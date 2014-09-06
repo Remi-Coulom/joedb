@@ -1,0 +1,8 @@
+schema: Sample
+
+class: City
+field: string name
+
+class: Person
+field: string name
+field: City city
