@@ -8,3 +8,6 @@ Ideas:
  - Log all operations
  - Store schema and crazydb version into journal
  - Should be flexible to change of schema
+
+Keywords:
+ - transparent persistence

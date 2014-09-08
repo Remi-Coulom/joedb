@@ -1,8 +1,8 @@
 schema: Sample
 
-class: City
+table: City
 field: string name
 
-class: Person
+table: Person
 field: string name
 field: City city
