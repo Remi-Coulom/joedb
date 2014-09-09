@@ -1,4 +1,3 @@
- - Second parsing pass to resolve data types of a schema
  - Generate C++ code from that data structure -> produce binary journal
  - Load data from journal
  - Write/Read dump

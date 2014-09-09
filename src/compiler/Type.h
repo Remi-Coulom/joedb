@@ -1,13 +1,15 @@
 #ifndef crazydb_Type_declared
 #define crazydb_Type_declared
 
-#include <string>
+#include <iosfwd>
 
 namespace crazydb
 {
- struct Type
+ class Type
  {
-  std::string cpp_type;
+  public:
+   virtual void generate_private(std::ostream &out) {}
+   virtual void generate_public(std::ostream &out) {}
  };
 }
 

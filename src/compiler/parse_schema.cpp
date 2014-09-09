@@ -1,8 +1,10 @@
 #include "parse_schema.h"
 
 #include <sstream>
+#include <map>
 
 #include "Schema.h"
+#include "Primitive_type.h"
 
 using namespace crazydb;
 
@@ -75,4 +77,56 @@ void crazydb::write_schema(std::ostream &out, const Schema &schema)
    out << "  " << field->type_string << ' ' << field->name << '\n';
   }
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+bool crazydb::parse_types(Schema &schema)
+/////////////////////////////////////////////////////////////////////////////
+{
+ //
+ // Map of types
+ //
+ std::map<std::string, Type*> m;
+
+ //
+ // Primary types
+ //
+ Primitive_type string_type("std::string");
+ m["string"] = &string_type;
+
+ //
+ // Create all table types
+ //
+ for (std::list<Table>::const_iterator table = schema.tables.begin();
+      table != schema.tables.end();
+      table++)
+ {
+  schema.table_types.push_back(Table_type(*table));
+  m[table->name] = &schema.table_types.back();
+ }
+
+ //
+ // Parse all fields
+ //
+ for (std::list<Table>::const_iterator table = schema.tables.begin();
+      table != schema.tables.end();
+      table++)
+  for (std::list<Field>::const_iterator field = table->fields.begin();
+       field != table->fields.end();
+       field++)
+  {
+   std::cerr << "  " << field->type_string << ' ' << field->name << '\n';
+   std::map<std::string, Type*>::const_iterator i = m.find(field->type_string);
+   if (i == m.end())
+   {
+    std::cerr << "Error: could not find type: " << field->type_string << '\n';
+    return false;
+   }
+   else
+   {
+    std::cerr << "OK\n";
+   }
+  }
+
+ return true;
 }

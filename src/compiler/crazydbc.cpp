@@ -15,6 +15,12 @@ int main()
   return 1;
  }
 
+ if (!parse_types(schema))
+ {
+  std::cout << "Error parsing types\n";
+  return 1;
+ }
+
  write_schema(std::cout, schema);
 
  return 0;

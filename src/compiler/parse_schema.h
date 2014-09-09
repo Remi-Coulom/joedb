@@ -12,6 +12,9 @@ namespace crazydb
 
  // Reverse operation
  void write_schema(std::ostream &out, const Schema &schema);
+
+ // Second pass after parse_schema
+ bool parse_types(Schema &schema);
 }
 
 #endif
