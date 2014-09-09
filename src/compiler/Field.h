@@ -8,6 +8,7 @@ namespace crazydb
  struct Field
  {
   std::string name;
+  std::string type_string;
   Type type;
  };
 }

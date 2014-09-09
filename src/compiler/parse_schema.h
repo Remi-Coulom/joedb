@@ -7,7 +7,11 @@ namespace crazydb
 {
  struct Schema;
 
- bool parse_schema(std::istream &input, Schema &schema);
+ // Return true if OK, false if error
+ bool parse_schema(std::istream &in, Schema &schema);
+
+ // Reverse operation
+ void write_schema(std::ostream &out, const Schema &schema);
 }
 
 #endif

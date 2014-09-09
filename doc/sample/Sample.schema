@@ -1,8 +1,8 @@
-schema: Sample
+Sample
 
-table: City
-field: string name
+City
+ string name
 
-table: Person
-field: string name
-field: City city
+Person
+ string name
+ City city

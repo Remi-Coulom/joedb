@@ -15,6 +15,7 @@ int main()
   return 1;
  }
 
- std::cout << "OK\n";
+ write_schema(std::cout, schema);
+
  return 0;
 }
