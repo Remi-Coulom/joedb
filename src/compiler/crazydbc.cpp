@@ -21,6 +21,7 @@ int main()
   return 1;
  }
 
+ std::cout << "Generating code for schema: ";
  write_schema(std::cout, schema);
 
  return 0;

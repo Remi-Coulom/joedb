@@ -93,6 +93,8 @@ bool crazydb::parse_types(Schema &schema)
  //
  Primitive_type string_type("std::string");
  m["string"] = &string_type;
+ Primitive_type int32_t_type("int32_t");
+ m["int32_t"] = &int32_t_type;
 
  //
  // Create all table types
@@ -115,16 +117,11 @@ bool crazydb::parse_types(Schema &schema)
        field != table->fields.end();
        field++)
   {
-   std::cerr << "  " << field->type_string << ' ' << field->name << '\n';
    std::map<std::string, Type*>::const_iterator i = m.find(field->type_string);
    if (i == m.end())
    {
     std::cerr << "Error: could not find type: " << field->type_string << '\n';
     return false;
-   }
-   else
-   {
-    std::cerr << "OK\n";
    }
   }
 
