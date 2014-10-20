@@ -1,4 +1,5 @@
  - Generate C++ code from that data structure -> produce binary journal
+ - idea: use xml for structure definition + xslt for code generation
  - Load data from journal
  - Write/Read dump
 
@@ -10,3 +11,6 @@ Ideas:
 
 Keywords:
  - transparent persistence
+
+References:
+ - http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
