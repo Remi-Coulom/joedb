@@ -1,5 +1,4 @@
  - Generate C++ code from that data structure -> produce binary journal
- - idea: use xml for structure definition + xslt for code generation
  - Load data from journal
  - Write/Read dump
 
