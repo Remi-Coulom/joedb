@@ -17,3 +17,5 @@ References:
 Notes:
  sudo apt-get install libsaxonb-java
  (libsaxon-java is tool old, and does not work)
+ sudo apt-get install libxml2-utils
+ (for xmllint)

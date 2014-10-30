@@ -39,6 +39,8 @@
   <xsl:value-of select="name"/>
   <xsl:text>_Declared&#xa;&#xa;</xsl:text>
 
+  <xsl:text>#include &lt;string&gt;&#xa;&#xa;</xsl:text>
+
   <xsl:text>class </xsl:text>
   <xsl:value-of select="name"/>
   <xsl:text>&#xa;{&#xa;</xsl:text>

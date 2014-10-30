@@ -1,12 +1,23 @@
-<database><name>SampleDB</name>
-
- <table><name>City</name>
-  <field><type>string</type><name>name</name></field>
- </table>
-
- <table><name>Person</name>
-  <field><type>string</type><name>name</name></field>
-  <field><type>City</type><name>city</name></field>
- </table>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE database SYSTEM "crazydb.dtd">
+<database>
+    <name>SampleDB</name>
+    <table>
+        <name>City</name>
+        <field>
+            <type>string</type>
+            <name>name</name>
+        </field>
+    </table>
+    <table>
+        <name>Person</name>
+        <field>
+            <type>string</type>
+            <name>name</name>
+        </field>
+        <field>
+            <type>City</type>
+            <name>city</name>
+        </field>
+    </table>
 </database>
