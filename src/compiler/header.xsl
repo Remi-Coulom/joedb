@@ -1,18 +1,31 @@
-<xsl:stylesheet version="2.0"
+<xsl:stylesheet version="3.0"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns:my="http://remi.coulom.free.fr"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:my="my:my"
 > 
 
  <xsl:output method="text" omit-xml-declaration="yes" media-type="text/c++"/>
 
- <xsl:function name="my:cpptype">
-  <xsl:param name="type"/>
+ <xsl:function name="my:storage_type" as="xs:string">
+  <xsl:param name="type" as="xs:string"/>
   <xsl:choose>
-   <xsl:when test="type = 'string'">
+   <xsl:when test="$type = 'string'">
     <xsl:text>std::string</xsl:text>
    </xsl:when>
    <xsl:otherwise>
-    <xsl:value-of select="type"/><xsl:text>*</xsl:text>
+    <xsl:value-of select="concat($type,'*')"/>
+   </xsl:otherwise>
+  </xsl:choose>
+ </xsl:function>
+
+ <xsl:function name="my:return_type" as="xs:string">
+  <xsl:param name="type" as="xs:string"/>
+  <xsl:choose>
+   <xsl:when test="$type = 'string'">
+    <xsl:text>const std::string &amp;</xsl:text>
+   </xsl:when>
+   <xsl:otherwise>
+    <xsl:value-of select="concat($type,' *')"/>
    </xsl:otherwise>
   </xsl:choose>
  </xsl:function>
@@ -39,15 +52,34 @@
    <xsl:text>  private:&#xa;</xsl:text>
    <xsl:for-each select="field">
     <xsl:text>   </xsl:text>
-    <xsl:value-of select="my:cpptype(type)"/>
+    <xsl:value-of select="my:storage_type(type)"/>
     <xsl:text> </xsl:text>
     <xsl:value-of select="name"/>
     <xsl:text>;&#xa;</xsl:text>
    </xsl:for-each>
 
-   <!-- Loop over table fields for getters and setters -->
-   <xsl:text>  public:&#xa;</xsl:text>
+   <!-- Loop over table fields for getters -->
+   <xsl:text>&#xa;  public:&#xa;</xsl:text>
    <xsl:for-each select="field">
+    <xsl:text>   </xsl:text>
+    <xsl:value-of select="my:return_type(type)"/>
+    <xsl:text>get_</xsl:text>
+    <xsl:value-of select="name"/>
+    <xsl:text>() const {return </xsl:text>
+    <xsl:value-of select="name"/>
+    <xsl:text>;}&#xa;</xsl:text>
+   </xsl:for-each>
+
+   <!-- Loop over table fields for setters -->
+   <xsl:text>&#xa;</xsl:text>
+   <xsl:for-each select="field">
+    <xsl:text>   void set_</xsl:text>
+    <xsl:value-of select="name"/>
+    <xsl:text>(</xsl:text>
+    <xsl:value-of select="my:return_type(type)"/>
+    <xsl:text>new_</xsl:text>
+    <xsl:value-of select="name"/>
+    <xsl:text>);&#xa;</xsl:text>
    </xsl:for-each>
 
    <!-- Table end -->
