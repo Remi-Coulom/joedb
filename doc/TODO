@@ -1,3 +1,5 @@
+ - Try to write the compiler in C++ with boost::propertytree:
+   http://www.boost.org/doc/libs/1_42_0/doc/html/boost_propertytree/tutorial.html
  - Generate C++ code from that data structure -> produce binary journal
  - Load data from journal
  - Write/Read dump
