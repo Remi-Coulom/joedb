@@ -1,6 +1,2 @@
-build
-mingw32
-mingw64
+makefile
 ninja
-vs2013
-vs2013-64
