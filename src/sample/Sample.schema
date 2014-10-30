@@ -1,8 +1,0 @@
-Sample
-
-City
- string name
-
-Person
- string name
- City city

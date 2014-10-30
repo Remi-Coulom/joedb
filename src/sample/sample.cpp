@@ -1,7 +1,7 @@
-#include "Sample.h"
+#include "SampleDB.h"
 
 int main()
 {
- Sample sample("./");
+ SampleDB sample;
  return 0;
 }

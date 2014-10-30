@@ -12,14 +12,6 @@ include_directories(
 )
 
 add_executable(
- crazydbc
- ../src/compiler/crazydbc.cpp
- ../src/compiler/parse_schema.cpp
-)
-
-add_executable(
  sample
- ../src/templates/Sample.cpp
- ../src/templates/Sample.h
  ../src/sample/sample.cpp
 )

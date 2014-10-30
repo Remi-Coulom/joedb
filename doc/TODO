@@ -13,3 +13,7 @@ Keywords:
 
 References:
  - http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
+
+Notes:
+ sudo apt-get install libsaxonb-java
+ (libsaxon-java is tool old, and does not work)
