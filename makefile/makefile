@@ -7,4 +7,4 @@ out/SampleDB.h: ../src/sample/SampleDB.xml ../src/compiler/header.xsl
 	saxonb-xslt $? >$@
 
 validate:
-	xmllint --valid --noout ../src/sample/SampleDB.xml
+	xmllint --noout --dtdvalid ../src/compiler/crazydb.dtd ../src/sample/SampleDB.xml
