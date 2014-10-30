@@ -1,4 +1,7 @@
-<xsl:transform version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"> 
+<xsl:stylesheet version="2.0"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+ xmlns:my="http://remi.coulom.free.fr"
+> 
 
  <xsl:output method="text" omit-xml-declaration="yes" media-type="text/c++"/>
 
@@ -32,7 +35,7 @@
    <xsl:text> class </xsl:text><xsl:value-of select="name"/>
    <xsl:text>&#xa; {&#xa;</xsl:text>
 
-   <!-- Loop over table fields for private data-->
+   <!-- Loop over table fields for private data -->
    <xsl:text>  private:&#xa;</xsl:text>
    <xsl:for-each select="field">
     <xsl:text>   </xsl:text>
@@ -42,6 +45,12 @@
     <xsl:text>;&#xa;</xsl:text>
    </xsl:for-each>
 
+   <!-- Loop over table fields for getters and setters -->
+   <xsl:text>  public:&#xa;</xsl:text>
+   <xsl:for-each select="field">
+   </xsl:for-each>
+
+   <!-- Table end -->
    <xsl:text> };&#xa;</xsl:text>
    <xsl:if test="position() != last()">
     <xsl:text>&#xa;</xsl:text>
@@ -51,4 +60,4 @@
   <xsl:text>};&#xa;&#xa;</xsl:text>
   <xsl:text>#endif&#xa;</xsl:text>
  </xsl:template>
-</xsl:transform>
+</xsl:stylesheet>
