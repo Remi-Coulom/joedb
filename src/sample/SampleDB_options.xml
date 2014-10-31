@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<compiler_options>
+
+    <backend>crazydb</backend>
+
+    <cache>
+        <table>City</table>
+        <type>vector</type>
+    </cache>
+
+    <cache>
+        <table>Person</table>
+        <type>deque</type>
+    </cache>
+
+    <index>
+	<table>Person</table>
+        <field>name</table>
+        <type>map</type>
+    </index>
+
+</compiler_options>
