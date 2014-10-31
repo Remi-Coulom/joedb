@@ -9,6 +9,11 @@ Ideas:
  - Log all operations
  - Store schema and crazydb version into journal
  - Should be flexible to change of schema
+ - Compile options:
+   - cache type for each table: vector, deque, map, none
+   - back-end: sql or crazydb
+   - when "none" and crazydb backend: write only (append)
+     Good for writing a big visit log, for instance
 
 Keywords:
  - transparent persistence
