@@ -8,6 +8,8 @@ Ideas:
  - Store schema and crazydb version into journal
  - Should be flexible to change of schema
  - Compile options:
+   - main index type (uint16_t, uint32_t, uint64_t), for each table
+   - additional index on other fields
    - cache type for each table: vector, deque, map, none
    - back-end: sql or crazydb
    - when "none" and crazydb backend: write only (append)

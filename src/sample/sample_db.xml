@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-    <name>SampleDB</name>
+    <name>sample_db</name>
     <table>
-        <name>City</name>
+        <name>city</name>
         <field>
             <type>string</type>
             <name>name</name>
         </field>
     </table>
     <table>
-        <name>Person</name>
+        <name>person</name>
         <field>
             <type>string</type>
             <name>name</name>
         </field>
         <field>
-            <type>City</type>
+            <type>city</type>
             <name>city</name>
         </field>
     </table>

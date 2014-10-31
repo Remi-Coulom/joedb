@@ -1,15 +1,19 @@
-.PHONY: validate
+#COMPILER:=g++ -Wall -O2 -Iout
+COMPILER:=clang++ -Wall -std=c++11 -O0 -Iout
 
-COMPILER:=g++ -std=c++0x -Wall -O2 -Iout -I/home/coulom/boost_1_56_0
-
-out/sample: ../src/sample/sample.cpp out/SampleDB.h
+out/sample: ../src/sample/sample.cpp out/sample_db.h
 	$(COMPILER) -o $@ $<
 
 out/compiler: ../src/compiler/compiler.cpp
 	$(COMPILER) -o $@ $<
 
-out/SampleDB.h: ../src/sample/SampleDB.xml out/compiler
+out/sample_db.h: ../src/sample/sample_db.xml out/compiler
 	out/compiler <$< >$@
 
+.PHONY: validate clean
+
+clean:
+	~/rc2/programs/_general/clean.sh
+
 validate:
-	xmllint --noout --dtdvalid ../src/compiler/crazydb.dtd ../src/sample/SampleDB.xml
+	xmllint --noout --dtdvalid ../src/compiler/crazydb.dtd ../src/sample/sample_db.xml

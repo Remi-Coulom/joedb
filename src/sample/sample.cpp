@@ -1,7 +1,7 @@
-#include "SampleDB.h"
+#include "sample_db.h"
 
 int main()
 {
- SampleDB sample;
+ sample_db db;
  return 0;
 }
