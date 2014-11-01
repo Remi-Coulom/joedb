@@ -1,3 +1,9 @@
+ - Before transparent persistence in C++: make a command interpreter (SQL)
+   - Data definition: add/remove table/field
+   - Data modification: insert,update,delete
+   - Dump (binary or sql), including data-structure-only dump
+   - Data structure will be defined by the data definition
+   - Keep all data in memory in an "interpreted" data structure
  - Generate C++ code from that data structure -> produce binary journal
  - Load data from journal
  - Write/Read dump
@@ -20,9 +26,5 @@ Keywords:
 
 References:
  - http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
-
-Notes:
- sudo apt-get install libsaxonb-java
- (libsaxon-java is tool old, and does not work)
- sudo apt-get install libxml2-utils
- (for xmllint)
+ - http://www.codesynthesis.com/products/odb/
+ - http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html
