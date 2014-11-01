@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 2.8.4)
 
 project(crazydb)
 
-set(CMAKE_CXX_FLAGS "-O0 -std=c++11 -Wall -ansi -pedantic -Wconversion")
+set(CMAKE_CXX_FLAGS "-O0 -std=c++11 -Wall -pedantic -Wconversion")
 
-# With these options, clang behaves better with ccache
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
 endif()
@@ -18,6 +18,7 @@ include_directories(
 add_executable(
  abstract_test
  ../src/test/abstract_test.cpp
+ ../src/interpreter/io/dump_schema.cpp
 )
 
 add_executable(

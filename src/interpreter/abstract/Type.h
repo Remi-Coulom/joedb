@@ -7,8 +7,10 @@ namespace crazydb
 {
  class Type
  {
-  private:
+  public:
    enum Kind {string_id, int32_id, int64_id, reference_id};
+
+  private:
    Kind kind;
    std::string table_name; // for reference only
 
@@ -16,7 +18,7 @@ namespace crazydb
    Type(const char *table_name): kind(reference_id), table_name(table_name) {}
 
   public:
-   bool is_reference() const {return kind == reference_id;}
+   Kind get_kind() const {return kind;}
    const std::string &get_table_name() const {return table_name;}
 
    static Type string() {return Type(string_id);}

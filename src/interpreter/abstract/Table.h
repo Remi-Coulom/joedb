@@ -16,17 +16,14 @@ namespace crazydb
   public:
    const std::map<std::string, Type> &get_fields() const {return fields;}
 
-   bool add_field(const char *name, const Type &type)
+   bool add_field(const std::string &name, const Type &type)
    {
-    std::string name_string(name);
+    return fields.insert(std::make_pair(name, type)).second;
+   }
 
-    if (fields.count(name_string))
-     return false;
-    else
-    {
-     fields.insert(std::make_pair(name_string, type));
-     return true;
-    }
+   bool drop_field(const std::string &name)
+   {
+    return fields.erase(name) > 0;
    }
  };
 }

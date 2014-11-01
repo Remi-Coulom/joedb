@@ -13,15 +13,40 @@ namespace crazydb
    std::map<std::string, Table> tables;
 
   public:
-   bool create_table(const char *name);
-   bool drop_table(const char *name);
-   bool alter_table_add(const char *table_name,
-                        const char *field_name,
-                        Type field_type);
-   bool alter_table_drop(const char *table_name,
-                         const char *field_name);
+   const std::map<std::string, Table> &get_tables() const {return tables;}
 
-   const Table *get_table(const char *table_name) const;
+   bool create_table(const std::string &name)
+   {
+    return tables.insert(std::make_pair(name, Table())).second;
+   }
+
+   bool drop_table(const std::string &name)
+   {
+    return tables.erase(name) > 0;
+   }
+
+   bool alter_table_add(const std::string &table_name,
+                        const std::string &field_name,
+                        const Type &field_type)
+   {
+    auto it = tables.find(table_name);
+
+    if (it == tables.end())
+     return false;
+    else
+     return it->second.add_field(field_name, field_type);
+   }
+
+   bool alter_table_drop(const std::string &table_name,
+                         const std::string &field_name)
+   {
+    auto it = tables.find(table_name);
+
+    if (it == tables.end())
+     return false;
+    else
+     return it->second.drop_field(field_name);
+   }
  };
 }
 
