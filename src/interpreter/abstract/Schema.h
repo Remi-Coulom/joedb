@@ -3,21 +3,21 @@
 
 #include <map>
 
-#include "Table.h"
+#include "TableFields.h"
 
 namespace crazydb
 {
  class Schema
  {
   private:
-   std::map<std::string, Table> tables;
+   std::map<std::string, TableFields> tables;
 
   public:
-   const std::map<std::string, Table> &get_tables() const {return tables;}
+   const std::map<std::string, TableFields> &get_tables() const {return tables;}
 
    bool create_table(const std::string &name)
    {
-    return tables.insert(std::make_pair(name, Table())).second;
+    return tables.insert(std::make_pair(name, TableFields())).second;
    }
 
    bool drop_table(const std::string &name)

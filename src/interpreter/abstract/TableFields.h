@@ -1,5 +1,5 @@
-#ifndef crazydb_Table_declared
-#define crazydb_Table_declared
+#ifndef crazydb_TableFields_declared
+#define crazydb_TableFields_declared
 
 #include <string>
 #include <map>
@@ -8,7 +8,7 @@
 
 namespace crazydb
 {
- class Table
+ class TableFields
  {
   private:
    std::map<std::string, Type> fields;
