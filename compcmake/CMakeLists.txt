@@ -18,7 +18,7 @@ include_directories(
 add_executable(
  abstract_test
  ../src/test/abstract_test.cpp
- ../src/interpreter/io/dump_schema.cpp
+ ../src/interpreter/io/dump.cpp
 )
 
 add_executable(
