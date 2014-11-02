@@ -2,9 +2,10 @@
 #define crazydb_Table_declared
 
 #include <unordered_map>
-#include <vector>
 #include <algorithm>
+#include <limits>
 
+#include "Field.h"
 #include "Type.h"
 #include "Value.h"
 #include "index_types.h"
@@ -14,21 +15,21 @@ namespace crazydb
  class Table
  {
   private:
-   record_id_t current_id;
-   std::vector<std::string> field_names;
-   std::vector<Type> field_types;
+   record_id_t current_record_id;
+   field_id_t current_field_id;
+
+   std::unordered_map<field_id_t, Field> fields;
    std::unordered_map<record_id_t, std::vector<Value>> records;
 
   public:
-   Table(): current_id(0) {}
+   Table():
+    current_record_id(0),
+    current_field_id(0)
+   {}
 
-   const std::vector<std::string> &get_field_names() const
+   const std::unordered_map<field_id_t, Field> &get_fields() const
    {
-    return field_names;
-   }
-   const std::vector<Type> &get_field_types() const
-   {
-    return field_types;
+    return fields;
    }
    const std::unordered_map<record_id_t, std::vector<Value>>
     &get_records() const
@@ -38,36 +39,47 @@ namespace crazydb
 
    field_id_t get_field_id(const std::string &name)
    {
-    auto it = find(field_names.begin(), field_names.end(), name);
-    if (it == field_names.end())
-     return 0;
-    else
-     return field_id_t(std::distance(field_names.begin(), it) + 1);
+    for (const auto &field: fields)
+     if (field.second.name == name)
+      return field.first;
+    return 0;
    }
 
    field_id_t add_field(const std::string &name, const Type &type)
    {
-    if (get_field_id(name))
+    if (get_field_id(name) ||
+        current_field_id == std::numeric_limits<field_id_t>::max())
      return 0;
 
-    field_names.push_back(name);
-    field_types.push_back(type);
+    Field field;
+    field.index = field_id_t(fields.size());
+    field.name = name;
+    field.type = type;
+    fields.insert(std::make_pair(++current_field_id, field));
 
-    for (auto record: records)
+    for (auto &record: records)
      record.second.push_back(Value());
 
-    // TODO check limit when adding new
-    // TODO check range when drop or update
-    return field_id_t(field_names.size());
+    return current_field_id;
    }
 
-   void drop_field(field_id_t field_id)
+   bool drop_field(field_id_t field_id)
    {
-    field_names.erase(field_names.begin() + field_id - 1);
-    field_types.erase(field_types.begin() + field_id - 1);
+    auto it = fields.find(field_id);
+    if (it == fields.end())
+     return false;
 
-    for (auto record: records)
-     record.second.erase(record.second.begin() + field_id - 1);
+    const field_id_t field_index = it->second.index;
+    fields.erase(it);
+
+    for (auto &field: fields)
+     if (field.second.index > field_index)
+      --field.second.index;
+
+    for (auto &record: records)
+     record.second.erase(record.second.begin() + field_index);
+
+    return true;
    }
 
    bool delete_record(record_id_t id)
@@ -77,19 +89,22 @@ namespace crazydb
 
    record_id_t insert_record()
    {
-    std::vector<Value> v;
-    for (Type type: field_types)
-     v.push_back(Value());
-    records.insert(std::make_pair(++current_id, v));
-    return current_id;
+    records.insert(std::make_pair(++current_record_id,
+                                  std::vector<Value>(fields.size())));
+    return current_record_id;
    }
 
    bool update(record_id_t record_id, field_id_t field_id, const Value &value)
    {
+    auto field = fields.find(field_id);
+    if (field == fields.end())
+     return false;
+
     auto record = records.find(record_id);
     if (record == records.end())
      return false;
-    record->second[field_id - 1] = value;
+
+    record->second[field->second.index] = value;
     return true;
    }
  };

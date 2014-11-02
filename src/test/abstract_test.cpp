@@ -22,6 +22,7 @@ int main()
 
  Table &person = database.create_table("Person");
  field_id_t person_name = person.add_field("name", Type::string());
+ field_id_t person_dummy = person.add_field("dummy", Type::int32());
  field_id_t person_city = person.add_field("city", Type::reference("City"));
 
  record_id_t remi = person.insert_record();
@@ -32,7 +33,17 @@ int main()
  person.update(norbert, person_name, Value("Norbert"));
  person.update(norbert, person_city, Value(lille));
 
- person.delete_record(remi);
+// person.delete_record(remi);
+ person.drop_field(person_dummy);
+
+ record_id_t alex = person.insert_record();
+ person.update(alex, person_name, Value("Alexandre"));
+ person.update(alex, person_city, Value(paris));
+
+ dump(std::cout, database);
+
+ person.add_field("dummy", Type::int32());
+ person.drop_field(person_city);
 
  dump(std::cout, database);
 

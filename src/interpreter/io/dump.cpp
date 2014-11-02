@@ -11,15 +11,18 @@ void crazydb::dump(std::ostream &out, const Database &database)
  for (auto table: tables)
  {
   out << "create_table " << table.first << '\n';
-  auto field_names = table.second.get_field_names();
-  auto field_types = table.second.get_field_types();
+  const auto &fields = table.second.get_fields();
 
-  for (size_t i = 0; i < field_names.size(); i++)
+  for (const auto &field: fields)
   {
-   out << "add_field " << table.first << ' ' << field_names[i] << ' ';
+   out << "add_field " << table.first << ' ' << field.second.name << ' ';
 
-   switch(field_types[i].get_kind())
+   switch(field.second.type.get_kind())
    {
+    case Type::null_id:
+     out << "null";
+    break;
+
     case Type::string_id:
      out << "string";
     break;
@@ -33,9 +36,11 @@ void crazydb::dump(std::ostream &out, const Database &database)
     break;
 
     case Type::reference_id:
-     out << "references " << field_types[i].get_table_name();
+     out << "references " << field.second.type.get_table_name();
     break;
    }
+
+   out << " # id = " << field.first << "; index = " << field.second.index;
    out << '\n';
   }
 
@@ -43,15 +48,20 @@ void crazydb::dump(std::ostream &out, const Database &database)
   {
    out << "insert_into " << table.first << ' ';
    out << record.first;
-   for (size_t i = 0; i < field_names.size(); i++)
+   for (const auto &field: fields)
    {
+    const size_t i = field.second.index;
     out << ' ';
 
     if (!record.second[i].is_initialized())
      out << "NULL";
     else
-     switch(field_types[i].get_kind())
+     switch(field.second.type.get_kind())
      {
+      case Type::null_id:
+       out << "NULL";
+      break;
+
       case Type::string_id:
        out << record.second[i].get_string();
       break;
