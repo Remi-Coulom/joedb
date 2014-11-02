@@ -15,9 +15,9 @@ namespace crazydb
   public:
    const std::map<std::string, Table> &get_tables() const {return tables;}
 
-   bool create_table(const std::string &name)
+   Table &create_table(const std::string &name)
    {
-    return tables.insert(std::make_pair(name, Table())).second;
+    return tables.insert(std::make_pair(name, Table())).first->second;
    }
 
    bool drop_table(const std::string &name)
@@ -25,27 +25,14 @@ namespace crazydb
     return tables.erase(name) > 0;
    }
 
-   bool alter_table_add(const std::string &table_name,
-                        const std::string &field_name,
-                        const Type &field_type)
+   Table *get_table(const std::string &name)
    {
-    auto it = tables.find(table_name);
+    auto it = tables.find(name);
 
     if (it == tables.end())
-     return false;
+     return 0;
     else
-     return it->second.add_field(field_name, field_type);
-   }
-
-   bool alter_table_drop(const std::string &table_name,
-                         const std::string &field_name)
-   {
-    auto it = tables.find(table_name);
-
-    if (it == tables.end())
-     return false;
-    else
-     return it->second.drop_field(field_name);
+     return &it->second;
    }
  };
 }

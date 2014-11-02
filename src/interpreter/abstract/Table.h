@@ -14,6 +14,11 @@ namespace crazydb
    std::map<std::string, Type> fields;
    std::map<uint64_t, std::vector<void *> > records;
 
+   void free_values(const std::vector<void *> &record)
+   {
+    // TODO
+   }
+
   public:
    const std::map<std::string, Type> &get_fields() const {return fields;}
 
@@ -27,8 +32,22 @@ namespace crazydb
     return fields.erase(name) > 0;
    }
 
+   bool delete_record(uint64_t id)
+   {
+    auto it = records.find(id);
+    if (it == records.end())
+     return false;
+    free_values(it->second);
+    records.erase(it);
+    return true;
+   }
+
+   uint64_t insert();
+
    ~Table()
    {
+    for (auto kvp: records)
+     free_values(kvp.second);
    }
  };
 }

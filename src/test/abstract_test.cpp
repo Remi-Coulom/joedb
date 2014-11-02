@@ -9,12 +9,12 @@ int main()
 {
  Database database;
 
- database.create_table("City");
- database.alter_table_add("City", "name", Type::string());
+ Table &city = database.create_table("City");
+ city.add_field("name", Type::string());
 
- database.create_table("Person");
- database.alter_table_add("Person", "name", Type::string());
- database.alter_table_add("Person", "city", Type::reference("City"));
+ Table &person = database.create_table("Person");
+ person.add_field("name", Type::string());
+ person.add_field("city", Type::reference("City"));
 
  dump_schema(std::cout, database);
 
