@@ -1,7 +1,7 @@
 #ifndef crazydb_Table_declared
 #define crazydb_Table_declared
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "Type.h"
@@ -12,7 +12,7 @@ namespace crazydb
  {
   private:
    std::map<std::string, Type> fields;
-   std::map<uint64_t, std::vector<void *> > records;
+   std::unordered_map<uint64_t, std::vector<void *>> records;
 
    void free_values(const std::vector<void *> &record)
    {
@@ -46,8 +46,8 @@ namespace crazydb
 
    ~Table()
    {
-    for (auto kvp: records)
-     free_values(kvp.second);
+    for (auto record: records)
+     free_values(record.second);
    }
  };
 }
