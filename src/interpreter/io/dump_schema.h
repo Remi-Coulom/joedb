@@ -5,9 +5,9 @@
 
 namespace crazydb
 {
- class Schema;
+ class Database;
 
- void dump_schema(std::ostream &out, const Schema &schema);
+ void dump_schema(std::ostream &out, const Database &database);
 }
 
 #endif

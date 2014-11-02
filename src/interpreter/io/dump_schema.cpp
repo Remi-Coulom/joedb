@@ -1,13 +1,13 @@
 #include "dump_schema.h"
-#include "Schema.h"
+#include "Database.h"
 
 #include <iostream>
 
 using namespace crazydb;
 
-void crazydb::dump_schema(std::ostream &out, const Schema &schema)
+void crazydb::dump_schema(std::ostream &out, const Database &database)
 {
- auto tables = schema.get_tables();
+ auto tables = database.get_tables();
  for (auto table_it: tables)
  {
   out << "create_table " << table_it.first << '\n';

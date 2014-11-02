@@ -16,7 +16,7 @@ int main()
  database.alter_table_add("Person", "name", Type::string());
  database.alter_table_add("Person", "city", Type::reference("City"));
 
- dump_schema(std::cout, database.get_schema());
+ dump_schema(std::cout, database);
 
  return 0;
 }

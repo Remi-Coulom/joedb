@@ -1,17 +1,18 @@
-#ifndef crazydb_TableFields_declared
-#define crazydb_TableFields_declared
+#ifndef crazydb_Table_declared
+#define crazydb_Table_declared
 
-#include <string>
 #include <map>
+#include <vector>
 
 #include "Type.h"
 
 namespace crazydb
 {
- class TableFields
+ class Table
  {
   private:
    std::map<std::string, Type> fields;
+   std::map<uint64_t, std::vector<void *> > records;
 
   public:
    const std::map<std::string, Type> &get_fields() const {return fields;}
@@ -24,6 +25,10 @@ namespace crazydb
    bool drop_field(const std::string &name)
    {
     return fields.erase(name) > 0;
+   }
+
+   ~Table()
+   {
    }
  };
 }

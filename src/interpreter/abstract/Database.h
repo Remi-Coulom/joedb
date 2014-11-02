@@ -1,40 +1,52 @@
 #ifndef crazydb_Database_declared
 #define crazydb_Database_declared
 
-#include "Schema.h"
+#include <map>
+
+#include "Table.h"
 
 namespace crazydb
 {
  class Database
  {
   private:
-   Schema schema;
+   std::map<std::string, Table> tables;
 
   public:
+   const std::map<std::string, Table> &get_tables() const {return tables;}
+
    bool create_table(const std::string &name)
    {
-    return schema.create_table(name);
+    return tables.insert(std::make_pair(name, Table())).second;
    }
 
    bool drop_table(const std::string &name)
    {
-    return schema.drop_table(name);
+    return tables.erase(name) > 0;
    }
 
    bool alter_table_add(const std::string &table_name,
                         const std::string &field_name,
-                        Type field_type)
+                        const Type &field_type)
    {
-    return schema.alter_table_add(table_name, field_name, field_type);
+    auto it = tables.find(table_name);
+
+    if (it == tables.end())
+     return false;
+    else
+     return it->second.add_field(field_name, field_type);
    }
 
    bool alter_table_drop(const std::string &table_name,
                          const std::string &field_name)
    {
-    return schema.alter_table_drop(table_name, field_name);
-   }
+    auto it = tables.find(table_name);
 
-   const Schema &get_schema() const {return schema;}
+    if (it == tables.end())
+     return false;
+    else
+     return it->second.drop_field(field_name);
+   }
  };
 }
 
