@@ -1,4 +1,7 @@
- - Move semantics for name when adding table / field
+ - Move semantics for name when adding table / field, value when updating...
+ - Implement interactive interpreter
+ - Coverage test (gtest?, cmake integration)
+ - Write log to binary file / Replay log from binary file
  - Before transparent persistence in C++: make a command interpreter (SQL)
    - Data definition: add/remove table/field
    - Data modification: insert,update,delete

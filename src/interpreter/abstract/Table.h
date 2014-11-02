@@ -15,6 +15,8 @@ namespace crazydb
  class Table
  {
   private:
+   std::string name;
+
    record_id_t current_record_id;
    field_id_t current_field_id;
 
@@ -22,22 +24,26 @@ namespace crazydb
    std::unordered_map<record_id_t, std::vector<Value>> records;
 
   public:
-   Table():
+   Table(const std::string &name):
+    name(name),
     current_record_id(0),
     current_field_id(0)
    {}
+
+   const std::string &get_name() const {return name;}
 
    const std::unordered_map<field_id_t, Field> &get_fields() const
    {
     return fields;
    }
+
    const std::unordered_map<record_id_t, std::vector<Value>>
     &get_records() const
    {
     return records;
    }
 
-   field_id_t get_field_id(const std::string &name)
+   field_id_t find_field(const std::string &name)
    {
     for (const auto &field: fields)
      if (field.second.name == name)
@@ -47,7 +53,7 @@ namespace crazydb
 
    field_id_t add_field(const std::string &name, const Type &type)
    {
-    if (get_field_id(name) ||
+    if (find_field(name) ||
         current_field_id == std::numeric_limits<field_id_t>::max())
      return 0;
 

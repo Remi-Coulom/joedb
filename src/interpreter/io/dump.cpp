@@ -10,12 +10,13 @@ void crazydb::dump(std::ostream &out, const Database &database)
  auto tables = database.get_tables();
  for (auto table: tables)
  {
-  out << "create_table " << table.first << '\n';
+  out << "create_table " << table.second.get_name() << '\n';
   const auto &fields = table.second.get_fields();
 
   for (const auto &field: fields)
   {
-   out << "add_field " << table.first << ' ' << field.second.name << ' ';
+   out << "add_field " << table.second.get_name() << ' ';
+   out << field.second.name << ' ';
 
    switch(field.second.type.get_kind())
    {
@@ -36,7 +37,15 @@ void crazydb::dump(std::ostream &out, const Database &database)
     break;
 
     case Type::reference_id:
-     out << "references " << field.second.type.get_table_name();
+    {
+     out << "references ";
+     table_id_t table_id = field.second.type.get_table_id();
+     const auto it = tables.find(table_id);
+     if (it != tables.end())
+      out << it->second.get_name();
+     else
+      out << "a_deleted_table";
+    }
     break;
    }
 
@@ -46,7 +55,7 @@ void crazydb::dump(std::ostream &out, const Database &database)
 
   for (auto record: table.second.get_records())
   {
-   out << "insert_into " << table.first << ' ';
+   out << "insert_into " << table.second.get_name() << ' ';
    out << record.first;
    for (const auto &field: fields)
    {

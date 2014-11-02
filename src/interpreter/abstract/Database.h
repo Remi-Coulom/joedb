@@ -1,8 +1,6 @@
 #ifndef crazydb_Database_declared
 #define crazydb_Database_declared
 
-#include <map>
-
 #include "Table.h"
 
 namespace crazydb
@@ -10,29 +8,72 @@ namespace crazydb
  class Database
  {
   private:
-   std::map<std::string, Table> tables;
+   table_id_t current_table_id;
+
+   std::unordered_map<table_id_t, Table> tables;
 
   public:
-   const std::map<std::string, Table> &get_tables() const {return tables;}
+   Database(): current_table_id(0) {}
 
-   Table &create_table(const std::string &name)
+   const std::unordered_map<table_id_t, Table> &get_tables() const
    {
-    return tables.insert(std::make_pair(name, Table())).first->second;
+    return tables;
    }
 
-   bool drop_table(const std::string &name)
+   table_id_t create_table(const std::string &name)
    {
-    return tables.erase(name) > 0;
+    tables.insert(std::make_pair(++current_table_id, Table(name)));
+    return current_table_id;
    }
 
-   Table *get_table(const std::string &name)
+   bool drop_table(table_id_t table_id)
    {
-    auto it = tables.find(name);
+    return tables.erase(table_id) > 0;
+   }
 
+   table_id_t find_table(const std::string &name)
+   {
+    for (const auto &table: tables)
+     if (table.second.get_name() == name)
+      return table.first;
+    return 0;
+   }
+
+   field_id_t add_field(table_id_t table_id,
+                        const std::string &name,
+                        Type type)
+   {
+    auto it = tables.find(table_id);
     if (it == tables.end())
      return 0;
-    else
-     return &it->second;
+    return it->second.add_field(name, type);
+   }
+
+   record_id_t insert_into(table_id_t table_id)
+   {
+    auto it = tables.find(table_id);
+    if (it == tables.end())
+     return 0;
+    return it->second.insert_record();
+   }
+
+   bool update(table_id_t table_id,
+               record_id_t record_id,
+               field_id_t field_id,
+               const Value &value)
+   {
+    auto it = tables.find(table_id);
+    if (it == tables.end())
+     return 0;
+    return it->second.update(record_id, field_id, value);
+   }
+
+   bool drop_field(table_id_t table_id, field_id_t field_id)
+   {
+    auto it = tables.find(table_id);
+    if (it == tables.end())
+     return 0;
+    return it->second.drop_field(field_id);
    }
  };
 }
