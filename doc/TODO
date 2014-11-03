@@ -1,34 +1,30 @@
- - Move semantics for name when adding table / field, value when updating...
- - Implement interactive interpreter
- - Coverage test (gtest?, cmake integration)
- - Write log to binary file / Replay log from binary file
- - Before transparent persistence in C++: make a command interpreter (SQL)
-   - Data definition: add/remove table/field
-   - Data modification: insert,update,delete
-   - Dump (binary or sql), including data-structure-only dump
-   - Data structure will be defined by the data definition
-   - Keep all data in memory in an "interpreted" data structure
- - Generate C++ code from that data structure -> produce binary journal
- - Load data from journal
- - Write/Read dump
+1: make something work fast:
+ - simple interactive interpreter
+ - write binary log (store version number)
+ - load binary log (with schema-only option)
+ - compiler to vector cache (with boolean "deleted" flag)
 
-Ideas:
- - Binary file format
- - Log all operations
- - Store schema and crazydb version into journal
- - Should be flexible to change of schema
- - Compile options:
-   - main index type (uint16_t, uint32_t, uint64_t), for each table
-   - additional index on other fields
-   - cache type for each table: vector, deque, map, none
-   - back-end: sql or crazydb
-   - when "none" and crazydb backend: write only (append)
-     Good for writing a big visit log, for instance
+2: make it good:
+ - unit testing (gtest, cmake integration)
+ - documentation
+ - New features: transactions, trigger, index, referential integrity, ...
+ - cache:
+   - any stl container (vector, deque, map, unordered_map)
+   - none (write only, for visit log)), or only N most recent
+   - file (maybe, for really huge tables)
 
 Keywords:
  - transparent persistence
 
 References:
- - http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
+
+ Object-Relational Mapping (ORM)
  - http://www.codesynthesis.com/products/odb/
  - http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html
+ - http://sourceforge.net/projects/litesql/
+
+ Serialization
+ - http://www.boost.org/doc/libs/1_56_0/libs/serialization/doc/index.html
+
+ C++ queries
+ - http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
