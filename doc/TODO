@@ -2,12 +2,13 @@
  - simple interactive interpreter
  - write binary log (store version number)
  - load binary log
- - compiler with triggers to produce vector cache (with boolean "deleted" flag)
+ - simple compiler (vector cache)
 
 2: make it good:
  - unit testing (gtest, cmake integration)
  - documentation
  - triggers (only compiled)
+ - compact dump (insert with data instead of field-by-field updates)
  - transactions:
    - global database lock (read and write)
    - undo-able updates (store old value in order to allow roll-back)
