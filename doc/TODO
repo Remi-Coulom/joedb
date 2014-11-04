@@ -1,14 +1,18 @@
 1: make something work fast:
  - simple interactive interpreter
  - write binary log (store version number)
- - load binary log (with schema-only option)
- - compiler to vector cache (with boolean "deleted" flag)
+ - load binary log
+ - compiler with triggers to produce vector cache (with boolean "deleted" flag)
 
 2: make it good:
  - unit testing (gtest, cmake integration)
  - documentation
- - New features: transactions, trigger, index, referential integrity, ...
- - cache:
+ - triggers (only compiled)
+ - transactions:
+   - global database lock (read and write)
+   - undo-able updates (store old value in order to allow roll-back)
+ - Using triggers: index, referential integrity, group by cache
+ - table storage:
    - any stl container (vector, deque, map, unordered_map)
    - none (write only, for visit log)), or only N most recent
    - file (maybe, for really huge tables)
