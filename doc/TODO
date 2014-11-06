@@ -2,21 +2,52 @@
  - simple interactive interpreter
  - write binary log (store version number)
  - load binary log
- - simple compiler (vector cache)
+ - simple compiler:
+   * class database
+   * class person
+     {
+      friend class database;
+      private:
+       record_id_t id;
+       person(record_id_t id): id(id) {} // only the database can construct
+      public:
+       record_id_t get_record_id() const {return id;}
+     };
+   * struct person_data
+     {
+      std::string name;
+      db_namespace::city city;
+     }
+   * city Lille = db.insert_city();
+     db.update_name(Lille, "Lille");
+   * person remi = db.insert_person("Rémi", city::null);
+   * db.update_city(remi, Lille);
+   * db.delete(remi);
+   * db.begin_transaction();
+   * db.end_transaction();
+   * transactions:
+     - write "begin" and "commit" operations to journal
+     - no rollback possible from within the code
+     - rollback only in case of failure (crash, ...) at load time
+  - core compiler options:
+   * namespace as parameter
+   * mutex protection as option
+   * triggers: C++ code: after/before insert/update/delete
+  - utility compilation (with triggers): vector cache for a table.
 
 2: make it good:
  - unit testing (gtest, cmake integration)
  - documentation
- - triggers (only compiled)
  - compact dump (insert with data instead of field-by-field updates)
- - transactions:
-   - global database lock (read and write)
-   - undo-able updates (store old value in order to allow roll-back)
- - Using triggers: index, referential integrity, group by cache
- - table storage:
-   - any stl container (vector, deque, map, unordered_map)
-   - none (write only, for visit log)), or only N most recent
-   - file (maybe, for really huge tables)
+ - Compiler utilities:
+   - table storage:
+     - any stl container (vector, deque, map, unordered_map)
+     - file (maybe, for big tables)
+     - easy loop over database records (for (auto person: db.persons))
+   - index, unique constraints (use triggers)
+   - referential integrity (use triggers)
+   - queries
+ - more data types: date, ip, vector<int>, ...
 
 Keywords:
  - transparent persistence
