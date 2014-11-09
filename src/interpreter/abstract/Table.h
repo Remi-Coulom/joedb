@@ -30,6 +30,8 @@ namespace crazydb
     current_field_id(0)
    {}
 
+   // TODO: use auto for all getters with C++ 2014
+
    const std::string &get_name() const {return name;}
 
    const std::unordered_map<field_id_t, Field> &get_fields() const
