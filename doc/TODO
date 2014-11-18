@@ -42,7 +42,7 @@
  - Compiler utilities:
    - table storage:
      - any stl container (vector, deque, map, unordered_map)
-     - file (maybe, for big tables)
+     - file (maybe, for big tables): make on-disk C++ containers
      - easy loop over database records (for (auto person: db.persons))
    - index, unique constraints (use triggers)
    - referential integrity (use triggers)
@@ -53,11 +53,29 @@ Keywords:
  - transparent persistence
 
 References:
+ SQLite:
+ - http://www.sqlite.org/
+
+ Berkeley DB:
+ - http://en.wikipedia.org/wiki/Berkeley_DB
+
+ Relational Template Library
+ - http://sourceforge.net/projects/rel-temp-lib/
+
+ POST++:
+ - http://www.garret.ru/post/readme.htm
+
+ On-disk containers:
+ - http://stackoverflow.com/questions/149488/disk-backed-stl-container-classes
+ - http://stxxl.sourceforge.net/
 
  Object-Relational Mapping (ORM)
  - http://www.codesynthesis.com/products/odb/
  - http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html
  - http://sourceforge.net/projects/litesql/
+
+ Active record pattern:
+ - http://en.wikipedia.org/wiki/Active_record_pattern
 
  Serialization
  - http://www.boost.org/doc/libs/1_56_0/libs/serialization/doc/index.html
