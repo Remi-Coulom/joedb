@@ -48,6 +48,8 @@
    - referential integrity (use triggers)
    - queries
  - more data types: date, ip, vector<int>, ...
+ - option to have rapidly undo-able history
+ - schema option: reuse deleted ids (implement with a linked list of free recs)
 
 Keywords:
  - transparent persistence
