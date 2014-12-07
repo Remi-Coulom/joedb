@@ -47,14 +47,31 @@
    - index, unique constraints (use triggers)
    - referential integrity (use triggers)
    - queries
+   - incrementally-updated group-by queries (OLAP, hypercube, ...)
  - more data types: date, ip, vector<int>, ...
  - option to have rapidly undo-able history
  - schema option: reuse deleted ids (implement with a linked list of free recs)
+ - don't store only table: also store variables. This can be done with a "single-row" table option. http://stackoverflow.com/questions/2300356/using-a-single-row-configuration-table-in-sql-server-database-bad-idea
 
 Keywords:
  - transparent persistence
+ - append-only file
+ - embedded database
 
 References:
+ Database with history/revisions:
+ - http://stackoverflow.com/questions/2724187/where-are-all-the-native-revisioned-databases
+ - http://stackoverflow.com/questions/39281/database-design-for-revisions
+ - http://stackoverflow.com/questions/9852703/store-all-data-changes-with-every-details-like-stackoverflow
+ - http://www.oracle.com/technetwork/issue-archive/2008/08-jul/o48totalrecall-092147.html
+ - http://stackoverflow.com/questions/12321200/database-row-snapshots-revisions
+ - http://stackoverflow.com/questions/750782/database-design-for-text-revisions
+ - https://github.com/DanielWaterworth/AODBM
+ - http://www.zodb.org/en/latest/
+ - http://oldblog.antirez.com/post/redis-persistence-demystified.html
+ - http://stackoverflow.com/questions/9484714/how-to-store-datas-change-history
+ - http://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
+
  SQLite:
  - http://www.sqlite.org/
 
