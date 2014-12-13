@@ -8,13 +8,13 @@ Context and Motivation
 
 The most basic approach to writing programs with persistent data stored in a relational database consists in using SQL queries via some API. Most database management systems provide such an API. Generic interfaces such as ODBC and JDBC are available, too.
 
-This basic SQL approach is not satisfactory for many reasons. In particular, writing a program that produces a SQL string at run time is dangerous: it is a source of security risks because of SQL injection. It also has a cost in terms of performance, because the SQL has to be parsed and interpreted by the database. Also, many errors that should be detected at compile time, such as a typo in the name of a field, will be detected at run time.
+This basic SQL approach has many problems. Writing a program that produces a SQL string at run time is dangerous: it is a source of security risks because of SQL injection. It also has a cost in terms of performance, because the SQL has to be parsed and interpreted by the database. Also, many errors that should be detected at compile time, such as a typo in the name of a field, will be detected at run time.
 
 Some weaknesses of the basic SQL approach can be corrected by encapsulating the dirty business of crafting SQL strings into some higher-level interfaces such as object-relational mapping systems or data-access objects. These system improve safety by providing static typing and identifier lookup.
 
 These abstract systems might look much cleaner from the programmer's point of view, but the additional layer of abstraction often has some cost, such as abstraction inversion. Abstraction inversion is when the programmer of the application may end-up having to re-implement a feature that was hidden by the abstraction. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
 
-The idea of crazydb is to overcome these problems by simply forgetting about SQL, and removing all abstraction layers. All the operations over the relational data are directly implemented in the target programming language.  This produces an architecture that is considerably cleaner and simpler.
+The idea of crazydb is to overcome these problems by dropping SQL, and all the abstraction layers. All the operations over the relational data are directly implemented in the target programming language. This produces an architecture that is considerably cleaner and simpler.
 
 In this minimalist approach, crazydb stores data in permanent storage with an append-only journal. In order to implement transactions, and to make the system robust to crashes, writing a journal is necessary. And because the journal can contain all the data, it is not necessary to make anything else permanent.
 
