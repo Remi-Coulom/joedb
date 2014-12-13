@@ -1,0 +1,69 @@
+TODO
+====
+
+make something work fast
+------------------------
+
+- simple interactive interpreter
+- write binary log (store version number)
+- load binary log
+- simple compiler
+
+.. code-block:: c++
+
+    class database;
+
+    class person
+    {
+      friend class database;
+      private:
+        record_id_t id;
+        person(record_id_t id): id(id) {} // only the database can construct
+      public:
+        record_id_t get_record_id() const {return id;}
+    };
+
+    struct person_data
+    {
+      std::string name;
+      db_namespace::city city;
+    }
+
+- transactions:
+
+  - write "begin" and "commit" operations to journal
+  - no rollback possible from within the code
+  - rollback only in case of failure (crash, ...) at load time
+
+- core compiler options:
+
+  * namespace as parameter
+  * mutex protection as option
+  * triggers: C++ code: after/before insert/update/delete
+
+- utility compilation (with triggers): vector cache for a table.
+
+make it good
+------------
+
+- unit testing (gtest, cmake integration)
+- documentation
+- compact dump (insert with data instead of field-by-field updates)
+- Compiler utilities:
+
+  - table storage:
+
+    - any stl container (vector, deque, map, unordered_map)
+    - file (maybe, for big tables): make on-disk C++ containers
+    - easy loop over database records (for (auto person: db.persons))
+
+  - index, unique constraints (use triggers)
+  - referential integrity (use triggers)
+  - queries
+  - incrementally-updated group-by queries (OLAP, hypercube, ...)
+
+- more data types: date, ip, vector<int>, ...
+- option to have rapidly undo-able history
+- schema option: reuse deleted ids (implement with a linked list of free recs)
+- don't store only table: also store variables. This can be done with a "single-row" table option. http://stackoverflow.com/questions/2300356/using-a-single-row-configuration-table-in-sql-server-database-bad-idea
+- a table can be made "read-only" as an option
