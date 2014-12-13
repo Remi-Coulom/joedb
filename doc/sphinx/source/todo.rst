@@ -1,12 +1,16 @@
 TODO
 ====
 
-make something work fast
-------------------------
+simple interactive interpreter
+------------------------------
 
-- simple interactive interpreter
-- write binary log (store version number)
-- load binary log
+#) interpreter (interpret dump commands)
+#) tests with coverage tests
+#) journal storage / file format
+
+simple compiler
+---------------
+
 - simple compiler
 
 .. code-block:: c++
@@ -68,3 +72,4 @@ make it good
 - don't store only table: also store variables. This can be done with a "single-row" table option. http://stackoverflow.com/questions/2300356/using-a-single-row-configuration-table-in-sql-server-database-bad-idea
 - a table can be made "read-only" as an option
 - possibility to add tags to the database log, and load data up to the tag.
+- GUI editor similar to the icga database editor (http server with cpp-netlib)
