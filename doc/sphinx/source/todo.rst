@@ -67,3 +67,4 @@ make it good
 - schema option: reuse deleted ids (implement with a linked list of free recs)
 - don't store only table: also store variables. This can be done with a "single-row" table option. http://stackoverflow.com/questions/2300356/using-a-single-row-configuration-table-in-sql-server-database-bad-idea
 - a table can be made "read-only" as an option
+- possibility to add tags to the database log, and load data up to the tag.
