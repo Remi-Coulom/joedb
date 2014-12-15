@@ -1,24 +1,24 @@
 Introduction
 ============
 
-crazydb is an embedded relational database that stores data in an append-only journal file. It comes with a compiler that takes a database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures.
+crazydb is an embedded relational database that stores data in an append-only journal file. It comes with a compiler that takes a database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures. This way, data can be efficiently manipulated by native code, without using SQL.
 
 Context and Motivation
 ----------------------
 
-The most basic approach to writing programs with persistent data stored in a relational database consists in using SQL queries via some API. Most database management systems provide such an API. Generic interfaces such as ODBC and JDBC are available, too.
+The usual approach to writing programs with persistent data stored in a relational database consists in using SQL queries. Most database management systems provide an API that take SQL strings as parameters.
 
-This basic SQL approach has many problems. Writing a program that produces a SQL string at run time is dangerous: it is a source of security risks because of SQL injection. It also has a cost in terms of performance, because the SQL has to be parsed and interpreted by the database. Also, many errors that should be detected at compile time, such as a typo in the name of a field, will be detected at run time.
+This basic SQL approach has many problems. Writing a program that produces a SQL string at run time is a source of security risks because of SQL injection. It also has a cost in terms of performance, because the SQL has to be parsed and interpreted by the database. Prepared statements with parameters can reduce these problems, but the compilation of the query is still done dynamically at run time. Compile-time type-checking and identifier lookup is safer and offers better opportunities for performance optimization.
 
-Some weaknesses of the basic SQL approach can be corrected by encapsulating the dirty business of crafting SQL strings into some higher-level interfaces such as object-relational mapping systems or data-access objects. These system improve safety by providing static typing and identifier lookup.
+Some weaknesses of the basic SQL approach can be corrected by encapsulating the SQL string manipulations into some higher-level interfaces such as object-relational mapping systems or data-access objects. These systems improve safety by providing static typing and identifier lookup.
 
-These abstract systems might look much cleaner from the programmer's point of view, but the additional layer of abstraction often has some cost, such as abstraction inversion. Abstraction inversion is when the programmer of the application may end-up having to re-implement a feature that was hidden by the abstraction. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
+These higher-level interfaces might look much cleaner from the programmer's point of view, but the additional layer of abstraction often has some cost, such as abstraction inversion. Abstraction inversion is when the programmer of the application has to re-implement a feature that was hidden by the abstraction. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
 
-The idea of crazydb is to overcome these problems by dropping SQL, and all the abstraction layers. All the operations over the relational data are directly implemented in the target programming language. This produces an architecture that is considerably cleaner and simpler.
+The idea of crazydb is to overcome these problems by dropping SQL, and all the abstraction layers. All the operations over the relational data are directly implemented in the target programming language. This produces an architecture that is cleaner, simpler, and offers great opportunities for performance optimization.
 
 In this minimalist approach, crazydb stores data in permanent storage with an append-only journal. In order to implement transactions, and to make the system robust to crashes, writing a journal is necessary. And because the journal can contain all the data, it is not necessary to make anything else permanent.
 
-A journal is a minimal representation of the database, but, for many typical operations, it is not a convenient representation. In practice, an application that uses crazydb will build in-memory or on-disk tabular structures and indexes to manipulate the data conveniently. But these are nothing more than a temporary redundant cache: the only official source of data is the journal. When a crazydb database is opened again, the tabular structures are rebuilt from the journal.
+A journal is a minimal representation of the database, but, for many typical operations, it is not a convenient representation. In practice, an application that uses crazydb will build in-memory or on-disk tabular structures and indexes to manipulate the data conveniently. These convenient data structures are nothing more than a temporary redundant cache: the only official source of data is the journal. When a crazydb database is opened again, the tabular structures are rebuilt from the journal.
 
 Pros and Cons
 -------------
@@ -37,8 +37,8 @@ Cons:
 - crazydb is an embedded database: it does not have the flexibility of the traditional client/server architecture where multiple separately-programmed clients can connect to the same database server. crazydb can be used inside a server, but the programmer has to implement the server logic.
 - The database schema is statically determined at compile-time, and cannot change during the execution of a compiled application. The schema of a crazydb file can be modified by a separate tool, and schema-modifications operations are logged in the crazydb file. But such schema modifications cannot occur during the execution of a compiled application.
 
-5-minute tutorial
------------------
+Five-Minute Tutorial
+--------------------
 
 The application can manipulate the data this way
 
