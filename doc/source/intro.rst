@@ -1,7 +1,7 @@
 Introduction
 ============
 
-joedb is the "journal-only embedded database", which means that only a log of all data operations is stored on disk. It comes with a compiler that takes a database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures. This way, data can be efficiently manipulated by native code, without using SQL.
+joedb is the "journal-only embedded database". This means that only a log of all data operations is stored in permanent storage. A compiler takes a database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures. This way, data can be efficiently manipulated by native code, without using SQL.
 
 Context and Motivation
 ----------------------
