@@ -1,10 +1,10 @@
-#ifndef crazydb_Value_declared
-#define crazydb_Value_declared
+#ifndef joedb_Value_declared
+#define joedb_Value_declared
 
 #include "Type.h"
 #include "index_types.h"
 
-namespace crazydb
+namespace joedb
 {
  class Value
  {

@@ -1,11 +1,11 @@
-#ifndef crazydb_Type_declared
-#define crazydb_Type_declared
+#ifndef joedb_Type_declared
+#define joedb_Type_declared
 
 #include <string>
 
 #include "index_types.h"
 
-namespace crazydb
+namespace joedb
 {
  class Type
  {

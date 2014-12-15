@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-using namespace crazydb;
+using namespace joedb;
 
-void crazydb::dump(std::ostream &out, const Database &database)
+void joedb::dump(std::ostream &out, const Database &database)
 {
  auto tables = database.get_tables();
  for (auto table: tables)

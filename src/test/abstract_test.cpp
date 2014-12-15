@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-using namespace crazydb;
+using namespace joedb;
 
 int main()
 {

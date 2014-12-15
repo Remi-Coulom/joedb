@@ -1,9 +1,9 @@
-#ifndef crazydb_dump_declared
-#define crazydb_dump_declared
+#ifndef joedb_dump_declared
+#define joedb_dump_declared
 
 #include <iosfwd>
 
-namespace crazydb
+namespace joedb
 {
  class Database;
 

@@ -1,9 +1,9 @@
-#ifndef crazydb_Database_declared
-#define crazydb_Database_declared
+#ifndef joedb_Database_declared
+#define joedb_Database_declared
 
 #include "Table.h"
 
-namespace crazydb
+namespace joedb
 {
  class Database
  {

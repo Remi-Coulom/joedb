@@ -1,5 +1,5 @@
-crazydb
-=======
+joedb, the Journal-Only Embedded Database
+=========================================
 
 .. toctree::
    :maxdepth: 2

@@ -1,12 +1,12 @@
-#ifndef crazydb_Field_declared
-#define crazydb_Field_declared
+#ifndef joedb_Field_declared
+#define joedb_Field_declared
 
 #include <string>
 
 #include "Type.h"
 #include "index_types.h"
 
-namespace crazydb
+namespace joedb
 {
  struct Field
  {

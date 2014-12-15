@@ -1,5 +1,5 @@
-#ifndef crazydb_Table_declared
-#define crazydb_Table_declared
+#ifndef joedb_Table_declared
+#define joedb_Table_declared
 
 #include <unordered_map>
 #include <algorithm>
@@ -10,7 +10,7 @@
 #include "Value.h"
 #include "index_types.h"
 
-namespace crazydb
+namespace joedb
 {
  class Table
  {
