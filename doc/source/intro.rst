@@ -12,7 +12,7 @@ The problem of using an SQL API is that the program has to produce SQL strings a
 
 Some weaknesses of SQL APIs can be corrected by encapsulating the SQL string manipulations into some higher-level interfaces such as object-relational mapping systems or data-access objects. These systems improve safety by providing static typing and identifier lookup.
 
-These higher-level interfaces might look much cleaner from the programmer's point of view, but the additional layer of abstraction often has some cost, such as abstraction inversion. Abstraction inversion is when the programmer of the application has to re-implement a feature that was hidden by the abstraction. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
+These higher-level interfaces might look much cleaner from the programmer's point of view, but the additional layer of abstraction often has some cost. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
 
 The idea of joedb is to overcome these problems by dropping SQL, and all the abstraction layers. All the operations over the relational data are directly implemented in the target programming language. This produces an architecture that is cleaner, simpler, and offers great opportunities for performance optimization.
 
