@@ -35,9 +35,9 @@ simple compiler
 
 - transactions:
 
-  - write "begin" and "commit" operations to journal
-  - no rollback possible from within the code
-  - rollback only in case of failure (crash, ...) at load time
+  - write "begin", "commit", "rollback" operations to journal
+  - support for "rollback" is costly: make it a compiler option
+  - truncate journal at load time. If unfinished transaction, append a rollback
 
 - core compiler options:
 
