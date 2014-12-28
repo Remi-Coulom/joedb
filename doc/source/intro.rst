@@ -12,13 +12,15 @@ The problem of using an SQL API is that the program has to produce SQL strings a
 
 Some weaknesses of SQL APIs can be corrected by encapsulating the SQL string manipulations into some higher-level interfaces such as object-relational mapping systems or data-access objects. These systems improve safety by providing static typing and identifier lookup.
 
-These higher-level interfaces might look much cleaner from the programmer's point of view, but the additional layer of abstraction often has some cost. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
+These higher-level interfaces might look much cleaner from the programmer's point of view, but the additional layer of abstraction is costly. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
 
 The idea of joedb is to overcome these problems by dropping SQL, and all the abstraction layers. All the operations over the relational data are directly implemented in the target programming language. This produces an architecture that is cleaner, simpler, and offers great opportunities for performance optimization.
 
-In this approach, joedb stores data in permanent storage with an append-only journal. Writing a journal is necessary in order to implement crash recovery and transactions. And because the journal can contain all the data, it is not necessary to make anything else permanent.
+In this approach, joedb stores data in permanent storage with a journal. Writing a journal is necessary for crash recovery and transactions. And because the journal can contain all the data, it is not necessary to make anything else permanent.
 
-A journal is a minimal representation of the database, but, for many typical operations, it is not a convenient representation. In practice, an application that uses joedb will build in-memory or on-disk tabular structures and indexes to manipulate the data conveniently. These convenient data structures are a temporary redundant cache: the only official source of data is the journal. When a joedb database is opened again, the tabular structures are rebuilt from the journal.
+A journal is a minimal representation of the database, but, for many typical operations, it is not a convenient representation. In practice, an application that uses joedb will build in-memory or on-disk tabular structures and indexes to manipulate the data conveniently. These convenient data structures are a temporary redundant cache: the only official source of data is the journal.
+
+The design philosophy of joedb is to provide a minimalist low-level mechanism for transparent persistence, without compromising performance. This simple low-level architecture can be used as a basis for higher-level tools.
 
 Pros and Cons
 -------------
@@ -32,7 +34,6 @@ Pros:
 
 Cons:
 
-- It is necessary to read the whole data history when opening a joedb file. This may be slow for large amounts of data. For a server application that is rarely restarted, a slow startup time is not a big problem. But if the application has to be rapidly responsive at startup, and the database is big, then joedb might not be a good choice.
 - The joedb file may become very big compared to the size of the data for a database that has a lot of updates and deletes. If necessary, it is possible to compact the journal file and keep only the most recent state. But this operation is not done transparently and may be slow.
 - joedb is an embedded database: it does not have the flexibility of the traditional client/server architecture where multiple separately-programmed clients can connect to the same database server. joedb can be used inside a server, but the programmer has to implement the server logic.
 - The database schema is statically determined at compile-time, and cannot change during the execution of a compiled application. The schema of a joedb file can be modified by a separate tool, and schema-modifications operations are logged in the joedb file. But such schema modifications cannot occur during the execution of a compiled application.
