@@ -1,7 +1,7 @@
 Introduction
 ============
 
-joedb is the "journal-only embedded database". The design philosophy of joedb is to provide a minimalist low-level mechanism for transparent persistence, without compromising performance. In joedb, only a log of all data modifications is stored in permanent storage. A compiler takes a database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures. This way, data can be efficiently manipulated by native code, without using SQL.
+joedb is the "journal-only embedded database". In joedb, only a log of all data modifications is stored in permanent storage. A compiler takes a relational database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures. This way, data can be efficiently manipulated by native code, without using SQL. The philosophy of joedb is to offer a simple minimalist low-level mechanism for persistence, without compromising performance.
 
 Context and Motivation
 ----------------------
@@ -18,7 +18,7 @@ The idea of joedb is to overcome these problems by dropping SQL, and all the abs
 
 In this approach, joedb stores data in permanent storage with a journal. Writing a journal is necessary for crash recovery and transactions. And because the journal can contain all the data, it is not necessary to make anything else permanent.
 
-A journal is a minimal representation of the database, but, for many typical operations, it is not a convenient representation. In practice, an application that uses joedb will build in-memory or on-disk tabular structures and indexes to manipulate the data conveniently. These convenient data structures are a temporary redundant cache: the only official source of data is the journal.
+A journal is a minimal representation of the database, but, for many typical operations, it is not a convenient representation. In practice, an application that uses joedb will build in-memory or on-disk tabular structures and indexes to manipulate the data conveniently.
 
 Pros and Cons
 -------------
