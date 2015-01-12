@@ -8,9 +8,19 @@ using namespace joedb;
 void joedb::dump(std::ostream &out, const Database &database)
 {
  auto tables = database.get_tables();
+
+ //
+ // Dump tables
+ //
+ for (auto table: tables)
+  out << "create_table " << table.second.get_name() <<
+         " # id = " << table.first << '\n';
+
+ //
+ // Dump fields
+ //
  for (auto table: tables)
  {
-  out << "create_table " << table.second.get_name() << '\n';
   const auto &fields = table.second.get_fields();
 
   for (const auto &field: fields)
@@ -52,6 +62,14 @@ void joedb::dump(std::ostream &out, const Database &database)
    out << " # id = " << field.first << "; index = " << field.second.index;
    out << '\n';
   }
+ }
+
+ //
+ // Dump records
+ //
+ for (auto table: tables)
+ {
+  const auto &fields = table.second.get_fields();
 
   for (auto record: table.second.get_records())
   {
@@ -90,7 +108,5 @@ void joedb::dump(std::ostream &out, const Database &database)
    }
    out << '\n';
   }
-
-  out << '\n';
  }
 }

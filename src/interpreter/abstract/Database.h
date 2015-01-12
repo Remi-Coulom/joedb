@@ -10,12 +10,12 @@ namespace joedb
   private:
    table_id_t current_table_id;
 
-   std::unordered_map<table_id_t, Table> tables;
+   std::map<table_id_t, Table> tables;
 
   public:
    Database(): current_table_id(0) {}
 
-   const std::unordered_map<table_id_t, Table> &get_tables() const
+   const std::map<table_id_t, Table> &get_tables() const
    {
     return tables;
    }
@@ -31,7 +31,7 @@ namespace joedb
     return tables.erase(table_id) > 0;
    }
 
-   table_id_t find_table(const std::string &name)
+   table_id_t find_table(const std::string &name) const
    {
     for (const auto &table: tables)
      if (table.second.get_name() == name)
@@ -55,6 +55,14 @@ namespace joedb
     if (it == tables.end())
      return 0;
     return it->second.insert_record();
+   }
+
+   record_id_t insert_into(table_id_t table_id, record_id_t record_id)
+   {
+    auto it = tables.find(table_id);
+    if (it == tables.end())
+     return 0;
+    return it->second.insert_record(record_id);
    }
 
    bool update(table_id_t table_id,

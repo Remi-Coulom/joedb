@@ -4,7 +4,6 @@ TODO
 simple interactive interpreter
 ------------------------------
 
-#) interpreter (interpret dump commands)
 #) tests with coverage tests
 #) journal storage / file format
 

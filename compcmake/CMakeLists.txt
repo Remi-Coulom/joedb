@@ -19,4 +19,5 @@ add_executable(
 add_executable(
  interpereter
  ../src/interpreter/io/interpreter.cpp
+ ../src/interpreter/io/dump.cpp
 )

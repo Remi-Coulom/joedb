@@ -1,7 +1,7 @@
 #ifndef joedb_Table_declared
 #define joedb_Table_declared
 
-#include <unordered_map>
+#include <map>
 #include <algorithm>
 #include <limits>
 
@@ -20,8 +20,8 @@ namespace joedb
    record_id_t current_record_id;
    field_id_t current_field_id;
 
-   std::unordered_map<field_id_t, Field> fields;
-   std::unordered_map<record_id_t, std::vector<Value>> records;
+   std::map<field_id_t, Field> fields;
+   std::map<record_id_t, std::vector<Value>> records;
 
   public:
    Table(const std::string &name):
@@ -34,12 +34,12 @@ namespace joedb
 
    const std::string &get_name() const {return name;}
 
-   const std::unordered_map<field_id_t, Field> &get_fields() const
+   const std::map<field_id_t, Field> &get_fields() const
    {
     return fields;
    }
 
-   const std::unordered_map<record_id_t, std::vector<Value>>
+   const std::map<record_id_t, std::vector<Value>>
     &get_records() const
    {
     return records;
@@ -100,6 +100,17 @@ namespace joedb
     records.insert(std::make_pair(++current_record_id,
                                   std::vector<Value>(fields.size())));
     return current_record_id;
+   }
+
+   record_id_t insert_record(record_id_t record_id)
+   {
+    if (record_id > current_record_id)
+    {
+     current_record_id = record_id - 1;
+     return insert_record();
+    }
+    else
+     return 0;
    }
 
    bool update(record_id_t record_id, field_id_t field_id, const Value &value)
