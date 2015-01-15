@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <limits>
+#include <vector>
 
 #include "Field.h"
 #include "Type.h"
@@ -45,9 +46,9 @@ namespace joedb
     return records;
    }
 
-   field_id_t find_field(const std::string &name)
+   field_id_t find_field(const std::string &name) const
    {
-    for (const auto &field: fields)
+    for (auto &field: fields)
      if (field.second.name == name)
       return field.first;
     return 0;
