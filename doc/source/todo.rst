@@ -4,7 +4,6 @@ TODO
 simple interactive interpreter
 ------------------------------
 
-#) tests with coverage tests
 #) journal storage / file format
 
 simple compiler

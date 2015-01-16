@@ -1,0 +1,20 @@
+OK: create table city; table_id = 1
+OK: create table person; table_id = 2
+OK: add_field name; field_id = 1
+OK: add_field name; field_id = 1
+OK: add_field city; field_id = 2
+OK: inserted record, id = 1
+OK: inserted record, id = 2
+OK: inserted record, id = 1
+OK: inserted record, id = 2
+OK: inserted record, id = 3
+create_table city # id = 1
+create_table person # id = 2
+add_field city name string # id = 1; index = 0
+add_field person name string # id = 1; index = 0
+add_field person city references city # id = 2; index = 1
+insert_into city 1 Paris
+insert_into city 2 Lille
+insert_into person 1 Rémi 2
+insert_into person 2 Norbert 2
+insert_into person 3 Alexandre 1

@@ -1,2 +1,4 @@
 makefile
 ninja
+ninja_debug
+ninja_release
