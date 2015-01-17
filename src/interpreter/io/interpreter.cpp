@@ -23,6 +23,7 @@ joedb::Type parse_type(const joedb::Database &db, std::istream &is)
    return joedb::Type::reference(table_id);
  }
 
+ std::cout << "Error: unknown type\n";
  return joedb::Type();
 }
 
@@ -47,11 +48,13 @@ int main()
   std::string command;
   iss >> command;
 
-  if (command == "dump")
+  if (command.size() == 0 || command[0] == '#') //////////////////////////////
+   continue;
+  else if (command == "dump") ////////////////////////////////////////////////
    joedb::dump(std::cout, db);
-  else if (command == "quit")
+  else if (command == "quit") ////////////////////////////////////////////////
    break;
-  else if (command == "create_table")
+  else if (command == "create_table") ////////////////////////////////////////
   {
    std::string table_name;
    iss >> table_name;
@@ -59,7 +62,15 @@ int main()
    std::cout << "OK: create table " << table_name <<
                 "; table_id = " << table_id << '\n';
   }
-  else if (command == "add_field")
+  else if (command == "drop_table") //////////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(db, iss);
+   if (table_id && db.drop_table(table_id))
+    std::cout << "OK: dropped table " << table_id << '\n';
+   else
+    std::cout << "Error: could not drop table\n";
+  }
+  else if (command == "add_field") ///////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(db, iss);
    if (table_id)
@@ -67,19 +78,29 @@ int main()
     std::string field_name;
     iss >> field_name;
     joedb::Type type = parse_type(db, iss);
-    if (type.get_kind() == joedb::Type::null_id)
-    {
-     std::cout << "Error: could not parse type\n";
-    }
+    field_id_t field_id = db.add_field(table_id, field_name, type);
+    std::cout << "OK: add_field " << field_name <<
+                 "; field_id = " << field_id << '\n';
+   }
+  }
+  else if (command == "drop_field") /////////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(db, iss);
+   if (table_id)
+   {
+    std::string field_name;
+    iss >> field_name;
+    field_id_t field_id = db.find_field(table_id, field_name);
+    if (!field_id)
+     std::cout << "Error: no such field: " << field_name << '\n';
     else
     {
-     field_id_t field_id = db.add_field(table_id, field_name, type);
-     std::cout << "OK: add_field " << field_name <<
-                  "; field_id = " << field_id << '\n';
+     db.drop_field(table_id, field_id);
+     std::cout << "OK: dropped field " << field_name << '\n';
     }
    }
   }
-  else if (command == "insert_into")
+  else if (command == "insert_into") /////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(db, iss);
    if (table_id)
@@ -98,6 +119,7 @@ int main()
       for (const auto &field: table.get_fields())
       {
        joedb::Value value;
+
        switch(field.second.type.get_kind())
        {
         case joedb::Type::string_id:
@@ -116,15 +138,40 @@ int main()
         }
         break;
 
-        default:
-         std::cout << "Error: unknown field type for field: " <<
-                      field.second.name << '\n';
+        case joedb::Type::int32_id:
+        {
+         int32_t v;
+         iss >> v;
+         value = joedb::Value(v);
+        }
+        break;
+
+        case joedb::Type::int64_id:
+        {
+         int64_t v;
+         iss >> v;
+         value = joedb::Value(v);
+        }
+        break;
        }
 
        db.update(table_id, record_id, field.first, value);
       }
      }
     }
+   }
+  }
+  else if (command == "delete") //////////////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(db, iss);
+   if (table_id)
+   {
+    record_id_t record_id = 0;
+    iss >> record_id;
+    if (db.delete_record(table_id, record_id))
+     std::cout << "OK: record number " << record_id << " deleted\n";
+    else
+     std::cout << "Error: could not delete record " << record_id << '\n';
    }
   }
   else

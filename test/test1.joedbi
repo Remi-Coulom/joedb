@@ -9,3 +9,32 @@ insert_into person 1 Rémi 2
 insert_into person 2 Norbert 2
 insert_into person 3 Alexandre 1
 dump
+
+drop_table city
+drop_table person
+dump
+
+create_table test
+add_field test a int32
+add_field test b int64
+add_field test c qsdfqsdf
+drop_table qsdfqsdf
+qsdfqsdf
+insert_into test 1 1234 5678
+insert_into test 1 1234 5678
+add_field test d string
+dump
+
+drop_field test qsdfqsdf
+drop_field test a
+insert_into test 2 3 4
+delete test 2
+delete test 123
+dump
+
+create_table ref
+add_field ref ref references test
+drop_table test
+dump
+
+quit

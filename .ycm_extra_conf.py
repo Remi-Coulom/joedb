@@ -106,7 +106,7 @@ flags = [
 def DirectoryOfThisScript():
   return os.path.dirname( os.path.abspath( __file__ ) )
 
-compilation_database_folder = DirectoryOfThisScript() + '/compcmake/ninja'
+compilation_database_folder = DirectoryOfThisScript() + '/compcmake/ninja_debug'
 
 if os.path.exists( compilation_database_folder ):
   database = ycm_core.CompilationDatabase( compilation_database_folder )

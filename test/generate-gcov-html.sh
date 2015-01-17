@@ -4,4 +4,4 @@ lcov  --remove all.info '/usr/*' --output app.info || exit 1
 c++filt -n <app.info >demangled.info
 mkdir -p html
 genhtml --output-directory html demangled.info || exit 1
-xdg-open html/index.html
+echo xdg-open html/index.html

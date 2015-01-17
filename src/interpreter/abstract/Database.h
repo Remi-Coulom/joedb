@@ -49,6 +49,23 @@ namespace joedb
     return it->second.add_field(name, type);
    }
 
+   field_id_t find_field(table_id_t table_id,
+                         const std::string &name) const
+   {
+    auto it = tables.find(table_id);
+    if (it == tables.end())
+     return 0;
+    return it->second.find_field(name);
+   }
+
+   bool drop_field(table_id_t table_id, field_id_t field_id)
+   {
+    auto it = tables.find(table_id);
+    if (it == tables.end())
+     return 0;
+    return it->second.drop_field(field_id);
+   }
+
    record_id_t insert_into(table_id_t table_id)
    {
     auto it = tables.find(table_id);
@@ -72,16 +89,16 @@ namespace joedb
    {
     auto it = tables.find(table_id);
     if (it == tables.end())
-     return 0;
+     return false;
     return it->second.update(record_id, field_id, value);
    }
 
-   bool drop_field(table_id_t table_id, field_id_t field_id)
+   bool delete_record(table_id_t table_id, record_id_t record_id)
    {
     auto it = tables.find(table_id);
     if (it == tables.end())
-     return 0;
-    return it->second.drop_field(field_id);
+     return false;
+    return it->second.delete_record(record_id);
    }
  };
 }
