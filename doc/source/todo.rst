@@ -55,6 +55,7 @@ make it good
   - Can trailing garbage occur? (depends on file system?)
   - How to resist it?
   - Possibility to write the database to a raw device?
+  - See "The Design and Implementation of a Log-Structured File System"
 
 - rename operations (table, field)
 - unit testing (gtest, cmake integration)

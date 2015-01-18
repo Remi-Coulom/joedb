@@ -16,10 +16,14 @@ Database with history/revisions:
 - http://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
 - http://database-programmer.blogspot.fr/2008/07/history-tables.html
 
+Crash resistance:
+
+- http://www.cs.berkeley.edu/~brewer/cs262/LFS.pdf
+- http://sqlite.org/atomiccommit.html
+
 SQLite:
 
 - http://sqlite.org/
-- http://sqlite.org/atomiccommit.html
 
 Berkeley DB:
 
