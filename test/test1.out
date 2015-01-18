@@ -22,31 +22,32 @@ OK: dropped table 1
 OK: dropped table 2
 OK: create table test; table_id = 3
 OK: add_field a; field_id = 1
+Error: could not add field
 OK: add_field b; field_id = 2
 Error: unknown type
-OK: add_field c; field_id = 3
 Error: no such table: qsdfqsdf
 Error: could not drop table
 Error: unknown command: qsdfqsdf
 OK: inserted record, id = 1
 Error: record already exists
-OK: add_field d; field_id = 4
+OK: add_field d; field_id = 3
 create_table test # id = 3
 add_field test a int32 # id = 1; index = 0
 add_field test b int64 # id = 2; index = 1
-add_field test c string # id = 3; index = 2
-add_field test d string # id = 4; index = 3
-insert_into test 1 1234 5678  NULL
+add_field test d string # id = 3; index = 2
+insert_into test 1 1234 5678 NULL
 Error: no such field: qsdfqsdf
 OK: dropped field a
 OK: inserted record, id = 2
 OK: record number 2 deleted
 Error: could not delete record 123
+Error: no such field: a
+Error: could not find record: 2
+OK: updated
 create_table test # id = 3
 add_field test b int64 # id = 2; index = 0
-add_field test c string # id = 3; index = 1
-add_field test d string # id = 4; index = 2
-insert_into test 1 5678  NULL
+add_field test d string # id = 3; index = 1
+insert_into test 1 56789 NULL
 OK: create table ref; table_id = 4
 OK: add_field ref; field_id = 1
 OK: dropped table 3

@@ -28,7 +28,7 @@ void joedb::dump(std::ostream &out, const Database &database)
    out << "add_field " << table.second.get_name() << ' ';
    out << field.second.name << ' ';
 
-   switch(field.second.type.get_kind())
+   switch(field.second.type.get_type_id())
    {
     case Type::string_id:
      out << "string";
@@ -79,7 +79,7 @@ void joedb::dump(std::ostream &out, const Database &database)
     if (!record.second[i].is_initialized())
      out << "NULL";
     else
-     switch(field.second.type.get_kind())
+     switch(field.second.type.get_type_id())
      {
       case Type::string_id:
        out << record.second[i].get_string();

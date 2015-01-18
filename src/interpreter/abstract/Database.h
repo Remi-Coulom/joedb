@@ -58,6 +58,19 @@ namespace joedb
     return it->second.find_field(name);
    }
 
+   Type::type_id_t get_field_type(table_id_t table_id,
+                                  field_id_t field_id) const
+   {
+    auto table_it = tables.find(table_id);
+    if (table_it == tables.end())
+     return Type::null_id;
+    auto &fields = table_it->second.get_fields();
+    auto field_it = fields.find(field_id);
+    if (field_it == fields.end())
+     return Type::null_id;
+    return field_it->second.type.get_type_id();
+   }
+
    bool drop_field(table_id_t table_id, field_id_t field_id)
    {
     auto it = tables.find(table_id);

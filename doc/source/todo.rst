@@ -4,6 +4,8 @@ TODO
 simple interactive interpreter
 ------------------------------
 
+#) implement methods in C++ files (header-only makes compilation slow), and make a library.
+#) database listeners (triggers)
 #) journal storage / file format
 
 simple compiler
@@ -48,6 +50,13 @@ simple compiler
 make it good
 ------------
 
+- resistance to trailing garbage:
+
+  - Can trailing garbage occur? (depends on file system?)
+  - How to resist it?
+  - Possibility to write the database to a raw device?
+
+- rename operations (table, field)
 - unit testing (gtest, cmake integration)
 - documentation
 - compact dump (insert with data instead of field-by-field updates)

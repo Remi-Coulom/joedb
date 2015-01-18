@@ -4,10 +4,12 @@
 #include <iostream>
 #include <sstream>
 
-joedb::Type parse_type(const joedb::Database &db, std::istream &is)
+/////////////////////////////////////////////////////////////////////////////
+joedb::Type parse_type(const joedb::Database &db, std::istream &in)
+/////////////////////////////////////////////////////////////////////////////
 {
  std::string type_name;
- is >> type_name;
+ in >> type_name;
  if (type_name == "string")
   return joedb::Type::string();
  if (type_name == "int32")
@@ -17,7 +19,7 @@ joedb::Type parse_type(const joedb::Database &db, std::istream &is)
  if (type_name == "references")
  {
   std::string table_name;
-  is >> table_name;
+  in >> table_name;
   table_id_t table_id = db.find_table(table_name);
   if (table_id)
    return joedb::Type::reference(table_id);
@@ -27,17 +29,65 @@ joedb::Type parse_type(const joedb::Database &db, std::istream &is)
  return joedb::Type();
 }
 
-table_id_t parse_table(const joedb::Database &db, std::istream &is)
+/////////////////////////////////////////////////////////////////////////////
+table_id_t parse_table(const joedb::Database &db, std::istream &in)
+/////////////////////////////////////////////////////////////////////////////
 {
  std::string table_name;
- is >> table_name;
+ in >> table_name;
  table_id_t table_id = db.find_table(table_name);
  if (!table_id)
   std::cout << "Error: no such table: " << table_name << '\n';
  return table_id;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+joedb::Value parse_value(joedb::Type::type_id_t type_id, std::istream &in)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Value value;
+
+ switch(type_id)
+ {
+  case joedb::Type::string_id:
+  {
+   std::string s;
+   in >> s;
+   value = joedb::Value(s);
+  }
+  break;
+
+  case joedb::Type::reference_id:
+  {
+   record_id_t record_id = 0;
+   in >> record_id;
+   value = joedb::Value(record_id);
+  }
+  break;
+
+  case joedb::Type::int32_id:
+  {
+   int32_t v;
+   in >> v;
+   value = joedb::Value(v);
+  }
+  break;
+
+  case joedb::Type::int64_id:
+  {
+   int64_t v;
+   in >> v;
+   value = joedb::Value(v);
+  }
+  break;
+ }
+
+ return value;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 int main()
+/////////////////////////////////////////////////////////////////////////////
 {
  joedb::Database db;
  std::string line;
@@ -78,9 +128,15 @@ int main()
     std::string field_name;
     iss >> field_name;
     joedb::Type type = parse_type(db, iss);
-    field_id_t field_id = db.add_field(table_id, field_name, type);
-    std::cout << "OK: add_field " << field_name <<
-                 "; field_id = " << field_id << '\n';
+    if (type.get_type_id() != joedb::Type::null_id)
+    {
+     field_id_t field_id = db.add_field(table_id, field_name, type);
+     if (field_id)
+      std::cout << "OK: add_field " << field_name <<
+                   "; field_id = " << field_id << '\n';
+     else
+      std::cout << "Error: could not add field\n";
+    }
    }
   }
   else if (command == "drop_field") /////////////////////////////////////////
@@ -118,46 +174,35 @@ int main()
      {
       for (const auto &field: table.get_fields())
       {
-       joedb::Value value;
-
-       switch(field.second.type.get_kind())
-       {
-        case joedb::Type::string_id:
-        {
-         std::string s;
-         iss >> s;
-         value = joedb::Value(s);
-        }
-        break;
-
-        case joedb::Type::reference_id:
-        {
-         record_id_t record_id = 0;
-         iss >> record_id;
-         value = joedb::Value(record_id);
-        }
-        break;
-
-        case joedb::Type::int32_id:
-        {
-         int32_t v;
-         iss >> v;
-         value = joedb::Value(v);
-        }
-        break;
-
-        case joedb::Type::int64_id:
-        {
-         int64_t v;
-         iss >> v;
-         value = joedb::Value(v);
-        }
-        break;
-       }
-
+       joedb::Value value = parse_value(field.second.type.get_type_id(), iss);
        db.update(table_id, record_id, field.first, value);
       }
      }
+    }
+   }
+  }
+  else if (command == "update") //////////////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(db, iss);
+   if (table_id)
+   {
+    record_id_t record_id = 0;
+    iss >> record_id;
+
+    std::string field_name;
+    iss >> field_name;
+    field_id_t field_id = db.find_field(table_id, field_name);
+
+    if (!field_id)
+     std::cout << "Error: no such field: " << field_name << '\n';
+    else
+    {
+     joedb::Value value = parse_value(db.get_field_type(table_id, field_id),
+                                      iss);
+     if (db.update(table_id, record_id, field_id, value))
+      std::cout << "OK: updated\n";
+     else
+      std::cout << "Error: could not find record: " << record_id << '\n';
     }
    }
   }

@@ -16,6 +16,7 @@ dump
 
 create_table test
 add_field test a int32
+add_field test a int32
 add_field test b int64
 add_field test c qsdfqsdf
 drop_table qsdfqsdf
@@ -30,6 +31,9 @@ drop_field test a
 insert_into test 2 3 4
 delete test 2
 delete test 123
+update test 1 a 56789
+update test 2 b 56789
+update test 1 b 56789
 dump
 
 create_table ref
