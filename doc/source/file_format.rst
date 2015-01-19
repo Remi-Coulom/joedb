@@ -8,12 +8,13 @@ General
 
 version number int64_t
 
-big/little endian: must be stored in file.
 table_id_t, field_id_t, record_id_t
 
 32 bytes: checkpoint region
 
 log_entry*
+
+little-endian storage
 
 Checkpoint Region
 -----------------
@@ -21,10 +22,10 @@ Checkpoint Region
 ======== ===========================
 Data     Comment
 ======== ===========================
-int64_t  file length (checkpoint #1)
-int64_t  file length (checkpoint #1)
-int64_t  file length (checkpoint #2)
-int64_t  file length (checkpoint #2)
+uint64_t file length (checkpoint #1)
+uint64_t file length (checkpoint #1)
+uint64_t file length (checkpoint #2)
+uint64_t file length (checkpoint #2)
 ======== ===========================
 
 Each checkpoint is a 64-bit file length, repeated twice. A checkpoint is valid if the two copies are identical. The current checkpoint is the highest valid checkpoint. Each checkpoint is written in alternance.

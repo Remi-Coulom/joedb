@@ -12,14 +12,19 @@ Database with history/revisions:
 
 - http://www.oracle.com/technetwork/issue-archive/2008/08-jul/o48totalrecall-092147.html
 - http://www.zodb.org/en/latest/
-- http://oldblog.antirez.com/post/redis-persistence-demystified.html
 - http://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
 - http://database-programmer.blogspot.fr/2008/07/history-tables.html
 
 Crash resistance:
 
 - http://www.cs.berkeley.edu/~brewer/cs262/LFS.pdf
+- http://oldblog.antirez.com/post/redis-persistence-demystified.html
 - http://sqlite.org/atomiccommit.html
+- http://lwn.net/Articles/457667/
+
+Fast IO:
+
+- http://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
 
 SQLite:
 

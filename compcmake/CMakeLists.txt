@@ -16,4 +16,6 @@ add_executable(
  interpreter
  ../src/interpreter/io/interpreter.cpp
  ../src/interpreter/io/dump.cpp
+ ../src/journal/File.cpp
+ ../src/journal/JournalFile.cpp
 )

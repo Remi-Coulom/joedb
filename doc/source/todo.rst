@@ -4,7 +4,6 @@ TODO
 simple interactive interpreter
 ------------------------------
 
-#) use database listener to display interpreter messages
 #) use database listener to write to joedb file
 #) read joedb file (schema-only option)
 
@@ -50,15 +49,8 @@ simple compiler
 make it good
 ------------
 
-- resistance to trailing garbage:
-
-  - Can trailing garbage occur? (depends on file system?)
-  - How to resist it?
-  - Possibility to write the database to a raw device?
-  - See "The Design and Implementation of a Log-Structured File System"
-
+- high-performance system-specific implementation of joedb::File, with fsync (asynchronous?), custom buffers, ...
 - rename operations (table, field)
-- unit testing (gtest, cmake integration)
 - documentation
 - compact dump (insert with data instead of field-by-field updates)
 - Compiler utilities:
