@@ -2,6 +2,7 @@
 #define joedb_Database_declared
 
 #include "Table.h"
+#include "Listener.h"
 
 namespace joedb
 {
@@ -11,9 +12,10 @@ namespace joedb
    table_id_t current_table_id;
 
    std::map<table_id_t, Table> tables;
+   Listener &listener;
 
   public:
-   Database(): current_table_id(0) {}
+   Database(Listener &listener): current_table_id(0), listener(listener) {}
 
    const std::map<table_id_t, Table> &get_tables() const
    {
@@ -22,13 +24,23 @@ namespace joedb
 
    table_id_t create_table(const std::string &name)
    {
+    if (find_table(name))
+     return 0;
+
     tables.insert(std::make_pair(++current_table_id, Table(name)));
+    listener.after_create_table(name);
     return current_table_id;
    }
 
    bool drop_table(table_id_t table_id)
    {
-    return tables.erase(table_id) > 0;
+    if (tables.erase(table_id) > 0)
+    {
+     listener.after_drop_table(table_id);
+     return true;
+    }
+    else
+     return false;
    }
 
    table_id_t find_table(const std::string &name) const
@@ -46,7 +58,10 @@ namespace joedb
     auto it = tables.find(table_id);
     if (it == tables.end())
      return 0;
-    return it->second.add_field(name, type);
+    field_id_t field_id = it->second.add_field(name, type);
+    if (field_id)
+     listener.after_add_field(table_id, name, type);
+    return field_id;
    }
 
    field_id_t find_field(table_id_t table_id,
@@ -74,25 +89,34 @@ namespace joedb
    bool drop_field(table_id_t table_id, field_id_t field_id)
    {
     auto it = tables.find(table_id);
-    if (it == tables.end())
-     return 0;
-    return it->second.drop_field(field_id);
+    if (it != tables.end() && it->second.drop_field(field_id))
+    {
+     listener.after_drop_field(table_id, field_id);
+     return true;
+    }
+    return false;
    }
 
-   record_id_t insert_into(table_id_t table_id)
+   bool insert_into(table_id_t table_id, record_id_t record_id)
    {
     auto it = tables.find(table_id);
-    if (it == tables.end())
-     return 0;
-    return it->second.insert_record();
+    if (it != tables.end() && it->second.insert_record(record_id))
+    {
+     listener.after_insert(table_id, record_id);
+     return true;
+    }
+    return false;
    }
 
-   record_id_t insert_into(table_id_t table_id, record_id_t record_id)
+   bool delete_record(table_id_t table_id, record_id_t record_id)
    {
     auto it = tables.find(table_id);
-    if (it == tables.end())
-     return 0;
-    return it->second.insert_record(record_id);
+    if (it != tables.end() && it->second.delete_record(record_id))
+    {
+     listener.after_delete(table_id, record_id);
+     return true;
+    }
+    return false;
    }
 
    bool update(table_id_t table_id,
@@ -101,17 +125,12 @@ namespace joedb
                const Value &value)
    {
     auto it = tables.find(table_id);
-    if (it == tables.end())
-     return false;
-    return it->second.update(record_id, field_id, value);
-   }
-
-   bool delete_record(table_id_t table_id, record_id_t record_id)
-   {
-    auto it = tables.find(table_id);
-    if (it == tables.end())
-     return false;
-    return it->second.delete_record(record_id);
+    if (it != tables.end() && it->second.update(record_id, field_id, value))
+    {
+     listener.after_update(table_id, record_id, field_id, value);
+     return true;
+    }
+    return false;
    }
  };
 }

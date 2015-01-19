@@ -1,5 +1,6 @@
 #include "Database.h"
 #include "dump.h"
+#include "Listener.h"
 
 #include <iostream>
 #include <sstream>
@@ -49,6 +50,9 @@ joedb::Value parse_value(joedb::Type::type_id_t type_id, std::istream &in)
 
  switch(type_id)
  {
+  case joedb::Type::null_id:
+  break;
+
   case joedb::Type::string_id:
   {
    std::string s;
@@ -89,7 +93,8 @@ joedb::Value parse_value(joedb::Type::type_id_t type_id, std::istream &in)
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Database db;
+ joedb::Listener listener;
+ joedb::Database db(listener);
  std::string line;
 
  while(std::getline(std::cin, line))
@@ -143,8 +148,7 @@ int main()
   {
    const table_id_t table_id = parse_table(db, iss);
    if (table_id)
-   {
-    std::string field_name;
+   { std::string field_name;
     iss >> field_name;
     field_id_t field_id = db.find_field(table_id, field_name);
     if (!field_id)
@@ -163,20 +167,16 @@ int main()
    {
     record_id_t record_id = 0;
     iss >> record_id;
-    auto &table = db.get_tables().find(table_id)->second;
-    if (table.get_records().find(record_id) != table.get_records().end())
-     std::cout << "Error: record already exists\n";
+    if (!db.insert_into(table_id, record_id))
+     std::cout << "Error: could not insert with id: " << record_id << '\n';
     else
     {
-     record_id_t result = db.insert_into(table_id, record_id);
-     std::cout << "OK: inserted record, id = " << result << '\n';
-     if (result == record_id)
+     std::cout << "OK: inserted record, id = " << record_id << '\n';
+     for (const auto &field:
+          db.get_tables().find(table_id)->second.get_fields())
      {
-      for (const auto &field: table.get_fields())
-      {
-       joedb::Value value = parse_value(field.second.type.get_type_id(), iss);
-       db.update(table_id, record_id, field.first, value);
-      }
+      joedb::Value value = parse_value(field.second.type.get_type_id(), iss);
+      db.update(table_id, record_id, field.first, value);
      }
     }
    }

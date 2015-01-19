@@ -30,6 +30,10 @@ void joedb::dump(std::ostream &out, const Database &database)
 
    switch(field.second.type.get_type_id())
    {
+    case Type::null_id:
+     out << "null";
+    break;
+
     case Type::string_id:
      out << "string";
     break;
@@ -81,6 +85,10 @@ void joedb::dump(std::ostream &out, const Database &database)
     else
      switch(field.second.type.get_type_id())
      {
+      case Type::null_id:
+       out << "NULL";
+      break;
+
       case Type::string_id:
        out << record.second[i].get_string();
       break;

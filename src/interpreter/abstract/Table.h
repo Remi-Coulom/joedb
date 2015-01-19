@@ -96,22 +96,17 @@ namespace joedb
     return records.erase(id) > 0;
    }
 
-   record_id_t insert_record()
-   {
-    records.insert(std::make_pair(++current_record_id,
-                                  std::vector<Value>(fields.size())));
-    return current_record_id;
-   }
-
-   record_id_t insert_record(record_id_t record_id)
+   bool insert_record(record_id_t record_id)
    {
     if (record_id > current_record_id)
     {
-     current_record_id = record_id - 1;
-     return insert_record();
+     records.insert(std::make_pair(record_id,
+                                   std::vector<Value>(fields.size())));
+     current_record_id = record_id;
+     return true;
     }
     else
-     return 0;
+     return false;
    }
 
    bool update(record_id_t record_id, field_id_t field_id, const Value &value)

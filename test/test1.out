@@ -29,7 +29,7 @@ Error: no such table: qsdfqsdf
 Error: could not drop table
 Error: unknown command: qsdfqsdf
 OK: inserted record, id = 1
-Error: record already exists
+Error: could not insert with id: 1
 OK: add_field d; field_id = 3
 create_table test # id = 3
 add_field test a int32 # id = 1; index = 0

@@ -4,7 +4,6 @@ TODO
 simple interactive interpreter
 ------------------------------
 
-#) implement methods in C++ files (header-only makes compilation slow), and make a library.
 #) database listeners (triggers)
 #) journal storage / file format
 
