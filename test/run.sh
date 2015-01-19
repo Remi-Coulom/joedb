@@ -7,7 +7,7 @@ cd -
 
 $interpreter <test1.joedbi >test1.tmp
 
-if diff test1.out test1.tmp; then
+if diff -w test1.out test1.tmp; then
  echo result is OK
 else
  echo Error!

@@ -11,7 +11,7 @@ File::File(const char *file_name, bool read_only):
  // First, try to open existing file
  //
  file = std::fopen(file_name, read_only ? "rb" : "r+b");
- created_new = bool(file);
+ created_new = file != 0;
 
  //
  // Then, try to create a new file
@@ -24,7 +24,7 @@ File::File(const char *file_name, bool read_only):
 bool File::is_good() const
 /////////////////////////////////////////////////////////////////////////////
 {
- return bool(file);
+ return file != 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ int64_t File::get_file_size() const
 void File::seek(int64_t offset)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::fseek(file, offset, SEEK_SET);
+ std::fseek(file, long(offset), SEEK_SET);
 }
 
 /////////////////////////////////////////////////////////////////////////////

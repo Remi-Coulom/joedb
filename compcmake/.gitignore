@@ -1,4 +1,4 @@
 makefile
-ninja
-ninja_debug
-ninja_release
+ninja*
+mingw*
+vs2013*
