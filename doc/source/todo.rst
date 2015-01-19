@@ -4,8 +4,9 @@ TODO
 simple interactive interpreter
 ------------------------------
 
-#) database listeners (triggers)
-#) journal storage / file format
+#) use database listener to display interpreter messages
+#) use database listener to write to joedb file
+#) read joedb file (schema-only option)
 
 simple compiler
 ---------------

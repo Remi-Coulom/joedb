@@ -148,7 +148,8 @@ int main()
   {
    const table_id_t table_id = parse_table(db, iss);
    if (table_id)
-   { std::string field_name;
+   {
+    std::string field_name;
     iss >> field_name;
     field_id_t field_id = db.find_field(table_id, field_name);
     if (!field_id)
