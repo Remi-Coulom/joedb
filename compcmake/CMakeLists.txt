@@ -25,22 +25,24 @@ include_directories(
  ../src/journal
 )
 
-add_executable(
- interpreter
- ../src/interpreter/io/interpreter_main.cpp
- ../src/interpreter/io/Interpreter.cpp
+add_library(interpreter_objects OBJECT
  ../src/interpreter/io/dump.cpp
+ ../src/interpreter/io/Interpreter.cpp
  ../src/journal/File.cpp
  ../src/journal/JournalFile.cpp
 )
 
 add_executable(
+ interpreter
+ ../src/interpreter/io/interpreter_main.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+)
+
+add_executable(
  gtest
- ../src/interpreter/io/dump.cpp
- ../src/interpreter/io/Interpreter.cpp
  ../src/interpreter/io/Interpreter_Test.cpp
- ../src/journal/File.cpp
  ../src/journal/File_Test.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
 )
 target_link_libraries(gtest ${GTEST_BOTH_LIBRARIES})
 target_link_libraries(gtest ${CMAKE_THREAD_LIBS_INIT})

@@ -21,6 +21,7 @@ class Interpreter_Test: public::testing::Test
   }
 };
 
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(Interpreter_Test, main_test)
 {
  std::ifstream in_file("interpreter_test.joedbi");
