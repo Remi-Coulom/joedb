@@ -27,7 +27,8 @@ include_directories(
 
 add_executable(
  interpreter
- ../src/interpreter/io/interpreter.cpp
+ ../src/interpreter/io/interpreter_main.cpp
+ ../src/interpreter/io/Interpreter.cpp
  ../src/interpreter/io/dump.cpp
  ../src/journal/File.cpp
  ../src/journal/JournalFile.cpp
@@ -35,8 +36,11 @@ add_executable(
 
 add_executable(
  gtest
- ../test/File_Test.cpp
+ ../src/interpreter/io/dump.cpp
+ ../src/interpreter/io/Interpreter.cpp
+ ../src/interpreter/io/Interpreter_Test.cpp
  ../src/journal/File.cpp
+ ../src/journal/File_Test.cpp
 )
 target_link_libraries(gtest ${GTEST_BOTH_LIBRARIES})
 target_link_libraries(gtest ${CMAKE_THREAD_LIBS_INIT})

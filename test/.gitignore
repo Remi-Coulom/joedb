@@ -1,4 +1,3 @@
-all.info
-app.info
 html
+*.info
 *.tmp
