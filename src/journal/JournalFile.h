@@ -13,7 +13,7 @@ namespace joedb
    int checkpoint_index;
 
   public:
-   JournalFile(const char *file_name, File::open_mode_t open_mode);
+   JournalFile(const char *file_name, File::mode_t mode);
 
    bool is_good() const {return file.is_good();}
 

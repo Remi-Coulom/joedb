@@ -15,7 +15,6 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 
-enable_testing()
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -36,7 +35,8 @@ add_executable(
 
 add_executable(
  gtest
- ../test/gtest.cpp
+ ../test/File_Test.cpp
+ ../src/journal/File.cpp
 )
 target_link_libraries(gtest ${GTEST_BOTH_LIBRARIES})
 target_link_libraries(gtest ${CMAKE_THREAD_LIBS_INIT})

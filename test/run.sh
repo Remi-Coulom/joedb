@@ -1,14 +1,9 @@
 #!/bin/bash
-interpreter=../compcmake/ninja_debug/interpreter
-
-cd ..
+cd ../compcmake/ninja_debug
+ninja clean
 rm -vf `find -name *.gcda`
+rm -vf `find -name *.gcno`
+ninja gtest
 cd -
-
-valgrind "$interpreter" <test1.joedbi >test1.tmp
-
-if diff -w test1.out test1.tmp; then
- echo result is OK
-else
- echo Error!
-fi
+valgrind ../compcmake/ninja_debug/gtest
+./generate-gcov-html.sh

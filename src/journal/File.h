@@ -9,17 +9,17 @@ namespace joedb
  class File
  {
   public:
-   enum class open_mode_t {read_existing, write_existing, create_new};
+   enum class mode_t {read_existing, write_existing, create_new};
 
   private:
    FILE *file;
-   open_mode_t open_mode;
+   mode_t mode;
 
   public:
-   File(const char *file_name, open_mode_t open_mode);
+   File(const char *file_name, mode_t mode);
 
    bool is_good() const {return file != 0;}
-   open_mode_t get_open_mode() const {return open_mode;}
+   mode_t get_mode() const {return mode;}
 
    void seek(int64_t offset);
 
@@ -33,7 +33,7 @@ namespace joedb
    uint32_t read_uint32();
    uint64_t read_uint64();
 
-   void commit();
+   void flush();
 
    ~File();
  };
