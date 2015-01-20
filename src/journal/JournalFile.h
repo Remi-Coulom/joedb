@@ -13,10 +13,9 @@ namespace joedb
    int checkpoint_index;
 
   public:
-   JournalFile(const char *file_name, bool read_only);
+   JournalFile(const char *file_name, File::open_mode_t open_mode);
 
    bool is_good() const {return file.is_good();}
-   bool is_read_only() const {return file.is_read_only();}
 
    void checkpoint();
 

@@ -8,19 +8,18 @@ namespace joedb
 {
  class File
  {
+  public:
+   enum class open_mode_t {read_existing, write_existing, create_new};
+
   private:
    FILE *file;
-   const bool read_only;
-   bool created_new;
-   int64_t file_size;
+   open_mode_t open_mode;
 
   public:
-   File(const char *file_name, bool read_only);
+   File(const char *file_name, open_mode_t open_mode);
 
-   bool is_good() const;
-   bool is_created_new() const;
-   bool is_read_only() const;
-   int64_t get_file_size() const;
+   bool is_good() const {return file != 0;}
+   open_mode_t get_open_mode() const {return open_mode;}
 
    void seek(int64_t offset);
 
