@@ -4,7 +4,7 @@ project(joedb)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
- set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -pedantic -Wconversion")
+ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -pedantic -Wconversion -fno-exceptions -fno-rtti")
  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fkeep-inline-functions -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
@@ -18,6 +18,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 include_directories(
  ../src/interpreter/abstract
  ../src/interpreter/io
+ ../src/journal
 )
 
 add_executable(
