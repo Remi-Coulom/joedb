@@ -31,21 +31,18 @@ namespace joedb
     current_field_id(0)
    {}
 
-   // TODO: use auto for all getters with C++ 2014
-
    const std::string &get_name() const {return name;}
 
-   const std::map<field_id_t, Field> &get_fields() const
-   {
-    return fields;
-   }
+   const std::map<field_id_t, Field> &get_fields() const {return fields;}
 
+   //////////////////////////////////////////////////////////////////////////
    const std::map<record_id_t, std::vector<Value>>
     &get_records() const
    {
     return records;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    field_id_t find_field(const std::string &name) const
    {
     for (auto &field: fields)
@@ -54,6 +51,7 @@ namespace joedb
     return 0;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    field_id_t add_field(const std::string &name, const Type &type)
    {
     if (find_field(name) ||
@@ -72,6 +70,7 @@ namespace joedb
     return current_field_id;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool drop_field(field_id_t field_id)
    {
     auto it = fields.find(field_id);
@@ -91,11 +90,13 @@ namespace joedb
     return true;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool delete_record(record_id_t id)
    {
     return records.erase(id) > 0;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool insert_record(record_id_t record_id)
    {
     if (record_id > current_record_id)
@@ -109,6 +110,7 @@ namespace joedb
      return false;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool update(record_id_t record_id, field_id_t field_id, const Value &value)
    {
     auto field = fields.find(field_id);

@@ -5,6 +5,7 @@
 
 using namespace joedb;
 
+/////////////////////////////////////////////////////////////////////////////
 void joedb::dump(std::ostream &out, const Database &database)
 {
  auto tables = database.get_tables();

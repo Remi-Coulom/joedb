@@ -19,6 +19,7 @@ namespace joedb
 
    const std::map<table_id_t, Table> &get_tables() const {return tables;}
 
+   //////////////////////////////////////////////////////////////////////////
    table_id_t create_table(const std::string &name)
    {
     if (find_table(name))
@@ -29,6 +30,7 @@ namespace joedb
     return current_table_id;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool drop_table(table_id_t table_id)
    {
     if (tables.erase(table_id) > 0)
@@ -40,6 +42,7 @@ namespace joedb
      return false;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    table_id_t find_table(const std::string &name) const
    {
     for (const auto &table: tables)
@@ -48,6 +51,7 @@ namespace joedb
     return 0;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    field_id_t add_field(table_id_t table_id,
                         const std::string &name,
                         Type type)
@@ -61,6 +65,7 @@ namespace joedb
     return field_id;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    field_id_t find_field(table_id_t table_id,
                          const std::string &name) const
    {
@@ -70,6 +75,7 @@ namespace joedb
     return it->second.find_field(name);
    }
 
+   //////////////////////////////////////////////////////////////////////////
    Type::type_id_t get_field_type(table_id_t table_id,
                                   field_id_t field_id) const
    {
@@ -83,6 +89,7 @@ namespace joedb
     return field_it->second.type.get_type_id();
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool drop_field(table_id_t table_id, field_id_t field_id)
    {
     auto it = tables.find(table_id);
@@ -94,6 +101,7 @@ namespace joedb
     return false;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool insert_into(table_id_t table_id, record_id_t record_id)
    {
     auto it = tables.find(table_id);
@@ -105,6 +113,7 @@ namespace joedb
     return false;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool delete_record(table_id_t table_id, record_id_t record_id)
    {
     auto it = tables.find(table_id);
@@ -116,6 +125,7 @@ namespace joedb
     return false;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    bool update(table_id_t table_id,
                record_id_t record_id,
                field_id_t field_id,
