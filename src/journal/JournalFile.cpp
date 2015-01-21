@@ -17,16 +17,16 @@ JournalFile::JournalFile(File &file):
  //
  if (file.get_mode() == File::mode_t::create_new)
  {
-  file.write_uint8('j');
-  file.write_uint8('o');
-  file.write_uint8('e');
-  file.write_uint8('d');
-  file.write_uint8('b');
-  file.write_uint32(version_number);
-  file.write_uint64(0);
-  file.write_uint64(0);
-  file.write_uint64(0);
-  file.write_uint64(0);
+  file.write<uint8_t>('j');
+  file.write<uint8_t>('o');
+  file.write<uint8_t>('e');
+  file.write<uint8_t>('d');
+  file.write<uint8_t>('b');
+  file.write<uint32_t>(version_number);
+  file.write<uint64_t>(0);
+  file.write<uint64_t>(0);
+  file.write<uint64_t>(0);
+  file.write<uint64_t>(0);
   checkpoint();
  }
 
@@ -38,11 +38,11 @@ JournalFile::JournalFile(File &file):
   //
   // First, check for initial "joedb"
   //
-  if (file.read_uint8() != 'j' ||
-      file.read_uint8() != 'o' ||
-      file.read_uint8() != 'e' ||
-      file.read_uint8() != 'd' ||
-      file.read_uint8() != 'b')
+  if (file.read<uint8_t>() != 'j' ||
+      file.read<uint8_t>() != 'o' ||
+      file.read<uint8_t>() != 'e' ||
+      file.read<uint8_t>() != 'd' ||
+      file.read<uint8_t>() != 'b')
   {
    state = state_t::bad_format;
   }
@@ -51,7 +51,7 @@ JournalFile::JournalFile(File &file):
    //
    // Check version number
    //
-   const uint32_t version = file.read_uint32();
+   const uint32_t version = file.read<uint32_t>();
    if (version > version_number)
     state = state_t::unsupported_version;
 
@@ -60,7 +60,7 @@ JournalFile::JournalFile(File &file):
    //
    int64_t pos[4];
    for (int i = 0; i < 4; i++)
-    pos[i] = int64_t(file.read_uint64());
+    pos[i] = int64_t(file.read<uint64_t>());
 
    if (pos[0] != pos[1] || pos[2] != pos[3])
     state = state_t::crash_check;
@@ -89,10 +89,73 @@ void JournalFile::checkpoint()
  checkpoint_index ^= 1;
  const int64_t position = file.get_position();
  file.set_position(9 + 16 * checkpoint_index);
- file.write_uint64(uint64_t(position));
- file.write_uint64(uint64_t(position));
+ file.write<uint64_t>(uint64_t(position));
+ file.write<uint64_t>(uint64_t(position));
  file.set_position(position);
  file.flush();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void JournalFile::after_create_table(const std::string &name)
+{
+ file.write<uint8_t>(uint8_t(operation_t::create_table));
+ file.write_string(name);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void JournalFile::after_drop_table(table_id_t table_id)
+{
+ file.write<uint8_t>(uint8_t(operation_t::drop_table));
+ file.write<table_id_t>(table_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void JournalFile::after_add_field(table_id_t table_id,
+                                  const std::string &name,
+                                  Type type)
+{
+ file.write<uint8_t>(uint8_t(operation_t::add_field));
+ file.write<table_id_t>(table_id);
+ file.write_string(name);
+ // TODO: type
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void JournalFile::after_drop_field(table_id_t table_id,
+                                   field_id_t field_id)
+{
+ file.write<uint8_t>(uint8_t(operation_t::drop_field));
+ file.write<table_id_t>(table_id);
+ file.write<field_id_t>(field_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
+{
+ file.write<uint8_t>(uint8_t(operation_t::insert_record));
+ file.write<table_id_t>(table_id);
+ file.write<record_id_t>(record_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void JournalFile::after_delete(table_id_t table_id, record_id_t record_id)
+{
+ file.write<uint8_t>(uint8_t(operation_t::delete_record));
+ file.write<table_id_t>(table_id);
+ file.write<record_id_t>(record_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void JournalFile::after_update(table_id_t table_id,
+                               record_id_t record_id,
+                               field_id_t field_id,
+                               const Value &value)
+{
+ file.write<uint8_t>(uint8_t(operation_t::update));
+ file.write<table_id_t>(table_id);
+ file.write<record_id_t>(record_id);
+ file.write<field_id_t>(field_id);
+ // TODO: value
 }
 
 /////////////////////////////////////////////////////////////////////////////

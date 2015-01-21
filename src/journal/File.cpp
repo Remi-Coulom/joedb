@@ -26,81 +26,22 @@ int64_t File::get_position() const
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File::write_uint8(uint8_t x)
+void File::write_string(const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::fputc(x, file);
+ write<uint64_t>(uint64_t(s.size()));
+ std::fwrite(&s[0], 1, s.size(), file);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File::write_uint16(uint16_t x)
+void File::read_string(std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::fputc(uint8_t(x >>  0), file);
- std::fputc(uint8_t(x >>  8), file);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void File::write_uint32(uint32_t x)
-/////////////////////////////////////////////////////////////////////////////
-{
- std::fputc(uint8_t(x >>  0), file);
- std::fputc(uint8_t(x >>  8), file);
- std::fputc(uint8_t(x >> 16), file);
- std::fputc(uint8_t(x >> 24), file);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void File::write_uint64(uint64_t x)
-/////////////////////////////////////////////////////////////////////////////
-{
- std::fputc(uint8_t(x >>  0), file);
- std::fputc(uint8_t(x >>  8), file);
- std::fputc(uint8_t(x >> 16), file);
- std::fputc(uint8_t(x >> 24), file);
- std::fputc(uint8_t(x >> 32), file);
- std::fputc(uint8_t(x >> 40), file);
- std::fputc(uint8_t(x >> 48), file);
- std::fputc(uint8_t(x >> 56), file);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-uint8_t File::read_uint8()
-/////////////////////////////////////////////////////////////////////////////
-{
- return (uint8_t)fgetc(file);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-uint16_t File::read_uint16()
-/////////////////////////////////////////////////////////////////////////////
-{
- return uint16_t((uint16_t(read_uint8()) <<  0) |
-                 (uint16_t(read_uint8()) <<  8));
-}
-
-/////////////////////////////////////////////////////////////////////////////
-uint32_t File::read_uint32()
-/////////////////////////////////////////////////////////////////////////////
-{
- return (uint32_t(read_uint8()) <<  0) |
-        (uint32_t(read_uint8()) <<  8) |
-        (uint32_t(read_uint8()) << 16) |
-        (uint32_t(read_uint8()) << 24);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-uint64_t File::read_uint64()
-/////////////////////////////////////////////////////////////////////////////
-{
- return (uint64_t(read_uint8()) <<  0) |
-        (uint64_t(read_uint8()) <<  8) |
-        (uint64_t(read_uint8()) << 16) |
-        (uint64_t(read_uint8()) << 24) |
-        (uint64_t(read_uint8()) << 32) |
-        (uint64_t(read_uint8()) << 40) |
-        (uint64_t(read_uint8()) << 48) |
-        (uint64_t(read_uint8()) << 56);
+ const uint64_t size = read<uint64_t>();
+ s.resize(size_t(size));
+ const size_t result = std::fread(&s[0], 1, size, file);
+ if (result < size)
+  s.resize(result);
 }
 
 /////////////////////////////////////////////////////////////////////////////
