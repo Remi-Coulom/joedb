@@ -47,6 +47,7 @@ namespace joedb
 
    File &file;
    int checkpoint_index;
+   int64_t checkpoint_position;
    state_t state;
 
    Type read_type();

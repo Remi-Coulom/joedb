@@ -66,19 +66,17 @@ JournalFile::JournalFile(File &file):
    if (pos[0] != pos[1] || pos[2] != pos[3])
     state = state_t::crash_check;
 
-   int64_t position = 0;
+   checkpoint_position = 0;
 
    for (int i = 0; i < 2; i++)
-    if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > position)
+    if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
     {
-     position = pos[2 * i];
+     checkpoint_position = pos[2 * i];
      checkpoint_index = i;
     }
 
-   if (position < header_size)
+   if (checkpoint_position < header_size)
     state = state_t::bad_format;
-   else
-    file.set_position(position);
   }
  }
 }
@@ -87,11 +85,11 @@ JournalFile::JournalFile(File &file):
 void JournalFile::checkpoint()
 {
  checkpoint_index ^= 1;
- const int64_t position = file.get_position();
+ checkpoint_position = file.get_position();
  file.set_position(9 + 16 * checkpoint_index);
- file.write<int64_t>(position);
- file.write<int64_t>(position);
- file.set_position(position);
+ file.write<int64_t>(checkpoint_position);
+ file.write<int64_t>(checkpoint_position);
+ file.set_position(checkpoint_position);
  file.flush();
 }
 
@@ -100,7 +98,9 @@ void JournalFile::replay_log(Database &db)
 {
  file.set_position(header_size);
 
- while(true)
+ while(file.get_position() < checkpoint_position &&
+       state == state_t::no_error &&
+       !file.is_end_of_file())
  {
   switch(file.read<operation_t>())
   {
@@ -108,32 +108,88 @@ void JournalFile::replay_log(Database &db)
    return;
 
    case operation_t::create_table:
-    db.create_table(file.read_string());
+    if (!db.create_table(file.read_string()))
+     state = state_t::bad_format;
    break;
 
    case operation_t::drop_table:
-    db.drop_table(file.read<table_id_t>());
+    if (!db.drop_table(file.read<table_id_t>()))
+     state = state_t::bad_format;
    break;
 
    case operation_t::add_field:
-    db.add_field(file.read<table_id_t>(), file.read_string(), read_type());
+   {
+    table_id_t table_id = file.read<table_id_t>();
+    std::string name = file.read_string();
+    Type type = read_type();
+    if (!db.add_field(table_id, name, type))
+     state = state_t::bad_format;
+   }
    break;
 
    case operation_t::drop_field:
-    db.drop_field(file.read<table_id_t>(), file.read<field_id_t>());
+   {
+    table_id_t table_id = file.read<table_id_t>();
+    field_id_t field_id = file.read<field_id_t>();
+    if (!db.drop_field(table_id, field_id))
+     state = state_t::bad_format;
+   }
    break;
 
    case operation_t::insert_into:
-    db.insert_into(file.read<table_id_t>(), file.read<record_id_t>());
+   {
+    table_id_t table_id = file.read<table_id_t>();
+    record_id_t record_id = file.read<record_id_t>();
+    if (!db.insert_into(table_id, record_id))
+     state = state_t::bad_format;
+   }
    break;
 
    case operation_t::delete_from:
-    db.delete_from(file.read<table_id_t>(), file.read<record_id_t>());
+   {
+    table_id_t table_id = file.read<table_id_t>();
+    record_id_t record_id = file.read<record_id_t>();
+    if (!db.delete_from(table_id, record_id))
+     state = state_t::bad_format;
+   }
    break;
 
    case operation_t::update:
    {
+    table_id_t table_id = file.read<table_id_t>();
+    record_id_t record_id = file.read<record_id_t>();
+    field_id_t field_id = file.read<field_id_t>();
+
+    Value value;
+    switch (db.get_field_type(table_id, field_id))
+    {
+     case Type::type_id_t::null:
+     break;
+
+     case Type::type_id_t::string:
+      value = Value(file.read_string());
+     break;
+
+     case Type::type_id_t::int32:
+      value = Value(file.read<int32_t>());
+     break;
+
+     case Type::type_id_t::int64:
+      value = Value(file.read<int64_t>());
+     break;
+
+     case Type::type_id_t::reference:
+      value = Value(file.read<record_id_t>());
+     break;
+    }
+
+    if (!db.update(table_id, record_id, field_id, value))
+     state = state_t::bad_format;
    }
+   break;
+
+   default:
+    state = state_t::bad_format;
    break;
   }
  }
@@ -238,5 +294,6 @@ Type JournalFile::read_type()
 /////////////////////////////////////////////////////////////////////////////
 JournalFile::~JournalFile()
 {
- checkpoint();
+ if (state == state_t::no_error)
+  checkpoint();
 }

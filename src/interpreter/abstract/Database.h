@@ -12,10 +12,15 @@ namespace joedb
    table_id_t current_table_id;
 
    std::map<table_id_t, Table> tables;
-   Listener &listener;
+
+   Listener default_listener;
+   Listener *listener;
 
   public:
-   Database(Listener &listener): current_table_id(0), listener(listener) {}
+   Database(): current_table_id(0), listener(&default_listener) {}
+
+   void set_listener(Listener &new_listener) {listener = &new_listener;}
+   void clear_listener() {listener = &default_listener;}
 
    const std::map<table_id_t, Table> &get_tables() const {return tables;}
 
@@ -26,7 +31,7 @@ namespace joedb
      return 0;
 
     tables.insert(std::make_pair(++current_table_id, Table(name)));
-    listener.after_create_table(name);
+    listener->after_create_table(name);
     return current_table_id;
    }
 
@@ -35,7 +40,7 @@ namespace joedb
    {
     if (tables.erase(table_id) > 0)
     {
-     listener.after_drop_table(table_id);
+     listener->after_drop_table(table_id);
      return true;
     }
     else
@@ -61,7 +66,7 @@ namespace joedb
      return 0;
     field_id_t field_id = it->second.add_field(name, type);
     if (field_id)
-     listener.after_add_field(table_id, name, type);
+     listener->after_add_field(table_id, name, type);
     return field_id;
    }
 
@@ -95,7 +100,7 @@ namespace joedb
     auto it = tables.find(table_id);
     if (it != tables.end() && it->second.drop_field(field_id))
     {
-     listener.after_drop_field(table_id, field_id);
+     listener->after_drop_field(table_id, field_id);
      return true;
     }
     return false;
@@ -107,7 +112,7 @@ namespace joedb
     auto it = tables.find(table_id);
     if (it != tables.end() && it->second.insert_record(record_id))
     {
-     listener.after_insert(table_id, record_id);
+     listener->after_insert(table_id, record_id);
      return true;
     }
     return false;
@@ -119,7 +124,7 @@ namespace joedb
     auto it = tables.find(table_id);
     if (it != tables.end() && it->second.delete_record(record_id))
     {
-     listener.after_delete(table_id, record_id);
+     listener->after_delete(table_id, record_id);
      return true;
     }
     return false;
@@ -134,7 +139,7 @@ namespace joedb
     auto it = tables.find(table_id);
     if (it != tables.end() && it->second.update(record_id, field_id, value))
     {
-     listener.after_update(table_id, record_id, field_id, value);
+     listener->after_update(table_id, record_id, field_id, value);
      return true;
     }
     return false;

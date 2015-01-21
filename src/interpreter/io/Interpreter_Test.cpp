@@ -10,12 +10,10 @@ using namespace joedb;
 class Interpreter_Test: public::testing::Test
 {
  protected:
-  Listener listener;
   Database db;
   Interpreter interpreter;
 
   Interpreter_Test():
-   db(listener),
    interpreter(db)
   {
   }

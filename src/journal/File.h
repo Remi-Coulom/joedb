@@ -11,9 +11,12 @@ namespace joedb
   public:
    enum class mode_t {read_existing, write_existing, create_new};
 
-   File(const char *file_name, mode_t mode);
+   File(): file(0) {}
+   File(const char *file_name, mode_t mode) {open(file_name, mode);}
+   bool open(const char *file_name, mode_t mode);
 
    bool is_good() const {return file != 0;}
+   bool is_end_of_file() const {return std::feof(file) != 0;}
    mode_t get_mode() const {return mode;}
 
    void set_position(int64_t position);

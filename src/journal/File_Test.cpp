@@ -70,4 +70,11 @@ TEST_F(File_Test, read_write)
   new_file.set_position(0);
   EXPECT_EQ(new_file.read<uint32_t>(), uint32_t(joedb_magic));
  }
+ {
+  File new_file("new.tmp", File::mode_t::create_new);
+  const std::string s("joedb!!!");
+  new_file.write_string(s);
+  new_file.set_position(0);
+  EXPECT_EQ(new_file.read_string(), s);
+ }
 }
