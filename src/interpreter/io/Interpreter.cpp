@@ -53,10 +53,10 @@ Value Interpreter::parse_value(Type::type_id_t type_id, std::istream &in)
 
  switch(type_id)
  {
-  case Type::null_id:
+  case Type::type_id_t::null:
   break;
 
-  case Type::string_id:
+  case Type::type_id_t::string:
   {
    std::string s;
    in >> s;
@@ -64,7 +64,7 @@ Value Interpreter::parse_value(Type::type_id_t type_id, std::istream &in)
   }
   break;
 
-  case Type::reference_id:
+  case Type::type_id_t::reference:
   {
    record_id_t record_id = 0;
    in >> record_id;
@@ -72,7 +72,7 @@ Value Interpreter::parse_value(Type::type_id_t type_id, std::istream &in)
   }
   break;
 
-  case Type::int32_id:
+  case Type::type_id_t::int32:
   {
    int32_t v;
    in >> v;
@@ -80,7 +80,7 @@ Value Interpreter::parse_value(Type::type_id_t type_id, std::istream &in)
   }
   break;
 
-  case Type::int64_id:
+  case Type::type_id_t::int64:
   {
    int64_t v;
    in >> v;
@@ -134,7 +134,7 @@ void Interpreter::main_loop(std::istream &in, std::ostream &out)
     std::string field_name;
     iss >> field_name;
     Type type = parse_type(iss, out);
-    if (type.get_type_id() != Type::null_id)
+    if (type.get_type_id() != Type::type_id_t::null)
     {
      field_id_t field_id = db.add_field(table_id, field_name, type);
      if (field_id)

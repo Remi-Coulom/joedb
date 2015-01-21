@@ -30,23 +30,23 @@ void joedb::dump(std::ostream &out, const Database &database)
 
    switch(field.second.type.get_type_id())
    {
-    case Type::null_id:
+    case Type::type_id_t::null:
      out << "null";
     break;
 
-    case Type::string_id:
+    case Type::type_id_t::string:
      out << "string";
     break;
 
-    case Type::int32_id:
+    case Type::type_id_t::int32:
      out << "int32";
     break;
 
-    case Type::int64_id:
+    case Type::type_id_t::int64:
      out << "int64";
     break;
 
-    case Type::reference_id:
+    case Type::type_id_t::reference:
     {
      out << "references ";
      table_id_t table_id = field.second.type.get_table_id();
@@ -80,31 +80,28 @@ void joedb::dump(std::ostream &out, const Database &database)
     const size_t i = field.second.index;
     out << ' ';
 
-    if (!record.second[i].is_initialized())
-     out << "NULL";
-    else
-     switch(field.second.type.get_type_id())
-     {
-      case Type::null_id:
-       out << "NULL";
-      break;
+    switch(field.second.type.get_type_id())
+    {
+     case Type::type_id_t::null:
+      out << "NULL";
+     break;
 
-      case Type::string_id:
-       out << record.second[i].get_string();
-      break;
+     case Type::type_id_t::string:
+      out << record.second[i].get_string();
+     break;
 
-      case Type::int32_id:
-       out << record.second[i].get_int32();
-      break;
+     case Type::type_id_t::int32:
+      out << record.second[i].get_int32();
+     break;
 
-      case Type::int64_id:
-       out << record.second[i].get_int64();
-      break;
+     case Type::type_id_t::int64:
+      out << record.second[i].get_int64();
+     break;
 
-      case Type::reference_id:
-       out << record.second[i].get_record_id();
-      break;
-     }
+     case Type::type_id_t::reference:
+      out << record.second[i].get_record_id();
+     break;
+    }
    }
    out << '\n';
   }

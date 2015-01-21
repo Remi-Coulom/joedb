@@ -75,11 +75,11 @@ namespace joedb
    {
     auto table_it = tables.find(table_id);
     if (table_it == tables.end())
-     return Type::null_id;
+     return Type::type_id_t::null;
     auto &fields = table_it->second.get_fields();
     auto field_it = fields.find(field_id);
     if (field_it == fields.end())
-     return Type::null_id;
+     return Type::type_id_t::null;
     return field_it->second.type.get_type_id();
    }
 

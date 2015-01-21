@@ -4,12 +4,14 @@
 #include "Type.h"
 #include "index_types.h"
 
+#include <cassert>
+
 namespace joedb
 {
  class Value
  {
   private:
-   bool initialized;
+   Type::type_id_t type_id;
    union
    {
     int32_t int32;
@@ -18,20 +20,41 @@ namespace joedb
    } u;
    std::string s;
 
-   // TODO: debug option to check get corresponds to constructor
-
   public:
-   Value(): initialized(false) {}
-   Value(int32_t i): initialized(true) {u.int32 = i;}
-   Value(int64_t i): initialized(true) {u.int64 = i;}
-   Value(record_id_t id): initialized(true) {u.record_id = id;}
-   Value(const std::string &s): initialized(true), s(s) {}
+   Value(): type_id(Type::type_id_t::null) {}
+   Value(const std::string &s): type_id(Type::type_id_t::string), s(s) {}
+   Value(int32_t i): type_id(Type::type_id_t::int32) {u.int32 = i;}
+   Value(int64_t i): type_id(Type::type_id_t::int64) {u.int64 = i;}
+   Value(record_id_t id): type_id(Type::type_id_t::reference)
+   {
+    u.record_id = id;
+   }
 
-   bool is_initialized() const {return initialized;}
-   int32_t get_int32() const {return u.int32;}
-   int64_t get_int64() const {return u.int64;}
-   record_id_t get_record_id() const {return u.record_id;}
-   const std::string &get_string() const {return s;}
+   Type::type_id_t get_type_id() const {return type_id;}
+
+   const std::string &get_string() const
+   {
+    assert(type_id == Type::type_id_t::string);
+    return s;
+   }
+
+   int32_t get_int32() const
+   {
+    assert(type_id == Type::type_id_t::int32);
+    return u.int32;
+   }
+
+   int64_t get_int64() const
+   {
+    assert(type_id == Type::type_id_t::int64);
+    return u.int64;
+   }
+
+   record_id_t get_record_id() const
+   {
+    assert(type_id == Type::type_id_t::reference);
+    return u.record_id;
+   }
  };
 }
 

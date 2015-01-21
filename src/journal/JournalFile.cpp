@@ -23,10 +23,10 @@ JournalFile::JournalFile(File &file):
   file.write<uint8_t>('d');
   file.write<uint8_t>('b');
   file.write<uint32_t>(version_number);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
+  file.write<int64_t>(0);
+  file.write<int64_t>(0);
+  file.write<int64_t>(0);
+  file.write<int64_t>(0);
   checkpoint();
  }
 
@@ -60,7 +60,7 @@ JournalFile::JournalFile(File &file):
    //
    int64_t pos[4];
    for (int i = 0; i < 4; i++)
-    pos[i] = int64_t(file.read<uint64_t>());
+    pos[i] = file.read<int64_t>();
 
    if (pos[0] != pos[1] || pos[2] != pos[3])
     state = state_t::crash_check;
@@ -68,9 +68,9 @@ JournalFile::JournalFile(File &file):
    int64_t position = 0;
 
    for (int i = 0; i < 2; i++)
-    if (pos[2 * i] == pos[2 * i + 1] && int64_t(pos[2 * i]) > position)
+    if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > position)
     {
-     position = int64_t(pos[2 * i]);
+     position = pos[2 * i];
      checkpoint_index = i;
     }
 
@@ -89,8 +89,8 @@ void JournalFile::checkpoint()
  checkpoint_index ^= 1;
  const int64_t position = file.get_position();
  file.set_position(9 + 16 * checkpoint_index);
- file.write<uint64_t>(uint64_t(position));
- file.write<uint64_t>(uint64_t(position));
+ file.write<int64_t>(position);
+ file.write<int64_t>(position);
  file.set_position(position);
  file.flush();
 }
@@ -117,7 +117,7 @@ void JournalFile::after_add_field(table_id_t table_id,
  file.write<uint8_t>(uint8_t(operation_t::add_field));
  file.write<table_id_t>(table_id);
  file.write_string(name);
- // TODO: type
+ file.write<uint8_t>(uint8_t(type.get_type_id()));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,28 @@ void JournalFile::after_update(table_id_t table_id,
  file.write<table_id_t>(table_id);
  file.write<record_id_t>(record_id);
  file.write<field_id_t>(field_id);
- // TODO: value
+
+ switch(value.get_type_id())
+ {
+  case Type::type_id_t::null:
+  break;
+
+  case Type::type_id_t::string:
+   file.write_string(value.get_string());
+  break;
+
+  case Type::type_id_t::int32:
+   file.write<int32_t>(value.get_int32());
+  break;
+
+  case Type::type_id_t::int64:
+   file.write<int64_t>(value.get_int64());
+  break;
+
+  case Type::type_id_t::reference:
+   file.write<record_id_t>(value.get_record_id());
+  break;
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
