@@ -5,17 +5,26 @@
 
 namespace joedb
 {
+ class File;
+
  class JournalFile
  {
-  private:
-   File file;
+  public:
+   enum class state_t {no_error,
+                       unsupported_version,
+                       bad_format,
+                       crash_check};
 
+  private:
+   static const uint32_t version_number;
+   static const int64_t header_size;
+
+   File &file;
    int checkpoint_index;
+   state_t state;
 
   public:
-   JournalFile(const char *file_name, File::mode_t mode);
-
-   bool is_good() const {return file.is_good();}
+   JournalFile(File &file);
 
    void checkpoint();
 

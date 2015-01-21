@@ -21,7 +21,8 @@ namespace joedb
    bool is_good() const {return file != 0;}
    mode_t get_mode() const {return mode;}
 
-   void seek(int64_t offset);
+   void set_position(int64_t position);
+   int64_t get_position() const;
 
    void write_uint8(uint8_t x);
    void write_uint16(uint16_t x);

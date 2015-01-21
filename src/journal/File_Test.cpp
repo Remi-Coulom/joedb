@@ -55,19 +55,19 @@ TEST_F(File_Test, read_write)
  {
   File new_file("new.tmp", File::mode_t::create_new);
   new_file.write_uint8(uint8_t(joedb_magic));
-  new_file.seek(0);
+  new_file.set_position(0);
   EXPECT_EQ(new_file.read_uint8(), uint8_t(joedb_magic));
  }
  {
   File new_file("new.tmp", File::mode_t::create_new);
   new_file.write_uint16(uint16_t(joedb_magic));
-  new_file.seek(0);
+  new_file.set_position(0);
   EXPECT_EQ(new_file.read_uint16(), uint16_t(joedb_magic));
  }
  {
   File new_file("new.tmp", File::mode_t::create_new);
   new_file.write_uint32(uint32_t(joedb_magic));
-  new_file.seek(0);
+  new_file.set_position(0);
   EXPECT_EQ(new_file.read_uint32(), uint32_t(joedb_magic));
  }
 }

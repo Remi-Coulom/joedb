@@ -6,7 +6,7 @@ General
 
 5 bytes: joedb
 
-version number int64_t
+version number uint32_t
 
 table_id_t, field_id_t, record_id_t
 

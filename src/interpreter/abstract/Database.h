@@ -17,10 +17,7 @@ namespace joedb
   public:
    Database(Listener &listener): current_table_id(0), listener(listener) {}
 
-   const std::map<table_id_t, Table> &get_tables() const
-   {
-    return tables;
-   }
+   const std::map<table_id_t, Table> &get_tables() const {return tables;}
 
    table_id_t create_table(const std::string &name)
    {
