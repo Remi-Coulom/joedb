@@ -204,14 +204,14 @@ void Interpreter::main_loop(std::istream &in, std::ostream &out)
     }
    }
   }
-  else if (command == "delete") //////////////////////////////////////////////
+  else if (command == "delete_from") /////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
    if (table_id)
    {
     record_id_t record_id = 0;
     iss >> record_id;
-    if (db.delete_record(table_id, record_id))
+    if (db.delete_from(table_id, record_id))
      out << "OK: record number " << record_id << " deleted\n";
     else
      out << "Error: could not delete record " << record_id << '\n';

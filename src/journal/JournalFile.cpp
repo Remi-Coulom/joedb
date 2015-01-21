@@ -1,4 +1,6 @@
 #include "JournalFile.h"
+#include "File.h"
+#include "Database.h"
 
 using namespace joedb;
 
@@ -94,16 +96,60 @@ void JournalFile::checkpoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void JournalFile::replay_log(Database &db)
+{
+ file.set_position(header_size);
+
+ while(true)
+ {
+  switch(file.read<operation_t>())
+  {
+   case operation_t::end_of_file:
+   return;
+
+   case operation_t::create_table:
+    db.create_table(file.read_string());
+   break;
+
+   case operation_t::drop_table:
+    db.drop_table(file.read<table_id_t>());
+   break;
+
+   case operation_t::add_field:
+    db.add_field(file.read<table_id_t>(), file.read_string(), read_type());
+   break;
+
+   case operation_t::drop_field:
+    db.drop_field(file.read<table_id_t>(), file.read<field_id_t>());
+   break;
+
+   case operation_t::insert_into:
+    db.insert_into(file.read<table_id_t>(), file.read<record_id_t>());
+   break;
+
+   case operation_t::delete_from:
+    db.delete_from(file.read<table_id_t>(), file.read<record_id_t>());
+   break;
+
+   case operation_t::update:
+   {
+   }
+   break;
+  }
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void JournalFile::after_create_table(const std::string &name)
 {
- file.write<uint8_t>(uint8_t(operation_t::create_table));
+ file.write<operation_t>(operation_t::create_table);
  file.write_string(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void JournalFile::after_drop_table(table_id_t table_id)
 {
- file.write<uint8_t>(uint8_t(operation_t::drop_table));
+ file.write<operation_t>(operation_t::drop_table);
  file.write<table_id_t>(table_id);
 }
 
@@ -112,17 +158,19 @@ void JournalFile::after_add_field(table_id_t table_id,
                                   const std::string &name,
                                   Type type)
 {
- file.write<uint8_t>(uint8_t(operation_t::add_field));
+ file.write<operation_t>(operation_t::add_field);
  file.write<table_id_t>(table_id);
  file.write_string(name);
- file.write<uint8_t>(uint8_t(type.get_type_id()));
+ file.write<Type::type_id_t>(type.get_type_id());
+ if (type.get_type_id() == Type::type_id_t::reference)
+  file.write<table_id_t>(type.get_table_id());
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void JournalFile::after_drop_field(table_id_t table_id,
                                    field_id_t field_id)
 {
- file.write<uint8_t>(uint8_t(operation_t::drop_field));
+ file.write<operation_t>(operation_t::drop_field);
  file.write<table_id_t>(table_id);
  file.write<field_id_t>(field_id);
 }
@@ -130,7 +178,7 @@ void JournalFile::after_drop_field(table_id_t table_id,
 /////////////////////////////////////////////////////////////////////////////
 void JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
 {
- file.write<uint8_t>(uint8_t(operation_t::insert_record));
+ file.write<operation_t>(operation_t::insert_into);
  file.write<table_id_t>(table_id);
  file.write<record_id_t>(record_id);
 }
@@ -138,7 +186,7 @@ void JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
 /////////////////////////////////////////////////////////////////////////////
 void JournalFile::after_delete(table_id_t table_id, record_id_t record_id)
 {
- file.write<uint8_t>(uint8_t(operation_t::delete_record));
+ file.write<operation_t>(operation_t::delete_from);
  file.write<table_id_t>(table_id);
  file.write<record_id_t>(record_id);
 }
@@ -149,7 +197,7 @@ void JournalFile::after_update(table_id_t table_id,
                                field_id_t field_id,
                                const Value &value)
 {
- file.write<uint8_t>(uint8_t(operation_t::update));
+ file.write<operation_t>(operation_t::update);
  file.write<table_id_t>(table_id);
  file.write<record_id_t>(record_id);
  file.write<field_id_t>(field_id);
@@ -175,6 +223,16 @@ void JournalFile::after_update(table_id_t table_id,
    file.write<record_id_t>(value.get_record_id());
   break;
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+Type JournalFile::read_type()
+{
+ Type::type_id_t type_id = file.read<Type::type_id_t>();
+ if (type_id == Type::type_id_t::reference)
+  return Type::reference(file.read<table_id_t>());
+ else
+  return Type(type_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////

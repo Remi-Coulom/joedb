@@ -1,12 +1,12 @@
 #ifndef joedb_JournalFile_declared
 #define joedb_JournalFile_declared
 
-#include "File.h"
 #include "Listener.h"
 
 namespace joedb
 {
  class File;
+ class Database;
 
  class JournalFile: public Listener
  {
@@ -22,8 +22,8 @@ namespace joedb
    };
 
    state_t get_state() const {return state;}
-
    void checkpoint();
+   void replay_log(Database &db);
 
    void after_create_table(const std::string &name);
    void after_drop_table(table_id_t table_id);
@@ -49,15 +49,17 @@ namespace joedb
    int checkpoint_index;
    state_t state;
 
-   enum class operation_t
+   Type read_type();
+
+   enum class operation_t: uint8_t
    {
     end_of_file   = 0x00,
     create_table  = 0x01,
     drop_table    = 0x02,
     add_field     = 0x03,
     drop_field    = 0x04,
-    insert_record = 0x05,
-    delete_record = 0x06,
+    insert_into   = 0x05,
+    delete_from   = 0x06,
     update        = 0x07
    };
  };

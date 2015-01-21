@@ -114,7 +114,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool delete_record(table_id_t table_id, record_id_t record_id)
+   bool delete_from(table_id_t table_id, record_id_t record_id)
    {
     auto it = tables.find(table_id);
     if (it != tables.end() && it->second.delete_record(record_id))

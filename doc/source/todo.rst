@@ -6,6 +6,7 @@ simple interactive interpreter
 
 #) use database listener to write to joedb file
 #) read joedb file (schema-only option)
+#) interpreter: string format/escaping 'string with space' ...
 
 simple compiler
 ---------------

@@ -30,13 +30,15 @@ void File::write_string(const std::string &s)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File::read_string(std::string &s)
+std::string File::read_string()
 {
+ std::string s;
  const uint64_t size = read<uint64_t>();
  s.resize(size_t(size));
  const size_t result = std::fread(&s[0], 1, size, file);
  if (result < size)
   s.resize(result);
+ return s;
 }
 
 /////////////////////////////////////////////////////////////////////////////

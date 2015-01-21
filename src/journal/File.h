@@ -23,7 +23,7 @@ namespace joedb
    template<typename T> T read() {return R<T, sizeof(T)>::read(file);}
 
    void write_string(const std::string &s);
-   void read_string(std::string &s);
+   std::string read_string();
 
    void flush();
 
@@ -41,7 +41,7 @@ namespace joedb
    {
     static void write(T x, FILE *file)
     {
-     std::fputc(char(x >>  0), file);
+     std::fputc(char(x), file);
     }
    };
 

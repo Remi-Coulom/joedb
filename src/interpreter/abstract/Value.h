@@ -30,6 +30,19 @@ namespace joedb
     u.record_id = id;
    }
 
+   Value(Type::type_id_t type_id):
+    type_id(type_id)
+   {
+    switch(type_id)
+    {
+     case Type::type_id_t::null: break;
+     case Type::type_id_t::int32: u.int32 = 0; break;
+     case Type::type_id_t::int64: u.int64 = 0; break;
+     case Type::type_id_t::reference: u.record_id = 0; break;
+     case Type::type_id_t::string: break;
+    }
+   }
+
    Type::type_id_t get_type_id() const {return type_id;}
 
    const std::string &get_string() const

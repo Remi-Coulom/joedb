@@ -65,7 +65,7 @@ namespace joedb
     fields.insert(std::make_pair(++current_field_id, field));
 
     for (auto &record: records)
-     record.second.push_back(Value());
+     record.second.push_back(Value(type.get_type_id()));
 
     return current_field_id;
    }
