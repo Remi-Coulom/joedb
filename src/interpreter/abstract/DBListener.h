@@ -10,12 +10,12 @@ namespace joedb
   public:
    DBListener(Database &db): SchemaListener(db) {}
 
-   void after_insert(table_id_t table_id, record_id_t record_id)
+   void after_insert(table_id_t table_id, record_id_t record_id) override
    {
     error |= !db.insert_into(table_id, record_id);
    }
 
-   void after_delete(table_id_t table_id, record_id_t record_id)
+   void after_delete(table_id_t table_id, record_id_t record_id) override
    {
     error |= !db.delete_from(table_id, record_id);
    }
@@ -23,7 +23,7 @@ namespace joedb
    void after_update(table_id_t table_id,
                      record_id_t record_id,
                      field_id_t field_id,
-                     const Value &value)
+                     const Value &value) override
    {
     error |= !db.update(table_id, record_id, field_id, value);
    }

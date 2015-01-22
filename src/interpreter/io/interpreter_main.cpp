@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   journal.replay_log(db_listener);
 
   if (journal.get_state() != JournalFile::state_t::no_error ||
-      db_listener.get_error())
+      !db_listener.is_good())
   {
    std::cout << "Error reading database\n";
    return 1;

@@ -14,26 +14,27 @@ namespace joedb
 
   public:
    SchemaListener(Database &db): db(db), error(false) {}
-   bool get_error() const {return error;}
 
-   void after_create_table(const std::string &name)
+   bool is_good() const override {return !error;}
+
+   void after_create_table(const std::string &name) override
    {
     error |= !db.create_table(name);
    }
 
-   void after_drop_table(table_id_t table_id)
+   void after_drop_table(table_id_t table_id) override
    {
     error |= !db.drop_table(table_id);
    }
 
    void after_add_field(table_id_t table_id,
                         const std::string &name,
-                        Type type)
+                        Type type) override
    {
     error |= !db.add_field(table_id, name, type);
    }
 
-   void after_drop_field(table_id_t table_id, field_id_t field_id)
+   void after_drop_field(table_id_t table_id, field_id_t field_id) override
    {
     error |= !db.drop_field(table_id, field_id);
    }

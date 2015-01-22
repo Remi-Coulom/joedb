@@ -8,11 +8,11 @@ OK: inserted record, id = 2
 OK: inserted record, id = 1
 OK: inserted record, id = 2
 OK: inserted record, id = 3
-create_table city # id = 1
-create_table person # id = 2
-add_field city name string # id = 1; index = 0
-add_field person name string # id = 1; index = 0
-add_field person city references city # id = 2; index = 1
+create_table city
+create_table person
+add_field city name string
+add_field person name string
+add_field person city references city
 insert_into city 1 Paris
 insert_into city 2 Lille
 insert_into person 1 Rémi 2
@@ -31,10 +31,10 @@ Error: unknown command: qsdfqsdf
 OK: inserted record, id = 1
 Error: could not insert with id: 1
 OK: add_field d; field_id = 3
-create_table test # id = 3
-add_field test a int32 # id = 1; index = 0
-add_field test b int64 # id = 2; index = 1
-add_field test d string # id = 3; index = 2
+create_table test
+add_field test a int32
+add_field test b int64
+add_field test d string
 insert_into test 1 1234 5678 
 Error: no such field: qsdfqsdf
 OK: dropped field a
@@ -44,12 +44,12 @@ Error: could not delete record 123
 Error: no such field: a
 Error: could not find record: 2
 OK: updated
-create_table test # id = 3
-add_field test b int64 # id = 2; index = 0
-add_field test d string # id = 3; index = 1
+create_table test
+add_field test b int64
+add_field test d string
 insert_into test 1 56789 
 OK: create table ref; table_id = 4
 OK: add_field ref; field_id = 1
 OK: dropped table 3
-create_table ref # id = 4
-add_field ref ref references a_deleted_table # id = 1; index = 0
+create_table ref
+add_field ref ref references a_deleted_table

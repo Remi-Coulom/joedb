@@ -101,6 +101,7 @@ void JournalFile::replay_log(Listener &listener)
 
  while(file.get_position() < checkpoint_position &&
        state == state_t::no_error &&
+       listener.is_good() &&
        !file.is_end_of_file())
  {
   switch(file.read<operation_t>())

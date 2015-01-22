@@ -8,6 +8,8 @@ namespace joedb
  class Listener
  {
   public:
+   virtual bool is_good() const {return true;}
+
    virtual void after_create_table(const std::string &name) {}
    virtual void after_drop_table(table_id_t table_id) {}
 

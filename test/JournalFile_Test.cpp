@@ -45,7 +45,7 @@ TEST_F(JournalFile_Test, basic_operations)
   JournalFile journal(file);
   DBListener db_listener(db2);
   journal.replay_log(db_listener);
-  EXPECT_FALSE(db_listener.get_error());
+  EXPECT_TRUE(db_listener.is_good());
   EXPECT_EQ(journal.get_state(), JournalFile::state_t::no_error);
  }
 

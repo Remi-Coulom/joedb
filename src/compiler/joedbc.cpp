@@ -122,7 +122,7 @@ int main(int argc, char **argv)
  SchemaListener schema_listener(db);
  journal.replay_log(schema_listener);
  if (journal.get_state() != JournalFile::state_t::no_error ||
-     schema_listener.get_error())
+     !schema_listener.is_good())
  {
   std::cerr << "Error reading database\n";
   return 1;
