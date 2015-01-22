@@ -33,25 +33,29 @@ add_library(interpreter_objects OBJECT
  ../src/journal/JournalFile.cpp
 )
 
-add_executable(interpreter
+add_executable(joedbi
  ../src/interpreter/io/interpreter_main.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
-add_executable(gtest
+add_executable(joedb_test
  ../test/Interpreter_Test.cpp
  ../test/File_Test.cpp
+ ../test/JournalFile_Test.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
-target_link_libraries(gtest ${GTEST_BOTH_LIBRARIES})
-target_link_libraries(gtest ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(joedb_test ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
 
-add_executable(sqlite3_insert
- ../benchmark/sqlite3_insert.cpp
-)
+add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
 target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
 
 add_executable(joedbi_insert
  ../benchmark/joedbi_insert.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+)
+
+add_executable(joedbc
+ ../src/compiler/joedbc.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )

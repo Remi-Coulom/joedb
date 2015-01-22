@@ -3,13 +3,13 @@ TODO
 
 Short term
 ----------
-- make simple compiler
-- schema-only option for replay_log
+- joedbc_insert benchmark with compiler
 
 Interpreter
 -----------
 - coverage tests for JournalFile etc.
 - string format/escaping 'string with space' ...
+- show command prompt
 - readline, help
 - dump journal to interpreter commands
 - sql dump -> sqlite3
@@ -20,6 +20,7 @@ Interpreter
 Journal file
 ------------
 - detect endianness at compile time for faster io
+- dynamically adjust the number of bytes for field_id_t, table_id_t, record_id_t
 - high-performance system-specific implementation of joedb::File, with fsync (asynchronous?), custom buffers, ...
 - more compact record insertion (record_id + all values at the same time)
 

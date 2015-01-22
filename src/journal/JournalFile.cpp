@@ -94,9 +94,10 @@ void JournalFile::checkpoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::replay_log(Database &db)
+void JournalFile::replay_log(Listener &listener)
 {
  file.set_position(header_size);
+ Database db_schema;
 
  while(file.get_position() < checkpoint_position &&
        state == state_t::no_error &&
@@ -108,13 +109,19 @@ void JournalFile::replay_log(Database &db)
    return;
 
    case operation_t::create_table:
-    if (!db.create_table(file.read_string()))
-     state = state_t::bad_format;
+   {
+    std::string name = file.read_string();
+    db_schema.create_table(name);
+    listener.after_create_table(name);
+   }
    break;
 
    case operation_t::drop_table:
-    if (!db.drop_table(file.read<table_id_t>()))
-     state = state_t::bad_format;
+   {
+    table_id_t table_id = file.read<table_id_t>();
+    db_schema.drop_table(table_id);
+    listener.after_drop_table(table_id);
+   }
    break;
 
    case operation_t::add_field:
@@ -122,8 +129,8 @@ void JournalFile::replay_log(Database &db)
     table_id_t table_id = file.read<table_id_t>();
     std::string name = file.read_string();
     Type type = read_type();
-    if (!db.add_field(table_id, name, type))
-     state = state_t::bad_format;
+    db_schema.add_field(table_id, name, type);
+    listener.after_add_field(table_id, name, type);
    }
    break;
 
@@ -131,8 +138,8 @@ void JournalFile::replay_log(Database &db)
    {
     table_id_t table_id = file.read<table_id_t>();
     field_id_t field_id = file.read<field_id_t>();
-    if (!db.drop_field(table_id, field_id))
-     state = state_t::bad_format;
+    db_schema.drop_field(table_id, field_id);
+    listener.after_drop_field(table_id, field_id);
    }
    break;
 
@@ -140,8 +147,7 @@ void JournalFile::replay_log(Database &db)
    {
     table_id_t table_id = file.read<table_id_t>();
     record_id_t record_id = file.read<record_id_t>();
-    if (!db.insert_into(table_id, record_id))
-     state = state_t::bad_format;
+    listener.after_insert(table_id, record_id);
    }
    break;
 
@@ -149,8 +155,7 @@ void JournalFile::replay_log(Database &db)
    {
     table_id_t table_id = file.read<table_id_t>();
     record_id_t record_id = file.read<record_id_t>();
-    if (!db.delete_from(table_id, record_id))
-     state = state_t::bad_format;
+    listener.after_delete(table_id, record_id);
    }
    break;
 
@@ -161,7 +166,7 @@ void JournalFile::replay_log(Database &db)
     field_id_t field_id = file.read<field_id_t>();
 
     Value value;
-    switch (db.get_field_type(table_id, field_id))
+    switch (db_schema.get_field_type(table_id, field_id))
     {
      case Type::type_id_t::null:
      break;
@@ -183,8 +188,7 @@ void JournalFile::replay_log(Database &db)
      break;
     }
 
-    if (!db.update(table_id, record_id, field_id, value))
-     state = state_t::bad_format;
+    listener.after_update(table_id, record_id, field_id, value);
    }
    break;
 

@@ -1,7 +1,7 @@
 Introduction
 ============
 
-joedb is the "journal-only embedded database". In joedb, only a log of all data modifications is stored in permanent storage. A compiler takes a relational database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures. This way, data can be efficiently manipulated by native code, without using SQL. The philosophy of joedb is to offer a simple minimalist low-level mechanism for persistence, without compromising performance.
+joedb is the "journal-only embedded database". In joedb, only a log of all data modifications is stored in permanent storage. A compiler takes a relational database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent C++ data structures. This way, data can be efficiently manipulated by native code, without using SQL. The philosophy of joedb is to offer a minimalist low-level mechanism for persistence, without compromising performance.
 
 Context and Motivation
 ----------------------
@@ -25,10 +25,9 @@ Pros and Cons
 
 Pros:
 
-- There is no SQL string manipulation. This removes the possibility of SQL injection, and the performance cost of SQL interpretation.
-- Tables of the relational schema are compiled into classes. This way, errors in tables names, field names or types can be detected at compile time, instead of run time.
-- The full data history is stored in joedb. In many applications based on traditional relational database management systems, database designers end up having to create history tables in order to keep data history. Typically, these table are filled by triggers. This is another example of ineffective abstraction inversion. Because any database management system has to write a journal anyway, the revision history should be stored there.
-- This approach offers great opportunities for performance optimization. Data is directly stored in C++ data structures. The programmer is free to choose which container best fits each table. So, for instance, a dense table can be kept in a simple C++ std::vector if it is small enough to fit in memory. Huge tables can be stored on disk with `stxxl <http://stxxl.sourceforge.net/>`_ containers. Indexes and triggers are implemented in C++, too. So, in short, the programmer of the application controls the data-management code completely, and can make it as efficient as possible.
+- There is no SQL string manipulation by the compiled program. This removes the possibility of SQL injection, and the performance cost of SQL interpretation.  Errors in tables names, field names or types are detected at compile time, instead of run time.
+- The full data history is stored in joedb. It is possible to annotate the history with time stamps and tags, and re-create any past state of the database.
+- Joedb offers great opportunities for performance optimization. Data is directly stored in C++ data structures. The programmer is free to choose which container best fits each table. So, for instance, a dense table can be kept in a simple C++ std::vector if it is small enough to fit in memory. Huge tables can be stored on disk with `stxxl <http://stxxl.sourceforge.net/>`_ containers. Indexes and triggers are implemented in C++, too. So, in short, the programmer of the application controls the data-management code completely, and can make it as efficient as possible.
 
 Cons:
 

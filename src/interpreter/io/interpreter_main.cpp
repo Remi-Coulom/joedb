@@ -2,6 +2,7 @@
 #include "Database.h"
 #include "File.h"
 #include "JournalFile.h"
+#include "DBListener.h"
 
 #include <iostream>
 
@@ -36,11 +37,13 @@ int main(int argc, char **argv)
 
   JournalFile journal(file);
   Database db;
-  journal.replay_log(db);
+  DBListener db_listener(db);
+  journal.replay_log(db_listener);
 
-  if (journal.get_state() != JournalFile::state_t::no_error)
+  if (journal.get_state() != JournalFile::state_t::no_error ||
+      db_listener.get_error())
   {
-   std::cout << "JournalFile error: " << int(journal.get_state()) << '\n';
+   std::cout << "Error reading database\n";
    return 1;
   }
 
