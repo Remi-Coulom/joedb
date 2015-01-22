@@ -17,6 +17,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
+find_library(SQLITE3_LIBRARY sqlite3)
 
 include_directories(
  ${GTEST_INCLUDE_DIRS}
@@ -46,3 +47,9 @@ add_executable(
 )
 target_link_libraries(gtest ${GTEST_BOTH_LIBRARIES})
 target_link_libraries(gtest ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(
+ sqlite3_insert
+ ../benchmark/sqlite3_insert.cpp
+)
+target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
