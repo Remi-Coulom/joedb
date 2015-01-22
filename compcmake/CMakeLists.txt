@@ -40,8 +40,8 @@ add_executable(
 
 add_executable(
  gtest
- ../src/interpreter/io/Interpreter_Test.cpp
- ../src/journal/File_Test.cpp
+ ../test/Interpreter_Test.cpp
+ ../test/File_Test.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
 target_link_libraries(gtest ${GTEST_BOTH_LIBRARIES})
