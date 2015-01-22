@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   std::printf("N = %d\n", N);
 
   quick_exec(db, "PRAGMA synchronous=OFF");
-//  quick_exec(db, "BEGIN TRANSACTION");
+  quick_exec(db, "BEGIN TRANSACTION");
 
   sqlite3_stmt *prepared_statement;
   sqlite3_prepare_v2(db,
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
    sqlite3_step(prepared_statement);
   }
 
-//  quick_exec(db, "END TRANSACTION");
+  quick_exec(db, "END TRANSACTION");
  }
 
  return 0;

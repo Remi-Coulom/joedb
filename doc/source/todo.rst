@@ -1,19 +1,41 @@
 TODO
 ====
 
-simple interactive interpreter
-------------------------------
+Short term
+----------
+- make simple compiler
+- schema-only option for replay_log
 
-#) coverage tests for JournalFile etc.
-#) interpreter: string format/escaping 'string with space' ...
-#) interpreter: checkpoints, tags, etc.
-#) interpreter: readline, help
-#) dump journal to interpreter commands
-#) sql dump -> sqlite3
-#) bulk insert benchmark http://stackoverflow.com/questions/1711631/improve-insert-per-second-performance-of-sqlite
+Interpreter
+-----------
+- coverage tests for JournalFile etc.
+- string format/escaping 'string with space' ...
+- readline, help
+- dump journal to interpreter commands
+- sql dump -> sqlite3
+- dump to compact new .joedb file
 
-simple compiler
----------------
+- optimize data structures (they are simple but inefficient)
+
+Journal file
+------------
+- detect endianness at compile time for faster io
+- high-performance system-specific implementation of joedb::File, with fsync (asynchronous?), custom buffers, ...
+- more compact record insertion (record_id + all values at the same time)
+
+New operations and types
+------------------------
+- "single-row" table option, compiled to a simple struct.
+- checkpoints, tags, etc.
+- rename operations (table, field)
+- more data types
+
+  - varchar
+  - date
+  - vector<int>
+
+Compiler
+--------
 
 - simple compiler
 
@@ -37,12 +59,6 @@ simple compiler
       db_namespace::city city;
     }
 
-- transactions:
-
-  - write "begin", "commit", "rollback" operations to journal
-  - support for "rollback" is costly: make it a compiler option
-  - truncate journal at load time. If unfinished transaction, append a rollback
-
 - core compiler options:
 
   * namespace as parameter
@@ -51,13 +67,6 @@ simple compiler
 
 - utility compilation (with triggers): vector cache for a table.
 
-make it good
-------------
-
-- high-performance system-specific implementation of joedb::File, with fsync (asynchronous?), custom buffers, ...
-- rename operations (table, field)
-- documentation
-- compact dump (insert with data instead of field-by-field updates)
 - Compiler utilities:
 
   - table storage:
@@ -68,13 +77,10 @@ make it good
 
   - index, unique constraints (use triggers)
   - referential integrity (use triggers)
-  - queries
+  - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
 
-- more data types: date, ip, vector<int>, ...
-- option to have rapidly undo-able history
-- schema option: reuse deleted ids (implement with a linked list of free recs)
-- don't store only table: also store variables. This can be done with a "single-row" table option. http://stackoverflow.com/questions/2300356/using-a-single-row-configuration-table-in-sql-server-database-bad-idea
-- a table can be made "read-only" as an option
-- possibility to add tags to the database log, and load data up to the tag.
+Other ideas
+-----------
 - GUI editor similar to the icga database editor (http server with cpp-netlib)
+- rapidly undo-able history
