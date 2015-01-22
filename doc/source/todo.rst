@@ -10,6 +10,7 @@ simple interactive interpreter
 #) interpreter: readline, help
 #) dump journal to interpreter commands
 #) sql dump -> sqlite3
+#) bulk insert benchmark http://stackoverflow.com/questions/1711631/improve-insert-per-second-performance-of-sqlite
 
 simple compiler
 ---------------
