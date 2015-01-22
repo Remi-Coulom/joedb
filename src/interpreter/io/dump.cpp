@@ -14,8 +14,7 @@ void joedb::dump(std::ostream &out, const Database &database)
  // Dump tables
  //
  for (auto table: tables)
-  out << "create_table " << table.second.get_name() <<
-         " # id = " << table.first << '\n';
+  out << "create_table " << table.second.get_name() << '\n';
 
  //
  // Dump fields
@@ -60,7 +59,6 @@ void joedb::dump(std::ostream &out, const Database &database)
     break;
    }
 
-   out << " # id = " << field.first << "; index = " << field.second.index;
    out << '\n';
   }
  }

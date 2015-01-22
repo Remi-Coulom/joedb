@@ -14,16 +14,42 @@ void generate_code(std::ostream &out,
 {
  out << "#ifndef " << dbname << "_database_declared\n";
  out << "#define " << dbname << "_database_declared\n";
- out << '\n';
- out << "#include <string>\n";
- out << "#include <cstdint>\n";
- out << '\n';
- out << "#include \"index_types.h\"\n";
- out << '\n';
- out << "namespace " << dbname << "\n{\n";
- out << " class database\n";
- out << " {\n";
- out << " };\n";
+ out << R"includes(
+#include <string>
+#include <cstdint>
+
+#include "index_types.h"
+#include "File.h"
+#include "JournalFile.h"
+
+)includes";
+
+ out << "namespace " << dbname << "\n{";
+
+ out << R"database(
+ class database: private joedb::Listener
+ {
+  private:
+   joedb::File file;
+   joedb::JournalFile journal;
+
+  public:
+   database(const char *file_name, bool read_only = false):
+    file(file_name,
+         read_only ? joedb::File::mode_t::read_existing :
+                     joedb::File::mode_t::write_existing),
+    journal(file)
+   {
+   }
+
+   bool is_good() const
+   {
+    return file.is_good() &&
+           journal.get_state() != joedb::JournalFile::state_t::no_error;
+   }
+ };
+
+)database";
 
  auto tables = db.get_tables();
 
