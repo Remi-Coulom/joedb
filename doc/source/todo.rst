@@ -4,8 +4,10 @@ TODO
 Short term
 ----------
 - Allow insertion of any non-existing id (don't have to be increasing)
-- Use std::unordered_map instead of std::map
-- Still keep the maximum index
+- Still keep the maximum index (for easy new insertions)
+- Use std::unordered_map instead of std::map (big performance boost)
+- Don't use "using namespace joedb" anywhere
+- Naming convention: class_t instead of Class ?
 
 Compiler:
 
@@ -30,10 +32,11 @@ Interpreter
 Journal file
 ------------
 - detect endianness at compile time for faster io
-- dynamically adjust the number of bytes for field_id_t, table_id_t, record_id_t
+- dynamically adjust the number of bytes for field_id_t, table_id_t, record_id_t? Also string size?
 - high-performance system-specific implementation of joedb::File, with fsync (asynchronous?), custom buffers, ...
 - more compact record insertion (record_id + all values at the same time)
 - crash resistance: need fsync before and after write in the checkpoint region.
+- Try using a raw device
 
 New operations and types
 ------------------------
