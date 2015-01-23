@@ -24,14 +24,16 @@ namespace joedb
    const std::vector<Value> &get_values() const {return values;}
  };
 
+ typedef std::deque<Record> RecordCollection;
+
  class RecordIterator
  {
   private:
-   std::deque<Record> &records;
+   RecordCollection &records;
    record_id_t record_id;
 
   public:
-   RecordIterator(std::deque<Record> &records, record_id_t record_id):
+   RecordIterator(RecordCollection &records, record_id_t record_id):
     records(records),
     record_id(record_id)
    {

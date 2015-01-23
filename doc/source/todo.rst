@@ -3,7 +3,6 @@ TODO
 
 Short term
 ----------
-- Table.cpp, Database.cpp ...
 - Keep highest record_id for easy table append
 - Don't use "using namespace joedb" anywhere
 

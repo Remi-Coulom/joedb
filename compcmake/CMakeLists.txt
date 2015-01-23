@@ -27,6 +27,8 @@ include_directories(
 )
 
 add_library(interpreter_objects OBJECT
+ ../src/interpreter/abstract/Database.cpp
+ ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
  ../src/journal/File.cpp
