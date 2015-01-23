@@ -1,9 +1,7 @@
 #include "File.h"
 
-using namespace joedb;
-
 /////////////////////////////////////////////////////////////////////////////
-bool File::open(const char *file_name, mode_t new_mode)
+bool joedb::File::open(const char *file_name, mode_t new_mode)
 {
  mode = new_mode;
  static const char *mode_string[3] = {"rb", "r+b", "w+b"};
@@ -12,26 +10,26 @@ bool File::open(const char *file_name, mode_t new_mode)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File::set_position(int64_t position)
+void joedb::File::set_position(int64_t position)
 {
  std::fseek(file, long(position), SEEK_SET);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int64_t File::get_position() const
+int64_t joedb::File::get_position() const
 {
  return int64_t(std::ftell(file));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File::write_string(const std::string &s)
+void joedb::File::write_string(const std::string &s)
 {
  write<uint64_t>(uint64_t(s.size()));
  std::fwrite(&s[0], 1, s.size(), file);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-std::string File::read_string()
+std::string joedb::File::read_string()
 {
  std::string s;
  const uint64_t size = read<uint64_t>();
@@ -43,13 +41,13 @@ std::string File::read_string()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File::flush()
+void joedb::File::flush()
 {
  fflush(file);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-File::~File()
+joedb::File::~File()
 {
  if (file)
   fclose(file);

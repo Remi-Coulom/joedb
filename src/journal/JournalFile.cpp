@@ -2,13 +2,11 @@
 #include "File.h"
 #include "Database.h"
 
-using namespace joedb;
-
-const uint32_t JournalFile::version_number = 0x00000001;
-const int64_t JournalFile::header_size = 41;
+const uint32_t joedb::JournalFile::version_number = 0x00000001;
+const int64_t joedb::JournalFile::header_size = 41;
 
 /////////////////////////////////////////////////////////////////////////////
-JournalFile::JournalFile(File &file):
+joedb::JournalFile::JournalFile(File &file):
  file(file),
  checkpoint_index(0),
  state(state_t::no_error)
@@ -82,7 +80,7 @@ JournalFile::JournalFile(File &file):
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::checkpoint()
+void joedb::JournalFile::checkpoint()
 {
  checkpoint_index ^= 1;
  checkpoint_position = file.get_position();
@@ -94,7 +92,7 @@ void JournalFile::checkpoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::replay_log(Listener &listener)
+void joedb::JournalFile::replay_log(Listener &listener)
 {
  file.set_position(header_size);
  Database db_schema;
@@ -201,21 +199,21 @@ void JournalFile::replay_log(Listener &listener)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::after_create_table(const std::string &name)
+void joedb::JournalFile::after_create_table(const std::string &name)
 {
  file.write<operation_t>(operation_t::create_table);
  file.write_string(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::after_drop_table(table_id_t table_id)
+void joedb::JournalFile::after_drop_table(table_id_t table_id)
 {
  file.write<operation_t>(operation_t::drop_table);
  file.write<table_id_t>(table_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::after_add_field(table_id_t table_id,
+void joedb::JournalFile::after_add_field(table_id_t table_id,
                                   const std::string &name,
                                   Type type)
 {
@@ -228,7 +226,7 @@ void JournalFile::after_add_field(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::after_drop_field(table_id_t table_id,
+void joedb::JournalFile::after_drop_field(table_id_t table_id,
                                    field_id_t field_id)
 {
  file.write<operation_t>(operation_t::drop_field);
@@ -237,7 +235,7 @@ void JournalFile::after_drop_field(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
+void joedb::JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
 {
  file.write<operation_t>(operation_t::insert_into);
  file.write<table_id_t>(table_id);
@@ -245,7 +243,7 @@ void JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::after_delete(table_id_t table_id, record_id_t record_id)
+void joedb::JournalFile::after_delete(table_id_t table_id, record_id_t record_id)
 {
  file.write<operation_t>(operation_t::delete_from);
  file.write<table_id_t>(table_id);
@@ -253,7 +251,7 @@ void JournalFile::after_delete(table_id_t table_id, record_id_t record_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void JournalFile::after_update(table_id_t table_id,
+void joedb::JournalFile::after_update(table_id_t table_id,
                                record_id_t record_id,
                                field_id_t field_id,
                                const Value &value)
@@ -287,7 +285,7 @@ void JournalFile::after_update(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-Type JournalFile::read_type()
+joedb::Type joedb::JournalFile::read_type()
 {
  Type::type_id_t type_id = file.read<Type::type_id_t>();
  if (type_id == Type::type_id_t::reference)
@@ -297,7 +295,7 @@ Type JournalFile::read_type()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-JournalFile::~JournalFile()
+joedb::JournalFile::~JournalFile()
 {
  if (state == state_t::no_error)
   checkpoint();

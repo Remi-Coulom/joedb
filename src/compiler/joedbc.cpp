@@ -5,11 +5,9 @@
 
 #include <iostream>
 
-using namespace joedb;
-
 /////////////////////////////////////////////////////////////////////////////
 void generate_code(std::ostream &out,
-                   const Database &db,
+                   const joedb::Database &db,
                    const char *dbname)
 {
  auto tables = db.get_tables();
@@ -50,23 +48,23 @@ void generate_code(std::ostream &out,
 
    switch (field.second.type.get_type_id())
    {
-    case Type::type_id_t::null:
+    case joedb::Type::type_id_t::null:
      out << "void";
     break;
 
-    case Type::type_id_t::string:
+    case joedb::Type::type_id_t::string:
      out << "std::string";
     break;
 
-    case Type::type_id_t::int32:
+    case joedb::Type::type_id_t::int32:
      out << "int32_t";
     break;
 
-    case Type::type_id_t::int64:
+    case joedb::Type::type_id_t::int64:
      out << "int64_t";
     break;
 
-    case Type::type_id_t::reference:
+    case joedb::Type::type_id_t::reference:
     {
      const table_id_t referred = field.second.type.get_table_id();
      out << db.get_tables().find(referred)->second.get_name() << "_t";
@@ -127,7 +125,7 @@ int main(int argc, char **argv)
   return 1;
  }
 
- File file(argv[1], File::mode_t::read_existing);
+ joedb::File file(argv[1], joedb::File::mode_t::read_existing);
  if (!file.is_good())
  {
   std::cerr << "Error: could not open " << argv[1] << '\n';
@@ -137,11 +135,11 @@ int main(int argc, char **argv)
  //
  // Read the database schema
  //
- JournalFile journal(file);
- Database db;
- SchemaListener schema_listener(db);
+ joedb::JournalFile journal(file);
+ joedb::Database db;
+ joedb::SchemaListener schema_listener(db);
  journal.replay_log(schema_listener);
- if (journal.get_state() != JournalFile::state_t::no_error ||
+ if (journal.get_state() != joedb::JournalFile::state_t::no_error ||
      !schema_listener.is_good())
  {
   std::cerr << "Error reading database\n";

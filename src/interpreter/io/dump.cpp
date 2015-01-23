@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-using namespace joedb;
-
 /////////////////////////////////////////////////////////////////////////////
 void joedb::dump(std::ostream &out, const Database &database)
 {

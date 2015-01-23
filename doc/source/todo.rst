@@ -3,9 +3,6 @@ TODO
 
 Short term
 ----------
-- Keep highest record_id for easy table append
-- Don't use "using namespace joedb" anywhere
-
 Compiler:
 
 - storage vectors: linked lists like in interpreter
@@ -16,6 +13,7 @@ Compiler:
 
 Interpreter
 -----------
+- Keep highest record_id for easy table append
 - coverage tests for JournalFile etc.
 - string format/escaping 'string with space' ...
 - show command prompt

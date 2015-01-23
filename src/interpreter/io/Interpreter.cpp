@@ -6,10 +6,9 @@
 #include <iostream>
 #include <sstream>
 
-using namespace joedb;
-
 /////////////////////////////////////////////////////////////////////////////
-Type Interpreter::parse_type(std::istream &in, std::ostream &out)
+joedb::Type joedb::Interpreter::parse_type(std::istream &in,
+                                           std::ostream &out)
 {
  std::string type_name;
  in >> type_name;
@@ -33,7 +32,8 @@ Type Interpreter::parse_type(std::istream &in, std::ostream &out)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-table_id_t Interpreter::parse_table(std::istream &in, std::ostream &out)
+table_id_t joedb::Interpreter::parse_table(std::istream &in,
+                                           std::ostream &out)
 {
  std::string table_name;
  in >> table_name;
@@ -44,7 +44,8 @@ table_id_t Interpreter::parse_table(std::istream &in, std::ostream &out)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-Value Interpreter::parse_value(Type::type_id_t type_id, std::istream &in)
+joedb::Value joedb::Interpreter::parse_value(Type::type_id_t type_id,
+                                             std::istream &in)
 {
  Value value;
 
@@ -90,7 +91,7 @@ Value Interpreter::parse_value(Type::type_id_t type_id, std::istream &in)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void Interpreter::main_loop(std::istream &in, std::ostream &out)
+void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
 {
  std::string line;
 
