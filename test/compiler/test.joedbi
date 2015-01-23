@@ -2,7 +2,7 @@ create_table city
 create_table person
 add_field city name string
 add_field person name string
-add_field person city references city
+add_field person home references city
 insert_into city 1 Paris
 insert_into city 2 Lille
 insert_into person 1 Rémi 2

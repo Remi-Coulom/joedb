@@ -3,7 +3,17 @@ TODO
 
 Short term
 ----------
-- joedbc_insert benchmark with compiler
+- Allow insertion of any non-existing id (don't have to be increasing)
+- Use std::unordered_map instead of std::map
+- Still keep the maximum index
+
+Compiler:
+
+- add a boolean indicating deletion in the vectors
+- implement Listener methods to fill vectors
+- implement data-manipulation methods
+- check matching db schema when opening file
+- joedbc_insert benchmark
 
 Interpreter
 -----------
@@ -23,6 +33,7 @@ Journal file
 - dynamically adjust the number of bytes for field_id_t, table_id_t, record_id_t
 - high-performance system-specific implementation of joedb::File, with fsync (asynchronous?), custom buffers, ...
 - more compact record insertion (record_id + all values at the same time)
+- crash resistance: need fsync before and after write in the checkpoint region.
 
 New operations and types
 ------------------------
@@ -38,35 +49,11 @@ New operations and types
 Compiler
 --------
 
-- simple compiler
-
-.. code-block:: c++
-
-    class database;
-
-    class person
-    {
-      friend class database;
-      private:
-        record_id_t id;
-        person(record_id_t id): id(id) {} // only the database can construct
-      public:
-        record_id_t get_record_id() const {return id;}
-    };
-
-    struct person_data
-    {
-      std::string name;
-      db_namespace::city city;
-    }
-
 - core compiler options:
 
   * namespace as parameter
   * mutex protection as option
   * triggers: C++ code: after/before insert/update/delete
-
-- utility compilation (with triggers): vector cache for a table.
 
 - Compiler utilities:
 

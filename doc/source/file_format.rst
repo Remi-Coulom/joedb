@@ -8,8 +8,6 @@ General
 
 version number uint32_t
 
-table_id_t, field_id_t, record_id_t
-
 32 bytes: checkpoint region
 
 log_entry*
@@ -35,27 +33,4 @@ This checkpoint system is designed to ensure crash recovery. If the actual lengt
 Log Entry
 ---------
 
-TODO: Better idea: should be documented in the code. Include pretty-printed C++
-header file here.
-
-+-----+--------------------+------------+-----------------------------------+
-|Code | Meaning            |  Data      | Comment                           |
-+=====+====================+============+===================================+
-| 00  | End of file        |            |                                   |
-+-----+--------------------+------------+-----------------------------------+
-| 01  | Begin Transaction  |            |                                   |
-+-----+--------------------+------------+-----------------------------------+
-| 02  | End Transaction    |            |                                   |
-+-----+--------------------+------------+-----------------------------------+
-| 0e  | Time Stamp         | int64_t    | Milliseconds since the Epoch      |
-+-----+--------------------+------------+-----------------------------------+
-| 0f  | Tag                | string     |                                   |
-+-----+--------------------+------------+-----------------------------------+
-| 10  | Create Table       | string     | name of the new table             |
-+-----+--------------------+------------+-----------------------------------+
-| 11  | Add Field          | table_id_t | id of the table                   |
-|     |                    +------------+-----------------------------------+
-|     |                    | type_id_t  | type of the new field             |
-|     |                    +------------+-----------------------------------+
-|     |                    | string     | name of the new field             |
-+-----+--------------------+------------+-----------------------------------+
+Should be documented in the code. Include pretty-printed C++ header file here.
