@@ -4,12 +4,14 @@
 #include <map>
 #include <algorithm>
 #include <limits>
-#include <vector>
+#include <deque>
 
 #include "Field.h"
 #include "Type.h"
-#include "Value.h"
+#include "Record.h"
 #include "index_types.h"
+
+#include <iostream>
 
 namespace joedb
 {
@@ -18,29 +20,50 @@ namespace joedb
   private:
    std::string name;
 
-   record_id_t current_record_id;
+   std::map<field_id_t, Field> fields;
    field_id_t current_field_id;
 
-   std::map<field_id_t, Field> fields;
-   std::map<record_id_t, std::vector<Value>> records;
+   std::deque<Record> records;
+   record_id_t first_record;
+   record_id_t first_free_record;
+
+#if 0
+   void dump_records(const char *message)
+   {
+    std::cout << "=================\n";
+    std::cout << "---> " << message << '\n';
+    std::cout << "=================\n";
+    std::cout << "first_record = " << first_record << '\n';
+    std::cout << "first_free_record = " << first_free_record << '\n';
+
+    for (size_t i = 0; i < records.size(); i++)
+    {
+     std::cout << "=================\n";
+     std::cout << i << '\n';
+     std::cout << "is_free = " << records[i].is_free << '\n';
+     std::cout << "next = " << records[i].next << '\n';
+     std::cout << "previous = " << records[i].previous << '\n';
+    }
+   }
+#else
+#define dump_records(x)
+#endif
 
   public:
    Table(const std::string &name):
     name(name),
-    current_record_id(0),
-    current_field_id(0)
-   {}
+    current_field_id(0),
+    first_record(0),
+    first_free_record(0)
+   {
+    dump_records("after construction");
+   }
 
    const std::string &get_name() const {return name;}
 
    const std::map<field_id_t, Field> &get_fields() const {return fields;}
 
-   //////////////////////////////////////////////////////////////////////////
-   const std::map<record_id_t, std::vector<Value>>
-    &get_records() const
-   {
-    return records;
-   }
+   RecordIterator begin() {return RecordIterator(records, first_record);}
 
    //////////////////////////////////////////////////////////////////////////
    field_id_t find_field(const std::string &name) const
@@ -65,7 +88,7 @@ namespace joedb
     fields.insert(std::make_pair(++current_field_id, field));
 
     for (auto &record: records)
-     record.second.push_back(Value(type.get_type_id()));
+     record.values.push_back(Value(type.get_type_id()));
 
     return current_field_id;
    }
@@ -85,29 +108,84 @@ namespace joedb
       --field.second.index;
 
     for (auto &record: records)
-     record.second.erase(record.second.begin() + field_index);
+     record.values.erase(record.values.begin() + field_index);
 
     return true;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool delete_record(record_id_t id)
+   bool delete_record(record_id_t record_id)
    {
-    return records.erase(id) > 0;
+    if (record_id == 0 || record_id > records.size())
+     return false;
+
+    Record &record = records[record_id - 1];
+
+    if (record.is_free)
+     return false;
+
+    record.is_free = true;
+    for (auto v: record.values)
+     v = Value();
+
+    if (record.previous)
+     records[record.previous - 1].next = record.next;
+    else
+     first_record = record.next;
+
+    if (record.next)
+     records[record.next - 1].previous = record.previous;
+
+    record.previous = 0;
+    record.next = first_free_record;
+    if (record.next)
+     records[record.next - 1].previous = record_id;
+    first_free_record = record_id;
+
+    dump_records("after delete");
+
+    return true;
    }
 
    //////////////////////////////////////////////////////////////////////////
    bool insert_record(record_id_t record_id)
    {
-    if (record_id > current_record_id)
+    while (record_id > records.size())
     {
-     records.insert(std::make_pair(record_id,
-                                   std::vector<Value>(fields.size())));
-     current_record_id = record_id;
-     return true;
+     records.push_back(Record(fields.size()));
+     Record &record = records.back();
+     record.previous = 0;
+     record.next = first_free_record;
+     if (record.next)
+      records[record.next - 1].previous = records.size();
+     first_free_record = records.size();
     }
-    else
+    dump_records("after allocation");
+
+    Record &record = records[record_id - 1];
+
+    if (!record.is_free)
      return false;
+
+    record.is_free = false;
+
+    if (record.previous)
+     records[record.previous - 1].next = record.next;
+    else
+     first_free_record = record.next;
+
+    if (record.next)
+     records[record.next - 1].previous = record.previous;
+
+    record.next = first_record;
+    record.previous = 0;
+    if (record.next)
+     records[record.next - 1].previous = record_id;
+    first_record = record_id;
+
+    dump_records("after insert");
+
+    return true;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -117,11 +195,11 @@ namespace joedb
     if (field == fields.end())
      return false;
 
-    auto record = records.find(record_id);
-    if (record == records.end())
+    if (record_id > records.size() || records[record_id - 1].is_free)
      return false;
 
-    record->second[field->second.index] = value;
+    records[record_id - 1].values[field->second.index] = value;
+
     return true;
    }
  };

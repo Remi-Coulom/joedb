@@ -70,10 +70,10 @@ void joedb::dump(std::ostream &out, const Database &database)
  {
   const auto &fields = table.second.get_fields();
 
-  for (auto record: table.second.get_records())
+  for (RecordIterator it = table.second.begin(); it.get_record_id(); ++it)
   {
    out << "insert_into " << table.second.get_name() << ' ';
-   out << record.first;
+   out << it.get_record_id();
    for (const auto &field: fields)
    {
     const size_t i = field.second.index;
@@ -86,19 +86,19 @@ void joedb::dump(std::ostream &out, const Database &database)
      break;
 
      case Type::type_id_t::string:
-      out << record.second[i].get_string();
+      out << (*it).get_values()[i].get_string();
      break;
 
      case Type::type_id_t::int32:
-      out << record.second[i].get_int32();
+      out << (*it).get_values()[i].get_int32();
      break;
 
      case Type::type_id_t::int64:
-      out << record.second[i].get_int64();
+      out << (*it).get_values()[i].get_int64();
      break;
 
      case Type::type_id_t::reference:
-      out << record.second[i].get_record_id();
+      out << (*it).get_values()[i].get_record_id();
      break;
     }
    }

@@ -3,15 +3,13 @@ TODO
 
 Short term
 ----------
-- Allow insertion of any non-existing id (don't have to be increasing)
-- Still keep the maximum index (for easy new insertions)
-- Use std::unordered_map instead of std::map (big performance boost)
+- Table.cpp, Database.cpp ...
+- Keep highest record_id for easy table append
 - Don't use "using namespace joedb" anywhere
-- Naming convention: class_t instead of Class ?
 
 Compiler:
 
-- add a boolean indicating deletion in the vectors
+- storage vectors: linked lists like in interpreter
 - implement Listener methods to fill vectors
 - implement data-manipulation methods
 - check matching db schema when opening file

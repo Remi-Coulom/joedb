@@ -14,8 +14,8 @@ void generate_code(std::ostream &out,
 {
  auto tables = db.get_tables();
 
- out << "#ifndef " << dbname << "_database_declared\n";
- out << "#define " << dbname << "_database_declared\n";
+ out << "#ifndef " << dbname << "_Database_declared\n";
+ out << "#define " << dbname << "_Database_declared\n";
  out << R"RRR(
 #include <string>
 #include <cstdint>
@@ -34,7 +34,7 @@ void generate_code(std::ostream &out,
   const auto &fields = table.second.get_fields();
 
   out << " class " << table.second.get_name() << "_t\n {\n";
-  out << "  friend class database;\n";
+  out << "  friend class Database;\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
   out << "   " << table.second.get_name() << "_t(record_id_t id): id(id) {}\n";
@@ -79,7 +79,7 @@ void generate_code(std::ostream &out,
   out << " };\n\n";
  }
 
- out << R"RRR( class database: private joedb::Listener
+ out << R"RRR( class Database: private joedb::Listener
  {
   private:
    joedb::File file;
@@ -95,7 +95,7 @@ void generate_code(std::ostream &out,
 
  out << R"RRR(
   public:
-   database(const char *file_name, bool read_only = false):
+   Database(const char *file_name, bool read_only = false):
     file(file_name,
          read_only ? joedb::File::mode_t::read_existing :
                      joedb::File::mode_t::write_existing),
