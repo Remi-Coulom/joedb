@@ -47,11 +47,15 @@ TEST_F(File_Test, open_success)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(File_Test, read_write)
+TEST_F(File_Test, read_existing)
 {
  File existing("existing.tmp", File::mode_t::read_existing);
  EXPECT_EQ(existing.read<uint64_t>(), joedb_magic);
+}
 
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, read_write_integer)
+{
  {
   File new_file("new.tmp", File::mode_t::create_new);
   new_file.write<uint8_t>(uint8_t(joedb_magic));
@@ -70,6 +74,17 @@ TEST_F(File_Test, read_write)
   new_file.set_position(0);
   EXPECT_EQ(new_file.read<uint32_t>(), uint32_t(joedb_magic));
  }
+ {
+  File new_file("new.tmp", File::mode_t::create_new);
+  new_file.write<uint64_t>(uint64_t(joedb_magic));
+  new_file.set_position(0);
+  EXPECT_EQ(new_file.read<uint64_t>(), uint64_t(joedb_magic));
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, read_write_string)
+{
  {
   File new_file("new.tmp", File::mode_t::create_new);
   const std::string s("joedb!!!");

@@ -18,7 +18,6 @@ class JournalFile_Test: public::testing::Test
 TEST_F(JournalFile_Test, basic_operations)
 {
  Database db1;
- Database db2;
 
  {
   File file("test.joedb", File::mode_t::create_new);
@@ -39,6 +38,8 @@ TEST_F(JournalFile_Test, basic_operations)
   const field_id_t name_id = db1.add_field(table_id, "name", Type::string());
   db1.update(table_id, 2, name_id, Value("Aristide"));
  }
+
+ Database db2;
 
  {
   File file("test.joedb", File::mode_t::read_existing);

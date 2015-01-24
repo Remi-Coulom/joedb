@@ -27,7 +27,7 @@ namespace joedb
    template<typename T> T read()
    {
     // must use set_position before read, after write, to flush write buffer
-    assert(write_buffer_index = 0);
+    assert(write_buffer_index == 0);
     return R<T, sizeof(T)>::read(file);
    }
 

@@ -13,22 +13,22 @@ bool joedb::File::open(const char *file_name, mode_t new_mode)
 /////////////////////////////////////////////////////////////////////////////
 void joedb::File::set_position(int64_t position)
 {
- if (write_buffer_index)
-  flush_write_buffer();
+ flush();
  std::fseek(file, long(position), SEEK_SET);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 int64_t joedb::File::get_position() const
 {
- return int64_t(std::ftell(file));
+ return int64_t(std::ftell(file) + long(write_buffer_index));
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::File::write_string(const std::string &s)
 {
  write<uint64_t>(uint64_t(s.size()));
- std::fwrite(&s[0], 1, s.size(), file);
+ for (char c: s)
+  write<char>(c);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -46,12 +46,15 @@ std::string joedb::File::read_string()
 /////////////////////////////////////////////////////////////////////////////
 void joedb::File::flush()
 {
+ if (write_buffer_index)
+  flush_write_buffer();
  fflush(file);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::File::~File()
 {
+ flush();
  if (file)
   fclose(file);
 }

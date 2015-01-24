@@ -3,8 +3,6 @@ TODO
 
 Short term
 ----------
-- Understand how Boost.Variant works, and do something similar for joedb::Value
-
 Compiler:
 
 - storage vectors: linked lists like in interpreter
@@ -25,12 +23,14 @@ Interpreter
 - dump to compact new .joedb file
 
 - optimize data structures (they are simple but inefficient)
+- Understand how Boost.Variant works, and do something similar for joedb::Value
 
 Journal file
 ------------
 - detect endianness at compile time for faster io
 - dynamically adjust the number of bytes for field_id_t, table_id_t, record_id_t? Also string size?
-- high-performance system-specific implementation of joedb::File, with fsync (asynchronous?), custom buffers, ...
+- high-performance system-specific implementation of joedb::File, with fsync (asynchronous?)
+- custom buffer for replay_log should improve performance, too
 - more compact record insertion (record_id + all values at the same time)
 - crash resistance: need fsync before and after write in the checkpoint region.
 - Try using a raw device
