@@ -18,7 +18,7 @@ namespace joedb
 
    bool is_good() const {return file != 0;}
    mode_t get_mode() const {return mode;}
-   bool is_end_of_file() const {return eof;}
+   bool is_end_of_file() const {return end_of_file;}
 
    // set_position must be called when switching between write and read
    void set_position(uint64_t position);
@@ -30,7 +30,8 @@ namespace joedb
    void write_string(const std::string &s);
    std::string read_string();
 
-   void flush();
+   void flush(); // flushes the write buffer
+   void commit(); // write to disk (fsync)
 
    ~File();
 
@@ -45,12 +46,12 @@ namespace joedb
    size_t write_buffer_index;
    size_t read_buffer_index;
    size_t read_buffer_size;
-   bool eof;
+   bool end_of_file;
    uint64_t position;
 
    void putc(char c)
    {
-    assert(read_buffer_size == 0 && !eof);
+    assert(read_buffer_size == 0 && !end_of_file);
     buffer[write_buffer_index++] = c;
     position++;
    }
@@ -69,7 +70,7 @@ namespace joedb
     }
     else
     {
-     eof = true;
+     end_of_file = true;
      return 0;
     }
    }
@@ -84,7 +85,7 @@ namespace joedb
    {
     read_buffer_index = 0;
     read_buffer_size = 0;
-    eof = false;
+    end_of_file = false;
    }
 
    void flush_write_buffer()

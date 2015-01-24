@@ -34,7 +34,12 @@ int main(int argc, char **argv)
    const record_id_t record_id = record_id_t(i);
    db.insert_into(table_id, record_id);
    db.update(table_id, record_id, field_id, value);
+   //file.commit();
+   //journal_file.checkpoint();
+   //file.commit();
   }
+
+  file.commit();
  }
 
  return 0;

@@ -28,7 +28,7 @@ int main(int argc, char **argv)
   std::sscanf(argv[1], "%d", &N);
   std::printf("N = %d\n", N);
 
-  quick_exec(db, "PRAGMA synchronous=OFF");
+//  quick_exec(db, "PRAGMA synchronous=OFF");
   quick_exec(db, "BEGIN TRANSACTION");
 
   sqlite3_stmt *prepared_statement;
