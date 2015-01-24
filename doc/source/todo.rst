@@ -5,7 +5,7 @@ Short term
 ----------
 Compiler:
 
-- storage vectors: linked lists like in interpreter
+- storage vectors: linked lists like in interpreter (share code with template)
 - implement Listener methods to fill vectors
 - implement data-manipulation methods
 - check matching db schema when opening file
