@@ -4,7 +4,7 @@ project(joedb)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
- set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -pedantic -Wconversion -fno-exceptions -fno-rtti")
+ set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -pedantic -Wconversion -fno-exceptions -fno-rtti")
  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
@@ -15,15 +15,15 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 
-find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
-find_library(SQLITE3_LIBRARY sqlite3)
 
 include_directories(
  ${GTEST_INCLUDE_DIRS}
  ../src/interpreter/abstract
  ../src/interpreter/io
  ../src/journal
+ ./gtest-1.7.0
+ ./gtest-1.7.0/include
 )
 
 add_library(interpreter_objects OBJECT
@@ -40,17 +40,24 @@ add_executable(joedbi
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
-add_executable(joedb_test
- ../test/Interpreter_Test.cpp
- ../test/File_Test.cpp
- ../test/JournalFile_Test.cpp
- $<TARGET_OBJECTS:interpreter_objects>
-)
-target_link_libraries(joedb_test ${GTEST_BOTH_LIBRARIES})
-target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
+if(EXISTS "../gtest-1.7.0")
+ add_executable(joedb_test
+  ../test/Interpreter_Test.cpp
+  ../test/File_Test.cpp
+  ../test/JournalFile_Test.cpp
+  ../test/Test_Main.cpp
+  $<TARGET_OBJECTS:interpreter_objects>
+ )
+# target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
+else()
+ message("WARNING: unzip gtest-1.7.0 in the parent directory for tests")
+endif()
 
-add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
-target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
+find_library(SQLITE3_LIBRARY sqlite3)
+if (SQLITE3_LIBRARY_FOUND)
+ add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
+ target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
+endif()
 
 add_executable(joedbi_insert
  ../benchmark/joedbi_insert.cpp

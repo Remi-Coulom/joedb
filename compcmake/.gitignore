@@ -2,3 +2,4 @@ makefile
 ninja*
 mingw*
 vs2013*
+gtest-1.7.0

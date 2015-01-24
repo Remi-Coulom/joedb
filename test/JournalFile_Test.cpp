@@ -37,6 +37,8 @@ TEST_F(JournalFile_Test, basic_operations)
   db1.update(table_id, 2, new_field, Value(record_id_t(2)));
   const field_id_t name_id = db1.add_field(table_id, "name", Type::string());
   db1.update(table_id, 2, name_id, Value("Aristide"));
+  journal.checkpoint();
+  file.commit();
  }
 
  Database db2;

@@ -96,17 +96,17 @@ TEST_F(File_Test, read_write_string)
 TEST_F(File_Test, position_test)
 {
  File file("new.tmp", File::mode_t::create_new);
- EXPECT_EQ(0, file.get_position());
+ EXPECT_EQ(0ULL, file.get_position());
 
  file.set_position(uint64_t(-1));
- EXPECT_EQ(0, file.get_position());
+ EXPECT_EQ(0ULL, file.get_position());
 
- const int N = 100;
+ const uint64_t N = 100;
  for (int i = N; --i >= 0;)
   file.write<uint8_t>('x');
  EXPECT_EQ(N, file.get_position());
 
- const int pos = 12;
+ const uint64_t pos = 12;
  file.set_position(pos);
  EXPECT_EQ(pos, file.get_position());
 
