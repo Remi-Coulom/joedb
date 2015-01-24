@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <string>
+#include <cassert>
 
 namespace joedb
 {
@@ -22,8 +23,13 @@ namespace joedb
    void set_position(int64_t position);
    int64_t get_position() const;
 
-   template<typename T> void write(T x) {W<T, sizeof(T)>::write(x, file);}
-   template<typename T> T read() {return R<T, sizeof(T)>::read(file);}
+   template<typename T> void write(T x) {W<T, sizeof(T)>::write(*this, x);}
+   template<typename T> T read()
+   {
+    // must use set_position before read, after write, to flush write buffer
+    assert(write_buffer_index = 0);
+    return R<T, sizeof(T)>::read(file);
+   }
 
    void write_string(const std::string &s);
    std::string read_string();
@@ -36,53 +42,77 @@ namespace joedb
    FILE *file;
    mode_t mode;
 
+   enum {buffer_size = (1 << 16)};
+   enum {buffer_extra = 8};
+
+   char write_buffer[buffer_size + buffer_extra];
+   size_t write_buffer_index;
+
+   void putc(char c) {write_buffer[write_buffer_index++] = c;}
+
+   void flush_write_buffer()
+   {
+    std::fwrite(write_buffer, 1, write_buffer_index, file);
+    write_buffer_index = 0;
+   }
+
+   void check_write_buffer()
+   {
+    if (write_buffer_index >= buffer_size)
+     flush_write_buffer();
+   }
+
    template<typename T, int n> struct W;
    template<typename T, int n> struct R;
 
    template<typename T>
    struct W<T, 1>
    {
-    static void write(T x, FILE *file)
+    static void write(File &file, T x)
     {
-     std::fputc(char(x), file);
+     file.putc(char(x));
+     file.check_write_buffer();
     }
    };
 
    template<typename T>
    struct W<T, 2>
    {
-    static void write(T x, FILE *file)
+    static void write(File &file, T x)
     {
-     std::fputc(char(x >>  0), file);
-     std::fputc(char(x >>  8), file);
+     file.putc(char(x >>  0));
+     file.putc(char(x >>  8));
+     file.check_write_buffer();
     }
    };
 
    template<typename T>
    struct W<T, 4>
    {
-    static void write(T x, FILE *file)
+    static void write(File &file, T x)
     {
-     std::fputc(char(x >>  0), file);
-     std::fputc(char(x >>  8), file);
-     std::fputc(char(x >> 16), file);
-     std::fputc(char(x >> 24), file);
+     file.putc(char(x >>  0));
+     file.putc(char(x >>  8));
+     file.putc(char(x >> 16));
+     file.putc(char(x >> 24));
+     file.check_write_buffer();
     }
    };
 
    template<typename T>
    struct W<T, 8>
    {
-    static void write(T x, FILE *file)
+    static void write(File &file, T x)
     {
-     std::fputc(char(x >>  0), file);
-     std::fputc(char(x >>  8), file);
-     std::fputc(char(x >> 16), file);
-     std::fputc(char(x >> 24), file);
-     std::fputc(char(x >> 32), file);
-     std::fputc(char(x >> 40), file);
-     std::fputc(char(x >> 48), file);
-     std::fputc(char(x >> 56), file);
+     file.putc(char(x >>  0));
+     file.putc(char(x >>  8));
+     file.putc(char(x >> 16));
+     file.putc(char(x >> 24));
+     file.putc(char(x >> 32));
+     file.putc(char(x >> 40));
+     file.putc(char(x >> 48));
+     file.putc(char(x >> 56));
+     file.check_write_buffer();
     }
    };
 

@@ -3,6 +3,8 @@ TODO
 
 Short term
 ----------
+- Understand how Boost.Variant works, and do something similar for joedb::Value
+
 Compiler:
 
 - storage vectors: linked lists like in interpreter

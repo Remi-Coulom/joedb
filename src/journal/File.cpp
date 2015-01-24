@@ -6,12 +6,15 @@ bool joedb::File::open(const char *file_name, mode_t new_mode)
  mode = new_mode;
  static const char *mode_string[3] = {"rb", "r+b", "w+b"};
  file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
+ write_buffer_index = 0;
  return file != 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::File::set_position(int64_t position)
 {
+ if (write_buffer_index)
+  flush_write_buffer();
  std::fseek(file, long(position), SEEK_SET);
 }
 

@@ -28,11 +28,12 @@ int main(int argc, char **argv)
   table_id_t table_id = db.create_table("BENCHMARK");
   field_id_t field_id = db.add_field(table_id, "NAME", Type::string());
 
+  Value value("TOTO");
   for (int i = 1; i <= N; i++)
   {
    const record_id_t record_id = record_id_t(i);
    db.insert_into(table_id, record_id);
-   db.update(table_id, record_id, field_id, Value("TOTO"));
+   db.update(table_id, record_id, field_id, value);
   }
  }
 
