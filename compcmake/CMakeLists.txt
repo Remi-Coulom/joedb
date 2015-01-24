@@ -48,7 +48,7 @@ if(EXISTS "../gtest-1.7.0")
   ../test/Test_Main.cpp
   $<TARGET_OBJECTS:interpreter_objects>
  )
-# target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
+ target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
 else()
  message("WARNING: unzip gtest-1.7.0 in the parent directory for tests")
 endif()
