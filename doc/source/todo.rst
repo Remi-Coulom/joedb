@@ -13,17 +13,16 @@ Compiler:
 
 Interpreter
 -----------
-- Keep highest record_id for easy table append
-- coverage tests for JournalFile etc.
 - string format/escaping 'string with space' ...
 - show command prompt
 - readline, help
 - dump journal to interpreter commands
 - sql dump -> sqlite3
 - dump to compact new .joedb file
-
-- optimize data structures (they are simple but inefficient)
-- Understand how Boost.Variant works, and do something similar for joedb::Value
+- optimize data structures:
+  - something like boost::variant for joedb::Value
+  - vector instead of map for Table::fields
+  - bulk-allocation of values
 
 Journal file
 ------------

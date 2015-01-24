@@ -62,7 +62,10 @@ namespace joedb
     assert(write_buffer_index == 0);
 
     if (read_buffer_index >= read_buffer_size)
-     get_read_buffer();
+    {
+     read_buffer_size = std::fread(buffer, 1, buffer_size, file);
+     read_buffer_index = 0;
+    }
 
     if (read_buffer_index < read_buffer_size)
     {
@@ -74,12 +77,6 @@ namespace joedb
      end_of_file = true;
      return 0;
     }
-   }
-
-   void get_read_buffer()
-   {
-    read_buffer_size = std::fread(buffer, 1, buffer_size, file);
-    read_buffer_index = 0;
    }
 
    void reset_read_buffer()
