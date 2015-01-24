@@ -17,19 +17,15 @@ namespace joedb
    bool open(const char *file_name, mode_t mode);
 
    bool is_good() const {return file != 0;}
-   bool is_end_of_file() const {return std::feof(file) != 0;}
    mode_t get_mode() const {return mode;}
+   bool is_end_of_file() const {return eof;}
 
-   void set_position(int64_t position);
-   int64_t get_position() const;
+   // set_position must be called when switching between write and read
+   void set_position(uint64_t position);
+   uint64_t get_position() const {return position;}
 
    template<typename T> void write(T x) {W<T, sizeof(T)>::write(*this, x);}
-   template<typename T> T read()
-   {
-    // must use set_position before read, after write, to flush write buffer
-    assert(write_buffer_index == 0);
-    return R<T, sizeof(T)>::read(file);
-   }
+   template<typename T> T read() {return R<T, sizeof(T)>::read(*this);}
 
    void write_string(const std::string &s);
    std::string read_string();
@@ -45,14 +41,55 @@ namespace joedb
    enum {buffer_size = (1 << 16)};
    enum {buffer_extra = 8};
 
-   char write_buffer[buffer_size + buffer_extra];
+   char buffer[buffer_size + buffer_extra];
    size_t write_buffer_index;
+   size_t read_buffer_index;
+   size_t read_buffer_size;
+   bool eof;
+   uint64_t position;
 
-   void putc(char c) {write_buffer[write_buffer_index++] = c;}
+   void putc(char c)
+   {
+    assert(read_buffer_size == 0 && !eof);
+    buffer[write_buffer_index++] = c;
+    position++;
+   }
+
+   uint8_t getc()
+   {
+    assert(write_buffer_index == 0);
+
+    if (read_buffer_index >= read_buffer_size)
+     get_read_buffer();
+
+    if (read_buffer_index < read_buffer_size)
+    {
+     position++;
+     return (uint8_t)buffer[read_buffer_index++];
+    }
+    else
+    {
+     eof = true;
+     return 0;
+    }
+   }
+
+   void get_read_buffer()
+   {
+    read_buffer_size = std::fread(buffer, 1, buffer_size, file);
+    read_buffer_index = 0;
+   }
+
+   void reset_read_buffer()
+   {
+    read_buffer_index = 0;
+    read_buffer_size = 0;
+    eof = false;
+   }
 
    void flush_write_buffer()
    {
-    std::fwrite(write_buffer, 1, write_buffer_index, file);
+    std::fwrite(buffer, 1, write_buffer_index, file);
     write_buffer_index = 0;
    }
 
@@ -119,47 +156,47 @@ namespace joedb
    template<typename T>
    struct R<T, 1>
    {
-    static T read(FILE *file)
+    static T read(File &file)
     {
-     return T(std::fgetc(file));
+     return T(file.getc());
     }
    };
 
    template<typename T>
    struct R<T, 2>
    {
-    static T read(FILE *file)
+    static T read(File &file)
     {
-     return T((uint16_t(std::fgetc(file)) <<  0) |
-              (uint16_t(std::fgetc(file)) <<  8));
+     return T((uint16_t(file.getc()) <<  0) |
+              (uint16_t(file.getc()) <<  8));
     }
    };
 
    template<typename T>
    struct R<T, 4>
    {
-    static T read(FILE *file)
+    static T read(File &file)
     {
-     return T((uint32_t(std::fgetc(file)) <<  0) |
-              (uint32_t(std::fgetc(file)) <<  8) |
-              (uint32_t(std::fgetc(file)) << 16) |
-              (uint32_t(std::fgetc(file)) << 24));
+     return T((uint32_t(file.getc()) <<  0) |
+              (uint32_t(file.getc()) <<  8) |
+              (uint32_t(file.getc()) << 16) |
+              (uint32_t(file.getc()) << 24));
     }
    };
 
    template<typename T>
    struct R<T, 8>
    {
-    static T read(FILE *file)
+    static T read(File &file)
     {
-     return T((uint64_t(std::fgetc(file)) <<  0) |
-              (uint64_t(std::fgetc(file)) <<  8) |
-              (uint64_t(std::fgetc(file)) << 16) |
-              (uint64_t(std::fgetc(file)) << 24) |
-              (uint64_t(std::fgetc(file)) << 32) |
-              (uint64_t(std::fgetc(file)) << 40) |
-              (uint64_t(std::fgetc(file)) << 48) |
-              (uint64_t(std::fgetc(file)) << 56));
+     return T((uint64_t(file.getc()) <<  0) |
+              (uint64_t(file.getc()) <<  8) |
+              (uint64_t(file.getc()) << 16) |
+              (uint64_t(file.getc()) << 24) |
+              (uint64_t(file.getc()) << 32) |
+              (uint64_t(file.getc()) << 40) |
+              (uint64_t(file.getc()) << 48) |
+              (uint64_t(file.getc()) << 56));
     }
    };
  };

@@ -47,7 +47,7 @@ TEST_F(JournalFile_Test, basic_operations)
   DBListener db_listener(db2);
   journal.replay_log(db_listener);
   EXPECT_TRUE(db_listener.is_good());
-  EXPECT_EQ(journal.get_state(), JournalFile::state_t::no_error);
+  EXPECT_EQ(JournalFile::state_t::no_error, journal.get_state());
  }
 
  // TODO: check for equality of db1 and db2

@@ -3,24 +3,32 @@
 /////////////////////////////////////////////////////////////////////////////
 bool joedb::File::open(const char *file_name, mode_t new_mode)
 {
+ write_buffer_index = 0;
+ reset_read_buffer();
+ position = 0;
+
  mode = new_mode;
  static const char *mode_string[3] = {"rb", "r+b", "w+b"};
  file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
- write_buffer_index = 0;
- return file != 0;
+
+ if (file)
+ {
+  std::setvbuf(file, 0, _IONBF, 0);
+  return true;
+ }
+ else
+  return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::File::set_position(int64_t position)
+void joedb::File::set_position(uint64_t new_position)
 {
  flush();
- std::fseek(file, long(position), SEEK_SET);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-int64_t joedb::File::get_position() const
-{
- return int64_t(std::ftell(file) + long(write_buffer_index));
+ if (!std::fseek(file, long(new_position), SEEK_SET))
+ {
+  position = new_position;
+  reset_read_buffer();
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -35,11 +43,10 @@ void joedb::File::write_string(const std::string &s)
 std::string joedb::File::read_string()
 {
  std::string s;
- const uint64_t size = read<uint64_t>();
- s.resize(size_t(size));
- const size_t result = std::fread(&s[0], 1, size, file);
- if (result < size)
-  s.resize(result);
+ size_t size = read<uint64_t>();
+ s.resize(size);
+ for (size_t i = 0; i < size; i++)
+  s[i] = char(getc());
  return s;
 }
 
@@ -48,7 +55,6 @@ void joedb::File::flush()
 {
  if (write_buffer_index)
   flush_write_buffer();
- fflush(file);
 }
 
 /////////////////////////////////////////////////////////////////////////////

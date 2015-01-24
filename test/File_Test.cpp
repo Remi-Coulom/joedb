@@ -85,11 +85,67 @@ TEST_F(File_Test, read_write_integer)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, read_write_string)
 {
- {
-  File new_file("new.tmp", File::mode_t::create_new);
-  const std::string s("joedb!!!");
-  new_file.write_string(s);
-  new_file.set_position(0);
-  EXPECT_EQ(new_file.read_string(), s);
- }
+ File new_file("new.tmp", File::mode_t::create_new);
+ const std::string s("joedb!!!");
+ new_file.write_string(s);
+ new_file.set_position(0);
+ EXPECT_EQ(new_file.read_string(), s);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, position_test)
+{
+ File file("new.tmp", File::mode_t::create_new);
+ EXPECT_EQ(0, file.get_position());
+
+ file.set_position(uint64_t(-1));
+ EXPECT_EQ(0, file.get_position());
+
+ const int N = 100;
+ for (int i = N; --i >= 0;)
+  file.write<uint8_t>('x');
+ EXPECT_EQ(N, file.get_position());
+
+ const int pos = 12;
+ file.set_position(pos);
+ EXPECT_EQ(pos, file.get_position());
+
+ const uint8_t x = file.read<uint8_t>();
+ EXPECT_EQ('x', x);
+ EXPECT_EQ(pos + 1, file.get_position());
+
+ file.set_position(N + 2);
+ EXPECT_EQ(N + 2, file.get_position());
+ file.write<uint8_t>('x');
+ file.set_position(N + 1);
+ const uint8_t c = file.read<uint8_t>();
+ EXPECT_EQ(0, c);
+ EXPECT_FALSE(file.is_end_of_file());
+ EXPECT_EQ(N + 2, file.get_position());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, eof)
+{
+ File file("new.tmp", File::mode_t::create_new);
+ EXPECT_FALSE(file.is_end_of_file());
+
+ file.read<uint8_t>();
+ EXPECT_TRUE(file.is_end_of_file());
+
+ file.set_position(0);
+ const int N = 100000;
+ for (int i = N; --i >= 0;)
+  file.write<uint8_t>('x');
+ EXPECT_FALSE(file.is_end_of_file());
+
+ file.set_position(N - 1);
+ EXPECT_FALSE(file.is_end_of_file());
+
+ uint8_t c = file.read<uint8_t>();
+ EXPECT_EQ('x', c);
+ EXPECT_FALSE(file.is_end_of_file());
+
+ file.read<uint8_t>();
+ EXPECT_TRUE(file.is_end_of_file());
 }

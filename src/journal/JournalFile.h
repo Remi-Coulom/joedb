@@ -46,8 +46,8 @@ namespace joedb
    static const int64_t header_size;
 
    File &file;
-   int checkpoint_index;
-   int64_t checkpoint_position;
+   unsigned checkpoint_index;
+   uint64_t checkpoint_position;
    state_t state;
 
    Type read_type();

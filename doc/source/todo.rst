@@ -27,11 +27,8 @@ Interpreter
 
 Journal file
 ------------
-- detect endianness at compile time for faster io
 - dynamically adjust the number of bytes for field_id_t, table_id_t, record_id_t? Also string size?
 - high-performance system-specific implementation of joedb::File, with fsync (asynchronous?)
-- custom buffer for replay_log should improve performance, too
-- more compact record insertion (record_id + all values at the same time)
 - crash resistance: need fsync before and after write in the checkpoint region.
 - Try using a raw device
 
@@ -40,6 +37,7 @@ New operations and types
 - "single-row" table option, compiled to a simple struct.
 - checkpoints, tags, etc.
 - rename operations (table, field)
+- more compact record insertion (record_id + all values at the same time)
 - more data types
 
   - varchar

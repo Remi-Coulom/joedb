@@ -57,16 +57,16 @@ joedb::JournalFile::JournalFile(File &file):
    //
    // Find the most recent checkpoint
    //
-   int64_t pos[4];
+   uint64_t pos[4];
    for (int i = 0; i < 4; i++)
-    pos[i] = file.read<int64_t>();
+    pos[i] = file.read<uint64_t>();
 
    if (pos[0] != pos[1] || pos[2] != pos[3])
     state = state_t::crash_check;
 
    checkpoint_position = 0;
 
-   for (int i = 0; i < 2; i++)
+   for (unsigned i = 0; i < 2; i++)
     if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
     {
      checkpoint_position = pos[2 * i];
@@ -82,13 +82,17 @@ joedb::JournalFile::JournalFile(File &file):
 /////////////////////////////////////////////////////////////////////////////
 void joedb::JournalFile::checkpoint()
 {
- checkpoint_index ^= 1;
- checkpoint_position = file.get_position();
- file.set_position(9 + 16 * checkpoint_index);
- file.write<int64_t>(checkpoint_position);
- file.write<int64_t>(checkpoint_position);
- file.set_position(checkpoint_position);
- file.flush();
+ if (state == state_t::no_error)
+ {
+  file.flush();
+  checkpoint_index ^= 1;
+  checkpoint_position = file.get_position();
+  file.set_position(9 + 16 * checkpoint_index);
+  file.write<uint64_t>(checkpoint_position);
+  file.write<uint64_t>(checkpoint_position);
+  file.set_position(checkpoint_position);
+  file.flush();
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -297,6 +301,5 @@ joedb::Type joedb::JournalFile::read_type()
 /////////////////////////////////////////////////////////////////////////////
 joedb::JournalFile::~JournalFile()
 {
- if (state == state_t::no_error)
-  checkpoint();
+ checkpoint();
 }
