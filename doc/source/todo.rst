@@ -26,12 +26,14 @@ Interpreter
 
 Journal file
 ------------
+- detect overflow in compact_write?
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
 
 New operations and types
 ------------------------
 - "single-row" table option, compiled to a simple struct.
+- "reuse-deleted-rows" table option
 - checkpoints, tags, etc.
 - rename operations (table, field)
 - more compact record insertion (record_id + all values at the same time)
