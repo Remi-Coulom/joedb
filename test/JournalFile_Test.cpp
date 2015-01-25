@@ -33,6 +33,10 @@ TEST_F(JournalFile_Test, basic_operations)
   db1.insert_into(table_id, 2);
   db1.update(table_id, 2, field_id, Value(int32_t(4567)));
   db1.drop_field(table_id, field_id);
+
+  const field_id_t big_field_id = db1.add_field(table_id, "big_field", Type::int64());
+  db1.update(table_id, 2, big_field_id, Value(int64_t(1234567)));
+
   const field_id_t new_field =
    db1.add_field(table_id, "new_field", Type::reference(table_id));
   db1.update(table_id, 2, new_field, Value(record_id_t(2)));

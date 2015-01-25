@@ -67,7 +67,7 @@ TEST_F(File_Test, read_write_integer)
 
  std::random_device rd;
  std::mt19937_64 gen(rd());
- const int N = 100;
+ const int N = 1000;
 
  {
   File new_file("new.tmp", File::mode_t::create_new);

@@ -64,7 +64,6 @@ void joedb::File::flush()
 #include <unistd.h>
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
 void joedb::File::commit()
 {
  flush();

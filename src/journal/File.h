@@ -25,21 +25,32 @@ namespace joedb
    void set_position(uint64_t position);
    uint64_t get_position() const {return position;}
 
-   template<typename T> void write(T x)
+   template<typename T>
+   void write(T x)
    {
     W<T, sizeof(T)>::write(*this, x);
    }
-   template<typename T> T read()
+   template<typename T>
+   T read()
    {
     return R<T, sizeof(T)>::read(*this);
    }
-   template<typename T> void compact_write(T x)
+
+   template<typename T>
+   void compact_write(T x)
    {
     CW<T, sizeof(T)>::write(*this, x);
    }
-   template<typename T> T compact_read()
+
+   template<typename T>
+   T compact_read()
    {
-    return CR<T, sizeof(T)>::read(*this);
+    uint8_t first_byte = getc();
+    int extra_bytes = first_byte >> 5;
+    T result = first_byte & 0x1f;
+    while (extra_bytes--)
+     result = T((result << 8) | getc());
+    return result;
    }
 
    void write_string(const std::string &s);
@@ -301,20 +312,6 @@ namespace joedb
               (uint64_t(file.getc()) << 40) |
               (uint64_t(file.getc()) << 48) |
               (uint64_t(file.getc()) << 56));
-    }
-   };
-
-   template<typename T, int n>
-   struct CR
-   {
-    static T read(File &file)
-    {
-     uint8_t first_byte = file.getc();
-     int extra_bytes = first_byte >> 5;
-     T result = first_byte & 0x1f;
-     while (extra_bytes--)
-      result = T((result << 8) | file.getc());
-     return result;
     }
    };
  };
