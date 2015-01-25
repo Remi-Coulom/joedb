@@ -5,7 +5,6 @@ Short term
 ----------
 Compiler:
 
-- storage vectors: linked lists like in interpreter (share code with template)
 - implement Listener methods to fill vectors
 - implement data-manipulation methods
 - check matching db schema when opening file
@@ -13,18 +12,19 @@ Compiler:
 
 Interpreter
 -----------
+- data structures can be made _much_ better:
+  - use a deque for each column (store as void pointer)
+  - std::deque of bools for deleted flag, too
+  - std::set or std::list for deleted and not-deleted rows
+  - one "update" method for each type
+  - get rid of the horrible "Value" class
 - string format/escaping 'string with space' ...
-- check C++ identifier constraints for table and field names
 - show command prompt
 - readline, help
 - dump journal to interpreter commands
 - sql dump
 - use sql syntax
 - dump to compact new .joedb file
-- optimize data structures:
-  - something like boost::variant for joedb::Value
-  - vector instead of map for Table::fields
-  - bulk-allocation of values
 
 Journal file
 ------------
@@ -48,6 +48,8 @@ New operations and types
 
 Compiler
 --------
+
+- check C++ identifier constraints for table and field names
 
 - core compiler options:
 
@@ -77,3 +79,4 @@ Other ideas
 -----------
 - GUI editor similar to the icga database editor (http server with cpp-netlib)
 - rapidly undo-able history
+- add explicit keyword to constructors
