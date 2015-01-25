@@ -226,7 +226,7 @@ void joedb::JournalFile::after_add_field(table_id_t table_id,
  file.write_string(name);
  file.write<Type::type_id_t>(type.get_type_id());
  if (type.get_type_id() == Type::type_id_t::reference)
-  file.write<table_id_t>(type.get_table_id());
+  file.compact_write<table_id_t>(type.get_table_id());
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,8 @@
 #include "File.h"
 #include "gtest/gtest.h"
 
+#include <random>
+
 using namespace joedb;
 
 static const uint64_t joedb_magic = 0x0000620165646A6FULL;
@@ -58,35 +60,42 @@ TEST_F(File_Test, read_write_integer)
 {
  {
   File new_file("new.tmp", File::mode_t::create_new);
-  new_file.write<uint8_t>(uint8_t(joedb_magic));
+  new_file.write<uint64_t>(joedb_magic);
   new_file.set_position(0);
-  EXPECT_EQ(new_file.read<uint8_t>(), uint8_t(joedb_magic));
+  EXPECT_EQ(joedb_magic, new_file.read<uint64_t>());
  }
- {
-  File new_file("new.tmp", File::mode_t::create_new);
-  new_file.write<uint16_t>(uint16_t(joedb_magic));
-  new_file.set_position(0);
-  EXPECT_EQ(new_file.read<uint16_t>(), uint16_t(joedb_magic));
- }
- {
-  File new_file("new.tmp", File::mode_t::create_new);
-  new_file.write<uint32_t>(uint32_t(joedb_magic));
-  new_file.set_position(0);
-  EXPECT_EQ(new_file.read<uint32_t>(), uint32_t(joedb_magic));
- }
- {
-  File new_file("new.tmp", File::mode_t::create_new);
-  new_file.write<uint64_t>(uint64_t(joedb_magic));
-  new_file.set_position(0);
-  EXPECT_EQ(new_file.read<uint64_t>(), uint64_t(joedb_magic));
- }
- {
-  File new_file("new.tmp", File::mode_t::create_new);
 
-  uint64_t values[] = {0, 1, 2, 16, 31, 32, 1240, joedb_magic};
+ std::random_device rd;
+ std::mt19937_64 gen(rd());
+ const int N = 100;
 
-  for (uint64_t value: values)
+ {
+  File new_file("new.tmp", File::mode_t::create_new);
+  for (int i = N; --i >= 0;)
   {
+   uint16_t value = uint16_t(gen());
+   new_file.set_position(0);
+   new_file.compact_write<uint16_t>(value);
+   new_file.set_position(0);
+   EXPECT_EQ(value, new_file.compact_read<uint16_t>());
+  }
+ }
+ {
+  File new_file("new.tmp", File::mode_t::create_new);
+  for (int i = N; --i >= 0;)
+  {
+   uint32_t value = uint32_t(gen());
+   new_file.set_position(0);
+   new_file.compact_write<uint32_t>(value);
+   new_file.set_position(0);
+   EXPECT_EQ(value, new_file.compact_read<uint32_t>());
+  }
+ }
+ {
+  File new_file("new.tmp", File::mode_t::create_new);
+  for (int i = N; --i >= 0;)
+  {
+   uint64_t value = uint64_t(gen()) & 0x1fffffffffffffffULL;
    new_file.set_position(0);
    new_file.compact_write<uint64_t>(value);
    new_file.set_position(0);

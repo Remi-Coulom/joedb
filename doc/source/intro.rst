@@ -1,7 +1,7 @@
 Introduction
 ============
 
-joedb is the "journal-only embedded database". In joedb, only a log of all data modifications is stored in permanent storage. A compiler takes a relational database schema as input and produces C++ code. This code can load the data from the journal file into transparently persistent data structures. This way, data can be efficiently manipulated by native code, without using SQL. The philosophy of joedb is to offer a minimalist low-level mechanism for persistence, without compromising performance.
+joedb is the "journal-only embedded database". In joedb, only a log of all data modifications is stored in permanent storage. A compiler takes a relational database schema as input and produces code in the target programming language for transparently persistent data structures. This way, data can be directly manipulated, without using SQL. The philosophy of joedb is to offer a minimalist low-level mechanism for persistence, without compromising performance.
 
 Context and Motivation
 ----------------------
@@ -20,7 +20,7 @@ Joedb stores data in permanent storage with a journal. Writing a journal is nece
 
 A journal is a simple representation of the data, but, for many typical operations, it is not a convenient representation. In practice, an application that uses joedb will build in-memory or on-disk tabular structures and indexes to manipulate the data conveniently. The joedb compiler can generate some ready-made data structures for the most usual situations. But the programmer is free to control the data-management code completely, and can implement any data structure or file format that fits a particular usage pattern.
 
-In short, joedb fixes the ugliness of having to call a very high-level dynamic query language from low-level native code. This approach produces programs that are simpler, cleaner, and faster.
+In short, joedb fixes the ugliness of having to call a high-level dynamic query language from a statically-typed programming language. This approach produces programs that are simpler, cleaner, and faster.
 
 Five-Minute Tutorial
 --------------------

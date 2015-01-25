@@ -2,6 +2,7 @@
 #include "File.h"
 #include "DBListener.h"
 #include "gtest/gtest.h"
+#include "dump.h"
 
 using namespace joedb;
 
@@ -52,5 +53,11 @@ TEST_F(JournalFile_Test, basic_operations)
   EXPECT_EQ(JournalFile::state_t::no_error, journal.get_state());
  }
 
- // TODO: check for equality of db1 and db2
+ std::ostringstream oss1;
+ std::ostringstream oss2;
+
+ joedb::dump(oss1, db1);
+ joedb::dump(oss2, db2);
+
+ EXPECT_EQ(oss1.str(), oss2.str());
 }

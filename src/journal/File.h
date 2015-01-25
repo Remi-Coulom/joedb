@@ -166,36 +166,94 @@ namespace joedb
     }
    };
 
-   template<typename T, int n>
-   struct CW
+   template<typename T, int n> struct CW;
+
+   template<typename T>
+   struct CW<T, 2>
    {
     static void write(File &file, T x)
     {
-     union
-     {
-      uint8_t bytes[n];
-      uint64_t x;
-     } u;
+     uint8_t b1 = uint8_t(x >> 8);
+     uint8_t b0 = uint8_t(x);
 
-     u.x = x; // TODO: swap bytes for big-endian machines
-
-     int i = n;
-     while (u.bytes[--i] == 0 && i >= 0)
+     if (b1)
      {
+      if (b1 < 32)
+       file.putc(char(32 | b1));
+      else
+      {
+       file.putc(64);
+       file.putc(char(b1));
+      }
      }
+     else
+      if (b0 >= 32)
+       file.putc(32);
 
-     if (u.bytes[i] < 32)
-      file.putc(char((i << 5) | u.bytes[i]));
+     file.putc(char(b0));
+     file.check_write_buffer();
+    }
+   };
+
+   template<typename T>
+   struct CW<T, 4>
+   {
+    static void write(File &file, T x)
+    {
+     if (!(uint32_t(x) >> 16))
+      file.compact_write<uint16_t>(uint16_t(x));
      else
      {
-      file.putc(char((i + 1) << 5));
-      file.putc(u.bytes[i]);
+      uint8_t b1 = uint8_t(x >> 24);
+      uint8_t b0 = uint8_t(x >> 16);
+
+      if (b1)
+      {
+       if (b1 < 32)
+        file.putc(char(96 | b1));
+       else
+       {
+        file.putc(char(128));
+        file.putc(char(b1));
+       }
+       file.putc(char(b0));
+      }
+      else
+       if (b0 < 32)
+        file.putc(char(64 | b0));
+       else
+       {
+        file.putc(char(96));
+        file.putc(char(b0));
+       }
+
+      file.putc(char(x >> 8));
+      file.putc(char(x));
+      file.check_write_buffer();
      }
+    }
+   };
 
-     while (--i >= 0)
-      file.putc(char(u.bytes[i]));
-
-     file.check_write_buffer();
+   template<typename T>
+   struct CW<T, 8>
+   {
+    static void write(File &file, T x)
+    {
+     if (!(uint64_t(x) >> 32))
+      file.compact_write<uint32_t>(uint32_t(x));
+     else
+     {
+      assert(!(char(x >> 56) & 0xe0));
+      file.putc(char(0xe0) | char(x >> 56));
+      file.putc(char(x >> 48));
+      file.putc(char(x >> 40));
+      file.putc(char(x >> 32));
+      file.putc(char(x >> 24));
+      file.putc(char(x >> 16));
+      file.putc(char(x >> 8));
+      file.putc(char(x));
+      file.check_write_buffer();
+     }
     }
    };
 
