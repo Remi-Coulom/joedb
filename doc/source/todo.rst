@@ -14,10 +14,12 @@ Compiler:
 Interpreter
 -----------
 - string format/escaping 'string with space' ...
+- check C++ identifier constraints for table and field names
 - show command prompt
 - readline, help
 - dump journal to interpreter commands
-- sql dump -> sqlite3
+- sql dump
+- use sql syntax
 - dump to compact new .joedb file
 - optimize data structures:
   - something like boost::variant for joedb::Value
@@ -33,7 +35,8 @@ Journal file
 New operations and types
 ------------------------
 - "single-row" table option, compiled to a simple struct.
-- "reuse-deleted-rows" table option
+- "don't-reuse-deleted-rows" table option
+- "no-delete" table option
 - checkpoints, tags, etc.
 - rename operations (table, field)
 - more compact record insertion (record_id + all values at the same time)
