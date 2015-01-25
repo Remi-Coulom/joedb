@@ -26,10 +26,8 @@ Interpreter
 
 Journal file
 ------------
-- dynamically adjust the number of bytes for field_id_t, table_id_t, record_id_t? Also string size?
-- high-performance system-specific implementation of joedb::File, with fsync (asynchronous?)
-- crash resistance: need fsync before and after write in the checkpoint region.
-- Try using a raw device
+- high-performance system-specific implementation of joedb::File?
+- Try using a raw device (probably requires a big buffer)
 
 New operations and types
 ------------------------

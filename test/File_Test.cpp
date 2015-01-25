@@ -80,6 +80,19 @@ TEST_F(File_Test, read_write_integer)
   new_file.set_position(0);
   EXPECT_EQ(new_file.read<uint64_t>(), uint64_t(joedb_magic));
  }
+ {
+  File new_file("new.tmp", File::mode_t::create_new);
+
+  uint64_t values[] = {0, 1, 2, 16, 31, 32, 1240, joedb_magic};
+
+  for (uint64_t value: values)
+  {
+   new_file.set_position(0);
+   new_file.compact_write<uint64_t>(value);
+   new_file.set_position(0);
+   EXPECT_EQ(value, new_file.compact_read<uint64_t>());
+  }
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

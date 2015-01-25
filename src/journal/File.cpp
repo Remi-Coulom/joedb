@@ -34,7 +34,7 @@ void joedb::File::set_position(uint64_t new_position)
 /////////////////////////////////////////////////////////////////////////////
 void joedb::File::write_string(const std::string &s)
 {
- write<uint64_t>(uint64_t(s.size()));
+ compact_write<size_t>(s.size());
  for (char c: s)
   write<char>(c);
 }
@@ -43,7 +43,7 @@ void joedb::File::write_string(const std::string &s)
 std::string joedb::File::read_string()
 {
  std::string s;
- size_t size = read<uint64_t>();
+ size_t size = compact_read<size_t>();
  s.resize(size);
  for (size_t i = 0; i < size; i++)
   s[i] = char(getc());

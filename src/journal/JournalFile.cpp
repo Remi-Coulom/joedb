@@ -121,7 +121,7 @@ void joedb::JournalFile::replay_log(Listener &listener)
 
    case operation_t::drop_table:
    {
-    table_id_t table_id = file.read<table_id_t>();
+    table_id_t table_id = file.compact_read<table_id_t>();
     db_schema.drop_table(table_id);
     listener.after_drop_table(table_id);
    }
@@ -129,7 +129,7 @@ void joedb::JournalFile::replay_log(Listener &listener)
 
    case operation_t::add_field:
    {
-    table_id_t table_id = file.read<table_id_t>();
+    table_id_t table_id = file.compact_read<table_id_t>();
     std::string name = file.read_string();
     Type type = read_type();
     db_schema.add_field(table_id, name, type);
@@ -139,8 +139,8 @@ void joedb::JournalFile::replay_log(Listener &listener)
 
    case operation_t::drop_field:
    {
-    table_id_t table_id = file.read<table_id_t>();
-    field_id_t field_id = file.read<field_id_t>();
+    table_id_t table_id = file.compact_read<table_id_t>();
+    field_id_t field_id = file.compact_read<field_id_t>();
     db_schema.drop_field(table_id, field_id);
     listener.after_drop_field(table_id, field_id);
    }
@@ -148,25 +148,25 @@ void joedb::JournalFile::replay_log(Listener &listener)
 
    case operation_t::insert_into:
    {
-    table_id_t table_id = file.read<table_id_t>();
-    record_id_t record_id = file.read<record_id_t>();
+    table_id_t table_id = file.compact_read<table_id_t>();
+    record_id_t record_id = file.compact_read<record_id_t>();
     listener.after_insert(table_id, record_id);
    }
    break;
 
    case operation_t::delete_from:
    {
-    table_id_t table_id = file.read<table_id_t>();
-    record_id_t record_id = file.read<record_id_t>();
+    table_id_t table_id = file.compact_read<table_id_t>();
+    record_id_t record_id = file.compact_read<record_id_t>();
     listener.after_delete(table_id, record_id);
    }
    break;
 
    case operation_t::update:
    {
-    table_id_t table_id = file.read<table_id_t>();
-    record_id_t record_id = file.read<record_id_t>();
-    field_id_t field_id = file.read<field_id_t>();
+    table_id_t table_id = file.compact_read<table_id_t>();
+    record_id_t record_id = file.compact_read<record_id_t>();
+    field_id_t field_id = file.compact_read<field_id_t>();
 
     Value value;
     switch (db_schema.get_field_type(table_id, field_id))
@@ -187,7 +187,7 @@ void joedb::JournalFile::replay_log(Listener &listener)
      break;
 
      case Type::type_id_t::reference:
-      value = Value(file.read<record_id_t>());
+      value = Value(file.compact_read<record_id_t>());
      break;
     }
 
@@ -213,7 +213,7 @@ void joedb::JournalFile::after_create_table(const std::string &name)
 void joedb::JournalFile::after_drop_table(table_id_t table_id)
 {
  file.write<operation_t>(operation_t::drop_table);
- file.write<table_id_t>(table_id);
+ file.compact_write<table_id_t>(table_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ void joedb::JournalFile::after_add_field(table_id_t table_id,
                                   Type type)
 {
  file.write<operation_t>(operation_t::add_field);
- file.write<table_id_t>(table_id);
+ file.compact_write<table_id_t>(table_id);
  file.write_string(name);
  file.write<Type::type_id_t>(type.get_type_id());
  if (type.get_type_id() == Type::type_id_t::reference)
@@ -234,24 +234,24 @@ void joedb::JournalFile::after_drop_field(table_id_t table_id,
                                    field_id_t field_id)
 {
  file.write<operation_t>(operation_t::drop_field);
- file.write<table_id_t>(table_id);
- file.write<field_id_t>(field_id);
+ file.compact_write<table_id_t>(table_id);
+ file.compact_write<field_id_t>(field_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
 {
  file.write<operation_t>(operation_t::insert_into);
- file.write<table_id_t>(table_id);
- file.write<record_id_t>(record_id);
+ file.compact_write<table_id_t>(table_id);
+ file.compact_write<record_id_t>(record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::JournalFile::after_delete(table_id_t table_id, record_id_t record_id)
 {
  file.write<operation_t>(operation_t::delete_from);
- file.write<table_id_t>(table_id);
- file.write<record_id_t>(record_id);
+ file.compact_write<table_id_t>(table_id);
+ file.compact_write<record_id_t>(record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -261,9 +261,9 @@ void joedb::JournalFile::after_update(table_id_t table_id,
                                const Value &value)
 {
  file.write<operation_t>(operation_t::update);
- file.write<table_id_t>(table_id);
- file.write<record_id_t>(record_id);
- file.write<field_id_t>(field_id);
+ file.compact_write<table_id_t>(table_id);
+ file.compact_write<record_id_t>(record_id);
+ file.compact_write<field_id_t>(field_id);
 
  switch(value.get_type_id())
  {
@@ -283,7 +283,7 @@ void joedb::JournalFile::after_update(table_id_t table_id,
   break;
 
   case Type::type_id_t::reference:
-   file.write<record_id_t>(value.get_record_id());
+   file.compact_write<record_id_t>(value.get_record_id());
   break;
  }
 }
@@ -293,7 +293,7 @@ joedb::Type joedb::JournalFile::read_type()
 {
  Type::type_id_t type_id = file.read<Type::type_id_t>();
  if (type_id == Type::type_id_t::reference)
-  return Type::reference(file.read<table_id_t>());
+  return Type::reference(file.compact_read<table_id_t>());
  else
   return Type(type_id);
 }

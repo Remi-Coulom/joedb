@@ -25,8 +25,22 @@ namespace joedb
    void set_position(uint64_t position);
    uint64_t get_position() const {return position;}
 
-   template<typename T> void write(T x) {W<T, sizeof(T)>::write(*this, x);}
-   template<typename T> T read() {return R<T, sizeof(T)>::read(*this);}
+   template<typename T> void write(T x)
+   {
+    W<T, sizeof(T)>::write(*this, x);
+   }
+   template<typename T> T read()
+   {
+    return R<T, sizeof(T)>::read(*this);
+   }
+   template<typename T> void compact_write(T x)
+   {
+    CW<T, sizeof(T)>::write(*this, x);
+   }
+   template<typename T> T compact_read()
+   {
+    return CR<T, sizeof(T)>::read(*this);
+   }
 
    void write_string(const std::string &s);
    std::string read_string();
@@ -152,6 +166,39 @@ namespace joedb
     }
    };
 
+   template<typename T, int n>
+   struct CW
+   {
+    static void write(File &file, T x)
+    {
+     union
+     {
+      uint8_t bytes[n];
+      uint64_t x;
+     } u;
+
+     u.x = x; // TODO: swap bytes for big-endian machines
+
+     int i = n;
+     while (u.bytes[--i] == 0 && i >= 0)
+     {
+     }
+
+     if (u.bytes[i] < 32)
+      file.putc(char((i << 5) | u.bytes[i]));
+     else
+     {
+      file.putc(char((i + 1) << 5));
+      file.putc(u.bytes[i]);
+     }
+
+     while (--i >= 0)
+      file.putc(char(u.bytes[i]));
+
+     file.check_write_buffer();
+    }
+   };
+
    template<typename T>
    struct R<T, 1>
    {
@@ -196,6 +243,20 @@ namespace joedb
               (uint64_t(file.getc()) << 40) |
               (uint64_t(file.getc()) << 48) |
               (uint64_t(file.getc()) << 56));
+    }
+   };
+
+   template<typename T, int n>
+   struct CR
+   {
+    static T read(File &file)
+    {
+     uint8_t first_byte = file.getc();
+     int extra_bytes = first_byte >> 5;
+     T result = first_byte & 0x1f;
+     while (extra_bytes--)
+      result = T((result << 8) | file.getc());
+     return result;
     }
    };
  };

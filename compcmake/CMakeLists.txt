@@ -50,13 +50,15 @@ if(EXISTS "../gtest-1.7.0")
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
 else()
- message("WARNING: unzip gtest-1.7.0 in the parent directory for tests")
+ message("== WARNING: unzip gtest-1.7.0 in the parent directory for tests")
 endif()
 
 find_library(SQLITE3_LIBRARY sqlite3)
-if (SQLITE3_LIBRARY_FOUND)
+if (SQLITE3_LIBRARY)
  add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
  target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
+else()
+ message("== WARNING: install sqlite3 for sqlite3 benchmarks")
 endif()
 
 add_executable(joedbi_insert
