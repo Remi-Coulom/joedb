@@ -25,30 +25,12 @@ In short, joedb fixes the ugliness of having to call a high-level dynamic query 
 Five-Minute Tutorial
 --------------------
 
+.. literalinclude:: ./tutorial/tutorial.joedbi
+
 The application can manipulate the data this way
 
-.. code-block:: c++
-
-    #include "tutorial.h"
-
-    int main()
-    {
-      tutorial::database db("tutorial.joedb");
-
-      tutorial::city Lille = db.insert_city();
-      db.update_name(Lille, "Lille");
-
-      tutorial::person remi = db.insert_person("Rémi", tutorial::city::null);
-
-      db.update_city(remi, Lille);
-
-      db.delete_person(remi);
-
-      db.begin_transaction();
-      db.end_transaction();
-
-      return 0;
-    }
+.. literalinclude:: ./tutorial/tutorial.cpp
+   :language: c++
 
 Benchmark
 ---------

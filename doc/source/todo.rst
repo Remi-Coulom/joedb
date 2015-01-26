@@ -22,7 +22,7 @@ Interpreter
 
 Journal file
 ------------
-- detect overflow in compact_write?
+- check for write errors (out of space) -> exception (option?)
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
 - Compression
