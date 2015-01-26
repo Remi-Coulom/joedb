@@ -2,7 +2,7 @@
 #define joedb_FreedomKeeper_declared
 
 #include <cstddef>
-#include <deque>
+#include <vector>
 #include <cassert>
 
 namespace joedb
@@ -17,29 +17,25 @@ namespace joedb
     size_t previous;
    };
 
-   std::deque<Record> records;
-
-   Record &used_list;
-   Record &free_list;
+   std::vector<Record> records;
+   enum {used_list = 0, free_list = 1};
 
   public: ///////////////////////////////////////////////////////////////////
    FreedomKeeper():
-    records(2),
-    used_list(records[0]),
-    free_list(records[1])
+    records(2)
    {
-    used_list.is_free = false;
-    used_list.next = 0;
-    used_list.previous = 0;
+    records[used_list].is_free = false;
+    records[used_list].next = used_list;
+    records[used_list].previous = used_list;
 
-    free_list.is_free = true;
-    free_list.next = 1;
-    free_list.previous = 1;
+    records[free_list].is_free = true;
+    records[free_list].next = free_list;
+    records[free_list].previous = free_list;
    }
 
    size_t size() const {return records.size() - 2;}
-   size_t get_first_free() const {return free_list.next;}
-   size_t get_first_used() const {return used_list.next;}
+   size_t get_first_free() const {return records[free_list].next;}
+   size_t get_first_used() const {return records[used_list].next;}
    size_t get_next(size_t index) const {return records[index].next;}
    bool is_free(size_t index) const {return records[index].is_free;}
 
@@ -47,10 +43,10 @@ namespace joedb
    void push_back()
    {
     const size_t index = records.size();
-    records.push_back({true, free_list.next, 1});
+    records.push_back({true, records[free_list].next, 1});
 
-    records[free_list.next].previous = index;
-    free_list.next = index;
+    records[records[free_list].next].previous = index;
+    records[free_list].next = index;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -66,11 +62,11 @@ namespace joedb
     records[record.previous].next = record.next;
     records[record.next].previous = record.previous;
 
-    record.next = used_list.next;
+    record.next = records[used_list].next;
     record.previous = 0;
 
-    records[used_list.next].previous = index;
-    used_list.next = index;
+    records[records[used_list].next].previous = index;
+    records[used_list].next = index;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -86,11 +82,11 @@ namespace joedb
     records[record.previous].next = record.next;
     records[record.next].previous = record.previous;
 
-    record.next = free_list.next;
+    record.next = records[free_list].next;
     record.previous = 1;
 
-    records[free_list.next].previous = index;
-    free_list.next = index;
+    records[records[free_list].next].previous = index;
+    records[free_list].next = index;
    }
  };
 }
