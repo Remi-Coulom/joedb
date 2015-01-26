@@ -19,7 +19,7 @@ field_id_t joedb::Table::add_field(const std::string &name, const Type &type)
   return 0;
 
  fields.insert(std::make_pair(++current_field_id,
-                              Field(name, type, is_free.size())));
+                              Field(name, type, freedom.size())));
 
  return current_field_id;
 }
@@ -37,9 +37,11 @@ bool joedb::Table::drop_field(field_id_t field_id)
 /////////////////////////////////////////////////////////////////////////////
 bool joedb::Table::delete_record(record_id_t record_id)
 {
- if (record_id == 0 || record_id > is_free.size() || is_free[record_id - 1])
+ if (record_id == 0 ||
+     record_id > freedom.size() ||
+     freedom.is_free(record_id + 1))
   return false;
- is_free[record_id - 1] = true;
+ freedom.free(record_id + 1);
  // TODO: reset default values
  return true;
 }
@@ -47,17 +49,16 @@ bool joedb::Table::delete_record(record_id_t record_id)
 /////////////////////////////////////////////////////////////////////////////
 bool joedb::Table::insert_record(record_id_t record_id)
 {
- if (record_id > is_free.size())
+ if (record_id > freedom.size())
  {
   for (auto &field: fields)
    field.second.resize(record_id);
-  while (is_free.size() < record_id)
-   is_free.push_back(true);
+  while (freedom.size() < record_id)
+   freedom.push_back();
  }
-
- if (!is_free[record_id - 1])
+ else if (!freedom.is_free(record_id + 1))
   return false;
 
- is_free[record_id - 1] = false;
+ freedom.use(record_id + 1);
  return true;
 }

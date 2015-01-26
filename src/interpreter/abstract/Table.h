@@ -7,7 +7,7 @@
 
 #include "Field.h"
 #include "Type.h"
-#include "index_types.h"
+#include "FreedomKeeper.h"
 
 namespace joedb
 {
@@ -19,8 +19,7 @@ namespace joedb
    std::map<field_id_t, Field> fields;
    field_id_t current_field_id;
 
-   std::map<field_id_t, void *> columns;
-   std::deque<bool> is_free;
+   FreedomKeeper freedom;
 
   public:
    Table(const std::string &name):
@@ -30,8 +29,7 @@ namespace joedb
    }
 
    const std::string &get_name() const {return name;}
-
-   const std::deque<bool> &get_free_flags() const {return is_free;}
+   const FreedomKeeper &get_freedom() const {return freedom;}
 
    const std::map<field_id_t, Field> &get_fields() const {return fields;}
    field_id_t find_field(const std::string &name) const;
@@ -50,7 +48,6 @@ namespace joedb
    int64_t get_int64(record_id_t rid, field_id_t fid) const;
    record_id_t get_reference(record_id_t rid, field_id_t fid) const;
 
-   // TODO: use a template?
    bool update_string(record_id_t record_id,
                       field_id_t field_id,
                       const std::string &value)

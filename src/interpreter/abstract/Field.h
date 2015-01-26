@@ -16,8 +16,6 @@ namespace joedb
    const std::string name;
    const Type type;
 
-   // TODO: bad, they are copied around
-   // should be stored separately inside table?
    std::deque<std::string> string_column;
    std::deque<uint32_t> int32_column;
    std::deque<uint64_t> int64_column;

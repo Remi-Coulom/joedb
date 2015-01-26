@@ -5,11 +5,8 @@ Short term
 ----------
 Finish interpreter data structures:
 
-- doubly linked list for free and used table records (like before)
-- template for update/get by type?
 - make sure the database interface is fail-safe, but also make sure that table/field/record existence is not checked more than once.
 - don't check too much in interpreter
-- make sure big field data structure is not copied
 - make sure fields of deleted records are reset to default
 
 Compiler:

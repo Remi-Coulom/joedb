@@ -68,13 +68,11 @@ void joedb::dump(std::ostream &out, const Database &database)
  {
   const auto &fields = table.second.get_fields();
 
-  const auto &is_free = table.second.get_free_flags();
+  const auto &freedom = table.second.get_freedom();
 
-  for (record_id_t record_id = 1; record_id <= is_free.size(); record_id++)
+  for (size_t i = freedom.get_first_used(); i != 0; i = freedom.get_next(i))
   {
-   if (is_free[record_id - 1])
-    continue;
-
+   record_id_t record_id = i - 1;
    out << "insert_into " << table.second.get_name() << ' ';
    out << record_id;
    for (const auto &field: fields)
