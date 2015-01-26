@@ -28,20 +28,39 @@ TEST_F(JournalFile_Test, basic_operations)
   const table_id_t table_id = db1.create_table("table_test");
   db1.insert_into(table_id, 1);
   const field_id_t field_id = db1.add_field(table_id, "field", Type::int32());
-  db1.update(table_id, 1, field_id, Value(int32_t(1234)));
+  db1.update_int32(table_id, 1, field_id, 1234);
   db1.delete_from(table_id, 1);
   db1.insert_into(table_id, 2);
-  db1.update(table_id, 2, field_id, Value(int32_t(4567)));
+  db1.update_int32(table_id, 2, field_id, 4567);
   db1.drop_field(table_id, field_id);
 
   const field_id_t big_field_id = db1.add_field(table_id, "big_field", Type::int64());
-  db1.update(table_id, 2, big_field_id, Value(int64_t(1234567)));
+  db1.update_int64(table_id, 2, big_field_id, 1234567ULL);
 
   const field_id_t new_field =
    db1.add_field(table_id, "new_field", Type::reference(table_id));
-  db1.update(table_id, 2, new_field, Value(record_id_t(2)));
+  db1.update_reference(table_id, 2, new_field, 2);
   const field_id_t name_id = db1.add_field(table_id, "name", Type::string());
-  db1.update(table_id, 2, name_id, Value("Aristide"));
+  db1.update_string(table_id, 2, name_id, "Aristide");
+
+  {
+   const table_id_t table_id = db1.create_table("type_test");
+   db1.insert_into(table_id, 1);
+
+   const field_id_t string_field_id =
+    db1.add_field(table_id, "string", Type::string());
+   const field_id_t int32_field_id =
+    db1.add_field(table_id, "int32", Type::int32());
+   const field_id_t int64_field_id =
+    db1.add_field(table_id, "int64", Type::int64());
+   const field_id_t reference_field_id =
+    db1.add_field(table_id, "reference", Type::reference(table_id));
+
+   db1.update_string(table_id, 1, string_field_id, "SuperString");
+   db1.update_int32(table_id, 1, int32_field_id, 1234);
+   db1.update_int64(table_id, 1, int64_field_id, 123412341234LL);
+   db1.update_reference(table_id, 1, reference_field_id, 1);
+  }
   journal.checkpoint();
   file.commit();
  }

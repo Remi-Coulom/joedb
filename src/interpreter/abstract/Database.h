@@ -44,6 +44,18 @@ namespace joedb
                       record_id_t record_id,
                       field_id_t field_id,
                       const std::string &value);
+   bool update_int32(table_id_t table_id,
+                     record_id_t record_id,
+                     field_id_t field_id,
+                     int32_t value);
+   bool update_int64(table_id_t table_id,
+                     record_id_t record_id,
+                     field_id_t field_id,
+                     int64_t value);
+   bool update_reference(table_id_t table_id,
+                         record_id_t record_id,
+                         field_id_t field_id,
+                         record_id_t value);
  };
 }
 

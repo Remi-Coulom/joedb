@@ -39,35 +39,37 @@ namespace joedb
    bool delete_record(record_id_t record_id);
    bool insert_record(record_id_t record_id);
 
-   const std::string &get_string(record_id_t rid, field_id_t fid) const
-   {
-    return fields.find(fid)->second.get_string(rid);
+#define TABLE_GET(return_type, type_id)\
+   return_type get_##type_id(record_id_t rid, field_id_t fid) const\
+   {\
+    return fields.find(fid)->second.get_##type_id(rid);\
+   }\
+
+   TABLE_GET(const std::string &, string)
+   TABLE_GET(int32_t, int32)
+   TABLE_GET(int64_t, int64)
+   TABLE_GET(record_id_t, reference)
+
+#undef TABLE_GET
+
+#define TABLE_UPDATE(return_type, type_id)\
+   bool update_##type_id(record_id_t record_id,\
+                         field_id_t field_id,\
+                         return_type value)\
+   {\
+    auto it = fields.find(field_id);\
+    if (it == fields.end() || !freedom.is_used(record_id + 1))\
+     return false;\
+    it->second.set_##type_id(record_id, value);\
+    return true;\
    }
 
-   int32_t get_int32(record_id_t rid, field_id_t fid) const;
-   int64_t get_int64(record_id_t rid, field_id_t fid) const;
-   record_id_t get_reference(record_id_t rid, field_id_t fid) const;
+   TABLE_UPDATE(const std::string &, string)
+   TABLE_UPDATE(int32_t, int32)
+   TABLE_UPDATE(int64_t, int64)
+   TABLE_UPDATE(record_id_t, reference)
 
-   bool update_string(record_id_t record_id,
-                      field_id_t field_id,
-                      const std::string &value)
-   {
-    auto it = fields.find(field_id);
-    if (it == fields.end())
-     return false;
-    it->second.set_string(record_id, value);
-    return true;
-   }
-
-   bool update_int32(record_id_t record_id,
-                     field_id_t field_id,
-                     int32_t value);
-   bool update_int64(record_id_t record_id,
-                     field_id_t field_id,
-                     int64_t value);
-   bool update_reference(record_id_t record_id,
-                         field_id_t field_id,
-                         record_id_t value);
+#undef TABLE_UPDATE
  };
 }
 

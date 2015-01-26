@@ -85,18 +85,17 @@ void joedb::dump(std::ostream &out, const Database &database)
       out << "NULL";
      break;
 
-     case Type::type_id_t::string:
-      out << table.second.get_string(record_id, field.first);
+#define FIELD_CASE(type)\
+     case Type::type_id_t::type:\
+      out << table.second.get_##type(record_id, field.first);\
      break;
 
-     case Type::type_id_t::int32:
-     break;
+     FIELD_CASE(string)
+     FIELD_CASE(int32)
+     FIELD_CASE(int64)
+     FIELD_CASE(reference)
 
-     case Type::type_id_t::int64:
-     break;
-
-     case Type::type_id_t::reference:
-     break;
+#undef FIELD_CASE
     }
    }
    out << '\n';

@@ -110,16 +110,25 @@ bool joedb::Database::delete_from(table_id_t table_id, record_id_t record_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::update_string(table_id_t table_id,
-                                    record_id_t record_id,
-                                    field_id_t field_id,
-                                    const std::string &value)
-{
- auto it = tables.find(table_id);
- if (it != tables.end() && it->second.update_string(record_id, field_id, value))
- {
-  listener->after_update_string(table_id, record_id, field_id, value);
-  return true;
- }
- return false;
+#define DB_UPDATE(return_type, type_id)\
+bool joedb::Database::update_##type_id(table_id_t table_id,\
+                                      record_id_t record_id,\
+                                      field_id_t field_id,\
+                                      return_type value)\
+{\
+ auto it = tables.find(table_id);\
+ if (it != tables.end() &&\
+     it->second.update_##type_id(record_id, field_id, value))\
+ {\
+  listener->after_update_##type_id(table_id, record_id, field_id, value);\
+  return true;\
+ }\
+ return false;\
 }
+
+DB_UPDATE(const std::string &, string)
+DB_UPDATE(int32_t, int32)
+DB_UPDATE(int64_t, int64)
+DB_UPDATE(record_id_t, reference)
+
+#undef DB_UPDATE

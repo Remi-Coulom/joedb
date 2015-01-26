@@ -46,7 +46,7 @@ void generate_code(std::ostream &out,
   {
    out << "  ";
 
-   switch (field.second.type.get_type_id())
+   switch (field.second.get_type().get_type_id())
    {
     case joedb::Type::type_id_t::null:
      out << "void";
@@ -66,12 +66,12 @@ void generate_code(std::ostream &out,
 
     case joedb::Type::type_id_t::reference:
     {
-     const table_id_t referred = field.second.type.get_table_id();
+     const table_id_t referred = field.second.get_type().get_table_id();
      out << db.get_tables().find(referred)->second.get_name() << "_t";
     }
     break;
    }
-   out << ' ' << field.second.name << ";\n";
+   out << ' ' << field.second.get_name() << ";\n";
   }
 
   out << " };\n\n";

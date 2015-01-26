@@ -42,7 +42,6 @@ bool joedb::Table::delete_record(record_id_t record_id)
      freedom.is_free(record_id + 1))
   return false;
  freedom.free(record_id + 1);
- // TODO: reset default values
  return true;
 }
 

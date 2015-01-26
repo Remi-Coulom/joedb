@@ -173,24 +173,20 @@ void joedb::JournalFile::replay_log(Listener &listener)
      case Type::type_id_t::null:
      break;
 
-     case Type::type_id_t::string:
-     {
-      std::string s = file.read_string();
-      listener.after_update_string(table_id, record_id, field_id, s);
-     }
+#define UPDATE_CASE(cpp_type, type_id, read_method)\
+     case Type::type_id_t::type_id:\
+     {\
+      cpp_type value = file.read_method();\
+      listener.after_update_##type_id(table_id, record_id, field_id, value);\
+     }\
      break;
 
-     case Type::type_id_t::int32:
-      file.read<int32_t>();
-     break;
+     UPDATE_CASE(std::string, string, read_string)
+     UPDATE_CASE(int32_t, int32, read<int32_t>)
+     UPDATE_CASE(int64_t, int64, read<int64_t>)
+     UPDATE_CASE(record_id_t, reference, compact_read<record_id_t>)
 
-     case Type::type_id_t::int64:
-      file.read<int64_t>();
-     break;
-
-     case Type::type_id_t::reference:
-      file.compact_read<record_id_t>();
-     break;
+#undef UPDATE_CASE
     }
 
    }
@@ -256,17 +252,25 @@ void joedb::JournalFile::after_delete(table_id_t table_id, record_id_t record_id
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::JournalFile::after_update_string(table_id_t table_id,
-                                             record_id_t record_id,
-                                             field_id_t field_id,
-                                             const std::string &value)
-{
- file.write<operation_t>(operation_t::update);
- file.compact_write<table_id_t>(table_id);
- file.compact_write<record_id_t>(record_id);
- file.compact_write<field_id_t>(field_id);
- file.write_string(value);
+#define AFTER_UPDATE(return_type, type_id, write_method)\
+void joedb::JournalFile::after_update_##type_id(table_id_t table_id,\
+                                                record_id_t record_id,\
+                                                field_id_t field_id,\
+                                                return_type value)\
+{\
+ file.write<operation_t>(operation_t::update);\
+ file.compact_write<table_id_t>(table_id);\
+ file.compact_write<record_id_t>(record_id);\
+ file.compact_write<field_id_t>(field_id);\
+ file.write_method(value);\
 }
+
+AFTER_UPDATE(const std::string &, string, write_string)
+AFTER_UPDATE(int32_t, int32, write<int32_t>)
+AFTER_UPDATE(int64_t, int64, write<int64_t>)
+AFTER_UPDATE(record_id_t, reference, compact_write<record_id_t>)
+
+#undef AFTER_UPDATE
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Type joedb::JournalFile::read_type()

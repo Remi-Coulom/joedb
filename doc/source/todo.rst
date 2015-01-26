@@ -3,12 +3,6 @@ TODO
 
 Short term
 ----------
-Finish interpreter data structures:
-
-- make sure the database interface is fail-safe, but also make sure that table/field/record existence is not checked more than once.
-- don't check too much in interpreter
-- make sure fields of deleted records are reset to default
-
 Compiler:
 
 - implement Listener methods to fill vectors
