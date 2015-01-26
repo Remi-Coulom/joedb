@@ -2,7 +2,7 @@
 #define joedb_Field_declared
 
 #include <string>
-#include <deque>
+#include <vector>
 #include <cassert>
 
 #include "Type.h"
@@ -16,10 +16,10 @@ namespace joedb
    const std::string name;
    const Type type;
 
-   std::deque<std::string> string_column;
-   std::deque<int32_t> int32_column;
-   std::deque<int64_t> int64_column;
-   std::deque<record_id_t> reference_column;
+   std::vector<std::string> string_column;
+   std::vector<int32_t> int32_column;
+   std::vector<int64_t> int64_column;
+   std::vector<record_id_t> reference_column;
 
   public:
    Field(const std::string &name, const Type &type, size_t size):

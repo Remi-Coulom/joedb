@@ -2,8 +2,6 @@
 #define joedb_Table_declared
 
 #include <map>
-#include <deque>
-#include <set>
 
 #include "Field.h"
 #include "Type.h"

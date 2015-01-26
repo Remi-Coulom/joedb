@@ -22,6 +22,10 @@ Crash resistance:
 - http://sqlite.org/atomiccommit.html
 - http://lwn.net/Articles/457667/
 
+Compression
+
+- https://code.google.com/p/snappy/ (used by LevelDB)
+
 Fast IO:
 
 - http://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c

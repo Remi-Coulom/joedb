@@ -26,14 +26,16 @@ int main(int argc, char **argv)
   db.set_listener(journal_file);
 
   table_id_t table_id = db.create_table("BENCHMARK");
-  field_id_t field_id = db.add_field(table_id, "NAME", Type::string());
+  field_id_t name_id = db.add_field(table_id, "NAME", Type::string());
+  field_id_t value_id = db.add_field(table_id, "VALUE", Type::int64());
 
-  std::string value("TOTO");
+  std::string name_string("TOTO");
   for (int i = 1; i <= N; i++)
   {
    const record_id_t record_id = record_id_t(i);
    db.insert_into(table_id, record_id);
-   db.update_string(table_id, record_id, field_id, value);
+   db.update_string(table_id, record_id, name_id, name_string);
+   db.update_int64(table_id, record_id, value_id, 18838586676582);
    //file.commit();
    //journal_file.checkpoint();
    //file.commit();

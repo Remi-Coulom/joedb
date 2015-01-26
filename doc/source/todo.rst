@@ -25,6 +25,7 @@ Journal file
 - detect overflow in compact_write?
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
+- Compression
 
 New operations and types
 ------------------------

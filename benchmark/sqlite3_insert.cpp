@@ -18,7 +18,7 @@ int main(int argc, char **argv)
  sqlite3 *db;
  sqlite3_open(file_name, &db);
 
- quick_exec(db, "CREATE TABLE BENCHMARK(NAME TEXT)");
+ quick_exec(db, "CREATE TABLE BENCHMARK(NAME TEXT, VALUE INTEGER)");
 
  if (argc <= 1)
   std::printf("usage: %s <number of rows>\n", argv[0]);
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
   sqlite3_stmt *prepared_statement;
   sqlite3_prepare_v2(db,
-   "INSERT INTO BENCHMARK VALUES('TOTO')", -1, &prepared_statement, 0);
+   "INSERT INTO BENCHMARK VALUES('TOTO', 18838586676582)", -1, &prepared_statement, 0);
 
   for (int i = N; --i >= 0;)
   {
