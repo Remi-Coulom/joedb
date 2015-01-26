@@ -168,30 +168,31 @@ void joedb::JournalFile::replay_log(Listener &listener)
     record_id_t record_id = file.compact_read<record_id_t>();
     field_id_t field_id = file.compact_read<field_id_t>();
 
-    Value value;
     switch (db_schema.get_field_type(table_id, field_id))
     {
      case Type::type_id_t::null:
      break;
 
      case Type::type_id_t::string:
-      value = Value(file.read_string());
+     {
+      std::string s = file.read_string();
+      listener.after_update_string(table_id, record_id, field_id, s);
+     }
      break;
 
      case Type::type_id_t::int32:
-      value = Value(file.read<int32_t>());
+      file.read<int32_t>();
      break;
 
      case Type::type_id_t::int64:
-      value = Value(file.read<int64_t>());
+      file.read<int64_t>();
      break;
 
      case Type::type_id_t::reference:
-      value = Value(file.compact_read<record_id_t>());
+      file.compact_read<record_id_t>();
      break;
     }
 
-    listener.after_update(table_id, record_id, field_id, value);
    }
    break;
 
@@ -255,37 +256,16 @@ void joedb::JournalFile::after_delete(table_id_t table_id, record_id_t record_id
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::JournalFile::after_update(table_id_t table_id,
-                               record_id_t record_id,
-                               field_id_t field_id,
-                               const Value &value)
+void joedb::JournalFile::after_update_string(table_id_t table_id,
+                                             record_id_t record_id,
+                                             field_id_t field_id,
+                                             const std::string &value)
 {
  file.write<operation_t>(operation_t::update);
  file.compact_write<table_id_t>(table_id);
  file.compact_write<record_id_t>(record_id);
  file.compact_write<field_id_t>(field_id);
-
- switch(value.get_type_id())
- {
-  case Type::type_id_t::null:
-  break;
-
-  case Type::type_id_t::string:
-   file.write_string(value.get_string());
-  break;
-
-  case Type::type_id_t::int32:
-   file.write<int32_t>(value.get_int32());
-  break;
-
-  case Type::type_id_t::int64:
-   file.write<int64_t>(value.get_int64());
-  break;
-
-  case Type::type_id_t::reference:
-   file.compact_write<record_id_t>(value.get_record_id());
-  break;
- }
+ file.write_string(value);
 }
 
 /////////////////////////////////////////////////////////////////////////////

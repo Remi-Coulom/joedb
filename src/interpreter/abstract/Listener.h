@@ -1,7 +1,9 @@
 #ifndef joedb_Listener_declared
 #define joedb_Listener_declared
 
-#include "Value.h"
+#include "Type.h"
+
+#include <string>
 
 namespace joedb
 {
@@ -22,10 +24,10 @@ namespace joedb
    virtual void after_insert(table_id_t table_id, record_id_t record_id) {}
    virtual void after_delete(table_id_t table_id, record_id_t record_id) {}
 
-   virtual void after_update(table_id_t table_id,
-                             record_id_t record_id,
-                             field_id_t field_id,
-                             const Value &value) {}
+   virtual void after_update_string(table_id_t table_id,
+                                    record_id_t record_id,
+                                    field_id_t field_id,
+                                    const std::string &value) {}
  };
 }
 

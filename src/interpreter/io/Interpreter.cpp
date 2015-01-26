@@ -44,12 +44,12 @@ table_id_t joedb::Interpreter::parse_table(std::istream &in,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Value joedb::Interpreter::parse_value(Type::type_id_t type_id,
-                                             std::istream &in)
+void joedb::Interpreter::update_value(std::istream &in,
+                                      table_id_t table_id,
+                                      record_id_t record_id,
+                                      field_id_t field_id)
 {
- Value value;
-
- switch(type_id)
+ switch(db.get_field_type(table_id, field_id))
  {
   case Type::type_id_t::null:
   break;
@@ -58,7 +58,7 @@ joedb::Value joedb::Interpreter::parse_value(Type::type_id_t type_id,
   {
    std::string s;
    in >> s;
-   value = Value(s);
+   db.update_string(table_id, record_id, field_id, s);
   }
   break;
 
@@ -66,7 +66,6 @@ joedb::Value joedb::Interpreter::parse_value(Type::type_id_t type_id,
   {
    record_id_t record_id = 0;
    in >> record_id;
-   value = Value(record_id);
   }
   break;
 
@@ -74,7 +73,6 @@ joedb::Value joedb::Interpreter::parse_value(Type::type_id_t type_id,
   {
    int32_t v;
    in >> v;
-   value = Value(v);
   }
   break;
 
@@ -82,12 +80,9 @@ joedb::Value joedb::Interpreter::parse_value(Type::type_id_t type_id,
   {
    int64_t v;
    in >> v;
-   value = Value(v);
   }
   break;
  }
-
- return value;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -174,8 +169,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
      for (const auto &field:
           db.get_tables().find(table_id)->second.get_fields())
      {
-      Value value = parse_value(field.second.type.get_type_id(), iss);
-      db.update(table_id, record_id, field.first, value);
+      update_value(iss, table_id, record_id, field.first);
      }
     }
    }
@@ -196,12 +190,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
      out << "Error: no such field: " << field_name << '\n';
     else
     {
-     Value value = parse_value(db.get_field_type(table_id, field_id),
-                                      iss);
-     if (db.update(table_id, record_id, field_id, value))
-      out << "OK: updated\n";
-     else
-      out << "Error: could not find record: " << record_id << '\n';
+     update_value(iss, table_id, record_id, field_id);
     }
    }
   }

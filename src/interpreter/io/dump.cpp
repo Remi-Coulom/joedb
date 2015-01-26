@@ -24,9 +24,9 @@ void joedb::dump(std::ostream &out, const Database &database)
   for (const auto &field: fields)
   {
    out << "add_field " << table.second.get_name() << ' ';
-   out << field.second.name << ' ';
+   out << field.second.get_name() << ' ';
 
-   switch(field.second.type.get_type_id())
+   switch(field.second.get_type().get_type_id())
    {
     case Type::type_id_t::null:
      out << "null";
@@ -47,7 +47,7 @@ void joedb::dump(std::ostream &out, const Database &database)
     case Type::type_id_t::reference:
     {
      out << "references ";
-     table_id_t table_id = field.second.type.get_table_id();
+     table_id_t table_id = field.second.get_type().get_table_id();
      const auto it = tables.find(table_id);
      if (it != tables.end())
       out << it->second.get_name();
@@ -68,35 +68,36 @@ void joedb::dump(std::ostream &out, const Database &database)
  {
   const auto &fields = table.second.get_fields();
 
-  for (RecordIterator it = table.second.begin(); it.get_record_id(); ++it)
+  const auto &is_free = table.second.get_free_flags();
+
+  for (record_id_t record_id = 1; record_id <= is_free.size(); record_id++)
   {
+   if (is_free[record_id - 1])
+    continue;
+
    out << "insert_into " << table.second.get_name() << ' ';
-   out << it.get_record_id();
+   out << record_id;
    for (const auto &field: fields)
    {
-    const size_t i = field.second.index;
     out << ' ';
 
-    switch(field.second.type.get_type_id())
+    switch(field.second.get_type().get_type_id())
     {
      case Type::type_id_t::null:
       out << "NULL";
      break;
 
      case Type::type_id_t::string:
-      out << (*it).get_values()[i].get_string();
+      out << table.second.get_string(record_id, field.first);
      break;
 
      case Type::type_id_t::int32:
-      out << (*it).get_values()[i].get_int32();
      break;
 
      case Type::type_id_t::int64:
-      out << (*it).get_values()[i].get_int64();
      break;
 
      case Type::type_id_t::reference:
-      out << (*it).get_values()[i].get_record_id();
      break;
     }
    }

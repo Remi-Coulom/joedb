@@ -70,7 +70,7 @@ joedb::Type::type_id_t joedb::Database::get_field_type
  auto field_it = fields.find(field_id);
  if (field_it == fields.end())
   return Type::type_id_t::null;
- return field_it->second.type.get_type_id();
+ return field_it->second.get_type().get_type_id();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -110,15 +110,15 @@ bool joedb::Database::delete_from(table_id_t table_id, record_id_t record_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::update(table_id_t table_id,
-                             record_id_t record_id,
-                             field_id_t field_id,
-                             const Value &value)
+bool joedb::Database::update_string(table_id_t table_id,
+                                    record_id_t record_id,
+                                    field_id_t field_id,
+                                    const std::string &value)
 {
  auto it = tables.find(table_id);
- if (it != tables.end() && it->second.update(record_id, field_id, value))
+ if (it != tables.end() && it->second.update_string(record_id, field_id, value))
  {
-  listener->after_update(table_id, record_id, field_id, value);
+  listener->after_update_string(table_id, record_id, field_id, value);
   return true;
  }
  return false;

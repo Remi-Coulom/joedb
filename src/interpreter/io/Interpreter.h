@@ -4,7 +4,6 @@
 #include <iosfwd>
 
 #include "Type.h"
-#include "Value.h"
 
 namespace joedb
 {
@@ -17,7 +16,10 @@ namespace joedb
 
    Type parse_type(std::istream &in, std::ostream &out);
    table_id_t parse_table(std::istream &in, std::ostream &out);
-   static Value parse_value(Type::type_id_t type_id, std::istream &in);
+   void update_value(std::istream &in,
+                     table_id_t table_id,
+                     record_id_t record_id,
+                     field_id_t field_id);
 
   public:
    Interpreter(Database &db): db(db) {}

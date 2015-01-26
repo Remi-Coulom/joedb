@@ -39,10 +39,11 @@ namespace joedb
    bool drop_field(table_id_t table_id, field_id_t field_id);
    bool insert_into(table_id_t table_id, record_id_t record_id);
    bool delete_from(table_id_t table_id, record_id_t record_id);
-   bool update(table_id_t table_id,
-               record_id_t record_id,
-               field_id_t field_id,
-               const Value &value);
+
+   bool update_string(table_id_t table_id,
+                      record_id_t record_id,
+                      field_id_t field_id,
+                      const std::string &value);
  };
 }
 

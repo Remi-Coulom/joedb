@@ -3,6 +3,15 @@ TODO
 
 Short term
 ----------
+Finish interpreter data structures:
+
+- doubly linked list for free and used table records (like before)
+- template for update/get by type?
+- make sure the database interface is fail-safe, but also make sure that table/field/record existence is not checked more than once.
+- don't check too much in interpreter
+- make sure big field data structure is not copied
+- make sure fields of deleted records are reset to default
+
 Compiler:
 
 - implement Listener methods to fill vectors
@@ -12,12 +21,6 @@ Compiler:
 
 Interpreter
 -----------
-- data structures can be made _much_ better:
-  - use a deque for each column (store as void pointer)
-  - std::deque of bools for deleted flag, too
-  - std::set or std::list for deleted and not-deleted rows
-  - one "update" method for each type
-  - get rid of the horrible "Value" class
 - string format/escaping 'string with space' ...
 - show command prompt
 - readline, help

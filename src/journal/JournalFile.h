@@ -34,10 +34,10 @@ namespace joedb
                          field_id_t field_id);
    void after_insert(table_id_t table_id, record_id_t record_id);
    void after_delete(table_id_t table_id, record_id_t record_id);
-   void after_update(table_id_t table_id,
-                     record_id_t record_id,
-                     field_id_t field_id,
-                     const Value &value);
+   void after_update_string(table_id_t table_id,
+                            record_id_t record_id,
+                            field_id_t field_id,
+                            const std::string &value);
 
    ~JournalFile();
 

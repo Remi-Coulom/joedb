@@ -20,12 +20,12 @@ namespace joedb
     error |= !db.delete_from(table_id, record_id);
    }
 
-   void after_update(table_id_t table_id,
-                     record_id_t record_id,
-                     field_id_t field_id,
-                     const Value &value) override
+   void after_update_string(table_id_t table_id,
+                            record_id_t record_id,
+                            field_id_t field_id,
+                            const std::string &value) override
    {
-    error |= !db.update(table_id, record_id, field_id, value);
+    error |= !db.update_string(table_id, record_id, field_id, value);
    }
  };
 }
