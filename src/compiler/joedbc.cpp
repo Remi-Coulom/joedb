@@ -19,9 +19,11 @@ void generate_code(std::ostream &out,
 #include <cstdint>
 #include <vector>
 
-#include "index_types.h"
 #include "File.h"
 #include "JournalFile.h"
+#include "Database.h"
+#include "SchemaListener.h"
+#include "FreedomKeeper.h"
 
 )RRR";
 
@@ -37,6 +39,7 @@ void generate_code(std::ostream &out,
   out << "   record_id_t id;\n";
   out << "   " << table.second.get_name() << "_t(record_id_t id): id(id) {}\n";
   out << "\n  public:\n";
+  out << "   " << table.second.get_name() << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << " };\n";
 
@@ -85,12 +88,89 @@ void generate_code(std::ostream &out,
 
 )RRR";
 
+ //
+ // Vectors, and freedom keepers
+ //
  for (auto table: tables)
  {
   const std::string &name = table.second.get_name();
   out << "   std::vector<" << name << "_data> " << name << "_table;\n";
+  out << "   joedb::FreedomKeeper " << name << "_FK;\n";
  }
 
+ //
+ // after_delete listener function
+ //
+ out << '\n';
+ out << "   void after_delete(table_id_t table_id, record_id_t record_id)\n";
+ out << "   {\n";
+ {
+  bool first = true;
+  for (auto table: tables)
+  {
+   out << "    ";
+   if (first)
+    first = false;
+   else
+    out << "else ";
+
+   const std::string &name = table.second.get_name();
+   out << "if (table_id == " << table.first << ")\n";
+   out << "     " << name << "_FK.free(record_id + 1);\n";
+  }
+ }
+ out << "   }\n";
+
+ //
+ // after_insert listener function
+ //
+ out << '\n';
+ out << "   void after_insert(table_id_t table_id, record_id_t record_id)\n";
+ out << "   {\n";
+ {
+  bool first = true;
+  for (auto table: tables)
+  {
+   out << "    ";
+   if (first)
+    first = false;
+   else
+    out << "else ";
+
+   const std::string &name = table.second.get_name();
+   out << "if (table_id == " << table.first << ")\n";
+   out << "    {\n";
+   out << "     " << name << "_table.resize(record_id);\n";
+   out << "     while (" << name << "_FK.size() < record_id)\n";
+   out << "      " << name << "_FK.push_back();\n";
+   out << "    }\n";
+  }
+ }
+ out << "   }\n";
+
+ //
+ // after_update
+ //
+ out << R"RRR(
+#define AFTER_UPDATE(return_type, type_id)\
+   void after_update_##type_id(table_id_t table_id,\
+                               record_id_t record_id,\
+                               field_id_t field_id,\
+                               return_type value)\
+   {\
+   }
+
+   AFTER_UPDATE(const std::string &, string)
+   AFTER_UPDATE(int32_t, int32)
+   AFTER_UPDATE(int64_t, int64)
+   AFTER_UPDATE(record_id_t, reference)
+
+#undef AFTER_UPDATE
+)RRR";
+
+ //
+ // Public stuff
+ //
  out << R"RRR(
   public:
    Database(const char *file_name, bool read_only = false):
@@ -99,12 +179,29 @@ void generate_code(std::ostream &out,
                      joedb::File::mode_t::write_existing),
     journal(file)
    {
+    //
+    // First, check that we have the right schema
+    //
+    joedb::Database db_schema;
+    joedb::SchemaListener schema_listener(db_schema);
+    journal.replay_log(schema_listener);
+    // TODO: compare schema with compiled schema
+
+    //
+    // Then load the data
+    //
+    journal.replay_log(*this);
+   }
+
+   joedb::JournalFile::state_t get_journal_state() const
+   {
+    return journal.get_state();
    }
 
    bool is_good() const
    {
     return file.is_good() &&
-           journal.get_state() != joedb::JournalFile::state_t::no_error;
+           journal.get_state() == joedb::JournalFile::state_t::no_error;
    }
  };
 )RRR";

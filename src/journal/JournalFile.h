@@ -16,6 +16,7 @@ namespace joedb
    enum class state_t
    {
     no_error,
+    bad_file,
     unsupported_version,
     bad_format,
     crash_check

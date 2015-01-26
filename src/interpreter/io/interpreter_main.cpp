@@ -30,8 +30,14 @@ int main(int argc, char **argv)
      std::cout << "Could not create " << argv[1] << ".\n";
      return 1;
     }
+    else
+     std::cout << "Created new database: " << argv[1] << '\n';
    }
+   else
+    std::cout << "Database opened read-only: " << argv[1] << '\n';
   }
+  else
+   std::cout << "Database opened successfully: " << argv[1] << '\n';
 
   joedb::JournalFile journal(file);
   joedb::Database db;

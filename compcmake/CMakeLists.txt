@@ -29,15 +29,19 @@ include_directories(
 add_library(interpreter_objects OBJECT
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
- ../src/interpreter/io/dump.cpp
- ../src/interpreter/io/Interpreter.cpp
  ../src/journal/File.cpp
  ../src/journal/JournalFile.cpp
+)
+
+add_library(io_objects OBJECT
+ ../src/interpreter/io/dump.cpp
+ ../src/interpreter/io/Interpreter.cpp
 )
 
 add_executable(joedbi
  ../src/interpreter/io/interpreter_main.cpp
  $<TARGET_OBJECTS:interpreter_objects>
+ $<TARGET_OBJECTS:io_objects>
 )
 
 if(EXISTS "../gtest-1.7.0")
@@ -47,6 +51,7 @@ if(EXISTS "../gtest-1.7.0")
   ../test/JournalFile_Test.cpp
   ../test/Test_Main.cpp
   $<TARGET_OBJECTS:interpreter_objects>
+  $<TARGET_OBJECTS:io_objects>
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
 else()
@@ -70,3 +75,9 @@ add_executable(joedbc
  ../src/compiler/joedbc.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
+
+add_executable(tutorial
+ ../doc/source/tutorial/tutorial.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+)
+set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)

@@ -24,22 +24,18 @@ namespace joedb
    virtual void after_insert(table_id_t table_id, record_id_t record_id) {}
    virtual void after_delete(table_id_t table_id, record_id_t record_id) {}
 
-   virtual void after_update_string(table_id_t table_id,
-                                    record_id_t record_id,
-                                    field_id_t field_id,
-                                    const std::string &value) {}
-   virtual void after_update_int32(table_id_t table_id,
-                                   record_id_t record_id,
-                                   field_id_t field_id,
-                                   int32_t value) {}
-   virtual void after_update_int64(table_id_t table_id,
-                                   record_id_t record_id,
-                                   field_id_t field_id,
-                                   int64_t value) {}
-   virtual void after_update_reference(table_id_t table_id,
-                                       record_id_t record_id,
-                                       field_id_t field_id,
-                                       record_id_t value) {}
+#define AFTER_UPDATE(return_type, type_id)\
+   virtual void after_update_##type_id(table_id_t table_id,\
+                                       record_id_t record_id,\
+                                       field_id_t field_id,\
+                                       return_type value) {}
+
+   AFTER_UPDATE(const std::string &, string)
+   AFTER_UPDATE(int32_t, int32)
+   AFTER_UPDATE(int64_t, int64)
+   AFTER_UPDATE(record_id_t, reference)
+
+#undef AFTER_UPDATE
  };
 }
 

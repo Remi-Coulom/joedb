@@ -11,6 +11,12 @@ joedb::JournalFile::JournalFile(File &file):
  checkpoint_index(0),
  state(state_t::no_error)
 {
+ if (!file.is_good())
+ {
+  state = state_t::bad_file;
+  return;
+ }
+
  //
  // Create a new empty joedb file
  //

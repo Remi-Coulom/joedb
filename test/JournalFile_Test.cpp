@@ -16,6 +16,15 @@ class JournalFile_Test: public::testing::Test
 };
 
 /////////////////////////////////////////////////////////////////////////////
+TEST_F(JournalFile_Test, bad_file)
+{
+ File file("this_does_not_exists", File::mode_t::read_existing);
+ EXPECT_FALSE(file.is_good());
+ JournalFile journal(file);
+ EXPECT_EQ(JournalFile::state_t::bad_file, journal.get_state());
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(JournalFile_Test, basic_operations)
 {
  Database db1;
