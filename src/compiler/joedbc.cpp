@@ -6,6 +6,42 @@
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
+void write_type(std::ostream &out,
+                const joedb::Database &db,
+                joedb::Type type,
+                bool return_type)
+{
+ switch (type.get_type_id())
+ {
+  case joedb::Type::type_id_t::null:
+   out << "void";
+  break;
+
+  case joedb::Type::type_id_t::string:
+   if (return_type)
+    out << "const std::string &";
+   else
+    out << "std::string";
+  break;
+
+  case joedb::Type::type_id_t::int32:
+   out << "int32_t";
+  break;
+
+  case joedb::Type::type_id_t::int64:
+   out << "int64_t";
+  break;
+
+  case joedb::Type::type_id_t::reference:
+  {
+   const table_id_t referred = type.get_table_id();
+   out << db.get_tables().find(referred)->second.get_name() << "_t";
+  }
+  break;
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void generate_code(std::ostream &out,
                    const joedb::Database &db,
                    const char *dbname)
@@ -18,6 +54,7 @@ void generate_code(std::ostream &out,
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <cassert>
 
 #include "File.h"
 #include "JournalFile.h"
@@ -28,60 +65,51 @@ void generate_code(std::ostream &out,
 )RRR";
 
  out << "namespace " << dbname << "\n{\n";
+ out << " class Database;\n\n";
 
  for (auto table: tables)
  {
-  const auto &fields = table.second.get_fields();
-
+  out << " class " << table.second.get_name() << "_container;\n\n";
   out << " class " << table.second.get_name() << "_t\n {\n";
   out << "  friend class Database;\n";
+  out << "  friend class "  << table.second.get_name() << "_container;\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
   out << "   " << table.second.get_name() << "_t(record_id_t id): id(id) {}\n";
   out << "\n  public:\n";
   out << "   " << table.second.get_name() << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
+
+  for (const auto &field: table.second.get_fields())
+  {
+   out << "   ";
+   write_type(out, db, field.second.get_type(), true);
+   out << " get_" << field.second.get_name() << "(const Database &db);\n";
+  }
+
   out << " };\n";
 
   out << "\n struct " << table.second.get_name() << "_data\n {\n";
 
-  for (const auto &field: fields)
+  for (const auto &field: table.second.get_fields())
   {
    out << "  ";
-
-   switch (field.second.get_type().get_type_id())
-   {
-    case joedb::Type::type_id_t::null:
-     out << "void";
-    break;
-
-    case joedb::Type::type_id_t::string:
-     out << "std::string";
-    break;
-
-    case joedb::Type::type_id_t::int32:
-     out << "int32_t";
-    break;
-
-    case joedb::Type::type_id_t::int64:
-     out << "int64_t";
-    break;
-
-    case joedb::Type::type_id_t::reference:
-    {
-     const table_id_t referred = field.second.get_type().get_table_id();
-     out << db.get_tables().find(referred)->second.get_name() << "_t";
-    }
-    break;
-   }
+   write_type(out, db, field.second.get_type(), false);
    out << ' ' << field.second.get_name() << ";\n";
   }
 
   out << " };\n\n";
  }
 
- out << R"RRR( class Database: private joedb::Listener
+ out << " class Database: private joedb::Listener\n {\n";
+
+ for (auto table: tables)
  {
+  out << "  friend class "  << table.second.get_name() << "_t;\n";
+  out << "  friend class "  << table.second.get_name() << "_container;\n";
+ }
+
+ out << R"RRR(
   private:
    joedb::File file;
    joedb::JournalFile journal;
@@ -102,7 +130,7 @@ void generate_code(std::ostream &out,
  // after_delete listener function
  //
  out << '\n';
- out << "   void after_delete(table_id_t table_id, record_id_t record_id)\n";
+ out << "   void after_delete(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -125,7 +153,7 @@ void generate_code(std::ostream &out,
  // after_insert listener function
  //
  out << '\n';
- out << "   void after_insert(table_id_t table_id, record_id_t record_id)\n";
+ out << "   void after_insert(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -179,18 +207,11 @@ void generate_code(std::ostream &out,
                      joedb::File::mode_t::write_existing),
     journal(file)
    {
-    //
-    // First, check that we have the right schema
-    //
-    joedb::Database db_schema;
-    joedb::SchemaListener schema_listener(db_schema);
-    journal.replay_log(schema_listener);
-    // TODO: compare schema with compiled schema
-
-    //
-    // Then load the data
-    //
-    journal.replay_log(*this);
+    if (is_good())
+    {
+     journal.replay_log(*this);
+     // TODO: compare schema with compiled schema
+    }
    }
 
    joedb::JournalFile::state_t get_journal_state() const
@@ -203,8 +224,70 @@ void generate_code(std::ostream &out,
     return file.is_good() &&
            journal.get_state() == joedb::JournalFile::state_t::no_error;
    }
- };
+
 )RRR";
+
+ for (auto table: tables)
+ {
+  const std::string &tname = table.second.get_name();
+  out << "   " << tname << "_container get_" << tname << "_table() const;\n";
+ }
+
+ out << "\n};\n";
+
+ for (auto table: tables)
+ {
+  const std::string &tname = table.second.get_name();
+  out << " class " << tname << "_container\n";
+  out << " {\n";
+  out << "  friend class Database;\n";
+  out << '\n';
+  out << "  private:\n";
+  out << "   const Database &db;\n";
+  out << "   " << tname << "_container(const Database &db): db(db) {}\n";
+  out << '\n';
+  out << "  public:\n";
+  out << "   class iterator\n";
+  out << "   {\n";
+  out << "    friend class " << tname << "_container;\n";
+
+  out << R"RRR(
+    private:
+     const joedb::FreedomKeeper &fk;
+     size_t index;
+     iterator(const joedb::FreedomKeeper &fk): fk(fk), index(1) {}
+
+    public:
+     bool operator!=(const iterator &i) const {return index != i.index;}
+     iterator &operator++() {index = fk.get_next(index); return *this;}
+)RRR";
+
+  out << "     " << tname << "_t operator*() {return ";
+  out << tname << "_t(index - 1);}\n";
+  out << "   };\n";
+  out << '\n';
+  out << "   iterator begin() {return ++iterator(db." << tname << "_FK);}\n";
+  out << "   iterator end() {return iterator(db." << tname << "_FK);}\n";
+  out << " };\n";
+  out << '\n';
+  out << ' ' << tname << "_container Database::get_" << tname << "_table() const\n";
+  out << " {\n";
+  out << "  return " << tname << "_container(*this);\n";
+  out << " }\n\n";
+
+  for (const auto &field: table.second.get_fields())
+  {
+   out << ' ';
+   write_type(out, db, field.second.get_type(), true);
+   out << ' ' << tname << "_t::";
+   out << "get_" << field.second.get_name() << "(const Database &db)\n";
+   out << " {\n";
+   out << "  assert(!is_null());\n";
+   out << "  return db." << tname;
+   out << "_table[id - 1]." << field.second.get_name() << ";\n";
+   out << " }\n";
+  }
+ }
 
  out << "}\n\n";
  out << "#endif\n";

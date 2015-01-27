@@ -45,6 +45,8 @@ Compiler
 --------
 
 - check C++ identifier constraints for table and field names
+- make sure identifiers can't produce other collisions
+- check namespace != joedb
 
 - core compiler options:
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir=../../../compcmake/ninja_release
+dir=../../../compcmake/ninja_debug
 
 cd $dir
 ninja
