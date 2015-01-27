@@ -5,13 +5,13 @@ Short term
 ----------
 Compiler:
 
-- implement after_update
-- implement data-manipulation methods
+- implement delete
+- store db along with record_id: .get_name() instead of .get_name(db)
 - joedbc_insert benchmark
+- new_xxxx with constructor parameters
 - check C++ identifier constraints for table and field names
 - check namespace != joedb
 - check matching db schema when opening file
-- store db along with record_id: .get_name() instead of .get_name(db) (city_id_t does not contain db, and city_t does)
 
 Interpreter
 -----------
@@ -25,6 +25,7 @@ Interpreter
 
 Journal file
 ------------
+- make sure the same file cannot be opened by two programs at the same time
 - check for write errors (out of space) -> exception (option?)
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)

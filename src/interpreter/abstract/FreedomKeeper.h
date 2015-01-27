@@ -43,6 +43,19 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
+   size_t allocate()
+   {
+    size_t result = records[free_list].next;
+    if (result == free_list)
+    {
+     push_back();
+     result = records[free_list].next;
+    }
+    use(result);
+    return result;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    void push_back()
    {
     const size_t index = records.size();

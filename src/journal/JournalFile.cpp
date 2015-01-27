@@ -203,6 +203,11 @@ void joedb::JournalFile::replay_log(Listener &listener)
    break;
   }
  }
+
+ if (file.get_position() != checkpoint_position)
+  state = state_t::crash_check;
+ else
+  file.set_position(checkpoint_position); // get ready for writing
 }
 
 /////////////////////////////////////////////////////////////////////////////

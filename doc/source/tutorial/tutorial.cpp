@@ -16,6 +16,13 @@ int main()
  for (auto city: db.get_city_table())
   std::cout << city.get_name(db) << '\n';
 
+ auto Amsterdam = db.new_city();
+ Amsterdam.set_name(db, "Amsterdam");
+
+ auto aristide = db.new_person();
+ aristide.set_name(db, "Aristide");
+ aristide.set_home(db, Amsterdam);
+
  std::cout << "\nList of persons with their cities:\n";
  for (auto person: db.get_person_table())
  {
@@ -24,7 +31,7 @@ int main()
   if (home.is_null())
    std::cout << "is homeless\n";
   else
-   std::cout << home.get_name(db) << '\n';
+   std::cout << "lives in " << home.get_name(db) << '\n';
  }
 
  return 0;

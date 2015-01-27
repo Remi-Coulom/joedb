@@ -46,6 +46,24 @@ void generate_code(std::ostream &out,
                    const joedb::Database &db,
                    const char *dbname)
 {
+ char const * const types[joedb::Type::type_ids] =
+ {
+  0,
+  "string",
+  "int32",
+  "int64",
+  "reference"
+ };
+
+ char const * const cpp_types[joedb::Type::type_ids] =
+ {
+  0,
+  "const std::string &",
+  "int32_t ",
+  "int64_t ",
+  "record_id_t "
+ };
+
  auto tables = db.get_tables();
 
  out << "#ifndef " << dbname << "_Database_declared\n";
@@ -72,6 +90,9 @@ void generate_code(std::ostream &out,
   out << " class " << table.second.get_name() << "_container;\n\n";
   out << " class " << table.second.get_name() << "_t\n {\n";
   out << "  friend class Database;\n";
+  for (auto friend_table: tables)
+   if (friend_table.first != table.first)
+    out << "  friend class " << friend_table.second.get_name() << "_t;\n";
   out << "  friend class "  << table.second.get_name() << "_container;\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
@@ -85,6 +106,10 @@ void generate_code(std::ostream &out,
    out << "   ";
    write_type(out, db, field.second.get_type(), true);
    out << " get_" << field.second.get_name() << "(const Database &db);\n";
+
+   out << "   void set_" << field.second.get_name() << "(Database &db, ";
+   write_type(out, db, field.second.get_type(), true);
+   out << ' ' << field.second.get_name() << ");\n";
   }
 
   out << " };\n";
@@ -171,6 +196,7 @@ void generate_code(std::ostream &out,
    out << "     " << name << "_table.resize(record_id);\n";
    out << "     while (" << name << "_FK.size() < record_id)\n";
    out << "      " << name << "_FK.push_back();\n";
+   out << "     " << name << "_FK.use(record_id + 1);\n";
    out << "    }\n";
   }
  }
@@ -179,22 +205,57 @@ void generate_code(std::ostream &out,
  //
  // after_update
  //
- out << R"RRR(
-#define AFTER_UPDATE(return_type, type_id)\
-   void after_update_##type_id(table_id_t table_id,\
-                               record_id_t record_id,\
-                               field_id_t field_id,\
-                               return_type value)\
-   {\
+ {
+  for (int type_id = 1;
+       type_id < int(joedb::Type::type_ids);
+       type_id++)
+  {
+   out << '\n';
+   out << "   void after_update_" << types[type_id] << '\n';
+   out << "   (\n";
+   out << "    table_id_t table_id,\n";
+   out << "    record_id_t record_id,\n";
+   out << "    field_id_t field_id,\n";
+   out << "    " << cpp_types[type_id] << "value\n";
+   out << "   )\n";
+   out << "   override\n";
+   out << "   {\n";
+
+   for (auto table: tables)
+   {
+    bool has_typed_field = false;
+
+    for (auto field: table.second.get_fields())
+     if (int(field.second.get_type().get_type_id()) == type_id)
+     {
+      has_typed_field = true;
+      break;
+     }
+
+    if (has_typed_field)
+    {
+     out << "    if (table_id == " << table.first << ")\n";
+     out << "    {\n";
+
+     for (auto field: table.second.get_fields())
+      if (int(field.second.get_type().get_type_id()) == type_id)
+      {
+       out << "     if (field_id == " << field.first << ")\n";
+       out << "     {\n";
+       out << "      " << table.second.get_name() << "_table[record_id - 1].";
+       out << field.second.get_name() << " = value;\n";
+       out << "      return;\n";
+       out << "     }\n";
+      }
+
+     out << "     return;\n";
+     out << "    }\n";
+    }
    }
 
-   AFTER_UPDATE(const std::string &, string)
-   AFTER_UPDATE(int32_t, int32)
-   AFTER_UPDATE(int64_t, int64)
-   AFTER_UPDATE(record_id_t, reference)
-
-#undef AFTER_UPDATE
-)RRR";
+   out << "   }\n";
+  }
+ }
 
  //
  // Public stuff
@@ -221,13 +282,22 @@ void generate_code(std::ostream &out,
     return file.is_good() &&
            journal.get_state() == joedb::JournalFile::state_t::no_error;
    }
-
 )RRR";
 
  for (auto table: tables)
  {
+  out << '\n';
   const std::string &tname = table.second.get_name();
   out << "   " << tname << "_container get_" << tname << "_table() const;\n";
+  out << "   " << tname << "_t new_" << tname << "()\n";
+  out << "   {\n";
+  out << "    " << tname << "_t result(" << tname << "_FK.allocate() - 1);\n";
+  out << "    while (" << tname << "_table.size() < ";
+  out << tname << "_FK.size())\n";
+  out << "     " << tname << "_table.push_back(" << tname << "_data());\n";
+  out << "    journal.after_insert(" << table.first << ", result.id);\n";
+  out << "    return result;\n";
+  out << "   }\n";
  }
 
  out << "\n};\n";
@@ -252,7 +322,7 @@ void generate_code(std::ostream &out,
     private:
      const joedb::FreedomKeeper &fk;
      size_t index;
-     iterator(const joedb::FreedomKeeper &fk): fk(fk), index(1) {}
+     iterator(const joedb::FreedomKeeper &fk): fk(fk), index(0) {}
 
     public:
      bool operator!=(const iterator &i) const {return index != i.index;}
@@ -270,18 +340,38 @@ void generate_code(std::ostream &out,
   out << ' ' << tname << "_container Database::get_" << tname << "_table() const\n";
   out << " {\n";
   out << "  return " << tname << "_container(*this);\n";
-  out << " }\n\n";
+  out << " }\n";
 
   for (const auto &field: table.second.get_fields())
   {
+   out << '\n';
+   const std::string &fname = field.second.get_name();
    out << ' ';
    write_type(out, db, field.second.get_type(), true);
    out << ' ' << tname << "_t::";
-   out << "get_" << field.second.get_name() << "(const Database &db)\n";
+   out << "get_" << fname << "(const Database &db)\n";
    out << " {\n";
    out << "  assert(!is_null());\n";
    out << "  return db." << tname;
-   out << "_table[id - 1]." << field.second.get_name() << ";\n";
+   out << "_table[id - 1]." << fname << ";\n";
+   out << " }\n";
+
+   out << " void " << tname << "_t::set_" << fname;
+   out << "(Database &db, ";
+   write_type(out, db, field.second.get_type(), true);
+   out << ' ' << fname << ")\n";
+   out << " {\n";
+   out << "  assert(!is_null());\n";
+   out << "  db." << tname << "_table[id - 1].";
+   out << fname << " = " << fname << ";\n";
+   out << "  db.journal.after_update_";
+   out << types[int(field.second.get_type().get_type_id())];
+   out << '(' << table.first << ", id, " << field.first << ", ";
+   out << fname;
+   if (field.second.get_type().get_type_id() ==
+       joedb::Type::type_id_t::reference)
+    out << ".id";
+   out << ");\n";
    out << " }\n";
   }
  }

@@ -8,7 +8,16 @@ namespace joedb
  class Type
  {
   public:
-   enum class type_id_t: uint8_t {null, string, int32, int64, reference};
+   enum class type_id_t: uint8_t
+   {
+    null,
+    string,
+    int32,
+    int64,
+    reference
+   };
+
+   enum {type_ids = int(type_id_t::reference) + 1};
 
   private:
    type_id_t type_id;
