@@ -5,11 +5,13 @@ Short term
 ----------
 Compiler:
 
-- store db along with record_id: .get_name() instead of .get_name(db)
 - implement after_update
 - implement data-manipulation methods
-- check matching db schema when opening file
 - joedbc_insert benchmark
+- check C++ identifier constraints for table and field names
+- check namespace != joedb
+- check matching db schema when opening file
+- store db along with record_id: .get_name() instead of .get_name(db) (city_id_t does not contain db, and city_t does)
 
 Interpreter
 -----------
@@ -45,9 +47,7 @@ New operations and types
 Compiler
 --------
 
-- check C++ identifier constraints for table and field names
 - make sure identifiers can't produce other collisions
-- check namespace != joedb
 
 - core compiler options:
 
