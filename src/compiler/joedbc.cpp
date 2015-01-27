@@ -208,10 +208,7 @@ void generate_code(std::ostream &out,
     journal(file)
    {
     if (is_good())
-    {
      journal.replay_log(*this);
-     // TODO: compare schema with compiled schema
-    }
    }
 
    joedb::JournalFile::state_t get_journal_state() const

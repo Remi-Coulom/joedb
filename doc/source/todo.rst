@@ -5,7 +5,8 @@ Short term
 ----------
 Compiler:
 
-- implement Listener methods to fill vectors
+- store db along with record_id: .get_name() instead of .get_name(db)
+- implement after_update
 - implement data-manipulation methods
 - check matching db schema when opening file
 - joedbc_insert benchmark
@@ -50,10 +51,10 @@ Compiler
 
 - core compiler options:
 
-  * namespace as parameter
   * mutex protection as option
   * triggers: C++ code: after/before insert/update/delete
   * commit/checkpoint policy:
+
     - never
     - when flushing write buffer
     - at every log entry or transaction_end
@@ -65,7 +66,6 @@ Compiler
 
     - any stl container (vector, deque, map, unordered_map)
     - file (maybe, for big tables): make on-disk C++ containers
-    - easy loop over database records (for (auto person: db.persons))
 
   - index, unique constraints (use triggers)
   - referential integrity (use triggers)
