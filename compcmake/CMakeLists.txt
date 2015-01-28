@@ -8,6 +8,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+ message("== clang")
+ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -fno-exceptions -fno-rtti")
+endif()
+
 if(WIN32)
  message("== win32")
  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
