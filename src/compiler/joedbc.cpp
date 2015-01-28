@@ -289,12 +289,67 @@ void generate_code(std::ostream &out,
   out << "    journal.after_insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
+  out << '\n';
+
+  //
+  // new with all fields
+  //
+  out << "   " << tname << "_t new_" << tname << '\n';
+  out << "   (\n    ";
+  {
+   bool first = true;
+
+   for (const auto &field: table.second.get_fields())
+   {
+    const std::string &fname = field.second.get_name();
+
+    if (first)
+     first = false;
+    else
+     out << ",\n    ";
+
+    write_type(out, db, field.second.get_type(), true);
+    out << ' ' << fname;
+   }
+
+   out << '\n';
+  }
+  out << "   )\n";
+  out << "   {\n";
+  out << "    " << tname << "_t result(" << tname << "_FK.allocate() - 1);\n";
+  out << "    journal.after_insert(" << table.first << ", result.id);\n";
+
+  for (const auto &field: table.second.get_fields())
+  {
+   const std::string &fname = field.second.get_name();
+
+   out << "  " << tname << "_FK.get_record(result.id + 1).";
+   out << fname << " = " << fname << ";\n";
+   out << "  journal.after_update_";
+   out << types[int(field.second.get_type().get_type_id())];
+   out << '(' << table.first << ", result.id, " << field.first << ", ";
+   out << fname;
+   if (field.second.get_type().get_type_id() ==
+       joedb::Type::type_id_t::reference)
+    out << ".id";
+   out << ");\n";
+  }
+
+  out << "    return result;\n";
+  out << "   }\n\n";
+
+  //
+  // Delete
+  //
   out << "   void delete_record(" << tname << "_t record)\n";
   out << "   {\n";
   out << "    " << tname << "_FK.free(record.id + 1);\n";
   out << "    journal.after_delete(" << table.first << ", record.id);\n";
   out << "   }\n";
 
+  //
+  // getters and setters for each field
+  //
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();

@@ -7,3 +7,4 @@ insert_into city 1 Lille
 insert_into city 2 Paris
 insert_into city 3 Tokyo
 insert_into person 1 Rémi 1
+insert_into person 2 Bertrand 0

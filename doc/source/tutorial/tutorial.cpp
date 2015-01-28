@@ -24,11 +24,8 @@ int main()
  //
  // Inserting new records
  //
- auto Amsterdam = db.new_city();
- db.set_name(Amsterdam, "Amsterdam");
- auto Aristide = db.new_person();
- db.set_name(Aristide, "Aristide");
- db.set_home(Aristide, Amsterdam);
+ auto Amsterdam = db.new_city("Amsterdam");
+ auto Aristide = db.new_person("Aristide", Amsterdam);
 
  //
  // A join between the two tables
