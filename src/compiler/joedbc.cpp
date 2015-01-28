@@ -1,9 +1,9 @@
 #include "Database.h"
 #include "File.h"
-#include "JournalFile.h"
-#include "SchemaListener.h"
+#include "Interpreter.h"
 
 #include <iostream>
+#include <fstream>
 
 /////////////////////////////////////////////////////////////////////////////
 void write_type(std::ostream &out,
@@ -391,30 +391,23 @@ int main(int argc, char **argv)
  //
  if (argc <= 2)
  {
-  std::cerr << "Usage: " << argv[0] << " <file.joedb> <namespace>\n";
+  std::cerr << "Usage: " << argv[0] << " <file.joedbi> <namespace>\n";
   return 1;
  }
 
- joedb::File file(argv[1], joedb::File::mode_t::read_existing);
- if (!file.is_good())
+ std::ifstream file(argv[1]);
+ if (!file.good())
  {
   std::cerr << "Error: could not open " << argv[1] << '\n';
   return 1;
  }
 
  //
- // Read the database schema
+ // Read the database
  //
- joedb::JournalFile journal(file);
  joedb::Database db;
- joedb::SchemaListener schema_listener(db);
- journal.replay_log(schema_listener);
- if (journal.get_state() != joedb::JournalFile::state_t::no_error ||
-     !schema_listener.is_good())
- {
-  std::cerr << "Error reading database\n";
-  return 1;
- }
+ joedb::Interpreter interpreter(db);
+ interpreter.main_loop(file, std::cerr);
 
  //
  // Generate code

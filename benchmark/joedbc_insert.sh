@@ -7,7 +7,7 @@ cd -
 
 rm -vf insert.joedb benchmark.h
 $dir/joedbi insert.joedb <joedbc_insert.joedbi
-$dir/joedbc insert.joedb benchmark >benchmark.h
+$dir/joedbc joedbc_insert.joedbi benchmark >benchmark.h
 
 cd $dir
 ninja joedbc_insert
