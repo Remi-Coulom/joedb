@@ -277,6 +277,9 @@ void generate_code(std::ostream &out,
     return journal.get_state();
    }
 
+   void commit() {file.commit();}
+   void checkpoint() {journal.checkpoint();}
+
    bool is_good() const
    {
     return file.is_good() &&

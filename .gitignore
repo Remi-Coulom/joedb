@@ -2,3 +2,4 @@
 *.log
 *.exe
 *.pyc
+oprofile_data

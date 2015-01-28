@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   field_id_t name_id = db.add_field(table_id, "NAME", Type::string());
   field_id_t value_id = db.add_field(table_id, "VALUE", Type::int64());
 
-  std::string name_string("TOTO");
+  const std::string name_string("TOTO");
   for (int i = 1; i <= N; i++)
   {
    const record_id_t record_id = record_id_t(i);

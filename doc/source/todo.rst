@@ -5,13 +5,15 @@ Short term
 ----------
 Compiler:
 
+- take joedbi file as input
 - implement delete
 - store db along with record_id: .get_name() instead of .get_name(db)
-- joedbc_insert benchmark
 - new_xxxx with constructor parameters
 - check C++ identifier constraints for table and field names
 - check namespace != joedb
-- check matching db schema when opening file
+- check matching db schema when opening file, and allow creating a new file
+- find_xxx method (with index)
+- get_id -> read id of record, but not write (useful for custom data structure).
 
 Interpreter
 -----------

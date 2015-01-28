@@ -71,6 +71,12 @@ add_executable(joedbi_insert
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
+add_executable(joedbc_insert
+ ../benchmark/joedbc_insert.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+)
+set_target_properties(joedbc_insert PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
 add_executable(joedbc
  ../src/compiler/joedbc.cpp
  $<TARGET_OBJECTS:interpreter_objects>
