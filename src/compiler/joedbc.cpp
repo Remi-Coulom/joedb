@@ -87,22 +87,25 @@ void generate_code(std::ostream &out,
 
  for (auto table: tables)
  {
-  out << " class " << table.second.get_name() << "_container;\n\n";
-  out << " class " << table.second.get_name() << "_t\n {\n";
+  const std::string &tname = table.second.get_name();
+  out << " class " << tname << "_container;\n\n";
+  out << " class " << tname << "_t\n {\n";
   out << "  friend class Database;\n";
   for (auto friend_table: tables)
    if (friend_table.first != table.first)
     out << "  friend class " << friend_table.second.get_name() << "_t;\n";
-  out << "  friend class "  << table.second.get_name() << "_container;\n";
+  out << "  friend class "  << tname << "_container;\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
-  out << "   " << table.second.get_name() << "_t(record_id_t id): id(id) {}\n";
+  out << "   " << tname << "_t(record_id_t id): id(id) {}\n";
   out << "\n  public:\n";
-  out << "   " << table.second.get_name() << "_t(): id(0) {}\n";
+  out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << " };\n";
   out << '\n';
-  out << "\n struct " << table.second.get_name() << "_data\n {\n";
+  out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n";
+  out << "  " << tname << "_data() {}\n";
+  out << "  " << tname << "_data(bool f): joedb::EmptyRecord(f) {}\n";
 
   for (const auto &field: table.second.get_fields())
   {
@@ -134,9 +137,8 @@ void generate_code(std::ostream &out,
  //
  for (auto table: tables)
  {
-  const std::string &name = table.second.get_name();
-  out << "   std::vector<" << name << "_data> " << name << "_table;\n";
-  out << "   joedb::FreedomKeeper " << name << "_FK;\n";
+  const std::string &tname = table.second.get_name();
+  out << "   joedb::FreedomKeeper<" << tname << "_data> " << tname << "_FK;\n";
  }
 
  //
@@ -181,7 +183,6 @@ void generate_code(std::ostream &out,
    const std::string &name = table.second.get_name();
    out << "if (table_id == " << table.first << ")\n";
    out << "    {\n";
-   out << "     " << name << "_table.resize(record_id);\n";
    out << "     while (" << name << "_FK.size() < record_id)\n";
    out << "      " << name << "_FK.push_back();\n";
    out << "     " << name << "_FK.use(record_id + 1);\n";
@@ -230,7 +231,8 @@ void generate_code(std::ostream &out,
       {
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
-       out << "      " << table.second.get_name() << "_table[record_id - 1].";
+       out << "      " << table.second.get_name();
+       out << "_FK.get_record(record_id + 1).";
        out << field.second.get_name() << " = value;\n";
        out << "      return;\n";
        out << "     }\n";
@@ -279,13 +281,11 @@ void generate_code(std::ostream &out,
  {
   out << '\n';
   const std::string &tname = table.second.get_name();
+
   out << "   " << tname << "_container get_" << tname << "_table() const;\n";
   out << "   " << tname << "_t new_" << tname << "()\n";
   out << "   {\n";
   out << "    " << tname << "_t result(" << tname << "_FK.allocate() - 1);\n";
-  out << "    while (" << tname << "_table.size() < ";
-  out << tname << "_FK.size())\n";
-  out << "     " << tname << "_table.push_back(" << tname << "_data());\n";
   out << "    journal.after_insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
@@ -305,7 +305,7 @@ void generate_code(std::ostream &out,
    out << " {\n";
    out << "  assert(!record.is_null());\n";
    out << "  return " << tname;
-   out << "_table[record.id - 1]." << fname << ";\n";
+   out << "_FK.get_record(record.id + 1)." << fname << ";\n";
    out << " }\n";
 
    out << " void set_" << fname;
@@ -314,7 +314,7 @@ void generate_code(std::ostream &out,
    out << ' ' << fname << ")\n";
    out << " {\n";
    out << "  assert(!record.is_null());\n";
-   out << "  " << tname << "_table[record.id - 1].";
+   out << "  " << tname << "_FK.get_record(record.id + 1).";
    out << fname << " = " << fname << ";\n";
    out << "  journal.after_update_";
    out << types[int(field.second.get_type().get_type_id())];
@@ -346,16 +346,14 @@ void generate_code(std::ostream &out,
   out << "   {\n";
   out << "    friend class " << tname << "_container;\n";
 
-  out << R"RRR(
-    private:
-     const joedb::FreedomKeeper &fk;
-     size_t index;
-     iterator(const joedb::FreedomKeeper &fk): fk(fk), index(0) {}
-
-    public:
-     bool operator!=(const iterator &i) const {return index != i.index;}
-     iterator &operator++() {index = fk.get_next(index); return *this;}
-)RRR";
+  out << "    private:\n";
+  out << "     const joedb::FreedomKeeper<" << tname << "_data> &fk;\n";
+  out << "     size_t index;\n";
+  out << "     iterator(const joedb::FreedomKeeper<" << tname << "_data> &fk): fk(fk), index(0) {}\n";
+  out << '\n';
+  out << "    public:\n";
+  out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
+  out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
 
   out << "     " << tname << "_t operator*() {return ";
   out << tname << "_t(index - 1);}\n";

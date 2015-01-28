@@ -4,14 +4,19 @@
 
 int main()
 {
+ //
+ // Open the database, and test that everything is OK
+ //
  tutorial::Database db("tutorial.joedb");
-
  if (!db.is_good())
  {
   std::cerr << "Error: could not open database\n";
   return 1;
  }
 
+ //
+ // Loop over rows of a table
+ //
  std::cout << "List of cities:\n";
  for (auto city: db.get_city_table())
   std::cout << db.get_name(city) << '\n';
@@ -21,12 +26,12 @@ int main()
  //
  auto Amsterdam = db.new_city();
  db.set_name(Amsterdam, "Amsterdam");
- auto aristide = db.new_person();
- db.set_name(aristide, "Aristide");
- db.set_home(aristide, Amsterdam);
+ auto Aristide = db.new_person();
+ db.set_name(Aristide, "Aristide");
+ db.set_home(Aristide, Amsterdam);
 
  //
- // A simple join between the two tables
+ // A join between the two tables
  //
  std::cout << "\nList of persons with their cities:\n";
  for (auto person: db.get_person_table())
@@ -42,7 +47,7 @@ int main()
  //
  // Deleting records
  //
- db.delete_record(aristide);
+ db.delete_record(Aristide);
  db.delete_record(Amsterdam);
 
  return 0;

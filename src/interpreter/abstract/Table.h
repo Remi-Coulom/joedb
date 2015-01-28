@@ -17,7 +17,7 @@ namespace joedb
    std::map<field_id_t, Field> fields;
    field_id_t current_field_id;
 
-   FreedomKeeper freedom;
+   FreedomKeeper<> freedom;
 
   public:
    Table(const std::string &name):
@@ -27,7 +27,7 @@ namespace joedb
    }
 
    const std::string &get_name() const {return name;}
-   const FreedomKeeper &get_freedom() const {return freedom;}
+   const FreedomKeeper<> &get_freedom() const {return freedom;}
 
    const std::map<field_id_t, Field> &get_fields() const {return fields;}
    field_id_t find_field(const std::string &name) const;
