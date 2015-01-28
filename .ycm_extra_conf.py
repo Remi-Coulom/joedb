@@ -173,7 +173,7 @@ def FlagsForFile( filename, **kwargs ):
     # python list, but a "list-like" StringVec object
 #    compilation_info = GetCompilationInfoForFile( filename )
 #    if not compilation_info:
-    compilation_info = database.GetCompilationInfoForFile("/home/rcoulom/crazydb/src/interpreter/io/interpreter_main.cpp")
+    compilation_info = database.GetCompilationInfoForFile(DirectoryOfThisScript() + "/src/interpreter/io/interpreter_main.cpp")
 
   if compilation_info:
     final_flags = MakeRelativePathsInFlagsAbsolute(
