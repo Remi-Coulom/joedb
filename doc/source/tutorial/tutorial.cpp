@@ -16,13 +16,18 @@ int main()
  for (auto city: db.get_city_table())
   std::cout << city.get_name(db) << '\n';
 
+ //
+ // Inserting new records
+ //
  auto Amsterdam = db.new_city();
  Amsterdam.set_name(db, "Amsterdam");
-
  auto aristide = db.new_person();
  aristide.set_name(db, "Aristide");
  aristide.set_home(db, Amsterdam);
 
+ //
+ // A simple joint between the two tables
+ //
  std::cout << "\nList of persons with their cities:\n";
  for (auto person: db.get_person_table())
  {
@@ -33,6 +38,12 @@ int main()
   else
    std::cout << "lives in " << home.get_name(db) << '\n';
  }
+
+ //
+ // Deleting records
+ //
+ aristide.delete_record(db);
+ Amsterdam.delete_record(db);
 
  return 0;
 }

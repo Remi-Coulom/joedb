@@ -100,6 +100,7 @@ void generate_code(std::ostream &out,
   out << "\n  public:\n";
   out << "   " << table.second.get_name() << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
+  out << "   void delete_record(Database &db);\n";
 
   for (const auto &field: table.second.get_fields())
   {
@@ -343,6 +344,12 @@ void generate_code(std::ostream &out,
   out << ' ' << tname << "_container Database::get_" << tname << "_table() const\n";
   out << " {\n";
   out << "  return " << tname << "_container(*this);\n";
+  out << " }\n";
+  out << '\n';
+  out << " void " << tname << "_t::delete_record(Database &db)\n";
+  out << " {\n";
+  out << "  db." << tname << "_FK.free(id + 1);\n";
+  out << "  db.journal.after_delete(" << table.first << ", id);\n";
   out << " }\n";
 
   for (const auto &field: table.second.get_fields())
