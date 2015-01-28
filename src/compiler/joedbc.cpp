@@ -100,21 +100,8 @@ void generate_code(std::ostream &out,
   out << "\n  public:\n";
   out << "   " << table.second.get_name() << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
-  out << "   void delete_record(Database &db);\n";
-
-  for (const auto &field: table.second.get_fields())
-  {
-   out << "   ";
-   write_type(out, db, field.second.get_type(), true);
-   out << " get_" << field.second.get_name() << "(const Database &db);\n";
-
-   out << "   void set_" << field.second.get_name() << "(Database &db, ";
-   write_type(out, db, field.second.get_type(), true);
-   out << ' ' << field.second.get_name() << ");\n";
-  }
-
   out << " };\n";
-
+  out << '\n';
   out << "\n struct " << table.second.get_name() << "_data\n {\n";
 
   for (const auto &field: table.second.get_fields())
@@ -302,6 +289,43 @@ void generate_code(std::ostream &out,
   out << "    journal.after_insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
+  out << "   void delete_record(" << tname << "_t record)\n";
+  out << "   {\n";
+  out << "    " << tname << "_FK.free(record.id + 1);\n";
+  out << "    journal.after_delete(" << table.first << ", record.id);\n";
+  out << "   }\n";
+
+  for (const auto &field: table.second.get_fields())
+  {
+   const std::string &fname = field.second.get_name();
+   out << '\n';
+   out << ' ';
+   write_type(out, db, field.second.get_type(), true);
+   out << " get_" << fname << "(" << tname << "_t record)\n";
+   out << " {\n";
+   out << "  assert(!record.is_null());\n";
+   out << "  return " << tname;
+   out << "_table[record.id - 1]." << fname << ";\n";
+   out << " }\n";
+
+   out << " void set_" << fname;
+   out << "(" << tname << "_t record, ";
+   write_type(out, db, field.second.get_type(), true);
+   out << ' ' << fname << ")\n";
+   out << " {\n";
+   out << "  assert(!record.is_null());\n";
+   out << "  " << tname << "_table[record.id - 1].";
+   out << fname << " = " << fname << ";\n";
+   out << "  journal.after_update_";
+   out << types[int(field.second.get_type().get_type_id())];
+   out << '(' << table.first << ", record.id, " << field.first << ", ";
+   out << fname;
+   if (field.second.get_type().get_type_id() ==
+       joedb::Type::type_id_t::reference)
+    out << ".id";
+   out << ");\n";
+   out << " }\n";
+  }
  }
 
  out << "\n};\n";
@@ -346,44 +370,6 @@ void generate_code(std::ostream &out,
   out << "  return " << tname << "_container(*this);\n";
   out << " }\n";
   out << '\n';
-  out << " void " << tname << "_t::delete_record(Database &db)\n";
-  out << " {\n";
-  out << "  db." << tname << "_FK.free(id + 1);\n";
-  out << "  db.journal.after_delete(" << table.first << ", id);\n";
-  out << " }\n";
-
-  for (const auto &field: table.second.get_fields())
-  {
-   out << '\n';
-   const std::string &fname = field.second.get_name();
-   out << ' ';
-   write_type(out, db, field.second.get_type(), true);
-   out << ' ' << tname << "_t::";
-   out << "get_" << fname << "(const Database &db)\n";
-   out << " {\n";
-   out << "  assert(!is_null());\n";
-   out << "  return db." << tname;
-   out << "_table[id - 1]." << fname << ";\n";
-   out << " }\n";
-
-   out << " void " << tname << "_t::set_" << fname;
-   out << "(Database &db, ";
-   write_type(out, db, field.second.get_type(), true);
-   out << ' ' << fname << ")\n";
-   out << " {\n";
-   out << "  assert(!is_null());\n";
-   out << "  db." << tname << "_table[id - 1].";
-   out << fname << " = " << fname << ";\n";
-   out << "  db.journal.after_update_";
-   out << types[int(field.second.get_type().get_type_id())];
-   out << '(' << table.first << ", id, " << field.first << ", ";
-   out << fname;
-   if (field.second.get_type().get_type_id() ==
-       joedb::Type::type_id_t::reference)
-    out << ".id";
-   out << ");\n";
-   out << " }\n";
-  }
  }
 
  out << "}\n\n";

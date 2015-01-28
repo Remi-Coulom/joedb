@@ -24,8 +24,8 @@ int main(int argc, char **argv)
   for (int i = 1; i <= N; i++)
   {
    auto record = db.new_BENCHMARK();
-   record.set_NAME(db, name_string);
-   record.set_VALUE(db, 18838586676582);
+   db.set_NAME(record, name_string);
+   db.set_VALUE(record, 18838586676582);
   }
 
   db.commit();

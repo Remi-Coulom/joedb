@@ -5,7 +5,6 @@ Short term
 ----------
 Compiler:
 
-- store db along with record_id: .get_name() instead of .get_name(db)
 - new_xxxx with constructor parameters
 - check matching db schema when opening file, and allow creating a new file
 
