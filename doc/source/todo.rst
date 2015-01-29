@@ -9,13 +9,13 @@ Compiler:
 - check C++ identifier constraints for table and field names
 - check namespace != joedb
 - find_xxx method (with index)
+- custom triggers
 
 Interpreter
 -----------
 - string format/escaping 'string with space' ...
 - show command prompt
 - readline, help
-- dump journal to interpreter commands
 - sql dump
 - use sql syntax
 - dump to compact new .joedb file

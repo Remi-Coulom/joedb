@@ -4,9 +4,44 @@
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump(std::ostream &out, const Database &database)
+void joedb::write_type(std::ostream &out, const Database &db, Type type)
 {
- auto tables = database.get_tables();
+ switch(type.get_type_id())
+ {
+  case Type::type_id_t::null:
+   out << "null";
+  break;
+
+  case Type::type_id_t::string:
+   out << "string";
+  break;
+
+  case Type::type_id_t::int32:
+   out << "int32";
+  break;
+
+  case Type::type_id_t::int64:
+   out << "int64";
+  break;
+
+  case Type::type_id_t::reference:
+  {
+   out << "references ";
+   table_id_t table_id = type.get_table_id();
+   const auto it = db.get_tables().find(table_id);
+   if (it != db.get_tables().end())
+    out << it->second.get_name();
+   else
+    out << "a_deleted_table";
+  }
+  break;
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::dump(std::ostream &out, const Database &db)
+{
+ auto tables = db.get_tables();
 
  //
  // Dump tables
@@ -25,38 +60,7 @@ void joedb::dump(std::ostream &out, const Database &database)
   {
    out << "add_field " << table.second.get_name() << ' ';
    out << field.second.get_name() << ' ';
-
-   switch(field.second.get_type().get_type_id())
-   {
-    case Type::type_id_t::null:
-     out << "null";
-    break;
-
-    case Type::type_id_t::string:
-     out << "string";
-    break;
-
-    case Type::type_id_t::int32:
-     out << "int32";
-    break;
-
-    case Type::type_id_t::int64:
-     out << "int64";
-    break;
-
-    case Type::type_id_t::reference:
-    {
-     out << "references ";
-     table_id_t table_id = field.second.get_type().get_table_id();
-     const auto it = tables.find(table_id);
-     if (it != tables.end())
-      out << it->second.get_name();
-     else
-      out << "a_deleted_table";
-    }
-    break;
-   }
-
+   write_type(out, db, field.second.get_type());
    out << '\n';
   }
  }

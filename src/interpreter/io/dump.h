@@ -3,11 +3,14 @@
 
 #include <iosfwd>
 
+#include "Type.h"
+
 namespace joedb
 {
  class Database;
 
- void dump(std::ostream &out, const Database &database);
+ void write_type(std::ostream &out, const Database &db, Type type);
+ void dump(std::ostream &out, const Database &db);
 }
 
 #endif

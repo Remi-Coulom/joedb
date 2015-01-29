@@ -49,6 +49,12 @@ add_executable(joedbi
  $<TARGET_OBJECTS:io_objects>
 )
 
+add_executable(joedb_logdump
+ ../src/interpreter/io/joedb_logdump.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+ $<TARGET_OBJECTS:io_objects>
+)
+
 if(EXISTS "../gtest-1.7.0")
  add_executable(joedb_test
   ../test/Interpreter_Test.cpp
