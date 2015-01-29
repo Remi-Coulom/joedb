@@ -5,4 +5,4 @@ The aim of joedb is to offer a simple embedded relational database, where data i
 
 Joedb is currently a proof-of-concept prototype. It was released with the aim to get feedback and reviews. It is not yet ready for real-world use, but the most basic features work, and you are welcome to try them.
 
-To get started, please take at a look at the _`Documentation http://remi.coulom.free.fr/joedb/`. It contains more details, a 5-minute tutorial, and some simple benchmarks.
+To get started, please take at a look at the _`Documentation http://remi.coulom.free.fr/joedb/`. It contains a detailed introduction, and a short tutorial that demonstrates how to use joedb.
