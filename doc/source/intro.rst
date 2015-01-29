@@ -41,7 +41,7 @@ This will produce ``joedbi``, the joedb interpreter, and ``joedbc``, the joedb c
 
 All the files for this tutorial are located in the ``doc/source/tutorial`` directory. This directory contains 3 files: ``tutorial.joedbi`` contains the intepreter commands that define the database schema, ``tutorial.cpp`` is the cpp file that manipulates the database, and ``generate.sh`` is a bash script that will compile all the code and run the program.
 
-The contents of these file should be self-explanatory
+The contents of these file should be self-explanatory:
 
 ``tutorial.joedbi``:
 
