@@ -25,12 +25,38 @@ In short, joedb fixes the ugliness of having to call a high-level dynamic query 
 Five-Minute Tutorial
 --------------------
 
+In Linux, the following commands should get you ready:
+
+.. code-block:: bash
+
+    sudo apt-get install libsqlite3-dev cmake ninja-build g++ lcov
+    git clone git@github.com:Remi-Coulom/joedb.git
+    cd joedb/compcmake/
+    ./get_gtest.sh
+    ./generate.sh
+    cd ninja_release
+    ninja
+
+This will produce ``joedbi``, the joedb interpreter, and ``joedbc``, the joedb compiler. ``joedbi`` lets you manipulate the database with interactive commands. ``joedbc`` reads a file with joedbi commands that define the database schema, and produce C++ code as output.
+
+All the files for this tutorial are located in the ``doc/source/tutorial`` directory. This directory contains 3 files: ``tutorial.joedbi`` contains the intepreter commands that define the database schema, ``tutorial.cpp`` is the cpp file that manipulates the database, and ``generate.sh`` is a bash script that will compile all the code and run the program.
+
+The contents of these file should be self-explanatory
+
+``tutorial.joedbi``:
+
 .. literalinclude:: ./tutorial/tutorial.joedbi
 
-The application can manipulate the data this way
+``generate.sh``:
+
+.. literalinclude:: ./tutorial/generate.sh
+   :language: bash
+
+``tutorial.cpp``:
 
 .. literalinclude:: ./tutorial/tutorial.cpp
    :language: c++
 
-Benchmark
----------
+The output of this tutorial should be:
+
+.. literalinclude:: ./tutorial/tutorial.out

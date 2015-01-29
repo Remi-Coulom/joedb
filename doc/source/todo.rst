@@ -9,7 +9,6 @@ Compiler:
 - check C++ identifier constraints for table and field names
 - check namespace != joedb
 - find_xxx method (with index)
-- get_id -> read id of record, but not write (useful for custom data structure).
 
 Interpreter
 -----------
@@ -76,3 +75,4 @@ Other ideas
 - GUI editor similar to the icga database editor (http server with cpp-netlib)
 - rapidly undo-able history
 - add explicit keyword to constructors
+- make some classes non-copyable

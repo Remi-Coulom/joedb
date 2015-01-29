@@ -14,4 +14,5 @@ cd $dir
 ninja tutorial || exit 1
 cd -
 
-$dir/tutorial
+$dir/tutorial >tutorial.out
+cat tutorial.out

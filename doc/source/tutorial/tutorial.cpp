@@ -26,6 +26,7 @@ int main()
  //
  auto Amsterdam = db.new_city("Amsterdam");
  auto Aristide = db.new_person("Aristide", Amsterdam);
+ db.set_name(Aristide, "Aristide Martinez");
 
  //
  // A join between the two tables

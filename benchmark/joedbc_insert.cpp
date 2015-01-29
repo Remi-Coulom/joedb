@@ -1,5 +1,4 @@
 #include "benchmark.h"
-
 #include <cstdio>
 
 int main(int argc, char **argv)
@@ -14,19 +13,10 @@ int main(int argc, char **argv)
 
   benchmark::Database db("insert.joedb");
 
-  if (!db.is_good())
-  {
-   std::printf("Error opening database\n");
-   return 1;
-  }
+  const std::string s("TOTO");
 
-  const std::string name_string("TOTO");
   for (int i = 1; i <= N; i++)
-  {
-   auto record = db.new_BENCHMARK();
-   db.set_NAME(record, name_string);
-   db.set_VALUE(record, 18838586676582);
-  }
+   db.new_BENCHMARK(s, i);
 
   db.commit();
  }
