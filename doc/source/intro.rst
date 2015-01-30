@@ -29,7 +29,7 @@ In Linux, the following commands should get you ready:
 
 .. code-block:: bash
 
-    sudo apt-get install libsqlite3-dev cmake ninja-build g++ lcov
+    sudo apt-get install libsqlite3-dev cmake ninja-build g++ lcov unzip valgrind python-sphinx wget git-core
     git clone git@github.com:Remi-Coulom/joedb.git
     cd joedb/compcmake/
     ./get_gtest.sh
