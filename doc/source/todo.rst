@@ -42,6 +42,10 @@ New operations and types
   - date
   - vector<int>
 
+Storage with stxxl
+------------------
+For strings: store a big vector of chars. A string is length + index in the big vector of chars.
+
 Compiler
 --------
 

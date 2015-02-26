@@ -19,6 +19,7 @@ Crash resistance:
 
 - http://www.cs.berkeley.edu/~brewer/cs262/LFS.pdf
 - http://oldblog.antirez.com/post/redis-persistence-demystified.html
+- http://oldblog.antirez.com/post/fsync-different-thread-useless.html
 - http://sqlite.org/atomiccommit.html
 - http://lwn.net/Articles/457667/
 
