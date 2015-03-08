@@ -1,5 +1,5 @@
-Introduction
-============
+joedb, the Journal-Only Embedded Database
+=========================================
 
 joedb is the "journal-only embedded database". In joedb, a log of all data modifications is stored in permanent storage. A compiler takes a relational database schema as input and produces code in the target programming language for transparently persistent data structures. This way, data can be directly manipulated, without using SQL. The philosophy of joedb is to offer a minimalist low-level mechanism for persistence, without compromising performance.
 
