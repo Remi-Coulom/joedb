@@ -41,6 +41,7 @@ add_library(interpreter_objects OBJECT
 add_library(io_objects OBJECT
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
+ ../src/interpreter/io/utf8.cpp
 )
 
 add_executable(joedbi

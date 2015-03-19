@@ -54,6 +54,13 @@ bool joedb::Interpreter::update_value(std::istream &in,
   case Type::type_id_t::null:
   return false;
 
+  case Type::type_id_t::string:
+  {
+   std::string value;
+   in >> value;
+   return db.update_string(table_id, record_id, field_id, value);
+  }
+
 #define UPDATE_CASE(cpp_type, type_name)\
   case Type::type_id_t::type_name:\
   {\
@@ -62,7 +69,6 @@ bool joedb::Interpreter::update_value(std::istream &in,
    return db.update_##type_name(table_id, record_id, field_id, value);\
   }
 
-  UPDATE_CASE(std::string, string);
   UPDATE_CASE(int32_t, int32);
   UPDATE_CASE(int64_t, int64);
   UPDATE_CASE(record_id_t, reference);
