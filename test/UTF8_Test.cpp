@@ -3,11 +3,17 @@
 
 #include <sstream>
 
+// TODO: find an utf-8 character that contains a " inside
+
 TEST(UTF8_Test, write_hexa_character)
 {
  std::ostringstream out;
  joedb::write_hexa_character(out, 0x1a);
  EXPECT_EQ(out.str(), "\\x1a");
+}
+
+TEST(UTF8_Test, read_utf8_string)
+{
 }
 
 TEST(UTF8_Test, write_utf8_string)
