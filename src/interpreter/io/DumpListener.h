@@ -3,6 +3,7 @@
 
 #include "SchemaListener.h"
 #include "dump.h"
+#include "utf8.h"
 
 #include <iostream>
 
@@ -80,6 +81,18 @@ namespace joedb
     out << record_id << '\n';
    }
 
+   void after_update_string(table_id_t table_id,
+                            record_id_t record_id,
+                            field_id_t field_id,
+                            const std::string &value) override
+   {
+    out << "update " << get_table_name(table_id) << ' ';
+    out << record_id << ' ';
+    out << get_field_name(table_id, field_id) << ' ';
+    joedb::write_utf8_string(out, value);
+    out << '\n';
+   }
+
 #define AFTER_UPDATE(return_type, type_id)\
    void after_update_##type_id(table_id_t table_id,\
                                record_id_t record_id,\
@@ -92,7 +105,6 @@ namespace joedb
     out << value << '\n';\
    }
 
-   AFTER_UPDATE(const std::string &, string)
    AFTER_UPDATE(int32_t, int32)
    AFTER_UPDATE(int64_t, int64)
    AFTER_UPDATE(record_id_t, reference)

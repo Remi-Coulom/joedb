@@ -14,7 +14,7 @@ TEST(UTF8_Test, write_utf8_string)
 {
  {
   std::ostringstream out;
-  joedb::write_utf8_string(out, "Hello, world!", false);
+  joedb::write_utf8_string(out, "Hello, world!");
   EXPECT_EQ(out.str(), "\"Hello, world!\"");
  }
 

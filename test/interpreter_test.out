@@ -13,11 +13,11 @@ create_table person
 add_field city name string
 add_field person name string
 add_field person city references city
-insert_into city 2 Lille
-insert_into city 1 Paris
-insert_into person 3 Alexandre 1
-insert_into person 2 Norbert 2
-insert_into person 1 Rémi 2
+insert_into city 2 "Lille"
+insert_into city 1 "Paris"
+insert_into person 3 "Alexandre" 1
+insert_into person 2 "Norbert" 2
+insert_into person 1 "Rémi" 2
 OK: dropped table 1
 OK: dropped table 2
 OK: create table test; table_id = 3
@@ -35,7 +35,7 @@ create_table test
 add_field test a int32
 add_field test b int64
 add_field test d string
-insert_into test 1 1234 5678 
+insert_into test 1 1234 5678 ""
 Error: no such field: qsdfqsdf
 OK: dropped field a
 OK: inserted record, id = 2
@@ -47,7 +47,7 @@ OK: updated
 create_table test
 add_field test b int64
 add_field test d string
-insert_into test 1 56789 
+insert_into test 1 56789 ""
 OK: create table ref; table_id = 4
 OK: add_field ref; field_id = 1
 OK: dropped table 3
