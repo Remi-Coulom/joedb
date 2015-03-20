@@ -12,16 +12,24 @@ std::string joedb::read_utf8_string(std::istream &in)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void write_hexa_character(std::ostream &out, uint8_t c)
+char joedb::get_hex_digit(uint8_t n)
 /////////////////////////////////////////////////////////////////////////////
 {
- out << "\\x" << char('0' + (c >> 4)) << char('0' + (c & 0x0f));
+ if (n < 10)
+  return char('0' + n);
+ else
+  return char('a' + n - 10);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void write_utf8_string(std::ostream &out,
-                       const std::string &s,
-                       bool ascii_only)
+void joedb::write_hexa_character(std::ostream &out, uint8_t c)
+/////////////////////////////////////////////////////////////////////////////
+{
+ out << "\\x" << get_hex_digit(uint8_t(c >> 4)) << get_hex_digit(c & 0x0f);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::write_utf8_string(std::ostream &out, const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
  out << '"';
@@ -38,8 +46,6 @@ void write_utf8_string(std::ostream &out,
     out << "\\";
    else if (c == '\n')
     out << "\\n";
-   else if (c == '\\')
-    out << "\\";
    else if (c == '\t')
     out << "\\t";
    else if (c < 0x20)
@@ -49,7 +55,7 @@ void write_utf8_string(std::ostream &out,
   }
   else if (c < 0xc2)
   {
-   write_hexa_character(out, c);
+   write_hexa_character(out, c); // error
   }
   else if (c < 0xe0 && i < s.size() - 1)
   {
@@ -71,7 +77,7 @@ void write_utf8_string(std::ostream &out,
   }
   else
   {
-   write_hexa_character(out, c);
+   write_hexa_character(out, c); // error
   }
  }
 

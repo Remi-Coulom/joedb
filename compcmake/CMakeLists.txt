@@ -61,6 +61,7 @@ if(EXISTS "../gtest-1.7.0")
   ../test/Interpreter_Test.cpp
   ../test/File_Test.cpp
   ../test/JournalFile_Test.cpp
+  ../test/UTF8_Test.cpp
   ../test/Test_Main.cpp
   $<TARGET_OBJECTS:interpreter_objects>
   $<TARGET_OBJECTS:io_objects>
