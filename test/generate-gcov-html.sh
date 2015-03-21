@@ -11,7 +11,7 @@ lcov --directory ../compcmake/ninja_debug\
      --rc lcov_branch_coverage=1\
      --output-file all.info || exit 1
 
-lcov --remove all.info '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/gtest-*/*'\
+lcov --remove all.info '/opt/local/*' '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/gtest-*/*'\
      --rc lcov_branch_coverage=1\
      --output app.info || exit 1
 

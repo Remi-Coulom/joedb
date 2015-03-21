@@ -2,8 +2,7 @@
 #include "gtest/gtest.h"
 
 #include <sstream>
-
-// TODO: find an utf-8 character that contains a " inside
+#include <random>
 
 struct
 {
@@ -51,5 +50,27 @@ TEST(UTF8_Test, write_utf8_string)
   std::ostringstream out;
   joedb::write_utf8_string(out, p.s1);
   EXPECT_EQ(out.str(), p.s2);
+ }
+}
+
+TEST(UTF8_Test, random)
+{
+ const int N = 1000;
+ const int Length = 5;
+ std::string s1(Length, 0);
+
+ auto ud = std::uniform_int_distribution<>(0, 255);
+ auto mt = std::mt19937(0);
+
+ for (int j = N; --j >= 0;)
+ {
+  for (int i = 0; i < Length; i++)
+   s1[i] = char(ud(mt));
+
+  std::ostringstream out;
+  joedb::write_utf8_string(out, s1);
+  std::istringstream in(out.str());
+  std::string s2 = joedb::read_utf8_string(in);
+  ASSERT_EQ(s1, s2) << "out.str() = " << out.str();
  }
 }
