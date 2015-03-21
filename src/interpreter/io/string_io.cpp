@@ -63,8 +63,8 @@ void joedb::write_hexa_character(std::ostream &out, uint8_t c)
 {
  out.put('\\');
  out.put('x');
- out.put(get_hex_char_from_digit(int8_t(c >> 4)));
- out.put(get_hex_char_from_digit(int8_t(c & 0x0f)));
+ out.put(get_hex_char_from_digit(char(c >> 4)));
+ out.put(get_hex_char_from_digit(char(c & 0x0f)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
