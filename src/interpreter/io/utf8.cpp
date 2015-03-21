@@ -73,8 +73,10 @@ uint8_t joedb::get_hex_digit_from_char(char c)
 void joedb::write_hexa_character(std::ostream &out, uint8_t c)
 /////////////////////////////////////////////////////////////////////////////
 {
- out << "\\x" << get_hex_char_from_digit(int8_t(c >> 4)) <<
-                 get_hex_char_from_digit(int8_t(c & 0x0f));
+ out.put('\\');
+ out.put('x');
+ out.put(get_hex_char_from_digit(int8_t(c >> 4)));
+ out.put(get_hex_char_from_digit(int8_t(c & 0x0f)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
