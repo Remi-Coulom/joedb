@@ -14,7 +14,7 @@ pairs[] =
  {u8"Hello"           , u8"\"Hello\""},
  {u8"Rémi"            , u8"\"Rémi\""},
  {u8"Hello, world!"   , u8"\"Hello, world!\""},
- {u8"\"\n\\\t\x1f"    , u8"\"\\\"\\n\\\\\\t\\x1f\""},
+ {u8"\"\\\x1f"        , u8"\"\\\"\\\\\\x1f\""},
  {u8"これは日本語です", u8"\"これは日本語です\""},
  {u8"𩸽"              , u8"\"𩸽\""}, // 4-byte character
  {u8""                , u8"\"\""}
@@ -34,12 +34,6 @@ TEST(UTF8_Test, read_utf8_string)
   std::istringstream iss(p.s2);
   std::string s = joedb::read_utf8_string(iss);
   EXPECT_EQ(p.s1, s);
- }
-
- {
-  std::istringstream iss("Hello");
-  std::string s = joedb::read_utf8_string(iss);
-  EXPECT_EQ("Hello", s);
  }
 
  {
