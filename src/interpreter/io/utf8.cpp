@@ -86,47 +86,26 @@ void joedb::write_utf8_string(std::ostream &out, const std::string &s)
  {
   const uint8_t c = uint8_t(s[i]);
 
-  if (c < 0x80)
+  if (c < 0x20)
+  {
+   if (c == '\n')
+    out << "\\n";
+   else if (c == '\t')
+    out << "\\t";
+   else
+    write_hexa_character(out, c);
+  }
+  else if (c < 0x80)
   {
    if (c == '"')
     out << "\\\"";
    else if (c == '\\')
     out << "\\\\";
-   else if (c == '\n')
-    out << "\\n";
-   else if (c == '\t')
-    out << "\\t";
-   else if (c < 0x20)
-    write_hexa_character(out, c);
    else
     out << c;
   }
-  else if (c < 0xc2)
-  {
-   write_hexa_character(out, c); // error
-  }
-  else if (c < 0xe0 && i < s.size() - 1)
-  {
-   out << s[i];
-   out << s[++i];
-  }
-  else if (c < 0xf0 && i < s.size() - 2)
-  {
-   out << s[i];
-   out << s[++i];
-   out << s[++i];
-  }
-  else if (c < 0xf5 && i < s.size() - 3)
-  {
-   out << s[i];
-   out << s[++i];
-   out << s[++i];
-   out << s[++i];
-  }
   else
-  {
-   write_hexa_character(out, c); // error
-  }
+   out << c;
  }
 
  out << '"';

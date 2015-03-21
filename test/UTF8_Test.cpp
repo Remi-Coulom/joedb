@@ -56,7 +56,7 @@ TEST(UTF8_Test, write_utf8_string)
 TEST(UTF8_Test, random)
 {
  const int N = 1000;
- const int Length = 5;
+ const int Length = 100;
  std::string s1(Length, 0);
 
  auto ud = std::uniform_int_distribution<>(0, 255);
