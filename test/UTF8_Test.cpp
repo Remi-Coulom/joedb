@@ -24,7 +24,7 @@ TEST(UTF8_Test, write_hexa_character)
 {
  std::ostringstream out;
  joedb::write_hexa_character(out, 0x1a);
- EXPECT_EQ(out.str(), "\\x1a");
+ EXPECT_EQ("\\x1a", out.str());
 }
 
 TEST(UTF8_Test, read_utf8_string)
@@ -33,13 +33,25 @@ TEST(UTF8_Test, read_utf8_string)
  {
   std::istringstream iss(p.s2);
   std::string s = joedb::read_utf8_string(iss);
-  EXPECT_EQ(s, p.s1);
+  EXPECT_EQ(p.s1, s);
  }
 
  {
   std::istringstream iss("Hello");
   std::string s = joedb::read_utf8_string(iss);
-  EXPECT_EQ(s, "Hello");
+  EXPECT_EQ("Hello", s);
+ }
+
+ {
+  std::istringstream iss("\"Hello");
+  std::string s = joedb::read_utf8_string(iss);
+  EXPECT_EQ("Hello", s);
+ }
+
+ {
+  std::istringstream iss("\"\\x z\"");
+  std::string s = joedb::read_utf8_string(iss);
+  EXPECT_EQ(std::string(1, 0), s);
  }
 }
 
@@ -49,7 +61,7 @@ TEST(UTF8_Test, write_utf8_string)
  {
   std::ostringstream out;
   joedb::write_utf8_string(out, p.s1);
-  EXPECT_EQ(out.str(), p.s2);
+  EXPECT_EQ(p.s2, out.str());
  }
 }
 

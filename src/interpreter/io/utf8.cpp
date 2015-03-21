@@ -22,20 +22,19 @@ std::string joedb::read_utf8_string(std::istream &in)
   {
    if (c == '\\')
    {
-    if (in.get(c))
+    in.get(c);
+
+    if (c == 'n')
+     c = '\n';
+    else if (c == 't')
+     c = '\t';
+    else if (c == 'x')
     {
-     if (c == 'n')
-      c = '\n';
-     else if (c == 't')
-      c = '\t';
-     else if (c == 'x')
-     {
-      char c1, c0;
-      in.get(c1).get(c0);
-      const uint8_t n1 = get_hex_digit_from_char(c1);
-      const uint8_t n0 = get_hex_digit_from_char(c0);
-      c = char((n1 << 4) | n0);
-     }
+     char c1, c0;
+     in.get(c1).get(c0);
+     const uint8_t n1 = get_hex_digit_from_char(c1);
+     const uint8_t n0 = get_hex_digit_from_char(c0);
+     c = char((n1 << 4) | n0);
     }
    }
 
@@ -80,7 +79,7 @@ void joedb::write_hexa_character(std::ostream &out, uint8_t c)
 void joedb::write_utf8_string(std::ostream &out, const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
- out << '"';
+ out.put('"');
 
  for (size_t i = 0; i < s.size(); i++)
  {
@@ -89,24 +88,24 @@ void joedb::write_utf8_string(std::ostream &out, const std::string &s)
   if (c < 0x20)
   {
    if (c == '\n')
-    out << "\\n";
+    out.put('\\').put('n');
    else if (c == '\t')
-    out << "\\t";
+    out.put('\\').put('t');
    else
     write_hexa_character(out, c);
   }
   else if (c < 0x80)
   {
    if (c == '"')
-    out << "\\\"";
+    out.put('\\').put('"');
    else if (c == '\\')
-    out << "\\\\";
+    out.put('\\').put('\\');
    else
-    out << c;
+    out.put(c);
   }
   else
-   out << c;
+   out.put(c);
  }
 
- out << '"';
+ out.put('"');
 }
