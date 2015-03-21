@@ -79,15 +79,10 @@ void joedb::write_utf8_string(std::ostream &out, const std::string &s)
 
   if (c < 0x20)
    write_hexa_character(out, c);
-  else if (c < 0x80)
-  {
-   if (c == '"')
-    out.put('\\').put('"');
-   else if (c == '\\')
-    out.put('\\').put('\\');
-   else
-    out.put(c);
-  }
+  else if (c == '"')
+   out.put('\\').put('"');
+  else if (c == '\\')
+   out.put('\\').put('\\');
   else
    out.put(c);
  }
