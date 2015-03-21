@@ -9,17 +9,20 @@ std::string joedb::read_utf8_string(std::istream &in)
  std::string result;
 
  char c;
- in >> c;
+ in.get(c);
 
  if (c != '"')
+ {
   in >> result;
+  result = c + result;
+ }
  else
  {
-  while ((in >> c) && c != '"')
+  while ((in.get(c)) && c != '"')
   {
    if (c == '\\')
    {
-    if (in >> c)
+    if (in.get(c))
     {
      if (c == 'n')
       c = '\n';
@@ -28,7 +31,7 @@ std::string joedb::read_utf8_string(std::istream &in)
      else if (c == 'x')
      {
       char c1, c0;
-      in >> c1 >> c0;
+      in.get(c1).get(c0);
       const uint8_t n1 = get_hex_digit_from_char(c1);
       const uint8_t n0 = get_hex_digit_from_char(c0);
       c = char((n1 << 4) | n0);
@@ -71,8 +74,8 @@ uint8_t joedb::get_hex_digit_from_char(char c)
 void joedb::write_hexa_character(std::ostream &out, uint8_t c)
 /////////////////////////////////////////////////////////////////////////////
 {
- out << "\\x" << get_hex_char_from_digit(c >> 4) <<
-                 get_hex_char_from_digit(c & 0x0f);
+ out << "\\x" << get_hex_char_from_digit(int8_t(c >> 4)) <<
+                 get_hex_char_from_digit(int8_t(c & 0x0f));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -90,7 +93,7 @@ void joedb::write_utf8_string(std::ostream &out, const std::string &s)
    if (c == '"')
     out << "\\\"";
    else if (c == '\\')
-    out << "\\";
+    out << "\\\\";
    else if (c == '\n')
     out << "\\n";
    else if (c == '\t')

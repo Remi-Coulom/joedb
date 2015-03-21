@@ -1,9 +1,9 @@
 #!/bin/bash
 cd ../compcmake/ninja_debug
 ninja clean
-rm -vf `find -name *.gcda`
-rm -vf `find -name *.gcno`
-ninja joedb_test
+rm -vf `find . -name \*.gcda`
+rm -vf `find . -name \*.gcno`
+ninja joedb_test || exit 1
 cd -
 
 if [[ $OSTYPE == *linux* ]]; then
