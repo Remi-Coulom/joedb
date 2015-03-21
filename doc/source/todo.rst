@@ -13,7 +13,6 @@ Compiler:
 
 Interpreter
 -----------
-- string format/escaping 'string with space' ...
 - show command prompt
 - readline, help
 - sql dump

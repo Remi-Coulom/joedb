@@ -2,6 +2,7 @@
 #include "Database.h"
 #include "dump.h"
 #include "Listener.h"
+#include "utf8.h"
 
 #include <iostream>
 #include <sstream>
@@ -56,8 +57,7 @@ bool joedb::Interpreter::update_value(std::istream &in,
 
   case Type::type_id_t::string:
   {
-   std::string value;
-   in >> value;
+   std::string value = joedb::read_utf8_string(in);
    return db.update_string(table_id, record_id, field_id, value);
   }
 
@@ -72,7 +72,6 @@ bool joedb::Interpreter::update_value(std::istream &in,
   UPDATE_CASE(int32_t, int32);
   UPDATE_CASE(int64_t, int64);
   UPDATE_CASE(record_id_t, reference);
-
 #undef UPDATE_CASE
  }
 
@@ -160,11 +159,10 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     else
     {
      out << "OK: inserted record, id = " << record_id << '\n';
-     for (const auto &field:
-          db.get_tables().find(table_id)->second.get_fields())
-     {
-      update_value(iss, table_id, record_id, field.first);
-     }
+     if (iss.good())
+      for (const auto &field:
+           db.get_tables().find(table_id)->second.get_fields())
+       update_value(iss, table_id, record_id, field.first);
     }
    }
   }

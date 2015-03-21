@@ -9,7 +9,9 @@ std::string joedb::read_utf8_string(std::istream &in)
  std::string result;
 
  char c;
- in.get(c);
+ while (in.get(c) && c == ' ')
+ {
+ }
 
  if (c != '"')
  {
