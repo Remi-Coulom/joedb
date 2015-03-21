@@ -1,4 +1,4 @@
-#include "utf8.h"
+#include "string_io.h"
 #include "gtest/gtest.h"
 
 #include <sstream>
@@ -20,46 +20,46 @@ pairs[] =
  {u8""                , u8"\"\""}
 };
 
-TEST(UTF8_Test, write_hexa_character)
+TEST(StringIO_Test, write_hexa_character)
 {
  std::ostringstream out;
  joedb::write_hexa_character(out, 0x1a);
  EXPECT_EQ("\\x1a", out.str());
 }
 
-TEST(UTF8_Test, read_utf8_string)
+TEST(StringIO_Test, read_string)
 {
  for (auto p: pairs)
  {
   std::istringstream iss(p.s2);
-  std::string s = joedb::read_utf8_string(iss);
+  std::string s = joedb::read_string(iss);
   EXPECT_EQ(p.s1, s);
  }
 
  {
   std::istringstream iss("\"Hello");
-  std::string s = joedb::read_utf8_string(iss);
+  std::string s = joedb::read_string(iss);
   EXPECT_EQ("Hello", s);
  }
 
  {
   std::istringstream iss("\"\\x z\"");
-  std::string s = joedb::read_utf8_string(iss);
+  std::string s = joedb::read_string(iss);
   EXPECT_EQ(std::string(1, 0), s);
  }
 }
 
-TEST(UTF8_Test, write_utf8_string)
+TEST(StringIO_Test, write_string)
 {
  for (auto p: pairs)
  {
   std::ostringstream out;
-  joedb::write_utf8_string(out, p.s1);
+  joedb::write_string(out, p.s1);
   EXPECT_EQ(p.s2, out.str());
  }
 }
 
-TEST(UTF8_Test, random)
+TEST(StringIO_Test, random)
 {
  const int N = 1000;
  const int Length = 100;
@@ -74,9 +74,9 @@ TEST(UTF8_Test, random)
    s1[i] = char(ud(mt));
 
   std::ostringstream out;
-  joedb::write_utf8_string(out, s1);
+  joedb::write_string(out, s1);
   std::istringstream in(out.str());
-  std::string s2 = joedb::read_utf8_string(in);
+  std::string s2 = joedb::read_string(in);
   ASSERT_EQ(s1, s2) << "out.str() = " << out.str();
  }
 }

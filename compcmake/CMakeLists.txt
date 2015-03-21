@@ -41,7 +41,7 @@ add_library(interpreter_objects OBJECT
 add_library(io_objects OBJECT
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
- ../src/interpreter/io/utf8.cpp
+ ../src/interpreter/io/string_io.cpp
 )
 
 add_executable(joedbi
@@ -61,7 +61,7 @@ if(EXISTS "../gtest-1.7.0")
   ../test/Interpreter_Test.cpp
   ../test/File_Test.cpp
   ../test/JournalFile_Test.cpp
-  ../test/UTF8_Test.cpp
+  ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   $<TARGET_OBJECTS:interpreter_objects>
   $<TARGET_OBJECTS:io_objects>

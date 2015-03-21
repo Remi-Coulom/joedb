@@ -1,9 +1,9 @@
-#include "utf8.h"
+#include "string_io.h"
 
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-std::string joedb::read_utf8_string(std::istream &in)
+std::string joedb::read_string(std::istream &in)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::string result;
@@ -68,7 +68,7 @@ void joedb::write_hexa_character(std::ostream &out, uint8_t c)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::write_utf8_string(std::ostream &out, const std::string &s)
+void joedb::write_string(std::ostream &out, const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
  out.put('"');

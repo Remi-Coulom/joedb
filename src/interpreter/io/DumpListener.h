@@ -3,7 +3,7 @@
 
 #include "SchemaListener.h"
 #include "dump.h"
-#include "utf8.h"
+#include "string_io.h"
 
 #include <iostream>
 
@@ -89,7 +89,7 @@ namespace joedb
     out << "update " << get_table_name(table_id) << ' ';
     out << record_id << ' ';
     out << get_field_name(table_id, field_id) << ' ';
-    joedb::write_utf8_string(out, value);
+    joedb::write_string(out, value);
     out << '\n';
    }
 

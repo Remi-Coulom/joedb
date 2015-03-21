@@ -1,6 +1,6 @@
 #include "dump.h"
 #include "Database.h"
-#include "utf8.h"
+#include "string_io.h"
 
 #include <iostream>
 
@@ -91,8 +91,7 @@ void joedb::dump(std::ostream &out, const Database &db)
      break;
 
      case Type::type_id_t::string:
-      joedb::write_utf8_string(out,
-        table.second.get_string(record_id, field.first));
+      joedb::write_string(out, table.second.get_string(record_id, field.first));
      break;
 
 #define FIELD_CASE(type)\

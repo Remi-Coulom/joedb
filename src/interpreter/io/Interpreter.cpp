@@ -2,7 +2,7 @@
 #include "Database.h"
 #include "dump.h"
 #include "Listener.h"
-#include "utf8.h"
+#include "string_io.h"
 
 #include <iostream>
 #include <sstream>
@@ -57,7 +57,7 @@ bool joedb::Interpreter::update_value(std::istream &in,
 
   case Type::type_id_t::string:
   {
-   std::string value = joedb::read_utf8_string(in);
+   std::string value = joedb::read_string(in);
    return db.update_string(table_id, record_id, field_id, value);
   }
 
