@@ -29,21 +29,23 @@ Journal file
 
 New operations and types
 ------------------------
+- more compact record insertion (record_id + all values at the same time)
+- also: insertion without record_id for default append should be more compact
 - "single-row" table option, compiled to a simple struct.
 - "don't-reuse-deleted-rows" table option
 - "no-delete" table option
 - checkpoints, tags, etc.
 - rename operations (table, field)
-- more compact record insertion (record_id + all values at the same time)
 - more data types
 
   - varchar
   - date
   - vector<int>
 
-Storage with stxxl
-------------------
-For strings: store a big vector of chars. A string is length + index in the big vector of chars.
+On-disk storage
+---------------
+- sqlite: with no fsync...
+- stxxl? For strings: store a big vector of chars. A string is length + index in the big vector of chars.
 
 Compiler
 --------
