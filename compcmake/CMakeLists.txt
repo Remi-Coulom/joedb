@@ -34,6 +34,7 @@ include_directories(
 add_library(interpreter_objects OBJECT
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
+ ../src/interpreter/abstract/is_identifier.cpp
  ../src/journal/File.cpp
  ../src/journal/JournalFile.cpp
 )
@@ -62,6 +63,7 @@ if(EXISTS "../gtest-1.7.0")
   ../test/File_Test.cpp
   ../test/JournalFile_Test.cpp
   ../test/StringIO_Test.cpp
+  ../test/is_identifier_Test.cpp
   ../test/Test_Main.cpp
   $<TARGET_OBJECTS:interpreter_objects>
   $<TARGET_OBJECTS:io_objects>
