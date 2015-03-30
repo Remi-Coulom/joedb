@@ -8,4 +8,11 @@ TEST(check_identifier_Test, main_test)
  EXPECT_FALSE(joedb::is_identifier(""));
  EXPECT_FALSE(joedb::is_identifier("123"));
  EXPECT_FALSE(joedb::is_identifier("123abcd"));
+ EXPECT_FALSE(joedb::is_identifier("Rémi"));
+ EXPECT_FALSE(joedb::is_identifier("/"));
+ EXPECT_FALSE(joedb::is_identifier(":"));
+ EXPECT_FALSE(joedb::is_identifier("@"));
+ EXPECT_FALSE(joedb::is_identifier("["));
+ EXPECT_FALSE(joedb::is_identifier("`"));
+ EXPECT_FALSE(joedb::is_identifier("{"));
 }

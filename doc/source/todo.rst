@@ -3,6 +3,7 @@ TODO
 
 Short term
 ----------
+
 Compiler:
 
 - check matching db schema when opening file, and allow creating a new file
