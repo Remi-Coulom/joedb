@@ -14,7 +14,7 @@ Some weaknesses of SQL APIs can be corrected by encapsulating the SQL string man
 
 These higher-level interfaces might look much cleaner from the programmer's point of view, but the additional layer of abstraction is costly. For example, it might become necessary to use a loop over objects to update them one by one. One single complex SQL query might have done the job efficiently, but the abstraction forces the programmer to inefficiently generate several queries instead.
 
-The idea of joedb is to overcome these problems by dropping SQL, and all the abstraction layers. All the operations over the relational data are directly implemented in the target programming language. This produces an architecture that is cleaner, simpler, and offers great opportunities for performance optimization.
+The idea of joedb is to overcome these problems by dropping SQL, and all the abstraction layers. Using SQL makes sense as a protocol to connect to a remote database, but is not necessary for an embedded database. All the operations over the relational data can be directly implemented in the target programming language. This produces an architecture that is cleaner, simpler, and offers great opportunities for performance optimization.
 
 Joedb stores data in permanent storage with a journal. Writing a journal is necessary for crash recovery and transactions. And because the journal can contain all the data, it is not necessary to make anything else permanent. In addition to its extreme simplicity, this approach also makes it possible to annotate the history with time stamps and tags, and to re-create any past state of the database.
 
