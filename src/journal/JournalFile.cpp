@@ -226,8 +226,8 @@ void joedb::JournalFile::after_drop_table(table_id_t table_id)
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::JournalFile::after_add_field(table_id_t table_id,
-                                  const std::string &name,
-                                  Type type)
+                                         const std::string &name,
+                                         Type type)
 {
  file.write<operation_t>(operation_t::add_field);
  file.compact_write<table_id_t>(table_id);
@@ -239,7 +239,7 @@ void joedb::JournalFile::after_add_field(table_id_t table_id,
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::JournalFile::after_drop_field(table_id_t table_id,
-                                   field_id_t field_id)
+                                          field_id_t field_id)
 {
  file.write<operation_t>(operation_t::drop_field);
  file.compact_write<table_id_t>(table_id);
@@ -247,7 +247,8 @@ void joedb::JournalFile::after_drop_field(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::JournalFile::after_insert(table_id_t table_id, record_id_t record_id)
+void joedb::JournalFile::after_insert(table_id_t table_id,
+                                      record_id_t record_id)
 {
  file.write<operation_t>(operation_t::insert_into);
  file.compact_write<table_id_t>(table_id);
@@ -255,7 +256,8 @@ void joedb::JournalFile::after_insert(table_id_t table_id, record_id_t record_id
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::JournalFile::after_delete(table_id_t table_id, record_id_t record_id)
+void joedb::JournalFile::after_delete(table_id_t table_id,
+                                      record_id_t record_id)
 {
  file.write<operation_t>(operation_t::delete_from);
  file.compact_write<table_id_t>(table_id);

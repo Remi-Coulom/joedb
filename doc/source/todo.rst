@@ -3,7 +3,6 @@ TODO
 
 Short term
 ----------
-
 Compiler:
 
 - check matching db schema when opening file, and allow creating a new file
@@ -30,22 +29,25 @@ Journal file
 
 New operations and types
 ------------------------
-- more compact record insertion (record_id + all values at the same time)
-- also: insertion without record_id for default append should be more compact
 - "single-row" table option, compiled to a simple struct.
 - "don't-reuse-deleted-rows" table option
 - "no-delete" table option
 - checkpoints, tags, etc.
 - rename operations (table, field)
+- compact log (easily done transparently):
+
+  * append = insert after previous insert (same table, record_id + 1)
+  * update_previous_record(field_id, value) = no need of table_id, record_id
+
 - more data types
 
-  - varchar
-  - date
-  - vector<int>
+  * varchar
+  * date
 
 On-disk storage
----------------
-- sqlite: with no fsync...
+----------------
+
+- sqlite
 - stxxl? For strings: store a big vector of chars. A string is length + index in the big vector of chars.
 
 Compiler
