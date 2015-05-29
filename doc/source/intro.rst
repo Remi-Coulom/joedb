@@ -37,7 +37,7 @@ In Linux, the following commands should get you ready:
 
 This will produce ``joedbi``, the joedb interpreter, and ``joedbc``, the joedb compiler. ``joedbi`` lets you manipulate the database with interactive commands. ``joedbc`` reads a file with joedbi commands that define the database schema, and produce C++ code as output.
 
-All the files for this tutorial are located in the ``doc/source/tutorial`` directory. This directory contains 3 files: ``tutorial.joedbi`` contains the intepreter commands that define the database schema, ``tutorial.cpp`` is the cpp file that manipulates the database, and ``generate.sh`` is a bash script that will compile all the code and run the program.
+All the files for this tutorial are located in the ``doc/source/tutorial`` directory. This directory contains 3 files: ``tutorial.joedbi`` contains the interpreter commands that define the database schema, ``tutorial.cpp`` is the cpp file that manipulates the database, and ``generate.sh`` is a bash script that will compile all the code and run the program.
 
 The contents of these file should be self-explanatory:
 
@@ -58,3 +58,102 @@ The contents of these file should be self-explanatory:
 The output of this tutorial should be:
 
 .. literalinclude:: ./tutorial/tutorial.out
+
+Benchmark
+---------
+
+The source code for these benchmarks can be found in the joedb/benchmark directory. They were run on a Linux machine with an i7-5930K CPU, and WDC WD20EZRX-00D8PB0 hard drive.
+
+Bulk Insert
+~~~~~~~~~~~
+
+First the sqlite3 code:
+
+.. code-block:: c++
+
+  sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
+  sqlite3_stmt *prepared_statement;
+  sqlite3_prepare_v2(db,
+                     "INSERT INTO BENCHMARK VALUES('TOTO', ?1)",
+                     -1,
+                     &prepared_statement,
+                     0);
+
+  for (int i = 1; i <= N; i++)
+  {
+   sqlite3_bind_int64(prepared_statement, 1, i);
+   sqlite3_step(prepared_statement);
+   sqlite3_reset(prepared_statement);
+  }
+
+  sqlite3_exec(db, "END TRANSACTION", 0, 0, 0);
+
+Then, the equivalent joedb code:
+
+.. code-block:: c++
+
+  const std::string s("TOTO");
+
+  for (int i = 1; i <= N; i++)
+   db.new_BENCHMARK(s, i);
+
+  db.checkpoint();
+  db.commit();
+
+The table below is the minimum of 10 runs, with N = 10,000,000.
+
++------+--------+---------+
+|      | joedb  | sqlite3 |
++------+--------+---------+
+| real | 2.803s | 10.266s |
++------+--------+---------+
+| user | 0.567s |  7.838s |
++------+--------+---------+
+| sys  | 0.200s |  0.319s |
++------+--------+---------+
+
+So, when the database fits in ram, joedb is much faster than sqlite3.
+
+Commit rate
+~~~~~~~~~~~
+
+If instead of one big commit at the end, each insert is committed to disk one by one, then the insertion rate is much slower. With N = 100:
+
++------+--------------+--------------+---------+
+|      | joedb (fast) | joedb (slow) | sqlite3 |
++------+--------------+--------------+---------+
+| real | 1.549s       | 3.184s       | 5.434s  |
++------+--------------+--------------+---------+
+| user | 0.002s       | 0.003s       | 0.006s  |
++------+--------------+--------------+---------+
+| sys  | 0.009s       | 0.016s       | 0.021s  |
++------+--------------+--------------+---------+
+
+The fast mode of joedb operates like this:
+
+.. code-block:: c++
+
+  for (int i = 1; i <= N; i++)
+  {
+   db.new_BENCHMARK(s, i);
+   db.checkpoint();
+   db.commit();
+  }
+
+The fast mode is crash-safe if the underlying system preserves write order.
+
+The slow mode is more paranoid, but twice slower:
+
+.. code-block:: c++
+
+  for (int i = 1; i <= N; i++)
+  {
+   db.new_BENCHMARK(s, i);
+   db.commit();
+   db.checkpoint();
+   db.commit();
+  }
+
+Thanks to its simple append-only file structure, joedb can operate safely with less synchronization operations than sqlite3, which makes it about 1.5 or 3 times faster, depending on synchronization mode.
+
+Note also that joedb does not require a file system: it can also operate over a raw device directly, which might offer additional opportunities for performance optimization.
