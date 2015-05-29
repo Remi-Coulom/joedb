@@ -112,8 +112,6 @@ The table below is the minimum of 10 runs, with N = 10,000,000.
 | sys  |  0.319s | 0.200s |
 +------+---------+--------+
 
-So, when the database fits in ram, joedb is much faster than sqlite3.
-
 Commit rate
 ~~~~~~~~~~~
 
