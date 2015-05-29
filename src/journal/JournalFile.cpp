@@ -9,7 +9,9 @@ const int64_t joedb::JournalFile::header_size = 41;
 joedb::JournalFile::JournalFile(File &file):
  file(file),
  checkpoint_index(0),
- state(state_t::no_error)
+ state(state_t::no_error),
+ table_of_last_insert(0),
+ record_of_last_insert(0)
 {
  if (!file.is_good())
  {
@@ -157,7 +159,13 @@ void joedb::JournalFile::replay_log(Listener &listener)
     table_id_t table_id = file.compact_read<table_id_t>();
     record_id_t record_id = file.compact_read<record_id_t>();
     listener.after_insert(table_id, record_id);
+    table_of_last_insert = table_id;
+    record_of_last_insert = record_id;
    }
+   break;
+
+   case operation_t::append:
+    listener.after_insert(table_of_last_insert, ++record_of_last_insert);
    break;
 
    case operation_t::delete_from:
@@ -250,9 +258,20 @@ void joedb::JournalFile::after_drop_field(table_id_t table_id,
 void joedb::JournalFile::after_insert(table_id_t table_id,
                                       record_id_t record_id)
 {
- file.write<operation_t>(operation_t::insert_into);
- file.compact_write<table_id_t>(table_id);
- file.compact_write<record_id_t>(record_id);
+ if (table_id == table_of_last_insert &&
+     record_id == record_of_last_insert + 1)
+ {
+  file.write<operation_t>(operation_t::append);
+ }
+ else
+ {
+  file.write<operation_t>(operation_t::insert_into);
+  file.compact_write<table_id_t>(table_id);
+  file.compact_write<record_id_t>(record_id);
+ }
+
+ table_of_last_insert = table_id;
+ record_of_last_insert = record_id;
 }
 
 /////////////////////////////////////////////////////////////////////////////

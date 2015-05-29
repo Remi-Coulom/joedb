@@ -36,7 +36,6 @@ New operations and types
 - rename operations (table, field)
 - compact log (easily done transparently):
 
-  * append = insert after previous insert (same table, record_id + 1)
   * update_previous_record(field_id, value) = no need of table_id, record_id
 
 - more data types
