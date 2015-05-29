@@ -67,6 +67,18 @@ The source code for these benchmarks can be found in the joedb/benchmark directo
 Bulk Insert
 ~~~~~~~~~~~
 
+The table below is the minimum of 10 runs, with N = 10,000,000 rows inserted.
+
++------+---------+--------+
+|      | sqlite3 | joedb  |
++======+=========+========+
+| real | 10.266s | 2.803s |
++------+---------+--------+
+| user |  7.838s | 0.567s |
++------+---------+--------+
+| sys  |  0.319s | 0.200s |
++------+---------+--------+
+
 First the sqlite3 code:
 
 .. code-block:: c++
@@ -100,18 +112,6 @@ Then, the equivalent joedb code:
   db.checkpoint();
   db.commit();
 
-The table below is the minimum of 10 runs, with N = 10,000,000.
-
-+------+---------+--------+
-|      | sqlite3 | joedb  |
-+------+---------+--------+
-| real | 10.266s | 2.803s |
-+------+---------+--------+
-| user |  7.838s | 0.567s |
-+------+---------+--------+
-| sys  |  0.319s | 0.200s |
-+------+---------+--------+
-
 Commit rate
 ~~~~~~~~~~~
 
@@ -119,7 +119,7 @@ Instead of one big commit at the end, each insert is now committed to disk one b
 
 +------+---------+--------------+--------------+
 |      | sqlite3 | joedb (slow) | joedb (fast) |
-+------+---------+--------------+--------------+
++======+=========+==============+==============+
 | real | 5.434s  | 3.184s       | 1.549s       |
 +------+---------+--------------+--------------+
 | user | 0.006s  | 0.003s       | 0.002s       |
