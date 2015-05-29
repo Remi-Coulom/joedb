@@ -60,10 +60,12 @@ namespace joedb
    uint64_t checkpoint_position;
    state_t state;
 
-   table_id_t table_of_last_insert;
-   record_id_t record_of_last_insert;
+   table_id_t table_of_last_operation;
+   record_id_t record_of_last_operation;
 
    Type read_type();
+
+   void read_update(table_id_t table_id, record_id_t record_id);
 
    enum class operation_t: uint8_t
    {
@@ -75,7 +77,8 @@ namespace joedb
     insert_into   = 0x05,
     delete_from   = 0x06,
     update        = 0x07,
-    append        = 0x08
+    append        = 0x08,
+    update_last   = 0x09
    };
  };
 }

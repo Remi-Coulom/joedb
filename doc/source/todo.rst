@@ -34,9 +34,6 @@ New operations and types
 - "no-delete" table option
 - checkpoints, tags, etc.
 - rename operations (table, field)
-- compact log (easily done transparently):
-
-  * update_previous_record(field_id, value) = no need of table_id, record_id
 
 - more data types
 

@@ -10,8 +10,8 @@ joedb::JournalFile::JournalFile(File &file):
  file(file),
  checkpoint_index(0),
  state(state_t::no_error),
- table_of_last_insert(0),
- record_of_last_insert(0)
+ table_of_last_operation(0),
+ record_of_last_operation(0)
 {
  if (!file.is_good())
  {
@@ -159,13 +159,14 @@ void joedb::JournalFile::replay_log(Listener &listener)
     table_id_t table_id = file.compact_read<table_id_t>();
     record_id_t record_id = file.compact_read<record_id_t>();
     listener.after_insert(table_id, record_id);
-    table_of_last_insert = table_id;
-    record_of_last_insert = record_id;
+    table_of_last_operation = table_id;
+    record_of_last_operation = record_id;
    }
    break;
 
    case operation_t::append:
-    listener.after_insert(table_of_last_insert, ++record_of_last_insert);
+    listener.after_insert(table_of_last_operation,
+                          ++record_of_last_operation);
    break;
 
    case operation_t::delete_from:
@@ -177,12 +178,14 @@ void joedb::JournalFile::replay_log(Listener &listener)
    break;
 
    case operation_t::update:
+    table_of_last_operation = file.compact_read<table_id_t>();
+    record_of_last_operation = file.compact_read<record_id_t>();
+
+   case operation_t::update_last:
    {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    record_id_t record_id = file.compact_read<record_id_t>();
     field_id_t field_id = file.compact_read<field_id_t>();
 
-    switch (db_schema.get_field_type(table_id, field_id))
+    switch (db_schema.get_field_type(table_of_last_operation, field_id))
     {
      case Type::type_id_t::null:
      break;
@@ -191,7 +194,9 @@ void joedb::JournalFile::replay_log(Listener &listener)
      case Type::type_id_t::type_id:\
      {\
       cpp_type value = file.read_method();\
-      listener.after_update_##type_id(table_id, record_id, field_id, value);\
+      listener.after_update_##type_id(table_of_last_operation,\
+                                      record_of_last_operation,\
+                                      field_id, value);\
      }\
      break;
 
@@ -258,8 +263,8 @@ void joedb::JournalFile::after_drop_field(table_id_t table_id,
 void joedb::JournalFile::after_insert(table_id_t table_id,
                                       record_id_t record_id)
 {
- if (table_id == table_of_last_insert &&
-     record_id == record_of_last_insert + 1)
+ if (table_id == table_of_last_operation &&
+     record_id == record_of_last_operation + 1)
  {
   file.write<operation_t>(operation_t::append);
  }
@@ -270,8 +275,8 @@ void joedb::JournalFile::after_insert(table_id_t table_id,
   file.compact_write<record_id_t>(record_id);
  }
 
- table_of_last_insert = table_id;
- record_of_last_insert = record_id;
+ table_of_last_operation = table_id;
+ record_of_last_operation = record_id;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -290,9 +295,19 @@ void joedb::JournalFile::after_update_##type_id(table_id_t table_id,\
                                                 field_id_t field_id,\
                                                 return_type value)\
 {\
- file.write<operation_t>(operation_t::update);\
- file.compact_write<table_id_t>(table_id);\
- file.compact_write<record_id_t>(record_id);\
+ if (table_id == table_of_last_operation &&\
+     record_id == record_of_last_operation)\
+ {\
+  file.write<operation_t>(operation_t::update_last);\
+ }\
+ else\
+ {\
+  file.write<operation_t>(operation_t::update);\
+  file.compact_write<table_id_t>(table_id);\
+  file.compact_write<record_id_t>(record_id);\
+  table_of_last_operation = table_id;\
+  record_of_last_operation = record_id;\
+ }\
  file.compact_write<field_id_t>(field_id);\
  file.write_method(value);\
 }
