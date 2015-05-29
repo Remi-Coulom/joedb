@@ -102,34 +102,34 @@ Then, the equivalent joedb code:
 
 The table below is the minimum of 10 runs, with N = 10,000,000.
 
-+------+--------+---------+
-|      | joedb  | sqlite3 |
-+------+--------+---------+
-| real | 2.803s | 10.266s |
-+------+--------+---------+
-| user | 0.567s |  7.838s |
-+------+--------+---------+
-| sys  | 0.200s |  0.319s |
-+------+--------+---------+
++------+---------+--------+
+|      | sqlite3 | joedb  |
++------+---------+--------+
+| real | 10.266s | 2.803s |
++------+---------+--------+
+| user |  7.838s | 0.567s |
++------+---------+--------+
+| sys  |  0.319s | 0.200s |
++------+---------+--------+
 
 So, when the database fits in ram, joedb is much faster than sqlite3.
 
 Commit rate
 ~~~~~~~~~~~
 
-If instead of one big commit at the end, each insert is committed to disk one by one, then the insertion rate is much slower. With N = 100:
+Instead of one big commit at the end, each insert is now committed to disk one by one. With N = 100:
 
-+------+--------------+--------------+---------+
-|      | joedb (fast) | joedb (slow) | sqlite3 |
-+------+--------------+--------------+---------+
-| real | 1.549s       | 3.184s       | 5.434s  |
-+------+--------------+--------------+---------+
-| user | 0.002s       | 0.003s       | 0.006s  |
-+------+--------------+--------------+---------+
-| sys  | 0.009s       | 0.016s       | 0.021s  |
-+------+--------------+--------------+---------+
++------+---------+--------------+--------------+
+|      | sqlite3 | joedb (slow) | joedb (fast) |
++------+---------+--------------+--------------+
+| real | 5.434s  | 3.184s       | 1.549s       |
++------+---------+--------------+--------------+
+| user | 0.006s  | 0.003s       | 0.002s       |
++------+---------+--------------+--------------+
+| sys  | 0.021s  | 0.016s       | 0.009s       |
++------+---------+--------------+--------------+
 
-The fast mode of joedb operates like this:
+The fast mode of joedb is crash-safe if the underlying system preserves write order:
 
 .. code-block:: c++
 
@@ -139,8 +139,6 @@ The fast mode of joedb operates like this:
    db.checkpoint();
    db.commit();
   }
-
-The fast mode is crash-safe if the underlying system preserves write order.
 
 The slow mode is more paranoid, but twice slower:
 
