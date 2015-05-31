@@ -112,7 +112,7 @@ Then, the equivalent joedb code:
   db.checkpoint();
   db.commit();
 
-Commit rate
+Commit Rate
 ~~~~~~~~~~~
 
 Instead of one big commit at the end, each insert is now committed to disk one by one. With N = 100:
