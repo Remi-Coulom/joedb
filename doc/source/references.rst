@@ -22,6 +22,7 @@ Crash resistance:
 - http://oldblog.antirez.com/post/fsync-different-thread-useless.html
 - http://sqlite.org/atomiccommit.html
 - http://lwn.net/Articles/457667/
+- http://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly
 
 Compression
 
