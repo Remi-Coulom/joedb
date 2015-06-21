@@ -37,8 +37,10 @@ New operations and types
 
 - more data types
 
-  * varchar
+  * varchar<N>
   * date
+  * float
+  * double
 
 On-disk storage
 ----------------
