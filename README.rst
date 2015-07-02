@@ -5,4 +5,4 @@ joedb is a minimalist embedded relational database, where data is manipulated di
 
 In joedb, the journal of all modifications is stored to disk. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple and fast.
 
-To get started, please take at a look at the _`documentation http://remi.coulom.free.fr/joedb/intro.html`.
+To get started, please take at a look at the _`documentation http://www.remi-coulom.fr/joedb/intro.html`.
