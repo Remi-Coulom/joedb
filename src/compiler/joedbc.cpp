@@ -102,7 +102,6 @@ void generate_code(std::ostream &out,
   out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << " };\n";
-  out << '\n';
   out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n";
   out << "  " << tname << "_data() {}\n";
   out << "  " << tname << "_data(bool f): joedb::EmptyRecord(f) {}\n";
@@ -323,9 +322,9 @@ void generate_code(std::ostream &out,
   {
    const std::string &fname = field.second.get_name();
 
-   out << "  " << tname << "_FK.get_record(result.id + 1).";
+   out << "    " << tname << "_FK.get_record(result.id + 1).";
    out << fname << " = " << fname << ";\n";
-   out << "  journal.after_update_";
+   out << "    journal.after_update_";
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", result.id, " << field.first << ", ";
    out << fname;
@@ -354,24 +353,24 @@ void generate_code(std::ostream &out,
   {
    const std::string &fname = field.second.get_name();
    out << '\n';
-   out << ' ';
+   out << "   ";
    write_type(out, db, field.second.get_type(), true);
    out << " get_" << fname << "(" << tname << "_t record)\n";
-   out << " {\n";
-   out << "  assert(!record.is_null());\n";
-   out << "  return " << tname;
+   out << "   {\n";
+   out << "    assert(!record.is_null());\n";
+   out << "    return " << tname;
    out << "_FK.get_record(record.id + 1)." << fname << ";\n";
-   out << " }\n";
+   out << "   }\n";
 
-   out << " void set_" << fname;
+   out << "   void set_" << fname;
    out << "(" << tname << "_t record, ";
    write_type(out, db, field.second.get_type(), true);
    out << ' ' << fname << ")\n";
-   out << " {\n";
-   out << "  assert(!record.is_null());\n";
-   out << "  " << tname << "_FK.get_record(record.id + 1).";
+   out << "   {\n";
+   out << "    assert(!record.is_null());\n";
+   out << "    " << tname << "_FK.get_record(record.id + 1).";
    out << fname << " = " << fname << ";\n";
-   out << "  journal.after_update_";
+   out << "    journal.after_update_";
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
    out << fname;
@@ -379,11 +378,11 @@ void generate_code(std::ostream &out,
        joedb::Type::type_id_t::reference)
     out << ".id";
    out << ");\n";
-   out << " }\n";
+   out << "   }\n";
   }
  }
 
- out << "\n};\n";
+ out << " };\n\n";
 
  for (auto table: tables)
  {
