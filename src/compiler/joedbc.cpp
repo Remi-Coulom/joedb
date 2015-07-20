@@ -347,12 +347,16 @@ void generate_code(std::ostream &out,
   out << "   }\n";
 
   //
-  // getters and setters for each field
+  // Loop over fields
   //
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
    out << '\n';
+
+   //
+   // Getter
+   //
    out << "   ";
    write_type(out, db, field.second.get_type(), true);
    out << " get_" << fname << "(" << tname << "_t record)\n";
@@ -362,6 +366,9 @@ void generate_code(std::ostream &out,
    out << "_FK.get_record(record.id + 1)." << fname << ";\n";
    out << "   }\n";
 
+   //
+   // Setter
+   //
    out << "   void set_" << fname;
    out << "(" << tname << "_t record, ";
    write_type(out, db, field.second.get_type(), true);
@@ -378,6 +385,16 @@ void generate_code(std::ostream &out,
        joedb::Type::type_id_t::reference)
     out << ".id";
    out << ");\n";
+   out << "   }\n";
+
+   //
+   // Finder
+   //
+   out << "   " << tname << "_t find_" << tname << "_by_" << fname << "(";
+   write_type(out, db, field.second.get_type(), true);
+   out << ' ' << fname << ") const\n";
+   out << "   {\n";
+   out << "    return " << tname << "_t (0);\n";
    out << "   }\n";
   }
  }

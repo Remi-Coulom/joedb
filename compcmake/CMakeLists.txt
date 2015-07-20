@@ -100,6 +100,7 @@ add_executable(joedbc
 
 add_executable(tutorial
  ../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/other_source.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
 set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)

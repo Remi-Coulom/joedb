@@ -48,5 +48,21 @@ int main()
  db.delete_record(Aristide);
  db.delete_record(Amsterdam);
 
+ //
+ // Finding records
+ //
+ std::cout << "Looking for cities...\n";
+ std::vector<std::string> cities = {"Paris", "London", "New York", "Tokyo"};
+ for (auto city_name: cities)
+ {
+  std::cout << "  " << city_name << ": ";
+  auto city = db.find_city_by_name(city_name);
+  if (city.is_null())
+   std::cout << "not found";
+  else
+   std::cout << "found";
+  std::cout << '\n';
+ }
+
  return 0;
 }
