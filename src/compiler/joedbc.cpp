@@ -101,6 +101,7 @@ void generate_code(std::ostream &out,
   out << "\n  public:\n";
   out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
+  out << "   bool operator==(const " << tname << "_t " << tname << ") const {return id == " << tname << ".id;}\n";
   out << " };\n";
   out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n";
   out << "  " << tname << "_data() {}\n";
@@ -352,6 +353,7 @@ void generate_code(std::ostream &out,
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
+
    out << '\n';
 
    //
@@ -359,7 +361,7 @@ void generate_code(std::ostream &out,
    //
    out << "   ";
    write_type(out, db, field.second.get_type(), true);
-   out << " get_" << fname << "(" << tname << "_t record)\n";
+   out << " get_" << fname << "(" << tname << "_t record) const\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
    out << "    return " << tname;
@@ -392,10 +394,7 @@ void generate_code(std::ostream &out,
    //
    out << "   " << tname << "_t find_" << tname << "_by_" << fname << "(";
    write_type(out, db, field.second.get_type(), true);
-   out << ' ' << fname << ") const\n";
-   out << "   {\n";
-   out << "    return " << tname << "_t (0);\n";
-   out << "   }\n";
+   out << ' ' << fname << ") const;\n";
   }
  }
 
@@ -439,6 +438,24 @@ void generate_code(std::ostream &out,
   out << "  return " << tname << "_container(*this);\n";
   out << " }\n";
   out << '\n';
+
+  //
+  // Loop over fields
+  //
+  for (const auto &field: table.second.get_fields())
+  {
+   const std::string &fname = field.second.get_name();
+
+   out << " inline " << tname << "_t Database::find_" << tname << "_by_" << fname << "(";
+   write_type(out, db, field.second.get_type(), true);
+   out << ' ' << fname << ") const\n";
+   out << " {\n";
+   out << "  for (auto " << tname << ": get_" << tname << "_table())\n";
+   out << "   if (get_" << fname << "(" << tname << ") == " << fname << ")\n";
+   out << "    return " << tname << ";\n";
+   out << "  return " << tname << "_t(0);\n";
+   out << " }\n\n";
+  }
  }
 
  out << "}\n\n";

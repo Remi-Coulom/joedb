@@ -55,12 +55,10 @@ int main()
  std::vector<std::string> cities = {"Paris", "London", "New York", "Tokyo"};
  for (auto city_name: cities)
  {
-  std::cout << "  " << city_name << ": ";
+  std::cout << "  " << city_name;
   auto city = db.find_city_by_name(city_name);
   if (city.is_null())
-   std::cout << "not found";
-  else
-   std::cout << "found";
+   std::cout << ": not found";
   std::cout << '\n';
  }
 
