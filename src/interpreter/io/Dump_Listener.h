@@ -1,7 +1,7 @@
-#ifndef joedb_DumpListener_declared
-#define joedb_DumpListener_declared
+#ifndef joedb_Dump_Listener_declared
+#define joedb_Dump_Listener_declared
 
-#include "SchemaListener.h"
+#include "Schema_Listener.h"
 #include "dump.h"
 #include "string_io.h"
 
@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- class DumpListener: public SchemaListener
+ class Dump_Listener: public Schema_Listener
  {
   private:
    Database db;
@@ -38,25 +38,25 @@ namespace joedb
    }
 
   public:
-   DumpListener(std::ostream &out): SchemaListener(db), out(out) {}
+   Dump_Listener(std::ostream &out): Schema_Listener(db), out(out) {}
 
    void after_create_table(const std::string &name) override
    {
-    SchemaListener::after_create_table(name);
+    Schema_Listener::after_create_table(name);
     out << "create_table " << name << '\n';
    }
 
    void after_drop_table(table_id_t table_id) override
    {
     out << "drop_table " << get_table_name(table_id) << '\n';
-    SchemaListener::after_drop_table(table_id);
+    Schema_Listener::after_drop_table(table_id);
    }
 
    void after_add_field(table_id_t table_id,
                         const std::string &name,
                         Type type) override
    {
-    SchemaListener::after_add_field(table_id, name, type);
+    Schema_Listener::after_add_field(table_id, name, type);
     out << "add_field " << get_table_name(table_id) << ' ' << name << ' ';
     write_type(out, db, type);
     out << '\n';
@@ -64,7 +64,7 @@ namespace joedb
 
    void after_drop_field(table_id_t table_id, field_id_t field_id) override
    {
-    SchemaListener::after_drop_field(table_id, field_id);
+    Schema_Listener::after_drop_field(table_id, field_id);
     out << "drop_field " << get_table_name(table_id) << ' ';
     out << get_field_name(table_id, field_id) << '\n';
    }

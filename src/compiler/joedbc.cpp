@@ -75,10 +75,10 @@ void generate_code(std::ostream &out,
 #include <cassert>
 
 #include "File.h"
-#include "JournalFile.h"
+#include "Journal_File.h"
 #include "Database.h"
-#include "SchemaListener.h"
-#include "FreedomKeeper.h"
+#include "Schema_Listener.h"
+#include "Freedom_Keeper.h"
 
 )RRR";
 
@@ -128,7 +128,7 @@ void generate_code(std::ostream &out,
  out << R"RRR(
   private:
    joedb::File file;
-   joedb::JournalFile journal;
+   joedb::Journal_File journal;
 
 )RRR";
 
@@ -138,7 +138,7 @@ void generate_code(std::ostream &out,
  for (auto table: tables)
  {
   const std::string &tname = table.second.get_name();
-  out << "   joedb::FreedomKeeper<" << tname << "_data> " << tname << "_FK;\n";
+  out << "   joedb::Freedom_Keeper<" << tname << "_data> " << tname << "_FK;\n";
  }
 
  //
@@ -262,7 +262,7 @@ void generate_code(std::ostream &out,
      journal.replay_log(*this);
    }
 
-   joedb::JournalFile::state_t get_journal_state() const
+   joedb::Journal_File::state_t get_journal_state() const
    {
     return journal.get_state();
    }
@@ -273,7 +273,7 @@ void generate_code(std::ostream &out,
    bool is_good() const
    {
     return file.is_good() &&
-           journal.get_state() == joedb::JournalFile::state_t::no_error;
+           journal.get_state() == joedb::Journal_File::state_t::no_error;
    }
 )RRR";
 
@@ -402,9 +402,9 @@ void generate_code(std::ostream &out,
   out << "    friend class " << tname << "_container;\n";
 
   out << "    private:\n";
-  out << "     const joedb::FreedomKeeper<" << tname << "_data> &fk;\n";
+  out << "     const joedb::Freedom_Keeper<" << tname << "_data> &fk;\n";
   out << "     size_t index;\n";
-  out << "     iterator(const joedb::FreedomKeeper<" << tname << "_data> &fk): fk(fk), index(0) {}\n";
+  out << "     iterator(const joedb::Freedom_Keeper<" << tname << "_data> &fk): fk(fk), index(0) {}\n";
   out << '\n';
   out << "    public:\n";
   out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";

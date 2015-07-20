@@ -1,5 +1,5 @@
-#ifndef joedb_FreedomKeeper_declared
-#define joedb_FreedomKeeper_declared
+#ifndef joedb_Freedom_Keeper_declared
+#define joedb_Freedom_Keeper_declared
 
 #include <cstddef>
 #include <vector>
@@ -20,7 +20,7 @@ namespace joedb
  };
 
  template<typename T = EmptyRecord>
- class FreedomKeeper
+ class Freedom_Keeper
  {
   private: //////////////////////////////////////////////////////////////////
    struct Record
@@ -34,7 +34,7 @@ namespace joedb
    enum {used_list = 0, free_list = 1};
 
   public: ///////////////////////////////////////////////////////////////////
-   FreedomKeeper(): records(2)
+   Freedom_Keeper(): records(2)
    {
     records[used_list].data.set_free(false);
     records[used_list].next = used_list;

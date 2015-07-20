@@ -1,8 +1,8 @@
 #include "Interpreter.h"
 #include "Database.h"
 #include "File.h"
-#include "JournalFile.h"
-#include "DBListener.h"
+#include "Journal_File.h"
+#include "DB_Listener.h"
 
 #include <iostream>
 
@@ -39,12 +39,12 @@ int main(int argc, char **argv)
   else
    std::cout << "Database opened successfully: " << argv[1] << '\n';
 
-  joedb::JournalFile journal(file);
+  joedb::Journal_File journal(file);
   joedb::Database db;
-  joedb::DBListener db_listener(db);
+  joedb::DB_Listener db_listener(db);
   journal.replay_log(db_listener);
 
-  if (journal.get_state() != joedb::JournalFile::state_t::no_error ||
+  if (journal.get_state() != joedb::Journal_File::state_t::no_error ||
       !db_listener.is_good())
   {
    std::cout << "Error reading database\n";

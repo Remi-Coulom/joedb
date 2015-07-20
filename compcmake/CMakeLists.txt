@@ -36,7 +36,7 @@ add_library(interpreter_objects OBJECT
  ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/abstract/is_identifier.cpp
  ../src/journal/File.cpp
- ../src/journal/JournalFile.cpp
+ ../src/journal/Journal_File.cpp
 )
 
 add_library(io_objects OBJECT
@@ -61,7 +61,7 @@ if(EXISTS "../gtest-1.7.0")
  add_executable(joedb_test
   ../test/Interpreter_Test.cpp
   ../test/File_Test.cpp
-  ../test/JournalFile_Test.cpp
+  ../test/Journal_File_Test.cpp
   ../test/StringIO_Test.cpp
   ../test/is_identifier_Test.cpp
   ../test/Test_Main.cpp

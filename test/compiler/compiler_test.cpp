@@ -1,6 +1,6 @@
 #include "testdb.h"
 #include "File.h"
-#include "JournalFile.h"
+#include "Journal_File.h"
 
 #include <iostream>
 

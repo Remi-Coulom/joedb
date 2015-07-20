@@ -1,5 +1,5 @@
-#ifndef joedb_JournalFile_declared
-#define joedb_JournalFile_declared
+#ifndef joedb_Journal_File_declared
+#define joedb_Journal_File_declared
 
 #include "Listener.h"
 
@@ -8,10 +8,10 @@ namespace joedb
  class File;
  class Database;
 
- class JournalFile: public Listener
+ class Journal_File: public Listener
  {
   public:
-   JournalFile(File &file);
+   Journal_File(File &file);
 
    enum class state_t
    {
@@ -49,7 +49,7 @@ namespace joedb
 
 #undef AFTER_UPDATE
 
-   ~JournalFile();
+   ~Journal_File();
 
   private:
    static const uint32_t version_number;

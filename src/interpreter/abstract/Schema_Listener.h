@@ -1,19 +1,19 @@
-#ifndef joedb_SchemaListener_declared
-#define joedb_SchemaListener_declared
+#ifndef joedb_Schema_Listener_declared
+#define joedb_Schema_Listener_declared
 
 #include "Listener.h"
 #include "Database.h"
 
 namespace joedb
 {
- class SchemaListener: public Listener
+ class Schema_Listener: public Listener
  {
   protected:
    Database &db;
    bool error;
 
   public:
-   SchemaListener(Database &db): db(db), error(false) {}
+   Schema_Listener(Database &db): db(db), error(false) {}
 
    bool is_good() const override {return !error;}
 

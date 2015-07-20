@@ -1,12 +1,12 @@
-#include "JournalFile.h"
+#include "Journal_File.h"
 #include "File.h"
-#include "DBListener.h"
+#include "DB_Listener.h"
 #include "gtest/gtest.h"
 #include "dump.h"
 
 using namespace joedb;
 
-class JournalFile_Test: public::testing::Test
+class Journal_File_Test: public::testing::Test
 {
  protected:
   virtual void TearDown()
@@ -16,22 +16,22 @@ class JournalFile_Test: public::testing::Test
 };
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(JournalFile_Test, bad_file)
+TEST_F(Journal_File_Test, bad_file)
 {
  File file("this_does_not_exists", File::mode_t::read_existing);
  EXPECT_FALSE(file.is_good());
- JournalFile journal(file);
- EXPECT_EQ(JournalFile::state_t::bad_file, journal.get_state());
+ Journal_File journal(file);
+ EXPECT_EQ(Journal_File::state_t::bad_file, journal.get_state());
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(JournalFile_Test, basic_operations)
+TEST_F(Journal_File_Test, basic_operations)
 {
  Database db1;
 
  {
   File file("test.joedb", File::mode_t::create_new);
-  JournalFile journal(file);
+  Journal_File journal(file);
   db1.set_listener(journal);
   db1.drop_table(db1.create_table("deleted"));
   const table_id_t table_id = db1.create_table("table_test");
@@ -78,11 +78,11 @@ TEST_F(JournalFile_Test, basic_operations)
 
  {
   File file("test.joedb", File::mode_t::read_existing);
-  JournalFile journal(file);
-  DBListener db_listener(db2);
+  Journal_File journal(file);
+  DB_Listener db_listener(db2);
   journal.replay_log(db_listener);
   EXPECT_TRUE(db_listener.is_good());
-  EXPECT_EQ(JournalFile::state_t::no_error, journal.get_state());
+  EXPECT_EQ(Journal_File::state_t::no_error, journal.get_state());
  }
 
  std::ostringstream oss1;

@@ -1,8 +1,8 @@
 #include <iostream>
 
 #include "File.h"
-#include "JournalFile.h"
-#include "DumpListener.h"
+#include "Journal_File.h"
+#include "Dump_Listener.h"
 
 int main(int argc, char **argv)
 {
@@ -21,8 +21,8 @@ int main(int argc, char **argv)
    return 1;
   }
 
-  joedb::JournalFile journal(file);
-  joedb::DumpListener dump_listener(std::cout);
+  joedb::Journal_File journal(file);
+  joedb::Dump_Listener dump_listener(std::cout);
   journal.replay_log(dump_listener);
  }
 

@@ -1,6 +1,6 @@
 #include <cstdio>
 #include "File.h"
-#include "JournalFile.h"
+#include "Journal_File.h"
 #include "Database.h"
 
 using namespace joedb;
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   std::printf("N = %d\n", N);
 
   File file(file_name, File::mode_t::create_new);
-  JournalFile journal_file(file);
+  Journal_File journal_file(file);
   Database db;
   db.set_listener(journal_file);
 

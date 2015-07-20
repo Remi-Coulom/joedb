@@ -1,14 +1,14 @@
-#ifndef joedb_DBListener_declared
-#define joedb_DBListener_declared
+#ifndef joedb_DB_Listener_declared
+#define joedb_DB_Listener_declared
 
-#include "SchemaListener.h"
+#include "Schema_Listener.h"
 
 namespace joedb
 {
- class DBListener: public SchemaListener
+ class DB_Listener: public Schema_Listener
  {
   public:
-   DBListener(Database &db): SchemaListener(db) {}
+   DB_Listener(Database &db): Schema_Listener(db) {}
 
    void after_insert(table_id_t table_id, record_id_t record_id) override
    {
