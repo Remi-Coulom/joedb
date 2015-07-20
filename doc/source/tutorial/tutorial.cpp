@@ -52,7 +52,7 @@ int main()
  // Finding records
  //
  std::cout << "Looking for cities...\n";
- std::vector<std::string> cities = {"Paris", "London", "New York", "Tokyo"};
+ static const char * const cities[] = {"Paris", "London", "New York", "Tokyo"};
  for (auto city_name: cities)
  {
   std::cout << "  " << city_name;
