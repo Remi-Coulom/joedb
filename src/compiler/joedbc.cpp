@@ -434,7 +434,7 @@ void generate_code(std::ostream &out,
   out << "   iterator end() {return iterator(db." << tname << "_FK);}\n";
   out << " };\n";
   out << '\n';
-  out << ' ' << tname << "_container Database::get_" << tname << "_table() const\n";
+  out << " inline " << tname << "_container Database::get_" << tname << "_table() const\n";
   out << " {\n";
   out << "  return " << tname << "_container(*this);\n";
   out << " }\n";
