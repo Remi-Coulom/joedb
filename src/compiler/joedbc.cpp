@@ -101,6 +101,7 @@ void generate_code(std::ostream &out,
   out << "\n  public:\n";
   out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
+  out << "   record_id_t get_id() const {return id;}\n";
   out << "   bool operator==(const " << tname << "_t " << tname << ") const {return id == " << tname << ".id;}\n";
   out << " };\n";
   out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n";

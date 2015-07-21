@@ -59,6 +59,8 @@ int main()
   auto city = db.find_city_by_name(city_name);
   if (city.is_null())
    std::cout << ": not found";
+  else
+   std::cout << ": id = " << city.get_id();
   std::cout << '\n';
  }
 
