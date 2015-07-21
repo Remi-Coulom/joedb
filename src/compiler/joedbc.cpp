@@ -97,8 +97,8 @@ void generate_code(std::ostream &out,
   out << "  friend class "  << tname << "_container;\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
-  out << "   " << tname << "_t(record_id_t id): id(id) {}\n";
   out << "\n  public:\n";
+  out << "   " << tname << "_t(record_id_t id): id(id) {}\n";
   out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   record_id_t get_id() const {return id;}\n";
