@@ -130,5 +130,6 @@ DB_UPDATE(const std::string &, string)
 DB_UPDATE(int32_t, int32)
 DB_UPDATE(int64_t, int64)
 DB_UPDATE(record_id_t, reference)
+DB_UPDATE(bool, boolean)
 
 #undef DB_UPDATE

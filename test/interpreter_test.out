@@ -31,11 +31,13 @@ Error: unknown command: qsdfqsdf
 OK: inserted record, id = 1
 Error: could not insert with id: 1
 OK: add_field d; field_id = 3
+OK: add_field e; field_id = 4
 create_table test
 add_field test a int32
 add_field test b int64
 add_field test d string
-insert_into test 1 1234 5678 ""
+add_field test e boolean
+insert_into test 1 1234 5678 "" 0
 Error: no such field: qsdfqsdf
 OK: dropped field a
 OK: inserted record, id = 2
@@ -47,7 +49,8 @@ OK: updated
 create_table test
 add_field test b int64
 add_field test d string
-insert_into test 1 56789 ""
+add_field test e boolean
+insert_into test 1 56789 "" 0
 OK: create table ref; table_id = 4
 OK: add_field ref; field_id = 1
 OK: dropped table 3

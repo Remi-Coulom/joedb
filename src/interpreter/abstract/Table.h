@@ -47,6 +47,7 @@ namespace joedb
    TABLE_GET(int32_t, int32)
    TABLE_GET(int64_t, int64)
    TABLE_GET(record_id_t, reference)
+   TABLE_GET(bool, boolean)
 
 #undef TABLE_GET
 
@@ -66,6 +67,7 @@ namespace joedb
    TABLE_UPDATE(int32_t, int32)
    TABLE_UPDATE(int64_t, int64)
    TABLE_UPDATE(record_id_t, reference)
+   TABLE_UPDATE(bool, boolean)
 
 #undef TABLE_UPDATE
  };

@@ -38,6 +38,10 @@ void write_type(std::ostream &out,
    out << db.get_tables().find(referred)->second.get_name() << "_t";
   }
   break;
+
+  case joedb::Type::type_id_t::boolean:
+   out << "bool";
+  break;
  }
 }
 
@@ -52,7 +56,8 @@ void generate_code(std::ostream &out,
   "string",
   "int32",
   "int64",
-  "reference"
+  "reference",
+  "boolean"
  };
 
  char const * const cpp_types[joedb::Type::type_ids] =
@@ -61,7 +66,8 @@ void generate_code(std::ostream &out,
   "const std::string &",
   "int32_t ",
   "int64_t ",
-  "record_id_t "
+  "record_id_t ",
+  "bool "
  };
 
  auto tables = db.get_tables();

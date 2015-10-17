@@ -14,10 +14,11 @@ namespace joedb
     string,
     int32,
     int64,
-    reference
+    reference,
+    boolean
    };
 
-   enum {type_ids = int(type_id_t::reference) + 1};
+   enum {type_ids = int(type_id_t::boolean) + 1};
 
   private:
    type_id_t type_id;
@@ -43,6 +44,7 @@ namespace joedb
    {
     return Type(type_id_t::reference, table_id);
    }
+   static Type boolean() {return Type(type_id_t::boolean);}
  };
 }
 

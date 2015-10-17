@@ -56,6 +56,10 @@ namespace joedb
                          record_id_t record_id,
                          field_id_t field_id,
                          record_id_t value);
+   bool update_boolean(table_id_t table_id,
+                       record_id_t record_id,
+                       field_id_t field_id,
+                       bool value);
  };
 }
 

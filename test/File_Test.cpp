@@ -14,6 +14,8 @@ class File_Test: public::testing::Test
   {
    File file("existing.tmp", File::mode_t::create_new);
    file.write<uint64_t>(joedb_magic);
+   file.write<bool>(false);
+   file.write<bool>(true);
   }
 
   virtual void TearDown()
@@ -53,6 +55,8 @@ TEST_F(File_Test, read_existing)
 {
  File existing("existing.tmp", File::mode_t::read_existing);
  EXPECT_EQ(existing.read<uint64_t>(), joedb_magic);
+ EXPECT_EQ(existing.read<bool>(), false);
+ EXPECT_EQ(existing.read<bool>(), true);
 }
 
 /////////////////////////////////////////////////////////////////////////////

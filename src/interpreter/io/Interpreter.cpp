@@ -27,6 +27,8 @@ joedb::Type joedb::Interpreter::parse_type(std::istream &in,
   if (table_id)
    return Type::reference(table_id);
  }
+ if (type_name == "boolean")
+  return Type::boolean();
 
  out << "Error: unknown type\n";
  return Type();
@@ -72,6 +74,8 @@ bool joedb::Interpreter::update_value(std::istream &in,
   UPDATE_CASE(int32_t, int32);
   UPDATE_CASE(int64_t, int64);
   UPDATE_CASE(record_id_t, reference);
+  UPDATE_CASE(bool, boolean);
+
 #undef UPDATE_CASE
  }
 

@@ -27,6 +27,7 @@ qsdfqsdf
 insert_into test 1 1234 5678
 insert_into test 1 1234 5678
 add_field test d string
+add_field test e boolean
 dump
 
 drop_field test qsdfqsdf

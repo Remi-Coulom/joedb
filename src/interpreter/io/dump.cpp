@@ -36,6 +36,10 @@ void joedb::write_type(std::ostream &out, const Database &db, Type type)
     out << "a_deleted_table";
   }
   break;
+
+  case Type::type_id_t::boolean:
+   out << "boolean";
+  break;
  }
 }
 
@@ -102,6 +106,7 @@ void joedb::dump(std::ostream &out, const Database &db)
      FIELD_CASE(int32)
      FIELD_CASE(int64)
      FIELD_CASE(reference)
+     FIELD_CASE(boolean)
 
 #undef FIELD_CASE
     }

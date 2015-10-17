@@ -20,6 +20,7 @@ namespace joedb
    std::vector<int32_t> int32_column;
    std::vector<int64_t> int64_column;
    std::vector<record_id_t> reference_column;
+   std::vector<bool> boolean_column;
 
   public:
    Field(const std::string &name, const Type &type, size_t size):
@@ -41,6 +42,7 @@ namespace joedb
      case Type::type_id_t::int32:     int32_column.resize(size);     break;
      case Type::type_id_t::int64:     int64_column.resize(size);     break;
      case Type::type_id_t::reference: reference_column.resize(size); break;
+     case Type::type_id_t::boolean:   boolean_column.resize(size);   break;
     }
    }
 
@@ -60,6 +62,7 @@ namespace joedb
    FIELD_GETSET(int32_t, int32)
    FIELD_GETSET(int64_t, int64)
    FIELD_GETSET(record_id_t, reference)
+   FIELD_GETSET(bool, boolean)
 
 #undef FIELD_GETSET
  };

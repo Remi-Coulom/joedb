@@ -2,7 +2,7 @@
 #include "File.h"
 #include "Database.h"
 
-const uint32_t joedb::Journal_File::version_number = 0x00000001;
+const uint32_t joedb::Journal_File::version_number = 0x00000002;
 const int64_t joedb::Journal_File::header_size = 41;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -204,6 +204,7 @@ void joedb::Journal_File::replay_log(Listener &listener)
      UPDATE_CASE(int32_t, int32, read<int32_t>)
      UPDATE_CASE(int64_t, int64, read<int64_t>)
      UPDATE_CASE(record_id_t, reference, compact_read<record_id_t>)
+     UPDATE_CASE(bool, boolean, read<bool>)
 
 #undef UPDATE_CASE
     }
