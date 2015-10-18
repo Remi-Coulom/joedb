@@ -78,6 +78,7 @@ Compiler
 
 Other ideas
 -----------
+- vim syntax and completer with YouCompleteMe
 - GUI editor similar to the icga database editor (http server with cpp-netlib)
 - rapidly undo-able history
 - add explicit keyword to constructors

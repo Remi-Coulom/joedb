@@ -267,6 +267,16 @@ void generate_code(std::ostream &out,
    {
     if (is_good())
      journal.replay_log(*this);
+    else if (!file.is_good() && !read_only)
+    {
+     file.open(file_name, joedb::File::mode_t::create_new);
+     if (file.is_good())
+     {
+      journal.~Journal_File();
+      new(&journal) joedb::Journal_File(file);
+      // TODO: build database structure
+     }
+    }
    }
 
    joedb::Journal_File::state_t get_journal_state() const
