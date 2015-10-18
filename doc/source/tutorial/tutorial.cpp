@@ -51,7 +51,7 @@ int main()
  //
  // Finding records
  //
- std::cout << "Looking for cities...\n";
+ std::cout << "\nLooking for cities...\n";
  static const char * const cities[] = {"Paris", "London", "New York", "Tokyo"};
  for (auto city_name: cities)
  {

@@ -104,3 +104,15 @@ add_executable(tutorial
  $<TARGET_OBJECTS:interpreter_objects>
 )
 set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
+#############################################################################
+# Packaging
+#############################################################################
+install(TARGETS joedbc RUNTIME DESTINATION bin)
+install(TARGETS joedbi RUNTIME DESTINATION bin)
+install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
+
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rémi Coulom")
+
+include(CPack)

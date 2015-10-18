@@ -1,7 +1,9 @@
-Introduction
-============
+joedb, the Journal-Only Embedded Database
+=========================================
 
-joedb is the "journal-only embedded database". In joedb, a log of all data modifications is stored in permanent storage. A compiler takes a relational database schema as input and produces code in the target programming language for transparently persistent data structures. This way, data can be directly manipulated, without using SQL. The philosophy of joedb is to offer a minimalist low-level mechanism for persistence, without compromising performance.
+joedb is a minimalist embedded relational database, where data is manipulated directly in the target programming language, without using SQL.
+
+In joedb, the journal of all modifications is stored to disk. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple and fast.
 
 Context and Motivation
 ----------------------
@@ -113,6 +115,8 @@ Then, the equivalent joedb code:
 
   db.checkpoint();
   db.commit();
+
+The joedb code not only uses 13 times less CPU time, it is also shorter, much more readable, and has many less potential run-time errors.
 
 Commit Rate
 ~~~~~~~~~~~
