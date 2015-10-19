@@ -484,6 +484,8 @@ void generate_code(std::ostream &out,
   out << '\n';
   out << "   iterator begin() {return ++iterator(db." << tname << "_FK);}\n";
   out << "   iterator end() {return iterator(db." << tname << "_FK);}\n";
+  out << "   bool is_empty() const {return db." << tname
+      << "_FK.size() == 0;}\n";
   out << " };\n";
   out << '\n';
   out << " inline " << tname << "_container Database::get_" << tname << "_table() const\n";
