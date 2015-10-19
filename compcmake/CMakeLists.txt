@@ -19,6 +19,7 @@ if(WIN32)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Threads REQUIRED)
 
@@ -37,6 +38,10 @@ add_library(interpreter_objects OBJECT
  ../src/interpreter/abstract/is_identifier.cpp
  ../src/journal/File.cpp
  ../src/journal/Journal_File.cpp
+)
+
+add_library(joedb SHARED
+ $<TARGET_OBJECTS:interpreter_objects>
 )
 
 add_library(io_objects OBJECT
@@ -111,6 +116,7 @@ set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)
 install(TARGETS joedbc RUNTIME DESTINATION bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
+install(TARGETS joedb LIBRARY DESTINATION lib)
 
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rémi Coulom")
