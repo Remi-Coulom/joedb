@@ -37,6 +37,8 @@ namespace joedb
    AFTER_UPDATE(bool, boolean)
 
 #undef AFTER_UPDATE
+
+   virtual ~Listener() {}
  };
 }
 
