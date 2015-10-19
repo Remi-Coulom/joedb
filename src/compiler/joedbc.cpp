@@ -274,8 +274,44 @@ void generate_code(std::ostream &out,
      {
       journal.~Journal_File();
       new(&journal) joedb::Journal_File(file);
-      // TODO: build database structure
-     }
+)RRR";
+
+ for (auto table: tables)
+ {
+  out << "      journal.after_create_table(\"" << table.second.get_name()
+      << "\");\n";
+
+  for (auto field: table.second.get_fields())
+  {
+   out << "      journal.after_add_field("
+       << table.first << ", \""
+       << field.second.get_name() << "\", ";
+   switch (field.second.get_type().get_type_id())
+   {
+    case joedb::Type::type_id_t::null:
+    break;
+    case joedb::Type::type_id_t::string:
+     out << "joedb::Type::string()";
+    break;
+    case joedb::Type::type_id_t::int32:
+     out << "joedb::Type::int32()";
+    break;
+    case joedb::Type::type_id_t::int64:
+     out << "joedb::Type::int64()";
+    break;
+    case joedb::Type::type_id_t::reference:
+     out << "joedb::Type::reference("
+         << field.second.get_type().get_table_id() << ")";
+    break;
+    case joedb::Type::type_id_t::boolean:
+     out << "joedb::Type::boolean()";
+    break;
+   }
+   out << ");\n";
+  }
+ }
+
+ out << R"RRR(     }
     }
    }
 

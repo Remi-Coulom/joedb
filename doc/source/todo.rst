@@ -5,7 +5,7 @@ Short term
 ----------
 Compiler:
 
-- check matching db schema when opening file, and allow creating a new file
+- check matching db schema when opening file
 - check C++ identifier constraints for table and field names
 - check namespace != joedb
 - find_xxx method (with index)
