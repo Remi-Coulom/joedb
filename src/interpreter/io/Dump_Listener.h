@@ -108,6 +108,7 @@ namespace joedb
    AFTER_UPDATE(int32_t, int32)
    AFTER_UPDATE(int64_t, int64)
    AFTER_UPDATE(record_id_t, reference)
+   AFTER_UPDATE(bool, boolean)
 
 #undef AFTER_UPDATE
  };

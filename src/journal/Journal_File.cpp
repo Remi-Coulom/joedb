@@ -317,6 +317,7 @@ AFTER_UPDATE(const std::string &, string, write_string)
 AFTER_UPDATE(int32_t, int32, write<int32_t>)
 AFTER_UPDATE(int64_t, int64, write<int64_t>)
 AFTER_UPDATE(record_id_t, reference, compact_write<record_id_t>)
+AFTER_UPDATE(bool, boolean, write<bool>)
 
 #undef AFTER_UPDATE
 
