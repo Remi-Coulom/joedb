@@ -64,9 +64,9 @@ namespace joedb
 
    void after_drop_field(table_id_t table_id, field_id_t field_id) override
    {
-    Schema_Listener::after_drop_field(table_id, field_id);
     out << "drop_field " << get_table_name(table_id) << ' ';
     out << get_field_name(table_id, field_id) << '\n';
+    Schema_Listener::after_drop_field(table_id, field_id);
    }
 
    void after_insert(table_id_t table_id, record_id_t record_id)
