@@ -3,7 +3,7 @@
 
 #include "Schema_Listener.h"
 #include "dump.h"
-#include "string_io.h"
+#include "type_io.h"
 
 #include <iostream>
 
@@ -81,19 +81,7 @@ namespace joedb
     out << record_id << '\n';
    }
 
-   void after_update_string(table_id_t table_id,
-                            record_id_t record_id,
-                            field_id_t field_id,
-                            const std::string &value) override
-   {
-    out << "update " << get_table_name(table_id) << ' ';
-    out << record_id << ' ';
-    out << get_field_name(table_id, field_id) << ' ';
-    joedb::write_string(out, value);
-    out << '\n';
-   }
-
-#define AFTER_UPDATE(return_type, type_id)\
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void after_update_##type_id(table_id_t table_id,\
                                record_id_t record_id,\
                                field_id_t field_id,\
@@ -102,15 +90,11 @@ namespace joedb
     out << "update " << get_table_name(table_id) << ' ';\
     out << record_id << ' ';\
     out << get_field_name(table_id, field_id) << ' ';\
-    out << value << '\n';\
+    joedb::write_##type_id(out, value);\
+    out << '\n';\
    }
-
-   AFTER_UPDATE(int32_t, int32)
-   AFTER_UPDATE(int64_t, int64)
-   AFTER_UPDATE(record_id_t, reference)
-   AFTER_UPDATE(bool, boolean)
-
-#undef AFTER_UPDATE
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
  };
 }
 

@@ -2,7 +2,7 @@
 #include "Database.h"
 #include "dump.h"
 #include "Listener.h"
-#include "string_io.h"
+#include "type_io.h"
 
 #include <iostream>
 #include <sstream>
@@ -57,26 +57,14 @@ bool joedb::Interpreter::update_value(std::istream &in,
   case Type::type_id_t::null:
   return false;
 
-  case Type::type_id_t::string:
-  {
-   std::string value = joedb::read_string(in);
-   return db.update_string(table_id, record_id, field_id, value);
-  }
-
-#define UPDATE_CASE(cpp_type, type_name)\
-  case Type::type_id_t::type_name:\
+  #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
+  case Type::type_id_t::type_id:\
   {\
-   cpp_type value = cpp_type();\
-   in >> value;\
-   return db.update_##type_name(table_id, record_id, field_id, value);\
+   type value = joedb::read_##type_id(in);\
+   return db.update_##type_id(table_id, record_id, field_id, value);\
   }
-
-  UPDATE_CASE(int32_t, int32);
-  UPDATE_CASE(int64_t, int64);
-  UPDATE_CASE(record_id_t, reference);
-  UPDATE_CASE(bool, boolean);
-
-#undef UPDATE_CASE
+  #include "TYPE_MACRO.h"
+  #undef TYPE_MACRO
  }
 
  return false;

@@ -1,6 +1,6 @@
 #include "dump.h"
 #include "Database.h"
-#include "string_io.h"
+#include "type_io.h"
 
 #include <iostream>
 
@@ -94,21 +94,13 @@ void joedb::dump(std::ostream &out, const Database &db)
       out << "NULL";
      break;
 
-     case Type::type_id_t::string:
-      joedb::write_string(out, table.second.get_string(record_id, field.first));
+     #define TYPE_MACRO(type, return_type, type_id, R, W)\
+     case Type::type_id_t::type_id:\
+      joedb::write_##type_id(out, table.second.get_##type_id(record_id,\
+                                                             field.first));\
      break;
-
-#define FIELD_CASE(type)\
-     case Type::type_id_t::type:\
-      out << table.second.get_##type(record_id, field.first);\
-     break;
-
-     FIELD_CASE(int32)
-     FIELD_CASE(int64)
-     FIELD_CASE(reference)
-     FIELD_CASE(boolean)
-
-#undef FIELD_CASE
+     #include "TYPE_MACRO.h"
+     #undef TYPE_MACRO
     }
    }
    out << '\n';

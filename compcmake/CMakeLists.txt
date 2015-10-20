@@ -47,7 +47,7 @@ add_library(joedb SHARED
 add_library(io_objects OBJECT
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
- ../src/interpreter/io/string_io.cpp
+ ../src/interpreter/io/type_io.cpp
 )
 
 add_executable(joedbi
