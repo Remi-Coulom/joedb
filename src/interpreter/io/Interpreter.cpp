@@ -150,7 +150,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    {
     record_id_t record_id = 0;
     iss >> record_id;
-    if (!db.insert_into(table_id, record_id))
+    if (!record_id || !db.insert_into(table_id, record_id))
      out << "Error: could not insert with id: " << record_id << '\n';
     else
     {
