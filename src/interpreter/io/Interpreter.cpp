@@ -66,7 +66,7 @@ bool joedb::Interpreter::update_value(std::istream &in,
 #define UPDATE_CASE(cpp_type, type_name)\
   case Type::type_id_t::type_name:\
   {\
-   cpp_type value;\
+   cpp_type value = cpp_type();\
    in >> value;\
    return db.update_##type_name(table_id, record_id, field_id, value);\
   }

@@ -32,7 +32,7 @@ dump
 
 drop_field test qsdfqsdf
 drop_field test a
-insert_into test 2 3 4
+insert_into test 2 3 "4"
 delete_from test 2
 delete_from test 123
 update test 1 a 56789
