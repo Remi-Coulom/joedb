@@ -39,8 +39,6 @@ New operations and types
 
   * varchar<N>
   * date
-  * float
-  * double
 
 On-disk storage
 ----------------

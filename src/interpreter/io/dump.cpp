@@ -40,6 +40,14 @@ void joedb::write_type(std::ostream &out, const Database &db, Type type)
   case Type::type_id_t::boolean:
    out << "boolean";
   break;
+
+  case Type::type_id_t::float32:
+   out << "float32";
+  break;
+
+  case Type::type_id_t::float64:
+   out << "float64";
+  break;
  }
 }
 

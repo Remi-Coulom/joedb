@@ -42,6 +42,14 @@ void write_type(std::ostream &out,
   case joedb::Type::type_id_t::boolean:
    out << "bool";
   break;
+
+  case joedb::Type::type_id_t::float32:
+   out << "float";
+  break;
+
+  case joedb::Type::type_id_t::float64:
+   out << "double";
+  break;
  }
 }
 
@@ -50,24 +58,28 @@ void generate_code(std::ostream &out,
                    const joedb::Database &db,
                    const char *dbname)
 {
- char const * const types[joedb::Type::type_ids] =
+ char const * const types[] =
  {
   0,
   "string",
   "int32",
   "int64",
   "reference",
-  "boolean"
+  "boolean",
+  "float32",
+  "float64"
  };
 
- char const * const cpp_types[joedb::Type::type_ids] =
+ char const * const cpp_types[] =
  {
   0,
   "const std::string &",
   "int32_t ",
   "int64_t ",
   "record_id_t ",
-  "bool "
+  "bool ",
+  "float ",
+  "double "
  };
 
  auto tables = db.get_tables();
@@ -305,6 +317,12 @@ void generate_code(std::ostream &out,
     break;
     case joedb::Type::type_id_t::boolean:
      out << "joedb::Type::boolean()";
+    break;
+    case joedb::Type::type_id_t::float32:
+     out << "joedb::Type::float32()";
+    break;
+    case joedb::Type::type_id_t::float64:
+     out << "joedb::Type::float64()";
     break;
    }
    out << ");\n";

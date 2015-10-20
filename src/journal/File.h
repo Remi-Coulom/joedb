@@ -141,8 +141,9 @@ namespace joedb
    {
     static void write(File &file, T x)
     {
-     file.putc(char(x >>  0));
-     file.putc(char(x >>  8));
+     const char *p = reinterpret_cast<char *>(&x);
+     file.putc(p[0]);
+     file.putc(p[1]);
      file.check_write_buffer();
     }
    };
@@ -152,10 +153,11 @@ namespace joedb
    {
     static void write(File &file, T x)
     {
-     file.putc(char(x >>  0));
-     file.putc(char(x >>  8));
-     file.putc(char(x >> 16));
-     file.putc(char(x >> 24));
+     const char *p = reinterpret_cast<char *>(&x);
+     file.putc(p[0]);
+     file.putc(p[1]);
+     file.putc(p[2]);
+     file.putc(p[3]);
      file.check_write_buffer();
     }
    };
@@ -165,14 +167,15 @@ namespace joedb
    {
     static void write(File &file, T x)
     {
-     file.putc(char(x >>  0));
-     file.putc(char(x >>  8));
-     file.putc(char(x >> 16));
-     file.putc(char(x >> 24));
-     file.putc(char(x >> 32));
-     file.putc(char(x >> 40));
-     file.putc(char(x >> 48));
-     file.putc(char(x >> 56));
+     const char *p = reinterpret_cast<char *>(&x);
+     file.putc(p[0]);
+     file.putc(p[1]);
+     file.putc(p[2]);
+     file.putc(p[3]);
+     file.putc(p[4]);
+     file.putc(p[5]);
+     file.putc(p[6]);
+     file.putc(p[7]);
      file.check_write_buffer();
     }
    };
@@ -282,8 +285,11 @@ namespace joedb
    {
     static T read(File &file)
     {
-     return T((uint16_t(file.getc()) <<  0) |
-              (uint16_t(file.getc()) <<  8));
+     T result;
+     uint8_t *p = reinterpret_cast<uint8_t *>(&result);
+     p[0] = file.getc();
+     p[1] = file.getc();
+     return result;
     }
    };
 
@@ -292,10 +298,13 @@ namespace joedb
    {
     static T read(File &file)
     {
-     return T((uint32_t(file.getc()) <<  0) |
-              (uint32_t(file.getc()) <<  8) |
-              (uint32_t(file.getc()) << 16) |
-              (uint32_t(file.getc()) << 24));
+     T result;
+     uint8_t *p = reinterpret_cast<uint8_t *>(&result);
+     p[0] = file.getc();
+     p[1] = file.getc();
+     p[2] = file.getc();
+     p[3] = file.getc();
+     return result;
     }
    };
 
@@ -304,14 +313,17 @@ namespace joedb
    {
     static T read(File &file)
     {
-     return T((uint64_t(file.getc()) <<  0) |
-              (uint64_t(file.getc()) <<  8) |
-              (uint64_t(file.getc()) << 16) |
-              (uint64_t(file.getc()) << 24) |
-              (uint64_t(file.getc()) << 32) |
-              (uint64_t(file.getc()) << 40) |
-              (uint64_t(file.getc()) << 48) |
-              (uint64_t(file.getc()) << 56));
+     T result;
+     uint8_t *p = reinterpret_cast<uint8_t *>(&result);
+     p[0] = file.getc();
+     p[1] = file.getc();
+     p[2] = file.getc();
+     p[3] = file.getc();
+     p[4] = file.getc();
+     p[5] = file.getc();
+     p[6] = file.getc();
+     p[7] = file.getc();
+     return result;
     }
    };
  };

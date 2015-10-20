@@ -29,6 +29,10 @@ joedb::Type joedb::Interpreter::parse_type(std::istream &in,
  }
  if (type_name == "boolean")
   return Type::boolean();
+ if (type_name == "float32")
+  return Type::float32();
+ if (type_name == "float64")
+  return Type::float64();
 
  out << "Error: unknown type\n";
  return Type();
