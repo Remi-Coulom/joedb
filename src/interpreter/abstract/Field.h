@@ -16,11 +16,10 @@ namespace joedb
    const std::string name;
    const Type type;
 
-   std::vector<std::string> string_column;
-   std::vector<int32_t> int32_column;
-   std::vector<int64_t> int64_column;
-   std::vector<record_id_t> reference_column;
-   std::vector<bool> boolean_column;
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   std::vector<type> type_id##_column;
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
 
   public:
    Field(const std::string &name, const Type &type, size_t size):
@@ -37,16 +36,15 @@ namespace joedb
    {
     switch (type.get_type_id())
     {
-     case Type::type_id_t::null:                                     break;
-     case Type::type_id_t::string:    string_column.resize(size);    break;
-     case Type::type_id_t::int32:     int32_column.resize(size);     break;
-     case Type::type_id_t::int64:     int64_column.resize(size);     break;
-     case Type::type_id_t::reference: reference_column.resize(size); break;
-     case Type::type_id_t::boolean:   boolean_column.resize(size);   break;
+     case Type::type_id_t::null: break;
+     #define TYPE_MACRO(type, return_type, type_id, R, W)\
+     case Type::type_id_t::type_id: type_id##_column.resize(size); break;
+     #include "TYPE_MACRO.h"
+     #undef TYPE_MACRO
     }
    }
 
-#define FIELD_GETSET(return_type, type_id)\
+   #define TYPE_MACRO(T, return_type, type_id, R, W)\
    return_type get_##type_id(record_id_t record_id) const\
    {\
     assert(type.get_type_id() == Type::type_id_t::type_id);\
@@ -57,14 +55,8 @@ namespace joedb
     assert(type.get_type_id() == Type::type_id_t::type_id);\
     type_id##_column[record_id - 1] = value;\
    }
-
-   FIELD_GETSET(const std::string &, string)
-   FIELD_GETSET(int32_t, int32)
-   FIELD_GETSET(int64_t, int64)
-   FIELD_GETSET(record_id_t, reference)
-   FIELD_GETSET(bool, boolean)
-
-#undef FIELD_GETSET
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
  };
 }
 

@@ -40,26 +40,13 @@ namespace joedb
    bool insert_into(table_id_t table_id, record_id_t record_id);
    bool delete_from(table_id_t table_id, record_id_t record_id);
 
-   bool update_string(table_id_t table_id,
-                      record_id_t record_id,
-                      field_id_t field_id,
-                      const std::string &value);
-   bool update_int32(table_id_t table_id,
-                     record_id_t record_id,
-                     field_id_t field_id,
-                     int32_t value);
-   bool update_int64(table_id_t table_id,
-                     record_id_t record_id,
-                     field_id_t field_id,
-                     int64_t value);
-   bool update_reference(table_id_t table_id,
-                         record_id_t record_id,
-                         field_id_t field_id,
-                         record_id_t value);
-   bool update_boolean(table_id_t table_id,
-                       record_id_t record_id,
-                       field_id_t field_id,
-                       bool value);
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   bool update_##type_id(table_id_t table_id,\
+                         record_id_t record_id,\
+                         field_id_t field_id,\
+                         return_type value);
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
  };
 }
 

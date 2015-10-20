@@ -11,11 +11,9 @@ namespace joedb
    enum class type_id_t: uint8_t
    {
     null,
-    string,
-    int32,
-    int64,
-    reference,
-    boolean
+    #define TYPE_MACRO(a, b, c, d, e) c,
+    #include "TYPE_MACRO.h"
+    #undef TYPE_MACRO
    };
 
    enum {type_ids = int(type_id_t::boolean) + 1};

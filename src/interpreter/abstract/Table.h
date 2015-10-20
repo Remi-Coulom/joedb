@@ -37,21 +37,15 @@ namespace joedb
    bool delete_record(record_id_t record_id);
    bool insert_record(record_id_t record_id);
 
-#define TABLE_GET(return_type, type_id)\
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id(record_id_t rid, field_id_t fid) const\
    {\
     return fields.find(fid)->second.get_##type_id(rid);\
-   }\
+   }
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
 
-   TABLE_GET(const std::string &, string)
-   TABLE_GET(int32_t, int32)
-   TABLE_GET(int64_t, int64)
-   TABLE_GET(record_id_t, reference)
-   TABLE_GET(bool, boolean)
-
-#undef TABLE_GET
-
-#define TABLE_UPDATE(return_type, type_id)\
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
    bool update_##type_id(record_id_t record_id,\
                          field_id_t field_id,\
                          return_type value)\
@@ -62,14 +56,8 @@ namespace joedb
     it->second.set_##type_id(record_id, value);\
     return true;\
    }
-
-   TABLE_UPDATE(const std::string &, string)
-   TABLE_UPDATE(int32_t, int32)
-   TABLE_UPDATE(int64_t, int64)
-   TABLE_UPDATE(record_id_t, reference)
-   TABLE_UPDATE(bool, boolean)
-
-#undef TABLE_UPDATE
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
  };
 }
 

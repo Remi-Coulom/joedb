@@ -110,7 +110,7 @@ bool joedb::Database::delete_from(table_id_t table_id, record_id_t record_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-#define DB_UPDATE(return_type, type_id)\
+#define TYPE_MACRO(T, return_type, type_id, R, W)\
 bool joedb::Database::update_##type_id(table_id_t table_id,\
                                       record_id_t record_id,\
                                       field_id_t field_id,\
@@ -125,11 +125,5 @@ bool joedb::Database::update_##type_id(table_id_t table_id,\
  }\
  return false;\
 }
-
-DB_UPDATE(const std::string &, string)
-DB_UPDATE(int32_t, int32)
-DB_UPDATE(int64_t, int64)
-DB_UPDATE(record_id_t, reference)
-DB_UPDATE(bool, boolean)
-
-#undef DB_UPDATE
+#include "TYPE_MACRO.h"
+#undef TYPE_MACRO

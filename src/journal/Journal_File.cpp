@@ -117,6 +117,8 @@ void joedb::Journal_File::replay_log(Listener &listener)
   switch(file.read<operation_t>())
   {
    case operation_t::end_of_file:
+    if (file.get_position() != checkpoint_position)
+     state = state_t::crash_check;
    return;
 
    case operation_t::create_table:
@@ -180,6 +182,7 @@ void joedb::Journal_File::replay_log(Listener &listener)
    case operation_t::update:
     table_of_last_operation = file.compact_read<table_id_t>();
     record_of_last_operation = file.compact_read<record_id_t>();
+   // no break
 
    case operation_t::update_last:
    {
@@ -190,7 +193,7 @@ void joedb::Journal_File::replay_log(Listener &listener)
      case Type::type_id_t::null:
      break;
 
-#define UPDATE_CASE(cpp_type, type_id, read_method)\
+     #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
      case Type::type_id_t::type_id:\
      {\
       cpp_type value = file.read_method();\
@@ -199,14 +202,8 @@ void joedb::Journal_File::replay_log(Listener &listener)
                                       field_id, value);\
      }\
      break;
-
-     UPDATE_CASE(std::string, string, read_string)
-     UPDATE_CASE(int32_t, int32, read<int32_t>)
-     UPDATE_CASE(int64_t, int64, read<int64_t>)
-     UPDATE_CASE(record_id_t, reference, compact_read<record_id_t>)
-     UPDATE_CASE(bool, boolean, read<bool>)
-
-#undef UPDATE_CASE
+     #include "TYPE_MACRO.h"
+     #undef TYPE_MACRO
     }
 
    }
@@ -290,7 +287,7 @@ void joedb::Journal_File::after_delete(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-#define AFTER_UPDATE(return_type, type_id, write_method)\
+#define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
 void joedb::Journal_File::after_update_##type_id(table_id_t table_id,\
                                                 record_id_t record_id,\
                                                 field_id_t field_id,\
@@ -312,14 +309,8 @@ void joedb::Journal_File::after_update_##type_id(table_id_t table_id,\
  file.compact_write<field_id_t>(field_id);\
  file.write_method(value);\
 }
-
-AFTER_UPDATE(const std::string &, string, write_string)
-AFTER_UPDATE(int32_t, int32, write<int32_t>)
-AFTER_UPDATE(int64_t, int64, write<int64_t>)
-AFTER_UPDATE(record_id_t, reference, compact_write<record_id_t>)
-AFTER_UPDATE(bool, boolean, write<bool>)
-
-#undef AFTER_UPDATE
+#include "TYPE_MACRO.h"
+#undef TYPE_MACRO
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Type joedb::Journal_File::read_type()

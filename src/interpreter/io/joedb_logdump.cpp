@@ -24,6 +24,17 @@ int main(int argc, char **argv)
   joedb::Journal_File journal(file);
   joedb::Dump_Listener dump_listener(std::cout);
   journal.replay_log(dump_listener);
+
+  std::cout << "---> ";
+  static const char * status_string[] =
+  {
+   "no_error",
+   "bad_file",
+   "unsupported_version",
+   "bad_format",
+   "crash_check"
+  };
+  std::cout << status_string[int(journal.get_state())] << '\n';
  }
 
  return 0;
