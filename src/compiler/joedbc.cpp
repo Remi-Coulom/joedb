@@ -116,7 +116,7 @@ void generate_code(std::ostream &out,
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
   out << "\n  public:\n";
-  out << "   " << tname << "_t(record_id_t id): id(id) {}\n";
+  out << "   explicit " << tname << "_t(record_id_t id): id(id) {}\n";
   out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   record_id_t get_id() const {return id;}\n";
@@ -252,7 +252,17 @@ void generate_code(std::ostream &out,
        out << "     {\n";
        out << "      " << table.second.get_name();
        out << "_FK.get_record(record_id + 1).";
-       out << field.second.get_name() << " = value;\n";
+       out << field.second.get_name() << " = ";
+       if (field.second.get_type().get_type_id() !=
+           joedb::Type::type_id_t::reference)
+        out << "value";
+       else
+       {
+        const table_id_t table_id = field.second.get_type().get_table_id();
+        out << tables.find(table_id)->second.get_name();
+        out << "_t(value)";
+       }
+       out <<";\n";
        out << "      return;\n";
        out << "     }\n";
       }
@@ -504,6 +514,9 @@ void generate_code(std::ostream &out,
   out << "   iterator end() {return iterator(db." << tname << "_FK);}\n";
   out << "   bool is_empty() const {return db." << tname
       << "_FK.size() == 0;}\n";
+  out << "   size_t get_size() const {return db." << tname << "_FK.size();}\n";
+  out << "   static " << tname << "_t get_at(size_t i) {return "
+      << tname << "_t(i + 1);}\n";
   out << " };\n";
   out << '\n';
   out << " inline " << tname << "_container Database::get_" << tname << "_table() const\n";
