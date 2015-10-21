@@ -1,7 +1,7 @@
-joedb, the Journal-Only Embedded Database
+Joedb, the Journal-Only Embedded Database
 =========================================
 
-joedb is a minimalist embedded relational database, where data is manipulated directly in the target programming language, without using SQL.
+Joedb is a minimalist embedded relational database, where data is manipulated directly in the target programming language, without using SQL: a compiler produces native data-manipulation code from the database schema.
 
 In joedb, the journal of all modifications is stored to disk. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple and fast.
 
