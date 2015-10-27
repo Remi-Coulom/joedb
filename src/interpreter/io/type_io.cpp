@@ -83,6 +83,35 @@ void joedb::write_string(std::ostream &out, const std::string &s)
    out.put('\\').put('"');
   else if (c == '\\')
    out.put('\\').put('\\');
+  else if ((c & 0xe0) == 0xc0 &&
+           i + 1 < s.size() &&
+           (s[i + 1] & 0xc0) == 0x80)
+  {
+   out.put(s[i++]);
+   out.put(s[i]);
+  }
+  else if ((c & 0xf0) == 0xe0 &&
+           i + 2 < s.size() &&
+           (s[i + 1] & 0xc0) == 0x80 &&
+           (s[i + 2] & 0xc0) == 0x80)
+  {
+   out.put(s[i++]);
+   out.put(s[i++]);
+   out.put(s[i]);
+  }
+  else if ((c & 0xf8) == 0xf0 &&
+           i + 3 < s.size() &&
+           (s[i + 1] & 0xc0) == 0x80 &&
+           (s[i + 2] & 0xc0) == 0x80 &&
+           (s[i + 3] & 0xc0) == 0x80)
+  {
+   out.put(s[i++]);
+   out.put(s[i++]);
+   out.put(s[i++]);
+   out.put(s[i]);
+  }
+  else if (c & 0x80)
+   write_hexa_character(out, c);
   else
    out.put(char(c));
  }
