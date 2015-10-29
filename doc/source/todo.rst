@@ -6,6 +6,8 @@ Short term
 Compiler:
 
 - check matching db schema when opening file
+- automatic db schema upgrade when opening and old file
+- format version as log entry, too
 - check C++ identifier constraints for table and field names
 - check namespace != joedb
 - find_xxx method (with index)
