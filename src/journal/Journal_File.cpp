@@ -3,7 +3,7 @@
 #include "Database.h"
 
 const uint32_t joedb::Journal_File::version_number = 0x00000003;
-const int64_t joedb::Journal_File::header_size = 41;
+const uint64_t joedb::Journal_File::header_size = 41;
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Journal_File::Journal_File(File &file):

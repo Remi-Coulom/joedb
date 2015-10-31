@@ -48,7 +48,7 @@ namespace joedb
 
   private:
    static const uint32_t version_number;
-   static const int64_t header_size;
+   static const uint64_t header_size;
 
    File &file;
    unsigned checkpoint_index;

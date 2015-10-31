@@ -113,7 +113,7 @@ set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)
 #############################################################################
 # Packaging
 #############################################################################
-if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
  install(TARGETS joedbc RUNTIME DESTINATION bin)
  install(TARGETS joedbi RUNTIME DESTINATION bin)
  install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
@@ -124,4 +124,6 @@ if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
  set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rémi Coulom")
 
  include(CPack)
+else()
+ message("== No package, CMAKE_SYSTEM_NAME = " ${CMAKE_SYSTEM_NAME})
 endif()
