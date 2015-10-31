@@ -113,13 +113,15 @@ set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)
 #############################################################################
 # Packaging
 #############################################################################
-install(TARGETS joedbc RUNTIME DESTINATION bin)
-install(TARGETS joedbi RUNTIME DESTINATION bin)
-install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
-install(TARGETS joedb LIBRARY DESTINATION lib)
-# TODO: install include files = joedb/File.h ...
+if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
+ install(TARGETS joedbc RUNTIME DESTINATION bin)
+ install(TARGETS joedbi RUNTIME DESTINATION bin)
+ install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
+ install(TARGETS joedb LIBRARY DESTINATION lib)
+ # TODO: install include files = joedb/File.h ...
 
-set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rémi Coulom")
+ set(CPACK_GENERATOR "DEB")
+ set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rémi Coulom")
 
-include(CPack)
+ include(CPack)
+endif()
