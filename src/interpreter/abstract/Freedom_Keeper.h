@@ -34,8 +34,15 @@ namespace joedb
    enum {used_list = 0, free_list = 1};
 
   public: ///////////////////////////////////////////////////////////////////
-   Freedom_Keeper(): records(2)
+   Freedom_Keeper()
    {
+    clear();
+   }
+
+   void clear()
+   {
+    records.resize(2);
+
     records[used_list].data.set_free(false);
     records[used_list].next = used_list;
     records[used_list].previous = used_list;
@@ -48,10 +55,12 @@ namespace joedb
    T &get_record(size_t index) {return records[index].data;}
    const T &get_record(size_t index) const {return records[index].data;}
 
+   bool is_empty() const {return records[used_list].next == used_list;}
    size_t size() const {return records.size() - 2;}
    size_t get_first_free() const {return records[free_list].next;}
    size_t get_first_used() const {return records[used_list].next;}
    size_t get_next(size_t index) const {return records[index].next;}
+   size_t get_previous(size_t index) const {return records[index].previous;}
    bool is_free(size_t index) const {return records[index].data.is_free();}
    bool is_used(size_t index) const
    {

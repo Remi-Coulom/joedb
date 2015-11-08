@@ -370,6 +370,7 @@ void generate_code(std::ostream &out,
   out << "    journal.after_insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
+  out << "   void clear_" << tname << "_table();\n";
   out << '\n';
 
   //
@@ -422,7 +423,7 @@ void generate_code(std::ostream &out,
   //
   // Delete
   //
-  out << "   void delete_record(" << tname << "_t record)\n";
+  out << "   void delete_" << tname << "(" << tname << "_t record)\n";
   out << "   {\n";
   out << "    " << tname << "_FK.free(record.id + 1);\n";
   out << "    journal.after_delete(" << table.first << ", record.id);\n";
@@ -513,15 +514,24 @@ void generate_code(std::ostream &out,
   out << "   iterator begin() {return ++iterator(db." << tname << "_FK);}\n";
   out << "   iterator end() {return iterator(db." << tname << "_FK);}\n";
   out << "   bool is_empty() const {return db." << tname
-      << "_FK.size() == 0;}\n";
+      << "_FK.is_empty();}\n";
   out << "   size_t get_size() const {return db." << tname << "_FK.size();}\n";
   out << "   static " << tname << "_t get_at(size_t i) {return "
       << tname << "_t(i + 1);}\n";
   out << " };\n";
   out << '\n';
+
   out << " inline " << tname << "_container Database::get_" << tname << "_table() const\n";
   out << " {\n";
   out << "  return " << tname << "_container(*this);\n";
+  out << " }\n";
+  out << '\n';
+
+  out << " inline void Database::clear_" << tname << "_table()\n";
+  out << " {\n";
+  out << "  while (!get_" << tname << "_table().is_empty())\n";
+  out << "   delete_" << tname << "(*get_" << tname << "_table().begin());\n";
+  out << "  " << tname << "_FK.clear();\n";
   out << " }\n";
   out << '\n';
 

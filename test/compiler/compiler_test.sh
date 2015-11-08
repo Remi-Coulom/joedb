@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 build_dir=../../compcmake/ninja_debug
 
 cd "$build_dir"
@@ -11,5 +12,5 @@ rm -rvf test.joedb
 
 cd "$build_dir"
 ninja compiler_test
-./compiler_test
 cd -
+"$build_dir"/compiler_test
