@@ -103,12 +103,21 @@ add_executable(joedbc
  $<TARGET_OBJECTS:io_objects>
 )
 
+#############################################################################
+# Targets below require databases to be compiled
+#############################################################################
 add_executable(tutorial
  ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/other_source.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
 set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
+add_executable(compiler_test
+ ../test/compiler/compiler_test.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+)
+set_target_properties(compiler_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 #############################################################################
 # Packaging

@@ -4,17 +4,23 @@
 
 #include <iostream>
 
+/////////////////////////////////////////////////////////////////////////////
 int main()
+/////////////////////////////////////////////////////////////////////////////
 {
- testdb::database db("test.joedb");
+ std::cout << "\nTesting compiled code...\n";
 
+ //
+ // First, try to open the database
+ //
+ testdb::Database db("test.joedb");
  if (!db.is_good())
  {
   std::cerr << "Error opening database\n";
   return 1;
  }
-
- std::cout << "Database opened successfully\n";
+ else
+  std::cout << "Database opened successfully\n";
 
  return 0;
 }
