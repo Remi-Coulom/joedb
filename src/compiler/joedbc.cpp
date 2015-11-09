@@ -350,6 +350,12 @@ void generate_code(std::ostream &out,
 
    void commit() {file.commit();}
    void checkpoint() {journal.checkpoint();}
+   void safe_commit()
+   {
+    file.commit();
+    journal.checkpoint();
+    file.commit();
+   }
 
    bool is_good() const
    {
