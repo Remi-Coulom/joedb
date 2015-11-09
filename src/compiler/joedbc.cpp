@@ -515,7 +515,7 @@ void generate_code(std::ostream &out,
   out << "   iterator end() {return iterator(db." << tname << "_FK);}\n";
   out << "   bool is_empty() const {return db." << tname
       << "_FK.is_empty();}\n";
-  out << "   size_t get_size() const {return db." << tname << "_FK.size();}\n";
+  out << "   size_t get_size() const {return db." << tname << "_FK.get_used_count();}\n";
   out << "   static " << tname << "_t get_at(size_t i) {return "
       << tname << "_t(i + 1);}\n";
   out << " };\n";
@@ -531,7 +531,6 @@ void generate_code(std::ostream &out,
   out << " {\n";
   out << "  while (!get_" << tname << "_table().is_empty())\n";
   out << "   delete_" << tname << "(*get_" << tname << "_table().begin());\n";
-  out << "  " << tname << "_FK.clear();\n";
   out << " }\n";
   out << '\n';
 

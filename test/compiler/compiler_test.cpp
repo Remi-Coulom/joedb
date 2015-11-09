@@ -15,7 +15,9 @@ void print_table_sizes(const testdb::Database &db)
  std::cout << " (is_empty = " << db.get_person_table().is_empty() << ')';
  std::cout << '\n';
  for (auto person: db.get_person_table())
-  std::cout << "  " << db.get_name(person) << '\n';
+ {
+  std::cout << "  " << person.get_id() << ": " << db.get_name(person) << '\n';
+ }
 
  std::cout << '\n';
  std::cout << " Cities: " << db.get_city_table().get_size() << '\n';
@@ -49,10 +51,11 @@ int main()
  //
  // Manually remove persons
  //
- db.delete_person(*db.get_person_table().begin());
- db.delete_person(*db.get_person_table().begin());
- db.delete_person(*db.get_person_table().begin());
+#if 0
+ while (!db.get_person_table().is_empty())
+  db.delete_person(*db.get_person_table().begin());
  print_table_sizes(db);
+#endif
 
  //
  // Clear Persons and cities
@@ -71,6 +74,8 @@ int main()
  db.new_city("Barcelona");
  auto New_York = db.new_city("New York");
  db.new_person("Toto", New_York);
+ db.new_person("Évariste", testdb::city_t());
+ db.new_person("Catherine", testdb::city_t());
  print_table_sizes(db);
 
  return 0;

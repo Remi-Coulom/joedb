@@ -30,19 +30,13 @@ namespace joedb
     size_t previous;
    };
 
+   size_t used_count;
    std::vector<Record> records;
    enum {used_list = 0, free_list = 1};
 
   public: ///////////////////////////////////////////////////////////////////
-   Freedom_Keeper()
+   Freedom_Keeper(): used_count(0), records(2)
    {
-    clear();
-   }
-
-   void clear()
-   {
-    records.resize(2);
-
     records[used_list].data.set_free(false);
     records[used_list].next = used_list;
     records[used_list].previous = used_list;
@@ -55,7 +49,8 @@ namespace joedb
    T &get_record(size_t index) {return records[index].data;}
    const T &get_record(size_t index) const {return records[index].data;}
 
-   bool is_empty() const {return records[used_list].next == used_list;}
+   bool is_empty() const {return used_count == 0;}
+   size_t get_used_count() const {return used_count;}
    size_t size() const {return records.size() - 2;}
    size_t get_first_free() const {return records[free_list].next;}
    size_t get_first_used() const {return records[used_list].next;}
@@ -110,6 +105,8 @@ namespace joedb
 
     records[records[used_list].next].previous = index;
     records[used_list].next = index;
+
+    used_count++;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -130,6 +127,8 @@ namespace joedb
 
     records[records[free_list].next].previous = index;
     records[free_list].next = index;
+
+    used_count--;
    }
  };
 }
