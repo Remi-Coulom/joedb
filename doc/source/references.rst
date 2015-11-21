@@ -15,6 +15,12 @@ Database with history/revisions:
 - http://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
 - http://database-programmer.blogspot.fr/2008/07/history-tables.html
 
+- https://www.reddit.com/r/programming/comments/3tfkdq/immutability_in_db_might_be_the_next_big_thing/
+- https://www.youtube.com/watch?v=fU9hR3kiOK0
+- http://www.datomic.com/
+- http://samza.apache.org/
+- http://www.pgconf.us/2015/event/60/
+
 Crash resistance:
 
 - http://www.cs.berkeley.edu/~brewer/cs262/LFS.pdf
