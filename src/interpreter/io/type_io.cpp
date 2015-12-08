@@ -13,7 +13,11 @@ std::string joedb::read_string(std::istream &in)
  {
  }
 
- while ((in.get(c)) && c != '"')
+ const bool is_quoted = c == '"';
+ if (is_quoted)
+  in.get(c);
+
+ while ((is_quoted && c != '"') || (!is_quoted && c != ' '))
  {
   if (c == '\\')
   {
@@ -30,6 +34,9 @@ std::string joedb::read_string(std::istream &in)
   }
 
   result.push_back(c);
+
+  if (!in.get(c))
+   break;
  }
 
  return result;

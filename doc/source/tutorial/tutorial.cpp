@@ -45,8 +45,8 @@ int main()
  //
  // Deleting records
  //
- db.delete_record(Aristide);
- db.delete_record(Amsterdam);
+ db.delete_person(Aristide);
+ db.delete_city(Amsterdam);
 
  //
  // Finding records
