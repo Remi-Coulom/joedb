@@ -5,6 +5,7 @@ Short term
 ----------
 Compiler:
 
+- allow same-name fields in two different tables
 - check matching db schema when opening file
 - automatic db schema upgrade when opening and old file
 - format version as log entry, too
