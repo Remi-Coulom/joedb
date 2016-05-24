@@ -6,7 +6,7 @@ Short term
 Compiler:
 
 - check matching db schema when opening file
-- automatic db schema upgrade when opening and old file
+- automatic db schema upgrade when opening an old file
 - format version as log entry, too
 - check C++ identifier constraints for table and field names
 - check namespace != joedb
@@ -76,10 +76,17 @@ Compiler
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
 
+Server
+------
+- Controls access to a single joedb file.
+- Manages history only. Each client manages its own individual table storage.
+- Clients can get/release exclusive write access.
+- Writes are broadcast to all clients, handled as triggers.
+
 Other ideas
 -----------
 - vim syntax and completer with YouCompleteMe
-- GUI editor similar to the icga database editor (http server with cpp-netlib)
+- GUI editor similar to the icga database editor (fastcgi, interpreter)
 - rapidly undo-able history
 - add explicit keyword to constructors
 - make some classes non-copyable
