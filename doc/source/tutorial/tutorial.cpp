@@ -64,5 +64,12 @@ int main()
   std::cout << '\n';
  }
 
+ //
+ // Validity
+ //
+ db.delete_city(db.find_city_by_name("Paris"));
+ for (size_t i = 0; i < 10; i++)
+  std::cout << i << ": " << db.get_city_table().is_valid_at(i) << '\n';
+
  return 0;
 }

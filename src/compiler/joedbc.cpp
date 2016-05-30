@@ -524,6 +524,7 @@ void generate_code(std::ostream &out,
   out << "   size_t get_size() const {return db." << tname << "_FK.get_used_count();}\n";
   out << "   static " << tname << "_t get_at(size_t i) {return "
       << tname << "_t(i + 1);}\n";
+  out << "   bool is_valid_at(size_t i) {return db." << tname << "_FK.is_used(i + 1);}\n";
   out << " };\n";
   out << '\n';
 
