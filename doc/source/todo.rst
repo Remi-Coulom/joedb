@@ -5,6 +5,7 @@ Short term
 ----------
 Compiler:
 
+- loop over find when more than one line matches
 - check matching db schema when opening file
 - automatic db schema upgrade when opening an old file
 - format version as log entry, too
