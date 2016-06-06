@@ -73,10 +73,30 @@ int main()
  //
  db.new_city("Barcelona");
  auto New_York = db.new_city("New York");
+ db.new_city("Paris");
+ db.new_city("Tokyo");
  db.new_person("Toto", New_York);
  db.new_person("Évariste", testdb::city_t());
  db.new_person("Catherine", testdb::city_t());
  print_table_sizes(db);
+
+ //
+ // Validity + get_at
+ //
+ std::cout << "\nValidity + get_at:\n";
+ std::cout << db.get_name(db.find_city_by_name("Paris")) << '\n';
+ db.delete_city(db.find_city_by_name("Paris"));
+ for (size_t i = 0; i < 10; i++)
+ {
+  bool valid = db.get_city_table().is_valid_at(i);
+  std::cout << i << ": ";
+  if (valid)
+   std::cout << db.get_name(db.get_city_table().get_at(i));
+  else
+   std::cout << "invalid!";
+  std::cout << '\n';
+ }
+
 
  return 0;
 }

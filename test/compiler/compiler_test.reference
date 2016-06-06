@@ -1,0 +1,46 @@
+
+Testing compiled code...
+Database opened successfully
+
+Dump
+====
+ Persons: 3 (is_empty = 0)
+  3: Alexandre
+  2: Norbert
+  1: Rémi
+
+ Cities: 2
+  Lille
+  Paris
+
+Dump
+====
+ Persons: 0 (is_empty = 1)
+
+ Cities: 0
+
+Dump
+====
+ Persons: 3 (is_empty = 0)
+  3: Catherine
+  2: Évariste
+  1: Toto
+
+ Cities: 4
+  Tokyo
+  Paris
+  New York
+  Barcelona
+
+Validity + get_at:
+Paris
+0: invalid!
+1: Barcelona
+2: New York
+3: invalid!
+4: Tokyo
+5: invalid!
+6: invalid!
+7: invalid!
+8: invalid!
+9: invalid!

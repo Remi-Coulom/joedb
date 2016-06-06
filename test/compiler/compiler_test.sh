@@ -13,4 +13,5 @@ rm -rvf test.joedb
 cd "$build_dir"
 ninja compiler_test
 cd -
-"$build_dir"/compiler_test
+"$build_dir"/compiler_test >compiler_test.out
+diff compiler_test.out compiler_test.reference

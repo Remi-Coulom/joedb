@@ -64,21 +64,5 @@ int main()
   std::cout << '\n';
  }
 
- //
- // Validity + get_at
- //
- std::cout << db.get_name(db.find_city_by_name("Paris")) << '\n';
- db.delete_city(db.find_city_by_name("Paris"));
- for (size_t i = 0; i < 10; i++)
- {
-  bool valid = db.get_city_table().is_valid_at(i);
-  std::cout << i << ": ";
-  if (valid)
-   std::cout << db.get_name(db.get_city_table().get_at(i));
-  else
-   std::cout << "invalid!";
-  std::cout << '\n';
- }
-
  return 0;
 }
