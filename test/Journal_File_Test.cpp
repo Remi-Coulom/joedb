@@ -64,11 +64,20 @@ TEST_F(Journal_File_Test, basic_operations)
     db1.add_field(table_id, "int64", Type::int64());
    const field_id_t reference_field_id =
     db1.add_field(table_id, "reference", Type::reference(table_id));
+   const field_id_t bool_field_id =
+    db1.add_field(table_id, "bool", Type::boolean());
+   const field_id_t float32_field_id =
+    db1.add_field(table_id, "float32", Type::float32());
+   const field_id_t float64_field_id =
+    db1.add_field(table_id, "float64", Type::float64());
 
    db1.update_string(table_id, 1, string_field_id, "SuperString");
    db1.update_int32(table_id, 1, int32_field_id, 1234);
    db1.update_int64(table_id, 1, int64_field_id, 123412341234LL);
    db1.update_reference(table_id, 1, reference_field_id, 1);
+   db1.update_boolean(table_id, 1, bool_field_id, true);
+   db1.update_float32(table_id, 1, float32_field_id, 3.14f);
+   db1.update_float64(table_id, 1, float64_field_id, 3.141592653589);
   }
   journal.checkpoint();
   file.commit();
