@@ -76,3 +76,7 @@ Serialization
 C++ queries
 
 - http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
+
+Interesting paper
+
+- http://db.cs.yale.edu/vldb07hstore.pdf
