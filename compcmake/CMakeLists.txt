@@ -4,13 +4,13 @@ project(joedb)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
- set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -pedantic -Wconversion -fno-exceptions -fno-rtti")
+ set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -pedantic -Wconversion -fno-rtti -pthread")
  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  message("== clang")
- set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -fno-exceptions -fno-rtti")
+ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -fno-rtti")
 endif()
 
 if(WIN32)
@@ -22,6 +22,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Threads REQUIRED)
+find_package(Boost COMPONENTS system thread)
 
 include_directories(
  ${GTEST_INCLUDE_DIRS}
@@ -76,6 +77,16 @@ if(EXISTS "../gtest-1.7.0")
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
 else()
  message("== WARNING: unzip gtest-1.7.0 in the parent directory for tests")
+endif()
+
+if(Boost_SYSTEM_FOUND)
+ add_executable(joedb_server ../src/server/joedb_server.cpp)
+ target_link_libraries(joedb_server ${Boost_SYSTEM_LIBRARY})
+ add_executable(joedb_client ../src/server/joedb_client.cpp)
+ target_link_libraries(joedb_client ${Boost_SYSTEM_LIBRARY})
+ target_link_libraries(joedb_client ${Boost_THREAD_LIBRARY})
+else()
+ message("== WARNING: boost system not found: server is not compiled")
 endif()
 
 find_library(SQLITE3_LIBRARY sqlite3)
