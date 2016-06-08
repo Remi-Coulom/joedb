@@ -136,7 +136,7 @@ set_target_properties(compiler_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
  install(TARGETS joedbc RUNTIME DESTINATION bin)
  install(TARGETS joedbi RUNTIME DESTINATION bin)
  install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
- install(TARGETS joedb LIBRARY DESTINATION lib)
+ install(TARGETS joedb ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
  # TODO: install include files = joedb/File.h ...
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")

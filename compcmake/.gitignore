@@ -2,4 +2,8 @@ makefile
 ninja*
 mingw*
 vs2013*
+vs2015*
 gtest-1.7.0*
+build
+debug
+release
