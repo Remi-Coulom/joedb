@@ -71,6 +71,7 @@ if(EXISTS "../gtest-1.7.0")
   ../test/StringIO_Test.cpp
   ../test/is_identifier_Test.cpp
   ../test/Test_Main.cpp
+  ../test/type_io_Test.cpp
   $<TARGET_OBJECTS:interpreter_objects>
   $<TARGET_OBJECTS:io_objects>
  )

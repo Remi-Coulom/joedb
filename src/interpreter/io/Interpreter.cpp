@@ -158,7 +158,14 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
      if (iss.good())
       for (const auto &field:
            db.get_tables().find(table_id)->second.get_fields())
+      {
        update_value(iss, table_id, record_id, field.first);
+       if (iss.fail())
+       {
+        out << "Error: failed parsing value\n";
+        break;
+       }
+      }
     }
    }
   }
