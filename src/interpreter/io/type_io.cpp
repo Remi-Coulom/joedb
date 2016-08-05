@@ -31,6 +31,15 @@ std::string joedb::read_string(std::istream &in)
     const uint8_t n0 = get_hex_digit_from_char(c0);
     c = char((n1 << 4) | n0);
    }
+   else if (c >= '0' && c <= '9')
+   {
+    char c1, c0;
+    in.get(c1).get(c0);
+    const uint8_t n2 = uint8_t(c  - '0');
+    const uint8_t n1 = uint8_t(c1 - '0');
+    const uint8_t n0 = uint8_t(c0 - '0');
+    c = char((n2 << 6) | (n1 << 3) | n0);
+   }
   }
 
   result.push_back(c);
@@ -75,6 +84,16 @@ void joedb::write_hexa_character(std::ostream &out, uint8_t c)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::write_octal_character(std::ostream &out, uint8_t c)
+/////////////////////////////////////////////////////////////////////////////
+{
+ out.put('\\');
+ out.put(char('0' + ((c >> 6) & 7)));
+ out.put(char('0' + ((c >> 3) & 7)));
+ out.put(char('0' + ((c >> 0) & 7)));
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::write_string(std::ostream &out, const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -85,7 +104,7 @@ void joedb::write_string(std::ostream &out, const std::string &s)
   const uint8_t c = uint8_t(s[i]);
 
   if (c < 0x20)
-   write_hexa_character(out, c);
+   write_octal_character(out, c);
   else if (c == '"')
    out.put('\\').put('"');
   else if (c == '\\')
@@ -118,7 +137,7 @@ void joedb::write_string(std::ostream &out, const std::string &s)
    out.put(s[i]);
   }
   else if (c & 0x80)
-   write_hexa_character(out, c);
+   write_octal_character(out, c);
   else
    out.put(char(c));
  }

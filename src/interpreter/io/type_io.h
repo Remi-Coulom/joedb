@@ -13,6 +13,7 @@ namespace joedb
  char get_hex_char_from_digit(uint8_t n);
  uint8_t get_hex_digit_from_char(char c);
  void write_hexa_character(std::ostream &out, uint8_t c);
+ void write_octal_character(std::ostream &out, uint8_t c);
 
  #define PRIMITIVE_IO(type, type_id)\
  inline type read_##type_id(std::istream &in)\

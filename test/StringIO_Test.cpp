@@ -14,10 +14,11 @@ pairs[] =
  {u8"Hello"           , u8"\"Hello\""},
  {u8"Rémi"            , u8"\"Rémi\""},
  {u8"Hello, world!"   , u8"\"Hello, world!\""},
- {u8"\"\\\x1f"        , u8"\"\\\"\\\\\\x1f\""},
+ {u8"\"\\\x1f"        , u8"\"\\\"\\\\\\037\""},
  {u8"これは日本語です", u8"\"これは日本語です\""},
  {u8"𩸽"              , u8"\"𩸽\""}, // 4-byte character
- {u8""                , u8"\"\""}
+ {u8""                , u8"\"\""},
+ {u8"4"               , u8"\"4\""}
 };
 
 TEST(StringIO_Test, write_hexa_character)
