@@ -29,8 +29,8 @@ include_directories(
  ../src/interpreter/abstract
  ../src/interpreter/io
  ../src/journal
- ./gtest-1.7.0
- ./gtest-1.7.0/include
+ ./googletest
+ ./googletest/include
 )
 
 add_library(interpreter_objects OBJECT
@@ -63,7 +63,7 @@ add_executable(joedb_logdump
  $<TARGET_OBJECTS:io_objects>
 )
 
-if(EXISTS "../gtest-1.7.0")
+if(EXISTS "../googletest/include")
  add_executable(joedb_test
   ../test/Interpreter_Test.cpp
   ../test/File_Test.cpp
@@ -77,7 +77,7 @@ if(EXISTS "../gtest-1.7.0")
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
 else()
- message("== WARNING: unzip gtest-1.7.0 in the parent directory for tests")
+ message("== WARNING: run ./get_gtest.sh in the parent directory for tests")
 endif()
 
 if(Boost_SYSTEM_FOUND)

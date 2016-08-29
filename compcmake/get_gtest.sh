@@ -1,3 +1,5 @@
 #!/bin/bash
-wget --no-check-certificate https://googletest.googlecode.com/files/gtest-1.7.0.zip
-unzip gtest-1.7.0.zip
+rm -rvf googletest* *.zip
+wget https://github.com/google/googletest/archive/release-1.8.0.zip
+unzip release-1.8.0.zip
+ln -s googletest-release-1.8.0/googletest .
