@@ -24,7 +24,6 @@ Interpreter
 
 Journal file
 ------------
-- make sure the same file cannot be opened by two programs at the same time
 - check for write errors (out of space) -> exception (option?)
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)

@@ -15,7 +15,12 @@ int main(int argc, char **argv)
  {
   joedb::File file(argv[1], joedb::File::mode_t::read_existing);
 
-  if (!file.is_good())
+  if (file.get_status() == joedb::File::status_t::locked)
+  {
+   std::cerr << "error: " << argv[1] << " is locked by another process\n";
+   return 1;
+  }
+  else if (file.get_status() != joedb::File::status_t::success)
   {
    std::cerr << "error: could not open file: " << argv[1] << '\n';
    return 1;

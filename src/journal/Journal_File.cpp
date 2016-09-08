@@ -13,7 +13,7 @@ joedb::Journal_File::Journal_File(File &file):
  table_of_last_operation(0),
  record_of_last_operation(0)
 {
- if (!file.is_good())
+ if (file.get_status() != File::status_t::success)
  {
   state = state_t::bad_file;
   return;

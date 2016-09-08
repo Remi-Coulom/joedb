@@ -19,7 +19,7 @@ class Journal_File_Test: public::testing::Test
 TEST_F(Journal_File_Test, bad_file)
 {
  File file("this_does_not_exists", File::mode_t::read_existing);
- EXPECT_FALSE(file.is_good());
+ EXPECT_EQ(file.get_status(), joedb::File::status_t::failure);
  Journal_File journal(file);
  EXPECT_EQ(Journal_File::state_t::bad_file, journal.get_state());
 }

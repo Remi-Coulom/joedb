@@ -1,7 +1,26 @@
 #include "File.h"
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::File::open(const char *file_name, mode_t new_mode)
+// System-specific file locking
+/////////////////////////////////////////////////////////////////////////////
+#ifdef _WIN32
+#include <io.h>
+#include <stdio.h>
+bool joedb::File::lock_file()
+{
+ HANDLE hFile = (HANDLE)_get_osfhandle(_fileno(file));
+ return LockFile(hFile, 0, 0, 1, 0);
+}
+#else
+#include <sys/file.h>
+bool joedb::File::lock_file()
+{
+ return flock(fileno(file), LOCK_EX | LOCK_NB) == 0;
+}
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::File::open(const char *file_name, mode_t new_mode)
 {
  write_buffer_index = 0;
  reset_read_buffer();
@@ -13,11 +32,20 @@ bool joedb::File::open(const char *file_name, mode_t new_mode)
 
  if (file)
  {
-  std::setvbuf(file, 0, _IONBF, 0);
-  return true;
+  if (lock_file())
+  {
+   std::setvbuf(file, 0, _IONBF, 0);
+   status = status_t::success;
+  }
+  else
+  {
+   std::fclose(file);
+   file = 0;
+   status = status_t::locked;
+  }
  }
  else
-  return false;
+  status = status_t::failure;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -12,12 +12,13 @@ namespace joedb
  {
   public:
    enum class mode_t {read_existing, write_existing, create_new};
+   enum class status_t {success, locked, failure};
 
    File(): file(0) {}
    File(const char *file_name, mode_t mode) {open(file_name, mode);}
-   bool open(const char *file_name, mode_t mode);
+   void open(const char *file_name, mode_t mode);
 
-   bool is_good() const {return file != 0;}
+   status_t get_status() const {return status;}
    mode_t get_mode() const {return mode;}
    bool is_end_of_file() const {return end_of_file;}
 
@@ -64,6 +65,7 @@ namespace joedb
   private:
    FILE *file;
    mode_t mode;
+   status_t status;
 
    enum {buffer_size = (1 << 16)};
    enum {buffer_extra = 8};
@@ -74,6 +76,8 @@ namespace joedb
    size_t read_buffer_size;
    bool end_of_file;
    uint64_t position;
+
+   bool lock_file();
 
    void putc(char c)
    {

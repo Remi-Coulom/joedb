@@ -289,10 +289,10 @@ void generate_code(std::ostream &out,
    {
     if (is_good())
      journal.replay_log(*this);
-    else if (!file.is_good() && !read_only)
+    else if (file.get_status() == joedb::File::status_t::failure && !read_only)
     {
      file.open(file_name, joedb::File::mode_t::create_new);
-     if (file.is_good())
+     if (file.get_status() == joedb::File::status_t::success)
      {
       journal.~Journal_File();
       new(&journal) joedb::Journal_File(file);
@@ -359,7 +359,7 @@ void generate_code(std::ostream &out,
 
    bool is_good() const
    {
-    return file.is_good() &&
+    return file.get_status() == joedb::File::status_t::success &&
            journal.get_state() == joedb::Journal_File::state_t::no_error;
    }
 )RRR";

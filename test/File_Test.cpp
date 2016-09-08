@@ -30,24 +30,37 @@ TEST_F(File_Test, open_failure)
 {
  {
   File file("not_existing.tmp", File::mode_t::read_existing);
-  EXPECT_FALSE(file.is_good());
+  EXPECT_EQ(file.get_status(), joedb::File::status_t::failure);
  }
  {
   File file("not_existing.tmp", File::mode_t::write_existing);
-  EXPECT_FALSE(file.is_good());
+  EXPECT_EQ(file.get_status(), joedb::File::status_t::failure);
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, open_lock)
+{
+ File locked_file_1("locked.tmp", File::mode_t::create_new);
+ File locked_file_2("locked.tmp", File::mode_t::write_existing);
+ EXPECT_EQ(locked_file_1.get_status(), joedb::File::status_t::success);
+ EXPECT_EQ(locked_file_2.get_status(), joedb::File::status_t::locked);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_success)
 {
- File file("existing.tmp", File::mode_t::read_existing);
- EXPECT_TRUE(file.is_good());
- EXPECT_EQ(file.get_mode(), File::mode_t::read_existing);
+ {
+  File file("existing.tmp", File::mode_t::read_existing);
+  EXPECT_EQ(file.get_status(), joedb::File::status_t::success);
+  EXPECT_EQ(file.get_mode(), File::mode_t::read_existing);
+ }
 
- File new_file("new.tmp", File::mode_t::create_new);
- EXPECT_TRUE(file.is_good());
- new_file.flush();
+ {
+  File new_file("new.tmp", File::mode_t::create_new);
+  EXPECT_EQ(new_file.get_status(), joedb::File::status_t::success);
+  new_file.flush();
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

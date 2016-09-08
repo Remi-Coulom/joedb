@@ -19,13 +19,24 @@ int main(int argc, char **argv)
  {
   joedb::File file;
 
-  if (!file.open(argv[1], joedb::File::mode_t::write_existing))
+  file.open(argv[1], joedb::File::mode_t::write_existing);
+  if (file.get_status() != joedb::File::status_t::success)
   {
    std::cout << "Could not open " << argv[1] << " for writing.\n";
-   if (!file.open(argv[1], joedb::File::mode_t::read_existing))
+
+   file.open(argv[1], joedb::File::mode_t::read_existing);
+   if (file.get_status() != joedb::File::status_t::success)
    {
     std::cout << "Could not open " << argv[1] << " for reading.\n";
-    if (!file.open(argv[1], joedb::File::mode_t::create_new))
+
+    if (file.get_status() == joedb::File::status_t::locked)
+    {
+     std::cout << "Error: " << argv[1] << " is locked by another process.\n";
+     return 1;
+    }
+
+    file.open(argv[1], joedb::File::mode_t::create_new);
+    if (file.get_status() != joedb::File::status_t::success)
     {
      std::cout << "Could not create " << argv[1] << ".\n";
      return 1;
