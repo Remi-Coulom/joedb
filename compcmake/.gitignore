@@ -3,9 +3,7 @@ ninja*
 mingw*
 vs2013*
 vs2015*
-gtest-1.7.0*
-googletest-release-1.8.0*
-googletest
+googletest-release-1.8.0
 *.zip
 build
 debug

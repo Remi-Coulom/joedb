@@ -26,6 +26,7 @@ TEST_F(Interpreter_Test, main_test)
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
+ std::ofstream("interpreter_test.out.tmp") << out_string.str();
 
  std::ifstream reference_file("interpreter_test.out");
  ASSERT_TRUE(reference_file.good());

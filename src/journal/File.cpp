@@ -4,12 +4,13 @@
 // System-specific file locking
 /////////////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
+#include <Windows.h>
 #include <io.h>
-#include <stdio.h>
+#include <FileAPI.h>
 bool joedb::File::lock_file()
 {
  HANDLE hFile = (HANDLE)_get_osfhandle(_fileno(file));
- return LockFile(hFile, 0, 0, 1, 0);
+ return LockFile(hFile, 0, 0, 1, 0) == TRUE;
 }
 #else
 #include <sys/file.h>
