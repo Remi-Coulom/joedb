@@ -84,17 +84,28 @@ else()
 endif()
 
 if(Boost_SYSTEM_FOUND)
- add_executable(joedb_server
-  ../src/server/joedb_server.cpp
+ add_executable(joedb_asio_server
+  ../src/communication/asio/joedb_asio_server.cpp
   ../src/interpreter/io/file_error_message.cpp
   $<TARGET_OBJECTS:interpreter_objects>
  )
- target_link_libraries(joedb_server ${Boost_SYSTEM_LIBRARY})
- add_executable(joedb_client ../src/server/joedb_client.cpp)
- target_link_libraries(joedb_client ${Boost_SYSTEM_LIBRARY})
- target_link_libraries(joedb_client ${Boost_THREAD_LIBRARY})
+ target_link_libraries(joedb_asio_server ${Boost_SYSTEM_LIBRARY})
+
+ add_executable(joedb_asio_client ../src/communication/asio/joedb_asio_client.cpp)
+ target_link_libraries(joedb_asio_client ${Boost_SYSTEM_LIBRARY})
+ target_link_libraries(joedb_asio_client ${Boost_THREAD_LIBRARY})
+
+ add_executable(joedb_interprocess_server
+  ../src/communication/interprocess/joedb_interprocess_server.cpp
+ )
+ target_link_libraries(joedb_interprocess_server rt)
+
+ add_executable(joedb_interprocess_client
+  ../src/communication/interprocess/joedb_interprocess_client.cpp
+ )
+ target_link_libraries(joedb_interprocess_client rt)
 else()
- message("== WARNING: boost system not found: server is not compiled")
+ message("== WARNING: boost system not found: communication not compiled")
 endif()
 
 find_library(SQLITE3_LIBRARY sqlite3)
