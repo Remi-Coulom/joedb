@@ -16,11 +16,11 @@ int main(int argc, char **argv)
  {
   std::cout << "Connecting to " << argv[1] << " on port " << argv[2] << '\n';
 
-  boost::asio::io_service aios;
-  boost::asio::ip::tcp::resolver resolver(aios);
+  boost::asio::io_service io_service;
+  boost::asio::ip::tcp::resolver resolver(io_service);
   boost::asio::ip::tcp::resolver::iterator endpoint =
    resolver.resolve(boost::asio::ip::tcp::resolver::query(argv[1], argv[2]));
-  boost::asio::ip::tcp::socket socket(aios);
+  boost::asio::ip::tcp::socket socket(io_service);
   boost::asio::connect(socket, endpoint);
 
   while (true)

@@ -3,6 +3,7 @@
 #include "File.h"
 #include "Journal_File.h"
 #include "Dump_Listener.h"
+#include "file_error_message.h"
 
 int main(int argc, char **argv)
 {
@@ -15,16 +16,8 @@ int main(int argc, char **argv)
  {
   joedb::File file(argv[1], joedb::File::mode_t::read_existing);
 
-  if (file.get_status() == joedb::File::status_t::locked)
-  {
-   std::cerr << "error: " << argv[1] << " is locked by another process\n";
+  if (joedb::file_error_message(std::cerr, file))
    return 1;
-  }
-  else if (file.get_status() != joedb::File::status_t::success)
-  {
-   std::cerr << "error: could not open file: " << argv[1] << '\n';
-   return 1;
-  }
 
   joedb::Journal_File journal(file);
   joedb::Dump_Listener dump_listener(std::cout);

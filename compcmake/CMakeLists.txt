@@ -24,13 +24,15 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Threads REQUIRED)
 find_package(Boost COMPONENTS system thread)
 
+set(GOOGLE_TEST ./googletest-release-1.8.0/googletest)
+
 include_directories(
  ${GTEST_INCLUDE_DIRS}
  ../src/interpreter/abstract
  ../src/interpreter/io
  ../src/journal
- ./googletest-release-1.8.0/googletest
- ./googletest-release-1.8.0/googletest/include
+ ${GOOGLE_TEST}
+ ${GOOGLE_TEST}/include
 )
 
 add_library(interpreter_objects OBJECT
@@ -49,10 +51,11 @@ add_library(io_objects OBJECT
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
  ../src/interpreter/io/type_io.cpp
+ ../src/interpreter/io/file_error_message.cpp
 )
 
 add_executable(joedbi
- ../src/interpreter/io/interpreter_main.cpp
+ ../src/interpreter/io/joedbi.cpp
  $<TARGET_OBJECTS:interpreter_objects>
  $<TARGET_OBJECTS:io_objects>
 )
@@ -63,7 +66,7 @@ add_executable(joedb_logdump
  $<TARGET_OBJECTS:io_objects>
 )
 
-if(EXISTS "../googletest-release-1.8.0/googletest/include")
+if(EXISTS "../${GOOGLE_TEST}/include")
  add_executable(joedb_test
   ../test/Interpreter_Test.cpp
   ../test/File_Test.cpp
@@ -77,11 +80,15 @@ if(EXISTS "../googletest-release-1.8.0/googletest/include")
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
 else()
- message("== WARNING: run ./get_gtest.sh in the parent directory for tests")
+ message("== WARNING: run ./get_gtest.sh for tests")
 endif()
 
 if(Boost_SYSTEM_FOUND)
- add_executable(joedb_server ../src/server/joedb_server.cpp)
+ add_executable(joedb_server
+  ../src/server/joedb_server.cpp
+  ../src/interpreter/io/file_error_message.cpp
+  $<TARGET_OBJECTS:interpreter_objects>
+ )
  target_link_libraries(joedb_server ${Boost_SYSTEM_LIBRARY})
  add_executable(joedb_client ../src/server/joedb_client.cpp)
  target_link_libraries(joedb_client ${Boost_SYSTEM_LIBRARY})
@@ -134,11 +141,11 @@ set_target_properties(compiler_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
 #############################################################################
 # Packaging
 #############################################################################
- install(TARGETS joedbc RUNTIME DESTINATION bin)
- install(TARGETS joedbi RUNTIME DESTINATION bin)
- install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
- install(TARGETS joedb ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
- # TODO: install include files = joedb/File.h ...
+install(TARGETS joedbc RUNTIME DESTINATION bin)
+install(TARGETS joedbi RUNTIME DESTINATION bin)
+install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
+install(TARGETS joedb ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+# TODO: install include files = joedb/File.h ...
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
  set(CPACK_GENERATOR "DEB")
