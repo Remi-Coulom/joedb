@@ -192,6 +192,6 @@ def FlagsForFile( filename, **kwargs ):
     final_flags = MakeRelativePathsInFlagsAbsolute( flags, relative_to )
 
   return {
-    'flags': final_flags + ['-x', 'c++'],
+    'flags': final_flags + ['-x', 'c++'] + ['-std', 'c++11'],
     'do_cache': True
   }
