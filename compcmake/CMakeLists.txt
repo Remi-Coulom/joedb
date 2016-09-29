@@ -39,6 +39,7 @@ add_library(interpreter_objects OBJECT
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/abstract/is_identifier.cpp
+ ../src/interpreter/abstract/Multiplexer.cpp
  ../src/journal/File.cpp
  ../src/journal/Journal_File.cpp
 )
@@ -68,11 +69,12 @@ add_executable(joedb_logdump
 
 if(EXISTS "../${GOOGLE_TEST}/include")
  add_executable(joedb_test
-  ../test/Interpreter_Test.cpp
   ../test/File_Test.cpp
-  ../test/Journal_File_Test.cpp
-  ../test/StringIO_Test.cpp
+  ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
+  ../test/Journal_File_Test.cpp
+  ../test/Multiplexer_Test.cpp
+  ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
   $<TARGET_OBJECTS:interpreter_objects>
