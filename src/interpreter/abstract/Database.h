@@ -2,7 +2,7 @@
 #define joedb_Database_declared
 
 #include "Table.h"
-#include "Listener.h"
+#include "Dummy_Listener.h"
 
 #include <map>
 
@@ -15,7 +15,7 @@ namespace joedb
 
    std::map<table_id_t, Table> tables;
 
-   Listener default_listener;
+   Dummy_Listener default_listener;
    Listener *listener;
 
   public:

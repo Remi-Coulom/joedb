@@ -95,7 +95,7 @@ void generate_code(std::ostream &out,
 #include "File.h"
 #include "Journal_File.h"
 #include "Database.h"
-#include "Schema_Listener.h"
+#include "Dummy_Listener.h"
 #include "Freedom_Keeper.h"
 
 )RRR";
@@ -136,7 +136,7 @@ void generate_code(std::ostream &out,
   out << " };\n\n";
  }
 
- out << " class Database: private joedb::Listener\n {\n";
+ out << " class Database: private joedb::Dummy_Listener\n {\n";
 
  for (auto table: tables)
  {
