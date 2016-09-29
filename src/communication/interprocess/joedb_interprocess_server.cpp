@@ -39,7 +39,7 @@ int main(int argc, char **argv)
  }
  catch (boost::interprocess::interprocess_exception &e)
  {
-  std::cerr << e.what() << '\n';
+  std::cerr << "boost::interprocess: " << e.what() << '\n';
   return 1;
  }
 
