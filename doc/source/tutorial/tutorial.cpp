@@ -7,7 +7,7 @@ int main()
  //
  // Open the database, and test that everything is OK
  //
- tutorial::Database db("tutorial.joedb");
+ tutorial::File_Database db("tutorial.joedb");
  if (!db.is_good())
  {
   std::cerr << "Error: could not open database\n";

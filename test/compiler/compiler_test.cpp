@@ -1,6 +1,9 @@
 #include "testdb.h"
 #include "File.h"
 #include "Journal_File.h"
+#include "Multiplexer.h"
+#include "Database.h"
+#include "DB_Listener.h"
 
 #include <iostream>
 
@@ -26,7 +29,7 @@ void print_table_sizes(const testdb::Database &db)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int main()
+int file_test()
 /////////////////////////////////////////////////////////////////////////////
 {
  std::cout << "\nTesting compiled code...\n";
@@ -34,7 +37,7 @@ int main()
  //
  // First, try to open the database
  //
- testdb::Database db("test.joedb");
+ testdb::File_Database db("test.joedb");
  if (!db.is_good())
  {
   std::cerr << "Error opening database\n";
@@ -97,6 +100,61 @@ int main()
   std::cout << '\n';
  }
 
+ return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+int multiplexer_test()
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::cout << "Multiplexer test...\n";
+
+ joedb::File file("test.joedb", joedb::File::mode_t::write_existing);
+ if (file.get_status() != joedb::File::status_t::success)
+ {
+  std::cout << "Error: could not open file\n";
+  return 1;
+ }
+ testdb::Database compiled_db;
+ joedb::Database interpreted_db;
+
+ joedb::Journal_File journal(file);
+ joedb::DB_Listener interpreted_listener(interpreted_db);
+
+ joedb::Multiplexer multiplexer;
+ joedb::Listener &journal_multiplexer = multiplexer.add_listener(journal);
+ joedb::Listener &compiled_multiplexer = multiplexer.add_listener(compiled_db);
+ joedb::Listener &interpreted_multiplexer = multiplexer.add_listener(interpreted_listener);
+
+ compiled_db.set_listener(compiled_multiplexer);
+ interpreted_db.set_listener(interpreted_multiplexer);
+
+ journal.replay_log(journal_multiplexer);
+
+ std::cout << "Tables:\n";
+ for (auto table: interpreted_db.get_tables())
+  std::cout << ' ' << table.second.get_name() << '\n';
+
+ compiled_db.new_city("Multiplexer");
+
+ table_id_t city_id = interpreted_db.find_table("city");
+ const joedb::Table &city_table = interpreted_db.get_tables().find(city_id)->second;
+ field_id_t name_id = city_table.find_field("name");
+ const joedb::Field &name_field = city_table.get_fields().find(name_id)->second;
+
+ for (int i = 1; i < 5; i++)
+  std::cout << i << ' ' << name_field.get_string(record_id_t(i)) << '\n';
 
  return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+int main()
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (file_test())
+  return 1;
+
+ if (multiplexer_test())
+  return 1;
 }

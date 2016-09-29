@@ -15,14 +15,14 @@ namespace joedb
 
    std::map<table_id_t, Table> tables;
 
-   Dummy_Listener default_listener;
+   Dummy_Listener dummy_listener;
    Listener *listener;
 
   public:
-   Database(): current_table_id(0), listener(&default_listener) {}
+   Database(): current_table_id(0), listener(&dummy_listener) {}
 
    void set_listener(Listener &new_listener) {listener = &new_listener;}
-   void clear_listener() {listener = &default_listener;}
+   void clear_listener() {listener = &dummy_listener;}
 
    const std::map<table_id_t, Table> &get_tables() const {return tables;}
 
