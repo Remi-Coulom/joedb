@@ -485,8 +485,7 @@ void generate_code(std::ostream &out,
   }
  }
 
- out << R"RRR(
-     }
+ out << R"RRR(     }
     }
     set_listener(journal);
    }
@@ -510,8 +509,8 @@ void generate_code(std::ostream &out,
            journal.get_state() == joedb::Journal_File::state_t::no_error;
    }
  };
-)RRR";
 
+)RRR";
 
  for (auto table: tables)
  {

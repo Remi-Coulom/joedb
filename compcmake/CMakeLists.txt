@@ -86,26 +86,29 @@ else()
 endif()
 
 if(Boost_SYSTEM_FOUND)
- add_executable(joedb_asio_server
+ add_executable(joedb_asio_server EXCLUDE_FROM_ALL
   ../src/communication/asio/joedb_asio_server.cpp
   ../src/interpreter/io/file_error_message.cpp
   $<TARGET_OBJECTS:interpreter_objects>
  )
  target_link_libraries(joedb_asio_server ${Boost_SYSTEM_LIBRARY})
 
- add_executable(joedb_asio_client ../src/communication/asio/joedb_asio_client.cpp)
+ add_executable(joedb_asio_client EXCLUDE_FROM_ALL
+  ../src/communication/asio/joedb_asio_client.cpp
+ )
  target_link_libraries(joedb_asio_client ${Boost_SYSTEM_LIBRARY})
  target_link_libraries(joedb_asio_client ${Boost_THREAD_LIBRARY})
 
- add_executable(joedb_interprocess_server
+ add_executable(joedb_interprocess_server EXCLUDE_FROM_ALL
   ../src/communication/interprocess/joedb_interprocess_server.cpp
  )
  target_link_libraries(joedb_interprocess_server rt)
 
- add_executable(joedb_interprocess_client
+ add_executable(joedb_interprocess_client EXCLUDE_FROM_ALL
   ../src/communication/interprocess/joedb_interprocess_client.cpp
  )
  target_link_libraries(joedb_interprocess_client rt)
+
 else()
  message("== WARNING: boost system not found: communication not compiled")
 endif()
@@ -138,18 +141,16 @@ add_executable(joedbc
 #############################################################################
 # Targets below require databases to be compiled
 #############################################################################
-add_executable(tutorial
+add_executable(tutorial EXCLUDE_FROM_ALL
  ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/other_source.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
-set_target_properties(tutorial PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
-add_executable(compiler_test
+add_executable(compiler_test EXCLUDE_FROM_ALL
  ../test/compiler/compiler_test.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
-set_target_properties(compiler_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 #############################################################################
 # Packaging

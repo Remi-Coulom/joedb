@@ -152,9 +152,5 @@ int multiplexer_test()
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- if (file_test())
-  return 1;
-
- if (multiplexer_test())
-  return 1;
+ return file_test() || multiplexer_test();
 }
