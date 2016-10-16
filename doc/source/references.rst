@@ -3,6 +3,7 @@ References
 
 Database with history/revisions:
 
+- https://github.com/attic-labs/noms
 - http://stackoverflow.com/questions/39281/database-design-for-revisions
 - http://stackoverflow.com/questions/750782/database-design-for-text-revisions
 - http://stackoverflow.com/questions/2724187/where-are-all-the-native-revisioned-databases
