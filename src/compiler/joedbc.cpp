@@ -92,11 +92,11 @@ void generate_code(std::ostream &out,
 #include <vector>
 #include <cassert>
 
-#include "File.h"
-#include "Journal_File.h"
-#include "Database.h"
-#include "Dummy_Listener.h"
-#include "Freedom_Keeper.h"
+#include "joedb/File.h"
+#include "joedb/Journal_File.h"
+#include "joedb/Database.h"
+#include "joedb/Dummy_Listener.h"
+#include "joedb/Freedom_Keeper.h"
 
 )RRR";
 
