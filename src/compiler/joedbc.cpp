@@ -1,6 +1,8 @@
 #include "Database.h"
 #include "File.h"
 #include "Interpreter.h"
+#include "Compiler_Options.h"
+#include "Compiler_Options_io.h"
 
 #include <iostream>
 #include <fstream>
@@ -54,9 +56,7 @@ void write_type(std::ostream &out,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void generate_code(std::ostream &out,
-                   const joedb::Database &db,
-                   const char *dbname)
+void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
 {
  char const * const types[] =
  {
@@ -82,10 +82,12 @@ void generate_code(std::ostream &out,
   "double "
  };
 
+ const joedb::Database &db = options.get_db();
+
  auto tables = db.get_tables();
 
- out << "#ifndef " << dbname << "_Database_declared\n";
- out << "#define " << dbname << "_Database_declared\n";
+ out << "#ifndef " << options.get_namespace_name() << "_Database_declared\n";
+ out << "#define " << options.get_namespace_name() << "_Database_declared\n";
  out << R"RRR(
 #include <string>
 #include <cstdint>
@@ -100,7 +102,7 @@ void generate_code(std::ostream &out,
 
 )RRR";
 
- out << "namespace " << dbname << "\n{\n";
+ out << "namespace " << options.get_namespace_name() << "\n{\n";
  out << " class Database;\n\n";
 
  for (auto table: tables)
@@ -596,28 +598,46 @@ int main(int argc, char **argv)
  //
  if (argc <= 2)
  {
-  std::cerr << "Usage: " << argv[0] << " <file.joedbi> <namespace>\n";
+  std::cerr << "Usage: " << argv[0] << " <file.joedbi> <file.joedbc>\n";
   return 1;
  }
 
- std::ifstream file(argv[1]);
- if (!file.good())
+ //
+ // Read file.joedbi
+ //
+ std::ifstream joedbi_file(argv[1]);
+ if (!joedbi_file.good())
  {
   std::cerr << "Error: could not open " << argv[1] << '\n';
   return 1;
  }
 
- //
- // Read the database
- //
  joedb::Database db;
  joedb::Interpreter interpreter(db);
- interpreter.main_loop(file, std::cerr);
+ interpreter.main_loop(joedbi_file, std::cerr);
+
+ //
+ // Read file.joedbc
+ //
+ std::ifstream joedbc_file(argv[2]);
+ if (!joedbc_file.good())
+ {
+  std::cerr << "Error: could not open " << argv[2] << '\n';
+  return 1;
+ }
+
+ joedb::Compiler_Options compiler_options(db);
+
+ if (!joedb::parse_compiler_options(joedbc_file, compiler_options))
+ {
+  std::cerr << "Error: could not parse compiler options\n";
+  return 1;
+ }
 
  //
  // Generate code
  //
- generate_code(std::cout, db, argv[2]);
+ generate_code(std::cout, compiler_options);
 
  return 0;
 }

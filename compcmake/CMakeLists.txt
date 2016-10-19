@@ -134,6 +134,7 @@ set_target_properties(joedbc_insert PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 add_executable(joedbc
  ../src/compiler/joedbc.cpp
+ ../src/compiler/Compiler_Options_io.cpp
  $<TARGET_OBJECTS:interpreter_objects>
  $<TARGET_OBJECTS:io_objects>
 )

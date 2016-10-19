@@ -1,10 +1,11 @@
 create_table city
 add_field city name string
 create_table person
-add_field person name string
+add_field person first_name string
+add_field person last_name string
 add_field person home references city
 insert_into city 1 "Lille"
 insert_into city 2 "Paris"
 insert_into city 3 "Tokyo"
-insert_into person 1 "Rémi" 1
-insert_into person 2 "Bertrand" 0
+insert_into person 1 "Rémi" "Coulom" 1
+insert_into person 2 "Bertrand" "Picard" 0

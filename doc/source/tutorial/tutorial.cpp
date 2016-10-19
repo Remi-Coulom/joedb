@@ -25,8 +25,12 @@ int main()
  // Inserting new records
  //
  auto Amsterdam = db.new_city("Amsterdam");
- auto Aristide = db.new_person("Aristide", Amsterdam);
- db.set_name(Aristide, "Aristide Martinez");
+ auto Aristide = db.new_person("Aristide", "Martines", Amsterdam);
+
+ //
+ // Updating a value
+ //
+ db.set_last_name(Aristide, "Martinez");
 
  //
  // A join between the two tables
@@ -34,7 +38,8 @@ int main()
  std::cout << "\nList of persons with their cities:\n";
  for (auto person: db.get_person_table())
  {
-  std::cout << db.get_name(person) << ' ';
+  std::cout << db.get_first_name(person) << ' ';
+  std::cout << db.get_last_name(person) << ' ';
   auto home = db.get_home(person);
   if (home.is_null())
    std::cout << "is homeless\n";
