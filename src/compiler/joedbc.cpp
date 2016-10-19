@@ -628,7 +628,7 @@ int main(int argc, char **argv)
 
  joedb::Compiler_Options compiler_options(db);
 
- if (!joedb::parse_compiler_options(joedbc_file, compiler_options))
+ if (!joedb::parse_compiler_options(joedbc_file, std::cerr, compiler_options))
  {
   std::cerr << "Error: could not parse compiler options\n";
   return 1;
