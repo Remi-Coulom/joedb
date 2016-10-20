@@ -33,13 +33,14 @@ bool joedb::parse_compiler_options
    iss >> namespace_name;
    compiler_options.set_namespace_name(namespace_name);
   }
-  else if (command == "create_index")
+  else if (command == "create_index" || command == "create_unique_index")
   {
    Compiler_Options::Index index;
 
+   index.unique = (command == "create_unique_index");
+
    std::string index_table;
    std::vector<std::string> index_columns;
-   std::string index_type_name;
 
    iss >> index.name >> index_table;
    {
@@ -50,7 +51,6 @@ bool joedb::parse_compiler_options
     while (std::getline(column_ss, column, ','))
      index_columns.push_back(column);
    }
-   iss >> index_type_name;
 
    if (!joedb::is_identifier(index.name))
    {
@@ -74,20 +74,6 @@ bool joedb::parse_compiler_options
      return false;
     }
     index.field_ids.push_back(field_id);
-   }
-
-   if (index_type_name == "map")
-    index.type = Compiler_Options::index_type_t::map;
-   else if (index_type_name == "multimap")
-    index.type = Compiler_Options::index_type_t::multimap;
-   else if (index_type_name == "unordered_map")
-    index.type = Compiler_Options::index_type_t::unordered_map;
-   else if (index_type_name == "unordered_multimap")
-    index.type = Compiler_Options::index_type_t::unordered_multimap;
-   else
-   {
-    out << "unknown index type: " << index_type_name << '\n';
-    return false;
    }
 
    compiler_options.add_index(index);

@@ -101,14 +101,6 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   "double "
  };
 
- char const * const index_types[] =
- {
-  "std::map",
-  "std::multimap",
-  "std::unordered_map",
-  "std::unordered_multimap"
- };
-
  const Database &db = options.get_db();
 
  auto tables = db.get_tables();
@@ -120,9 +112,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 #include <cstdint>
 #include <vector>
 #include <cassert>
-
 #include <map>
-#include <unordered_map>
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
@@ -205,7 +195,12 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   {
    const Table &table = db.get_tables().find(index.table_id)->second;
 
-   out << "   " << index_types[index.type] << '<';
+   out << "   std::";
+   if (index.unique)
+    out << "map";
+   else
+    out << "multimap";
+   out << '<';
 
    if (index.field_ids.size() == 1)
    {

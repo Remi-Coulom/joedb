@@ -13,20 +13,12 @@ namespace joedb
  class Compiler_Options
  {
   public:
-   enum index_type_t
-   {
-    map,
-    multimap,
-    unordered_map,
-    unordered_multimap,
-   };
-
    struct Index
    {
+    bool unique;
     std::string name;
     table_id_t table_id;
     std::vector<field_id_t> field_ids;
-    index_type_t type;
    };
 
   private:
