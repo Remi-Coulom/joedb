@@ -65,7 +65,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t allocate()
+   size_t get_free_record()
    {
     size_t result = records[free_list].next;
     if (result == free_list)
@@ -73,6 +73,13 @@ namespace joedb
      push_back();
      result = records[free_list].next;
     }
+    return result;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   size_t allocate()
+   {
+    size_t result = get_free_record();
     use(result);
     return result;
    }

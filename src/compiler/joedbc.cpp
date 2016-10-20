@@ -62,6 +62,55 @@ void write_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void write_index_type
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Table &table,
+ const Compiler_Options::Index &index
+)
+{
+ char const * const cpp_value_types[] =
+ {
+  0,
+  "std::string",
+  "int32_t ",
+  "int64_t ",
+  "record_id_t ",
+  "bool ",
+  "float ",
+  "double "
+ };
+
+ out << "std::";
+ if (index.unique)
+  out << "map";
+ else
+  out << "multimap";
+ out << '<';
+
+ if (index.field_ids.size() == 1)
+ {
+  const Field &field = table.get_fields().find(index.field_ids[0])->second;
+  out << cpp_value_types[int(field.get_type().get_type_id())];
+ }
+ else
+ {
+  out << "std::tuple<";
+  for (size_t i = 0; i < index.field_ids.size(); i++)
+  {
+   if (i > 0)
+    out << ", ";
+   const Field &field = table.get_fields().find(index.field_ids[i])->second;
+   out << cpp_value_types[int(field.get_type().get_type_id())];
+  }
+  out << ">";
+ }
+
+ out << ", " << table.get_name() << "_t>";
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void generate_code(std::ostream &out, const Compiler_Options &options)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -81,18 +130,6 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  {
   0,
   "const std::string &",
-  "int32_t ",
-  "int64_t ",
-  "record_id_t ",
-  "bool ",
-  "float ",
-  "double "
- };
-
- char const * const cpp_value_types[] =
- {
-  0,
-  "std::string",
   "int32_t ",
   "int64_t ",
   "record_id_t ",
@@ -144,6 +181,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << "   record_id_t get_id() const {return id;}\n";
   out << "   bool operator==(const " << tname << "_t " << tname << ") const {return id == " << tname << ".id;}\n";
   out << " };\n";
+
   out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n";
   out << "  " << tname << "_data() {}\n";
   out << "  " << tname << "_data(bool f): joedb::EmptyRecord(f) {}\n";
@@ -154,6 +192,15 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, field.second.get_type(), false);
    out << ' ' << field.second.get_name() << ";\n";
   }
+
+  for (const auto &index: options.get_indices())
+   if (index.table_id == table.first)
+   {
+    out << "  ";
+    write_index_type(out, table.second, index);
+    out << "::iterator ";
+    out << index.name << ";\n";
+   }
 
   out << " };\n\n";
  }
@@ -185,50 +232,31 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  //
  // Indices
  //
+ if (options.get_indices().size())
+  out << '\n';
+
+ for (const auto &index: options.get_indices())
  {
-  const std::vector<Compiler_Options::Index> indices = options.get_indices();
+  const Table &table = db.get_tables().find(index.table_id)->second;
 
-  if (indices.size())
-   out << '\n';
-
-  for (const auto &index: indices)
-  {
-   const Table &table = db.get_tables().find(index.table_id)->second;
-
-   out << "   std::";
-   if (index.unique)
-    out << "map";
-   else
-    out << "multimap";
-   out << '<';
-
-   if (index.field_ids.size() == 1)
-   {
-    const Field &field = table.get_fields().find(index.field_ids[0])->second;
-    out << cpp_value_types[int(field.get_type().get_type_id())];
-   }
-   else
-   {
-    out << "std::tuple<";
-    for (size_t i = 0; i < index.field_ids.size(); i++)
-    {
-     if (i > 0)
-      out << ", ";
-     const Field &field = table.get_fields().find(index.field_ids[i])->second;
-     out << cpp_value_types[int(field.get_type().get_type_id())];
-    }
-    out << ">";
-   }
-
-   out << ", " << table.get_name() << "_t";
-   out << "> ";
-   out << index.name << ";\n";
-  }
+  out << "   ";
+  write_index_type(out, table, index);
+  out << ' ' << index.name << ";\n";
  }
 
  //
  // after_delete listener function
  //
+ out << '\n';
+ for (auto table: tables)
+ {
+  const std::string &name = table.second.get_name();
+  out << "   void internal_delete_" << name << "(record_id_t record_id)\n";
+  out << "   {\n";
+  out << "    " << name << "_FK.free(record_id + 1);\n";
+  out << "   }\n";
+ }
+
  out << '\n';
  out << "   void after_delete(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
@@ -244,7 +272,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
    const std::string &name = table.second.get_name();
    out << "if (table_id == " << table.first << ")\n";
-   out << "     " << name << "_FK.free(record_id + 1);\n";
+   out << "     internal_delete_" << name << "(record_id);\n";
   }
  }
  out << "   }\n";
@@ -340,14 +368,9 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // Public stuff
+ // Do nothing for model changes
  //
  out << R"RRR(
-  public:
-   Database(): listener(&dummy_listener) {}
-
-   void set_listener(Listener &new_listener) {listener = &new_listener;}
-   void clear_listener() {listener = &dummy_listener;}
    void after_create_table(const std::string &name) override {}
    void after_drop_table(table_id_t table_id) override {}
    void after_add_field(table_id_t table_id,
@@ -356,6 +379,17 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    {
    }
    void after_drop_field(table_id_t table_id, field_id_t field_id) override {}
+)RRR";
+
+ //
+ // Public stuff
+ //
+ out << R"RRR(
+  public:
+   Database(): listener(&dummy_listener) {}
+
+   void set_listener(Listener &new_listener) {listener = &new_listener;}
+   void clear_listener() {listener = &dummy_listener;}
 )RRR";
 
  for (auto table: tables)
@@ -424,7 +458,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   //
   out << "   void delete_" << tname << "(" << tname << "_t record)\n";
   out << "   {\n";
-  out << "    " << tname << "_FK.free(record.id + 1);\n";
+  out << "    internal_delete_" << tname << "(record.id);\n";
   out << "    listener->after_delete(" << table.first << ", record.id);\n";
   out << "   }\n";
 
