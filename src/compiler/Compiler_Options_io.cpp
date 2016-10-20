@@ -35,12 +35,13 @@ bool joedb::parse_compiler_options
   }
   else if (command == "create_index")
   {
-   std::string index_name;
+   Compiler_Options::Index index;
+
    std::string index_table;
    std::vector<std::string> index_columns;
    std::string index_type_name;
 
-   iss >> index_name >> index_table;
+   iss >> index.name >> index_table;
    {
     std::string s;
     iss >> s;
@@ -51,45 +52,45 @@ bool joedb::parse_compiler_options
    }
    iss >> index_type_name;
 
-   if (!joedb::is_identifier(index_name))
+   if (!joedb::is_identifier(index.name))
    {
-    out << "Error: invalid index name: " << index_name << '\n';
+    out << "Error: invalid index name: " << index.name << '\n';
     return false;
    }
 
-   table_id_t table_id = db.find_table(index_table);
-   if (!table_id)
+   index.table_id = db.find_table(index_table);
+   if (!index.table_id)
    {
     out << "Error: no such table: " << index_table << '\n';
     return false;
    }
 
-   std::vector<field_id_t> field_ids;
    for (auto field_name: index_columns)
    {
-    field_id_t field_id = db.find_field(table_id, field_name);
+    field_id_t field_id = db.find_field(index.table_id, field_name);
     if (!field_id)
     {
      out << "Error: no such field: " << field_name << '\n';
      return false;
     }
-    field_ids.push_back(field_id);
+    index.field_ids.push_back(field_id);
    }
 
-   Compiler_Options::index_type_t index_type;
    if (index_type_name == "map")
-    index_type = Compiler_Options::index_type_t::map;
+    index.type = Compiler_Options::index_type_t::map;
    else if (index_type_name == "multimap")
-    index_type = Compiler_Options::index_type_t::multimap;
+    index.type = Compiler_Options::index_type_t::multimap;
    else if (index_type_name == "unordered_map")
-    index_type = Compiler_Options::index_type_t::unordered_map;
+    index.type = Compiler_Options::index_type_t::unordered_map;
    else if (index_type_name == "unordered_multimap")
-    index_type = Compiler_Options::index_type_t::unordered_multimap;
+    index.type = Compiler_Options::index_type_t::unordered_multimap;
    else
    {
     out << "unknown index type: " << index_type_name << '\n';
     return false;
    }
+
+   compiler_options.add_index(index);
   }
   else
   {

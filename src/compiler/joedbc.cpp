@@ -7,56 +7,63 @@
 #include <iostream>
 #include <fstream>
 
+namespace joedb {
+
 /////////////////////////////////////////////////////////////////////////////
-void write_type(std::ostream &out,
-                const joedb::Database &db,
-                joedb::Type type,
-                bool return_type)
+void write_type
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Database &db,
+ Type type,
+ bool return_type
+)
 {
  switch (type.get_type_id())
  {
-  case joedb::Type::type_id_t::null:
+  case Type::type_id_t::null:
    out << "void";
   break;
 
-  case joedb::Type::type_id_t::string:
+  case Type::type_id_t::string:
    if (return_type)
     out << "const std::string &";
    else
     out << "std::string";
   break;
 
-  case joedb::Type::type_id_t::int32:
+  case Type::type_id_t::int32:
    out << "int32_t";
   break;
 
-  case joedb::Type::type_id_t::int64:
+  case Type::type_id_t::int64:
    out << "int64_t";
   break;
 
-  case joedb::Type::type_id_t::reference:
+  case Type::type_id_t::reference:
   {
    const table_id_t referred = type.get_table_id();
    out << db.get_tables().find(referred)->second.get_name() << "_t";
   }
   break;
 
-  case joedb::Type::type_id_t::boolean:
+  case Type::type_id_t::boolean:
    out << "bool";
   break;
 
-  case joedb::Type::type_id_t::float32:
+  case Type::type_id_t::float32:
    out << "float";
   break;
 
-  case joedb::Type::type_id_t::float64:
+  case Type::type_id_t::float64:
    out << "double";
   break;
  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
+void generate_code(std::ostream &out, const Compiler_Options &options)
+/////////////////////////////////////////////////////////////////////////////
 {
  char const * const types[] =
  {
@@ -82,7 +89,27 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
   "double "
  };
 
- const joedb::Database &db = options.get_db();
+ char const * const cpp_value_types[] =
+ {
+  0,
+  "std::string",
+  "int32_t ",
+  "int64_t ",
+  "record_id_t ",
+  "bool ",
+  "float ",
+  "double "
+ };
+
+ char const * const index_types[] =
+ {
+  "std::map",
+  "std::multimap",
+  "std::unordered_map",
+  "std::unordered_multimap"
+ };
+
+ const Database &db = options.get_db();
 
  auto tables = db.get_tables();
 
@@ -93,6 +120,9 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
 #include <cstdint>
 #include <vector>
 #include <cassert>
+
+#include <map>
+#include <unordered_map>
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
@@ -163,6 +193,45 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
  }
 
  //
+ // Indices
+ //
+ {
+  const std::vector<Compiler_Options::Index> indices = options.get_indices();
+
+  if (indices.size())
+   out << '\n';
+
+  for (const auto &index: indices)
+  {
+   const Table &table = db.get_tables().find(index.table_id)->second;
+
+   out << "   " << index_types[index.type] << '<';
+
+   if (index.field_ids.size() == 1)
+   {
+    const Field &field = table.get_fields().find(index.field_ids[0])->second;
+    out << cpp_value_types[int(field.get_type().get_type_id())];
+   }
+   else
+   {
+    out << "std::tuple<";
+    for (size_t i = 0; i < index.field_ids.size(); i++)
+    {
+     if (i > 0)
+      out << ", ";
+     const Field &field = table.get_fields().find(index.field_ids[i])->second;
+     out << cpp_value_types[int(field.get_type().get_type_id())];
+    }
+    out << ">";
+   }
+
+   out << ", " << table.get_name() << "_t";
+   out << "> ";
+   out << index.name << ";\n";
+  }
+ }
+
+ //
  // after_delete listener function
  //
  out << '\n';
@@ -216,9 +285,7 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
  // after_update
  //
  {
-  for (int type_id = 1;
-       type_id < int(joedb::Type::type_ids);
-       type_id++)
+  for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
    out << '\n';
    out << "   void after_update_" << types[type_id] << '\n';
@@ -255,8 +322,7 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
        out << "      " << table.second.get_name();
        out << "_FK.get_record(record_id + 1).";
        out << field.second.get_name() << " = ";
-       if (field.second.get_type().get_type_id() !=
-           joedb::Type::type_id_t::reference)
+       if (field.second.get_type().get_type_id() != Type::type_id_t::reference)
         out << "value";
        else
        {
@@ -350,8 +416,7 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", result.id, " << field.first << ", ";
    out << fname;
-   if (field.second.get_type().get_type_id() ==
-       joedb::Type::type_id_t::reference)
+   if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
     out << ".id";
    out << ");\n";
   }
@@ -404,8 +469,7 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
    out << fname;
-   if (field.second.get_type().get_type_id() ==
-       joedb::Type::type_id_t::reference)
+   if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
     out << ".id";
    out << ");\n";
    out << "   }\n";
@@ -458,28 +522,28 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
        << field.second.get_name() << "\", ";
    switch (field.second.get_type().get_type_id())
    {
-    case joedb::Type::type_id_t::null:
+    case Type::type_id_t::null:
     break;
-    case joedb::Type::type_id_t::string:
+    case Type::type_id_t::string:
      out << "joedb::Type::string()";
     break;
-    case joedb::Type::type_id_t::int32:
+    case Type::type_id_t::int32:
      out << "joedb::Type::int32()";
     break;
-    case joedb::Type::type_id_t::int64:
+    case Type::type_id_t::int64:
      out << "joedb::Type::int64()";
     break;
-    case joedb::Type::type_id_t::reference:
+    case Type::type_id_t::reference:
      out << "joedb::Type::reference("
          << field.second.get_type().get_table_id() << ")";
     break;
-    case joedb::Type::type_id_t::boolean:
+    case Type::type_id_t::boolean:
      out << "joedb::Type::boolean()";
     break;
-    case joedb::Type::type_id_t::float32:
+    case Type::type_id_t::float32:
      out << "joedb::Type::float32()";
     break;
-    case joedb::Type::type_id_t::float64:
+    case Type::type_id_t::float64:
      out << "joedb::Type::float64()";
     break;
    }
@@ -590,8 +654,11 @@ void generate_code(std::ostream &out, const joedb::Compiler_Options &options)
  out << "#endif\n";
 }
 
+}
+
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
+/////////////////////////////////////////////////////////////////////////////
 {
  //
  // Open existing file from the command line
@@ -637,7 +704,7 @@ int main(int argc, char **argv)
  //
  // Generate code
  //
- generate_code(std::cout, compiler_options);
+ joedb::generate_code(std::cout, compiler_options);
 
  return 0;
 }
