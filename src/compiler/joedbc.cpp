@@ -9,6 +9,18 @@
 
 namespace joedb {
 
+static char const * const cpp_value_types[] =
+{
+ 0,
+ "std::string",
+ "int32_t ",
+ "int64_t ",
+ "record_id_t ",
+ "bool ",
+ "float ",
+ "double "
+};
+
 /////////////////////////////////////////////////////////////////////////////
 void write_type
 /////////////////////////////////////////////////////////////////////////////
@@ -62,6 +74,26 @@ void write_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void write_tuple_type
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Table &table,
+ const Compiler_Options::Index &index
+)
+{
+ out << "std::tuple<";
+ for (size_t i = 0; i < index.field_ids.size(); i++)
+ {
+  if (i > 0)
+   out << ", ";
+  const Field &field = table.get_fields().find(index.field_ids[i])->second;
+  out << cpp_value_types[int(field.get_type().get_type_id())];
+ }
+ out << ">";
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void write_index_type
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -70,18 +102,6 @@ void write_index_type
  const Compiler_Options::Index &index
 )
 {
- char const * const cpp_value_types[] =
- {
-  0,
-  "std::string",
-  "int32_t ",
-  "int64_t ",
-  "record_id_t ",
-  "bool ",
-  "float ",
-  "double "
- };
-
  out << "std::";
  if (index.unique)
   out << "map";
@@ -96,15 +116,7 @@ void write_index_type
  }
  else
  {
-  out << "std::tuple<";
-  for (size_t i = 0; i < index.field_ids.size(); i++)
-  {
-   if (i > 0)
-    out << ", ";
-   const Field &field = table.get_fields().find(index.field_ids[i])->second;
-   out << cpp_value_types[int(field.get_type().get_type_id())];
-  }
-  out << ">";
+  write_tuple_type(out, table, index);
  }
 
  out << ", " << table.get_name() << "_t>";
@@ -162,13 +174,13 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  out << "namespace " << options.get_namespace_name() << "\n{\n";
  out << " class Database;\n\n";
 
- for (auto table: tables)
+ for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
   out << " class " << tname << "_container;\n\n";
   out << " class " << tname << "_t\n {\n";
   out << "  friend class Database;\n";
-  for (auto friend_table: tables)
+  for (auto &friend_table: tables)
    if (friend_table.first != table.first)
     out << "  friend class " << friend_table.second.get_name() << "_t;\n";
   out << "  friend class "  << tname << "_container;\n";
@@ -199,7 +211,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
     out << "  ";
     write_index_type(out, table.second, index);
     out << "::iterator ";
-    out << index.name << ";\n";
+    out << index.name << "_iterator;\n";
    }
 
   out << " };\n\n";
@@ -207,7 +219,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
  out << " class Database: public joedb::Listener\n {\n";
 
- for (auto table: tables)
+ for (auto &table: tables)
  {
   out << "  friend class "  << table.second.get_name() << "_t;\n";
   out << "  friend class "  << table.second.get_name() << "_container;\n";
@@ -223,7 +235,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  //
  // Vectors, and freedom keepers
  //
- for (auto table: tables)
+ for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
   out << "   joedb::Freedom_Keeper<" << tname << "_data> " << tname << "_FK;\n";
@@ -248,30 +260,80 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  // Internal data-modification functions
  //
  out << '\n';
- for (auto table: tables)
- {
-  const std::string &name = table.second.get_name();
-  out << "   void internal_delete_" << name << "(record_id_t record_id)\n";
-  out << "   {\n";
-  out << "    " << name << "_FK.free(record_id + 1);\n";
-  out << "   }\n";
- }
-
- out << '\n';
- for (auto table: tables)
- {
-  const std::string &name = table.second.get_name();
-  out << "   void internal_insert_" << name << "(record_id_t record_id)\n";
-  out << "   {\n";
-  out << "    " << name << "_FK.use(record_id + 1);\n";
-  out << "   }\n";
- }
-
- out << '\n';
- for (auto table: tables)
+ for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  for (auto field: table.second.get_fields())
+  out << "   void internal_delete_" << tname << "(record_id_t record_id)\n";
+  out << "   {\n";
+
+  for (const auto &index: options.get_indices())
+   if (index.table_id == table.first)
+   {
+    out << "    " << index.name << ".erase(" << tname;
+    out << "_FK.get_record(record_id + 1)." << index.name << "_iterator);\n";
+   }
+
+  out << "    " << tname << "_FK.free(record_id + 1);\n";
+  out << "   }\n";
+ }
+
+ out << '\n';
+ for (auto &table: tables)
+ {
+  const std::string &tname = table.second.get_name();
+  out << "   void internal_insert_" << tname << "(record_id_t record_id)\n";
+  out << "   {\n";
+  out << "    " << tname << "_FK.use(record_id + 1);\n";
+
+  for (const auto &index: options.get_indices())
+   if (index.table_id == table.first)
+   {
+    out << "    " << tname << "_data &data = ";
+    out << tname << "_FK.get_record(record_id + 1);\n";
+    out << "    auto result = " << index.name;
+    out << ".insert\n    (\n     ";
+    write_index_type(out, table.second, index);
+    out << "::value_type\n     (\n      ";
+    if (index.field_ids.size() == 1)
+    {
+     const Field &field =
+      table.second.get_fields().find(index.field_ids[0])->second;
+     out << "data." << field.get_name();
+    }
+    else
+    {
+     write_tuple_type(out, table.second, index);
+     out << '(';
+     for (size_t i = 0; i < index.field_ids.size(); i++)
+     {
+      if (i > 0)
+       out << ", ";
+      const Field &field =
+       table.second.get_fields().find(index.field_ids[i])->second;
+      out << "data." << field.get_name();
+     }
+     out << ')';
+    }
+    out << ",\n      " << tname << "_t(record_id)\n     )\n    );\n";
+    if (index.unique)
+    {
+     out << "    data." << index.name << "_iterator = result.first;\n";
+     out << "    if (!result.second)\n";
+     out << "     throw std::runtime_error(\"";
+     out << index.name << " unique index failure\");\n";
+    }
+    else
+     out << "    data." << index.name << "_iterator = result;\n";
+   }
+
+  out << "   }\n";
+ }
+
+ out << '\n';
+ for (auto &table: tables)
+ {
+  const std::string &tname = table.second.get_name();
+  for (auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
    out << "   void internal_update_" << tname << '_' << fname;
@@ -316,7 +378,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  out << "   {\n";
  {
   bool first = true;
-  for (auto table: tables)
+  for (auto &table: tables)
   {
    out << "    ";
    if (first)
@@ -352,11 +414,11 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << "   override\n";
    out << "   {\n";
 
-   for (auto table: tables)
+   for (auto &table: tables)
    {
     bool has_typed_field = false;
 
-    for (auto field: table.second.get_fields())
+    for (auto &field: table.second.get_fields())
      if (int(field.second.get_type().get_type_id()) == type_id)
      {
       has_typed_field = true;
@@ -368,7 +430,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
      out << "    if (table_id == " << table.first << ")\n";
      out << "    {\n";
 
-     for (auto field: table.second.get_fields())
+     for (auto &field: table.second.get_fields())
       if (int(field.second.get_type().get_type_id()) == type_id)
       {
        out << "     if (field_id == " << field.first << ")\n";
@@ -422,7 +484,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    void clear_listener() {listener = &dummy_listener;}
 )RRR";
 
- for (auto table: tables)
+ for (auto &table: tables)
  {
   out << '\n';
   const std::string &tname = table.second.get_name();
@@ -587,7 +649,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
       new(&journal) joedb::Journal_File(file);
 )RRR";
 
- for (auto table: tables)
+ for (auto &table: tables)
  {
   out << "      journal.after_create_table(\"" << table.second.get_name()
       << "\");\n";
@@ -655,7 +717,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
 )RRR";
 
- for (auto table: tables)
+ for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
   out << " class " << tname << "_container\n";
