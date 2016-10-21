@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 namespace joedb {
 
@@ -250,10 +251,57 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  for (const auto &index: options.get_indices())
  {
   const Table &table = db.get_tables().find(index.table_id)->second;
+  const std::string &tname = table.get_name();
 
   out << "   ";
   write_index_type(out, table, index);
   out << ' ' << index.name << ";\n";
+
+  out << "   void " << index.name << "_remove_index(record_id_t record_id)\n";
+  out << "   {\n";
+  out << "    " << index.name << ".erase(" << tname;
+  out << "_FK.get_record(record_id + 1)." << index.name << "_iterator);\n";
+  out << "   }\n";
+
+  out << "   void " << index.name << "_add_index(record_id_t record_id)\n";
+  out << "   {\n";
+  out << "    " << tname << "_data &data = ";
+  out << tname << "_FK.get_record(record_id + 1);\n";
+  out << "    auto result = " << index.name;
+  out << ".insert\n    (\n     ";
+  write_index_type(out, table, index);
+  out << "::value_type\n     (\n      ";
+  if (index.field_ids.size() == 1)
+  {
+   const Field &field =
+    table.get_fields().find(index.field_ids[0])->second;
+   out << "data." << field.get_name();
+  }
+  else
+  {
+   write_tuple_type(out, table, index);
+   out << '(';
+   for (size_t i = 0; i < index.field_ids.size(); i++)
+   {
+    if (i > 0)
+     out << ", ";
+    const Field &field =
+     table.get_fields().find(index.field_ids[i])->second;
+    out << "data." << field.get_name();
+   }
+   out << ')';
+  }
+  out << ",\n      " << tname << "_t(record_id)\n     )\n    );\n";
+  if (index.unique)
+  {
+   out << "    data." << index.name << "_iterator = result.first;\n";
+   out << "    if (!result.second)\n";
+   out << "     throw std::runtime_error(\"";
+   out << index.name << " unique index failure\");\n";
+  }
+  else
+   out << "    data." << index.name << "_iterator = result;\n";
+  out << "   }\n";
  }
 
  //
@@ -268,10 +316,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
-   {
-    out << "    " << index.name << ".erase(" << tname;
-    out << "_FK.get_record(record_id + 1)." << index.name << "_iterator);\n";
-   }
+    out << "    " << index.name << "_remove_index(record_id);\n";
 
   out << "    " << tname << "_FK.free(record_id + 1);\n";
   out << "   }\n";
@@ -287,44 +332,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
-   {
-    out << "    " << tname << "_data &data = ";
-    out << tname << "_FK.get_record(record_id + 1);\n";
-    out << "    auto result = " << index.name;
-    out << ".insert\n    (\n     ";
-    write_index_type(out, table.second, index);
-    out << "::value_type\n     (\n      ";
-    if (index.field_ids.size() == 1)
-    {
-     const Field &field =
-      table.second.get_fields().find(index.field_ids[0])->second;
-     out << "data." << field.get_name();
-    }
-    else
-    {
-     write_tuple_type(out, table.second, index);
-     out << '(';
-     for (size_t i = 0; i < index.field_ids.size(); i++)
-     {
-      if (i > 0)
-       out << ", ";
-      const Field &field =
-       table.second.get_fields().find(index.field_ids[i])->second;
-      out << "data." << field.get_name();
-     }
-     out << ')';
-    }
-    out << ",\n      " << tname << "_t(record_id)\n     )\n    );\n";
-    if (index.unique)
-    {
-     out << "    data." << index.name << "_iterator = result.first;\n";
-     out << "    if (!result.second)\n";
-     out << "     throw std::runtime_error(\"";
-     out << index.name << " unique index failure\");\n";
-    }
-    else
-     out << "    data." << index.name << "_iterator = result;\n";
-   }
+    out << "    " << index.name << "_add_index(record_id);\n";
 
   out << "   }\n";
  }
@@ -343,6 +351,16 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << "   {\n";
    out << "    " << tname << "_FK.get_record(record_id + 1)." << fname;
    out << " = " << fname << ";\n";
+
+   for (const auto &index: options.get_indices())
+    if (index.table_id == table.first &&
+        std::find(index.field_ids.begin(),
+                  index.field_ids.end(),
+                  field.first) != index.field_ids.end())
+    {
+     out << "    " << index.name << "_remove_index(record_id);\n";
+     out << "    " << index.name << "_add_index(record_id);\n";
+    }
    out << "   }\n";
   }
  }
