@@ -281,6 +281,16 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  // after_insert listener function
  //
  out << '\n';
+ for (auto table: tables)
+ {
+  const std::string &name = table.second.get_name();
+  out << "   void internal_insert_" << name << "(record_id_t record_id)\n";
+  out << "   {\n";
+  out << "    " << name << "_FK.use(record_id + 1);\n";
+  out << "   }\n";
+ }
+
+ out << '\n';
  out << "   void after_insert(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
  {
@@ -298,7 +308,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << "    {\n";
    out << "     while (" << name << "_FK.size() < record_id)\n";
    out << "      " << name << "_FK.push_back();\n";
-   out << "     " << name << "_FK.use(record_id + 1);\n";
+   out << "     internal_insert_" << name << "(record_id);\n";
    out << "    }\n";
   }
  }
@@ -397,10 +407,19 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << '\n';
   const std::string &tname = table.second.get_name();
 
-  out << "   " << tname << "_container get_" << tname << "_table() const;\n";
+  //
+  // Declaration of container access
+  //
+  out << "   " << tname << "_container get_" << tname << "_table() const;\n\n";
+
+  //
+  // new with default fields
+  //
   out << "   " << tname << "_t new_" << tname << "()\n";
   out << "   {\n";
-  out << "    " << tname << "_t result(" << tname << "_FK.allocate() - 1);\n";
+  out << "    size_t free_record = " << tname << "_FK.get_free_record();\n";
+  out << "    " << tname << "_t result(free_record - 1);\n\n";
+  out << "    internal_insert_" << tname << "(result.id);\n\n";
   out << "    listener->after_insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
@@ -432,15 +451,24 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   }
   out << "   )\n";
   out << "   {\n";
-  out << "    " << tname << "_t result(" << tname << "_FK.allocate() - 1);\n";
-  out << "    listener->after_insert(" << table.first << ", result.id);\n";
+  out << "    size_t free_record = " << tname << "_FK.get_free_record();\n";
 
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
 
-   out << "    " << tname << "_FK.get_record(result.id + 1).";
+   out << "    " << tname << "_FK.get_record(free_record).";
    out << fname << " = " << fname << ";\n";
+  }
+
+  out << "\n    " << tname << "_t result(free_record - 1);\n";
+  out << "    internal_insert_" << tname << "(result.id);\n\n";
+
+  out << "    listener->after_insert(" << table.first << ", result.id);\n";
+  for (const auto &field: table.second.get_fields())
+  {
+   const std::string &fname = field.second.get_name();
+
    out << "    listener->after_update_";
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", result.id, " << field.first << ", ";
