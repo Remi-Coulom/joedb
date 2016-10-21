@@ -22,41 +22,41 @@ void write_type
  switch (type.get_type_id())
  {
   case Type::type_id_t::null:
-   out << "void";
+   out << "void ";
   break;
 
   case Type::type_id_t::string:
    if (return_type)
     out << "const std::string &";
    else
-    out << "std::string";
+    out << "std::string ";
   break;
 
   case Type::type_id_t::int32:
-   out << "int32_t";
+   out << "int32_t ";
   break;
 
   case Type::type_id_t::int64:
-   out << "int64_t";
+   out << "int64_t ";
   break;
 
   case Type::type_id_t::reference:
   {
    const table_id_t referred = type.get_table_id();
-   out << db.get_tables().find(referred)->second.get_name() << "_t";
+   out << db.get_tables().find(referred)->second.get_name() << "_t ";
   }
   break;
 
   case Type::type_id_t::boolean:
-   out << "bool";
+   out << "bool ";
   break;
 
   case Type::type_id_t::float32:
-   out << "float";
+   out << "float ";
   break;
 
   case Type::type_id_t::float64:
-   out << "double";
+   out << "double ";
   break;
  }
 }
@@ -190,7 +190,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   {
    out << "  ";
    write_type(out, db, field.second.get_type(), false);
-   out << ' ' << field.second.get_name() << ";\n";
+   out << field.second.get_name() << ";\n";
   }
 
   for (const auto &index: options.get_indices())
@@ -245,7 +245,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // after_delete listener function
+ // Internal data-modification functions
  //
  out << '\n';
  for (auto table: tables)
@@ -257,6 +257,37 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << "   }\n";
  }
 
+ out << '\n';
+ for (auto table: tables)
+ {
+  const std::string &name = table.second.get_name();
+  out << "   void internal_insert_" << name << "(record_id_t record_id)\n";
+  out << "   {\n";
+  out << "    " << name << "_FK.use(record_id + 1);\n";
+  out << "   }\n";
+ }
+
+ out << '\n';
+ for (auto table: tables)
+ {
+  const std::string &tname = table.second.get_name();
+  for (auto field: table.second.get_fields())
+  {
+   const std::string &fname = field.second.get_name();
+   out << "   void internal_update_" << tname << '_' << fname;
+   out << "\n   (\n    record_id_t record_id,\n    ";
+   write_type(out, db, field.second.get_type(), true);
+   out << fname << "\n   )\n";
+   out << "   {\n";
+   out << "    " << tname << "_FK.get_record(record_id + 1)." << fname;
+   out << " = " << fname << ";\n";
+   out << "   }\n";
+  }
+ }
+
+ //
+ // after_delete listener function
+ //
  out << '\n';
  out << "   void after_delete(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
@@ -280,16 +311,6 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
  //
  // after_insert listener function
  //
- out << '\n';
- for (auto table: tables)
- {
-  const std::string &name = table.second.get_name();
-  out << "   void internal_insert_" << name << "(record_id_t record_id)\n";
-  out << "   {\n";
-  out << "    " << name << "_FK.use(record_id + 1);\n";
-  out << "   }\n";
- }
-
  out << '\n';
  out << "   void after_insert(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
@@ -352,9 +373,8 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
       {
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
-       out << "      " << table.second.get_name();
-       out << "_FK.get_record(record_id + 1).";
-       out << field.second.get_name() << " = ";
+       out << "      internal_update_" << table.second.get_name();
+       out << '_' << field.second.get_name() << "(record_id, ";
        if (field.second.get_type().get_type_id() != Type::type_id_t::reference)
         out << "value";
        else
@@ -363,7 +383,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
         out << tables.find(table_id)->second.get_name();
         out << "_t(value)";
        }
-       out <<";\n";
+       out << ");\n";
        out << "      return;\n";
        out << "     }\n";
       }
@@ -444,7 +464,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
      out << ",\n    ";
 
     write_type(out, db, field.second.get_type(), true);
-    out << ' ' << fname;
+    out << fname;
    }
 
    out << '\n';
@@ -504,7 +524,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    //
    out << "   ";
    write_type(out, db, field.second.get_type(), true);
-   out << " get_" << fname << "(" << tname << "_t record) const\n";
+   out << "get_" << fname << "(" << tname << "_t record) const\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
    out << "    return " << tname;
@@ -517,11 +537,11 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << "   void set_" << fname;
    out << "(" << tname << "_t record, ";
    write_type(out, db, field.second.get_type(), true);
-   out << ' ' << fname << ")\n";
+   out << fname << ")\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
-   out << "    " << tname << "_FK.get_record(record.id + 1).";
-   out << fname << " = " << fname << ";\n";
+   out << "    internal_update_" << tname << '_' << fname << "(record.id, ";
+   out << fname << ");\n";
    out << "    listener->after_update_";
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
@@ -536,7 +556,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    //
    out << "   " << tname << "_t find_" << tname << "_by_" << fname << "(";
    write_type(out, db, field.second.get_type(), true);
-   out << ' ' << fname << ") const;\n";
+   out << fname << ") const;\n";
   }
  }
 
@@ -697,7 +717,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
    out << " inline " << tname << "_t Database::find_" << tname << "_by_" << fname << "(";
    write_type(out, db, field.second.get_type(), true);
-   out << ' ' << fname << ") const\n";
+   out << fname << ") const\n";
    out << " {\n";
    out << "  for (auto " << tname << ": get_" << tname << "_table())\n";
    out << "   if (get_" << fname << "(" << tname << ") == " << fname << ")\n";
