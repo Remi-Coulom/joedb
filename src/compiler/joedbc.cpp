@@ -630,15 +630,43 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
     out << ".id";
    out << ");\n";
    out << "   }\n";
-
-   //
-   // Finder
-   //
-   out << "   " << tname << "_t find_" << tname << "_by_" << fname << "(";
-   write_type(out, db, field.second.get_type(), true);
-   out << fname << ") const;\n";
   }
  }
+
+ //
+ // find_unique_index
+ //
+ for (const auto &index: options.get_indices())
+  if (index.unique)
+  {
+   const Table &table = db.get_tables().find(index.table_id)->second;
+   const std::string &tname = table.get_name();
+   out << "   " << tname << "_t find_" << index.name << '(';
+   for (size_t i = 0; i < index.field_ids.size(); i++)
+   {
+    if (i > 0)
+     out << ", ";
+    const Field &field = table.get_fields().find(index.field_ids[i])->second;
+    write_type(out, db, field.get_type(), true);
+    out << field.get_name();
+   }
+   out << ") const\n";
+   out << "   {\n";
+   out << "    auto i = " << index.name << ".find(";
+   for (size_t i = 0; i < index.field_ids.size(); i++)
+   {
+    if (i > 0)
+     out << ", ";
+    const Field &field = table.get_fields().find(index.field_ids[i])->second;
+    out << field.get_name();
+   }
+   out << ");\n";
+   out << "    if (i == " << index.name << ".end())\n";
+   out << "     return " << tname << "_t();\n";
+   out << "    else\n";
+   out << "     return i->second;\n";
+   out << "   }\n";
+  }
 
  out << " };\n";
 
@@ -787,24 +815,6 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << "   delete_" << tname << "(*get_" << tname << "_table().begin());\n";
   out << " }\n";
   out << '\n';
-
-  //
-  // Loop over fields
-  //
-  for (const auto &field: table.second.get_fields())
-  {
-   const std::string &fname = field.second.get_name();
-
-   out << " inline " << tname << "_t Database::find_" << tname << "_by_" << fname << "(";
-   write_type(out, db, field.second.get_type(), true);
-   out << fname << ") const\n";
-   out << " {\n";
-   out << "  for (auto " << tname << ": get_" << tname << "_table())\n";
-   out << "   if (get_" << fname << "(" << tname << ") == " << fname << ")\n";
-   out << "    return " << tname << ";\n";
-   out << "  return " << tname << "_t(0);\n";
-   out << " }\n\n";
-  }
  }
 
  out << "}\n\n";

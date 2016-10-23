@@ -3,7 +3,6 @@ References
 
 Database with history/revisions:
 
-- https://github.com/attic-labs/noms
 - http://stackoverflow.com/questions/39281/database-design-for-revisions
 - http://stackoverflow.com/questions/750782/database-design-for-text-revisions
 - http://stackoverflow.com/questions/2724187/where-are-all-the-native-revisioned-databases
@@ -21,6 +20,11 @@ Database with history/revisions:
 - http://www.datomic.com/
 - http://samza.apache.org/
 - http://www.pgconf.us/2015/event/60/
+- https://github.com/attic-labs/noms
+
+Fast in-memory database with on-disk persistence
+
+- http://redis.io/ (the AOF persistence option is very similar to joedb)
 
 Crash resistance:
 
