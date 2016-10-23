@@ -1,0 +1,2 @@
+namespace testdb
+create_unique_index city_by_name city name

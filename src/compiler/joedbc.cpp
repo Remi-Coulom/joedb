@@ -296,8 +296,13 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   {
    out << "    data." << index.name << "_iterator = result.first;\n";
    out << "    if (!result.second)\n";
+   out << "    {\n";
+   out << "     " << tname << "_t duplicate = result.first->second;\n";
+   out << "     internal_delete_" << tname << "(record_id);\n";
+   out << "     " << index.name << "_add_index(duplicate.id);\n";
    out << "     throw std::runtime_error(\"";
    out << index.name << " unique index failure\");\n";
+   out << "    }\n";
   }
   else
    out << "    data." << index.name << "_iterator = result;\n";
@@ -641,6 +646,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   {
    const Table &table = db.get_tables().find(index.table_id)->second;
    const std::string &tname = table.get_name();
+   out << '\n';
    out << "   " << tname << "_t find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
@@ -670,6 +676,9 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
  out << " };\n";
 
+ //
+ // File_Database
+ //
  out << R"RRR(
  class File_Database: public Database
  {
@@ -763,6 +772,9 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 
 )RRR";
 
+ //
+ // Plain iteration over tables
+ //
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
@@ -816,6 +828,47 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << " }\n";
   out << '\n';
  }
+
+ //
+ // Index ranges for indexes that are not unique
+ //
+ for (const auto &index: options.get_indices())
+  if (!index.unique)
+  {
+   const Table &table = db.get_tables().find(index.table_id)->second;
+
+   out << " class " << index.name << "_range\n";
+   out << " {\n";
+   out << "  private:\n";
+   out << "   std::pair<";
+   write_index_type(out, table, index);
+   out << "::iterator, ";
+   write_index_type(out, table, index);
+   out << "::iterator> range;\n";
+   out << "  public:\n";
+   out << "   class iterator\n";
+   out << "   {\n";
+   out << "    friend class " << index.name << "_range;\n";
+   out << "    private:\n";
+   out << "     ";
+   write_index_type(out, table, index);
+   out << "::iterator map_iterator;\n";
+   out << "     iterator(";
+   write_index_type(out, table, index);
+   out << "::iterator map_iterator): map_iterator(map_iterator) {}\n";
+   out << "    public:\n";
+   out << "     bool operator !=(const iterator &i) const\n";
+   out << "     {\n";
+   out << "      return map_iterator != i.map_iterator;\n";
+   out << "     }\n";
+   out << "     iterator &operator++() {map_iterator++; return *this;}\n";
+   out << "     " << table.get_name();
+   out << "_t operator*() const {return map_iterator->second;}\n";
+   out << "   };\n";
+   out << "   iterator begin() {return range.first;}\n";
+   out << "   iterator end() {return range.second;}\n";
+   out << " };\n";
+  }
 
  out << "}\n\n";
  out << "#endif\n";

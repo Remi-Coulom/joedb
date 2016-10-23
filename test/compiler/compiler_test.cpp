@@ -8,7 +8,7 @@
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-void print_table_sizes(const testdb::Database &db)
+void dump(const testdb::Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::cout << '\n';
@@ -19,13 +19,20 @@ void print_table_sizes(const testdb::Database &db)
  std::cout << '\n';
  for (auto person: db.get_person_table())
  {
-  std::cout << "  " << person.get_id() << ": " << db.get_name(person) << '\n';
+  std::cout << "  " << person.get_id() << ": ";
+  std::cout << db.get_name(person) << ' ';
+  std::cout << db.get_home(person).get_id() << '\n';
  }
 
  std::cout << '\n';
  std::cout << " Cities: " << db.get_city_table().get_size() << '\n';
  for (auto city: db.get_city_table())
-  std::cout << "  " << db.get_name(city) << '\n';
+ {
+  std::cout << "  " << city.get_id() << ": ";
+  std::cout << db.get_name(city) << '\n';
+ }
+
+ std::cout << '\n';
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -49,16 +56,7 @@ int file_test()
  //
  // Print table sizes
  //
- print_table_sizes(db);
-
- //
- // Manually remove persons
- //
-#if 0
- while (!db.get_person_table().is_empty())
-  db.delete_person(*db.get_person_table().begin());
- print_table_sizes(db);
-#endif
+ dump(db);
 
  //
  // Clear Persons and cities
@@ -69,7 +67,7 @@ int file_test()
  //
  // Print table sizes
  //
- print_table_sizes(db);
+ dump(db);
 
  //
  // Insert some
@@ -81,7 +79,21 @@ int file_test()
  db.new_person("Toto", New_York);
  db.new_person("Évariste", testdb::city_t());
  db.new_person("Catherine", testdb::city_t());
- print_table_sizes(db);
+ dump(db);
+
+ //
+ // Test unique index constraint
+ //
+ std::cout << "Trying to insert a duplicate Paris: ...\n";
+ try
+ {
+  db.new_city("Paris");
+ }
+ catch(std::runtime_error e)
+ {
+  std::cout << e.what() << '\n';
+ }
+ dump(db);
 
  //
  // Validity + get_at
