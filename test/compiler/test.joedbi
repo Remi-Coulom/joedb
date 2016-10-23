@@ -11,8 +11,9 @@ insert_into person 3 "Alexandre" 1
 
 create_table language
 add_field language name string
-insert_into language 1 "English"
-insert_into language 2 "Français"
+add_field language id string
+insert_into language 1 "English" "en"
+insert_into language 2 "Français" "fr"
 
 create_table string_id
 add_field string_id name string
@@ -23,7 +24,7 @@ insert_into string_id 3 "how_are_you"
 create_table translation
 add_field translation string_id references string_id
 add_field translation language references language
-add_field translation value string
+add_field translation translation string
 insert_into translation 1 1 1 "Hello"
 insert_into translation 2 1 2 "Bonjour"
 insert_into translation 3 2 1 "Goodbye"

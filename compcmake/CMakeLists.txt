@@ -153,6 +153,11 @@ add_executable(compiler_test EXCLUDE_FROM_ALL
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
+add_executable(generate_translation_header EXCLUDE_FROM_ALL
+ ../test/compiler/generate_translation_header.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+)
+
 #############################################################################
 # Packaging
 #############################################################################

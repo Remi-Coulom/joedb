@@ -4,6 +4,7 @@
 #include "Multiplexer.h"
 #include "Database.h"
 #include "DB_Listener.h"
+#include "translation.h"
 
 #include <iostream>
 #include <algorithm>
@@ -34,6 +35,31 @@ void dump(const testdb::Database &db)
  }
 
  std::cout << '\n';
+}
+
+/////////////////////////////////////////////////////////////////////////////
+const std::string &get_translation
+/////////////////////////////////////////////////////////////////////////////
+(
+ const testdb::Database &db,
+ record_id_t string_id_id,
+ record_id_t language_id
+)
+{
+ const testdb::string_id_t string_id(string_id_id);
+ const testdb::language_t language(language_id);
+ const testdb::language_t english(translation::language::en);
+
+ auto translation = db.find_translation_by_ids(string_id, language);
+
+ if (translation.is_null())
+  translation = db.find_translation_by_ids(string_id, english);
+
+ if (!translation.is_null())
+  return db.get_translation(translation);
+
+ const static std::string error("Translation error!");
+ return error;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -160,9 +186,15 @@ int file_test()
   }
 
  //
- // Test of unique index with two columns
+ // Translation test
  //
- std::cout << db.get_value(db.find_translation_by_ids(db.find_string_id_by_name("how_are_you"), db.find_language_by_name("Français"))) << '\n';
+ std::cout << get_translation
+              (
+               db,
+               translation::how_are_you,
+               translation::language::fr
+              );
+ std::cout << '\n';
 
  return 0;
 }
