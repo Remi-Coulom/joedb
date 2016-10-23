@@ -131,7 +131,7 @@ int file_test()
  }
 
  //
- // Generic find
+ // Standard find algorithm
  //
  {
   auto i = std::find_if
@@ -148,6 +148,21 @@ int file_test()
    std::cout << "Found Catherine!\n";
   }
  }
+
+ //
+ // Isn't it simpler with a plain loop?
+ //
+ for (auto person: db.get_person_table())
+  if (db.get_name(person) == "Catherine")
+  {
+   std::cout << "Found Catherine!\n";
+   break;
+  }
+
+ //
+ // Test of unique index with two columns
+ //
+ std::cout << db.get_value(db.find_translation_by_ids(db.find_string_id_by_name("how_are_you"), db.find_language_by_name("Français"))) << '\n';
 
  return 0;
 }

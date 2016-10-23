@@ -83,11 +83,16 @@ Finding all Totos:
  4: Tokyo
  5: Barcelona
 Found Catherine!
+Found Catherine!
+Comment allez-vous?
 
 Multiplexer test...
 Tables:
  city
  person
+ language
+ string_id
+ translation
 1 Barcelona
 2 New York
 3 Multiplexer City

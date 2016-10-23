@@ -10,18 +10,6 @@
 
 namespace joedb {
 
-static char const * const cpp_value_types[] =
-{
- 0,
- "std::string",
- "int32_t",
- "int64_t",
- "record_id_t",
- "bool",
- "float",
- "double"
-};
-
 /////////////////////////////////////////////////////////////////////////////
 void write_type
 /////////////////////////////////////////////////////////////////////////////
@@ -79,17 +67,19 @@ void write_tuple_type
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Table &table,
+ const Database &db,
  const Compiler_Options::Index &index
 )
 {
+ const Table &table = db.get_tables().find(index.table_id)->second;
+
  out << "std::tuple<";
  for (size_t i = 0; i < index.field_ids.size(); i++)
  {
   if (i > 0)
    out << ", ";
   const Field &field = table.get_fields().find(index.field_ids[i])->second;
-  out << cpp_value_types[int(field.get_type().get_type_id())];
+  write_type(out, db, field.get_type(), false);
  }
  out << ">";
 }
@@ -99,7 +89,7 @@ void write_index_type
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Table &table,
+ const Database &db,
  const Compiler_Options::Index &index
 )
 {
@@ -110,8 +100,9 @@ void write_index_type
   out << "multimap";
  out << '<';
 
- write_tuple_type(out, table, index);
+ write_tuple_type(out, db, index);
 
+ const Table &table = db.get_tables().find(index.table_id)->second;
  out << ", " << table.get_name() << "_t>";
 }
 
@@ -184,7 +175,8 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   record_id_t get_id() const {return id;}\n";
-  out << "   bool operator==(const " << tname << "_t " << tname << ") const {return id == " << tname << ".id;}\n";
+  out << "   bool operator==(" << tname << "_t " << tname << ") const {return id == " << tname << ".id;}\n";
+  out << "   bool operator<(" << tname << "_t " << tname << ") const {return id < " << tname << ".id;}\n";
   out << " };\n";
 
   out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n"; out << "  " << tname << "_data() {}\n";
@@ -201,7 +193,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    if (index.table_id == table.first)
    {
     out << "  ";
-    write_index_type(out, table.second, index);
+    write_index_type(out, db, index);
     out << "::iterator ";
     out << index.name << "_iterator;\n";
    }
@@ -254,7 +246,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   const std::string &tname = table.get_name();
 
   out << "   ";
-  write_index_type(out, table, index);
+  write_index_type(out, db, index);
   out << ' ' << index.name << ";\n";
 
   out << "   void " << index.name << "_remove_index(record_id_t record_id)\n";
@@ -269,9 +261,9 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << tname << "_FK.get_record(record_id + 1);\n";
   out << "    auto result = " << index.name;
   out << ".insert\n    (\n     ";
-  write_index_type(out, table, index);
+  write_index_type(out, db, index);
   out << "::value_type\n     (\n      ";
-  write_tuple_type(out, table, index);
+  write_tuple_type(out, db, index);
   out << '(';
   for (size_t i = 0; i < index.field_ids.size(); i++)
   {
@@ -650,7 +642,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << ") const\n";
    out << "   {\n";
    out << "    auto i = " << index.name << ".find(";
-   write_tuple_type(out, table, index);
+   write_tuple_type(out, db, index);
    out << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
@@ -850,9 +842,9 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << "  friend class Database;\n";
    out << "  private:\n";
    out << "   std::pair<";
-   write_index_type(out, table, index);
+   write_index_type(out, db, index);
    out << "::const_iterator, ";
-   write_index_type(out, table, index);
+   write_index_type(out, db, index);
    out << "::const_iterator> range;\n";
    out << "   " << index.name << "_range(const Database &db";
    for (size_t i = 0; i < index.field_ids.size(); i++)
@@ -866,7 +858,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << ")\n";
    out << "   {\n";
    out << "    range = db." << index.name << ".equal_range(";
-   write_tuple_type(out, table, index);
+   write_tuple_type(out, db, index);
    out << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
@@ -884,10 +876,10 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << "    friend class " << index.name << "_range;\n";
    out << "    private:\n";
    out << "     ";
-   write_index_type(out, table, index);
+   write_index_type(out, db, index);
    out << "::const_iterator map_iterator;\n";
    out << "     iterator(";
-   write_index_type(out, table, index);
+   write_index_type(out, db, index);
    out << "::const_iterator map_iterator): map_iterator(map_iterator) {}\n";
    out << "    public:\n";
    out << "     bool operator !=(const iterator &i) const\n";

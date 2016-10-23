@@ -8,3 +8,25 @@ insert_into city 2 "Lille"
 insert_into person 1 "Rémi" 2
 insert_into person 2 "Norbert" 2
 insert_into person 3 "Alexandre" 1
+
+create_table language
+add_field language name string
+insert_into language 1 "English"
+insert_into language 2 "Français"
+
+create_table string_id
+add_field string_id name string
+insert_into string_id 1 "hello"
+insert_into string_id 2 "goodbye"
+insert_into string_id 3 "how_are_you"
+
+create_table translation
+add_field translation string_id references string_id
+add_field translation language references language
+add_field translation value string
+insert_into translation 1 1 1 "Hello"
+insert_into translation 2 1 2 "Bonjour"
+insert_into translation 3 2 1 "Goodbye"
+insert_into translation 4 2 2 "Aurevoir"
+insert_into translation 5 3 1 "How are you?"
+insert_into translation 6 3 2 "Comment allez-vous?"
