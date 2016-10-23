@@ -112,6 +112,23 @@ int file_test()
   std::cout << '\n';
  }
 
+ //
+ // Loop over not-unique index
+ //
+ db.new_person("Toto", db.find_city_by_name("Tokyo"));
+ db.new_person("Toto", db.find_city_by_name("Barcelona"));
+ dump(db);
+
+ std::cout << "Finding all Totos:\n";
+ for (auto toto: db.find_person_by_name("Toto"))
+ {
+  std::cout << ' ' << toto.get_id();
+  auto city = db.get_home(toto);
+  if (!city.is_null())
+   std::cout << ": " << db.get_name(city);
+  std::cout << '\n';
+ }
+
  return 0;
 }
 
@@ -119,7 +136,7 @@ int file_test()
 int multiplexer_test()
 /////////////////////////////////////////////////////////////////////////////
 {
- std::cout << "Multiplexer test...\n";
+ std::cout << "\nMultiplexer test...\n";
 
  joedb::File file("test.joedb", joedb::File::mode_t::write_existing);
  if (file.get_status() != joedb::File::status_t::success)
@@ -147,7 +164,7 @@ int multiplexer_test()
  for (auto table: interpreted_db.get_tables())
   std::cout << ' ' << table.second.get_name() << '\n';
 
- compiled_db.new_city("Multiplexer");
+ compiled_db.new_city("Multiplexer City");
 
  table_id_t city_id = interpreted_db.find_table("city");
  const joedb::Table &city_table = interpreted_db.get_tables().find(city_id)->second;

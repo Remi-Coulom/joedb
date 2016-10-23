@@ -63,11 +63,31 @@ Paris
 7: invalid!
 8: invalid!
 9: invalid!
+
+Dump
+====
+ Persons: 5 (is_empty = 0)
+  5: Toto 1
+  4: Toto 4
+  3: Catherine 0
+  2: Évariste 0
+  1: Toto 2
+
+ Cities: 3
+  4: Tokyo
+  2: New York
+  1: Barcelona
+
+Finding all Totos:
+ 1: New York
+ 4: Tokyo
+ 5: Barcelona
+
 Multiplexer test...
 Tables:
  city
  person
 1 Barcelona
 2 New York
-3 Multiplexer
+3 Multiplexer City
 4 Tokyo

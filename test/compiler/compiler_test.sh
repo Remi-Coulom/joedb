@@ -14,4 +14,9 @@ cd "$build_dir"
 ninja compiler_test
 cd -
 "$build_dir"/compiler_test >compiler_test.out
-diff compiler_test.out compiler_test.reference
+
+if diff compiler_test.out compiler_test.reference; then
+ echo "Everything is OK";
+else
+ echo "Error: difference detected with reference output";
+fi
