@@ -5,14 +5,10 @@ Short term
 ----------
 Compiler:
 
-- loop over find when more than one line matches
+- generic sorting and finding (with full scan)
 - check matching db schema when opening file
 - automatic db schema upgrade when opening an old file
 - format version as log entry, too
-- check C++ identifier constraints for table and field names
-- check namespace != joedb
-- find_xxx method (with index)
-- custom triggers
 
 Interpreter
 -----------
@@ -52,6 +48,7 @@ Compiler
 --------
 
 - make sure identifiers can't produce other collisions
+- custom triggers, modularize code generation
 
 - core compiler options:
 
@@ -71,7 +68,6 @@ Compiler
     - any stl container (vector, deque, map, unordered_map)
     - file (maybe, for big tables): make on-disk C++ containers
 
-  - index, unique constraints (use triggers)
   - referential integrity (use triggers)
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)

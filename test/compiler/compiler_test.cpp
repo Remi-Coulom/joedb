@@ -6,6 +6,7 @@
 #include "DB_Listener.h"
 
 #include <iostream>
+#include <algorithm>
 
 /////////////////////////////////////////////////////////////////////////////
 void dump(const testdb::Database &db)
@@ -127,6 +128,25 @@ int file_test()
   if (!city.is_null())
    std::cout << ": " << db.get_name(city);
   std::cout << '\n';
+ }
+
+ //
+ // Generic find
+ //
+ {
+  auto i = std::find_if
+           (
+            db.get_person_table().begin(),
+            db.get_person_table().end(),
+            [&](testdb::person_t person)
+            {
+             return db.get_name(person) == "Catherine";
+            }
+           );
+  if (i != db.get_person_table().end())
+  {
+   std::cout << "Found Catherine!\n";
+  }
  }
 
  return 0;

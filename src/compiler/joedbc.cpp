@@ -794,7 +794,8 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << "   " << tname << "_container(const Database &db): db(db) {}\n";
   out << '\n';
   out << "  public:\n";
-  out << "   class iterator\n";
+  out << "   class iterator: public std::iterator<std::forward_iterator_tag, ";
+  out << tname << "_t>\n";
   out << "   {\n";
   out << "    friend class " << tname << "_container;\n";
 
@@ -877,7 +878,8 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
    out << "));\n";
    out << "   }\n";
    out << "  public:\n";
-   out << "   class iterator\n";
+   out << "   class iterator: public std::iterator<std::forward_iterator_tag, ";
+   out << table.get_name() << "_t>\n";
    out << "   {\n";
    out << "    friend class " << index.name << "_range;\n";
    out << "    private:\n";
