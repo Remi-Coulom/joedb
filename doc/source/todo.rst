@@ -5,7 +5,6 @@ Short term
 ----------
 Compiler:
 
-- generic sorting and finding (with full scan)
 - check matching db schema when opening file
 - automatic db schema upgrade when opening an old file
 - format version as log entry, too
@@ -49,6 +48,7 @@ Compiler
 
 - make sure identifiers can't produce other collisions
 - custom triggers, modularize code generation
+- index-based sorting
 
 - core compiler options:
 

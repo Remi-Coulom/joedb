@@ -196,6 +196,18 @@ int file_test()
               );
  std::cout << '\n';
 
+ //
+ // Sorting
+ //
+ db.new_person("Zoé", testdb::city_t());
+ db.new_person("Albert", testdb::city_t());
+ auto by_name = [&](testdb::person_t p_1, testdb::person_t p_2)
+                {
+                 return db.get_name(p_1) < db.get_name(p_2);
+                };
+ for (auto person: db.sorted_person(by_name))
+  std::cout << db.get_name(person) << '\n';
+
  return 0;
 }
 
@@ -238,7 +250,7 @@ int multiplexer_test()
  field_id_t name_id = city_table.find_field("name");
  const joedb::Field &name_field = city_table.get_fields().find(name_id)->second;
 
- for (int i = 1; i < 5; i++)
+ for (size_t i = 1; i <= compiled_db.get_city_table().get_size(); i++)
   std::cout << i << ' ' << name_field.get_string(record_id_t(i)) << '\n';
 
  return 0;

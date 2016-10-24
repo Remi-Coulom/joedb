@@ -146,6 +146,7 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
 #include <vector>
 #include <cassert>
 #include <map>
+#include <algorithm>
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
@@ -499,6 +500,9 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   // Declaration of container access
   //
   out << "   " << tname << "_container get_" << tname << "_table() const;\n\n";
+  out << "    template<class Comparator>\n";
+  out << "    std::vector<" << tname << "_t> sorted_" << tname;
+  out << "(Comparator comparator) const;\n\n";
 
   //
   // new with default fields
@@ -820,6 +824,17 @@ void generate_code(std::ostream &out, const Compiler_Options &options)
   out << "  return " << tname << "_container(*this);\n";
   out << " }\n";
   out << '\n';
+
+  out << " template<class Comparator>\n";
+  out << " std::vector<" << tname << "_t> Database::sorted_" << tname;
+  out << "(Comparator comparator) const\n";
+  out << " {\n";
+  out << "  std::vector<" << tname << "_t> result;\n";
+  out << "  for (auto x: get_" << tname << "_table())\n";
+  out << "   result.push_back(x);\n";
+  out << "  std::sort(result.begin(), result.end(), comparator);\n";
+  out << "  return result;\n";
+  out << " }\n";
 
   out << " inline void Database::clear_" << tname << "_table()\n";
   out << " {\n";
