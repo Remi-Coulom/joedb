@@ -8,7 +8,7 @@ cd -
 
 rm -rvf test.joedb
 "$build_dir"/joedbi test.joedb <test.joedbi
-"$build_dir"/joedbc test.joedbi test.joedbc >testdb.h
+"$build_dir"/joedbc test.joedbi test.joedbc
 
 cd "$build_dir"
 ninja generate_translation_header

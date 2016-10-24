@@ -143,7 +143,8 @@ add_executable(joedbc
 # Targets below require databases to be compiled
 #############################################################################
 set_source_files_properties(
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp PROPERTIES GENERATED TRUE
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ PROPERTIES GENERATED TRUE
 )
 
 add_executable(tutorial EXCLUDE_FROM_ALL
@@ -152,12 +153,19 @@ add_executable(tutorial EXCLUDE_FROM_ALL
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
+set_source_files_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
+ PROPERTIES GENERATED TRUE
+)
+
 add_executable(compiler_test EXCLUDE_FROM_ALL
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/compiler_test.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
 add_executable(generate_translation_header EXCLUDE_FROM_ALL
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
