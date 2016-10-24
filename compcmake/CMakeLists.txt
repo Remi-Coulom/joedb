@@ -142,9 +142,13 @@ add_executable(joedbc
 #############################################################################
 # Targets below require databases to be compiled
 #############################################################################
+set_source_files_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp PROPERTIES GENERATED TRUE
+)
+
 add_executable(tutorial EXCLUDE_FROM_ALL
- ../doc/source/tutorial/tutorial.cpp
- ../doc/source/tutorial/other_source.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial_main.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
