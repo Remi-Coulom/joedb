@@ -277,15 +277,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << ",\n      " << tname << "_t(record_id)\n     )\n    );\n";
   if (index.unique)
   {
-   out << "    data." << index.name << "_iterator = result.first;\n";
    out << "    if (!result.second)\n";
-   out << "    {\n";
-   out << "     " << tname << "_t duplicate = result.first->second;\n";
-   out << "     internal_delete_" << tname << "(record_id);\n";
-   out << "     " << index.name << "_add_index(duplicate.id);\n";
    out << "     throw std::runtime_error(\"";
    out << index.name << " unique index failure\");\n";
-   out << "    }\n";
+   out << "    data." << index.name << "_iterator = result.first;\n";
   }
   else
    out << "    data." << index.name << "_iterator = result;\n";
@@ -316,12 +311,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   const std::string &tname = table.second.get_name();
   out << "   void internal_insert_" << tname << "(record_id_t record_id)\n";
   out << "   {\n";
-  out << "    " << tname << "_FK.use(record_id + 1);\n";
 
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
     out << "    " << index.name << "_add_index(record_id);\n";
 
+  out << "    " << tname << "_FK.use(record_id + 1);\n";
   out << "   }\n";
  }
 
