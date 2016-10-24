@@ -6,8 +6,18 @@ Short term
 Compiler:
 
 - check matching db schema when opening file
+   * must have a File that uses a C++ stream instead of a C file:
+      File: public Generic_File
+      Stream_File: public Generic_File
+      Generic_File has virtual functions for fread, fwrite, fseek
+   * write schema to a string stream (and read from it later)
 - automatic db schema upgrade when opening an old file
-- format version as log entry, too
+- post_upgrade code when necessary (new log entry: "upgrade <name>")
+- new log entry: rename table/field
+- flush data before throwing
+- periodic flush to system / periodic sync ?
+- new log entry: comment with time stamp
+- new log entry: begin/end transaction
 
 Interpreter
 -----------
@@ -26,9 +36,6 @@ Journal file
 
 New operations and types
 ------------------------
-- "single-row" table option, compiled to a simple struct.
-- "don't-reuse-deleted-rows" table option
-- "no-delete" table option
 - checkpoints, tags, etc.
 - rename operations (table, field)
 
@@ -36,6 +43,7 @@ New operations and types
 
   * varchar<N>
   * date
+  * vector<T>
 
 On-disk storage
 ----------------
@@ -45,6 +53,9 @@ On-disk storage
 
 Compiler
 --------
+
+- "single-row" table option, compiled to a simple struct, with simpler getters.
+- "no-delete" table option
 
 - make sure identifiers can't produce other collisions
 - custom triggers, modularize code generation
