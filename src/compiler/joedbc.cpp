@@ -895,9 +895,6 @@ void generate_cpp
  write_string(out, schema);
  out << ";\n";
 
- const Database &db = options.get_db();
- auto tables = db.get_tables();
-
  out << R"RRR(
 /////////////////////////////////////////////////////////////////////////////
 File_Database::File_Database(const char *file_name, bool read_only):
