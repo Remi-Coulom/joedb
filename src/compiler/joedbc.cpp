@@ -916,7 +916,8 @@ File_Database::File_Database(const char *file_name, bool read_only):
   {
    journal.~Journal_File();
    new(&journal) joedb::Journal_File(file);
-   std::stringstream schema(schema_string);
+   std::stringstream schema(std::string(schema_string, )RRR";
+ out << schema.size() << R"RRR());
    joedb::Stream_File schema_file(schema,
                                   joedb::Generic_File::mode_t::read_existing);
    joedb::Journal_File schema_journal(schema_file);
