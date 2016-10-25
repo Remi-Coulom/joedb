@@ -88,7 +88,9 @@ int joedb::File::seek(size_t offset)
 joedb::File::~File()
 /////////////////////////////////////////////////////////////////////////////
 {
- flush();
  if (file)
+ {
+  commit();
   fclose(file);
+ }
 }

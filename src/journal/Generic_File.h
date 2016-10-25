@@ -53,8 +53,8 @@ namespace joedb
    void write_string(const std::string &s);
    std::string read_string();
 
-   void flush(); // flushes the write buffer
-   void commit(); // write to disk (fsync)
+   void flush(); // flushes the write buffer to the system
+   void commit(); // flush and write to disk (fsync)
 
    virtual ~Generic_File() {}
 
