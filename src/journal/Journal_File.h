@@ -5,13 +5,13 @@
 
 namespace joedb
 {
- class File;
+ class Generic_File;
  class Database;
 
  class Journal_File: public Listener
  {
   public:
-   Journal_File(File &file);
+   Journal_File(Generic_File &file);
 
    enum class state_t
    {
@@ -50,7 +50,7 @@ namespace joedb
    static const uint32_t version_number;
    static const uint64_t header_size;
 
-   File &file;
+   Generic_File &file;
    unsigned checkpoint_index;
    uint64_t checkpoint_position;
    state_t state;

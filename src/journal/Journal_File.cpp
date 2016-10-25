@@ -1,19 +1,20 @@
 #include "Journal_File.h"
-#include "File.h"
+#include "Generic_File.h"
 #include "Database.h"
 
 const uint32_t joedb::Journal_File::version_number = 0x00000003;
 const uint64_t joedb::Journal_File::header_size = 41;
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Journal_File::Journal_File(File &file):
+joedb::Journal_File::Journal_File(Generic_File &file):
+/////////////////////////////////////////////////////////////////////////////
  file(file),
  checkpoint_index(0),
  state(state_t::no_error),
  table_of_last_operation(0),
  record_of_last_operation(0)
 {
- if (file.get_status() != File::status_t::success)
+ if (file.get_status() != Generic_File::status_t::success)
  {
   state = state_t::bad_file;
   return;
@@ -22,7 +23,7 @@ joedb::Journal_File::Journal_File(File &file):
  //
  // Create a new empty joedb file
  //
- if (file.get_mode() == File::mode_t::create_new)
+ if (file.get_mode() == Generic_File::mode_t::create_new)
  {
   file.write<uint8_t>('j');
   file.write<uint8_t>('o');
@@ -89,6 +90,7 @@ joedb::Journal_File::Journal_File(File &file):
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::checkpoint()
+/////////////////////////////////////////////////////////////////////////////
 {
  if (state == state_t::no_error)
  {
@@ -105,6 +107,7 @@ void joedb::Journal_File::checkpoint()
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::replay_log(Listener &listener)
+/////////////////////////////////////////////////////////////////////////////
 {
  file.set_position(header_size);
  Database db_schema;
@@ -223,6 +226,7 @@ void joedb::Journal_File::replay_log(Listener &listener)
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::after_create_table(const std::string &name)
+/////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::create_table);
  file.write_string(name);
@@ -230,15 +234,20 @@ void joedb::Journal_File::after_create_table(const std::string &name)
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::after_drop_table(table_id_t table_id)
+/////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::drop_table);
  file.compact_write<table_id_t>(table_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_add_field(table_id_t table_id,
-                                         const std::string &name,
-                                         Type type)
+void joedb::Journal_File::after_add_field
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ const std::string &name,
+ Type type
+)
 {
  file.write<operation_t>(operation_t::add_field);
  file.compact_write<table_id_t>(table_id);
@@ -249,8 +258,12 @@ void joedb::Journal_File::after_add_field(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_drop_field(table_id_t table_id,
-                                          field_id_t field_id)
+void joedb::Journal_File::after_drop_field
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ field_id_t field_id
+)
 {
  file.write<operation_t>(operation_t::drop_field);
  file.compact_write<table_id_t>(table_id);
@@ -258,8 +271,12 @@ void joedb::Journal_File::after_drop_field(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_insert(table_id_t table_id,
-                                      record_id_t record_id)
+void joedb::Journal_File::after_insert
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ record_id_t record_id
+)
 {
  if (table_id == table_of_last_operation &&
      record_id == record_of_last_operation + 1)
@@ -278,8 +295,12 @@ void joedb::Journal_File::after_insert(table_id_t table_id,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_delete(table_id_t table_id,
-                                      record_id_t record_id)
+void joedb::Journal_File::after_delete
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ record_id_t record_id
+)
 {
  file.write<operation_t>(operation_t::delete_from);
  file.compact_write<table_id_t>(table_id);
@@ -314,6 +335,7 @@ void joedb::Journal_File::after_update_##type_id(table_id_t table_id,\
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Type joedb::Journal_File::read_type()
+/////////////////////////////////////////////////////////////////////////////
 {
  Type::type_id_t type_id = file.read<Type::type_id_t>();
  if (type_id == Type::type_id_t::reference)
@@ -324,6 +346,7 @@ joedb::Type joedb::Journal_File::read_type()
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Journal_File::~Journal_File()
+/////////////////////////////////////////////////////////////////////////////
 {
  checkpoint();
 }

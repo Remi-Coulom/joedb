@@ -21,11 +21,28 @@ bool joedb::File::lock_file()
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::File::open(const char *file_name, mode_t new_mode)
+// System-specific sync
+/////////////////////////////////////////////////////////////////////////////
+#ifdef WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
+void joedb::File::sync()
 {
- write_buffer_index = 0;
- reset_read_buffer();
- position = 0;
+#ifdef WIN32
+ _commit(_fileno(file));
+#else
+ fsync(fileno(file));
+#endif
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::File::open(const char *file_name, mode_t new_mode)
+/////////////////////////////////////////////////////////////////////////////
+{
+ reset();
 
  mode = new_mode;
  static const char *mode_string[3] = {"rb", "r+b", "w+b"};
@@ -50,61 +67,29 @@ void joedb::File::open(const char *file_name, mode_t new_mode)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::File::set_position(uint64_t new_position)
+size_t joedb::File::read_buffer()
+/////////////////////////////////////////////////////////////////////////////
 {
- flush();
- if (!std::fseek(file, long(new_position), SEEK_SET))
- {
-  position = new_position;
-  reset_read_buffer();
- }
+ return std::fread(buffer, 1, buffer_size, file);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::File::write_string(const std::string &s)
+void joedb::File::write_buffer()
+/////////////////////////////////////////////////////////////////////////////
 {
- compact_write<size_t>(s.size());
- for (char c: s)
-  write<char>(c);
+ std::fwrite(buffer, 1, write_buffer_index, file);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-std::string joedb::File::read_string()
-{
- std::string s;
- size_t size = compact_read<size_t>();
- s.resize(size);
- for (size_t i = 0; i < size; i++)
-  s[i] = char(getc());
- return s;
-}
-
+int joedb::File::seek(size_t offset)
 /////////////////////////////////////////////////////////////////////////////
-void joedb::File::flush()
 {
- if (write_buffer_index)
-  flush_write_buffer();
-}
-
-/////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-
-void joedb::File::commit()
-{
- flush();
-#ifdef WIN32
- _commit(_fileno(file));
-#else
- fsync(fileno(file));
-#endif
+ return std::fseek(file, long(offset), SEEK_SET);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::File::~File()
+/////////////////////////////////////////////////////////////////////////////
 {
  flush();
  if (file)

@@ -41,6 +41,7 @@ add_library(interpreter_objects OBJECT
  ../src/interpreter/abstract/is_identifier.cpp
  ../src/interpreter/abstract/Multiplexer.cpp
  ../src/journal/File.cpp
+ ../src/journal/Generic_File.cpp
  ../src/journal/Journal_File.cpp
 )
 
@@ -179,6 +180,7 @@ install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
 install(TARGETS joedb ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 install(FILES
  ../src/journal/File.h
+ ../src/journal/Generic_File.h
  ../src/journal/Journal_File.h
  ../src/interpreter/abstract/Database.h
  ../src/interpreter/abstract/Listener.h
