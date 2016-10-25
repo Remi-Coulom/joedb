@@ -41,7 +41,7 @@ In Linux, the following commands should get you ready:
 
 This will produce ``joedbi``, the joedb interpreter, and ``joedbc``, the joedb compiler. ``joedbi`` lets you manipulate the database with interactive commands. ``joedbc`` reads a file with joedbi commands that define the database schema, and produce C++ code as output.
 
-All the files for this tutorial are located in the ``doc/source/tutorial`` directory. This directory contains 3 files: ``tutorial.joedbi`` contains the interpreter commands that define the database schema, ``tutorial.cpp`` is the cpp file that manipulates the database, and ``generate.sh`` is a bash script that will compile all the code and run the program.
+All the files for this tutorial are located in the ``doc/source/tutorial`` directory. This directory contains 4 files: ``tutorial.joedbi`` contains the interpreter commands that define the database schema, ``tutorial.joedbc`` defines compiler options, ``tutorial_main.cpp`` is the cpp file that manipulates the database, and ``generate.sh`` is a bash script that will compile all the code and run the program.
 
 The contents of these files should be self-explanatory:
 
@@ -49,14 +49,18 @@ The contents of these files should be self-explanatory:
 
 .. literalinclude:: ./tutorial/tutorial.joedbi
 
+``tutorial.joedbc``:
+
+.. literalinclude:: ./tutorial/tutorial.joedbc
+
 ``generate.sh``:
 
 .. literalinclude:: ./tutorial/generate.sh
    :language: bash
 
-``tutorial.cpp``:
+``tutorial_main.cpp``:
 
-.. literalinclude:: ./tutorial/tutorial.cpp
+.. literalinclude:: ./tutorial/tutorial_main.cpp
    :language: c++
 
 The output of this tutorial should be:
