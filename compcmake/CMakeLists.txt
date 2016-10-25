@@ -75,9 +75,11 @@ if(EXISTS "../${GOOGLE_TEST}/include")
   ../test/is_identifier_Test.cpp
   ../test/Journal_File_Test.cpp
   ../test/Multiplexer_Test.cpp
+  ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
+  ../src/journal/Stream_File.cpp
   $<TARGET_OBJECTS:interpreter_objects>
   $<TARGET_OBJECTS:io_objects>
  )
