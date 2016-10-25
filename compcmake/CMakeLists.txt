@@ -43,6 +43,7 @@ add_library(interpreter_objects OBJECT
  ../src/journal/File.cpp
  ../src/journal/Generic_File.cpp
  ../src/journal/Journal_File.cpp
+ ../src/journal/Stream_File.cpp
 )
 
 add_library(joedb SHARED
@@ -79,7 +80,6 @@ if(EXISTS "../${GOOGLE_TEST}/include")
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
-  ../src/journal/Stream_File.cpp
   $<TARGET_OBJECTS:interpreter_objects>
   $<TARGET_OBJECTS:io_objects>
  )

@@ -1,14 +1,19 @@
 #include "Database.h"
 #include "File.h"
+#include "Stream_File.h"
+#include "Journal_File.h"
+#include "Selective_Listener.h"
 #include "Interpreter.h"
 #include "Compiler_Options.h"
 #include "Compiler_Options_io.h"
+#include "type_io.h"
 
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <sstream>
 
-namespace joedb {
+using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
 void write_type
@@ -461,7 +466,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // Do nothing for model changes
+ // Do nothing for schema changes
  //
  out << R"RRR(
    void after_create_table(const std::string &name) override {}
@@ -682,6 +687,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   private:
    joedb::File file;
    joedb::Journal_File journal;
+   static char const * const schema_string;
 
   public:
    File_Database(const char *file_name, bool read_only = false);
@@ -870,12 +876,24 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void generate_cpp(std::ostream &out, const Compiler_Options &options)
+void generate_cpp
 /////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Compiler_Options &options,
+ const std::string &schema
+)
 {
- out << "#include\"" << options.get_namespace_name() << ".h\"\n";
+ out << "#include \"" << options.get_namespace_name() << ".h\"\n";
+ out << "#include \"Stream_File.h\"\n";
+ out << '\n';
+ out << "#include <sstream>\n";
  out << '\n';
  out << "using namespace " << options.get_namespace_name() << ";\n";
+ out << '\n';
+ out << "char const * const File_Database::schema_string = ";
+ write_string(out, schema);
+ out << ";\n";
 
  const Database &db = options.get_db();
  auto tables = db.get_tables();
@@ -898,55 +916,16 @@ File_Database::File_Database(const char *file_name, bool read_only):
   {
    journal.~Journal_File();
    new(&journal) joedb::Journal_File(file);
-)RRR";
-
- for (auto &table: tables)
- {
-  out << "   journal.after_create_table(\"" << table.second.get_name()
-      << "\");\n";
-
-  for (auto field: table.second.get_fields())
-  {
-   out << "   journal.after_add_field("
-       << table.first << ", \""
-       << field.second.get_name() << "\", ";
-   switch (field.second.get_type().get_type_id())
-   {
-    case Type::type_id_t::null:
-    break;
-    case Type::type_id_t::string:
-     out << "joedb::Type::string()";
-    break;
-    case Type::type_id_t::int32:
-     out << "joedb::Type::int32()";
-    break;
-    case Type::type_id_t::int64:
-     out << "joedb::Type::int64()";
-    break;
-    case Type::type_id_t::reference:
-     out << "joedb::Type::reference("
-         << field.second.get_type().get_table_id() << ")";
-    break;
-    case Type::type_id_t::boolean:
-     out << "joedb::Type::boolean()";
-    break;
-    case Type::type_id_t::float32:
-     out << "joedb::Type::float32()";
-    break;
-    case Type::type_id_t::float64:
-     out << "joedb::Type::float64()";
-    break;
-   }
-   out << ");\n";
+   std::stringstream schema(schema_string);
+   joedb::Stream_File schema_file(schema,
+                                  joedb::Generic_File::mode_t::read_existing);
+   joedb::Journal_File schema_journal(schema_file);
+   schema_journal.replay_log(journal);
   }
- }
-
- out << R"RRR(  }
  }
  set_listener(journal);
 }
 )RRR";
-
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -959,8 +938,6 @@ void write_initial_comment(std::ostream &out, const Compiler_Options &options)
  out << "// https://www.remi-coulom.fr/joedb/\n";
  out << "//\n";
  out << "/////////////////////////////////////////////////////////////////////////////\n";
-}
-
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -979,16 +956,26 @@ int main(int argc, char **argv)
  //
  // Read file.joedbi
  //
- std::ifstream joedbi_file(argv[1]);
- if (!joedbi_file.good())
- {
-  std::cerr << "Error: could not open " << argv[1] << '\n';
-  return 1;
- }
+ Database db;
+ std::stringstream schema;
 
- joedb::Database db;
- joedb::Interpreter interpreter(db);
- interpreter.main_loop(joedbi_file, std::cerr);
+ {
+  std::ifstream joedbi_file(argv[1]);
+  if (!joedbi_file.good())
+  {
+   std::cerr << "Error: could not open " << argv[1] << '\n';
+   return 1;
+  }
+
+  Stream_File schema_file(schema, Generic_File::mode_t::create_new);
+  Journal_File journal(schema_file);
+  Selective_Listener schema_listener(journal, Selective_Listener::schema);
+
+  db.set_listener(schema_listener);
+  Interpreter interpreter(db);
+  interpreter.main_loop(joedbi_file, std::cerr);
+  journal.checkpoint();
+ }
 
  //
  // Read file.joedbc
@@ -1000,9 +987,9 @@ int main(int argc, char **argv)
   return 1;
  }
 
- joedb::Compiler_Options compiler_options(db);
+ Compiler_Options compiler_options(db);
 
- if (!joedb::parse_compiler_options(joedbc_file, std::cerr, compiler_options))
+ if (!parse_compiler_options(joedbc_file, std::cerr, compiler_options))
  {
   std::cerr << "Error: could not parse compiler options\n";
   return 1;
@@ -1013,13 +1000,13 @@ int main(int argc, char **argv)
  //
  {
   std::ofstream h_file(compiler_options.get_namespace_name() + ".h");
-  joedb::write_initial_comment(h_file, compiler_options);
-  joedb::generate_h(h_file, compiler_options);
+  write_initial_comment(h_file, compiler_options);
+  generate_h(h_file, compiler_options);
  }
  {
   std::ofstream cpp_file(compiler_options.get_namespace_name() + ".cpp");
-  joedb::write_initial_comment(cpp_file, compiler_options);
-  joedb::generate_cpp(cpp_file, compiler_options);
+  write_initial_comment(cpp_file, compiler_options);
+  generate_cpp(cpp_file, compiler_options, schema.str());
  }
 
  return 0;

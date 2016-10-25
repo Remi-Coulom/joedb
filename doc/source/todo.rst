@@ -6,11 +6,6 @@ Short term
 Compiler:
 
 - check matching db schema when opening file
-   * must have a File that uses a C++ stream instead of a C file:
-      File: public Generic_File
-      Stream_File: public Generic_File
-      Generic_File has virtual functions for fread, fwrite, fseek
-   * write schema to a string stream (and read from it later)
 - automatic db schema upgrade when opening an old file
 - post_upgrade code when necessary (new log entry: "upgrade <name>")
 - new log entry: rename table/field
