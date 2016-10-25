@@ -28,6 +28,8 @@ set(GOOGLE_TEST ./googletest-release-1.8.0/googletest)
 
 include_directories(
  ${GTEST_INCLUDE_DIRS}
+ ../src/includes
+ ../src/includes/joedb
  ../src/interpreter/abstract
  ../src/interpreter/io
  ../src/journal
@@ -180,20 +182,9 @@ install(TARGETS joedbc RUNTIME DESTINATION bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
 install(TARGETS joedb ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
-install(FILES
- ../src/journal/File.h
- ../src/journal/Generic_File.h
- ../src/journal/Journal_File.h
- ../src/interpreter/abstract/Database.h
- ../src/interpreter/abstract/Listener.h
- ../src/interpreter/abstract/Type.h
- ../src/interpreter/abstract/index_types.h
- ../src/interpreter/abstract/TYPE_MACRO.h
- ../src/interpreter/abstract/Table.h
- ../src/interpreter/abstract/Field.h
- ../src/interpreter/abstract/Freedom_Keeper.h
- ../src/interpreter/abstract/Dummy_Listener.h
- DESTINATION include/joedb)
+
+file(GLOB all_includes ../src/includes/joedb/*.h)
+install(FILES ${all_includes} DESTINATION include/joedb)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
  set(CPACK_GENERATOR "DEB")

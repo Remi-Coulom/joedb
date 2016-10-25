@@ -885,7 +885,7 @@ void generate_cpp
 )
 {
  out << "#include \"" << options.get_namespace_name() << ".h\"\n";
- out << "#include \"Stream_File.h\"\n";
+ out << "#include \"joedb/Stream_File.h\"\n";
  out << '\n';
  out << "#include <sstream>\n";
  out << '\n';
