@@ -1,42 +1,39 @@
 #include "File.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// System-specific file locking
+// System-specific functions
 /////////////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
 #include <Windows.h>
 #include <io.h>
 #include <FileAPI.h>
+
 bool joedb::File::lock_file()
 {
  HANDLE hFile = (HANDLE)_get_osfhandle(_fileno(file));
  return LockFile(hFile, 0, 0, 1, 0) == TRUE;
 }
+
+void joedb::File::sync()
+{
+ _commit(_fileno(file));
+}
+
 #else
 #include <sys/file.h>
+#include <unistd.h>
+
 bool joedb::File::lock_file()
 {
  return flock(fileno(file), LOCK_EX | LOCK_NB) == 0;
 }
-#endif
-
-/////////////////////////////////////////////////////////////////////////////
-// System-specific sync
-/////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
 
 void joedb::File::sync()
 {
-#ifdef WIN32
- _commit(_fileno(file));
-#else
  fsync(fileno(file));
-#endif
 }
+
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::File::open(const char *file_name, mode_t new_mode)
