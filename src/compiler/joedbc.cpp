@@ -953,30 +953,21 @@ File_Database::File_Database(const char *file_name, bool read_only):
    joedb::Journal_File stored_schema_journal(stored_schema_file);
    set_listener(stored_schema_journal);
    journal.replay_log(*this);
-   stored_schema_journal.checkpoint();
    clear_listener();
   }
 
-  if (std::string(schema_string, 104) == stored_schema.str())
-  {
-   std::cerr << "Schema matches!\n";
-  }
-  else
+  if (schema_string != stored_schema.str())
   {
    std::cerr << "Schema does not match: replay schema\n";
    std::cerr << "stored_schema.size() = " << stored_schema.str().size() << '\n';
 
-   std::stringstream schema(std::string(schema_string, 104));
+   std::stringstream schema(schema_string);
    joedb::Stream_File schema_file(schema,
                                    joedb::Generic_File::mode_t::read_existing);
    joedb::Journal_File schema_journal(schema_file);
 
    schema_journal.replay_log(journal);
   }
- }
- else
- {
-  std::cerr << "!is_good()!\n";
  }
 
  set_listener(journal);
@@ -1031,8 +1022,6 @@ int main(int argc, char **argv)
   db.set_listener(schema_listener);
   Interpreter interpreter(db);
   interpreter.main_loop(joedbi_file, std::cerr);
-  journal.checkpoint();
-  journal.checkpoint();
  }
 
  //
