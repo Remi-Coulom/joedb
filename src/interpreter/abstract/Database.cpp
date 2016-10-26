@@ -86,6 +86,14 @@ bool joedb::Database::drop_field(table_id_t table_id, field_id_t field_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Database::custom(const std::string &name)
+/////////////////////////////////////////////////////////////////////////////
+{
+ custom_names.push_back(name);
+ listener->after_custom(name);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 bool joedb::Database::insert_into(table_id_t table_id, record_id_t record_id)
 {
  auto it = tables.find(table_id);

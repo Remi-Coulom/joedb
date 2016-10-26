@@ -58,6 +58,12 @@ namespace joedb
      listener.after_drop_field(table_id, field_id);
    }
 
+   void after_custom(const std::string &name) override
+   {
+    if (mode & schema)
+     listener.after_custom(name);
+   }
+
    //
    // data events
    //

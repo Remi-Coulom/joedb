@@ -28,25 +28,26 @@ namespace joedb
    void rewind();
    void play_until(Listener &listener, uint64_t end);
 
-   void after_create_table(const std::string &name);
-   void after_drop_table(table_id_t table_id);
+   void after_create_table(const std::string &name) override;
+   void after_drop_table(table_id_t table_id) override;
    void after_add_field(table_id_t table_id,
                         const std::string &name,
-                        Type type);
+                        Type type) override;
    void after_drop_field(table_id_t table_id,
-                         field_id_t field_id);
-   void after_insert(table_id_t table_id, record_id_t record_id);
-   void after_delete(table_id_t table_id, record_id_t record_id);
+                         field_id_t field_id) override;
+   void after_custom(const std::string &name) override;
+   void after_insert(table_id_t table_id, record_id_t record_id) override;
+   void after_delete(table_id_t table_id, record_id_t record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    void after_update_##type_id(table_id_t table_id,\
                                record_id_t record_id,\
                                field_id_t field_id,\
-                               return_type value);
+                               return_type value) override;
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
 
-   ~Journal_File();
+   ~Journal_File() override;
 
    static const uint32_t version_number;
    static const uint64_t header_size;
@@ -76,7 +77,8 @@ namespace joedb
     delete_from   = 0x06,
     update        = 0x07,
     append        = 0x08,
-    update_last   = 0x09
+    update_last   = 0x09,
+    custom        = 0x10
    };
  };
 }

@@ -17,6 +17,8 @@ namespace joedb
    void after_drop_field(table_id_t table_id,
                          field_id_t field_id) override {};
 
+   void after_custom(const std::string &name) override {};
+
    void after_insert(table_id_t table_id, record_id_t record_id) override {};
    void after_delete(table_id_t table_id, record_id_t record_id) override {};
 

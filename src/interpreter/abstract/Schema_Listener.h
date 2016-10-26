@@ -38,6 +38,10 @@ namespace joedb
    {
     error |= !db.drop_field(table_id, field_id);
    }
+
+   void after_custom(const std::string &name) override
+   {
+   }
  };
 }
 

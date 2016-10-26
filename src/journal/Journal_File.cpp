@@ -228,6 +228,13 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    }
    break;
 
+   case operation_t::custom:
+   {
+    std::string name = file.read_string();
+    listener.after_custom(name);
+   }
+   break;
+
    default:
     state = state_t::bad_format;
    break;
@@ -284,6 +291,14 @@ void joedb::Journal_File::after_drop_field
  file.write<operation_t>(operation_t::drop_field);
  file.compact_write<table_id_t>(table_id);
  file.compact_write<field_id_t>(field_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_custom(const std::string &name)
+/////////////////////////////////////////////////////////////////////////////
+{
+ file.write<operation_t>(operation_t::custom);
+ file.write_string(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////

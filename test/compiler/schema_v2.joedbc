@@ -1,1 +1,2 @@
 namespace schema_v2
+create_unique_index language_by_id language id

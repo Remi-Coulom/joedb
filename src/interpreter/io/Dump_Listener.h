@@ -69,6 +69,11 @@ namespace joedb
     Schema_Listener::after_drop_field(table_id, field_id);
    }
 
+   void after_custom(const std::string &name) override
+   {
+    out << "custom " << name << '\n';
+   }
+
    void after_insert(table_id_t table_id, record_id_t record_id)
    {
     out << "insert_into " << get_table_name(table_id) << ' ';

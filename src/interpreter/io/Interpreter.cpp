@@ -143,6 +143,12 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     }
    }
   }
+  else if (command == "custom") //////////////////////////////////////////////
+  {
+   std::string name;
+   iss >> name;
+   db.custom(name);
+  }
   else if (command == "insert_into") /////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);

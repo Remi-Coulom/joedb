@@ -259,6 +259,22 @@ int multiplexer_test()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void schema_v2::File_Database::set_default_preferred_language_to_english
+/////////////////////////////////////////////////////////////////////////////
+(
+ Database &db
+)
+{
+ auto english = db.find_language_by_id("en");
+ if (english.is_null())
+  english = db.new_language("English", "en");
+
+ for (auto person: db.get_person_table())
+  if (db.get_preferred_language(person).is_null())
+   db.set_preferred_language(person, english);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 int schema_upgrade_test()
 /////////////////////////////////////////////////////////////////////////////
 {

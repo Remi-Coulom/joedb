@@ -481,6 +481,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // Schema changes are forwarded to the listener
  //
  out << R"RRR(
+
+  protected:
    void after_create_table(const std::string &name) override
    {
     listener->after_create_table(name);
@@ -501,6 +503,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void after_drop_field(table_id_t table_id, field_id_t field_id) override
    {
     listener->after_drop_field(table_id, field_id);
+   }
+
+   void after_custom(const std::string &name) override
+   {
+    listener->after_custom(name);
    }
 )RRR";
 
@@ -714,7 +721,33 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::Journal_File journal;
    static const std::string schema_string;
    bool schema_error = false;
+   bool upgrading_schema = false;
 
+   void after_custom(const std::string &name) override
+   {
+    Database::after_custom(name);
+)RRR";
+ if (db.get_custom_names().size())
+ {
+  out << "    if (upgrading_schema)\n";
+  out << "    {\n";
+  for (const auto &name: db.get_custom_names())
+  {
+   out << "     if (name == \"" << name << "\")\n";
+   out << "      " << name << "(*this);\n";
+  }
+  out << "    }\n";
+ }
+ out << "   }\n";
+
+ if (db.get_custom_names().size())
+ {
+  out << '\n';
+  for (const auto &name: db.get_custom_names())
+   out << "   static void " << name << "(Database &db);\n";
+ }
+
+ out << R"RRR(
   public:
    File_Database(const char *file_name, bool read_only = false);
 
@@ -933,6 +966,9 @@ File_Database::File_Database(const char *file_name, bool read_only):
                   joedb::File::mode_t::write_existing),
  journal(file)
 {
+ //
+ // If the file does not exist, create it
+ //
  if (!is_good() &&
      !read_only &&
      file.get_status() == joedb::File::status_t::failure)
@@ -945,6 +981,9 @@ File_Database::File_Database(const char *file_name, bool read_only):
   }
  }
 
+ //
+ // If the file was opened successfully, replay the journal, and check schema
+ //
  if (is_good())
  {
   std::stringstream file_schema;
@@ -963,7 +1002,7 @@ File_Database::File_Database(const char *file_name, bool read_only):
   //
   // If schema does not match, try to upgrade it, or fail
   //
-  if (schema_string != file_schema.str())
+  if (is_good() && schema_string != file_schema.str())
   {
    const size_t pos = joedb::Journal_File::header_size;
    const size_t len = file_schema.str().size() - pos;
@@ -980,7 +1019,11 @@ File_Database::File_Database(const char *file_name, bool read_only):
 
     schema_journal.rewind();
     schema_journal.play_until(dummy_listener, file_schema.str().size());
-    schema_journal.play_until(journal, 0);
+
+    set_listener(journal);
+    upgrading_schema = true;
+    schema_journal.play_until(*this, 0);
+    upgrading_schema = false;
    }
    else
     schema_error = true;

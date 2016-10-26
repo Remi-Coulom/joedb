@@ -5,7 +5,6 @@ Short term
 ----------
 Compiler:
 
-- custom data-upgrade code when necessary (new log entry: "custom <name>")
 - new log entry: rename table/field
 - flush data before throwing
 - periodic flush to system / periodic sync ?

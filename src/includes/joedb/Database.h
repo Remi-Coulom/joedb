@@ -18,6 +18,8 @@ namespace joedb
    Dummy_Listener dummy_listener;
    Listener *listener;
 
+   std::vector<std::string> custom_names;
+
   public:
    Database(): current_table_id(0), listener(&dummy_listener) {}
 
@@ -37,6 +39,11 @@ namespace joedb
    Type::type_id_t get_field_type(table_id_t table_id,
                                   field_id_t field_id) const;
    bool drop_field(table_id_t table_id, field_id_t field_id);
+   void custom(const std::string &name);
+   const std::vector<std::string> &get_custom_names() const
+   {
+    return custom_names;
+   }
    bool insert_into(table_id_t table_id, record_id_t record_id);
    bool delete_from(table_id_t table_id, record_id_t record_id);
 
