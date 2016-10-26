@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 build_dir=../../compcmake/ninja_debug
 
 cd "$build_dir"

@@ -234,8 +234,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "  friend class " << index.name << "_range;\n";
 
  out << R"RRR(
-  private:
+  protected:
    joedb::Dummy_Listener dummy_listener;
+
+  private:
    joedb::Listener *listener;
 
 )RRR";
@@ -711,6 +713,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::File file;
    joedb::Journal_File journal;
    static const std::string schema_string;
+   bool schema_error = false;
 
   public:
    File_Database(const char *file_name, bool read_only = false);
@@ -731,7 +734,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    bool is_good() const
    {
     return file.get_status() == joedb::File::status_t::success &&
-           journal.get_state() == joedb::Journal_File::state_t::no_error;
+           journal.get_state() == joedb::Journal_File::state_t::no_error &&
+           !schema_error;
    }
  };
 
@@ -943,35 +947,47 @@ File_Database::File_Database(const char *file_name, bool read_only):
 
  if (is_good())
  {
-  std::stringstream stored_schema;
+  std::stringstream file_schema;
   {
-   joedb::Stream_File stored_schema_file
+   joedb::Stream_File stream_file
                       (
-                       stored_schema,
+                       file_schema,
                        joedb::Generic_File::mode_t::create_new
                       );
-   joedb::Journal_File stored_schema_journal(stored_schema_file);
-   set_listener(stored_schema_journal);
+   joedb::Journal_File file_schema_journal(stream_file);
+   set_listener(file_schema_journal);
    journal.replay_log(*this);
    clear_listener();
   }
 
-  if (schema_string != stored_schema.str())
+  //
+  // If schema does not match, try to upgrade it, or fail
+  //
+  if (schema_string != file_schema.str())
   {
-   std::cerr << "Schema does not match: replay schema\n";
-   std::cerr << "stored_schema.size() = " << stored_schema.str().size() << '\n';
+   const size_t pos = joedb::Journal_File::header_size;
+   const size_t len = file_schema.str().size() - pos;
 
-   std::stringstream schema(schema_string);
-   joedb::Stream_File schema_file(schema,
-                                   joedb::Generic_File::mode_t::read_existing);
-   joedb::Journal_File schema_journal(schema_file);
+   if (file_schema.str().compare(pos, len, schema_string, pos, len) == 0)
+   {
+    std::stringstream schema(schema_string);
+    joedb::Stream_File schema_file
+                       (
+                        schema,
+                        joedb::Generic_File::mode_t::read_existing
+                       );
+    joedb::Journal_File schema_journal(schema_file);
 
-   schema_journal.replay_log(journal);
+    schema_journal.rewind();
+    schema_journal.play_until(dummy_listener, file_schema.str().size());
+    schema_journal.play_until(journal, 0);
+   }
+   else
+    schema_error = true;
   }
  }
 
  set_listener(journal);
-
 }
 )RRR";
 }

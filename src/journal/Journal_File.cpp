@@ -1,6 +1,5 @@
 #include "Journal_File.h"
 #include "Generic_File.h"
-#include "Database.h"
 
 const uint32_t joedb::Journal_File::version_number = 0x00000003;
 const uint64_t joedb::Journal_File::header_size = 41;
@@ -106,16 +105,30 @@ void joedb::Journal_File::checkpoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::replay_log(Listener &listener, uint64_t until)
+void joedb::Journal_File::replay_log(Listener &listener)
+/////////////////////////////////////////////////////////////////////////////
+{
+ rewind();
+ play_until(listener, checkpoint_position);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::rewind()
 /////////////////////////////////////////////////////////////////////////////
 {
  file.set_position(header_size);
- Database db_schema;
+ db_schema.~Database();
+ new(&db_schema) Database;
+}
 
- if (until == 0)
-  until = checkpoint_position;
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (end == 0)
+  end = checkpoint_position;
 
- while(file.get_position() < until &&
+ while(file.get_position() < end &&
        state == state_t::no_error &&
        listener.is_good() &&
        !file.is_end_of_file())
@@ -221,10 +234,10 @@ void joedb::Journal_File::replay_log(Listener &listener, uint64_t until)
   }
  }
 
- if (file.get_position() != checkpoint_position)
+ if (file.get_position() != end)
   state = state_t::crash_check;
  else
-  file.set_position(checkpoint_position); // get ready for writing
+  file.set_position(end); // get ready for writing
 }
 
 /////////////////////////////////////////////////////////////////////////////

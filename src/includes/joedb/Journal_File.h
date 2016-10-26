@@ -2,11 +2,11 @@
 #define joedb_Journal_File_declared
 
 #include "Listener.h"
+#include "Database.h"
 
 namespace joedb
 {
  class Generic_File;
- class Database;
 
  class Journal_File: public Listener
  {
@@ -24,7 +24,9 @@ namespace joedb
 
    state_t get_state() const {return state;}
    void checkpoint();
-   void replay_log(Listener &listener, uint64_t until = 0);
+   void replay_log(Listener &listener);
+   void rewind();
+   void play_until(Listener &listener, uint64_t end);
 
    void after_create_table(const std::string &name);
    void after_drop_table(table_id_t table_id);
@@ -46,15 +48,16 @@ namespace joedb
 
    ~Journal_File();
 
-  private:
    static const uint32_t version_number;
    static const uint64_t header_size;
 
+  private:
    Generic_File &file;
    unsigned checkpoint_index;
    uint64_t checkpoint_position;
    state_t state;
 
+   Database db_schema;
    table_id_t table_of_last_operation;
    record_id_t record_of_last_operation;
 

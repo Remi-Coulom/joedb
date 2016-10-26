@@ -264,13 +264,60 @@ int schema_upgrade_test()
 {
  {
   schema_v1::File_Database db("upgrade_test.joedb");
+  if (!db.is_good())
+  {
+   std::cout << "Error during opening of v1\n";
+   return 1;
+  }
+  std::cout << "v1 opened\n";
+
+  db.new_person("Toto");
+  db.new_person("Rémi");
  }
- {
-  schema_v2::File_Database db("upgrade_test.joedb");
- }
+
  {
   schema_v1::File_Database db("upgrade_test.joedb");
+  if (!db.is_good())
+  {
+   std::cout << "Error during re-opening of v1\n";
+   return 1;
+  }
+  std::cout << "v1 re-opened\n";
  }
+
+ {
+  schema_v2::File_Database db("upgrade_test.joedb");
+  if (!db.is_good())
+  {
+   std::cout << "Error during opening of v2\n";
+   return 1;
+  }
+  else
+   std::cout << "v2 opened\n";
+ }
+
+ {
+  schema_v2::File_Database db("upgrade_test.joedb");
+  if (!db.is_good())
+  {
+   std::cout << "Error during opening of v2\n";
+   return 1;
+  }
+  else
+   std::cout << "v2 re-opened\n";
+ }
+
+ {
+  schema_v1::File_Database db("upgrade_test.joedb");
+  if (db.is_good())
+  {
+   std::cout << "Error: v1 code should not open v2 files\n";
+   return 1;
+  }
+  else
+   std::cout << "OK: v1 code does not open v2 file\n";
+ }
+
  return 0;
 }
 

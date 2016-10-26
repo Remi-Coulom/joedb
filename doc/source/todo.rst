@@ -5,14 +5,16 @@ Short term
 ----------
 Compiler:
 
-- check matching db schema when opening file
-- automatic db schema upgrade when opening an old file
-- post_upgrade code when necessary (new log entry: "upgrade <name>")
+- custom data-upgrade code when necessary (new log entry: "custom <name>")
 - new log entry: rename table/field
 - flush data before throwing
 - periodic flush to system / periodic sync ?
-- new log entry: comment with time stamp
-- new log entry: begin/end transaction
+- new log entry: comment
+- new log entry: time stamp
+- better checkpoint types:
+   * checkpoint_no_commit
+   * checkpoint_half_commit
+   * checkpoint_full_commit
 
 Interpreter
 -----------
