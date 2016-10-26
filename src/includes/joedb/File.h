@@ -10,7 +10,7 @@ namespace joedb
  class File: public Generic_File
  {
   public:
-   File(): file(0) {}
+   File() {}
    File(const char *file_name, mode_t mode) {open(file_name, mode);}
    void open(const char *file_name, mode_t mode);
    ~File() override;
@@ -22,8 +22,9 @@ namespace joedb
    void sync() override;
 
   private:
-   FILE *file;
+   FILE *file = 0;
    bool lock_file();
+   void close_file();
  };
 }
 
