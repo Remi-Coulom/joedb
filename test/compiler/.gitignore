@@ -1,5 +1,7 @@
-test.joedb
+*.joedb
 testdb.h
 testdb.cpp
 compiler_test.out
 translation.h
+schema_v?.h
+schema_v?.cpp

@@ -1,0 +1,8 @@
+create_table person
+add_field person name string
+
+create_table language
+add_field language name string
+add_field language id string
+
+add_field person preferred_language references language

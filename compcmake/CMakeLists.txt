@@ -162,9 +162,19 @@ set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  PROPERTIES GENERATED TRUE
 )
+set_source_files_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
+ PROPERTIES GENERATED TRUE
+)
+set_source_files_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v2.cpp
+ PROPERTIES GENERATED TRUE
+)
 
 add_executable(compiler_test EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v2.cpp
  ../test/compiler/compiler_test.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )

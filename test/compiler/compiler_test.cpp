@@ -1,4 +1,6 @@
 #include "testdb.h"
+#include "schema_v1.h"
+#include "schema_v2.h"
 #include "File.h"
 #include "Journal_File.h"
 #include "Multiplexer.h"
@@ -257,8 +259,25 @@ int multiplexer_test()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+int schema_upgrade_test()
+/////////////////////////////////////////////////////////////////////////////
+{
+ {
+  schema_v1::File_Database db("upgrade_test.joedb");
+ }
+ {
+  schema_v2::File_Database db("upgrade_test.joedb");
+ }
+ {
+  schema_v1::File_Database db("upgrade_test.joedb");
+ }
+ return 0;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file_test() || multiplexer_test();
+ return file_test() || multiplexer_test() || schema_upgrade_test();
 }

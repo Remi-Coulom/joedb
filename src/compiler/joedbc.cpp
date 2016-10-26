@@ -166,7 +166,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  out << " class " << tname << "_container;\n\n";
+  out << " class " << tname << "_container;\n";
+ }
+
+ for (auto &table: tables)
+ {
+  const std::string &tname = table.second.get_name();
+  out << '\n';
   out << " class " << tname << "_t\n {\n";
   out << "  friend class Database;\n";
   for (auto &friend_table: tables)
@@ -183,7 +189,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   bool operator==(" << tname << "_t " << tname << ") const {return id == " << tname << ".id;}\n";
   out << "   bool operator<(" << tname << "_t " << tname << ") const {return id < " << tname << ".id;}\n";
   out << " };\n";
+ }
 
+ for (auto &table: tables)
+ {
+  const std::string &tname = table.second.get_name();
   out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n"; out << "  " << tname << "_data() {}\n";
   out << "  " << tname << "_data(bool f): joedb::EmptyRecord(f) {}\n";
 
