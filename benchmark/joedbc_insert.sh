@@ -1,13 +1,14 @@
 #!/bin/bash
+set -e
+
 dir=../compcmake/ninja_release
 
 cd $dir
 ninja
 cd -
 
-rm -vf insert.joedb benchmark.h
-$dir/joedbi insert.joedb <joedbc_insert.joedbi
-$dir/joedbc joedbc_insert.joedbi benchmark >benchmark.h
+rm -vf *.joedb
+$dir/joedbc joedbc_insert.joedbi joedbc_insert.joedbc
 
 cd $dir
 ninja joedbc_insert

@@ -131,12 +131,6 @@ add_executable(joedbi_insert
  $<TARGET_OBJECTS:interpreter_objects>
 )
 
-add_executable(joedbc_insert
- ../benchmark/joedbc_insert.cpp
- $<TARGET_OBJECTS:interpreter_objects>
-)
-set_target_properties(joedbc_insert PROPERTIES EXCLUDE_FROM_ALL TRUE)
-
 add_executable(joedbc
  ../src/compiler/joedbc.cpp
  ../src/compiler/Compiler_Options_io.cpp
@@ -151,7 +145,6 @@ set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  PROPERTIES GENERATED TRUE
 )
-
 add_executable(tutorial EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/tutorial_main.cpp
@@ -170,7 +163,6 @@ set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v2.cpp
  PROPERTIES GENERATED TRUE
 )
-
 add_executable(compiler_test EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
@@ -182,6 +174,16 @@ add_executable(compiler_test EXCLUDE_FROM_ALL
 add_executable(generate_translation_header EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
+ $<TARGET_OBJECTS:interpreter_objects>
+)
+
+set_source_files_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/../benchmark/benchmark.cpp
+ PROPERTIES GENERATED TRUE
+)
+add_executable(joedbc_insert EXCLUDE_FROM_ALL
+ ${CMAKE_CURRENT_SOURCE_DIR}/../benchmark/benchmark.cpp
+ ../benchmark/joedbc_insert.cpp
  $<TARGET_OBJECTS:interpreter_objects>
 )
 

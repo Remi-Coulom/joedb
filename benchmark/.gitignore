@@ -1,2 +1,3 @@
 benchmark.h
-insert.joedb
+benchmark.cpp
+*.joedb

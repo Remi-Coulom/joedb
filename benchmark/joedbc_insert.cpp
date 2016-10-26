@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   std::sscanf(argv[1], "%d", &N);
   std::printf("N = %d\n", N);
 
-  benchmark::Database db("insert.joedb");
+  benchmark::File_Database db("insert.joedb");
 
   const std::string s("TOTO");
 
