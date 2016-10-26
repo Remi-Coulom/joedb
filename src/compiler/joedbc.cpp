@@ -476,17 +476,30 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // Do nothing for schema changes
+ // Schema changes are forwarded to the listener
  //
  out << R"RRR(
-   void after_create_table(const std::string &name) override {}
-   void after_drop_table(table_id_t table_id) override {}
+   void after_create_table(const std::string &name) override
+   {
+    listener->after_create_table(name);
+   }
+
+   void after_drop_table(table_id_t table_id) override
+   {
+    listener->after_drop_table(table_id);
+   }
+
    void after_add_field(table_id_t table_id,
                         const std::string &name,
                         joedb::Type type) override
    {
+    listener->after_add_field(table_id, name, type);
    }
-   void after_drop_field(table_id_t table_id, field_id_t field_id) override {}
+
+   void after_drop_field(table_id_t table_id, field_id_t field_id) override
+   {
+    listener->after_drop_field(table_id, field_id);
+   }
 )RRR";
 
  //
@@ -697,7 +710,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   private:
    joedb::File file;
    joedb::Journal_File journal;
-   static char const * const schema_string;
+   static const std::string schema_string;
 
   public:
    File_Database(const char *file_name, bool read_only = false);
@@ -901,9 +914,11 @@ void generate_cpp
  out << '\n';
  out << "using namespace " << options.get_namespace_name() << ";\n";
  out << '\n';
- out << "char const * const File_Database::schema_string = ";
+ out << "const std::string File_Database::schema_string(";
  write_string(out, schema);
- out << ";\n";
+ out << ", ";
+ out << schema.size();
+ out << ");\n";
 
  out << R"RRR(
 /////////////////////////////////////////////////////////////////////////////
@@ -914,24 +929,58 @@ File_Database::File_Database(const char *file_name, bool read_only):
                   joedb::File::mode_t::write_existing),
  journal(file)
 {
- if (is_good())
-  journal.replay_log(*this);
- else if (file.get_status() == joedb::File::status_t::failure && !read_only)
+ if (!is_good() &&
+     !read_only &&
+     file.get_status() == joedb::File::status_t::failure)
  {
   file.open(file_name, joedb::File::mode_t::create_new);
   if (file.get_status() == joedb::File::status_t::success)
   {
    journal.~Journal_File();
    new(&journal) joedb::Journal_File(file);
-   std::stringstream schema(std::string(schema_string, )RRR";
- out << schema.size() << R"RRR());
+  }
+ }
+
+ if (is_good())
+ {
+  std::stringstream stored_schema;
+  {
+   joedb::Stream_File stored_schema_file
+                      (
+                       stored_schema,
+                       joedb::Generic_File::mode_t::create_new
+                      );
+   joedb::Journal_File stored_schema_journal(stored_schema_file);
+   set_listener(stored_schema_journal);
+   journal.replay_log(*this);
+   stored_schema_journal.checkpoint();
+   clear_listener();
+  }
+
+  if (std::string(schema_string, 104) == stored_schema.str())
+  {
+   std::cerr << "Schema matches!\n";
+  }
+  else
+  {
+   std::cerr << "Schema does not match: replay schema\n";
+   std::cerr << "stored_schema.size() = " << stored_schema.str().size() << '\n';
+
+   std::stringstream schema(std::string(schema_string, 104));
    joedb::Stream_File schema_file(schema,
-                                  joedb::Generic_File::mode_t::read_existing);
+                                   joedb::Generic_File::mode_t::read_existing);
    joedb::Journal_File schema_journal(schema_file);
+
    schema_journal.replay_log(journal);
   }
  }
+ else
+ {
+  std::cerr << "!is_good()!\n";
+ }
+
  set_listener(journal);
+
 }
 )RRR";
 }
@@ -982,6 +1031,7 @@ int main(int argc, char **argv)
   db.set_listener(schema_listener);
   Interpreter interpreter(db);
   interpreter.main_loop(joedbi_file, std::cerr);
+  journal.checkpoint();
   journal.checkpoint();
  }
 

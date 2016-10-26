@@ -24,7 +24,7 @@ namespace joedb
 
    state_t get_state() const {return state;}
    void checkpoint();
-   void replay_log(Listener &listener);
+   void replay_log(Listener &listener, uint64_t until = 0);
 
    void after_create_table(const std::string &name);
    void after_drop_table(table_id_t table_id);

@@ -106,13 +106,16 @@ void joedb::Journal_File::checkpoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::replay_log(Listener &listener)
+void joedb::Journal_File::replay_log(Listener &listener, uint64_t until)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.set_position(header_size);
  Database db_schema;
 
- while(file.get_position() < checkpoint_position &&
+ if (until == 0)
+  until = checkpoint_position;
+
+ while(file.get_position() < until &&
        state == state_t::no_error &&
        listener.is_good() &&
        !file.is_end_of_file())
