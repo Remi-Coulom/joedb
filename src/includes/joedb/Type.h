@@ -16,7 +16,12 @@ namespace joedb
     #undef TYPE_MACRO
    };
 
-   enum {type_ids = int(type_id_t::int8) + 1};
+   #define TYPE_MACRO(a, b, c, d, e) 1 +
+   enum {type_ids =
+    #include "TYPE_MACRO.h"
+    1
+   };
+   #undef TYPE_MACRO
 
   private:
    type_id_t type_id;

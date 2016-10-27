@@ -119,31 +119,28 @@ void write_index_type
 void generate_h(std::ostream &out, const Compiler_Options &options)
 /////////////////////////////////////////////////////////////////////////////
 {
+#define STRINGIFY(X) #X
+#define EXPAND_AND_STRINGIFY(X) STRINGIFY(X)
+
  char const * const types[] =
  {
   0,
-  "string",
-  "int32",
-  "int64",
-  "reference",
-  "boolean",
-  "float32",
-  "float64",
-  "int8"
+#define TYPE_MACRO(a, b, type_id, d, e) EXPAND_AND_STRINGIFY(type_id),
+#include "TYPE_MACRO.h"
+#undef TYPE_MACRO
  };
+
 
  char const * const cpp_types[] =
  {
   0,
-  "const std::string &",
-  "int32_t ",
-  "int64_t ",
-  "record_id_t ",
-  "bool ",
-  "float ",
-  "double ",
-  "int8_t "
+#define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
+#include "TYPE_MACRO.h"
+#undef TYPE_MACRO
  };
+
+#undef EXPAND_AND_STRINGIFY
+#undef STRINGIFY
 
  const Database &db = options.get_db();
  auto tables = db.get_tables();
