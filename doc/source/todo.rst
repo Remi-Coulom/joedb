@@ -3,17 +3,11 @@ TODO
 
 Short term
 ----------
-Compiler:
+- Table options:
 
-- new log entry: rename table/field
-- flush data before throwing
-- periodic flush to system / periodic sync ?
-- new log entry: comment
-- new log entry: time stamp
-- better checkpoint types:
-   * checkpoint_no_commit
-   * checkpoint_half_commit
-   * checkpoint_full_commit
+  * single_row: compiled to a simple struct, with simpler getters.
+  * no_delete: store as vector
+  * store_in_reference: store in field of referenced table
 
 Interpreter
 -----------
@@ -32,27 +26,28 @@ Journal file
 
 New operations and types
 ------------------------
-- checkpoints, tags, etc.
-- rename operations (table, field)
+- new log entry
 
-- more data types
-
-  * varchar<N>
-  * date
-  * vector<T>
+  * comment
+  * time stamp
+  * rename table/field
+  * "checkpoint"
 
 On-disk storage
 ----------------
-
 - sqlite
 - stxxl? For strings: store a big vector of chars. A string is length + index in the big vector of chars.
 
 Compiler
 --------
+- better checkpoint types
 
-- "single-row" table option, compiled to a simple struct, with simpler getters.
-- "no-delete" table option
+  * checkpoint_no_commit
+  * checkpoint_half_commit
+  * checkpoint_full_commit
 
+- periodic flush to system / periodic sync ?
+- custom error management
 - make sure identifiers can't produce other collisions
 - custom triggers, modularize code generation
 - index-based sorting
