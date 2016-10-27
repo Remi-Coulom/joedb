@@ -276,7 +276,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   {\n";
   out << "    " << tname << "_data &data = ";
   out << tname << "_FK.get_record(record_id + 1);\n";
-  out << "    auto result = " << index.name;
+  out << "    auto J_result = " << index.name;
   out << ".insert\n    (\n     ";
   write_index_type(out, db, index);
   out << "::value_type\n     (\n      ";
@@ -294,13 +294,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << ",\n      " << tname << "_t(record_id)\n     )\n    );\n";
   if (index.unique)
   {
-   out << "    if (!result.second)\n";
+   out << "    if (!J_result.second)\n";
    out << "     throw std::runtime_error(\"";
    out << index.name << " unique index failure\");\n";
-   out << "    data." << index.name << "_iterator = result.first;\n";
+   out << "    data." << index.name << "_iterator = J_result.first;\n";
   }
   else
-   out << "    data." << index.name << "_iterator = result;\n";
+   out << "    data." << index.name << "_iterator = J_result;\n";
   out << "   }\n";
  }
 
@@ -540,11 +540,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   " << tname << "_t new_" << tname << "()\n";
   out << "   {\n";
-  out << "    size_t free_record = " << tname << "_FK.get_free_record();\n";
-  out << "    " << tname << "_t result(free_record - 1);\n\n";
-  out << "    internal_insert_" << tname << "(result.id);\n\n";
-  out << "    listener->after_insert(" << table.first << ", result.id);\n";
-  out << "    return result;\n";
+  out << "    size_t J_free_record = " << tname << "_FK.get_free_record();\n";
+  out << "    " << tname << "_t J_result(J_free_record - 1);\n\n";
+  out << "    internal_insert_" << tname << "(J_result.id);\n\n";
+  out << "    listener->after_insert(" << table.first << ", J_result.id);\n";
+  out << "    return J_result;\n";
   out << "   }\n";
   out << "   void clear_" << tname << "_table();\n";
   out << '\n';
@@ -574,34 +574,34 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
   out << "   )\n";
   out << "   {\n";
-  out << "    size_t free_record = " << tname << "_FK.get_free_record();\n";
+  out << "    size_t J_free_record = " << tname << "_FK.get_free_record();\n";
 
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
 
-   out << "    " << tname << "_FK.get_record(free_record).";
+   out << "    " << tname << "_FK.get_record(J_free_record).";
    out << fname << " = " << fname << ";\n";
   }
 
-  out << "\n    " << tname << "_t result(free_record - 1);\n";
-  out << "    internal_insert_" << tname << "(result.id);\n\n";
+  out << "\n    " << tname << "_t J_result(J_free_record - 1);\n";
+  out << "    internal_insert_" << tname << "(J_result.id);\n\n";
 
-  out << "    listener->after_insert(" << table.first << ", result.id);\n";
+  out << "    listener->after_insert(" << table.first << ", J_result.id);\n";
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
 
    out << "    listener->after_update_";
    out << types[int(field.second.get_type().get_type_id())];
-   out << '(' << table.first << ", result.id, " << field.first << ", ";
+   out << '(' << table.first << ", J_result.id, " << field.first << ", ";
    out << fname;
    if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
     out << ".id";
    out << ");\n";
   }
 
-  out << "    return result;\n";
+  out << "    return J_result;\n";
   out << "   }\n\n";
 
   //
@@ -828,11 +828,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << " std::vector<" << tname << "_t> Database::sorted_" << tname;
   out << "(Comparator comparator) const\n";
   out << " {\n";
-  out << "  std::vector<" << tname << "_t> result;\n";
+  out << "  std::vector<" << tname << "_t> J_result;\n";
   out << "  for (auto x: get_" << tname << "_table())\n";
-  out << "   result.push_back(x);\n";
-  out << "  std::sort(result.begin(), result.end(), comparator);\n";
-  out << "  return result;\n";
+  out << "   J_result.push_back(x);\n";
+  out << "  std::sort(J_result.begin(), J_result.end(), comparator);\n";
+  out << "  return J_result;\n";
   out << " }\n";
 
   out << " inline void Database::clear_" << tname << "_table()\n";

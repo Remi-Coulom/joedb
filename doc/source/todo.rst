@@ -3,6 +3,7 @@ TODO
 
 Short term
 ----------
+- make sure identifiers can't produce collisions
 - Table options:
 
   * single_row: compiled to a simple struct, with simpler getters.
@@ -48,7 +49,6 @@ Compiler
 
 - periodic flush to system / periodic sync ?
 - custom error management
-- make sure identifiers can't produce other collisions
 - custom triggers, modularize code generation
 - index-based sorting
 
