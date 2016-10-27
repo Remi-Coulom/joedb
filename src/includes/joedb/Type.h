@@ -16,7 +16,7 @@ namespace joedb
     #undef TYPE_MACRO
    };
 
-   enum {type_ids = int(type_id_t::float64) + 1};
+   enum {type_ids = int(type_id_t::int8) + 1};
 
   private:
    type_id_t type_id;
@@ -45,6 +45,7 @@ namespace joedb
    static Type boolean() {return Type(type_id_t::boolean);}
    static Type float32() {return Type(type_id_t::float32);}
    static Type float64() {return Type(type_id_t::float64);}
+   static Type int8() {return Type(type_id_t::int8);}
  };
 }
 

@@ -33,6 +33,8 @@ joedb::Type joedb::Interpreter::parse_type(std::istream &in,
   return Type::float32();
  if (type_name == "float64")
   return Type::float64();
+ if (type_name == "int8")
+  return Type::int8();
 
  out << "Error: unknown type\n";
  return Type();

@@ -26,6 +26,7 @@ namespace joedb
  PRIMITIVE_IO(record_id_t, reference)
  PRIMITIVE_IO(float, float32)
  PRIMITIVE_IO(double, float64)
+ PRIMITIVE_IO(int8_t, int8)
  #undef PRIMITIVE_IO
 }
 

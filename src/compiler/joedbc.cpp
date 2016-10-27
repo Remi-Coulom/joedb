@@ -64,6 +64,10 @@ void write_type
   case Type::type_id_t::float64:
    out << "double ";
   break;
+
+  case Type::type_id_t::int8:
+   out << "int8_t ";
+  break;
  }
 }
 
@@ -124,7 +128,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   "reference",
   "boolean",
   "float32",
-  "float64"
+  "float64",
+  "int8"
  };
 
  char const * const cpp_types[] =
@@ -136,7 +141,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   "record_id_t ",
   "bool ",
   "float ",
-  "double "
+  "double ",
+  "int8_t "
  };
 
  const Database &db = options.get_db();
