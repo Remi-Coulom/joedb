@@ -30,18 +30,18 @@ TEST(Multiplexer_Test, basic)
 
   journal.replay_log(journal_multiplexer);
 
-  EXPECT_EQ(0, db1.get_tables().size());
-  EXPECT_EQ(0, db2.get_tables().size());
+  EXPECT_EQ(0ULL, db1.get_tables().size());
+  EXPECT_EQ(0ULL, db2.get_tables().size());
 
   db1.create_table("T");
 
-  EXPECT_EQ(1, db1.get_tables().size());
-  EXPECT_EQ(1, db2.get_tables().size());
+  EXPECT_EQ(1ULL, db1.get_tables().size());
+  EXPECT_EQ(1ULL, db2.get_tables().size());
 
   db2.create_table("U");
 
-  EXPECT_EQ(2, db1.get_tables().size());
-  EXPECT_EQ(2, db2.get_tables().size());
+  EXPECT_EQ(2ULL, db1.get_tables().size());
+  EXPECT_EQ(2ULL, db2.get_tables().size());
  }
 
  {
@@ -65,7 +65,7 @@ TEST(Multiplexer_Test, basic)
 
   journal.replay_log(journal_multiplexer);
 
-  EXPECT_EQ(2, db1.get_tables().size());
-  EXPECT_EQ(2, db2.get_tables().size());
+  EXPECT_EQ(2ULL, db1.get_tables().size());
+  EXPECT_EQ(2ULL, db2.get_tables().size());
  }
 }
