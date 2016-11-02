@@ -37,6 +37,7 @@ bool joedb::Database::rename_table
  if (table_it != tables.end())
  {
   table_it->second.set_name(name);
+  listener->after_rename_table(table_id, name);
   return true;
  }
  else
@@ -133,6 +134,7 @@ bool joedb::Database::rename_field
   if (field_it != fields.end())
   {
    field_it->second.set_name(name);
+   listener->after_rename_field(table_id, field_id, name);
    return true;
   }
  }
@@ -146,6 +148,27 @@ void joedb::Database::custom(const std::string &name)
 {
  custom_names.push_back(name);
  listener->after_custom(name);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Database::time_stamp(int64_t time_stamp) const
+/////////////////////////////////////////////////////////////////////////////
+{
+ listener->after_time_stamp(time_stamp);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Database::checkpoint() const
+/////////////////////////////////////////////////////////////////////////////
+{
+ listener->after_checkpoint();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Database::comment(const std::string &comment) const
+/////////////////////////////////////////////////////////////////////////////
+{
+ listener->after_comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////

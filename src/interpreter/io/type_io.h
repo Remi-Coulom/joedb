@@ -15,6 +15,9 @@ namespace joedb
  void write_hexa_character(std::ostream &out, uint8_t c);
  void write_octal_character(std::ostream &out, uint8_t c);
 
+ int8_t read_int8(std::istream &in);
+ void write_int8(std::ostream &out, int8_t value);
+
  #define PRIMITIVE_IO(type, type_id)\
  inline type read_##type_id(std::istream &in)\
  {type value = type(); in >> value; return value;}\
@@ -26,7 +29,6 @@ namespace joedb
  PRIMITIVE_IO(record_id_t, reference)
  PRIMITIVE_IO(float, float32)
  PRIMITIVE_IO(double, float64)
- PRIMITIVE_IO(int8_t, int8)
  #undef PRIMITIVE_IO
 }
 

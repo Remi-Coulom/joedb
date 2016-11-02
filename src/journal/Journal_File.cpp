@@ -177,6 +177,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     db_schema.rename_table(table_id, name);
     listener.after_rename_table(table_id, name);
    }
+   break;
 
    case operation_t::add_field:
    {
@@ -205,6 +206,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     db_schema.rename_field(table_id, field_id, name);
     listener.after_rename_field(table_id, field_id, name);
    }
+   break;
 
    case operation_t::insert_into:
    {

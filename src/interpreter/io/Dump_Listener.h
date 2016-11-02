@@ -42,8 +42,8 @@ namespace joedb
 
    void after_create_table(const std::string &name) override
    {
-    Schema_Listener::after_create_table(name);
     out << "create_table " << name << '\n';
+    Schema_Listener::after_create_table(name);
    }
 
    void after_drop_table(table_id_t table_id) override
@@ -52,14 +52,21 @@ namespace joedb
     Schema_Listener::after_drop_table(table_id);
    }
 
+   void after_rename_table(table_id_t table_id,
+                           const std::string &name) override
+   {
+    out << "rename_table " << get_table_name(table_id) << ' ' << name << '\n';
+    Schema_Listener::after_rename_table(table_id, name);
+   }
+
    void after_add_field(table_id_t table_id,
                         const std::string &name,
                         Type type) override
    {
-    Schema_Listener::after_add_field(table_id, name, type);
     out << "add_field " << get_table_name(table_id) << ' ' << name << ' ';
     write_type(out, db, type);
     out << '\n';
+    Schema_Listener::after_add_field(table_id, name, type);
    }
 
    void after_drop_field(table_id_t table_id, field_id_t field_id) override
@@ -69,9 +76,35 @@ namespace joedb
     Schema_Listener::after_drop_field(table_id, field_id);
    }
 
+   void after_rename_field(table_id_t table_id,
+                           field_id_t field_id,
+                           const std::string &name)
+   {
+    out << "rename_field " << get_table_name(table_id) << ' ';
+    out << get_field_name(table_id, field_id) << ' ' << name << '\n';
+    Schema_Listener::after_rename_field(table_id, field_id, name);
+   }
+
    void after_custom(const std::string &name) override
    {
     out << "custom " << name << '\n';
+   }
+
+   void after_comment(const std::string &comment) override
+   {
+    out << "comment ";
+    write_string(out, comment);
+    out << '\n';
+   }
+
+   void after_time_stamp(int64_t time_stamp) override
+   {
+    out << "time_stamp " << time_stamp << '\n';
+   }
+
+   void after_checkpoint() override
+   {
+    out << "checkpoint\n";
    }
 
    void after_insert(table_id_t table_id, record_id_t record_id)

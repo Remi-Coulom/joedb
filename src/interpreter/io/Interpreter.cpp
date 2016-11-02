@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <ctime>
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Type joedb::Interpreter::parse_type(std::istream &in,
@@ -109,6 +110,16 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    else
     out << "Error: could not drop table\n";
   }
+  else if (command == "rename_table") ////////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(iss, out);
+   std::string new_name;
+   iss >> new_name;
+   if (db.rename_table(table_id, new_name))
+    out << "OK: renamed table " << table_id << " to " << new_name << '\n';
+   else
+    out << "Error: could not rename table\n";
+  }
   else if (command == "add_field") ///////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
@@ -145,13 +156,62 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     }
    }
   }
-  else if (command == "custom") //////////////////////////////////////////////
+  else if (command == "rename_field") ///////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(iss, out);
+   if (table_id)
+   {
+    std::string field_name;
+    iss >> field_name;
+    field_id_t field_id = db.find_field(table_id, field_name);
+    if (!field_id)
+     out << "Error: no such field: " << field_name << '\n';
+    else
+    {
+     std::string new_field_name;
+     iss >> new_field_name;
+     db.rename_field(table_id, field_id, new_field_name);
+     out << "OK: renamed field " << field_name << " to " << new_field_name << '\n';
+    }
+   }
+  }
+  else if (command == "custom") /////////////////////////////////////////////
   {
    std::string name;
    iss >> name;
    db.custom(name);
+   out << "OK: custom command: " << name << '\n';
   }
-  else if (command == "insert_into") /////////////////////////////////////////
+  else if (command == "comment") ////////////////////////////////////////////
+  {
+   const std::string comment = joedb::read_string(iss);
+   db.comment(comment);
+   out << "OK: comment: ";
+   joedb::write_string(out, comment);
+   out << '\n';
+  }
+  else if (command == "time_stamp") /////////////////////////////////////////
+  {
+   int64_t time_stamp = 0;
+   iss >> time_stamp;
+   out << "OK: time_stamp: ";
+   if (iss.fail())
+   {
+    db.time_stamp(std::time(0));
+    out << "now\n";
+   }
+   else
+   {
+    db.time_stamp(time_stamp);
+    out << time_stamp << '\n';
+   }
+  }
+  else if (command == "checkpoint") /////////////////////////////////////////
+  {
+   db.checkpoint();
+   out << "OK: checkpoint\n";
+  }
+  else if (command == "insert_into") ////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
    if (table_id)
@@ -177,7 +237,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     }
    }
   }
-  else if (command == "update") //////////////////////////////////////////////
+  else if (command == "update") /////////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
    if (table_id)
@@ -200,7 +260,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     }
    }
   }
-  else if (command == "delete_from") /////////////////////////////////////////
+  else if (command == "delete_from") ////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
    if (table_id)

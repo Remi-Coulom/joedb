@@ -42,6 +42,9 @@ namespace joedb
    bool drop_field(table_id_t table_id, field_id_t field_id);
    bool rename_field(table_id_t, field_id_t, const std::string &name);
    void custom(const std::string &name);
+   void comment(const std::string &comment) const;
+   void time_stamp(int64_t time_stamp) const;
+   void checkpoint() const;
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;
