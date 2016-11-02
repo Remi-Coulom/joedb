@@ -759,14 +759,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     return journal.get_state();
    }
 
-   void commit() {file.commit();}
-   void checkpoint() {journal.checkpoint();}
-   void safe_commit()
-   {
-    file.commit();
-    journal.checkpoint();
-    file.commit();
-   }
+   void checkpoint_no_commit() {journal.checkpoint(0);}
+   void checkpoint_half_commit() {journal.checkpoint(1);}
+   void checkpoint_full_commit() {journal.checkpoint(2);}
+
    bool is_good() const
    {
     return file.get_status() == joedb::File::status_t::success &&

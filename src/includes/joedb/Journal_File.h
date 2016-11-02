@@ -23,7 +23,7 @@ namespace joedb
    };
 
    state_t get_state() const {return state;}
-   void checkpoint();
+   void checkpoint(int commit_level);
    void replay_log(Listener &listener);
    void rewind();
    void play_until(Listener &listener, uint64_t end);
@@ -56,6 +56,7 @@ namespace joedb
    Generic_File &file;
    unsigned checkpoint_index;
    uint64_t checkpoint_position;
+   int current_commit_level;
    state_t state;
 
    Database db_schema;

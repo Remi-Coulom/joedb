@@ -49,7 +49,7 @@ namespace joedb
   private:
    std::vector<Listener *> external_listeners;
    std::vector<std::unique_ptr<Internal_Listener>> internal_listeners;
-   bool multiplexing;
+   bool multiplexing = false;
 
   public:
    Listener &add_listener(Listener &external_listener);

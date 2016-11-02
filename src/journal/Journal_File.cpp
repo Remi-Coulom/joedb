@@ -9,6 +9,8 @@ joedb::Journal_File::Journal_File(Generic_File &file):
 /////////////////////////////////////////////////////////////////////////////
  file(file),
  checkpoint_index(0),
+ checkpoint_position(0),
+ current_commit_level(0),
  state(state_t::no_error),
  table_of_last_operation(0),
  record_of_last_operation(0)
@@ -34,7 +36,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
   file.write<int64_t>(0);
   file.write<int64_t>(0);
   file.write<int64_t>(0);
-  checkpoint();
+  checkpoint(0);
  }
 
  //
@@ -88,19 +90,31 @@ joedb::Journal_File::Journal_File(Generic_File &file):
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::checkpoint()
+void joedb::Journal_File::checkpoint(int commit_level)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (state == state_t::no_error)
+ if ((file.get_position() > checkpoint_position ||
+      commit_level > current_commit_level) &&
+     state == state_t::no_error)
  {
-  file.flush();
   checkpoint_index ^= 1;
   checkpoint_position = file.get_position();
+  current_commit_level = commit_level;
+
   file.set_position(9 + 16 * checkpoint_index);
   file.write<uint64_t>(checkpoint_position);
-  file.write<uint64_t>(checkpoint_position);
-  file.set_position(checkpoint_position);
+
   file.flush();
+  if (commit_level > 0)
+   file.commit();
+
+  file.write<uint64_t>(checkpoint_position);
+
+  file.flush();
+  if (commit_level > 1)
+   file.commit();
+
+  file.set_position(checkpoint_position);
  }
 }
 
@@ -379,5 +393,5 @@ joedb::Type joedb::Journal_File::read_type()
 joedb::Journal_File::~Journal_File()
 /////////////////////////////////////////////////////////////////////////////
 {
- checkpoint();
+ checkpoint(0);
 }

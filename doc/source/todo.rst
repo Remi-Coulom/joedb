@@ -41,12 +41,6 @@ On-disk storage
 
 Compiler
 --------
-- better checkpoint types
-
-  * checkpoint_no_commit
-  * checkpoint_half_commit
-  * checkpoint_full_commit
-
 - periodic flush to system / periodic sync ?
 - custom error management
 - custom triggers, modularize code generation
@@ -56,12 +50,6 @@ Compiler
 
   * mutex protection as option
   * triggers: C++ code: after/before insert/update/delete
-  * commit/checkpoint policy:
-
-    - never
-    - when flushing write buffer
-    - at every log entry or transaction_end
-    - commit before/after/before&after checkpoint
 
 - Compiler utilities:
 

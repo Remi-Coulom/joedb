@@ -79,8 +79,7 @@ TEST_F(Journal_File_Test, basic_operations)
    db1.update_float32(table_id, 1, float32_field_id, 3.14f);
    db1.update_float64(table_id, 1, float64_field_id, 3.141592653589);
   }
-  journal.checkpoint();
-  file.commit();
+  journal.checkpoint(2);
  }
 
  Database db2;

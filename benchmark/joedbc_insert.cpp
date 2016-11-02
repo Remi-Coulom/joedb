@@ -18,8 +18,7 @@ int main(int argc, char **argv)
   for (int i = 1; i <= N; i++)
    db.new_BENCHMARK(s, i);
 
-  db.checkpoint();
-  db.commit();
+  db.checkpoint_full_commit();
  }
 
  return 0;
