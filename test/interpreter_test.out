@@ -69,6 +69,7 @@ OK: add_field d; field_id = 7
 OK: add_field o; field_id = 8
 OK: inserted record, id = 1
 OK: time_stamp: now
+OK: time_stamp: 1234567890
 OK: comment: "This is a comment. これは日本語です。"
 OK: checkpoint
 OK: renamed table 5 to all_types

@@ -34,4 +34,8 @@ TEST_F(Interpreter_Test, main_test)
  reference_string << reference_file.rdbuf();
 
  EXPECT_EQ(out_string.str(), reference_string.str());
+
+ // TODO: write data to .joedb
+ // read new database from .joedb
+ // check that both databases are identical
 }
