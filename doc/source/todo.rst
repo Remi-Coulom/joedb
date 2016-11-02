@@ -3,12 +3,21 @@ TODO
 
 Short term
 ----------
+- index-based sorting
+- id-based sorting
 - make sure identifiers can't produce collisions
 - Table options:
 
-  * single_row: compiled to a simple struct, with simpler getters.
-  * no_delete: store as vector
-  * store_in_reference: store in field of referenced table
+  - vector:
+
+    - insert/delete at the back only
+    - store as std::vector of struct
+    - return const std::vector<> & to user
+
+  - single_row: compiled to a simple struct, with simpler getters.
+
+- Compact "vector-insertion" log entry (no new event?)
+- C wrapper (with "EXPORTED_FUNCTIONS", for emscripten)
 
 Interpreter
 -----------
@@ -35,22 +44,9 @@ On-disk storage
 
 Compiler
 --------
-- periodic flush to system / periodic sync ?
 - custom error management
-- custom triggers, modularize code generation
-- index-based sorting
-
-- core compiler options:
-
-  * mutex protection as option
-  * triggers: C++ code: after/before insert/update/delete
-
+- modularize code generation
 - Compiler utilities:
-
-  - table storage:
-
-    - any stl container (vector, deque, map, unordered_map)
-    - file (maybe, for big tables): make on-disk C++ containers
 
   - referential integrity (use triggers)
   - queries (SQL compiler?)
