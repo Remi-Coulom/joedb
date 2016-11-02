@@ -30,6 +30,7 @@ namespace joedb
 
    table_id_t create_table(const std::string &name);
    bool drop_table(table_id_t table_id);
+   bool rename_table(table_id_t table_id, const std::string &name);
    table_id_t find_table(const std::string &name) const;
    field_id_t add_field(table_id_t table_id,
                         const std::string &name,
@@ -39,6 +40,7 @@ namespace joedb
    Type::type_id_t get_field_type(table_id_t table_id,
                                   field_id_t field_id) const;
    bool drop_field(table_id_t table_id, field_id_t field_id);
+   bool rename_field(table_id_t, field_id_t, const std::string &name);
    void custom(const std::string &name);
    const std::vector<std::string> &get_custom_names() const
    {

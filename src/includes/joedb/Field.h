@@ -13,7 +13,7 @@ namespace joedb
  class Field
  {
   private:
-   const std::string name;
+   std::string name;
    const Type type;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -30,6 +30,7 @@ namespace joedb
    }
 
    const std::string &get_name() const {return name;}
+   void set_name(const std::string &new_name) {name = new_name;}
    const Type &get_type() const {return type;}
 
    void resize(size_t size)

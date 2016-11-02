@@ -9,8 +9,12 @@
 
 namespace joedb
 {
+ class Database;
+
  class Table
  {
+  friend class Database;
+
   private:
    std::string name;
 
@@ -27,6 +31,7 @@ namespace joedb
    }
 
    const std::string &get_name() const {return name;}
+   void set_name(const std::string &new_name) {name = new_name;}
    const Freedom_Keeper<> &get_freedom() const {return freedom;}
 
    const std::map<field_id_t, Field> &get_fields() const {return fields;}

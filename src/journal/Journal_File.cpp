@@ -170,6 +170,14 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    }
    break;
 
+   case operation_t::rename_table:
+   {
+    table_id_t table_id = file.compact_read<table_id_t>();
+    std::string name = file.read_string();
+    db_schema.rename_table(table_id, name);
+    listener.after_rename_table(table_id, name);
+   }
+
    case operation_t::add_field:
    {
     table_id_t table_id = file.compact_read<table_id_t>();
@@ -188,6 +196,15 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     listener.after_drop_field(table_id, field_id);
    }
    break;
+
+   case operation_t::rename_field:
+   {
+    table_id_t table_id = file.compact_read<table_id_t>();
+    field_id_t field_id = file.compact_read<field_id_t>();
+    std::string name = file.read_string();
+    db_schema.rename_field(table_id, field_id, name);
+    listener.after_rename_field(table_id, field_id, name);
+   }
 
    case operation_t::insert_into:
    {
@@ -249,6 +266,26 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    }
    break;
 
+   case operation_t::comment:
+   {
+    std::string comment = file.read_string();
+    listener.after_comment(comment);
+   }
+   break;
+
+   case operation_t::time_stamp:
+   {
+    int64_t time_stamp = file.read<int64_t>();
+    listener.after_time_stamp(time_stamp);
+   }
+   break;
+
+   case operation_t::checkpoint:
+   {
+    listener.after_checkpoint();
+   }
+   break;
+
    default:
     state = state_t::bad_format;
    break;
@@ -275,6 +312,19 @@ void joedb::Journal_File::after_drop_table(table_id_t table_id)
 {
  file.write<operation_t>(operation_t::drop_table);
  file.compact_write<table_id_t>(table_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_rename_table
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ const std::string &name
+)
+{
+ file.write<operation_t>(operation_t::rename_table);
+ file.compact_write<table_id_t>(table_id);
+ file.write_string(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -308,11 +358,49 @@ void joedb::Journal_File::after_drop_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_rename_field
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ field_id_t field_id,
+ const std::string &name
+)
+{
+ file.write<operation_t>(operation_t::rename_field);
+ file.compact_write<table_id_t>(table_id);
+ file.compact_write<field_id_t>(field_id);
+ file.write_string(name);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::after_custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::custom);
  file.write_string(name);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_comment(const std::string &comment)
+/////////////////////////////////////////////////////////////////////////////
+{
+ file.write<operation_t>(operation_t::comment);
+ file.write_string(comment);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_time_stamp(int64_t time_stamp)
+/////////////////////////////////////////////////////////////////////////////
+{
+ file.write<operation_t>(operation_t::time_stamp);
+ file.write<int64_t>(time_stamp);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_checkpoint()
+/////////////////////////////////////////////////////////////////////////////
+{
+ file.write<operation_t>(operation_t::checkpoint);
 }
 
 /////////////////////////////////////////////////////////////////////////////

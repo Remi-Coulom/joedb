@@ -27,6 +27,12 @@ namespace joedb
     error |= !db.drop_table(table_id);
    }
 
+   void after_rename_table(table_id_t table_id,
+                           const std::string &name) override
+   {
+    error |= !db.rename_table(table_id, name);
+   }
+
    void after_add_field(table_id_t table_id,
                         const std::string &name,
                         Type type) override
@@ -39,9 +45,17 @@ namespace joedb
     error |= !db.drop_field(table_id, field_id);
    }
 
-   void after_custom(const std::string &name) override
+   void after_rename_field(table_id_t table_id,
+                           field_id_t field_id,
+                           const std::string &name) override
    {
+    error |= !db.rename_field(table_id, field_id, name);
    }
+
+   void after_custom(const std::string &name) override {}
+   void after_comment(const std::string &comment) override {}
+   void after_time_stamp(int64_t time_stamp) override {}
+   void after_checkpoint() override {}
  };
 }
 

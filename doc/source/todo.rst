@@ -27,12 +27,6 @@ Journal file
 
 New operations and types
 ------------------------
-- new log entry
-
-  * comment
-  * time stamp
-  * rename table/field
-  * "checkpoint"
 
 On-disk storage
 ----------------
