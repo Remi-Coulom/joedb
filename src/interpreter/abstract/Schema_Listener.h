@@ -52,7 +52,10 @@ namespace joedb
     error |= !db.rename_field(table_id, field_id, name);
    }
 
-   void after_custom(const std::string &name) override {}
+   void after_custom(const std::string &name) override
+   {
+    db.custom(name);
+   }
  };
 }
 

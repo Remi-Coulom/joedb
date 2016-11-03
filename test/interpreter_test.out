@@ -72,6 +72,7 @@ OK: time_stamp: now
 OK: time_stamp: 1234567890
 OK: comment: "This is a comment. これは日本語です。"
 OK: checkpoint
+OK: custom command: toto_le_petit_rigolo
 OK: renamed table 5 to all_types
 OK: renamed field s to str
 create_table all_types

@@ -9,7 +9,7 @@
 
 using namespace joedb;
 
-class Journal_File_Test: public::testing::Test
+class Journal_File_Test: public ::testing::Test
 {
  protected:
   virtual void TearDown()

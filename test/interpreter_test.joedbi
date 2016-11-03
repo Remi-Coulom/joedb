@@ -62,6 +62,7 @@ time_stamp 1234567890
 comment "This is a comment. これは日本語です。"
 checkpoint
 
+custom toto_le_petit_rigolo
 rename_table alltypes all_types
 rename_field all_types s str
 
