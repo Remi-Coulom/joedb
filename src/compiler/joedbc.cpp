@@ -578,6 +578,18 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << '\n';
 
   //
+  // new uninitialized vector
+  //
+  out << "   " << tname << "_t new_vector_of_" << tname << "(size_t size)\n";
+  out << "   {\n";
+  out << "    " << tname << "_t J_result = new_" << tname << "();\n";
+  out << "    for (size_t i = 1; i < size; i++)\n";
+  out << "     new_" << tname << "();\n";
+  out << "    return J_result;\n";
+  out << "   }\n";
+  out << '\n';
+
+  //
   // new with all fields
   //
   out << "   " << tname << "_t new_" << tname << '\n';
