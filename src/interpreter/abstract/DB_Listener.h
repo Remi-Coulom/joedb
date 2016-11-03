@@ -10,6 +10,21 @@ namespace joedb
   public:
    DB_Listener(Database &db): Schema_Listener(db) {}
 
+   void after_comment(const std::string &comment) override
+   {
+    db.comment(comment);
+   }
+
+   void after_time_stamp(int64_t time_stamp) override
+   {
+    db.time_stamp(time_stamp);
+   }
+
+   void after_checkpoint() override
+   {
+    db.checkpoint();
+   }
+
    void after_insert(table_id_t table_id, record_id_t record_id) override
    {
     error |= !db.insert_into(table_id, record_id);

@@ -53,9 +53,6 @@ namespace joedb
    }
 
    void after_custom(const std::string &name) override {}
-   void after_comment(const std::string &comment) override {}
-   void after_time_stamp(int64_t time_stamp) override {}
-   void after_checkpoint() override {}
  };
 }
 

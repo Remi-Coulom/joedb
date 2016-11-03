@@ -3,6 +3,9 @@
 #include "DB_Listener.h"
 #include "gtest/gtest.h"
 #include "dump.h"
+#include "Interpreter.h"
+
+#include <fstream>
 
 using namespace joedb;
 
@@ -12,11 +15,13 @@ class Journal_File_Test: public::testing::Test
   virtual void TearDown()
   {
    std::remove("test.joedb");
+   std::remove("test_copy.joedb");
   }
 };
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(Journal_File_Test, bad_file)
+/////////////////////////////////////////////////////////////////////////////
 {
  File file("this_does_not_exists", File::mode_t::read_existing);
  EXPECT_EQ(file.get_status(), joedb::File::status_t::failure);
@@ -26,6 +31,7 @@ TEST_F(Journal_File_Test, bad_file)
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(Journal_File_Test, basic_operations)
+/////////////////////////////////////////////////////////////////////////////
 {
  Database db1;
 
@@ -100,4 +106,58 @@ TEST_F(Journal_File_Test, basic_operations)
  joedb::dump(oss2, db2);
 
  EXPECT_EQ(oss1.str(), oss2.str());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(Journal_File_Test, interpreter_test)
+/////////////////////////////////////////////////////////////////////////////
+{
+ //
+ // First, write a .joedb file with the interpreter_test commands
+ //
+ {
+  File file("test.joedb", File::mode_t::create_new);
+  Journal_File journal(file);
+
+  Database db;
+  db.set_listener(journal);
+
+  Interpreter interpreter(db);
+  std::ifstream in_file("interpreter_test.joedbi");
+  ASSERT_TRUE(in_file.good());
+  std::ostringstream out;
+  interpreter.main_loop(in_file, out);
+ }
+
+ //
+ // Then, replay test.joedb into test_copy.joedb
+ //
+ {
+  File file("test.joedb", File::mode_t::read_existing);
+  Journal_File journal(file);
+
+  File file_copy("test_copy.joedb", File::mode_t::create_new);
+  Journal_File journal_copy(file_copy);
+
+  Database db;
+  db.set_listener(journal_copy);
+
+  DB_Listener db_listener(db);
+  journal.replay_log(db_listener);
+ }
+
+ //
+ // check that test.joedb and test_copy.joedb are identical
+ //
+ {
+  std::ifstream file("test.joedb");
+  std::ostringstream bytes_of_file;
+  bytes_of_file << file.rdbuf();
+
+  std::ifstream file_copy("test_copy.joedb");
+  std::ostringstream bytes_of_file_copy;
+  bytes_of_file_copy << file_copy.rdbuf();
+
+  EXPECT_EQ(bytes_of_file.str(), bytes_of_file_copy.str());
+ }
 }
