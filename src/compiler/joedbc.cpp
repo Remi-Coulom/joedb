@@ -496,6 +496,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     listener->after_drop_table(table_id);
    }
 
+   void after_rename_table(table_id_t table_id,
+                           const std::string &name) override
+   {
+    listener->after_rename_table(table_id, name);
+   }
+
    void after_add_field(table_id_t table_id,
                         const std::string &name,
                         joedb::Type type) override
@@ -508,9 +514,28 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     listener->after_drop_field(table_id, field_id);
    }
 
+   void after_rename_field(table_id_t table_id,
+                           field_id_t field_id,
+                           const std::string &name) override
+   {
+    listener->after_rename_field(table_id, field_id, name);
+   }
+
    void after_custom(const std::string &name) override
    {
     listener->after_custom(name);
+   }
+
+   void after_comment(const std::string &comment) override
+   {
+   }
+
+   void after_time_stamp(int64_t time_stamp) override
+   {
+   }
+
+   void after_checkpoint() override
+   {
    }
 )RRR";
 
