@@ -189,8 +189,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   " << tname << "_t(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   record_id_t get_id() const {return id;}\n";
-  out << "   bool operator==(" << tname << "_t " << tname << ") const {return id == " << tname << ".id;}\n";
-  out << "   bool operator<(" << tname << "_t " << tname << ") const {return id < " << tname << ".id;}\n";
+  out << "   bool operator==(" << tname << "_t x) const {return id == x.id;}\n";
+  out << "   bool operator<(" << tname << "_t x) const {return id < x.id;}\n";
   out << " };\n";
  }
 
