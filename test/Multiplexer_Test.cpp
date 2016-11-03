@@ -147,7 +147,7 @@ TEST_F(Multiplexer_Test, interpreter_test)
  }
 
  //
- // Check that they are equal identical
+ // Check that they are identical
  //
  {
   std::ifstream file("test.joedb");
