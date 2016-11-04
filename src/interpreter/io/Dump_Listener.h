@@ -78,7 +78,7 @@ namespace joedb
 
    void after_rename_field(table_id_t table_id,
                            field_id_t field_id,
-                           const std::string &name)
+                           const std::string &name) override
    {
     out << "rename_field " << get_table_name(table_id) << ' ';
     out << get_field_name(table_id, field_id) << ' ' << name << '\n';
@@ -107,13 +107,21 @@ namespace joedb
     out << "checkpoint\n";
    }
 
-   void after_insert(table_id_t table_id, record_id_t record_id)
+   void after_insert(table_id_t table_id, record_id_t record_id) override
    {
     out << "insert_into " << get_table_name(table_id) << ' ';
     out << record_id << '\n';
    }
 
-   void after_delete(table_id_t table_id, record_id_t record_id)
+   void after_insert_vector(table_id_t table_id,
+                            record_id_t record_id,
+                            record_id_t size) override
+   {
+    out << "insert_vector " << get_table_name(table_id) << ' ';
+    out << record_id << ' ' << size << '\n';
+   }
+
+   void after_delete(table_id_t table_id, record_id_t record_id) override
    {
     out << "delete_from " << get_table_name(table_id) << ' ';
     out << record_id << '\n';

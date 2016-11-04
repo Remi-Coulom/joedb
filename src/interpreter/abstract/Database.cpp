@@ -185,6 +185,30 @@ bool joedb::Database::insert_into(table_id_t table_id, record_id_t record_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+bool joedb::Database::insert_vector
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ record_id_t record_id,
+ record_id_t size
+)
+{
+ auto it = tables.find(table_id);
+
+ if (it != tables.end())
+ {
+  // TODO: optimize large vector insertion
+  for (record_id_t i = 0; i < size; i++)
+   it->second.insert_record(record_id + i);
+
+  listener->after_insert_vector(table_id, record_id, size);
+  return true;
+ }
+
+ return false;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 bool joedb::Database::delete_from(table_id_t table_id, record_id_t record_id)
 /////////////////////////////////////////////////////////////////////////////
 {

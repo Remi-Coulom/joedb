@@ -237,6 +237,23 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     }
    }
   }
+  else if (command == "insert_vector") //////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(iss, out);
+   if (table_id)
+   {
+    record_id_t record_id = 0;
+    record_id_t size = 0;
+    iss >> record_id >> size;
+    if (!record_id || !size || !db.insert_vector(table_id, record_id, size))
+     out << "Error: could not insert vector\n";
+    else
+    {
+     out << "OK: inserted vector: record_id = " << record_id;
+     out << "; size = " << size << '\n';
+    }
+   }
+  }
   else if (command == "update") /////////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);

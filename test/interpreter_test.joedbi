@@ -66,6 +66,15 @@ custom toto_le_petit_rigolo
 rename_table alltypes all_types
 rename_field all_types s str
 
+create_table float
+add_field float value float32
+insert_vector float 1 5
+update float 1 value 0.1
+update float 2 value 0.2
+update float 3 value 0.3
+update float 4 value 0.4
+update float 5 value 0.5
+
 dump
 
 quit

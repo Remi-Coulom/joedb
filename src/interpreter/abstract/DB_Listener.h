@@ -30,6 +30,13 @@ namespace joedb
     error |= !db.insert_into(table_id, record_id);
    }
 
+   void after_insert_vector(table_id_t table_id,
+                            record_id_t record_id,
+                            record_id_t size) override
+   {
+    error |= !db.insert_vector(table_id, record_id, size);
+   }
+
    void after_delete(table_id_t table_id, record_id_t record_id) override
    {
     error |= !db.delete_from(table_id, record_id);

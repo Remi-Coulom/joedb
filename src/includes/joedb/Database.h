@@ -50,6 +50,9 @@ namespace joedb
     return custom_names;
    }
    bool insert_into(table_id_t table_id, record_id_t record_id);
+   bool insert_vector(table_id_t table_id,
+                      record_id_t record_id,
+                      record_id_t size);
    bool delete_from(table_id_t table_id, record_id_t record_id);
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\

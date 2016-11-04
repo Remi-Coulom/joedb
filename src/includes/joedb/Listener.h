@@ -32,6 +32,9 @@ namespace joedb
    virtual void after_checkpoint() = 0;
 
    virtual void after_insert(table_id_t table_id, record_id_t record_id) = 0;
+   virtual void after_insert_vector(table_id_t table_id,
+                                    record_id_t record_id,
+                                    record_id_t size) = 0;
    virtual void after_delete(table_id_t table_id, record_id_t record_id) = 0;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\

@@ -28,6 +28,9 @@ namespace joedb
    void after_checkpoint() override {}
 
    void after_insert(table_id_t table_id, record_id_t record_id) override {}
+   void after_insert_vector(table_id_t table_id,
+                            record_id_t record_id,
+                            record_id_t size) override {}
    void after_delete(table_id_t table_id, record_id_t record_id) override {}
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\

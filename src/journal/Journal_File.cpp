@@ -218,6 +218,17 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    }
    break;
 
+   case operation_t::insert_vector:
+   {
+    table_id_t table_id = file.compact_read<table_id_t>();
+    record_id_t record_id = file.compact_read<record_id_t>();
+    record_id_t size = file.compact_read<record_id_t>();
+    listener.after_insert_vector(table_id, record_id, size);
+    table_of_last_operation = table_id;
+    record_of_last_operation = record_id;
+   }
+   break;
+
    case operation_t::append:
     listener.after_insert(table_of_last_operation,
                           ++record_of_last_operation);
@@ -424,6 +435,24 @@ void joedb::Journal_File::after_insert
   file.compact_write<table_id_t>(table_id);
   file.compact_write<record_id_t>(record_id);
  }
+
+ table_of_last_operation = table_id;
+ record_of_last_operation = record_id;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_insert_vector
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ record_id_t record_id,
+ record_id_t size
+)
+{
+ file.write<operation_t>(operation_t::insert_vector);
+ file.compact_write<table_id_t>(table_id);
+ file.compact_write<record_id_t>(record_id);
+ file.compact_write<record_id_t>(size);
 
  table_of_last_operation = table_id;
  record_of_last_operation = record_id;

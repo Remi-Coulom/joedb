@@ -45,6 +45,9 @@ namespace joedb
    void after_time_stamp(int64_t time_stamp) override;
    void after_checkpoint() override;
    void after_insert(table_id_t table_id, record_id_t record_id) override;
+   void after_insert_vector(table_id_t table_id,
+                            record_id_t record_id,
+                            record_id_t size) override;
    void after_delete(table_id_t table_id, record_id_t record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
@@ -92,6 +95,7 @@ namespace joedb
     rename_table  = 0x0c,
     rename_field  = 0x0d,
     checkpoint    = 0x0e,
+    insert_vector = 0x0f,
     custom        = 0x10
    };
  };
