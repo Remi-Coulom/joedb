@@ -31,3 +31,6 @@ insert_into translation 3 2 1 "Goodbye"
 insert_into translation 4 2 2 "Aurevoir"
 insert_into translation 5 3 1 "How are you?"
 insert_into translation 6 3 2 "Comment allez-vous?"
+
+create_table float
+add_field float value float32

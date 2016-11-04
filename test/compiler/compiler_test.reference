@@ -100,6 +100,7 @@ Tables:
  language
  string_id
  translation
+ float
 1 Barcelona
 2 New York
 3 Multiplexer City
@@ -109,3 +110,8 @@ v1 re-opened
 v2 opened
 v2 re-opened
 OK: v1 code does not open v2 file
+v[0] = 0
+v[1] = 0.1
+v[2] = 0.2
+v[3] = 0.3
+v[4] = 0.4

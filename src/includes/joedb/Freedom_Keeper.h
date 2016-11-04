@@ -85,13 +85,15 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push_back()
+   size_t push_back()
    {
     const size_t index = records.size();
     records.push_back({true, records[free_list].next, 1});
 
     records[records[free_list].next].previous = index;
     records[free_list].next = index;
+
+    return index;
    }
 
    //////////////////////////////////////////////////////////////////////////

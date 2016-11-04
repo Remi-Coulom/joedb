@@ -191,6 +191,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   record_id_t get_id() const {return id;}\n";
   out << "   bool operator==(" << tname << "_t x) const {return id == x.id;}\n";
   out << "   bool operator<(" << tname << "_t x) const {return id < x.id;}\n";
+  out << "   " << tname << "_t operator[](record_id_t i) const {return " << tname << "_t(id + i);}\n";
   out << " };\n";
  }
 
@@ -392,7 +393,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "   }\n";
 
  //
- // after_insert listener function
+ // after_insert
  //
  out << '\n';
  out << "   void after_insert(table_id_t table_id, record_id_t record_id) override\n";
@@ -413,6 +414,34 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "     while (" << name << "_FK.size() < record_id)\n";
    out << "      " << name << "_FK.push_back();\n";
    out << "     internal_insert_" << name << "(record_id);\n";
+   out << "    }\n";
+  }
+ }
+ out << "   }\n";
+
+ //
+ // after_insert_vector
+ //
+ out << '\n';
+ out << "   void after_insert_vector(table_id_t table_id, record_id_t record_id, record_id_t size) override\n";
+ out << "   {\n";
+ {
+  bool first = true;
+  for (auto &table: tables)
+  {
+   out << "    ";
+   if (first)
+    first = false;
+   else
+    out << "else ";
+
+   const std::string &name = table.second.get_name();
+   out << "if (table_id == " << table.first << ")\n";
+   out << "    {\n";
+   out << "     while (" << name << "_FK.size() < record_id + size - 1)\n";
+   out << "      " << name << "_FK.push_back();\n";
+   out << "     for (record_id_t i = 0; i < size; i++)\n";
+   out << "      internal_insert_" << name << "(record_id + i);\n";
    out << "    }\n";
   }
  }
@@ -574,6 +603,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "    listener->after_insert(" << table.first << ", J_result.id);\n";
   out << "    return J_result;\n";
   out << "   }\n";
+  out << '\n';
   out << "   void clear_" << tname << "_table();\n";
   out << '\n';
 
@@ -582,9 +612,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   " << tname << "_t new_vector_of_" << tname << "(size_t size)\n";
   out << "   {\n";
-  out << "    " << tname << "_t J_result = new_" << tname << "();\n";
+  out << "    size_t J_free_record = " << tname << "_FK.push_back();\n";
+  out << "    " << tname << "_t J_result(J_free_record - 1);\n";
   out << "    for (size_t i = 1; i < size; i++)\n";
-  out << "     new_" << tname << "();\n";
+  out << "     " << tname << "_FK.push_back();\n";
+  out << "    for (size_t i = 0; i < size; i++)\n";
+  out << "     internal_insert_" << tname << "(J_result.id + i);\n";
+  out << "    listener->after_insert_vector(" << table.first;
+  out << ", J_result.id, size);\n";
   out << "    return J_result;\n";
   out << "   }\n";
   out << '\n';

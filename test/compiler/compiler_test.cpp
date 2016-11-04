@@ -333,10 +333,35 @@ int schema_upgrade_test()
  return 0;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+int vector_test()
+/////////////////////////////////////////////////////////////////////////////
+{
+ const size_t n = 5;
+ testdb::float_t v;
+
+ {
+  testdb::File_Database db("test.joedb");
+
+  v = db.new_vector_of_float(n);
+
+  for (size_t i = 0; i < n; i++)
+   db.set_value(v[i], 0.1f * float(i));
+ }
+
+ {
+  testdb::File_Database db("test.joedb", true);
+
+  for (size_t i = 0; i < n; i++)
+   std::cout << "v[" << i << "] = " << db.get_value(v[i]) << '\n';
+ }
+
+ return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file_test() || multiplexer_test() || schema_upgrade_test();
+ return file_test() || multiplexer_test() || schema_upgrade_test() || vector_test();
 }
