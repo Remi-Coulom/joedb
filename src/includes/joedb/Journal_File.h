@@ -73,6 +73,7 @@ namespace joedb
    Database db_schema;
    table_id_t table_of_last_operation;
    record_id_t record_of_last_operation;
+   field_id_t field_of_last_update;
 
    Type read_type();
 
@@ -96,7 +97,8 @@ namespace joedb
     rename_field  = 0x0d,
     checkpoint    = 0x0e,
     insert_vector = 0x0f,
-    custom        = 0x10
+    custom        = 0x10,
+    update_next   = 0x12
    };
  };
 }

@@ -13,7 +13,8 @@ joedb::Journal_File::Journal_File(Generic_File &file):
  current_commit_level(0),
  state(state_t::no_error),
  table_of_last_operation(0),
- record_of_last_operation(0)
+ record_of_last_operation(0),
+ field_of_last_update(0)
 {
  if (file.get_status() != Generic_File::status_t::success)
  {
@@ -245,13 +246,20 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    case operation_t::update:
     table_of_last_operation = file.compact_read<table_id_t>();
     record_of_last_operation = file.compact_read<record_id_t>();
-   // no break
+    field_of_last_update = file.compact_read<field_id_t>();
+   goto lbl_perform_update;
 
    case operation_t::update_last:
-   {
-    field_id_t field_id = file.compact_read<field_id_t>();
+    field_of_last_update = file.compact_read<field_id_t>();
+   goto lbl_perform_update;
 
-    switch (db_schema.get_field_type(table_of_last_operation, field_id))
+   case operation_t::update_next:
+    record_of_last_operation++;
+   goto lbl_perform_update;
+
+   lbl_perform_update:
+    switch (db_schema.get_field_type(table_of_last_operation,
+                                     field_of_last_update))
     {
      case Type::type_id_t::null:
      break;
@@ -262,14 +270,13 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
       cpp_type value = file.read_method();\
       listener.after_update_##type_id(table_of_last_operation,\
                                       record_of_last_operation,\
-                                      field_id, value);\
+                                      field_of_last_update,\
+                                      value);\
      }\
      break;
      #include "TYPE_MACRO.h"
      #undef TYPE_MACRO
     }
-
-   }
    break;
 
    case operation_t::custom:
@@ -482,16 +489,25 @@ void joedb::Journal_File::after_update_##type_id(table_id_t table_id,\
      record_id == record_of_last_operation)\
  {\
   file.write<operation_t>(operation_t::update_last);\
+  file.compact_write<field_id_t>(field_id);\
+ }\
+ else if (table_id == table_of_last_operation &&\
+          record_id == record_of_last_operation + 1 &&\
+          field_id == field_of_last_update)\
+ {\
+  file.write<operation_t>(operation_t::update_next);\
+  record_of_last_operation++;\
  }\
  else\
  {\
   file.write<operation_t>(operation_t::update);\
   file.compact_write<table_id_t>(table_id);\
   file.compact_write<record_id_t>(record_id);\
+  file.compact_write<field_id_t>(field_id);\
   table_of_last_operation = table_id;\
   record_of_last_operation = record_id;\
+  field_of_last_update = field_id;\
  }\
- file.compact_write<field_id_t>(field_id);\
  file.write_method(value);\
 }
 #include "TYPE_MACRO.h"
