@@ -4,6 +4,7 @@
 #include "gtest/gtest.h"
 #include "dump.h"
 #include "Interpreter.h"
+#include "Dump_Listener.h"
 
 #include <fstream>
 
@@ -102,8 +103,11 @@ TEST_F(Journal_File_Test, basic_operations)
  std::ostringstream oss1;
  std::ostringstream oss2;
 
- joedb::dump(oss1, db1);
- joedb::dump(oss2, db2);
+ Dump_Listener listener1(oss1);
+ Dump_Listener listener2(oss2);
+
+ joedb::dump(db1, listener1);
+ joedb::dump(db2, listener2);
 
  EXPECT_EQ(oss1.str(), oss2.str());
 }

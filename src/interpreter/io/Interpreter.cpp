@@ -1,6 +1,7 @@
 #include "Interpreter.h"
 #include "Database.h"
 #include "dump.h"
+#include "Dump_Listener.h"
 #include "Listener.h"
 #include "type_io.h"
 
@@ -91,7 +92,10 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   if (command.size() == 0 || command[0] == '#') //////////////////////////////
    continue;
   else if (command == "dump") ////////////////////////////////////////////////
-   dump(out, db);
+  {
+   Dump_Listener dump_listener(out);
+   dump(db, dump_listener);
+  }
   else if (command == "quit") ////////////////////////////////////////////////
    break;
   else if (command == "create_table") ////////////////////////////////////////

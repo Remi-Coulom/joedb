@@ -1,16 +1,12 @@
 #ifndef joedb_dump_declared
 #define joedb_dump_declared
 
-#include <iosfwd>
-
-#include "Type.h"
-
 namespace joedb
 {
  class Database;
+ class Listener;
 
- void write_type(std::ostream &out, const Database &db, Type type);
- void dump(std::ostream &out, const Database &db);
+ void dump(const Database &db, Listener &listener);
 }
 
 #endif

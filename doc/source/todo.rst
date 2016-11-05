@@ -3,21 +3,26 @@ TODO
 
 Short term
 ----------
+- joedb_pack. dump(db, listener).
+- time stamp
+- custom error management
+
+- benchmark & profile: memory usage and opening of analysis file
+- measure time to produce each page on crazy sensei
+
+- index after update, not after insert (or use default value)
 - index-based sorting
-- id-based sorting
+
 - make sure identifiers can't produce collisions
+
 - Table options:
 
   - vector:
 
     - insert/delete at the back only
     - store as std::vector of struct
-    - return const std::vector<> & to user
 
   - single_row: compiled to a simple struct, with simpler getters.
-
-- Compact "vector-insertion" log entry (no new event?)
-- C wrapper (with "EXPORTED_FUNCTIONS", for emscripten)
 
 Interpreter
 -----------
@@ -25,7 +30,6 @@ Interpreter
 - readline, help
 - sql dump
 - use sql syntax
-- dump to compact new .joedb file
 
 Journal file
 ------------
@@ -44,13 +48,14 @@ On-disk storage
 
 Compiler
 --------
-- custom error management
 - modularize code generation
 - Compiler utilities:
 
   - referential integrity (use triggers)
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
+
+- C wrapper (with "EXPORTED_FUNCTIONS", for emscripten)
 
 Server
 ------

@@ -2,7 +2,6 @@
 #define joedb_Dump_Listener_declared
 
 #include "Schema_Listener.h"
-#include "dump.h"
 #include "type_io.h"
 
 #include <iostream>
@@ -37,6 +36,56 @@ namespace joedb
     return field->second.get_name();
    }
 
+   void write_type(Type type)
+   {
+    switch(type.get_type_id())
+    {
+     case Type::type_id_t::null:
+      out << "null";
+     break;
+
+     case Type::type_id_t::string:
+      out << "string";
+     break;
+
+     case Type::type_id_t::int32:
+      out << "int32";
+     break;
+
+     case Type::type_id_t::int64:
+      out << "int64";
+     break;
+
+     case Type::type_id_t::reference:
+     {
+      out << "references ";
+      table_id_t table_id = type.get_table_id();
+      const auto it = db.get_tables().find(table_id);
+      if (it != db.get_tables().end())
+       out << it->second.get_name();
+      else
+       out << "a_deleted_table";
+     }
+     break;
+
+     case Type::type_id_t::boolean:
+      out << "boolean";
+     break;
+
+     case Type::type_id_t::float32:
+      out << "float32";
+     break;
+
+     case Type::type_id_t::float64:
+      out << "float64";
+     break;
+
+     case Type::type_id_t::int8:
+      out << "int8";
+     break;
+    }
+   }
+
   public:
    Dump_Listener(std::ostream &out): Schema_Listener(db), out(out) {}
 
@@ -64,7 +113,7 @@ namespace joedb
                         Type type) override
    {
     out << "add_field " << get_table_name(table_id) << ' ' << name << ' ';
-    write_type(out, db, type);
+    write_type(type);
     out << '\n';
     Schema_Listener::after_add_field(table_id, name, type);
    }

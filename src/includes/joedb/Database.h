@@ -11,18 +11,16 @@ namespace joedb
  class Database
  {
   private:
-   table_id_t current_table_id;
+   table_id_t current_table_id = 0;
 
    std::map<table_id_t, Table> tables;
 
    Dummy_Listener dummy_listener;
-   Listener *listener;
+   Listener *listener = &dummy_listener;
 
    std::vector<std::string> custom_names;
 
   public:
-   Database(): current_table_id(0), listener(&dummy_listener) {}
-
    void set_listener(Listener &new_listener) {listener = &new_listener;}
    void clear_listener() {listener = &dummy_listener;}
 

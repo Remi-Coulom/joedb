@@ -1,91 +1,55 @@
 #include "dump.h"
 #include "Database.h"
-#include "type_io.h"
+#include "Listener.h"
 
-#include <iostream>
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::write_type(std::ostream &out, const Database &db, Type type)
-{
- switch(type.get_type_id())
- {
-  case Type::type_id_t::null:
-   out << "null";
-  break;
-
-  case Type::type_id_t::string:
-   out << "string";
-  break;
-
-  case Type::type_id_t::int32:
-   out << "int32";
-  break;
-
-  case Type::type_id_t::int64:
-   out << "int64";
-  break;
-
-  case Type::type_id_t::reference:
-  {
-   out << "references ";
-   table_id_t table_id = type.get_table_id();
-   const auto it = db.get_tables().find(table_id);
-   if (it != db.get_tables().end())
-    out << it->second.get_name();
-   else
-    out << "a_deleted_table";
-  }
-  break;
-
-  case Type::type_id_t::boolean:
-   out << "boolean";
-  break;
-
-  case Type::type_id_t::float32:
-   out << "float32";
-  break;
-
-  case Type::type_id_t::float64:
-   out << "float64";
-  break;
-
-  case Type::type_id_t::int8:
-   out << "int8";
-  break;
- }
-}
+#include <map>
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump(std::ostream &out, const Database &db)
+void joedb::dump(const Database &db, Listener &listener)
+/////////////////////////////////////////////////////////////////////////////
 {
- auto tables = db.get_tables();
-
  //
  // Dump tables
  //
- for (auto table: tables)
-  out << "create_table " << table.second.get_name() << '\n';
+ std::map<table_id_t, table_id_t> table_map;
+ {
+  table_id_t table_id = 0;
+  for (auto table: db.get_tables())
+  {
+   ++table_id;
+   listener.after_create_table(table.second.get_name());
+   table_map[table.first] = table_id;
+  }
+ }
 
  //
  // Dump fields
  //
- for (auto table: tables)
+ std::map<table_id_t, std::map<field_id_t, field_id_t>> field_maps;
  {
-  const auto &fields = table.second.get_fields();
-
-  for (const auto &field: fields)
+  table_id_t table_id = 0;
+  for (auto table: db.get_tables())
   {
-   out << "add_field " << table.second.get_name() << ' ';
-   out << field.second.get_name() << ' ';
-   write_type(out, db, field.second.get_type());
-   out << '\n';
+   ++table_id;
+   field_id_t field_id = 0;
+   for (const auto &field: table.second.get_fields())
+   {
+    ++field_id;
+    auto type = field.second.get_type();
+    if (type.get_type_id() == Type::type_id_t::reference)
+     type = Type::reference(table_map[type.get_table_id()]);
+    listener.after_add_field(table_map[table.first],
+                             field.second.get_name(),
+                             type);
+    field_maps[table.first][field.first] = field_id;
+   }
   }
  }
 
  //
  // Dump records
  //
- for (auto table: tables)
+ for (auto table: db.get_tables())
  {
   const auto &fields = table.second.get_fields();
 
@@ -94,28 +58,23 @@ void joedb::dump(std::ostream &out, const Database &db)
   for (size_t i = freedom.get_first_used(); i != 0; i = freedom.get_next(i))
   {
    record_id_t record_id = i - 1;
-   out << "insert_into " << table.second.get_name() << ' ';
-   out << record_id;
+   listener.after_insert(table_map[table.first], record_id);
+
    for (const auto &field: fields)
    {
-    out << ' ';
-
     switch(field.second.get_type().get_type_id())
     {
      case Type::type_id_t::null:
-      out << "NULL";
      break;
 
      #define TYPE_MACRO(type, return_type, type_id, R, W)\
      case Type::type_id_t::type_id:\
-      joedb::write_##type_id(out, table.second.get_##type_id(record_id,\
-                                                             field.first));\
+      listener.after_update_##type_id(table_map[table.first], record_id, field_maps[table.first][field.first], table.second.get_##type_id(record_id, field.first));\
      break;
      #include "TYPE_MACRO.h"
      #undef TYPE_MACRO
     }
    }
-   out << '\n';
   }
  }
 }
