@@ -1,0 +1,16 @@
+#!/bin/bash
+
+tmp_sql=$(mktemp /tmp/joedb_browser.XXXXXX)
+tmp_sqlite=$(mktemp /tmp/joedb_browser.XXXXXX)
+
+{
+ echo "BEGIN;"
+ joedb_logdump --sql "$1" || exit 1
+ echo "COMMIT;"
+} >"$tmp_sql"
+
+sqlite3 "$tmp_sqlite" <"$tmp_sql"
+
+sqlitebrowser "$tmp_sqlite"
+
+rm "$tmp_sqlite" "$tmp_sql"

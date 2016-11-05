@@ -31,7 +31,7 @@ In Linux, the following commands should get you ready:
 
 .. code-block:: bash
 
-    sudo apt-get install libsqlite3-dev cmake ninja-build g++ lcov unzip valgrind python-sphinx wget git-core libboost-all-dev
+    sudo apt-get install libsqlite3-dev cmake ninja-build g++ lcov unzip valgrind python-sphinx wget git-core libboost-all-dev sqlitebrowser
     git clone https://github.com/Remi-Coulom/joedb.git
     cd joedb/compcmake/
     ./get_gtest.sh
