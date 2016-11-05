@@ -1,0 +1,16 @@
+create_table vector
+add_field vector value int32
+add_field vector name string
+insert_into vector 1 123 "qsdf"
+insert_into vector 2 124 "sodig"
+insert_into vector 3 125 "dfqsidf"
+insert_into vector 4 126 "qsdd"
+insert_into vector 5 127 "ooih"
+insert_into vector 6 128 ",bbf"
+insert_into vector 7 129 "bof"
+insert_into vector 8 130 "oi"
+insert_into vector 9 131 "jlkj"
+delete_from vector 1
+delete_from vector 5
+delete_from vector 9
+dump

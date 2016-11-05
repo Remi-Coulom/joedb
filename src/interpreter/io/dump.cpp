@@ -3,6 +3,7 @@
 #include "Listener.h"
 
 #include <map>
+#include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::dump(const Database &db, Listener &listener)
@@ -52,29 +53,45 @@ void joedb::dump(const Database &db, Listener &listener)
  for (auto table: db.get_tables())
  {
   const auto &fields = table.second.get_fields();
-
   const auto &freedom = table.second.get_freedom();
 
-  for (size_t i = freedom.get_first_used(); i != 0; i = freedom.get_next(i))
+  size_t i = 0;
+
+  while (i < freedom.size())
   {
-   record_id_t record_id = i - 1;
-   listener.after_insert(table_map[table.first], record_id);
+   while (i < freedom.size() && freedom.is_free(i + 2))
+    i++;
+   size_t size = 0;
+   while (i + size < freedom.size() && !freedom.is_free(i + 2 + size))
+    size++;
 
-   for (const auto &field: fields)
+   if (size)
    {
-    switch(field.second.get_type().get_type_id())
-    {
-     case Type::type_id_t::null:
-     break;
-
-     #define TYPE_MACRO(type, return_type, type_id, R, W)\
-     case Type::type_id_t::type_id:\
-      listener.after_update_##type_id(table_map[table.first], record_id, field_maps[table.first][field.first], table.second.get_##type_id(record_id, field.first));\
-     break;
-     #include "TYPE_MACRO.h"
-     #undef TYPE_MACRO
-    }
+    listener.after_insert_vector(table_map[table.first], i + 1, size);
+    i += size;
    }
+  }
+
+  for (const auto &field: fields)
+  {
+   for (size_t i = 0; i < freedom.size(); i++)
+    if (!freedom.is_free(i + 2))
+    {
+     record_id_t record_id = i + 1;
+
+     switch(field.second.get_type().get_type_id())
+     {
+      case Type::type_id_t::null:
+      break;
+
+      #define TYPE_MACRO(type, return_type, type_id, R, W)\
+      case Type::type_id_t::type_id:\
+       listener.after_update_##type_id(table_map[table.first], record_id, field_maps[table.first][field.first], table.second.get_##type_id(record_id, field.first));\
+      break;
+      #include "TYPE_MACRO.h"
+      #undef TYPE_MACRO
+     }
+    }
   }
  }
 }
