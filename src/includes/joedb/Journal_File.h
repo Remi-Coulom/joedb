@@ -74,6 +74,7 @@ namespace joedb
    table_id_t table_of_last_operation;
    record_id_t record_of_last_operation;
    field_id_t field_of_last_update;
+   Type::type_id_t type_of_last_update;
 
    Type read_type();
 

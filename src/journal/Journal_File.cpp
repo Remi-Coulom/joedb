@@ -247,10 +247,14 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     table_of_last_operation = file.compact_read<table_id_t>();
     record_of_last_operation = file.compact_read<record_id_t>();
     field_of_last_update = file.compact_read<field_id_t>();
+    type_of_last_update =
+     db_schema.get_field_type(table_of_last_operation, field_of_last_update);
    goto lbl_perform_update;
 
    case operation_t::update_last:
     field_of_last_update = file.compact_read<field_id_t>();
+    type_of_last_update =
+     db_schema.get_field_type(table_of_last_operation, field_of_last_update);
    goto lbl_perform_update;
 
    case operation_t::update_next:
@@ -258,8 +262,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    goto lbl_perform_update;
 
    lbl_perform_update:
-    switch (db_schema.get_field_type(table_of_last_operation,
-                                     field_of_last_update))
+    switch (type_of_last_update)
     {
      case Type::type_id_t::null:
      break;

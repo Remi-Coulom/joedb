@@ -2,9 +2,6 @@
 #include "Database.h"
 #include "Listener.h"
 
-#include <map>
-#include <iostream>
-
 /////////////////////////////////////////////////////////////////////////////
 void joedb::dump(const Database &db, Listener &listener)
 /////////////////////////////////////////////////////////////////////////////
@@ -94,4 +91,78 @@ void joedb::dump(const Database &db, Listener &listener)
     }
   }
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::dump_data(const Database &db, Listener &listener)
+/////////////////////////////////////////////////////////////////////////////
+{
+ for (auto table: db.get_tables())
+ {
+  const auto &fields = table.second.get_fields();
+  const auto &freedom = table.second.get_freedom();
+
+  size_t i = 0;
+
+  while (i < freedom.size())
+  {
+   while (i < freedom.size() && freedom.is_free(i + 2))
+    i++;
+   size_t size = 0;
+   while (i + size < freedom.size() && !freedom.is_free(i + 2 + size))
+    size++;
+
+   if (size)
+   {
+    listener.after_insert_vector(table.first, i + 1, size);
+    i += size;
+   }
+  }
+
+  for (const auto &field: fields)
+  {
+   for (size_t i = 0; i < freedom.size(); i++)
+    if (!freedom.is_free(i + 2))
+    {
+     record_id_t record_id = i + 1;
+
+     switch(field.second.get_type().get_type_id())
+     {
+      case Type::type_id_t::null:
+      break;
+
+      #define TYPE_MACRO(type, return_type, type_id, R, W)\
+      case Type::type_id_t::type_id:\
+       listener.after_update_##type_id(table.first, record_id, field.first, table.second.get_##type_id(record_id, field.first));\
+      break;
+      #include "TYPE_MACRO.h"
+      #undef TYPE_MACRO
+     }
+    }
+  }
+ }
+}
+
+#include "DB_Listener.h"
+#include "Selective_Listener.h"
+#include "Multiplexer.h"
+#include "Journal_File.h"
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::pack(Journal_File &input_journal, Listener &listener)
+/////////////////////////////////////////////////////////////////////////////
+{
+ Database db;
+ DB_Listener db_listener(db);
+
+ Selective_Listener schema_writer(listener, Selective_Listener::Mode::schema);
+ Multiplexer multiplexer;
+ multiplexer.add_listener(db_listener);
+ multiplexer.add_listener(schema_writer);
+ Dummy_Listener dummy;
+ auto &multiplexer_listener = multiplexer.add_listener(dummy);
+
+ input_journal.replay_log(multiplexer_listener);
+
+ dump_data(db, listener);
 }

@@ -3,7 +3,7 @@ TODO
 
 Short term
 ----------
-- joedb_pack. dump(db, listener).
+
 - time stamp
 - custom error management
 
@@ -19,8 +19,9 @@ Short term
 
   - vector:
 
-    - insert/delete at the back only
-    - store as std::vector of struct
+    - no delete
+    - insert at the back
+    - one std::vector for each field
 
   - single_row: compiled to a simple struct, with simpler getters.
 

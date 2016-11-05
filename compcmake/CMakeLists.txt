@@ -37,7 +37,7 @@ include_directories(
  ${GOOGLE_TEST}/include
 )
 
-add_library(interpreter_objects OBJECT
+add_library(joedb SHARED
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/abstract/is_identifier.cpp
@@ -46,10 +46,6 @@ add_library(interpreter_objects OBJECT
  ../src/journal/Generic_File.cpp
  ../src/journal/Journal_File.cpp
  ../src/journal/Stream_File.cpp
-)
-
-add_library(joedb SHARED
- $<TARGET_OBJECTS:interpreter_objects>
 )
 
 add_library(io_objects OBJECT
@@ -61,15 +57,21 @@ add_library(io_objects OBJECT
 
 add_executable(joedbi
  ../src/interpreter/io/joedbi.cpp
- $<TARGET_OBJECTS:interpreter_objects>
  $<TARGET_OBJECTS:io_objects>
 )
+target_link_libraries(joedbi joedb)
 
 add_executable(joedb_logdump
  ../src/interpreter/io/joedb_logdump.cpp
- $<TARGET_OBJECTS:interpreter_objects>
  $<TARGET_OBJECTS:io_objects>
 )
+target_link_libraries(joedb_logdump joedb)
+
+add_executable(joedb_pack
+ ../src/interpreter/io/joedb_pack.cpp
+ ../src/interpreter/io/dump.cpp
+)
+target_link_libraries(joedb_pack joedb)
 
 if(EXISTS "../${GOOGLE_TEST}/include")
  add_executable(joedb_test
@@ -82,10 +84,9 @@ if(EXISTS "../${GOOGLE_TEST}/include")
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
-  $<TARGET_OBJECTS:interpreter_objects>
   $<TARGET_OBJECTS:io_objects>
  )
- target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT})
+ target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
 else()
  message("== WARNING: run ./get_gtest.sh for tests")
 endif()
@@ -94,9 +95,8 @@ if(Boost_SYSTEM_FOUND)
  add_executable(joedb_asio_server EXCLUDE_FROM_ALL
   ../src/communication/asio/joedb_asio_server.cpp
   ../src/interpreter/io/file_error_message.cpp
-  $<TARGET_OBJECTS:interpreter_objects>
  )
- target_link_libraries(joedb_asio_server ${Boost_SYSTEM_LIBRARY})
+ target_link_libraries(joedb_asio_server ${Boost_SYSTEM_LIBRARY} joedb)
 
  add_executable(joedb_asio_client EXCLUDE_FROM_ALL
   ../src/communication/asio/joedb_asio_client.cpp
@@ -128,15 +128,15 @@ endif()
 
 add_executable(joedbi_insert
  ../benchmark/joedbi_insert.cpp
- $<TARGET_OBJECTS:interpreter_objects>
 )
+target_link_libraries(joedbi_insert joedb)
 
 add_executable(joedbc
  ../src/compiler/joedbc.cpp
  ../src/compiler/Compiler_Options_io.cpp
- $<TARGET_OBJECTS:interpreter_objects>
  $<TARGET_OBJECTS:io_objects>
 )
+target_link_libraries(joedbc joedb)
 
 #############################################################################
 # Targets below require databases to be compiled
@@ -148,8 +148,8 @@ set_source_files_properties(
 add_executable(tutorial EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/tutorial_main.cpp
- $<TARGET_OBJECTS:interpreter_objects>
 )
+target_link_libraries(tutorial joedb)
 
 set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
@@ -168,14 +168,14 @@ add_executable(compiler_test EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v2.cpp
  ../test/compiler/compiler_test.cpp
- $<TARGET_OBJECTS:interpreter_objects>
 )
+target_link_libraries(compiler_test joedb)
 
 add_executable(generate_translation_header EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
- $<TARGET_OBJECTS:interpreter_objects>
 )
+target_link_libraries(generate_translation_header joedb)
 
 set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../benchmark/benchmark.cpp
@@ -184,8 +184,8 @@ set_source_files_properties(
 add_executable(joedbc_insert EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../benchmark/benchmark.cpp
  ../benchmark/joedbc_insert.cpp
- $<TARGET_OBJECTS:interpreter_objects>
 )
+target_link_libraries(joedbc_insert joedb)
 
 #############################################################################
 # Packaging
@@ -193,6 +193,7 @@ add_executable(joedbc_insert EXCLUDE_FROM_ALL
 install(TARGETS joedbc RUNTIME DESTINATION bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
+install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 
 file(GLOB all_includes ../src/includes/joedb/*.h)
