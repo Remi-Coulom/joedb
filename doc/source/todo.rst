@@ -29,8 +29,7 @@ Interpreter
 -----------
 - show command prompt
 - readline, help
-- sql dump
-- use sql syntax
+- SQL import
 
 Journal file
 ------------

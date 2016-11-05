@@ -1,7 +1,7 @@
 #include "Interpreter.h"
 #include "Database.h"
 #include "dump.h"
-#include "Dump_Listener.h"
+#include "Interpreter_Dump_Listener.h"
 #include "Listener.h"
 #include "type_io.h"
 
@@ -93,7 +93,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    continue;
   else if (command == "dump") ////////////////////////////////////////////////
   {
-   Dump_Listener dump_listener(out);
+   Interpreter_Dump_Listener dump_listener(out);
    dump(db, dump_listener);
   }
   else if (command == "quit") ////////////////////////////////////////////////
