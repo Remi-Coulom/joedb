@@ -69,6 +69,7 @@ Object-Relational Mapping (ORM)
 - http://www.codesynthesis.com/products/odb/
 - http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html
 - http://sourceforge.net/projects/litesql/
+- https://github.com/rbock/sqlpp11
 
 Active record pattern:
 
