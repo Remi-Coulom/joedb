@@ -25,6 +25,7 @@ namespace joedb
    void clear_listener() {listener = &dummy_listener;}
 
    const std::map<table_id_t, Table> &get_tables() const {return tables;}
+   size_t get_current_table_id() const {return current_table_id;}
 
    table_id_t create_table(const std::string &name);
    bool drop_table(table_id_t table_id);

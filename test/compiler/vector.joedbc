@@ -1,0 +1,2 @@
+namespace vector_test
+set_table_storage vector_test vector

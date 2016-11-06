@@ -1,0 +1,3 @@
+create_table vector_test
+add_field vector_test x float32
+add_field vector_test y float32

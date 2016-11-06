@@ -78,6 +78,33 @@ bool joedb::parse_compiler_options
 
    compiler_options.add_index(index);
   }
+  else if (command == "set_table_storage")
+  {
+   std::string table_name;
+   std::string storage_string;
+
+   iss >> table_name >> storage_string;
+
+   table_id_t table_id = db.find_table(table_name);
+   if (!table_id)
+   {
+    out << "Error: no such table: " << table_name << '\n';
+    return false;
+   }
+
+   Compiler_Options::Table_Storage storage;
+   if (storage_string == "freedom_keeper")
+    storage = Compiler_Options::Table_Storage::freedom_keeper;
+   else if (storage_string == "vector")
+    storage = Compiler_Options::Table_Storage::vector;
+   else
+   {
+    out << "Error: unknown table storage: " << storage_string << '\n';
+    return false;
+   }
+
+   compiler_options.set_table_storage(table_id, storage);
+  }
   else
   {
    out << "unknown command: " << command << '\n';

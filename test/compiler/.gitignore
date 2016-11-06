@@ -5,3 +5,5 @@ compiler_test.out
 translation.h
 schema_v?.h
 schema_v?.cpp
+vector_test.h
+vector_test.cpp

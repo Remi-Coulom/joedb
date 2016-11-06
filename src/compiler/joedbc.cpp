@@ -198,8 +198,20 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  out << "\n struct " << tname << "_data: public joedb::EmptyRecord\n {\n"; out << "  " << tname << "_data() {}\n";
-  out << "  " << tname << "_data(bool f): joedb::EmptyRecord(f) {}\n";
+  auto storage = options.get_table_options(table.first).storage;
+
+  out << "\n struct " << tname << "_data";
+
+  if (storage == Compiler_Options::Table_Storage::freedom_keeper)
+   out << ": public joedb::EmptyRecord";
+
+  out <<"\n {\n";
+
+  if (storage == Compiler_Options::Table_Storage::freedom_keeper)
+  {
+   out << "  " << tname << "_data() {}\n";
+   out << "  " << tname << "_data(bool f): joedb::EmptyRecord(f) {}\n";
+  }
 
   for (const auto &field: table.second.get_fields())
   {
@@ -252,7 +264,25 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  out << "   joedb::Freedom_Keeper<" << tname << "_data> " << tname << "_FK;\n";
+  auto storage = options.get_table_options(table.first).storage;
+
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "   joedb::Freedom_Keeper<" << tname << "_data>";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "   std::vector<" << tname << "_data>";
+   break;
+
+   default:
+    out << "   // Error. storage = " << int(storage) << '\n';
+    out << "   // table_id = " << table.first << '\n';
+   break;
+  }
+
+  out << " storage_of_" << tname << ";\n";
  }
 
  //
@@ -272,15 +302,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   out << "   void " << index.name << "_remove_index(record_id_t record_id)\n";
   out << "   {\n";
-  out << "    " << index.name << ".erase(" << tname;
-  out << "_FK.get_record(record_id + 1)." << index.name << "_iterator);\n";
+  out << "    " << index.name << ".erase(storage_of_" << tname;
+  out << ".get_record(record_id + 1)." << index.name << "_iterator);\n";
   out << "   }\n";
 
   out << "   void " << index.name << "_add_index(record_id_t record_id)\n";
   out << "   {\n";
-  out << "    " << tname << "_data &data = ";
-  out << tname << "_FK.get_record(record_id + 1);\n";
-  out << "    auto J_result = " << index.name;
+  out << "    " << tname << "_data &data = storage_of_";
+  out << tname << ".get_record(record_id + 1);\n";
+  out << "    auto result = " << index.name;
   out << ".insert\n    (\n     ";
   write_index_type(out, db, index);
   out << "::value_type\n     (\n      ";
@@ -298,13 +328,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << ",\n      " << tname << "_t(record_id)\n     )\n    );\n";
   if (index.unique)
   {
-   out << "    if (!J_result.second)\n";
+   out << "    if (!result.second)\n";
    out << "     throw std::runtime_error(\"";
    out << index.name << " unique index failure\");\n";
-   out << "    data." << index.name << "_iterator = J_result.first;\n";
+   out << "    data." << index.name << "_iterator = result.first;\n";
   }
   else
-   out << "    data." << index.name << "_iterator = J_result;\n";
+   out << "    data." << index.name << "_iterator = result;\n";
   out << "   }\n";
  }
 
@@ -315,21 +345,34 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  out << "   void internal_delete_" << tname << "(record_id_t record_id)\n";
-  out << "   {\n";
+  auto storage = options.get_table_options(table.first).storage;
 
-  for (const auto &index: options.get_indices())
-   if (index.table_id == table.first)
-    out << "    " << index.name << "_remove_index(record_id);\n";
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "   void internal_delete_" << tname << "(record_id_t record_id)\n";
+    out << "   {\n";
 
-  out << "    " << tname << "_FK.free(record_id + 1);\n";
-  out << "   }\n";
+    for (const auto &index: options.get_indices())
+     if (index.table_id == table.first)
+      out << "    " << index.name << "_remove_index(record_id);\n";
+
+    out << "    storage_of_" << tname << ".free(record_id + 1);\n";
+    out << "   }\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+   break;
+  }
+
  }
 
  out << '\n';
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
+  auto storage = options.get_table_options(table.first).storage;
+
   out << "   void internal_insert_" << tname << "(record_id_t record_id)\n";
   out << "   {\n";
 
@@ -337,7 +380,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    if (index.table_id == table.first)
     out << "    " << index.name << "_add_index(record_id);\n";
 
-  out << "    " << tname << "_FK.use(record_id + 1);\n";
+  if (storage == Compiler_Options::Table_Storage::freedom_keeper)
+   out << "    storage_of_" << tname << ".use(record_id + 1);\n";
   out << "   }\n";
  }
 
@@ -353,7 +397,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, field.second.get_type(), true);
    out << fname << "\n   )\n";
    out << "   {\n";
-   out << "    " << tname << "_FK.get_record(record_id + 1)." << fname;
+   out << "    storage_of_" << tname << "[record_id - 1]." << fname;
    out << " = " << fname << ";\n";
 
    for (const auto &index: options.get_indices())
@@ -385,9 +429,21 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    else
     out << "else ";
 
-   const std::string &name = table.second.get_name();
    out << "if (table_id == " << table.first << ")\n";
-   out << "     internal_delete_" << name << "(record_id);\n";
+
+   const std::string &name = table.second.get_name();
+   auto storage = options.get_table_options(table.first).storage;
+
+   switch(storage)
+   {
+    case Compiler_Options::Table_Storage::freedom_keeper:
+     out << "     internal_delete_" << name << "(record_id);\n";
+    break;
+
+    case Compiler_Options::Table_Storage::vector:
+     out << "     throw std::runtime_error(\"No delete allowed on vector table: " << name << "\");\n";
+    break;
+   }
   }
  }
  out << "   }\n";
@@ -411,8 +467,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    const std::string &name = table.second.get_name();
    out << "if (table_id == " << table.first << ")\n";
    out << "    {\n";
-   out << "     while (" << name << "_FK.size() < record_id)\n";
-   out << "      " << name << "_FK.push_back();\n";
+   out << "     if (storage_of_" << name << ".size() < record_id)\n";
+   out << "      storage_of_" << name << ".resize(record_id);\n";
    out << "     internal_insert_" << name << "(record_id);\n";
    out << "    }\n";
   }
@@ -438,8 +494,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    const std::string &name = table.second.get_name();
    out << "if (table_id == " << table.first << ")\n";
    out << "    {\n";
-   out << "     while (" << name << "_FK.size() < record_id + size - 1)\n";
-   out << "      " << name << "_FK.push_back();\n";
+   out << "     if (storage_of_" << name << ".size() < record_id + size - 1)\n";
+   out << "      storage_of_" << name << ".resize(record_id + size - 1);\n";
    out << "     for (record_id_t i = 0; i < size; i++)\n";
    out << "      internal_insert_" << name << "(record_id + i);\n";
    out << "    }\n";
@@ -583,25 +639,40 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   out << '\n';
   const std::string &tname = table.second.get_name();
+  auto storage = options.get_table_options(table.first).storage;
 
   //
   // Declaration of container access
   //
   out << "   " << tname << "_container get_" << tname << "_table() const;\n\n";
-  out << "    template<class Comparator>\n";
-  out << "    std::vector<" << tname << "_t> sorted_" << tname;
+  out << "   template<class Comparator>\n";
+  out << "   std::vector<" << tname << "_t> sorted_" << tname;
   out << "(Comparator comparator) const;\n\n";
 
   //
-  // new with default fields
+  // Uninitialized new
   //
   out << "   " << tname << "_t new_" << tname << "()\n";
   out << "   {\n";
-  out << "    size_t J_free_record = " << tname << "_FK.get_free_record();\n";
-  out << "    " << tname << "_t J_result(J_free_record - 1);\n\n";
-  out << "    internal_insert_" << tname << "(J_result.id);\n\n";
-  out << "    listener->after_insert(" << table.first << ", J_result.id);\n";
-  out << "    return J_result;\n";
+
+
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
+    out << "    " << tname << "_t result(free_record - 1);\n\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "    const size_t size = storage_of_" << tname << ".size();\n";
+    out << "    storage_of_" << tname << ".resize(size + 1);\n";
+    out << "    " << tname << "_t result(size + 1);\n\n";
+   break;
+  }
+
+  out << "    internal_insert_" << tname << "(result.id);\n\n";
+  out << "    listener->after_insert(" << table.first << ", result.id);\n";
+  out << "    return result;\n";
   out << "   }\n";
   out << '\n';
   out << "   void clear_" << tname << "_table();\n";
@@ -612,15 +683,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   " << tname << "_t new_vector_of_" << tname << "(size_t size)\n";
   out << "   {\n";
-  out << "    size_t J_free_record = " << tname << "_FK.push_back();\n";
-  out << "    " << tname << "_t J_result(J_free_record - 1);\n";
+  out << "    size_t free_record = storage_of_" << tname << ".push_back();\n";
+  out << "    " << tname << "_t result(free_record - 1);\n";
   out << "    for (size_t i = 1; i < size; i++)\n";
-  out << "     " << tname << "_FK.push_back();\n";
+  out << "     storage_of_" << tname << ".push_back();\n";
   out << "    for (size_t i = 0; i < size; i++)\n";
-  out << "     internal_insert_" << tname << "(J_result.id + i);\n";
+  out << "     internal_insert_" << tname << "(result.id + i);\n";
   out << "    listener->after_insert_vector(" << table.first;
-  out << ", J_result.id, size);\n";
-  out << "    return J_result;\n";
+  out << ", result.id, size);\n";
+  out << "    return result;\n";
   out << "   }\n";
   out << '\n';
 
@@ -642,41 +713,41 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
      out << ",\n    ";
 
     write_type(out, db, field.second.get_type(), true);
-    out << fname;
+    out << "field_" << fname;
    }
 
    out << '\n';
   }
   out << "   )\n";
   out << "   {\n";
-  out << "    size_t J_free_record = " << tname << "_FK.get_free_record();\n";
+  out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
 
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
 
-   out << "    " << tname << "_FK.get_record(J_free_record).";
-   out << fname << " = " << fname << ";\n";
+   out << "    storage_of_" << tname << ".get_record(free_record).";
+   out << fname << " = field_" << fname << ";\n";
   }
 
-  out << "\n    " << tname << "_t J_result(J_free_record - 1);\n";
-  out << "    internal_insert_" << tname << "(J_result.id);\n\n";
+  out << "\n    " << tname << "_t result(free_record - 1);\n";
+  out << "    internal_insert_" << tname << "(result.id);\n\n";
 
-  out << "    listener->after_insert(" << table.first << ", J_result.id);\n";
+  out << "    listener->after_insert(" << table.first << ", result.id);\n";
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
 
    out << "    listener->after_update_";
    out << types[int(field.second.get_type().get_type_id())];
-   out << '(' << table.first << ", J_result.id, " << field.first << ", ";
-   out << fname;
+   out << '(' << table.first << ", result.id, " << field.first << ", ";
+   out << "field_" << fname;
    if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
     out << ".id";
    out << ");\n";
   }
 
-  out << "    return J_result;\n";
+  out << "    return result;\n";
   out << "   }\n\n";
 
   //
@@ -705,8 +776,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "get_" << fname << "(" << tname << "_t record) const\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
-   out << "    return " << tname;
-   out << "_FK.get_record(record.id + 1)." << fname << ";\n";
+   out << "    return storage_of_" << tname;
+   out << ".get_record(record.id + 1)." << fname << ";\n";
    out << "   }\n";
 
    //
@@ -878,14 +949,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << tname << "_t(index - 1);}\n";
   out << "   };\n";
   out << '\n';
-  out << "   iterator begin() {return ++iterator(db." << tname << "_FK);}\n";
-  out << "   iterator end() {return iterator(db." << tname << "_FK);}\n";
-  out << "   bool is_empty() const {return db." << tname
-      << "_FK.is_empty();}\n";
-  out << "   size_t get_size() const {return db." << tname << "_FK.get_used_count();}\n";
+  out << "   iterator begin() {return ++iterator(db.storage_of_" << tname << ");}\n";
+  out << "   iterator end() {return iterator(db.storage_of_" << tname << ");}\n";
+  out << "   bool is_empty() const {return db.storage_of_" << tname
+      << ".is_empty();}\n";
+  out << "   size_t get_size() const {return db.storage_of_" << tname << ".get_used_count();}\n";
   out << "   static " << tname << "_t get_at(size_t i) {return "
       << tname << "_t(i);}\n";
-  out << "   bool is_valid_at(size_t i) {return db." << tname << "_FK.is_used(i + 1);}\n";
+  out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".is_used(i + 1);}\n";
   out << " };\n";
   out << '\n';
 
@@ -899,11 +970,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << " std::vector<" << tname << "_t> Database::sorted_" << tname;
   out << "(Comparator comparator) const\n";
   out << " {\n";
-  out << "  std::vector<" << tname << "_t> J_result;\n";
+  out << "  std::vector<" << tname << "_t> result;\n";
   out << "  for (auto x: get_" << tname << "_table())\n";
-  out << "   J_result.push_back(x);\n";
-  out << "  std::sort(J_result.begin(), J_result.end(), comparator);\n";
-  out << "  return J_result;\n";
+  out << "   result.push_back(x);\n";
+  out << "  std::sort(result.begin(), result.end(), comparator);\n";
+  out << "  return result;\n";
   out << " }\n";
 
   out << " inline void Database::clear_" << tname << "_table()\n";

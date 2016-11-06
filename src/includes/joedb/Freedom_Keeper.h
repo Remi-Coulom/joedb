@@ -49,6 +49,9 @@ namespace joedb
    T &get_record(size_t index) {return records[index].data;}
    const T &get_record(size_t index) const {return records[index].data;}
 
+   T &operator[](size_t index) {return records[index + 2].data;}
+   const T &operator[](size_t index) const {return records[index + 2].data;}
+
    bool is_empty() const {return used_count == 0;}
    size_t get_used_count() const {return used_count;}
    size_t size() const {return records.size() - 2;}
@@ -94,6 +97,13 @@ namespace joedb
     records[free_list].next = index;
 
     return index;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void resize(size_t new_size)
+   {
+    while(size() < new_size)
+     push_back();
    }
 
    //////////////////////////////////////////////////////////////////////////
