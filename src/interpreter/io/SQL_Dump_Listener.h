@@ -58,12 +58,14 @@ namespace joedb
     }
    }
 
+   std::string id_field_name = "joedb_key";
+
   public:
    SQL_Dump_Listener(std::ostream &out): Dump_Listener(out) {}
 
    void after_create_table(const std::string &name) override
    {
-    out << "CREATE TABLE " << name << "(id INTEGER PRIMARY KEY);\n";
+    out << "CREATE TABLE " << name << "(" << id_field_name << " INTEGER PRIMARY KEY);\n";
     Schema_Listener::after_create_table(name);
    }
 
@@ -135,7 +137,7 @@ namespace joedb
    void after_insert(table_id_t table_id, record_id_t record_id) override
    {
     out << "INSERT INTO " << get_table_name(table_id);
-    out << "(id) VALUES(" << record_id << ");\n";
+    out << "(" << id_field_name << ") VALUES(" << record_id << ");\n";
    }
 
    void after_insert_vector(table_id_t table_id,
@@ -149,7 +151,7 @@ namespace joedb
    void after_delete(table_id_t table_id, record_id_t record_id) override
    {
     out << "DELETE FROM " << get_table_name(table_id);
-    out << " WHERE id = " << record_id << ";\n";
+    out << " WHERE " << id_field_name << " = " << record_id << ";\n";
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -161,7 +163,7 @@ namespace joedb
     out << "UPDATE " << get_table_name(table_id);\
     out << " SET " << get_field_name(table_id, field_id) << " = ";\
     joedb::write_##type_id(out, value);\
-    out << " WHERE id = " << record_id << ";\n";\
+    out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
    }
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
