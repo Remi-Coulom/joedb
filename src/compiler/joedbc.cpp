@@ -655,7 +655,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   " << tname << "_t new_" << tname << "()\n";
   out << "   {\n";
 
-
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
@@ -683,10 +682,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   " << tname << "_t new_vector_of_" << tname << "(size_t size)\n";
   out << "   {\n";
-  out << "    size_t free_record = storage_of_" << tname << ".push_back();\n";
-  out << "    " << tname << "_t result(free_record - 1);\n";
-  out << "    for (size_t i = 1; i < size; i++)\n";
-  out << "     storage_of_" << tname << ".push_back();\n";
+  out << "    " << tname << "_t result(storage_of_" << tname;
+  out << ".size() + 1);\n";
+  out << "    storage_of_" << tname << ".resize(storage_of_";
+  out << tname << ".size() + size);\n";
   out << "    for (size_t i = 0; i < size; i++)\n";
   out << "     internal_insert_" << tname << "(result.id + i);\n";
   out << "    listener->after_insert_vector(" << table.first;
@@ -720,17 +719,30 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
   out << "   )\n";
   out << "   {\n";
-  out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
+
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "    size_t free_record = storage_of_" << tname;
+    out << ".get_free_record() - 2;\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "    size_t free_record = storage_of_" << tname << ".size();\n";
+    out << "    storage_of_" << tname;
+    out << ".resize(storage_of_" << tname << ".size() + 1);\n";
+   break;
+  }
 
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
 
-   out << "    storage_of_" << tname << ".get_record(free_record).";
+   out << "    storage_of_" << tname << "[free_record].";
    out << fname << " = field_" << fname << ";\n";
   }
 
-  out << "\n    " << tname << "_t result(free_record - 1);\n";
+  out << "\n    " << tname << "_t result(free_record + 1);\n";
   out << "    internal_insert_" << tname << "(result.id);\n\n";
 
   out << "    listener->after_insert(" << table.first << ", result.id);\n";
@@ -753,11 +765,19 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // Delete
   //
-  out << "   void delete_" << tname << "(" << tname << "_t record)\n";
-  out << "   {\n";
-  out << "    internal_delete_" << tname << "(record.id);\n";
-  out << "    listener->after_delete(" << table.first << ", record.id);\n";
-  out << "   }\n";
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "   void delete_" << tname << "(" << tname << "_t record)\n";
+    out << "   {\n";
+    out << "    internal_delete_" << tname << "(record.id);\n";
+    out << "    listener->after_delete(" << table.first << ", record.id);\n";
+    out << "   }\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+   break;
+  }
 
   //
   // Loop over fields
@@ -777,7 +797,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
    out << "    return storage_of_" << tname;
-   out << ".get_record(record.id + 1)." << fname << ";\n";
+   out << "[record.id - 1]." << fname << ";\n";
    out << "   }\n";
 
    //

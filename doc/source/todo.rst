@@ -4,26 +4,12 @@ TODO
 Short term
 ----------
 
+- index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
+- make sure identifiers can't produce collisions
 - time stamp
 - custom error management
-
-- benchmark & profile: memory usage and opening of analysis file
-- measure time to produce each page on crazy sensei
-
 - index after update, not after insert (or use default value)
-- index-based sorting
-
-- make sure identifiers can't produce collisions
-
-- Table options:
-
-  - vector:
-
-    - no delete
-    - insert at the back
-    - one std::vector for each field
-
-  - single_row: compiled to a simple struct, with simpler getters.
+- index-based sorting: just return a const reference to the map
 
 Interpreter
 -----------
@@ -49,6 +35,10 @@ On-disk storage
 Compiler
 --------
 - modularize code generation
+- Table options:
+
+  - single_row: compiled to a simple struct, with simpler getters.
+
 - Compiler utilities:
 
   - referential integrity (use triggers)
