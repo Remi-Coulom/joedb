@@ -49,6 +49,14 @@ namespace joedb
                                return_type value) override\
    {\
     error |= !db.update_##type_id(table_id, record_id, field_id, value);\
+   }\
+   void after_update_vector_##type_id(table_id_t table_id,\
+                                      record_id_t record_id,\
+                                      field_id_t field_id,\
+                                      record_id_t size,\
+                                      const type *value) override\
+   {\
+    error |= !db.update_vector_##type_id(table_id, record_id, field_id, size, value);\
    }
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO

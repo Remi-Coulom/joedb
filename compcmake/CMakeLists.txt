@@ -4,13 +4,13 @@ project(joedb)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
- set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -pedantic -Wconversion -fno-rtti -pthread")
+ set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -pedantic -Wconversion -pthread")
  set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  message("== clang")
- set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -fno-rtti")
+ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 endif()
 
 if(WIN32)

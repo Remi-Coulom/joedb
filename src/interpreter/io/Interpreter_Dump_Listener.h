@@ -159,6 +159,23 @@ namespace joedb
     out << get_field_name(table_id, field_id) << ' ';\
     joedb::write_##type_id(out, value);\
     out << '\n';\
+   }\
+   void after_update_vector_##type_id(table_id_t table_id,\
+                                      record_id_t record_id,\
+                                      field_id_t field_id,\
+                                      record_id_t size,\
+                                      const type *value) override\
+   {\
+    out << "update_vector " << get_table_name(table_id) << ' ';\
+    out << record_id << ' ';\
+    out << get_field_name(table_id, field_id) << ' ';\
+    out << size;\
+    for (record_id_t i = 0; i < size; i++)\
+    {\
+     out << ' ';\
+     joedb::write_##type_id(out, value[i]);\
+    }\
+    out << '\n';\
    }
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
