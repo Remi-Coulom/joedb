@@ -54,7 +54,12 @@ namespace joedb
    void after_update_##type_id(table_id_t table_id,\
                                record_id_t record_id,\
                                field_id_t field_id,\
-                               return_type value) override;
+                               return_type value) override;\
+   void after_update_vector_##type_id(table_id_t table_id,\
+                                      record_id_t record_id,\
+                                      field_id_t field_id,\
+                                      record_id_t size,\
+                                      const type *value) override;
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
 
@@ -99,6 +104,7 @@ namespace joedb
     checkpoint    = 0x0e,
     insert_vector = 0x0f,
     custom        = 0x10,
+    update_vector = 0x11,
     update_next   = 0x12
    };
  };

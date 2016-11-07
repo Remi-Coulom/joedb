@@ -282,6 +282,40 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     }
    break;
 
+   case operation_t::update_vector:
+   {
+    table_of_last_operation = file.compact_read<table_id_t>();
+    record_of_last_operation = file.compact_read<record_id_t>();
+    field_of_last_update = file.compact_read<field_id_t>();
+    record_id_t size = file.compact_read<record_id_t>();
+
+    type_of_last_update =
+     db_schema.get_field_type(table_of_last_operation, field_of_last_update);
+
+    switch (type_of_last_update)
+    {
+     case Type::type_id_t::null:
+     break;
+
+     #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+     case Type::type_id_t::type_id:\
+     {\
+      std::vector<cpp_type> buffer(size);\
+      for (size_t i = 0; i < size; i++)\
+       buffer[i] = file.read_method();\
+      listener.after_update_vector_##type_id(table_of_last_operation,\
+                                             record_of_last_operation,\
+                                             field_of_last_update,\
+                                             size,\
+                                             &buffer[0]);\
+     }\
+     break;
+     #include "TYPE_MACRO.h"
+     #undef TYPE_MACRO
+    }
+   }
+   break;
+
    case operation_t::custom:
    {
     std::string name = file.read_string();
@@ -483,10 +517,13 @@ void joedb::Journal_File::after_delete
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
-void joedb::Journal_File::after_update_##type_id(table_id_t table_id,\
-                                                record_id_t record_id,\
-                                                field_id_t field_id,\
-                                                return_type value)\
+void joedb::Journal_File::after_update_##type_id\
+(\
+ table_id_t table_id,\
+ record_id_t record_id,\
+ field_id_t field_id,\
+ return_type value\
+)\
 {\
  if (table_id == table_of_last_operation &&\
      record_id == record_of_last_operation)\
@@ -513,6 +550,26 @@ void joedb::Journal_File::after_update_##type_id(table_id_t table_id,\
   field_of_last_update = field_id;\
  }\
  file.write_method(value);\
+}\
+void joedb::Journal_File::after_update_vector_##type_id\
+(\
+ table_id_t table_id,\
+ record_id_t record_id,\
+ field_id_t field_id,\
+ record_id_t size,\
+ const type *value\
+)\
+{\
+ file.write<operation_t>(operation_t::update_vector);\
+ file.compact_write<table_id_t>(table_id);\
+ file.compact_write<record_id_t>(record_id);\
+ file.compact_write<field_id_t>(field_id);\
+ file.compact_write<record_id_t>(size);\
+ table_of_last_operation = table_id;\
+ record_of_last_operation = record_id;\
+ field_of_last_update = field_id;\
+ for (record_id_t i = 0; i < size; i++)\
+  file.write_method(value[i]);\
 }
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
