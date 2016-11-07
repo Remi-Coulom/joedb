@@ -804,15 +804,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   void set_" << fname;
    out << "(" << tname << "_t record, ";
    write_type(out, db, field.second.get_type(), true);
-   out << fname << ")\n";
+   out << "field_" << fname << ")\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
    out << "    internal_update_" << tname << '_' << fname << "(record.id, ";
-   out << fname << ");\n";
+   out << "field_" << fname << ");\n";
    out << "    listener->after_update_";
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
-   out << fname;
+   out << "field_" << fname;
    if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
     out << ".id";
    out << ");\n";

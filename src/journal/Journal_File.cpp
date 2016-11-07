@@ -493,6 +493,7 @@ void joedb::Journal_File::after_update_##type_id(table_id_t table_id,\
  {\
   file.write<operation_t>(operation_t::update_last);\
   file.compact_write<field_id_t>(field_id);\
+  field_of_last_update = field_id;\
  }\
  else if (table_id == table_of_last_operation &&\
           record_id == record_of_last_operation + 1 &&\

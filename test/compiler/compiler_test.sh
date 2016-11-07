@@ -10,6 +10,7 @@ rm -rvf *.joedb
 "$build_dir"/joedbc test.joedbi test.joedbc
 "$build_dir"/joedbc schema_v1.joedbi schema_v1.joedbc
 "$build_dir"/joedbc schema_v2.joedbi schema_v2.joedbc
+"$build_dir"/joedbc vector_test.joedbi vector_test.joedbc
 
 
 cd "$build_dir"

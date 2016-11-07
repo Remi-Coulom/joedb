@@ -1,6 +1,8 @@
 #include "testdb.h"
 #include "schema_v1.h"
 #include "schema_v2.h"
+#include "vector_test.h"
+
 #include "File.h"
 #include "Journal_File.h"
 #include "Multiplexer.h"
@@ -334,26 +336,55 @@ int schema_upgrade_test()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int vector_test()
+int do_vector_test()
 /////////////////////////////////////////////////////////////////////////////
 {
  const size_t n = 5;
- testdb::float_t v;
 
+ //
+ // Freedom_keeper version
+ //
  {
-  testdb::File_Database db("test.joedb");
+  testdb::float_t v;
 
-  v = db.new_vector_of_float(n);
+  {
+   testdb::File_Database db("test.joedb");
+   v = db.new_vector_of_float(n);
+   for (size_t i = 0; i < n; i++)
+    db.set_value(v[i], 0.1f * float(i));
+  }
 
-  for (size_t i = 0; i < n; i++)
-   db.set_value(v[i], 0.1f * float(i));
+  {
+   testdb::File_Database db("test.joedb", true);
+   for (size_t i = 0; i < n; i++)
+    std::cout << "v[" << i << "] = " << db.get_value(v[i]) << '\n';
+  }
  }
 
+ //
+ // Vector storage
+ //
  {
-  testdb::File_Database db("test.joedb", true);
+  vector_test::point_t v;
 
-  for (size_t i = 0; i < n; i++)
-   std::cout << "v[" << i << "] = " << db.get_value(v[i]) << '\n';
+  {
+   vector_test::File_Database db("vector_test.joedb");
+   v = db.new_vector_of_point(n);
+   for (size_t i = 0; i < n; i++)
+   {
+    db.set_x(v[i], 0.1f * float(i));
+    db.set_y(v[i], 1.234f);
+   }
+  }
+
+  {
+   vector_test::File_Database db("vector_test.joedb", true);
+   for (size_t i = 0; i < n; i++)
+   {
+    std::cout << "v[" << i << "] = {" << db.get_x(v[i]);
+    std::cout << ", " << db.get_y(v[i]) << "}\n";
+   }
+  }
  }
 
  return 0;
@@ -363,5 +394,5 @@ int vector_test()
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file_test() || multiplexer_test() || schema_upgrade_test() || vector_test();
+ return file_test() || multiplexer_test() || schema_upgrade_test() || do_vector_test();
 }
