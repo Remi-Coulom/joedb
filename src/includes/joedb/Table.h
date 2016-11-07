@@ -46,11 +46,7 @@ namespace joedb
    return_type get_##type_id(record_id_t rid, field_id_t fid) const\
    {\
     return fields.find(fid)->second.get_##type_id(rid);\
-   }
-   #include "TYPE_MACRO.h"
-   #undef TYPE_MACRO
-
-   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   }\
    bool update_##type_id(record_id_t record_id,\
                          field_id_t field_id,\
                          return_type value)\
@@ -59,6 +55,17 @@ namespace joedb
     if (it == fields.end() || !freedom.is_used(record_id + 1))\
      return false;\
     it->second.set_##type_id(record_id, value);\
+    return true;\
+   }\
+   bool update_vector_##type_id(record_id_t record_id,\
+                                field_id_t field_id,\
+                                record_id_t size,\
+                                const type *value)\
+   {\
+    auto it = fields.find(field_id);\
+    if (it == fields.end() || !freedom.is_used(record_id + 1))\
+     return false;\
+    it->second.set_vector_##type_id(record_id, size, value);\
     return true;\
    }
    #include "TYPE_MACRO.h"

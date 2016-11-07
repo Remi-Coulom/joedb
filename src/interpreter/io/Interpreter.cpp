@@ -281,6 +281,47 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     }
    }
   }
+  else if (command == "update_vector") //////////////////////////////////////
+  {
+   const table_id_t table_id = parse_table(iss, out);
+   if (table_id)
+   {
+    record_id_t record_id = 0;
+    iss >> record_id;
+
+    std::string field_name;
+    iss >> field_name;
+    field_id_t field_id = db.find_field(table_id, field_name);
+
+    if (!field_id)
+     out << "Error: no such field: " << field_name << '\n';
+    else
+    {
+     record_id_t size = 0;
+     iss >> size;
+
+     switch(db.get_field_type(table_id, field_id))
+     {
+      case Type::type_id_t::null:
+      break;
+
+      #define TYPE_MACRO(type, return_type, type_id, R, W)\
+      case Type::type_id_t::type_id:\
+      {\
+       std::vector<type> v(size);\
+       for (size_t i = 0; i < size; i++)\
+        v[i] = joedb::read_##type_id(iss);\
+       db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
+      }\
+      break;
+      #include "TYPE_MACRO.h"
+      #undef TYPE_MACRO
+     }
+
+     out << "OK: updated " << size << " rows\n";
+    }
+   }
+  }
   else if (command == "delete_from") ////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);

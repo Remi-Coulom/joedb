@@ -115,17 +115,9 @@ void joedb::dump_data(const Database &db, Listener &listener)
    if (size)
    {
     listener.after_insert_vector(table.first, i + 1, size);
-    i += size;
-   }
-  }
 
-  for (const auto &field: fields)
-  {
-   for (size_t i = 0; i < freedom.size(); i++)
-    if (!freedom.is_free(i + 2))
+    for (const auto &field: fields)
     {
-     record_id_t record_id = i + 1;
-
      switch(field.second.get_type().get_type_id())
      {
       case Type::type_id_t::null:
@@ -133,12 +125,15 @@ void joedb::dump_data(const Database &db, Listener &listener)
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::type_id_t::type_id:\
-       listener.after_update_##type_id(table.first, record_id, field.first, table.second.get_##type_id(record_id, field.first));\
+       listener.after_update_vector_##type_id(table.first, i + 1, field.first, size, field.second.get_vector_##type_id() + i);\
       break;
       #include "TYPE_MACRO.h"
       #undef TYPE_MACRO
      }
     }
+
+    i += size;
+   }
   }
  }
 }

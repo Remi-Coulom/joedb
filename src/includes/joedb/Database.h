@@ -58,7 +58,12 @@ namespace joedb
    bool update_##type_id(table_id_t table_id,\
                          record_id_t record_id,\
                          field_id_t field_id,\
-                         return_type value);
+                         return_type value);\
+   bool update_vector_##type_id(table_id_t table_id,\
+                                record_id_t record_id,\
+                                field_id_t field_id,\
+                                record_id_t size,\
+                                const type *value);
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
  };
