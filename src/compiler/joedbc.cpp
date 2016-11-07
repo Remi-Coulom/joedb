@@ -198,7 +198,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  auto storage = options.get_table_options(table.first).storage;
+  const auto storage = options.get_table_options(table.first).storage;
 
   out << "\n struct " << tname << "_data";
 
@@ -264,7 +264,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  auto storage = options.get_table_options(table.first).storage;
+  const auto storage = options.get_table_options(table.first).storage;
 
   switch(storage)
   {
@@ -345,26 +345,21 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  auto storage = options.get_table_options(table.first).storage;
+  const auto storage = options.get_table_options(table.first).storage;
+  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
-  switch(storage)
+  if (has_delete)
   {
-   case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "   void internal_delete_" << tname << "(record_id_t record_id)\n";
-    out << "   {\n";
+   out << "   void internal_delete_" << tname << "(record_id_t record_id)\n";
+   out << "   {\n";
 
-    for (const auto &index: options.get_indices())
-     if (index.table_id == table.first)
-      out << "    " << index.name << "_remove_index(record_id);\n";
+   for (const auto &index: options.get_indices())
+    if (index.table_id == table.first)
+     out << "    " << index.name << "_remove_index(record_id);\n";
 
-    out << "    storage_of_" << tname << ".free(record_id + 1);\n";
-    out << "   }\n";
-   break;
-
-   case Compiler_Options::Table_Storage::vector:
-   break;
+   out << "    storage_of_" << tname << ".free(record_id + 1);\n";
+   out << "   }\n";
   }
-
  }
 
  out << '\n';
@@ -432,7 +427,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "if (table_id == " << table.first << ")\n";
 
    const std::string &name = table.second.get_name();
-   auto storage = options.get_table_options(table.first).storage;
+   const auto storage = options.get_table_options(table.first).storage;
 
    switch(storage)
    {
@@ -639,7 +634,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   out << '\n';
   const std::string &tname = table.second.get_name();
-  auto storage = options.get_table_options(table.first).storage;
+  const auto storage = options.get_table_options(table.first).storage;
+  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
   //
   // Declaration of container access
@@ -648,6 +644,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   template<class Comparator>\n";
   out << "   std::vector<" << tname << "_t> sorted_" << tname;
   out << "(Comparator comparator) const;\n\n";
+
+  //
+  // Erase all elements of the table
+  //
+  if (has_delete)
+  {
+   out << "   void clear_" << tname << "_table();\n";
+   out << '\n';
+  }
 
   //
   // Uninitialized new
@@ -673,8 +678,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "    listener->after_insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
-  out << '\n';
-  out << "   void clear_" << tname << "_table();\n";
   out << '\n';
 
   //
@@ -765,18 +768,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // Delete
   //
-  switch(storage)
+  if (has_delete)
   {
-   case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "   void delete_" << tname << "(" << tname << "_t record)\n";
-    out << "   {\n";
-    out << "    internal_delete_" << tname << "(record.id);\n";
-    out << "    listener->after_delete(" << table.first << ", record.id);\n";
-    out << "   }\n";
-   break;
-
-   case Compiler_Options::Table_Storage::vector:
-   break;
+   out << "   void delete_" << tname << "(" << tname << "_t record)\n";
+   out << "   {\n";
+   out << "    internal_delete_" << tname << "(record.id);\n";
+   out << "    listener->after_delete(" << table.first << ", record.id);\n";
+   out << "   }\n";
   }
 
   //
@@ -942,6 +940,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
+  const auto storage = options.get_table_options(table.first).storage;
+  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
+
   out << " class " << tname << "_container\n";
   out << " {\n";
   out << "  friend class Database;\n";
@@ -955,28 +956,51 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << tname << "_t>\n";
   out << "   {\n";
   out << "    friend class " << tname << "_container;\n";
-
   out << "    private:\n";
-  out << "     const joedb::Freedom_Keeper<" << tname << "_data> &fk;\n";
-  out << "     size_t index;\n";
-  out << "     iterator(const joedb::Freedom_Keeper<" << tname << "_data> &fk): fk(fk), index(0) {}\n";
-  out << '\n';
-  out << "    public:\n";
-  out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
-  out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
 
-  out << "     " << tname << "_t operator*() {return ";
-  out << tname << "_t(index - 1);}\n";
-  out << "   };\n";
-  out << '\n';
-  out << "   iterator begin() {return ++iterator(db.storage_of_" << tname << ");}\n";
-  out << "   iterator end() {return iterator(db.storage_of_" << tname << ");}\n";
-  out << "   bool is_empty() const {return db.storage_of_" << tname
-      << ".is_empty();}\n";
-  out << "   size_t get_size() const {return db.storage_of_" << tname << ".get_used_count();}\n";
-  out << "   static " << tname << "_t get_at(size_t i) {return "
-      << tname << "_t(i);}\n";
-  out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".is_used(i + 1);}\n";
+
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "     const joedb::Freedom_Keeper<" << tname << "_data> &fk;\n";
+    out << "     size_t index;\n";
+    out << "     iterator(const joedb::Freedom_Keeper<" << tname << "_data> &fk): fk(fk), index(0) {}\n";
+    out << "    public:\n";
+    out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
+    out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
+    out << "     " << tname << "_t operator*() {return ";
+    out << tname << "_t(index - 1);}\n";
+    out << "   };\n";
+    out << '\n';
+    out << "   iterator begin() {return ++iterator(db.storage_of_" << tname << ");}\n";
+    out << "   iterator end() {return iterator(db.storage_of_" << tname << ");}\n";
+    out << "   bool is_empty() const {return db.storage_of_" << tname
+        << ".is_empty();}\n";
+    out << "   size_t get_size() const {return db.storage_of_" << tname << ".get_used_count();}\n";
+    out << "   static " << tname << "_t get_at(size_t i) {return "
+        << tname << "_t(i);}\n";
+    out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".is_used(i + 1);}\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "     size_t index;\n";
+    out << "     iterator(size_t index): index(index) {}\n";
+    out << "    public:\n";
+    out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
+    out << "     iterator &operator++() {index++; return *this;}\n";
+    out << "     " << tname << "_t operator*() {return " << tname << "_t(index + 1);}\n";
+    out << "   };\n";
+    out << '\n';
+    out << "   iterator begin() {return iterator(0);}\n";
+    out << "   iterator end() {return iterator(db.storage_of_" << tname << ".size());}\n";
+    out << "   bool is_empty() const {return db.storage_of_" << tname << ".size() == 0;}\n";
+    out << "   size_t get_size() const {return db.storage_of_" << tname << ".size();}\n";
+    out << "   static " << tname << "_t get_at(size_t i) {return " << tname << "_t(i);}\n";
+    out << "   bool is_valid_at(size_t i) {return i > 0 && i <= db.storage_of_" << tname << ".size();}\n";
+   break;
+  }
+
+
   out << " };\n";
   out << '\n';
 
@@ -997,12 +1021,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "  return result;\n";
   out << " }\n";
 
-  out << " inline void Database::clear_" << tname << "_table()\n";
-  out << " {\n";
-  out << "  while (!get_" << tname << "_table().is_empty())\n";
-  out << "   delete_" << tname << "(*get_" << tname << "_table().begin());\n";
-  out << " }\n";
-  out << '\n';
+  if (has_delete)
+  {
+   out << " inline void Database::clear_" << tname << "_table()\n";
+   out << " {\n";
+   out << "  while (!get_" << tname << "_table().is_empty())\n";
+   out << "   delete_" << tname << "(*get_" << tname << "_table().begin());\n";
+   out << " }\n";
+   out << '\n';
+  }
  }
 
  //
