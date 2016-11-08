@@ -4,12 +4,15 @@ TODO
 Short term
 ----------
 
-- index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
+- test vector stuff more
+- vector error: must insert right at the back, don't make holes
 - make sure identifiers can't produce collisions
+- index after first update (on last field of index), not after insert
+- better sql syntax for strings
+- index-based sorting: just return a const reference to the map
 - time stamp
 - custom error management
-- index after update, not after insert (or use default value)
-- index-based sorting: just return a const reference to the map
+- write checkpoint log entries
 
 Interpreter
 -----------
@@ -34,6 +37,7 @@ On-disk storage
 
 Compiler
 --------
+- store each field as a vector (probably not so important)
 - modularize code generation
 - Table options:
 
@@ -56,6 +60,7 @@ Server
 
 Other ideas
 -----------
+- index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
 - vim syntax and completer with YouCompleteMe
 - GUI editor similar to the icga database editor (fastcgi, interpreter)
 - rapidly undo-able history

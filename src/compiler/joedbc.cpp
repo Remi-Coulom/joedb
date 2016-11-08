@@ -130,11 +130,18 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #undef TYPE_MACRO
  };
 
-
  char const * const cpp_types[] =
  {
   0,
 #define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
+#include "TYPE_MACRO.h"
+#undef TYPE_MACRO
+ };
+
+ char const * const storage_types[] =
+ {
+  0,
+#define TYPE_MACRO(storage, b, c, d, e) EXPAND_AND_STRINGIFY(storage),
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
  };
@@ -545,6 +552,70 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
         const table_id_t table_id = field.second.get_type().get_table_id();
         out << tables.find(table_id)->second.get_name();
         out << "_t(value)";
+       }
+       out << ");\n";
+       out << "      return;\n";
+       out << "     }\n";
+      }
+
+     out << "     return;\n";
+     out << "    }\n";
+    }
+   }
+
+   out << "   }\n";
+  }
+ }
+
+ //
+ // after_update_vector
+ //
+ {
+  for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
+  {
+   out << '\n';
+   out << "   void after_update_vector_" << types[type_id] << '\n';
+   out << "   (\n";
+   out << "    table_id_t table_id,\n";
+   out << "    record_id_t record_id,\n";
+   out << "    field_id_t field_id,\n";
+   out << "    record_id_t size,\n";
+   out << "    const " << storage_types[type_id] << " *value\n";
+   out << "   )\n";
+   out << "   override\n";
+   out << "   {\n";
+
+   for (auto &table: tables)
+   {
+    bool has_typed_field = false;
+
+    for (auto &field: table.second.get_fields())
+     if (int(field.second.get_type().get_type_id()) == type_id)
+     {
+      has_typed_field = true;
+      break;
+     }
+
+    if (has_typed_field)
+    {
+     out << "    if (table_id == " << table.first << ")\n";
+     out << "    {\n";
+
+     for (auto &field: table.second.get_fields())
+      if (int(field.second.get_type().get_type_id()) == type_id)
+      {
+       out << "     if (field_id == " << field.first << ")\n";
+       out << "     {\n";
+       out << "      for (record_id_t i = 0; i < size; i++)\n";
+       out << "       internal_update_" << table.second.get_name();
+       out << '_' << field.second.get_name() << "(record_id + i, ";
+       if (field.second.get_type().get_type_id() != Type::type_id_t::reference)
+        out << "value[i]";
+       else
+       {
+        const table_id_t table_id = field.second.get_type().get_table_id();
+        out << tables.find(table_id)->second.get_name();
+        out << "_t(value[i])";
        }
        out << ");\n";
        out << "      return;\n";
