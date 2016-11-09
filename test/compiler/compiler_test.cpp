@@ -221,13 +221,22 @@ int file_test()
   std::cout << db.get_name(x.second) << '\n';
 
  //
- // Reverse alphabetical order of cities
+ // Inserting a vector with a unique index
  //
- std::cout << "Reverse order of cities:\n";
- for (auto x = db.get_index_of_city_by_name().rbegin();
-      x != db.get_index_of_city_by_name().rend();
-      ++x)
-  std::cout << db.get_name(x->second) << '\n';
+ {
+  auto v = db.new_vector_of_city(2);
+  db.set_name(v[0], "Washington");
+  db.set_name(v[1], "Beijing");
+
+  std::cout << "Reverse order of cities:\n";
+  for (auto x = db.get_index_of_city_by_name().rbegin();
+       x != db.get_index_of_city_by_name().rend();
+       ++x)
+   std::cout << db.get_name(x->second) << '\n';
+
+  db.delete_city(v[0]);
+  db.delete_city(v[1]);
+ }
 
  return 0;
 }
