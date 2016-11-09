@@ -176,7 +176,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second.get_name();
-  out << " class " << tname << "_container;\n";
+  out << " class container_of_" << tname << ";\n";
  }
 
  for (auto &table: tables)
@@ -188,7 +188,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   for (auto &friend_table: tables)
    if (friend_table.first != table.first)
     out << "  friend class id_of_" << friend_table.second.get_name() << ";\n";
-  out << "  friend class "  << tname << "_container;\n";
+  out << "  friend class container_of_"  << tname << ";\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
   out << "\n  public:\n";
@@ -249,7 +249,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   out << "  friend class id_of_"  << table.second.get_name() << ";\n";
-  out << "  friend class "  << table.second.get_name() << "_container;\n";
+  out << "  friend class container_of_"  << table.second.get_name() << ";\n";
  }
 
  for (auto &index: options.get_indices())
@@ -721,7 +721,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // Declaration of container access
   //
-  out << "   " << tname << "_container get_" << tname << "_table() const;\n\n";
+  out << "   container_of_" << tname << " get_" << tname << "_table() const;\n\n";
   out << "   template<class Comparator>\n";
   out << "   std::vector<id_of_" << tname << "> sorted_" << tname;
   out << "(Comparator comparator) const;\n\n";
@@ -1006,19 +1006,19 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   const auto storage = options.get_table_options(table.first).storage;
   const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
-  out << " class " << tname << "_container\n";
+  out << " class container_of_" << tname << "\n";
   out << " {\n";
   out << "  friend class Database;\n";
   out << '\n';
   out << "  private:\n";
   out << "   const Database &db;\n";
-  out << "   " << tname << "_container(const Database &db): db(db) {}\n";
+  out << "   container_of_" << tname << "(const Database &db): db(db) {}\n";
   out << '\n';
   out << "  public:\n";
   out << "   class iterator: public std::iterator<std::forward_iterator_tag,";
   out << " id_of_" << tname << ">\n";
   out << "   {\n";
-  out << "    friend class " << tname << "_container;\n";
+  out << "    friend class container_of_" << tname << ";\n";
   out << "    private:\n";
 
 
@@ -1067,9 +1067,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << " };\n";
   out << '\n';
 
-  out << " inline " << tname << "_container Database::get_" << tname << "_table() const\n";
+  out << " inline container_of_" << tname << " Database::get_" << tname << "_table() const\n";
   out << " {\n";
-  out << "  return " << tname << "_container(*this);\n";
+  out << "  return container_of_" << tname << "(*this);\n";
   out << " }\n";
   out << '\n';
 
