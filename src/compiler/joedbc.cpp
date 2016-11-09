@@ -207,7 +207,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   const std::string &tname = table.second.get_name();
   const auto storage = options.get_table_options(table.first).storage;
 
-  out << "\n struct " << tname << "_data";
+  out << "\n struct data_of_" << tname;
 
   if (storage == Compiler_Options::Table_Storage::freedom_keeper)
    out << ": public joedb::EmptyRecord";
@@ -216,8 +216,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   if (storage == Compiler_Options::Table_Storage::freedom_keeper)
   {
-   out << "  " << tname << "_data() {}\n";
-   out << "  " << tname << "_data(bool f): joedb::EmptyRecord(f) {}\n";
+   out << "  data_of_" << tname << "() {}\n";
+   out << "  data_of_" << tname << "(bool f): joedb::EmptyRecord(f) {}\n";
   }
 
   for (const auto &field: table.second.get_fields())
@@ -276,11 +276,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "   joedb::Freedom_Keeper<" << tname << "_data>";
+    out << "   joedb::Freedom_Keeper<data_of_" << tname << ">";
    break;
 
    case Compiler_Options::Table_Storage::vector:
-    out << "   std::vector<" << tname << "_data>";
+    out << "   std::vector<data_of_" << tname << ">";
    break;
 
    default:
@@ -320,7 +320,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   out << "   void " << index.name << "_add_index(record_id_t record_id)\n";
   out << "   {\n";
-  out << "    " << tname << "_data &data = storage_of_";
+  out << "    " << "data_of_" << tname << " &data = storage_of_";
   out << tname << "[record_id - 1];\n";
   out << "    auto result = " << index.name;
   out << ".insert\n    (\n     ";
@@ -386,7 +386,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
    {
-    out << "    " << tname << "_data &data = storage_of_";
+    out << "    data_of_" << tname << " &data = storage_of_";
     out << tname << "[record_id - 1];\n";
     out << "    data." << index.name << "_iterator = ";
     out << index.name << ".end();\n";
@@ -1025,9 +1025,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "     const joedb::Freedom_Keeper<" << tname << "_data> &fk;\n";
+    out << "     const joedb::Freedom_Keeper<data_of_" << tname << "> &fk;\n";
     out << "     size_t index;\n";
-    out << "     iterator(const joedb::Freedom_Keeper<" << tname << "_data> &fk): fk(fk), index(0) {}\n";
+    out << "     iterator(const joedb::Freedom_Keeper<data_of_" << tname << "> &fk): fk(fk), index(0) {}\n";
     out << "    public:\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
     out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
