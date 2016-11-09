@@ -420,5 +420,8 @@ int do_vector_test()
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file_test() || multiplexer_test() || schema_upgrade_test() || do_vector_test();
+ return file_test() ||
+        multiplexer_test() ||
+        schema_upgrade_test() ||
+        do_vector_test();
 }

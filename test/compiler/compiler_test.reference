@@ -116,6 +116,7 @@ Tables:
  string_id
  translation
  float
+ delete
 Multiplexer City
 v1 opened
 v1 re-opened

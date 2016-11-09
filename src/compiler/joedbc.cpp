@@ -233,7 +233,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "  ";
     write_index_type(out, db, index);
     out << "::iterator ";
-    out << index.name << "_iterator;\n";
+    out << "iterator_over_" << index.name << ";\n";
    }
 
   out << " };\n\n";
@@ -241,7 +241,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (auto &index: options.get_indices())
   if (!index.unique)
-   out << " class " << index.name << "_range;\n";
+   out << " class range_of_" << index.name << ";\n";
  out << '\n';
 
  out << " class Database: public joedb::Listener\n {\n";
@@ -254,7 +254,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (auto &index: options.get_indices())
   if (!index.unique)
-   out << "  friend class " << index.name << "_range;\n";
+   out << "  friend class range_of_" << index.name << ";\n";
 
  out << R"RRR(
   protected:
@@ -305,16 +305,16 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   out << "   ";
   write_index_type(out, db, index);
-  out << ' ' << index.name << ";\n";
+  out << " index_of_" << index.name << ";\n";
 
   out << "   void " << index.name << "_remove_index(record_id_t record_id)\n";
   out << "   {\n";
   out << "    auto &iterator = storage_of_" << tname;
-  out << "[record_id - 1]." << index.name << "_iterator;\n";
-  out << "    if (iterator != " << index.name << ".end())\n";
+  out << "[record_id - 1].iterator_over_" << index.name << ";\n";
+  out << "    if (iterator != index_of_" << index.name << ".end())\n";
   out << "    {\n";
-  out << "     " << index.name << ".erase(iterator);\n";
-  out << "     iterator = " << index.name << ".end();\n";
+  out << "     index_of_" << index.name << ".erase(iterator);\n";
+  out << "     iterator = index_of_" << index.name << ".end();\n";
   out << "    }\n";
   out << "   }\n";
 
@@ -322,7 +322,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   {\n";
   out << "    " << "data_of_" << tname << " &data = storage_of_";
   out << tname << "[record_id - 1];\n";
-  out << "    auto result = " << index.name;
+  out << "    auto result = index_of_" << index.name;
   out << ".insert\n    (\n     ";
   write_index_type(out, db, index);
   out << "::value_type\n     (\n      ";
@@ -343,10 +343,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "    if (!result.second)\n";
    out << "     throw std::runtime_error(\"";
    out << index.name << " unique index failure\");\n";
-   out << "    data." << index.name << "_iterator = result.first;\n";
+   out << "    data.iterator_over_" << index.name << " = result.first;\n";
   }
   else
-   out << "    data." << index.name << "_iterator = result;\n";
+   out << "    data.iterator_over_" << index.name << " = result;\n";
   out << "   }\n";
  }
 
@@ -388,8 +388,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     out << "    data_of_" << tname << " &data = storage_of_";
     out << tname << "[record_id - 1];\n";
-    out << "    data." << index.name << "_iterator = ";
-    out << index.name << ".end();\n";
+    out << "    data.iterator_over_" << index.name << " = ";
+    out << "index_of_" << index.name << ".end();\n";
    }
 
   if (storage == Compiler_Options::Table_Storage::freedom_keeper)
@@ -879,7 +879,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   write_index_type(out, db, index);
   out << " &get_index_of_" << index.name << "()\n";
   out << "   {\n";
-  out << "    return " << index.name << ";\n";
+  out << "    return index_of_" << index.name << ";\n";
   out << "   }\n";
  }
 
@@ -899,11 +899,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
      out << ", ";
     const Field &field = table.get_fields().find(index.field_ids[i])->second;
     write_type(out, db, field.get_type(), true);
-    out << field.get_name();
+    out << "field_value_of_" << field.get_name();
    }
    out << ") const\n";
    out << "   {\n";
-   out << "    auto i = " << index.name << ".find(";
+   out << "    auto i = index_of_" << index.name << ".find(";
    write_tuple_type(out, db, index);
    out << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
@@ -911,10 +911,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     if (i > 0)
      out << ", ";
     const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    out << field.get_name();
+    out << "field_value_of_" << field.get_name();
    }
    out << "));\n";
-   out << "    if (i == " << index.name << ".end())\n";
+   out << "    if (i == index_of_" << index.name << ".end())\n";
    out << "     return id_of_" << tname << "();\n";
    out << "    else\n";
    out << "     return i->second;\n";
@@ -923,14 +923,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   else
   {
    const Table &table = db.get_tables().find(index.table_id)->second;
-   out << "   " << index.name << "_range find_" << index.name << '(';
+   out << "   range_of_" << index.name << " find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     if (i > 0)
      out << ", ";
     const Field &field = table.get_fields().find(index.field_ids[i])->second;
     write_type(out, db, field.get_type(), true);
-    out << field.get_name();
+    out << "field_value_of_" << field.get_name();
    }
    out << ") const;\n";
   }
@@ -1103,7 +1103,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    const Table &table = db.get_tables().find(index.table_id)->second;
 
-   out << " class " << index.name << "_range\n";
+   out << " class range_of_" << index.name << "\n";
    out << " {\n";
    out << "  friend class Database;\n";
    out << "  private:\n";
@@ -1112,7 +1112,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "::const_iterator, ";
    write_index_type(out, db, index);
    out << "::const_iterator> range;\n";
-   out << "   " << index.name << "_range(const Database &db";
+   out << "   range_of_" << index.name << "(const Database &db";
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     out << ", ";
@@ -1123,7 +1123,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
    out << ")\n";
    out << "   {\n";
-   out << "    range = db." << index.name << ".equal_range(";
+   out << "    range = db.index_of_" << index.name << ".equal_range(";
    write_tuple_type(out, db, index);
    out << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
@@ -1139,7 +1139,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   class iterator: public std::iterator<std::forward_iterator_tag, ";
    out << "id_of_" << table.get_name() << ">\n";
    out << "   {\n";
-   out << "    friend class " << index.name << "_range;\n";
+   out << "    friend class range_of_" << index.name << ";\n";
    out << "    private:\n";
    out << "     ";
    write_index_type(out, db, index);
@@ -1160,23 +1160,23 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   iterator end() {return range.second;}\n";
    out << " };\n";
 
-   out << "   inline " << index.name << "_range Database::find_" << index.name << '(';
+   out << "   inline range_of_" << index.name << " Database::find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     if (i > 0)
      out << ", ";
     const Field &field = table.get_fields().find(index.field_ids[i])->second;
     write_type(out, db, field.get_type(), true);
-    out << field.get_name();
+    out << "field_value_of_" << field.get_name();
    }
    out << ") const\n";
    out << "   {\n";
-   out << "    return " << index.name << "_range(*this";
+   out << "    return range_of_" << index.name << "(*this";
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     out << ", ";
     const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    out << field.get_name();
+    out << "field_value_of_" << field.get_name();
    }
    out << ");\n";
    out << "   }\n";
