@@ -34,3 +34,7 @@ insert_into translation 6 3 2 "Comment allez-vous?"
 
 create_table float
 add_field float value float32
+
+create_table delete
+add_field delete for int32
+add_field delete while int32
