@@ -50,9 +50,9 @@ const std::string &get_translation
  record_id_t language_id
 )
 {
- const testdb::string_id_t string_id(string_id_id);
- const testdb::language_t language(language_id);
- const testdb::language_t english(translation::language::en);
+ const testdb::id_of_string_id string_id(string_id_id);
+ const testdb::id_of_language language(language_id);
+ const testdb::id_of_language english(translation::language::en);
 
  auto translation = db.find_translation_by_ids(string_id, language);
 
@@ -108,8 +108,8 @@ int file_test()
  db.new_city("Paris");
  db.new_city("Tokyo");
  db.new_person("Toto", New_York);
- db.new_person("Évariste", testdb::city_t());
- db.new_person("Catherine", testdb::city_t());
+ db.new_person("Évariste", testdb::id_of_city());
+ db.new_person("Catherine", testdb::id_of_city());
  dump(db);
 
  //
@@ -169,7 +169,7 @@ int file_test()
            (
             db.get_person_table().begin(),
             db.get_person_table().end(),
-            [&](testdb::person_t person)
+            [&](testdb::id_of_person person)
             {
              return db.get_name(person) == "Catherine";
             }
@@ -205,9 +205,9 @@ int file_test()
  // Sorting
  //
  std::cout << "Sorting with explicit sort:\n";
- db.new_person("Zoé", testdb::city_t());
- db.new_person("Albert", testdb::city_t());
- auto by_name = [&](testdb::person_t p_1, testdb::person_t p_2)
+ db.new_person("Zoé", testdb::id_of_city());
+ db.new_person("Albert", testdb::id_of_city());
+ auto by_name = [&](testdb::id_of_person p_1, testdb::id_of_person p_2)
                 {
                  return db.get_name(p_1) < db.get_name(p_2);
                 };
@@ -371,7 +371,7 @@ int do_vector_test()
  // Freedom_keeper version
  //
  {
-  testdb::float_t v;
+  testdb::id_of_float v;
 
   {
    testdb::File_Database db("test.joedb");
@@ -391,7 +391,7 @@ int do_vector_test()
  // Vector storage
  //
  {
-  vector_test::point_t v;
+  vector_test::id_of_point v;
 
   {
    vector_test::File_Database db("vector_test.joedb");

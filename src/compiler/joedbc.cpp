@@ -49,7 +49,7 @@ void write_type
   case Type::type_id_t::reference:
   {
    const table_id_t referred = type.get_table_id();
-   out << db.get_tables().find(referred)->second.get_name() << "_t ";
+   out << "id_of_" << db.get_tables().find(referred)->second.get_name() << ' ';
   }
   break;
 
@@ -112,7 +112,7 @@ void write_index_type
  write_tuple_type(out, db, index);
 
  const Table &table = db.get_tables().find(index.table_id)->second;
- out << ", " << table.get_name() << "_t>";
+ out << ", id_of_" << table.get_name() << ">";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -183,22 +183,22 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   const std::string &tname = table.second.get_name();
   out << '\n';
-  out << " class " << tname << "_t\n {\n";
+  out << " class id_of_" << tname << "\n {\n";
   out << "  friend class Database;\n";
   for (auto &friend_table: tables)
    if (friend_table.first != table.first)
-    out << "  friend class " << friend_table.second.get_name() << "_t;\n";
+    out << "  friend class id_of_" << friend_table.second.get_name() << ";\n";
   out << "  friend class "  << tname << "_container;\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
   out << "\n  public:\n";
-  out << "   explicit " << tname << "_t(record_id_t id): id(id) {}\n";
-  out << "   " << tname << "_t(): id(0) {}\n";
+  out << "   explicit id_of_" << tname << "(record_id_t id): id(id) {}\n";
+  out << "   id_of_" << tname << "(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   record_id_t get_id() const {return id;}\n";
-  out << "   bool operator==(" << tname << "_t x) const {return id == x.id;}\n";
-  out << "   bool operator<(" << tname << "_t x) const {return id < x.id;}\n";
-  out << "   " << tname << "_t operator[](record_id_t i) const {return " << tname << "_t(id + i);}\n";
+  out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
+  out << "   bool operator<(id_of_" << tname << " x) const {return id < x.id;}\n";
+  out << "   id_of_" << tname << " operator[](record_id_t i) const {return id_of_" << tname << "(id + i);}\n";
   out << " };\n";
  }
 
@@ -248,7 +248,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (auto &table: tables)
  {
-  out << "  friend class "  << table.second.get_name() << "_t;\n";
+  out << "  friend class id_of_"  << table.second.get_name() << ";\n";
   out << "  friend class "  << table.second.get_name() << "_container;\n";
  }
 
@@ -337,7 +337,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "data." << field.get_name();
   }
   out << ')';
-  out << ",\n      " << tname << "_t(record_id)\n     )\n    );\n";
+  out << ",\n      id_of_" << tname << "(record_id)\n     )\n    );\n";
   if (index.unique)
   {
    out << "    if (!result.second)\n";
@@ -560,8 +560,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
        else
        {
         const table_id_t table_id = field.second.get_type().get_table_id();
-        out << tables.find(table_id)->second.get_name();
-        out << "_t(value)";
+        out << "id_of_" << tables.find(table_id)->second.get_name();
+        out << "(value)";
        }
        out << ");\n";
        out << "      return;\n";
@@ -624,8 +624,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
        else
        {
         const table_id_t table_id = field.second.get_type().get_table_id();
-        out << tables.find(table_id)->second.get_name();
-        out << "_t(value[i])";
+        out << "id_of_" << tables.find(table_id)->second.get_name();
+        out << "(value[i])";
        }
        out << ");\n";
        out << "      return;\n";
@@ -723,7 +723,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   " << tname << "_container get_" << tname << "_table() const;\n\n";
   out << "   template<class Comparator>\n";
-  out << "   std::vector<" << tname << "_t> sorted_" << tname;
+  out << "   std::vector<id_of_" << tname << "> sorted_" << tname;
   out << "(Comparator comparator) const;\n\n";
 
   //
@@ -738,20 +738,20 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // Uninitialized new
   //
-  out << "   " << tname << "_t new_" << tname << "()\n";
+  out << "   id_of_" << tname << " new_" << tname << "()\n";
   out << "   {\n";
 
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
     out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
-    out << "    " << tname << "_t result(free_record - 1);\n\n";
+    out << "    id_of_" << tname << " result(free_record - 1);\n\n";
    break;
 
    case Compiler_Options::Table_Storage::vector:
     out << "    const size_t size = storage_of_" << tname << ".size();\n";
     out << "    storage_of_" << tname << ".resize(size + 1);\n";
-    out << "    " << tname << "_t result(size + 1);\n\n";
+    out << "    id_of_" << tname << " result(size + 1);\n\n";
    break;
   }
 
@@ -764,9 +764,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // new uninitialized vector
   //
-  out << "   " << tname << "_t new_vector_of_" << tname << "(size_t size)\n";
+  out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
   out << "   {\n";
-  out << "    " << tname << "_t result(storage_of_" << tname;
+  out << "    id_of_" << tname << " result(storage_of_" << tname;
   out << ".size() + 1);\n";
   out << "    storage_of_" << tname << ".resize(storage_of_";
   out << tname << ".size() + size);\n";
@@ -781,7 +781,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // new with all fields
   //
-  out << "   " << tname << "_t new_" << tname << '\n';
+  out << "   id_of_" << tname << " new_" << tname << '\n';
   out << "   (\n    ";
   {
    bool first = true;
@@ -819,7 +819,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   if (has_delete)
   {
-   out << "   void delete_" << tname << "(" << tname << "_t record)\n";
+   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
    out << "   {\n";
    out << "    internal_delete_" << tname << "(record.id);\n";
    out << "    listener->after_delete(" << table.first << ", record.id);\n";
@@ -840,7 +840,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    //
    out << "   ";
    write_type(out, db, field.second.get_type(), true);
-   out << "get_" << fname << "(" << tname << "_t record) const\n";
+   out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
    out << "    return storage_of_" << tname;
@@ -851,7 +851,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    // Setter
    //
    out << "   void set_" << fname;
-   out << "(" << tname << "_t record, ";
+   out << "(id_of_" << tname << " record, ";
    write_type(out, db, field.second.get_type(), true);
    out << "field_" << fname << ")\n";
    out << "   {\n";
@@ -892,7 +892,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    const Table &table = db.get_tables().find(index.table_id)->second;
    const std::string &tname = table.get_name();
    out << '\n';
-   out << "   " << tname << "_t find_" << index.name << '(';
+   out << "   id_of_" << tname << " find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     if (i > 0)
@@ -915,7 +915,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
    out << "));\n";
    out << "    if (i == " << index.name << ".end())\n";
-   out << "     return " << tname << "_t();\n";
+   out << "     return id_of_" << tname << "();\n";
    out << "    else\n";
    out << "     return i->second;\n";
    out << "   }\n";
@@ -1015,8 +1015,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   " << tname << "_container(const Database &db): db(db) {}\n";
   out << '\n';
   out << "  public:\n";
-  out << "   class iterator: public std::iterator<std::forward_iterator_tag, ";
-  out << tname << "_t>\n";
+  out << "   class iterator: public std::iterator<std::forward_iterator_tag,";
+  out << " id_of_" << tname << ">\n";
   out << "   {\n";
   out << "    friend class " << tname << "_container;\n";
   out << "    private:\n";
@@ -1031,8 +1031,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "    public:\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
     out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
-    out << "     " << tname << "_t operator*() {return ";
-    out << tname << "_t(index - 1);}\n";
+    out << "     id_of_" << tname << " operator*() {return id_of_";
+    out << tname << "(index - 1);}\n";
     out << "   };\n";
     out << '\n';
     out << "   iterator begin() {return ++iterator(db.storage_of_" << tname << ");}\n";
@@ -1040,8 +1040,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "   bool is_empty() const {return db.storage_of_" << tname
         << ".is_empty();}\n";
     out << "   size_t get_size() const {return db.storage_of_" << tname << ".get_used_count();}\n";
-    out << "   static " << tname << "_t get_at(size_t i) {return "
-        << tname << "_t(i);}\n";
+    out << "   static id_of_" << tname << " get_at(size_t i) {return id_of_"
+        << tname << "(i);}\n";
     out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".is_used(i + 1);}\n";
    break;
 
@@ -1051,14 +1051,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "    public:\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
     out << "     iterator &operator++() {index++; return *this;}\n";
-    out << "     " << tname << "_t operator*() {return " << tname << "_t(index + 1);}\n";
+    out << "     id_of_" << tname << " operator*() {return id_of_" << tname << "(index + 1);}\n";
     out << "   };\n";
     out << '\n';
     out << "   iterator begin() {return iterator(0);}\n";
     out << "   iterator end() {return iterator(db.storage_of_" << tname << ".size());}\n";
     out << "   bool is_empty() const {return db.storage_of_" << tname << ".size() == 0;}\n";
     out << "   size_t get_size() const {return db.storage_of_" << tname << ".size();}\n";
-    out << "   static " << tname << "_t get_at(size_t i) {return " << tname << "_t(i);}\n";
+    out << "   static id_of_" << tname << " get_at(size_t i) {return id_of_" << tname << "(i);}\n";
     out << "   bool is_valid_at(size_t i) {return i > 0 && i <= db.storage_of_" << tname << ".size();}\n";
    break;
   }
@@ -1074,10 +1074,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << '\n';
 
   out << " template<class Comparator>\n";
-  out << " std::vector<" << tname << "_t> Database::sorted_" << tname;
+  out << " std::vector<id_of_" << tname << "> Database::sorted_" << tname;
   out << "(Comparator comparator) const\n";
   out << " {\n";
-  out << "  std::vector<" << tname << "_t> result;\n";
+  out << "  std::vector<id_of_" << tname << "> result;\n";
   out << "  for (auto x: get_" << tname << "_table())\n";
   out << "   result.push_back(x);\n";
   out << "  std::sort(result.begin(), result.end(), comparator);\n";
@@ -1137,7 +1137,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   }\n";
    out << "  public:\n";
    out << "   class iterator: public std::iterator<std::forward_iterator_tag, ";
-   out << table.get_name() << "_t>\n";
+   out << "id_of_" << table.get_name() << ">\n";
    out << "   {\n";
    out << "    friend class " << index.name << "_range;\n";
    out << "    private:\n";
@@ -1153,8 +1153,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "      return map_iterator != i.map_iterator;\n";
    out << "     }\n";
    out << "     iterator &operator++() {map_iterator++; return *this;}\n";
-   out << "     " << table.get_name();
-   out << "_t operator*() const {return map_iterator->second;}\n";
+   out << "     id_of_" << table.get_name();
+   out << " operator*() const {return map_iterator->second;}\n";
    out << "   };\n";
    out << "   iterator begin() {return range.first;}\n";
    out << "   iterator end() {return range.second;}\n";
