@@ -310,7 +310,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   void " << index.name << "_remove_index(record_id_t record_id)\n";
   out << "   {\n";
   out << "    auto &iterator = storage_of_" << tname;
-  out << ".get_record(record_id + 1)." << index.name << "_iterator;\n";
+  out << "[record_id - 1]." << index.name << "_iterator;\n";
   out << "    if (iterator != " << index.name << ".end())\n";
   out << "    {\n";
   out << "     " << index.name << ".erase(iterator);\n";
@@ -321,7 +321,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   void " << index.name << "_add_index(record_id_t record_id)\n";
   out << "   {\n";
   out << "    " << tname << "_data &data = storage_of_";
-  out << tname << ".get_record(record_id + 1);\n";
+  out << tname << "[record_id - 1];\n";
   out << "    auto result = " << index.name;
   out << ".insert\n    (\n     ";
   write_index_type(out, db, index);
@@ -387,7 +387,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    if (index.table_id == table.first)
    {
     out << "    " << tname << "_data &data = storage_of_";
-    out << tname << ".get_record(record_id + 1);\n";
+    out << tname << "[record_id - 1];\n";
     out << "    data." << index.name << "_iterator = ";
     out << index.name << ".end();\n";
    }

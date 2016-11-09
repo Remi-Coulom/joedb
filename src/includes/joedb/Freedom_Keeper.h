@@ -46,9 +46,6 @@ namespace joedb
     records[free_list].previous = free_list;
    }
 
-   T &get_record(size_t index) {return records[index].data;}
-   const T &get_record(size_t index) const {return records[index].data;}
-
    T &operator[](size_t index) {return records[index + 2].data;}
    const T &operator[](size_t index) const {return records[index + 2].data;}
 
