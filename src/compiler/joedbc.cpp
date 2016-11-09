@@ -309,8 +309,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   out << "   void " << index.name << "_remove_index(record_id_t record_id)\n";
   out << "   {\n";
-  out << "    " << index.name << ".erase(storage_of_" << tname;
-  out << ".get_record(record_id + 1)." << index.name << "_iterator);\n";
+  out << "    auto &iterator = storage_of_" << tname;
+  out << ".get_record(record_id + 1)." << index.name << "_iterator;\n";
+  out << "    if (iterator != " << index.name << ".end())\n";
+  out << "    {\n";
+  out << "     " << index.name << ".erase(iterator);\n";
+  out << "     iterator = " << index.name << ".end();\n";
+  out << "    }\n";
   out << "   }\n";
 
   out << "   void " << index.name << "_add_index(record_id_t record_id)\n";
@@ -380,7 +385,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
-    out << "    " << index.name << "_add_index(record_id);\n";
+   {
+    out << "    " << tname << "_data &data = storage_of_";
+    out << tname << ".get_record(record_id + 1);\n";
+    out << "    data." << index.name << "_iterator = ";
+    out << index.name << ".end();\n";
+   }
 
   if (storage == Compiler_Options::Table_Storage::freedom_keeper)
    out << "    storage_of_" << tname << ".use(record_id + 1);\n";
@@ -793,44 +803,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
   out << "   )\n";
   out << "   {\n";
-
-  switch(storage)
-  {
-   case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "    size_t free_record = storage_of_" << tname;
-    out << ".get_free_record() - 2;\n";
-   break;
-
-   case Compiler_Options::Table_Storage::vector:
-    out << "    size_t free_record = storage_of_" << tname << ".size();\n";
-    out << "    storage_of_" << tname;
-    out << ".resize(storage_of_" << tname << ".size() + 1);\n";
-   break;
-  }
+  out << "    auto result = new_" << tname << "();\n";
 
   for (const auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
-
-   out << "    storage_of_" << tname << "[free_record].";
-   out << fname << " = field_" << fname << ";\n";
-  }
-
-  out << "\n    " << tname << "_t result(free_record + 1);\n";
-  out << "    internal_insert_" << tname << "(result.id);\n\n";
-
-  out << "    listener->after_insert(" << table.first << ", result.id);\n";
-  for (const auto &field: table.second.get_fields())
-  {
-   const std::string &fname = field.second.get_name();
-
-   out << "    listener->after_update_";
-   out << types[int(field.second.get_type().get_type_id())];
-   out << '(' << table.first << ", result.id, " << field.first << ", ";
-   out << "field_" << fname;
-   if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
-    out << ".id";
-   out << ");\n";
+   out << "    set_" << fname << "(result, field_" << fname << ");\n";
   }
 
   out << "    return result;\n";

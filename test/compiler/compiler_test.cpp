@@ -115,14 +115,15 @@ int file_test()
  //
  // Test unique index constraint
  //
- std::cout << "Trying to insert a duplicate Paris: ...\n";
+ std::cout << "Trying to update into a duplicate Paris: ...\n";
  try
  {
-  db.new_city("Paris");
+  db.set_name(New_York, "Paris");
  }
  catch(std::runtime_error e)
  {
   std::cout << e.what() << '\n';
+  db.set_name(New_York, "New York");
  }
  dump(db);
 
@@ -273,15 +274,14 @@ int multiplexer_test()
  for (auto table: interpreted_db.get_tables())
   std::cout << ' ' << table.second.get_name() << '\n';
 
- compiled_db.new_city("Multiplexer City");
+ auto MC = compiled_db.new_city("Multiplexer City");
 
  table_id_t city_id = interpreted_db.find_table("city");
  const joedb::Table &city_table = interpreted_db.get_tables().find(city_id)->second;
  field_id_t name_id = city_table.find_field("name");
  const joedb::Field &name_field = city_table.get_fields().find(name_id)->second;
 
- for (size_t i = 1; i <= compiled_db.get_city_table().get_size(); i++)
-  std::cout << i << ' ' << name_field.get_string(record_id_t(i)) << '\n';
+ std::cout << name_field.get_string(MC.get_id()) << '\n';
 
  return 0;
 }

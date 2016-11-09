@@ -34,7 +34,7 @@ Dump
   2: New York
   1: Barcelona
 
-Trying to insert a duplicate Paris: ...
+Trying to update into a duplicate Paris: ...
 city_by_name unique index failure
 
 Dump
@@ -102,8 +102,10 @@ Toto
 Zoé
 Évariste
 Reverse order of cities:
+Washington
 Tokyo
 New York
+Beijing
 Barcelona
 
 Multiplexer test...
@@ -114,10 +116,7 @@ Tables:
  string_id
  translation
  float
-1 Barcelona
-2 New York
-3 Multiplexer City
-4 Tokyo
+Multiplexer City
 v1 opened
 v1 re-opened
 v2 opened

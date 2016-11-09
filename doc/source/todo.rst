@@ -7,7 +7,6 @@ Short term
 - test vector stuff more
 - vector error: must insert right at the back, don't make holes
 - make sure identifiers can't produce collisions
-- index after first update (on last field of index), not after insert
 - better sql syntax for strings
 - time stamp
 - custom error management
