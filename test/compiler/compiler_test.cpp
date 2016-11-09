@@ -203,6 +203,7 @@ int file_test()
  //
  // Sorting
  //
+ std::cout << "Sorting with explicit sort:\n";
  db.new_person("Zoé", testdb::city_t());
  db.new_person("Albert", testdb::city_t());
  auto by_name = [&](testdb::person_t p_1, testdb::person_t p_2)
@@ -211,6 +212,22 @@ int file_test()
                 };
  for (auto person: db.sorted_person(by_name))
   std::cout << db.get_name(person) << '\n';
+
+ //
+ // Sorting with index
+ //
+ std::cout << "Sorting with index:\n";
+ for (auto &x: db.get_index_of_person_by_name())
+  std::cout << db.get_name(x.second) << '\n';
+
+ //
+ // Reverse alphabetical order of cities
+ //
+ std::cout << "Reverse order of cities:\n";
+ for (auto x = db.get_index_of_city_by_name().rbegin();
+      x != db.get_index_of_city_by_name().rend();
+      ++x)
+  std::cout << db.get_name(x->second) << '\n';
 
  return 0;
 }

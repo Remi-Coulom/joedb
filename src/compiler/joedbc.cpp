@@ -892,6 +892,20 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
+ // get_index_of_X
+ //
+ for (const auto &index: options.get_indices())
+ {
+  out << '\n';
+  out << "   const ";
+  write_index_type(out, db, index);
+  out << " &get_index_of_" << index.name << "()\n";
+  out << "   {\n";
+  out << "    return " << index.name << ";\n";
+  out << "   }\n";
+ }
+
+ //
  // find_index
  //
  for (const auto &index: options.get_indices())

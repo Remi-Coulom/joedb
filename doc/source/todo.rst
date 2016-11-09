@@ -9,7 +9,6 @@ Short term
 - make sure identifiers can't produce collisions
 - index after first update (on last field of index), not after insert
 - better sql syntax for strings
-- index-based sorting: just return a const reference to the map
 - time stamp
 - custom error management
 - write checkpoint log entries

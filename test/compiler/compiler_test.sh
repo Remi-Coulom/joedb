@@ -26,7 +26,7 @@ cd -
 #
 # Check differences with reference output
 #
-if diff compiler_test.out compiler_test.reference; then
+if diff compiler_test.reference compiler_test.out; then
  echo "Everything is OK";
 else
  echo "Error: difference detected with reference output";

@@ -85,6 +85,7 @@ Finding all Totos:
 Found Catherine!
 Found Catherine!
 Comment allez-vous?
+Sorting with explicit sort:
 Albert
 Catherine
 Toto
@@ -92,6 +93,18 @@ Toto
 Toto
 Zoé
 Évariste
+Sorting with index:
+Albert
+Catherine
+Toto
+Toto
+Toto
+Zoé
+Évariste
+Reverse order of cities:
+Tokyo
+New York
+Barcelona
 
 Multiplexer test...
 Tables:
