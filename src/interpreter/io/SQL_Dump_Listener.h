@@ -165,8 +165,21 @@ namespace joedb
     joedb::write_##type_id(out, value);\
     out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
    }
+   #define TYPE_MACRO_NO_STRING
    #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO_NO_STRING
    #undef TYPE_MACRO
+
+   void after_update_string(table_id_t table_id,
+                            record_id_t record_id,
+                            field_id_t field_id,
+                            const std::string &value) override
+   {
+    out << "UPDATE " << get_table_name(table_id);
+    out << " SET " << get_field_name(table_id, field_id) << " = ";
+    joedb::write_sql_string(out, value);
+    out << " WHERE " << id_field_name << " = " << record_id << ";\n";
+   }
  };
 }
 

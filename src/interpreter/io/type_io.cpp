@@ -55,6 +55,8 @@ std::string joedb::read_string(std::istream &in)
 char joedb::get_hex_char_from_digit(uint8_t n)
 /////////////////////////////////////////////////////////////////////////////
 {
+ n &= 0x0f;
+
  if (n < 10)
   return char('0' + n);
  else
@@ -91,6 +93,20 @@ void joedb::write_octal_character(std::ostream &out, uint8_t c)
  out.put(char('0' + ((c >> 6) & 7)));
  out.put(char('0' + ((c >> 3) & 7)));
  out.put(char('0' + ((c >> 0) & 7)));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::write_sql_string(std::ostream &out, const std::string &s)
+/////////////////////////////////////////////////////////////////////////////
+{
+ out.put('X');
+ out.put('\'');
+ for (char c: s)
+ {
+  out.put(get_hex_char_from_digit(uint8_t(c >> 4)));
+  out.put(get_hex_char_from_digit(uint8_t(c & 0x0f)));
+ }
+ out.put('\'');
 }
 
 /////////////////////////////////////////////////////////////////////////////
