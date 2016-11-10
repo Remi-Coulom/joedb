@@ -40,17 +40,17 @@ namespace joedb
    Type(): type_id(type_id_t::null) {}
    Type(type_id_t type_id): type_id(type_id) {}
 
-   static Type string() {return Type(type_id_t::string);}
-   static Type int32() {return Type(type_id_t::int32);}
-   static Type int64() {return Type(type_id_t::int64);}
+   #define TYPE_MACRO(type, return_type, type_id, read, write)\
+   static Type type_id() {return Type(type_id_t::type_id);};
+   #define TYPE_MACRO_NO_REFERENCE
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO_NO_REFERENCE
+   #undef TYPE_MACRO
+
    static Type reference(table_id_t table_id)
    {
     return Type(type_id_t::reference, table_id);
    }
-   static Type boolean() {return Type(type_id_t::boolean);}
-   static Type float32() {return Type(type_id_t::float32);}
-   static Type float64() {return Type(type_id_t::float64);}
-   static Type int8() {return Type(type_id_t::int8);}
  };
 }
 

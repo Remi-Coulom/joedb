@@ -38,14 +38,6 @@ void write_type
     out << "std::string ";
   break;
 
-  case Type::type_id_t::int32:
-   out << "int32_t ";
-  break;
-
-  case Type::type_id_t::int64:
-   out << "int64_t ";
-  break;
-
   case Type::type_id_t::reference:
   {
    const table_id_t referred = type.get_table_id();
@@ -53,21 +45,16 @@ void write_type
   }
   break;
 
-  case Type::type_id_t::boolean:
-   out << "bool ";
+  #define TYPE_MACRO(type, return_type, type_id, read, write)\
+  case Type::type_id_t::type_id:\
+   out << #type << ' ';\
   break;
-
-  case Type::type_id_t::float32:
-   out << "float ";
-  break;
-
-  case Type::type_id_t::float64:
-   out << "double ";
-  break;
-
-  case Type::type_id_t::int8:
-   out << "int8_t ";
-  break;
+  #define TYPE_MACRO_NO_STRING
+  #define TYPE_MACRO_NO_REFERENCE
+  #include "TYPE_MACRO.h"
+  #undef TYPE_MACRO_NO_REFERENCE
+  #undef TYPE_MACRO_NO_STRING
+  #undef TYPE_MACRO
  }
 }
 

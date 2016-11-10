@@ -81,6 +81,7 @@ OK: add_field b; field_id = 5
 OK: add_field f; field_id = 6
 OK: add_field d; field_id = 7
 OK: add_field o; field_id = 8
+OK: add_field oulala; field_id = 9
 OK: inserted record, id = 1
 OK: time_stamp: 1234567890
 OK: comment: "This is a comment. これは日本語です。"
@@ -103,6 +104,7 @@ add_field all_types b boolean
 add_field all_types f float32
 add_field all_types d float64
 add_field all_types o int8
+add_field all_types oulala int16
 add_field float value float32
 insert_vector all_types 1 1
 update all_types 1 str "toto"
@@ -113,6 +115,7 @@ update all_types 1 b 1
 update all_types 1 f 3.14
 update all_types 1 d 3.14159
 update all_types 1 o 42
+update all_types 1 oulala 12345
 insert_vector float 1 5
 update float 1 value 0.1
 update float 2 value 0.2

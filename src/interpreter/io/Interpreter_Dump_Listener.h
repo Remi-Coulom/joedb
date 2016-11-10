@@ -16,17 +16,14 @@ namespace joedb
       out << "null";
      break;
 
-     case Type::type_id_t::string:
-      out << "string";
+     #define TYPE_MACRO(type, return_type, type_id, read, write)\
+     case Type::type_id_t::type_id:\
+      out << #type_id;\
      break;
-
-     case Type::type_id_t::int32:
-      out << "int32";
-     break;
-
-     case Type::type_id_t::int64:
-      out << "int64";
-     break;
+     #define TYPE_MACRO_NO_REFERENCE
+     #include "TYPE_MACRO.h"
+     #undef TYPE_MACRO_NO_REFERENCE
+     #undef TYPE_MACRO
 
      case Type::type_id_t::reference:
      {
@@ -38,22 +35,6 @@ namespace joedb
       else
        out << "a_deleted_table";
      }
-     break;
-
-     case Type::type_id_t::boolean:
-      out << "boolean";
-     break;
-
-     case Type::type_id_t::float32:
-      out << "float32";
-     break;
-
-     case Type::type_id_t::float64:
-      out << "float64";
-     break;
-
-     case Type::type_id_t::int8:
-      out << "int8";
      break;
     }
    }

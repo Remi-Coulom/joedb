@@ -16,12 +16,7 @@ joedb::Type joedb::Interpreter::parse_type(std::istream &in,
 {
  std::string type_name;
  in >> type_name;
- if (type_name == "string")
-  return Type::string();
- if (type_name == "int32")
-  return Type::int32();
- if (type_name == "int64")
-  return Type::int64();
+
  if (type_name == "references")
  {
   std::string table_name;
@@ -30,14 +25,14 @@ joedb::Type joedb::Interpreter::parse_type(std::istream &in,
   if (table_id)
    return Type::reference(table_id);
  }
- if (type_name == "boolean")
-  return Type::boolean();
- if (type_name == "float32")
-  return Type::float32();
- if (type_name == "float64")
-  return Type::float64();
- if (type_name == "int8")
-  return Type::int8();
+
+ #define TYPE_MACRO(type, return_type, type_id, read, write)\
+ if (type_name == #type_id)\
+  return Type::type_id();
+ #define TYPE_MACRO_NO_REFERENCE
+ #include "TYPE_MACRO.h"
+ #undef TYPE_MACRO_NO_REFERENCE
+ #undef TYPE_MACRO
 
  out << "Error: unknown type\n";
  return Type();
