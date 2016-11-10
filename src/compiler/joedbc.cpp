@@ -294,7 +294,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   write_index_type(out, db, index);
   out << " index_of_" << index.name << ";\n";
 
-  out << "   void " << index.name << "_remove_index(record_id_t record_id)\n";
+  out << "   void remove_index_of_" << index.name << "(record_id_t record_id)\n";
   out << "   {\n";
   out << "    auto &iterator = storage_of_" << tname;
   out << "[record_id - 1].iterator_over_" << index.name << ";\n";
@@ -305,7 +305,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "    }\n";
   out << "   }\n";
 
-  out << "   void " << index.name << "_add_index(record_id_t record_id)\n";
+  out << "   void add_index_of_" << index.name << "(record_id_t record_id)\n";
   out << "   {\n";
   out << "    " << "data_of_" << tname << " &data = storage_of_";
   out << tname << "[record_id - 1];\n";
@@ -354,7 +354,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    for (const auto &index: options.get_indices())
     if (index.table_id == table.first)
-     out << "    " << index.name << "_remove_index(record_id);\n";
+     out << "    remove_index_of_" << index.name << "(record_id);\n";
 
    out << "    storage_of_" << tname << ".free(record_id + 1);\n";
    out << "   }\n";
@@ -391,7 +391,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   for (auto &field: table.second.get_fields())
   {
    const std::string &fname = field.second.get_name();
-   out << "   void internal_update_" << tname << '_' << fname;
+   out << "   void internal_update_" << tname << "__" << fname;
    out << "\n   (\n    record_id_t record_id,\n    ";
    write_type(out, db, field.second.get_type(), true);
    out << "field_value_of_" << fname << "\n   )\n";
@@ -405,8 +405,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
                   index.field_ids.end(),
                   field.first) != index.field_ids.end())
     {
-     out << "    " << index.name << "_remove_index(record_id);\n";
-     out << "    " << index.name << "_add_index(record_id);\n";
+     out << "    remove_index_of_" << index.name << "(record_id);\n";
+     out << "    add_index_of_" << index.name << "(record_id);\n";
     }
    out << "   }\n";
   }
@@ -541,7 +541,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
        out << "      internal_update_" << table.second.get_name();
-       out << '_' << field.second.get_name() << "(record_id, ";
+       out << "__" << field.second.get_name() << "(record_id, ";
        if (field.second.get_type().get_type_id() != Type::type_id_t::reference)
         out << "value";
        else
@@ -605,7 +605,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
        out << "     {\n";
        out << "      for (record_id_t i = 0; i < size; i++)\n";
        out << "       internal_update_" << table.second.get_name();
-       out << '_' << field.second.get_name() << "(record_id + i, ";
+       out << "__" << field.second.get_name() << "(record_id + i, ";
        if (field.second.get_type().get_type_id() != Type::type_id_t::reference)
         out << "value[i]";
        else
@@ -843,7 +843,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "field_value_of_" << fname << ")\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
-   out << "    internal_update_" << tname << '_' << fname << "(record.id, ";
+   out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
    out << "field_value_of_" << fname << ");\n";
    out << "    listener->after_update_";
    out << types[int(field.second.get_type().get_type_id())];
