@@ -4,6 +4,8 @@
 #include "Database.h"
 #include "DB_Listener.h"
 #include "Interpreter.h"
+#include "Dummy_Listener.h"
+#include "Selective_Listener.h"
 
 #include "gtest/gtest.h"
 
@@ -130,8 +132,17 @@ TEST_F(Multiplexer_Test, interpreter_test)
   DB_Listener db1_listener(db1);
   DB_Listener db2_listener(db2);
 
+  Dummy_Listener dummy;
+  Selective_Listener select1(dummy, Selective_Listener::schema);
+  Selective_Listener select2(dummy, Selective_Listener::data);
+  Selective_Listener select4(dummy, Selective_Listener::information);
+  dummy.after_comment("hello");
+
   Listener &db1_multiplexer = multiplexer.add_listener(db1_listener);
                               multiplexer.add_listener(db2_listener);
+                              multiplexer.add_listener(select1);
+                              multiplexer.add_listener(select2);
+                              multiplexer.add_listener(select4);
 
   db1.set_listener(db1_multiplexer);
 

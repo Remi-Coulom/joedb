@@ -92,6 +92,7 @@ OK: create table float; table_id = 6
 OK: add_field value; field_id = 1
 OK: inserted vector: record_id = 1; size = 5
 OK: updated 5 rows
+Error: no such field: qsdf
 create_table all_types
 create_table float
 add_field all_types str string

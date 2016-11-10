@@ -71,6 +71,7 @@ create_table float
 add_field float value float32
 insert_vector float 1 5
 update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
+update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
 
 dump
 

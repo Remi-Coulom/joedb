@@ -44,6 +44,12 @@ TEST(StringIO_Test, read_string)
  }
 
  {
+  std::istringstream iss("\"\\x0d\"");
+  std::string s = joedb::read_string(iss);
+  EXPECT_EQ("\x0d", s);
+ }
+
+ {
   std::istringstream iss("\"\\x z\"");
   std::string s = joedb::read_string(iss);
   EXPECT_EQ(std::string(1, 0), s);
