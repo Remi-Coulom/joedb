@@ -23,6 +23,8 @@ update person 3 name "Alexandre"
 update person 1 city 2
 update person 2 city 2
 update person 3 city 1
+Error: table city already exists
+Error: "123456" is not a valid identifier
 OK: dropped table 1
 OK: dropped table 2
 OK: create table test; table_id = 3
@@ -80,7 +82,6 @@ OK: add_field f; field_id = 6
 OK: add_field d; field_id = 7
 OK: add_field o; field_id = 8
 OK: inserted record, id = 1
-OK: time_stamp: now
 OK: time_stamp: 1234567890
 OK: comment: "This is a comment. これは日本語です。"
 OK: checkpoint

@@ -81,3 +81,10 @@ TEST(StringIO_Test, random)
   ASSERT_EQ(s1, s2) << "out.str() = " << out.str();
  }
 }
+
+TEST(StringIO_Test, sql)
+{
+ std::ostringstream oss;
+ joedb::write_sql_string(oss, "Rémi Coulom");
+ EXPECT_EQ(oss.str(), "X'52c3a96d6920436f756c6f6d'");
+}

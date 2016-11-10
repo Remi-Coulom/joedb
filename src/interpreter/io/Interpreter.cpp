@@ -4,6 +4,7 @@
 #include "Interpreter_Dump_Listener.h"
 #include "Listener.h"
 #include "type_io.h"
+#include "is_identifier.h"
 
 #include <iostream>
 #include <sstream>
@@ -102,9 +103,17 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   {
    std::string table_name;
    iss >> table_name;
-   table_id_t table_id = db.create_table(table_name);
-   out << "OK: create table " << table_name <<
-          "; table_id = " << table_id << '\n';
+   if (!is_identifier(table_name))
+    out << "Error: \"" << table_name << "\" is not a valid identifier\n";
+   else
+   {
+    table_id_t table_id = db.create_table(table_name);
+    if (table_id == 0)
+     out << "Error: table " << table_name << " already exists\n";
+    else
+     out << "OK: create table " << table_name <<
+            "; table_id = " << table_id << '\n';
+   }
   }
   else if (command == "drop_table") //////////////////////////////////////////
   {
