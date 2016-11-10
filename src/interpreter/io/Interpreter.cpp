@@ -178,8 +178,10 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     {
      std::string new_field_name;
      iss >> new_field_name;
-     db.rename_field(table_id, field_id, new_field_name);
-     out << "OK: renamed field " << field_name << " to " << new_field_name << '\n';
+     if (db.rename_field(table_id, field_id, new_field_name))
+      out << "OK: renamed field " << field_name << " to " << new_field_name << '\n';
+     else
+      out << "Error: could not rename this field\n";
     }
    }
   }

@@ -25,6 +25,8 @@ update person 2 city 2
 update person 3 city 1
 Error: table city already exists
 Error: "123456" is not a valid identifier
+Error: could not rename table
+Error: could not rename this field
 OK: dropped table 1
 OK: dropped table 2
 OK: create table test; table_id = 3

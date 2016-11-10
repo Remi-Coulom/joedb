@@ -34,7 +34,7 @@ bool joedb::Database::rename_table
 )
 {
  auto table_it = tables.find(table_id);
- if (table_it != tables.end())
+ if (table_it != tables.end() && find_table(name) == 0)
  {
   table_it->second.set_name(name);
   listener->after_rename_table(table_id, name);
@@ -131,7 +131,7 @@ bool joedb::Database::rename_field
  {
   auto &fields = table_it->second.fields;
   auto field_it = fields.find(field_id);
-  if (field_it != fields.end())
+  if (field_it != fields.end() && find_field(table_id, name) == 0)
   {
    field_it->second.set_name(name);
    listener->after_rename_field(table_id, field_id, name);

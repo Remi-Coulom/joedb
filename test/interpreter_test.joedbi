@@ -15,6 +15,9 @@ dump
 
 create_table city
 create_table 123456
+rename_table person city
+rename_field person city name
+
 drop_table city
 drop_table person
 dump
