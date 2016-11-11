@@ -200,20 +200,20 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    joedb::write_string(out, comment);
    out << '\n';
   }
-  else if (command == "time_stamp") /////////////////////////////////////////
+  else if (command == "timestamp") //////////////////////////////////////////
   {
-   int64_t time_stamp = 0;
-   iss >> time_stamp;
-   out << "OK: time_stamp: ";
+   int64_t timestamp = 0;
+   iss >> timestamp;
+   out << "OK: timestamp: ";
    if (iss.fail())
    {
-    db.time_stamp(std::time(0));
+    db.timestamp(std::time(0));
     out << "now\n";
    }
    else
    {
-    db.time_stamp(time_stamp);
-    out << time_stamp << '\n';
+    db.timestamp(timestamp);
+    out << timestamp << '\n';
    }
   }
   else if (command == "insert_into") ////////////////////////////////////////

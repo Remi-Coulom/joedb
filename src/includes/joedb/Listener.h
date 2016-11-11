@@ -28,7 +28,7 @@ namespace joedb
 
    virtual void after_custom(const std::string &name) = 0;
    virtual void after_comment(const std::string &comment) = 0;
-   virtual void after_time_stamp(int64_t time_stamp) = 0;
+   virtual void after_timestamp(int64_t timestamp) = 0;
 
    virtual void after_insert(table_id_t table_id, record_id_t record_id) = 0;
    virtual void after_insert_vector(table_id_t table_id,

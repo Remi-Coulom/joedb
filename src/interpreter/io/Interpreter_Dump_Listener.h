@@ -2,6 +2,7 @@
 #define joedb_Interpreter_Dump_Listener_declared
 
 #include "Dump_Listener.h"
+#include "type_io.h"
 
 namespace joedb
 {
@@ -99,9 +100,10 @@ namespace joedb
     out << '\n';
    }
 
-   void after_time_stamp(int64_t time_stamp) override
+   void after_timestamp(int64_t timestamp) override
    {
-    out << "time_stamp " << time_stamp << '\n';
+    out << "timestamp " << timestamp << ' ';
+    out << get_local_time(timestamp) << '\n';
    }
 
    void after_insert(table_id_t table_id, record_id_t record_id) override

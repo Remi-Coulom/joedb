@@ -42,6 +42,7 @@ add_library(joedb SHARED
  ../src/interpreter/abstract/is_identifier.cpp
  ../src/interpreter/abstract/Listener.cpp
  ../src/interpreter/abstract/Multiplexer.cpp
+ ../src/interpreter/io/Dump_Listener.cpp
  ../src/journal/File.cpp
  ../src/journal/Generic_File.cpp
  ../src/journal/Journal_File.cpp

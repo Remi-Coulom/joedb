@@ -43,7 +43,7 @@ namespace joedb
                            const std::string &name) override;
    void after_custom(const std::string &name) override;
    void after_comment(const std::string &comment) override;
-   void after_time_stamp(int64_t time_stamp) override;
+   void after_timestamp(int64_t timestamp) override;
    void after_insert(table_id_t table_id, record_id_t record_id) override;
    void after_insert_vector(table_id_t table_id,
                             record_id_t record_id,
@@ -98,7 +98,7 @@ namespace joedb
     append        = 0x08,
     update_last   = 0x09,
     comment       = 0x0a,
-    time_stamp    = 0x0b,
+    timestamp     = 0x0b,
     rename_table  = 0x0c,
     rename_field  = 0x0d,
     insert_vector = 0x0f,

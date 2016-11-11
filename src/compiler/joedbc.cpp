@@ -678,7 +678,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
    }
 
-   void after_time_stamp(int64_t time_stamp) override
+   void after_timestamp(int64_t timestamp) override
    {
    }
 )RRR";
@@ -692,6 +692,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    void set_listener(Listener &new_listener) {listener = &new_listener;}
    void clear_listener() {listener = &dummy_listener;}
+
+   void timestamp();
+   void comment(const std::string &comment);
 )RRR";
 
  for (auto &table: tables)
@@ -1183,6 +1186,7 @@ void generate_cpp
  out << "#include \"joedb/Stream_File.h\"\n";
  out << '\n';
  out << "#include <sstream>\n";
+ out << "#include <ctime>\n";
  out << '\n';
  out << "using namespace " << options.get_namespace_name() << ";\n";
  out << '\n';
@@ -1193,6 +1197,20 @@ void generate_cpp
  out << ");\n";
 
  out << R"RRR(
+/////////////////////////////////////////////////////////////////////////////
+void Database::comment(const std::string &comment)
+/////////////////////////////////////////////////////////////////////////////
+{
+ listener->after_comment(comment);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void Database::timestamp()
+/////////////////////////////////////////////////////////////////////////////
+{
+ listener->after_timestamp(std::time(0));
+}
+
 /////////////////////////////////////////////////////////////////////////////
 File_Database::File_Database(const char *file_name, bool read_only):
 /////////////////////////////////////////////////////////////////////////////

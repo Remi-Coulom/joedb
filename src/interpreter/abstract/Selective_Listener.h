@@ -89,10 +89,10 @@ namespace joedb
      listener.after_comment(comment);
    }
 
-   void after_time_stamp(int64_t time_stamp) override
+   void after_timestamp(int64_t timestamp) override
    {
     if (mode & information)
-     listener.after_time_stamp(time_stamp);
+     listener.after_timestamp(timestamp);
    }
 
    //

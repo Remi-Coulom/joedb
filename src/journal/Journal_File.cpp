@@ -336,10 +336,10 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    }
    break;
 
-   case operation_t::time_stamp:
+   case operation_t::timestamp:
    {
-    int64_t time_stamp = file.read<int64_t>();
-    listener.after_time_stamp(time_stamp);
+    int64_t timestamp = file.read<int64_t>();
+    listener.after_timestamp(timestamp);
    }
    break;
 
@@ -446,11 +446,11 @@ void joedb::Journal_File::after_comment(const std::string &comment)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_time_stamp(int64_t time_stamp)
+void joedb::Journal_File::after_timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
- file.write<operation_t>(operation_t::time_stamp);
- file.write<int64_t>(time_stamp);
+ file.write<operation_t>(operation_t::timestamp);
+ file.write<int64_t>(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////

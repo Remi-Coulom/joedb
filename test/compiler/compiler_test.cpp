@@ -413,6 +413,15 @@ int do_vector_test()
   }
  }
 
+ //
+ // timestamp
+ //
+ {
+  vector_test::File_Database db("vector_test.joedb");
+  db.timestamp();
+  db.comment("This was a timestamp.");
+ }
+
  return 0;
 }
 

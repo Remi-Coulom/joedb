@@ -6,7 +6,6 @@ Short term
 
 - test vector stuff more
 - vector error: must insert right at the back, don't make holes
-- time stamp
 - custom error management
 
 Interpreter

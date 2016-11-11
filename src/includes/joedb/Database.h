@@ -42,7 +42,7 @@ namespace joedb
    bool rename_field(table_id_t, field_id_t, const std::string &name);
    void custom(const std::string &name);
    void comment(const std::string &comment) const;
-   void time_stamp(int64_t time_stamp) const;
+   void timestamp(int64_t timestamp) const;
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;
