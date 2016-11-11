@@ -112,13 +112,12 @@ Then, the equivalent joedb code:
 
 .. code-block:: c++
 
-  const std::string s("TOTO");
+  const std::string toto = "TOTO";
 
   for (int i = 1; i <= N; i++)
-   db.new_BENCHMARK(s, i);
+   db.new_benchmark(toto, i);
 
-  db.checkpoint();
-  db.commit();
+  db.checkpoint_full_commit();
 
 The joedb code not only uses 13 times less CPU time, it is also shorter, much more readable, and has many less potential run-time errors.
 
@@ -128,7 +127,7 @@ Commit Rate
 Instead of one big commit at the end, each insert is now committed to disk one by one. With N = 100:
 
 +------+---------+--------------+--------------+
-|      | sqlite3 | joedb (slow) | joedb (fast) |
+|      | sqlite3 | joedb (full) | joedb (half) |
 +======+=========+==============+==============+
 | real | 5.434s  | 3.184s       | 1.549s       |
 +------+---------+--------------+--------------+
@@ -137,29 +136,24 @@ Instead of one big commit at the end, each insert is now committed to disk one b
 | sys  | 0.021s  | 0.016s       | 0.009s       |
 +------+---------+--------------+--------------+
 
-The fast mode of joedb is crash-safe if the underlying system preserves write order:
+The half_commit version is reasonably crash-safe.
 
 .. code-block:: c++
 
   for (int i = 1; i <= N; i++)
   {
-   db.new_BENCHMARK(s, i);
-   db.checkpoint();
-   db.commit();
+   db.new_benchmark(toto, i);
+   db.checkpoint_half_commit();
   }
 
-The slow mode is more paranoid, but twice slower:
+The full_commit version is paranoid, completely safe, but twice slower:
 
 .. code-block:: c++
 
   for (int i = 1; i <= N; i++)
   {
-   db.new_BENCHMARK(s, i);
-   db.commit();
-   db.checkpoint();
-   db.commit();
+   db.new_benchmark(toto, i);
+   db.checkpoint_full_commit();
   }
 
-Thanks to its simple append-only file structure, joedb can operate safely with less synchronization operations than sqlite3, which makes it about 1.5 or 3 times faster, depending on synchronization mode.
-
-Note also that joedb does not require a file system: it can also operate over a raw device directly, which might offer additional opportunities for performance optimization.
+Thanks to its simple append-only file structure, joedb can operate safely with less synchronization operations than sqlite3, which makes it about 1.7 or 3.5 times faster, depending on synchronization mode.

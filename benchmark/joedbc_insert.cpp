@@ -13,10 +13,10 @@ int main(int argc, char **argv)
 
   benchmark::File_Database db("insert.joedb");
 
-  const std::string s("TOTO");
+  const std::string toto = "TOTO";
 
   for (int i = 1; i <= N; i++)
-   db.new_BENCHMARK(s, i);
+   db.new_benchmark(toto, i);
 
   db.checkpoint_full_commit();
  }

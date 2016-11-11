@@ -4,7 +4,6 @@ TODO
 Short term
 ----------
 
-- test vector stuff more
 - vector error: must insert right at the back, don't make holes
 - custom error management
 
@@ -19,6 +18,7 @@ Journal file
 - check for write errors (out of space) -> exception (option?)
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
+- joedb_fix
 - Compression
 
 New operations and types

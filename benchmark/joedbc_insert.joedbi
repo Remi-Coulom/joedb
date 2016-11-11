@@ -1,3 +1,3 @@
-create_table BENCHMARK
-add_field BENCHMARK NAME string
-add_field BENCHMARK VALUE int64
+create_table benchmark
+add_field benchmark name string
+add_field benchmark value int64
