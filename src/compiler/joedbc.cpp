@@ -681,10 +681,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void after_time_stamp(int64_t time_stamp) override
    {
    }
-
-   void after_checkpoint() override
-   {
-   }
 )RRR";
 
  //
