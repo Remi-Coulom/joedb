@@ -91,11 +91,17 @@ joedb::Journal_File::Journal_File(Generic_File &file):
 }
 
 /////////////////////////////////////////////////////////////////////////////
+uint64_t joedb::Journal_File::ahead_of_checkpoint() const
+/////////////////////////////////////////////////////////////////////////////
+{
+ return file.get_position() - checkpoint_position;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::checkpoint(int commit_level)
 /////////////////////////////////////////////////////////////////////////////
 {
- if ((file.get_position() > checkpoint_position ||
-      commit_level > current_commit_level) &&
+ if ((ahead_of_checkpoint() || commit_level > current_commit_level) &&
      state == state_t::no_error)
  {
   checkpoint_index ^= 1;
@@ -337,12 +343,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    }
    break;
 
-   case operation_t::checkpoint:
-   {
-    listener.after_checkpoint();
-   }
-   break;
-
    default:
     state = state_t::bad_format;
    break;
@@ -451,13 +451,6 @@ void joedb::Journal_File::after_time_stamp(int64_t time_stamp)
 {
  file.write<operation_t>(operation_t::time_stamp);
  file.write<int64_t>(time_stamp);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_checkpoint()
-/////////////////////////////////////////////////////////////////////////////
-{
- file.write<operation_t>(operation_t::checkpoint);
 }
 
 /////////////////////////////////////////////////////////////////////////////

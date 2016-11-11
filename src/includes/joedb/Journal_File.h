@@ -23,6 +23,7 @@ namespace joedb
    };
 
    state_t get_state() const {return state;}
+   uint64_t ahead_of_checkpoint() const;
    void checkpoint(int commit_level);
    void replay_log(Listener &listener);
    void rewind();
@@ -43,7 +44,6 @@ namespace joedb
    void after_custom(const std::string &name) override;
    void after_comment(const std::string &comment) override;
    void after_time_stamp(int64_t time_stamp) override;
-   void after_checkpoint() override;
    void after_insert(table_id_t table_id, record_id_t record_id) override;
    void after_insert_vector(table_id_t table_id,
                             record_id_t record_id,
@@ -101,7 +101,6 @@ namespace joedb
     time_stamp    = 0x0b,
     rename_table  = 0x0c,
     rename_field  = 0x0d,
-    checkpoint    = 0x0e,
     insert_vector = 0x0f,
     custom        = 0x10,
     update_vector = 0x11,

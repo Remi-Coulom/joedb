@@ -104,11 +104,6 @@ namespace joedb
     out << "time_stamp " << time_stamp << '\n';
    }
 
-   void after_checkpoint() override
-   {
-    out << "checkpoint\n";
-   }
-
    void after_insert(table_id_t table_id, record_id_t record_id) override
    {
     out << "insert_into " << get_table_name(table_id) << ' ';

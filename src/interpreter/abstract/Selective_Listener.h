@@ -95,12 +95,6 @@ namespace joedb
      listener.after_time_stamp(time_stamp);
    }
 
-   void after_checkpoint() override
-   {
-    if (mode & information)
-     listener.after_checkpoint();
-   }
-
    //
    // data events
    //

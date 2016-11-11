@@ -8,7 +8,6 @@ Short term
 - vector error: must insert right at the back, don't make holes
 - time stamp
 - custom error management
-- write checkpoint log entries
 
 Interpreter
 -----------

@@ -216,11 +216,6 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     out << time_stamp << '\n';
    }
   }
-  else if (command == "checkpoint") /////////////////////////////////////////
-  {
-   db.checkpoint();
-   out << "OK: checkpoint\n";
-  }
   else if (command == "insert_into") ////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
