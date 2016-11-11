@@ -57,9 +57,8 @@ UPDATE "alltypes" SET "f" = 3.14 WHERE "joedb_key" = 1;
 UPDATE "alltypes" SET "d" = 3.14159 WHERE "joedb_key" = 1;
 UPDATE "alltypes" SET "o" = 42 WHERE "joedb_key" = 1;
 UPDATE "alltypes" SET "oulala" = 12345 WHERE "joedb_key" = 1;
--- time_stamp 1234567890
+-- timestamp 1234567890
 -- "This is a comment. これは日本語です。"
--- checkpoint
 -- custom: toto_le_petit_rigolo
 ALTER TABLE "alltypes" RENAME TO "all_types";
 ALTER TABLE "all_types" RENAME COLUMN "s" TO "str";

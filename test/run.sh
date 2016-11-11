@@ -1,4 +1,5 @@
 #!/bin/bash
+TZ='Europe/Paris'
 cd ../compcmake/ninja_debug
 ninja clean
 rm -vf `find . -name \*.gcda`

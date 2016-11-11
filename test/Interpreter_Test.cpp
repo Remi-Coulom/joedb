@@ -35,7 +35,7 @@ TEST_F(Interpreter_Test, main_test)
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
 
- EXPECT_EQ(out_string.str(), reference_string.str());
+ EXPECT_EQ(reference_string.str(), out_string.str());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Listener)
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
 
- EXPECT_EQ(dump_string.str(), reference_string.str());
+ EXPECT_EQ(reference_string.str(), dump_string.str());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,5 +77,5 @@ TEST_F(Interpreter_Test, SQL_Dump_Listener)
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
 
- EXPECT_EQ(dump_string.str(), reference_string.str());
+ EXPECT_EQ(reference_string.str(), dump_string.str());
 }
