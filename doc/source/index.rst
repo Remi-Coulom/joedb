@@ -6,6 +6,8 @@ joedb, the Journal-Only Embedded Database
    :numbered:
 
    intro
+   getting_started
+   benchmarks
    file_format
    todo
    references

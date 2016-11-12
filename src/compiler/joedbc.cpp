@@ -422,26 +422,19 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   bool first = true;
   for (auto table: tables)
   {
-   out << "    ";
-   if (first)
-    first = false;
-   else
-    out << "else ";
-
-   out << "if (table_id == " << table.first << ")\n";
-
-   const std::string &name = table.second.get_name();
+   const std::string &tname = table.second.get_name();
    const auto storage = options.get_table_options(table.first).storage;
 
-   switch(storage)
+   if (storage != Compiler_Options::Table_Storage::vector)
    {
-    case Compiler_Options::Table_Storage::freedom_keeper:
-     out << "     internal_delete_" << name << "(record_id);\n";
-    break;
+    out << "    ";
+    if (first)
+     first = false;
+    else
+     out << "else ";
 
-    case Compiler_Options::Table_Storage::vector:
-     out << "     throw std::runtime_error(\"No delete allowed on vector table: " << name << "\");\n";
-    break;
+    out << "if (table_id == " << table.first << ")\n";
+    out << "     internal_delete_" << tname << "(record_id);\n";
    }
   }
  }

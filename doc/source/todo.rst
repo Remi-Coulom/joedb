@@ -4,8 +4,20 @@ TODO
 Short term
 ----------
 
-- vector error: must insert right at the back, don't make holes
-- custom error management
+- documentation
+- interpreter: meta commands use ".quit", ".dump", ... , and add ".help"
+- db.null_<table>() to get the null pointer
+- error management:
+
+  - When replaying the journal:
+
+    - more explicit error explanation
+    - put the journal in bad state
+
+  - When using the compiled code:
+
+    - write a time stamp and a message in the log
+    - avoid crashing (no throw)
 
 Interpreter
 -----------
@@ -23,6 +35,7 @@ Journal file
 
 New operations and types
 ------------------------
+- Use diff for large-string update
 
 On-disk storage
 ----------------

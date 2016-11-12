@@ -7,7 +7,6 @@ ninja || exit 1
 cd -
 
 rm -vf tutorial.joedb
-$dir/joedbi tutorial.joedb <tutorial.joedbi || exit 1
 $dir/joedbc tutorial.joedbi tutorial.joedbc || exit 1
 
 cd $dir
@@ -16,3 +15,5 @@ cd -
 
 $dir/tutorial >tutorial.out
 cat tutorial.out
+
+joedb_logdump tutorial.joedb >logdump.out
