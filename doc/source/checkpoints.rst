@@ -1,20 +1,32 @@
 Checkpoints
 ===========
 
-Understanding the Checkpoint Region of the Joedb File
------------------------------------------------------
+In order to allow safe recovery from a crash, joedb uses the checkpoint technique of the Sprite Log-Structured File System [Rosenblum-1991]_. A checkpoint indicates a position in the log at which all the data is consistent and complete.
 
-Checkpoint types
+Two copies of a checkpoint position are stored in the file. A checkpoint is written in 4 steps:
+
+1. Write all log entries up to this checkpoint, and the first copy of the checkpoint position.
+2. Flush data to disk (fsync).
+3. Write the second copy of the checkpoint position.
+4. Flush data to disk.
+
+A checkpoint is considered valid if the two copies are identical.
+
+The two copies of two checkpoints are stored at the beginning of a joedb file. They are written in alternance. This way, if a crash occurs during a checkpoint, it is always possible to recover the previous checkpoint.
+
+Checkpoint Types
 ----------------
 
-- ``checkpoint_no_commit()``
-- ``checkpoint_half_commit()``
-- ``checkpoint_full_commit()``
+The joedb compiler produces three checkpoint functions:
 
-Benchmark of commit performance
--------------------------------
+- ``checkpoint_full_commit()``: Performs all 4 steps. Safe and slow.
+- ``checkpoint_half_commit()``: Performs step 1, 2, and 3, but not 4. This is about twice faster than a full commit (if the commit is small). It ensures that data up to the previous checkpoint is safely recoverable. Data of the current checkpoint is written to disk, but recovery may require care.
+- ``checkpoint_no_commit()``: Performs step 1 and 3 only. This will not flush data to disk, but it will flush it to the operating system. This protects data from an application crash, but not from an operating-system crash. It is tremendously faster than full or half commit.
 
-The source code for these benchmarks can be found in the joedb/benchmark directory. They were run on a Linux machine with an i7-5930K CPU, and WDC WD20EZRX-00D8PB0 hard drive.
+Benchmarks
+----------
+
+The source code for these benchmarks can be found in the joedb/benchmark directory. They were run on a Linux machine with an i7-5930K CPU, and WDC WD20EZRX-00D8PB0 hard drive, with an ext4 file system.
 
 Bulk Insert
 ~~~~~~~~~~~
@@ -70,34 +82,16 @@ Commit Rate
 
 Instead of one big commit at the end, each insert is now committed to disk one by one. With N = 100:
 
-+------+---------+--------------+--------------+
-|      | sqlite3 | joedb (full) | joedb (half) |
-+======+=========+==============+==============+
-| real | 5.434s  | 3.184s       | 1.549s       |
-+------+---------+--------------+--------------+
-| user | 0.006s  | 0.003s       | 0.002s       |
-+------+---------+--------------+--------------+
-| sys  | 0.021s  | 0.016s       | 0.009s       |
-+------+---------+--------------+--------------+
-
-The half_commit version is reasonably crash-safe.
-
-.. code-block:: c++
-
-  for (int i = 1; i <= N; i++)
-  {
-   db.new_benchmark(toto, i);
-   db.checkpoint_half_commit();
-  }
-
-The full_commit version is paranoid, completely safe, but twice slower:
-
-.. code-block:: c++
-
-  for (int i = 1; i <= N; i++)
-  {
-   db.new_benchmark(toto, i);
-   db.checkpoint_full_commit();
-  }
++------+---------+---------------------+---------------------+
+|      | sqlite3 | joedb (full_commit) | joedb (half_commit) |
++======+=========+=====================+=====================+
+| real | 5.434s  | 3.184s              | 1.549s              |
++------+---------+---------------------+---------------------+
+| user | 0.006s  | 0.003s              | 0.002s              |
++------+---------+---------------------+---------------------+
+| sys  | 0.021s  | 0.016s              | 0.009s              |
++------+---------+---------------------+---------------------+
 
 Thanks to its simple append-only file structure, joedb can operate safely with less synchronization operations than sqlite3, which makes it about 1.7 or 3.5 times faster, depending on synchronization mode.
+
+Note also that joedb does not require a file system: it can also operate over a raw device directly, which might offer additional opportunities for performance optimization.

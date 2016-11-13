@@ -28,12 +28,12 @@ Fast in-memory database with on-disk persistence
 
 Crash resistance:
 
-- http://www.cs.berkeley.edu/~brewer/cs262/LFS.pdf
-- http://oldblog.antirez.com/post/redis-persistence-demystified.html
-- http://oldblog.antirez.com/post/fsync-different-thread-useless.html
-- http://sqlite.org/atomiccommit.html
-- http://lwn.net/Articles/457667/
-- http://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly
+.. [Rosenblum-1991] `The Design and Implementation of a Log-Structured File System <http://www.cs.berkeley.edu/~brewer/cs262/LFS.pdf>`_
+.. [Redis-2016a] `Redis persistence demystified <http://oldblog.antirez.com/post/redis-persistence-demystified.html>`_
+.. [Redis-2016b] `fsync() on a different thread: apparently a useless trick <http://oldblog.antirez.com/post/fsync-different-thread-useless.html>`_
+.. [SQLite-AC] `Atomic Commit In SQLite <http://sqlite.org/atomiccommit.html>`_
+.. [Moyer-2011] `Ensuring data reaches disk <http://lwn.net/Articles/457667/>`_
+.. [serverfault-2009] `SATA Disks that handle write caching properly? <http://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
 
 Compression
 
