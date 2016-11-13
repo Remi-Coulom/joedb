@@ -6,7 +6,6 @@ Short term
 
 - documentation
 - interpreter: meta commands use ".quit", ".dump", ... , and add ".help"
-- db.null_<table>() to get the null pointer
 - error management:
 
   - When replaying the journal:

@@ -108,8 +108,8 @@ int file_test()
  db.new_city("Paris");
  db.new_city("Tokyo");
  db.new_person("Toto", New_York);
- db.new_person("Évariste", testdb::id_of_city());
- db.new_person("Catherine", testdb::id_of_city());
+ db.new_person("Évariste", db.null_city());
+ db.new_person("Catherine", db.null_city());
  dump(db);
 
  //
@@ -205,8 +205,8 @@ int file_test()
  // Sorting
  //
  std::cout << "Sorting with explicit sort:\n";
- db.new_person("Zoé", testdb::id_of_city());
- db.new_person("Albert", testdb::id_of_city());
+ db.new_person("Zoé", db.null_city());
+ db.new_person("Albert", db.null_city());
  auto by_name = [&](testdb::id_of_person p_1, testdb::id_of_person p_2)
                 {
                  return db.get_name(p_1) < db.get_name(p_2);

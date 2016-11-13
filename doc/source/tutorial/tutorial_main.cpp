@@ -27,7 +27,7 @@ int main()
  auto Amsterdam = db.new_city("Amsterdam");
 
  db.new_person("Rémi", "Coulom", Lille);
- db.new_person("Bertrand", "Picard", Lille);
+ db.new_person("Bertrand", "Picard", db.null_city());
 
  auto Aristide = db.new_person("Aristide", "Martines", Amsterdam);
 
@@ -48,7 +48,11 @@ int main()
  {
   std::cout << "  " << db.get_first_name(person) << ' ';
   std::cout << db.get_last_name(person) << ' ';
-  std::cout << "lives in " << db.get_name(db.get_home(person)) << '\n';
+  auto city = db.get_home(person);
+  if (city.is_null())
+   std::cout << "is homeless\n";
+  else
+   std::cout << "lives in " << db.get_name(city) << '\n';
  }
 
  //

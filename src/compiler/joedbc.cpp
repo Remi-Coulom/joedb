@@ -715,6 +715,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
 
   //
+  // Easy access to null
+  //
+  out << "   id_of_" << tname << " null_" << tname << "()\n";
+  out << "   {\n";
+  out << "    return id_of_" << tname << "();\n";
+  out << "   }\n\n";
+
+  //
   // Uninitialized new
   //
   out << "   id_of_" << tname << " new_" << tname << "()\n";
