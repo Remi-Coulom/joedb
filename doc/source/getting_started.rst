@@ -3,8 +3,8 @@ Getting Started
 
 This explains how to install and use joedb.
 
-Compilation Instructions
-------------------------
+Compilation
+-----------
 
 The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_.
 

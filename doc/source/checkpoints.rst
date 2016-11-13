@@ -1,8 +1,18 @@
-Benchmarks
-==========
+Checkpoints
+===========
 
-Simple Benchmarks
------------------
+Understanding the Checkpoint Region of the Joedb File
+-----------------------------------------------------
+
+Checkpoint types
+----------------
+
+- ``checkpoint_no_commit()``
+- ``checkpoint_half_commit()``
+- ``checkpoint_full_commit()``
+
+Benchmark of commit performance
+-------------------------------
 
 The source code for these benchmarks can be found in the joedb/benchmark directory. They were run on a Linux machine with an i7-5930K CPU, and WDC WD20EZRX-00D8PB0 hard drive.
 

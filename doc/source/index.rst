@@ -7,7 +7,9 @@ joedb, the Journal-Only Embedded Database
 
    intro
    getting_started
-   benchmarks
+   indexes
+   schema_upgrade
+   checkpoints
    file_format
    todo
    references
