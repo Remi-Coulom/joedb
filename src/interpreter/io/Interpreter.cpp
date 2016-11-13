@@ -94,6 +94,45 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   }
   else if (command == "quit") ////////////////////////////////////////////////
    break;
+  else if (command == "help") ////////////////////////////////////////////////
+  {
+   out << '\n';
+   out << "Commands that don't modify the database\n";
+   out << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+   out << " help\n";
+   out << " quit\n";
+   out << " dump\n";
+   out << '\n';
+   out << "Commands unrelated to data\n";
+   out << "~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+   out << " timestamp [<stamp>] (if no value is given, use current time)\n";
+   out << " comment \"<comment_string>\"\n";
+   out << '\n';
+   out << "Data definition\n";
+   out << "~~~~~~~~~~~~~~~\n";
+   out << " create_table <table_name>\n";
+   out << " drop_table <table_name>\n";
+   out << " rename_table <old_table_name> <new_table_name>\n";
+   out << " add_field <table_name> <field_name> <type>\n";
+   out << " drop_field <table_name> <field_name>\n";
+   out << " rename_field <table_name> <old_field_name> <new_field_name>\n";
+   out << " custom <custom_name>\n";
+   out << '\n';
+   out << " <type> may be:\n";
+   out << "  string,\n";
+   out << "  int8, int16, int32, int64,\n";
+   out << "  float32, float64,\n";
+   out << "  references <table_name>\n";
+   out << '\n';
+   out << "Data manipulation\n";
+   out << "~~~~~~~~~~~~~~~~~\n";
+   out << " insert_into <table_name> <record_id>\n";
+   out << " insert_vector <table_name> <record_id> <size>\n";
+   out << " update <table_name> <record_id> <field_name> <value>\n";
+   out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
+   out << " delete_from <table_name> <record_id>\n";
+   out << '\n';
+  }
   else if (command == "create_table") ////////////////////////////////////////
   {
    std::string table_name;
@@ -337,6 +376,6 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    }
   }
   else
-   out << "Error: unknown command: " << command << '\n';
+   out << "Error: unknown command: " << command << ". For a list of available commands, try \"help\".\n";
  }
 }

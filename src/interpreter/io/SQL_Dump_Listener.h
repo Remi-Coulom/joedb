@@ -2,6 +2,9 @@
 #define joedb_SQL_Dump_Listener_declared
 
 #include "Dump_Listener.h"
+#include "type_io.h"
+
+#include <iostream>
 
 namespace joedb
 {
@@ -64,7 +67,7 @@ namespace joedb
     }
    }
 
-   std::string id_field_name = "\"joedb_key\"";
+   std::string id_field_name = "\"__id\"";
 
   public:
    SQL_Dump_Listener(std::ostream &out): Dump_Listener(out) {}
@@ -123,14 +126,12 @@ namespace joedb
 
    void after_comment(const std::string &comment) override
    {
-    out << "-- ";
-    write_string(out, comment);
-    out << '\n';
+    out << "-- " << comment << '\n';
    }
 
    void after_timestamp(int64_t timestamp) override
    {
-    out << "-- timestamp " << timestamp << '\n';
+    out << "-- " << get_local_time(timestamp) << '\n';
    }
 
    void after_insert(table_id_t table_id, record_id_t record_id) override

@@ -4,3 +4,5 @@ edited_tutorial.h
 tutorial.joedb
 tutorial.out
 logdump.out
+logdump.sql
+joedbi_help.out

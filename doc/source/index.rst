@@ -8,6 +8,7 @@ joedb, the Journal-Only Embedded Database
    intro
    getting_started
    indexes
+   vectors
    schema_upgrade
    checkpoints
    file_format

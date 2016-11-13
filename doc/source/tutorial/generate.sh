@@ -16,4 +16,6 @@ cd -
 $dir/tutorial >tutorial.out
 cat tutorial.out
 
-joedb_logdump tutorial.joedb >logdump.out
+$dir/joedb_logdump tutorial.joedb >logdump.out
+$dir/joedb_logdump --sql tutorial.joedb >logdump.sql
+echo help | $dir/joedbi >joedbi_help.out

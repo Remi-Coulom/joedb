@@ -5,7 +5,6 @@ Short term
 ----------
 
 - documentation
-- interpreter: meta commands use ".quit", ".dump", ... , and add ".help"
 - error management:
 
   - When replaying the journal:
