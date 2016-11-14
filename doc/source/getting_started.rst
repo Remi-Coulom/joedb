@@ -6,13 +6,23 @@ This explains how to install and use joedb.
 Compilation
 -----------
 
-The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_.
+The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_. Joedb is written in portable C++11, and uses `cmake <https://cmake.org/>`_ for its build system. It should be reasonably portable to many platforms, but because it was developed there, `Ubuntu <https://www.ubuntu.com/>`_ is likely to be the easiest one to use.
 
-In Linux, the following commands should get you ready:
+Linux, MacOS (and maybe other variations of Unix)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Prerequisites in Ubuntu can be installed with this command:
 
 .. code-block:: bash
 
-    sudo apt-get install libsqlite3-dev cmake ninja-build g++ lcov unzip valgrind python-sphinx wget git-core libboost-all-dev sqlitebrowser
+    sudo apt-get install g++ cmake ninja-build lcov unzip valgrind python-sphinx wget git-core sqlite3 libsqlite3-dev sqlitebrowser
+
+Similar packages should be available in other systems. Joedb was compiled successfully on MacOS with `macports <https://www.macports.org>`_.
+
+When the necessary packages are installed, the following commands should get you ready:
+
+.. code-block:: bash
+
     git clone https://github.com/Remi-Coulom/joedb.git
     cd joedb/compcmake/
     ./get_gtest.sh
@@ -26,29 +36,19 @@ If you wish to install joedb system-wide, you can run:
 
     sudo ninja install
 
-This will produce ``joedbi``, the joedb interpreter, and ``joedbc``, the joedb compiler. ``joedbi`` lets you manipulate the database with interactive commands. ``joedbc`` reads a file with joedbi commands that define the database schema, and produce C++ code as output.
-
-Tests
------
-
-If you wish to test that everything is allright, you can run
-``./quick_test.sh`` in the test directory, and ``./compiler_test.sh`` in the
-test/compiler directory.
-
-Tutorial
---------
-
-All the files of the tutorial are located in the ``doc/source/tutorial`` directory. This directory contains 4 files: ``tutorial.joedbi`` contains the interpreter commands that define the database schema, ``tutorial.joedbc`` defines compiler options, ``tutorial_main.cpp`` is the cpp file that manipulates the database, and ``generate.sh`` is a bash script that will compile all the code and run the program.
+Windows
+^^^^^^^
 
 Joedb Tools
 -----------
 
-Joedb comes with a few executable files.
+Compiling joedb produces a few executables tools.
 
 ``joedbi``
 ^^^^^^^^^^
-
 ``joedbi`` is the joedb interpreter. When invoked without parameters, it will create a database in memory. When invoked with a parameter, it will open it as a file. A database will be created if it does not exist yet.
+
+Below is a list of commands the interpreter understands:
 
 .. literalinclude:: ./tutorial/joedbi_help.out
    :language: none
@@ -81,3 +81,15 @@ In order to support schema recognition (see :doc:`schema_upgrade`), data definit
 ^^^^^^^^^^^^^^^^^
 
 ``joedb_browser`` uses ``joedb_logdump`` to produce an SQLite database, and invokes ``sqlitebrowser`` to browse it.
+
+Example Code
+------------
+
+Example code is located in the ``doc/source/tutorial`` directory:
+
+- ``tutorial.joedbi`` contains the interpreter commands that define the database schema,
+- ``tutorial.joedbc`` defines compiler options,
+- ``tutorial_main.cpp`` is the cpp shown in the :doc:`intro`,
+- ``index_tutorial.cpp`` illustrates how to use :doc:`indexes`,
+- and ``generate.sh`` is a bash script that will compile all the code and run the programs.
+

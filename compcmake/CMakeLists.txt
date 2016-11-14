@@ -22,7 +22,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Threads REQUIRED)
-find_package(Boost COMPONENTS system thread)
 
 set(GOOGLE_TEST ./googletest-release-1.8.0/googletest)
 
@@ -93,6 +92,8 @@ else()
  message("== WARNING: run ./get_gtest.sh for tests")
 endif()
 
+if(false)
+find_package(Boost COMPONENTS system thread)
 if(Boost_SYSTEM_FOUND)
  add_executable(joedb_asio_server EXCLUDE_FROM_ALL
   ../src/communication/asio/joedb_asio_server.cpp
@@ -118,6 +119,7 @@ if(Boost_SYSTEM_FOUND)
 
 else()
  message("== WARNING: boost system not found: communication not compiled")
+endif()
 endif()
 
 find_library(SQLITE3_LIBRARY sqlite3)
