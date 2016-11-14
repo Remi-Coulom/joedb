@@ -7,7 +7,7 @@ Vector Table Storage
 The joedb compiler currently offers two options for storing a table:
 
 - ``freedom_keeper`` is the default. It stores tables in a vector of structs, with a boolean flag indicating whether each row is free or not. In addition, two linked lists of free and occupied rows are maintained.
-- ``vector`` also stores the table in a vector, but does not allow holes. So there is no need to keep track of which row is free or not. When using the ``vector`` storage option, it is not possible to delete anything in this table. The ``vector`` storage option is less flexible, but has better speed and memory usage.
+- ``vector`` also stores the table in a vector, but does not allow holes. There is no need to keep track of which row is free or not: all the rows are used. When using the ``vector`` storage option, it is not possible to delete anything in the table. The ``vector`` storage option is less flexible, but has better speed and memory usage.
 
 It is possible to set the storage option of the table in the joedbc file with this syntax:
 
