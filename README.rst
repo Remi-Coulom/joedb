@@ -1,5 +1,5 @@
-Welcom to joedb!
-================
+Welcome to joedb!
+=================
 
 Joedb stands for the Journal-Only Embedded Database. Its purpose is to allow
 crash-safe manipulation of data stored in permanent storage in a way that is
