@@ -39,6 +39,8 @@ If you wish to install joedb system-wide, you can run:
 Windows
 ^^^^^^^
 
+If you use one of them, cygwin or Ubuntu on Windows might be the most convenient approach, and would look very much like the Linux method above.
+
 Joedb Tools
 -----------
 
