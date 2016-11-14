@@ -103,8 +103,8 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    out << " quit\n";
    out << " dump\n";
    out << '\n';
-   out << "Commands unrelated to data\n";
-   out << "~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+   out << "Logging\n";
+   out << "~~~~~~~\n";
    out << " timestamp [<stamp>] (if no value is given, use current time)\n";
    out << " comment \"<comment_string>\"\n";
    out << '\n';

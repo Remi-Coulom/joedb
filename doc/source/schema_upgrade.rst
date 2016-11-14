@@ -45,3 +45,5 @@ The ``custom`` command defines the name of a custom function that the programmer
   } 
 
 This way, when a joedb file with the old schema is opened, the new tables and fields will be created, and data will be initialized correctly thanks to the custom function.
+
+Creating a new file works like upgrading from an empty schema, and will also invoke the custom functions.

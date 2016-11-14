@@ -10,9 +10,10 @@ rm -vf tutorial.joedb
 $dir/joedbc tutorial.joedbi tutorial.joedbc || exit 1
 
 cd $dir
-ninja tutorial || exit 1
+ninja tutorial index_tutorial || exit 1
 cd -
 
+$dir/index_tutorial >index_tutorial.out
 $dir/tutorial >tutorial.out
 cat tutorial.out
 

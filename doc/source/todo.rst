@@ -5,6 +5,9 @@ Short term
 ----------
 
 - documentation
+- joedb_fix <in> <out> (show checkpoint positions, file length, ...)
+- joedb_truncate <file> <position> (+optionally show position in logdump)
+- faster journal reading: use vectors instead of maps for schema storage
 - error management:
 
   - When replaying the journal:
@@ -15,7 +18,7 @@ Short term
   - When using the compiled code:
 
     - write a time stamp and a message in the log
-    - avoid crashing (no throw)
+    - throwing or not has be a compiler option
 
 Interpreter
 -----------

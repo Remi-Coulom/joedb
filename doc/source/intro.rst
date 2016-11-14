@@ -1,28 +1,33 @@
 Introduction
 ============
 
-Joedb stands for the Journal-Only Embedded Database. Joedb is a minimalist embedded relational database, where data is manipulated directly in the target programming language, without using SQL: a compiler produces native type-safe data-manipulation code from the database schema.
-
-In joedb, the journal of all modifications is stored to disk. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple, and fast.
+Joedb stands for the Journal-Only Embedded Database. Its purpose is to allow
+crash-safe manipulation of data stored in permanent storage in a way that is
+convenient, efficient, and reliable. Data is manipulated directly in the target
+programming language, without using SQL: a compiler produces native type-safe
+data-manipulation code from the database schema. The data is stored in
+permanent storage as a journal of all modifications. This way, the whole data
+history is remembered, and it is possible to re-create any past state of the
+database. It is also a way to make the system extremely simple, and fast.
 
 Pros and Cons
 -------------
 
-Joedb currently has some limitations:
-
-- the database must fit in memory
-- only one process can open the database at the same time
-- C++ is the only supported programming language
-
-Note that those limitations are likely to disappear in the future.
-
-Joedb offers many nice features that may make it more attractive than typical alternatives such as sqlite, xml, or json:
+Joedb offers many nice features that may make it more attractive than typical alternatives such as SQLite, xml, or json:
 
 - Since a joedb file is append-only, its crash-safe operation does not require flushing data to disk as frequently as typical relational databases (see :doc:`checkpoints`).
 - The whole data history is remembered. So, no old data can ever be lost. It is also possible to add time stamps and comments to the journal, and use it as a log of the application (if the history has to be forgotten for privacy or disk-space reasons, it is also possible to pack it).
 - If the database schema of an application changes over time, joedb can upgrade files to the new version automatically. The upgrade includes changes to the schema as well as custom data manipulation (see :doc:`schema_upgrade`).
 - The database schema is compiled into C++ code that allows convenient type-safe data manipulation. Many errors that would be detected at run time with SQL, xml, or json will be detected at compile time instead.
 - Joedb is very simple, light, and fast.
+
+Joedb currently has some limitations:
+
+- The database must fit in memory.
+- Only one process can open the database at the same time.
+- C++ is the only supported programming language.
+
+Note that these limitations are likely to be removed in the future.
 
 An Example
 ----------

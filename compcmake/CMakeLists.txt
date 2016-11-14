@@ -152,6 +152,11 @@ add_executable(tutorial EXCLUDE_FROM_ALL
  ../doc/source/tutorial/tutorial_main.cpp
 )
 target_link_libraries(tutorial joedb)
+add_executable(index_tutorial EXCLUDE_FROM_ALL
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/index_tutorial.cpp
+)
+target_link_libraries(index_tutorial joedb)
 
 set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp

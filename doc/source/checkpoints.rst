@@ -12,7 +12,7 @@ Two copies of a checkpoint position are stored in the file. A checkpoint is writ
 
 A checkpoint is considered valid if the two copies are identical.
 
-The two copies of two checkpoints are stored at the beginning of a joedb file. They are written in alternance. This way, if a crash occurs during a checkpoint, it is always possible to recover the previous checkpoint.
+The two copies of two checkpoints are stored at the beginning of a joedb file. The two checkpoints are written in alternance. This way, if a crash occurs during a checkpoint, it is always possible to recover the previous checkpoint.
 
 Checkpoint Types
 ----------------
@@ -20,8 +20,10 @@ Checkpoint Types
 The joedb compiler produces three checkpoint functions:
 
 - ``checkpoint_full_commit()``: Performs all 4 steps. Safe and slow.
-- ``checkpoint_half_commit()``: Performs step 1, 2, and 3, but not 4. This is about twice faster than a full commit (if the commit is small). It ensures that data up to the previous checkpoint is safely recoverable. Data of the current checkpoint is written to disk, but recovery may require care.
+- ``checkpoint_half_commit()``: Performs step 1, 2, and 3, but not 4. This is about twice faster than a full commit (if the commit is small). It ensures that data up to the previous checkpoint is safely recoverable. Data of the current checkpoint is written to disk, but recovery may require care if the second checkpoint copy does not make it to the disk before the crash.
 - ``checkpoint_no_commit()``: Performs step 1 and 3 only. This will not flush data to disk, but it will flush it to the operating system. This protects data from an application crash, but not from an operating-system crash. It is tremendously faster than full or half commit.
+
+The safety of the half_commit and no_commit versions depends on the operating system, file system, and disk hardware. According to the SQLite documentation [SQLite-AC]_, it seems that most modern filesystems may exhibit the safe-append property. In fact, the Redis database also uses an append-only journal file without worrying about the risk of corruption [Redis-2016a]_.
 
 Benchmarks
 ----------
