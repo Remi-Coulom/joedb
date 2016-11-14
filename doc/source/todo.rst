@@ -4,10 +4,6 @@ TODO
 Short term
 ----------
 
-- documentation
-- joedb_fix <in> <out> (show checkpoint positions, file length, ...)
-- joedb_truncate <file> <position> (+optionally show position in logdump)
-- faster journal reading: use vectors instead of maps for schema storage
 - error management:
 
   - When replaying the journal:
@@ -18,7 +14,7 @@ Short term
   - When using the compiled code:
 
     - write a time stamp and a message in the log
-    - throwing or not has be a compiler option
+    - throwing or not has to be a compiler option
 
 Interpreter
 -----------
@@ -28,6 +24,8 @@ Interpreter
 
 Journal file
 ------------
+- joedb_truncate <file> <position> (+optionally show position in logdump)
+- faster journal reading: use vectors instead of maps for schema storage
 - check for write errors (out of space) -> exception (option?)
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
