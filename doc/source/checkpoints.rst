@@ -70,7 +70,7 @@ Then, the equivalent joedb code:
 
 .. code-block:: c++
 
-  const std::string toto = "TOTO";
+  const std::string toto = "TOTO"; // saves N calls to std::string's constructor
 
   for (int i = 1; i <= N; i++)
    db.new_benchmark(toto, i);

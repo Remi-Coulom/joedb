@@ -51,6 +51,7 @@ Joedb comes with a few executable files.
 ``joedbi`` is the joedb interpreter. When invoked without parameters, it will create a database in memory. When invoked with a parameter, it will open it as a file. A database will be created if it does not exist yet.
 
 .. literalinclude:: ./tutorial/joedbi_help.out
+   :language: none
 
 ``joedbc``
 ^^^^^^^^^^

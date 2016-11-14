@@ -1,4 +1,4 @@
-joedb, the Journal-Only Embedded Database
+Joedb, the Journal-Only Embedded Database
 =========================================
 
 .. toctree::

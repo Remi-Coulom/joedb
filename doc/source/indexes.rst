@@ -17,6 +17,7 @@ Note that there must be no space around the comma.
 For example, the joedb tutorial has these index definitions:
 
 .. literalinclude:: ./tutorial/tutorial.joedbc
+   :language: none
 
 So, two cities can't have the same name, but two persons can. An update that would create a duplicate city name will throw an exception.
 
@@ -35,3 +36,4 @@ Here is an example with the tutorial database:
 And here is its output:
 
 .. literalinclude:: ./tutorial/index_tutorial.out
+   :language: none

@@ -39,10 +39,12 @@ An Example
 The database schema is described in a file like this one:
 
 .. literalinclude:: ./tutorial/tutorial.joedbi
+   :language: none
 
 Compiler instructions are in a separate file:
 
 .. literalinclude:: ./tutorial/tutorial.joedbc
+   :language: none
 
 Running the compiler with these files will generate tutorial.h and tutorial.cpp, two files that you can use to manipulate data conveniently in C++:
 
@@ -52,7 +54,9 @@ Running the compiler with these files will generate tutorial.h and tutorial.cpp,
 Running this tutorial will produce this output:
 
 .. literalinclude:: ./tutorial/tutorial.out
+   :language: none
 
 All the data was stored in the tutorial.joedb file. The database file is a binary file, so it is not convenient to inspect it directly. The joedb_logdump tool will produce a readable log:
 
 .. literalinclude:: ./tutorial/logdump.out
+   :language: none
