@@ -35,7 +35,7 @@ include_directories(
  ${GOOGLE_TEST}/include
 )
 
-add_library(joedb SHARED
+add_library(joedb_objects OBJECT
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/abstract/is_identifier.cpp
@@ -47,6 +47,17 @@ add_library(joedb SHARED
  ../src/journal/Journal_File.cpp
  ../src/journal/Stream_File.cpp
 )
+
+# The shared library does not work with Visual Studio: link statically
+if (UNIX)
+ add_library(joedb SHARED
+  $<TARGET_OBJECTS:joedb_objects>
+ )
+else()
+ add_library(joedb STATIC
+  $<TARGET_OBJECTS:joedb_objects>
+ )
+endif()
 
 add_library(io_objects OBJECT
  ../src/interpreter/io/dump.cpp
