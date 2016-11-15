@@ -41,9 +41,9 @@ Windows
 
 First, download and extract a zip file of a recent release from the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_.
 
-`CMake <https://cmake.org>`__ is used to produce project files. In the CMake GUI, enter the ``compcmake`` directory in the field that says "Where is the source code:". Enter an empty or non-existing directory for "Where to build the binaries:", such as ``compcmake/build``, for instance. Then click "Configure", and "Generate". This should produce a ``joedb.sln`` for Visual Studio. CMake can also generate project files for other build environments.
+`CMake <https://cmake.org>`__ is used to generate project files. In the CMake GUI, enter the ``compcmake`` directory in the field that says "Where is the source code:". Enter an empty or non-existing directory for "Where to build the binaries:", such as ``compcmake/build``, for instance. Then click "Configure", and "Generate". This should produce a ``joedb.sln`` for Visual Studio. CMake can also generate project files for other build environments.
 
-Some binaries will fail to compile, because they require the joedb compiler to produce some C++ files first. But the main joedb tools will be compiled. Right now, there is not automatic way to produce the missing files. You can try to produce them manually by looking at the Linux bash scripts.
+Some binaries will fail to compile, because they require the joedb compiler to produce some C++ files first. But the main joedb tools will be compiled. Right now, there is not automatic way to generate the missing files. You should be able to produce them by running the joedb compiler manually.
 
 Joedb Tools
 -----------
@@ -71,7 +71,7 @@ The joedbc file should at least contain a ``namespace`` option that indicates th
 
 ``joedb_logdump`` takes a joedb file name as parameter, and produces a sequence of joedbi commands. With the ``--sql`` option, it can produce SQL output. This way, joedb data can be easily imported into any system that understands SQL.
 
-For instance, this is the sql output of the tutorial database:
+For instance, this is the SQL output of the tutorial database:
 
 .. literalinclude:: ./tutorial/logdump.sql
    :language: sql
@@ -95,7 +95,7 @@ Example code is located in the ``doc/source/tutorial`` directory:
 
 - ``tutorial.joedbi`` contains the interpreter commands that define the database schema,
 - ``tutorial.joedbc`` defines compiler options,
-- ``tutorial_main.cpp`` is the cpp shown in the :doc:`intro`,
+- ``tutorial_main.cpp`` is the example presented in the :doc:`intro`,
 - ``index_tutorial.cpp`` illustrates how to use :doc:`indexes`,
 - and ``generate.sh`` is a bash script that will compile all the code and run the programs.
 

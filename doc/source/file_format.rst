@@ -26,7 +26,7 @@ uint64_t file length (checkpoint #2)
 uint64_t file length (checkpoint #2)
 ======== ===========================
 
-Each checkpoint is a 64-bit file length, repeated twice. A checkpoint is valid if the two copies are identical. The current checkpoint is the highest valid checkpoint. Each checkpoint is written in alternance.
+Each checkpoint is a 64-bit file length, repeated twice. A checkpoint is valid if the two copies are identical. The current checkpoint is the highest valid checkpoint. Each checkpoint is written alternately.
 
 This checkpoint system is designed to ensure crash recovery. If the actual length of the file is not equal to the current checkpoint when opening a joedb file, then it is necessary to perform crash recovery.
 

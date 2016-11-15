@@ -1,9 +1,9 @@
 Checkpoints
 ===========
 
-In order to allow safe recovery from a crash, joedb uses the checkpoint technique of the Sprite Log-Structured File System [Rosenblum-1991]_. A checkpoint indicates a position in the log at which all the data is consistent and complete.
+In order to allow safe recovery from a crash, joedb uses the checkpoint technique of the Sprite Log-Structured File System [Rosenblum-1991]_. A checkpoint indicates a position in the log up to which all the events have been properly written.
 
-Two copies of a checkpoint position are stored in the file. A checkpoint is written in 4 steps:
+Two copies of two checkpoint positions are stored in the beginning of the joedb file. A checkpoint is written in 4 steps:
 
 1. Write all log entries up to this checkpoint, and the first copy of the checkpoint position.
 2. Flush data to disk (fsync).
@@ -12,7 +12,9 @@ Two copies of a checkpoint position are stored in the file. A checkpoint is writ
 
 A checkpoint is considered valid if the two copies are identical.
 
-The two copies of two checkpoints are stored at the beginning of a joedb file. The two checkpoints are written in alternance. This way, if a crash occurs during a checkpoint, it is always possible to recover the previous checkpoint.
+The two checkpoints are used alternately. This way, if a crash occurs during a checkpoint, it is always possible to recover the previous checkpoint.
+
+Note that a checkpoint does not necessarily indicate that data is in a valid and coherent state. The purpose of the checkpoint is only to prevent data loss or corruption in case of a crash. In particular, the error-management code will checkpoint the log file before throwing an exception, which may occur in the middle of a transaction. If needed, a separate "valid_state" event can be used to indicate that data is valid.
 
 Checkpoint Types
 ----------------
@@ -23,7 +25,7 @@ The joedb compiler produces three checkpoint functions:
 - ``checkpoint_half_commit()``: Performs step 1, 2, and 3, but not 4. This is about twice faster than a full commit (if the commit is small). It ensures that data up to the previous checkpoint is safely recoverable. Data of the current checkpoint is written to disk, but recovery may require care if the second checkpoint copy does not make it to the disk before the crash.
 - ``checkpoint_no_commit()``: Performs step 1 and 3 only. This will not flush data to disk, but it will flush it to the operating system. This protects data from an application crash, but not from an operating-system crash. It is tremendously faster than full or half commit.
 
-The safety of the half_commit and no_commit versions depends on the operating system, file system, and disk hardware. According to the SQLite documentation [SQLite-AC]_, it seems that most modern filesystems may exhibit the safe-append property. In fact, the Redis database also uses an append-only journal file without worrying about the risk of corruption [Redis-2016a]_.
+The safety of the half_commit and no_commit versions depends on the operating system, file system, and disk hardware. According to the SQLite documentation [SQLite-AC]_, it seems that most modern file systems may exhibit the safe-append property. In fact, the Redis database also uses an append-only journal file without worrying about the risk of corruption [Redis-2016a]_.
 
 Benchmarks
 ----------
