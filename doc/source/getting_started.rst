@@ -39,7 +39,11 @@ If you wish to install joedb system-wide, you can run:
 Windows
 ^^^^^^^
 
-If you use one of them, cygwin or Ubuntu on Windows might be the most convenient approach, and would look very much like the Linux method above.
+You can download and extract a zip file of a recent release from the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_.
+
+In order to produce Visual Studio project files, you have to use `CMake <https://cmake.org>`_. In the cmake GUI, enter the ``compcmake`` directory in the field that says "Where is the source code:". Enter an empty or non-existing directory for "Where to build the binaries:", such as ``compcmake/build``, for instance. Then click "Configure", and "Generate". This should produce a ``joedb.sln`` for Visual Studio. CMake also offers you the possibility to generate project files for other build environments.
+
+Some binaries will fail to compile, because they require the joedb compiler to produce some C++ file first. But the main joedb tools will be compiled. Right now, there is not automatic way to produce the missing files. You can try to produce them manually by looking at the bash script files that generate them for Linux.
 
 Joedb Tools
 -----------
