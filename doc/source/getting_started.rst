@@ -6,7 +6,7 @@ This explains how to install and use joedb.
 Compilation
 -----------
 
-The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_. Joedb is written in portable C++11, and uses `cmake <https://cmake.org/>`_ for its build system. It should be reasonably portable to many platforms, but because it was developed there, `Ubuntu <https://www.ubuntu.com/>`_ is likely to be the easiest one to use.
+The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_. Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`__ for its build system. It should be reasonably portable to many platforms, but because it was developed there, `Ubuntu <https://www.ubuntu.com/>`_ is likely to be the easiest one to use.
 
 Linux, MacOS (and maybe other variations of Unix)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -39,11 +39,11 @@ If you wish to install joedb system-wide, you can run:
 Windows
 ^^^^^^^
 
-You can download and extract a zip file of a recent release from the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_.
+First, download and extract a zip file of a recent release from the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_.
 
-In order to produce Visual Studio project files, you have to use `CMake <https://cmake.org>`_. In the cmake GUI, enter the ``compcmake`` directory in the field that says "Where is the source code:". Enter an empty or non-existing directory for "Where to build the binaries:", such as ``compcmake/build``, for instance. Then click "Configure", and "Generate". This should produce a ``joedb.sln`` for Visual Studio. CMake also offers you the possibility to generate project files for other build environments.
+`CMake <https://cmake.org>`__ is used to produce project files. In the CMake GUI, enter the ``compcmake`` directory in the field that says "Where is the source code:". Enter an empty or non-existing directory for "Where to build the binaries:", such as ``compcmake/build``, for instance. Then click "Configure", and "Generate". This should produce a ``joedb.sln`` for Visual Studio. CMake can also generate project files for other build environments.
 
-Some binaries will fail to compile, because they require the joedb compiler to produce some C++ file first. But the main joedb tools will be compiled. Right now, there is not automatic way to produce the missing files. You can try to produce them manually by looking at the bash script files that generate them for Linux.
+Some binaries will fail to compile, because they require the joedb compiler to produce some C++ files first. But the main joedb tools will be compiled. Right now, there is not automatic way to produce the missing files. You can try to produce them manually by looking at the Linux bash scripts.
 
 Joedb Tools
 -----------
