@@ -36,7 +36,7 @@ Journal File
 - joedb_fix
 - Compression
 
-New operations and types
+New Operations and Types
 ------------------------
 - Use diff for large-string update
 - Date type?
