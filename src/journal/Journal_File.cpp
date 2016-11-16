@@ -2,6 +2,7 @@
 #include "Generic_File.h"
 
 #include <vector>
+#include <stdexcept>
 
 const uint32_t joedb::Journal_File::version_number = 0x00000004;
 const uint64_t joedb::Journal_File::header_size = 41;
@@ -149,169 +150,173 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
  if (end == 0)
   end = checkpoint_position;
 
- while(file.get_position() < end &&
-       state == state_t::no_error &&
-       listener.is_good() &&
-       !file.is_end_of_file())
+ try
  {
-  switch(file.read<operation_t>())
+  while(file.get_position() < end)
   {
-   case operation_t::end_of_file:
-    if (file.get_position() != checkpoint_position)
-     state = state_t::crash_check;
-   return;
-
-   case operation_t::create_table:
+   switch(file.read<operation_t>())
    {
-    std::string name = file.read_string();
-    listener.after_create_table(name);
-   }
-   break;
+    case operation_t::end_of_file:
+     if (file.get_position() != checkpoint_position)
+      state = state_t::crash_check;
+    return;
 
-   case operation_t::drop_table:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    listener.after_drop_table(table_id);
-   }
-   break;
+    case operation_t::create_table:
+    {
+     std::string name = file.read_string();
+     listener.after_create_table(name);
+    }
+    break;
 
-   case operation_t::rename_table:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    std::string name = file.read_string();
-    listener.after_rename_table(table_id, name);
-   }
-   break;
+    case operation_t::drop_table:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     listener.after_drop_table(table_id);
+    }
+    break;
 
-   case operation_t::add_field:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    std::string name = file.read_string();
-    Type type = read_type();
-    listener.after_add_field(table_id, name, type);
-   }
-   break;
+    case operation_t::rename_table:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     std::string name = file.read_string();
+     listener.after_rename_table(table_id, name);
+    }
+    break;
 
-   case operation_t::drop_field:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    field_id_t field_id = file.compact_read<field_id_t>();
-    listener.after_drop_field(table_id, field_id);
-   }
-   break;
+    case operation_t::add_field:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     std::string name = file.read_string();
+     Type type = read_type();
+     listener.after_add_field(table_id, name, type);
+    }
+    break;
 
-   case operation_t::rename_field:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    field_id_t field_id = file.compact_read<field_id_t>();
-    std::string name = file.read_string();
-    listener.after_rename_field(table_id, field_id, name);
-   }
-   break;
+    case operation_t::drop_field:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     field_id_t field_id = file.compact_read<field_id_t>();
+     listener.after_drop_field(table_id, field_id);
+    }
+    break;
 
-   case operation_t::insert_into:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    record_id_t record_id = file.compact_read<record_id_t>();
-    listener.after_insert(table_id, record_id);
-    table_of_last_operation = table_id;
-    record_of_last_operation = record_id;
-   }
-   break;
+    case operation_t::rename_field:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     field_id_t field_id = file.compact_read<field_id_t>();
+     std::string name = file.read_string();
+     listener.after_rename_field(table_id, field_id, name);
+    }
+    break;
 
-   case operation_t::insert_vector:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    record_id_t record_id = file.compact_read<record_id_t>();
-    record_id_t size = file.compact_read<record_id_t>();
-    listener.after_insert_vector(table_id, record_id, size);
-    table_of_last_operation = table_id;
-    record_of_last_operation = record_id;
-   }
-   break;
+    case operation_t::insert_into:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     record_id_t record_id = file.compact_read<record_id_t>();
+     listener.after_insert(table_id, record_id);
+     table_of_last_operation = table_id;
+     record_of_last_operation = record_id;
+    }
+    break;
 
-   case operation_t::append:
-    listener.after_insert(table_of_last_operation,
-                          ++record_of_last_operation);
-   break;
+    case operation_t::insert_vector:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     record_id_t record_id = file.compact_read<record_id_t>();
+     record_id_t size = file.compact_read<record_id_t>();
+     listener.after_insert_vector(table_id, record_id, size);
+     table_of_last_operation = table_id;
+     record_of_last_operation = record_id;
+    }
+    break;
 
-   case operation_t::delete_from:
-   {
-    table_id_t table_id = file.compact_read<table_id_t>();
-    record_id_t record_id = file.compact_read<record_id_t>();
-    listener.after_delete(table_id, record_id);
-   }
-   break;
+    case operation_t::append:
+     listener.after_insert(table_of_last_operation,
+                           ++record_of_last_operation);
+    break;
 
-   #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
-   case operation_t::update_##type_id:\
-    table_of_last_operation = file.compact_read<table_id_t>();\
-    record_of_last_operation = file.compact_read<record_id_t>();\
-    field_of_last_update = file.compact_read<field_id_t>();\
-   goto lbl_perform_update_##type_id;\
+    case operation_t::delete_from:
+    {
+     table_id_t table_id = file.compact_read<table_id_t>();
+     record_id_t record_id = file.compact_read<record_id_t>();
+     listener.after_delete(table_id, record_id);
+    }
+    break;
+
+    #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+    case operation_t::update_##type_id:\
+     table_of_last_operation = file.compact_read<table_id_t>();\
+     record_of_last_operation = file.compact_read<record_id_t>();\
+     field_of_last_update = file.compact_read<field_id_t>();\
+    goto lbl_perform_update_##type_id;\
 \
-   case operation_t::update_last_##type_id:\
-    field_of_last_update = file.compact_read<field_id_t>();\
-   goto lbl_perform_update_##type_id;\
+    case operation_t::update_last_##type_id:\
+     field_of_last_update = file.compact_read<field_id_t>();\
+    goto lbl_perform_update_##type_id;\
 \
-   case operation_t::update_next_##type_id:\
-    record_of_last_operation++;\
-   goto lbl_perform_update_##type_id;\
+    case operation_t::update_next_##type_id:\
+     record_of_last_operation++;\
+    goto lbl_perform_update_##type_id;\
 \
-   lbl_perform_update_##type_id:\
-   {\
-    cpp_type value = file.read_method();\
-    listener.after_update_##type_id(table_of_last_operation,\
-                                    record_of_last_operation,\
-                                    field_of_last_update,\
-                                    value);\
-   }\
-   break;\
+    lbl_perform_update_##type_id:\
+    {\
+     cpp_type value = file.read_method();\
+     listener.after_update_##type_id(table_of_last_operation,\
+                                     record_of_last_operation,\
+                                     field_of_last_update,\
+                                     value);\
+    }\
+    break;\
 \
-   case operation_t::update_vector_##type_id:\
-   {\
-    table_of_last_operation = file.compact_read<table_id_t>();\
-    record_of_last_operation = file.compact_read<record_id_t>();\
-    field_of_last_update = file.compact_read<field_id_t>();\
-    record_id_t size = file.compact_read<record_id_t>();\
-    std::vector<cpp_type> buffer(size);\
-    for (size_t i = 0; i < size; i++)\
-     buffer[i] = file.read_method();\
-    listener.after_update_vector_##type_id(table_of_last_operation,\
-                                           record_of_last_operation,\
-                                           field_of_last_update,\
-                                           size,\
-                                           &buffer[0]);\
-   }\
-   break;
-   #include "TYPE_MACRO.h"
-   #undef TYPE_MACRO
+    case operation_t::update_vector_##type_id:\
+    {\
+     table_of_last_operation = file.compact_read<table_id_t>();\
+     record_of_last_operation = file.compact_read<record_id_t>();\
+     field_of_last_update = file.compact_read<field_id_t>();\
+     record_id_t size = file.compact_read<record_id_t>();\
+     std::vector<cpp_type> buffer(size);\
+     for (size_t i = 0; i < size; i++)\
+      buffer[i] = file.read_method();\
+     listener.after_update_vector_##type_id(table_of_last_operation,\
+                                            record_of_last_operation,\
+                                            field_of_last_update,\
+                                            size,\
+                                            &buffer[0]);\
+    }\
+    break;
+    #include "TYPE_MACRO.h"
+    #undef TYPE_MACRO
 
-   case operation_t::custom:
-   {
-    std::string name = file.read_string();
-    listener.after_custom(name);
+    case operation_t::custom:
+    {
+     std::string name = file.read_string();
+     listener.after_custom(name);
+    }
+    break;
+
+    case operation_t::comment:
+    {
+     std::string comment = file.read_string();
+     listener.after_comment(comment);
+    }
+    break;
+
+    case operation_t::timestamp:
+    {
+     int64_t timestamp = file.read<int64_t>();
+     listener.after_timestamp(timestamp);
+    }
+    break;
+
+    default:
+     state = state_t::bad_format;
+    break;
    }
-   break;
-
-   case operation_t::comment:
-   {
-    std::string comment = file.read_string();
-    listener.after_comment(comment);
-   }
-   break;
-
-   case operation_t::timestamp:
-   {
-    int64_t timestamp = file.read<int64_t>();
-    listener.after_timestamp(timestamp);
-   }
-   break;
-
-   default:
-    state = state_t::bad_format;
-   break;
   }
+ }
+ catch (std::runtime_error e)
+ {
+  state = state_t::crash_check;
  }
 
  if (file.get_position() != end)

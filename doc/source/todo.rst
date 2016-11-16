@@ -7,21 +7,10 @@ Short term
 - single cpp that includes all dependencies for linking to compiled code
 - add a log event that indicates that data is valid at this point
 - runtime error when creating a hole in vector storage (can happen only when replaying the journal)
-- error management:
-
-  - When replaying the journal:
-
-    - more explicit error explanation
-    - put the journal in bad state
-    - throw an exception instead of slow calling of virtual is_good()
-
-  - When using the compiled code:
-
-    - log the event that produced the error
-    - log a time stamp and a comment + checkpoint_no_commit()
 
 Interpreter
 -----------
+- use freedom keepers instead of maps for tables and fields
 - show command prompt
 - readline, help
 - SQL import
@@ -48,6 +37,7 @@ On-disk Storage
 Compiler
 --------
 - store each field as a vector (probably not so important)
+- before_update_vector: ask for storage pointer to the listener
 - modularize code generation
 - Table options:
 

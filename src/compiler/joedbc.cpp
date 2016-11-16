@@ -247,6 +247,16 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   protected:
    joedb::Dummy_Listener dummy_listener;
 
+   virtual void before_throwing() {}
+
+   void error(const std::string &message)
+   {
+    timestamp();
+    comment(message);
+    before_throwing();
+    throw std::runtime_error(message);
+   }
+
   private:
    joedb::Listener *listener;
 
@@ -328,8 +338,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   if (index.unique)
   {
    out << "    if (!result.second)\n";
-   out << "     throw std::runtime_error(\"";
-   out << index.name << " unique index failure\");\n";
+   out << "     error(\"" << index.name << " unique index failure\");\n";
    out << "    data.iterator_over_" << index.name << " = result.first;\n";
   }
   else
@@ -930,6 +939,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
  class File_Database: public Database
  {
+  protected:
+   virtual void before_throwing() {checkpoint_no_commit();}
+
   private:
    joedb::File file;
    joedb::Journal_File journal;
