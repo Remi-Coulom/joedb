@@ -2,7 +2,6 @@
 #define joedb_Journal_File_declared
 
 #include "Listener.h"
-#include "Database.h"
 
 namespace joedb
 {
@@ -75,11 +74,9 @@ namespace joedb
    int current_commit_level;
    state_t state;
 
-   Database db_schema;
    table_id_t table_of_last_operation;
    record_id_t record_of_last_operation;
    field_id_t field_of_last_update;
-   Type::type_id_t type_of_last_update;
 
    Type read_type();
 

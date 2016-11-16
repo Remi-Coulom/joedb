@@ -1,6 +1,8 @@
 #include "Journal_File.h"
 #include "Generic_File.h"
 
+#include <vector>
+
 const uint32_t joedb::Journal_File::version_number = 0x00000004;
 const uint64_t joedb::Journal_File::header_size = 41;
 
@@ -62,7 +64,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
    // Check version number
    //
    const uint32_t version = file.read<uint32_t>();
-   if (version > version_number)
+   if (version != version_number)
     state = state_t::unsupported_version;
 
    //
@@ -138,8 +140,6 @@ void joedb::Journal_File::rewind()
 /////////////////////////////////////////////////////////////////////////////
 {
  file.set_position(header_size);
- db_schema.~Database();
- new(&db_schema) Database;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    case operation_t::create_table:
    {
     std::string name = file.read_string();
-    db_schema.create_table(name);
     listener.after_create_table(name);
    }
    break;
@@ -172,7 +171,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    case operation_t::drop_table:
    {
     table_id_t table_id = file.compact_read<table_id_t>();
-    db_schema.drop_table(table_id);
     listener.after_drop_table(table_id);
    }
    break;
@@ -181,7 +179,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    {
     table_id_t table_id = file.compact_read<table_id_t>();
     std::string name = file.read_string();
-    db_schema.rename_table(table_id, name);
     listener.after_rename_table(table_id, name);
    }
    break;
@@ -191,7 +188,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     table_id_t table_id = file.compact_read<table_id_t>();
     std::string name = file.read_string();
     Type type = read_type();
-    db_schema.add_field(table_id, name, type);
     listener.after_add_field(table_id, name, type);
    }
    break;
@@ -200,7 +196,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
    {
     table_id_t table_id = file.compact_read<table_id_t>();
     field_id_t field_id = file.compact_read<field_id_t>();
-    db_schema.drop_field(table_id, field_id);
     listener.after_drop_field(table_id, field_id);
    }
    break;
@@ -210,7 +205,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     table_id_t table_id = file.compact_read<table_id_t>();
     field_id_t field_id = file.compact_read<field_id_t>();
     std::string name = file.read_string();
-    db_schema.rename_field(table_id, field_id, name);
     listener.after_rename_field(table_id, field_id, name);
    }
    break;
@@ -246,79 +240,6 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     table_id_t table_id = file.compact_read<table_id_t>();
     record_id_t record_id = file.compact_read<record_id_t>();
     listener.after_delete(table_id, record_id);
-   }
-   break;
-
-   case operation_t::update:
-    table_of_last_operation = file.compact_read<table_id_t>();
-    record_of_last_operation = file.compact_read<record_id_t>();
-    field_of_last_update = file.compact_read<field_id_t>();
-    type_of_last_update =
-     db_schema.get_field_type(table_of_last_operation, field_of_last_update);
-   goto lbl_perform_update;
-
-   case operation_t::update_last:
-    field_of_last_update = file.compact_read<field_id_t>();
-    type_of_last_update =
-     db_schema.get_field_type(table_of_last_operation, field_of_last_update);
-   goto lbl_perform_update;
-
-   case operation_t::update_next:
-    record_of_last_operation++;
-   goto lbl_perform_update;
-
-   lbl_perform_update:
-    switch (type_of_last_update)
-    {
-     case Type::type_id_t::null:
-     break;
-
-     #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
-     case Type::type_id_t::type_id:\
-     {\
-      cpp_type value = file.read_method();\
-      listener.after_update_##type_id(table_of_last_operation,\
-                                      record_of_last_operation,\
-                                      field_of_last_update,\
-                                      value);\
-     }\
-     break;
-     #include "TYPE_MACRO.h"
-     #undef TYPE_MACRO
-    }
-   break;
-
-   case operation_t::update_vector:
-   {
-    table_of_last_operation = file.compact_read<table_id_t>();
-    record_of_last_operation = file.compact_read<record_id_t>();
-    field_of_last_update = file.compact_read<field_id_t>();
-    record_id_t size = file.compact_read<record_id_t>();
-
-    type_of_last_update =
-     db_schema.get_field_type(table_of_last_operation, field_of_last_update);
-
-    switch (type_of_last_update)
-    {
-     case Type::type_id_t::null:
-     break;
-
-     #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
-     case Type::type_id_t::type_id:\
-     {\
-      std::vector<cpp_type> buffer(size);\
-      for (size_t i = 0; i < size; i++)\
-       buffer[i] = file.read_method();\
-      listener.after_update_vector_##type_id(table_of_last_operation,\
-                                             record_of_last_operation,\
-                                             field_of_last_update,\
-                                             size,\
-                                             &buffer[0]);\
-     }\
-     break;
-     #include "TYPE_MACRO.h"
-     #undef TYPE_MACRO
-    }
    }
    break;
 
