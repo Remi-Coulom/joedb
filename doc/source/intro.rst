@@ -10,7 +10,7 @@ Joedb offers many nice features that may make it more attractive than typical al
 
 - Since a joedb file is append-only, its crash-safe operation does not require flushing data to disk as frequently as typical relational databases (see :doc:`checkpoints`).
 - The whole data history is remembered. So, no old data can ever be lost. It is also possible to add time stamps and comments to the journal, and use it as a log of the application (if the history has to be forgotten for privacy or disk-space reasons, it is also possible to pack it).
-- If the database schema of an application changes over time, joedb can upgrade files to the new version automatically. The upgrade includes changes to the schema as well as custom data manipulation (see :doc:`schema_upgrade`).
+- If the database schema of an application changes over time, joedb can upgrade old files to the new version automatically. The upgrade includes changes to the schema as well as custom data manipulation (see :doc:`schema_upgrade`).
 - The database schema is compiled into C++ code that allows convenient type-safe data manipulation. Many errors that would be detected at run time with SQL, xml, or json will be detected at compile time instead.
 - Joedb is very simple, light, and fast.
 
@@ -24,7 +24,7 @@ These limitations are likely to be removed in the future.
 
 A fundamental drawback of the joedb approach, compared to a database like SQLite, is that frequently updated values may make the joedb journal file grow much larger than an history-less database.
 
-Another drawback is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first. In theory, this drawback could be removed by implementing on-disk storage of tables, but this option is not yet available.
+Another drawback is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first. In theory, it would be possible to implement on-disk storage of data in joedb, but this option is not yet implemented.
 
 An Example
 ----------

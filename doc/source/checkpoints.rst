@@ -1,7 +1,7 @@
 Checkpoints
 ===========
 
-In order to allow safe recovery from a crash, joedb uses the checkpoint technique of the Sprite Log-Structured File System [Rosenblum-1991]_. A checkpoint indicates a position in the log up to which all the events have been properly written.
+In order to allow safe recovery from a crash, joedb uses a checkpoint technique inspired by the Sprite Log-Structured File System [Rosenblum-1991]_. A checkpoint indicates a position in the log up to which all the events have been properly written.
 
 Two copies of two checkpoint positions are stored in the beginning of the joedb file. A checkpoint is written in 4 steps:
 
@@ -12,9 +12,12 @@ Two copies of two checkpoint positions are stored in the beginning of the joedb 
 
 A checkpoint is considered valid if the two copies are identical.
 
-The two checkpoints are used alternately. This way, if a crash occurs during a checkpoint, it is always possible to recover the previous checkpoint.
+The two checkpoints are used alternately. This way, if a crash occurs during a checkpoint, it is still possible to recover the previous checkpoint.
 
-Note that a checkpoint does not necessarily indicate that data is in a valid and coherent state. The purpose of the checkpoint is only to prevent data loss or corruption in case of a crash. In particular, the error-management code will checkpoint the log file before throwing an exception, which may occur in the middle of a transaction. If needed, a separate "valid_state" event can be used to indicate that data is valid.
+Checkpoints and Transactions
+----------------------------
+
+A checkpoint does not necessarily indicate that data is in a valid and coherent state. The purpose of the checkpoint is only to prevent data loss or corruption in case of a crash. In particular, the error-management code will checkpoint the log file before throwing an exception, which may occur in the middle of a transaction. If needed, a separate "valid_state" event can be used to indicate that data is valid.
 
 Checkpoint Types
 ----------------

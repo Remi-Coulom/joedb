@@ -4,8 +4,10 @@ TODO
 Short term
 ----------
 
+- get rid of db_schema in journal_file, and use separate update for each type
+- single cpp that includes all dependencies for linking to compiled code
 - add a log event that indicates that data is valid at this point
-- faster journal reading: use vectors instead of maps for schema storage
+- runtime error when creating a hole in vector storage (can happen only when replaying the journal)
 - error management:
 
   - When replaying the journal:

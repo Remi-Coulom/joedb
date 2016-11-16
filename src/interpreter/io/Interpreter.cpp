@@ -122,6 +122,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    out << "  string,\n";
    out << "  int8, int16, int32, int64,\n";
    out << "  float32, float64,\n";
+   out << "  boolean,\n";
    out << "  references <table_name>\n";
    out << '\n';
    out << "Data manipulation\n";
