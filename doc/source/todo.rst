@@ -36,8 +36,9 @@ On-disk Storage
 
 Compiler
 --------
-- store each field as a vector (probably not so important)
+- store each field as a vector
 - before_update_vector: ask for storage pointer to the listener
+- debug code with range checking
 - modularize code generation
 - Table options:
 
