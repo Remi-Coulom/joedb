@@ -84,6 +84,11 @@ add_executable(joedb_pack
 )
 target_link_libraries(joedb_pack joedb)
 
+add_executable(joedb_convert
+ ../src/interpreter/io/joedb_convert.cpp
+)
+target_link_libraries(joedb_convert joedb)
+
 if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
   ../test/File_Test.cpp

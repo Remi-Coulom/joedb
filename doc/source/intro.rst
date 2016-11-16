@@ -39,7 +39,7 @@ Compiler instructions are in a separate file:
 .. literalinclude:: ./tutorial/tutorial.joedbc
    :language: none
 
-Running the compiler with these files will generate tutorial.h and tutorial.cpp, two files that you can use to manipulate data conveniently in C++:
+Running the compiler with these files will generate tutorial.h and tutorial.cpp, two files that can be used to manipulate data conveniently in C++:
 
 .. literalinclude:: ./tutorial/tutorial_main.cpp
    :language: c++

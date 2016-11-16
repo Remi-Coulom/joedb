@@ -94,17 +94,25 @@ namespace joedb
     drop_field    = 0x04,
     insert_into   = 0x05,
     delete_from   = 0x06,
-    update        = 0x07,
+    update        = 0x07, // deprecated
     append        = 0x08,
-    update_last   = 0x09,
+    update_last   = 0x09, // deprecated
     comment       = 0x0a,
     timestamp     = 0x0b,
     rename_table  = 0x0c,
     rename_field  = 0x0d,
     insert_vector = 0x0f,
     custom        = 0x10,
-    update_vector = 0x11,
-    update_next   = 0x12
+    update_vector = 0x11, // deprecated
+    update_next   = 0x12, // deprecated
+    updates       = 0x80,
+    #define TYPE_MACRO(t, rt, type_id, r, w)\
+    update_##type_id,\
+    update_last_##type_id,\
+    update_next_##type_id,\
+    update_vector_##type_id,
+    #include "TYPE_MACRO.h"
+    #undef TYPE_MACRO
    };
  };
 }
