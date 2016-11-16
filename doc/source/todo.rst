@@ -27,7 +27,7 @@ Interpreter
 - readline, help
 - SQL import
 
-Journal file
+Journal File
 ------------
 - joedb_truncate <file> <position> (+optionally show position in logdump)
 - check for write errors (out of space) -> exception (option?)
@@ -39,8 +39,9 @@ Journal file
 New operations and types
 ------------------------
 - Use diff for large-string update
+- Date type?
 
-On-disk storage
+On-disk Storage
 ----------------
 - sqlite
 - stxxl? For strings: store a big vector of chars. A string is length + index in the big vector of chars.
@@ -68,7 +69,7 @@ Server
 - Clients can get/release exclusive write access.
 - Writes are broadcast to all clients, handled as triggers.
 
-Other ideas
+Other Ideas
 -----------
 - index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
 - vim syntax and completer with YouCompleteMe
