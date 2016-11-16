@@ -103,36 +103,6 @@ else()
  message("== WARNING: run ./get_gtest.sh for tests")
 endif()
 
-if(false)
-find_package(Boost COMPONENTS system thread)
-if(Boost_SYSTEM_FOUND)
- add_executable(joedb_asio_server EXCLUDE_FROM_ALL
-  ../src/communication/asio/joedb_asio_server.cpp
-  ../src/interpreter/io/file_error_message.cpp
- )
- target_link_libraries(joedb_asio_server ${Boost_SYSTEM_LIBRARY} joedb)
-
- add_executable(joedb_asio_client EXCLUDE_FROM_ALL
-  ../src/communication/asio/joedb_asio_client.cpp
- )
- target_link_libraries(joedb_asio_client ${Boost_SYSTEM_LIBRARY})
- target_link_libraries(joedb_asio_client ${Boost_THREAD_LIBRARY})
-
- add_executable(joedb_interprocess_server EXCLUDE_FROM_ALL
-  ../src/communication/interprocess/joedb_interprocess_server.cpp
- )
- target_link_libraries(joedb_interprocess_server rt)
-
- add_executable(joedb_interprocess_client EXCLUDE_FROM_ALL
-  ../src/communication/interprocess/joedb_interprocess_client.cpp
- )
- target_link_libraries(joedb_interprocess_client rt)
-
-else()
- message("== WARNING: boost system not found: communication not compiled")
-endif()
-endif()
-
 find_library(SQLITE3_LIBRARY sqlite3)
 if (SQLITE3_LIBRARY)
  add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
