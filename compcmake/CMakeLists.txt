@@ -27,6 +27,7 @@ set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.8.0/googletest)
 
 include_directories(
  ${GTEST_INCLUDE_DIRS}
+ ../src/includes
  ../src/includes/joedb
  ../src/interpreter/abstract
  ../src/interpreter/io
