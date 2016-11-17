@@ -5,7 +5,6 @@ Short term
 ----------
 
 - single cpp that includes all dependencies for linking to compiled code
-- add a log event that indicates that data is valid at this point
 
 Interpreter
 -----------

@@ -20,6 +20,11 @@ namespace joedb
     db.timestamp(timestamp);
    }
 
+   void after_valid_data() override
+   {
+    db.valid_data();
+   }
+
    void after_insert(table_id_t table_id, record_id_t record_id) override
    {
     error |= !db.insert_into(table_id, record_id);

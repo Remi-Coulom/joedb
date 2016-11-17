@@ -59,6 +59,7 @@ UPDATE "alltypes" SET "o" = 42 WHERE "__id" = 1;
 UPDATE "alltypes" SET "oulala" = 12345 WHERE "__id" = 1;
 -- 2009-02-14 00:31:30
 -- This is a comment. これは日本語です。
+-- valid data
 -- custom: toto_le_petit_rigolo
 ALTER TABLE "alltypes" RENAME TO "all_types";
 ALTER TABLE "all_types" RENAME COLUMN "s" TO "str";

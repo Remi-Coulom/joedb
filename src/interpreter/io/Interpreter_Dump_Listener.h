@@ -106,6 +106,11 @@ namespace joedb
     out << get_local_time(timestamp) << '\n';
    }
 
+   void after_valid_data() override
+   {
+    out << "valid_data\n";
+   }
+
    void after_insert(table_id_t table_id, record_id_t record_id) override
    {
     out << "insert_into " << get_table_name(table_id) << ' ';

@@ -308,6 +308,10 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     }
     break;
 
+    case operation_t::valid_data:
+     listener.after_valid_data();
+    break;
+
     default:
      state = state_t::bad_format;
     break;
@@ -421,6 +425,13 @@ void joedb::Journal_File::after_timestamp(int64_t timestamp)
 {
  file.write<operation_t>(operation_t::timestamp);
  file.write<int64_t>(timestamp);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Journal_File::after_valid_data()
+/////////////////////////////////////////////////////////////////////////////
+{
+ file.write<operation_t>(operation_t::valid_data);
 }
 
 /////////////////////////////////////////////////////////////////////////////

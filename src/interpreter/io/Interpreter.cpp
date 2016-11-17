@@ -107,6 +107,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    out << "~~~~~~~\n";
    out << " timestamp [<stamp>] (if no value is given, use current time)\n";
    out << " comment \"<comment_string>\"\n";
+   out << " valid_data\n";
    out << '\n';
    out << "Data definition\n";
    out << "~~~~~~~~~~~~~~~\n";
@@ -255,6 +256,11 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     db.timestamp(timestamp);
     out << timestamp << '\n';
    }
+  }
+  else if (command == "valid_data") /////////////////////////////////////////
+  {
+   db.valid_data();
+   out << "OK: valid data\n";
   }
   else if (command == "insert_into") ////////////////////////////////////////
   {

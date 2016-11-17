@@ -87,6 +87,7 @@ OK: add_field oulala; field_id = 9
 OK: inserted record, id = 1
 OK: timestamp: 1234567890
 OK: comment: "This is a comment. これは日本語です。"
+OK: valid data
 OK: custom command: toto_le_petit_rigolo
 OK: renamed table 5 to all_types
 OK: renamed field s to str

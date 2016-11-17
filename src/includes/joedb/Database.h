@@ -43,6 +43,7 @@ namespace joedb
    void custom(const std::string &name);
    void comment(const std::string &comment) const;
    void timestamp(int64_t timestamp) const;
+   void valid_data() const;
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;

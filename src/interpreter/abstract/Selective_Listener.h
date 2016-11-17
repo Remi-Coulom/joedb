@@ -95,6 +95,12 @@ namespace joedb
      listener.after_timestamp(timestamp);
    }
 
+   void after_valid_data() override
+   {
+    if (mode & information)
+     listener.after_valid_data();
+   }
+
    //
    // data events
    //

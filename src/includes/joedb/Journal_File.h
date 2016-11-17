@@ -45,6 +45,7 @@ namespace joedb
    void after_custom(const std::string &name) override;
    void after_comment(const std::string &comment) override;
    void after_timestamp(int64_t timestamp) override;
+   void after_valid_data() override;
    void after_insert(table_id_t table_id, record_id_t record_id) override;
    void after_insert_vector(table_id_t table_id,
                             record_id_t record_id,
@@ -100,6 +101,7 @@ namespace joedb
     timestamp     = 0x0b,
     rename_table  = 0x0c,
     rename_field  = 0x0d,
+    valid_data    = 0x0e,
     insert_vector = 0x0f,
     custom        = 0x10,
     update_vector = 0x11, // deprecated
