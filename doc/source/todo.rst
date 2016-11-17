@@ -4,8 +4,6 @@ TODO
 Short term
 ----------
 
-- single cpp that includes all dependencies for linking to compiled code
-
 Interpreter
 -----------
 - use freedom keepers instead of maps for tables and fields
