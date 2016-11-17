@@ -33,6 +33,7 @@ On-disk Storage
 
 Compiler
 --------
+- use std::set and std::multiset for indexes? Might be better for strings.
 - store each field as a vector
 - before_update_vector: ask for storage pointer to the listener
 - debug code with range checking
