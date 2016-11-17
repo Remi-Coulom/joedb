@@ -6,7 +6,7 @@ cd $dir
 ninja || exit 1
 cd -
 
-rm -vf tutorial.joedb
+rm -vf tutorial.joedb index_tutorial.joedb
 $dir/joedbc tutorial.joedbi tutorial.joedbc || exit 1
 
 cd $dir
