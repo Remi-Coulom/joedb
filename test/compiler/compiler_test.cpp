@@ -411,6 +411,24 @@ int do_vector_test()
     std::cout << ", " << db.get_y(v[i]) << "}\n";
    }
   }
+
+  {
+   vector_test::File_Database db("vector_hole.joedb");
+   if (!db.is_good())
+   {
+    std::cout << "Error opening vector_hole.joedb\n";
+    std::cout << db.get_last_error_message() << '\n';
+   }
+  }
+
+  {
+   vector_test::File_Database db("vector_delete.joedb");
+   if (!db.is_good())
+   {
+    std::cout << "Error opening vector_delete.joedb\n";
+    std::cout << db.get_last_error_message() << '\n';
+   }
+  }
  }
 
  //

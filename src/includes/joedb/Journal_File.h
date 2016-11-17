@@ -18,7 +18,9 @@ namespace joedb
     bad_file,
     unsupported_version,
     bad_format,
-    crash_check
+    crash_check,
+    listener_threw,
+    journal_errors
    };
 
    state_t get_state() const {return state;}

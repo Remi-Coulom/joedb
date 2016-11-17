@@ -44,15 +44,21 @@ int main(int argc, char **argv)
    journal.replay_log(dump_listener);
   }
 
-  std::cerr << "---> ";
-  static const char * status_string[] =
+  static char const * const status_string[]
   {
    "no_error",
    "bad_file",
    "unsupported_version",
    "bad_format",
-   "crash_check"
+   "crash_check",
+   "listener_threw"
   };
+
+  static_assert(sizeof(status_string) / sizeof(*status_string) ==
+   size_t(joedb::Journal_File::state_t::journal_errors),
+   "size of status_string is wrong");
+
+  std::cerr << "---> ";
   std::cerr << status_string[int(journal.get_state())] << '\n';
  }
 

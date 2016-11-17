@@ -316,7 +316,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
  }
  catch (std::runtime_error e)
  {
-  state = state_t::crash_check;
+  state = state_t::listener_threw;
  }
 
  if (file.get_position() != end)

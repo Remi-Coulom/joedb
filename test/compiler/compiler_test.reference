@@ -133,3 +133,7 @@ v[1] = {0.1, 1.234}
 v[2] = {0.2, 1.234}
 v[3] = {0.3, 1.234}
 v[4] = {0.4, 1.234}
+Error opening vector_hole.joedb
+Non-contiguous insert in vector storage of table point
+Error opening vector_delete.joedb
+Can't delete in vector storage of table point

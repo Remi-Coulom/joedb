@@ -244,6 +244,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "  friend class range_of_" << index.name << ";\n";
 
  out << R"RRR(
+  public:
+   const std::string &get_last_error_message() const
+   {
+    return last_error_message;
+   }
+
   protected:
    joedb::Dummy_Listener dummy_listener;
 
@@ -253,11 +259,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     timestamp();
     comment(message);
+    last_error_message = message;
     before_throwing();
     throw std::runtime_error(message);
    }
 
   private:
+   std::string last_error_message;
    joedb::Listener *listener;
 
 )RRR";
@@ -434,17 +442,20 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    const std::string &tname = table.second.get_name();
    const auto storage = options.get_table_options(table.first).storage;
 
-   if (storage != Compiler_Options::Table_Storage::vector)
-   {
-    out << "    ";
-    if (first)
-     first = false;
-    else
-     out << "else ";
+   out << "    ";
+   if (first)
+    first = false;
+   else
+    out << "else ";
 
-    out << "if (table_id == " << table.first << ")\n";
-    out << "     internal_delete_" << tname << "(record_id);\n";
+   out << "if (table_id == " << table.first << ")\n";
+   if (storage == Compiler_Options::Table_Storage::vector)
+   {
+    out << "     error(\"Can't delete in vector storage of table ";
+    out << tname << "\");\n";
    }
+   else
+    out << "     internal_delete_" << tname << "(record_id);\n";
   }
  }
  out << "   }\n";
@@ -459,18 +470,26 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   bool first = true;
   for (auto &table: tables)
   {
+   const std::string &tname = table.second.get_name();
+   const auto storage = options.get_table_options(table.first).storage;
+
    out << "    ";
    if (first)
     first = false;
    else
     out << "else ";
 
-   const std::string &name = table.second.get_name();
    out << "if (table_id == " << table.first << ")\n";
    out << "    {\n";
-   out << "     if (storage_of_" << name << ".size() < record_id)\n";
-   out << "      storage_of_" << name << ".resize(record_id);\n";
-   out << "     internal_insert_" << name << "(record_id);\n";
+   if (storage == Compiler_Options::Table_Storage::vector)
+   {
+    out << "     if (record_id != storage_of_" << tname << ".size() + 1)\n";
+    out << "      error(\"Non-contiguous insert in vector storage of table ";
+    out << tname << "\");\n";
+   }
+   out << "     if (storage_of_" << tname << ".size() < record_id)\n";
+   out << "      storage_of_" << tname << ".resize(record_id);\n";
+   out << "     internal_insert_" << tname << "(record_id);\n";
    out << "    }\n";
   }
  }
