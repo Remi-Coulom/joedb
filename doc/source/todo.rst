@@ -7,8 +7,6 @@ Short term
 Interpreter
 -----------
 - use freedom keepers instead of maps for tables and fields
-- show command prompt
-- readline, help
 - SQL import
 
 Journal File

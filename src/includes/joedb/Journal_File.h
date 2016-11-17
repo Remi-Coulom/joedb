@@ -68,6 +68,7 @@ namespace joedb
    ~Journal_File() override;
 
    static const uint32_t version_number;
+   static const uint32_t compatible_version;
    static const uint64_t header_size;
 
   private:

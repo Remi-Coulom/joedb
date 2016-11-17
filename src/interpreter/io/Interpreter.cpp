@@ -5,6 +5,7 @@
 #include "Listener.h"
 #include "type_io.h"
 #include "is_identifier.h"
+#include "Journal_File.h"
 
 #include <iostream>
 #include <sstream>
@@ -99,9 +100,10 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    out << '\n';
    out << "Commands that don't modify the database\n";
    out << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+   out << " about\n";
    out << " help\n";
-   out << " quit\n";
    out << " dump\n";
+   out << " quit\n";
    out << '\n';
    out << "Logging\n";
    out << "~~~~~~~\n";
@@ -134,6 +136,16 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
    out << " delete_from <table_name> <record_id>\n";
    out << '\n';
+  }
+  else if (command == "about") ///////////////////////////////////////////////
+  {
+   out << "version " <<
+   #include "../../VERSION"
+   ;
+   out << ", format " << Journal_File::compatible_version << '-' <<
+                         Journal_File::version_number;
+   out << ", compiled " << __DATE__ << ' ' << __TIME__ << '\n';
+   out << "https://www.remi-coulom.fr/joedb/\n";
   }
   else if (command == "create_table") ////////////////////////////////////////
   {

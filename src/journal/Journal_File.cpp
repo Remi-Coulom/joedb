@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 const uint32_t joedb::Journal_File::version_number = 0x00000004;
+const uint32_t joedb::Journal_File::compatible_version = 0x00000004;
 const uint64_t joedb::Journal_File::header_size = 41;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,7 +66,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
    // Check version number
    //
    const uint32_t version = file.read<uint32_t>();
-   if (version != version_number)
+   if (version < compatible_version || version > version_number)
     state = state_t::unsupported_version;
 
    //
