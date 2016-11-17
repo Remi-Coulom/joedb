@@ -702,6 +702,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void after_timestamp(int64_t timestamp) override
    {
    }
+
+   void after_valid_data() override
+   {
+   }
 )RRR";
 
  //
@@ -716,6 +720,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    void timestamp();
    void comment(const std::string &comment);
+   void valid_data();
 )RRR";
 
  for (auto &table: tables)
@@ -1241,6 +1246,13 @@ void Database::timestamp()
 /////////////////////////////////////////////////////////////////////////////
 {
  listener->after_timestamp(std::time(0));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void Database::valid_data()
+/////////////////////////////////////////////////////////////////////////////
+{
+ listener->after_valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
