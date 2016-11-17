@@ -34,21 +34,6 @@ std::string Dump_Listener::get_field_name
 }
 
 /////////////////////////////////////////////////////////////////////////////
-Type Dump_Listener::get_field_type(table_id_t table_id, field_id_t field_id)
-/////////////////////////////////////////////////////////////////////////////
-{
- auto table = db.get_tables().find(table_id);
- if (table == db.get_tables().end())
-  return Type();
-
- auto field = table->second.get_fields().find(field_id);
- if (field == table->second.get_fields().end())
-  return Type();
-
- return field->second.get_type();
-}
-
-/////////////////////////////////////////////////////////////////////////////
 std::string Dump_Listener::get_local_time(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
