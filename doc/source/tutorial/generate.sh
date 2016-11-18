@@ -20,3 +20,5 @@ cat tutorial.out
 $dir/joedb_logdump tutorial.joedb >logdump.out
 $dir/joedb_logdump --sql tutorial.joedb >logdump.sql
 echo help | $dir/joedbi >joedbi_help.out
+
+sed -e s#VERSION#`echo $(<../../../VERSION) | tr -d '"'`# compiling-template.sh >compiling.sh
