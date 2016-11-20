@@ -21,14 +21,8 @@ Similar packages should be available in other systems. Joedb was compiled succes
 
 When the necessary packages are installed, the following commands should get you ready:
 
-.. code-block:: bash
-
-    git clone https://github.com/Remi-Coulom/joedb.git
-    cd joedb/compcmake/
-    ./get_gtest.sh
-    ./generate.sh
-    cd ninja_release
-    ninja
+.. literalinclude:: ./tutorial/compiling.sh
+   :language: bash
 
 If you wish to install joedb system-wide, you can run:
 
