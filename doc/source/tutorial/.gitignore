@@ -1,5 +1,7 @@
 tutorial.h
 tutorial.cpp
+tutorial_wrapper.h
+tutorial_wrapper.cpp
 edited_tutorial.h
 tutorial.joedb
 tutorial.out

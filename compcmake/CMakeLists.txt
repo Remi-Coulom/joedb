@@ -125,6 +125,7 @@ target_link_libraries(joedbi_insert joedb)
 add_executable(joedbc
  ../src/compiler/joedbc.cpp
  ../src/compiler/Compiler_Options_io.cpp
+ ../src/compiler/c_wrapper.cpp
  $<TARGET_OBJECTS:io_objects>
 )
 target_link_libraries(joedbc joedb)
@@ -146,6 +147,13 @@ add_executable(index_tutorial EXCLUDE_FROM_ALL
  ../doc/source/tutorial/index_tutorial.cpp
 )
 target_link_libraries(index_tutorial joedb)
+
+add_executable(wrapper_tutorial EXCLUDE_FROM_ALL
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
+ ../doc/source/tutorial/tutorial_main.c
+)
+target_link_libraries(wrapper_tutorial joedb)
 
 set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp

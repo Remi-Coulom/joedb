@@ -79,9 +79,10 @@ Serialization
 
 - http://www.boost.org/doc/libs/1_56_0/libs/serialization/doc/index.html
 
-C++ queries
+C++
 
-- http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
+- queries: http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
+- db with templates: https://github.com/RamblingMadMan/dbpp
 
 Interesting paper
 

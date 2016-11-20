@@ -37,10 +37,13 @@ namespace joedb
    std::vector<Index> indices;
    std::vector<Table_Options> table_options;
 
+   bool generate_c_wrapper;
+
   public:
    Compiler_Options(const Database &db):
     db(db),
-    table_options(db.get_current_table_id(), {freedom_keeper})
+    table_options(db.get_current_table_id(), {freedom_keeper}),
+    generate_c_wrapper(false)
    {
    }
 
@@ -50,6 +53,7 @@ namespace joedb
     table_options[table_id - 1].storage = storage;
    }
    void add_index(const Index &index) {indices.push_back(index);}
+   void set_generate_c_wrapper(bool value) {generate_c_wrapper = value;}
 
    const Database &get_db() const {return db;}
    const std::string &get_namespace_name() const {return namespace_name;}
@@ -58,6 +62,7 @@ namespace joedb
    {
     return table_options[table_id - 1];
    }
+   bool get_generate_c_wrapper() const {return generate_c_wrapper;}
  };
 }
 
