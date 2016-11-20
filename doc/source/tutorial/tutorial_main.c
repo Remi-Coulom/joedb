@@ -17,6 +17,11 @@ int main()
   return 1;
  }
 
+ tutorial_timestap(db);
+ tutorial_comment(db, "This is a comment");
+ tutorial_valid_data(db);
+ tutorial_checkpoint_full_commit(db);
+
  tutorial_delete(db);
 
  return 0;

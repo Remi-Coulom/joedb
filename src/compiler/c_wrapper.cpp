@@ -31,7 +31,15 @@ void joedb::generate_c_wrapper
 
  header << name << "_db *" << name << "_open_file(const char *file_name, bool read_only);\n";
  header << "void " << name << "_delete(" << name << "_db *db);\n";
+ header << '\n';
  header << "bool " << name << "_is_good(" << name << "_db *db);\n";
+ header << "void " << name << "_checkpoint_no_commit(" << name << "_db *db);\n";
+ header << "void " << name << "_checkpoint_half_commit(" << name << "_db *db);\n";
+ header << "void " << name << "_checkpoint_full_commit(" << name << "_db *db);\n";
+ header << '\n';
+ header << "void " << name << "_timestap(" << name << "_db *db);\n";
+ header << "void " << name << "_comment(" << name << "_db *db, const char *comment);\n";
+ header << "void " << name << "_valid_data(" << name << "_db *db);\n";
 
  header << "\n#ifdef __cplusplus\n";
  header << "}\n";
@@ -66,4 +74,37 @@ void joedb::generate_c_wrapper
  body << convert.str();
  body << " return p->is_good();\n";
  body << "}\n";
+
+ body << "\nvoid " << name << "_checkpoint_no_commit(" << name << "_db *db)\n";
+ body << "{\n";
+ body << convert.str();
+ body << " p->checkpoint_no_commit();\n";
+ body << "}\n";
+ body << "\nvoid " << name << "_checkpoint_half_commit(" << name << "_db *db)\n";
+ body << "{\n";
+ body << convert.str();
+ body << " p->checkpoint_half_commit();\n";
+ body << "}\n";
+ body << "\nvoid " << name << "_checkpoint_full_commit(" << name << "_db *db)\n";
+ body << "{\n";
+ body << convert.str();
+ body << " p->checkpoint_full_commit();\n";
+ body << "}\n";
+
+ body << "\nvoid " << name << "_timestap(" << name << "_db *db)\n";
+ body << "{\n";
+ body << convert.str();
+ body << " p->timestamp();\n";
+ body << "}\n";
+ body << "\nvoid " << name << "_comment(" << name << "_db *db, const char *comment)\n";
+ body << "{\n";
+ body << convert.str();
+ body << " p->comment(comment);\n";
+ body << "}\n";
+ body << "\nvoid " << name << "_valid_data(" << name << "_db *db)\n";
+ body << "{\n";
+ body << convert.str();
+ body << " p->valid_data();\n";
+ body << "}\n";
+ body << '\n';
 }
