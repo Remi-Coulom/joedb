@@ -22,8 +22,9 @@ int main()
  tutorial_valid_data(db);
  tutorial_checkpoint_full_commit(db);
 
- tutorial_id_of_city id = tutorial_new_city(db);
- tutorial_delete_city(db, id);
+ tutorial_set_city_name(db, tutorial_new_city(db), "Lille");
+ tutorial_set_city_name(db, tutorial_new_city(db), "Paris");
+ tutorial_set_city_name(db, tutorial_new_city(db), "Versailles");
 
  tutorial_delete(db);
 

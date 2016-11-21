@@ -4,13 +4,57 @@
 #include <iostream>
 #include <sstream>
 
+namespace joedb {
+
 /////////////////////////////////////////////////////////////////////////////
-void joedb::generate_c_wrapper
+void write_c_type
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Compiler_Options &options,
+ Type type
+)
+{
+ const Database &db = options.get_db();
+
+ switch (type.get_type_id())
+ {
+  case Type::type_id_t::null:
+   out << "void ";
+  break;
+
+  case Type::type_id_t::string:
+   out << "char const *";
+  break;
+
+  case Type::type_id_t::reference:
+  {
+   const table_id_t referred = type.get_table_id();
+   out << options.get_namespace_name() << "_id_of_";
+   out << db.get_tables().find(referred)->second.get_name() << ' ';
+  }
+  break;
+
+  #define TYPE_MACRO(type, return_type, type_id, read, write)\
+  case Type::type_id_t::type_id:\
+   out << #type << ' ';\
+  break;
+  #define TYPE_MACRO_NO_STRING
+  #define TYPE_MACRO_NO_REFERENCE
+  #include "TYPE_MACRO.h"
+  #undef TYPE_MACRO_NO_REFERENCE
+  #undef TYPE_MACRO_NO_STRING
+  #undef TYPE_MACRO
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void generate_c_wrapper
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &header,
  std::ostream &body,
- const joedb::Compiler_Options &options
+ const Compiler_Options &options
 )
 {
  const std::string &name = options.get_namespace_name();
@@ -70,6 +114,21 @@ void joedb::generate_c_wrapper
    header << "void " << name << "_delete_" << tname;
    header << '(' << name << "_db *db, ";
    header << name << "_id_of_" << tname << " id);\n";
+  }
+
+  for (const auto &field: table.second.get_fields())
+  {
+   const std::string &fname = field.second.get_name();
+   write_c_type(header, options, field.second.get_type());
+   header << name << "_get_" << tname << '_' << fname << "(";
+   header << name << "_db *db, ";
+   header << name << "_id_of_" << tname;
+   header << " id);\n";
+   header << "void " << name << "_set_" << tname << '_' << fname << "(";
+   header << name << "_db *db, ";
+   header << name << "_id_of_" << tname << " id, ";
+   write_c_type(header, options, field.second.get_type());
+   header << "value);\n";
   }
  }
 
@@ -171,5 +230,42 @@ void joedb::generate_c_wrapper
    body << '(' << name << "::id_of_" << tname << "(id));\n";
    body << "}\n\n";
   }
+
+  for (const auto &field: table.second.get_fields())
+  {
+   const std::string &fname = field.second.get_name();
+   write_c_type(body, options, field.second.get_type());
+   body << name << "_get_" << tname << '_' << fname << "(";
+   body << name << "_db *db, ";
+   body << name << "_id_of_" << tname;
+   body << " id)\n{\n";
+   body << convert.str();
+   body << " return p->get_" << fname << '(' << name << "::id_of_" << tname << "(id))";
+   if (field.second.get_type().get_type_id() == Type::type_id_t::string)
+    body << ".c_str()";
+   else if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
+    body << ".get_id()";
+   body << ";\n";
+   body << "}\n\n";
+   body << "void " << name << "_set_" << tname << '_' << fname << "(";
+   body << name << "_db *db, ";
+   body << name << "_id_of_" << tname << " id, ";
+   write_c_type(body, options, field.second.get_type());
+   body << "value)\n{\n";
+   body << convert.str();
+   body << " p->set_" << fname << '(' << name << "::id_of_" << tname << "(id), ";
+   if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
+   {
+    body << name << "::id_of_";
+    body << db.get_tables().find(field.second.get_type().get_table_id())->second.get_name();
+    body << "(value)";
+   }
+   else
+    body << "value";
+   body << ");\n";
+   body << "}\n\n";
+  }
  }
+}
+
 }
