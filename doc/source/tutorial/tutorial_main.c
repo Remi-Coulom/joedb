@@ -17,10 +17,13 @@ int main()
   return 1;
  }
 
- tutorial_timestap(db);
+ tutorial_timestamp(db);
  tutorial_comment(db, "This is a comment");
  tutorial_valid_data(db);
  tutorial_checkpoint_full_commit(db);
+
+ tutorial_id_of_city id = tutorial_new_city(db);
+ tutorial_delete_city(db, id);
 
  tutorial_delete(db);
 
