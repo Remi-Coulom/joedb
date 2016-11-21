@@ -735,6 +735,50 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   // Declaration of container access
   //
   out << "   container_of_" << tname << " get_" << tname << "_table() const;\n\n";
+
+  out << "   id_of_" << tname << " get_beginning_of_" << tname << "() const\n";
+  out << "   {\n";
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "    return id_of_" << tname << "(storage_of_" << tname << ".get_first_used() - 1);\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "    return id_of_" << tname << "(1);\n";
+   break;
+  }
+  out << "   }\n";
+
+  out << "   id_of_" << tname << " get_end_of_" << tname << "() const\n";
+  out << "   {\n";
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "    return id_of_" << tname << "(-1);\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "    return id_of_" << tname << "(storage_of_" << tname << ".size() + 1);\n";
+   break;
+  }
+  out << "   }\n";
+
+  out << "   id_of_" << tname << " get_next_" << tname << "(id_of_" << tname << " id) const\n";
+  out << "   {\n";
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "    return id_of_" << tname << "(storage_of_" << tname << ".get_next(id.get_id() + 1) - 1);\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "    return id_of_" << tname << "(id.get_id() + 1);\n";
+   break;
+  }
+  out << "   }\n\n";
+
+
   out << "   template<class Comparator>\n";
   out << "   std::vector<id_of_" << tname << "> sorted_" << tname;
   out << "(Comparator comparator) const;\n\n";
