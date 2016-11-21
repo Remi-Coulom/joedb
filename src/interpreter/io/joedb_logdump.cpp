@@ -32,6 +32,11 @@ int main(int argc, char **argv)
    return 1;
 
   joedb::Journal_File journal(file);
+  if (!journal.is_good())
+  {
+   std::cerr << "Error opening file\n";
+   return 1;
+  }
 
   if (sql)
   {
