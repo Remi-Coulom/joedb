@@ -58,6 +58,8 @@ namespace joedb
 
    virtual ~Generic_File() {}
 
+   virtual int64_t get_size() const {return -1;} // -1 means no known size
+
   protected:
    mode_t mode;
    status_t status;

@@ -5,6 +5,7 @@
 #include "Interpreter_Dump_Listener.h"
 #include "SQL_Dump_Listener.h"
 #include "file_error_message.h"
+#include "diagnostics.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -12,17 +13,24 @@ int main(int argc, char **argv)
 {
  if (argc <= 1)
  {
-  std::cerr << "usage: " << argv[0] << " [--sql] <file.joedb>\n";
+  std::cerr << "usage: " << argv[0] << " [--sql|--header] <file.joedb>\n";
   return 1;
  }
  else
  {
   bool sql = false;
+  bool header = false;
   int file_index = 1;
 
   if (std::string(argv[1]) == "--sql")
   {
    sql = true;
+   file_index = 2;
+  }
+
+  if (std::string(argv[1]) == "--header")
+  {
+   header = true;
    file_index = 2;
   }
 
@@ -42,6 +50,14 @@ int main(int argc, char **argv)
   {
    joedb::SQL_Dump_Listener dump_listener(std::cout);
    journal.replay_log(dump_listener);
+  }
+  else if (header)
+  {
+   std::cout << '\n';
+   joedb::dump_header(std::cout, file);
+   std::cout << '\n';
+   joedb::about_joedb(std::cout);
+   std::cout << '\n';
   }
   else
   {

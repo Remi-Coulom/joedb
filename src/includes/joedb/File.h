@@ -14,6 +14,7 @@ namespace joedb
    File(const char *file_name, mode_t mode) {open(file_name, mode);}
    void open(const char *file_name, mode_t mode);
    ~File() override;
+   int64_t get_size() const override;
 
   protected:
    size_t read_buffer() override;

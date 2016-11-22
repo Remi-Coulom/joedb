@@ -6,6 +6,7 @@
 #include "type_io.h"
 #include "is_identifier.h"
 #include "Journal_File.h"
+#include "diagnostics.h"
 
 #include <iostream>
 #include <sstream>
@@ -139,13 +140,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   }
   else if (command == "about") ///////////////////////////////////////////////
   {
-   out << "version " <<
-   #include "../../VERSION"
-   ;
-   out << ", format " << Journal_File::compatible_version << '-' <<
-                         Journal_File::version_number;
-   out << ", compiled " << __DATE__ << ' ' << __TIME__ << '\n';
-   out << "https://www.remi-coulom.fr/joedb/\n";
+   about_joedb(out);
   }
   else if (command == "create_table") ////////////////////////////////////////
   {

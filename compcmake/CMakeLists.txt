@@ -43,9 +43,14 @@ add_library(joedb_objects OBJECT
  ../src/interpreter/abstract/Listener.cpp
  ../src/interpreter/abstract/Multiplexer.cpp
  ../src/interpreter/io/Dump_Listener.cpp
+ ../src/interpreter/io/dump.cpp
+ ../src/interpreter/io/Interpreter.cpp
+ ../src/interpreter/io/type_io.cpp
+ ../src/interpreter/io/file_error_message.cpp
  ../src/journal/File.cpp
  ../src/journal/Generic_File.cpp
  ../src/journal/Journal_File.cpp
+ ../src/journal/diagnostics.cpp
  ../src/journal/Stream_File.cpp
 )
 
@@ -60,28 +65,18 @@ else()
  )
 endif()
 
-add_library(io_objects OBJECT
- ../src/interpreter/io/dump.cpp
- ../src/interpreter/io/Interpreter.cpp
- ../src/interpreter/io/type_io.cpp
- ../src/interpreter/io/file_error_message.cpp
-)
-
 add_executable(joedbi
  ../src/interpreter/io/joedbi.cpp
- $<TARGET_OBJECTS:io_objects>
 )
 target_link_libraries(joedbi joedb)
 
 add_executable(joedb_logdump
  ../src/interpreter/io/joedb_logdump.cpp
- $<TARGET_OBJECTS:io_objects>
 )
 target_link_libraries(joedb_logdump joedb)
 
 add_executable(joedb_pack
  ../src/interpreter/io/joedb_pack.cpp
- ../src/interpreter/io/dump.cpp
 )
 target_link_libraries(joedb_pack joedb)
 
@@ -102,7 +97,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
-  $<TARGET_OBJECTS:io_objects>
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
 else()
@@ -126,7 +120,6 @@ add_executable(joedbc
  ../src/compiler/joedbc.cpp
  ../src/compiler/Compiler_Options_io.cpp
  ../src/compiler/c_wrapper.cpp
- $<TARGET_OBJECTS:io_objects>
 )
 target_link_libraries(joedbc joedb)
 
