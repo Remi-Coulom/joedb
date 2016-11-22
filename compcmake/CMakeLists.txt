@@ -127,6 +127,10 @@ target_link_libraries(joedbc joedb)
 # Targets below require databases to be compiled
 #############################################################################
 set_source_files_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
+ PROPERTIES GENERATED TRUE
+)
+set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  PROPERTIES GENERATED TRUE
 )
