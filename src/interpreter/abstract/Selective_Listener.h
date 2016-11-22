@@ -27,7 +27,7 @@ namespace joedb
    {
    }
 
-   bool is_good() const {return listener.is_good();}
+   bool is_good() const override {return listener.is_good();}
 
    //
    // schema events
