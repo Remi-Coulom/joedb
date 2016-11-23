@@ -322,12 +322,16 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
  catch (std::runtime_error e)
  {
   state = state_t::listener_threw;
+  return;
  }
 
  if (file.get_position() != end)
+ {
   state = state_t::crash_check;
- else
-  file.set_position(end); // get ready for writing
+  return;
+ }
+
+ file.set_position(end); // get ready for writing
 }
 
 /////////////////////////////////////////////////////////////////////////////
