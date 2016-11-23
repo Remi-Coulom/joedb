@@ -41,31 +41,27 @@ int main(int argc, char **argv)
 
   joedb::Journal_File journal(file);
 
-  if (header)
+  if (header || !journal.is_good())
   {
-   std::cout << '\n';
    joedb::dump_header(std::cout, file);
    std::cout << '\n';
    joedb::about_joedb(std::cout);
-   std::cout << '\n';
-   return 0;
+   if (header)
+    return 0;
   }
 
-  if (!journal.is_good())
+  if (journal.is_good())
   {
-   std::cerr << "Error opening file\n";
-   return 1;
-  }
-
-  if (sql)
-  {
-   joedb::SQL_Dump_Listener dump_listener(std::cout);
-   journal.replay_log(dump_listener);
-  }
-  else
-  {
-   joedb::Interpreter_Dump_Listener dump_listener(std::cout);
-   journal.replay_log(dump_listener);
+   if (sql)
+   {
+    joedb::SQL_Dump_Listener dump_listener(std::cout);
+    journal.replay_log(dump_listener);
+   }
+   else
+   {
+    joedb::Interpreter_Dump_Listener dump_listener(std::cout);
+    journal.replay_log(dump_listener);
+   }
   }
 
   static char const * const status_string[]
@@ -82,7 +78,7 @@ int main(int argc, char **argv)
    size_t(joedb::Journal_File::state_t::journal_errors),
    "size of status_string is wrong");
 
-  std::cerr << "---> ";
+  std::cerr << "\n---> ";
   std::cerr << status_string[int(journal.get_state())] << '\n';
  }
 

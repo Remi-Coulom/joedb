@@ -315,7 +315,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
 
     default:
      state = state_t::bad_format;
-    break;
+    return;
    }
   }
  }
