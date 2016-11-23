@@ -82,6 +82,10 @@ bool joedb::parse_compiler_options
   {
    compiler_options.set_generate_c_wrapper(true);
   }
+  else if (command == "generate_js_wrapper")
+  {
+   compiler_options.set_generate_js_wrapper(true);
+  }
   else if (command == "set_table_storage")
   {
    std::string table_name;
