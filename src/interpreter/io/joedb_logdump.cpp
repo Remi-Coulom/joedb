@@ -40,6 +40,17 @@ int main(int argc, char **argv)
    return 1;
 
   joedb::Journal_File journal(file);
+
+  if (header)
+  {
+   std::cout << '\n';
+   joedb::dump_header(std::cout, file);
+   std::cout << '\n';
+   joedb::about_joedb(std::cout);
+   std::cout << '\n';
+   return 0;
+  }
+
   if (!journal.is_good())
   {
    std::cerr << "Error opening file\n";
@@ -50,14 +61,6 @@ int main(int argc, char **argv)
   {
    joedb::SQL_Dump_Listener dump_listener(std::cout);
    journal.replay_log(dump_listener);
-  }
-  else if (header)
-  {
-   std::cout << '\n';
-   joedb::dump_header(std::cout, file);
-   std::cout << '\n';
-   joedb::about_joedb(std::cout);
-   std::cout << '\n';
   }
   else
   {
