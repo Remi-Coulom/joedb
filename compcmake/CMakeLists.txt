@@ -32,6 +32,7 @@ include_directories(
  ../src/interpreter/abstract
  ../src/interpreter/io
  ../src/journal
+ ../../../emsdk_portable/emscripten/master/system/include
  ${GOOGLE_TEST}
  ${GOOGLE_TEST}/include
 )
