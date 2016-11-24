@@ -1,4 +1,4 @@
-#include "Database.h"
+#include "joedb/Database.h"
 
 /////////////////////////////////////////////////////////////////////////////
 table_id_t joedb::Database::create_table(const std::string &name)
@@ -252,5 +252,5 @@ bool joedb::Database::update_vector_##type_id(table_id_t table_id,\
  }\
  return false;\
 }
-#include "TYPE_MACRO.h"
+#include "joedb/TYPE_MACRO.h"
 #undef TYPE_MACRO

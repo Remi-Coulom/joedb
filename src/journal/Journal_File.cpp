@@ -1,5 +1,5 @@
-#include "Journal_File.h"
-#include "Generic_File.h"
+#include "joedb/Journal_File.h"
+#include "joedb/Generic_File.h"
 
 #include <vector>
 #include <stdexcept>
@@ -285,7 +285,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
                                             &buffer[0]);\
     }\
     break;
-    #include "TYPE_MACRO.h"
+    #include "joedb/TYPE_MACRO.h"
     #undef TYPE_MACRO
 
     case operation_t::custom:
@@ -550,7 +550,7 @@ void joedb::Journal_File::after_update_vector_##type_id\
  for (record_id_t i = 0; i < size; i++)\
   file.write_method(value[i]);\
 }
-#include "TYPE_MACRO.h"
+#include "joedb/TYPE_MACRO.h"
 #undef TYPE_MACRO
 
 /////////////////////////////////////////////////////////////////////////////

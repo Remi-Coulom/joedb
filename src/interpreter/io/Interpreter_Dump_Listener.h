@@ -22,7 +22,7 @@ namespace joedb
       out << #type_id;\
      break;
      #define TYPE_MACRO_NO_REFERENCE
-     #include "TYPE_MACRO.h"
+     #include "joedb/TYPE_MACRO.h"
      #undef TYPE_MACRO_NO_REFERENCE
      #undef TYPE_MACRO
 
@@ -160,7 +160,7 @@ namespace joedb
     }\
     out << '\n';\
    }
-   #include "TYPE_MACRO.h"
+   #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO
  };
 }

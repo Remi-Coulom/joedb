@@ -1009,7 +1009,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  class File_Database: public Database
  {
   protected:
-   virtual void before_throwing() {checkpoint_no_commit();}
+   void before_throwing() override {checkpoint_no_commit();}
 
   private:
    joedb::File file;
@@ -1055,7 +1055,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void checkpoint_half_commit() {journal.checkpoint(1);}
    void checkpoint_full_commit() {journal.checkpoint(2);}
 
-   bool is_good() const
+   bool is_good() const override
    {
     return file.get_status() == joedb::File::status_t::success &&
            journal.get_state() == joedb::Journal_File::state_t::no_error &&

@@ -1,7 +1,7 @@
 #include <cstdio>
-#include "File.h"
-#include "Journal_File.h"
-#include "Database.h"
+#include "joedb/File.h"
+#include "joedb/Journal_File.h"
+#include "joedb/Database.h"
 
 using namespace joedb;
 

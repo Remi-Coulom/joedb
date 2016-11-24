@@ -171,7 +171,7 @@ namespace joedb
     out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
    }
    #define TYPE_MACRO_NO_STRING
-   #include "TYPE_MACRO.h"
+   #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO_NO_STRING
    #undef TYPE_MACRO
 

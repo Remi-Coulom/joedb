@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 
-#include "Type.h"
+#include "joedb/Type.h"
 
 namespace joedb
 {

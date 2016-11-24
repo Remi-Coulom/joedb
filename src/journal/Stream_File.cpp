@@ -1,4 +1,4 @@
-#include "Stream_File.h"
+#include "joedb/Stream_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Stream_File::Stream_File(std::iostream &stream, mode_t mode):

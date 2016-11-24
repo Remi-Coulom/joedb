@@ -1,4 +1,4 @@
-#include "Listener.h"
+#include "joedb/Listener.h"
 
 namespace joedb
 {
@@ -12,6 +12,6 @@ namespace joedb
   for (record_id_t i = 0; i < size; i++)\
    after_update_##type_id(table_id, record_id + i, field_id, value[i]);\
  }
- #include "TYPE_MACRO.h"
+ #include "joedb/TYPE_MACRO.h"
  #undef TYPE_MACRO
 }

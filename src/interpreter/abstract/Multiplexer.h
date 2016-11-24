@@ -1,7 +1,7 @@
 #ifndef joedb_Multiplexer_declared
 #define joedb_Multiplexer_declared
 
-#include "Listener.h"
+#include "joedb/Listener.h"
 
 #include <vector>
 #include <memory>
@@ -55,7 +55,7 @@ namespace joedb
                                       field_id_t field_id,\
                                       record_id_t size,\
                                       const type *value) override;
-   #include "TYPE_MACRO.h"
+   #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO
  };
 

@@ -1,7 +1,7 @@
 #ifndef joedb_Selective_Listener_declared
 #define joedb_Selective_Listener_declared
 
-#include "Listener.h"
+#include "joedb/Listener.h"
 
 namespace joedb
 {
@@ -133,7 +133,7 @@ namespace joedb
     if (mode & data)\
      listener.after_update_##type_id(table_id, record_id, field_id, value);\
    }
-   #include "TYPE_MACRO.h"
+   #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO
  };
 }

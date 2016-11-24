@@ -41,7 +41,7 @@ void write_c_type
   break;
   #define TYPE_MACRO_NO_STRING
   #define TYPE_MACRO_NO_REFERENCE
-  #include "TYPE_MACRO.h"
+  #include "joedb/TYPE_MACRO.h"
   #undef TYPE_MACRO_NO_REFERENCE
   #undef TYPE_MACRO_NO_STRING
   #undef TYPE_MACRO

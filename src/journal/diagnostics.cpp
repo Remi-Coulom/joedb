@@ -1,6 +1,6 @@
 #include "diagnostics.h"
-#include "Generic_File.h"
-#include "Journal_File.h"
+#include "joedb/Generic_File.h"
+#include "joedb/Journal_File.h"
 #include "type_io.h"
 
 #include <iostream>

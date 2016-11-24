@@ -1,8 +1,8 @@
 #ifndef joedb_Schema_Listener_declared
 #define joedb_Schema_Listener_declared
 
-#include "Listener.h"
-#include "Database.h"
+#include "joedb/Listener.h"
+#include "joedb/Database.h"
 
 namespace joedb
 {

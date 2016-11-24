@@ -1,6 +1,6 @@
 #include "dump.h"
-#include "Database.h"
-#include "Listener.h"
+#include "joedb/Database.h"
+#include "joedb/Listener.h"
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::dump(const Database &db, Listener &listener)
@@ -85,7 +85,7 @@ void joedb::dump(const Database &db, Listener &listener)
       case Type::type_id_t::type_id:\
        listener.after_update_##type_id(table_map[table.first], record_id, field_maps[table.first][field.first], table.second.get_##type_id(record_id, field.first));\
       break;
-      #include "TYPE_MACRO.h"
+      #include "joedb/TYPE_MACRO.h"
       #undef TYPE_MACRO
      }
     }
@@ -127,7 +127,7 @@ void joedb::dump_data(const Database &db, Listener &listener)
       case Type::type_id_t::type_id:\
        listener.after_update_vector_##type_id(table.first, i + 1, field.first, size, field.second.get_vector_##type_id() + i);\
       break;
-      #include "TYPE_MACRO.h"
+      #include "joedb/TYPE_MACRO.h"
       #undef TYPE_MACRO
      }
     }
@@ -141,7 +141,7 @@ void joedb::dump_data(const Database &db, Listener &listener)
 #include "DB_Listener.h"
 #include "Selective_Listener.h"
 #include "Multiplexer.h"
-#include "Journal_File.h"
+#include "joedb/Journal_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::pack(Journal_File &input_journal, Listener &listener)

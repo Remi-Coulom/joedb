@@ -170,7 +170,7 @@ void joedb::Internal_Listener::after_update_vector_##type_id\
   after_update_vector_##type_id(table_id, record_id, field_id, size, value)\
  );\
 }
-#include "TYPE_MACRO.h"
+#include "joedb/TYPE_MACRO.h"
 #undef TYPE_MACRO
 #undef MULTIPLEX
 

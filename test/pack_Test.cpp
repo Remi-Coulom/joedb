@@ -1,8 +1,8 @@
 #include "dump.h"
 #include "Interpreter.h"
-#include "Database.h"
-#include "Stream_File.h"
-#include "Journal_File.h"
+#include "joedb/Database.h"
+#include "joedb/Stream_File.h"
+#include "joedb/Journal_File.h"
 #include "Interpreter_Dump_Listener.h"
 #include "gtest/gtest.h"
 

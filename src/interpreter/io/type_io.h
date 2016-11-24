@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cstdint>
-#include "index_types.h"
+#include "joedb/index_types.h"
 
 namespace joedb
 {
