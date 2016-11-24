@@ -18,8 +18,9 @@ void joedb::write_json(std::ostream &out, const Database &db)
   else
    out << ",\n";
 
-  out << ' ' << table.second.get_name() << ":\n";
-  out << " {\n";
+  out << ' ';
+  write_string(out, table.second.get_name());
+  out << ":\n {\n";
 
   const auto &fields = table.second.get_fields();
   const auto &freedom = table.second.get_freedom();
@@ -32,7 +33,9 @@ void joedb::write_json(std::ostream &out, const Database &db)
    else
     out << ",\n";
 
-   out << "  " << field.second.get_name() << ": [";
+   out << "  ";
+   write_string(out, field.second.get_name());
+   out << ": [";
 
    bool first_value = true;
    for (size_t i = 0; i < freedom.size(); i++)
