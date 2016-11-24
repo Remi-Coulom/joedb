@@ -60,7 +60,6 @@ int main(int argc, char **argv)
       !db_listener.is_good())
   {
    std::cout << "Error reading database\n";
-   std::cout << "db_listener.is_good() = " << db_listener.is_good() << '\n';
    return 1;
   }
 

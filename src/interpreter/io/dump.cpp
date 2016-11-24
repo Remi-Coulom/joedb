@@ -74,7 +74,7 @@ void joedb::dump(const Database &db, Listener &listener)
    for (size_t i = 0; i < freedom.size(); i++)
     if (!freedom.is_free(i + 2))
     {
-     record_id_t record_id = i + 1;
+     const record_id_t record_id = i + 1;
 
      switch(field.second.get_type().get_type_id())
      {

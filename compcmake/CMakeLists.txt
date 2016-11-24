@@ -46,6 +46,7 @@ add_library(joedb_objects OBJECT
  ../src/interpreter/io/Dump_Listener.cpp
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
+ ../src/interpreter/io/json.cpp
  ../src/interpreter/io/type_io.cpp
  ../src/interpreter/io/file_error_message.cpp
  ../src/journal/File.cpp
@@ -85,6 +86,11 @@ add_executable(joedb_convert
  ../src/interpreter/io/joedb_convert.cpp
 )
 target_link_libraries(joedb_convert joedb)
+
+add_executable(joedb_to_json
+ ../src/interpreter/io/joedb_to_json.cpp
+)
+target_link_libraries(joedb_to_json joedb)
 
 if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
