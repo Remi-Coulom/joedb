@@ -13,11 +13,20 @@ int main(int argc, char **argv)
 {
  if (argc <= 1)
  {
-  std::cerr << "usage: " << argv[0] << "<file.joedb>\n";
+  std::cerr << "usage: " << argv[0] << "[--base64] <file.joedb>\n";
   return 1;
  }
 
- joedb::File file(argv[1], joedb::File::mode_t::read_existing);
+ bool base64 = false;
+ int file_index = 1;
+
+ if (argc > 2 && argv[1] == std::string("--base64"))
+ {
+  file_index++;
+  base64 = true;
+ }
+
+ joedb::File file(argv[file_index], joedb::File::mode_t::read_existing);
 
  if (joedb::file_error_message(std::cerr, file))
   return 1;
@@ -33,7 +42,7 @@ int main(int argc, char **argv)
   return 1;
  }
 
- joedb::write_json(std::cout, db);
+ joedb::write_json(std::cout, db, base64);
 
  return 0;
 }

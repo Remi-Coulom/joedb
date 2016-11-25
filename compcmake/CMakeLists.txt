@@ -43,6 +43,7 @@ add_library(joedb_objects OBJECT
  ../src/interpreter/abstract/is_identifier.cpp
  ../src/interpreter/abstract/Listener.cpp
  ../src/interpreter/abstract/Multiplexer.cpp
+ ../src/interpreter/io/base64.cpp
  ../src/interpreter/io/Dump_Listener.cpp
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp

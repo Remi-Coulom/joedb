@@ -1,4 +1,5 @@
 #include "type_io.h"
+#include "base64.h"
 #include "gtest/gtest.h"
 
 #include <sstream>
@@ -93,4 +94,14 @@ TEST(StringIO_Test, sql)
  std::ostringstream oss;
  joedb::write_sql_string(oss, "Rémi Coulom");
  EXPECT_EQ(oss.str(), "X'52c3a96d6920436f756c6f6d'");
+}
+
+TEST(StringIO_Test, base64)
+{
+ EXPECT_EQ("TWFu", joedb::base64_encode("Man"));
+ EXPECT_EQ("TWE=", joedb::base64_encode("Ma"));
+ EXPECT_EQ("TQ==", joedb::base64_encode("M"));
+ EXPECT_EQ("UsOpbWk=", joedb::base64_encode("Rémi"));
+ EXPECT_EQ("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ", joedb::base64_encode("これは日本語です"));
+ EXPECT_EQ("", joedb::base64_encode(""));
 }

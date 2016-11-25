@@ -1,11 +1,12 @@
 #include "json.h"
 #include "joedb/Database.h"
 #include "type_io.h"
+#include "base64.h"
 
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::write_json(std::ostream &out, const Database &db)
+void joedb::write_json(std::ostream &out, const Database &db, bool base64)
 /////////////////////////////////////////////////////////////////////////////
 {
  //
@@ -81,13 +82,27 @@ void joedb::write_json(std::ostream &out, const Database &db)
                [table.second.get_reference(record_id, field.first)];
       break;
 
+      case Type::type_id_t::string:
+       if (base64)
+       {
+        out << '"';
+        out << base64_encode(table.second.get_string(record_id, field.first));
+        out << '"';
+       }
+       else
+        joedb::write_string(out,
+                            table.second.get_string(record_id, field.first));
+      break;
+
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::type_id_t::type_id:\
        joedb::write_##type_id(out,\
         table.second.get_##type_id(record_id, field.first));\
       break;
       #define TYPE_MACRO_NO_REFERENCE
+      #define TYPE_MACRO_NO_STRING
       #include "joedb/TYPE_MACRO.h"
+      #undef TYPE_MACRO_NO_STRING
       #undef TYPE_MACRO_NO_REFERENCE
       #undef TYPE_MACRO
      }
