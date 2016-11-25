@@ -73,7 +73,7 @@ For instance, this is the SQL output of the tutorial database:
 ``joedb_to_json``
 ^^^^^^^^^^^^^^^^^
 
-``joedb_to_json`` takes a joedb file name as parameter, and produces json output. Each column is represented as a vector, and references are indexes into the vector (-1 indicates the null reference). If the table has deleted rows, they will still appear in the json output.
+``joedb_to_json`` takes a joedb file name as parameter, and produces json output. Each column is represented as a vector, and references are indexes into the vector (-1 indicates the null reference).
 
 This is the json output of the tutorial database:
 

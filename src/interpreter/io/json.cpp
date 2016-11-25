@@ -8,6 +8,29 @@
 void joedb::write_json(std::ostream &out, const Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
+ //
+ // First, create reference translations
+ //
+ std::map<table_id_t, std::vector<int64_t>> reference_translation;
+ for (auto table: db.get_tables())
+ {
+  std::vector<int64_t> &v = reference_translation[table.first];
+  const auto &freedom = table.second.get_freedom();
+  v.resize(freedom.size() + 1);
+  v[0] = -1;
+  int64_t position = 0;
+  for (size_t i = 0; i < freedom.size(); i++)
+  {
+   if (freedom.is_free(i + 2))
+    v[i + 1] = -1;
+   else
+    v[i + 1] = position++;
+  }
+ }
+
+ //
+ // Write output
+ //
  out << "{\n";
 
  bool first_table = true;
@@ -39,35 +62,36 @@ void joedb::write_json(std::ostream &out, const Database &db)
 
    bool first_value = true;
    for (size_t i = 0; i < freedom.size(); i++)
-   {
-    if (first_value)
-     first_value = false;
-    else
-     out << ',';
-
-    const record_id_t record_id = i + 1;
-
-
-    switch(field.second.get_type().get_type_id())
+    if (!freedom.is_free(i + 2))
     {
-     case Type::type_id_t::null:
-     break;
+     if (first_value)
+      first_value = false;
+     else
+      out << ',';
 
-     case Type::type_id_t::reference:
-      out << int64_t(table.second.get_reference(record_id, field.first)) - 1;
-     break;
+     const record_id_t record_id = i + 1;
 
-     #define TYPE_MACRO(type, return_type, type_id, R, W)\
-     case Type::type_id_t::type_id:\
-      joedb::write_##type_id(out,\
-       table.second.get_##type_id(record_id, field.first));\
-     break;
-     #define TYPE_MACRO_NO_REFERENCE
-     #include "joedb/TYPE_MACRO.h"
-     #undef TYPE_MACRO_NO_REFERENCE
-     #undef TYPE_MACRO
+     switch(field.second.get_type().get_type_id())
+     {
+      case Type::type_id_t::null:
+      break;
+
+      case Type::type_id_t::reference:
+       out << reference_translation[field.second.get_type().get_table_id()]
+               [table.second.get_reference(record_id, field.first)];
+      break;
+
+      #define TYPE_MACRO(type, return_type, type_id, R, W)\
+      case Type::type_id_t::type_id:\
+       joedb::write_##type_id(out,\
+        table.second.get_##type_id(record_id, field.first));\
+      break;
+      #define TYPE_MACRO_NO_REFERENCE
+      #include "joedb/TYPE_MACRO.h"
+      #undef TYPE_MACRO_NO_REFERENCE
+      #undef TYPE_MACRO
+     }
     }
-   }
 
    out << "]";
   }

@@ -56,6 +56,11 @@ int main()
  }
 
  //
+ // Deleting a record
+ //
+ db.delete_city(db.find_city_by_name("New York"));
+
+ //
  // Time stamp and comment
  //
  db.timestamp();
