@@ -20,11 +20,15 @@ Joedb currently has some limitations:
 - Only one process can open the database at the same time.
 - C++ is the only supported programming language.
 
-These limitations are likely to be removed in the future.
+These limitations are likely to be removed in the future. A rudimentary C
+wrapper is available, and supporting more programming languages via this C
+wrapper should be easy. The option to use a key-value store instead of RAM is
+planned, too. Concurrent access to data via a server would be also possible in
+theory. So these are not fundamental limitations.
 
-A fundamental drawback of the joedb approach, compared to a database like SQLite, is that frequently updated values may make the joedb journal file grow much larger than an history-less database.
+A drawback of the joedb approach is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first. (But when on-disk storage will be available, it will be possible to skip replaying the log in case there was no crash)
 
-Another drawback is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first. In theory, it would be possible to implement on-disk storage of data in joedb, but this option is not yet implemented.
+Another fundamental drawback of the joedb approach is that frequently-updated values may make the joedb journal file grow much larger than an history-less database.
 
 An Example
 ----------
