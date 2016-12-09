@@ -96,7 +96,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
    //
    int64_t file_size = file.get_size();
    if (file_size > 0 && uint64_t(file_size) != checkpoint_position)
-    state = state_t::bad_format;
+    state = state_t::crash_check;
   }
  }
 }
