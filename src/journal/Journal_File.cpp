@@ -90,6 +90,13 @@ joedb::Journal_File::Journal_File(Generic_File &file):
 
    if (checkpoint_position < header_size)
     state = state_t::bad_format;
+
+   //
+   // Compare to file size (if available)
+   //
+   int64_t file_size = file.get_size();
+   if (file_size > 0 && uint64_t(file_size) != checkpoint_position)
+    state = state_t::bad_format;
   }
  }
 }
@@ -214,9 +221,17 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     listener.after_insert(table_id, record_id);
-     table_of_last_operation = table_id;
-     record_of_last_operation = record_id;
+     if (record_id > 0 && record_id < checkpoint_position)
+     {
+      listener.after_insert(table_id, record_id);
+      table_of_last_operation = table_id;
+      record_of_last_operation = record_id;
+     }
+     else
+     {
+      state = state_t::bad_format;
+      return;
+     }
     }
     break;
 
