@@ -12,6 +12,12 @@ Interpreter
 Journal File
 ------------
 - make sure that no input can crash the program
+  - Journal_File must check vector and string length
+  - implement Safe_Listener to resist libFuzzer:
+    - test valid table_id/field_id/record_id
+    - test valid field type
+    - vector and string length + record_id at insert must be small
+  - use Safe_Listener for joedb_check
 - joedb_truncate <file> <position> (+optionally show position in logdump)
 - check for write errors (out of space) -> exception (option?)
 - high-performance system-specific implementation of joedb::File?
