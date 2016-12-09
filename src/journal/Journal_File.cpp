@@ -221,17 +221,9 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     if (record_id > 0 && record_id < checkpoint_position)
-     {
-      listener.after_insert(table_id, record_id);
-      table_of_last_operation = table_id;
-      record_of_last_operation = record_id;
-     }
-     else
-     {
-      state = state_t::bad_format;
-      return;
-     }
+     listener.after_insert(table_id, record_id);
+     table_of_last_operation = table_id;
+     record_of_last_operation = record_id;
     }
     break;
 
