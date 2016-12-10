@@ -85,8 +85,8 @@ target_link_libraries(joedb_pack joedb)
 
 add_executable(joedb_convert
  ../src/interpreter/io/joedb_convert.cpp
+ $<TARGET_OBJECTS:joedb_objects>
 )
-target_link_libraries(joedb_convert joedb)
 
 add_executable(joedb_to_json
  ../src/interpreter/io/joedb_to_json.cpp
