@@ -83,6 +83,8 @@ namespace joedb
    int current_commit_level;
    state_t state;
 
+   bool safe_insert;
+
    table_id_t table_of_last_operation;
    record_id_t record_of_last_operation;
    field_id_t field_of_last_update;

@@ -16,6 +16,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
  checkpoint_position(0),
  current_commit_level(0),
  state(state_t::no_error),
+ safe_insert(true),
  table_of_last_operation(0),
  record_of_last_operation(0),
  field_of_last_update(0)
@@ -221,6 +222,13 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
+     if (safe_insert &&
+         (record_id <= 0 ||
+          record_id > checkpoint_position))
+     {
+      state = state_t::bad_format;
+      return;
+     }
      listener.after_insert(table_id, record_id);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
@@ -232,6 +240,14 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
      record_id_t size = file.compact_read<record_id_t>();
+     if (safe_insert &&
+         (record_id <= 0 ||
+          record_id > checkpoint_position ||
+          size > checkpoint_position))
+     {
+      state = state_t::bad_format;
+      return;
+     }
      listener.after_insert_vector(table_id, record_id, size);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
@@ -239,6 +255,13 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     break;
 
     case operation_t::append:
+     if (safe_insert &&
+         (record_of_last_operation + 1 <= 0 ||
+          record_of_last_operation + 1 > checkpoint_position))
+     {
+      state = state_t::bad_format;
+      return;
+     }
      listener.after_insert(table_of_last_operation,
                            ++record_of_last_operation);
     break;
@@ -282,6 +305,11 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      record_of_last_operation = file.compact_read<record_id_t>();\
      field_of_last_update = file.compact_read<field_id_t>();\
      record_id_t size = file.compact_read<record_id_t>();\
+     if (size > checkpoint_position || size < 0)\
+     {\
+      state = state_t::bad_format;\
+      return;\
+     }\
      std::vector<cpp_type> buffer(size);\
      for (size_t i = 0; i < size; i++)\
       buffer[i] = read_method();\
