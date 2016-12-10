@@ -1,1 +1,5 @@
 joedb_fuzz
+TMP_CLANG
+third_party
+Fuzzer
+libFuzzer.a
