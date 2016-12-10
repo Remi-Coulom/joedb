@@ -268,7 +268,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
 \
     lbl_perform_update_##type_id:\
     {\
-     cpp_type value = file.read_method();\
+     cpp_type value = read_method();\
      listener.after_update_##type_id(table_of_last_operation,\
                                      record_of_last_operation,\
                                      field_of_last_update,\
@@ -284,7 +284,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      record_id_t size = file.compact_read<record_id_t>();\
      std::vector<cpp_type> buffer(size);\
      for (size_t i = 0; i < size; i++)\
-      buffer[i] = file.read_method();\
+      buffer[i] = read_method();\
      listener.after_update_vector_##type_id(table_of_last_operation,\
                                             record_of_last_operation,\
                                             field_of_last_update,\
@@ -502,7 +502,7 @@ void joedb::Journal_File::after_delete
 }
 
 /////////////////////////////////////////////////////////////////////////////
-#define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
+#define TYPE_MACRO(type, return_type, type_id, R, write_method)\
 void joedb::Journal_File::after_update_##type_id\
 (\
  table_id_t table_id,\
