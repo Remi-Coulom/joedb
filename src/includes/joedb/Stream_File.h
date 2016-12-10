@@ -11,6 +11,7 @@ namespace joedb
  {
   public:
    Stream_File(std::iostream &stream, mode_t mode);
+   int64_t get_size() const override;
 
   protected:
    size_t read_buffer() override;
