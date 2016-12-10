@@ -171,7 +171,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
 
     case operation_t::create_table:
     {
-     std::string name = file.read_string();
+     std::string name = safe_read_string();
      listener.after_create_table(name);
     }
     break;
@@ -186,7 +186,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     case operation_t::rename_table:
     {
      table_id_t table_id = file.compact_read<table_id_t>();
-     std::string name = file.read_string();
+     std::string name = safe_read_string();
      listener.after_rename_table(table_id, name);
     }
     break;
@@ -194,7 +194,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     case operation_t::add_field:
     {
      table_id_t table_id = file.compact_read<table_id_t>();
-     std::string name = file.read_string();
+     std::string name = safe_read_string();
      Type type = read_type();
      listener.after_add_field(table_id, name, type);
     }
@@ -212,7 +212,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      field_id_t field_id = file.compact_read<field_id_t>();
-     std::string name = file.read_string();
+     std::string name = safe_read_string();
      listener.after_rename_field(table_id, field_id, name);
     }
     break;
@@ -297,14 +297,14 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
 
     case operation_t::custom:
     {
-     std::string name = file.read_string();
+     std::string name = safe_read_string();
      listener.after_custom(name);
     }
     break;
 
     case operation_t::comment:
     {
-     std::string comment = file.read_string();
+     std::string comment = safe_read_string();
      listener.after_comment(comment);
     }
     break;
@@ -569,6 +569,13 @@ joedb::Type joedb::Journal_File::read_type()
   return Type::reference(file.compact_read<table_id_t>());
  else
   return Type(type_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+std::string joedb::Journal_File::safe_read_string()
+/////////////////////////////////////////////////////////////////////////////
+{
+ return file.safe_read_string(checkpoint_position);
 }
 
 /////////////////////////////////////////////////////////////////////////////

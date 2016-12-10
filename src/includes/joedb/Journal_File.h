@@ -88,8 +88,7 @@ namespace joedb
    field_id_t field_of_last_update;
 
    Type read_type();
-
-   void read_update(table_id_t table_id, record_id_t record_id);
+   std::string safe_read_string();
 
    enum class operation_t: uint8_t
    {

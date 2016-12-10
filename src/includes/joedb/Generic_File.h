@@ -52,6 +52,7 @@ namespace joedb
 
    void write_string(const std::string &s);
    std::string read_string();
+   std::string safe_read_string(size_t max_size);
 
    void flush(); // flushes the write buffer to the system
    void commit(); // flush and write to disk (fsync)
