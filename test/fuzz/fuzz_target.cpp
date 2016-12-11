@@ -20,7 +20,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
   joedb::Database db;
   joedb::DB_Listener db_listener(db);
-  joedb::Safe_Listener safe_listener(db_listener, journal);
+  joedb::Safe_Listener safe_listener(db_listener,
+                                     journal.get_checkpoint_position());
   journal.replay_log(safe_listener);
  }
 

@@ -4,6 +4,7 @@
 #include "Listener.h"
 #include "Database.h"
 #include "Journal_File.h"
+#include "DB_Listener.h"
 
 namespace joedb
 {
@@ -11,17 +12,19 @@ namespace joedb
  {
   private:
    Database db;
+   DB_Listener db_listener;
    Listener &listener;
    bool safe_insert;
-   uint64_t checkpoint_position;
+   record_id_t max_record_id;
 
    bool is_existing_table_id(table_id_t table_id) const;
 
   public:
-   Safe_Listener(Listener &listener, const Journal_File &journal):
+   Safe_Listener(Listener &listener, record_id_t max_record_id):
+    db_listener(db),
     listener(listener),
     safe_insert(true),
-    checkpoint_position(journal.get_checkpoint_position())
+    max_record_id(max_record_id)
    {
    }
 

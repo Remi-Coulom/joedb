@@ -102,6 +102,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Journal_File_Test.cpp
   ../test/Multiplexer_Test.cpp
   ../test/pack_Test.cpp
+  ../test/Safe_Listener_Test.cpp
   ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
