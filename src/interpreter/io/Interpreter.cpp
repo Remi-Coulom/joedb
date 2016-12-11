@@ -111,6 +111,10 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   std::string command;
   iss >> command;
 
+#if 0
+  out << "running: " << line << '\n';
+#endif
+
   if (command.size() == 0 || command[0] == '#') //////////////////////////////
    continue;
   else if (command == "dump") ////////////////////////////////////////////////
@@ -358,7 +362,8 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
      out << "Error: no such field: " << field_name << '\n';
     else
     {
-     if (update_value(iss, table_id, record_id, field_id))
+     if (!too_big(record_id) &&
+         update_value(iss, table_id, record_id, field_id))
       out << "OK: updated\n";
      else
       out << "Error: could not find record: " << record_id << '\n';
@@ -385,23 +390,28 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
      iss >> size;
      bool result = false;
 
-     switch(db.get_field_type(table_id, field_id))
-     {
-      case Type::type_id_t::null:
-      break;
+     if (!too_big(record_id) && !too_big(size))
+      switch(db.get_field_type(table_id, field_id))
+      {
+       case Type::type_id_t::null:
+       break;
 
-      #define TYPE_MACRO(type, return_type, type_id, R, W)\
-      case Type::type_id_t::type_id:\
-      {\
-       std::vector<type> v(size);\
-       for (size_t i = 0; i < size; i++)\
-        v[i] = joedb::read_##type_id(iss);\
-       result = db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
-      }\
-      break;
-      #include "joedb/TYPE_MACRO.h"
-      #undef TYPE_MACRO
-     }
+       #define TYPE_MACRO(type, return_type, type_id, R, W)\
+       case Type::type_id_t::type_id:\
+       {\
+        std::vector<type> v(size);\
+        for (size_t i = 0; i < size; i++)\
+         v[i] = joedb::read_##type_id(iss);\
+        result = db.update_vector_##type_id(table_id,\
+                                            record_id,\
+                                            field_id,\
+                                            size,\
+                                            &v[0]);\
+       }\
+       break;
+       #include "joedb/TYPE_MACRO.h"
+       #undef TYPE_MACRO
+      }
 
      if (result)
       out << "OK: updated " << size << " rows\n";
