@@ -8,6 +8,12 @@ const uint32_t joedb::Journal_File::version_number = 0x00000004;
 const uint32_t joedb::Journal_File::compatible_version = 0x00000004;
 const uint64_t joedb::Journal_File::header_size = 41;
 
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+#define SAFE_MAX_SIZE 1000000
+#else
+#define SAFE_MAX_SIZE checkpoint_position
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 joedb::Journal_File::Journal_File(Generic_File &file):
 /////////////////////////////////////////////////////////////////////////////
@@ -282,7 +288,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      record_of_last_operation = file.compact_read<record_id_t>();\
      field_of_last_update = file.compact_read<field_id_t>();\
      record_id_t size = file.compact_read<record_id_t>();\
-     if (size > checkpoint_position || size < 0)\
+     if (size > SAFE_MAX_SIZE || size < 0)\
      {\
       state = state_t::bad_format;\
       return;\
@@ -580,7 +586,7 @@ joedb::Type joedb::Journal_File::read_type()
 std::string joedb::Journal_File::safe_read_string()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file.safe_read_string(checkpoint_position);
+ return file.safe_read_string(SAFE_MAX_SIZE);
 }
 
 /////////////////////////////////////////////////////////////////////////////

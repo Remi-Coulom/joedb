@@ -13,28 +13,35 @@ int main(int argc, char **argv)
 {
  if (argc <= 1)
  {
-  std::cerr << "usage: " << argv[0] << " [--sql|--header] <file.joedb>\n";
+  std::cerr << "usage: " << argv[0] << " [--sql] [--header|--force] <file.joedb>\n";
   return 1;
  }
  else
  {
   bool sql = false;
   bool header = false;
-  int file_index = 1;
+  bool force = false;
+  int arg_index = 1;
 
-  if (std::string(argv[1]) == "--sql")
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sql")
   {
    sql = true;
-   file_index = 2;
+   arg_index++;
   }
 
-  if (std::string(argv[1]) == "--header")
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--header")
   {
    header = true;
-   file_index = 2;
+   arg_index++;
   }
 
-  joedb::File file(argv[file_index], joedb::File::mode_t::read_existing);
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--force")
+  {
+   force = true;
+   arg_index++;
+  }
+
+  joedb::File file(argv[arg_index], joedb::File::mode_t::read_existing);
 
   if (joedb::file_error_message(std::cerr, file))
    return 1;
@@ -50,7 +57,7 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  if (journal.is_good())
+  if (journal.is_good() || force)
   {
    if (sql)
    {

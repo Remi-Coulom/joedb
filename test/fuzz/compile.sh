@@ -19,11 +19,13 @@ if [ ! -f libFuzzer.a ]; then
 fi
 
 ./third_party/llvm-build/Release+Asserts/bin/clang++\
+ -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
  -fsanitize-coverage=trace-pc-guard\
  -fsanitize=address\
  -std=c++11\
  -I ../../src/interpreter/abstract\
  -I ../../src/includes/joedb\
+ -I ../../src/includes\
  fuzz_target.cpp\
  ../../src/interpreter/abstract/Database.cpp\
  ../../src/interpreter/abstract/Listener.cpp\

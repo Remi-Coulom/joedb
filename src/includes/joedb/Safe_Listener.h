@@ -19,6 +19,12 @@ namespace joedb
 
    bool is_existing_table_id(table_id_t table_id) const;
 
+   bool is_update_ok(table_id_t table_id,
+                     record_id_t record_id,
+                     field_id_t field_id,
+                     record_id_t size,
+                     Type::type_id_t type_id) const;
+
   public:
    Safe_Listener(Listener &listener, record_id_t max_record_id):
     db_listener(db),
