@@ -26,7 +26,7 @@ fi
  -I ../../src/interpreter/abstract\
  -I ../../src/includes/joedb\
  -I ../../src/includes\
- fuzz_target.cpp\
+ binary_journal_fuzzer.cpp\
  ../../src/interpreter/abstract/Database.cpp\
  ../../src/interpreter/abstract/Listener.cpp\
  ../../src/interpreter/abstract/Multiplexer.cpp\
@@ -36,4 +36,4 @@ fi
  ../../src/journal/Journal_File.cpp\
  ../../src/journal/Stream_File.cpp\
  ./libFuzzer.a\
- -o joedb_fuzz
+ -o binary_journal_fuzzer
