@@ -167,7 +167,30 @@ void joedb::Safe_Listener::after_update_##type_id(table_id_t table_id,\
   {\
    if (field_it->second.get_type().get_type_id() == Type::type_id_t::type_id)\
    {\
-    FORWARD(after_delete(table_id, record_id));\
+    FORWARD(after_update_##type_id(table_id, record_id, field_id, value));\
+    return;\
+   }\
+  }\
+ }\
+ throw std::runtime_error("Wrong update");\
+}\
+void joedb::Safe_Listener::after_update_vector_##type_id(table_id_t table_id,\
+                                                  record_id_t record_id,\
+                                                  field_id_t field_id,\
+                                                  record_id_t size,\
+                                                  const type *value)\
+{\
+ const auto &tables = db.get_tables();\
+ auto table_it = tables.find(table_id);\
+ if (table_it != tables.end())\
+ {\
+  const auto &fields = table_it->second.get_fields();\
+  auto field_it = fields.find(field_id);\
+  if (field_it != fields.end())\
+  {\
+   if (field_it->second.get_type().get_type_id() == Type::type_id_t::type_id)\
+   {\
+    FORWARD(after_update_vector_##type_id(table_id, record_id, field_id, size, value));\
     return;\
    }\
   }\
