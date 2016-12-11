@@ -26,7 +26,7 @@ wrapper should be easy. The option to use a key-value store instead of RAM is
 planned, too. Concurrent access to data via a server would be also possible in
 theory. So these are not fundamental limitations.
 
-A drawback of the joedb approach is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first. (But when on-disk storage will be available, it will be possible to skip replaying the log in case there was no crash)
+A drawback of the joedb approach is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first.
 
 Another fundamental drawback of the joedb approach is that frequently-updated values may make the joedb journal file grow much larger than an history-less database.
 

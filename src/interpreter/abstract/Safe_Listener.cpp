@@ -49,7 +49,7 @@ void joedb::Safe_Listener::after_create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (db.find_table(name))
-  throw std::runtime_error("after_create_table: " + name + " exists.");
+  throw std::runtime_error("after_create_table: name already used");
 
  FORWARD(after_create_table(name));
 }
@@ -74,6 +74,9 @@ void joedb::Safe_Listener::after_rename_table
 {
  if (!is_existing_table_id(table_id))
   throw std::runtime_error("after_rename_table: invalid table_id");
+ if (db.find_table(name))
+  throw std::runtime_error("after_rename_table: name already used");
+
  FORWARD(after_rename_table(table_id, name));
 }
 
@@ -86,6 +89,10 @@ void joedb::Safe_Listener::after_add_field
  Type type
 )
 {
+ if (!is_existing_table_id(table_id))
+  throw std::runtime_error("after_add_field: invalid table_id");
+ // TODO: make sure name is not already used
+
  FORWARD(after_add_field(table_id, name, type));
 }
 
@@ -97,6 +104,8 @@ void joedb::Safe_Listener::after_drop_field
  field_id_t field_id
 )
 {
+ // TODO: existing table
+ // TODO: existing field
  FORWARD(after_drop_field(table_id, field_id));
 }
 
@@ -109,6 +118,9 @@ void joedb::Safe_Listener::after_rename_field
  const std::string &name
 )
 {
+ // TODO: existing table
+ // TODO: existing field
+ // TODO: name not used
  FORWARD(after_rename_field(table_id, field_id, name));
 }
 
@@ -182,6 +194,8 @@ void joedb::Safe_Listener::after_delete
  record_id_t record_id
 )
 {
+ // TODO: existing table_id
+ // TODO: existing record_id
  FORWARD(after_delete(table_id, record_id));
 }
 

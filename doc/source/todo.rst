@@ -3,24 +3,18 @@ TODO
 
 Short term
 ----------
-
-Interpreter
------------
-- use freedom keepers instead of maps for tables and fields
-- SQL import
+- Finish Safe_Listener checks (with tests)
+- Use Safe_Listener for everything
+- Error checking: catch Safe_Listener exceptions
+- Then, can remove a lot of redundant safety checks
+- Should a Database be a listener?
+- Interpreter takes listener as parameter?
+- Use vector of smart pointers instead of map for Database tables and fields
 
 Journal File
 ------------
-- make sure that no input can crash the program
-  - Journal_File must check vector and string length
-  - implement Safe_Listener to resist libFuzzer:
-    - test valid table_id/field_id/record_id
-    - test valid field type
-    - vector and string length + record_id at insert must be small
-  - use Safe_Listener for joedb_check
-  - write a Safe_Listener_Test to make sure all correct input passes
 - joedb_truncate <file> <position> (+optionally show position in logdump)
-- check for write errors (out of space) -> exception (option?)
+- check for write errors (no space left on device) -> exception
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
 - joedb_fix
@@ -29,11 +23,16 @@ Journal File
 New Operations and Types
 ------------------------
 - Use diff for large-string update
-- Date type?
+- Differentiate between "storage type" and "usage type":
+
+  - remove bool type and use int8 instead, with bool usage
+  - usages: bool(int8), date(int64).
+  - custom usage label: ip address(int32), URL(string), PNG file(string), ...?
 
 On-disk Storage
 ----------------
-- sqlite
+- LevelDB? https://github.com/google/leveldb
+- sqlite?
 - stxxl? For strings: store a big vector of chars. A string is length + index in the big vector of chars.
 
 Compiler
@@ -49,11 +48,12 @@ Compiler
 
 - Compiler utilities:
 
-  - referential integrity (use triggers)
+  - referential integrity
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
 
-- C wrapper (with "EXPORTED_FUNCTIONS", for emscripten)
+- C wrapper
+- jni wrapper
 
 Server
 ------
@@ -64,6 +64,7 @@ Server
 
 Other Ideas
 -----------
+- import from SQL
 - index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
 - vim syntax and completer with YouCompleteMe
 - GUI editor similar to the icga database editor (fastcgi, interpreter)
