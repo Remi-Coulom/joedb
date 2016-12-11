@@ -353,6 +353,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     {
      record_id_t size = 0;
      iss >> size;
+     bool result = false;
 
      switch(db.get_field_type(table_id, field_id))
      {
@@ -365,14 +366,17 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
        std::vector<type> v(size);\
        for (size_t i = 0; i < size; i++)\
         v[i] = joedb::read_##type_id(iss);\
-       db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
+       result = db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
       }\
       break;
       #include "joedb/TYPE_MACRO.h"
       #undef TYPE_MACRO
      }
 
-     out << "OK: updated " << size << " rows\n";
+     if (result)
+      out << "OK: updated " << size << " rows\n";
+     else
+      out << "Error: could not update vector\n";
     }
    }
   }

@@ -75,3 +75,8 @@ UPDATE "float" SET "value" = 0.2 WHERE "__id" = 2;
 UPDATE "float" SET "value" = 0.3 WHERE "__id" = 3;
 UPDATE "float" SET "value" = 0.4 WHERE "__id" = 4;
 UPDATE "float" SET "value" = 0.5 WHERE "__id" = 5;
+CREATE TABLE "toto"("__id" INTEGER PRIMARY KEY);
+ALTER TABLE "toto" ADD "value" TEXT;
+INSERT INTO "toto"("__id") VALUES(3);
+INSERT INTO "toto"("__id") VALUES(5);
+UPDATE "toto" SET "value" = X'746f746f' WHERE "__id" = 3;

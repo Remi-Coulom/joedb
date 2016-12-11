@@ -96,8 +96,15 @@ OK: add_field value; field_id = 1
 OK: inserted vector: record_id = 1; size = 5
 OK: updated 5 rows
 Error: no such field: qsdf
+OK: create table toto; table_id = 7
+OK: add_field value; field_id = 1
+OK: inserted vector: record_id = 3; size = 1
+OK: inserted vector: record_id = 5; size = 1
+OK: updated
+Error: could not update vector
 create_table all_types
 create_table float
+create_table toto
 add_field all_types str string
 add_field all_types i32 int32
 add_field all_types i64 int64
@@ -108,6 +115,7 @@ add_field all_types d float64
 add_field all_types o int8
 add_field all_types oulala int16
 add_field float value float32
+add_field toto value string
 insert_vector all_types 1 1
 update all_types 1 str "toto"
 update all_types 1 i32 123456789
@@ -124,3 +132,7 @@ update float 2 value 0.2
 update float 3 value 0.3
 update float 4 value 0.4
 update float 5 value 0.5
+insert_vector toto 3 1
+insert_vector toto 5 1
+update toto 3 value "toto"
+update toto 5 value ""

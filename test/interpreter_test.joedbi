@@ -77,6 +77,13 @@ insert_vector float 1 5
 update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
 update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
 
+create_table toto
+add_field toto value string
+insert_vector toto 3 1
+insert_vector toto 5 1
+update toto 3 value "toto"
+update_vector toto 5 value 2 "kiki" "kuku"
+
 dump
 
 quit

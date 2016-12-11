@@ -63,7 +63,9 @@ namespace joedb
                                 const type *value)\
    {\
     auto it = fields.find(field_id);\
-    if (it == fields.end() || !freedom.is_used(record_id + 1))\
+    if (it == fields.end() ||\
+        !freedom.is_used(record_id + 1) ||\
+        !freedom.is_used(record_id + size))\
      return false;\
     it->second.set_vector_##type_id(record_id, size, value);\
     return true;\
