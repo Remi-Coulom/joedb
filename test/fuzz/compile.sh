@@ -18,22 +18,36 @@ if [ ! -f libFuzzer.a ]; then
  ./Fuzzer/build.sh
 fi
 
-./third_party/llvm-build/Release+Asserts/bin/clang++\
- -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
- -fsanitize-coverage=trace-pc-guard\
- -fsanitize=address\
- -std=c++11\
- -I ../../src/interpreter/abstract\
- -I ../../src/includes/joedb\
- -I ../../src/includes\
- binary_journal_fuzzer.cpp\
- ../../src/interpreter/abstract/Database.cpp\
- ../../src/interpreter/abstract/Listener.cpp\
- ../../src/interpreter/abstract/Multiplexer.cpp\
- ../../src/interpreter/abstract/Safe_Listener.cpp\
- ../../src/interpreter/abstract/Table.cpp\
- ../../src/journal/Generic_File.cpp\
- ../../src/journal/Journal_File.cpp\
- ../../src/journal/Stream_File.cpp\
- ./libFuzzer.a\
- -o binary_journal_fuzzer
+build()
+{
+ ./third_party/llvm-build/Release+Asserts/bin/clang++\
+  -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
+  -fsanitize-coverage=trace-pc-guard\
+  -fsanitize=address\
+  -std=c++11\
+  -I ../../src/interpreter/abstract\
+  -I ../../src/interpreter/io\
+  -I ../../src/includes/joedb\
+  -I ../../src/includes\
+  -I ../../src/journal\
+  "$1"_fuzzer.cpp\
+  ../../src/interpreter/abstract/Database.cpp\
+  ../../src/interpreter/abstract/is_identifier.cpp\
+  ../../src/interpreter/abstract/Listener.cpp\
+  ../../src/interpreter/abstract/Multiplexer.cpp\
+  ../../src/interpreter/abstract/Safe_Listener.cpp\
+  ../../src/interpreter/abstract/Table.cpp\
+  ../../src/interpreter/io/Interpreter.cpp\
+  ../../src/interpreter/io/Dump_Listener.cpp\
+  ../../src/interpreter/io/type_io.cpp\
+  ../../src/interpreter/io/dump.cpp\
+  ../../src/journal/diagnostics.cpp\
+  ../../src/journal/Generic_File.cpp\
+  ../../src/journal/Journal_File.cpp\
+  ../../src/journal/Stream_File.cpp\
+  ./libFuzzer.a\
+  -o "$1"_fuzzer
+}
+
+build "binary_journal"
+build "joedbi"

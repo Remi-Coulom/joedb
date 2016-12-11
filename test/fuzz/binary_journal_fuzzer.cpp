@@ -1,11 +1,10 @@
 #include <sstream>
 #include <string>
 
-#include <joedb/Stream_File.h>
-#include <joedb/Journal_File.h>
-#include <joedb/Database.h>
-#include <joedb/Safe_Listener.h>
-
+#include "Stream_File.h"
+#include "Journal_File.h"
+#include "Database.h"
+#include "Safe_Listener.h"
 #include "DB_Listener.h"
 
 /////////////////////////////////////////////////////////////////////////////

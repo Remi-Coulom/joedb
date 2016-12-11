@@ -20,6 +20,7 @@ namespace joedb
                      table_id_t table_id,
                      record_id_t record_id,
                      field_id_t field_id);
+   static bool too_big(record_id_t record_id);
 
   public:
    Interpreter(Database &db): db(db) {}

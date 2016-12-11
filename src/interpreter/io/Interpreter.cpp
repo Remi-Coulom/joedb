@@ -13,8 +13,23 @@
 #include <ctime>
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Type joedb::Interpreter::parse_type(std::istream &in,
-                                           std::ostream &out)
+bool joedb::Interpreter::too_big(record_id_t record_id)
+/////////////////////////////////////////////////////////////////////////////
+{
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+ return record_id > 1000000;
+#else
+ return false;
+#endif
+}
+
+/////////////////////////////////////////////////////////////////////////////
+joedb::Type joedb::Interpreter::parse_type
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::istream &in,
+ std::ostream &out
+)
 {
  std::string type_name;
  in >> type_name;
@@ -41,8 +56,12 @@ joedb::Type joedb::Interpreter::parse_type(std::istream &in,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-table_id_t joedb::Interpreter::parse_table(std::istream &in,
-                                           std::ostream &out)
+table_id_t joedb::Interpreter::parse_table
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::istream &in,
+ std::ostream &out
+)
 {
  std::string table_name;
  in >> table_name;
@@ -53,10 +72,14 @@ table_id_t joedb::Interpreter::parse_table(std::istream &in,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Interpreter::update_value(std::istream &in,
-                                      table_id_t table_id,
-                                      record_id_t record_id,
-                                      field_id_t field_id)
+bool joedb::Interpreter::update_value
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::istream &in,
+ table_id_t table_id,
+ record_id_t record_id,
+ field_id_t field_id
+)
 {
  switch(db.get_field_type(table_id, field_id))
  {
@@ -78,6 +101,7 @@ bool joedb::Interpreter::update_value(std::istream &in,
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
+/////////////////////////////////////////////////////////////////////////////
 {
  std::string line;
 
@@ -276,7 +300,9 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    {
     record_id_t record_id = 0;
     iss >> record_id;
-    if (!record_id || !db.insert_into(table_id, record_id))
+    if (!record_id ||
+        too_big(record_id) ||
+        !db.insert_into(table_id, record_id))
      out << "Error: could not insert with id: " << record_id << '\n';
     else
     {
@@ -303,7 +329,11 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     record_id_t record_id = 0;
     record_id_t size = 0;
     iss >> record_id >> size;
-    if (!record_id || !size || !db.insert_vector(table_id, record_id, size))
+    if (!record_id ||
+        !size ||
+        too_big(record_id) ||
+        too_big(size) ||
+        !db.insert_vector(table_id, record_id, size))
      out << "Error: could not insert vector\n";
     else
     {
