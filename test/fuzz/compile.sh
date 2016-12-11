@@ -28,6 +28,7 @@ fi
  ../../src/interpreter/abstract/Database.cpp\
  ../../src/interpreter/abstract/Listener.cpp\
  ../../src/interpreter/abstract/Multiplexer.cpp\
+ ../../src/interpreter/abstract/Safe_Listener.cpp\
  ../../src/interpreter/abstract/Table.cpp\
  ../../src/journal/Generic_File.cpp\
  ../../src/journal/Journal_File.cpp\

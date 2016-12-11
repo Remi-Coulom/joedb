@@ -30,6 +30,7 @@ namespace joedb
 
    state_t get_state() const {return state;}
    uint64_t ahead_of_checkpoint() const;
+   uint64_t get_checkpoint_position() const {return checkpoint_position;}
    void checkpoint(int commit_level);
    void replay_log(Listener &listener);
    void rewind();
@@ -82,8 +83,6 @@ namespace joedb
    uint64_t checkpoint_position;
    int current_commit_level;
    state_t state;
-
-   bool safe_insert;
 
    table_id_t table_of_last_operation;
    record_id_t record_of_last_operation;

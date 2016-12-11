@@ -4,6 +4,7 @@
 #include <joedb/Stream_File.h>
 #include <joedb/Journal_File.h>
 #include <joedb/Database.h>
+#include <joedb/Safe_Listener.h>
 
 #include "DB_Listener.h"
 
@@ -18,8 +19,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  if (journal.get_state() == joedb::Journal_File::state_t::no_error)
  {
   joedb::Database db;
-  joedb::DB_Listener listener(db);
-  journal.replay_log(listener);
+  joedb::DB_Listener db_listener(db);
+  joedb::Safe_Listener safe_listener(db_listener, journal);
+  journal.replay_log(safe_listener);
  }
 
  return 0;
