@@ -1,20 +1,14 @@
 TODO
 ====
 
-Short term
+Short Term
 ----------
+Safety:
+
 - Finish Safe_Listener checks (with tests)
 - No forwarding in Safe_Listener (useless)
-- No forwarding in Database either?
-- Make Multiplexer a Listener?
-- Make Database a Listener? Then, no more DB_Listener.
-- Remove Dummy_Listener: should become useless.
 - Use Safe_Listener for everything interpreted
-- Interpreter takes Listener as parameter instead of db? Build a local schema?
 - Then, can remove a lot of redundant safety checks (catch exceptions)
-
-- Use vector of smart pointers instead of map for Database tables and fields
-
 - Make compiled code safe:
 
   - no need to check for valid table_id, field_id, type_id: bad are ignored
@@ -23,11 +17,30 @@ Short term
   - non-listener updates + deletes checked, except if NDEBUG macro defined
   - fuzz it
 
-- Use templates instead of virtual function calls?
+Simple improvement:
+
+- Use vector of smart pointers instead of map for Database tables and fields
+
+Redesign:
+
+- No forwarding in Database?
+- Make Multiplexer a Listener? Multiplexer and Synchronizer should be separate?
+- Make Database a Listener? Then, no more DB_Listener.
+- Remove Dummy_Listener: should become useless.
+- Interpreter takes Listener as parameter instead of db? Build a local schema? Or create a Listener_With_Schema class?
+- This way, interpreter works with compiled database. joedb_admin should work with a listener too: could be applied to a compiled database!
+- For this to work, a universal Database_Reader interface must be implemented by interpreted and compiled databases.
+- Remove ``after_`` prefix in listener events. Don't call listeners listeners any more. ``Writeable`` and ``Readable`` are better terms.
+- Use templates instead of virtual function calls for listeners?
 
   - compilation will be slower
   - compiled code may get bigger if more than one template instance
   - but avoiding virtual calls makes code run faster
+  - class that take one listener reference as constructor parameter are easy to convert.
+  - Exceptions are:
+
+    - set_listener in compiled code, but it should be possible to re-design without set_listener. This re-design may be good even without converting to templates.
+    - Multiplexer: variadic template? Can we deal with Internal_Listeners? Separating Multiplexer and Synchronizer may help. Database storage without forwarding would help too (only multiplexers are necessary, no risk of recursive calls).
 
 Journal File
 ------------
@@ -45,7 +58,7 @@ New Operations and Types
 
   - remove bool type and use int8 instead, with bool usage
   - usages: bool(int8), date(int64).
-  - custom usage label: ip address(int32), URL(string), PNG file(string), ...?
+  - custom usage label: ip address(int32), URL(string), PNG file(string), UTF8(string) (use base64 instead for json output), ...?
 
 On-disk Storage
 ----------------
