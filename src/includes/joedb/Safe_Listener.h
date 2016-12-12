@@ -13,7 +13,6 @@ namespace joedb
   private:
    Database db;
    DB_Listener db_listener;
-   Listener &listener;
    bool safe_insert;
    record_id_t max_record_id;
 
@@ -26,9 +25,8 @@ namespace joedb
                      Type::type_id_t type_id) const;
 
   public:
-   Safe_Listener(Listener &listener, record_id_t max_record_id):
+   Safe_Listener(record_id_t max_record_id):
     db_listener(db),
-    listener(listener),
     safe_insert(true),
     max_record_id(max_record_id)
    {

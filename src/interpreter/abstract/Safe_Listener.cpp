@@ -42,8 +42,6 @@ bool joedb::Safe_Listener::is_update_ok
  return false;
 }
 
-#define FORWARD(x) do {db_listener.x; listener.x;} while(false)
-
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Listener::after_create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
@@ -51,7 +49,7 @@ void joedb::Safe_Listener::after_create_table(const std::string &name)
  if (db.find_table(name))
   throw std::runtime_error("after_create_table: name already used");
 
- FORWARD(after_create_table(name));
+ db_listener.after_create_table(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -61,7 +59,7 @@ void joedb::Safe_Listener::after_drop_table(table_id_t table_id)
  if (!is_existing_table_id(table_id))
   throw std::runtime_error("after_drop_table: invalid table_id");
 
- FORWARD(after_drop_table(table_id));
+ db_listener.after_drop_table(table_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,7 +75,7 @@ void joedb::Safe_Listener::after_rename_table
  if (db.find_table(name))
   throw std::runtime_error("after_rename_table: name already used");
 
- FORWARD(after_rename_table(table_id, name));
+ db_listener.after_rename_table(table_id, name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,7 +91,7 @@ void joedb::Safe_Listener::after_add_field
   throw std::runtime_error("after_add_field: invalid table_id");
  // TODO: make sure name is not already used
 
- FORWARD(after_add_field(table_id, name, type));
+ db_listener.after_add_field(table_id, name, type);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -106,7 +104,7 @@ void joedb::Safe_Listener::after_drop_field
 {
  // TODO: existing table
  // TODO: existing field
- FORWARD(after_drop_field(table_id, field_id));
+ db_listener.after_drop_field(table_id, field_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -121,35 +119,35 @@ void joedb::Safe_Listener::after_rename_field
  // TODO: existing table
  // TODO: existing field
  // TODO: name not used
- FORWARD(after_rename_field(table_id, field_id, name));
+ db_listener.after_rename_field(table_id, field_id, name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Listener::after_custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
- FORWARD(after_custom(name));
+ db_listener.after_custom(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Listener::after_comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
- FORWARD(after_comment(comment));
+ db_listener.after_comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Listener::after_timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
- FORWARD(after_timestamp(timestamp));
+ db_listener.after_timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Listener::after_valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
- FORWARD(after_valid_data());
+ db_listener.after_valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -164,7 +162,7 @@ void joedb::Safe_Listener::after_insert
   throw std::runtime_error("after_insert: invalid table_id");
  if (record_id <= 0 || (max_record_id && record_id > max_record_id))
   throw std::runtime_error("after_insert: bad record_id");
- FORWARD(after_insert(table_id, record_id));
+ db_listener.after_insert(table_id, record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -183,7 +181,7 @@ void joedb::Safe_Listener::after_insert_vector
      (max_record_id && record_id > max_record_id) ||
      (max_record_id && size > max_record_id))
   throw std::runtime_error("after_insert_vector: bad record_id or size");
- FORWARD(after_insert_vector(table_id, record_id, size));
+ db_listener.after_insert_vector(table_id, record_id, size);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -196,7 +194,7 @@ void joedb::Safe_Listener::after_delete
 {
  // TODO: existing table_id
  // TODO: existing record_id
- FORWARD(after_delete(table_id, record_id));
+ db_listener.after_delete(table_id, record_id);
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -210,7 +208,7 @@ void joedb::Safe_Listener::after_update_##type_id(table_id_t table_id,\
                   field_id,\
                   1,\
                   Type::type_id_t::type_id))\
-  FORWARD(after_update_##type_id(table_id, record_id, field_id, value));\
+  db_listener.after_update_##type_id(table_id, record_id, field_id, value);\
  else\
   throw std::runtime_error("Wrong update");\
 }\
@@ -225,11 +223,9 @@ void joedb::Safe_Listener::after_update_vector_##type_id(table_id_t table_id,\
                   field_id,\
                   size,\
                   Type::type_id_t::type_id))\
-  FORWARD(after_update_vector_##type_id(table_id, record_id, field_id, size, value));\
+  db_listener.after_update_vector_##type_id(table_id, record_id, field_id, size, value);\
  else\
   throw std::runtime_error("Wrong update");\
 }
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
-
-#undef FORWARD

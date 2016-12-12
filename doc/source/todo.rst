@@ -6,7 +6,6 @@ Short Term
 Safety:
 
 - Finish Safe_Listener checks (with tests)
-- No forwarding in Safe_Listener (useless)
 - Use Safe_Listener for everything interpreted
 - Then, can remove a lot of redundant safety checks (catch exceptions)
 - Make compiled code safe:

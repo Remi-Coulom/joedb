@@ -19,9 +19,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  if (journal.get_state() == joedb::Journal_File::state_t::no_error)
 #endif
  {
-  joedb::Database db;
-  joedb::DB_Listener db_listener(db);
-  joedb::Safe_Listener safe_listener(db_listener, 1000000);
+  joedb::Safe_Listener safe_listener(1000000);
   journal.replay_log(safe_listener);
  }
 
