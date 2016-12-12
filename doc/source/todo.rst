@@ -4,12 +4,30 @@ TODO
 Short term
 ----------
 - Finish Safe_Listener checks (with tests)
-- Use Safe_Listener for everything
-- Error checking: catch Safe_Listener exceptions
-- Then, can remove a lot of redundant safety checks
-- Should a Database be a listener?
-- Interpreter takes listener as parameter?
+- No forwarding in Safe_Listener (useless)
+- No forwarding in Database either?
+- Make Multiplexer a Listener?
+- Make Database a Listener? Then, no more DB_Listener.
+- Remove Dummy_Listener: should become useless.
+- Use Safe_Listener for everything interpreted
+- Interpreter takes Listener as parameter instead of db? Build a local schema?
+- Then, can remove a lot of redundant safety checks (catch exceptions)
+
 - Use vector of smart pointers instead of map for Database tables and fields
+
+- Make compiled code safe:
+
+  - no need to check for valid table_id, field_id, type_id: bad are ignored
+  - check valid record_id for listener updates and deletes
+  - max_record_id for listener inserts
+  - non-listener updates + deletes checked, except if NDEBUG macro defined
+  - fuzz it
+
+- Use templates instead of virtual function calls?
+
+  - compilation will be slower
+  - compiled code may get bigger if more than one template instance
+  - but avoiding virtual calls makes code run faster
 
 Journal File
 ------------
