@@ -1,6 +1,3 @@
-#include "File.h"
-#include "Journal_File.h"
-#include "Interpreter.h"
 #include "Safe_Listener.h"
 
 #include "gtest/gtest.h"
@@ -10,63 +7,69 @@
 
 using namespace joedb;
 
-class Safe_Listener_Test: public ::testing::Test
-{
- protected:
-  virtual void TearDown()
-  {
-   std::remove("test.joedb");
-   std::remove("test_copy.joedb");
-  }
-};
+// TODO: test that all successful operation are actually performed
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Safe_Listener_Test, interpreter_test)
+TEST(Safe_Listener_Test, test_all_errors)
 /////////////////////////////////////////////////////////////////////////////
 {
- //
- // Directly write to test.joedb
- //
- {
-  File file("test.joedb", File::mode_t::create_new);
-  Journal_File journal(file);
-
-  Database db;
-  db.set_listener(journal);
-
-  Interpreter interpreter(db);
-  std::ifstream in_file("interpreter_test.joedbi");
-  ASSERT_TRUE(in_file.good());
-  std::ostringstream out;
-  interpreter.main_loop(in_file, out);
+ #define CHECK_EXCEPTION(x)\
+ {\
+  bool exception_caught = false;\
+  try {x;}\
+  catch (std::runtime_error e) {exception_caught = true;}\
+  EXPECT_TRUE(exception_caught);\
  }
 
- //
- // Write to test_copy through the safe listener
- //
+ joedb::Safe_Listener listener(1000);
+ const Database &db = listener.get_db();
+
+ listener.after_create_table("person");
+ CHECK_EXCEPTION(listener.after_create_table("person"));
+
  {
-  File output_file("test_copy.joedb", File::mode_t::create_new);
-  Journal_File output_journal(output_file);
-
-  File input_file("test.joedb", File::mode_t::read_existing);
-  Journal_File input_journal(input_file);
-
-  Safe_Listener safe_listener(output_journal, 0);
-  input_journal.replay_log(safe_listener);
+  const table_id_t table_id = db.find_table("person");
+  listener.after_drop_table(table_id);
+  CHECK_EXCEPTION(listener.after_drop_table(table_id));
+  CHECK_EXCEPTION(listener.after_rename_table(table_id, "toto"));
  }
 
- //
- // Check that they are identical
- //
- {
-  std::ifstream file("test.joedb");
-  std::ostringstream bytes_of_file;
-  bytes_of_file << file.rdbuf();
+ listener.after_create_table("cityx");
+ const table_id_t table_id = db.find_table("cityx");
+ listener.after_rename_table(table_id, "city");
+ CHECK_EXCEPTION(listener.after_rename_table(table_id, "city"));
+ listener.after_add_field(table_id, "N", joedb::Type::string());
+ CHECK_EXCEPTION(listener.after_add_field(table_id, "N", joedb::Type::string()));
+ CHECK_EXCEPTION(listener.after_add_field(1234, "", joedb::Type::string()));
+ listener.after_rename_field(table_id, 1, "toto");
+ CHECK_EXCEPTION(listener.after_rename_field(table_id, 1, "toto"));
+ CHECK_EXCEPTION(listener.after_rename_field(1234, 1, "toto"));
+ CHECK_EXCEPTION(listener.after_rename_field(table_id, 1234, "toto"));
 
-  std::ifstream file_copy("test_copy.joedb");
-  std::ostringstream bytes_of_file_copy;
-  bytes_of_file_copy << file_copy.rdbuf();
+ CHECK_EXCEPTION(listener.after_drop_field(table_id, 1234));
+ CHECK_EXCEPTION(listener.after_drop_field(1234, 1));
+ listener.after_drop_field(table_id, 1);
 
-  EXPECT_EQ(bytes_of_file.str(), bytes_of_file_copy.str());
- }
+ listener.after_custom("custom");
+ listener.after_comment("comment");
+ listener.after_timestamp(0);
+ listener.after_valid_data();
+
+ listener.after_add_field(table_id, "field", joedb::Type::string());
+ listener.after_insert(table_id, 1);
+ CHECK_EXCEPTION(listener.after_insert(1234, 0));
+ CHECK_EXCEPTION(listener.after_insert(table_id, 0));
+ CHECK_EXCEPTION(listener.after_insert(table_id, 1000000));
+ //CHECK_EXCEPTION(listener.after_insert(table_id, 1));
+ listener.after_insert_vector(table_id, 2, 10);
+ CHECK_EXCEPTION(listener.after_insert_vector(1234, 0, 10))
+ CHECK_EXCEPTION(listener.after_insert_vector(table_id, 0, 10))
+ CHECK_EXCEPTION(listener.after_insert_vector(table_id, 10, 0))
+ CHECK_EXCEPTION(listener.after_insert_vector(table_id, 100000, 1))
+ CHECK_EXCEPTION(listener.after_insert_vector(table_id, 100, 100000))
+
+ listener.after_delete(table_id, 1);
+ CHECK_EXCEPTION(listener.after_delete(12345, 1));
+ //CHECK_EXCEPTION(listener.after_delete(table_id, 1));
+ //CHECK_EXCEPTION(listener.after_delete(table_id, 2));
 }

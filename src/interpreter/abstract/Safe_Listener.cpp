@@ -1,5 +1,7 @@
 #include "Safe_Listener.h"
 
+// TODO: should also check that identifier are valid C++ identifiers
+
 /////////////////////////////////////////////////////////////////////////////
 bool joedb::Safe_Listener::is_existing_table_id(table_id_t table_id) const
 /////////////////////////////////////////////////////////////////////////////
@@ -47,7 +49,7 @@ void joedb::Safe_Listener::after_create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (db.find_table(name))
-  throw std::runtime_error("after_create_table: name already used");
+  throw std::runtime_error("create_table: name already used");
 
  db_listener.after_create_table(name);
 }
@@ -57,7 +59,7 @@ void joedb::Safe_Listener::after_drop_table(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (!is_existing_table_id(table_id))
-  throw std::runtime_error("after_drop_table: invalid table_id");
+  throw std::runtime_error("drop_table: invalid table_id");
 
  db_listener.after_drop_table(table_id);
 }
@@ -71,9 +73,9 @@ void joedb::Safe_Listener::after_rename_table
 )
 {
  if (!is_existing_table_id(table_id))
-  throw std::runtime_error("after_rename_table: invalid table_id");
+  throw std::runtime_error("rename_table: invalid table_id");
  if (db.find_table(name))
-  throw std::runtime_error("after_rename_table: name already used");
+  throw std::runtime_error("rename_table: name already used");
 
  db_listener.after_rename_table(table_id, name);
 }
@@ -87,9 +89,14 @@ void joedb::Safe_Listener::after_add_field
  Type type
 )
 {
- if (!is_existing_table_id(table_id))
-  throw std::runtime_error("after_add_field: invalid table_id");
- // TODO: make sure name is not already used
+ const auto &tables = db.get_tables();
+ const auto table_it = tables.find(table_id);
+
+ if (table_it == tables.end())
+  throw std::runtime_error("add_field: invalid table_id");
+
+ if (table_it->second.find_field(name))
+  throw std::runtime_error("add_field: name already used");
 
  db_listener.after_add_field(table_id, name, type);
 }
@@ -102,8 +109,16 @@ void joedb::Safe_Listener::after_drop_field
  field_id_t field_id
 )
 {
- // TODO: existing table
- // TODO: existing field
+ const auto &tables = db.get_tables();
+ const auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  throw std::runtime_error("drop_field: invalid table_id");
+
+ const auto &fields = table_it->second.get_fields();
+ auto field_it = fields.find(field_id);
+ if (field_it == fields.end())
+  throw std::runtime_error("drop_field: invalid field_id");
+
  db_listener.after_drop_field(table_id, field_id);
 }
 
@@ -116,9 +131,19 @@ void joedb::Safe_Listener::after_rename_field
  const std::string &name
 )
 {
- // TODO: existing table
- // TODO: existing field
- // TODO: name not used
+ const auto &tables = db.get_tables();
+ const auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  throw std::runtime_error("rename_field: invalid table_id");
+
+ const auto &fields = table_it->second.get_fields();
+ auto field_it = fields.find(field_id);
+ if (field_it == fields.end())
+  throw std::runtime_error("rename_field: invalid field_id");
+
+ if (table_it->second.find_field(name))
+  throw std::runtime_error("rename_field: name already used");
+
  db_listener.after_rename_field(table_id, field_id, name);
 }
 
@@ -159,9 +184,10 @@ void joedb::Safe_Listener::after_insert
 )
 {
  if (!is_existing_table_id(table_id))
-  throw std::runtime_error("after_insert: invalid table_id");
+  throw std::runtime_error("insert: invalid table_id");
  if (record_id <= 0 || (max_record_id && record_id > max_record_id))
-  throw std::runtime_error("after_insert: bad record_id");
+  throw std::runtime_error("insert: bad record_id");
+ // TODO: check that it does not already exist?
  db_listener.after_insert(table_id, record_id);
 }
 
@@ -175,12 +201,12 @@ void joedb::Safe_Listener::after_insert_vector
 )
 {
  if (!is_existing_table_id(table_id))
-  throw std::runtime_error("after_insert_vector: invalid table_id");
+  throw std::runtime_error("insert_vector: invalid table_id");
  if (record_id <= 0 ||
      size <= 0 ||
      (max_record_id && record_id > max_record_id) ||
      (max_record_id && size > max_record_id))
-  throw std::runtime_error("after_insert_vector: bad record_id or size");
+  throw std::runtime_error("insert_vector: bad record_id or size");
  db_listener.after_insert_vector(table_id, record_id, size);
 }
 
@@ -192,8 +218,12 @@ void joedb::Safe_Listener::after_delete
  record_id_t record_id
 )
 {
- // TODO: existing table_id
- // TODO: existing record_id
+ const auto &tables = db.get_tables();
+ const auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  throw std::runtime_error("delete: invalid table_id");
+ // TODO: check that it already exists
+
  db_listener.after_delete(table_id, record_id);
 }
 

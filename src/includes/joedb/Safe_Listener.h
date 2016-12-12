@@ -25,12 +25,14 @@ namespace joedb
                      Type::type_id_t type_id) const;
 
   public:
-   Safe_Listener(record_id_t max_record_id):
+   Safe_Listener(record_id_t max_record_id = 0):
     db_listener(db),
     safe_insert(true),
     max_record_id(max_record_id)
    {
    }
+
+   const Database &get_db() const {return db;}
 
    void after_create_table(const std::string &name) override;
    void after_drop_table(table_id_t table_id) override;
