@@ -1,6 +1,8 @@
 #include "Safe_Listener.h"
 
 // TODO: should also check that identifier are valid C++ identifiers
+// TODO: don't allow "__" inside identifiers
+// TODO: more detailed error for updates
 
 /////////////////////////////////////////////////////////////////////////////
 bool joedb::Safe_Listener::is_existing_table_id(table_id_t table_id) const

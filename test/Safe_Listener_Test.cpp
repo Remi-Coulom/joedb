@@ -8,6 +8,7 @@
 using namespace joedb;
 
 // TODO: test that all successful operation are actually performed
+// TODO: check exception name
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Safe_Listener_Test, test_all_errors)
@@ -56,6 +57,7 @@ TEST(Safe_Listener_Test, test_all_errors)
  listener.after_valid_data();
 
  listener.after_add_field(table_id, "field", joedb::Type::string());
+ const field_id_t field_id = db.get_tables().find(table_id)->second.find_field("field");
  listener.after_insert(table_id, 1);
  CHECK_EXCEPTION(listener.after_insert(1234, 0));
  CHECK_EXCEPTION(listener.after_insert(table_id, 0));
@@ -72,4 +74,11 @@ TEST(Safe_Listener_Test, test_all_errors)
  CHECK_EXCEPTION(listener.after_delete(12345, 1));
  //CHECK_EXCEPTION(listener.after_delete(table_id, 1));
  //CHECK_EXCEPTION(listener.after_delete(table_id, 2));
+
+ listener.after_insert(table_id, 1);
+ listener.after_update_string(table_id, 1, field_id, "toto");
+ CHECK_EXCEPTION(listener.after_update_string(table_id, 23456, field_id, "toto"));
+ CHECK_EXCEPTION(listener.after_update_string(table_id, 1, 2345, "toto"));
+ CHECK_EXCEPTION(listener.after_update_string(12345, 1, field_id, "toto"));
+ CHECK_EXCEPTION(listener.after_update_int32(table_id, 1, field_id, 12345));
 }
