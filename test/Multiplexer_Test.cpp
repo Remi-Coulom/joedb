@@ -136,7 +136,7 @@ TEST_F(Multiplexer_Test, interpreter_test)
   Selective_Listener select1(dummy, Selective_Listener::schema);
   Selective_Listener select2(dummy, Selective_Listener::data);
   Selective_Listener select4(dummy, Selective_Listener::information);
-  dummy.after_comment("hello");
+  dummy.comment("hello");
 
   Listener &db1_multiplexer = multiplexer.add_listener(db1_listener);
                               multiplexer.add_listener(db2_listener);

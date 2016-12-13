@@ -36,38 +36,38 @@ namespace joedb
    void rewind();
    void play_until(Listener &listener, uint64_t end);
 
-   void after_create_table(const std::string &name) override;
-   void after_drop_table(table_id_t table_id) override;
-   void after_rename_table(table_id_t table_id,
-                           const std::string &name) override;
-   void after_add_field(table_id_t table_id,
-                        const std::string &name,
-                        Type type) override;
-   void after_drop_field(table_id_t table_id,
-                         field_id_t field_id) override;
-   void after_rename_field(table_id_t table_id,
-                           field_id_t field_id,
-                           const std::string &name) override;
-   void after_custom(const std::string &name) override;
-   void after_comment(const std::string &comment) override;
-   void after_timestamp(int64_t timestamp) override;
-   void after_valid_data() override;
-   void after_insert(table_id_t table_id, record_id_t record_id) override;
-   void after_insert_vector(table_id_t table_id,
-                            record_id_t record_id,
-                            record_id_t size) override;
-   void after_delete(table_id_t table_id, record_id_t record_id) override;
+   void create_table(const std::string &name) override;
+   void drop_table(table_id_t table_id) override;
+   void rename_table(table_id_t table_id,
+                     const std::string &name) override;
+   void add_field(table_id_t table_id,
+                  const std::string &name,
+                  Type type) override;
+   void drop_field(table_id_t table_id,
+                   field_id_t field_id) override;
+   void rename_field(table_id_t table_id,
+                     field_id_t field_id,
+                     const std::string &name) override;
+   void custom(const std::string &name) override;
+   void comment(const std::string &comment) override;
+   void timestamp(int64_t timestamp) override;
+   void valid_data() override;
+   void insert(table_id_t table_id, record_id_t record_id) override;
+   void insert_vector(table_id_t table_id,
+                      record_id_t record_id,
+                      record_id_t size) override;
+   void delete_record(table_id_t table_id, record_id_t record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
-   void after_update_##type_id(table_id_t table_id,\
-                               record_id_t record_id,\
-                               field_id_t field_id,\
-                               return_type value) override;\
-   void after_update_vector_##type_id(table_id_t table_id,\
-                                      record_id_t record_id,\
-                                      field_id_t field_id,\
-                                      record_id_t size,\
-                                      const type *value) override;
+   void update_##type_id(table_id_t table_id,\
+                         record_id_t record_id,\
+                         field_id_t field_id,\
+                         return_type value) override;\
+   void update_vector_##type_id(table_id_t table_id,\
+                                record_id_t record_id,\
+                                field_id_t field_id,\
+                                record_id_t size,\
+                                const type *value) override;
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
 

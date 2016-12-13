@@ -72,98 +72,98 @@ namespace joedb
   public:
    SQL_Dump_Listener(std::ostream &out): Dump_Listener(out) {}
 
-   void after_create_table(const std::string &name) override
+   void create_table(const std::string &name) override
    {
     out << "CREATE TABLE \"" << name << "\"(" << id_field_name << " INTEGER PRIMARY KEY);\n";
-    Schema_Listener::after_create_table(name);
+    Schema_Listener::create_table(name);
    }
 
-   void after_drop_table(table_id_t table_id) override
+   void drop_table(table_id_t table_id) override
    {
     out << "DROP TABLE \"" << get_table_name(table_id) << "\";\n";
-    Schema_Listener::after_drop_table(table_id);
+    Schema_Listener::drop_table(table_id);
    }
 
-   void after_rename_table(table_id_t table_id,
-                           const std::string &name) override
+   void rename_table(table_id_t table_id,
+                     const std::string &name) override
    {
     out << "ALTER TABLE \"" << get_table_name(table_id);
     out << "\" RENAME TO \"" << name << "\";\n";
-    Schema_Listener::after_rename_table(table_id, name);
+    Schema_Listener::rename_table(table_id, name);
    }
 
-   void after_add_field(table_id_t table_id,
-                        const std::string &name,
-                        Type type) override
+   void add_field(table_id_t table_id,
+                  const std::string &name,
+                  Type type) override
    {
     out << "ALTER TABLE \"" << get_table_name(table_id);
     out << "\" ADD \"" << name << "\" ";
     write_type(type);
     out << ";\n";
-    Schema_Listener::after_add_field(table_id, name, type);
+    Schema_Listener::add_field(table_id, name, type);
    }
 
-   void after_drop_field(table_id_t table_id, field_id_t field_id) override
+   void drop_field(table_id_t table_id, field_id_t field_id) override
    {
     out << "ALTER TABLE \"" << get_table_name(table_id);
     out << "\" DROP \"" << get_field_name(table_id, field_id) << "\";\n";
-    Schema_Listener::after_drop_field(table_id, field_id);
+    Schema_Listener::drop_field(table_id, field_id);
    }
 
-   void after_rename_field(table_id_t table_id,
-                           field_id_t field_id,
-                           const std::string &name) override
+   void rename_field(table_id_t table_id,
+                     field_id_t field_id,
+                     const std::string &name) override
    {
     out << "ALTER TABLE \"" << get_table_name(table_id) << "\" RENAME COLUMN \"";
     out << get_field_name(table_id, field_id) << "\" TO \"" << name << "\";\n";
-    Schema_Listener::after_rename_field(table_id, field_id, name);
+    Schema_Listener::rename_field(table_id, field_id, name);
    }
 
-   void after_custom(const std::string &name) override
+   void custom(const std::string &name) override
    {
     out << "-- custom: " << name << '\n';
    }
 
-   void after_comment(const std::string &comment) override
+   void comment(const std::string &comment) override
    {
     out << "-- " << comment << '\n';
    }
 
-   void after_timestamp(int64_t timestamp) override
+   void timestamp(int64_t timestamp) override
    {
     out << "-- " << get_local_time(timestamp) << '\n';
    }
 
-   void after_valid_data() override
+   void valid_data() override
    {
     out << "-- valid data\n";
    }
 
-   void after_insert(table_id_t table_id, record_id_t record_id) override
+   void insert(table_id_t table_id, record_id_t record_id) override
    {
     out << "INSERT INTO \"" << get_table_name(table_id);
     out << "\"(" << id_field_name << ") VALUES(" << record_id << ");\n";
    }
 
-   void after_insert_vector(table_id_t table_id,
-                            record_id_t record_id,
-                            record_id_t size) override
+   void insert_vector(table_id_t table_id,
+                      record_id_t record_id,
+                      record_id_t size) override
    {
     for (record_id_t i = 0; i < size; i++)
-     after_insert(table_id, record_id + i);
+     insert(table_id, record_id + i);
    }
 
-   void after_delete(table_id_t table_id, record_id_t record_id) override
+   void delete_record(table_id_t table_id, record_id_t record_id) override
    {
     out << "DELETE FROM \"" << get_table_name(table_id);
     out << "\" WHERE " << id_field_name << " = " << record_id << ";\n";
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   void after_update_##type_id(table_id_t table_id,\
-                               record_id_t record_id,\
-                               field_id_t field_id,\
-                               return_type value) override\
+   void update_##type_id(table_id_t table_id,\
+                         record_id_t record_id,\
+                         field_id_t field_id,\
+                         return_type value) override\
    {\
     out << "UPDATE \"" << get_table_name(table_id);\
     out << "\" SET \"" << get_field_name(table_id, field_id) << "\" = ";\
@@ -175,10 +175,10 @@ namespace joedb
    #undef TYPE_MACRO_NO_STRING
    #undef TYPE_MACRO
 
-   void after_update_string(table_id_t table_id,
-                            record_id_t record_id,
-                            field_id_t field_id,
-                            const std::string &value) override
+   void update_string(table_id_t table_id,
+                      record_id_t record_id,
+                      field_id_t field_id,
+                      const std::string &value) override
    {
     out << "UPDATE \"" << get_table_name(table_id);
     out << "\" SET \"" << get_field_name(table_id, field_id) << "\" = ";

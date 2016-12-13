@@ -23,32 +23,32 @@ joedb::Internal_Listener::Internal_Listener
 } while(0)
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_create_table(const std::string &name)
+void joedb::Internal_Listener::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
- MULTIPLEX(after_create_table(name));
+ MULTIPLEX(create_table(name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_drop_table(table_id_t table_id)
+void joedb::Internal_Listener::drop_table(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
- MULTIPLEX(after_drop_table(table_id));
+ MULTIPLEX(drop_table(table_id));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_rename_table
+void joedb::Internal_Listener::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
  const std::string &name
 )
 {
- MULTIPLEX(after_rename_table(table_id, name));
+ MULTIPLEX(rename_table(table_id, name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_add_field
+void joedb::Internal_Listener::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -56,22 +56,22 @@ void joedb::Internal_Listener::after_add_field
  Type type
 )
 {
- MULTIPLEX(after_add_field(table_id, name, type));
+ MULTIPLEX(add_field(table_id, name, type));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_drop_field
+void joedb::Internal_Listener::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
  field_id_t field_id
 )
 {
- MULTIPLEX(after_drop_field(table_id, field_id));
+ MULTIPLEX(drop_field(table_id, field_id));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_rename_field
+void joedb::Internal_Listener::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -79,50 +79,50 @@ void joedb::Internal_Listener::after_rename_field
  const std::string &name
 )
 {
- MULTIPLEX(after_rename_field(table_id, field_id, name));
+ MULTIPLEX(rename_field(table_id, field_id, name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_custom(const std::string &name)
+void joedb::Internal_Listener::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
- MULTIPLEX(after_custom(name));
+ MULTIPLEX(custom(name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_comment(const std::string &comment)
+void joedb::Internal_Listener::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
- MULTIPLEX(after_comment(comment));
+ MULTIPLEX(comment(comment));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_timestamp(int64_t timestamp)
+void joedb::Internal_Listener::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
- MULTIPLEX(after_timestamp(timestamp));
+ MULTIPLEX(timestamp(timestamp));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_valid_data()
+void joedb::Internal_Listener::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
- MULTIPLEX(after_valid_data());
+ MULTIPLEX(valid_data());
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_insert
+void joedb::Internal_Listener::insert
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
  record_id_t record_id
 )
 {
- MULTIPLEX(after_insert(table_id, record_id));
+ MULTIPLEX(insert(table_id, record_id));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_insert_vector
+void joedb::Internal_Listener::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -130,22 +130,22 @@ void joedb::Internal_Listener::after_insert_vector
  record_id_t size
 )
 {
- MULTIPLEX(after_insert_vector(table_id, record_id, size));
+ MULTIPLEX(insert_vector(table_id, record_id, size));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::after_delete
+void joedb::Internal_Listener::delete_record
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
  record_id_t record_id
 )
 {
- MULTIPLEX(after_delete(table_id, record_id));
+ MULTIPLEX(delete_record(table_id, record_id));
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-void joedb::Internal_Listener::after_update_##type_id\
+void joedb::Internal_Listener::update_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\
@@ -153,10 +153,10 @@ void joedb::Internal_Listener::after_update_##type_id\
  return_type value\
 )\
 {\
- MULTIPLEX(after_update_##type_id(table_id, record_id, field_id, value));\
+ MULTIPLEX(update_##type_id(table_id, record_id, field_id, value));\
 }\
 \
-void joedb::Internal_Listener::after_update_vector_##type_id\
+void joedb::Internal_Listener::update_vector_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\
@@ -167,7 +167,7 @@ void joedb::Internal_Listener::after_update_vector_##type_id\
 {\
  MULTIPLEX\
  (\
-  after_update_vector_##type_id(table_id, record_id, field_id, size, value)\
+  update_vector_##type_id(table_id, record_id, field_id, size, value)\
  );\
 }
 #include "joedb/TYPE_MACRO.h"

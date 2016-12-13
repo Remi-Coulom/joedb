@@ -32,106 +32,106 @@ namespace joedb
    //
    // schema events
    //
-   void after_create_table(const std::string &name) override
+   void create_table(const std::string &name) override
    {
     if (mode & schema)
-     listener.after_create_table(name);
+     listener.create_table(name);
    }
 
-   void after_drop_table(table_id_t table_id) override
+   void drop_table(table_id_t table_id) override
    {
     if (mode & schema)
-     listener.after_drop_table(table_id);
+     listener.drop_table(table_id);
    }
 
-   void after_rename_table(table_id_t table_id,
-                           const std::string &name) override
+   void rename_table(table_id_t table_id,
+                     const std::string &name) override
    {
     if (mode & schema)
-     listener.after_rename_table(table_id, name);
+     listener.rename_table(table_id, name);
    }
 
-   void after_add_field(table_id_t table_id,
-                        const std::string &name,
-                        Type type) override
+   void add_field(table_id_t table_id,
+                  const std::string &name,
+                  Type type) override
    {
     if (mode & schema)
-     listener.after_add_field(table_id, name, type);
+     listener.add_field(table_id, name, type);
    }
 
-   void after_drop_field(table_id_t table_id,
-                         field_id_t field_id) override
+   void drop_field(table_id_t table_id,
+                   field_id_t field_id) override
    {
     if (mode & schema)
-     listener.after_drop_field(table_id, field_id);
+     listener.drop_field(table_id, field_id);
    }
 
-   void after_rename_field(table_id_t table_id,
-                           field_id_t field_id,
-                           const std::string &name) override
+   void rename_field(table_id_t table_id,
+                     field_id_t field_id,
+                     const std::string &name) override
    {
     if (mode & schema)
-     listener.after_rename_field(table_id, field_id, name);
+     listener.rename_field(table_id, field_id, name);
    }
 
-   void after_custom(const std::string &name) override
+   void custom(const std::string &name) override
    {
     if (mode & schema)
-     listener.after_custom(name);
+     listener.custom(name);
    }
 
    //
    // Informative events
    //
-   void after_comment(const std::string &comment) override
+   void comment(const std::string &comment) override
    {
     if (mode & information)
-     listener.after_comment(comment);
+     listener.comment(comment);
    }
 
-   void after_timestamp(int64_t timestamp) override
+   void timestamp(int64_t timestamp) override
    {
     if (mode & information)
-     listener.after_timestamp(timestamp);
+     listener.timestamp(timestamp);
    }
 
-   void after_valid_data() override
+   void valid_data() override
    {
     if (mode & information)
-     listener.after_valid_data();
+     listener.valid_data();
    }
 
    //
    // data events
    //
-   void after_insert(table_id_t table_id, record_id_t record_id) override
+   void insert(table_id_t table_id, record_id_t record_id) override
    {
     if (mode & data)
-     listener.after_insert(table_id, record_id);
+     listener.insert(table_id, record_id);
    }
 
-   void after_insert_vector(table_id_t table_id,
-                            record_id_t record_id,
-                            record_id_t size) override
+   void insert_vector(table_id_t table_id,
+                      record_id_t record_id,
+                      record_id_t size) override
    {
     if (mode & data)
-     listener.after_insert_vector(table_id, record_id, size);
+     listener.insert_vector(table_id, record_id, size);
    }
 
-   void after_delete(table_id_t table_id, record_id_t record_id) override
+   void delete_record(table_id_t table_id, record_id_t record_id) override
    {
     if (mode & data)
-     listener.after_delete(table_id, record_id);
+     listener.delete_record(table_id, record_id);
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   void after_update_##type_id(table_id_t table_id,\
-                               record_id_t record_id,\
-                               field_id_t field_id,\
-                               return_type value) override\
+   void update_##type_id(table_id_t table_id,\
+                         record_id_t record_id,\
+                         field_id_t field_id,\
+                         return_type value) override\
    {\
     if (mode & data)\
-     listener.after_update_##type_id(table_id, record_id, field_id, value);\
+     listener.update_##type_id(table_id, record_id, field_id, value);\
    }
    #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO

@@ -431,10 +431,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // after_delete listener function
+ // delete_record listener function
  //
  out << '\n';
- out << "   void after_delete(table_id_t table_id, record_id_t record_id) override\n";
+ out << "   void delete_record(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -462,10 +462,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "   }\n";
 
  //
- // after_insert
+ // insert
  //
  out << '\n';
- out << "   void after_insert(table_id_t table_id, record_id_t record_id) override\n";
+ out << "   void insert(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -497,10 +497,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "   }\n";
 
  //
- // after_insert_vector
+ // insert_vector
  //
  out << '\n';
- out << "   void after_insert_vector(table_id_t table_id, record_id_t record_id, record_id_t size) override\n";
+ out << "   void insert_vector(table_id_t table_id, record_id_t record_id, record_id_t size) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -525,13 +525,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "   }\n";
 
  //
- // after_update
+ // update
  //
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
    out << '\n';
-   out << "   void after_update_" << types[type_id] << '\n';
+   out << "   void update_" << types[type_id] << '\n';
    out << "   (\n";
    out << "    table_id_t table_id,\n";
    out << "    record_id_t record_id,\n";
@@ -587,13 +587,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // after_update_vector
+ // update_vector
  //
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
    out << '\n';
-   out << "   void after_update_vector_" << types[type_id] << '\n';
+   out << "   void update_vector_" << types[type_id] << '\n';
    out << "   (\n";
    out << "    table_id_t table_id,\n";
    out << "    record_id_t record_id,\n";
@@ -656,56 +656,44 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
 
   protected:
-   void after_create_table(const std::string &name) override
+   void create_table(const std::string &name) override
    {
-    listener->after_create_table(name);
+    listener->create_table(name);
    }
 
-   void after_drop_table(table_id_t table_id) override
+   void drop_table(table_id_t table_id) override
    {
-    listener->after_drop_table(table_id);
+    listener->drop_table(table_id);
    }
 
-   void after_rename_table(table_id_t table_id,
+   void rename_table(table_id_t table_id,
                            const std::string &name) override
    {
-    listener->after_rename_table(table_id, name);
+    listener->rename_table(table_id, name);
    }
 
-   void after_add_field(table_id_t table_id,
+   void add_field(table_id_t table_id,
                         const std::string &name,
                         joedb::Type type) override
    {
-    listener->after_add_field(table_id, name, type);
+    listener->add_field(table_id, name, type);
    }
 
-   void after_drop_field(table_id_t table_id, field_id_t field_id) override
+   void drop_field(table_id_t table_id, field_id_t field_id) override
    {
-    listener->after_drop_field(table_id, field_id);
+    listener->drop_field(table_id, field_id);
    }
 
-   void after_rename_field(table_id_t table_id,
+   void rename_field(table_id_t table_id,
                            field_id_t field_id,
                            const std::string &name) override
    {
-    listener->after_rename_field(table_id, field_id, name);
+    listener->rename_field(table_id, field_id, name);
    }
 
-   void after_custom(const std::string &name) override
+   void custom(const std::string &name) override
    {
-    listener->after_custom(name);
-   }
-
-   void after_comment(const std::string &comment) override
-   {
-   }
-
-   void after_timestamp(int64_t timestamp) override
-   {
-   }
-
-   void after_valid_data() override
-   {
+    listener->custom(name);
    }
 )RRR";
 
@@ -719,9 +707,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void set_listener(Listener &new_listener) {listener = &new_listener;}
    void clear_listener() {listener = &dummy_listener;}
 
+   void comment(const std::string &comment) override;
    void timestamp();
-   void comment(const std::string &comment);
-   void valid_data();
+   void timestamp(int64_t timestamp) override;
+   void valid_data() override;
 )RRR";
 
  for (auto &table: tables)
@@ -821,7 +810,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
 
   out << "    internal_insert_" << tname << "(result.id);\n\n";
-  out << "    listener->after_insert(" << table.first << ", result.id);\n";
+  out << "    listener->insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -837,7 +826,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << tname << ".size() + size);\n";
   out << "    for (size_t i = 0; i < size; i++)\n";
   out << "     internal_insert_" << tname << "(result.id + i);\n";
-  out << "    listener->after_insert_vector(" << table.first;
+  out << "    listener->insert_vector(" << table.first;
   out << ", result.id, size);\n";
   out << "    return result;\n";
   out << "   }\n";
@@ -887,7 +876,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
    out << "   {\n";
    out << "    internal_delete_" << tname << "(record.id);\n";
-   out << "    listener->after_delete(" << table.first << ", record.id);\n";
+   out << "    listener->delete_record(" << table.first << ", record.id);\n";
    out << "   }\n";
   }
 
@@ -923,7 +912,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "    assert(!record.is_null());\n";
    out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
    out << "field_value_of_" << fname << ");\n";
-   out << "    listener->after_update_";
+   out << "    listener->update_";
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
    out << "field_value_of_" << fname;
@@ -1018,9 +1007,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    bool schema_error = false;
    bool upgrading_schema = false;
 
-   void after_custom(const std::string &name) override
+   void custom(const std::string &name) override
    {
-    Database::after_custom(name);
+    Database::custom(name);
 )RRR";
  if (db.get_custom_names().size())
  {
@@ -1283,21 +1272,28 @@ void generate_cpp
 void Database::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->after_comment(comment);
+ listener->comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void Database::timestamp()
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->after_timestamp(std::time(0));
+ listener->timestamp(std::time(0));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void Database::timestamp(int64_t timestamp)
+/////////////////////////////////////////////////////////////////////////////
+{
+ listener->timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void Database::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->after_valid_data();
+ listener->valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////

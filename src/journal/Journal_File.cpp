@@ -178,14 +178,14 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     case operation_t::create_table:
     {
      std::string name = safe_read_string();
-     listener.after_create_table(name);
+     listener.create_table(name);
     }
     break;
 
     case operation_t::drop_table:
     {
      table_id_t table_id = file.compact_read<table_id_t>();
-     listener.after_drop_table(table_id);
+     listener.drop_table(table_id);
     }
     break;
 
@@ -193,7 +193,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      std::string name = safe_read_string();
-     listener.after_rename_table(table_id, name);
+     listener.rename_table(table_id, name);
     }
     break;
 
@@ -202,7 +202,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      table_id_t table_id = file.compact_read<table_id_t>();
      std::string name = safe_read_string();
      Type type = read_type();
-     listener.after_add_field(table_id, name, type);
+     listener.add_field(table_id, name, type);
     }
     break;
 
@@ -210,7 +210,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      field_id_t field_id = file.compact_read<field_id_t>();
-     listener.after_drop_field(table_id, field_id);
+     listener.drop_field(table_id, field_id);
     }
     break;
 
@@ -219,7 +219,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      table_id_t table_id = file.compact_read<table_id_t>();
      field_id_t field_id = file.compact_read<field_id_t>();
      std::string name = safe_read_string();
-     listener.after_rename_field(table_id, field_id, name);
+     listener.rename_field(table_id, field_id, name);
     }
     break;
 
@@ -227,7 +227,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     listener.after_insert(table_id, record_id);
+     listener.insert(table_id, record_id);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
     }
@@ -238,14 +238,14 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
      record_id_t size = file.compact_read<record_id_t>();
-     listener.after_insert_vector(table_id, record_id, size);
+     listener.insert_vector(table_id, record_id, size);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
     }
     break;
 
     case operation_t::append:
-     listener.after_insert(table_of_last_operation,
+     listener.insert(table_of_last_operation,
                            ++record_of_last_operation);
     break;
 
@@ -253,7 +253,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     listener.after_delete(table_id, record_id);
+     listener.delete_record(table_id, record_id);
     }
     break;
 
@@ -275,7 +275,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     lbl_perform_update_##type_id:\
     {\
      cpp_type value = read_method();\
-     listener.after_update_##type_id(table_of_last_operation,\
+     listener.update_##type_id(table_of_last_operation,\
                                      record_of_last_operation,\
                                      field_of_last_update,\
                                      value);\
@@ -296,7 +296,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
      std::vector<cpp_type> buffer(size);\
      for (size_t i = 0; i < size; i++)\
       buffer[i] = read_method();\
-     listener.after_update_vector_##type_id(table_of_last_operation,\
+     listener.update_vector_##type_id(table_of_last_operation,\
                                             record_of_last_operation,\
                                             field_of_last_update,\
                                             size,\
@@ -309,26 +309,26 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
     case operation_t::custom:
     {
      std::string name = safe_read_string();
-     listener.after_custom(name);
+     listener.custom(name);
     }
     break;
 
     case operation_t::comment:
     {
      std::string comment = safe_read_string();
-     listener.after_comment(comment);
+     listener.comment(comment);
     }
     break;
 
     case operation_t::timestamp:
     {
      int64_t timestamp = file.read<int64_t>();
-     listener.after_timestamp(timestamp);
+     listener.timestamp(timestamp);
     }
     break;
 
     case operation_t::valid_data:
-     listener.after_valid_data();
+     listener.valid_data();
     break;
 
     default:
@@ -353,7 +353,7 @@ void joedb::Journal_File::play_until(Listener &listener, uint64_t end)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_create_table(const std::string &name)
+void joedb::Journal_File::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::create_table);
@@ -361,7 +361,7 @@ void joedb::Journal_File::after_create_table(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_drop_table(table_id_t table_id)
+void joedb::Journal_File::drop_table(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::drop_table);
@@ -369,7 +369,7 @@ void joedb::Journal_File::after_drop_table(table_id_t table_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_rename_table
+void joedb::Journal_File::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -382,7 +382,7 @@ void joedb::Journal_File::after_rename_table
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_add_field
+void joedb::Journal_File::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -399,7 +399,7 @@ void joedb::Journal_File::after_add_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_drop_field
+void joedb::Journal_File::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -412,7 +412,7 @@ void joedb::Journal_File::after_drop_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_rename_field
+void joedb::Journal_File::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -427,7 +427,7 @@ void joedb::Journal_File::after_rename_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_custom(const std::string &name)
+void joedb::Journal_File::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::custom);
@@ -435,7 +435,7 @@ void joedb::Journal_File::after_custom(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_comment(const std::string &comment)
+void joedb::Journal_File::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::comment);
@@ -443,7 +443,7 @@ void joedb::Journal_File::after_comment(const std::string &comment)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_timestamp(int64_t timestamp)
+void joedb::Journal_File::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::timestamp);
@@ -451,14 +451,14 @@ void joedb::Journal_File::after_timestamp(int64_t timestamp)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_valid_data()
+void joedb::Journal_File::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::valid_data);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_insert
+void joedb::Journal_File::insert
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -482,7 +482,7 @@ void joedb::Journal_File::after_insert
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_insert_vector
+void joedb::Journal_File::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -500,7 +500,7 @@ void joedb::Journal_File::after_insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::after_delete
+void joedb::Journal_File::delete_record
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -514,7 +514,7 @@ void joedb::Journal_File::after_delete
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, write_method)\
-void joedb::Journal_File::after_update_##type_id\
+void joedb::Journal_File::update_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\
@@ -548,7 +548,7 @@ void joedb::Journal_File::after_update_##type_id\
  }\
  file.write_method(value);\
 }\
-void joedb::Journal_File::after_update_vector_##type_id\
+void joedb::Journal_File::update_vector_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\

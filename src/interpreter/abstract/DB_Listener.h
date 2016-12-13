@@ -10,51 +10,51 @@ namespace joedb
   public:
    DB_Listener(Database &db): Schema_Listener(db) {}
 
-   void after_comment(const std::string &comment) override
+   void comment(const std::string &comment) override
    {
     db.comment(comment);
    }
 
-   void after_timestamp(int64_t timestamp) override
+   void timestamp(int64_t timestamp) override
    {
     db.timestamp(timestamp);
    }
 
-   void after_valid_data() override
+   void valid_data() override
    {
     db.valid_data();
    }
 
-   void after_insert(table_id_t table_id, record_id_t record_id) override
+   void insert(table_id_t table_id, record_id_t record_id) override
    {
     error |= !db.insert_into(table_id, record_id);
    }
 
-   void after_insert_vector(table_id_t table_id,
-                            record_id_t record_id,
-                            record_id_t size) override
+   void insert_vector(table_id_t table_id,
+                      record_id_t record_id,
+                      record_id_t size) override
    {
     error |= !db.insert_vector(table_id, record_id, size);
    }
 
-   void after_delete(table_id_t table_id, record_id_t record_id) override
+   void delete_record(table_id_t table_id, record_id_t record_id) override
    {
     error |= !db.delete_from(table_id, record_id);
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   void after_update_##type_id(table_id_t table_id,\
-                               record_id_t record_id,\
-                               field_id_t field_id,\
-                               return_type value) override\
+   void update_##type_id(table_id_t table_id,\
+                         record_id_t record_id,\
+                         field_id_t field_id,\
+                         return_type value) override\
    {\
     error |= !db.update_##type_id(table_id, record_id, field_id, value);\
    }\
-   void after_update_vector_##type_id(table_id_t table_id,\
-                                      record_id_t record_id,\
-                                      field_id_t field_id,\
-                                      record_id_t size,\
-                                      const type *value) override\
+   void update_vector_##type_id(table_id_t table_id,\
+                                record_id_t record_id,\
+                                field_id_t field_id,\
+                                record_id_t size,\
+                                const type *value) override\
    {\
     error |= !db.update_vector_##type_id(table_id, record_id, field_id, size, value);\
    }
