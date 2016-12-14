@@ -15,14 +15,14 @@ namespace joedb
 
    std::map<table_id_t, Table> tables;
 
-   Dummy_Writeable dummy_listener;
-   Writeable *listener = &dummy_listener;
+   Dummy_Writeable dummy_writeable;
+   Writeable *writeable = &dummy_writeable;
 
    std::vector<std::string> custom_names;
 
   public:
-   void set_listener(Writeable &new_listener) {listener = &new_listener;}
-   void clear_listener() {listener = &dummy_listener;}
+   void set_writeable(Writeable &new_writeable) {writeable = &new_writeable;}
+   void clear_writeable() {writeable = &dummy_writeable;}
 
    const std::map<table_id_t, Table> &get_tables() const {return tables;}
    size_t get_current_table_id() const {return current_table_id;}

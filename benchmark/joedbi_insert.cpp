@@ -23,7 +23,7 @@ int main(int argc, char **argv)
   File file(file_name, File::mode_t::create_new);
   Journal_File journal_file(file);
   Database db;
-  db.set_listener(journal_file);
+  db.set_writeable(journal_file);
 
   table_id_t table_id = db.create_table("BENCHMARK");
   field_id_t name_id = db.add_field(table_id, "NAME", Type::string());

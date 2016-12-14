@@ -258,15 +258,15 @@ int multiplexer_test()
  joedb::Database interpreted_db;
 
  joedb::Journal_File journal(file);
- joedb::DB_Writeable interpreted_listener(interpreted_db);
+ joedb::DB_Writeable interpreted_writeable(interpreted_db);
 
  joedb::Multiplexer multiplexer;
- joedb::Writeable &journal_multiplexer = multiplexer.add_listener(journal);
- joedb::Writeable &compiled_multiplexer = multiplexer.add_listener(compiled_db);
- joedb::Writeable &interpreted_multiplexer = multiplexer.add_listener(interpreted_listener);
+ joedb::Writeable &journal_multiplexer = multiplexer.add_writeable(journal);
+ joedb::Writeable &compiled_multiplexer = multiplexer.add_writeable(compiled_db);
+ joedb::Writeable &interpreted_multiplexer = multiplexer.add_writeable(interpreted_writeable);
 
- compiled_db.set_listener(compiled_multiplexer);
- interpreted_db.set_listener(interpreted_multiplexer);
+ compiled_db.set_writeable(compiled_multiplexer);
+ interpreted_db.set_writeable(interpreted_multiplexer);
 
  journal.replay_log(journal_multiplexer);
 

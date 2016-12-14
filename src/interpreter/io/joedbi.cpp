@@ -53,17 +53,17 @@ int main(int argc, char **argv)
 
   joedb::Journal_File journal(file);
   joedb::Database db;
-  joedb::DB_Writeable db_listener(db);
-  journal.replay_log(db_listener);
+  joedb::DB_Writeable db_writeable(db);
+  journal.replay_log(db_writeable);
 
   if (journal.get_state() != joedb::Journal_File::state_t::no_error ||
-      !db_listener.is_good())
+      !db_writeable.is_good())
   {
    std::cout << "Error reading database\n";
    return 1;
   }
 
-  db.set_listener(journal);
+  db.set_writeable(journal);
   joedb::Interpreter interpreter(db);
   interpreter.main_loop(std::cin, std::cout);
  }

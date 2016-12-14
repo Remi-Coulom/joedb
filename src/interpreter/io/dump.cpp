@@ -3,7 +3,7 @@
 #include "joedb/Writeable.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump(const Database &db, Writeable &listener)
+void joedb::dump(const Database &db, Writeable &writeable)
 /////////////////////////////////////////////////////////////////////////////
 {
  //
@@ -15,7 +15,7 @@ void joedb::dump(const Database &db, Writeable &listener)
   for (auto table: db.get_tables())
   {
    ++table_id;
-   listener.create_table(table.second.get_name());
+   writeable.create_table(table.second.get_name());
    table_map[table.first] = table_id;
   }
  }
@@ -36,7 +36,7 @@ void joedb::dump(const Database &db, Writeable &listener)
     auto type = field.second.get_type();
     if (type.get_type_id() == Type::type_id_t::reference)
      type = Type::reference(table_map[type.get_table_id()]);
-    listener.add_field(table_map[table.first],
+    writeable.add_field(table_map[table.first],
                        field.second.get_name(),
                        type);
     field_maps[table.first][field.first] = field_id;
@@ -64,7 +64,7 @@ void joedb::dump(const Database &db, Writeable &listener)
 
    if (size)
    {
-    listener.insert_vector(table_map[table.first], i + 1, size);
+    writeable.insert_vector(table_map[table.first], i + 1, size);
     i += size;
    }
   }
@@ -83,7 +83,7 @@ void joedb::dump(const Database &db, Writeable &listener)
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::type_id_t::type_id:\
-       listener.update_##type_id(table_map[table.first], record_id, field_maps[table.first][field.first], table.second.get_##type_id(record_id, field.first));\
+       writeable.update_##type_id(table_map[table.first], record_id, field_maps[table.first][field.first], table.second.get_##type_id(record_id, field.first));\
       break;
       #include "joedb/TYPE_MACRO.h"
       #undef TYPE_MACRO
@@ -94,7 +94,7 @@ void joedb::dump(const Database &db, Writeable &listener)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump_data(const Database &db, Writeable &listener)
+void joedb::dump_data(const Database &db, Writeable &writeable)
 /////////////////////////////////////////////////////////////////////////////
 {
  for (auto table: db.get_tables())
@@ -114,7 +114,7 @@ void joedb::dump_data(const Database &db, Writeable &listener)
 
    if (size)
    {
-    listener.insert_vector(table.first, i + 1, size);
+    writeable.insert_vector(table.first, i + 1, size);
 
     for (const auto &field: fields)
     {
@@ -125,7 +125,7 @@ void joedb::dump_data(const Database &db, Writeable &listener)
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::type_id_t::type_id:\
-       listener.update_vector_##type_id(table.first, i + 1, field.first, size, field.second.get_vector_##type_id() + i);\
+       writeable.update_vector_##type_id(table.first, i + 1, field.first, size, field.second.get_vector_##type_id() + i);\
       break;
       #include "joedb/TYPE_MACRO.h"
       #undef TYPE_MACRO
@@ -144,20 +144,20 @@ void joedb::dump_data(const Database &db, Writeable &listener)
 #include "joedb/Journal_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::pack(Journal_File &input_journal, Writeable &listener)
+void joedb::pack(Journal_File &input_journal, Writeable &writeable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
- DB_Writeable db_listener(db);
+ DB_Writeable db_writeable(db);
 
- Selective_Writeable schema_writer(listener, Selective_Writeable::Mode::schema);
+ Selective_Writeable schema_writer(writeable, Selective_Writeable::Mode::schema);
  Multiplexer multiplexer;
- multiplexer.add_listener(db_listener);
- multiplexer.add_listener(schema_writer);
+ multiplexer.add_writeable(db_writeable);
+ multiplexer.add_writeable(schema_writer);
  Dummy_Writeable dummy;
- auto &multiplexer_listener = multiplexer.add_listener(dummy);
+ auto &multiplexer_writeable = multiplexer.add_writeable(dummy);
 
- input_journal.replay_log(multiplexer_listener);
+ input_journal.replay_log(multiplexer_writeable);
 
- dump_data(db, listener);
+ dump_data(db, writeable);
 }

@@ -16,18 +16,18 @@ namespace joedb
    };
 
   private:
-   Writeable &listener;
+   Writeable &writeable;
    const Mode mode;
 
   public:
 
-   Selective_Writeable(Writeable &listener, Mode mode):
-    listener(listener),
+   Selective_Writeable(Writeable &writeable, Mode mode):
+    writeable(writeable),
     mode(mode)
    {
    }
 
-   bool is_good() const override {return listener.is_good();}
+   bool is_good() const override {return writeable.is_good();}
 
    //
    // schema events
@@ -35,20 +35,20 @@ namespace joedb
    void create_table(const std::string &name) override
    {
     if (mode & schema)
-     listener.create_table(name);
+     writeable.create_table(name);
    }
 
    void drop_table(table_id_t table_id) override
    {
     if (mode & schema)
-     listener.drop_table(table_id);
+     writeable.drop_table(table_id);
    }
 
    void rename_table(table_id_t table_id,
                      const std::string &name) override
    {
     if (mode & schema)
-     listener.rename_table(table_id, name);
+     writeable.rename_table(table_id, name);
    }
 
    void add_field(table_id_t table_id,
@@ -56,14 +56,14 @@ namespace joedb
                   Type type) override
    {
     if (mode & schema)
-     listener.add_field(table_id, name, type);
+     writeable.add_field(table_id, name, type);
    }
 
    void drop_field(table_id_t table_id,
                    field_id_t field_id) override
    {
     if (mode & schema)
-     listener.drop_field(table_id, field_id);
+     writeable.drop_field(table_id, field_id);
    }
 
    void rename_field(table_id_t table_id,
@@ -71,13 +71,13 @@ namespace joedb
                      const std::string &name) override
    {
     if (mode & schema)
-     listener.rename_field(table_id, field_id, name);
+     writeable.rename_field(table_id, field_id, name);
    }
 
    void custom(const std::string &name) override
    {
     if (mode & schema)
-     listener.custom(name);
+     writeable.custom(name);
    }
 
    //
@@ -86,19 +86,19 @@ namespace joedb
    void comment(const std::string &comment) override
    {
     if (mode & information)
-     listener.comment(comment);
+     writeable.comment(comment);
    }
 
    void timestamp(int64_t timestamp) override
    {
     if (mode & information)
-     listener.timestamp(timestamp);
+     writeable.timestamp(timestamp);
    }
 
    void valid_data() override
    {
     if (mode & information)
-     listener.valid_data();
+     writeable.valid_data();
    }
 
    //
@@ -107,7 +107,7 @@ namespace joedb
    void insert(table_id_t table_id, record_id_t record_id) override
    {
     if (mode & data)
-     listener.insert(table_id, record_id);
+     writeable.insert(table_id, record_id);
    }
 
    void insert_vector(table_id_t table_id,
@@ -115,13 +115,13 @@ namespace joedb
                       record_id_t size) override
    {
     if (mode & data)
-     listener.insert_vector(table_id, record_id, size);
+     writeable.insert_vector(table_id, record_id, size);
    }
 
    void delete_record(table_id_t table_id, record_id_t record_id) override
    {
     if (mode & data)
-     listener.delete_record(table_id, record_id);
+     writeable.delete_record(table_id, record_id);
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -131,7 +131,7 @@ namespace joedb
                          return_type value) override\
    {\
     if (mode & data)\
-     listener.update_##type_id(table_id, record_id, field_id, value);\
+     writeable.update_##type_id(table_id, record_id, field_id, value);\
    }
    #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO

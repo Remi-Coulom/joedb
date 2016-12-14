@@ -7,9 +7,9 @@ namespace joedb
  class Writeable;
  class Journal_File;
 
- void dump(const Database &db, Writeable &listener);
- void dump_data(const Database &db, Writeable &listener);
- void pack(Journal_File &input_journal, Writeable &listener);
+ void dump(const Database &db, Writeable &writeable);
+ void dump_data(const Database &db, Writeable &writeable);
+ void pack(Journal_File &input_journal, Writeable &writeable);
 }
 
 #endif

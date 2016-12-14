@@ -119,8 +119,8 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    continue;
   else if (command == "dump") ////////////////////////////////////////////////
   {
-   Interpreter_Dump_Writeable dump_listener(out);
-   dump(db, dump_listener);
+   Interpreter_Dump_Writeable dump_writeable(out);
+   dump(db, dump_writeable);
   }
   else if (command == "quit") ////////////////////////////////////////////////
    break;

@@ -12,7 +12,7 @@ namespace joedb
  {
   private:
    Database db;
-   DB_Writeable db_listener;
+   DB_Writeable db_writeable;
    bool safe_insert;
    record_id_t max_record_id;
 
@@ -26,7 +26,7 @@ namespace joedb
 
   public:
    Safe_Writeable(record_id_t max_record_id = 0):
-    db_listener(db),
+    db_writeable(db),
     safe_insert(true),
     max_record_id(max_record_id)
    {

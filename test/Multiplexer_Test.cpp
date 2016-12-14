@@ -41,16 +41,16 @@ TEST_F(Multiplexer_Test, basic)
   Database db2;
 
   Journal_File journal(file);
-  DB_Writeable db1_listener(db1);
-  DB_Writeable db2_listener(db2);
+  DB_Writeable db1_writeable(db1);
+  DB_Writeable db2_writeable(db2);
 
   Multiplexer multiplexer;
-  Writeable &journal_multiplexer = multiplexer.add_listener(journal);
-  Writeable &db1_multiplexer = multiplexer.add_listener(db1_listener);
-  Writeable &db2_multiplexer = multiplexer.add_listener(db2_listener);
+  Writeable &journal_multiplexer = multiplexer.add_writeable(journal);
+  Writeable &db1_multiplexer = multiplexer.add_writeable(db1_writeable);
+  Writeable &db2_multiplexer = multiplexer.add_writeable(db2_writeable);
 
-  db1.set_listener(db1_multiplexer);
-  db2.set_listener(db2_multiplexer);
+  db1.set_writeable(db1_multiplexer);
+  db2.set_writeable(db2_multiplexer);
 
   journal.replay_log(journal_multiplexer);
 
@@ -79,16 +79,16 @@ TEST_F(Multiplexer_Test, basic)
   Database db2;
 
   Journal_File journal(file);
-  DB_Writeable db1_listener(db1);
-  DB_Writeable db2_listener(db2);
+  DB_Writeable db1_writeable(db1);
+  DB_Writeable db2_writeable(db2);
 
   Multiplexer multiplexer;
-  Writeable &journal_multiplexer = multiplexer.add_listener(journal);
-  Writeable &db1_multiplexer = multiplexer.add_listener(db1_listener);
-  Writeable &db2_multiplexer = multiplexer.add_listener(db2_listener);
+  Writeable &journal_multiplexer = multiplexer.add_writeable(journal);
+  Writeable &db1_multiplexer = multiplexer.add_writeable(db1_writeable);
+  Writeable &db2_multiplexer = multiplexer.add_writeable(db2_writeable);
 
-  db1.set_listener(db1_multiplexer);
-  db2.set_listener(db2_multiplexer);
+  db1.set_writeable(db1_multiplexer);
+  db2.set_writeable(db2_multiplexer);
 
   journal.replay_log(journal_multiplexer);
 
@@ -113,7 +113,7 @@ TEST_F(Multiplexer_Test, interpreter_test)
   Journal_File journal(file);
 
   Database db;
-  db.set_listener(journal);
+  db.set_writeable(journal);
 
   Interpreter interpreter(db);
   std::ifstream in_file("interpreter_test.joedbi");
@@ -129,8 +129,8 @@ TEST_F(Multiplexer_Test, interpreter_test)
   Database db1;
   Database db2;
 
-  DB_Writeable db1_listener(db1);
-  DB_Writeable db2_listener(db2);
+  DB_Writeable db1_writeable(db1);
+  DB_Writeable db2_writeable(db2);
 
   Dummy_Writeable dummy;
   Selective_Writeable select1(dummy, Selective_Writeable::schema);
@@ -138,17 +138,17 @@ TEST_F(Multiplexer_Test, interpreter_test)
   Selective_Writeable select4(dummy, Selective_Writeable::information);
   dummy.comment("hello");
 
-  Writeable &db1_multiplexer = multiplexer.add_listener(db1_listener);
-                              multiplexer.add_listener(db2_listener);
-                              multiplexer.add_listener(select1);
-                              multiplexer.add_listener(select2);
-                              multiplexer.add_listener(select4);
+  Writeable &db1_multiplexer = multiplexer.add_writeable(db1_writeable);
+                               multiplexer.add_writeable(db2_writeable);
+                               multiplexer.add_writeable(select1);
+                               multiplexer.add_writeable(select2);
+                               multiplexer.add_writeable(select4);
 
-  db1.set_listener(db1_multiplexer);
+  db1.set_writeable(db1_multiplexer);
 
   File file("test_copy.joedb", File::mode_t::create_new);
   Journal_File journal(file);
-  db2.set_listener(journal);
+  db2.set_writeable(journal);
 
   Interpreter interpreter(db1);
   std::ifstream in_file("interpreter_test.joedbi");

@@ -33,10 +33,10 @@ int main(int argc, char **argv)
 
  joedb::Journal_File journal(file);
  joedb::Database db;
- joedb::DB_Writeable db_listener(db);
- journal.replay_log(db_listener);
+ joedb::DB_Writeable db_writeable(db);
+ journal.replay_log(db_writeable);
 
- if (!journal.is_good() || !db_listener.is_good())
+ if (!journal.is_good() || !db_writeable.is_good())
  {
   std::cerr << "Error reading database\n";
   return 1;

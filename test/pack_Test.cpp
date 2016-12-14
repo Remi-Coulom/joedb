@@ -44,7 +44,7 @@ update_vector float 7 value 2 0.8 9\n\
   Journal_File journal(joedb_file);
 
   Database db;
-  db.set_listener(journal);
+  db.set_writeable(journal);
 
   {
    std::istringstream joedbi_iss(joedbi);
@@ -61,8 +61,8 @@ update_vector float 7 value 2 0.8 9\n\
   Journal_File journal(joedb_file);
 
   std::stringstream packed_ss;
-  Interpreter_Dump_Writeable listener(packed_ss);
-  pack(journal, listener);
+  Interpreter_Dump_Writeable writeable(packed_ss);
+  pack(journal, writeable);
   EXPECT_EQ(packed_ss.str(), packed_result);
  }
 }

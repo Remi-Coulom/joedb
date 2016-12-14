@@ -19,7 +19,7 @@ namespace joedb
     unsupported_version,
     bad_format,
     crash_check,
-    listener_threw,
+    writeable_threw,
     journal_errors
    };
 
@@ -32,9 +32,9 @@ namespace joedb
    uint64_t ahead_of_checkpoint() const;
    uint64_t get_checkpoint_position() const {return checkpoint_position;}
    void checkpoint(int commit_level);
-   void replay_log(Writeable &listener);
+   void replay_log(Writeable &writeable);
    void rewind();
-   void play_until(Writeable &listener, uint64_t end);
+   void play_until(Writeable &writeable, uint64_t end);
 
    void create_table(const std::string &name) override;
    void drop_table(table_id_t table_id) override;

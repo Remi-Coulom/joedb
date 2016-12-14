@@ -15,9 +15,9 @@ joedb::Internal_Writeable::Internal_Writeable
 #define MULTIPLEX(x) do {\
  if (!multiplexer->multiplexing) {\
   multiplexer->multiplexing = true;\
-  for (size_t i = 0; i < multiplexer->external_listeners.size(); i++) \
+  for (size_t i = 0; i < multiplexer->external_writeables.size(); i++) \
    if (i != id) \
-    multiplexer->external_listeners[i]->x;\
+    multiplexer->external_writeables[i]->x;\
   multiplexer->multiplexing = false;\
  }\
 } while(0)
@@ -175,15 +175,15 @@ void joedb::Internal_Writeable::update_vector_##type_id\
 #undef MULTIPLEX
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Writeable &joedb::Multiplexer::add_listener(Writeable &external_listener)
+joedb::Writeable &joedb::Multiplexer::add_writeable(Writeable &external_writeable)
 /////////////////////////////////////////////////////////////////////////////
 {
- const size_t id = external_listeners.size();
+ const size_t id = external_writeables.size();
 
- external_listeners.push_back(&external_listener);
- internal_listeners.push_back(
+ external_writeables.push_back(&external_writeable);
+ internal_writeables.push_back(
   std::unique_ptr<Internal_Writeable>(new Internal_Writeable(this, id)));
  // TODO later: C++14 has std::make_unique. Should be used here in the future.
 
- return *internal_listeners.back();
+ return *internal_writeables.back();
 }

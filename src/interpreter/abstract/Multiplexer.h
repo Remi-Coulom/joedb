@@ -64,12 +64,12 @@ namespace joedb
   friend class Internal_Writeable;
 
   private:
-   std::vector<Writeable *> external_listeners;
-   std::vector<std::unique_ptr<Internal_Writeable>> internal_listeners;
+   std::vector<Writeable *> external_writeables;
+   std::vector<std::unique_ptr<Internal_Writeable>> internal_writeables;
    bool multiplexing = false;
 
   public:
-   Writeable &add_listener(Writeable &external_listener);
+   Writeable &add_writeable(Writeable &external_writeable);
  };
 }
 

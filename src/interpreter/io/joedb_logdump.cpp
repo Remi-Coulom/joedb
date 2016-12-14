@@ -61,13 +61,13 @@ int main(int argc, char **argv)
   {
    if (sql)
    {
-    joedb::SQL_Dump_Writeable dump_listener(std::cout);
-    journal.replay_log(dump_listener);
+    joedb::SQL_Dump_Writeable dump_writeable(std::cout);
+    journal.replay_log(dump_writeable);
    }
    else
    {
-    joedb::Interpreter_Dump_Writeable dump_listener(std::cout);
-    journal.replay_log(dump_listener);
+    joedb::Interpreter_Dump_Writeable dump_writeable(std::cout);
+    journal.replay_log(dump_writeable);
    }
   }
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
    "unsupported_version",
    "bad_format",
    "crash_check",
-   "listener_threw"
+   "writeable_threw"
   };
 
   static_assert(sizeof(status_string) / sizeof(*status_string) ==

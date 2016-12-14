@@ -53,7 +53,7 @@ void joedb::Safe_Writeable::create_table(const std::string &name)
  if (db.find_table(name))
   throw std::runtime_error("create_table: name already used");
 
- db_listener.create_table(name);
+ db_writeable.create_table(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ void joedb::Safe_Writeable::drop_table(table_id_t table_id)
  if (!is_existing_table_id(table_id))
   throw std::runtime_error("drop_table: invalid table_id");
 
- db_listener.drop_table(table_id);
+ db_writeable.drop_table(table_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ void joedb::Safe_Writeable::rename_table
  if (db.find_table(name))
   throw std::runtime_error("rename_table: name already used");
 
- db_listener.rename_table(table_id, name);
+ db_writeable.rename_table(table_id, name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ void joedb::Safe_Writeable::add_field
  if (table_it->second.find_field(name))
   throw std::runtime_error("add_field: name already used");
 
- db_listener.add_field(table_id, name, type);
+ db_writeable.add_field(table_id, name, type);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ void joedb::Safe_Writeable::drop_field
  if (field_it == fields.end())
   throw std::runtime_error("drop_field: invalid field_id");
 
- db_listener.drop_field(table_id, field_id);
+ db_writeable.drop_field(table_id, field_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -146,35 +146,35 @@ void joedb::Safe_Writeable::rename_field
  if (table_it->second.find_field(name))
   throw std::runtime_error("rename_field: name already used");
 
- db_listener.rename_field(table_id, field_id, name);
+ db_writeable.rename_field(table_id, field_id, name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Writeable::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
- db_listener.custom(name);
+ db_writeable.custom(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Writeable::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
- db_listener.comment(comment);
+ db_writeable.comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Writeable::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
- db_listener.timestamp(timestamp);
+ db_writeable.timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Safe_Writeable::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
- db_listener.valid_data();
+ db_writeable.valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -190,7 +190,7 @@ void joedb::Safe_Writeable::insert
  if (record_id <= 0 || (max_record_id && record_id > max_record_id))
   throw std::runtime_error("insert: bad record_id");
  // TODO: check that it does not already exist?
- db_listener.insert(table_id, record_id);
+ db_writeable.insert(table_id, record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -209,7 +209,7 @@ void joedb::Safe_Writeable::insert_vector
      (max_record_id && record_id > max_record_id) ||
      (max_record_id && size > max_record_id))
   throw std::runtime_error("insert_vector: bad record_id or size");
- db_listener.insert_vector(table_id, record_id, size);
+ db_writeable.insert_vector(table_id, record_id, size);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -226,7 +226,7 @@ void joedb::Safe_Writeable::delete_record
   throw std::runtime_error("delete: invalid table_id");
  // TODO: check that it already exists
 
- db_listener.delete_record(table_id, record_id);
+ db_writeable.delete_record(table_id, record_id);
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -240,7 +240,7 @@ void joedb::Safe_Writeable::update_##type_id(table_id_t table_id,\
                   field_id,\
                   1,\
                   Type::type_id_t::type_id))\
-  db_listener.update_##type_id(table_id, record_id, field_id, value);\
+  db_writeable.update_##type_id(table_id, record_id, field_id, value);\
  else\
   throw std::runtime_error("Wrong update");\
 }\
@@ -255,7 +255,7 @@ void joedb::Safe_Writeable::update_vector_##type_id(table_id_t table_id,\
                   field_id,\
                   size,\
                   Type::type_id_t::type_id))\
-  db_listener.update_vector_##type_id(table_id,\
+  db_writeable.update_vector_##type_id(table_id,\
                                       record_id,\
                                       field_id,\
                                       size,\

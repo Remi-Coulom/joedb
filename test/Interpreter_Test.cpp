@@ -42,8 +42,8 @@ TEST_F(Interpreter_Test, main_test)
 TEST_F(Interpreter_Test, Interpreter_Dump_Writeable)
 {
  std::ostringstream dump_string;
- joedb::Interpreter_Dump_Writeable listener(dump_string);
- db.set_listener(listener);
+ joedb::Interpreter_Dump_Writeable writeable(dump_string);
+ db.set_writeable(writeable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -63,8 +63,8 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Writeable)
 TEST_F(Interpreter_Test, SQL_Dump_Writeable)
 {
  std::ostringstream dump_string;
- joedb::SQL_Dump_Writeable listener(dump_string);
- db.set_listener(listener);
+ joedb::SQL_Dump_Writeable writeable(dump_string);
+ db.set_writeable(writeable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());

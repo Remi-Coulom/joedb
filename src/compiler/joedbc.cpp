@@ -252,7 +252,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
 
   protected:
-   joedb::Dummy_Writeable dummy_listener;
+   joedb::Dummy_Writeable dummy_writeable;
 
    virtual void before_throwing() {}
 
@@ -267,7 +267,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   private:
    std::string last_error_message;
-   joedb::Writeable *listener;
+   joedb::Writeable *writeable;
 
 )RRR";
 
@@ -431,7 +431,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // delete_record listener function
+ // delete_record writeable function
  //
  out << '\n';
  out << "   void delete_record(table_id_t table_id, record_id_t record_id) override\n";
@@ -651,49 +651,49 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // Schema changes are forwarded to the listener
+ // Schema changes are forwarded to the writeable
  //
  out << R"RRR(
 
   protected:
    void create_table(const std::string &name) override
    {
-    listener->create_table(name);
+    writeable->create_table(name);
    }
 
    void drop_table(table_id_t table_id) override
    {
-    listener->drop_table(table_id);
+    writeable->drop_table(table_id);
    }
 
    void rename_table(table_id_t table_id,
                            const std::string &name) override
    {
-    listener->rename_table(table_id, name);
+    writeable->rename_table(table_id, name);
    }
 
    void add_field(table_id_t table_id,
                         const std::string &name,
                         joedb::Type type) override
    {
-    listener->add_field(table_id, name, type);
+    writeable->add_field(table_id, name, type);
    }
 
    void drop_field(table_id_t table_id, field_id_t field_id) override
    {
-    listener->drop_field(table_id, field_id);
+    writeable->drop_field(table_id, field_id);
    }
 
    void rename_field(table_id_t table_id,
                            field_id_t field_id,
                            const std::string &name) override
    {
-    listener->rename_field(table_id, field_id, name);
+    writeable->rename_field(table_id, field_id, name);
    }
 
    void custom(const std::string &name) override
    {
-    listener->custom(name);
+    writeable->custom(name);
    }
 )RRR";
 
@@ -702,10 +702,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR(
   public:
-   Database(): listener(&dummy_listener) {}
+   Database(): writeable(&dummy_writeable) {}
 
-   void set_listener(Writeable &new_listener) {listener = &new_listener;}
-   void clear_listener() {listener = &dummy_listener;}
+   void set_writeable(Writeable &new_writeable) {writeable = &new_writeable;}
+   void clear_writeable() {writeable = &dummy_writeable;}
 
    void comment(const std::string &comment) override;
    void timestamp();
@@ -810,7 +810,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
 
   out << "    internal_insert_" << tname << "(result.id);\n\n";
-  out << "    listener->insert(" << table.first << ", result.id);\n";
+  out << "    writeable->insert(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -826,7 +826,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << tname << ".size() + size);\n";
   out << "    for (size_t i = 0; i < size; i++)\n";
   out << "     internal_insert_" << tname << "(result.id + i);\n";
-  out << "    listener->insert_vector(" << table.first;
+  out << "    writeable->insert_vector(" << table.first;
   out << ", result.id, size);\n";
   out << "    return result;\n";
   out << "   }\n";
@@ -876,7 +876,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
    out << "   {\n";
    out << "    internal_delete_" << tname << "(record.id);\n";
-   out << "    listener->delete_record(" << table.first << ", record.id);\n";
+   out << "    writeable->delete_record(" << table.first << ", record.id);\n";
    out << "   }\n";
   }
 
@@ -912,7 +912,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "    assert(!record.is_null());\n";
    out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
    out << "field_value_of_" << fname << ");\n";
-   out << "    listener->update_";
+   out << "    writeable->update_";
    out << types[int(field.second.get_type().get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
    out << "field_value_of_" << fname;
@@ -1272,28 +1272,28 @@ void generate_cpp
 void Database::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->comment(comment);
+ writeable->comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void Database::timestamp()
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->timestamp(std::time(0));
+ writeable->timestamp(std::time(0));
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void Database::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->timestamp(timestamp);
+ writeable->timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void Database::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->valid_data();
+ writeable->valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1332,9 +1332,9 @@ File_Database::File_Database(const char *file_name, bool read_only):
                        joedb::Generic_File::mode_t::create_new
                       );
    joedb::Journal_File file_schema_journal(stream_file);
-   set_listener(file_schema_journal);
+   set_writeable(file_schema_journal);
    journal.replay_log(*this);
-   clear_listener();
+   clear_writeable();
   }
 
   //
@@ -1356,9 +1356,9 @@ File_Database::File_Database(const char *file_name, bool read_only):
     joedb::Journal_File schema_journal(schema_file);
 
     schema_journal.rewind();
-    schema_journal.play_until(dummy_listener, file_schema.str().size());
+    schema_journal.play_until(dummy_writeable, file_schema.str().size());
 
-    set_listener(journal);
+    set_writeable(journal);
     upgrading_schema = true;
     schema_journal.play_until(*this, 0);
     upgrading_schema = false;
@@ -1368,7 +1368,7 @@ File_Database::File_Database(const char *file_name, bool read_only):
   }
  }
 
- set_listener(journal);
+ set_writeable(journal);
 }
 )RRR";
 }
@@ -1414,9 +1414,9 @@ int main(int argc, char **argv)
 
   Stream_File schema_file(schema, Generic_File::mode_t::create_new);
   Journal_File journal(schema_file);
-  Selective_Writeable schema_listener(journal, Selective_Writeable::schema);
+  Selective_Writeable schema_writeable(journal, Selective_Writeable::schema);
 
-  db.set_listener(schema_listener);
+  db.set_writeable(schema_writeable);
   Interpreter interpreter(db);
   interpreter.main_loop(joedbi_file, std::cerr);
  }

@@ -143,11 +143,11 @@ void joedb::Journal_File::checkpoint(int commit_level)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::replay_log(Writeable &listener)
+void joedb::Journal_File::replay_log(Writeable &writeable)
 /////////////////////////////////////////////////////////////////////////////
 {
  rewind();
- play_until(listener, checkpoint_position);
+ play_until(writeable, checkpoint_position);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ void joedb::Journal_File::rewind()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
+void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (end == 0)
@@ -178,14 +178,14 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
     case operation_t::create_table:
     {
      std::string name = safe_read_string();
-     listener.create_table(name);
+     writeable.create_table(name);
     }
     break;
 
     case operation_t::drop_table:
     {
      table_id_t table_id = file.compact_read<table_id_t>();
-     listener.drop_table(table_id);
+     writeable.drop_table(table_id);
     }
     break;
 
@@ -193,7 +193,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      std::string name = safe_read_string();
-     listener.rename_table(table_id, name);
+     writeable.rename_table(table_id, name);
     }
     break;
 
@@ -202,7 +202,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
      table_id_t table_id = file.compact_read<table_id_t>();
      std::string name = safe_read_string();
      Type type = read_type();
-     listener.add_field(table_id, name, type);
+     writeable.add_field(table_id, name, type);
     }
     break;
 
@@ -210,7 +210,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      field_id_t field_id = file.compact_read<field_id_t>();
-     listener.drop_field(table_id, field_id);
+     writeable.drop_field(table_id, field_id);
     }
     break;
 
@@ -219,7 +219,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
      table_id_t table_id = file.compact_read<table_id_t>();
      field_id_t field_id = file.compact_read<field_id_t>();
      std::string name = safe_read_string();
-     listener.rename_field(table_id, field_id, name);
+     writeable.rename_field(table_id, field_id, name);
     }
     break;
 
@@ -227,7 +227,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     listener.insert(table_id, record_id);
+     writeable.insert(table_id, record_id);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
     }
@@ -238,14 +238,14 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
      record_id_t size = file.compact_read<record_id_t>();
-     listener.insert_vector(table_id, record_id, size);
+     writeable.insert_vector(table_id, record_id, size);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
     }
     break;
 
     case operation_t::append:
-     listener.insert(table_of_last_operation,
+     writeable.insert(table_of_last_operation,
                            ++record_of_last_operation);
     break;
 
@@ -253,7 +253,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     listener.delete_record(table_id, record_id);
+     writeable.delete_record(table_id, record_id);
     }
     break;
 
@@ -275,7 +275,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
     lbl_perform_update_##type_id:\
     {\
      cpp_type value = read_method();\
-     listener.update_##type_id(table_of_last_operation,\
+     writeable.update_##type_id(table_of_last_operation,\
                                      record_of_last_operation,\
                                      field_of_last_update,\
                                      value);\
@@ -296,7 +296,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
      std::vector<cpp_type> buffer(size);\
      for (size_t i = 0; i < size; i++)\
       buffer[i] = read_method();\
-     listener.update_vector_##type_id(table_of_last_operation,\
+     writeable.update_vector_##type_id(table_of_last_operation,\
                                             record_of_last_operation,\
                                             field_of_last_update,\
                                             size,\
@@ -309,26 +309,26 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
     case operation_t::custom:
     {
      std::string name = safe_read_string();
-     listener.custom(name);
+     writeable.custom(name);
     }
     break;
 
     case operation_t::comment:
     {
      std::string comment = safe_read_string();
-     listener.comment(comment);
+     writeable.comment(comment);
     }
     break;
 
     case operation_t::timestamp:
     {
      int64_t timestamp = file.read<int64_t>();
-     listener.timestamp(timestamp);
+     writeable.timestamp(timestamp);
     }
     break;
 
     case operation_t::valid_data:
-     listener.valid_data();
+     writeable.valid_data();
     break;
 
     default:
@@ -339,7 +339,7 @@ void joedb::Journal_File::play_until(Writeable &listener, uint64_t end)
  }
  catch (std::runtime_error e)
  {
-  state = state_t::listener_threw;
+  state = state_t::writeable_threw;
   return;
  }
 

@@ -8,7 +8,7 @@ table_id_t joedb::Database::create_table(const std::string &name)
   return 0;
 
  tables.insert(std::make_pair(++current_table_id, Table(name)));
- listener->create_table(name);
+ writeable->create_table(name);
  return current_table_id;
 }
 
@@ -18,7 +18,7 @@ bool joedb::Database::drop_table(table_id_t table_id)
 {
  if (tables.erase(table_id) > 0)
  {
-  listener->drop_table(table_id);
+  writeable->drop_table(table_id);
   return true;
  }
  else
@@ -37,7 +37,7 @@ bool joedb::Database::rename_table
  if (table_it != tables.end() && find_table(name) == 0)
  {
   table_it->second.set_name(name);
-  listener->rename_table(table_id, name);
+  writeable->rename_table(table_id, name);
   return true;
  }
  else
@@ -68,7 +68,7 @@ field_id_t joedb::Database::add_field
   return 0;
  field_id_t field_id = it->second.add_field(name, type);
  if (field_id)
-  listener->add_field(table_id, name, type);
+  writeable->add_field(table_id, name, type);
  return field_id;
 }
 
@@ -111,7 +111,7 @@ bool joedb::Database::drop_field(table_id_t table_id, field_id_t field_id)
  auto it = tables.find(table_id);
  if (it != tables.end() && it->second.drop_field(field_id))
  {
-  listener->drop_field(table_id, field_id);
+  writeable->drop_field(table_id, field_id);
   return true;
  }
  return false;
@@ -134,7 +134,7 @@ bool joedb::Database::rename_field
   if (field_it != fields.end() && find_field(table_id, name) == 0)
   {
    field_it->second.set_name(name);
-   listener->rename_field(table_id, field_id, name);
+   writeable->rename_field(table_id, field_id, name);
    return true;
   }
  }
@@ -147,28 +147,28 @@ void joedb::Database::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  custom_names.push_back(name);
- listener->custom(name);
+ writeable->custom(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Database::timestamp(int64_t timestamp) const
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->timestamp(timestamp);
+ writeable->timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Database::comment(const std::string &comment) const
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->comment(comment);
+ writeable->comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Database::valid_data() const
 /////////////////////////////////////////////////////////////////////////////
 {
- listener->valid_data();
+ writeable->valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ bool joedb::Database::insert_into(table_id_t table_id, record_id_t record_id)
  auto it = tables.find(table_id);
  if (it != tables.end() && it->second.insert_record(record_id))
  {
-  listener->insert(table_id, record_id);
+  writeable->insert(table_id, record_id);
   return true;
  }
  return false;
@@ -201,7 +201,7 @@ bool joedb::Database::insert_vector
   for (record_id_t i = 0; i < size; i++)
    it->second.insert_record(record_id + i);
 
-  listener->insert_vector(table_id, record_id, size);
+  writeable->insert_vector(table_id, record_id, size);
   return true;
  }
 
@@ -215,7 +215,7 @@ bool joedb::Database::delete_from(table_id_t table_id, record_id_t record_id)
  auto it = tables.find(table_id);
  if (it != tables.end() && it->second.delete_record(record_id))
  {
-  listener->delete_record(table_id, record_id);
+  writeable->delete_record(table_id, record_id);
   return true;
  }
  return false;
@@ -232,7 +232,7 @@ bool joedb::Database::update_##type_id(table_id_t table_id,\
  if (it != tables.end() &&\
      it->second.update_##type_id(record_id, field_id, value))\
  {\
-  listener->update_##type_id(table_id, record_id, field_id, value);\
+  writeable->update_##type_id(table_id, record_id, field_id, value);\
   return true;\
  }\
  return false;\
@@ -247,7 +247,7 @@ bool joedb::Database::update_vector_##type_id(table_id_t table_id,\
  if (it != tables.end() &&\
      it->second.update_vector_##type_id(record_id, field_id, size, value))\
  {\
-  listener->update_vector_##type_id(table_id, record_id, field_id, size, value);\
+  writeable->update_vector_##type_id(table_id, record_id, field_id, size, value);\
   return true;\
  }\
  return false;\

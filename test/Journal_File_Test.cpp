@@ -39,7 +39,7 @@ TEST_F(Journal_File_Test, basic_operations)
  {
   File file("test.joedb", File::mode_t::create_new);
   Journal_File journal(file);
-  db1.set_listener(journal);
+  db1.set_writeable(journal);
   db1.drop_table(db1.create_table("deleted"));
   const table_id_t table_id = db1.create_table("table_test");
   db1.insert_into(table_id, 1);
@@ -94,20 +94,20 @@ TEST_F(Journal_File_Test, basic_operations)
  {
   File file("test.joedb", File::mode_t::read_existing);
   Journal_File journal(file);
-  DB_Writeable db_listener(db2);
-  journal.replay_log(db_listener);
-  EXPECT_TRUE(db_listener.is_good());
+  DB_Writeable db_writeable(db2);
+  journal.replay_log(db_writeable);
+  EXPECT_TRUE(db_writeable.is_good());
   EXPECT_EQ(Journal_File::state_t::no_error, journal.get_state());
  }
 
  std::ostringstream oss1;
  std::ostringstream oss2;
 
- Interpreter_Dump_Writeable listener1(oss1);
- Interpreter_Dump_Writeable listener2(oss2);
+ Interpreter_Dump_Writeable writeable1(oss1);
+ Interpreter_Dump_Writeable writeable2(oss2);
 
- joedb::dump(db1, listener1);
- joedb::dump(db2, listener2);
+ joedb::dump(db1, writeable1);
+ joedb::dump(db2, writeable2);
 
  EXPECT_EQ(oss1.str(), oss2.str());
 }
@@ -124,7 +124,7 @@ TEST_F(Journal_File_Test, interpreter_test)
   Journal_File journal(file);
 
   Database db;
-  db.set_listener(journal);
+  db.set_writeable(journal);
 
   Interpreter interpreter(db);
   std::ifstream in_file("interpreter_test.joedbi");
@@ -144,10 +144,10 @@ TEST_F(Journal_File_Test, interpreter_test)
   Journal_File journal_copy(file_copy);
 
   Database db;
-  db.set_listener(journal_copy);
+  db.set_writeable(journal_copy);
 
-  DB_Writeable db_listener(db);
-  journal.replay_log(db_listener);
+  DB_Writeable db_writeable(db);
+  journal.replay_log(db_writeable);
  }
 
  //
