@@ -2,7 +2,7 @@
 #include "File.h"
 #include "Stream_File.h"
 #include "Journal_File.h"
-#include "Selective_Listener.h"
+#include "Selective_Writeable.h"
 #include "Interpreter.h"
 #include "Compiler_Options.h"
 #include "Compiler_Options_io.h"
@@ -153,7 +153,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
 #include "joedb/Database.h"
-#include "joedb/Dummy_Listener.h"
+#include "joedb/Dummy_Writeable.h"
 #include "joedb/Freedom_Keeper.h"
 
 )RRR";
@@ -232,7 +232,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << " class range_of_" << index.name << ";\n";
  out << '\n';
 
- out << " class Database: public joedb::Listener\n {\n";
+ out << " class Database: public joedb::Writeable\n {\n";
 
  for (auto &table: tables)
  {
@@ -252,7 +252,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
 
   protected:
-   joedb::Dummy_Listener dummy_listener;
+   joedb::Dummy_Writeable dummy_listener;
 
    virtual void before_throwing() {}
 
@@ -267,7 +267,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   private:
    std::string last_error_message;
-   joedb::Listener *listener;
+   joedb::Writeable *listener;
 
 )RRR";
 
@@ -704,7 +704,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   public:
    Database(): listener(&dummy_listener) {}
 
-   void set_listener(Listener &new_listener) {listener = &new_listener;}
+   void set_listener(Writeable &new_listener) {listener = &new_listener;}
    void clear_listener() {listener = &dummy_listener;}
 
    void comment(const std::string &comment) override;
@@ -1414,7 +1414,7 @@ int main(int argc, char **argv)
 
   Stream_File schema_file(schema, Generic_File::mode_t::create_new);
   Journal_File journal(schema_file);
-  Selective_Listener schema_listener(journal, Selective_Listener::schema);
+  Selective_Writeable schema_listener(journal, Selective_Writeable::schema);
 
   db.set_listener(schema_listener);
   Interpreter interpreter(db);

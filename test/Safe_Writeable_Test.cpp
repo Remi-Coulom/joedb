@@ -1,4 +1,4 @@
-#include "Safe_Listener.h"
+#include "Safe_Writeable.h"
 
 #include "gtest/gtest.h"
 
@@ -11,7 +11,7 @@ using namespace joedb;
 // TODO: check exception name
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Safe_Listener_Test, test_all_errors)
+TEST(Safe_Writeable_Test, test_all_errors)
 /////////////////////////////////////////////////////////////////////////////
 {
  #define CHECK_EXCEPTION(x)\
@@ -22,7 +22,7 @@ TEST(Safe_Listener_Test, test_all_errors)
   EXPECT_TRUE(exception_caught);\
  }
 
- joedb::Safe_Listener listener(1000);
+ joedb::Safe_Writeable listener(1000);
  const Database &db = listener.get_db();
 
  listener.create_table("person");

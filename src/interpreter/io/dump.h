@@ -4,12 +4,12 @@
 namespace joedb
 {
  class Database;
- class Listener;
+ class Writeable;
  class Journal_File;
 
- void dump(const Database &db, Listener &listener);
- void dump_data(const Database &db, Listener &listener);
- void pack(Journal_File &input_journal, Listener &listener);
+ void dump(const Database &db, Writeable &listener);
+ void dump_data(const Database &db, Writeable &listener);
+ void pack(Journal_File &input_journal, Writeable &listener);
 }
 
 #endif

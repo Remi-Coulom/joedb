@@ -2,7 +2,7 @@
 #define joedb_Database_declared
 
 #include "Table.h"
-#include "Dummy_Listener.h"
+#include "Dummy_Writeable.h"
 
 #include <map>
 
@@ -15,13 +15,13 @@ namespace joedb
 
    std::map<table_id_t, Table> tables;
 
-   Dummy_Listener dummy_listener;
-   Listener *listener = &dummy_listener;
+   Dummy_Writeable dummy_listener;
+   Writeable *listener = &dummy_listener;
 
    std::vector<std::string> custom_names;
 
   public:
-   void set_listener(Listener &new_listener) {listener = &new_listener;}
+   void set_listener(Writeable &new_listener) {listener = &new_listener;}
    void clear_listener() {listener = &dummy_listener;}
 
    const std::map<table_id_t, Table> &get_tables() const {return tables;}

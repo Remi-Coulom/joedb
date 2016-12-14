@@ -1,11 +1,11 @@
-#include "Safe_Listener.h"
+#include "Safe_Writeable.h"
 
 // TODO: should also check that identifier are valid C++ identifiers
 // TODO: don't allow "__" inside identifiers
 // TODO: more detailed error for updates
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Safe_Listener::is_existing_table_id(table_id_t table_id) const
+bool joedb::Safe_Writeable::is_existing_table_id(table_id_t table_id) const
 /////////////////////////////////////////////////////////////////////////////
 {
  const auto &tables = db.get_tables();
@@ -13,7 +13,7 @@ bool joedb::Safe_Listener::is_existing_table_id(table_id_t table_id) const
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Safe_Listener::is_update_ok
+bool joedb::Safe_Writeable::is_update_ok
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -47,7 +47,7 @@ bool joedb::Safe_Listener::is_update_ok
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::create_table(const std::string &name)
+void joedb::Safe_Writeable::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (db.find_table(name))
@@ -57,7 +57,7 @@ void joedb::Safe_Listener::create_table(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::drop_table(table_id_t table_id)
+void joedb::Safe_Writeable::drop_table(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (!is_existing_table_id(table_id))
@@ -67,7 +67,7 @@ void joedb::Safe_Listener::drop_table(table_id_t table_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::rename_table
+void joedb::Safe_Writeable::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -83,7 +83,7 @@ void joedb::Safe_Listener::rename_table
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::add_field
+void joedb::Safe_Writeable::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -104,7 +104,7 @@ void joedb::Safe_Listener::add_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::drop_field
+void joedb::Safe_Writeable::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -125,7 +125,7 @@ void joedb::Safe_Listener::drop_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::rename_field
+void joedb::Safe_Writeable::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -150,35 +150,35 @@ void joedb::Safe_Listener::rename_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::custom(const std::string &name)
+void joedb::Safe_Writeable::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  db_listener.custom(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::comment(const std::string &comment)
+void joedb::Safe_Writeable::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  db_listener.comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::timestamp(int64_t timestamp)
+void joedb::Safe_Writeable::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  db_listener.timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::valid_data()
+void joedb::Safe_Writeable::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  db_listener.valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::insert
+void joedb::Safe_Writeable::insert
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -194,7 +194,7 @@ void joedb::Safe_Listener::insert
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::insert_vector
+void joedb::Safe_Writeable::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -213,7 +213,7 @@ void joedb::Safe_Listener::insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Safe_Listener::delete_record
+void joedb::Safe_Writeable::delete_record
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -230,7 +230,7 @@ void joedb::Safe_Listener::delete_record
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-void joedb::Safe_Listener::update_##type_id(table_id_t table_id,\
+void joedb::Safe_Writeable::update_##type_id(table_id_t table_id,\
                                             record_id_t record_id,\
                                             field_id_t field_id,\
                                             return_type value)\
@@ -244,7 +244,7 @@ void joedb::Safe_Listener::update_##type_id(table_id_t table_id,\
  else\
   throw std::runtime_error("Wrong update");\
 }\
-void joedb::Safe_Listener::update_vector_##type_id(table_id_t table_id,\
+void joedb::Safe_Writeable::update_vector_##type_id(table_id_t table_id,\
                                                    record_id_t record_id,\
                                                    field_id_t field_id,\
                                                    record_id_t size,\

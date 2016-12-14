@@ -17,4 +17,4 @@ TYPE_MACRO(int8_t, int8_t, int8, file.read<int8_t>, write<int8_t>)
 TYPE_MACRO(int16_t, int16_t, int16, file.read<int16_t>, write<int16_t>)
 
 // Warning: only add at the bottom to keep compatibility with previous versions
-// Don't forget to add case in SQL_Dump_Listener
+// Don't forget to add case in SQL_Dump_Writeable

@@ -1,13 +1,13 @@
-#ifndef joedb_Dump_Listener_declared
-#define joedb_Dump_Listener_declared
+#ifndef joedb_Dump_Writeable_declared
+#define joedb_Dump_Writeable_declared
 
-#include "Schema_Listener.h"
+#include "Schema_Writeable.h"
 
 #include <iosfwd>
 
 namespace joedb
 {
- class Dump_Listener: public Schema_Listener
+ class Dump_Writeable: public Schema_Writeable
  {
   protected:
    Database db;
@@ -18,7 +18,7 @@ namespace joedb
    static std::string get_local_time(int64_t timestamp);
 
   public:
-   Dump_Listener(std::ostream &out): Schema_Listener(db), out(out) {}
+   Dump_Writeable(std::ostream &out): Schema_Writeable(db), out(out) {}
  };
 }
 

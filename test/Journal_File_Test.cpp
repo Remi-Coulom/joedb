@@ -1,10 +1,10 @@
 #include "Journal_File.h"
 #include "File.h"
-#include "DB_Listener.h"
+#include "DB_Writeable.h"
 #include "gtest/gtest.h"
 #include "dump.h"
 #include "Interpreter.h"
-#include "Interpreter_Dump_Listener.h"
+#include "Interpreter_Dump_Writeable.h"
 
 #include <fstream>
 
@@ -94,7 +94,7 @@ TEST_F(Journal_File_Test, basic_operations)
  {
   File file("test.joedb", File::mode_t::read_existing);
   Journal_File journal(file);
-  DB_Listener db_listener(db2);
+  DB_Writeable db_listener(db2);
   journal.replay_log(db_listener);
   EXPECT_TRUE(db_listener.is_good());
   EXPECT_EQ(Journal_File::state_t::no_error, journal.get_state());
@@ -103,8 +103,8 @@ TEST_F(Journal_File_Test, basic_operations)
  std::ostringstream oss1;
  std::ostringstream oss2;
 
- Interpreter_Dump_Listener listener1(oss1);
- Interpreter_Dump_Listener listener2(oss2);
+ Interpreter_Dump_Writeable listener1(oss1);
+ Interpreter_Dump_Writeable listener2(oss2);
 
  joedb::dump(db1, listener1);
  joedb::dump(db2, listener2);
@@ -146,7 +146,7 @@ TEST_F(Journal_File_Test, interpreter_test)
   Database db;
   db.set_listener(journal_copy);
 
-  DB_Listener db_listener(db);
+  DB_Writeable db_listener(db);
   journal.replay_log(db_listener);
  }
 

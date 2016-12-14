@@ -1,18 +1,18 @@
-#ifndef joedb_Safe_Listener_declared
-#define joedb_Safe_Listener_declared
+#ifndef joedb_Safe_Writeable_declared
+#define joedb_Safe_Writeable_declared
 
-#include "Listener.h"
+#include "Writeable.h"
 #include "Database.h"
 #include "Journal_File.h"
-#include "DB_Listener.h"
+#include "DB_Writeable.h"
 
 namespace joedb
 {
- class Safe_Listener: public Listener
+ class Safe_Writeable: public Writeable
  {
   private:
    Database db;
-   DB_Listener db_listener;
+   DB_Writeable db_listener;
    bool safe_insert;
    record_id_t max_record_id;
 
@@ -25,7 +25,7 @@ namespace joedb
                      Type::type_id_t type_id) const;
 
   public:
-   Safe_Listener(record_id_t max_record_id = 0):
+   Safe_Writeable(record_id_t max_record_id = 0):
     db_listener(db),
     safe_insert(true),
     max_record_id(max_record_id)

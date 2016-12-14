@@ -1,12 +1,12 @@
-#ifndef joedb_Interpreter_Dump_Listener_declared
-#define joedb_Interpreter_Dump_Listener_declared
+#ifndef joedb_Interpreter_Dump_Writeable_declared
+#define joedb_Interpreter_Dump_Writeable_declared
 
-#include "Dump_Listener.h"
+#include "Dump_Writeable.h"
 #include "type_io.h"
 
 namespace joedb
 {
- class Interpreter_Dump_Listener: public Dump_Listener
+ class Interpreter_Dump_Writeable: public Dump_Writeable
  {
   private:
    void write_type(Type type)
@@ -41,25 +41,25 @@ namespace joedb
    }
 
   public:
-   Interpreter_Dump_Listener(std::ostream &out): Dump_Listener(out) {}
+   Interpreter_Dump_Writeable(std::ostream &out): Dump_Writeable(out) {}
 
    void create_table(const std::string &name) override
    {
     out << "create_table " << name << '\n';
-    Schema_Listener::create_table(name);
+    Schema_Writeable::create_table(name);
    }
 
    void drop_table(table_id_t table_id) override
    {
     out << "drop_table " << get_table_name(table_id) << '\n';
-    Schema_Listener::drop_table(table_id);
+    Schema_Writeable::drop_table(table_id);
    }
 
    void rename_table(table_id_t table_id,
                      const std::string &name) override
    {
     out << "rename_table " << get_table_name(table_id) << ' ' << name << '\n';
-    Schema_Listener::rename_table(table_id, name);
+    Schema_Writeable::rename_table(table_id, name);
    }
 
    void add_field(table_id_t table_id,
@@ -69,14 +69,14 @@ namespace joedb
     out << "add_field " << get_table_name(table_id) << ' ' << name << ' ';
     write_type(type);
     out << '\n';
-    Schema_Listener::add_field(table_id, name, type);
+    Schema_Writeable::add_field(table_id, name, type);
    }
 
    void drop_field(table_id_t table_id, field_id_t field_id) override
    {
     out << "drop_field " << get_table_name(table_id) << ' ';
     out << get_field_name(table_id, field_id) << '\n';
-    Schema_Listener::drop_field(table_id, field_id);
+    Schema_Writeable::drop_field(table_id, field_id);
    }
 
    void rename_field(table_id_t table_id,
@@ -85,7 +85,7 @@ namespace joedb
    {
     out << "rename_field " << get_table_name(table_id) << ' ';
     out << get_field_name(table_id, field_id) << ' ' << name << '\n';
-    Schema_Listener::rename_field(table_id, field_id, name);
+    Schema_Writeable::rename_field(table_id, field_id, name);
    }
 
    void custom(const std::string &name) override

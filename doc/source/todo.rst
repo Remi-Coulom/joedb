@@ -28,7 +28,6 @@ Redesign:
 - Interpreter takes Listener as parameter instead of db? Build a local schema? Or create a Listener_With_Schema class?
 - This way, interpreter works with compiled database. joedb_admin should work with a listener too: could be applied to a compiled database!
 - For this to work, a universal Database_Reader interface must be implemented by interpreted and compiled databases.
-- Don't call listeners listeners any more. ``Writeable`` and ``Readable`` are better terms.
 - Remove is_good()? throw exceptions instead.
 - Use templates instead of virtual function calls for listeners?
 

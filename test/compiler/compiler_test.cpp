@@ -7,7 +7,7 @@
 #include "Journal_File.h"
 #include "Multiplexer.h"
 #include "Database.h"
-#include "DB_Listener.h"
+#include "DB_Writeable.h"
 #include "translation.h"
 
 #include <iostream>
@@ -258,12 +258,12 @@ int multiplexer_test()
  joedb::Database interpreted_db;
 
  joedb::Journal_File journal(file);
- joedb::DB_Listener interpreted_listener(interpreted_db);
+ joedb::DB_Writeable interpreted_listener(interpreted_db);
 
  joedb::Multiplexer multiplexer;
- joedb::Listener &journal_multiplexer = multiplexer.add_listener(journal);
- joedb::Listener &compiled_multiplexer = multiplexer.add_listener(compiled_db);
- joedb::Listener &interpreted_multiplexer = multiplexer.add_listener(interpreted_listener);
+ joedb::Writeable &journal_multiplexer = multiplexer.add_listener(journal);
+ joedb::Writeable &compiled_multiplexer = multiplexer.add_listener(compiled_db);
+ joedb::Writeable &interpreted_multiplexer = multiplexer.add_listener(interpreted_listener);
 
  compiled_db.set_listener(compiled_multiplexer);
  interpreted_db.set_listener(interpreted_multiplexer);

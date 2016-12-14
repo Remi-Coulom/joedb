@@ -1,11 +1,11 @@
-#ifndef joedb_Selective_Listener_declared
-#define joedb_Selective_Listener_declared
+#ifndef joedb_Selective_Writeable_declared
+#define joedb_Selective_Writeable_declared
 
-#include "joedb/Listener.h"
+#include "joedb/Writeable.h"
 
 namespace joedb
 {
- class Selective_Listener: public Listener
+ class Selective_Writeable: public Writeable
  {
   public:
    enum Mode
@@ -16,12 +16,12 @@ namespace joedb
    };
 
   private:
-   Listener &listener;
+   Writeable &listener;
    const Mode mode;
 
   public:
 
-   Selective_Listener(Listener &listener, Mode mode):
+   Selective_Writeable(Writeable &listener, Mode mode):
     listener(listener),
     mode(mode)
    {

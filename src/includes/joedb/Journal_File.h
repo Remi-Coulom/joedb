@@ -1,13 +1,13 @@
 #ifndef joedb_Journal_File_declared
 #define joedb_Journal_File_declared
 
-#include "Listener.h"
+#include "Writeable.h"
 
 namespace joedb
 {
  class Generic_File;
 
- class Journal_File: public Listener
+ class Journal_File: public Writeable
  {
   public:
    Journal_File(Generic_File &file);
@@ -32,9 +32,9 @@ namespace joedb
    uint64_t ahead_of_checkpoint() const;
    uint64_t get_checkpoint_position() const {return checkpoint_position;}
    void checkpoint(int commit_level);
-   void replay_log(Listener &listener);
+   void replay_log(Writeable &listener);
    void rewind();
-   void play_until(Listener &listener, uint64_t end);
+   void play_until(Writeable &listener, uint64_t end);
 
    void create_table(const std::string &name) override;
    void drop_table(table_id_t table_id) override;

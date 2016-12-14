@@ -1,11 +1,11 @@
-#ifndef joedb_Dummy_Listener_declared
-#define joedb_Dummy_Listener_declared
+#ifndef joedb_Dummy_Writeable_declared
+#define joedb_Dummy_Writeable_declared
 
-#include "Listener.h"
+#include "Writeable.h"
 
 namespace joedb
 {
- class Dummy_Listener: public Listener
+ class Dummy_Writeable: public Writeable
  {
   public:
    void create_table(const std::string &name) override {}

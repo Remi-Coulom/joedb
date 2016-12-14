@@ -2,10 +2,10 @@
 #include "File.h"
 #include "Journal_File.h"
 #include "Database.h"
-#include "DB_Listener.h"
+#include "DB_Writeable.h"
 #include "Interpreter.h"
-#include "Dummy_Listener.h"
-#include "Selective_Listener.h"
+#include "Dummy_Writeable.h"
+#include "Selective_Writeable.h"
 
 #include "gtest/gtest.h"
 
@@ -41,13 +41,13 @@ TEST_F(Multiplexer_Test, basic)
   Database db2;
 
   Journal_File journal(file);
-  DB_Listener db1_listener(db1);
-  DB_Listener db2_listener(db2);
+  DB_Writeable db1_listener(db1);
+  DB_Writeable db2_listener(db2);
 
   Multiplexer multiplexer;
-  Listener &journal_multiplexer = multiplexer.add_listener(journal);
-  Listener &db1_multiplexer = multiplexer.add_listener(db1_listener);
-  Listener &db2_multiplexer = multiplexer.add_listener(db2_listener);
+  Writeable &journal_multiplexer = multiplexer.add_listener(journal);
+  Writeable &db1_multiplexer = multiplexer.add_listener(db1_listener);
+  Writeable &db2_multiplexer = multiplexer.add_listener(db2_listener);
 
   db1.set_listener(db1_multiplexer);
   db2.set_listener(db2_multiplexer);
@@ -79,13 +79,13 @@ TEST_F(Multiplexer_Test, basic)
   Database db2;
 
   Journal_File journal(file);
-  DB_Listener db1_listener(db1);
-  DB_Listener db2_listener(db2);
+  DB_Writeable db1_listener(db1);
+  DB_Writeable db2_listener(db2);
 
   Multiplexer multiplexer;
-  Listener &journal_multiplexer = multiplexer.add_listener(journal);
-  Listener &db1_multiplexer = multiplexer.add_listener(db1_listener);
-  Listener &db2_multiplexer = multiplexer.add_listener(db2_listener);
+  Writeable &journal_multiplexer = multiplexer.add_listener(journal);
+  Writeable &db1_multiplexer = multiplexer.add_listener(db1_listener);
+  Writeable &db2_multiplexer = multiplexer.add_listener(db2_listener);
 
   db1.set_listener(db1_multiplexer);
   db2.set_listener(db2_multiplexer);
@@ -129,16 +129,16 @@ TEST_F(Multiplexer_Test, interpreter_test)
   Database db1;
   Database db2;
 
-  DB_Listener db1_listener(db1);
-  DB_Listener db2_listener(db2);
+  DB_Writeable db1_listener(db1);
+  DB_Writeable db2_listener(db2);
 
-  Dummy_Listener dummy;
-  Selective_Listener select1(dummy, Selective_Listener::schema);
-  Selective_Listener select2(dummy, Selective_Listener::data);
-  Selective_Listener select4(dummy, Selective_Listener::information);
+  Dummy_Writeable dummy;
+  Selective_Writeable select1(dummy, Selective_Writeable::schema);
+  Selective_Writeable select2(dummy, Selective_Writeable::data);
+  Selective_Writeable select4(dummy, Selective_Writeable::information);
   dummy.comment("hello");
 
-  Listener &db1_multiplexer = multiplexer.add_listener(db1_listener);
+  Writeable &db1_multiplexer = multiplexer.add_listener(db1_listener);
                               multiplexer.add_listener(db2_listener);
                               multiplexer.add_listener(select1);
                               multiplexer.add_listener(select2);

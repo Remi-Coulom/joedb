@@ -1,14 +1,14 @@
-#ifndef joedb_DB_Listener_declared
-#define joedb_DB_Listener_declared
+#ifndef joedb_DB_Writeable_declared
+#define joedb_DB_Writeable_declared
 
-#include "Schema_Listener.h"
+#include "Schema_Writeable.h"
 
 namespace joedb
 {
- class DB_Listener: public Schema_Listener
+ class DB_Writeable: public Schema_Writeable
  {
   public:
-   DB_Listener(Database &db): Schema_Listener(db) {}
+   DB_Writeable(Database &db): Schema_Writeable(db) {}
 
    void comment(const std::string &comment) override
    {

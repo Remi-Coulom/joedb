@@ -1,7 +1,7 @@
 #include "Multiplexer.h"
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Internal_Listener::Internal_Listener
+joedb::Internal_Writeable::Internal_Writeable
 /////////////////////////////////////////////////////////////////////////////
 (
  Multiplexer *multiplexer,
@@ -23,21 +23,21 @@ joedb::Internal_Listener::Internal_Listener
 } while(0)
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::create_table(const std::string &name)
+void joedb::Internal_Writeable::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(create_table(name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::drop_table(table_id_t table_id)
+void joedb::Internal_Writeable::drop_table(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(drop_table(table_id));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::rename_table
+void joedb::Internal_Writeable::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -48,7 +48,7 @@ void joedb::Internal_Listener::rename_table
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::add_field
+void joedb::Internal_Writeable::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -60,7 +60,7 @@ void joedb::Internal_Listener::add_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::drop_field
+void joedb::Internal_Writeable::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -71,7 +71,7 @@ void joedb::Internal_Listener::drop_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::rename_field
+void joedb::Internal_Writeable::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -83,35 +83,35 @@ void joedb::Internal_Listener::rename_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::custom(const std::string &name)
+void joedb::Internal_Writeable::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(custom(name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::comment(const std::string &comment)
+void joedb::Internal_Writeable::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(comment(comment));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::timestamp(int64_t timestamp)
+void joedb::Internal_Writeable::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(timestamp(timestamp));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::valid_data()
+void joedb::Internal_Writeable::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(valid_data());
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::insert
+void joedb::Internal_Writeable::insert
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -122,7 +122,7 @@ void joedb::Internal_Listener::insert
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::insert_vector
+void joedb::Internal_Writeable::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -134,7 +134,7 @@ void joedb::Internal_Listener::insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Listener::delete_record
+void joedb::Internal_Writeable::delete_record
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -145,7 +145,7 @@ void joedb::Internal_Listener::delete_record
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-void joedb::Internal_Listener::update_##type_id\
+void joedb::Internal_Writeable::update_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\
@@ -156,7 +156,7 @@ void joedb::Internal_Listener::update_##type_id\
  MULTIPLEX(update_##type_id(table_id, record_id, field_id, value));\
 }\
 \
-void joedb::Internal_Listener::update_vector_##type_id\
+void joedb::Internal_Writeable::update_vector_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\
@@ -175,14 +175,14 @@ void joedb::Internal_Listener::update_vector_##type_id\
 #undef MULTIPLEX
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Listener &joedb::Multiplexer::add_listener(Listener &external_listener)
+joedb::Writeable &joedb::Multiplexer::add_listener(Writeable &external_listener)
 /////////////////////////////////////////////////////////////////////////////
 {
  const size_t id = external_listeners.size();
 
  external_listeners.push_back(&external_listener);
  internal_listeners.push_back(
-  std::unique_ptr<Internal_Listener>(new Internal_Listener(this, id)));
+  std::unique_ptr<Internal_Writeable>(new Internal_Writeable(this, id)));
  // TODO later: C++14 has std::make_unique. Should be used here in the future.
 
  return *internal_listeners.back();

@@ -1,6 +1,6 @@
 #include "Interpreter.h"
-#include "Interpreter_Dump_Listener.h"
-#include "SQL_Dump_Listener.h"
+#include "Interpreter_Dump_Writeable.h"
+#include "SQL_Dump_Writeable.h"
 #include "Database.h"
 #include "gtest/gtest.h"
 
@@ -39,10 +39,10 @@ TEST_F(Interpreter_Test, main_test)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, Interpreter_Dump_Listener)
+TEST_F(Interpreter_Test, Interpreter_Dump_Writeable)
 {
  std::ostringstream dump_string;
- joedb::Interpreter_Dump_Listener listener(dump_string);
+ joedb::Interpreter_Dump_Writeable listener(dump_string);
  db.set_listener(listener);
 
  std::ifstream in_file("interpreter_test.joedbi");
@@ -60,10 +60,10 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Listener)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, SQL_Dump_Listener)
+TEST_F(Interpreter_Test, SQL_Dump_Writeable)
 {
  std::ostringstream dump_string;
- joedb::SQL_Dump_Listener listener(dump_string);
+ joedb::SQL_Dump_Writeable listener(dump_string);
  db.set_listener(listener);
 
  std::ifstream in_file("interpreter_test.joedbi");

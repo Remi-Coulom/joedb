@@ -2,8 +2,8 @@
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
-#include "Interpreter_Dump_Listener.h"
-#include "SQL_Dump_Listener.h"
+#include "Interpreter_Dump_Writeable.h"
+#include "SQL_Dump_Writeable.h"
 #include "file_error_message.h"
 #include "diagnostics.h"
 
@@ -61,12 +61,12 @@ int main(int argc, char **argv)
   {
    if (sql)
    {
-    joedb::SQL_Dump_Listener dump_listener(std::cout);
+    joedb::SQL_Dump_Writeable dump_listener(std::cout);
     journal.replay_log(dump_listener);
    }
    else
    {
-    joedb::Interpreter_Dump_Listener dump_listener(std::cout);
+    joedb::Interpreter_Dump_Writeable dump_listener(std::cout);
     journal.replay_log(dump_listener);
    }
   }

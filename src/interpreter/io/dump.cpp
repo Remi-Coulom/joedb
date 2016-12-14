@@ -1,9 +1,9 @@
 #include "dump.h"
 #include "joedb/Database.h"
-#include "joedb/Listener.h"
+#include "joedb/Writeable.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump(const Database &db, Listener &listener)
+void joedb::dump(const Database &db, Writeable &listener)
 /////////////////////////////////////////////////////////////////////////////
 {
  //
@@ -94,7 +94,7 @@ void joedb::dump(const Database &db, Listener &listener)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump_data(const Database &db, Listener &listener)
+void joedb::dump_data(const Database &db, Writeable &listener)
 /////////////////////////////////////////////////////////////////////////////
 {
  for (auto table: db.get_tables())
@@ -138,23 +138,23 @@ void joedb::dump_data(const Database &db, Listener &listener)
  }
 }
 
-#include "DB_Listener.h"
-#include "Selective_Listener.h"
+#include "DB_Writeable.h"
+#include "Selective_Writeable.h"
 #include "Multiplexer.h"
 #include "joedb/Journal_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::pack(Journal_File &input_journal, Listener &listener)
+void joedb::pack(Journal_File &input_journal, Writeable &listener)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
- DB_Listener db_listener(db);
+ DB_Writeable db_listener(db);
 
- Selective_Listener schema_writer(listener, Selective_Listener::Mode::schema);
+ Selective_Writeable schema_writer(listener, Selective_Writeable::Mode::schema);
  Multiplexer multiplexer;
  multiplexer.add_listener(db_listener);
  multiplexer.add_listener(schema_writer);
- Dummy_Listener dummy;
+ Dummy_Writeable dummy;
  auto &multiplexer_listener = multiplexer.add_listener(dummy);
 
  input_journal.replay_log(multiplexer_listener);

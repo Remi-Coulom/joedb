@@ -1,5 +1,5 @@
-#ifndef joedb_Listener_declared
-#define joedb_Listener_declared
+#ifndef joedb_Writeable_declared
+#define joedb_Writeable_declared
 
 #include "Type.h"
 
@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- class Listener
+ class Writeable
  {
   public:
    virtual bool is_good() const {return true;}
@@ -49,7 +49,7 @@ namespace joedb
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
 
-   virtual ~Listener() {}
+   virtual ~Writeable() {}
  };
 }
 

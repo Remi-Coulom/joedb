@@ -3,7 +3,7 @@
 #include "joedb/Database.h"
 #include "joedb/Stream_File.h"
 #include "joedb/Journal_File.h"
-#include "Interpreter_Dump_Listener.h"
+#include "Interpreter_Dump_Writeable.h"
 #include "gtest/gtest.h"
 
 #include <fstream>
@@ -61,7 +61,7 @@ update_vector float 7 value 2 0.8 9\n\
   Journal_File journal(joedb_file);
 
   std::stringstream packed_ss;
-  Interpreter_Dump_Listener listener(packed_ss);
+  Interpreter_Dump_Writeable listener(packed_ss);
   pack(journal, listener);
   EXPECT_EQ(packed_ss.str(), packed_result);
  }

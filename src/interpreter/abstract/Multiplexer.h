@@ -1,7 +1,7 @@
 #ifndef joedb_Multiplexer_declared
 #define joedb_Multiplexer_declared
 
-#include "joedb/Listener.h"
+#include "joedb/Writeable.h"
 
 #include <vector>
 #include <memory>
@@ -10,14 +10,14 @@ namespace joedb
 {
  class Multiplexer;
 
- class Internal_Listener: public Listener
+ class Internal_Writeable: public Writeable
  {
   private:
    Multiplexer * const multiplexer;
    const size_t id;
 
   public:
-   Internal_Listener(Multiplexer *multiplexer, size_t id);
+   Internal_Writeable(Multiplexer *multiplexer, size_t id);
 
    void create_table(const std::string &name) override;
    void drop_table(table_id_t table_id) override;
@@ -61,15 +61,15 @@ namespace joedb
 
  class Multiplexer
  {
-  friend class Internal_Listener;
+  friend class Internal_Writeable;
 
   private:
-   std::vector<Listener *> external_listeners;
-   std::vector<std::unique_ptr<Internal_Listener>> internal_listeners;
+   std::vector<Writeable *> external_listeners;
+   std::vector<std::unique_ptr<Internal_Writeable>> internal_listeners;
    bool multiplexing = false;
 
   public:
-   Listener &add_listener(Listener &external_listener);
+   Writeable &add_listener(Writeable &external_listener);
  };
 }
 

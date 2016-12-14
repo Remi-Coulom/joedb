@@ -1,10 +1,10 @@
-#include "Dump_Listener.h"
+#include "Dump_Writeable.h"
 #include <ctime>
 
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
-std::string Dump_Listener::get_table_name(table_id_t table_id)
+std::string Dump_Writeable::get_table_name(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto it = db.get_tables().find(table_id);
@@ -15,7 +15,7 @@ std::string Dump_Listener::get_table_name(table_id_t table_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-std::string Dump_Listener::get_field_name
+std::string Dump_Writeable::get_field_name
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -34,7 +34,7 @@ std::string Dump_Listener::get_field_name
 }
 
 /////////////////////////////////////////////////////////////////////////////
-std::string Dump_Listener::get_local_time(int64_t timestamp)
+std::string Dump_Writeable::get_local_time(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  const size_t buffer_size = 20;
