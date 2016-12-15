@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- class Database
+ class Database: public Writeable
  {
   private:
    table_id_t current_table_id = 0;
@@ -21,49 +21,59 @@ namespace joedb
    std::vector<std::string> custom_names;
 
   public:
+   //
+   // This should disappear
+   //
    void set_writeable(Writeable &new_writeable) {writeable = &new_writeable;}
    void clear_writeable() {writeable = &dummy_writeable;}
 
+   //
+   // Will go to Readable ?
+   //
    const std::map<table_id_t, Table> &get_tables() const {return tables;}
    size_t get_current_table_id() const {return current_table_id;}
-
-   table_id_t create_table(const std::string &name);
-   bool drop_table(table_id_t table_id);
-   bool rename_table(table_id_t table_id, const std::string &name);
    table_id_t find_table(const std::string &name) const;
-   field_id_t add_field(table_id_t table_id,
-                        const std::string &name,
-                        Type type);
-   field_id_t find_field(table_id_t table_id,
-                         const std::string &name) const;
+   field_id_t find_field(table_id_t table_id, const std::string &name) const;
    Type::type_id_t get_field_type(table_id_t table_id,
                                   field_id_t field_id) const;
-   bool drop_field(table_id_t table_id, field_id_t field_id);
-   bool rename_field(table_id_t, field_id_t, const std::string &name);
-   void custom(const std::string &name);
-   void comment(const std::string &comment) const;
-   void timestamp(int64_t timestamp) const;
-   void valid_data() const;
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;
    }
-   bool insert_into(table_id_t table_id, record_id_t record_id);
-   bool insert_vector(table_id_t table_id,
+
+   //
+   // Writeable override
+   //
+   void create_table(const std::string &name) override;
+   void drop_table(table_id_t table_id) override;
+   void rename_table(table_id_t table_id, const std::string &name) override;
+   void add_field(table_id_t table_id,
+                  const std::string &name,
+                  Type type) override;
+   void drop_field(table_id_t table_id, field_id_t field_id) override;
+   void rename_field(table_id_t, field_id_t, const std::string &name) override;
+
+   void custom(const std::string &name) override;
+   void comment(const std::string &comment) override;
+   void timestamp(int64_t timestamp) override;
+   void valid_data() override;
+
+   void insert(table_id_t table_id, record_id_t record_id) override;
+   void insert_vector(table_id_t table_id,
                       record_id_t record_id,
-                      record_id_t size);
-   bool delete_from(table_id_t table_id, record_id_t record_id);
+                      record_id_t size) override;
+   void delete_record(table_id_t table_id, record_id_t record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   bool update_##type_id(table_id_t table_id,\
+   void update_##type_id(table_id_t table_id,\
                          record_id_t record_id,\
                          field_id_t field_id,\
-                         return_type value);\
-   bool update_vector_##type_id(table_id_t table_id,\
+                         return_type value) override;\
+   void update_vector_##type_id(table_id_t table_id,\
                                 record_id_t record_id,\
                                 field_id_t field_id,\
                                 record_id_t size,\
-                                const type *value);
+                                const type *value) override;
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
  };

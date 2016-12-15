@@ -13,17 +13,6 @@
 #include <ctime>
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Interpreter::too_big(record_id_t record_id)
-/////////////////////////////////////////////////////////////////////////////
-{
-#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
- return record_id > 1000000;
-#else
- return false;
-#endif
-}
-
-/////////////////////////////////////////////////////////////////////////////
 joedb::Type joedb::Interpreter::parse_type
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -72,7 +61,7 @@ table_id_t joedb::Interpreter::parse_table
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Interpreter::update_value
+void joedb::Interpreter::update_value
 /////////////////////////////////////////////////////////////////////////////
 (
  std::istream &in,
@@ -84,19 +73,18 @@ bool joedb::Interpreter::update_value
  switch(db.get_field_type(table_id, field_id))
  {
   case Type::type_id_t::null:
-  return false;
+   throw std::runtime_error("bad field");
 
   #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
   case Type::type_id_t::type_id:\
   {\
    type value = joedb::read_##type_id(in);\
-   return db.update_##type_id(table_id, record_id, field_id, value);\
-  }
+   db.update_##type_id(table_id, record_id, field_id, value);\
+  }\
+  break;
   #include "joedb/TYPE_MACRO.h"
   #undef TYPE_MACRO
  }
-
- return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -110,6 +98,13 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   std::istringstream iss(line);
   std::string command;
   iss >> command;
+
+  #define ERROR_CHECK(x) do\
+  {\
+   try {x; out << "OK: " << line << '\n';}\
+   catch(std::runtime_error &e) {out << "Error: " << e.what() << " (" << line << ')' << '\n';}\
+  }\
+  while(false)
 
 #if 0
   out << "running: " << line << '\n';
@@ -174,266 +169,149 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   {
    std::string table_name;
    iss >> table_name;
-   if (!is_identifier(table_name))
-    out << "Error: \"" << table_name << "\" is not a valid identifier\n";
-   else
-   {
-    table_id_t table_id = db.create_table(table_name);
-    if (table_id == 0)
-     out << "Error: table " << table_name << " already exists\n";
-    else
-     out << "OK: create table " << table_name <<
-            "; table_id = " << table_id << '\n';
-   }
+   ERROR_CHECK(db.create_table(table_name));
   }
   else if (command == "drop_table") //////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id && db.drop_table(table_id))
-    out << "OK: dropped table " << table_id << '\n';
-   else
-    out << "Error: could not drop table\n";
+   ERROR_CHECK(db.drop_table(table_id));
   }
   else if (command == "rename_table") ////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
    std::string new_name;
    iss >> new_name;
-   if (db.rename_table(table_id, new_name))
-    out << "OK: renamed table " << table_id << " to " << new_name << '\n';
-   else
-    out << "Error: could not rename table\n";
+   ERROR_CHECK(db.rename_table(table_id, new_name));
   }
   else if (command == "add_field") ///////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
-   {
-    std::string field_name;
-    iss >> field_name;
-    Type type = parse_type(iss, out);
-    if (type.get_type_id() != Type::type_id_t::null)
-    {
-     field_id_t field_id = db.add_field(table_id, field_name, type);
-     if (field_id)
-      out << "OK: add_field " << field_name <<
-                   "; field_id = " << field_id << '\n';
-     else
-      out << "Error: could not add field\n";
-    }
-   }
+   std::string field_name;
+   iss >> field_name;
+   Type type = parse_type(iss, out);
+   if (type.get_type_id() != Type::type_id_t::null)
+    ERROR_CHECK(db.add_field(table_id, field_name, type));
   }
   else if (command == "drop_field") /////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
-   {
-    std::string field_name;
-    iss >> field_name;
-    field_id_t field_id = db.find_field(table_id, field_name);
-    if (!field_id)
-     out << "Error: no such field: " << field_name << '\n';
-    else
-    {
-     db.drop_field(table_id, field_id);
-     out << "OK: dropped field " << field_name << '\n';
-    }
-   }
+   std::string field_name;
+   iss >> field_name;
+   field_id_t field_id = db.find_field(table_id, field_name);
+   ERROR_CHECK(db.drop_field(table_id, field_id));
   }
   else if (command == "rename_field") ///////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
-   {
-    std::string field_name;
-    iss >> field_name;
-    field_id_t field_id = db.find_field(table_id, field_name);
-    if (!field_id)
-     out << "Error: no such field: " << field_name << '\n';
-    else
-    {
-     std::string new_field_name;
-     iss >> new_field_name;
-     if (db.rename_field(table_id, field_id, new_field_name))
-      out << "OK: renamed field " << field_name << " to " << new_field_name << '\n';
-     else
-      out << "Error: could not rename this field\n";
-    }
-   }
+   std::string field_name;
+   iss >> field_name;
+   field_id_t field_id = db.find_field(table_id, field_name);
+   std::string new_field_name;
+   iss >> new_field_name;
+   ERROR_CHECK(db.rename_field(table_id, field_id, new_field_name));
   }
   else if (command == "custom") /////////////////////////////////////////////
   {
    std::string name;
    iss >> name;
-   db.custom(name);
-   out << "OK: custom command: " << name << '\n';
+   ERROR_CHECK(db.custom(name));
   }
   else if (command == "comment") ////////////////////////////////////////////
   {
    const std::string comment = joedb::read_string(iss);
-   db.comment(comment);
-   out << "OK: comment: ";
-   joedb::write_string(out, comment);
-   out << '\n';
+   ERROR_CHECK(db.comment(comment));
   }
   else if (command == "timestamp") //////////////////////////////////////////
   {
    int64_t timestamp = 0;
    iss >> timestamp;
-   out << "OK: timestamp: ";
    if (iss.fail())
-   {
-    db.timestamp(std::time(0));
-    out << "now\n";
-   }
-   else
-   {
-    db.timestamp(timestamp);
-    out << timestamp << '\n';
-   }
+    timestamp = std::time(0);
+   ERROR_CHECK(db.timestamp(timestamp));
   }
   else if (command == "valid_data") /////////////////////////////////////////
   {
-   db.valid_data();
-   out << "OK: valid data\n";
+   ERROR_CHECK(db.valid_data());
   }
   else if (command == "insert_into") ////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
-   {
-    record_id_t record_id = 0;
-    iss >> record_id;
-    if (!record_id ||
-        too_big(record_id) ||
-        !db.insert_into(table_id, record_id))
-     out << "Error: could not insert with id: " << record_id << '\n';
-    else
-    {
-     out << "OK: inserted record, id = " << record_id << '\n';
-     if (iss.good())
-      for (const auto &field:
-           db.get_tables().find(table_id)->second.get_fields())
+   record_id_t record_id = 0;
+   iss >> record_id;
+   ERROR_CHECK(
+    db.insert(table_id, record_id);
+    if (iss.good())
+     for (const auto &field:
+          db.get_tables().find(table_id)->second.get_fields())
+     {
+      update_value(iss, table_id, record_id, field.first);
+      if (iss.fail())
       {
-       update_value(iss, table_id, record_id, field.first);
-       if (iss.fail())
-       {
-        out << "Error: failed parsing value\n";
-        break;
-       }
+       out << "Error: failed parsing value\n";
+       break;
       }
-    }
-   }
+     }
+   );
   }
   else if (command == "insert_vector") //////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
-   {
-    record_id_t record_id = 0;
-    record_id_t size = 0;
-    iss >> record_id >> size;
-    if (!record_id ||
-        !size ||
-        too_big(record_id) ||
-        too_big(size) ||
-        !db.insert_vector(table_id, record_id, size))
-     out << "Error: could not insert vector\n";
-    else
-    {
-     out << "OK: inserted vector: record_id = " << record_id;
-     out << "; size = " << size << '\n';
-    }
-   }
+   record_id_t record_id = 0;
+   record_id_t size = 0;
+   iss >> record_id >> size;
+   ERROR_CHECK(db.insert_vector(table_id, record_id, size));
   }
   else if (command == "update") /////////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
-   {
-    record_id_t record_id = 0;
-    iss >> record_id;
-
-    std::string field_name;
-    iss >> field_name;
-    field_id_t field_id = db.find_field(table_id, field_name);
-
-    if (!field_id)
-     out << "Error: no such field: " << field_name << '\n';
-    else
-    {
-     if (!too_big(record_id) &&
-         update_value(iss, table_id, record_id, field_id))
-      out << "OK: updated\n";
-     else
-      out << "Error: could not find record: " << record_id << '\n';
-    }
-   }
+   record_id_t record_id = 0;
+   iss >> record_id;
+   std::string field_name;
+   iss >> field_name;
+   field_id_t field_id = db.find_field(table_id, field_name);
+   ERROR_CHECK(update_value(iss, table_id, record_id, field_id));
   }
   else if (command == "update_vector") //////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
+   record_id_t record_id = 0;
+   iss >> record_id;
+   std::string field_name;
+   iss >> field_name;
+   field_id_t field_id = db.find_field(table_id, field_name);
+   record_id_t size = 0;
+   iss >> size;
+   const Type::type_id_t field_type = db.get_field_type(table_id, field_id);
+
+   switch(field_type)
    {
-    record_id_t record_id = 0;
-    iss >> record_id;
+    case Type::type_id_t::null:
+     out << "Error: bad field\n";
+    break;
 
-    std::string field_name;
-    iss >> field_name;
-    field_id_t field_id = db.find_field(table_id, field_name);
-
-    if (!field_id)
-     out << "Error: no such field: " << field_name << '\n';
-    else
-    {
-     record_id_t size = 0;
-     iss >> size;
-     bool result = false;
-
-     if (!too_big(record_id) && !too_big(size))
-      switch(db.get_field_type(table_id, field_id))
-      {
-       case Type::type_id_t::null:
-       break;
-
-       #define TYPE_MACRO(type, return_type, type_id, R, W)\
-       case Type::type_id_t::type_id:\
-       {\
-        std::vector<type> v(size);\
-        for (size_t i = 0; i < size; i++)\
-         v[i] = joedb::read_##type_id(iss);\
-        result = db.update_vector_##type_id(table_id,\
-                                            record_id,\
-                                            field_id,\
-                                            size,\
-                                            &v[0]);\
-       }\
-       break;
-       #include "joedb/TYPE_MACRO.h"
-       #undef TYPE_MACRO
-      }
-
-     if (result)
-      out << "OK: updated " << size << " rows\n";
-     else
-      out << "Error: could not update vector\n";
-    }
+    #define TYPE_MACRO(type, return_type, type_id, R, W)\
+    case Type::type_id_t::type_id:\
+    {\
+     std::vector<type> v(size);\
+     for (size_t i = 0; i < size; i++)\
+      v[i] = joedb::read_##type_id(iss);\
+     ERROR_CHECK(db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]));\
+    }\
+    break;
+    #include "joedb/TYPE_MACRO.h"
+    #undef TYPE_MACRO
    }
   }
   else if (command == "delete_from") ////////////////////////////////////////
   {
    const table_id_t table_id = parse_table(iss, out);
-   if (table_id)
-   {
-    record_id_t record_id = 0;
-    iss >> record_id;
-    if (db.delete_from(table_id, record_id))
-     out << "OK: record number " << record_id << " deleted\n";
-    else
-     out << "Error: could not delete record " << record_id << '\n';
-   }
+   record_id_t record_id = 0;
+   iss >> record_id;
+   ERROR_CHECK(db.delete_record(table_id, record_id));
   }
   else
    out << "Error: unknown command: " << command << ". For a list of available commands, try \"help\".\n";
  }
+
+ #undef ERROR_CHECK
 }

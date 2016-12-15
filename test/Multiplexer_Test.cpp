@@ -2,7 +2,6 @@
 #include "File.h"
 #include "Journal_File.h"
 #include "Database.h"
-#include "DB_Writeable.h"
 #include "Interpreter.h"
 #include "Dummy_Writeable.h"
 #include "Selective_Writeable.h"

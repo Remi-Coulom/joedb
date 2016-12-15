@@ -1,13 +1,13 @@
-OK: create table city; table_id = 1
-OK: create table person; table_id = 2
-OK: add_field name; field_id = 1
-OK: add_field name; field_id = 1
-OK: add_field city; field_id = 2
-OK: inserted record, id = 1
-OK: inserted record, id = 2
-OK: inserted record, id = 1
-OK: inserted record, id = 2
-OK: inserted record, id = 3
+OK: create_table city
+OK: create_table person
+OK: add_field city name string
+OK: add_field person name string
+OK: add_field person city references city
+OK: insert_into city 1 "Paris"
+OK: insert_into city 2 "Lille"
+OK: insert_into person 1 "Rémi" 2
+OK: insert_into person 2 "Norbert" 2
+OK: insert_into person 3 "Alexandre" 1
 create_table city
 create_table person
 add_field city name string
@@ -23,24 +23,24 @@ update person 3 name "Alexandre"
 update person 1 city 2
 update person 2 city 2
 update person 3 city 1
-Error: table city already exists
-Error: "123456" is not a valid identifier
-Error: could not rename table
-Error: could not rename this field
-OK: dropped table 1
-OK: dropped table 2
-OK: create table test; table_id = 3
-OK: add_field a; field_id = 1
-Error: could not add field
-OK: add_field b; field_id = 2
+Error: create_table: name already used (create_table city)
+Error: create_table: invalid identifier (create_table 123456)
+Error: rename_table: name already used (rename_table person city)
+Error: rename_field: name already used (rename_field person city name)
+OK: drop_table city
+OK: drop_table person
+OK: create_table test
+OK: add_field test a int32
+Error: add_field: name already used (add_field test a int32)
+OK: add_field test b int64
 Error: unknown type
 Error: no such table: qsdfqsdf
-Error: could not drop table
+Error: drop_table: invalid table_id (drop_table qsdfqsdf)
 Error: unknown command: qsdfqsdf. For a list of available commands, try "help".
-OK: inserted record, id = 1
-Error: could not insert with id: 1
-OK: add_field d; field_id = 3
-OK: add_field e; field_id = 4
+OK: insert_into test 1 1234 5678
+Error: insert: bad record_id (insert_into test 1 1234 5678)
+OK: add_field test d string
+OK: add_field test e boolean
 create_table test
 add_field test a int32
 add_field test b int64
@@ -51,15 +51,15 @@ update test 1 a 1234
 update test 1 b 5678
 update test 1 d ""
 update test 1 e 0
-Error: no such field: qsdfqsdf
-OK: dropped field a
-OK: inserted record, id = 2
+Error: drop_field: invalid field_id (drop_field test qsdfqsdf)
+OK: drop_field test a
 Error: failed parsing value
-OK: record number 2 deleted
-Error: could not delete record 123
-Error: no such field: a
-Error: could not find record: 2
-OK: updated
+OK: insert_into test 2 3 "4"
+OK: delete_from test 2
+Error: delete: error (delete_from test 123)
+Error: bad field (update test 1 a 56789)
+Error: update: bad update (update test 2 b 56789)
+OK: update test 1 b 56789
 create_table test
 add_field test b int64
 add_field test d string
@@ -68,40 +68,40 @@ insert_vector test 1 1
 update test 1 b 56789
 update test 1 d ""
 update test 1 e 0
-OK: create table ref; table_id = 4
-OK: add_field ref; field_id = 1
-OK: dropped table 3
+OK: create_table ref
+OK: add_field ref ref references test
+OK: drop_table test
 create_table ref
 add_field ref ref references a_deleted_table
-OK: dropped table 4
-OK: create table alltypes; table_id = 5
-OK: add_field s; field_id = 1
-OK: add_field i32; field_id = 2
-OK: add_field i64; field_id = 3
-OK: add_field ref; field_id = 4
-OK: add_field b; field_id = 5
-OK: add_field f; field_id = 6
-OK: add_field d; field_id = 7
-OK: add_field o; field_id = 8
-OK: add_field oulala; field_id = 9
-OK: inserted record, id = 1
-OK: timestamp: 1234567890
-OK: comment: "This is a comment. これは日本語です。"
-OK: valid data
-OK: custom command: toto_le_petit_rigolo
-OK: renamed table 5 to all_types
-OK: renamed field s to str
-OK: create table float; table_id = 6
-OK: add_field value; field_id = 1
-OK: inserted vector: record_id = 1; size = 5
-OK: updated 5 rows
-Error: no such field: qsdf
-OK: create table toto; table_id = 7
-OK: add_field value; field_id = 1
-OK: inserted vector: record_id = 3; size = 1
-OK: inserted vector: record_id = 5; size = 1
-OK: updated
-Error: could not update vector
+OK: drop_table ref
+OK: create_table alltypes
+OK: add_field alltypes s string
+OK: add_field alltypes i32 int32
+OK: add_field alltypes i64 int64
+OK: add_field alltypes ref references alltypes
+OK: add_field alltypes b boolean
+OK: add_field alltypes f float32
+OK: add_field alltypes d float64
+OK: add_field alltypes o int8
+OK: add_field alltypes oulala int16
+OK: insert_into alltypes 1 "toto" 123456789 123456789123456789 1 1 3.14 3.14159265359 42 12345
+OK: timestamp 1234567890
+OK: comment "This is a comment. これは日本語です。"
+OK: valid_data
+OK: custom toto_le_petit_rigolo
+OK: rename_table alltypes all_types
+OK: rename_field all_types s str
+OK: create_table float
+OK: add_field float value float32
+OK: insert_vector float 1 5
+OK: update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
+Error: bad field
+OK: create_table toto
+OK: add_field toto value string
+OK: insert_vector toto 3 1
+OK: insert_vector toto 5 1
+OK: update toto 3 value "toto"
+Error: update_vector: bad update (update_vector toto 5 value 2 "kiki" "kuku")
 create_table all_types
 create_table float
 create_table toto

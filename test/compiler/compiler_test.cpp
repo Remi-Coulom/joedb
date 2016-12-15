@@ -6,7 +6,6 @@
 #include "File.h"
 #include "Journal_File.h"
 #include "Database.h"
-#include "DB_Writeable.h"
 #include "translation.h"
 
 #include <iostream>

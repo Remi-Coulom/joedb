@@ -21,13 +21,11 @@ Simple improvement:
 
 Redesign:
 
-- No forwarding in Database
-- Make Database a Writeable
-- Remove Dummy_Writeable: should become useless.
+- Readable class for data access
 - Interpreter takes Readable_Writeable as parameter instead of db.
 - This way, interpreter works with compiled database. joedb_admin should work with a listener too: could be applied to a compiled database.
-- For this to work, a universal Readable interface must be implemented by interpreted and compiled databases.
-- Use templates instead of virtual function calls for listeners?
+- No forwarding to listener in databases (compiled and interpreted), and remove Dummy_Writeable: should become useless.
+- Use templates instead of virtual function calls for writeables?
 
   - compilation will be slower
   - compiled code may get bigger if more than one template instance

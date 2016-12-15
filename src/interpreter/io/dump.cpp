@@ -138,7 +138,6 @@ void joedb::dump_data(const Database &db, Writeable &writeable)
  }
 }
 
-#include "DB_Writeable.h"
 #include "Selective_Writeable.h"
 #include "Multiplexer.h"
 #include "joedb/Journal_File.h"
@@ -148,12 +147,11 @@ void joedb::pack(Journal_File &input_journal, Writeable &writeable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
- DB_Writeable db_writeable(db);
 
- Selective_Writeable schema_writeable(writeable, Selective_Writeable::Mode::schema);
+ Selective_Writeable schema_filter(writeable, Selective_Writeable::Mode::schema);
  Multiplexer multiplexer;
- multiplexer.add_writeable(db_writeable);
- multiplexer.add_writeable(schema_writeable);
+ multiplexer.add_writeable(db);
+ multiplexer.add_writeable(schema_filter);
 
  input_journal.replay_log(multiplexer);
 

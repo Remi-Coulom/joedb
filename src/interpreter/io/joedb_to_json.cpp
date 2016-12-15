@@ -2,7 +2,6 @@
 #include "File.h"
 #include "Journal_File.h"
 #include "file_error_message.h"
-#include "DB_Writeable.h"
 #include "Database.h"
 
 #include <iostream>
@@ -33,8 +32,7 @@ int main(int argc, char **argv)
 
  joedb::Journal_File journal(file);
  joedb::Database db;
- joedb::DB_Writeable db_writeable(db);
- journal.replay_log(db_writeable);
+ journal.replay_log(db);
 
  if (journal.get_state() != joedb::Journal_File::state_t::no_error)
  {

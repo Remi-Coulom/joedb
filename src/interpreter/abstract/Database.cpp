@@ -1,48 +1,5 @@
 #include "joedb/Database.h"
-
-/////////////////////////////////////////////////////////////////////////////
-table_id_t joedb::Database::create_table(const std::string &name)
-/////////////////////////////////////////////////////////////////////////////
-{
- if (find_table(name))
-  return 0;
-
- tables.insert(std::make_pair(++current_table_id, Table(name)));
- writeable->create_table(name);
- return current_table_id;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::drop_table(table_id_t table_id)
-/////////////////////////////////////////////////////////////////////////////
-{
- if (tables.erase(table_id) > 0)
- {
-  writeable->drop_table(table_id);
-  return true;
- }
- else
-  return false;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::rename_table
-/////////////////////////////////////////////////////////////////////////////
-(
- table_id_t table_id,
- const std::string &name
-)
-{
- auto table_it = tables.find(table_id);
- if (table_it != tables.end() && find_table(name) == 0)
- {
-  table_it->second.set_name(name);
-  writeable->rename_table(table_id, name);
-  return true;
- }
- else
-  return false;
-}
+#include "is_identifier.h"
 
 /////////////////////////////////////////////////////////////////////////////
 table_id_t joedb::Database::find_table(const std::string &name) const
@@ -52,24 +9,6 @@ table_id_t joedb::Database::find_table(const std::string &name) const
   if (table.second.get_name() == name)
    return table.first;
  return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-field_id_t joedb::Database::add_field
-/////////////////////////////////////////////////////////////////////////////
-(
- table_id_t table_id,
- const std::string &name,
- Type type
-)
-{
- auto it = tables.find(table_id);
- if (it == tables.end())
-  return 0;
- field_id_t field_id = it->second.add_field(name, type);
- if (field_id)
-  writeable->add_field(table_id, name, type);
- return field_id;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -105,20 +44,85 @@ joedb::Type::type_id_t joedb::Database::get_field_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::drop_field(table_id_t table_id, field_id_t field_id)
+void joedb::Database::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
- auto it = tables.find(table_id);
- if (it != tables.end() && it->second.drop_field(field_id))
- {
-  writeable->drop_field(table_id, field_id);
-  return true;
- }
- return false;
+ if (!is_identifier(name))
+  throw std::runtime_error("create_table: invalid identifier");
+ if (find_table(name))
+  throw std::runtime_error("create_table: name already used");
+
+ tables.insert(std::make_pair(++current_table_id, Table(name)));
+ writeable->create_table(name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::rename_field
+void joedb::Database::drop_table(table_id_t table_id)
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (tables.erase(table_id) == 0)
+  throw std::runtime_error("drop_table: invalid table_id");
+
+ writeable->drop_table(table_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Database::rename_table
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ const std::string &name
+)
+{
+ auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  throw std::runtime_error("rename_table: invalid table_id");
+
+ if (find_table(name) == 0)
+ {
+  table_it->second.set_name(name);
+  writeable->rename_table(table_id, name);
+ }
+ else
+  throw std::runtime_error("rename_table: name already used");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Database::add_field
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ const std::string &name,
+ Type type
+)
+{
+ auto it = tables.find(table_id);
+ if (it == tables.end())
+  throw std::runtime_error("add_field: invalid table_id");
+
+ field_id_t field_id = it->second.add_field(name, type);
+ if (!field_id) // TODO: move throw to Table
+  throw std::runtime_error("add_field: name already used");
+
+ writeable->add_field(table_id, name, type);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Database::drop_field(table_id_t table_id, field_id_t field_id)
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto it = tables.find(table_id);
+ if (it == tables.end())
+  throw std::runtime_error("drop_field: invalid table_id");
+
+ if (!it->second.drop_field(field_id)) // TODO: move throw to Table
+  throw std::runtime_error("drop_field: invalid field_id");
+
+ writeable->drop_field(table_id, field_id);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Database::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -127,19 +131,19 @@ bool joedb::Database::rename_field
 )
 {
  auto table_it = tables.find(table_id);
- if (table_it != tables.end())
- {
-  auto &fields = table_it->second.fields;
-  auto field_it = fields.find(field_id);
-  if (field_it != fields.end() && find_field(table_id, name) == 0)
-  {
-   field_it->second.set_name(name);
-   writeable->rename_field(table_id, field_id, name);
-   return true;
-  }
- }
+ if (table_it == tables.end())
+  throw std::runtime_error("rename_field: invalid table_id");
 
- return false;
+ auto &fields = table_it->second.fields;
+ auto field_it = fields.find(field_id);
+ if (field_it == fields.end())
+  throw std::runtime_error("rename_field: invalid field_id");
+
+ if (table_it->second.find_field(name))
+  throw std::runtime_error("rename_field: name already used");
+
+ field_it->second.set_name(name);
+ writeable->rename_field(table_id, field_id, name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -151,41 +155,43 @@ void joedb::Database::custom(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::timestamp(int64_t timestamp) const
+void joedb::Database::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  writeable->timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::comment(const std::string &comment) const
+void joedb::Database::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  writeable->comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::valid_data() const
+void joedb::Database::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  writeable->valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::insert_into(table_id_t table_id, record_id_t record_id)
+void joedb::Database::insert(table_id_t table_id, record_id_t record_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto it = tables.find(table_id);
- if (it != tables.end() && it->second.insert_record(record_id))
- {
-  writeable->insert(table_id, record_id);
-  return true;
- }
- return false;
+ if (it == tables.end())
+  throw std::runtime_error("insert: invalid table_id");
+
+ // TODO: check max_record_id
+ if (!it->second.insert_record(record_id))
+  throw std::runtime_error("insert: bad record_id");
+
+ writeable->insert(table_id, record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::insert_vector
+void joedb::Database::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -194,63 +200,62 @@ bool joedb::Database::insert_vector
 )
 {
  auto it = tables.find(table_id);
+ if (it == tables.end())
+  throw std::runtime_error("insert_vector: invalid table_id");
 
- if (it != tables.end())
- {
-  // TODO: optimize large vector insertion
-  for (record_id_t i = 0; i < size; i++)
-   it->second.insert_record(record_id + i);
+ // TODO: optimize large vector insertion
+ // TODO: test for size limit and insertion errors
 
-  writeable->insert_vector(table_id, record_id, size);
-  return true;
- }
+ for (record_id_t i = 0; i < size; i++)
+  it->second.insert_record(record_id + i);
 
- return false;
+ writeable->insert_vector(table_id, record_id, size);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::Database::delete_from(table_id_t table_id, record_id_t record_id)
+void joedb::Database::delete_record
 /////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ record_id_t record_id
+)
 {
  auto it = tables.find(table_id);
- if (it != tables.end() && it->second.delete_record(record_id))
- {
-  writeable->delete_record(table_id, record_id);
-  return true;
- }
- return false;
+ if (it == tables.end())
+  throw std::runtime_error("delete: invalid table_id");
+
+ if (!it->second.delete_record(record_id))
+  throw std::runtime_error("delete: error");
+
+ writeable->delete_record(table_id, record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-bool joedb::Database::update_##type_id(table_id_t table_id,\
+void joedb::Database::update_##type_id(table_id_t table_id,\
                                        record_id_t record_id,\
                                        field_id_t field_id,\
                                        return_type value)\
 {\
  auto it = tables.find(table_id);\
- if (it != tables.end() &&\
-     it->second.update_##type_id(record_id, field_id, value))\
- {\
-  writeable->update_##type_id(table_id, record_id, field_id, value);\
-  return true;\
- }\
- return false;\
+ if (it == tables.end())\
+  throw std::runtime_error("update: invalid table_id");\
+ if (!it->second.update_##type_id(record_id, field_id, value))\
+  throw std::runtime_error("update: bad update");\
+ writeable->update_##type_id(table_id, record_id, field_id, value);\
 }\
-bool joedb::Database::update_vector_##type_id(table_id_t table_id,\
+void joedb::Database::update_vector_##type_id(table_id_t table_id,\
                                               record_id_t record_id,\
                                               field_id_t field_id,\
                                               record_id_t size,\
                                               const type *value)\
 {\
  auto it = tables.find(table_id);\
- if (it != tables.end() &&\
-     it->second.update_vector_##type_id(record_id, field_id, size, value))\
- {\
-  writeable->update_vector_##type_id(table_id, record_id, field_id, size, value);\
-  return true;\
- }\
- return false;\
+ if (it == tables.end())\
+  throw std::runtime_error("update_vector: invalid table_id");\
+ if (!it->second.update_vector_##type_id(record_id, field_id, size, value))\
+  throw std::runtime_error("update_vector: bad update");\
+ writeable->update_vector_##type_id(table_id, record_id, field_id, size, value);\
 }
 #include "joedb/TYPE_MACRO.h"
 #undef TYPE_MACRO
