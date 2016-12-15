@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <cassert>
 
 #include "Type.h"
 #include "index_types.h"
@@ -48,24 +47,28 @@ namespace joedb
    #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
    return_type get_##type_id(record_id_t record_id) const\
    {\
-    assert(type.get_type_id() == Type::type_id_t::type_id);\
+    if (type.get_type_id() != Type::type_id_t::type_id)\
+     throw std::runtime_error("type error");\
     return type_id##_column[record_id - 1];\
    }\
    void set_##type_id(record_id_t record_id, return_type value)\
    {\
-    assert(type.get_type_id() == Type::type_id_t::type_id);\
+    if (type.get_type_id() != Type::type_id_t::type_id)\
+     throw std::runtime_error("type error");\
     type_id##_column[record_id - 1] = value;\
    }\
    const cpp_type *get_vector_##type_id() const\
    {\
-    assert(type.get_type_id() == Type::type_id_t::type_id);\
+    if (type.get_type_id() != Type::type_id_t::type_id)\
+     throw std::runtime_error("type error");\
     return &type_id##_column[0];\
    }\
    void set_vector_##type_id(record_id_t record_id,\
                              record_id_t size,\
                              const cpp_type *value)\
    {\
-    assert(type.get_type_id() == Type::type_id_t::type_id);\
+    if (type.get_type_id() != Type::type_id_t::type_id)\
+     throw std::runtime_error("type error");\
     for (record_id_t i = 0; i < size; i++)\
      type_id##_column[record_id + i - 1] = value[i];\
    }

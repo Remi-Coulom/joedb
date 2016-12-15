@@ -100,10 +100,7 @@ void joedb::Database::add_field
  if (it == tables.end())
   throw std::runtime_error("add_field: invalid table_id");
 
- field_id_t field_id = it->second.add_field(name, type);
- if (!field_id) // TODO: move throw to Table
-  throw std::runtime_error("add_field: name already used");
-
+ it->second.add_field(name, type);
  writeable->add_field(table_id, name, type);
 }
 
@@ -115,9 +112,7 @@ void joedb::Database::drop_field(table_id_t table_id, field_id_t field_id)
  if (it == tables.end())
   throw std::runtime_error("drop_field: invalid table_id");
 
- if (!it->second.drop_field(field_id)) // TODO: move throw to Table
-  throw std::runtime_error("drop_field: invalid field_id");
-
+ it->second.drop_field(field_id);
  writeable->drop_field(table_id, field_id);
 }
 
@@ -183,10 +178,10 @@ void joedb::Database::insert(table_id_t table_id, record_id_t record_id)
  if (it == tables.end())
   throw std::runtime_error("insert: invalid table_id");
 
- // TODO: check max_record_id
- if (!it->second.insert_record(record_id))
-  throw std::runtime_error("insert: bad record_id");
+ if (record_id <= 0 || (max_record_id && record_id > max_record_id))
+  throw std::runtime_error("insert: too big");
 
+ it->second.insert_record(record_id);
  writeable->insert(table_id, record_id);
 }
 
@@ -202,9 +197,12 @@ void joedb::Database::insert_vector
  auto it = tables.find(table_id);
  if (it == tables.end())
   throw std::runtime_error("insert_vector: invalid table_id");
+ if (record_id <= 0 ||
+     size <= 0 ||
+     (max_record_id && (record_id > max_record_id || size > max_record_id)))
+  throw std::runtime_error("insert_vector: too big");
 
  // TODO: optimize large vector insertion
- // TODO: test for size limit and insertion errors
 
  for (record_id_t i = 0; i < size; i++)
   it->second.insert_record(record_id + i);
@@ -224,9 +222,7 @@ void joedb::Database::delete_record
  if (it == tables.end())
   throw std::runtime_error("delete: invalid table_id");
 
- if (!it->second.delete_record(record_id))
-  throw std::runtime_error("delete: error");
-
+ it->second.delete_record(record_id);
  writeable->delete_record(table_id, record_id);
 }
 
@@ -240,8 +236,7 @@ void joedb::Database::update_##type_id(table_id_t table_id,\
  auto it = tables.find(table_id);\
  if (it == tables.end())\
   throw std::runtime_error("update: invalid table_id");\
- if (!it->second.update_##type_id(record_id, field_id, value))\
-  throw std::runtime_error("update: bad update");\
+ it->second.update_##type_id(record_id, field_id, value);\
  writeable->update_##type_id(table_id, record_id, field_id, value);\
 }\
 void joedb::Database::update_vector_##type_id(table_id_t table_id,\
@@ -253,8 +248,7 @@ void joedb::Database::update_vector_##type_id(table_id_t table_id,\
  auto it = tables.find(table_id);\
  if (it == tables.end())\
   throw std::runtime_error("update_vector: invalid table_id");\
- if (!it->second.update_vector_##type_id(record_id, field_id, size, value))\
-  throw std::runtime_error("update_vector: bad update");\
+ it->second.update_vector_##type_id(record_id, field_id, size, value);\
  writeable->update_vector_##type_id(table_id, record_id, field_id, size, value);\
 }
 #include "joedb/TYPE_MACRO.h"

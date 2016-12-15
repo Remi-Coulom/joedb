@@ -38,7 +38,7 @@ Error: no such table: qsdfqsdf
 Error: drop_table: invalid table_id (drop_table qsdfqsdf)
 Error: unknown command: qsdfqsdf. For a list of available commands, try "help".
 OK: insert_into test 1 1234 5678
-Error: insert: bad record_id (insert_into test 1 1234 5678)
+Error: insert: record_id already in use (insert_into test 1 1234 5678)
 OK: add_field test d string
 OK: add_field test e boolean
 create_table test
@@ -56,9 +56,9 @@ OK: drop_field test a
 Error: failed parsing value
 OK: insert_into test 2 3 "4"
 OK: delete_from test 2
-Error: delete: error (delete_from test 123)
+Error: delete_record: bad record_id (delete_from test 123)
 Error: bad field (update test 1 a 56789)
-Error: update: bad update (update test 2 b 56789)
+Error: update: invalid record_id (update test 2 b 56789)
 OK: update test 1 b 56789
 create_table test
 add_field test b int64
@@ -101,7 +101,7 @@ OK: add_field toto value string
 OK: insert_vector toto 3 1
 OK: insert_vector toto 5 1
 OK: update toto 3 value "toto"
-Error: update_vector: bad update (update_vector toto 5 value 2 "kiki" "kuku")
+Error: update_vector: invalid record_id range (update_vector toto 5 value 2 "kiki" "kuku")
 create_table all_types
 create_table float
 create_table toto

@@ -11,6 +11,8 @@ namespace joedb
  class Database: public Writeable
  {
   private:
+   const record_id_t max_record_id;
+
    table_id_t current_table_id = 0;
 
    std::map<table_id_t, Table> tables;
@@ -21,6 +23,8 @@ namespace joedb
    std::vector<std::string> custom_names;
 
   public:
+   Database(record_id_t max_record_id = 0): max_record_id(max_record_id) {}
+
    //
    // This should disappear
    //

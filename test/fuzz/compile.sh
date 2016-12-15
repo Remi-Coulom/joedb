@@ -35,7 +35,6 @@ build()
   ../../src/interpreter/abstract/is_identifier.cpp\
   ../../src/interpreter/abstract/Writeable.cpp\
   ../../src/interpreter/abstract/Multiplexer.cpp\
-  ../../src/interpreter/abstract/Safe_Writeable.cpp\
   ../../src/interpreter/abstract/Table.cpp\
   ../../src/interpreter/io/Interpreter.cpp\
   ../../src/interpreter/io/Dump_Writeable.cpp\
