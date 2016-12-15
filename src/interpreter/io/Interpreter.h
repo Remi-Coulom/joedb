@@ -7,12 +7,12 @@
 
 namespace joedb
 {
- class Database;
+ class Readable_Writeable;
 
  class Interpreter
  {
   private:
-   Database &db;
+   Readable_Writeable &db;
 
    Type parse_type(std::istream &in, std::ostream &out);
    table_id_t parse_table(std::istream &in, std::ostream &out);
@@ -22,7 +22,7 @@ namespace joedb
                      field_id_t field_id);
 
   public:
-   Interpreter(Database &db): db(db) {}
+   Interpreter(Readable_Writeable &db): db(db) {}
 
    void main_loop(std::istream &in, std::ostream &out);
  };

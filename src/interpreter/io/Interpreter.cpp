@@ -1,7 +1,9 @@
 #include "Interpreter.h"
 #include "joedb/Database.h"
 #include "dump.h"
+#include "json.h"
 #include "Interpreter_Dump_Writeable.h"
+#include "SQL_Dump_Writeable.h"
 #include "joedb/Writeable.h"
 #include "type_io.h"
 #include "is_identifier.h"
@@ -117,17 +119,33 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    Interpreter_Dump_Writeable dump_writeable(out);
    dump(db, dump_writeable);
   }
+  else if (command == "json") ////////////////////////////////////////////////
+  {
+   bool use_base64 = false;
+   iss >> use_base64;
+   write_json(out, db, use_base64);
+  }
+  else if (command == "sql") /////////////////////////////////////////////////
+  {
+   SQL_Dump_Writeable dump_writeable(out);
+   dump(db, dump_writeable);
+  }
   else if (command == "quit") ////////////////////////////////////////////////
    break;
   else if (command == "help") ////////////////////////////////////////////////
   {
    out << '\n';
-   out << "Commands that don't modify the database\n";
-   out << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+   out << "Commands unrelated to the database\n";
+   out << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
    out << " about\n";
    out << " help\n";
-   out << " dump\n";
    out << " quit\n";
+   out << '\n';
+   out << "Reading data\n";
+   out << "~~~~~~~~~~~~\n";
+   out << " dump\n";
+   out << " json [<base64>]\n";
+   out << " sql\n";
    out << '\n';
    out << "Logging\n";
    out << "~~~~~~~\n";

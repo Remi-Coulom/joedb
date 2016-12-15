@@ -1,6 +1,7 @@
 #ifndef joedb_Database_declared
 #define joedb_Database_declared
 
+#include "Readable_Writeable.h"
 #include "Table.h"
 #include "Dummy_Writeable.h"
 
@@ -8,7 +9,7 @@
 
 namespace joedb
 {
- class Database: public Writeable
+ class Database: public Readable_Writeable
  {
   private:
    const record_id_t max_record_id;
@@ -32,16 +33,20 @@ namespace joedb
    void clear_writeable() {writeable = &dummy_writeable;}
 
    //
-   // Will go to Readable ?
+   // Readable override
    //
-   record_id_t get_max_record_id() const {return max_record_id;}
-   const std::map<table_id_t, Table> &get_tables() const {return tables;}
-   size_t get_current_table_id() const {return current_table_id;}
-   table_id_t find_table(const std::string &name) const;
-   field_id_t find_field(table_id_t table_id, const std::string &name) const;
+   record_id_t get_max_record_id() const override {return max_record_id;}
+   const std::map<table_id_t, Table> &get_tables() const override
+   {
+    return tables;
+   }
+   size_t get_current_table_id() const override {return current_table_id;}
+   table_id_t find_table(const std::string &name) const override;
+   field_id_t find_field(table_id_t table_id,
+                         const std::string &name) const override;
    Type::type_id_t get_field_type(table_id_t table_id,
-                                  field_id_t field_id) const;
-   const std::vector<std::string> &get_custom_names() const
+                                  field_id_t field_id) const override;
+   const std::vector<std::string> &get_custom_names() const override
    {
     return custom_names;
    }

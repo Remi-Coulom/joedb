@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- class Multiplexer: public Writeable
+ class Multiplexer: public virtual Writeable
  {
   private:
    std::vector<Writeable *> writeables;

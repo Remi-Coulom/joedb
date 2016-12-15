@@ -5,9 +5,9 @@ Short Term
 ----------
 Safety:
 
+- Forbid "__" inside identifiers
 - Make compiled code safe:
 
-  - no need to check for valid table_id, field_id, type_id: bad are ignored
   - check valid record_id for listener updates and deletes
   - max_record_id for listener inserts
   - non-listener updates + deletes checked, except if NDEBUG macro defined
@@ -19,16 +19,14 @@ Simple improvement:
 
 Redesign:
 
-- Readable class for data access
-- Interpreter takes Readable_Writeable as parameter instead of db.
-- This way, interpreter works with compiled database. joedb_admin should work with a listener too: could be applied to a compiled database.
+- make Readable interface less specific (easy to adapt to compiled db)
+- make compiled db Readable_Writeable (and no forwarding)
 - No forwarding to listener in databases (compiled and interpreted), and remove Dummy_Writeable: should become useless.
 - Use templates instead of virtual function calls for writeables?
 
   - compilation will be slower
   - compiled code may get bigger if more than one template instance
   - but avoiding virtual calls makes code run faster (and may get smaller)
-  - makes readable + writeable combination easier to manage
   - worth it only if measurably faster
 
 Journal File
