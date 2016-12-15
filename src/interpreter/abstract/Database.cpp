@@ -74,6 +74,9 @@ void joedb::Database::rename_table
  const std::string &name
 )
 {
+ if (!is_identifier(name))
+  throw std::runtime_error("rename_table: invalid identifier");
+
  auto table_it = tables.find(table_id);
  if (table_it == tables.end())
   throw std::runtime_error("rename_table: invalid table_id");
@@ -96,6 +99,9 @@ void joedb::Database::add_field
  Type type
 )
 {
+ if (!is_identifier(name))
+  throw std::runtime_error("add_field: invalid identifier");
+
  auto it = tables.find(table_id);
  if (it == tables.end())
   throw std::runtime_error("add_field: invalid table_id");
@@ -125,6 +131,9 @@ void joedb::Database::rename_field
  const std::string &name
 )
 {
+ if (!is_identifier(name))
+  throw std::runtime_error("rename_field: invalid identifier");
+
  auto table_it = tables.find(table_id);
  if (table_it == tables.end())
   throw std::runtime_error("rename_field: invalid table_id");
@@ -145,6 +154,8 @@ void joedb::Database::rename_field
 void joedb::Database::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
+ if (!is_identifier(name))
+  throw std::runtime_error("custom: invalid identifier");
  custom_names.push_back(name);
  writeable->custom(name);
 }
