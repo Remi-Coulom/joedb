@@ -281,25 +281,29 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    field_id_t field_id = db.find_field(table_id, field_name);
    record_id_t size = 0;
    iss >> size;
-   const Type::type_id_t field_type = db.get_field_type(table_id, field_id);
 
-   switch(field_type)
+   if (db.get_max_record_id() != 0 && size >= db.get_max_record_id())
+    out << "Error: vector is too big\n";
+   else
    {
-    case Type::type_id_t::null:
-     out << "Error: bad field\n";
-    break;
+    switch(db.get_field_type(table_id, field_id))
+    {
+     case Type::type_id_t::null:
+      out << "Error: bad field\n";
+     break;
 
-    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-    case Type::type_id_t::type_id:\
-    {\
-     std::vector<type> v(size);\
-     for (size_t i = 0; i < size; i++)\
-      v[i] = joedb::read_##type_id(iss);\
-     ERROR_CHECK(db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]));\
-    }\
-    break;
-    #include "joedb/TYPE_MACRO.h"
-    #undef TYPE_MACRO
+     #define TYPE_MACRO(type, return_type, type_id, R, W)\
+     case Type::type_id_t::type_id:\
+     {\
+      std::vector<type> v(size);\
+      for (size_t i = 0; i < size; i++)\
+       v[i] = joedb::read_##type_id(iss);\
+      ERROR_CHECK(db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]));\
+     }\
+     break;
+     #include "joedb/TYPE_MACRO.h"
+     #undef TYPE_MACRO
+    }
    }
   }
   else if (command == "delete_from") ////////////////////////////////////////

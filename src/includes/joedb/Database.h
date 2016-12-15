@@ -34,6 +34,7 @@ namespace joedb
    //
    // Will go to Readable ?
    //
+   record_id_t get_max_record_id() const {return max_record_id;}
    const std::map<table_id_t, Table> &get_tables() const {return tables;}
    size_t get_current_table_id() const {return current_table_id;}
    table_id_t find_table(const std::string &name) const;
