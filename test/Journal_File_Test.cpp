@@ -4,6 +4,7 @@
 #include "dump.h"
 #include "Interpreter.h"
 #include "Interpreter_Dump_Writeable.h"
+#include "Multiplexer.h"
 
 #include <fstream>
 
@@ -38,43 +39,46 @@ TEST_F(Journal_File_Test, basic_operations)
  {
   File file("test.joedb", File::mode_t::create_new);
   Journal_File journal(file);
-  db1.set_writeable(journal);
-  db1.create_table("deleted");
-  db1.drop_table(db1.find_table("deleted"));
-  db1.create_table("table_test");
+  Multiplexer multiplexer;
+  multiplexer.add_writeable(db1);
+  multiplexer.add_writeable(journal);
+
+  multiplexer.create_table("deleted");
+  multiplexer.drop_table(db1.find_table("deleted"));
+  multiplexer.create_table("table_test");
   const table_id_t table_id = db1.find_table("table_test");
-  db1.insert(table_id, 1);
-  db1.add_field(table_id, "field", Type::int32());
+  multiplexer.insert(table_id, 1);
+  multiplexer.add_field(table_id, "field", Type::int32());
   const field_id_t field_id = db1.find_field(table_id, "field");
-  db1.update_int32(table_id, 1, field_id, 1234);
-  db1.delete_record(table_id, 1);
-  db1.insert(table_id, 2);
-  db1.update_int32(table_id, 2, field_id, 4567);
-  db1.drop_field(table_id, field_id);
+  multiplexer.update_int32(table_id, 1, field_id, 1234);
+  multiplexer.delete_record(table_id, 1);
+  multiplexer.insert(table_id, 2);
+  multiplexer.update_int32(table_id, 2, field_id, 4567);
+  multiplexer.drop_field(table_id, field_id);
 
-  db1.add_field(table_id, "big_field", Type::int64());
+  multiplexer.add_field(table_id, "big_field", Type::int64());
   const field_id_t big_field_id = db1.find_field(table_id, "big_field");
-  db1.update_int64(table_id, 2, big_field_id, 1234567ULL);
+  multiplexer.update_int64(table_id, 2, big_field_id, 1234567ULL);
 
-  db1.add_field(table_id, "new_field", Type::reference(table_id));
+  multiplexer.add_field(table_id, "new_field", Type::reference(table_id));
   const field_id_t new_field = db1.find_field(table_id, "new_field");
-  db1.update_reference(table_id, 2, new_field, 2);
-  db1.add_field(table_id, "name", Type::string());
+  multiplexer.update_reference(table_id, 2, new_field, 2);
+  multiplexer.add_field(table_id, "name", Type::string());
   const field_id_t name_id = db1.find_field(table_id, "name");
-  db1.update_string(table_id, 2, name_id, "Aristide");
+  multiplexer.update_string(table_id, 2, name_id, "Aristide");
 
   {
-   db1.create_table("type_test");
+   multiplexer.create_table("type_test");
    const table_id_t table_id = db1.find_table("type_test");
-   db1.insert(table_id, 1);
+   multiplexer.insert(table_id, 1);
 
-   db1.add_field(table_id, "string", Type::string());
-   db1.add_field(table_id, "int32", Type::int32());
-   db1.add_field(table_id, "int64", Type::int64());
-   db1.add_field(table_id, "reference", Type::reference(table_id));
-   db1.add_field(table_id, "bool", Type::boolean());
-   db1.add_field(table_id, "float32", Type::float32());
-   db1.add_field(table_id, "float64", Type::float64());
+   multiplexer.add_field(table_id, "string", Type::string());
+   multiplexer.add_field(table_id, "int32", Type::int32());
+   multiplexer.add_field(table_id, "int64", Type::int64());
+   multiplexer.add_field(table_id, "reference", Type::reference(table_id));
+   multiplexer.add_field(table_id, "bool", Type::boolean());
+   multiplexer.add_field(table_id, "float32", Type::float32());
+   multiplexer.add_field(table_id, "float64", Type::float64());
 
    const field_id_t string_field_id = db1.find_field(table_id, "string");
    const field_id_t int32_field_id = db1.find_field(table_id, "int32");
@@ -84,13 +88,13 @@ TEST_F(Journal_File_Test, basic_operations)
    const field_id_t float32_field_id = db1.find_field(table_id, "float32");
    const field_id_t float64_field_id = db1.find_field(table_id, "float64");
 
-   db1.update_string(table_id, 1, string_field_id, "SuperString");
-   db1.update_int32(table_id, 1, int32_field_id, 1234);
-   db1.update_int64(table_id, 1, int64_field_id, 123412341234LL);
-   db1.update_reference(table_id, 1, reference_field_id, 1);
-   db1.update_boolean(table_id, 1, bool_field_id, true);
-   db1.update_float32(table_id, 1, float32_field_id, 3.14f);
-   db1.update_float64(table_id, 1, float64_field_id, 3.141592653589);
+   multiplexer.update_string(table_id, 1, string_field_id, "SuperString");
+   multiplexer.update_int32(table_id, 1, int32_field_id, 1234);
+   multiplexer.update_int64(table_id, 1, int64_field_id, 123412341234LL);
+   multiplexer.update_reference(table_id, 1, reference_field_id, 1);
+   multiplexer.update_boolean(table_id, 1, bool_field_id, true);
+   multiplexer.update_float32(table_id, 1, float32_field_id, 3.14f);
+   multiplexer.update_float64(table_id, 1, float64_field_id, 3.141592653589);
   }
   journal.checkpoint(2);
  }

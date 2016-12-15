@@ -5,8 +5,6 @@ Short Term
 ----------
 Safety:
 
-- Use Safe_Listener for everything interpreted
-- Then, can remove a lot of redundant safety checks (catch exceptions)
 - Make compiled code safe:
 
   - no need to check for valid table_id, field_id, type_id: bad are ignored
