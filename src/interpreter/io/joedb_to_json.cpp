@@ -36,7 +36,7 @@ int main(int argc, char **argv)
  joedb::DB_Writeable db_writeable(db);
  journal.replay_log(db_writeable);
 
- if (!journal.is_good() || !db_writeable.is_good())
+ if (journal.get_state() != joedb::Journal_File::state_t::no_error)
  {
   std::cerr << "Error reading database\n";
   return 1;

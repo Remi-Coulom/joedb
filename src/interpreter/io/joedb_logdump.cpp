@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
   joedb::Journal_File journal(file);
 
-  if (header || !journal.is_good())
+  if (header || journal.get_state() != joedb::Journal_File::state_t::no_error)
   {
    joedb::dump_header(std::cout, file);
    std::cout << '\n';
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  if (journal.is_good() || force)
+  if (journal.get_state() == joedb::Journal_File::state_t::no_error || force)
   {
    if (sql)
    {

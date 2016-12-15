@@ -10,8 +10,6 @@ namespace joedb
  class Writeable
  {
   public:
-   virtual bool is_good() const {return true;}
-
    virtual void create_table(const std::string &name) = 0;
    virtual void drop_table(table_id_t table_id) = 0;
    virtual void rename_table(table_id_t table_id, const std::string &name) = 0;

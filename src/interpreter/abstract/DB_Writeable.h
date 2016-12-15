@@ -27,19 +27,19 @@ namespace joedb
 
    void insert(table_id_t table_id, record_id_t record_id) override
    {
-    error |= !db.insert_into(table_id, record_id);
+    db.insert_into(table_id, record_id);
    }
 
    void insert_vector(table_id_t table_id,
                       record_id_t record_id,
                       record_id_t size) override
    {
-    error |= !db.insert_vector(table_id, record_id, size);
+    db.insert_vector(table_id, record_id, size);
    }
 
    void delete_record(table_id_t table_id, record_id_t record_id) override
    {
-    error |= !db.delete_from(table_id, record_id);
+    db.delete_from(table_id, record_id);
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -48,7 +48,7 @@ namespace joedb
                          field_id_t field_id,\
                          return_type value) override\
    {\
-    error |= !db.update_##type_id(table_id, record_id, field_id, value);\
+    db.update_##type_id(table_id, record_id, field_id, value);\
    }\
    void update_vector_##type_id(table_id_t table_id,\
                                 record_id_t record_id,\
@@ -56,7 +56,7 @@ namespace joedb
                                 record_id_t size,\
                                 const type *value) override\
    {\
-    error |= !db.update_vector_##type_id(table_id, record_id, field_id, size, value);\
+    db.update_vector_##type_id(table_id, record_id, field_id, size, value);\
    }
    #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO

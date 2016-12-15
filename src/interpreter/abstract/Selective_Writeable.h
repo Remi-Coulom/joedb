@@ -27,8 +27,6 @@ namespace joedb
    {
    }
 
-   bool is_good() const override {return writeable.is_good();}
-
    //
    // schema events
    //

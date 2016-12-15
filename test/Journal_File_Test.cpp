@@ -96,7 +96,6 @@ TEST_F(Journal_File_Test, basic_operations)
   Journal_File journal(file);
   DB_Writeable db_writeable(db2);
   journal.replay_log(db_writeable);
-  EXPECT_TRUE(db_writeable.is_good());
   EXPECT_EQ(Journal_File::state_t::no_error, journal.get_state());
  }
 

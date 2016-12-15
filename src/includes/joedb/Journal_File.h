@@ -23,11 +23,6 @@ namespace joedb
     journal_errors
    };
 
-   bool is_good() const override
-   {
-    return state == state_t::no_error;
-   }
-
    state_t get_state() const {return state;}
    uint64_t ahead_of_checkpoint() const;
    uint64_t get_checkpoint_position() const {return checkpoint_position;}

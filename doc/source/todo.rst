@@ -27,7 +27,6 @@ Redesign:
 - Interpreter takes Readable_Writeable as parameter instead of db.
 - This way, interpreter works with compiled database. joedb_admin should work with a listener too: could be applied to a compiled database.
 - For this to work, a universal Readable interface must be implemented by interpreted and compiled databases.
-- Remove is_good()? throw exceptions instead.
 - Use templates instead of virtual function calls for listeners?
 
   - compilation will be slower

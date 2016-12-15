@@ -1044,7 +1044,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void checkpoint_half_commit() {journal.checkpoint(1);}
    void checkpoint_full_commit() {journal.checkpoint(2);}
 
-   bool is_good() const override
+   bool is_good() const
    {
     return file.get_status() == joedb::File::status_t::success &&
            journal.get_state() == joedb::Journal_File::state_t::no_error &&
