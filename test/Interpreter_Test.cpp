@@ -3,6 +3,7 @@
 #include "SQL_Dump_Writeable.h"
 #include "Database.h"
 #include "gtest/gtest.h"
+#include "Readable_Multiplexer.h"
 
 #include <fstream>
 #include <sstream>
@@ -12,10 +13,12 @@ using namespace joedb;
 class Interpreter_Test: public::testing::Test
 {
  protected:
-  Database db;
+  Database db_storage;
+  Readable_Multiplexer db;
   Interpreter interpreter;
 
   Interpreter_Test():
+   db(db_storage),
    interpreter(db)
   {
   }
@@ -43,7 +46,7 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Writeable)
 {
  std::ostringstream dump_string;
  joedb::Interpreter_Dump_Writeable writeable(dump_string);
- db.set_writeable(writeable);
+ db.add_writeable(writeable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -64,7 +67,7 @@ TEST_F(Interpreter_Test, SQL_Dump_Writeable)
 {
  std::ostringstream dump_string;
  joedb::SQL_Dump_Writeable writeable(dump_string);
- db.set_writeable(writeable);
+ db.add_writeable(writeable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());

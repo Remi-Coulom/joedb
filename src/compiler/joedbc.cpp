@@ -3,6 +3,7 @@
 #include "Stream_File.h"
 #include "Journal_File.h"
 #include "Selective_Writeable.h"
+#include "Readable_Multiplexer.h"
 #include "Interpreter.h"
 #include "Compiler_Options.h"
 #include "Compiler_Options_io.h"
@@ -1416,8 +1417,9 @@ int main(int argc, char **argv)
   Journal_File journal(schema_file);
   Selective_Writeable schema_writeable(journal, Selective_Writeable::schema);
 
-  db.set_writeable(schema_writeable);
-  Interpreter interpreter(db);
+  Readable_Multiplexer multiplexer(db);
+  multiplexer.add_writeable(schema_writeable);
+  Interpreter interpreter(multiplexer);
   interpreter.main_loop(joedbi_file, std::cerr);
  }
 

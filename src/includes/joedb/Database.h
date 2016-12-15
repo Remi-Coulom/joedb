@@ -17,20 +17,8 @@ namespace joedb
    std::map<table_id_t, Table> tables;
    std::vector<std::string> custom_names;
 
-   //
-   // This should disappear
-   //
-   Dummy_Writeable dummy_writeable;
-   Writeable *writeable = &dummy_writeable;
-
   public:
    Database(record_id_t max_record_id = 0): max_record_id(max_record_id) {}
-
-   //
-   // This should disappear
-   //
-   void set_writeable(Writeable &new_writeable) {writeable = &new_writeable;}
-   void clear_writeable() {writeable = &dummy_writeable;}
 
    //
    // Readable override
@@ -64,9 +52,9 @@ namespace joedb
    void rename_field(table_id_t, field_id_t, const std::string &name) override;
 
    void custom(const std::string &name) override;
-   void comment(const std::string &comment) override;
-   void timestamp(int64_t timestamp) override;
-   void valid_data() override;
+   void comment(const std::string &comment) override {};
+   void timestamp(int64_t timestamp) override {};
+   void valid_data() override {};
 
    void insert(table_id_t table_id, record_id_t record_id) override;
    void insert_vector(table_id_t table_id,

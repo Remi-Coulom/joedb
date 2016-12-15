@@ -130,8 +130,9 @@ TEST_F(Journal_File_Test, interpreter_test)
   File file("test.joedb", File::mode_t::create_new);
   Journal_File journal(file);
 
-  Database db;
-  db.set_writeable(journal);
+  Database db_storage;
+  Readable_Multiplexer db(db_storage);
+  db.add_writeable(journal);
 
   Interpreter interpreter(db);
   std::ifstream in_file("interpreter_test.joedbi");
@@ -150,8 +151,9 @@ TEST_F(Journal_File_Test, interpreter_test)
   File file_copy("test_copy.joedb", File::mode_t::create_new);
   Journal_File journal_copy(file_copy);
 
-  Database db;
-  db.set_writeable(journal_copy);
+  Database db_storage;
+  Readable_Multiplexer db(db_storage);
+  db.add_writeable(journal_copy);
   journal.replay_log(db);
  }
 

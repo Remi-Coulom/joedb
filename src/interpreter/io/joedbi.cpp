@@ -2,6 +2,7 @@
 #include "Database.h"
 #include "File.h"
 #include "Journal_File.h"
+#include "Readable_Multiplexer.h"
 
 #include <iostream>
 
@@ -60,8 +61,9 @@ int main(int argc, char **argv)
    return 1;
   }
 
-  db.set_writeable(journal);
-  joedb::Interpreter interpreter(db);
+  joedb::Readable_Multiplexer multiplexer(db);
+  multiplexer.add_writeable(journal);
+  joedb::Interpreter interpreter(multiplexer);
   interpreter.main_loop(std::cin, std::cout);
  }
 
