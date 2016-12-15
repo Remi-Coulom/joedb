@@ -150,14 +150,12 @@ void joedb::pack(Journal_File &input_journal, Writeable &writeable)
  Database db;
  DB_Writeable db_writeable(db);
 
- Selective_Writeable schema_writer(writeable, Selective_Writeable::Mode::schema);
+ Selective_Writeable schema_writeable(writeable, Selective_Writeable::Mode::schema);
  Multiplexer multiplexer;
  multiplexer.add_writeable(db_writeable);
- multiplexer.add_writeable(schema_writer);
- Dummy_Writeable dummy;
- auto &multiplexer_writeable = multiplexer.add_writeable(dummy);
+ multiplexer.add_writeable(schema_writeable);
 
- input_journal.replay_log(multiplexer_writeable);
+ input_journal.replay_log(multiplexer);
 
  dump_data(db, writeable);
 }

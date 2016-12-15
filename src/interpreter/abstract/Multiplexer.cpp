@@ -1,43 +1,30 @@
 #include "Multiplexer.h"
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Internal_Writeable::Internal_Writeable
+void joedb::Multiplexer::add_writeable(Writeable &writeable)
 /////////////////////////////////////////////////////////////////////////////
-(
- Multiplexer *multiplexer,
- size_t id
-):
- multiplexer(multiplexer),
- id(id)
 {
+ writeables.push_back(&writeable);
 }
 
-#define MULTIPLEX(x) do {\
- if (!multiplexer->multiplexing) {\
-  multiplexer->multiplexing = true;\
-  for (size_t i = 0; i < multiplexer->external_writeables.size(); i++) \
-   if (i != id) \
-    multiplexer->external_writeables[i]->x;\
-  multiplexer->multiplexing = false;\
- }\
-} while(0)
+#define MULTIPLEX(x) do {for (auto w: writeables) w->x;} while(0)
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::create_table(const std::string &name)
+void joedb::Multiplexer::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(create_table(name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::drop_table(table_id_t table_id)
+void joedb::Multiplexer::drop_table(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(drop_table(table_id));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::rename_table
+void joedb::Multiplexer::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -48,7 +35,7 @@ void joedb::Internal_Writeable::rename_table
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::add_field
+void joedb::Multiplexer::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -60,7 +47,7 @@ void joedb::Internal_Writeable::add_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::drop_field
+void joedb::Multiplexer::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -71,7 +58,7 @@ void joedb::Internal_Writeable::drop_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::rename_field
+void joedb::Multiplexer::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -83,35 +70,35 @@ void joedb::Internal_Writeable::rename_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::custom(const std::string &name)
+void joedb::Multiplexer::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(custom(name));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::comment(const std::string &comment)
+void joedb::Multiplexer::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(comment(comment));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::timestamp(int64_t timestamp)
+void joedb::Multiplexer::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(timestamp(timestamp));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::valid_data()
+void joedb::Multiplexer::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(valid_data());
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::insert
+void joedb::Multiplexer::insert
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -122,7 +109,7 @@ void joedb::Internal_Writeable::insert
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::insert_vector
+void joedb::Multiplexer::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -134,7 +121,7 @@ void joedb::Internal_Writeable::insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Internal_Writeable::delete_record
+void joedb::Multiplexer::delete_record
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -145,7 +132,7 @@ void joedb::Internal_Writeable::delete_record
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-void joedb::Internal_Writeable::update_##type_id\
+void joedb::Multiplexer::update_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\
@@ -156,7 +143,7 @@ void joedb::Internal_Writeable::update_##type_id\
  MULTIPLEX(update_##type_id(table_id, record_id, field_id, value));\
 }\
 \
-void joedb::Internal_Writeable::update_vector_##type_id\
+void joedb::Multiplexer::update_vector_##type_id\
 (\
  table_id_t table_id,\
  record_id_t record_id,\
@@ -173,17 +160,3 @@ void joedb::Internal_Writeable::update_vector_##type_id\
 #include "joedb/TYPE_MACRO.h"
 #undef TYPE_MACRO
 #undef MULTIPLEX
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Writeable &joedb::Multiplexer::add_writeable(Writeable &external_writeable)
-/////////////////////////////////////////////////////////////////////////////
-{
- const size_t id = external_writeables.size();
-
- external_writeables.push_back(&external_writeable);
- internal_writeables.push_back(
-  std::unique_ptr<Internal_Writeable>(new Internal_Writeable(this, id)));
- // TODO later: C++14 has std::make_unique. Should be used here in the future.
-
- return *internal_writeables.back();
-}

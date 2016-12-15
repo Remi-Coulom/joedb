@@ -21,24 +21,20 @@ Simple improvement:
 
 Redesign:
 
-- No forwarding in Database?
-- Make Multiplexer a Listener? Multiplexer and Synchronizer should be separate?
-- Make Database a Listener? Then, no more DB_Listener.
-- Remove Dummy_Listener: should become useless.
-- Interpreter takes Listener as parameter instead of db? Build a local schema? Or create a Listener_With_Schema class?
-- This way, interpreter works with compiled database. joedb_admin should work with a listener too: could be applied to a compiled database!
-- For this to work, a universal Database_Reader interface must be implemented by interpreted and compiled databases.
+- No forwarding in Database
+- Make Database a Writeable
+- Remove Dummy_Writeable: should become useless.
+- Interpreter takes Readable_Writeable as parameter instead of db.
+- This way, interpreter works with compiled database. joedb_admin should work with a listener too: could be applied to a compiled database.
+- For this to work, a universal Readable interface must be implemented by interpreted and compiled databases.
 - Remove is_good()? throw exceptions instead.
 - Use templates instead of virtual function calls for listeners?
 
   - compilation will be slower
   - compiled code may get bigger if more than one template instance
-  - but avoiding virtual calls makes code run faster
-  - class that take one listener reference as constructor parameter are easy to convert.
-  - Exceptions are:
-
-    - set_listener in compiled code, but it should be possible to re-design without set_listener. This re-design may be good even without converting to templates.
-    - Multiplexer: variadic template? Can we deal with Internal_Listeners? Separating Multiplexer and Synchronizer may help. Database storage without forwarding would help too (only multiplexers are necessary, no risk of recursive calls).
+  - but avoiding virtual calls makes code run faster (and may get smaller)
+  - makes readable + writeable combination easier to manage
+  - worth it only if measurably faster
 
 Journal File
 ------------
