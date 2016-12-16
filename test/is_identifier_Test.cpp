@@ -15,4 +15,7 @@ TEST(check_identifier_Test, main_test)
  EXPECT_FALSE(joedb::is_identifier("["));
  EXPECT_FALSE(joedb::is_identifier("`"));
  EXPECT_FALSE(joedb::is_identifier("{"));
+ EXPECT_FALSE(joedb::is_identifier("__id"));
+ EXPECT_TRUE(joedb::is_identifier("name_of_toto"));
+ EXPECT_FALSE(joedb::is_identifier("name__of_toto"));
 }

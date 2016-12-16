@@ -5,7 +5,6 @@ Short Term
 ----------
 Safety:
 
-- Forbid "__" inside identifiers
 - Make compiled code safe:
 
   - check valid record_id for listener updates and deletes
@@ -16,12 +15,12 @@ Safety:
 Simple improvement:
 
 - Use vector of smart pointers instead of map for Database tables and fields
+- Unify function names and operation codes (insert vs insert_into,  ...)
 
 Redesign:
 
 - make Readable interface less specific (easy to adapt to compiled db)
-- make compiled db Readable_Writeable (and no forwarding)
-- No forwarding to listener in databases (compiled and interpreted), and remove Dummy_Writeable: should become useless.
+- make Readable_Writeable based on compiled db
 - Use templates instead of virtual function calls for writeables?
 
   - compilation will be slower

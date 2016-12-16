@@ -24,9 +24,15 @@ bool joedb::is_identifier(const std::string &s)
  if (is_number(s[0]))
   return false;
 
+ char previous = 0;
  for (char c: s)
+ {
   if (c != '_' && !is_letter(c) && !is_number(c))
    return false;
+  if (c == '_' && previous == '_')
+   return false;
+  previous = c;
+ }
 
  return true;
 }
