@@ -12,6 +12,9 @@ insert_into person 1 "Rémi" 2
 insert_into person 2 "Norbert" 2
 insert_into person 3 "Alexandre" 1
 dump
+sql
+json 1
+help
 
 create_table city
 create_table 123456

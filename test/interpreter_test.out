@@ -23,6 +23,79 @@ update person 3 name "Alexandre"
 update person 1 city 2
 update person 2 city 2
 update person 3 city 1
+CREATE TABLE "city"("__id" INTEGER PRIMARY KEY);
+CREATE TABLE "person"("__id" INTEGER PRIMARY KEY);
+ALTER TABLE "city" ADD "name" TEXT;
+ALTER TABLE "person" ADD "name" TEXT;
+ALTER TABLE "person" ADD "city" INTEGER REFERENCES "city";
+INSERT INTO "city"("__id") VALUES(1);
+INSERT INTO "city"("__id") VALUES(2);
+UPDATE "city" SET "name" = X'5061726973' WHERE "__id" = 1;
+UPDATE "city" SET "name" = X'4c696c6c65' WHERE "__id" = 2;
+INSERT INTO "person"("__id") VALUES(1);
+INSERT INTO "person"("__id") VALUES(2);
+INSERT INTO "person"("__id") VALUES(3);
+UPDATE "person" SET "name" = X'52c3a96d69' WHERE "__id" = 1;
+UPDATE "person" SET "name" = X'4e6f7262657274' WHERE "__id" = 2;
+UPDATE "person" SET "name" = X'416c6578616e647265' WHERE "__id" = 3;
+UPDATE "person" SET "city" = 2 WHERE "__id" = 1;
+UPDATE "person" SET "city" = 2 WHERE "__id" = 2;
+UPDATE "person" SET "city" = 1 WHERE "__id" = 3;
+{
+ "city":
+ {
+  "name": ["UGFyaXM=","TGlsbGU="]
+ },
+ "person":
+ {
+  "name": ["UsOpbWk=","Tm9yYmVydA==","QWxleGFuZHJl"],
+  "city": [1,1,0]
+ }
+}
+
+Commands unrelated to the database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ about
+ help
+ quit
+
+Reading data
+~~~~~~~~~~~~
+ dump
+ json [<base64>]
+ sql
+
+Logging
+~~~~~~~
+ timestamp [<stamp>] (if no value is given, use current time)
+ comment "<comment_string>"
+ valid_data
+
+Data definition
+~~~~~~~~~~~~~~~
+ create_table <table_name>
+ drop_table <table_name>
+ rename_table <old_table_name> <new_table_name>
+ add_field <table_name> <field_name> <type>
+ drop_field <table_name> <field_name>
+ rename_field <table_name> <old_field_name> <new_field_name>
+ custom <custom_name>
+
+ <type> may be:
+  string,
+  int8, int16, int32, int64,
+  float32, float64,
+  boolean,
+  references <table_name>
+
+Data manipulation
+~~~~~~~~~~~~~~~~~
+ insert_into <table_name> <record_id>
+ insert_vector <table_name> <record_id> <size>
+ update <table_name> <record_id> <field_name> <value>
+ update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
+ delete_from <table_name> <record_id>
+
 Error: create_table: name already used (create_table city)
 Error: create_table: invalid identifier (create_table 123456)
 Error: rename_table: name already used (rename_table person city)
