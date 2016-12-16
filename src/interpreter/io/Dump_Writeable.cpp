@@ -11,7 +11,7 @@ std::string Dump_Writeable::get_table_name(table_id_t table_id)
  if (it != db.get_tables().end())
   return it->second.get_name();
  else
-  return "";
+  return "__unknown_table__";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,11 +24,11 @@ std::string Dump_Writeable::get_field_name
 {
  auto table = db.get_tables().find(table_id);
  if (table == db.get_tables().end())
-  return "";
+  return "__unknown_field_of_unknown_table__";
 
  auto field = table->second.get_fields().find(field_id);
  if (field == table->second.get_fields().end())
-  return "";
+  return "__unknown_field__";
 
  return field->second.get_name();
 }

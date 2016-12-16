@@ -12,7 +12,9 @@ namespace joedb
    {
     schema = 1,
     data = 2,
-    information = 4
+    information = 4,
+
+    data_and_schema = 3 // bitwise operators don't work on enums
    };
 
   private:

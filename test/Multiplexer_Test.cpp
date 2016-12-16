@@ -13,19 +13,8 @@
 
 using namespace joedb;
 
-class Multiplexer_Test: public ::testing::Test
-{
- protected:
-  virtual void TearDown()
-  {
-   std::remove("multiplexer.joedb");
-   std::remove("test.joedb");
-   std::remove("test_copy.joedb");
-  }
-};
-
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Multiplexer_Test, interpreter_test)
+TEST(Multiplexer_Test, interpreter_test)
 /////////////////////////////////////////////////////////////////////////////
 {
  //

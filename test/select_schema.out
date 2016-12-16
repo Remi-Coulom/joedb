@@ -1,0 +1,34 @@
+create_table city
+create_table person
+add_field city name string
+add_field person name string
+add_field person city references city
+drop_table city
+drop_table person
+create_table test
+add_field test a int32
+add_field test b int64
+add_field test d string
+add_field test e boolean
+drop_field test a
+create_table ref
+add_field ref ref references test
+drop_table test
+drop_table ref
+create_table alltypes
+add_field alltypes s string
+add_field alltypes i32 int32
+add_field alltypes i64 int64
+add_field alltypes ref references alltypes
+add_field alltypes b boolean
+add_field alltypes f float32
+add_field alltypes d float64
+add_field alltypes o int8
+add_field alltypes oulala int16
+custom toto_le_petit_rigolo
+rename_table alltypes all_types
+rename_field all_types s str
+create_table float
+add_field float value float32
+create_table toto
+add_field toto value string
