@@ -46,12 +46,12 @@ TEST_F(Journal_File_Test, basic_operations)
   multi.drop_table(db1.find_table("deleted"));
   multi.create_table("table_test");
   const table_id_t table_id = multi.find_table("table_test");
-  multi.insert(table_id, 1);
+  multi.insert_into(table_id, 1);
   multi.add_field(table_id, "field", Type::int32());
   const field_id_t field_id = multi.find_field(table_id, "field");
   multi.update_int32(table_id, 1, field_id, 1234);
-  multi.delete_record(table_id, 1);
-  multi.insert(table_id, 2);
+  multi.delete_from(table_id, 1);
+  multi.insert_into(table_id, 2);
   multi.update_int32(table_id, 2, field_id, 4567);
   multi.drop_field(table_id, field_id);
 
@@ -69,7 +69,7 @@ TEST_F(Journal_File_Test, basic_operations)
   {
    multi.create_table("type_test");
    const table_id_t table_id = multi.find_table("type_test");
-   multi.insert(table_id, 1);
+   multi.insert_into(table_id, 1);
 
    multi.add_field(table_id, "string", Type::string());
    multi.add_field(table_id, "int32", Type::int32());

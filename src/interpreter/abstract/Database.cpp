@@ -142,15 +142,15 @@ void joedb::Database::rename_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::insert(table_id_t table_id, record_id_t record_id)
+void joedb::Database::insert_into(table_id_t table_id, record_id_t record_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto it = tables.find(table_id);
  if (it == tables.end())
-  throw std::runtime_error("insert: invalid table_id");
+  throw std::runtime_error("insert_into: invalid table_id");
 
  if (record_id <= 0 || (max_record_id && record_id > max_record_id))
-  throw std::runtime_error("insert: too big");
+  throw std::runtime_error("insert_into: too big");
 
  it->second.insert_record(record_id);
 }
@@ -172,14 +172,12 @@ void joedb::Database::insert_vector
      (max_record_id && (record_id > max_record_id || size > max_record_id)))
   throw std::runtime_error("insert_vector: too big");
 
- // TODO: optimize large vector insertion
-
  for (record_id_t i = 0; i < size; i++)
   it->second.insert_record(record_id + i);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::delete_record
+void joedb::Database::delete_from
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -188,7 +186,7 @@ void joedb::Database::delete_record
 {
  auto it = tables.find(table_id);
  if (it == tables.end())
-  throw std::runtime_error("delete: invalid table_id");
+  throw std::runtime_error("delete_from: invalid table_id");
 
  it->second.delete_record(record_id);
 }

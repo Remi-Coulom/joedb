@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   for (int i = 1; i <= N; i++)
   {
    const record_id_t record_id = record_id_t(i);
-   multiplexer.insert(table_id, record_id);
+   multiplexer.insert_into(table_id, record_id);
    multiplexer.update_string(table_id, record_id, name_id, name_string);
    multiplexer.update_int64(table_id, record_id, value_id, i);
   }

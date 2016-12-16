@@ -98,14 +98,14 @@ void joedb::Multiplexer::valid_data()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Multiplexer::insert
+void joedb::Multiplexer::insert_into
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
  record_id_t record_id
 )
 {
- MULTIPLEX(insert(table_id, record_id));
+ MULTIPLEX(insert_into(table_id, record_id));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -121,14 +121,14 @@ void joedb::Multiplexer::insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Multiplexer::delete_record
+void joedb::Multiplexer::delete_from
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
  record_id_t record_id
 )
 {
- MULTIPLEX(delete_record(table_id, record_id));
+ MULTIPLEX(delete_from(table_id, record_id));
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\

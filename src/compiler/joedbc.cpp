@@ -434,10 +434,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // delete_record writeable function
+ // delete_from writeable function
  //
  out << '\n';
- out << "   void delete_record(table_id_t table_id, record_id_t record_id) override\n";
+ out << "   void delete_from(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -465,10 +465,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "   }\n";
 
  //
- // insert
+ // insert_into
  //
  out << '\n';
- out << "   void insert(table_id_t table_id, record_id_t record_id) override\n";
+ out << "   void insert_into(table_id_t table_id, record_id_t record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -813,7 +813,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
 
   out << "    internal_insert_" << tname << "(result.id);\n\n";
-  out << "    writeable->insert(" << table.first << ", result.id);\n";
+  out << "    writeable->insert_into(" << table.first << ", result.id);\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -879,7 +879,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
    out << "   {\n";
    out << "    internal_delete_" << tname << "(record.id);\n";
-   out << "    writeable->delete_record(" << table.first << ", record.id);\n";
+   out << "    writeable->delete_from(" << table.first << ", record.id);\n";
    out << "   }\n";
   }
 

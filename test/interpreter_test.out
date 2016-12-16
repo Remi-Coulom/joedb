@@ -190,11 +190,11 @@ Error: no such table: azersdf
 Error: rename_field: invalid table_id (rename_field azersdf value valux)
 Error: rename_field: invalid field_id (rename_field toto valux valux)
 Error: no such table: azersdf
-Error: insert: invalid table_id (insert_into azersdf 1)
+Error: insert_into: invalid table_id (insert_into azersdf 1)
 Error: no such table: azersdf
 Error: insert_vector: invalid table_id (insert_vector azersdf 1 1)
 Error: no such table: azersdf
-Error: delete: invalid table_id (delete_from azersdf 1)
+Error: delete_from: invalid table_id (delete_from azersdf 1)
 create_table all_types
 create_table float
 create_table toto

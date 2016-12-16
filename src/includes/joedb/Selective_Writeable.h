@@ -104,10 +104,10 @@ namespace joedb
    //
    // data events
    //
-   void insert(table_id_t table_id, record_id_t record_id) override
+   void insert_into(table_id_t table_id, record_id_t record_id) override
    {
     if (mode & data)
-     writeable.insert(table_id, record_id);
+     writeable.insert_into(table_id, record_id);
    }
 
    void insert_vector(table_id_t table_id,
@@ -118,10 +118,10 @@ namespace joedb
      writeable.insert_vector(table_id, record_id, size);
    }
 
-   void delete_record(table_id_t table_id, record_id_t record_id) override
+   void delete_from(table_id_t table_id, record_id_t record_id) override
    {
     if (mode & data)
-     writeable.delete_record(table_id, record_id);
+     writeable.delete_from(table_id, record_id);
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\

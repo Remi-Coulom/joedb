@@ -227,7 +227,7 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     writeable.insert(table_id, record_id);
+     writeable.insert_into(table_id, record_id);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
     }
@@ -245,7 +245,7 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
     break;
 
     case operation_t::append:
-     writeable.insert(table_of_last_operation,
+     writeable.insert_into(table_of_last_operation,
                            ++record_of_last_operation);
     break;
 
@@ -253,7 +253,7 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
     {
      table_id_t table_id = file.compact_read<table_id_t>();
      record_id_t record_id = file.compact_read<record_id_t>();
-     writeable.delete_record(table_id, record_id);
+     writeable.delete_from(table_id, record_id);
     }
     break;
 
@@ -459,7 +459,7 @@ void joedb::Journal_File::valid_data()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::insert
+void joedb::Journal_File::insert_into
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -501,7 +501,7 @@ void joedb::Journal_File::insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::delete_record
+void joedb::Journal_File::delete_from
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,

@@ -28,11 +28,11 @@ namespace joedb
    virtual void timestamp(int64_t timestamp) = 0;
    virtual void valid_data() = 0;
 
-   virtual void insert(table_id_t table_id, record_id_t record_id) = 0;
+   virtual void insert_into(table_id_t table_id, record_id_t record_id) = 0;
    virtual void insert_vector(table_id_t table_id,
                               record_id_t record_id,
                               record_id_t size) = 0;
-   virtual void delete_record(table_id_t table_id, record_id_t record_id) = 0;
+   virtual void delete_from(table_id_t table_id, record_id_t record_id) = 0;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual void update_##type_id(table_id_t table_id,\

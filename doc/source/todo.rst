@@ -12,7 +12,6 @@ Short Term
   - make Readable_Writeable based on compiled db
 
 - Use vector of smart pointers instead of map for Database tables and fields
-- Unify function names and operation codes (insert vs insert_into,  ...)
 
 Journal File
 ------------

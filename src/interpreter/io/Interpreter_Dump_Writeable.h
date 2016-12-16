@@ -111,7 +111,7 @@ namespace joedb
     out << "valid_data\n";
    }
 
-   void insert(table_id_t table_id, record_id_t record_id) override
+   void insert_into(table_id_t table_id, record_id_t record_id) override
    {
     out << "insert_into " << get_table_name(table_id) << ' ';
     out << record_id << '\n';
@@ -125,7 +125,7 @@ namespace joedb
     out << record_id << ' ' << size << '\n';
    }
 
-   void delete_record(table_id_t table_id, record_id_t record_id) override
+   void delete_from(table_id_t table_id, record_id_t record_id) override
    {
     out << "delete_from " << get_table_name(table_id) << ' ';
     out << record_id << '\n';

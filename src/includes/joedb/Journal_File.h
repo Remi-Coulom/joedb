@@ -48,11 +48,11 @@ namespace joedb
    void comment(const std::string &comment) override;
    void timestamp(int64_t timestamp) override;
    void valid_data() override;
-   void insert(table_id_t table_id, record_id_t record_id) override;
+   void insert_into(table_id_t table_id, record_id_t record_id) override;
    void insert_vector(table_id_t table_id,
                       record_id_t record_id,
                       record_id_t size) override;
-   void delete_record(table_id_t table_id, record_id_t record_id) override;
+   void delete_from(table_id_t table_id, record_id_t record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    void update_##type_id(table_id_t table_id,\

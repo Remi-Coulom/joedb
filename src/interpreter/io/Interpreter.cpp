@@ -257,7 +257,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    record_id_t record_id = 0;
    iss >> record_id;
    ERROR_CHECK(
-    db.insert(table_id, record_id);
+    db.insert_into(table_id, record_id);
     if (iss.good())
      for (const auto &field:
           db.get_tables().find(table_id)->second.get_fields())
@@ -329,7 +329,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    const table_id_t table_id = parse_table(iss, out);
    record_id_t record_id = 0;
    iss >> record_id;
-   ERROR_CHECK(db.delete_record(table_id, record_id));
+   ERROR_CHECK(db.delete_from(table_id, record_id));
   }
   else
    out << "Error: unknown command: " << command << ". For a list of available commands, try \"help\".\n";

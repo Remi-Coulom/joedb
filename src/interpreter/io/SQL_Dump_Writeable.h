@@ -139,7 +139,7 @@ namespace joedb
     out << "-- valid data\n";
    }
 
-   void insert(table_id_t table_id, record_id_t record_id) override
+   void insert_into(table_id_t table_id, record_id_t record_id) override
    {
     out << "INSERT INTO \"" << get_table_name(table_id);
     out << "\"(" << id_field_name << ") VALUES(" << record_id << ");\n";
@@ -150,10 +150,10 @@ namespace joedb
                       record_id_t size) override
    {
     for (record_id_t i = 0; i < size; i++)
-     insert(table_id, record_id + i);
+     insert_into(table_id, record_id + i);
    }
 
-   void delete_record(table_id_t table_id, record_id_t record_id) override
+   void delete_from(table_id_t table_id, record_id_t record_id) override
    {
     out << "DELETE FROM \"" << get_table_name(table_id);
     out << "\" WHERE " << id_field_name << " = " << record_id << ";\n";
