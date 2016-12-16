@@ -1,4 +1,5 @@
 binary_journal_fuzzer
+joedbc_fuzzer
 joedbi_fuzzer
 TMP_CLANG
 third_party

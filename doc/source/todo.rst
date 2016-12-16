@@ -10,7 +10,6 @@ Safety:
   - check valid record_id for listener updates and deletes
   - max_record_id for listener inserts
   - non-listener updates + deletes checked, except if NDEBUG macro defined
-  - fuzz it
 
 Simple improvement:
 

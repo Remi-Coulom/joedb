@@ -1,6 +1,8 @@
 #!/bin/bash
 
+#############################################################################
 # http://llvm.org/docs/LibFuzzer.html#versions
+#############################################################################
 if [ ! -d third_party ]; then
  echo Installing clang ...
  mkdir TMP_CLANG
@@ -10,7 +12,9 @@ if [ ! -d third_party ]; then
  TMP_CLANG/clang/scripts/update.py
 fi
 
+#############################################################################
 # http://llvm.org/docs/LibFuzzer.html#building
+#############################################################################
 if [ ! -f libFuzzer.a ]; then
  echo Building libFuzzer.a ...
  git clone https://chromium.googlesource.com/chromium/llvm-project/llvm/lib/Fuzzer
@@ -18,7 +22,9 @@ if [ ! -f libFuzzer.a ]; then
  ./Fuzzer/build.sh
 fi
 
+#############################################################################
 build()
+#############################################################################
 {
  ./third_party/llvm-build/Release+Asserts/bin/clang++\
   -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
@@ -40,7 +46,10 @@ build()
   ../../src/interpreter/io/Dump_Writeable.cpp\
   ../../src/interpreter/io/type_io.cpp\
   ../../src/interpreter/io/dump.cpp\
+  ../../src/interpreter/io/json.cpp\
+  ../../src/interpreter/io/base64.cpp\
   ../../src/journal/diagnostics.cpp\
+  ../../src/journal/File.cpp\
   ../../src/journal/Generic_File.cpp\
   ../../src/journal/Journal_File.cpp\
   ../../src/journal/Stream_File.cpp\
@@ -50,3 +59,11 @@ build()
 
 build "binary_journal"
 build "joedbi"
+
+if [ ! -f ../compiler/testdb.cpp ]; then
+ cd ../compiler
+ ./compiler_test.sh
+ cd -
+fi
+
+build "joedbc"
