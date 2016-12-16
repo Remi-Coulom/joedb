@@ -44,10 +44,12 @@ UPDATE "person" SET "city" = 1 WHERE "__id" = 3;
 {
  "city":
  {
+  "__size": 2,
   "name": ["UGFyaXM=","TGlsbGU="]
  },
  "person":
  {
+  "__size": 3,
   "name": ["UsOpbWk=","Tm9yYmVydA==","QWxleGFuZHJl"],
   "city": [1,1,0]
  }

@@ -13,6 +13,7 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
  // First, create reference translations
  //
  std::map<table_id_t, std::vector<int64_t>> reference_translation;
+ std::map<table_id_t, int64_t> table_size;
  for (auto table: db.get_tables())
  {
   std::vector<int64_t> &v = reference_translation[table.first];
@@ -27,6 +28,7 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
    else
     v[i + 1] = position++;
   }
+  table_size[table.first] = position;
  }
 
  //
@@ -49,13 +51,11 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
   const auto &fields = table.second.get_fields();
   const auto &freedom = table.second.get_freedom();
 
-  bool first_field = true;
+  out << "  \"__size\": " << table_size[table.first];
+
   for (const auto &field: fields)
   {
-   if (first_field)
-    first_field = false;
-   else
-    out << ",\n";
+   out << ",\n";
 
    out << "  ";
    write_string(out, field.second.get_name());
