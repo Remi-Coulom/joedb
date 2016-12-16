@@ -87,6 +87,18 @@ insert_vector toto 5 1
 update toto 3 value "toto"
 update_vector toto 5 value 2 "kiki" "kuku"
 
+rename_table toto __toto__
+rename_table azersdf toto
+add_field toto __field__ string
+add_field azersdf field string
+drop_field azersdf field
+rename_field toto value __value__
+rename_field azersdf value valux
+rename_field toto valux valux
+insert_into azersdf 1
+insert_vector azersdf 1 1
+delete_from azersdf 1
+
 dump
 
 quit

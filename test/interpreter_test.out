@@ -177,6 +177,24 @@ OK: insert_vector toto 3 1
 OK: insert_vector toto 5 1
 OK: update toto 3 value "toto"
 Error: update_vector: invalid record_id range (update_vector toto 5 value 2 "kiki" "kuku")
+Error: rename_table: invalid identifier (rename_table toto __toto__)
+Error: no such table: azersdf
+Error: rename_table: invalid table_id (rename_table azersdf toto)
+Error: add_field: invalid identifier (add_field toto __field__ string)
+Error: no such table: azersdf
+Error: add_field: invalid table_id (add_field azersdf field string)
+Error: no such table: azersdf
+Error: drop_field: invalid table_id (drop_field azersdf field)
+Error: rename_field: invalid identifier (rename_field toto value __value__)
+Error: no such table: azersdf
+Error: rename_field: invalid table_id (rename_field azersdf value valux)
+Error: rename_field: invalid field_id (rename_field toto valux valux)
+Error: no such table: azersdf
+Error: insert: invalid table_id (insert_into azersdf 1)
+Error: no such table: azersdf
+Error: insert_vector: invalid table_id (insert_vector azersdf 1 1)
+Error: no such table: azersdf
+Error: delete: invalid table_id (delete_from azersdf 1)
 create_table all_types
 create_table float
 create_table toto

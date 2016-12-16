@@ -48,11 +48,6 @@ namespace joedb
    {
     db.rename_field(table_id, field_id, name);
    }
-
-   void custom(const std::string &name) override
-   {
-    db.custom(name);
-   }
  };
 }
 
