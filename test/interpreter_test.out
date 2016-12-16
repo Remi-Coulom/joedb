@@ -61,8 +61,8 @@ Commands unrelated to the database
  help
  quit
 
-Reading data
-~~~~~~~~~~~~
+Displaying data
+~~~~~~~~~~~~~~~
  dump
  json [<base64>]
  sql

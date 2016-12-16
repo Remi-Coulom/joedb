@@ -14,7 +14,6 @@ namespace joedb
    const record_id_t max_record_id;
    table_id_t current_table_id = 0;
    std::map<table_id_t, Table> tables;
-   std::vector<std::string> custom_names;
 
   public:
    Database(record_id_t max_record_id = 0): max_record_id(max_record_id) {}
@@ -33,10 +32,6 @@ namespace joedb
                          const std::string &name) const override;
    Type::type_id_t get_field_type(table_id_t table_id,
                                   field_id_t field_id) const override;
-   const std::vector<std::string> &get_custom_names() const override
-   {
-    return custom_names;
-   }
 
    //
    // Writeable override
@@ -50,7 +45,7 @@ namespace joedb
    void drop_field(table_id_t table_id, field_id_t field_id) override;
    void rename_field(table_id_t, field_id_t, const std::string &name) override;
 
-   void custom(const std::string &name) override;
+   void custom(const std::string &name) override {};
    void comment(const std::string &comment) override {};
    void timestamp(int64_t timestamp) override {};
    void valid_data() override {};

@@ -21,7 +21,6 @@ namespace joedb
                                  const std::string &name) const = 0;
    virtual Type::type_id_t get_field_type(table_id_t table_id,
                                   field_id_t field_id) const = 0;
-   virtual const std::vector<std::string> &get_custom_names() const = 0;
 
    virtual ~Readable() {}
  };

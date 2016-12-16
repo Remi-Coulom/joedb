@@ -3,29 +3,16 @@ TODO
 
 Short Term
 ----------
-Safety:
-
-- Make compiled code safe:
+- compiler:
 
   - check valid record_id for listener updates and deletes
+  - #ifndef NDEBUG -> check double delete/insert, etc.
   - max_record_id for listener inserts
-  - non-listener updates + deletes checked, except if NDEBUG macro defined
-
-Simple improvement:
+  - make Readable interface less specific (easy to adapt to compiled db)
+  - make Readable_Writeable based on compiled db
 
 - Use vector of smart pointers instead of map for Database tables and fields
 - Unify function names and operation codes (insert vs insert_into,  ...)
-
-Redesign:
-
-- make Readable interface less specific (easy to adapt to compiled db)
-- make Readable_Writeable based on compiled db
-- Use templates instead of virtual function calls for writeables?
-
-  - compilation will be slower
-  - compiled code may get bigger if more than one template instance
-  - but avoiding virtual calls makes code run faster (and may get smaller)
-  - worth it only if measurably faster
 
 Journal File
 ------------
@@ -87,3 +74,9 @@ Other Ideas
 - rapidly undo-able history
 - add explicit keyword to constructors
 - make some classes non-copyable
+- Use templates instead of virtual function calls for writeables?
+
+  - compilation will be slower
+  - compiled code may get bigger if more than one template instance
+  - but avoiding virtual calls makes code run faster (and may get smaller)
+  - worth it only if measurably faster

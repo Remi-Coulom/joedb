@@ -49,11 +49,6 @@ namespace joedb
    {
     return readable.get_field_type(table_id, field_id);
    }
-
-   const std::vector<std::string> &get_custom_names() const override
-   {
-    return readable.get_custom_names();
-   }
  };
 }
 

@@ -32,6 +32,7 @@ namespace joedb
 
   private:
    const Database &db;
+   const std::vector<std::string> &custom_names;
 
    std::string namespace_name;
    std::vector<Index> indices;
@@ -41,8 +42,13 @@ namespace joedb
    bool generate_js_wrapper;
 
   public:
-   Compiler_Options(const Database &db):
+   Compiler_Options
+   (
+    const Database &db,
+    const std::vector<std::string> &custom_names
+   ):
     db(db),
+    custom_names(custom_names),
     table_options(db.get_current_table_id(), {freedom_keeper}),
     generate_c_wrapper(false)
    {
@@ -58,6 +64,10 @@ namespace joedb
    void set_generate_js_wrapper(bool value) {generate_js_wrapper = value;}
 
    const Database &get_db() const {return db;}
+   const std::vector<std::string> &get_custom_names() const
+   {
+    return custom_names;
+   }
    const std::string &get_namespace_name() const {return namespace_name;}
    const std::vector<Index> &get_indices() const {return indices;}
    const Table_Options &get_table_options(table_id_t table_id) const

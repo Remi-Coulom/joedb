@@ -141,8 +141,8 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    out << " help\n";
    out << " quit\n";
    out << '\n';
-   out << "Reading data\n";
-   out << "~~~~~~~~~~~~\n";
+   out << "Displaying data\n";
+   out << "~~~~~~~~~~~~~~~\n";
    out << " dump\n";
    out << " json [<base64>]\n";
    out << " sql\n";

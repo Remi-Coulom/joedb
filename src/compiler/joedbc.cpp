@@ -9,6 +9,8 @@
 #include "Compiler_Options_io.h"
 #include "type_io.h"
 #include "c_wrapper.h"
+#include "Dummy_Writeable.h"
+#include "is_identifier.h"
 
 #include <iostream>
 #include <fstream>
@@ -1012,11 +1014,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     Database::custom(name);
 )RRR";
- if (db.get_custom_names().size())
+ if (options.get_custom_names().size())
  {
   out << "    if (upgrading_schema)\n";
   out << "    {\n";
-  for (const auto &name: db.get_custom_names())
+  for (const auto &name: options.get_custom_names())
   {
    out << "     if (name == \"" << name << "\")\n";
    out << "      " << name << "(*this);\n";
@@ -1025,10 +1027,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
  out << "   }\n";
 
- if (db.get_custom_names().size())
+ if (options.get_custom_names().size())
  {
   out << '\n';
-  for (const auto &name: db.get_custom_names())
+  for (const auto &name: options.get_custom_names())
    out << "   static void " << name << "(Database &db);\n";
  }
 
@@ -1387,6 +1389,27 @@ void write_initial_comment(std::ostream &out, const Compiler_Options &options)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+namespace joedb
+/////////////////////////////////////////////////////////////////////////////
+{
+ class Custom_Collector: public Dummy_Writeable
+ {
+  private:
+   std::vector<std::string> &names;
+
+  public:
+   Custom_Collector(std::vector<std::string> &names): names(names) {}
+
+   void custom(const std::string &name) override
+   {
+    if (!is_identifier(name))
+     throw std::runtime_error("custom: invalid identifier");
+    names.push_back(name);
+   }
+ };
+}
+
+/////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -1404,6 +1427,7 @@ int main(int argc, char **argv)
  //
  Database db;
  std::stringstream schema;
+ std::vector<std::string> custom_names;
 
  {
   std::ifstream joedbi_file(argv[1]);
@@ -1416,9 +1440,12 @@ int main(int argc, char **argv)
   Stream_File schema_file(schema, Generic_File::mode_t::create_new);
   Journal_File journal(schema_file);
   Selective_Writeable schema_writeable(journal, Selective_Writeable::schema);
+  Custom_Collector custom_collector(custom_names);
 
   Readable_Multiplexer multiplexer(db);
   multiplexer.add_writeable(schema_writeable);
+  multiplexer.add_writeable(custom_collector);
+
   Interpreter interpreter(multiplexer);
   interpreter.main_loop(joedbi_file, std::cerr);
  }
@@ -1433,7 +1460,7 @@ int main(int argc, char **argv)
   return 1;
  }
 
- Compiler_Options compiler_options(db);
+ Compiler_Options compiler_options(db, custom_names);
 
  if (!parse_compiler_options(joedbc_file, std::cerr, compiler_options))
  {

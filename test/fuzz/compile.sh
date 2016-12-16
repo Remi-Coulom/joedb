@@ -60,10 +60,7 @@ build()
 build "binary_journal"
 build "joedbi"
 
-if [ ! -f ../compiler/testdb.cpp ]; then
- cd ../compiler
- ./compiler_test.sh
- cd -
-fi
-
+cd ../compiler
+./compiler_test.sh
+cd -
 build "joedbc"
