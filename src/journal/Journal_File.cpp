@@ -340,6 +340,7 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
  catch (std::runtime_error e)
  {
   state = state_t::writeable_threw;
+  thrown_error = e.what();
   return;
  }
 

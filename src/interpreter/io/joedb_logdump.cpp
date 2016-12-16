@@ -86,7 +86,11 @@ int main(int argc, char **argv)
    "size of status_string is wrong");
 
   std::cerr << "\n---> ";
-  std::cerr << status_string[int(journal.get_state())] << '\n';
+  std::cerr << status_string[int(journal.get_state())];
+  if (journal.get_state() == joedb::Journal_File::state_t::writeable_threw)
+   std::cerr << ": " << journal.get_thrown_error() << '\n';
+  else
+   std::cerr << '\n';
  }
 
  return 0;
