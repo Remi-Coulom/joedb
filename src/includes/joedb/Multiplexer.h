@@ -29,6 +29,7 @@ namespace joedb
    void comment(const std::string &comment) override;
    void timestamp(int64_t timestamp) override;
    void valid_data() override;
+   record_id_t get_max_record_id() const override;
    void insert_into(table_id_t table_id, record_id_t record_id) override;
    void insert_vector(table_id_t table_id,
                       record_id_t record_id,

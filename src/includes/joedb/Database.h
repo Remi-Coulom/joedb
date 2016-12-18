@@ -14,6 +14,7 @@ namespace joedb
    const record_id_t max_record_id;
    table_id_t current_table_id = 0;
    std::map<table_id_t, Table> tables;
+   table_map table_name_map;
 
   public:
    Database(record_id_t max_record_id = 0): max_record_id(max_record_id) {}
@@ -21,17 +22,18 @@ namespace joedb
    //
    // Readable override
    //
-   record_id_t get_max_record_id() const override {return max_record_id;}
-   const std::map<table_id_t, Table> &get_tables() const override
-   {
-    return tables;
-   }
-   size_t get_current_table_id() const override {return current_table_id;}
-   table_id_t find_table(const std::string &name) const override;
-   field_id_t find_field(table_id_t table_id,
-                         const std::string &name) const override;
-   Type::type_id_t get_field_type(table_id_t table_id,
-                                  field_id_t field_id) const override;
+   const table_map &get_tables() const override {return table_name_map;}
+   const field_map &get_table_fields(table_id_t table_id) const override;
+   const Type &get_field_type(table_id_t table_id,
+                              field_id_t field_id) const override;
+
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   return_type get_##type_id(table_id_t table_id,\
+                             record_id_t record_id,\
+                             field_id_t field_id) const override;
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
+
 
    //
    // Writeable override
@@ -49,6 +51,8 @@ namespace joedb
    void comment(const std::string &comment) override {};
    void timestamp(int64_t timestamp) override {};
    void valid_data() override {};
+
+   record_id_t get_max_record_id() const override {return max_record_id;}
 
    void insert_into(table_id_t table_id, record_id_t record_id) override;
    void insert_vector(table_id_t table_id,

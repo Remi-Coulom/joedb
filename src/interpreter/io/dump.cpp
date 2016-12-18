@@ -15,8 +15,9 @@ void joedb::dump(const Readable &db, Writeable &writeable)
   for (auto table: db.get_tables())
   {
    ++table_id;
-   writeable.create_table(table.second.get_name());
-   table_map[table.first] = table_id;
+   table_map[table.second] = table_id;
+
+   writeable.create_table(table.first);
   }
  }
 
@@ -30,16 +31,15 @@ void joedb::dump(const Readable &db, Writeable &writeable)
   {
    ++table_id;
    field_id_t field_id = 0;
-   for (const auto &field: table.second.get_fields())
+   for (const auto &field: db.get_table_fields(table.second))
    {
     ++field_id;
-    auto type = field.second.get_type();
+    Type type = db.get_field_type(table.second, field.second);
     if (type.get_type_id() == Type::type_id_t::reference)
      type = Type::reference(table_map[type.get_table_id()]);
-    writeable.add_field(table_map[table.first],
-                       field.second.get_name(),
-                       type);
-    field_maps[table.first][field.first] = field_id;
+    field_maps[table.second][field.second] = field_id;
+
+    writeable.add_field(table_map[table.second], field.first, type);
    }
   }
  }
@@ -49,8 +49,8 @@ void joedb::dump(const Readable &db, Writeable &writeable)
  //
  for (auto table: db.get_tables())
  {
-  const auto &fields = table.second.get_fields();
-  const auto &freedom = table.second.get_freedom();
+  const auto &fields = db.get_table_fields(table.second);
+  const record_id_t max_record_id = db.get_max_record_id(table.second);
 
   size_t i = 0;
 
@@ -64,7 +64,7 @@ void joedb::dump(const Readable &db, Writeable &writeable)
 
    if (size)
    {
-    writeable.insert_vector(table_map[table.first], i + 1, size);
+    writeable.insert_vector(table_map[table.second], i + 1, size);
     i += size;
    }
   }

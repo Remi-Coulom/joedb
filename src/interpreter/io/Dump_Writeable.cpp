@@ -7,11 +7,11 @@ using namespace joedb;
 std::string Dump_Writeable::get_table_name(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
- auto it = db.get_tables().find(table_id);
- if (it != db.get_tables().end())
-  return it->second.get_name();
- else
-  return "__unknown_table__";
+ for (auto table: db.get_tables())
+  if (table.second == table_id)
+   return table.first;
+
+ return "__unknown_table__";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -22,15 +22,10 @@ std::string Dump_Writeable::get_field_name
  field_id_t field_id
 )
 {
- auto table = db.get_tables().find(table_id);
- if (table == db.get_tables().end())
-  return "__unknown_field_of_unknown_table__";
-
- auto field = table->second.get_fields().find(field_id);
- if (field == table->second.get_fields().end())
-  return "__unknown_field__";
-
- return field->second.get_name();
+ for (auto field: db.get_table_fields(table_id))
+  if (field.second == field_id)
+   return field.first;
+ return "__unknown_field__";
 }
 
 /////////////////////////////////////////////////////////////////////////////

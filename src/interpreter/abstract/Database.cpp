@@ -2,31 +2,7 @@
 #include "is_identifier.h"
 
 /////////////////////////////////////////////////////////////////////////////
-table_id_t joedb::Database::find_table(const std::string &name) const
-/////////////////////////////////////////////////////////////////////////////
-{
- for (const auto &table: tables)
-  if (table.second.get_name() == name)
-   return table.first;
- return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-field_id_t joedb::Database::find_field
-/////////////////////////////////////////////////////////////////////////////
-(
- table_id_t table_id,
- const std::string &name
-) const
-{
- auto it = tables.find(table_id);
- if (it == tables.end())
-  return 0;
- return it->second.find_field(name);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Type::type_id_t joedb::Database::get_field_type
+joedb::Type::type_id_t joedb::Database::get_field_type_id
 /////////////////////////////////////////////////////////////////////////////
 (
  table_id_t table_id,
@@ -53,14 +29,18 @@ void joedb::Database::create_table(const std::string &name)
   throw std::runtime_error("create_table: name already used");
 
  tables.insert(std::make_pair(++current_table_id, Table(name)));
+ table_name_map[name] = current_table_id;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Database::drop_table(table_id_t table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (tables.erase(table_id) == 0)
+ auto it = tables.find(table_id);
+ if (it == tables.end())
   throw std::runtime_error("drop_table: invalid table_id");
+ table_name_map.erase(it->second.get_name());
+ tables.erase(it);
 }
 
 /////////////////////////////////////////////////////////////////////////////

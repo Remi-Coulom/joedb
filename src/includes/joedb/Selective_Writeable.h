@@ -102,6 +102,14 @@ namespace joedb
    }
 
    //
+   // get_max_record_id()
+   //
+   record_id_t get_max_record_id() const override
+   {
+    return writeable.get_max_record_id();
+   }
+
+   //
    // data events
    //
    void insert_into(table_id_t table_id, record_id_t record_id) override

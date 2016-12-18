@@ -3,15 +3,16 @@ TODO
 
 Short Term
 ----------
-- compiler:
 
+- Make the new readable interface work
+
+- compiler:
   - check valid record_id for listener updates and deletes
   - #ifndef NDEBUG -> check double delete/insert, etc.
   - max_record_id for listener inserts
-  - make Readable interface less specific (easy to adapt to compiled db)
   - make Readable_Writeable based on compiled db
 
-- Use vector of smart pointers instead of map for Database tables and fields
+- type identifiers with "_t" suffix are reserved by POSIX. Should change.
 
 Journal File
 ------------

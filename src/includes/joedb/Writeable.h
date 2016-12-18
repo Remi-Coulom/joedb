@@ -23,10 +23,11 @@ namespace joedb
                              const std::string &name) = 0;
 
    virtual void custom(const std::string &name) = 0;
-
    virtual void comment(const std::string &comment) = 0;
    virtual void timestamp(int64_t timestamp) = 0;
    virtual void valid_data() = 0;
+
+   virtual record_id_t get_max_record_id() const = 0;
 
    virtual void insert_into(table_id_t table_id, record_id_t record_id) = 0;
    virtual void insert_vector(table_id_t table_id,
