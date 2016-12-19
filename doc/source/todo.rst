@@ -4,8 +4,6 @@ TODO
 Short Term
 ----------
 
-- Make the new readable interface work
-
 - compiler:
   - check valid record_id for listener updates and deletes
   - #ifndef NDEBUG -> check double delete/insert, etc.
