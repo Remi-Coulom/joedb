@@ -72,7 +72,7 @@ void joedb::Interpreter::update_value
  field_id_t field_id
 )
 {
- switch(db.get_field_type_id(table_id, field_id))
+ switch(db.get_field_type(table_id, field_id).get_type_id())
  {
   case Type::type_id_t::null:
    throw std::runtime_error("bad field");
@@ -304,7 +304,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
     out << "Error: vector is too big\n";
    else
    {
-    switch(db.get_field_type_id(table_id, field_id))
+    switch(db.get_field_type(table_id, field_id).get_type_id())
     {
      case Type::type_id_t::null:
       out << "Error: bad field\n";

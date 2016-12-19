@@ -19,7 +19,7 @@ namespace joedb
    virtual const Type &get_field_type(table_id_t table_id,
                                       field_id_t field_id) const = 0;
 
-   virtual record_id_t get_max_record_id(table_id_t table_id) const = 0;
+   virtual record_id_t get_last_record_id(table_id_t table_id) const = 0;
    virtual bool is_used(table_id_t table_id, record_id_t record_id) const = 0;
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual return_type get_##type_id(table_id_t table_id,\
@@ -53,6 +53,25 @@ namespace joedb
      return 0;
     else
      return it->second;
+   }
+
+   virtual const std::string &get_table_name(table_id_t table_id) const
+   {
+    for (const auto &table: get_tables())
+     if (table.second == table_id)
+      return table.first;
+    static const std::string default_name = "__unknown_table__";
+    return default_name;
+   }
+
+   virtual const std::string &get_field_name(table_id_t table_id,
+                                             field_id_t field_id) const
+   {
+    for (const auto &field: get_table_fields(table_id))
+     if (field.second == field_id)
+      return field.first;
+    static const std::string default_name = "__unknown_field__";
+    return default_name;
    }
  };
 }

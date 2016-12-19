@@ -33,15 +33,8 @@ namespace joedb
 
      case Type::type_id_t::reference:
      {
-      out << "INTEGER REFERENCES ";
-      table_id_t table_id = type.get_table_id();
-      const auto it = db.get_tables().find(table_id);
-      out << '\"';
-      if (it != db.get_tables().end())
-       out << it->second.get_name();
-      else
-       out << "a_deleted_table";
-      out << '\"';
+      out << key_type << " REFERENCES ";
+      out << '\"' << db.get_table_name(type.get_table_id()) << '\"';
      }
      break;
 
@@ -68,26 +61,27 @@ namespace joedb
    }
 
    std::string id_field_name = "\"__id\"";
+   std::string key_type = "INTEGER";
 
   public:
    SQL_Dump_Writeable(std::ostream &out): Dump_Writeable(out) {}
 
    void create_table(const std::string &name) override
    {
-    out << "CREATE TABLE \"" << name << "\"(" << id_field_name << " INTEGER PRIMARY KEY);\n";
+    out << "CREATE TABLE \"" << name << "\"(" << id_field_name << ' ' << key_type << " PRIMARY KEY);\n";
     Schema_Writeable::create_table(name);
    }
 
    void drop_table(table_id_t table_id) override
    {
-    out << "DROP TABLE \"" << get_table_name(table_id) << "\";\n";
+    out << "DROP TABLE \"" << db.get_table_name(table_id) << "\";\n";
     Schema_Writeable::drop_table(table_id);
    }
 
    void rename_table(table_id_t table_id,
                      const std::string &name) override
    {
-    out << "ALTER TABLE \"" << get_table_name(table_id);
+    out << "ALTER TABLE \"" << db.get_table_name(table_id);
     out << "\" RENAME TO \"" << name << "\";\n";
     Schema_Writeable::rename_table(table_id, name);
    }
@@ -96,7 +90,7 @@ namespace joedb
                   const std::string &name,
                   Type type) override
    {
-    out << "ALTER TABLE \"" << get_table_name(table_id);
+    out << "ALTER TABLE \"" << db.get_table_name(table_id);
     out << "\" ADD \"" << name << "\" ";
     write_type(type);
     out << ";\n";
@@ -105,8 +99,8 @@ namespace joedb
 
    void drop_field(table_id_t table_id, field_id_t field_id) override
    {
-    out << "ALTER TABLE \"" << get_table_name(table_id);
-    out << "\" DROP \"" << get_field_name(table_id, field_id) << "\";\n";
+    out << "ALTER TABLE \"" << db.get_table_name(table_id);
+    out << "\" DROP \"" << db.get_field_name(table_id, field_id) << "\";\n";
     Schema_Writeable::drop_field(table_id, field_id);
    }
 
@@ -114,8 +108,8 @@ namespace joedb
                      field_id_t field_id,
                      const std::string &name) override
    {
-    out << "ALTER TABLE \"" << get_table_name(table_id) << "\" RENAME COLUMN \"";
-    out << get_field_name(table_id, field_id) << "\" TO \"" << name << "\";\n";
+    out << "ALTER TABLE \"" << db.get_table_name(table_id) << "\" RENAME COLUMN \"";
+    out << db.get_field_name(table_id, field_id) << "\" TO \"" << name << "\";\n";
     Schema_Writeable::rename_field(table_id, field_id, name);
    }
 
@@ -139,9 +133,11 @@ namespace joedb
     out << "-- valid data\n";
    }
 
+   record_id_t get_max_record_id() const override {return 0;}
+
    void insert_into(table_id_t table_id, record_id_t record_id) override
    {
-    out << "INSERT INTO \"" << get_table_name(table_id);
+    out << "INSERT INTO \"" << db.get_table_name(table_id);
     out << "\"(" << id_field_name << ") VALUES(" << record_id << ");\n";
    }
 
@@ -155,7 +151,7 @@ namespace joedb
 
    void delete_from(table_id_t table_id, record_id_t record_id) override
    {
-    out << "DELETE FROM \"" << get_table_name(table_id);
+    out << "DELETE FROM \"" << db.get_table_name(table_id);
     out << "\" WHERE " << id_field_name << " = " << record_id << ";\n";
    }
 
@@ -165,8 +161,8 @@ namespace joedb
                          field_id_t field_id,\
                          return_type value) override\
    {\
-    out << "UPDATE \"" << get_table_name(table_id);\
-    out << "\" SET \"" << get_field_name(table_id, field_id) << "\" = ";\
+    out << "UPDATE \"" << db.get_table_name(table_id);\
+    out << "\" SET \"" << db.get_field_name(table_id, field_id) << "\" = ";\
     joedb::write_##type_id(out, value);\
     out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
    }
@@ -180,8 +176,8 @@ namespace joedb
                       field_id_t field_id,
                       const std::string &value) override
    {
-    out << "UPDATE \"" << get_table_name(table_id);
-    out << "\" SET \"" << get_field_name(table_id, field_id) << "\" = ";
+    out << "UPDATE \"" << db.get_table_name(table_id);
+    out << "\" SET \"" << db.get_field_name(table_id, field_id) << "\" = ";
     joedb::write_sql_string(out, value);
     out << " WHERE " << id_field_name << " = " << record_id << ";\n";
    }

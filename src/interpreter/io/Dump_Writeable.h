@@ -13,8 +13,6 @@ namespace joedb
    Database db;
    std::ostream &out;
 
-   std::string get_table_name(table_id_t table_id);
-   std::string get_field_name(table_id_t table_id, field_id_t field_id);
    static std::string get_local_time(int64_t timestamp);
 
   public:

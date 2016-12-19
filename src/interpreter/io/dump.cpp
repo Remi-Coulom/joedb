@@ -49,41 +49,45 @@ void joedb::dump(const Readable &db, Writeable &writeable)
  //
  for (auto table: db.get_tables())
  {
-  const auto &fields = db.get_table_fields(table.second);
-  const record_id_t max_record_id = db.get_max_record_id(table.second);
+  const table_id_t table_id = table.second;
+  const record_id_t last_record_id = db.get_last_record_id(table_id);
 
-  size_t i = 0;
+  record_id_t record_id = 1;
 
-  while (i < freedom.size())
+  while (record_id <= last_record_id)
   {
-   while (i < freedom.size() && freedom.is_free(i + 2))
-    i++;
-   size_t size = 0;
-   while (i + size < freedom.size() && !freedom.is_free(i + 2 + size))
+   while (record_id <= last_record_id &&
+          !db.is_used(table_id, record_id))
+    record_id++;
+
+   record_id_t size = 0;
+
+   while (record_id + size <= last_record_id &&
+          db.is_used(table_id, record_id + size))
     size++;
 
    if (size)
    {
-    writeable.insert_vector(table_map[table.second], i + 1, size);
-    i += size;
+    writeable.insert_vector(table_map[table_id], record_id, size);
+    record_id += size;
    }
   }
 
-  for (const auto &field: fields)
+  for (const auto &field: db.get_table_fields(table_id))
   {
-   for (size_t i = 0; i < freedom.size(); i++)
-    if (!freedom.is_free(i + 2))
-    {
-     const record_id_t record_id = i + 1;
+   const field_id_t field_id = field.second;
 
-     switch(field.second.get_type().get_type_id())
+   for (record_id_t record_id = 1; record_id <= last_record_id; record_id++)
+    if (db.is_used(table_id, record_id))
+    {
+     switch(db.get_field_type(table_id, field_id).get_type_id())
      {
       case Type::type_id_t::null:
       break;
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::type_id_t::type_id:\
-       writeable.update_##type_id(table_map[table.first], record_id, field_maps[table.first][field.first], table.second.get_##type_id(record_id, field.first));\
+       writeable.update_##type_id(table_map[table_id], record_id, field_maps[table_id][field_id], db.get_##type_id(table_id, record_id, field_id));\
       break;
       #include "joedb/TYPE_MACRO.h"
       #undef TYPE_MACRO
@@ -99,40 +103,51 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 {
  for (auto table: db.get_tables())
  {
-  const auto &fields = table.second.get_fields();
-  const auto &freedom = table.second.get_freedom();
+  const table_id_t table_id = table.second;
+  const record_id_t last_record_id = db.get_last_record_id(table_id);
 
-  size_t i = 0;
+  record_id_t record_id = 1;
 
-  while (i < freedom.size())
+  while (record_id <= last_record_id)
   {
-   while (i < freedom.size() && freedom.is_free(i + 2))
-    i++;
-   size_t size = 0;
-   while (i + size < freedom.size() && !freedom.is_free(i + 2 + size))
+   while (record_id <= last_record_id &&
+          !db.is_used(table_id, record_id))
+    record_id++;
+
+   record_id_t size = 0;
+
+   while (record_id + size <= last_record_id &&
+          db.is_used(table_id, record_id + size))
     size++;
 
    if (size)
    {
-    writeable.insert_vector(table.first, i + 1, size);
+    writeable.insert_vector(table_id, record_id, size);
 
-    for (const auto &field: fields)
+    for (const auto &field: db.get_table_fields(table_id))
     {
-     switch(field.second.get_type().get_type_id())
+     const field_id_t field_id = field.second;
+
+     switch(db.get_field_type(table_id, field_id).get_type_id())
      {
       case Type::type_id_t::null:
       break;
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::type_id_t::type_id:\
-       writeable.update_vector_##type_id(table.first, i + 1, field.first, size, field.second.get_vector_##type_id() + i);\
+      {\
+       std::vector<type> v(size);\
+       for (record_id_t i = 0; i < size; i++)\
+        v[i] = db.get_##type_id(table_id, record_id + i, field_id);\
+       writeable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
+      }\
       break;
       #include "joedb/TYPE_MACRO.h"
       #undef TYPE_MACRO
      }
     }
 
-    i += size;
+    record_id += size;
    }
   }
  }

@@ -27,15 +27,7 @@ namespace joedb
      #undef TYPE_MACRO
 
      case Type::type_id_t::reference:
-     {
-      out << "references ";
-      table_id_t table_id = type.get_table_id();
-      const auto it = db.get_tables().find(table_id);
-      if (it != db.get_tables().end())
-       out << it->second.get_name();
-      else
-       out << "a_deleted_table";
-     }
+      out << "references " << db.get_table_name(type.get_table_id());
      break;
     }
    }
@@ -51,14 +43,14 @@ namespace joedb
 
    void drop_table(table_id_t table_id) override
    {
-    out << "drop_table " << get_table_name(table_id) << '\n';
+    out << "drop_table " << db.get_table_name(table_id) << '\n';
     Schema_Writeable::drop_table(table_id);
    }
 
    void rename_table(table_id_t table_id,
                      const std::string &name) override
    {
-    out << "rename_table " << get_table_name(table_id) << ' ' << name << '\n';
+    out << "rename_table " << db.get_table_name(table_id) << ' ' << name << '\n';
     Schema_Writeable::rename_table(table_id, name);
    }
 
@@ -66,7 +58,7 @@ namespace joedb
                   const std::string &name,
                   Type type) override
    {
-    out << "add_field " << get_table_name(table_id) << ' ' << name << ' ';
+    out << "add_field " << db.get_table_name(table_id) << ' ' << name << ' ';
     write_type(type);
     out << '\n';
     Schema_Writeable::add_field(table_id, name, type);
@@ -74,8 +66,8 @@ namespace joedb
 
    void drop_field(table_id_t table_id, field_id_t field_id) override
    {
-    out << "drop_field " << get_table_name(table_id) << ' ';
-    out << get_field_name(table_id, field_id) << '\n';
+    out << "drop_field " << db.get_table_name(table_id) << ' ';
+    out << db.get_field_name(table_id, field_id) << '\n';
     Schema_Writeable::drop_field(table_id, field_id);
    }
 
@@ -83,8 +75,8 @@ namespace joedb
                      field_id_t field_id,
                      const std::string &name) override
    {
-    out << "rename_field " << get_table_name(table_id) << ' ';
-    out << get_field_name(table_id, field_id) << ' ' << name << '\n';
+    out << "rename_field " << db.get_table_name(table_id) << ' ';
+    out << db.get_field_name(table_id, field_id) << ' ' << name << '\n';
     Schema_Writeable::rename_field(table_id, field_id, name);
    }
 
@@ -111,9 +103,11 @@ namespace joedb
     out << "valid_data\n";
    }
 
+   record_id_t get_max_record_id() const override {return 0;}
+
    void insert_into(table_id_t table_id, record_id_t record_id) override
    {
-    out << "insert_into " << get_table_name(table_id) << ' ';
+    out << "insert_into " << db.get_table_name(table_id) << ' ';
     out << record_id << '\n';
    }
 
@@ -121,13 +115,13 @@ namespace joedb
                       record_id_t record_id,
                       record_id_t size) override
    {
-    out << "insert_vector " << get_table_name(table_id) << ' ';
+    out << "insert_vector " << db.get_table_name(table_id) << ' ';
     out << record_id << ' ' << size << '\n';
    }
 
    void delete_from(table_id_t table_id, record_id_t record_id) override
    {
-    out << "delete_from " << get_table_name(table_id) << ' ';
+    out << "delete_from " << db.get_table_name(table_id) << ' ';
     out << record_id << '\n';
    }
 
@@ -137,9 +131,9 @@ namespace joedb
                          field_id_t field_id,\
                          return_type value) override\
    {\
-    out << "update " << get_table_name(table_id) << ' ';\
+    out << "update " << db.get_table_name(table_id) << ' ';\
     out << record_id << ' ';\
-    out << get_field_name(table_id, field_id) << ' ';\
+    out << db.get_field_name(table_id, field_id) << ' ';\
     joedb::write_##type_id(out, value);\
     out << '\n';\
    }\
@@ -149,9 +143,9 @@ namespace joedb
                                 record_id_t size,\
                                 const type *value) override\
    {\
-    out << "update_vector " << get_table_name(table_id) << ' ';\
+    out << "update_vector " << db.get_table_name(table_id) << ' ';\
     out << record_id << ' ';\
-    out << get_field_name(table_id, field_id) << ' ';\
+    out << db.get_field_name(table_id, field_id) << ' ';\
     out << size;\
     for (record_id_t i = 0; i < size; i++)\
     {\
