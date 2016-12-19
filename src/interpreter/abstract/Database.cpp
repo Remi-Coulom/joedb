@@ -29,7 +29,8 @@ void joedb::Database::create_table(const std::string &name)
  if (find_table(name))
   throw std::runtime_error("create_table: name already used");
 
- tables.insert(std::make_pair(++current_table_id, Table(name)));
+ ++current_table_id;
+ tables.insert(std::make_pair(current_table_id, Table()));
  table_names[current_table_id] = name;
 }
 
@@ -62,7 +63,7 @@ void joedb::Database::rename_table
  if (find_table(name) != 0)
   throw std::runtime_error("rename_table: name already used");
 
- table_it->second.set_name(name);
+ table_names[table_id] = name;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -111,15 +112,15 @@ void joedb::Database::rename_field
  if (table_it == tables.end())
   throw std::runtime_error("rename_field: invalid table_id");
 
- auto &fields = table_it->second.fields;
- auto field_it = fields.find(field_id);
- if (field_it == fields.end())
+ auto &field_names = table_it->second.field_names;
+ auto field_it = field_names.find(field_id);
+ if (field_it == field_names.end())
   throw std::runtime_error("rename_field: invalid field_id");
 
  if (table_it->second.find_field(name))
   throw std::runtime_error("rename_field: name already used");
 
- field_it->second.set_name(name);
+ field_it->second = name;
 }
 
 /////////////////////////////////////////////////////////////////////////////

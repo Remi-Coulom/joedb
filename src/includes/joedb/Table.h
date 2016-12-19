@@ -16,22 +16,13 @@ namespace joedb
   friend class Database;
 
   private:
-   std::string name;
-
    std::map<field_id_t, Field> fields;
-   field_id_t current_field_id;
+   std::map<field_id_t, std::string> field_names;
+   field_id_t current_field_id = 0;
 
    Freedom_Keeper<> freedom;
 
   public:
-   Table(const std::string &name):
-    name(name),
-    current_field_id(0)
-   {
-   }
-
-   const std::string &get_name() const {return name;}
-   void set_name(const std::string &new_name) {name = new_name;}
    const Freedom_Keeper<> &get_freedom() const {return freedom;}
 
    const std::map<field_id_t, Field> &get_fields() const {return fields;}

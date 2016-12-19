@@ -12,9 +12,10 @@ namespace joedb
  {
   private:
    const record_id_t max_record_id;
-   table_id_t current_table_id = 0;
+
    std::map<table_id_t, Table> tables;
    std::map<table_id_t, std::string> table_names;
+   table_id_t current_table_id = 0;
 
   public:
    Database(record_id_t max_record_id = 0): max_record_id(max_record_id) {}
