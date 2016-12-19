@@ -2,6 +2,19 @@
 #include "is_identifier.h"
 
 /////////////////////////////////////////////////////////////////////////////
+const std::map<field_id_t, std::string> &joedb::Database::get_fields
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id
+) const
+{
+ auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  throw std::runtime_error("get_fields: invalid table_id");
+ return table_it->second.field_names;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 const joedb::Type &joedb::Database::get_field_type
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -19,6 +32,43 @@ const joedb::Type &joedb::Database::get_field_type
   return null_type;
  return field_it->second.get_type();
 }
+
+/////////////////////////////////////////////////////////////////////////////
+record_id_t joedb::Database::get_last_record_id(table_id_t table_id) const
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  return 0;
+ return table_it->second.freedom.size();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+bool joedb::Database::is_used
+/////////////////////////////////////////////////////////////////////////////
+(
+ table_id_t table_id,
+ record_id_t record_id
+) const
+{
+ auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  return false;
+ return table_it->second.freedom.is_used(record_id + 1);
+}
+
+#define TYPE_MACRO(type, return_type, type_id, R, W)\
+return_type joedb::Database::get_##type_id(table_id_t table_id,\
+                                           record_id_t record_id,\
+                                           field_id_t field_id) const\
+{\
+ auto table_it = tables.find(table_id);\
+ if (table_it == tables.end())\
+  throw std::runtime_error("get: invalid table_id");\
+ return table_it->second.get_##type_id(record_id, field_id);\
+}
+#include "TYPE_MACRO.h"
+#undef TYPE_MACRO
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Database::create_table(const std::string &name)

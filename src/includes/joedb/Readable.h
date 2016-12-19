@@ -42,9 +42,15 @@ namespace joedb
 
    field_id_t find_field(table_id_t table_id, const std::string &name) const
    {
-    for (const auto &field: get_fields(table_id))
-     if (field.second == name)
-      return field.first;
+    try
+    {
+     for (const auto &field: get_fields(table_id))
+      if (field.second == name)
+       return field.first;
+    }
+    catch (std::runtime_error &e)
+    {
+    }
     return 0;
    }
 
@@ -64,15 +70,19 @@ namespace joedb
    const std::string &get_field_name(table_id_t table_id,
                                      field_id_t field_id) const
    {
-    const std::map<field_id_t, std::string> &fields = get_fields(table_id);
-    auto it = fields.find(field_id);
-    if (it == fields.end())
+    try
     {
-     static const std::string default_name = "__unknown_field__";
-     return default_name;
+     const std::map<field_id_t, std::string> &fields = get_fields(table_id);
+     auto it = fields.find(field_id);
+     if (it != fields.end())
+      return it->second;
     }
-    else
-     return it->second;
+    catch (std::runtime_error &e)
+    {
+    }
+
+    static const std::string default_name = "__unknown_field__";
+    return default_name;
    }
  };
 }

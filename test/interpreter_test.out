@@ -147,7 +147,7 @@ OK: create_table ref
 OK: add_field ref ref references test
 OK: drop_table test
 create_table ref
-add_field ref ref references a_deleted_table
+add_field ref ref references __unknown_table__
 OK: drop_table ref
 OK: create_table alltypes
 OK: add_field alltypes s string
