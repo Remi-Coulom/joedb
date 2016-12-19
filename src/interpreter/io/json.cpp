@@ -75,8 +75,13 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
       break;
 
       case Type::type_id_t::reference:
-       out << reference_translation[type.get_table_id()]
-               [db.get_reference(table_id, record_id, field_id)];
+      {
+       record_id_t i = db.get_reference(table_id, record_id, field_id);
+       const std::vector<int64_t> &v = reference_translation[table_id];
+       if (i >= v.size())
+        i = 0;
+       out << v[i];
+      }
       break;
 
       case Type::type_id_t::string:
