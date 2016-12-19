@@ -43,10 +43,7 @@ void write_type
   break;
 
   case Type::type_id_t::reference:
-  {
-   const table_id_t referred = type.get_table_id();
-   out << "id_of_" << db.get_tables().find(referred)->second.get_name() << ' ';
-  }
+   out << "id_of_" << db.get_table_name(type.get_table_id()) << ' ';
   break;
 
   #define TYPE_MACRO(type, return_type, type_id, read, write)\
@@ -71,15 +68,13 @@ void write_tuple_type
  const Compiler_Options::Index &index
 )
 {
- const Table &table = db.get_tables().find(index.table_id)->second;
-
  out << "std::tuple<";
  for (size_t i = 0; i < index.field_ids.size(); i++)
  {
   if (i > 0)
    out << ", ";
-  const Field &field = table.get_fields().find(index.field_ids[i])->second;
-  write_type(out, db, field.get_type(), false);
+  const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
+  write_type(out, db, type, false);
  }
  out << ">";
 }
@@ -102,8 +97,7 @@ void write_index_type
 
  write_tuple_type(out, db, index);
 
- const Table &table = db.get_tables().find(index.table_id)->second;
- out << ", id_of_" << table.get_name() << ">";
+ out << ", id_of_" << db.get_table_name(index.table_id) << ">";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -166,19 +160,19 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   out << " class container_of_" << tname << ";\n";
  }
 
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   out << '\n';
   out << " class id_of_" << tname << "\n {\n";
   out << "  friend class Database;\n";
   for (auto &friend_table: tables)
    if (friend_table.first != table.first)
-    out << "  friend class id_of_" << friend_table.second.get_name() << ";\n";
+    out << "  friend class id_of_" << friend_table.second << ";\n";
   out << "  friend class container_of_"  << tname << ";\n";
   out << "\n  private:\n";
   out << "   record_id_t id;\n";
@@ -195,7 +189,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
 
   out << "\n struct data_of_" << tname;
@@ -211,11 +205,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "  data_of_" << tname << "(bool f): joedb::EmptyRecord(f) {}\n";
   }
 
-  for (const auto &field: table.second.get_fields())
+  for (const auto &field: db.get_fields(table.first))
   {
    out << "  ";
-   write_type(out, db, field.second.get_type(), false);
-   out << "field_value_of_" << field.second.get_name() << ";\n";
+   write_type(out, db, db.get_field_type(table.first, field.first), false);
+   out << "field_value_of_" << field.second << ";\n";
   }
 
   for (const auto &index: options.get_indices())
@@ -239,8 +233,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (auto &table: tables)
  {
-  out << "  friend class id_of_"  << table.second.get_name() << ";\n";
-  out << "  friend class container_of_"  << table.second.get_name() << ";\n";
+  out << "  friend class id_of_"  << table.second << ";\n";
+  out << "  friend class container_of_"  << table.second << ";\n";
  }
 
  for (auto &index: options.get_indices())
@@ -279,7 +273,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
 
   switch(storage)
@@ -309,8 +303,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (const auto &index: options.get_indices())
  {
-  const Table &table = db.get_tables().find(index.table_id)->second;
-  const std::string &tname = table.get_name();
+  const std::string &tname = db.get_table_name(index.table_id);
 
   out << "   ";
   write_index_type(out, db, index);
@@ -341,9 +334,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    if (i > 0)
     out << ", ";
-   const Field &field =
-    table.get_fields().find(index.field_ids[i])->second;
-   out << "data.field_value_of_" << field.get_name();
+   out << "data.field_value_of_";
+   out << db.get_field_name(index.table_id, index.field_ids[i]);
   }
   out << ')';
   out << ",\n      id_of_" << tname << "(record_id)\n     )\n    );\n";
@@ -364,7 +356,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
   const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
@@ -385,7 +377,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   auto storage = options.get_table_options(table.first).storage;
 
   out << "   void internal_insert_" << tname << "(record_id_t record_id)\n";
@@ -408,13 +400,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
-  for (auto &field: table.second.get_fields())
+  const std::string &tname = table.second;
+  for (auto &field: db.get_fields(table.first))
   {
-   const std::string &fname = field.second.get_name();
+   const std::string &fname = field.second;
    out << "   void internal_update_" << tname << "__" << fname;
    out << "\n   (\n    record_id_t record_id,\n    ";
-   write_type(out, db, field.second.get_type(), true);
+   const Type &type = db.get_field_type(table.first, field.first);
+   write_type(out, db, type, true);
    out << "field_value_of_" << fname << "\n   )\n";
    out << "   {\n";
    out << "    storage_of_" << tname << "[record_id - 1].field_value_of_" << fname;
@@ -443,7 +436,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   bool first = true;
   for (auto table: tables)
   {
-   const std::string &tname = table.second.get_name();
+   const std::string &tname = table.second;
    const auto storage = options.get_table_options(table.first).storage;
 
    out << "    ";
@@ -474,7 +467,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   bool first = true;
   for (auto &table: tables)
   {
-   const std::string &tname = table.second.get_name();
+   const std::string &tname = table.second;
    const auto storage = options.get_table_options(table.first).storage;
 
    out << "    ";
@@ -515,7 +508,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    else
     out << "else ";
 
-   const std::string &name = table.second.get_name();
+   const std::string &name = table.second;
    out << "if (table_id == " << table.first << ")\n";
    out << "    {\n";
    out << "     if (storage_of_" << name << ".size() < record_id + size - 1)\n";
@@ -548,37 +541,42 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     bool has_typed_field = false;
 
-    for (auto &field: table.second.get_fields())
-     if (int(field.second.get_type().get_type_id()) == type_id)
+    for (auto &field: db.get_fields(table.first))
+    {
+     const Type &type = db.get_field_type(table.first, field.first);
+     if (int(type.get_type_id()) == type_id)
      {
       has_typed_field = true;
       break;
      }
+    }
 
     if (has_typed_field)
     {
      out << "    if (table_id == " << table.first << ")\n";
      out << "    {\n";
 
-     for (auto &field: table.second.get_fields())
-      if (int(field.second.get_type().get_type_id()) == type_id)
+     for (auto &field: db.get_fields(table.first))
+     {
+      const Type &type = db.get_field_type(table.first, field.first);
+      if (int(type.get_type_id()) == type_id)
       {
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
-       out << "      internal_update_" << table.second.get_name();
-       out << "__" << field.second.get_name() << "(record_id, ";
-       if (field.second.get_type().get_type_id() != Type::type_id_t::reference)
+       out << "      internal_update_" << table.second;
+       out << "__" << field.second << "(record_id, ";
+       if (type.get_type_id() != Type::type_id_t::reference)
         out << "value";
        else
        {
-        const table_id_t table_id = field.second.get_type().get_table_id();
-        out << "id_of_" << tables.find(table_id)->second.get_name();
+        out << "id_of_" << db.get_table_name(type.get_table_id());
         out << "(value)";
        }
        out << ");\n";
        out << "      return;\n";
        out << "     }\n";
       }
+     }
 
      out << "     return;\n";
      out << "    }\n";
@@ -611,38 +609,43 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     bool has_typed_field = false;
 
-    for (auto &field: table.second.get_fields())
-     if (int(field.second.get_type().get_type_id()) == type_id)
+    for (auto &field: db.get_fields(table.first))
+    {
+     const Type &type = db.get_field_type(table.first, field.first);
+     if (int(type.get_type_id()) == type_id)
      {
       has_typed_field = true;
       break;
      }
+    }
 
     if (has_typed_field)
     {
      out << "    if (table_id == " << table.first << ")\n";
      out << "    {\n";
 
-     for (auto &field: table.second.get_fields())
-      if (int(field.second.get_type().get_type_id()) == type_id)
+     for (auto &field: db.get_fields(table.first))
+     {
+      const Type &type = db.get_field_type(table.first, field.first);
+      if (int(type.get_type_id()) == type_id)
       {
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
        out << "      for (record_id_t i = 0; i < size; i++)\n";
-       out << "       internal_update_" << table.second.get_name();
-       out << "__" << field.second.get_name() << "(record_id + i, ";
-       if (field.second.get_type().get_type_id() != Type::type_id_t::reference)
+       out << "       internal_update_" << table.second;
+       out << "__" << field.second << "(record_id + i, ";
+       if (type.get_type_id() != Type::type_id_t::reference)
         out << "value[i]";
        else
        {
-        const table_id_t table_id = field.second.get_type().get_table_id();
-        out << "id_of_" << tables.find(table_id)->second.get_name();
+        out << "id_of_" << db.get_table_name(type.get_table_id());
         out << "(value[i])";
        }
        out << ");\n";
        out << "      return;\n";
        out << "     }\n";
       }
+     }
 
      out << "     return;\n";
      out << "    }\n";
@@ -657,6 +660,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // Schema changes are forwarded to the writeable
  //
  out << R"RRR(
+   record_id_t get_max_record_id() const override {return 0;}
 
   protected:
    void create_table(const std::string &name) override
@@ -719,7 +723,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   out << '\n';
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
   const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
@@ -843,16 +847,17 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    bool first = true;
 
-   for (const auto &field: table.second.get_fields())
+   for (const auto &field: db.get_fields(table.first))
    {
-    const std::string &fname = field.second.get_name();
+    const std::string &fname = field.second;
 
     if (first)
      first = false;
     else
      out << ",\n    ";
 
-    write_type(out, db, field.second.get_type(), true);
+    const Type &type = db.get_field_type(table.first, field.first);
+    write_type(out, db, type, true);
     out << "field_value_of_" << fname;
    }
 
@@ -862,9 +867,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   {\n";
   out << "    auto result = new_" << tname << "();\n";
 
-  for (const auto &field: table.second.get_fields())
+  for (const auto &field: db.get_fields(table.first))
   {
-   const std::string &fname = field.second.get_name();
+   const std::string &fname = field.second;
    out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
   }
 
@@ -886,9 +891,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // Loop over fields
   //
-  for (const auto &field: table.second.get_fields())
+  for (const auto &field: db.get_fields(table.first))
   {
-   const std::string &fname = field.second.get_name();
+   const std::string &fname = field.second;
+   const Type &type = db.get_field_type(table.first, field.first);
 
    out << '\n';
 
@@ -896,7 +902,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    // Getter
    //
    out << "   ";
-   write_type(out, db, field.second.get_type(), true);
+   write_type(out, db, type, true);
    out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
@@ -909,17 +915,17 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    //
    out << "   void set_" << fname;
    out << "(id_of_" << tname << " record, ";
-   write_type(out, db, field.second.get_type(), true);
+   write_type(out, db, type, true);
    out << "field_value_of_" << fname << ")\n";
    out << "   {\n";
    out << "    assert(!record.is_null());\n";
    out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
    out << "field_value_of_" << fname << ");\n";
    out << "    writeable->update_";
-   out << types[int(field.second.get_type().get_type_id())];
+   out << types[int(type.get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
    out << "field_value_of_" << fname;
-   if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
+   if (type.get_type_id() == Type::type_id_t::reference)
     out << ".id";
    out << ");\n";
    out << "   }\n";
@@ -946,17 +952,17 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (const auto &index: options.get_indices())
   if (index.unique)
   {
-   const Table &table = db.get_tables().find(index.table_id)->second;
-   const std::string &tname = table.get_name();
+   const std::string &tname = db.get_table_name(index.table_id);
    out << '\n';
    out << "   id_of_" << tname << " find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     if (i > 0)
      out << ", ";
-    const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    write_type(out, db, field.get_type(), true);
-    out << "field_value_of_" << field.get_name();
+    const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
+    write_type(out, db, type, true);
+    out << "field_value_of_";
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ") const\n";
    out << "   {\n";
@@ -967,8 +973,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     if (i > 0)
      out << ", ";
-    const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    out << "field_value_of_" << field.get_name();
+    out << "field_value_of_";
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << "));\n";
    out << "    if (i == index_of_" << index.name << ".end())\n";
@@ -979,15 +985,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
   else
   {
-   const Table &table = db.get_tables().find(index.table_id)->second;
    out << "   range_of_" << index.name << " find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     if (i > 0)
      out << ", ";
-    const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    write_type(out, db, field.get_type(), true);
-    out << "field_value_of_" << field.get_name();
+    const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
+    write_type(out, db, type, true);
+    out << "field_value_of_";
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ") const;\n";
   }
@@ -1062,7 +1068,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
   const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
@@ -1161,8 +1167,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (const auto &index: options.get_indices())
   if (!index.unique)
   {
-   const Table &table = db.get_tables().find(index.table_id)->second;
-
    out << " class range_of_" << index.name << "\n";
    out << " {\n";
    out << "  friend class Database;\n";
@@ -1176,10 +1180,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     out << ", ";
-    const Field &field =
-     table.get_fields().find(index.field_ids[i])->second;
-    write_type(out, db, field.get_type(), true);
-    out << field.get_name();
+    const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
+    write_type(out, db, type, true);
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ")\n";
    out << "   {\n";
@@ -1190,14 +1193,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     if (i > 0)
      out << ", ";
-    const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    out << field.get_name();
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << "));\n";
    out << "   }\n";
    out << "  public:\n";
    out << "   class iterator: public std::iterator<std::forward_iterator_tag, ";
-   out << "id_of_" << table.get_name() << ">\n";
+   out << "id_of_" << db.get_table_name(index.table_id) << ">\n";
    out << "   {\n";
    out << "    friend class range_of_" << index.name << ";\n";
    out << "    private:\n";
@@ -1213,7 +1215,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "      return map_iterator != i.map_iterator;\n";
    out << "     }\n";
    out << "     iterator &operator++() {map_iterator++; return *this;}\n";
-   out << "     id_of_" << table.get_name();
+   out << "     id_of_" << db.get_table_name(index.table_id);
    out << " operator*() const {return map_iterator->second;}\n";
    out << "   };\n";
    out << "   iterator begin() {return range.first;}\n";
@@ -1225,9 +1227,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     if (i > 0)
      out << ", ";
-    const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    write_type(out, db, field.get_type(), true);
-    out << "field_value_of_" << field.get_name();
+    const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
+    write_type(out, db, type, true);
+    out << "field_value_of_";
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ") const\n";
    out << "   {\n";
@@ -1235,8 +1238,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     out << ", ";
-    const Field &field = table.get_fields().find(index.field_ids[i])->second;
-    out << "field_value_of_" << field.get_name();
+    out << "field_value_of_";
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ");\n";
    out << "   }\n";

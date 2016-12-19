@@ -12,7 +12,7 @@ namespace joedb
  {
   public:
    virtual const std::map<table_id_t, std::string> &get_tables() const = 0;
-   virtual const std::map<table_id_t, std::string> &get_fields(table_id_t table_id) const = 0;
+   virtual const std::map<field_id_t, std::string> &get_fields(table_id_t table_id) const = 0;
    virtual const Type &get_field_type(table_id_t table_id,
                                       field_id_t field_id) const = 0;
 

@@ -31,7 +31,7 @@ void write_c_type
   {
    const table_id_t referred = type.get_table_id();
    out << options.get_namespace_name() << "_id_of_";
-   out << db.get_tables().find(referred)->second.get_name() << ' ';
+   out << db.get_table_name(referred) << ' ';
   }
   break;
 
@@ -79,7 +79,7 @@ void generate_c_wrapper
  header << "typedef struct " << name << "_db " << name << "_db;\n";
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   header << "typedef record_id_t " << name << "_id_of_" << tname << ";\n";
  }
 
@@ -98,7 +98,7 @@ void generate_c_wrapper
 
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
   const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
@@ -122,10 +122,11 @@ void generate_c_wrapper
    header << name << "_id_of_" << tname << " id);\n";
   }
 
-  for (const auto &field: table.second.get_fields())
+  for (const auto &field: db.get_fields(table.first))
   {
-   const std::string &fname = field.second.get_name();
-   write_c_type(header, options, field.second.get_type());
+   const std::string &fname = field.second;
+   const Type &type = db.get_field_type(table.first, field.first);
+   write_c_type(header, options, type);
    header << name << "_get_" << tname << '_' << fname << "(";
    header << name << "_db *db, ";
    header << name << "_id_of_" << tname;
@@ -133,7 +134,7 @@ void generate_c_wrapper
    header << "void " << name << "_set_" << tname << '_' << fname << "(";
    header << name << "_db *db, ";
    header << name << "_id_of_" << tname << " id, ";
-   write_c_type(header, options, field.second.get_type());
+   write_c_type(header, options, type);
    header << "value);\n";
   }
  }
@@ -209,7 +210,7 @@ void generate_c_wrapper
 
  for (auto &table: tables)
  {
-  const std::string &tname = table.second.get_name();
+  const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
   const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
@@ -257,33 +258,34 @@ void generate_c_wrapper
    body << "}\n\n";
   }
 
-  for (const auto &field: table.second.get_fields())
+  for (const auto &field: db.get_fields(table.first))
   {
-   const std::string &fname = field.second.get_name();
-   write_c_type(body, options, field.second.get_type());
+   const std::string &fname = field.second;
+   const Type &type = db.get_field_type(table.first, field.first);
+   write_c_type(body, options, type);
    body << name << "_get_" << tname << '_' << fname << "(";
    body << name << "_db *db, ";
    body << name << "_id_of_" << tname;
    body << " id)\n{\n";
    body << convert.str();
    body << " return p->get_" << fname << '(' << name << "::id_of_" << tname << "(id))";
-   if (field.second.get_type().get_type_id() == Type::type_id_t::string)
+   if (type.get_type_id() == Type::type_id_t::string)
     body << ".c_str()";
-   else if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
+   else if (type.get_type_id() == Type::type_id_t::reference)
     body << ".get_id()";
    body << ";\n";
    body << "}\n\n";
    body << "void " << name << "_set_" << tname << '_' << fname << "(";
    body << name << "_db *db, ";
    body << name << "_id_of_" << tname << " id, ";
-   write_c_type(body, options, field.second.get_type());
+   write_c_type(body, options, type);
    body << "value)\n{\n";
    body << convert.str();
    body << " p->set_" << fname << '(' << name << "::id_of_" << tname << "(id), ";
-   if (field.second.get_type().get_type_id() == Type::type_id_t::reference)
+   if (type.get_type_id() == Type::type_id_t::reference)
    {
     body << name << "::id_of_";
-    body << db.get_tables().find(field.second.get_type().get_table_id())->second.get_name();
+    body << db.get_table_name(type.get_table_id());
     body << "(value)";
    }
    else
