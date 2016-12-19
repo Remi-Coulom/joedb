@@ -30,7 +30,7 @@ void joedb::Database::create_table(const std::string &name)
   throw std::runtime_error("create_table: name already used");
 
  tables.insert(std::make_pair(++current_table_id, Table(name)));
- table_map[name] = current_table_id;
+ table_names[current_table_id] = name;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ void joedb::Database::drop_table(table_id_t table_id)
  auto it = tables.find(table_id);
  if (it == tables.end())
   throw std::runtime_error("drop_table: invalid table_id");
- table_map.erase(it->second.get_name());
+ table_names.erase(table_id);
  tables.erase(it);
 }
 

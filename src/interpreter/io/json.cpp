@@ -16,7 +16,7 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
  std::map<table_id_t, int64_t> table_size;
  for (auto table: db.get_tables())
  {
-  const table_id_t table_id = table.second;
+  const table_id_t table_id = table.first;
   const record_id_t last_record_id = db.get_last_record_id(table_id);
   std::vector<int64_t> &v = reference_translation[table_id];
   v.resize(db.get_last_record_id(table_id) + 1);
@@ -40,7 +40,7 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
  bool first_table = true;
  for (auto table: db.get_tables())
  {
-  const table_id_t table_id = table.second;
+  const table_id_t table_id = table.first;
   const record_id_t last_record_id = db.get_last_record_id(table_id);
 
   if (first_table)
@@ -48,21 +48,17 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
   else
    out << ",\n";
 
-  out << ' ';
-  write_string(out, table.first);
-  out << ":\n {\n";
+  out << " \"" << table.second << "\":\n {\n";
 
   out << "  \"__size\": " << table_size[table_id];
 
-  for (const auto &field: db.get_table_fields(table_id))
+  for (const auto &field: db.get_fields(table_id))
   {
-   const field_id_t field_id = field.second;
+   const field_id_t field_id = field.first;
    const Type &type = db.get_field_type(table_id, field_id);
    out << ",\n";
 
-   out << "  ";
-   write_string(out, field.first);
-   out << ": [";
+   out << "  \"" << field.second << "\": [";
 
    bool first_value = true;
    for (record_id_t record_id = 1; record_id <= last_record_id; record_id++)

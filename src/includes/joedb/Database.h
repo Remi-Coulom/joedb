@@ -14,7 +14,7 @@ namespace joedb
    const record_id_t max_record_id;
    table_id_t current_table_id = 0;
    std::map<table_id_t, Table> tables;
-   Table_Map table_map;
+   std::map<table_id_t, std::string> table_names;
 
   public:
    Database(record_id_t max_record_id = 0): max_record_id(max_record_id) {}
@@ -22,8 +22,8 @@ namespace joedb
    //
    // Readable override
    //
-   const Table_Map &get_tables() const override {return table_map;}
-   const Field_Map &get_table_fields(table_id_t table_id) const override;
+   const std::map<table_id_t, std::string> &get_tables() const override {return table_names;}
+   const std::map<field_id_t, std::string> &get_fields(table_id_t table_id) const override;
    const Type &get_field_type(table_id_t table_id,
                               field_id_t field_id) const override;
 

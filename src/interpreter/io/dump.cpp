@@ -15,9 +15,9 @@ void joedb::dump(const Readable &db, Writeable &writeable)
   for (auto table: db.get_tables())
   {
    ++table_id;
-   table_map[table.second] = table_id;
+   table_map[table.first] = table_id;
 
-   writeable.create_table(table.first);
+   writeable.create_table(table.second);
   }
  }
 
@@ -31,15 +31,15 @@ void joedb::dump(const Readable &db, Writeable &writeable)
   {
    ++table_id;
    field_id_t field_id = 0;
-   for (const auto &field: db.get_table_fields(table.second))
+   for (const auto &field: db.get_fields(table.first))
    {
     ++field_id;
-    Type type = db.get_field_type(table.second, field.second);
+    Type type = db.get_field_type(table.first, field.first);
     if (type.get_type_id() == Type::type_id_t::reference)
      type = Type::reference(table_map[type.get_table_id()]);
-    field_maps[table.second][field.second] = field_id;
+    field_maps[table.first][field.first] = field_id;
 
-    writeable.add_field(table_map[table.second], field.first, type);
+    writeable.add_field(table_map[table.first], field.second, type);
    }
   }
  }
@@ -49,7 +49,7 @@ void joedb::dump(const Readable &db, Writeable &writeable)
  //
  for (auto table: db.get_tables())
  {
-  const table_id_t table_id = table.second;
+  const table_id_t table_id = table.first;
   const record_id_t last_record_id = db.get_last_record_id(table_id);
 
   record_id_t record_id = 1;
@@ -73,9 +73,9 @@ void joedb::dump(const Readable &db, Writeable &writeable)
    }
   }
 
-  for (const auto &field: db.get_table_fields(table_id))
+  for (const auto &field: db.get_fields(table_id))
   {
-   const field_id_t field_id = field.second;
+   const field_id_t field_id = field.first;
 
    for (record_id_t record_id = 1; record_id <= last_record_id; record_id++)
     if (db.is_used(table_id, record_id))
@@ -103,7 +103,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 {
  for (auto table: db.get_tables())
  {
-  const table_id_t table_id = table.second;
+  const table_id_t table_id = table.first;
   const record_id_t last_record_id = db.get_last_record_id(table_id);
 
   record_id_t record_id = 1;
@@ -124,9 +124,9 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
    {
     writeable.insert_vector(table_id, record_id, size);
 
-    for (const auto &field: db.get_table_fields(table_id))
+    for (const auto &field: db.get_fields(table_id))
     {
-     const field_id_t field_id = field.second;
+     const field_id_t field_id = field.first;
 
      switch(db.get_field_type(table_id, field_id).get_type_id())
      {

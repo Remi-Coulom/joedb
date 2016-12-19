@@ -18,37 +18,41 @@ namespace joedb
     add_writeable(readable_writeable);
    }
 
-   record_id_t get_max_record_id() const override
-   {
-    return readable.get_max_record_id();
-   }
-
-   const std::map<table_id_t, Table> &get_tables() const override
+   const std::map<table_id_t, std::string> &get_tables() const override
    {
     return readable.get_tables();
    }
 
-   size_t get_current_table_id() const override
+   const std::map<table_id_t, std::string> &get_fields(table_id_t table_id) const
    {
-    return readable.get_current_table_id();
+    return readable.get_fields(table_id);
    }
 
-   table_id_t find_table(const std::string &name) const override
-   {
-    return readable.find_table(name);
-   }
-
-   field_id_t find_field(table_id_t table_id,
-                         const std::string &name) const override
-   {
-    return readable.find_field(table_id, name);
-   }
-
-   Type::type_id_t get_field_type(table_id_t table_id,
-                                  field_id_t field_id) const override
+   const Type &get_field_type(table_id_t table_id,
+                              field_id_t field_id) const
    {
     return readable.get_field_type(table_id, field_id);
    }
+
+   record_id_t get_last_record_id(table_id_t table_id) const
+   {
+    return readable.get_last_record_id(table_id);
+   }
+
+   bool is_used(table_id_t table_id, record_id_t record_id) const
+   {
+    return readable.is_used(table_id, record_id);
+   }
+
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   return_type get_##type_id(table_id_t table_id,\
+                             record_id_t record_id,\
+                             field_id_t field_id) const\
+   {\
+    return readable.get_##type_id(table_id, record_id, field_id);\
+   }
+   #include "TYPE_MACRO.h"
+   #undef TYPE_MACRO
  };
 }
 

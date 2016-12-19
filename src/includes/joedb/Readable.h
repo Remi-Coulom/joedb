@@ -8,14 +8,11 @@
 
 namespace joedb
 {
- typedef std::map<std::string, table_id_t> Table_Map;
- typedef std::map<std::string, field_id_t> Field_Map;
-
  class Readable
  {
   public:
-   virtual const Table_Map &get_tables() const = 0;
-   virtual const Field_Map &get_table_fields(table_id_t table_id) const = 0;
+   virtual const std::map<table_id_t, std::string> &get_tables() const = 0;
+   virtual const std::map<table_id_t, std::string> &get_fields(table_id_t table_id) const = 0;
    virtual const Type &get_field_type(table_id_t table_id,
                                       field_id_t field_id) const = 0;
 
@@ -35,43 +32,47 @@ namespace joedb
    virtual ~Readable() {}
 
   public:
-   table_id_t find_table(const std::string &name)
-   {
-    const Table_Map &tables = get_tables();
-    auto it = tables.find(name);
-    if (it == tables.end())
-     return 0;
-    else
-     return it->second;
-   }
-
-   field_id_t find_field(table_id_t table_id, const std::string &name)
-   {
-    const Field_Map &fields = get_table_fields(table_id);
-    auto it = fields.find(name);
-    if (it == fields.end())
-     return 0;
-    else
-     return it->second;
-   }
-
-   virtual const std::string &get_table_name(table_id_t table_id) const
+   table_id_t find_table(const std::string &name) const
    {
     for (const auto &table: get_tables())
-     if (table.second == table_id)
+     if (table.second == name)
       return table.first;
-    static const std::string default_name = "__unknown_table__";
-    return default_name;
+    return 0;
    }
 
-   virtual const std::string &get_field_name(table_id_t table_id,
-                                             field_id_t field_id) const
+   field_id_t find_field(table_id_t table_id, const std::string &name) const
    {
-    for (const auto &field: get_table_fields(table_id))
-     if (field.second == field_id)
+    for (const auto &field: get_fields(table_id))
+     if (field.second == name)
       return field.first;
-    static const std::string default_name = "__unknown_field__";
-    return default_name;
+    return 0;
+   }
+
+   const std::string &get_table_name(table_id_t table_id) const
+   {
+    const std::map<table_id_t, std::string> &tables = get_tables();
+    auto it = tables.find(table_id);
+    if (it == tables.end())
+    {
+     static const std::string default_name = "__unknown_table__";
+     return default_name;
+    }
+    else
+     return it->second;
+   }
+
+   const std::string &get_field_name(table_id_t table_id,
+                                     field_id_t field_id) const
+   {
+    const std::map<field_id_t, std::string> &fields = get_fields(table_id);
+    auto it = fields.find(field_id);
+    if (it == fields.end())
+    {
+     static const std::string default_name = "__unknown_field__";
+     return default_name;
+    }
+    else
+     return it->second;
    }
  };
 }

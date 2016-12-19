@@ -259,8 +259,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    ERROR_CHECK(
     db.insert_into(table_id, record_id);
     if (iss.good())
-     for (const auto &field:
-          db.get_tables().find(table_id)->second.get_fields())
+     for (const auto &field: db.get_fields(table_id))
      {
       update_value(iss, table_id, record_id, field.first);
       if (iss.fail())
