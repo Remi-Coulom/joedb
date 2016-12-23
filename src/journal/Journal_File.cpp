@@ -184,14 +184,14 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 
     case operation_t::drop_table:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
      writeable.drop_table(table_id);
     }
     break;
 
     case operation_t::rename_table:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
      std::string name = safe_read_string();
      writeable.rename_table(table_id, name);
     }
@@ -199,7 +199,7 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 
     case operation_t::add_field:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
      std::string name = safe_read_string();
      Type type = read_type();
      writeable.add_field(table_id, name, type);
@@ -208,16 +208,16 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 
     case operation_t::drop_field:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
-     field_id_t field_id = file.compact_read<field_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
+     Field_Id field_id = file.compact_read<Field_Id>();
      writeable.drop_field(table_id, field_id);
     }
     break;
 
     case operation_t::rename_field:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
-     field_id_t field_id = file.compact_read<field_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
+     Field_Id field_id = file.compact_read<Field_Id>();
      std::string name = safe_read_string();
      writeable.rename_field(table_id, field_id, name);
     }
@@ -225,8 +225,8 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 
     case operation_t::insert_into:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
-     record_id_t record_id = file.compact_read<record_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
+     Record_Id record_id = file.compact_read<Record_Id>();
      writeable.insert_into(table_id, record_id);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
@@ -235,9 +235,9 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 
     case operation_t::insert_vector:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
-     record_id_t record_id = file.compact_read<record_id_t>();
-     record_id_t size = file.compact_read<record_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
+     Record_Id record_id = file.compact_read<Record_Id>();
+     Record_Id size = file.compact_read<Record_Id>();
      writeable.insert_vector(table_id, record_id, size);
      table_of_last_operation = table_id;
      record_of_last_operation = record_id;
@@ -251,21 +251,21 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 
     case operation_t::delete_from:
     {
-     table_id_t table_id = file.compact_read<table_id_t>();
-     record_id_t record_id = file.compact_read<record_id_t>();
+     Table_Id table_id = file.compact_read<Table_Id>();
+     Record_Id record_id = file.compact_read<Record_Id>();
      writeable.delete_from(table_id, record_id);
     }
     break;
 
     #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
     case operation_t::update_##type_id:\
-     table_of_last_operation = file.compact_read<table_id_t>();\
-     record_of_last_operation = file.compact_read<record_id_t>();\
-     field_of_last_update = file.compact_read<field_id_t>();\
+     table_of_last_operation = file.compact_read<Table_Id>();\
+     record_of_last_operation = file.compact_read<Record_Id>();\
+     field_of_last_update = file.compact_read<Field_Id>();\
     goto lbl_perform_update_##type_id;\
 \
     case operation_t::update_last_##type_id:\
-     field_of_last_update = file.compact_read<field_id_t>();\
+     field_of_last_update = file.compact_read<Field_Id>();\
     goto lbl_perform_update_##type_id;\
 \
     case operation_t::update_next_##type_id:\
@@ -284,10 +284,10 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
 \
     case operation_t::update_vector_##type_id:\
     {\
-     table_of_last_operation = file.compact_read<table_id_t>();\
-     record_of_last_operation = file.compact_read<record_id_t>();\
-     field_of_last_update = file.compact_read<field_id_t>();\
-     record_id_t size = file.compact_read<record_id_t>();\
+     table_of_last_operation = file.compact_read<Table_Id>();\
+     record_of_last_operation = file.compact_read<Record_Id>();\
+     field_of_last_update = file.compact_read<Field_Id>();\
+     Record_Id size = file.compact_read<Record_Id>();\
      if (size > SAFE_MAX_SIZE || size < 0)\
      {\
       state = state_t::bad_format;\
@@ -362,23 +362,23 @@ void joedb::Journal_File::create_table(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::drop_table(table_id_t table_id)
+void joedb::Journal_File::drop_table(Table_Id table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::drop_table);
- file.compact_write<table_id_t>(table_id);
+ file.compact_write<Table_Id>(table_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
+ Table_Id table_id,
  const std::string &name
 )
 {
  file.write<operation_t>(operation_t::rename_table);
- file.compact_write<table_id_t>(table_id);
+ file.compact_write<Table_Id>(table_id);
  file.write_string(name);
 }
 
@@ -386,44 +386,44 @@ void joedb::Journal_File::rename_table
 void joedb::Journal_File::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
+ Table_Id table_id,
  const std::string &name,
  Type type
 )
 {
  file.write<operation_t>(operation_t::add_field);
- file.compact_write<table_id_t>(table_id);
+ file.compact_write<Table_Id>(table_id);
  file.write_string(name);
  file.write<Type::type_id_t>(type.get_type_id());
  if (type.get_type_id() == Type::type_id_t::reference)
-  file.compact_write<table_id_t>(type.get_table_id());
+  file.compact_write<Table_Id>(type.get_table_id());
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- field_id_t field_id
+ Table_Id table_id,
+ Field_Id field_id
 )
 {
  file.write<operation_t>(operation_t::drop_field);
- file.compact_write<table_id_t>(table_id);
- file.compact_write<field_id_t>(field_id);
+ file.compact_write<Table_Id>(table_id);
+ file.compact_write<Field_Id>(field_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Journal_File::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- field_id_t field_id,
+ Table_Id table_id,
+ Field_Id field_id,
  const std::string &name
 )
 {
  file.write<operation_t>(operation_t::rename_field);
- file.compact_write<table_id_t>(table_id);
- file.compact_write<field_id_t>(field_id);
+ file.compact_write<Table_Id>(table_id);
+ file.compact_write<Field_Id>(field_id);
  file.write_string(name);
 }
 
@@ -462,8 +462,8 @@ void joedb::Journal_File::valid_data()
 void joedb::Journal_File::insert_into
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id
+ Table_Id table_id,
+ Record_Id record_id
 )
 {
  if (table_id == table_of_last_operation &&
@@ -474,8 +474,8 @@ void joedb::Journal_File::insert_into
  else
  {
   file.write<operation_t>(operation_t::insert_into);
-  file.compact_write<table_id_t>(table_id);
-  file.compact_write<record_id_t>(record_id);
+  file.compact_write<Table_Id>(table_id);
+  file.compact_write<Record_Id>(record_id);
  }
 
  table_of_last_operation = table_id;
@@ -486,15 +486,15 @@ void joedb::Journal_File::insert_into
 void joedb::Journal_File::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id,
- record_id_t size
+ Table_Id table_id,
+ Record_Id record_id,
+ Record_Id size
 )
 {
  file.write<operation_t>(operation_t::insert_vector);
- file.compact_write<table_id_t>(table_id);
- file.compact_write<record_id_t>(record_id);
- file.compact_write<record_id_t>(size);
+ file.compact_write<Table_Id>(table_id);
+ file.compact_write<Record_Id>(record_id);
+ file.compact_write<Record_Id>(size);
 
  table_of_last_operation = table_id;
  record_of_last_operation = record_id;
@@ -504,22 +504,22 @@ void joedb::Journal_File::insert_vector
 void joedb::Journal_File::delete_from
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id
+ Table_Id table_id,
+ Record_Id record_id
 )
 {
  file.write<operation_t>(operation_t::delete_from);
- file.compact_write<table_id_t>(table_id);
- file.compact_write<record_id_t>(record_id);
+ file.compact_write<Table_Id>(table_id);
+ file.compact_write<Record_Id>(record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, write_method)\
 void joedb::Journal_File::update_##type_id\
 (\
- table_id_t table_id,\
- record_id_t record_id,\
- field_id_t field_id,\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id,\
  return_type value\
 )\
 {\
@@ -527,7 +527,7 @@ void joedb::Journal_File::update_##type_id\
      record_id == record_of_last_operation)\
  {\
   file.write<operation_t>(operation_t::update_last_##type_id);\
-  file.compact_write<field_id_t>(field_id);\
+  file.compact_write<Field_Id>(field_id);\
   field_of_last_update = field_id;\
  }\
  else if (table_id == table_of_last_operation &&\
@@ -540,9 +540,9 @@ void joedb::Journal_File::update_##type_id\
  else\
  {\
   file.write<operation_t>(operation_t::update_##type_id);\
-  file.compact_write<table_id_t>(table_id);\
-  file.compact_write<record_id_t>(record_id);\
-  file.compact_write<field_id_t>(field_id);\
+  file.compact_write<Table_Id>(table_id);\
+  file.compact_write<Record_Id>(record_id);\
+  file.compact_write<Field_Id>(field_id);\
   table_of_last_operation = table_id;\
   record_of_last_operation = record_id;\
   field_of_last_update = field_id;\
@@ -551,22 +551,22 @@ void joedb::Journal_File::update_##type_id\
 }\
 void joedb::Journal_File::update_vector_##type_id\
 (\
- table_id_t table_id,\
- record_id_t record_id,\
- field_id_t field_id,\
- record_id_t size,\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id,\
+ Record_Id size,\
  const type *value\
 )\
 {\
  file.write<operation_t>(operation_t::update_vector_##type_id);\
- file.compact_write<table_id_t>(table_id);\
- file.compact_write<record_id_t>(record_id);\
- file.compact_write<field_id_t>(field_id);\
- file.compact_write<record_id_t>(size);\
+ file.compact_write<Table_Id>(table_id);\
+ file.compact_write<Record_Id>(record_id);\
+ file.compact_write<Field_Id>(field_id);\
+ file.compact_write<Record_Id>(size);\
  table_of_last_operation = table_id;\
  record_of_last_operation = record_id;\
  field_of_last_update = field_id;\
- for (record_id_t i = 0; i < size; i++)\
+ for (Record_Id i = 0; i < size; i++)\
   file.write_method(value[i]);\
 }
 #include "joedb/TYPE_MACRO.h"
@@ -578,7 +578,7 @@ joedb::Type joedb::Journal_File::read_type()
 {
  Type::type_id_t type_id = file.read<Type::type_id_t>();
  if (type_id == Type::type_id_t::reference)
-  return Type::reference(file.compact_read<table_id_t>());
+  return Type::reference(file.compact_read<Table_Id>());
  else
   return Type(type_id);
 }

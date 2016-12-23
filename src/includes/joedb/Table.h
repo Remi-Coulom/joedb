@@ -16,30 +16,30 @@ namespace joedb
   friend class Database;
 
   private:
-   std::map<field_id_t, Field> fields;
-   std::map<field_id_t, std::string> field_names;
-   field_id_t current_field_id = 0;
+   std::map<Field_Id, Field> fields;
+   std::map<Field_Id, std::string> field_names;
+   Field_Id current_field_id = 0;
 
    Freedom_Keeper<> freedom;
 
   public:
    const Freedom_Keeper<> &get_freedom() const {return freedom;}
 
-   const std::map<field_id_t, Field> &get_fields() const {return fields;}
-   field_id_t find_field(const std::string &name) const;
+   const std::map<Field_Id, Field> &get_fields() const {return fields;}
+   Field_Id find_field(const std::string &name) const;
    void add_field(const std::string &name, const Type &type);
-   void drop_field(field_id_t field_id);
+   void drop_field(Field_Id field_id);
 
-   void delete_record(record_id_t record_id);
-   void insert_record(record_id_t record_id);
+   void delete_record(Record_Id record_id);
+   void insert_record(Record_Id record_id);
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   return_type get_##type_id(record_id_t rid, field_id_t fid) const\
+   return_type get_##type_id(Record_Id rid, Field_Id fid) const\
    {\
     return fields.find(fid)->second.get_##type_id(rid);\
    }\
-   void update_##type_id(record_id_t record_id,\
-                         field_id_t field_id,\
+   void update_##type_id(Record_Id record_id,\
+                         Field_Id field_id,\
                          return_type value)\
    {\
     auto it = fields.find(field_id);\
@@ -49,9 +49,9 @@ namespace joedb
      throw std::runtime_error("update: invalid record_id");\
     it->second.set_##type_id(record_id, value);\
    }\
-   void update_vector_##type_id(record_id_t record_id,\
-                                field_id_t field_id,\
-                                record_id_t size,\
+   void update_vector_##type_id(Record_Id record_id,\
+                                Field_Id field_id,\
+                                Record_Id size,\
                                 const type *value)\
    {\
     auto it = fields.find(field_id);\

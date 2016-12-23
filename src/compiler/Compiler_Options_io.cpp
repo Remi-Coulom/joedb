@@ -67,7 +67,7 @@ bool joedb::parse_compiler_options
 
    for (auto field_name: index_columns)
    {
-    field_id_t field_id = db.find_field(index.table_id, field_name);
+    Field_Id field_id = db.find_field(index.table_id, field_name);
     if (!field_id)
     {
      out << "Error: no such field: " << field_name << '\n';
@@ -93,7 +93,7 @@ bool joedb::parse_compiler_options
 
    iss >> table_name >> storage_string;
 
-   table_id_t table_id = db.find_table(table_name);
+   Table_Id table_id = db.find_table(table_name);
    if (!table_id)
    {
     out << "Error: no such table: " << table_name << '\n';

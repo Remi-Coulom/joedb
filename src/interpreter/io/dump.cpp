@@ -9,9 +9,9 @@ void joedb::dump(const Readable &db, Writeable &writeable)
  //
  // Dump tables
  //
- std::map<table_id_t, table_id_t> table_map;
+ std::map<Table_Id, Table_Id> table_map;
  {
-  table_id_t table_id = 0;
+  Table_Id table_id = 0;
   for (auto table: db.get_tables())
   {
    ++table_id;
@@ -24,13 +24,13 @@ void joedb::dump(const Readable &db, Writeable &writeable)
  //
  // Dump fields
  //
- std::map<table_id_t, std::map<field_id_t, field_id_t>> field_maps;
+ std::map<Table_Id, std::map<Field_Id, Field_Id>> field_maps;
  {
-  table_id_t table_id = 0;
+  Table_Id table_id = 0;
   for (auto table: db.get_tables())
   {
    ++table_id;
-   field_id_t field_id = 0;
+   Field_Id field_id = 0;
    for (const auto &field: db.get_fields(table.first))
    {
     ++field_id;
@@ -49,10 +49,10 @@ void joedb::dump(const Readable &db, Writeable &writeable)
  //
  for (auto table: db.get_tables())
  {
-  const table_id_t table_id = table.first;
-  const record_id_t last_record_id = db.get_last_record_id(table_id);
+  const Table_Id table_id = table.first;
+  const Record_Id last_record_id = db.get_last_record_id(table_id);
 
-  record_id_t record_id = 1;
+  Record_Id record_id = 1;
 
   while (record_id <= last_record_id)
   {
@@ -60,7 +60,7 @@ void joedb::dump(const Readable &db, Writeable &writeable)
           !db.is_used(table_id, record_id))
     record_id++;
 
-   record_id_t size = 0;
+   Record_Id size = 0;
 
    while (record_id + size <= last_record_id &&
           db.is_used(table_id, record_id + size))
@@ -75,9 +75,9 @@ void joedb::dump(const Readable &db, Writeable &writeable)
 
   for (const auto &field: db.get_fields(table_id))
   {
-   const field_id_t field_id = field.first;
+   const Field_Id field_id = field.first;
 
-   for (record_id_t record_id = 1; record_id <= last_record_id; record_id++)
+   for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
     if (db.is_used(table_id, record_id))
     {
      switch(db.get_field_type(table_id, field_id).get_type_id())
@@ -103,10 +103,10 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 {
  for (auto table: db.get_tables())
  {
-  const table_id_t table_id = table.first;
-  const record_id_t last_record_id = db.get_last_record_id(table_id);
+  const Table_Id table_id = table.first;
+  const Record_Id last_record_id = db.get_last_record_id(table_id);
 
-  record_id_t record_id = 1;
+  Record_Id record_id = 1;
 
   while (record_id <= last_record_id)
   {
@@ -114,7 +114,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
           !db.is_used(table_id, record_id))
     record_id++;
 
-   record_id_t size = 0;
+   Record_Id size = 0;
 
    while (record_id + size <= last_record_id &&
           db.is_used(table_id, record_id + size))
@@ -126,7 +126,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 
     for (const auto &field: db.get_fields(table_id))
     {
-     const field_id_t field_id = field.first;
+     const Field_Id field_id = field.first;
 
      switch(db.get_field_type(table_id, field_id).get_type_id())
      {
@@ -137,7 +137,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
       case Type::type_id_t::type_id:\
       {\
        std::vector<type> v(size);\
-       for (record_id_t i = 0; i < size; i++)\
+       for (Record_Id i = 0; i < size; i++)\
         v[i] = db.get_##type_id(table_id, record_id + i, field_id);\
        writeable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
       }\

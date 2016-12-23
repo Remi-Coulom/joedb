@@ -44,8 +44,8 @@ const std::string &get_translation
 /////////////////////////////////////////////////////////////////////////////
 (
  const testdb::Database &db,
- record_id_t string_id_id,
- record_id_t language_id
+ Record_Id string_id_id,
+ Record_Id language_id
 )
 {
  const testdb::id_of_string_id string_id(string_id_id);

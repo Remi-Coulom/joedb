@@ -38,20 +38,20 @@ namespace joedb
      writeable.create_table(name);
    }
 
-   void drop_table(table_id_t table_id) override
+   void drop_table(Table_Id table_id) override
    {
     if (mode & schema)
      writeable.drop_table(table_id);
    }
 
-   void rename_table(table_id_t table_id,
+   void rename_table(Table_Id table_id,
                      const std::string &name) override
    {
     if (mode & schema)
      writeable.rename_table(table_id, name);
    }
 
-   void add_field(table_id_t table_id,
+   void add_field(Table_Id table_id,
                   const std::string &name,
                   Type type) override
    {
@@ -59,15 +59,15 @@ namespace joedb
      writeable.add_field(table_id, name, type);
    }
 
-   void drop_field(table_id_t table_id,
-                   field_id_t field_id) override
+   void drop_field(Table_Id table_id,
+                   Field_Id field_id) override
    {
     if (mode & schema)
      writeable.drop_field(table_id, field_id);
    }
 
-   void rename_field(table_id_t table_id,
-                     field_id_t field_id,
+   void rename_field(Table_Id table_id,
+                     Field_Id field_id,
                      const std::string &name) override
    {
     if (mode & schema)
@@ -104,7 +104,7 @@ namespace joedb
    //
    // get_max_record_id()
    //
-   record_id_t get_max_record_id() const override
+   Record_Id get_max_record_id() const override
    {
     return writeable.get_max_record_id();
    }
@@ -112,30 +112,30 @@ namespace joedb
    //
    // data events
    //
-   void insert_into(table_id_t table_id, record_id_t record_id) override
+   void insert_into(Table_Id table_id, Record_Id record_id) override
    {
     if (mode & data)
      writeable.insert_into(table_id, record_id);
    }
 
-   void insert_vector(table_id_t table_id,
-                      record_id_t record_id,
-                      record_id_t size) override
+   void insert_vector(Table_Id table_id,
+                      Record_Id record_id,
+                      Record_Id size) override
    {
     if (mode & data)
      writeable.insert_vector(table_id, record_id, size);
    }
 
-   void delete_from(table_id_t table_id, record_id_t record_id) override
+   void delete_from(Table_Id table_id, Record_Id record_id) override
    {
     if (mode & data)
      writeable.delete_from(table_id, record_id);
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   void update_##type_id(table_id_t table_id,\
-                         record_id_t record_id,\
-                         field_id_t field_id,\
+   void update_##type_id(Table_Id table_id,\
+                         Record_Id record_id,\
+                         Field_Id field_id,\
                          return_type value) override\
    {\
     if (mode & data)\

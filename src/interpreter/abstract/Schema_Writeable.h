@@ -19,31 +19,31 @@ namespace joedb
     db.create_table(name);
    }
 
-   void drop_table(table_id_t table_id) override
+   void drop_table(Table_Id table_id) override
    {
     db.drop_table(table_id);
    }
 
-   void rename_table(table_id_t table_id,
+   void rename_table(Table_Id table_id,
                      const std::string &name) override
    {
     db.rename_table(table_id, name);
    }
 
-   void add_field(table_id_t table_id,
+   void add_field(Table_Id table_id,
                   const std::string &name,
                   Type type) override
    {
     db.add_field(table_id, name, type);
    }
 
-   void drop_field(table_id_t table_id, field_id_t field_id) override
+   void drop_field(Table_Id table_id, Field_Id field_id) override
    {
     db.drop_field(table_id, field_id);
    }
 
-   void rename_field(table_id_t table_id,
-                     field_id_t field_id,
+   void rename_field(Table_Id table_id,
+                     Field_Id field_id,
                      const std::string &name) override
    {
     db.rename_field(table_id, field_id, name);

@@ -25,17 +25,17 @@ namespace joedb
 
   private:
    type_id_t type_id;
-   table_id_t table_id;
+   Table_Id table_id;
 
    Type(type_id_t type_id,
-        table_id_t table_id):
+        Table_Id table_id):
     type_id(type_id),
     table_id(table_id)
    {}
 
   public:
    type_id_t get_type_id() const {return type_id;}
-   table_id_t get_table_id() const {return table_id;}
+   Table_Id get_table_id() const {return table_id;}
 
    Type(): type_id(type_id_t::null) {}
    Type(type_id_t type_id): type_id(type_id) {}
@@ -47,7 +47,7 @@ namespace joedb
    #undef TYPE_MACRO_NO_REFERENCE
    #undef TYPE_MACRO
 
-   static Type reference(table_id_t table_id)
+   static Type reference(Table_Id table_id)
    {
     return Type(type_id_t::reference, table_id);
    }

@@ -15,8 +15,8 @@ namespace joedb
    {
     bool unique;
     std::string name;
-    table_id_t table_id;
-    std::vector<field_id_t> field_ids;
+    Table_Id table_id;
+    std::vector<Field_Id> field_ids;
    };
 
    enum Table_Storage
@@ -36,7 +36,7 @@ namespace joedb
 
    std::string namespace_name;
    std::vector<Index> indices;
-   std::map<table_id_t, Table_Options> table_options;
+   std::map<Table_Id, Table_Options> table_options;
 
    bool generate_c_wrapper;
    bool generate_js_wrapper;
@@ -56,7 +56,7 @@ namespace joedb
    }
 
    void set_namespace_name(const std::string &s) {namespace_name = s;}
-   void set_table_storage(table_id_t table_id, Table_Storage storage)
+   void set_table_storage(Table_Id table_id, Table_Storage storage)
    {
     table_options[table_id].storage = storage;
    }
@@ -71,7 +71,7 @@ namespace joedb
    }
    const std::string &get_namespace_name() const {return namespace_name;}
    const std::vector<Index> &get_indices() const {return indices;}
-   const Table_Options &get_table_options(table_id_t table_id) const
+   const Table_Options &get_table_options(Table_Id table_id) const
    {
     return table_options.find(table_id)->second;
    }

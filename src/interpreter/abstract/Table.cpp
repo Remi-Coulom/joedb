@@ -3,7 +3,7 @@
 #include <limits>
 
 /////////////////////////////////////////////////////////////////////////////
-field_id_t joedb::Table::find_field(const std::string &name) const
+Field_Id joedb::Table::find_field(const std::string &name) const
 /////////////////////////////////////////////////////////////////////////////
 {
  for (auto &field: field_names)
@@ -18,7 +18,7 @@ void joedb::Table::add_field(const std::string &name, const Type &type)
 {
  if (find_field(name))
   throw std::runtime_error("add_field: name already used");
- if (current_field_id == std::numeric_limits<field_id_t>::max())
+ if (current_field_id == std::numeric_limits<Field_Id>::max())
   throw std::runtime_error("add_field: reached maximum field count");
 
  ++current_field_id;
@@ -27,7 +27,7 @@ void joedb::Table::add_field(const std::string &name, const Type &type)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Table::drop_field(field_id_t field_id)
+void joedb::Table::drop_field(Field_Id field_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto it = fields.find(field_id);
@@ -38,7 +38,7 @@ void joedb::Table::drop_field(field_id_t field_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Table::delete_record(record_id_t record_id)
+void joedb::Table::delete_record(Record_Id record_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (record_id == 0 ||
@@ -49,7 +49,7 @@ void joedb::Table::delete_record(record_id_t record_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Table::insert_record(record_id_t record_id)
+void joedb::Table::insert_record(Record_Id record_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (record_id > freedom.size())

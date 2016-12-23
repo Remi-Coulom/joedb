@@ -41,13 +41,13 @@ namespace joedb
    }
 
    #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
-   return_type get_##type_id(record_id_t record_id) const\
+   return_type get_##type_id(Record_Id record_id) const\
    {\
     if (type.get_type_id() != Type::type_id_t::type_id)\
      throw std::runtime_error("type error");\
     return type_id##_column[record_id - 1];\
    }\
-   void set_##type_id(record_id_t record_id, return_type value)\
+   void set_##type_id(Record_Id record_id, return_type value)\
    {\
     if (type.get_type_id() != Type::type_id_t::type_id)\
      throw std::runtime_error("type error");\
@@ -59,13 +59,13 @@ namespace joedb
      throw std::runtime_error("type error");\
     return &type_id##_column[0];\
    }\
-   void set_vector_##type_id(record_id_t record_id,\
-                             record_id_t size,\
+   void set_vector_##type_id(Record_Id record_id,\
+                             Record_Id size,\
                              const cpp_type *value)\
    {\
     if (type.get_type_id() != Type::type_id_t::type_id)\
      throw std::runtime_error("type error");\
-    for (record_id_t i = 0; i < size; i++)\
+    for (Record_Id i = 0; i < size; i++)\
      type_id##_column[record_id + i - 1] = value[i];\
    }
    #include "TYPE_MACRO.h"

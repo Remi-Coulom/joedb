@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-typedef uint16_t table_id_t;
-typedef uint16_t field_id_t;
-typedef uint64_t record_id_t;
+typedef uint16_t Table_Id;
+typedef uint16_t Field_Id;
+typedef uint64_t Record_Id;
 
 #endif

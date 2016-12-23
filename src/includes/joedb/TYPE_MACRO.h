@@ -8,7 +8,7 @@ TYPE_MACRO(std::string, const std::string &, string, safe_read_string, write_str
 TYPE_MACRO(int32_t, int32_t, int32, file.read<int32_t>, write<int32_t>)
 TYPE_MACRO(int64_t, int64_t, int64, file.read<int64_t>, write<int64_t>)
 #ifndef TYPE_MACRO_NO_REFERENCE
-TYPE_MACRO(record_id_t, record_id_t, reference, file.compact_read<record_id_t>, compact_write<record_id_t>)
+TYPE_MACRO(Record_Id, Record_Id, reference, file.compact_read<Record_Id>, compact_write<Record_Id>)
 #endif
 TYPE_MACRO(char, bool, boolean, file.read<char>, write<char>)
 TYPE_MACRO(float, float, float32, file.read<float>, write<float>)

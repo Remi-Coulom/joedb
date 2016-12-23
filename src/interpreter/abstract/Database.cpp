@@ -2,10 +2,10 @@
 #include "is_identifier.h"
 
 /////////////////////////////////////////////////////////////////////////////
-const std::map<field_id_t, std::string> &joedb::Database::get_fields
+const std::map<Field_Id, std::string> &joedb::Database::get_fields
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id
+ Table_Id table_id
 ) const
 {
  auto table_it = tables.find(table_id);
@@ -18,8 +18,8 @@ const std::map<field_id_t, std::string> &joedb::Database::get_fields
 const joedb::Type &joedb::Database::get_field_type
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- field_id_t field_id
+ Table_Id table_id,
+ Field_Id field_id
 ) const
 {
  static Type null_type;
@@ -34,7 +34,7 @@ const joedb::Type &joedb::Database::get_field_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
-record_id_t joedb::Database::get_last_record_id(table_id_t table_id) const
+Record_Id joedb::Database::get_last_record_id(Table_Id table_id) const
 /////////////////////////////////////////////////////////////////////////////
 {
  auto table_it = tables.find(table_id);
@@ -47,8 +47,8 @@ record_id_t joedb::Database::get_last_record_id(table_id_t table_id) const
 bool joedb::Database::is_used
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id
+ Table_Id table_id,
+ Record_Id record_id
 ) const
 {
  auto table_it = tables.find(table_id);
@@ -58,9 +58,9 @@ bool joedb::Database::is_used
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-return_type joedb::Database::get_##type_id(table_id_t table_id,\
-                                           record_id_t record_id,\
-                                           field_id_t field_id) const\
+return_type joedb::Database::get_##type_id(Table_Id table_id,\
+                                           Record_Id record_id,\
+                                           Field_Id field_id) const\
 {\
  auto table_it = tables.find(table_id);\
  if (table_it == tables.end())\
@@ -85,7 +85,7 @@ void joedb::Database::create_table(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::drop_table(table_id_t table_id)
+void joedb::Database::drop_table(Table_Id table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto it = tables.find(table_id);
@@ -99,7 +99,7 @@ void joedb::Database::drop_table(table_id_t table_id)
 void joedb::Database::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
+ Table_Id table_id,
  const std::string &name
 )
 {
@@ -120,7 +120,7 @@ void joedb::Database::rename_table
 void joedb::Database::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
+ Table_Id table_id,
  const std::string &name,
  Type type
 )
@@ -136,7 +136,7 @@ void joedb::Database::add_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::drop_field(table_id_t table_id, field_id_t field_id)
+void joedb::Database::drop_field(Table_Id table_id, Field_Id field_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto it = tables.find(table_id);
@@ -150,8 +150,8 @@ void joedb::Database::drop_field(table_id_t table_id, field_id_t field_id)
 void joedb::Database::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- field_id_t field_id,
+ Table_Id table_id,
+ Field_Id field_id,
  const std::string &name
 )
 {
@@ -174,7 +174,7 @@ void joedb::Database::rename_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Database::insert_into(table_id_t table_id, record_id_t record_id)
+void joedb::Database::insert_into(Table_Id table_id, Record_Id record_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto it = tables.find(table_id);
@@ -191,9 +191,9 @@ void joedb::Database::insert_into(table_id_t table_id, record_id_t record_id)
 void joedb::Database::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id,
- record_id_t size
+ Table_Id table_id,
+ Record_Id record_id,
+ Record_Id size
 )
 {
  auto it = tables.find(table_id);
@@ -204,7 +204,7 @@ void joedb::Database::insert_vector
      (max_record_id && (record_id > max_record_id || size > max_record_id)))
   throw std::runtime_error("insert_vector: too big");
 
- for (record_id_t i = 0; i < size; i++)
+ for (Record_Id i = 0; i < size; i++)
   it->second.insert_record(record_id + i);
 }
 
@@ -212,8 +212,8 @@ void joedb::Database::insert_vector
 void joedb::Database::delete_from
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id
+ Table_Id table_id,
+ Record_Id record_id
 )
 {
  auto it = tables.find(table_id);
@@ -225,9 +225,9 @@ void joedb::Database::delete_from
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-void joedb::Database::update_##type_id(table_id_t table_id,\
-                                       record_id_t record_id,\
-                                       field_id_t field_id,\
+void joedb::Database::update_##type_id(Table_Id table_id,\
+                                       Record_Id record_id,\
+                                       Field_Id field_id,\
                                        return_type value)\
 {\
  auto it = tables.find(table_id);\
@@ -235,10 +235,10 @@ void joedb::Database::update_##type_id(table_id_t table_id,\
   throw std::runtime_error("update: invalid table_id");\
  it->second.update_##type_id(record_id, field_id, value);\
 }\
-void joedb::Database::update_vector_##type_id(table_id_t table_id,\
-                                              record_id_t record_id,\
-                                              field_id_t field_id,\
-                                              record_id_t size,\
+void joedb::Database::update_vector_##type_id(Table_Id table_id,\
+                                              Record_Id record_id,\
+                                              Field_Id field_id,\
+                                              Record_Id size,\
                                               const type *value)\
 {\
  auto it = tables.find(table_id);\

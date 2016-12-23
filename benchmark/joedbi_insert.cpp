@@ -29,16 +29,16 @@ int main(int argc, char **argv)
   multiplexer.add_writeable(journal_file);
 
   multiplexer.create_table("BENCHMARK");
-  table_id_t table_id = multiplexer.find_table("BENCHMARK");
+  Table_Id table_id = multiplexer.find_table("BENCHMARK");
   multiplexer.add_field(table_id, "NAME", Type::string());
-  field_id_t name_id = multiplexer.find_field(table_id, "NAME");
+  Field_Id name_id = multiplexer.find_field(table_id, "NAME");
   multiplexer.add_field(table_id, "VALUE", Type::int64());
-  field_id_t value_id = multiplexer.find_field(table_id, "VALUE");
+  Field_Id value_id = multiplexer.find_field(table_id, "VALUE");
 
   const std::string name_string("TOTO");
   for (int i = 1; i <= N; i++)
   {
-   const record_id_t record_id = record_id_t(i);
+   const Record_Id record_id = Record_Id(i);
    multiplexer.insert_into(table_id, record_id);
    multiplexer.update_string(table_id, record_id, name_id, name_string);
    multiplexer.update_int64(table_id, record_id, value_id, i);

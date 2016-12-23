@@ -29,7 +29,7 @@ void write_c_type
 
   case Type::type_id_t::reference:
   {
-   const table_id_t referred = type.get_table_id();
+   const Table_Id referred = type.get_table_id();
    out << options.get_namespace_name() << "_id_of_";
    out << db.get_table_name(referred) << ' ';
   }
@@ -80,7 +80,7 @@ void generate_c_wrapper
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  header << "typedef record_id_t " << name << "_id_of_" << tname << ";\n";
+  header << "typedef Record_Id " << name << "_id_of_" << tname << ";\n";
  }
 
  header << '\n';

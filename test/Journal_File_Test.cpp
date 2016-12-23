@@ -45,10 +45,10 @@ TEST_F(Journal_File_Test, basic_operations)
   multi.create_table("deleted");
   multi.drop_table(db1.find_table("deleted"));
   multi.create_table("table_test");
-  const table_id_t table_id = multi.find_table("table_test");
+  const Table_Id table_id = multi.find_table("table_test");
   multi.insert_into(table_id, 1);
   multi.add_field(table_id, "field", Type::int32());
-  const field_id_t field_id = multi.find_field(table_id, "field");
+  const Field_Id field_id = multi.find_field(table_id, "field");
   multi.update_int32(table_id, 1, field_id, 1234);
   multi.delete_from(table_id, 1);
   multi.insert_into(table_id, 2);
@@ -56,19 +56,19 @@ TEST_F(Journal_File_Test, basic_operations)
   multi.drop_field(table_id, field_id);
 
   multi.add_field(table_id, "big_field", Type::int64());
-  const field_id_t big_field_id = multi.find_field(table_id, "big_field");
+  const Field_Id big_field_id = multi.find_field(table_id, "big_field");
   multi.update_int64(table_id, 2, big_field_id, 1234567ULL);
 
   multi.add_field(table_id, "new_field", Type::reference(table_id));
-  const field_id_t new_field = multi.find_field(table_id, "new_field");
+  const Field_Id new_field = multi.find_field(table_id, "new_field");
   multi.update_reference(table_id, 2, new_field, 2);
   multi.add_field(table_id, "name", Type::string());
-  const field_id_t name_id = multi.find_field(table_id, "name");
+  const Field_Id name_id = multi.find_field(table_id, "name");
   multi.update_string(table_id, 2, name_id, "Aristide");
 
   {
    multi.create_table("type_test");
-   const table_id_t table_id = multi.find_table("type_test");
+   const Table_Id table_id = multi.find_table("type_test");
    multi.insert_into(table_id, 1);
 
    multi.add_field(table_id, "string", Type::string());
@@ -79,13 +79,13 @@ TEST_F(Journal_File_Test, basic_operations)
    multi.add_field(table_id, "float32", Type::float32());
    multi.add_field(table_id, "float64", Type::float64());
 
-   const field_id_t string_field_id = multi.find_field(table_id, "string");
-   const field_id_t int32_field_id = multi.find_field(table_id, "int32");
-   const field_id_t int64_field_id = multi.find_field(table_id, "int64");
-   const field_id_t reference_field_id = multi.find_field(table_id, "reference");
-   const field_id_t bool_field_id = multi.find_field(table_id, "bool");
-   const field_id_t float32_field_id = multi.find_field(table_id, "float32");
-   const field_id_t float64_field_id = multi.find_field(table_id, "float64");
+   const Field_Id string_field_id = multi.find_field(table_id, "string");
+   const Field_Id int32_field_id = multi.find_field(table_id, "int32");
+   const Field_Id int64_field_id = multi.find_field(table_id, "int64");
+   const Field_Id reference_field_id = multi.find_field(table_id, "reference");
+   const Field_Id bool_field_id = multi.find_field(table_id, "bool");
+   const Field_Id float32_field_id = multi.find_field(table_id, "float32");
+   const Field_Id float64_field_id = multi.find_field(table_id, "float64");
 
    multi.update_string(table_id, 1, string_field_id, "SuperString");
    multi.update_int32(table_id, 1, int32_field_id, 1234);

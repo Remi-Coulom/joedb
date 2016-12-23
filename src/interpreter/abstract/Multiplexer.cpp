@@ -17,7 +17,7 @@ void joedb::Multiplexer::create_table(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Multiplexer::drop_table(table_id_t table_id)
+void joedb::Multiplexer::drop_table(Table_Id table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  MULTIPLEX(drop_table(table_id));
@@ -27,7 +27,7 @@ void joedb::Multiplexer::drop_table(table_id_t table_id)
 void joedb::Multiplexer::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
+ Table_Id table_id,
  const std::string &name
 )
 {
@@ -38,7 +38,7 @@ void joedb::Multiplexer::rename_table
 void joedb::Multiplexer::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
+ Table_Id table_id,
  const std::string &name,
  Type type
 )
@@ -50,8 +50,8 @@ void joedb::Multiplexer::add_field
 void joedb::Multiplexer::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- field_id_t field_id
+ Table_Id table_id,
+ Field_Id field_id
 )
 {
  MULTIPLEX(drop_field(table_id, field_id));
@@ -61,8 +61,8 @@ void joedb::Multiplexer::drop_field
 void joedb::Multiplexer::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- field_id_t field_id,
+ Table_Id table_id,
+ Field_Id field_id,
  const std::string &name
 )
 {
@@ -98,13 +98,13 @@ void joedb::Multiplexer::valid_data()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-record_id_t joedb::Multiplexer::get_max_record_id() const
+Record_Id joedb::Multiplexer::get_max_record_id() const
 /////////////////////////////////////////////////////////////////////////////
 {
- record_id_t result = 0;
+ Record_Id result = 0;
  for (auto w: writeables)
  {
-  record_id_t max = w->get_max_record_id();
+  Record_Id max = w->get_max_record_id();
   if (!result || (max && max < result))
    result = max;
  }
@@ -115,8 +115,8 @@ record_id_t joedb::Multiplexer::get_max_record_id() const
 void joedb::Multiplexer::insert_into
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id
+ Table_Id table_id,
+ Record_Id record_id
 )
 {
  MULTIPLEX(insert_into(table_id, record_id));
@@ -126,9 +126,9 @@ void joedb::Multiplexer::insert_into
 void joedb::Multiplexer::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id,
- record_id_t size
+ Table_Id table_id,
+ Record_Id record_id,
+ Record_Id size
 )
 {
  MULTIPLEX(insert_vector(table_id, record_id, size));
@@ -138,8 +138,8 @@ void joedb::Multiplexer::insert_vector
 void joedb::Multiplexer::delete_from
 /////////////////////////////////////////////////////////////////////////////
 (
- table_id_t table_id,
- record_id_t record_id
+ Table_Id table_id,
+ Record_Id record_id
 )
 {
  MULTIPLEX(delete_from(table_id, record_id));
@@ -148,9 +148,9 @@ void joedb::Multiplexer::delete_from
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
 void joedb::Multiplexer::update_##type_id\
 (\
- table_id_t table_id,\
- record_id_t record_id,\
- field_id_t field_id,\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id,\
  return_type value\
 )\
 {\
@@ -159,10 +159,10 @@ void joedb::Multiplexer::update_##type_id\
 \
 void joedb::Multiplexer::update_vector_##type_id\
 (\
- table_id_t table_id,\
- record_id_t record_id,\
- field_id_t field_id,\
- record_id_t size,\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id,\
+ Record_Id size,\
  const type *value\
 )\
 {\

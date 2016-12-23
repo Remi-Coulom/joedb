@@ -29,7 +29,7 @@ joedb::Type joedb::Interpreter::parse_type
  {
   std::string table_name;
   in >> table_name;
-  table_id_t table_id = db.find_table(table_name);
+  Table_Id table_id = db.find_table(table_name);
   if (table_id)
    return Type::reference(table_id);
  }
@@ -47,7 +47,7 @@ joedb::Type joedb::Interpreter::parse_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
-table_id_t joedb::Interpreter::parse_table
+Table_Id joedb::Interpreter::parse_table
 /////////////////////////////////////////////////////////////////////////////
 (
  std::istream &in,
@@ -56,7 +56,7 @@ table_id_t joedb::Interpreter::parse_table
 {
  std::string table_name;
  in >> table_name;
- table_id_t table_id = db.find_table(table_name);
+ Table_Id table_id = db.find_table(table_name);
  if (!table_id)
   out << "Error: no such table: " << table_name << '\n';
  return table_id;
@@ -67,9 +67,9 @@ void joedb::Interpreter::update_value
 /////////////////////////////////////////////////////////////////////////////
 (
  std::istream &in,
- table_id_t table_id,
- record_id_t record_id,
- field_id_t field_id
+ Table_Id table_id,
+ Record_Id record_id,
+ Field_Id field_id
 )
 {
  switch(db.get_field_type(table_id, field_id).get_type_id())
@@ -191,19 +191,19 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   }
   else if (command == "drop_table") //////////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
+   const Table_Id table_id = parse_table(iss, out);
    ERROR_CHECK(db.drop_table(table_id));
   }
   else if (command == "rename_table") ////////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
+   const Table_Id table_id = parse_table(iss, out);
    std::string new_name;
    iss >> new_name;
    ERROR_CHECK(db.rename_table(table_id, new_name));
   }
   else if (command == "add_field") ///////////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
+   const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
    Type type = parse_type(iss, out);
@@ -212,18 +212,18 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   }
   else if (command == "drop_field") /////////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
+   const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
-   field_id_t field_id = db.find_field(table_id, field_name);
+   Field_Id field_id = db.find_field(table_id, field_name);
    ERROR_CHECK(db.drop_field(table_id, field_id));
   }
   else if (command == "rename_field") ///////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
+   const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
-   field_id_t field_id = db.find_field(table_id, field_name);
+   Field_Id field_id = db.find_field(table_id, field_name);
    std::string new_field_name;
    iss >> new_field_name;
    ERROR_CHECK(db.rename_field(table_id, field_id, new_field_name));
@@ -253,8 +253,8 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   }
   else if (command == "insert_into") ////////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
-   record_id_t record_id = 0;
+   const Table_Id table_id = parse_table(iss, out);
+   Record_Id record_id = 0;
    iss >> record_id;
    ERROR_CHECK(
     db.insert_into(table_id, record_id);
@@ -272,31 +272,31 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   }
   else if (command == "insert_vector") //////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
-   record_id_t record_id = 0;
-   record_id_t size = 0;
+   const Table_Id table_id = parse_table(iss, out);
+   Record_Id record_id = 0;
+   Record_Id size = 0;
    iss >> record_id >> size;
    ERROR_CHECK(db.insert_vector(table_id, record_id, size));
   }
   else if (command == "update") /////////////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
-   record_id_t record_id = 0;
+   const Table_Id table_id = parse_table(iss, out);
+   Record_Id record_id = 0;
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
-   field_id_t field_id = db.find_field(table_id, field_name);
+   Field_Id field_id = db.find_field(table_id, field_name);
    ERROR_CHECK(update_value(iss, table_id, record_id, field_id));
   }
   else if (command == "update_vector") //////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
-   record_id_t record_id = 0;
+   const Table_Id table_id = parse_table(iss, out);
+   Record_Id record_id = 0;
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
-   field_id_t field_id = db.find_field(table_id, field_name);
-   record_id_t size = 0;
+   Field_Id field_id = db.find_field(table_id, field_name);
+   Record_Id size = 0;
    iss >> size;
 
    if (db.get_max_record_id() != 0 && size >= db.get_max_record_id())
@@ -325,8 +325,8 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   }
   else if (command == "delete_from") ////////////////////////////////////////
   {
-   const table_id_t table_id = parse_table(iss, out);
-   record_id_t record_id = 0;
+   const Table_Id table_id = parse_table(iss, out);
+   Record_Id record_id = 0;
    iss >> record_id;
    ERROR_CHECK(db.delete_from(table_id, record_id));
   }

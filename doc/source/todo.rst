@@ -10,8 +10,6 @@ Short Term
   - max_record_id for listener inserts
   - make Readable_Writeable based on compiled db
 
-- type identifiers with "_t" suffix are reserved by POSIX. Should change.
-
 Journal File
 ------------
 - joedb_truncate <file> <position> (+optionally show position in logdump)

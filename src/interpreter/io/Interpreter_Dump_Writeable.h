@@ -41,20 +41,20 @@ namespace joedb
     Schema_Writeable::create_table(name);
    }
 
-   void drop_table(table_id_t table_id) override
+   void drop_table(Table_Id table_id) override
    {
     out << "drop_table " << db.get_table_name(table_id) << '\n';
     Schema_Writeable::drop_table(table_id);
    }
 
-   void rename_table(table_id_t table_id,
+   void rename_table(Table_Id table_id,
                      const std::string &name) override
    {
     out << "rename_table " << db.get_table_name(table_id) << ' ' << name << '\n';
     Schema_Writeable::rename_table(table_id, name);
    }
 
-   void add_field(table_id_t table_id,
+   void add_field(Table_Id table_id,
                   const std::string &name,
                   Type type) override
    {
@@ -64,15 +64,15 @@ namespace joedb
     Schema_Writeable::add_field(table_id, name, type);
    }
 
-   void drop_field(table_id_t table_id, field_id_t field_id) override
+   void drop_field(Table_Id table_id, Field_Id field_id) override
    {
     out << "drop_field " << db.get_table_name(table_id) << ' ';
     out << db.get_field_name(table_id, field_id) << '\n';
     Schema_Writeable::drop_field(table_id, field_id);
    }
 
-   void rename_field(table_id_t table_id,
-                     field_id_t field_id,
+   void rename_field(Table_Id table_id,
+                     Field_Id field_id,
                      const std::string &name) override
    {
     out << "rename_field " << db.get_table_name(table_id) << ' ';
@@ -103,32 +103,32 @@ namespace joedb
     out << "valid_data\n";
    }
 
-   record_id_t get_max_record_id() const override {return 0;}
+   Record_Id get_max_record_id() const override {return 0;}
 
-   void insert_into(table_id_t table_id, record_id_t record_id) override
+   void insert_into(Table_Id table_id, Record_Id record_id) override
    {
     out << "insert_into " << db.get_table_name(table_id) << ' ';
     out << record_id << '\n';
    }
 
-   void insert_vector(table_id_t table_id,
-                      record_id_t record_id,
-                      record_id_t size) override
+   void insert_vector(Table_Id table_id,
+                      Record_Id record_id,
+                      Record_Id size) override
    {
     out << "insert_vector " << db.get_table_name(table_id) << ' ';
     out << record_id << ' ' << size << '\n';
    }
 
-   void delete_from(table_id_t table_id, record_id_t record_id) override
+   void delete_from(Table_Id table_id, Record_Id record_id) override
    {
     out << "delete_from " << db.get_table_name(table_id) << ' ';
     out << record_id << '\n';
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   void update_##type_id(table_id_t table_id,\
-                         record_id_t record_id,\
-                         field_id_t field_id,\
+   void update_##type_id(Table_Id table_id,\
+                         Record_Id record_id,\
+                         Field_Id field_id,\
                          return_type value) override\
    {\
     out << "update " << db.get_table_name(table_id) << ' ';\
@@ -137,17 +137,17 @@ namespace joedb
     joedb::write_##type_id(out, value);\
     out << '\n';\
    }\
-   void update_vector_##type_id(table_id_t table_id,\
-                                record_id_t record_id,\
-                                field_id_t field_id,\
-                                record_id_t size,\
+   void update_vector_##type_id(Table_Id table_id,\
+                                Record_Id record_id,\
+                                Field_Id field_id,\
+                                Record_Id size,\
                                 const type *value) override\
    {\
     out << "update_vector " << db.get_table_name(table_id) << ' ';\
     out << record_id << ' ';\
     out << db.get_field_name(table_id, field_id) << ' ';\
     out << size;\
-    for (record_id_t i = 0; i < size; i++)\
+    for (Record_Id i = 0; i < size; i++)\
     {\
      out << ' ';\
      joedb::write_##type_id(out, value[i]);\

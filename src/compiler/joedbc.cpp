@@ -175,15 +175,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "  friend class id_of_" << friend_table.second << ";\n";
   out << "  friend class container_of_"  << tname << ";\n";
   out << "\n  private:\n";
-  out << "   record_id_t id;\n";
+  out << "   Record_Id id;\n";
   out << "\n  public:\n";
-  out << "   explicit id_of_" << tname << "(record_id_t id): id(id) {}\n";
+  out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
   out << "   id_of_" << tname << "(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
-  out << "   record_id_t get_id() const {return id;}\n";
+  out << "   Record_Id get_id() const {return id;}\n";
   out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
   out << "   bool operator<(id_of_" << tname << " x) const {return id < x.id;}\n";
-  out << "   id_of_" << tname << " operator[](record_id_t i) const {return id_of_" << tname << "(id + i);}\n";
+  out << "   id_of_" << tname << " operator[](Record_Id i) const {return id_of_" << tname << "(id + i);}\n";
   out << " };\n";
  }
 
@@ -309,7 +309,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   write_index_type(out, db, index);
   out << " index_of_" << index.name << ";\n";
 
-  out << "   void remove_index_of_" << index.name << "(record_id_t record_id)\n";
+  out << "   void remove_index_of_" << index.name << "(Record_Id record_id)\n";
   out << "   {\n";
   out << "    auto &iterator = storage_of_" << tname;
   out << "[record_id - 1].iterator_over_" << index.name << ";\n";
@@ -320,7 +320,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "    }\n";
   out << "   }\n";
 
-  out << "   void add_index_of_" << index.name << "(record_id_t record_id)\n";
+  out << "   void add_index_of_" << index.name << "(Record_Id record_id)\n";
   out << "   {\n";
   out << "    " << "data_of_" << tname << " &data = storage_of_";
   out << tname << "[record_id - 1];\n";
@@ -362,7 +362,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   if (has_delete)
   {
-   out << "   void internal_delete_" << tname << "(record_id_t record_id)\n";
+   out << "   void internal_delete_" << tname << "(Record_Id record_id)\n";
    out << "   {\n";
 
    for (const auto &index: options.get_indices())
@@ -380,7 +380,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   const std::string &tname = table.second;
   auto storage = options.get_table_options(table.first).storage;
 
-  out << "   void internal_insert_" << tname << "(record_id_t record_id)\n";
+  out << "   void internal_insert_" << tname << "(Record_Id record_id)\n";
   out << "   {\n";
 
   for (const auto &index: options.get_indices())
@@ -405,7 +405,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    const std::string &fname = field.second;
    out << "   void internal_update_" << tname << "__" << fname;
-   out << "\n   (\n    record_id_t record_id,\n    ";
+   out << "\n   (\n    Record_Id record_id,\n    ";
    const Type &type = db.get_field_type(table.first, field.first);
    write_type(out, db, type, true);
    out << "field_value_of_" << fname << "\n   )\n";
@@ -430,7 +430,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // delete_from writeable function
  //
  out << '\n';
- out << "   void delete_from(table_id_t table_id, record_id_t record_id) override\n";
+ out << "   void delete_from(Table_Id table_id, Record_Id record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -461,7 +461,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // insert_into
  //
  out << '\n';
- out << "   void insert_into(table_id_t table_id, record_id_t record_id) override\n";
+ out << "   void insert_into(Table_Id table_id, Record_Id record_id) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -496,7 +496,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // insert_vector
  //
  out << '\n';
- out << "   void insert_vector(table_id_t table_id, record_id_t record_id, record_id_t size) override\n";
+ out << "   void insert_vector(Table_Id table_id, Record_Id record_id, Record_Id size) override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -513,7 +513,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "    {\n";
    out << "     if (storage_of_" << name << ".size() < record_id + size - 1)\n";
    out << "      storage_of_" << name << ".resize(record_id + size - 1);\n";
-   out << "     for (record_id_t i = 0; i < size; i++)\n";
+   out << "     for (Record_Id i = 0; i < size; i++)\n";
    out << "      internal_insert_" << name << "(record_id + i);\n";
    out << "    }\n";
   }
@@ -529,9 +529,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << '\n';
    out << "   void update_" << types[type_id] << '\n';
    out << "   (\n";
-   out << "    table_id_t table_id,\n";
-   out << "    record_id_t record_id,\n";
-   out << "    field_id_t field_id,\n";
+   out << "    Table_Id table_id,\n";
+   out << "    Record_Id record_id,\n";
+   out << "    Field_Id field_id,\n";
    out << "    " << cpp_types[type_id] << "value\n";
    out << "   )\n";
    out << "   override\n";
@@ -596,10 +596,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << '\n';
    out << "   void update_vector_" << types[type_id] << '\n';
    out << "   (\n";
-   out << "    table_id_t table_id,\n";
-   out << "    record_id_t record_id,\n";
-   out << "    field_id_t field_id,\n";
-   out << "    record_id_t size,\n";
+   out << "    Table_Id table_id,\n";
+   out << "    Record_Id record_id,\n";
+   out << "    Field_Id field_id,\n";
+   out << "    Record_Id size,\n";
    out << "    const " << storage_types[type_id] << " *value\n";
    out << "   )\n";
    out << "   override\n";
@@ -631,7 +631,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
       {
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
-       out << "      for (record_id_t i = 0; i < size; i++)\n";
+       out << "      for (Record_Id i = 0; i < size; i++)\n";
        out << "       internal_update_" << table.second;
        out << "__" << field.second << "(record_id + i, ";
        if (type.get_type_id() != Type::type_id_t::reference)
@@ -660,7 +660,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // Schema changes are forwarded to the writeable
  //
  out << R"RRR(
-   record_id_t get_max_record_id() const override {return 0;}
+   Record_Id get_max_record_id() const override {return 0;}
 
   protected:
    void create_table(const std::string &name) override
@@ -668,31 +668,31 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     writeable->create_table(name);
    }
 
-   void drop_table(table_id_t table_id) override
+   void drop_table(Table_Id table_id) override
    {
     writeable->drop_table(table_id);
    }
 
-   void rename_table(table_id_t table_id,
+   void rename_table(Table_Id table_id,
                            const std::string &name) override
    {
     writeable->rename_table(table_id, name);
    }
 
-   void add_field(table_id_t table_id,
+   void add_field(Table_Id table_id,
                         const std::string &name,
                         joedb::Type type) override
    {
     writeable->add_field(table_id, name, type);
    }
 
-   void drop_field(table_id_t table_id, field_id_t field_id) override
+   void drop_field(Table_Id table_id, Field_Id field_id) override
    {
     writeable->drop_field(table_id, field_id);
    }
 
-   void rename_field(table_id_t table_id,
-                           field_id_t field_id,
+   void rename_field(Table_Id table_id,
+                           Field_Id field_id,
                            const std::string &name) override
    {
     writeable->rename_field(table_id, field_id, name);
