@@ -17,9 +17,9 @@ void joedb::Table::add_field(const std::string &name, const Type &type)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (find_field(name))
-  throw std::runtime_error("add_field: name already used");
+  throw Exception("add_field: name already used");
  if (current_field_id == std::numeric_limits<Field_Id>::max())
-  throw std::runtime_error("add_field: reached maximum field count");
+  throw Exception("add_field: reached maximum field count");
 
  ++current_field_id;
  fields.insert(std::make_pair(current_field_id, Field(type, freedom.size())));
@@ -32,7 +32,7 @@ void joedb::Table::drop_field(Field_Id field_id)
 {
  auto it = fields.find(field_id);
  if (it == fields.end())
-  throw std::runtime_error("drop_field: invalid field_id");
+  throw Exception("drop_field: invalid field_id");
  field_names.erase(field_id);
  fields.erase(it);
 }
@@ -44,7 +44,7 @@ void joedb::Table::delete_record(Record_Id record_id)
  if (record_id == 0 ||
      record_id > freedom.size() ||
      freedom.is_free(record_id + 1))
-  throw std::runtime_error("delete_record: bad record_id");
+  throw Exception("delete_record: bad record_id");
  freedom.free(record_id + 1);
 }
 
@@ -60,7 +60,7 @@ void joedb::Table::insert_record(Record_Id record_id)
    freedom.push_back();
  }
  else if (!freedom.is_free(record_id + 1))
-  throw std::runtime_error("insert: record_id already in use");
+  throw Exception("insert: record_id already in use");
 
  freedom.use(record_id + 1);
 }

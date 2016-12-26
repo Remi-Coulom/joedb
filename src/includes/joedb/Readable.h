@@ -2,6 +2,7 @@
 #define joedb_Readable_declared
 
 #include "Type.h"
+#include "Exception.h"
 
 #include <map>
 #include <string>
@@ -48,7 +49,7 @@ namespace joedb
       if (field.second == name)
        return field.first;
     }
-    catch (std::runtime_error &e)
+    catch (const Exception &e)
     {
     }
     return 0;
@@ -77,7 +78,7 @@ namespace joedb
      if (it != fields.end())
       return it->second;
     }
-    catch (std::runtime_error &e)
+    catch (const Exception &e)
     {
     }
 

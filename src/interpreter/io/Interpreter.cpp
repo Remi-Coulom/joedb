@@ -75,7 +75,7 @@ void joedb::Interpreter::update_value
  switch(db.get_field_type(table_id, field_id).get_type_id())
  {
   case Type::type_id_t::null:
-   throw std::runtime_error("bad field");
+   throw Exception("bad field");
 
   #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
   case Type::type_id_t::type_id:\
@@ -104,7 +104,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   #define ERROR_CHECK(x) do\
   {\
    try {x; out << "OK: " << line << '\n';}\
-   catch(std::runtime_error &e) {out << "Error: " << e.what() << " (" << line << ')' << '\n';}\
+   catch(const Exception &e) {out << "Error: " << e.what() << " (" << line << ')' << '\n';}\
   }\
   while(false)
 

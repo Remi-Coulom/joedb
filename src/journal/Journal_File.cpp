@@ -1,5 +1,6 @@
 #include "joedb/Journal_File.h"
 #include "joedb/Generic_File.h"
+#include "Exception.h"
 
 #include <vector>
 #include <stdexcept>
@@ -337,7 +338,7 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
    }
   }
  }
- catch (std::runtime_error e)
+ catch (const Exception &e)
  {
   state = state_t::writeable_threw;
   thrown_error = e.what();

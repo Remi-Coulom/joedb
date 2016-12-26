@@ -152,6 +152,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include "joedb/Database.h"
 #include "joedb/Dummy_Writeable.h"
 #include "joedb/Freedom_Keeper.h"
+#include "joedb/Exception.h"
 
 )RRR";
 
@@ -253,13 +254,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    virtual void before_throwing() {}
 
-   void error(const std::string &message)
+   void error(const char *message)
    {
     timestamp();
     comment(message);
     last_error_message = message;
     before_throwing();
-    throw std::runtime_error(message);
+    throw joedb::Exception(message);
    }
 
   private:
@@ -1406,7 +1407,7 @@ namespace joedb
    void custom(const std::string &name) override
    {
     if (!is_identifier(name))
-     throw std::runtime_error("custom: invalid identifier");
+     throw Exception("custom: invalid identifier");
     names.push_back(name);
    }
  };

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "Exception.h"
 #include "Type.h"
 #include "index_types.h"
 
@@ -44,19 +45,19 @@ namespace joedb
    return_type get_##type_id(Record_Id record_id) const\
    {\
     if (type.get_type_id() != Type::type_id_t::type_id)\
-     throw std::runtime_error("type error");\
+     throw Exception("type error");\
     return type_id##_column[record_id - 1];\
    }\
    void set_##type_id(Record_Id record_id, return_type value)\
    {\
     if (type.get_type_id() != Type::type_id_t::type_id)\
-     throw std::runtime_error("type error");\
+     throw Exception("type error");\
     type_id##_column[record_id - 1] = value;\
    }\
    const cpp_type *get_vector_##type_id() const\
    {\
     if (type.get_type_id() != Type::type_id_t::type_id)\
-     throw std::runtime_error("type error");\
+     throw Exception("type error");\
     return &type_id##_column[0];\
    }\
    void set_vector_##type_id(Record_Id record_id,\
@@ -64,7 +65,7 @@ namespace joedb
                              const cpp_type *value)\
    {\
     if (type.get_type_id() != Type::type_id_t::type_id)\
-     throw std::runtime_error("type error");\
+     throw Exception("type error");\
     for (Record_Id i = 0; i < size; i++)\
      type_id##_column[record_id + i - 1] = value[i];\
    }

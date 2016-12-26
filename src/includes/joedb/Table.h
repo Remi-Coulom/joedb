@@ -5,6 +5,7 @@
 
 #include "Field.h"
 #include "Type.h"
+#include "Exception.h"
 #include "Freedom_Keeper.h"
 
 namespace joedb
@@ -44,9 +45,9 @@ namespace joedb
    {\
     auto it = fields.find(field_id);\
     if (it == fields.end())\
-     throw std::runtime_error("update: invalid field_id");\
+     throw Exception("update: invalid field_id");\
     if (!freedom.is_used(record_id + 1))\
-     throw std::runtime_error("update: invalid record_id");\
+     throw Exception("update: invalid record_id");\
     it->second.set_##type_id(record_id, value);\
    }\
    void update_vector_##type_id(Record_Id record_id,\
@@ -56,10 +57,10 @@ namespace joedb
    {\
     auto it = fields.find(field_id);\
     if (it == fields.end())\
-     throw std::runtime_error("update_vector: invalid field_id");\
+     throw Exception("update_vector: invalid field_id");\
     if (!freedom.is_used(record_id + 1) ||\
         !freedom.is_used(record_id + size))\
-     throw std::runtime_error("update_vector: invalid record_id range");\
+     throw Exception("update_vector: invalid record_id range");\
     it->second.set_vector_##type_id(record_id, size, value);\
    }
    #include "TYPE_MACRO.h"
