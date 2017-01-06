@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 2.8.4)
 
+file(STRINGS "../VERSION" QUOTED_JOEDB_VERSION)
+string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
+message("== JOEDB_VERSION = ${JOEDB_VERSION}")
+
 project(joedb)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -62,6 +66,7 @@ if (UNIX)
  add_library(joedb SHARED
   $<TARGET_OBJECTS:joedb_objects>
  )
+ set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
 else()
  add_library(joedb STATIC
   $<TARGET_OBJECTS:joedb_objects>
