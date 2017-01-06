@@ -29,6 +29,7 @@ If you wish to install joedb system-wide, you can run:
 .. code-block:: bash
 
     sudo ninja install
+    sudo ldconfig
 
 Windows
 ^^^^^^^
