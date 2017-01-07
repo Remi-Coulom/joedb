@@ -1262,6 +1262,7 @@ void generate_cpp
 {
  out << "#include \"" << options.get_namespace_name() << ".h\"\n";
  out << "#include \"joedb/Stream_File.h\"\n";
+ out << "#include \"joedb/Selective_Writeable.h\"\n";
  out << '\n';
  out << "#include <sstream>\n";
  out << "#include <ctime>\n";
@@ -1334,12 +1335,20 @@ File_Database::File_Database(const char *file_name, bool read_only):
   std::stringstream file_schema;
   {
    joedb::Stream_File stream_file
-                      (
-                       file_schema,
-                       joedb::Generic_File::mode_t::create_new
-                      );
+   (
+    file_schema,
+    joedb::Generic_File::mode_t::create_new
+   );
+
    joedb::Journal_File file_schema_journal(stream_file);
-   set_writeable(file_schema_journal);
+
+   joedb::Selective_Writeable select
+   (
+    file_schema_journal,
+    joedb::Selective_Writeable::Mode::schema
+   );
+
+   set_writeable(select);
    journal.replay_log(*this);
    clear_writeable();
   }
