@@ -674,15 +674,21 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     writeable->drop_table(table_id);
    }
 
-   void rename_table(Table_Id table_id,
-                           const std::string &name) override
+   void rename_table
+   (
+    Table_Id table_id,
+    const std::string &name
+   ) override
    {
     writeable->rename_table(table_id, name);
    }
 
-   void add_field(Table_Id table_id,
-                        const std::string &name,
-                        joedb::Type type) override
+   void add_field
+   (
+    Table_Id table_id,
+    const std::string &name,
+    joedb::Type type
+   ) override
    {
     writeable->add_field(table_id, name, type);
    }
@@ -692,9 +698,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     writeable->drop_field(table_id, field_id);
    }
 
-   void rename_field(Table_Id table_id,
-                           Field_Id field_id,
-                           const std::string &name) override
+   void rename_field
+   (
+    Table_Id table_id,
+    Field_Id field_id,
+    const std::string &name
+   ) override
    {
     writeable->rename_field(table_id, field_id, name);
    }
