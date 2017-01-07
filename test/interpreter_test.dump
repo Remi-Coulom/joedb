@@ -7,6 +7,8 @@ insert_into city 1
 update city 1 name "Paris"
 insert_into city 2
 update city 2 name "Lille"
+insert_into city 15
+update city 15 name "Pétaouchnok"
 insert_into person 1
 update person 1 name "Rémi"
 update person 1 city 2
@@ -15,7 +17,7 @@ update person 2 name "Norbert"
 update person 2 city 2
 insert_into person 3
 update person 3 name "Alexandre"
-update person 3 city 1
+update person 3 city 15
 drop_table city
 drop_table person
 create_table test

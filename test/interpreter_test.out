@@ -5,24 +5,27 @@ OK: add_field person name string
 OK: add_field person city references city
 OK: insert_into city 1 "Paris"
 OK: insert_into city 2 "Lille"
+OK: insert_into city 15 "Pétaouchnok"
 OK: insert_into person 1 "Rémi" 2
 OK: insert_into person 2 "Norbert" 2
-OK: insert_into person 3 "Alexandre" 1
+OK: insert_into person 3 "Alexandre" 15
 create_table city
 create_table person
 add_field city name string
 add_field person name string
 add_field person city references city
 insert_vector city 1 2
+insert_vector city 15 1
 update city 1 name "Paris"
 update city 2 name "Lille"
+update city 15 name "Pétaouchnok"
 insert_vector person 1 3
 update person 1 name "Rémi"
 update person 2 name "Norbert"
 update person 3 name "Alexandre"
 update person 1 city 2
 update person 2 city 2
-update person 3 city 1
+update person 3 city 15
 CREATE TABLE "city"("__id" INTEGER PRIMARY KEY);
 CREATE TABLE "person"("__id" INTEGER PRIMARY KEY);
 ALTER TABLE "city" ADD "name" TEXT;
@@ -30,8 +33,10 @@ ALTER TABLE "person" ADD "name" TEXT;
 ALTER TABLE "person" ADD "city" INTEGER REFERENCES "city";
 INSERT INTO "city"("__id") VALUES(1);
 INSERT INTO "city"("__id") VALUES(2);
+INSERT INTO "city"("__id") VALUES(15);
 UPDATE "city" SET "name" = X'5061726973' WHERE "__id" = 1;
 UPDATE "city" SET "name" = X'4c696c6c65' WHERE "__id" = 2;
+UPDATE "city" SET "name" = X'50c3a974616f7563686e6f6b' WHERE "__id" = 15;
 INSERT INTO "person"("__id") VALUES(1);
 INSERT INTO "person"("__id") VALUES(2);
 INSERT INTO "person"("__id") VALUES(3);
@@ -40,18 +45,18 @@ UPDATE "person" SET "name" = X'4e6f7262657274' WHERE "__id" = 2;
 UPDATE "person" SET "name" = X'416c6578616e647265' WHERE "__id" = 3;
 UPDATE "person" SET "city" = 2 WHERE "__id" = 1;
 UPDATE "person" SET "city" = 2 WHERE "__id" = 2;
-UPDATE "person" SET "city" = 1 WHERE "__id" = 3;
+UPDATE "person" SET "city" = 15 WHERE "__id" = 3;
 {
  "city":
  {
-  "__size": 2,
-  "name": ["UGFyaXM=","TGlsbGU="]
+  "__size": 3,
+  "name": ["UGFyaXM=","TGlsbGU=","UMOpdGFvdWNobm9r"]
  },
  "person":
  {
   "__size": 3,
   "name": ["UsOpbWk=","Tm9yYmVydA==","QWxleGFuZHJl"],
-  "city": [1,1,0]
+  "city": [1,1,2]
  }
 }
 
