@@ -14,7 +14,8 @@ namespace joedb
     data = 2,
     information = 4,
 
-    data_and_schema = 3 // bitwise operators don't work on enums
+    data_and_schema = 3, // bitwise operators don't work on enums
+    all = 7
    };
 
   private:

@@ -267,6 +267,8 @@ int schema_upgrade_test()
 
   db.new_person("Toto");
   db.new_person("Rémi");
+  db.comment("This is a comment");
+  db.timestamp(12345);
  }
 
  {

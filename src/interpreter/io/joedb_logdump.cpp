@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
@@ -6,6 +7,7 @@
 #include "SQL_Dump_Writeable.h"
 #include "file_error_message.h"
 #include "diagnostics.h"
+#include "Selective_Writeable.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -13,7 +15,7 @@ int main(int argc, char **argv)
 {
  if (argc <= 1)
  {
-  std::cerr << "usage: " << argv[0] << " [--sql] [--header|--force] <file.joedb>\n";
+  std::cerr << "usage: " << argv[0] << " [--sql] [--header|--force] [--schema-only] <file.joedb>\n";
   return 1;
  }
  else
@@ -21,6 +23,7 @@ int main(int argc, char **argv)
   bool sql = false;
   bool header = false;
   bool force = false;
+  bool schema_only = false;
   int arg_index = 1;
 
   if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sql")
@@ -38,6 +41,12 @@ int main(int argc, char **argv)
   if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--force")
   {
    force = true;
+   arg_index++;
+  }
+
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--schema-only")
+  {
+   schema_only = true;
    arg_index++;
   }
 
@@ -59,16 +68,21 @@ int main(int argc, char **argv)
 
   if (journal.get_state() == joedb::Journal_File::state_t::no_error || force)
   {
+   std::shared_ptr<joedb::Writeable> writeable;
+
    if (sql)
-   {
-    joedb::SQL_Dump_Writeable dump_writeable(std::cout);
-    journal.replay_log(dump_writeable);
-   }
+    writeable = std::make_shared<joedb::SQL_Dump_Writeable>(std::cout);
    else
-   {
-    joedb::Interpreter_Dump_Writeable dump_writeable(std::cout);
-    journal.replay_log(dump_writeable);
-   }
+    writeable = std::make_shared<joedb::Interpreter_Dump_Writeable>(std::cout);
+
+   joedb::Selective_Writeable select
+   (
+    *writeable,
+    schema_only ? joedb::Selective_Writeable::Mode::schema
+                : joedb::Selective_Writeable::Mode::all
+   );
+
+   journal.replay_log(select);
   }
 
   static char const * const status_string[]
