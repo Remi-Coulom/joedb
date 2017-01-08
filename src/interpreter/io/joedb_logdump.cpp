@@ -75,14 +75,13 @@ int main(int argc, char **argv)
    else
     writeable = std::make_shared<joedb::Interpreter_Dump_Writeable>(std::cout);
 
-   joedb::Selective_Writeable select
-   (
-    *writeable,
-    schema_only ? joedb::Selective_Writeable::Mode::schema
-                : joedb::Selective_Writeable::Mode::all
-   );
-
-   journal.replay_log(select);
+   if (schema_only)
+   {
+    joedb::Selective_Writeable w(*writeable, joedb::Selective_Writeable::Mode::schema);
+    journal.replay_log(w);
+   }
+   else
+    journal.replay_log(*writeable);
   }
 
   static char const * const status_string[]

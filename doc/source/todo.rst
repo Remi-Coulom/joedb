@@ -5,10 +5,13 @@ Short Term
 ----------
 
 - compiler:
+
   - check valid record_id for listener updates and deletes
   - #ifndef NDEBUG -> check double delete/insert, etc.
   - max_record_id for listener inserts
   - make Readable_Writeable based on compiled db
+
+- explicit detailed error message when !db.is_good()
 
 Journal File
 ------------
