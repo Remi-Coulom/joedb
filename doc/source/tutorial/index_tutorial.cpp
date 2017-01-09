@@ -7,8 +7,6 @@ int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  tutorial::File_Database db("index_tutorial.joedb");
- if (!db.is_good())
-  return 1;
 
  //
  // Erase all data

@@ -6,8 +6,9 @@
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- tutorial_db *db = tutorial_open_file("wrapper_test.joedb", false);
+ tutorial_db *db = tutorial_open_file("wrapper_test.joedb");
 
+#if 0
  if (tutorial_is_good(db))
   printf("good!\n");
  else
@@ -16,6 +17,7 @@ int main()
   tutorial_delete(db);
   return 1;
  }
+#endif
 
  tutorial_timestamp(db);
  tutorial_comment(db, "This is a comment");

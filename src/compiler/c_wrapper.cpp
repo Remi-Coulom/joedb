@@ -84,10 +84,9 @@ void generate_c_wrapper
  }
 
  header << '\n';
- header << name << "_db *" << name << "_open_file(const char *file_name, bool read_only);\n";
+ header << name << "_db *" << name << "_open_file(const char *file_name);\n";
  header << "void " << name << "_delete(" << name << "_db *db);\n";
  header << '\n';
- header << "bool " << name << "_is_good(" << name << "_db *db);\n";
  header << "void " << name << "_checkpoint_no_commit(" << name << "_db *db);\n";
  header << "void " << name << "_checkpoint_half_commit(" << name << "_db *db);\n";
  header << "void " << name << "_checkpoint_full_commit(" << name << "_db *db);\n";
@@ -156,9 +155,9 @@ void generate_c_wrapper
  body << "#include \"" << name << ".h\"\n";
  body << '\n';
 
- body << name << "_db *" << name << "_open_file(const char *file_name, bool read_only)\n";
+ body << name << "_db *" << name << "_open_file(const char *file_name)\n";
  body << "{\n";
- body << " return (" << name << "_db *)(new " << name << "::File_Database(file_name, read_only));\n";
+ body << " return (" << name << "_db *)(new " << name << "::File_Database(file_name));\n";
  body << "}\n";
 
  body << "\nvoid " << name << "_delete(" << name << "_db *db)\n";
@@ -166,12 +165,6 @@ void generate_c_wrapper
  body << convert.str();
  body << " delete p;\n";
  body << "}\n";
-
- body << "\nbool " << name << "_is_good(" << name << "_db *db)\n";
- body << "{\n";
- body << convert.str();
- body << " return p->is_good();\n";
- body << "}\n\n";
 
  body << "\nvoid " << name << "_checkpoint_no_commit(" << name << "_db *db)\n";
  body << "{\n";

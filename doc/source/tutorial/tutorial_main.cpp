@@ -7,14 +7,9 @@ int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  //
- // Open the database, and test that everything is OK
+ // Open the database
  //
  tutorial::File_Database db("tutorial.joedb");
- if (!db.is_good())
- {
-  std::cerr << "Error: could not open database\n";
-  return 1;
- }
 
  //
  // Simple data manipulation

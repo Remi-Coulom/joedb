@@ -51,7 +51,7 @@ Compiler
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
 
-- C wrapper
+- C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
 
 Server
