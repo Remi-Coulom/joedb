@@ -94,7 +94,9 @@ size_t joedb::File::read_buffer()
 void joedb::File::write_buffer()
 /////////////////////////////////////////////////////////////////////////////
 {
- std::fwrite(buffer, 1, write_buffer_index, file);
+ const size_t written = std::fwrite(buffer, 1, write_buffer_index, file);
+ if (written != write_buffer_index)
+  throw Exception("Error writing file");
 }
 
 /////////////////////////////////////////////////////////////////////////////

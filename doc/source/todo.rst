@@ -14,7 +14,6 @@ Short Term
 Journal File
 ------------
 - joedb_truncate <file> <position> (+optionally show position in logdump)
-- check for write errors (no space left on device) -> exception
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
 - joedb_fix
