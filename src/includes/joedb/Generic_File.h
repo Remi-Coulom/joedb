@@ -12,6 +12,13 @@ namespace joedb
  class Generic_File
  {
   public:
+   Generic_File()
+   {
+    write_buffer_index = 0;
+    reset_read_buffer();
+    position = 0;
+   }
+
    Open_Mode get_mode() const {return mode;}
 
    bool is_end_of_file() const {return end_of_file;}
@@ -66,13 +73,6 @@ namespace joedb
    virtual void write_buffer() = 0;
    virtual int seek(size_t offset) = 0;
    virtual void sync() = 0;
-
-   void reset()
-   {
-    write_buffer_index = 0;
-    reset_read_buffer();
-    position = 0;
-   }
 
    enum {buffer_size = (1 << 16)};
    enum {buffer_extra = 8};

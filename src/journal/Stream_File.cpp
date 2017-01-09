@@ -6,9 +6,7 @@ joedb::Stream_File::Stream_File(std::iostream &stream, Open_Mode mode):
 /////////////////////////////////////////////////////////////////////////////
  stream(stream)
 {
- reset();
-
- Generic_File::mode = mode;
+ this->mode = mode;
 
  if (!stream.good())
   throw Exception("Bad stream");

@@ -79,8 +79,6 @@ joedb::File::File(const char *file_name, Open_Mode new_mode)
  }
 
  std::setvbuf(file, 0, _IONBF, 0);
-
- reset();
 }
 
 /////////////////////////////////////////////////////////////////////////////
