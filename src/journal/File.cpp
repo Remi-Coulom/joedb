@@ -47,12 +47,9 @@ bool joedb::File::try_open(const char *file_name, mode_t new_mode)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::File::open(const char *file_name, mode_t new_mode)
+joedb::File::File(const char *file_name, mode_t new_mode)
 /////////////////////////////////////////////////////////////////////////////
 {
- reset();
- close_file();
-
  if (new_mode == mode_t::automatic)
  {
   try_open(file_name, mode_t::write_existing) ||
@@ -82,6 +79,8 @@ void joedb::File::open(const char *file_name, mode_t new_mode)
  }
 
  std::setvbuf(file, 0, _IONBF, 0);
+
+ reset();
 }
 
 /////////////////////////////////////////////////////////////////////////////

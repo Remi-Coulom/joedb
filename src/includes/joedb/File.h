@@ -10,9 +10,7 @@ namespace joedb
  class File: public Generic_File
  {
   public:
-   File() {}
-   File(const char *file_name, mode_t mode) {open(file_name, mode);}
-   void open(const char *file_name, mode_t mode);
+   File(const char *file_name, mode_t mode);
    ~File() override;
    int64_t get_size() const override;
 
