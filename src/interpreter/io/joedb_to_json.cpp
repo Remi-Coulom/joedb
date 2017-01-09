@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   base64 = true;
  }
 
- joedb::File file(argv[file_index], joedb::File::mode_t::read_existing);
+ joedb::File file(argv[file_index], joedb::Open_Mode::read_existing);
  joedb::Journal_File journal(file);
  joedb::Database db;
  journal.replay_log(db);

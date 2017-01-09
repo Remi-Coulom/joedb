@@ -27,7 +27,7 @@ TEST_F(Journal_File_Test, basic_operations)
  Database db1;
 
  {
-  File file("test.joedb", File::mode_t::create_new);
+  File file("test.joedb", Open_Mode::create_new);
   Journal_File journal(file);
   Readable_Multiplexer multi(db1);
   multi.add_writeable(journal);
@@ -91,7 +91,7 @@ TEST_F(Journal_File_Test, basic_operations)
  Database db2;
 
  {
-  File file("test.joedb", File::mode_t::read_existing);
+  File file("test.joedb", Open_Mode::read_existing);
   Journal_File journal(file);
   journal.replay_log(db2);
  }
@@ -116,7 +116,7 @@ TEST_F(Journal_File_Test, interpreter_test)
  // First, write a .joedb file with the interpreter_test commands
  //
  {
-  File file("test.joedb", File::mode_t::create_new);
+  File file("test.joedb", Open_Mode::create_new);
   Journal_File journal(file);
 
   Database db_storage;
@@ -134,10 +134,10 @@ TEST_F(Journal_File_Test, interpreter_test)
  // Then, replay test.joedb into test_copy.joedb
  //
  {
-  File file("test.joedb", File::mode_t::read_existing);
+  File file("test.joedb", Open_Mode::read_existing);
   Journal_File journal(file);
 
-  File file_copy("test_copy.joedb", File::mode_t::create_new);
+  File file_copy("test_copy.joedb", Open_Mode::create_new);
   Journal_File journal_copy(file_copy);
 
   Database db_storage;

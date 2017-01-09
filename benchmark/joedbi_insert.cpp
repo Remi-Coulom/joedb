@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   std::sscanf(argv[1], "%d", &N);
   std::printf("N = %d\n", N);
 
-  File file(file_name, File::mode_t::create_new);
+  File file(file_name, Open_Mode::create_new);
   Journal_File journal_file(file);
   Database db;
   Readable_Multiplexer multiplexer(db);

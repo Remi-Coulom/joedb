@@ -37,7 +37,7 @@ void joedb::File::sync()
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::File::try_open(const char *file_name, mode_t new_mode)
+bool joedb::File::try_open(const char *file_name, Open_Mode new_mode)
 /////////////////////////////////////////////////////////////////////////////
 {
  static const char *mode_string[3] = {"rb", "r+b", "w+b"};
@@ -47,24 +47,24 @@ bool joedb::File::try_open(const char *file_name, mode_t new_mode)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::File::File(const char *file_name, mode_t new_mode)
+joedb::File::File(const char *file_name, Open_Mode new_mode)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (new_mode == mode_t::automatic)
+ if (new_mode == Open_Mode::automatic)
  {
-  try_open(file_name, mode_t::write_existing) ||
-  try_open(file_name, mode_t::read_existing) ||
-  try_open(file_name, mode_t::create_new);
+  try_open(file_name, Open_Mode::write_existing) ||
+  try_open(file_name, Open_Mode::read_existing) ||
+  try_open(file_name, Open_Mode::create_new);
  }
- else if (new_mode == mode_t::create_new)
+ else if (new_mode == Open_Mode::create_new)
  {
-  if (try_open(file_name, mode_t::read_existing))
+  if (try_open(file_name, Open_Mode::read_existing))
   {
    close_file();
    throw Exception("File already exists: " + std::string(file_name));
   }
   else
-   try_open(file_name, mode_t::create_new);
+   try_open(file_name, Open_Mode::create_new);
  }
  else
   try_open(file_name, new_mode);

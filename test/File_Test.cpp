@@ -12,7 +12,7 @@ class File_Test: public::testing::Test
  protected:
   virtual void SetUp()
   {
-   File file("existing.tmp", File::mode_t::create_new);
+   File file("existing.tmp", Open_Mode::create_new);
    file.write<uint64_t>(joedb_magic);
    file.write<bool>(false);
    file.write<bool>(true);
@@ -31,17 +31,17 @@ TEST_F(File_Test, open_failure)
 {
  EXPECT_ANY_THROW
  (
-  File file("not_existing.tmp", File::mode_t::read_existing)
+  File file("not_existing.tmp", Open_Mode::read_existing)
  );
 
  EXPECT_ANY_THROW
  (
-  File file("not_existing.tmp", File::mode_t::write_existing)
+  File file("not_existing.tmp", Open_Mode::write_existing)
  );
 
  EXPECT_ANY_THROW
  (
-  File file("existing.tmp", File::mode_t::create_new)
+  File file("existing.tmp", Open_Mode::create_new)
  );
 }
 
@@ -49,11 +49,11 @@ TEST_F(File_Test, open_failure)
 TEST_F(File_Test, open_lock)
 {
  std::remove("locked.tmp");
- File locked_file_1("locked.tmp", File::mode_t::create_new);
+ File locked_file_1("locked.tmp", Open_Mode::create_new);
 
  EXPECT_ANY_THROW
  (
-  File locked_file_2("locked.tmp", File::mode_t::write_existing)
+  File locked_file_2("locked.tmp", Open_Mode::write_existing)
  );
 }
 
@@ -61,22 +61,22 @@ TEST_F(File_Test, open_lock)
 TEST_F(File_Test, open_success)
 {
  {
-  File file("existing.tmp", File::mode_t::read_existing);
-  EXPECT_EQ(file.get_mode(), File::mode_t::read_existing);
+  File file("existing.tmp", Open_Mode::read_existing);
+  EXPECT_EQ(file.get_mode(), Open_Mode::read_existing);
  }
 
  {
   std::remove("new.tmp");
-  File new_file("new.tmp", File::mode_t::create_new);
+  File new_file("new.tmp", Open_Mode::create_new);
   new_file.flush();
-  EXPECT_EQ(new_file.get_mode(), File::mode_t::create_new);
+  EXPECT_EQ(new_file.get_mode(), Open_Mode::create_new);
  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, read_existing)
 {
- File existing("existing.tmp", File::mode_t::read_existing);
+ File existing("existing.tmp", Open_Mode::read_existing);
  EXPECT_EQ(existing.read<uint64_t>(), joedb_magic);
  EXPECT_EQ(existing.read<bool>(), false);
  EXPECT_EQ(existing.read<bool>(), true);
@@ -87,7 +87,7 @@ TEST_F(File_Test, read_write_integer)
 {
  {
   std::remove("new.tmp");
-  File new_file("new.tmp", File::mode_t::create_new);
+  File new_file("new.tmp", Open_Mode::create_new);
   new_file.write<uint64_t>(joedb_magic);
   new_file.set_position(0);
   EXPECT_EQ(joedb_magic, new_file.read<uint64_t>());
@@ -99,7 +99,7 @@ TEST_F(File_Test, read_write_integer)
 
  {
   std::remove("new.tmp");
-  File new_file("new.tmp", File::mode_t::create_new);
+  File new_file("new.tmp", Open_Mode::create_new);
   for (int i = N; --i >= 0;)
   {
    uint16_t value = uint16_t(gen());
@@ -111,7 +111,7 @@ TEST_F(File_Test, read_write_integer)
  }
  {
   std::remove("new.tmp");
-  File new_file("new.tmp", File::mode_t::create_new);
+  File new_file("new.tmp", Open_Mode::create_new);
   for (int i = N; --i >= 0;)
   {
    uint32_t value = uint32_t(gen());
@@ -123,7 +123,7 @@ TEST_F(File_Test, read_write_integer)
  }
  {
   std::remove("new.tmp");
-  File new_file("new.tmp", File::mode_t::create_new);
+  File new_file("new.tmp", Open_Mode::create_new);
   for (int i = N; --i >= 0;)
   {
    uint64_t value = uint64_t(gen()) & 0x1fffffffffffffffULL;
@@ -139,7 +139,7 @@ TEST_F(File_Test, read_write_integer)
 TEST_F(File_Test, read_write_string)
 {
  std::remove("new.tmp");
- File new_file("new.tmp", File::mode_t::create_new);
+ File new_file("new.tmp", Open_Mode::create_new);
  const std::string s("joedb!!!");
  new_file.write_string(s);
  new_file.set_position(0);
@@ -150,7 +150,7 @@ TEST_F(File_Test, read_write_string)
 TEST_F(File_Test, position_test)
 {
  std::remove("new.tmp");
- File file("new.tmp", File::mode_t::create_new);
+ File file("new.tmp", Open_Mode::create_new);
  EXPECT_EQ(0ULL, file.get_position());
 
  file.set_position(uint64_t(-1));
@@ -183,7 +183,7 @@ TEST_F(File_Test, position_test)
 TEST_F(File_Test, eof)
 {
  std::remove("new.tmp");
- File file("new.tmp", File::mode_t::create_new);
+ File file("new.tmp", Open_Mode::create_new);
  EXPECT_FALSE(file.is_end_of_file());
 
  file.read<uint8_t>();

@@ -7,12 +7,12 @@
 
 namespace joedb
 {
+ enum class Open_Mode {read_existing, write_existing, create_new, automatic};
+
  class Generic_File
  {
   public:
-   enum class mode_t {read_existing, write_existing, create_new, automatic};
-
-   mode_t get_mode() const {return mode;}
+   Open_Mode get_mode() const {return mode;}
 
    bool is_end_of_file() const {return end_of_file;}
 
@@ -60,7 +60,7 @@ namespace joedb
    virtual int64_t get_size() const {return -1;} // -1 means no known size
 
   protected:
-   mode_t mode;
+   Open_Mode mode;
 
    virtual size_t read_buffer() = 0;
    virtual void write_buffer() = 0;

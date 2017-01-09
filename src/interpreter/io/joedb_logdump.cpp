@@ -43,7 +43,7 @@ int main(int argc, char **argv)
    arg_index++;
   }
 
-  joedb::File file(argv[arg_index], joedb::File::mode_t::read_existing);
+  joedb::File file(argv[arg_index], joedb::Open_Mode::read_existing);
 
   if (header)
   {

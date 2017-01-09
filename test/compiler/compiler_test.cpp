@@ -308,8 +308,7 @@ int do_vector_test()
   }
 
   {
-   testdb::File_Database db("test.joedb",
-                            joedb::Generic_File::mode_t::read_existing);
+   testdb::File_Database db("test.joedb", joedb::Open_Mode::read_existing);
    for (size_t i = 0; i < n; i++)
     std::cout << "v[" << i << "] = " << db.get_value(v[i]) << '\n';
   }
@@ -333,7 +332,7 @@ int do_vector_test()
 
   {
    vector_test::File_Database db("vector_test.joedb",
-                                 joedb::Generic_File::mode_t::read_existing);
+                                 joedb::Open_Mode::read_existing);
    for (size_t i = 0; i < n; i++)
    {
     std::cout << "v[" << i << "] = {" << db.get_x(v[i]);

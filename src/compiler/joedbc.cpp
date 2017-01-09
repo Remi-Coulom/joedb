@@ -1051,7 +1051,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << R"RRR(
   public:
-   File_Database(const char *file_name, joedb::Generic_File::mode_t mode = joedb::Generic_File::mode_t::automatic);
+   File_Database(const char *file_name,
+                 joedb::Open_Mode mode = joedb::Open_Mode::automatic);
 
    void checkpoint_no_commit() {journal.checkpoint(0);}
    void checkpoint_half_commit() {journal.checkpoint(1);}
@@ -1306,7 +1307,7 @@ File_Database::File_Database
 /////////////////////////////////////////////////////////////////////////////
 (
  const char *file_name,
- joedb::Generic_File::mode_t mode
+ joedb::Open_Mode mode
 ):
  file(file_name, mode),
  journal(file)
@@ -1316,11 +1317,7 @@ File_Database::File_Database
  //
  std::stringstream file_schema;
  {
-  joedb::Stream_File stream_file
-  (
-   file_schema,
-   joedb::Generic_File::mode_t::create_new
-  );
+  joedb::Stream_File stream_file(file_schema, joedb::Open_Mode::create_new);
 
   joedb::Journal_File file_schema_journal(stream_file);
 
@@ -1346,11 +1343,7 @@ File_Database::File_Database
   if (file_schema.str().compare(pos, len, schema_string, pos, len) == 0)
   {
    std::stringstream schema(schema_string);
-   joedb::Stream_File schema_file
-                      (
-                       schema,
-                       joedb::Generic_File::mode_t::read_existing
-                      );
+   joedb::Stream_File schema_file(schema, joedb::Open_Mode::read_existing);
    joedb::Journal_File schema_journal(schema_file);
 
    schema_journal.rewind();
@@ -1431,7 +1424,7 @@ int main(int argc, char **argv)
    return 1;
   }
 
-  Stream_File schema_file(schema, Generic_File::mode_t::create_new);
+  Stream_File schema_file(schema, Open_Mode::create_new);
   Journal_File journal(schema_file);
   Selective_Writeable schema_writeable(journal, Selective_Writeable::schema);
   Custom_Collector custom_collector(custom_names);

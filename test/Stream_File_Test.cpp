@@ -11,7 +11,7 @@ TEST(Stream_File_Test, position_test)
 {
  std::stringstream stream;
 
- Stream_File file(stream, Generic_File::mode_t::create_new);
+ Stream_File file(stream, Open_Mode::create_new);
  EXPECT_EQ(0ULL, file.get_position());
 
  file.set_position(uint64_t(-1));

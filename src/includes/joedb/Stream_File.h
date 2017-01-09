@@ -10,7 +10,7 @@ namespace joedb
  class Stream_File: public Generic_File
  {
   public:
-   Stream_File(std::iostream &stream, mode_t mode);
+   Stream_File(std::iostream &stream, Open_Mode mode);
    int64_t get_size() const override;
 
   protected:

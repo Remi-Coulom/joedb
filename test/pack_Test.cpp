@@ -41,7 +41,7 @@ update_vector float 7 value 2 0.8 9\n\
  std::stringstream joedb_ss;
 
  {
-  Stream_File joedb_file(joedb_ss, Generic_File::mode_t::create_new);
+  Stream_File joedb_file(joedb_ss, Open_Mode::create_new);
   Journal_File journal(joedb_file);
 
   Database db;
@@ -59,7 +59,7 @@ update_vector float 7 value 2 0.8 9\n\
 
  {
   std::stringstream joedb_ss_bis(joedb_ss.str());
-  Stream_File joedb_file(joedb_ss_bis, Generic_File::mode_t::read_existing);
+  Stream_File joedb_file(joedb_ss_bis, Open_Mode::read_existing);
   Journal_File journal(joedb_file);
 
   std::stringstream packed_ss;

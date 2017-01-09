@@ -29,7 +29,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
  //
  // Create a new empty joedb file
  //
- if (file.get_mode() == Generic_File::mode_t::create_new)
+ if (file.get_mode() == Open_Mode::create_new)
  {
   file.write<uint8_t>('j');
   file.write<uint8_t>('o');
