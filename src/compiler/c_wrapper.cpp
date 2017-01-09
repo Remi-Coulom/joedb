@@ -19,15 +19,15 @@ void write_c_type
 
  switch (type.get_type_id())
  {
-  case Type::type_id_t::null:
+  case Type::Type_Id::null:
    out << "void ";
   break;
 
-  case Type::type_id_t::string:
+  case Type::Type_Id::string:
    out << "char const *";
   break;
 
-  case Type::type_id_t::reference:
+  case Type::Type_Id::reference:
   {
    const Table_Id referred = type.get_table_id();
    out << options.get_namespace_name() << "_id_of_";
@@ -36,7 +36,7 @@ void write_c_type
   break;
 
   #define TYPE_MACRO(type, return_type, type_id, read, write)\
-  case Type::type_id_t::type_id:\
+  case Type::Type_Id::type_id:\
    out << #type << ' ';\
   break;
   #define TYPE_MACRO_NO_STRING
@@ -269,9 +269,9 @@ void generate_c_wrapper
    body << " id)\n{\n";
    body << convert.str();
    body << " return p->get_" << fname << '(' << name << "::id_of_" << tname << "(id))";
-   if (type.get_type_id() == Type::type_id_t::string)
+   if (type.get_type_id() == Type::Type_Id::string)
     body << ".c_str()";
-   else if (type.get_type_id() == Type::type_id_t::reference)
+   else if (type.get_type_id() == Type::Type_Id::reference)
     body << ".get_id()";
    body << ";\n";
    body << "}\n\n";
@@ -282,7 +282,7 @@ void generate_c_wrapper
    body << "value)\n{\n";
    body << convert.str();
    body << " p->set_" << fname << '(' << name << "::id_of_" << tname << "(id), ";
-   if (type.get_type_id() == Type::type_id_t::reference)
+   if (type.get_type_id() == Type::Type_Id::reference)
    {
     body << name << "::id_of_";
     body << db.get_table_name(type.get_table_id());

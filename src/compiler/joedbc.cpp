@@ -31,23 +31,23 @@ void write_type
 {
  switch (type.get_type_id())
  {
-  case Type::type_id_t::null:
+  case Type::Type_Id::null:
    out << "void ";
   break;
 
-  case Type::type_id_t::string:
+  case Type::Type_Id::string:
    if (return_type)
     out << "const std::string &";
    else
     out << "std::string ";
   break;
 
-  case Type::type_id_t::reference:
+  case Type::Type_Id::reference:
    out << "id_of_" << db.get_table_name(type.get_table_id()) << ' ';
   break;
 
   #define TYPE_MACRO(type, return_type, type_id, read, write)\
-  case Type::type_id_t::type_id:\
+  case Type::Type_Id::type_id:\
    out << #type << ' ';\
   break;
   #define TYPE_MACRO_NO_STRING
@@ -566,7 +566,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
        out << "     {\n";
        out << "      internal_update_" << table.second;
        out << "__" << field.second << "(record_id, ";
-       if (type.get_type_id() != Type::type_id_t::reference)
+       if (type.get_type_id() != Type::Type_Id::reference)
         out << "value";
        else
        {
@@ -635,7 +635,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
        out << "      for (Record_Id i = 0; i < size; i++)\n";
        out << "       internal_update_" << table.second;
        out << "__" << field.second << "(record_id + i, ";
-       if (type.get_type_id() != Type::type_id_t::reference)
+       if (type.get_type_id() != Type::Type_Id::reference)
         out << "value[i]";
        else
        {
@@ -935,7 +935,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << types[int(type.get_type_id())];
    out << '(' << table.first << ", record.id, " << field.first << ", ";
    out << "field_value_of_" << fname;
-   if (type.get_type_id() == Type::type_id_t::reference)
+   if (type.get_type_id() == Type::Type_Id::reference)
     out << ".id";
    out << ");\n";
    out << "   }\n";

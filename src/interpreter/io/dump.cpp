@@ -35,7 +35,7 @@ void joedb::dump(const Readable &db, Writeable &writeable)
    {
     ++field_id;
     Type type = db.get_field_type(table.first, field.first);
-    if (type.get_type_id() == Type::type_id_t::reference)
+    if (type.get_type_id() == Type::Type_Id::reference)
      type = Type::reference(table_map[type.get_table_id()]);
     field_maps[table.first][field.first] = field_id;
 
@@ -82,11 +82,11 @@ void joedb::dump(const Readable &db, Writeable &writeable)
     {
      switch(db.get_field_type(table_id, field_id).get_type_id())
      {
-      case Type::type_id_t::null:
+      case Type::Type_Id::null:
       break;
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
-      case Type::type_id_t::type_id:\
+      case Type::Type_Id::type_id:\
        writeable.update_##type_id(table_map[table_id], record_id, field_maps[table_id][field_id], db.get_##type_id(table_id, record_id, field_id));\
       break;
       #include "joedb/TYPE_MACRO.h"
@@ -130,11 +130,11 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 
      switch(db.get_field_type(table_id, field_id).get_type_id())
      {
-      case Type::type_id_t::null:
+      case Type::Type_Id::null:
       break;
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
-      case Type::type_id_t::type_id:\
+      case Type::Type_Id::type_id:\
       {\
        std::vector<type> v(size);\
        for (Record_Id i = 0; i < size; i++)\

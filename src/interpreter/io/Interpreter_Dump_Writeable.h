@@ -13,12 +13,12 @@ namespace joedb
    {
     switch(type.get_type_id())
     {
-     case Type::type_id_t::null:
+     case Type::Type_Id::null:
       out << "null";
      break;
 
      #define TYPE_MACRO(type, return_type, type_id, read, write)\
-     case Type::type_id_t::type_id:\
+     case Type::Type_Id::type_id:\
       out << #type_id;\
      break;
      #define TYPE_MACRO_NO_REFERENCE
@@ -26,7 +26,7 @@ namespace joedb
      #undef TYPE_MACRO_NO_REFERENCE
      #undef TYPE_MACRO
 
-     case Type::type_id_t::reference:
+     case Type::Type_Id::reference:
       out << "references " << db.get_table_name(type.get_table_id());
      break;
     }

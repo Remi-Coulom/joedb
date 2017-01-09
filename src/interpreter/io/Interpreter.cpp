@@ -74,11 +74,11 @@ void joedb::Interpreter::update_value
 {
  switch(db.get_field_type(table_id, field_id).get_type_id())
  {
-  case Type::type_id_t::null:
+  case Type::Type_Id::null:
    throw Exception("bad field");
 
   #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
-  case Type::type_id_t::type_id:\
+  case Type::Type_Id::type_id:\
   {\
    type value = joedb::read_##type_id(in);\
    db.update_##type_id(table_id, record_id, field_id, value);\
@@ -207,7 +207,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    std::string field_name;
    iss >> field_name;
    Type type = parse_type(iss, out);
-   if (type.get_type_id() != Type::type_id_t::null)
+   if (type.get_type_id() != Type::Type_Id::null)
     ERROR_CHECK(db.add_field(table_id, field_name, type));
   }
   else if (command == "drop_field") /////////////////////////////////////////
@@ -305,12 +305,12 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
    {
     switch(db.get_field_type(table_id, field_id).get_type_id())
     {
-     case Type::type_id_t::null:
+     case Type::Type_Id::null:
       out << "Error: bad field\n";
      break;
 
      #define TYPE_MACRO(type, return_type, type_id, R, W)\
-     case Type::type_id_t::type_id:\
+     case Type::Type_Id::type_id:\
      {\
       std::vector<type> v(size);\
       for (size_t i = 0; i < size; i++)\

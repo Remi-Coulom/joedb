@@ -71,10 +71,10 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
 
      switch(type.get_type_id())
      {
-      case Type::type_id_t::null:
+      case Type::Type_Id::null:
       break;
 
-      case Type::type_id_t::reference:
+      case Type::Type_Id::reference:
       {
        Record_Id i = db.get_reference(table_id, record_id, field_id);
        const std::vector<int64_t> &v = reference_translation[type.get_table_id()];
@@ -84,7 +84,7 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
       }
       break;
 
-      case Type::type_id_t::string:
+      case Type::Type_Id::string:
        if (base64)
        {
         out << '"';
@@ -96,7 +96,7 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
       break;
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
-      case Type::type_id_t::type_id:\
+      case Type::Type_Id::type_id:\
        joedb::write_##type_id(out,\
         db.get_##type_id(table_id, record_id, field_id));\
       break;

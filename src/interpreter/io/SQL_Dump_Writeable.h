@@ -15,46 +15,46 @@ namespace joedb
    {
     switch(type.get_type_id())
     {
-     case Type::type_id_t::null:
+     case Type::Type_Id::null:
       out << "NULL";
      break;
 
-     case Type::type_id_t::string:
+     case Type::Type_Id::string:
       out << "TEXT";
      break;
 
-     case Type::type_id_t::int32:
+     case Type::Type_Id::int32:
       out << "INTEGER";
      break;
 
-     case Type::type_id_t::int64:
+     case Type::Type_Id::int64:
       out << "BIGINT";
      break;
 
-     case Type::type_id_t::reference:
+     case Type::Type_Id::reference:
      {
       out << key_type << " REFERENCES ";
       out << '\"' << db.get_table_name(type.get_table_id()) << '\"';
      }
      break;
 
-     case Type::type_id_t::boolean:
+     case Type::Type_Id::boolean:
       out << "SMALLINT";
      break;
 
-     case Type::type_id_t::float32:
+     case Type::Type_Id::float32:
       out << "REAL";
      break;
 
-     case Type::type_id_t::float64:
+     case Type::Type_Id::float64:
       out << "REAL";
      break;
 
-     case Type::type_id_t::int8:
+     case Type::Type_Id::int8:
       out << "SMALLINT";
      break;
 
-     case Type::type_id_t::int16:
+     case Type::Type_Id::int16:
       out << "SMALLINT";
      break;
     }

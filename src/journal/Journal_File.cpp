@@ -364,8 +364,8 @@ void joedb::Journal_File::add_field
  file.write<operation_t>(operation_t::add_field);
  file.compact_write<Table_Id>(table_id);
  file.write_string(name);
- file.write<Type::type_id_t>(type.get_type_id());
- if (type.get_type_id() == Type::type_id_t::reference)
+ file.write<Type::Type_Id>(type.get_type_id());
+ if (type.get_type_id() == Type::Type_Id::reference)
   file.compact_write<Table_Id>(type.get_table_id());
 }
 
@@ -546,8 +546,8 @@ void joedb::Journal_File::update_vector_##type_id\
 joedb::Type joedb::Journal_File::read_type()
 /////////////////////////////////////////////////////////////////////////////
 {
- Type::type_id_t type_id = file.read<Type::type_id_t>();
- if (type_id == Type::type_id_t::reference)
+ Type::Type_Id type_id = file.read<Type::Type_Id>();
+ if (type_id == Type::Type_Id::reference)
   return Type::reference(file.compact_read<Table_Id>());
  else
   return Type(type_id);

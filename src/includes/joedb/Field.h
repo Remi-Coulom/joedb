@@ -33,9 +33,9 @@ namespace joedb
    {
     switch (type.get_type_id())
     {
-     case Type::type_id_t::null: break;
+     case Type::Type_Id::null: break;
      #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
-     case Type::type_id_t::type_id: type_id##_column.resize(size); break;
+     case Type::Type_Id::type_id: type_id##_column.resize(size); break;
      #include "TYPE_MACRO.h"
      #undef TYPE_MACRO
     }
@@ -44,19 +44,19 @@ namespace joedb
    #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
    return_type get_##type_id(Record_Id record_id) const\
    {\
-    if (type.get_type_id() != Type::type_id_t::type_id)\
+    if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
     return type_id##_column[record_id - 1];\
    }\
    void set_##type_id(Record_Id record_id, return_type value)\
    {\
-    if (type.get_type_id() != Type::type_id_t::type_id)\
+    if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
     type_id##_column[record_id - 1] = value;\
    }\
    const cpp_type *get_vector_##type_id() const\
    {\
-    if (type.get_type_id() != Type::type_id_t::type_id)\
+    if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
     return &type_id##_column[0];\
    }\
@@ -64,7 +64,7 @@ namespace joedb
                              Record_Id size,\
                              const cpp_type *value)\
    {\
-    if (type.get_type_id() != Type::type_id_t::type_id)\
+    if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
     for (Record_Id i = 0; i < size; i++)\
      type_id##_column[record_id + i - 1] = value[i];\
