@@ -20,47 +20,10 @@ int main(int argc, char **argv)
  {
   joedb::File file;
 
-  file.open(argv[1], joedb::File::mode_t::write_existing);
-  if (file.get_status() != joedb::File::status_t::success)
-  {
-   std::cout << "Could not open " << argv[1] << " for writing.\n";
-
-   file.open(argv[1], joedb::File::mode_t::read_existing);
-   if (file.get_status() != joedb::File::status_t::success)
-   {
-    std::cout << "Could not open " << argv[1] << " for reading.\n";
-
-    if (file.get_status() == joedb::File::status_t::locked)
-    {
-     std::cout << "Error: " << argv[1] << " is locked by another process.\n";
-     return 1;
-    }
-
-    file.open(argv[1], joedb::File::mode_t::create_new);
-    if (file.get_status() != joedb::File::status_t::success)
-    {
-     std::cout << "Could not create " << argv[1] << ".\n";
-     return 1;
-    }
-    else
-     std::cout << "Created new database: " << argv[1] << '\n';
-   }
-   else
-    std::cout << "Database opened read-only: " << argv[1] << '\n';
-  }
-  else
-   std::cout << "Database opened successfully: " << argv[1] << '\n';
-
+  file.open(argv[1], joedb::File::mode_t::automatic);
   joedb::Journal_File journal(file);
   joedb::Database db;
   journal.replay_log(db);
-
-  if (journal.get_state() != joedb::Journal_File::state_t::no_error)
-  {
-   std::cout << "Error reading database\n";
-   return 1;
-  }
-
   joedb::Readable_Multiplexer multiplexer(db);
   multiplexer.add_writeable(journal);
   joedb::Interpreter interpreter(multiplexer);

@@ -1,7 +1,6 @@
 #include "json.h"
 #include "File.h"
 #include "Journal_File.h"
-#include "file_error_message.h"
 #include "Database.h"
 
 #include <iostream>
@@ -26,20 +25,9 @@ int main(int argc, char **argv)
  }
 
  joedb::File file(argv[file_index], joedb::File::mode_t::read_existing);
-
- if (joedb::file_error_message(std::cerr, file))
-  return 1;
-
  joedb::Journal_File journal(file);
  joedb::Database db;
  journal.replay_log(db);
-
- if (journal.get_state() != joedb::Journal_File::state_t::no_error)
- {
-  std::cerr << "Error reading database\n";
-  return 1;
- }
-
  joedb::write_json(std::cout, db, base64);
 
  return 0;

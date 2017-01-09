@@ -1023,7 +1023,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::File file;
    joedb::Journal_File journal;
    static const std::string schema_string;
-   bool schema_error = false;
    bool upgrading_schema = false;
 
    void custom(const std::string &name) override
@@ -1052,23 +1051,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << R"RRR(
   public:
-   File_Database(const char *file_name, bool read_only = false);
-
-   joedb::Journal_File::state_t get_journal_state() const
-   {
-    return journal.get_state();
-   }
+   File_Database(const char *file_name, joedb::Generic_File::mode_t mode = joedb::Generic_File::mode_t::automatic);
 
    void checkpoint_no_commit() {journal.checkpoint(0);}
    void checkpoint_half_commit() {journal.checkpoint(1);}
    void checkpoint_full_commit() {journal.checkpoint(2);}
-
-   bool is_good() const
-   {
-    return file.get_status() == joedb::File::status_t::success &&
-           journal.get_state() == joedb::Journal_File::state_t::no_error &&
-           !schema_error;
-   }
  };
 
 )RRR";
@@ -1272,6 +1259,7 @@ void generate_cpp
  out << "#include \"" << options.get_namespace_name() << ".h\"\n";
  out << "#include \"joedb/Stream_File.h\"\n";
  out << "#include \"joedb/Selective_Writeable.h\"\n";
+ out << "#include \"joedb/Exception.h\"\n";
  out << '\n';
  out << "#include <sstream>\n";
  out << "#include <ctime>\n";
@@ -1314,83 +1302,67 @@ void Database::valid_data()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-File_Database::File_Database(const char *file_name, bool read_only):
+File_Database::File_Database
 /////////////////////////////////////////////////////////////////////////////
- file(file_name,
-      read_only ? joedb::File::mode_t::read_existing :
-                  joedb::File::mode_t::write_existing),
+(
+ const char *file_name,
+ joedb::Generic_File::mode_t mode
+):
+ file(file_name, mode),
  journal(file)
 {
  //
- // If the file does not exist, create it
+ // Replay the journal: load data + schema
  //
- if (!is_good() &&
-     !read_only &&
-     file.get_status() == joedb::File::status_t::failure)
+ std::stringstream file_schema;
  {
-  file.open(file_name, joedb::File::mode_t::create_new);
-  if (file.get_status() == joedb::File::status_t::success)
-  {
-   journal.~Journal_File();
-   new(&journal) joedb::Journal_File(file);
-  }
+  joedb::Stream_File stream_file
+  (
+   file_schema,
+   joedb::Generic_File::mode_t::create_new
+  );
+
+  joedb::Journal_File file_schema_journal(stream_file);
+
+  joedb::Selective_Writeable select
+  (
+   file_schema_journal,
+   joedb::Selective_Writeable::Mode::schema
+  );
+
+  set_writeable(select);
+  journal.replay_log(*this);
+  clear_writeable();
  }
 
  //
- // If the file was opened successfully, replay the journal, and check schema
+ // If schema does not match, try to upgrade it, or fail
  //
- if (is_good())
+ if (schema_string != file_schema.str())
  {
-  std::stringstream file_schema;
+  const size_t pos = joedb::Journal_File::header_size;
+  const size_t len = file_schema.str().size() - pos;
+
+  if (file_schema.str().compare(pos, len, schema_string, pos, len) == 0)
   {
-   joedb::Stream_File stream_file
-   (
-    file_schema,
-    joedb::Generic_File::mode_t::create_new
-   );
+   std::stringstream schema(schema_string);
+   joedb::Stream_File schema_file
+                      (
+                       schema,
+                       joedb::Generic_File::mode_t::read_existing
+                      );
+   joedb::Journal_File schema_journal(schema_file);
 
-   joedb::Journal_File file_schema_journal(stream_file);
+   schema_journal.rewind();
+   schema_journal.play_until(dummy_writeable, file_schema.str().size());
 
-   joedb::Selective_Writeable select
-   (
-    file_schema_journal,
-    joedb::Selective_Writeable::Mode::schema
-   );
-
-   set_writeable(select);
-   journal.replay_log(*this);
-   clear_writeable();
+   set_writeable(journal);
+   upgrading_schema = true;
+   schema_journal.play_until_checkpoint(*this);
+   upgrading_schema = false;
   }
-
-  //
-  // If schema does not match, try to upgrade it, or fail
-  //
-  if (is_good() && schema_string != file_schema.str())
-  {
-   const size_t pos = joedb::Journal_File::header_size;
-   const size_t len = file_schema.str().size() - pos;
-
-   if (file_schema.str().compare(pos, len, schema_string, pos, len) == 0)
-   {
-    std::stringstream schema(schema_string);
-    joedb::Stream_File schema_file
-                       (
-                        schema,
-                        joedb::Generic_File::mode_t::read_existing
-                       );
-    joedb::Journal_File schema_journal(schema_file);
-
-    schema_journal.rewind();
-    schema_journal.play_until(dummy_writeable, file_schema.str().size());
-
-    set_writeable(journal);
-    upgrading_schema = true;
-    schema_journal.play_until(*this, 0);
-    upgrading_schema = false;
-   }
-   else
-    schema_error = true;
-  }
+  else
+   throw joedb::Exception("Schema error");
  }
 
  set_writeable(journal);

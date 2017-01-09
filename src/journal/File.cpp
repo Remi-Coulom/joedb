@@ -1,4 +1,5 @@
 #include "joedb/File.h"
+#include "Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // System-specific functions
@@ -36,32 +37,51 @@ void joedb::File::sync()
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
+bool joedb::File::try_open(const char *file_name, mode_t new_mode)
+/////////////////////////////////////////////////////////////////////////////
+{
+ static const char *mode_string[3] = {"rb", "r+b", "w+b"};
+ mode = new_mode;
+ file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
+ return file != 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::File::open(const char *file_name, mode_t new_mode)
 /////////////////////////////////////////////////////////////////////////////
 {
  reset();
  close_file();
 
- mode = new_mode;
- static const char *mode_string[3] = {"rb", "r+b", "w+b"};
- file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
-
- if (file)
+ if (new_mode == mode_t::automatic)
  {
-  if (lock_file())
+  try_open(file_name, mode_t::write_existing) ||
+  try_open(file_name, mode_t::read_existing) ||
+  try_open(file_name, mode_t::create_new);
+ }
+ else if (new_mode == mode_t::create_new)
+ {
+  if (try_open(file_name, mode_t::read_existing))
   {
-   std::setvbuf(file, 0, _IONBF, 0);
-   status = status_t::success;
+   close_file();
+   throw Exception("File already exists: " + std::string(file_name));
   }
   else
-  {
-   std::fclose(file);
-   file = 0;
-   status = status_t::locked;
-  }
+   try_open(file_name, mode_t::create_new);
  }
  else
-  status = status_t::failure;
+  try_open(file_name, new_mode);
+
+ if (!file)
+  throw Exception("Cannot open file: " + std::string(file_name));
+
+ if (!lock_file())
+ {
+  close_file();
+  throw Exception("File locked: " + std::string(file_name));
+ }
+
+ std::setvbuf(file, 0, _IONBF, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,6 +113,7 @@ void joedb::File::close_file()
  {
   flush();
   fclose(file);
+  file = 0;
  }
 }
 

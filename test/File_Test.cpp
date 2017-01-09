@@ -20,6 +20,7 @@ class File_Test: public::testing::Test
 
   virtual void TearDown()
   {
+   std::remove("locked.tmp");
    std::remove("existing.tmp");
    std::remove("new.tmp");
   }
@@ -28,23 +29,32 @@ class File_Test: public::testing::Test
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_failure)
 {
- {
-  File file("not_existing.tmp", File::mode_t::read_existing);
-  EXPECT_EQ(file.get_status(), joedb::File::status_t::failure);
- }
- {
-  File file("not_existing.tmp", File::mode_t::write_existing);
-  EXPECT_EQ(file.get_status(), joedb::File::status_t::failure);
- }
+ EXPECT_ANY_THROW
+ (
+  File file("not_existing.tmp", File::mode_t::read_existing)
+ );
+
+ EXPECT_ANY_THROW
+ (
+  File file("not_existing.tmp", File::mode_t::write_existing)
+ );
+
+ EXPECT_ANY_THROW
+ (
+  File file("existing.tmp", File::mode_t::create_new)
+ );
 }
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
+ std::remove("locked.tmp");
  File locked_file_1("locked.tmp", File::mode_t::create_new);
- File locked_file_2("locked.tmp", File::mode_t::write_existing);
- EXPECT_EQ(locked_file_1.get_status(), joedb::File::status_t::success);
- EXPECT_EQ(locked_file_2.get_status(), joedb::File::status_t::locked);
+
+ EXPECT_ANY_THROW
+ (
+  File locked_file_2("locked.tmp", File::mode_t::write_existing)
+ );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,14 +62,14 @@ TEST_F(File_Test, open_success)
 {
  {
   File file("existing.tmp", File::mode_t::read_existing);
-  EXPECT_EQ(file.get_status(), joedb::File::status_t::success);
   EXPECT_EQ(file.get_mode(), File::mode_t::read_existing);
  }
 
  {
+  std::remove("new.tmp");
   File new_file("new.tmp", File::mode_t::create_new);
-  EXPECT_EQ(new_file.get_status(), joedb::File::status_t::success);
   new_file.flush();
+  EXPECT_EQ(new_file.get_mode(), File::mode_t::create_new);
  }
 }
 
@@ -76,6 +86,7 @@ TEST_F(File_Test, read_existing)
 TEST_F(File_Test, read_write_integer)
 {
  {
+  std::remove("new.tmp");
   File new_file("new.tmp", File::mode_t::create_new);
   new_file.write<uint64_t>(joedb_magic);
   new_file.set_position(0);
@@ -87,6 +98,7 @@ TEST_F(File_Test, read_write_integer)
  const int N = 1000;
 
  {
+  std::remove("new.tmp");
   File new_file("new.tmp", File::mode_t::create_new);
   for (int i = N; --i >= 0;)
   {
@@ -98,6 +110,7 @@ TEST_F(File_Test, read_write_integer)
   }
  }
  {
+  std::remove("new.tmp");
   File new_file("new.tmp", File::mode_t::create_new);
   for (int i = N; --i >= 0;)
   {
@@ -109,6 +122,7 @@ TEST_F(File_Test, read_write_integer)
   }
  }
  {
+  std::remove("new.tmp");
   File new_file("new.tmp", File::mode_t::create_new);
   for (int i = N; --i >= 0;)
   {
@@ -124,6 +138,7 @@ TEST_F(File_Test, read_write_integer)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, read_write_string)
 {
+ std::remove("new.tmp");
  File new_file("new.tmp", File::mode_t::create_new);
  const std::string s("joedb!!!");
  new_file.write_string(s);
@@ -134,6 +149,7 @@ TEST_F(File_Test, read_write_string)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, position_test)
 {
+ std::remove("new.tmp");
  File file("new.tmp", File::mode_t::create_new);
  EXPECT_EQ(0ULL, file.get_position());
 
@@ -166,6 +182,7 @@ TEST_F(File_Test, position_test)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, eof)
 {
+ std::remove("new.tmp");
  File file("new.tmp", File::mode_t::create_new);
  EXPECT_FALSE(file.is_end_of_file());
 

@@ -23,6 +23,7 @@ namespace joedb
    void sync() override;
 
   private:
+   bool try_open(const char *file_name, mode_t mode);
    FILE *file = 0;
    bool lock_file();
    void close_file();

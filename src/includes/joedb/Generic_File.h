@@ -10,11 +10,9 @@ namespace joedb
  class Generic_File
  {
   public:
-   enum class mode_t {read_existing, write_existing, create_new};
-   enum class status_t {success, locked, failure};
+   enum class mode_t {read_existing, write_existing, create_new, automatic};
 
    mode_t get_mode() const {return mode;}
-   status_t get_status() const {return status;}
 
    bool is_end_of_file() const {return end_of_file;}
 
@@ -63,7 +61,6 @@ namespace joedb
 
   protected:
    mode_t mode;
-   status_t status;
 
    virtual size_t read_buffer() = 0;
    virtual void write_buffer() = 0;

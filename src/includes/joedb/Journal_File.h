@@ -12,25 +12,16 @@ namespace joedb
   public:
    Journal_File(Generic_File &file);
 
-   enum class state_t
-   {
-    no_error,
-    bad_file,
-    unsupported_version,
-    bad_format,
-    crash_check,
-    writeable_threw,
-    journal_errors
-   };
-
-   state_t get_state() const {return state;}
-   const std::string &get_thrown_error() const {return thrown_error;}
    uint64_t ahead_of_checkpoint() const;
    uint64_t get_checkpoint_position() const {return checkpoint_position;}
    void checkpoint(int commit_level);
    void replay_log(Writeable &writeable);
    void rewind();
    void play_until(Writeable &writeable, uint64_t end);
+   void play_until_checkpoint(Writeable &writeable)
+   {
+    play_until(writeable, checkpoint_position);
+   }
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;
@@ -79,8 +70,6 @@ namespace joedb
    unsigned checkpoint_index;
    uint64_t checkpoint_position;
    int current_commit_level;
-   state_t state;
-   std::string thrown_error;
 
    Table_Id table_of_last_operation;
    Record_Id record_of_last_operation;

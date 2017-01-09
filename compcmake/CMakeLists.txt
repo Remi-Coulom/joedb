@@ -53,7 +53,6 @@ add_library(joedb_objects OBJECT
  ../src/interpreter/io/Interpreter.cpp
  ../src/interpreter/io/json.cpp
  ../src/interpreter/io/type_io.cpp
- ../src/interpreter/io/file_error_message.cpp
  ../src/journal/File.cpp
  ../src/journal/Generic_File.cpp
  ../src/journal/Journal_File.cpp

@@ -74,13 +74,7 @@ int file_test()
  // First, try to open the database
  //
  testdb::File_Database db("test.joedb");
- if (!db.is_good())
- {
-  std::cerr << "Error opening database\n";
-  return 1;
- }
- else
-  std::cout << "Database opened successfully\n";
+ std::cout << "Database opened successfully\n";
 
  //
  // Print table sizes
@@ -258,11 +252,6 @@ int schema_upgrade_test()
 {
  {
   schema_v1::File_Database db("upgrade_test.joedb");
-  if (!db.is_good())
-  {
-   std::cout << "Error during opening of v1\n";
-   return 1;
-  }
   std::cout << "v1 opened\n";
 
   db.new_person("Toto");
@@ -273,45 +262,27 @@ int schema_upgrade_test()
 
  {
   schema_v1::File_Database db("upgrade_test.joedb");
-  if (!db.is_good())
-  {
-   std::cout << "Error during re-opening of v1\n";
-   return 1;
-  }
   std::cout << "v1 re-opened\n";
  }
 
  {
   schema_v2::File_Database db("upgrade_test.joedb");
-  if (!db.is_good())
-  {
-   std::cout << "Error during opening of v2\n";
-   return 1;
-  }
-  else
-   std::cout << "v2 opened\n";
+  std::cout << "v2 opened\n";
  }
 
  {
   schema_v2::File_Database db("upgrade_test.joedb");
-  if (!db.is_good())
-  {
-   std::cout << "Error during opening of v2\n";
-   return 1;
-  }
-  else
-   std::cout << "v2 re-opened\n";
+  std::cout << "v2 re-opened\n";
  }
 
+ try
  {
   schema_v1::File_Database db("upgrade_test.joedb");
-  if (db.is_good())
-  {
-   std::cout << "Error: v1 code should not open v2 files\n";
-   return 1;
-  }
-  else
-   std::cout << "OK: v1 code does not open v2 file\n";
+  std::cout << "Error: v1 code should not open v2 files\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << "OK: v1 code does not open v2 file\n";
  }
 
  return 0;
@@ -337,7 +308,8 @@ int do_vector_test()
   }
 
   {
-   testdb::File_Database db("test.joedb", true);
+   testdb::File_Database db("test.joedb",
+                            joedb::Generic_File::mode_t::read_existing);
    for (size_t i = 0; i < n; i++)
     std::cout << "v[" << i << "] = " << db.get_value(v[i]) << '\n';
   }
@@ -360,7 +332,8 @@ int do_vector_test()
   }
 
   {
-   vector_test::File_Database db("vector_test.joedb", true);
+   vector_test::File_Database db("vector_test.joedb",
+                                 joedb::Generic_File::mode_t::read_existing);
    for (size_t i = 0; i < n; i++)
    {
     std::cout << "v[" << i << "] = {" << db.get_x(v[i]);
@@ -368,22 +341,24 @@ int do_vector_test()
    }
   }
 
+  try
   {
    vector_test::File_Database db("vector_hole.joedb");
-   if (!db.is_good())
-   {
-    std::cout << "Error opening vector_hole.joedb\n";
-    std::cout << db.get_last_error_message() << '\n';
-   }
+  }
+  catch (const joedb::Exception &e)
+  {
+   std::cout << "Error opening vector_hole.joedb\n";
+   std::cout << e.what() << '\n';
   }
 
+  try
   {
    vector_test::File_Database db("vector_delete.joedb");
-   if (!db.is_good())
-   {
-    std::cout << "Error opening vector_delete.joedb\n";
-    std::cout << db.get_last_error_message() << '\n';
-   }
+  }
+  catch (const joedb::Exception &e)
+  {
+   std::cout << "Error opening vector_delete.joedb\n";
+   std::cout << e.what() << '\n';
   }
  }
 

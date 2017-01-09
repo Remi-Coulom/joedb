@@ -7,8 +7,6 @@ int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  testdb::File_Database db("test.joedb");
- if (!db.is_good())
-  return 1;
 
  std::cout << "#ifndef translation_declared\n";
  std::cout << "#define translation_declared\n\n";

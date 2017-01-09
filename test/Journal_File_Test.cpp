@@ -21,16 +21,6 @@ class Journal_File_Test: public ::testing::Test
 };
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Journal_File_Test, bad_file)
-/////////////////////////////////////////////////////////////////////////////
-{
- File file("this_does_not_exists", File::mode_t::read_existing);
- EXPECT_EQ(file.get_status(), joedb::File::status_t::failure);
- Journal_File journal(file);
- EXPECT_EQ(Journal_File::state_t::bad_file, journal.get_state());
-}
-
-/////////////////////////////////////////////////////////////////////////////
 TEST_F(Journal_File_Test, basic_operations)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -104,7 +94,6 @@ TEST_F(Journal_File_Test, basic_operations)
   File file("test.joedb", File::mode_t::read_existing);
   Journal_File journal(file);
   journal.replay_log(db2);
-  EXPECT_EQ(Journal_File::state_t::no_error, journal.get_state());
  }
 
  std::ostringstream oss1;

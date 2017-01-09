@@ -1,4 +1,5 @@
 #include "joedb/Stream_File.h"
+#include "Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Stream_File::Stream_File(std::iostream &stream, mode_t mode):
@@ -9,10 +10,8 @@ joedb::Stream_File::Stream_File(std::iostream &stream, mode_t mode):
 
  Generic_File::mode = mode;
 
- if (stream.good())
-  Generic_File::status = status_t::success;
- else
-  Generic_File::status = status_t::failure;
+ if (!stream.good())
+  throw Exception("Bad stream");
 }
 
 /////////////////////////////////////////////////////////////////////////////
