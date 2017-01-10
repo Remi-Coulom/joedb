@@ -2,7 +2,7 @@
 #include <memory>
 
 #include "joedb/File.h"
-#include "joedb/Journal_File.h"
+#include "joedb/Readonly_Journal.h"
 #include "Interpreter_Dump_Writeable.h"
 #include "SQL_Dump_Writeable.h"
 #include "diagnostics.h"
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
   }
   else
   {
-   joedb::Journal_File journal(file);
+   joedb::Readonly_Journal journal(file);
 
    std::shared_ptr<joedb::Writeable> writeable;
 

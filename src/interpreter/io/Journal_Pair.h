@@ -12,7 +12,7 @@ namespace joedb
  (
   int argc,
   char **argv,
-  void (*process)(Journal_File &, Journal_File &)
+  void (*process)(Readonly_Journal &, Journal_File &)
  )
  {
   if (argc != 3)
@@ -22,7 +22,7 @@ namespace joedb
   } 
  
   File input_file(argv[1], Open_Mode::read_existing);
-  Journal_File input_journal(input_file);
+  Readonly_Journal input_journal(input_file);
 
   File output_file(argv[2], Open_Mode::create_new);
   Journal_File output_journal(output_file);

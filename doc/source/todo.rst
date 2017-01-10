@@ -4,12 +4,22 @@ TODO
 Short Term
 ----------
 
-- compiler:
+- support compiled read-only databases:
+
+   - hierarchy = Readonly_Database/Database/Database_With_Writeable<Writeable>
+   - separate File_Database and Readonly_File_Database
+   - file_schema and schema_writeable stored inside Readonly_Database
+   - comment & time_stamp: separate override and public (write_*)
+
+- Read_Only_Interpreter
+
+- compiler safety:
 
   - check valid record_id for listener updates and deletes
   - #ifndef NDEBUG -> check double delete/insert, etc.
   - max_record_id for listener inserts
-  - make Readable_Writeable based on compiled db
+
+- make Readable_Writeable based on compiled db (or Readable only...)
 
 Journal File
 ------------

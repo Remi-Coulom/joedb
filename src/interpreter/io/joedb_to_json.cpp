@@ -1,6 +1,6 @@
 #include "json.h"
 #include "File.h"
-#include "Journal_File.h"
+#include "Readonly_Journal.h"
 #include "Database.h"
 
 #include <iostream>
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
  }
 
  joedb::File file(argv[file_index], joedb::Open_Mode::read_existing);
- joedb::Journal_File journal(file);
+ joedb::Readonly_Journal journal(file);
  joedb::Database db;
  journal.replay_log(db);
  joedb::write_json(std::cout, db, base64);
