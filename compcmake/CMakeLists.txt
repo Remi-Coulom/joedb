@@ -56,6 +56,7 @@ add_library(joedb_objects OBJECT
  ../src/journal/File.cpp
  ../src/journal/Generic_File.cpp
  ../src/journal/Journal_File.cpp
+ ../src/journal/Readonly_Journal.cpp
  ../src/journal/diagnostics.cpp
  ../src/journal/Stream_File.cpp
 )

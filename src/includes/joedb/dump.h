@@ -5,11 +5,11 @@ namespace joedb
 {
  class Readable;
  class Writeable;
- class Journal_File;
+ class Readonly_Journal;
 
  void dump(const Readable &db, Writeable &writeable);
  void dump_data(const Readable &db, Writeable &writeable);
- void pack(Journal_File &input_journal, Writeable &writeable);
+ void pack(Readonly_Journal &input_journal, Writeable &writeable);
 }
 
 #endif

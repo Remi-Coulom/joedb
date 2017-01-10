@@ -158,7 +158,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 #include "joedb/Journal_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::pack(Journal_File &input_journal, Writeable &writeable)
+void joedb::pack(Readonly_Journal &input_journal, Writeable &writeable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;

@@ -60,7 +60,7 @@ update_vector float 7 value 2 0.8 9\n\
  {
   std::stringstream joedb_ss_bis(joedb_ss.str());
   Stream_File joedb_file(joedb_ss_bis, Open_Mode::read_existing);
-  Journal_File journal(joedb_file);
+  Readonly_Journal journal(joedb_file);
 
   std::stringstream packed_ss;
   Interpreter_Dump_Writeable writeable(packed_ss);

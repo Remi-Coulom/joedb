@@ -92,7 +92,7 @@ TEST_F(Journal_File_Test, basic_operations)
 
  {
   File file("test.joedb", Open_Mode::read_existing);
-  Journal_File journal(file);
+  Readonly_Journal journal(file);
   journal.replay_log(db2);
  }
 
@@ -135,7 +135,7 @@ TEST_F(Journal_File_Test, interpreter_test)
  //
  {
   File file("test.joedb", Open_Mode::read_existing);
-  Journal_File journal(file);
+  Readonly_Journal journal(file);
 
   File file_copy("test_copy.joedb", Open_Mode::create_new);
   Journal_File journal_copy(file_copy);
