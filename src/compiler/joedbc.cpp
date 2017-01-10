@@ -243,12 +243,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "  friend class range_of_" << index.name << ";\n";
 
  out << R"RRR(
-  public:
-   const std::string &get_last_error_message() const
-   {
-    return last_error_message;
-   }
-
   protected:
    joedb::Dummy_Writeable dummy_writeable;
 
@@ -258,13 +252,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     timestamp();
     comment(message);
-    last_error_message = message;
     before_throwing();
     throw joedb::Exception(message);
    }
 
   private:
-   std::string last_error_message;
    joedb::Writeable *writeable;
 
 )RRR";
@@ -1344,7 +1336,7 @@ File_Database::File_Database
   {
    std::stringstream schema(schema_string);
    joedb::Stream_File schema_file(schema, joedb::Open_Mode::read_existing);
-   joedb::Journal_File schema_journal(schema_file);
+   joedb::Readonly_Journal schema_journal(schema_file);
 
    schema_journal.rewind();
    schema_journal.play_until(dummy_writeable, file_schema.str().size());
