@@ -21,6 +21,8 @@ Short Term
 
 - make Readable_Writeable based on compiled db (or Readable only...)
 
+- conan.io
+
 Journal File
 ------------
 - joedb_truncate <file> <position> (+optionally show position in logdump)
