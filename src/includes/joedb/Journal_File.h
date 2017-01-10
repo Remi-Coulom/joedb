@@ -12,9 +12,7 @@ namespace joedb
   public:
    Journal_File(Generic_File &file);
 
-   uint64_t ahead_of_checkpoint() const;
    uint64_t get_checkpoint_position() const {return checkpoint_position;}
-   void checkpoint(int commit_level);
    void replay_log(Writeable &writeable);
    void rewind();
    void play_until(Writeable &writeable, uint64_t end);
@@ -22,6 +20,9 @@ namespace joedb
    {
     play_until(writeable, checkpoint_position);
    }
+
+   uint64_t ahead_of_checkpoint() const;
+   void checkpoint(int commit_level);
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;

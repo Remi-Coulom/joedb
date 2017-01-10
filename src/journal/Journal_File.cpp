@@ -320,7 +320,7 @@ void joedb::Journal_File::play_until(Writeable &writeable, uint64_t end)
   }
  }
 
- file.set_position(end); // get ready for writing
+ file.set_position(file.get_position()); // get ready for writing
 }
 
 /////////////////////////////////////////////////////////////////////////////
