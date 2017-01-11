@@ -236,10 +236,10 @@ int file_test()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void schema_v2::Database::set_default_preferred_language_to_english
+void schema_v2::File_Database::set_default_preferred_language_to_english
 /////////////////////////////////////////////////////////////////////////////
 (
- Database &db
+ File_Database &db
 )
 {
  auto english = db.new_language("English", "en");
@@ -257,8 +257,8 @@ int schema_upgrade_test()
 
   db.new_person("Toto");
   db.new_person("Rémi");
-  db.comment("This is a comment");
-  db.timestamp(12345);
+  db.write_comment("This is a comment");
+  db.write_timestamp(12345);
  }
 
  {
@@ -375,8 +375,8 @@ int do_vector_test()
  //
  {
   vector_test::File_Database db("vector_test.joedb");
-  db.timestamp();
-  db.comment("This was a timestamp.");
+  db.write_timestamp();
+  db.write_comment("This was a timestamp.");
  }
 
  return 0;

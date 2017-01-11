@@ -187,17 +187,17 @@ void generate_c_wrapper
  body << "\nvoid " << name << "_timestamp(" << name << "_db *db)\n";
  body << "{\n";
  body << convert.str();
- body << " p->timestamp();\n";
+ body << " p->write_timestamp();\n";
  body << "}\n";
  body << "\nvoid " << name << "_comment(" << name << "_db *db, const char *comment)\n";
  body << "{\n";
  body << convert.str();
- body << " p->comment(comment);\n";
+ body << " p->write_comment(comment);\n";
  body << "}\n";
  body << "\nvoid " << name << "_valid_data(" << name << "_db *db)\n";
  body << "{\n";
  body << convert.str();
- body << " p->valid_data();\n";
+ body << " p->write_valid_data();\n";
  body << "}\n";
  body << '\n';
 

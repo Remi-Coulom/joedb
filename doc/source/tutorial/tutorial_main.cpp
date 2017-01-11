@@ -58,8 +58,8 @@ int main()
  //
  // Time stamp and comment
  //
- db.timestamp();
- db.comment("The End");
+ db.write_timestamp();
+ db.write_comment("The End");
 
  return 0;
 }

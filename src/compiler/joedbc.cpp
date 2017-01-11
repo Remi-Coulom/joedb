@@ -173,6 +173,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << '\n';
   out << " class id_of_" << tname << "\n {\n";
   out << "  friend class Database;\n";
+  out << "  friend class File_Database;\n";
   for (auto &friend_table: tables)
    if (friend_table.first != table.first)
     out << "  friend class id_of_" << friend_table.second << ";\n";
@@ -246,21 +247,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << R"RRR(
   protected:
-   joedb::Dummy_Writeable dummy_writeable;
-
-   virtual void before_throwing() {}
-
-   void error(const char *message)
+   virtual void error(const char *message)
    {
-    timestamp();
-    comment(message);
-    before_throwing();
     throw joedb::Exception(message);
    }
 
-  private:
-   joedb::Writeable *writeable;
-
+  protected:
 )RRR";
 
  //
@@ -652,11 +644,23 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // Schema changes are forwarded to the writeable
+ // max_record_id (for safety)
+ //
+ out << "   Record_Id get_max_record_id() const override {return 0;}\n\n";
+
+ //
+ // Informative events are ignored
  //
  out << R"RRR(
-   Record_Id get_max_record_id() const override {return 0;}
+   void comment(const std::string &comment) override {};
+   void timestamp(int64_t timestamp) override {};
+   void valid_data() override {};
+)RRR";
 
+ //
+ // Schema changes are forwarded to the schema string
+ //
+ out << R"RRR(
   protected:
    static const std::string schema_string;
    bool upgrading_schema = false;
@@ -711,26 +715,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void custom(const std::string &name) override
    {
     schema_journal.custom(name);
+   }
 )RRR";
- if (options.get_custom_names().size())
- {
-  out << "    if (upgrading_schema)\n";
-  out << "    {\n";
-  for (const auto &name: options.get_custom_names())
-  {
-   out << "     if (name == \"" << name << "\")\n";
-   out << "      " << name << "(*this);\n";
-  }
-  out << "    }\n";
- }
- out << "   }\n";
-
- if (options.get_custom_names().size())
- {
-  out << '\n';
-  for (const auto &name: options.get_custom_names())
-   out << "   static void " << name << "(Database &db);\n";
- }
 
  //
  // Public stuff
@@ -738,18 +724,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
   public:
    Database():
-    writeable(&dummy_writeable),
     schema_file(schema_stream, joedb::Open_Mode::create_new),
     schema_journal(schema_file)
    {}
-
-   void set_writeable(Writeable &new_writeable) {writeable = &new_writeable;}
-   void clear_writeable() {writeable = &dummy_writeable;}
-
-   void comment(const std::string &comment) override;
-   void timestamp();
-   void timestamp(int64_t timestamp) override;
-   void valid_data() override;
 )RRR";
 
  for (auto &table: tables)
@@ -757,7 +734,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << '\n';
   const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
-  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
   //
   // Declaration of container access
@@ -812,113 +788,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "(Comparator comparator) const;\n\n";
 
   //
-  // Erase all elements of the table
-  //
-  if (has_delete)
-  {
-   out << "   void clear_" << tname << "_table();\n";
-   out << '\n';
-  }
-
-  //
   // Easy access to null
   //
-  out << "   id_of_" << tname << " null_" << tname << "()\n";
+  out << "   id_of_" << tname << " null_" << tname << "() const\n";
   out << "   {\n";
   out << "    return id_of_" << tname << "();\n";
   out << "   }\n\n";
 
-  //
-  // Uninitialized new
-  //
-  out << "   id_of_" << tname << " new_" << tname << "()\n";
-  out << "   {\n";
-
-  switch(storage)
-  {
-   case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
-    out << "    id_of_" << tname << " result(free_record - 1);\n\n";
-   break;
-
-   case Compiler_Options::Table_Storage::vector:
-    out << "    const size_t size = storage_of_" << tname << ".size();\n";
-    out << "    storage_of_" << tname << ".resize(size + 1);\n";
-    out << "    id_of_" << tname << " result(size + 1);\n\n";
-   break;
-  }
-
-  out << "    internal_insert_" << tname << "(result.id);\n\n";
-  out << "    writeable->insert_into(" << table.first << ", result.id);\n";
-  out << "    return result;\n";
-  out << "   }\n";
-  out << '\n';
-
-  //
-  // new uninitialized vector
-  //
-  out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
-  out << "   {\n";
-  out << "    id_of_" << tname << " result(storage_of_" << tname;
-  out << ".size() + 1);\n";
-  out << "    storage_of_" << tname << ".resize(storage_of_";
-  out << tname << ".size() + size);\n";
-  out << "    for (size_t i = 0; i < size; i++)\n";
-  out << "     internal_insert_" << tname << "(result.id + i);\n";
-  out << "    writeable->insert_vector(" << table.first;
-  out << ", result.id, size);\n";
-  out << "    return result;\n";
-  out << "   }\n";
-  out << '\n';
-
-  //
-  // new with all fields
-  //
-  out << "   id_of_" << tname << " new_" << tname << '\n';
-  out << "   (\n    ";
-  {
-   bool first = true;
-
-   for (const auto &field: db.get_fields(table.first))
-   {
-    const std::string &fname = field.second;
-
-    if (first)
-     first = false;
-    else
-     out << ",\n    ";
-
-    const Type &type = db.get_field_type(table.first, field.first);
-    write_type(out, db, type, true);
-    out << "field_value_of_" << fname;
-   }
-
-   out << '\n';
-  }
-  out << "   )\n";
-  out << "   {\n";
-  out << "    auto result = new_" << tname << "();\n";
-
-  for (const auto &field: db.get_fields(table.first))
-  {
-   const std::string &fname = field.second;
-   out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
-  }
-
-  out << "    return result;\n";
-  out << "   }\n\n";
-
-  //
-  // Delete
-  //
-  if (has_delete)
-  {
-   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
-   out << "   {\n";
-   out << "    internal_delete_" << tname << "(record.id);\n";
-   out << "    writeable->delete_from(" << table.first << ", record.id);\n";
-   out << "   }\n";
-  }
 
   //
   // Loop over fields
@@ -940,26 +816,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "    assert(!record.is_null());\n";
    out << "    return storage_of_" << tname;
    out << "[record.id - 1].field_value_of_" << fname << ";\n";
-   out << "   }\n";
-
-   //
-   // Setter
-   //
-   out << "   void set_" << fname;
-   out << "(id_of_" << tname << " record, ";
-   write_type(out, db, type, true);
-   out << "field_value_of_" << fname << ")\n";
-   out << "   {\n";
-   out << "    assert(!record.is_null());\n";
-   out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
-   out << "field_value_of_" << fname << ");\n";
-   out << "    writeable->update_";
-   out << types[int(type.get_type_id())];
-   out << '(' << table.first << ", record.id, " << field.first << ", ";
-   out << "field_value_of_" << fname;
-   if (type.get_type_id() == Type::Type_Id::reference)
-    out << ".id";
-   out << ");\n";
    out << "   }\n";
   }
  }
@@ -1039,12 +895,47 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  class File_Database: public Database
  {
   protected:
-   void before_throwing() override {checkpoint_no_commit();}
+   void error(const char *message) override
+   {
+    if (ready_to_write)
+    {
+     write_timestamp();
+     write_comment(message);
+     checkpoint_no_commit();
+    }
+    Database::error(message);
+   }
 
   private:
    joedb::File file;
    joedb::Journal_File journal;
+   bool ready_to_write = false;
 
+   void custom(const std::string &name) override
+   {
+    Database::custom(name);
+)RRR";
+ if (options.get_custom_names().size())
+ {
+  out << "    if (upgrading_schema)\n";
+  out << "    {\n";
+  for (const auto &name: options.get_custom_names())
+  {
+   out << "     if (name == \"" << name << "\")\n";
+   out << "      " << name << "(*this);\n";
+  }
+  out << "    }\n";
+ }
+ out << "   }\n";
+
+ if (options.get_custom_names().size())
+ {
+  out << '\n';
+  for (const auto &name: options.get_custom_names())
+   out << "   static void " << name << "(File_Database &db);\n";
+ }
+
+ out << R"RRR(
   public:
    File_Database(const char *file_name,
                  joedb::Open_Mode mode = joedb::Open_Mode::automatic);
@@ -1052,9 +943,154 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void checkpoint_no_commit() {journal.checkpoint(0);}
    void checkpoint_half_commit() {journal.checkpoint(1);}
    void checkpoint_full_commit() {journal.checkpoint(2);}
- };
 
+   void write_comment(const std::string &comment);
+   void write_timestamp();
+   void write_timestamp(int64_t timestamp);
+   void write_valid_data();
 )RRR";
+
+ for (auto &table: tables)
+ {
+  out << '\n';
+  const std::string &tname = table.second;
+  const auto storage = options.get_table_options(table.first).storage;
+  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
+
+  //
+  // Erase all elements of the table
+  //
+  if (has_delete)
+  {
+   out << "   void clear_" << tname << "_table();\n";
+   out << '\n';
+  }
+
+  //
+  // Uninitialized new
+  //
+  out << "   id_of_" << tname << " new_" << tname << "()\n";
+  out << "   {\n";
+
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
+    out << "    id_of_" << tname << " result(free_record - 1);\n\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "    const size_t size = storage_of_" << tname << ".size();\n";
+    out << "    storage_of_" << tname << ".resize(size + 1);\n";
+    out << "    id_of_" << tname << " result(size + 1);\n\n";
+   break;
+  }
+
+  out << "    internal_insert_" << tname << "(result.id);\n\n";
+  out << "    journal.insert_into(" << table.first << ", result.id);\n";
+  out << "    return result;\n";
+  out << "   }\n";
+  out << '\n';
+
+  //
+  // new uninitialized vector
+  //
+  out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
+  out << "   {\n";
+  out << "    id_of_" << tname << " result(storage_of_" << tname;
+  out << ".size() + 1);\n";
+  out << "    storage_of_" << tname << ".resize(storage_of_";
+  out << tname << ".size() + size);\n";
+  out << "    for (size_t i = 0; i < size; i++)\n";
+  out << "     internal_insert_" << tname << "(result.id + i);\n";
+  out << "    journal.insert_vector(" << table.first;
+  out << ", result.id, size);\n";
+  out << "    return result;\n";
+  out << "   }\n";
+  out << '\n';
+
+  //
+  // new with all fields
+  //
+  out << "   id_of_" << tname << " new_" << tname << '\n';
+  out << "   (\n    ";
+  {
+   bool first = true;
+
+   for (const auto &field: db.get_fields(table.first))
+   {
+    const std::string &fname = field.second;
+
+    if (first)
+     first = false;
+    else
+     out << ",\n    ";
+
+    const Type &type = db.get_field_type(table.first, field.first);
+    write_type(out, db, type, true);
+    out << "field_value_of_" << fname;
+   }
+
+   out << '\n';
+  }
+  out << "   )\n";
+  out << "   {\n";
+  out << "    auto result = new_" << tname << "();\n";
+
+  for (const auto &field: db.get_fields(table.first))
+  {
+   const std::string &fname = field.second;
+   out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
+  }
+
+  out << "    return result;\n";
+  out << "   }\n\n";
+
+  //
+  // Delete
+  //
+  if (has_delete)
+  {
+   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
+   out << "   {\n";
+   out << "    internal_delete_" << tname << "(record.id);\n";
+   out << "    journal.delete_from(" << table.first << ", record.id);\n";
+   out << "   }\n";
+  }
+
+  //
+  // Loop over fields
+  //
+  for (const auto &field: db.get_fields(table.first))
+  {
+   const std::string &fname = field.second;
+   const Type &type = db.get_field_type(table.first, field.first);
+
+   out << '\n';
+
+   //
+   // Setter
+   //
+   out << "   void set_" << fname;
+   out << "(id_of_" << tname << " record, ";
+   write_type(out, db, type, true);
+   out << "field_value_of_" << fname << ")\n";
+   out << "   {\n";
+   out << "    assert(!record.is_null());\n";
+   out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
+   out << "field_value_of_" << fname << ");\n";
+   out << "    journal.update_";
+   out << types[int(type.get_type_id())];
+   out << '(' << table.first << ", record.id, " << field.first << ", ";
+   out << "field_value_of_" << fname;
+   if (type.get_type_id() == Type::Type_Id::reference)
+    out << ".id";
+   out << ");\n";
+   out << "   }\n";
+  }
+ }
+
+ out << " };\n";
 
  //
  // Plain iteration over tables
@@ -1145,7 +1181,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   if (has_delete)
   {
-   out << " inline void Database::clear_" << tname << "_table()\n";
+   out << " inline void File_Database::clear_" << tname << "_table()\n";
    out << " {\n";
    out << "  while (!get_" << tname << "_table().is_empty())\n";
    out << "   delete_" << tname << "(*get_" << tname << "_table().begin());\n";
@@ -1269,31 +1305,31 @@ void generate_cpp
 
  out << R"RRR(
 /////////////////////////////////////////////////////////////////////////////
-void Database::comment(const std::string &comment)
+void File_Database::write_comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
- writeable->comment(comment);
+ journal.comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void Database::timestamp()
+void File_Database::write_timestamp()
 /////////////////////////////////////////////////////////////////////////////
 {
- writeable->timestamp(std::time(0));
+ journal.timestamp(std::time(0));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void Database::timestamp(int64_t timestamp)
+void File_Database::write_timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
- writeable->timestamp(timestamp);
+ journal.timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void Database::valid_data()
+void File_Database::write_valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
- writeable->valid_data();
+ journal.valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1307,7 +1343,7 @@ File_Database::File_Database
  journal(file)
 {
  journal.replay_log(*this);
- set_writeable(journal);
+ ready_to_write = true;
 
  //
  // If schema does not match, try to upgrade it
