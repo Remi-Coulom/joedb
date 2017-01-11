@@ -36,12 +36,11 @@ int main(int argc, char **argv)
   const std::string name_string("TOTO");
 
 #if 1
-  for (int i = 1; i <= N; i++)
+  for (size_t i = 1; i <= N; i++)
   {
-   const Record_Id record_id = Record_Id(i);
-   multiplexer.insert_into(table_id, record_id);
-   multiplexer.update_string(table_id, record_id, name_id, name_string);
-   multiplexer.update_int64(table_id, record_id, value_id, i);
+   multiplexer.insert_into(table_id, i);
+   multiplexer.update_string(table_id, i, name_id, name_string);
+   multiplexer.update_int64(table_id, i, value_id, int64_t(i));
   }
 #else
   multiplexer.insert_vector(table_id, 1, N);

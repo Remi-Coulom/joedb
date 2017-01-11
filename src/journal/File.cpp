@@ -56,6 +56,11 @@ joedb::File::File(const char *file_name, Open_Mode new_mode)
   try_open(file_name, Open_Mode::read_existing) ||
   try_open(file_name, Open_Mode::create_new);
  }
+ else if (new_mode == Open_Mode::write_existing_or_create_new)
+ {
+  try_open(file_name, Open_Mode::write_existing) ||
+  try_open(file_name, Open_Mode::create_new);
+ }
  else if (new_mode == Open_Mode::create_new)
  {
   if (try_open(file_name, Open_Mode::read_existing))
@@ -72,7 +77,7 @@ joedb::File::File(const char *file_name, Open_Mode new_mode)
  if (!file)
   throw Exception("Cannot open file: " + std::string(file_name));
 
- if (!lock_file())
+ if (mode == Open_Mode::write_existing && !lock_file())
  {
   close_file();
   throw Exception("File locked: " + std::string(file_name));

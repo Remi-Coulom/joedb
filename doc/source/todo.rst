@@ -4,8 +4,6 @@ TODO
 Short Term
 ----------
 
-- support compiled read-only databases:
-
 - Read_Only_Interpreter
 
 - compiler safety:
@@ -17,6 +15,7 @@ Short Term
 - make Readable_Writeable based on compiled db (or Readable only...)
 
 - conan.io
+- make file work independently of machine endianness
 
 Journal File
 ------------

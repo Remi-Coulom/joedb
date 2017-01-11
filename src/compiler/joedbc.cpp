@@ -892,6 +892,21 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // File_Database
  //
  out << R"RRR(
+ class Readonly_Database: public Database
+ {
+  private:
+   joedb::File file;
+   joedb::Readonly_Journal journal;
+
+  public:
+   Readonly_Database(const char *file_name):
+    file(file_name, joedb::Open_Mode::read_existing),
+    journal(file)
+   {
+    journal.replay_log(*this);
+   }
+ };
+
  class File_Database: public Database
  {
   protected:
@@ -909,7 +924,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   private:
    joedb::File file;
    joedb::Journal_File journal;
-   bool ready_to_write = false;
+   bool ready_to_write;
 
    void custom(const std::string &name) override
    {
@@ -937,8 +952,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << R"RRR(
   public:
-   File_Database(const char *file_name,
-                 joedb::Open_Mode mode = joedb::Open_Mode::automatic);
+   File_Database(const char *file_name);
 
    void checkpoint_no_commit() {journal.checkpoint(0);}
    void checkpoint_half_commit() {journal.checkpoint(1);}
@@ -1333,14 +1347,11 @@ void File_Database::write_valid_data()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-File_Database::File_Database
+File_Database::File_Database(const char *file_name):
 /////////////////////////////////////////////////////////////////////////////
-(
- const char *file_name,
- joedb::Open_Mode mode
-):
- file(file_name, mode),
- journal(file)
+ file(file_name, joedb::Open_Mode::write_existing_or_create_new),
+ journal(file),
+ ready_to_write(false)
 {
  journal.replay_log(*this);
  ready_to_write = true;
