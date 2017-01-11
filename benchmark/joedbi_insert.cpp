@@ -12,15 +12,13 @@ static const char * const file_name = "./insert.joedb";
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::remove(file_name);
-
  if (argc <= 1)
   std::printf("usage: %s <number of rows>\n", argv[0]);
  else
  {
-  int N = 0;
-  std::sscanf(argv[1], "%d", &N);
-  std::printf("N = %d\n", N);
+  size_t N = 0;
+  std::sscanf(argv[1], "%lu", &N);
+  std::printf("N = %lu\n", N);
 
   File file(file_name, Open_Mode::create_new);
   Journal_File journal_file(file);
@@ -36,6 +34,8 @@ int main(int argc, char **argv)
   Field_Id value_id = multiplexer.find_field(table_id, "VALUE");
 
   const std::string name_string("TOTO");
+
+#if 1
   for (int i = 1; i <= N; i++)
   {
    const Record_Id record_id = Record_Id(i);
@@ -43,6 +43,13 @@ int main(int argc, char **argv)
    multiplexer.update_string(table_id, record_id, name_id, name_string);
    multiplexer.update_int64(table_id, record_id, value_id, i);
   }
+#else
+  multiplexer.insert_vector(table_id, 1, N);
+  for (size_t i = 1; i <= N; i++)
+   multiplexer.update_string(table_id, i, name_id, name_string);
+  for (size_t i = 1; i <= N; i++)
+   multiplexer.update_int64(table_id, i, value_id, int64_t(i));
+#endif
 
   journal_file.checkpoint(2);
  }

@@ -74,7 +74,7 @@ namespace joedb
    virtual int seek(size_t offset) = 0;
    virtual void sync() = 0;
 
-   enum {buffer_size = (1 << 16)};
+   enum {buffer_size = (1 << 12)};
    enum {buffer_extra = 8};
 
    char buffer[buffer_size + buffer_extra];
