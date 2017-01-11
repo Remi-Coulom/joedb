@@ -146,6 +146,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include <cassert>
 #include <map>
 #include <algorithm>
+#include <sstream>
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
@@ -153,6 +154,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include "joedb/Dummy_Writeable.h"
 #include "joedb/Freedom_Keeper.h"
 #include "joedb/Exception.h"
+#include "joedb/Stream_File.h"
 
 )RRR";
 
@@ -656,14 +658,20 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    Record_Id get_max_record_id() const override {return 0;}
 
   protected:
+   static const std::string schema_string;
+   bool upgrading_schema = false;
+   std::stringstream schema_stream;
+   joedb::Stream_File schema_file;
+   joedb::Journal_File schema_journal;
+
    void create_table(const std::string &name) override
    {
-    writeable->create_table(name);
+    schema_journal.create_table(name);
    }
 
    void drop_table(Table_Id table_id) override
    {
-    writeable->drop_table(table_id);
+    schema_journal.drop_table(table_id);
    }
 
    void rename_table
@@ -672,7 +680,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     const std::string &name
    ) override
    {
-    writeable->rename_table(table_id, name);
+    schema_journal.rename_table(table_id, name);
    }
 
    void add_field
@@ -682,12 +690,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Type type
    ) override
    {
-    writeable->add_field(table_id, name, type);
+    schema_journal.add_field(table_id, name, type);
    }
 
    void drop_field(Table_Id table_id, Field_Id field_id) override
    {
-    writeable->drop_field(table_id, field_id);
+    schema_journal.drop_field(table_id, field_id);
    }
 
    void rename_field
@@ -697,21 +705,43 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     const std::string &name
    ) override
    {
-    writeable->rename_field(table_id, field_id, name);
+    schema_journal.rename_field(table_id, field_id, name);
    }
 
    void custom(const std::string &name) override
    {
-    writeable->custom(name);
-   }
+    schema_journal.custom(name);
 )RRR";
+ if (options.get_custom_names().size())
+ {
+  out << "    if (upgrading_schema)\n";
+  out << "    {\n";
+  for (const auto &name: options.get_custom_names())
+  {
+   out << "     if (name == \"" << name << "\")\n";
+   out << "      " << name << "(*this);\n";
+  }
+  out << "    }\n";
+ }
+ out << "   }\n";
+
+ if (options.get_custom_names().size())
+ {
+  out << '\n';
+  for (const auto &name: options.get_custom_names())
+   out << "   static void " << name << "(Database &db);\n";
+ }
 
  //
  // Public stuff
  //
  out << R"RRR(
   public:
-   Database(): writeable(&dummy_writeable) {}
+   Database():
+    writeable(&dummy_writeable),
+    schema_file(schema_stream, joedb::Open_Mode::create_new),
+    schema_journal(schema_file)
+   {}
 
    void set_writeable(Writeable &new_writeable) {writeable = &new_writeable;}
    void clear_writeable() {writeable = &dummy_writeable;}
@@ -1014,34 +1044,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   private:
    joedb::File file;
    joedb::Journal_File journal;
-   static const std::string schema_string;
-   bool upgrading_schema = false;
 
-   void custom(const std::string &name) override
-   {
-    Database::custom(name);
-)RRR";
- if (options.get_custom_names().size())
- {
-  out << "    if (upgrading_schema)\n";
-  out << "    {\n";
-  for (const auto &name: options.get_custom_names())
-  {
-   out << "     if (name == \"" << name << "\")\n";
-   out << "      " << name << "(*this);\n";
-  }
-  out << "    }\n";
- }
- out << "   }\n";
-
- if (options.get_custom_names().size())
- {
-  out << '\n';
-  for (const auto &name: options.get_custom_names())
-   out << "   static void " << name << "(Database &db);\n";
- }
-
- out << R"RRR(
   public:
    File_Database(const char *file_name,
                  joedb::Open_Mode mode = joedb::Open_Mode::automatic);
@@ -1251,7 +1254,6 @@ void generate_cpp
 {
  out << "#include \"" << options.get_namespace_name() << ".h\"\n";
  out << "#include \"joedb/Stream_File.h\"\n";
- out << "#include \"joedb/Selective_Writeable.h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
  out << '\n';
  out << "#include <sstream>\n";
@@ -1259,7 +1261,7 @@ void generate_cpp
  out << '\n';
  out << "using namespace " << options.get_namespace_name() << ";\n";
  out << '\n';
- out << "const std::string File_Database::schema_string(";
+ out << "const std::string Database::schema_string(";
  write_string(out, schema);
  out << ", ";
  out << schema.size();
@@ -1304,53 +1306,45 @@ File_Database::File_Database
  file(file_name, mode),
  journal(file)
 {
- //
- // Replay the journal: load data + schema
- //
- std::stringstream file_schema;
- {
-  joedb::Stream_File stream_file(file_schema, joedb::Open_Mode::create_new);
-
-  joedb::Journal_File file_schema_journal(stream_file);
-
-  joedb::Selective_Writeable select
-  (
-   file_schema_journal,
-   joedb::Selective_Writeable::Mode::schema
-  );
-
-  set_writeable(select);
-  journal.replay_log(*this);
-  clear_writeable();
- }
-
- //
- // If schema does not match, try to upgrade it, or fail
- //
- if (schema_string != file_schema.str())
- {
-  const size_t pos = joedb::Journal_File::header_size;
-  const size_t len = file_schema.str().size() - pos;
-
-  if (file_schema.str().compare(pos, len, schema_string, pos, len) == 0)
-  {
-   std::stringstream schema(schema_string);
-   joedb::Stream_File schema_file(schema, joedb::Open_Mode::read_existing);
-   joedb::Readonly_Journal schema_journal(schema_file);
-
-   schema_journal.rewind();
-   schema_journal.play_until(dummy_writeable, file_schema.str().size());
-
-   set_writeable(journal);
-   upgrading_schema = true;
-   schema_journal.play_until_checkpoint(*this);
-   upgrading_schema = false;
-  }
-  else
-   throw joedb::Exception("Schema error");
- }
-
+ journal.replay_log(*this);
  set_writeable(journal);
+
+ //
+ // If schema does not match, try to upgrade it
+ //
+ schema_file.flush();
+
+ const size_t file_schema_size = schema_stream.str().size();
+ const size_t compiled_schema_size = schema_string.size();
+
+ const size_t pos = joedb::Journal_File::header_size;
+ const size_t len = file_schema_size - pos;
+
+ if (schema_stream.str().compare(pos, len, schema_string, pos, len) != 0)
+  throw joedb::Exception("Trying to open a file with incompatible schema");
+
+ if (file_schema_size < compiled_schema_size)
+ {
+  journal.comment("Automatic schema upgrade");
+
+  std::stringstream schema(schema_string);
+  joedb::Stream_File schema_file(schema, joedb::Open_Mode::read_existing);
+  joedb::Readonly_Journal schema_journal(schema_file);
+
+  joedb::Dummy_Writeable dummy_writeable;
+
+  schema_journal.rewind();
+  schema_journal.play_until(dummy_writeable, schema_stream.str().size());
+  schema_journal.play_until_checkpoint(journal);
+
+  schema_journal.rewind();
+  schema_journal.play_until(dummy_writeable, schema_stream.str().size());
+  upgrading_schema = true;
+  schema_journal.play_until_checkpoint(*this);
+  upgrading_schema = false;
+
+  journal.comment("End of automatic schema upgrade");
+ }
 }
 )RRR";
 }

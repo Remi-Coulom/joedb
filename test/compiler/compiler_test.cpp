@@ -7,6 +7,7 @@
 #include "Journal_File.h"
 #include "Database.h"
 #include "translation.h"
+#include "Interpreter_Dump_Writeable.h"
 
 #include <iostream>
 #include <algorithm>
@@ -235,7 +236,7 @@ int file_test()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void schema_v2::File_Database::set_default_preferred_language_to_english
+void schema_v2::Database::set_default_preferred_language_to_english
 /////////////////////////////////////////////////////////////////////////////
 (
  Database &db
@@ -282,7 +283,15 @@ int schema_upgrade_test()
  }
  catch (const joedb::Exception &e)
  {
+  std::cout << e.what() << '\n';
   std::cout << "OK: v1 code does not open v2 file\n";
+ }
+
+ {
+  joedb::File file("upgrade_test.joedb", joedb::Open_Mode::read_existing);
+  joedb::Readonly_Journal journal(file);
+  joedb::Interpreter_Dump_Writeable writeable(std::cout);
+  journal.replay_log(writeable);
  }
 
  return 0;
@@ -308,7 +317,7 @@ int do_vector_test()
   }
 
   {
-   testdb::File_Database db("test.joedb", joedb::Open_Mode::read_existing);
+   testdb::File_Database db("test.joedb"/*, joedb::Open_Mode::read_existing*/);
    for (size_t i = 0; i < n; i++)
     std::cout << "v[" << i << "] = " << db.get_value(v[i]) << '\n';
   }
@@ -331,8 +340,8 @@ int do_vector_test()
   }
 
   {
-   vector_test::File_Database db("vector_test.joedb",
-                                 joedb::Open_Mode::read_existing);
+   vector_test::File_Database db("vector_test.joedb"/*,
+                                 joedb::Open_Mode::read_existing*/);
    for (size_t i = 0; i < n; i++)
    {
     std::cout << "v[" << i << "] = {" << db.get_x(v[i]);
