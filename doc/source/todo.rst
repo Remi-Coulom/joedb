@@ -13,12 +13,14 @@ Short Term
 - make Readable_Writeable based on compiled db (or Readable only...)
 
 - conan.io
-- make file work independently of machine endianness
 
 Journal File
 ------------
 - joedb_truncate <file> <position> (+optionally show position in logdump)
 - high-performance system-specific implementation of joedb::File?
+- make file work independently of machine endianness?
+  Determining endianness at compile time is difficult:
+  http://stackoverflow.com/questions/4239993/determining-endianness-at-compile-time
 - Try using a raw device (probably requires a big buffer)
 - joedb_fix
 - Compression

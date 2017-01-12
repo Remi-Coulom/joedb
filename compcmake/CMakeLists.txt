@@ -98,6 +98,11 @@ add_executable(joedb_to_json
 )
 target_link_libraries(joedb_to_json joedb)
 
+add_executable(file_benchmark
+ ../benchmark/file_benchmark.cpp
+)
+target_link_libraries(file_benchmark joedb)
+
 if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
   ../test/File_Test.cpp
