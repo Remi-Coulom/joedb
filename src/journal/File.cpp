@@ -1,4 +1,4 @@
-#include "joedb/File.h"
+#include "File.h"
 #include "Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,8 @@ joedb::File::File(const char *file_name, Open_Mode new_mode)
  if (!file)
   throw Exception("Cannot open file: " + std::string(file_name));
 
- if (mode == Open_Mode::write_existing && !lock_file())
+ if ((mode == Open_Mode::write_existing ||
+      mode == Open_Mode::create_new) && !lock_file())
  {
   close_file();
   throw Exception("File locked: " + std::string(file_name));

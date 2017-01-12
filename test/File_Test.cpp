@@ -49,12 +49,23 @@ TEST_F(File_Test, open_failure)
 TEST_F(File_Test, open_lock)
 {
  std::remove("locked.tmp");
- File locked_file_1("locked.tmp", Open_Mode::create_new);
+ {
+  File locked_file_1("locked.tmp", Open_Mode::create_new);
+  locked_file_1.write<int>(1234);
 
- EXPECT_ANY_THROW
- (
-  File locked_file_2("locked.tmp", Open_Mode::write_existing)
- );
+  EXPECT_ANY_THROW
+  (
+   File locked_file_2("locked.tmp", Open_Mode::write_existing)
+  );
+ }
+ {
+  File locked_file_1("locked.tmp", Open_Mode::write_existing);
+
+  EXPECT_ANY_THROW
+  (
+   File locked_file_2("locked.tmp", Open_Mode::write_existing)
+  );
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
