@@ -1,7 +1,7 @@
 #include "Compiler_Options_io.h"
 #include "Compiler_Options.h"
 #include "is_identifier.h"
-#include "joedb/Database.h"
+#include "Database.h"
 
 #include <iostream>
 #include <sstream>

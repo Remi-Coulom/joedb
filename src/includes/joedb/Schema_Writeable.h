@@ -1,8 +1,8 @@
 #ifndef joedb_Schema_Writeable_declared
 #define joedb_Schema_Writeable_declared
 
-#include "joedb/Writeable.h"
-#include "joedb/Database.h"
+#include "Writeable.h"
+#include "Database.h"
 
 namespace joedb
 {

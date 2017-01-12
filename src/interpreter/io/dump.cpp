@@ -1,6 +1,6 @@
 #include "dump.h"
-#include "joedb/Database.h"
-#include "joedb/Writeable.h"
+#include "Database.h"
+#include "Writeable.h"
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::dump(const Readable &db, Writeable &writeable)
@@ -89,7 +89,7 @@ void joedb::dump(const Readable &db, Writeable &writeable)
       case Type::Type_Id::type_id:\
        writeable.update_##type_id(table_map[table_id], record_id, field_maps[table_id][field_id], db.get_##type_id(table_id, record_id, field_id));\
       break;
-      #include "joedb/TYPE_MACRO.h"
+      #include "TYPE_MACRO.h"
       #undef TYPE_MACRO
      }
     }
@@ -142,7 +142,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
        writeable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
       }\
       break;
-      #include "joedb/TYPE_MACRO.h"
+      #include "TYPE_MACRO.h"
       #undef TYPE_MACRO
      }
     }
@@ -155,7 +155,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 
 #include "Selective_Writeable.h"
 #include "Multiplexer.h"
-#include "joedb/Journal_File.h"
+#include "Journal_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::pack(Readonly_Journal &input_journal, Writeable &writeable)

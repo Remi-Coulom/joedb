@@ -1,4 +1,4 @@
-#include "joedb/Database.h"
+#include "Database.h"
 #include "Exception.h"
 #include "is_identifier.h"
 
@@ -247,5 +247,5 @@ void joedb::Database::update_vector_##type_id(Table_Id table_id,\
   throw Exception("update_vector: invalid table_id");\
  it->second.update_vector_##type_id(record_id, field_id, size, value);\
 }
-#include "joedb/TYPE_MACRO.h"
+#include "TYPE_MACRO.h"
 #undef TYPE_MACRO

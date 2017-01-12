@@ -1,5 +1,5 @@
 #include "json.h"
-#include "joedb/Database.h"
+#include "Database.h"
 #include "type_io.h"
 #include "base64.h"
 
@@ -102,7 +102,7 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
       break;
       #define TYPE_MACRO_NO_REFERENCE
       #define TYPE_MACRO_NO_STRING
-      #include "joedb/TYPE_MACRO.h"
+      #include "TYPE_MACRO.h"
       #undef TYPE_MACRO_NO_STRING
       #undef TYPE_MACRO_NO_REFERENCE
       #undef TYPE_MACRO

@@ -1,4 +1,4 @@
-#include "joedb/Table.h"
+#include "Table.h"
 
 #include <limits>
 

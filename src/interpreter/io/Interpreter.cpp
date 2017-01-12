@@ -1,13 +1,13 @@
 #include "Interpreter.h"
-#include "joedb/Database.h"
+#include "Database.h"
 #include "dump.h"
 #include "json.h"
 #include "Interpreter_Dump_Writeable.h"
 #include "SQL_Dump_Writeable.h"
-#include "joedb/Writeable.h"
+#include "Writeable.h"
 #include "type_io.h"
 #include "is_identifier.h"
-#include "joedb/Journal_File.h"
+#include "Journal_File.h"
 #include "diagnostics.h"
 
 #include <iostream>
@@ -38,7 +38,7 @@ joedb::Type joedb::Interpreter::parse_type
  if (type_name == #type_id)\
   return Type::type_id();
  #define TYPE_MACRO_NO_REFERENCE
- #include "joedb/TYPE_MACRO.h"
+ #include "TYPE_MACRO.h"
  #undef TYPE_MACRO_NO_REFERENCE
  #undef TYPE_MACRO
 
@@ -84,7 +84,7 @@ void joedb::Interpreter::update_value
    db.update_##type_id(table_id, record_id, field_id, value);\
   }\
   break;
-  #include "joedb/TYPE_MACRO.h"
+  #include "TYPE_MACRO.h"
   #undef TYPE_MACRO
  }
 }
@@ -318,7 +318,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
       ERROR_CHECK(db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]));\
      }\
      break;
-     #include "joedb/TYPE_MACRO.h"
+     #include "TYPE_MACRO.h"
      #undef TYPE_MACRO
     }
    }

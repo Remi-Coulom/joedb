@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "joedb/Database.h"
+#include "Database.h"
 
 namespace joedb
 {

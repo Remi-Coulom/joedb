@@ -1,7 +1,7 @@
 #ifndef joedb_Selective_Writeable_declared
 #define joedb_Selective_Writeable_declared
 
-#include "joedb/Writeable.h"
+#include "Writeable.h"
 
 namespace joedb
 {
@@ -142,7 +142,7 @@ namespace joedb
     if (mode & data)\
      writeable.update_##type_id(table_id, record_id, field_id, value);\
    }
-   #include "joedb/TYPE_MACRO.h"
+   #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
  };
 }

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <memory>
 
-#include "joedb/File.h"
-#include "joedb/Readonly_Journal.h"
+#include "File.h"
+#include "Readonly_Journal.h"
 #include "Interpreter_Dump_Writeable.h"
 #include "SQL_Dump_Writeable.h"
 #include "diagnostics.h"

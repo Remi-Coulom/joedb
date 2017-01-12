@@ -1,5 +1,5 @@
-#include "joedb/Journal_File.h"
-#include "joedb/Generic_File.h"
+#include "Journal_File.h"
+#include "Generic_File.h"
 #include "Exception.h"
 
 #include <vector>
@@ -279,7 +279,7 @@ void joedb::Journal_File::update_vector_##type_id\
  for (Record_Id i = 0; i < size; i++)\
   file.write_method(value[i]);\
 }
-#include "joedb/TYPE_MACRO.h"
+#include "TYPE_MACRO.h"
 #undef TYPE_MACRO
 
 /////////////////////////////////////////////////////////////////////////////
