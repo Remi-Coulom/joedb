@@ -4,8 +4,6 @@ TODO
 Short Term
 ----------
 
-- Read_Only_Interpreter
-
 - compiler safety:
 
   - check valid record_id for listener updates and deletes

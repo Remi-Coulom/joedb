@@ -18,7 +18,7 @@ int main(int argc, char **argv)
  }
  else
  {
-  joedb::File file(argv[1], joedb::Open_Mode::automatic);
+  joedb::File file(argv[1], joedb::Open_Mode::write_existing_or_create_new);
   joedb::Journal_File journal(file);
   joedb::Database db;
   journal.replay_log(db);
