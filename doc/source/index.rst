@@ -14,4 +14,5 @@ Joedb, the Journal-Only Embedded Database
    file_format
    todo
    references
+   history
    license
