@@ -12,6 +12,8 @@ Short Term
 
 - make Readable_Writeable based on compiled db (or Readable only...)
 
+- Instead of throwing an exception: make it impossible at compile time to open a writeable journal with a read_only file.
+
 - conan.io
 
 Journal File
