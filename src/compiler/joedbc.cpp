@@ -668,6 +668,18 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::Stream_File schema_file;
    joedb::Journal_File schema_journal;
 
+   void check_schema()
+   {
+    schema_file.flush();
+
+    const size_t file_schema_size = schema_stream.str().size();
+    const size_t pos = joedb::Journal_File::header_size;
+    const size_t len = file_schema_size - pos;
+
+    if (schema_stream.str().compare(pos, len, schema_string, pos, len) != 0)
+     throw joedb::Exception("Trying to open a file with incompatible schema");
+   }
+
    void create_table(const std::string &name) override
    {
     schema_journal.create_table(name);
@@ -904,6 +916,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     journal(file)
    {
     journal.replay_log(*this);
+    check_schema();
    }
  };
 
@@ -1355,20 +1368,10 @@ File_Database::File_Database(const char *file_name):
 {
  journal.replay_log(*this);
  ready_to_write = true;
-
- //
- // If schema does not match, try to upgrade it
- //
- schema_file.flush();
+ check_schema();
 
  const size_t file_schema_size = schema_stream.str().size();
  const size_t compiled_schema_size = schema_string.size();
-
- const size_t pos = joedb::Journal_File::header_size;
- const size_t len = file_schema_size - pos;
-
- if (schema_stream.str().compare(pos, len, schema_string, pos, len) != 0)
-  throw joedb::Exception("Trying to open a file with incompatible schema");
 
  if (file_schema_size < compiled_schema_size)
  {

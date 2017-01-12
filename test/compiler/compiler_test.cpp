@@ -287,6 +287,18 @@ int schema_upgrade_test()
   std::cout << "OK: v1 code does not open v2 file\n";
  }
 
+ try
+ {
+  schema_v1::Readonly_Database db("upgrade_test.joedb");
+  std::cout << "Error: v1 code should not open v2 files\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+  std::cout << "OK: v1 code does not open v2 file\n";
+ }
+
+
  {
   joedb::File file("upgrade_test.joedb", joedb::Open_Mode::read_existing);
   joedb::Readonly_Journal journal(file);

@@ -113,6 +113,8 @@ v2 opened
 v2 re-opened
 Trying to open a file with incompatible schema
 OK: v1 code does not open v2 file
+Trying to open a file with incompatible schema
+OK: v1 code does not open v2 file
 comment "Automatic schema upgrade"
 create_table person
 add_field person name string
