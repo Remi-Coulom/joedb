@@ -15,7 +15,7 @@
 #include <ctime>
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Type joedb::Interpreter::parse_type
+joedb::Type joedb::Readonly_Interpreter::parse_type
 /////////////////////////////////////////////////////////////////////////////
 (
  std::istream &in,
@@ -47,7 +47,7 @@ joedb::Type joedb::Interpreter::parse_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
-Table_Id joedb::Interpreter::parse_table
+Table_Id joedb::Readonly_Interpreter::parse_table
 /////////////////////////////////////////////////////////////////////////////
 (
  std::istream &in,
@@ -89,9 +89,277 @@ void joedb::Interpreter::update_value
  }
 }
 
+#define ERROR_CHECK(x) do\
+{\
+ try {x; out << "OK: " << line << '\n';}\
+ catch(const Exception &e)\
+ {out << "Error: " << e.what() << " (" << line << ')' << '\n';}\
+}\
+while(false)
+
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
+bool joedb::Readonly_Interpreter::process_command
 /////////////////////////////////////////////////////////////////////////////
+(
+ const std::string &line,
+ std::istream &iss,
+ const std::string &command,
+ std::ostream &out
+)
+{
+ if (command.size() == 0 || command[0] == '#') //////////////////////////////
+  return true;
+ else if (command == "dump") ////////////////////////////////////////////////
+ {
+  Interpreter_Dump_Writeable dump_writeable(out);
+  dump(db, dump_writeable);
+ }
+ else if (command == "json") ////////////////////////////////////////////////
+ {
+  bool use_base64 = false;
+  iss >> use_base64;
+  write_json(out, db, use_base64);
+ }
+ else if (command == "sql") /////////////////////////////////////////////////
+ {
+  SQL_Dump_Writeable dump_writeable(out);
+  dump(db, dump_writeable);
+ }
+ else if (command == "help") ////////////////////////////////////////////////
+ {
+  out << '\n';
+  out << "Commands unrelated to the database\n";
+  out << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+  out << " about\n";
+  out << " help\n";
+  out << " quit\n";
+  out << '\n';
+  out << "Displaying data\n";
+  out << "~~~~~~~~~~~~~~~\n";
+  out << " dump\n";
+  out << " json [<base64>]\n";
+  out << " sql\n";
+  out << '\n';
+ }
+ else if (command == "about") ///////////////////////////////////////////////
+ {
+  about_joedb(out);
+ }
+ else if (command == "quit") ////////////////////////////////////////////////
+  return false;
+ else
+  out << "Error: unknown command: " << command << ". For a list of available commands, try \"help\".\n";
+
+ return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+bool joedb::Interpreter::process_command
+/////////////////////////////////////////////////////////////////////////////
+(
+ const std::string &line,
+ std::istream &iss,
+ const std::string &command,
+ std::ostream &out
+)
+{
+ if (command == "help") ////////////////////////////////////////////////
+ {
+  Readonly_Interpreter::process_command(line, iss, command, out);
+  out << "Logging\n";
+  out << "~~~~~~~\n";
+  out << " timestamp [<stamp>] (if no value is given, use current time)\n";
+  out << " comment \"<comment_string>\"\n";
+  out << " valid_data\n";
+  out << '\n';
+  out << "Data definition\n";
+  out << "~~~~~~~~~~~~~~~\n";
+  out << " create_table <table_name>\n";
+  out << " drop_table <table_name>\n";
+  out << " rename_table <old_table_name> <new_table_name>\n";
+  out << " add_field <table_name> <field_name> <type>\n";
+  out << " drop_field <table_name> <field_name>\n";
+  out << " rename_field <table_name> <old_field_name> <new_field_name>\n";
+  out << " custom <custom_name>\n";
+  out << '\n';
+  out << " <type> may be:\n";
+  out << "  string,\n";
+  out << "  int8, int16, int32, int64,\n";
+  out << "  float32, float64,\n";
+  out << "  boolean,\n";
+  out << "  references <table_name>\n";
+  out << '\n';
+  out << "Data manipulation\n";
+  out << "~~~~~~~~~~~~~~~~~\n";
+  out << " insert_into <table_name> <record_id>\n";
+  out << " insert_vector <table_name> <record_id> <size>\n";
+  out << " update <table_name> <record_id> <field_name> <value>\n";
+  out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
+  out << " delete_from <table_name> <record_id>\n";
+  out << '\n';
+ }
+ else if (command == "create_table") ////////////////////////////////////////
+ {
+  std::string table_name;
+  iss >> table_name;
+  ERROR_CHECK(db.create_table(table_name));
+ }
+ else if (command == "drop_table") //////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  ERROR_CHECK(db.drop_table(table_id));
+ }
+ else if (command == "rename_table") ////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  std::string new_name;
+  iss >> new_name;
+  ERROR_CHECK(db.rename_table(table_id, new_name));
+ }
+ else if (command == "add_field") ///////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  std::string field_name;
+  iss >> field_name;
+  Type type = parse_type(iss, out);
+  if (type.get_type_id() != Type::Type_Id::null)
+   ERROR_CHECK(db.add_field(table_id, field_name, type));
+ }
+ else if (command == "drop_field") /////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  std::string field_name;
+  iss >> field_name;
+  Field_Id field_id = db.find_field(table_id, field_name);
+  ERROR_CHECK(db.drop_field(table_id, field_id));
+ }
+ else if (command == "rename_field") ///////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  std::string field_name;
+  iss >> field_name;
+  Field_Id field_id = db.find_field(table_id, field_name);
+  std::string new_field_name;
+  iss >> new_field_name;
+  ERROR_CHECK(db.rename_field(table_id, field_id, new_field_name));
+ }
+ else if (command == "custom") /////////////////////////////////////////////
+ {
+  std::string name;
+  iss >> name;
+  ERROR_CHECK(db.custom(name));
+ }
+ else if (command == "comment") ////////////////////////////////////////////
+ {
+  const std::string comment = joedb::read_string(iss);
+  ERROR_CHECK(db.comment(comment));
+ }
+ else if (command == "timestamp") //////////////////////////////////////////
+ {
+  int64_t timestamp = 0;
+  iss >> timestamp;
+  if (iss.fail())
+   timestamp = std::time(0);
+  ERROR_CHECK(db.timestamp(timestamp));
+ }
+ else if (command == "valid_data") /////////////////////////////////////////
+ {
+  ERROR_CHECK(db.valid_data());
+ }
+ else if (command == "insert_into") ////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  Record_Id record_id = 0;
+  iss >> record_id;
+  ERROR_CHECK(
+   db.insert_into(table_id, record_id);
+   if (iss.good())
+    for (const auto &field: db.get_fields(table_id))
+    {
+     update_value(iss, table_id, record_id, field.first);
+     if (iss.fail())
+     {
+      out << "Error: failed parsing value\n";
+      break;
+     }
+    }
+  );
+ }
+ else if (command == "insert_vector") //////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  Record_Id record_id = 0;
+  Record_Id size = 0;
+  iss >> record_id >> size;
+  ERROR_CHECK(db.insert_vector(table_id, record_id, size));
+ }
+ else if (command == "update") /////////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  Record_Id record_id = 0;
+  iss >> record_id;
+  std::string field_name;
+  iss >> field_name;
+  Field_Id field_id = db.find_field(table_id, field_name);
+  ERROR_CHECK(update_value(iss, table_id, record_id, field_id));
+ }
+ else if (command == "update_vector") //////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  Record_Id record_id = 0;
+  iss >> record_id;
+  std::string field_name;
+  iss >> field_name;
+  Field_Id field_id = db.find_field(table_id, field_name);
+  Record_Id size = 0;
+  iss >> size;
+
+  if (db.get_max_record_id() != 0 && size >= db.get_max_record_id())
+   out << "Error: vector is too big\n";
+  else
+  {
+   switch(db.get_field_type(table_id, field_id).get_type_id())
+   {
+    case Type::Type_Id::null:
+     out << "Error: bad field\n";
+    break;
+
+    #define TYPE_MACRO(type, return_type, type_id, R, W)\
+    case Type::Type_Id::type_id:\
+    {\
+     std::vector<type> v(size);\
+     for (size_t i = 0; i < size; i++)\
+      v[i] = joedb::read_##type_id(iss);\
+     ERROR_CHECK(db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]));\
+    }\
+    break;
+    #include "TYPE_MACRO.h"
+    #undef TYPE_MACRO
+   }
+  }
+ }
+ else if (command == "delete_from") ////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  Record_Id record_id = 0;
+  iss >> record_id;
+  ERROR_CHECK(db.delete_from(table_id, record_id));
+ }
+ else
+  return Readonly_Interpreter::process_command(line, iss, command, out);
+
+ return true;
+}
+
+#undef ERROR_CHECK
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Interpreter::main_loop
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::istream &in,
+ std::ostream &out
+)
 {
  std::string line;
 
@@ -101,238 +369,7 @@ void joedb::Interpreter::main_loop(std::istream &in, std::ostream &out)
   std::string command;
   iss >> command;
 
-  #define ERROR_CHECK(x) do\
-  {\
-   try {x; out << "OK: " << line << '\n';}\
-   catch(const Exception &e) {out << "Error: " << e.what() << " (" << line << ')' << '\n';}\
-  }\
-  while(false)
-
-#if 0
-  out << "running: " << line << '\n';
-#endif
-
-  if (command.size() == 0 || command[0] == '#') //////////////////////////////
-   continue;
-  else if (command == "dump") ////////////////////////////////////////////////
-  {
-   Interpreter_Dump_Writeable dump_writeable(out);
-   dump(db, dump_writeable);
-  }
-  else if (command == "json") ////////////////////////////////////////////////
-  {
-   bool use_base64 = false;
-   iss >> use_base64;
-   write_json(out, db, use_base64);
-  }
-  else if (command == "sql") /////////////////////////////////////////////////
-  {
-   SQL_Dump_Writeable dump_writeable(out);
-   dump(db, dump_writeable);
-  }
-  else if (command == "quit") ////////////////////////////////////////////////
+  if (!process_command(line, iss, command, out))
    break;
-  else if (command == "help") ////////////////////////////////////////////////
-  {
-   out << '\n';
-   out << "Commands unrelated to the database\n";
-   out << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-   out << " about\n";
-   out << " help\n";
-   out << " quit\n";
-   out << '\n';
-   out << "Displaying data\n";
-   out << "~~~~~~~~~~~~~~~\n";
-   out << " dump\n";
-   out << " json [<base64>]\n";
-   out << " sql\n";
-   out << '\n';
-   out << "Logging\n";
-   out << "~~~~~~~\n";
-   out << " timestamp [<stamp>] (if no value is given, use current time)\n";
-   out << " comment \"<comment_string>\"\n";
-   out << " valid_data\n";
-   out << '\n';
-   out << "Data definition\n";
-   out << "~~~~~~~~~~~~~~~\n";
-   out << " create_table <table_name>\n";
-   out << " drop_table <table_name>\n";
-   out << " rename_table <old_table_name> <new_table_name>\n";
-   out << " add_field <table_name> <field_name> <type>\n";
-   out << " drop_field <table_name> <field_name>\n";
-   out << " rename_field <table_name> <old_field_name> <new_field_name>\n";
-   out << " custom <custom_name>\n";
-   out << '\n';
-   out << " <type> may be:\n";
-   out << "  string,\n";
-   out << "  int8, int16, int32, int64,\n";
-   out << "  float32, float64,\n";
-   out << "  boolean,\n";
-   out << "  references <table_name>\n";
-   out << '\n';
-   out << "Data manipulation\n";
-   out << "~~~~~~~~~~~~~~~~~\n";
-   out << " insert_into <table_name> <record_id>\n";
-   out << " insert_vector <table_name> <record_id> <size>\n";
-   out << " update <table_name> <record_id> <field_name> <value>\n";
-   out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
-   out << " delete_from <table_name> <record_id>\n";
-   out << '\n';
-  }
-  else if (command == "about") ///////////////////////////////////////////////
-  {
-   about_joedb(out);
-  }
-  else if (command == "create_table") ////////////////////////////////////////
-  {
-   std::string table_name;
-   iss >> table_name;
-   ERROR_CHECK(db.create_table(table_name));
-  }
-  else if (command == "drop_table") //////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   ERROR_CHECK(db.drop_table(table_id));
-  }
-  else if (command == "rename_table") ////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   std::string new_name;
-   iss >> new_name;
-   ERROR_CHECK(db.rename_table(table_id, new_name));
-  }
-  else if (command == "add_field") ///////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   std::string field_name;
-   iss >> field_name;
-   Type type = parse_type(iss, out);
-   if (type.get_type_id() != Type::Type_Id::null)
-    ERROR_CHECK(db.add_field(table_id, field_name, type));
-  }
-  else if (command == "drop_field") /////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   std::string field_name;
-   iss >> field_name;
-   Field_Id field_id = db.find_field(table_id, field_name);
-   ERROR_CHECK(db.drop_field(table_id, field_id));
-  }
-  else if (command == "rename_field") ///////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   std::string field_name;
-   iss >> field_name;
-   Field_Id field_id = db.find_field(table_id, field_name);
-   std::string new_field_name;
-   iss >> new_field_name;
-   ERROR_CHECK(db.rename_field(table_id, field_id, new_field_name));
-  }
-  else if (command == "custom") /////////////////////////////////////////////
-  {
-   std::string name;
-   iss >> name;
-   ERROR_CHECK(db.custom(name));
-  }
-  else if (command == "comment") ////////////////////////////////////////////
-  {
-   const std::string comment = joedb::read_string(iss);
-   ERROR_CHECK(db.comment(comment));
-  }
-  else if (command == "timestamp") //////////////////////////////////////////
-  {
-   int64_t timestamp = 0;
-   iss >> timestamp;
-   if (iss.fail())
-    timestamp = std::time(0);
-   ERROR_CHECK(db.timestamp(timestamp));
-  }
-  else if (command == "valid_data") /////////////////////////////////////////
-  {
-   ERROR_CHECK(db.valid_data());
-  }
-  else if (command == "insert_into") ////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
-   iss >> record_id;
-   ERROR_CHECK(
-    db.insert_into(table_id, record_id);
-    if (iss.good())
-     for (const auto &field: db.get_fields(table_id))
-     {
-      update_value(iss, table_id, record_id, field.first);
-      if (iss.fail())
-      {
-       out << "Error: failed parsing value\n";
-       break;
-      }
-     }
-   );
-  }
-  else if (command == "insert_vector") //////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
-   Record_Id size = 0;
-   iss >> record_id >> size;
-   ERROR_CHECK(db.insert_vector(table_id, record_id, size));
-  }
-  else if (command == "update") /////////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
-   iss >> record_id;
-   std::string field_name;
-   iss >> field_name;
-   Field_Id field_id = db.find_field(table_id, field_name);
-   ERROR_CHECK(update_value(iss, table_id, record_id, field_id));
-  }
-  else if (command == "update_vector") //////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
-   iss >> record_id;
-   std::string field_name;
-   iss >> field_name;
-   Field_Id field_id = db.find_field(table_id, field_name);
-   Record_Id size = 0;
-   iss >> size;
-
-   if (db.get_max_record_id() != 0 && size >= db.get_max_record_id())
-    out << "Error: vector is too big\n";
-   else
-   {
-    switch(db.get_field_type(table_id, field_id).get_type_id())
-    {
-     case Type::Type_Id::null:
-      out << "Error: bad field\n";
-     break;
-
-     #define TYPE_MACRO(type, return_type, type_id, R, W)\
-     case Type::Type_Id::type_id:\
-     {\
-      std::vector<type> v(size);\
-      for (size_t i = 0; i < size; i++)\
-       v[i] = joedb::read_##type_id(iss);\
-      ERROR_CHECK(db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]));\
-     }\
-     break;
-     #include "TYPE_MACRO.h"
-     #undef TYPE_MACRO
-    }
-   }
-  }
-  else if (command == "delete_from") ////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
-   iss >> record_id;
-   ERROR_CHECK(db.delete_from(table_id, record_id));
-  }
-  else
-   out << "Error: unknown command: " << command << ". For a list of available commands, try \"help\".\n";
  }
-
- #undef ERROR_CHECK
 }
