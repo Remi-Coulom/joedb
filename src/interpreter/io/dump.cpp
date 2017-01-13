@@ -80,7 +80,7 @@ void joedb::dump(const Readable &db, Writeable &writeable)
    for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
     if (db.is_used(table_id, record_id))
     {
-     switch(db.get_field_type(table_id, field_id).get_type_id())
+     switch (db.get_field_type(table_id, field_id).get_type_id())
      {
       case Type::Type_Id::null:
       break;

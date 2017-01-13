@@ -9,10 +9,12 @@
 #include "is_identifier.h"
 #include "Journal_File.h"
 #include "diagnostics.h"
+#include "type_io.h"
 
 #include <iostream>
 #include <sstream>
 #include <ctime>
+#include <iomanip>
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Type joedb::Readonly_Interpreter::parse_type
@@ -98,6 +100,33 @@ void joedb::Interpreter::update_value
 while(false)
 
 /////////////////////////////////////////////////////////////////////////////
+static size_t utf8_length(const std::string &s)
+/////////////////////////////////////////////////////////////////////////////
+{
+ size_t result = 0;
+
+ for (char c: s)
+  if ((c & 0xc0) != 0x80)
+   result++;
+
+ return result;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void write_justified(std::ostream &out, const std::string &s, size_t w)
+/////////////////////////////////////////////////////////////////////////////
+{
+ size_t length = utf8_length(s);
+ out << s;
+
+ while (length < w)
+ {
+  out << ' ';
+  length++;
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 bool joedb::Readonly_Interpreter::process_command
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -113,6 +142,103 @@ bool joedb::Readonly_Interpreter::process_command
  {
   Interpreter_Dump_Writeable dump_writeable(out);
   dump(db, dump_writeable);
+ }
+ else if (command == "print") ///////////////////////////////////////////////
+ {
+  const Table_Id table_id = parse_table(iss, out);
+  if (table_id)
+  {
+   const auto &fields = db.get_fields(table_id);
+   std::map<Field_Id, size_t> column_width;
+
+   for (auto field: fields)
+   {
+    size_t width = field.second.size();
+    column_width[field.first] = width;
+   }
+
+   //
+   // Store values in strings to determine column widths
+   //
+   std::map<Field_Id, std::vector<std::string>> columns;
+   std::vector<Record_Id> id_column;
+
+   size_t rows = 0;
+   const Record_Id last_record_id = db.get_last_record_id(table_id);
+   for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
+    if (db.is_used(table_id, record_id))
+    {
+     rows++;
+     id_column.push_back(record_id);
+     for (auto field: fields)
+     {
+      std::stringstream ss;
+
+      switch (db.get_field_type(table_id, field.first).get_type_id())
+      {
+       case Type::Type_Id::null:
+       break;
+       #define TYPE_MACRO(type, return_type, type_id, R, W)\
+       case Type::Type_Id::type_id:\
+        write_##type_id(ss, db.get_##type_id(table_id, record_id, field.first));\
+       break;
+       #include "TYPE_MACRO.h"
+       #undef TYPE_MACRO
+      }
+
+      ss.flush();
+      const std::string &s = ss.str();
+      columns[field.first].push_back(s);
+      const size_t width = utf8_length(s);
+      if (column_width[field.first] < width)
+       column_width[field.first] = width;
+     }
+    }
+
+   //
+   // Determine table width
+   //
+   size_t id_width = 0;
+   {
+    std::stringstream ss;
+    ss << last_record_id;
+    ss.flush();
+    id_width = ss.str().size();
+   }
+   size_t table_width = id_width;
+   for (auto field: fields)
+    table_width += column_width[field.first] + 1;
+
+   //
+   // Table header
+   //
+   out << std::string(table_width, '-') << '\n';
+   {
+    out << std::string(id_width, ' ');
+    for (auto field: fields)
+    {
+     out << ' ';
+     write_justified(out, field.second, column_width[field.first]);
+    }
+    out << '\n';
+   }
+   out << std::string(table_width, '-') << '\n';
+
+   //
+   // Table data
+   //
+   for (size_t i = 0; i < rows; i++)
+   {
+    out << std::setw(int(id_width)) << id_column[i];
+
+    for (auto field: fields)
+    {
+     out << ' ';
+     write_justified(out, columns[field.first][i], column_width[field.first]);
+    }
+    out << '\n';
+   }
+  }
  }
  else if (command == "json") ////////////////////////////////////////////////
  {
@@ -137,6 +263,7 @@ bool joedb::Readonly_Interpreter::process_command
   out << "Displaying data\n";
   out << "~~~~~~~~~~~~~~~\n";
   out << " dump\n";
+  out << " print <table_name>\n";
   out << " json [<base64>]\n";
   out << " sql\n";
   out << '\n';
