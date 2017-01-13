@@ -99,12 +99,39 @@ void joedb::Interpreter::update_value
 }\
 while(false)
 
+#include "Markus_Kuhn_wcwidth.h"
+
 /////////////////////////////////////////////////////////////////////////////
 void write_justified(std::ostream &out, const std::string &s, size_t w)
 /////////////////////////////////////////////////////////////////////////////
 {
  size_t length = joedb::utf8_display_size(s);
- out << s;
+
+ if (length <= w)
+  out << s;
+ else
+ {
+  length = 1;
+  std::string shortened;
+
+  for (size_t i = 0;;)
+  {
+   const size_t previous_i = i;
+   const uint32_t wide_char = joedb::read_utf8_char(i, s);
+   const size_t char_width = size_t(::Markus_Kuhn_wcwidth(wide_char));
+
+   if (length + char_width <= w)
+   {
+    length += char_width;
+    for (size_t j = previous_i; j < i; j++)
+     shortened += s[j];
+   }
+   else
+    break;
+  }
+
+  out << shortened << u8"…";
+ }
 
  while (length < w)
  {
@@ -125,8 +152,10 @@ bool joedb::Readonly_Interpreter::process_command
 {
  if (command.size() == 0 || command[0] == '#') //////////////////////////////
   return true;
- else if (command == "print") ///////////////////////////////////////////////
+ else if (command == "table") ///////////////////////////////////////////////
  {
+  const size_t max_column_width = 25;
+
   const Table_Id table_id = parse_table(iss, out);
   if (table_id)
   {
@@ -189,7 +218,11 @@ bool joedb::Readonly_Interpreter::process_command
    }
    size_t table_width = id_width;
    for (auto field: fields)
+   {
+    if (column_width[field.first] > max_column_width)
+     column_width[field.first] = max_column_width;
     table_width += column_width[field.first] + 1;
+   }
 
    //
    // Table header
@@ -254,7 +287,7 @@ bool joedb::Readonly_Interpreter::process_command
   out << '\n';
   out << "Displaying data\n";
   out << "~~~~~~~~~~~~~~~\n";
-  out << " print <table_name>\n";
+  out << " table <table_name>\n";
   out << " schema\n";
   out << " dump\n";
   out << " sql\n";

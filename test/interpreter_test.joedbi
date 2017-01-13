@@ -15,6 +15,7 @@ insert_into person 3 "Alexandre" 15
 dump
 sql
 json 1
+table person
 help
 
 create_table city

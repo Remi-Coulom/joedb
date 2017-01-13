@@ -59,6 +59,12 @@ UPDATE "person" SET "city" = 15 WHERE "__id" = 3;
   "city": [1,1,2]
  }
 }
+------------------
+  name        city
+------------------
+1 "Rémi"      2   
+2 "Norbert"   2   
+3 "Alexandre" 15  
 
 Commands unrelated to the database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,7 +74,7 @@ Commands unrelated to the database
 
 Displaying data
 ~~~~~~~~~~~~~~~
- print <table_name>
+ table <table_name>
  schema
  dump
  sql
