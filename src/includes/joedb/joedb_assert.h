@@ -10,7 +10,7 @@
 #define JOEDB_ASSERT(x) do\
 {\
  if (!(x))\
-  throw joedb::Assertion_Failure(#x "\n  File: " __FILE__ "\n  Line: " JOEDB_ASSERT_TO_STRING(__LINE__));\
+  throw joedb::Assertion_Failure("!("#x ")\n  File: " __FILE__ "\n  Line: " JOEDB_ASSERT_TO_STRING(__LINE__));\
 } while(0)
 #endif
 

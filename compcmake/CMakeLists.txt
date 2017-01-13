@@ -106,6 +106,7 @@ target_link_libraries(file_benchmark joedb)
 if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
   ../test/File_Test.cpp
+  ../test/Freedom_Keeper_Test.cpp
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
   ../test/Journal_File_Test.cpp
