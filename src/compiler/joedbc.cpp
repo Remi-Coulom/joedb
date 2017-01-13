@@ -143,7 +143,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include <string>
 #include <cstdint>
 #include <vector>
-#include <cassert>
 #include <map>
 #include <algorithm>
 #include <sstream>
@@ -155,6 +154,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include "joedb/Freedom_Keeper.h"
 #include "joedb/Exception.h"
 #include "joedb/Stream_File.h"
+#include "joedb/joedb_assert.h"
 
 )RRR";
 
@@ -825,7 +825,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, type, true);
    out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
-   out << "    assert(!record.is_null());\n";
+   out << "    JOEDB_ASSERT(!record.is_null());\n";
    out << "    return storage_of_" << tname;
    out << "[record.id - 1].field_value_of_" << fname << ";\n";
    out << "   }\n";
@@ -1103,7 +1103,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, type, true);
    out << "field_value_of_" << fname << ")\n";
    out << "   {\n";
-   out << "    assert(!record.is_null());\n";
+   out << "    JOEDB_ASSERT(!record.is_null());\n";
    out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
    out << "field_value_of_" << fname << ");\n";
    out << "    journal.update_";

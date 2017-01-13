@@ -3,7 +3,8 @@
 
 #include <cstddef>
 #include <vector>
-#include <cassert>
+
+#include "joedb_assert.h"
 
 namespace joedb
 {
@@ -106,9 +107,9 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    void use(size_t index)
    {
-    assert(index > 1);
-    assert(index < records.size());
-    assert(records[index].data.is_free());
+    JOEDB_ASSERT(index > 1);
+    JOEDB_ASSERT(index < records.size());
+    JOEDB_ASSERT(records[index].data.is_free());
 
     Record &record = records[index];
     record.data.set_free(false);
@@ -128,9 +129,9 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    void free(size_t index)
    {
-    assert(index > 1);
-    assert(index < records.size());
-    assert(!records[index].data.is_free());
+    JOEDB_ASSERT(index > 1);
+    JOEDB_ASSERT(index < records.size());
+    JOEDB_ASSERT(!records[index].data.is_free());
 
     Record &record = records[index];
     record.data.set_free(true);

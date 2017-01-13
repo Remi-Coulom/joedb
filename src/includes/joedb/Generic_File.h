@@ -2,8 +2,9 @@
 #define joedb_Generic_File_declared
 
 #include <string>
-#include <cassert>
 #include <cstdint>
+
+#include "joedb_assert.h"
 
 namespace joedb
 {
@@ -95,14 +96,14 @@ namespace joedb
 
    void putc(char c)
    {
-    assert(read_buffer_size == 0 && !end_of_file);
+    JOEDB_ASSERT(read_buffer_size == 0 && !end_of_file);
     buffer[write_buffer_index++] = c;
     position++;
    }
 
    uint8_t getc()
    {
-    assert(write_buffer_index == 0);
+    JOEDB_ASSERT(write_buffer_index == 0);
 
     if (read_buffer_index >= read_buffer_size)
     {
@@ -275,7 +276,7 @@ namespace joedb
       file.compact_write<uint32_t>(uint32_t(x));
      else
      {
-      assert(!(char(x >> 56) & 0xe0));
+      JOEDB_ASSERT(!(char(x >> 56) & 0xe0));
       file.putc(char(0xe0) | char(x >> 56));
       file.putc(char(x >> 48));
       file.putc(char(x >> 40));
