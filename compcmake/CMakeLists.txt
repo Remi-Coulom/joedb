@@ -43,7 +43,7 @@ include_directories(
 )
 
 add_library(joedb_objects OBJECT
- ../src/external/Markus_Kuhn_wcwidth.c
+ ../src/external/wide_char_display_width.c
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/abstract/is_identifier.cpp

@@ -1,5 +1,5 @@
 #include "type_io.h"
-#include "Markus_Kuhn_wcwidth.h"
+#include "wide_char_display_width.h"
 
 #include <iostream>
 
@@ -119,7 +119,7 @@ size_t joedb::utf8_display_size(const std::string &s)
  for (size_t i = 0; i < s.size();)
  {
   uint32_t wide_char = read_utf8_char(i, s);
-  result += size_t(::Markus_Kuhn_wcwidth(uint32_t(wide_char)));
+  result += size_t(wide_char_display_width(uint32_t(wide_char)));
  }
 
  return result;
@@ -161,6 +161,50 @@ uint32_t joedb::read_utf8_char(size_t &i, const std::string &s)
  }
 
  return result;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::write_justified
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const std::string &s,
+ size_t width
+)
+{
+ size_t length = utf8_display_size(s);
+
+ if (length <= width)
+  out << s;
+ else
+ {
+  length = 1;
+  std::string shortened;
+
+  for (size_t i = 0;;)
+  {
+   const size_t previous_i = i;
+   const uint32_t wide_char = read_utf8_char(i, s);
+   const size_t char_width = size_t(wide_char_display_width(wide_char));
+
+   if (length + char_width <= width)
+   {
+    length += char_width;
+    for (size_t j = previous_i; j < i; j++)
+     shortened += s[j];
+   }
+   else
+    break;
+  }
+
+  out << shortened << u8"…";
+ }
+
+ while (length < width)
+ {
+  out << ' ';
+  length++;
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

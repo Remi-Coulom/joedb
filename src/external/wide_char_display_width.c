@@ -7,7 +7,7 @@
  * modified by Rémi Coulom
  */
 
-#include "Markus_Kuhn_wcwidth.h"
+#include "wide_char_display_width.h"
 
 struct interval {
   unsigned short first;
@@ -65,7 +65,7 @@ static int bisearch(uint32_t ucs, const struct interval *table, int max) {
  * in ISO 10646.
  */
 
-int Markus_Kuhn_wcwidth(uint32_t ucs)
+int wide_char_display_width(uint32_t ucs)
 {
   /* sorted list of non-overlapping intervals of non-spacing characters */
   static const struct interval combining[] = {
