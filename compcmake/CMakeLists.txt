@@ -31,6 +31,7 @@ set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.8.0/googletest)
 
 include_directories(
  ${GTEST_INCLUDE_DIRS}
+ ../src/external
  ../src/includes
  ../src/includes/joedb
  ../src/interpreter/abstract
@@ -42,6 +43,7 @@ include_directories(
 )
 
 add_library(joedb_objects OBJECT
+ ../src/external/Markus_Kuhn_wcwidth.c
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/abstract/is_identifier.cpp

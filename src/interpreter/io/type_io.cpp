@@ -1,4 +1,5 @@
 #include "type_io.h"
+#include "Markus_Kuhn_wcwidth.h"
 
 #include <iostream>
 
@@ -107,6 +108,31 @@ void joedb::write_sql_string(std::ostream &out, const std::string &s)
   out.put(get_hex_char_from_digit(uint8_t(c & 0x0f)));
  }
  out.put('\'');
+}
+
+/////////////////////////////////////////////////////////////////////////////
+size_t joedb::utf8_display_size(const std::string &s)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::setlocale(LC_ALL, "en_US.utf8");
+ size_t result = 0;
+
+ std::mbstate_t state = std::mbstate_t();
+ const char *current = s.c_str();
+ int remaining = int(s.size());
+
+ while (remaining > 0)
+ {
+  wchar_t wide_char;
+  std::size_t n = std::mbrtowc(&wide_char, current, size_t(remaining), &state);
+  current += n;
+  remaining -= int(n);
+  const int w = ::Markus_Kuhn_wcwidth(wide_char);
+  if (w > 0)
+   result += size_t(::Markus_Kuhn_wcwidth(wide_char));
+ }
+
+ return result;
 }
 
 /////////////////////////////////////////////////////////////////////////////

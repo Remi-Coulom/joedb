@@ -100,23 +100,10 @@ void joedb::Interpreter::update_value
 while(false)
 
 /////////////////////////////////////////////////////////////////////////////
-static size_t utf8_length(const std::string &s)
-/////////////////////////////////////////////////////////////////////////////
-{
- size_t result = 0;
-
- for (char c: s)
-  if ((c & 0xc0) != 0x80)
-   result++;
-
- return result;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 void write_justified(std::ostream &out, const std::string &s, size_t w)
 /////////////////////////////////////////////////////////////////////////////
 {
- size_t length = utf8_length(s);
+ size_t length = joedb::utf8_display_size(s);
  out << s;
 
  while (length < w)
@@ -189,7 +176,7 @@ bool joedb::Readonly_Interpreter::process_command
       ss.flush();
       const std::string &s = ss.str();
       columns[field.first].push_back(s);
-      const size_t width = utf8_length(s);
+      const size_t width = utf8_display_size(s);
       if (column_width[field.first] < width)
        column_width[field.first] = width;
      }
