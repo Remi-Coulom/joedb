@@ -50,13 +50,7 @@ bool joedb::File::try_open(const char *file_name, Open_Mode new_mode)
 joedb::File::File(const char *file_name, Open_Mode new_mode)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (new_mode == Open_Mode::automatic)
- {
-  try_open(file_name, Open_Mode::write_existing) ||
-  try_open(file_name, Open_Mode::read_existing) ||
-  try_open(file_name, Open_Mode::create_new);
- }
- else if (new_mode == Open_Mode::write_existing_or_create_new)
+ if (new_mode == Open_Mode::write_existing_or_create_new)
  {
   try_open(file_name, Open_Mode::write_existing) ||
   try_open(file_name, Open_Mode::create_new);

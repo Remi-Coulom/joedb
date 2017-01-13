@@ -13,8 +13,7 @@ namespace joedb
   read_existing,
   write_existing,
   create_new,
-  write_existing_or_create_new,
-  automatic // write_existing || read_existing || create_new
+  write_existing_or_create_new
  };
 
  class Generic_File
