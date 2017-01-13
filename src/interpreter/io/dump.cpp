@@ -3,7 +3,7 @@
 #include "Writeable.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump(const Readable &db, Writeable &writeable)
+void joedb::dump(const Readable &db, Writeable &writeable, bool schema_only)
 /////////////////////////////////////////////////////////////////////////////
 {
  //
@@ -47,6 +47,9 @@ void joedb::dump(const Readable &db, Writeable &writeable)
  //
  // Dump records
  //
+ if (schema_only)
+  return;
+
  for (auto table: db.get_tables())
  {
   const Table_Id table_id = table.first;

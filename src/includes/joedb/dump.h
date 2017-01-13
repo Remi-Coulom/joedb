@@ -7,8 +7,9 @@ namespace joedb
  class Writeable;
  class Readonly_Journal;
 
- void dump(const Readable &db, Writeable &writeable);
+ void dump(const Readable &db, Writeable &writeable, bool schema_only = false);
  void dump_data(const Readable &db, Writeable &writeable);
+
  void pack(Readonly_Journal &input_journal, Writeable &writeable);
 }
 

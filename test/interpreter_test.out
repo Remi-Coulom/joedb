@@ -68,10 +68,11 @@ Commands unrelated to the database
 
 Displaying data
 ~~~~~~~~~~~~~~~
- dump
  print <table_name>
- json [<base64>]
+ schema
+ dump
  sql
+ json [<base64>]
 
 Logging
 ~~~~~~~

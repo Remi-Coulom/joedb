@@ -125,11 +125,6 @@ bool joedb::Readonly_Interpreter::process_command
 {
  if (command.size() == 0 || command[0] == '#') //////////////////////////////
   return true;
- else if (command == "dump") ////////////////////////////////////////////////
- {
-  Interpreter_Dump_Writeable dump_writeable(out);
-  dump(db, dump_writeable);
- }
  else if (command == "print") ///////////////////////////////////////////////
  {
   const Table_Id table_id = parse_table(iss, out);
@@ -227,16 +222,26 @@ bool joedb::Readonly_Interpreter::process_command
    }
   }
  }
- else if (command == "json") ////////////////////////////////////////////////
+ else if (command == "schema") //////////////////////////////////////////////
  {
-  bool use_base64 = false;
-  iss >> use_base64;
-  write_json(out, db, use_base64);
+  Interpreter_Dump_Writeable dump_writeable(out);
+  dump(db, dump_writeable, true);
+ }
+ else if (command == "dump") ////////////////////////////////////////////////
+ {
+  Interpreter_Dump_Writeable dump_writeable(out);
+  dump(db, dump_writeable);
  }
  else if (command == "sql") /////////////////////////////////////////////////
  {
   SQL_Dump_Writeable dump_writeable(out);
   dump(db, dump_writeable);
+ }
+ else if (command == "json") ////////////////////////////////////////////////
+ {
+  bool use_base64 = false;
+  iss >> use_base64;
+  write_json(out, db, use_base64);
  }
  else if (command == "help") ////////////////////////////////////////////////
  {
@@ -249,10 +254,11 @@ bool joedb::Readonly_Interpreter::process_command
   out << '\n';
   out << "Displaying data\n";
   out << "~~~~~~~~~~~~~~~\n";
-  out << " dump\n";
   out << " print <table_name>\n";
-  out << " json [<base64>]\n";
+  out << " schema\n";
+  out << " dump\n";
   out << " sql\n";
+  out << " json [<base64>]\n";
   out << '\n';
  }
  else if (command == "about") ///////////////////////////////////////////////
