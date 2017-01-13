@@ -114,22 +114,50 @@ void joedb::write_sql_string(std::ostream &out, const std::string &s)
 size_t joedb::utf8_display_size(const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::setlocale(LC_ALL, "en_US.utf8");
  size_t result = 0;
 
- std::mbstate_t state = std::mbstate_t();
- const char *current = s.c_str();
- int remaining = int(s.size());
-
- while (remaining > 0)
+ for (size_t i = 0; i < s.size();)
  {
-  wchar_t wide_char;
-  std::size_t n = std::mbrtowc(&wide_char, current, size_t(remaining), &state);
-  current += n;
-  remaining -= int(n);
-  const int w = ::Markus_Kuhn_wcwidth(wide_char);
-  if (w > 0)
-   result += size_t(::Markus_Kuhn_wcwidth(wide_char));
+  uint32_t wide_char = read_utf8_char(i, s);
+  result += size_t(::Markus_Kuhn_wcwidth(uint32_t(wide_char)));
+ }
+
+ return result;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+uint32_t joedb::read_utf8_char(size_t &i, const std::string &s)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const uint8_t *p = ((const uint8_t *)(s.c_str()) + i) ;
+
+ uint32_t result;
+
+ if ((p[0] & 0xe0) == 0xc0 && i + 1 < s.size())
+ {
+  result = (uint32_t(p[0]) << 6) +
+           (uint32_t(p[1])     ) - uint32_t(0x3080UL);
+  i += 2;
+ }
+ else if ((p[0] & 0xf0) == 0xe0 && i + 2 < s.size())
+ {
+  result = (uint32_t(p[0]) << 12) +
+           (uint32_t(p[1]) <<  6) +
+           (uint32_t(p[2])      ) - uint32_t(0xe2080UL);
+  i += 3;
+ }
+ else if ((p[0] & 0xf8) == 0xf0 && i + 3 < s.size())
+ {
+  result = (uint32_t(p[0]) << 18) +
+           (uint32_t(p[1]) << 12) +
+           (uint32_t(p[2]) <<  6) +
+           (uint32_t(p[3])      ) - uint32_t(0x3c82080UL);
+  i += 4;
+ }
+ else
+ {
+  result = p[0];
+  i += 1;
  }
 
  return result;

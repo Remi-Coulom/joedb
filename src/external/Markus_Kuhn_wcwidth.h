@@ -1,13 +1,13 @@
 #ifndef Markus_Kuhn_wcwidth_declared
 #define Markus_Kuhn_wcwidth_declared
 
-#include <wchar.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int Markus_Kuhn_wcwidth(wchar_t ucs);
+int Markus_Kuhn_wcwidth(uint32_t ucs);
 
 #ifdef __cplusplus
 }

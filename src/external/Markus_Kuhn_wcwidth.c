@@ -15,7 +15,7 @@ struct interval {
 };
 
 /* auxiliary function for binary search in interval table */
-static int bisearch(wchar_t ucs, const struct interval *table, int max) {
+static int bisearch(uint32_t ucs, const struct interval *table, int max) {
   int min = 0;
   int mid;
 
@@ -61,11 +61,11 @@ static int bisearch(wchar_t ucs, const struct interval *table, int max) {
  *      ISO 8859-1 and WGL4 characters, Unicode control characters,
  *      etc.) have a column width of 1.
  *
- * This implementation assumes that wchar_t characters are encoded
+ * This implementation assumes that uint32_t characters are encoded
  * in ISO 10646.
  */
 
-int Markus_Kuhn_wcwidth(wchar_t ucs)
+int Markus_Kuhn_wcwidth(uint32_t ucs)
 {
   /* sorted list of non-overlapping intervals of non-spacing characters */
   static const struct interval combining[] = {
@@ -121,7 +121,7 @@ int Markus_Kuhn_wcwidth(wchar_t ucs)
   return 1 + 
     (ucs >= 0x1100 &&
      (ucs <= 0x115f ||                    /* Hangul Jamo init. consonants */
-      (ucs >= 0x2e80 && ucs <= 0xa4cf && (ucs & ~0x0011) != 0x300a &&
+      (ucs >= 0x2e80 && ucs <= 0xa4cf && (ucs & ~0x0011UL) != 0x300a &&
        ucs != 0x303f) ||                  /* CJK ... Yi */
       (ucs >= 0xac00 && ucs <= 0xd7a3) || /* Hangul Syllables */
       (ucs >= 0xf900 && ucs <= 0xfaff) || /* CJK Compatibility Ideographs */
