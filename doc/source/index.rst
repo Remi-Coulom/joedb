@@ -6,13 +6,5 @@ Joedb, the Journal-Only Embedded Database
    :numbered:
 
    intro
-   getting_started
-   indexes
-   vectors
-   schema_upgrade
-   checkpoints
-   file_format
-   todo
-   references
-   history
-   license
+   user_guide
+   reference

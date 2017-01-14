@@ -44,11 +44,28 @@ On-disk Storage
 
 Compiler
 --------
+- modularize code generation
+
+  - Each module should have:
+
+    - required include files
+    - data structure for storing data
+    - additional hidden table fields?
+    - triggers (after/before insert/update/delete)
+    - public methods
+
+  - Possible to modularize:
+
+    - indexes
+    - sort functions
+    - referential integrity
+    - safety checks
+    - incrementally updated group-by queries
+
 - use std::set and std::multiset for indexes? Might be better for strings.
 - store each field as a vector
 - before_update_vector: ask for storage pointer to the listener
 - debug code with range checking
-- modularize code generation
 - Table options:
 
   - single_row: compiled to a simple struct, with simpler getters.

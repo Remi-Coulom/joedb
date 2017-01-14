@@ -1,5 +1,5 @@
-References
-==========
+Bibliography
+============
 
 Database with history/revisions:
 
