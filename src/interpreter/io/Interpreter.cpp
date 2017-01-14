@@ -187,15 +187,13 @@ bool joedb::Readonly_Interpreter::process_command
    // Table header
    //
    out << std::string(table_width, '-') << '\n';
+   out << std::string(id_width, ' ');
+   for (auto field: fields)
    {
-    out << std::string(id_width, ' ');
-    for (auto field: fields)
-    {
-     out << ' ';
-     write_justified(out, field.second, column_width[field.first]);
-    }
-    out << '\n';
+    out << ' ';
+    write_justified(out, field.second, column_width[field.first]);
    }
+   out << '\n';
    out << std::string(table_width, '-') << '\n';
 
    //
@@ -207,8 +205,15 @@ bool joedb::Readonly_Interpreter::process_command
 
     for (auto field: fields)
     {
+     const auto type = db.get_field_type(table_id, field.first).get_type_id();
      out << ' ';
-     write_justified(out, columns[field.first][i], column_width[field.first]);
+     write_justified
+     (
+      out,
+      columns[field.first][i],
+      column_width[field.first],
+      type == Type::Type_Id::string
+     );
     }
     out << '\n';
    }

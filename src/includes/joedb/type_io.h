@@ -13,7 +13,13 @@ namespace joedb
 
  size_t utf8_display_size(const std::string &s);
  uint32_t read_utf8_char(size_t &i, const std::string &s);
- void write_justified(std::ostream &out, const std::string &s, size_t width);
+ void write_justified
+ (
+  std::ostream &out,
+  const std::string &s,
+  size_t width,
+  bool flush_left = true
+ );
 
  char get_hex_char_from_digit(uint8_t n);
  uint8_t get_hex_digit_from_char(char c);

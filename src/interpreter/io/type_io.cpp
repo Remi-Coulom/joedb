@@ -169,42 +169,45 @@ void joedb::write_justified
 (
  std::ostream &out,
  const std::string &s,
- size_t width
+ size_t width,
+ bool flush_left
 )
 {
- size_t length = utf8_display_size(s);
+ size_t length = 0;
+ std::string displayed;
 
- if (length <= width)
-  out << s;
- else
+ for (size_t i = 0; s.c_str()[i];)
  {
-  length = 1;
-  std::string shortened;
+  const size_t previous_i = i;
+  const uint32_t wide_char = read_utf8_char(i, s);
+  const size_t char_width = size_t(wide_char_display_width(wide_char));
 
-  for (size_t i = 0;;)
+  if (length + char_width < width ||
+      (length + char_width == width && !s.c_str()[i]))
   {
-   const size_t previous_i = i;
-   const uint32_t wide_char = read_utf8_char(i, s);
-   const size_t char_width = size_t(wide_char_display_width(wide_char));
-
-   if (length + char_width <= width)
-   {
-    length += char_width;
-    for (size_t j = previous_i; j < i; j++)
-     shortened += s[j];
-   }
-   else
-    break;
+   length += char_width;
+   for (size_t j = previous_i; j < i; j++)
+    displayed += s[j];
   }
-
-  out << shortened << u8"…";
+  else
+  {
+   length += 1;
+   displayed += u8"…";
+   break;
+  }
  }
+
+ if (flush_left)
+  out << displayed;
 
  while (length < width)
  {
   out << ' ';
   length++;
  }
+
+ if (!flush_left)
+  out << displayed;
 }
 
 /////////////////////////////////////////////////////////////////////////////
