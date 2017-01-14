@@ -14,7 +14,13 @@ Short Term
 
 - Instead of throwing an exception: make it impossible at compile time to open a writeable journal with a read_only file.
 
+- better readable interface:
+
+  - a separate table abstraction (that could be used for query output)
+  - cursors on tables
+
 - conan.io
+
 
 Journal File
 ------------
