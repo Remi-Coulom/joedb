@@ -160,8 +160,15 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
+#if defined(LITTLE_ENDIAN)
      file.putc(p[0]);
      file.putc(p[1]);
+#elif defined(BIG_ENDIAN)
+     file.putc(p[1]);
+     file.putc(p[0]);
+#else
+#error no endian
+#endif
      file.check_write_buffer();
     }
    };
@@ -172,10 +179,17 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
+#if defined(LITTLE_ENDIAN)
      file.putc(p[0]);
      file.putc(p[1]);
      file.putc(p[2]);
      file.putc(p[3]);
+#elif defined(BIG_ENDIAN)
+     file.putc(p[3]);
+     file.putc(p[2]);
+     file.putc(p[1]);
+     file.putc(p[0]);
+#endif
      file.check_write_buffer();
     }
    };
@@ -186,6 +200,7 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
+#if defined(LITTLE_ENDIAN)
      file.putc(p[0]);
      file.putc(p[1]);
      file.putc(p[2]);
@@ -194,6 +209,16 @@ namespace joedb
      file.putc(p[5]);
      file.putc(p[6]);
      file.putc(p[7]);
+#elif defined(BIG_ENDIAN)
+     file.putc(p[7]);
+     file.putc(p[6]);
+     file.putc(p[5]);
+     file.putc(p[4]);
+     file.putc(p[3]);
+     file.putc(p[2]);
+     file.putc(p[1]);
+     file.putc(p[0]);
+#endif
      file.check_write_buffer();
     }
    };
@@ -273,7 +298,7 @@ namespace joedb
     {
      if (!(uint64_t(x) >> 32))
       file.compact_write<uint32_t>(uint32_t(x));
-     else
+     else // TODO: should be optimized?
      {
       JOEDB_ASSERT(!(char(x >> 56) & 0xe0));
       file.putc(char(0xe0) | char(x >> 56));
@@ -305,8 +330,13 @@ namespace joedb
     {
      T result;
      uint8_t *p = reinterpret_cast<uint8_t *>(&result);
+#if defined(LITTLE_ENDIAN)
      p[0] = file.getc();
      p[1] = file.getc();
+#elif defined(BIG_ENDIAN)
+     p[1] = file.getc();
+     p[0] = file.getc();
+#endif
      return result;
     }
    };
@@ -318,10 +348,17 @@ namespace joedb
     {
      T result;
      uint8_t *p = reinterpret_cast<uint8_t *>(&result);
+#if defined(LITTLE_ENDIAN)
      p[0] = file.getc();
      p[1] = file.getc();
      p[2] = file.getc();
      p[3] = file.getc();
+#elif defined(BIG_ENDIAN)
+     p[3] = file.getc();
+     p[2] = file.getc();
+     p[1] = file.getc();
+     p[0] = file.getc();
+#endif
      return result;
     }
    };
@@ -333,6 +370,7 @@ namespace joedb
     {
      T result;
      uint8_t *p = reinterpret_cast<uint8_t *>(&result);
+#if defined(LITTLE_ENDIAN)
      p[0] = file.getc();
      p[1] = file.getc();
      p[2] = file.getc();
@@ -341,6 +379,16 @@ namespace joedb
      p[5] = file.getc();
      p[6] = file.getc();
      p[7] = file.getc();
+#elif defined(BIG_ENDIAN)
+     p[7] = file.getc();
+     p[6] = file.getc();
+     p[5] = file.getc();
+     p[4] = file.getc();
+     p[3] = file.getc();
+     p[2] = file.getc();
+     p[1] = file.getc();
+     p[0] = file.getc();
+#endif
      return result;
     }
    };
