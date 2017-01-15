@@ -38,8 +38,8 @@ namespace joedb
    bool is_end_of_file() const {return end_of_file;}
 
    // set_position must be called when switching between write and read
-   void set_position(uint64_t position);
-   uint64_t get_position() const {return position;}
+   void set_position(size_t position);
+   size_t get_position() const {return position;}
 
    template<typename T>
    void write(T x)
@@ -98,7 +98,7 @@ namespace joedb
    size_t read_buffer_index;
    size_t read_buffer_size;
    bool end_of_file;
-   uint64_t position;
+   size_t position;
 
    void putc(char c)
    {
