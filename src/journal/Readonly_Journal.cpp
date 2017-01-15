@@ -64,7 +64,9 @@ joedb::Readonly_Journal::Readonly_Journal(Generic_File &file):
    for (unsigned i = 0; i < 2; i++)
     if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
     {
-     checkpoint_position = pos[2 * i];
+     if (uint64_t(size_t(pos[2 * i])) != pos[2 * i])
+      throw Exception("size_t is too small for this file");
+     checkpoint_position = size_t(pos[2 * i]);
      checkpoint_index = i;
     }
 
@@ -97,7 +99,7 @@ void joedb::Readonly_Journal::rewind()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::play_until(Writeable &writeable, uint64_t end)
+void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
 /////////////////////////////////////////////////////////////////////////////
 {
  while(file.get_position() < end)

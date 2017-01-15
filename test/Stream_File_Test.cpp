@@ -14,7 +14,7 @@ TEST(Stream_File_Test, position_test)
  Stream_File file(stream, Open_Mode::create_new);
  EXPECT_EQ(0ULL, file.get_position());
 
- file.set_position(uint64_t(-1));
+ file.set_position(size_t(-1));
  EXPECT_EQ(0ULL, file.get_position());
 
  const uint64_t N = 100;

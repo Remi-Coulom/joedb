@@ -17,8 +17,8 @@ int main(int argc, char **argv)
  else
  {
   size_t N = 0;
-  std::sscanf(argv[1], "%lu", &N);
-  std::printf("N = %lu\n", N);
+  std::sscanf(argv[1], "%zu", &N);
+  std::printf("N = %zu\n", N);
 
   File file(file_name, Open_Mode::create_new);
   Journal_File journal_file(file);

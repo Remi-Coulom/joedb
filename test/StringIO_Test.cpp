@@ -26,15 +26,15 @@ pairs[] =
 TEST(StringIO_Test, utf8_display_size)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ(0, joedb::utf8_display_size(u8""));
- EXPECT_EQ(4, joedb::utf8_display_size(u8"Remi"));
- EXPECT_EQ(4, joedb::utf8_display_size(u8"Rémi"));
- EXPECT_EQ(4, joedb::utf8_display_size(u8"山下"));
- EXPECT_EQ(2, joedb::utf8_display_size(u8"𩸽"));
- EXPECT_EQ(4, joedb::utf8_display_size(u8"바둑"));
- EXPECT_EQ(4, joedb::utf8_display_size(u8"圍棋"));
- EXPECT_EQ(4, joedb::utf8_display_size(u8"围棋"));
- EXPECT_EQ(4, joedb::utf8_display_size(u8"囲碁"));
+ EXPECT_EQ(size_t(0), joedb::utf8_display_size(u8""));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"Remi"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"Rémi"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"山下"));
+ EXPECT_EQ(size_t(2), joedb::utf8_display_size(u8"𩸽"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"바둑"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"圍棋"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"围棋"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"囲碁"));
 }
 
 /////////////////////////////////////////////////////////////////////////////
