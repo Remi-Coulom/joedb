@@ -18,6 +18,13 @@ namespace joedb
 
  class Generic_File
  {
+  private:
+   static inline uint8_t is_big_endian()
+   {
+    const uint16_t n = 0x0100;
+    return *(const uint8_t *)&n;
+   }
+
   public:
    Generic_File()
    {
@@ -160,15 +167,16 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-#if defined(LITTLE_ENDIAN)
-     file.putc(p[0]);
-     file.putc(p[1]);
-#elif defined(BIG_ENDIAN)
-     file.putc(p[1]);
-     file.putc(p[0]);
-#else
-#error no endian
-#endif
+     if (is_big_endian())
+     {
+      file.putc(p[1]);
+      file.putc(p[0]);
+     }
+     else
+     {
+      file.putc(p[0]);
+      file.putc(p[1]);
+     }
      file.check_write_buffer();
     }
    };
@@ -179,17 +187,20 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-#if defined(LITTLE_ENDIAN)
-     file.putc(p[0]);
-     file.putc(p[1]);
-     file.putc(p[2]);
-     file.putc(p[3]);
-#elif defined(BIG_ENDIAN)
-     file.putc(p[3]);
-     file.putc(p[2]);
-     file.putc(p[1]);
-     file.putc(p[0]);
-#endif
+     if (is_big_endian())
+     {
+      file.putc(p[3]);
+      file.putc(p[2]);
+      file.putc(p[1]);
+      file.putc(p[0]);
+     }
+     else
+     {
+      file.putc(p[0]);
+      file.putc(p[1]);
+      file.putc(p[2]);
+      file.putc(p[3]);
+     }
      file.check_write_buffer();
     }
    };
@@ -200,25 +211,28 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-#if defined(LITTLE_ENDIAN)
-     file.putc(p[0]);
-     file.putc(p[1]);
-     file.putc(p[2]);
-     file.putc(p[3]);
-     file.putc(p[4]);
-     file.putc(p[5]);
-     file.putc(p[6]);
-     file.putc(p[7]);
-#elif defined(BIG_ENDIAN)
-     file.putc(p[7]);
-     file.putc(p[6]);
-     file.putc(p[5]);
-     file.putc(p[4]);
-     file.putc(p[3]);
-     file.putc(p[2]);
-     file.putc(p[1]);
-     file.putc(p[0]);
-#endif
+     if (is_big_endian())
+     {
+      file.putc(p[7]);
+      file.putc(p[6]);
+      file.putc(p[5]);
+      file.putc(p[4]);
+      file.putc(p[3]);
+      file.putc(p[2]);
+      file.putc(p[1]);
+      file.putc(p[0]);
+     }
+     else
+     {
+      file.putc(p[0]);
+      file.putc(p[1]);
+      file.putc(p[2]);
+      file.putc(p[3]);
+      file.putc(p[4]);
+      file.putc(p[5]);
+      file.putc(p[6]);
+      file.putc(p[7]);
+     }
      file.check_write_buffer();
     }
    };
@@ -330,13 +344,16 @@ namespace joedb
     {
      T result;
      uint8_t *p = reinterpret_cast<uint8_t *>(&result);
-#if defined(LITTLE_ENDIAN)
-     p[0] = file.getc();
-     p[1] = file.getc();
-#elif defined(BIG_ENDIAN)
-     p[1] = file.getc();
-     p[0] = file.getc();
-#endif
+     if (is_big_endian())
+     {
+      p[1] = file.getc();
+      p[0] = file.getc();
+     }
+     else
+     {
+      p[0] = file.getc();
+      p[1] = file.getc();
+     }
      return result;
     }
    };
@@ -348,17 +365,20 @@ namespace joedb
     {
      T result;
      uint8_t *p = reinterpret_cast<uint8_t *>(&result);
-#if defined(LITTLE_ENDIAN)
-     p[0] = file.getc();
-     p[1] = file.getc();
-     p[2] = file.getc();
-     p[3] = file.getc();
-#elif defined(BIG_ENDIAN)
-     p[3] = file.getc();
-     p[2] = file.getc();
-     p[1] = file.getc();
-     p[0] = file.getc();
-#endif
+     if (is_big_endian())
+     {
+      p[3] = file.getc();
+      p[2] = file.getc();
+      p[1] = file.getc();
+      p[0] = file.getc();
+     }
+     else
+     {
+      p[0] = file.getc();
+      p[1] = file.getc();
+      p[2] = file.getc();
+      p[3] = file.getc();
+     }
      return result;
     }
    };
@@ -370,25 +390,28 @@ namespace joedb
     {
      T result;
      uint8_t *p = reinterpret_cast<uint8_t *>(&result);
-#if defined(LITTLE_ENDIAN)
-     p[0] = file.getc();
-     p[1] = file.getc();
-     p[2] = file.getc();
-     p[3] = file.getc();
-     p[4] = file.getc();
-     p[5] = file.getc();
-     p[6] = file.getc();
-     p[7] = file.getc();
-#elif defined(BIG_ENDIAN)
-     p[7] = file.getc();
-     p[6] = file.getc();
-     p[5] = file.getc();
-     p[4] = file.getc();
-     p[3] = file.getc();
-     p[2] = file.getc();
-     p[1] = file.getc();
-     p[0] = file.getc();
-#endif
+     if (is_big_endian())
+     {
+      p[7] = file.getc();
+      p[6] = file.getc();
+      p[5] = file.getc();
+      p[4] = file.getc();
+      p[3] = file.getc();
+      p[2] = file.getc();
+      p[1] = file.getc();
+      p[0] = file.getc();
+     }
+     else
+     {
+      p[0] = file.getc();
+      p[1] = file.getc();
+      p[2] = file.getc();
+      p[3] = file.getc();
+      p[4] = file.getc();
+      p[5] = file.getc();
+      p[6] = file.getc();
+      p[7] = file.getc();
+     }
      return result;
     }
    };

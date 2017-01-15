@@ -1,6 +1,6 @@
 #!/bin/bash
 TZ='Europe/Paris'
-cd ../compcmake/ninja_debug
+cd ../compcmake/ninja_coverage
 ninja clean
 rm -vf `find . -name \*.gcda`
 rm -vf `find . -name \*.gcno`
@@ -9,11 +9,11 @@ cd -
 
 if [[ $OSTYPE == *linux* ]]; then
  echo Linux
- valgrind ../compcmake/ninja_debug/joedb_test || exit 1
+ valgrind ../compcmake/ninja_coverage/joedb_test || exit 1
 else
  echo Not Linux
  echo OSTYPE = \"$OSTYPE\"
- ../compcmake/ninja_debug/joedb_test || exit 1
+ ../compcmake/ninja_coverage/joedb_test || exit 1
 fi
 
 read -p "Enter to continue..."

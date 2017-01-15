@@ -33,6 +33,7 @@ function generate {
 
 generate "$build_system_prefix"release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler_option
 generate "$build_system_prefix"debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler_option
+generate "$build_system_prefix"coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler_option
 
 if [ $OSTYPE == "cygwin" ]; then
 # generate mingw32 cmake -G Ninja -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++

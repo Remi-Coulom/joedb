@@ -1,0 +1,10 @@
+create_table endian
+add_field endian int8 int8
+add_field endian int16 int16
+add_field endian int32 int32
+add_field endian int64 int64
+insert_into endian 1
+update endian 1 int8 1
+update endian 1 int16 258
+update endian 1 int32 16909060
+update endian 1 int64 72623859790382856

@@ -6,20 +6,10 @@ message("== JOEDB_VERSION = ${JOEDB_VERSION}")
 
 project(joedb)
 
-include(TestBigEndian)
-TEST_BIG_ENDIAN(BIG_ENDIAN)
-if (${BIG_ENDIAN})
- add_definitions(-DBIG_ENDIAN)
- message("== Big endian")
-else()
- add_definitions(-DLITTLE_ENDIAN)
- message("== Little endian")
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
  set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -pedantic -Wconversion -pthread")
- set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
+ set(CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -117,6 +107,7 @@ target_link_libraries(file_benchmark joedb)
 
 if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
+  ../test/endianness_Test.cpp
   ../test/File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
   ../test/Interpreter_Test.cpp

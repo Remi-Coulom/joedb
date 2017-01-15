@@ -62,9 +62,9 @@ UPDATE "person" SET "city" = 15 WHERE "__id" = 3;
 ------------------
   name        city
 ------------------
-1 "Rémi"      2   
-2 "Norbert"   2   
-3 "Alexandre" 15  
+1 "Rémi"         2
+2 "Norbert"      2
+3 "Alexandre"   15
 
 Commands unrelated to the database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
