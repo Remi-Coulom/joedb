@@ -1,5 +1,6 @@
 #include "type_io.h"
 #include "base64.h"
+#include "wide_char_display_width.h"
 #include "gtest/gtest.h"
 
 #include <sstream>
@@ -12,29 +13,62 @@ struct
 }
 pairs[] =
 {
- {u8"Hello"           , u8"\"Hello\""},
- {u8"Rémi"            , u8"\"Rémi\""},
- {u8"Hello, world!"   , u8"\"Hello, world!\""},
- {u8"\"\\\x1f"        , u8"\"\\\"\\\\\\037\""},
- {u8"これは日本語です", u8"\"これは日本語です\""},
- {u8"𩸽"              , u8"\"𩸽\""}, // 4-byte character
- {u8""                , u8"\"\""},
- {u8"4"               , u8"\"4\""}
+ {"Hello"           , "\"Hello\""},
+ {"Rémi"            , "\"Rémi\""},
+ {"Hello, world!"   , "\"Hello, world!\""},
+ {"\"\\\x1f"        , "\"\\\"\\\\\\037\""},
+ {"これは日本語です", "\"これは日本語です\""},
+ {"𩸽"              , "\"𩸽\""}, // 4-byte character
+ {""                , "\"\""},
+ {"4"               , "\"4\""}
 };
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, wide_char_display_width)
+/////////////////////////////////////////////////////////////////////////////
+{
+ EXPECT_EQ(1, wide_char_display_width('e'));
+ EXPECT_EQ(1, wide_char_display_width(0x00e9));
+ {
+  size_t i = 0;
+  std::string s = "日";
+  uint32_t c = joedb::read_utf8_char(i, s);
+  EXPECT_EQ(size_t(3), i);
+  EXPECT_EQ(size_t(3), s.size());
+  EXPECT_EQ(uint8_t(0xe6), uint8_t(s[0]));
+  EXPECT_EQ(uint8_t(0x97), uint8_t(s[1]));
+  EXPECT_EQ(uint8_t(0xa5), uint8_t(s[2]));
+  EXPECT_EQ(uint32_t(0x65e5), c);
+  EXPECT_EQ(int(2), wide_char_display_width(c));
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, read_utf8_char)
+/////////////////////////////////////////////////////////////////////////////
+{
+ {
+  size_t i = 1;
+  std::string s = "Rémi";
+  uint32_t c = joedb::read_utf8_char(i, s);
+  EXPECT_EQ(size_t(3), i);
+  EXPECT_EQ(uint32_t(0x00e9), c);
+ }
+}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(StringIO_Test, utf8_display_size)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ(size_t(0), joedb::utf8_display_size(u8""));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"Remi"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"Rémi"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"山下"));
- EXPECT_EQ(size_t(2), joedb::utf8_display_size(u8"𩸽"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"바둑"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"圍棋"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"围棋"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"囲碁"));
+ EXPECT_EQ(size_t(0), joedb::utf8_display_size(""));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("Remi"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("Rémi"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("山下"));
+ EXPECT_EQ(size_t(2), joedb::utf8_display_size("𩸽"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("바둑"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("圍棋"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("围棋"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("囲碁"));
 }
 
 /////////////////////////////////////////////////////////////////////////////

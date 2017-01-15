@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     joedb::Open_Mode::write_existing_or_create_new
    );
   }
-  catch (const joedb::Exception &e)
+  catch (const joedb::Exception &)
   {
    file = std::make_shared<joedb::File>
    (

@@ -49,7 +49,7 @@ namespace joedb
       if (field.second == name)
        return field.first;
     }
-    catch (const Exception &e)
+    catch (const Exception &)
     {
     }
     return 0;
@@ -78,7 +78,7 @@ namespace joedb
      if (it != fields.end())
       return it->second;
     }
-    catch (const Exception &e)
+    catch (const Exception &)
     {
     }
 

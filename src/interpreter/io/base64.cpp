@@ -1,4 +1,5 @@
 #include "base64.h"
+#include "stdint.h"
 
 /////////////////////////////////////////////////////////////////////////////
 std::string joedb::base64_encode(const std::string &input)

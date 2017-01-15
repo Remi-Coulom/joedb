@@ -59,7 +59,7 @@ UPDATE "alltypes" SET "f" = 3.14 WHERE "__id" = 1;
 UPDATE "alltypes" SET "d" = 3.14159 WHERE "__id" = 1;
 UPDATE "alltypes" SET "o" = 42 WHERE "__id" = 1;
 UPDATE "alltypes" SET "oulala" = 12345 WHERE "__id" = 1;
--- 2009-02-14 00:31:30
+-- 2009-02-13 23:31:30 GMT
 -- This is a comment. これは日本語です。
 -- valid data
 -- custom: toto_le_petit_rigolo

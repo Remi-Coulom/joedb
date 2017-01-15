@@ -2,6 +2,7 @@
 #include "wide_char_display_width.h"
 
 #include <iostream>
+#include <string>
 
 /////////////////////////////////////////////////////////////////////////////
 std::string joedb::read_string(std::istream &in)
@@ -192,7 +193,7 @@ void joedb::write_justified
   else
   {
    length += 1;
-   displayed += u8"…";
+   displayed += "…";
    break;
   }
  }
