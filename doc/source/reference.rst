@@ -7,6 +7,6 @@ Reference
 
    file_format
    todo
-   references
+   links
    history
    license

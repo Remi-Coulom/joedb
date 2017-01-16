@@ -8,7 +8,7 @@ History
   - Better handling of read-only files and locking. A file opened for writing can now be opened for reading by other processes.
   - The compiler can produce a C wrapper around the C++ classes
   - ``joedb_to_json``
-  - Compatibility with big-endian machines
+  - Tested on big-endian and 32-bit machines
   - Many minor fixes and improvements
 
 - 2016-11-18: 1.0
