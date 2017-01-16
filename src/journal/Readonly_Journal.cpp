@@ -10,8 +10,10 @@ const uint64_t joedb::Readonly_Journal::header_size = 41;
 
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 #define SAFE_MAX_SIZE 1000000
+#define FORMAT_EXCEPTION(x)
 #else
 #define SAFE_MAX_SIZE checkpoint_position
+#define FORMAT_EXCEPTION(x) throw Exception(x)
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -38,7 +40,7 @@ joedb::Readonly_Journal::Readonly_Journal(Generic_File &file):
       file.read<uint8_t>() != 'd' ||
       file.read<uint8_t>() != 'b')
   {
-   throw Exception("File does not start by 'joedb'");
+   FORMAT_EXCEPTION("File does not start by 'joedb'");
   }
   else
   {
@@ -47,7 +49,7 @@ joedb::Readonly_Journal::Readonly_Journal(Generic_File &file):
    //
    const uint32_t version = file.read<uint32_t>();
    if (version < compatible_version || version > version_number)
-    throw Exception("Unsupported format version");
+    FORMAT_EXCEPTION("Unsupported format version");
 
    //
    // Find the most recent checkpoint
@@ -57,7 +59,7 @@ joedb::Readonly_Journal::Readonly_Journal(Generic_File &file):
     pos[i] = file.read<uint64_t>();
 
    if (pos[0] != pos[1] || pos[2] != pos[3])
-    throw Exception("Checkpoint mismatch");
+    FORMAT_EXCEPTION("Checkpoint mismatch");
 
    checkpoint_position = 0;
 
@@ -71,14 +73,14 @@ joedb::Readonly_Journal::Readonly_Journal(Generic_File &file):
     }
 
    if (checkpoint_position < header_size)
-    throw Exception("Checkpoint too small");
+    FORMAT_EXCEPTION("Checkpoint too small");
 
    //
    // Compare to file size (if available)
    //
    int64_t file_size = file.get_size();
    if (file_size > 0 && uint64_t(file_size) != checkpoint_position)
-    throw Exception("Checkpoint different from file size");
+    FORMAT_EXCEPTION("Checkpoint different from file size");
   }
  }
 }
@@ -288,3 +290,6 @@ std::string joedb::Readonly_Journal::safe_read_string()
 {
  return file.safe_read_string(SAFE_MAX_SIZE);
 }
+
+#undef SAFE_MAX_SIZE
+#undef FORMAT_EXCEPTION
