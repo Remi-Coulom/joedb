@@ -20,11 +20,7 @@ Joedb currently has some limitations:
 - Only one process can open the database at the same time.
 - C++ is the only supported programming language.
 
-These limitations are likely to be removed in the future. A rudimentary C
-wrapper is available, and supporting more programming languages via this C
-wrapper should be easy. The option to use a key-value store instead of RAM is
-planned, too. Concurrent access to data via a server would be also possible in
-theory. So these are not fundamental limitations.
+These limitations are likely to be removed in the future.
 
 A drawback of the joedb approach is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first.
 
