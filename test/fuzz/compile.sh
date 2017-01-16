@@ -31,12 +31,14 @@ build()
   -fsanitize-coverage=trace-pc-guard\
   -fsanitize=address\
   -std=c++11\
+  -I ../../src/external\
   -I ../../src/interpreter/abstract\
   -I ../../src/interpreter/io\
   -I ../../src/includes/joedb\
   -I ../../src/includes\
   -I ../../src/journal\
   "$1"_fuzzer.cpp\
+  ../../src/external/wide_char_display_width.c\
   ../../src/interpreter/abstract/Database.cpp\
   ../../src/interpreter/abstract/is_identifier.cpp\
   ../../src/interpreter/abstract/Writeable.cpp\
@@ -53,6 +55,7 @@ build()
   ../../src/journal/Generic_File.cpp\
   ../../src/journal/Journal_File.cpp\
   ../../src/journal/Stream_File.cpp\
+  ../../src/journal/Readonly_Journal.cpp\
   ./libFuzzer.a\
   -o "$1"_fuzzer
 }

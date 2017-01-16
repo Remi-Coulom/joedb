@@ -77,10 +77,16 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
       case Type::Type_Id::reference:
       {
        Record_Id i = db.get_reference(table_id, record_id, field_id);
-       const std::vector<int64_t> &v = reference_translation[type.get_table_id()];
-       if (i >= v.size())
-        i = 0;
-       out << v[i];
+       const auto it = reference_translation.find(type.get_table_id());
+       if (it != reference_translation.end())
+       {
+        const std::vector<int64_t> &v = it->second;
+        if (i >= v.size())
+         i = 0;
+        out << v[i];
+       }
+       else
+        out << i; // reference to a missing table
       }
       break;
 
