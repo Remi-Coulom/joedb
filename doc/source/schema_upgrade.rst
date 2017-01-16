@@ -1,7 +1,7 @@
 Schema Upgrade
 ==============
 
-An important practical problem when storing structured data to files is schema upgrades. A new version of an application may change the data structure, typically by adding tables or fields. In order to allow the new version to use data produced by previous versions, it is necessary to upgrade the old data files. Joedb has convenient features that lets database be easily upgraded in a way that is automatic, transparent, and safe.
+An important practical problem when storing structured data in files is schema upgrades. A new version of an application may change the data structure, typically by adding tables or fields. In order to allow the new version to use data produced by previous versions, it is necessary to upgrade the old data files. Joedb has convenient features that lets a database be easily upgraded in a way that is automatic, transparent, and safe.
 
 Code compiled by joedbc will usually refuse to open joedb databases when the schema of the file does not match the schema used for compiling. But if the schema of the opened file matches the beginning of the current schema, then it will open the file successfully, and upgrade it to the new schema.
 
