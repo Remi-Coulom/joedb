@@ -190,8 +190,15 @@ bool joedb::Readonly_Interpreter::process_command
    out << std::string(id_width, ' ');
    for (auto field: fields)
    {
+    const auto type = db.get_field_type(table_id, field.first).get_type_id();
     out << ' ';
-    write_justified(out, field.second, column_width[field.first]);
+    write_justified
+    (
+     out,
+     field.second,
+     column_width[field.first],
+     type == Type::Type_Id::string
+    );
    }
    out << '\n';
    out << std::string(table_width, '-') << '\n';
