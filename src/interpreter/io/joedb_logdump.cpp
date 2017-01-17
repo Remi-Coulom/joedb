@@ -7,6 +7,7 @@
 #include "SQL_Dump_Writeable.h"
 #include "diagnostics.h"
 #include "Selective_Writeable.h"
+#include "Raw_Dump_Writeable.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -15,12 +16,13 @@ int main(int argc, char **argv)
  if (argc <= 1)
  {
   std::cerr << "usage: " << argv[0];
-  std::cerr << " [--sql] [--header] [--schema-only] [--ignore-errors] <file.joedb>\n";
+  std::cerr << " [--sql] [--raw] [--header] [--schema-only] [--ignore-errors] <file.joedb>\n";
   return 1;
  }
  else
  {
   bool sql = false;
+  bool raw = false;
   bool header = false;
   bool schema_only = false;
   bool ignore_errors = false;
@@ -30,6 +32,12 @@ int main(int argc, char **argv)
   if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sql")
   {
    sql = true;
+   arg_index++;
+  }
+
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--raw")
+  {
+   raw = true;
    arg_index++;
   }
 
@@ -81,6 +89,8 @@ int main(int argc, char **argv)
 
    if (sql)
     writeable = std::make_shared<joedb::SQL_Dump_Writeable>(std::cout);
+   else if (raw)
+    writeable = std::make_shared<joedb::Raw_Dump_Writeable>(std::cout);
    else
     writeable = std::make_shared<joedb::Interpreter_Dump_Writeable>(std::cout);
 
