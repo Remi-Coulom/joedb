@@ -252,6 +252,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     throw joedb::Exception(message);
    }
 
+   Record_Id max_record_id;
+
   protected:
 )RRR";
 
@@ -644,11 +646,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // max_record_id (for safety)
- //
- out << "   Record_Id get_max_record_id() const override {return 0;}\n\n";
-
- //
  // Informative events are ignored
  //
  out << R"RRR(
@@ -736,6 +733,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
   public:
    Database():
+    max_record_id(0),
     schema_file(schema_stream, joedb::Open_Mode::create_new),
     schema_journal(schema_file)
    {}
@@ -915,6 +913,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     file(file_name, joedb::Open_Mode::read_existing),
     journal(file)
    {
+    max_record_id = journal.get_checkpoint_position();
     journal.replay_log(*this);
     check_schema();
    }
@@ -1366,6 +1365,7 @@ File_Database::File_Database(const char *file_name):
  journal(file),
  ready_to_write(false)
 {
+ max_record_id = journal.get_checkpoint_position();
  journal.replay_log(*this);
  ready_to_write = true;
  check_schema();

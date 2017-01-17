@@ -27,8 +27,6 @@ namespace joedb
    virtual void timestamp(int64_t timestamp) = 0;
    virtual void valid_data() = 0;
 
-   virtual Record_Id get_max_record_id() const = 0;
-
    virtual void insert_into(Table_Id table_id, Record_Id record_id) = 0;
    virtual void insert_vector(Table_Id table_id,
                               Record_Id record_id,

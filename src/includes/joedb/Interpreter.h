@@ -52,10 +52,13 @@ namespace joedb
     std::ostream &out
    ) override;
 
+   Record_Id max_record_id;
+
   public:
-   Interpreter(Readable_Writeable &db):
+   Interpreter(Readable_Writeable &db, Record_Id max_record_id = 0):
     Readonly_Interpreter(db),
-    db(db)
+    db(db),
+    max_record_id(max_record_id)
    {}
  };
 }

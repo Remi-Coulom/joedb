@@ -438,7 +438,7 @@ bool joedb::Interpreter::process_command
   Record_Id size = 0;
   iss >> size;
 
-  if (db.get_max_record_id() != 0 && size >= db.get_max_record_id())
+  if (max_record_id != 0 && size >= max_record_id)
    out << "Error: vector is too big\n";
   else
   {

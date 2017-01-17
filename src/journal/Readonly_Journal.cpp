@@ -8,12 +8,6 @@ const uint32_t joedb::Readonly_Journal::version_number = 0x00000004;
 const uint32_t joedb::Readonly_Journal::compatible_version = 0x00000004;
 const uint64_t joedb::Readonly_Journal::header_size = 41;
 
-#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-#define SAFE_MAX_SIZE 1000000
-#else
-#define SAFE_MAX_SIZE checkpoint_position
-#endif
-
 #define FORMAT_EXCEPTION(x)\
  do {if (!ignore_errors) throw Exception(x);} while(false)
 
@@ -84,8 +78,11 @@ joedb::Readonly_Journal::Readonly_Journal
    // Compare to file size (if available)
    //
    int64_t file_size = file.get_size();
-   if (file_size > 0 && uint64_t(file_size) != checkpoint_position)
+   if (file_size > 0 && size_t(file_size) != checkpoint_position)
+   {
+    checkpoint_position = size_t(file_size);
     FORMAT_EXCEPTION("Checkpoint different from file size");
+   }
   }
  }
 }
@@ -232,7 +229,7 @@ void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
     record_of_last_operation = file.compact_read<Record_Id>();\
     field_of_last_update = file.compact_read<Field_Id>();\
     Record_Id size = file.compact_read<Record_Id>();\
-    if (size > SAFE_MAX_SIZE || size < 0)\
+    if (size > checkpoint_position || size < 0)\
      throw Exception("update_vector too big");\
     std::vector<cpp_type> buffer(size);\
     for (size_t i = 0; i < size; i++)\
@@ -295,7 +292,5 @@ joedb::Type joedb::Readonly_Journal::read_type()
 std::string joedb::Readonly_Journal::safe_read_string()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file.safe_read_string(SAFE_MAX_SIZE);
+ return file.safe_read_string(checkpoint_position);
 }
-
-#undef SAFE_MAX_SIZE

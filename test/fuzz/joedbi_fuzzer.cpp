@@ -12,7 +12,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  std::ostringstream out;
 
  joedb::Database db(10000);
- joedb::Interpreter interpreter(db);
+ joedb::Interpreter interpreter(db, 10000);
  interpreter.main_loop(in, out);
 
  return 0;

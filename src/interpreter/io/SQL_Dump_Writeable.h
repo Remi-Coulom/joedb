@@ -133,8 +133,6 @@ namespace joedb
     out << "-- valid data\n";
    }
 
-   Record_Id get_max_record_id() const override {return 0;}
-
    void insert_into(Table_Id table_id, Record_Id record_id) override
    {
     out << "INSERT INTO \"" << db.get_table_name(table_id);
