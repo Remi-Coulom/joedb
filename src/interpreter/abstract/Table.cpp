@@ -41,9 +41,7 @@ void joedb::Table::drop_field(Field_Id field_id)
 void joedb::Table::delete_record(Record_Id record_id)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (record_id == 0 ||
-     record_id > freedom.size() ||
-     freedom.is_free(record_id + 1))
+ if (!freedom.is_used(record_id + 1))
   throw Exception("delete_record: bad record_id");
  freedom.free(record_id + 1);
 }

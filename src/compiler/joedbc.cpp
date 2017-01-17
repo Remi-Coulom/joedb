@@ -358,6 +358,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    out << "   void internal_delete_" << tname << "(Record_Id record_id)\n";
    out << "   {\n";
+   out << "    JOEDB_ASSERT(storage_of_" << tname << ".is_used(record_id + 1));\n";
 
    for (const auto &index: options.get_indices())
     if (index.table_id == table.first)
