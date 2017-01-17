@@ -253,6 +253,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    Record_Id max_record_id;
 
+  public:
+   void set_max_record_id(Record_Id record_id)
+   {
+    max_record_id = record_id;
+   }
+
   protected:
 )RRR";
 
@@ -451,6 +457,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "   void insert_into(Table_Id table_id, Record_Id record_id) override\n";
  out << "   {\n";
+ out << "    if (record_id <= 0 || (max_record_id && record_id > max_record_id))\n";
+ out << "     throw joedb::Exception(\"insert_into: too big\");\n";
  {
   bool first = true;
   for (auto &table: tables)
@@ -486,6 +494,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "   void insert_vector(Table_Id table_id, Record_Id record_id, Record_Id size) override\n";
  out << "   {\n";
+ out << "    if (record_id <= 0 || size <= 0 || (max_record_id && (record_id > max_record_id || size > max_record_id)))\n";
+ out << "     throw joedb::Exception(\"insert_vector: too big\");\n";
  {
   bool first = true;
   for (auto &table: tables)
@@ -914,6 +924,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     max_record_id = journal.get_checkpoint_position();
     journal.replay_log(*this);
+    max_record_id = 0;
+
     check_schema();
    }
  };
@@ -1366,6 +1378,8 @@ File_Database::File_Database(const char *file_name):
 {
  max_record_id = journal.get_checkpoint_position();
  journal.replay_log(*this);
+ max_record_id = 0;
+
  ready_to_write = true;
  check_schema();
 

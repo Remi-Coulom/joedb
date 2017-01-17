@@ -78,11 +78,12 @@ joedb::Readonly_Journal::Readonly_Journal
    // Compare to file size (if available)
    //
    int64_t file_size = file.get_size();
+
    if (file_size > 0 && size_t(file_size) != checkpoint_position)
-   {
-    checkpoint_position = size_t(file_size);
     FORMAT_EXCEPTION("Checkpoint different from file size");
-   }
+
+   if (ignore_errors)
+    checkpoint_position = size_t(file_size);
   }
  }
 }
