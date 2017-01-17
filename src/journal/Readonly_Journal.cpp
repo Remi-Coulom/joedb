@@ -10,15 +10,20 @@ const uint64_t joedb::Readonly_Journal::header_size = 41;
 
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 #define SAFE_MAX_SIZE 1000000
-#define FORMAT_EXCEPTION(x)
 #else
 #define SAFE_MAX_SIZE checkpoint_position
-#define FORMAT_EXCEPTION(x) throw Exception(x)
 #endif
 
+#define FORMAT_EXCEPTION(x)\
+ do {if (!ignore_errors) throw Exception(x);} while(false)
+
 /////////////////////////////////////////////////////////////////////////////
-joedb::Readonly_Journal::Readonly_Journal(Generic_File &file):
+joedb::Readonly_Journal::Readonly_Journal
 /////////////////////////////////////////////////////////////////////////////
+(
+ Generic_File &file,
+ bool ignore_errors
+):
  file(file),
  checkpoint_index(0),
  checkpoint_position(0),
@@ -84,6 +89,8 @@ joedb::Readonly_Journal::Readonly_Journal(Generic_File &file):
   }
  }
 }
+
+#undef FORMAT_EXCEPTION
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::replay_log(Writeable &writeable)
@@ -292,4 +299,3 @@ std::string joedb::Readonly_Journal::safe_read_string()
 }
 
 #undef SAFE_MAX_SIZE
-#undef FORMAT_EXCEPTION

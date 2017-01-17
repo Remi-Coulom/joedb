@@ -10,7 +10,7 @@ namespace joedb
  class Readonly_Journal
  {
   public:
-   Readonly_Journal(Generic_File &file);
+   Readonly_Journal(Generic_File &file, bool ignore_errors = false);
 
    size_t get_checkpoint_position() const {return checkpoint_position;}
    void replay_log(Writeable &writeable);

@@ -15,7 +15,7 @@ int main(int argc, char **argv)
  if (argc <= 1)
  {
   std::cerr << "usage: " << argv[0];
-  std::cerr << " [--sql] [--header] [--schema-only] <file.joedb>\n";
+  std::cerr << " [--sql] [--header] [--schema-only] [--ignore-errors] <file.joedb>\n";
   return 1;
  }
  else
@@ -23,6 +23,8 @@ int main(int argc, char **argv)
   bool sql = false;
   bool header = false;
   bool schema_only = false;
+  bool ignore_errors = false;
+
   int arg_index = 1;
 
   if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sql")
@@ -43,6 +45,12 @@ int main(int argc, char **argv)
    arg_index++;
   }
 
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--ignore-errors")
+  {
+   ignore_errors = true;
+   arg_index++;
+  }
+
   joedb::File file(argv[arg_index], joedb::Open_Mode::read_existing);
 
   if (header)
@@ -53,7 +61,21 @@ int main(int argc, char **argv)
   }
   else
   {
-   joedb::Readonly_Journal journal(file);
+   std::unique_ptr<joedb::Readonly_Journal> journal;
+
+   try
+   {
+    journal.reset(new joedb::Readonly_Journal(file, ignore_errors));
+   }
+   catch (const joedb::Exception &e)
+   {
+    if (!ignore_errors)
+    {
+     std::cout << "Error opening journal file: " << e.what() << '\n';
+     std::cout << "run with the --ignore-errors flag to skip this check.\n";
+    }
+    return 1;
+   }
 
    std::shared_ptr<joedb::Writeable> writeable;
 
@@ -65,10 +87,10 @@ int main(int argc, char **argv)
    if (schema_only)
    {
     joedb::Selective_Writeable w(*writeable, joedb::Selective_Writeable::Mode::schema);
-    journal.replay_log(w);
+    journal->replay_log(w);
    }
    else
-    journal.replay_log(*writeable);
+    journal->replay_log(*writeable);
   }
  }
 
