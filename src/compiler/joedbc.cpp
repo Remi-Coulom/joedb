@@ -150,7 +150,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
 #include "joedb/Database.h"
-#include "joedb/Dummy_Writeable.h"
 #include "joedb/Freedom_Keeper.h"
 #include "joedb/Exception.h"
 #include "joedb/Stream_File.h"
@@ -1381,14 +1380,10 @@ File_Database::File_Database(const char *file_name):
   joedb::Stream_File schema_file(schema, joedb::Open_Mode::read_existing);
   joedb::Readonly_Journal schema_journal(schema_file);
 
-  joedb::Dummy_Writeable dummy_writeable;
-
-  schema_journal.rewind();
-  schema_journal.play_until(dummy_writeable, schema_stream.str().size());
+  schema_journal.seek(file_schema_size);
   schema_journal.play_until_checkpoint(journal);
 
-  schema_journal.rewind();
-  schema_journal.play_until(dummy_writeable, schema_stream.str().size());
+  schema_journal.seek(file_schema_size);
   upgrading_schema = true;
   schema_journal.play_until_checkpoint(*this);
   upgrading_schema = false;

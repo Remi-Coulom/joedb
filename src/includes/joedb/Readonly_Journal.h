@@ -15,6 +15,7 @@ namespace joedb
    size_t get_checkpoint_position() const {return checkpoint_position;}
    void replay_log(Writeable &writeable);
    void rewind();
+   void seek(size_t position);
    void play_until(Writeable &writeable, size_t end);
    void play_until_checkpoint(Writeable &writeable)
    {
