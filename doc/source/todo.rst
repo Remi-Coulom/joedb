@@ -5,15 +5,16 @@ Short Term
 ----------
 
 - make Readable_Writeable based on compiled db (or Readable only...)
-
 - Instead of throwing an exception: make it impossible at compile time to open a writeable journal with a read_only file.
-
+- Allow opening a compiled db in "create_new" mode to throw if existing?
 - better readable interface:
 
   - a separate table abstraction (that could be used for query output)
   - cursors on tables
 
 - An un-initialized field is undefined. Debug mode: check that no undefined value is read? Also: an index may have more than one field. Should not include a row into the index before all fields of the index are defined? Online one index columns triggers index update?
+- Should inheritance of compiled db from Writeable be protected?
+- Raw commands in interpreter?
 
 - conan.io
 

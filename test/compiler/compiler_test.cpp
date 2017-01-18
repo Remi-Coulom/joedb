@@ -394,10 +394,124 @@ int do_vector_test()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+int exceptions()
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::cout << "Testing exceptions...\n";
+
+ try
+ {
+  testdb::File_Database db("unique_index_failure.joedb");
+  db.new_city("Paris");
+  db.new_city("Lille");
+  db.new_city("Paris");
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  testdb::File_Database db("delete_in_vector_storage.joedb");
+  auto translation = db.new_translation();
+  ((joedb::Writeable *)&db)->delete_from(5, translation.get_id());
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  testdb::File_Database db("duplicate_insert.joedb");
+  ((joedb::Writeable *)&db)->insert_into(1, 1);
+  ((joedb::Writeable *)&db)->insert_into(1, 1);
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  testdb::File_Database db("contiguous_vector.joedb");
+  ((joedb::Writeable *)&db)->insert_into(5, 1);
+  ((joedb::Writeable *)&db)->insert_into(5, 3);
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  testdb::File_Database db("too_big.joedb");
+  db.set_max_record_id(1000);
+  ((joedb::Writeable *)&db)->insert_into(1, 2000);
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  testdb::File_Database db("too_big.joedb");
+  db.set_max_record_id(1000);
+  ((joedb::Writeable *)&db)->insert_vector(1, 1, 2000);
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  testdb::File_Database db("read_error.joedb");
+  auto city = db.new_city("Paris");
+  std::cout << db.get_name(city) << '\n';
+  db.delete_city(city);
+  std::cout << db.get_name(city) << '\n';
+ }
+ catch (const joedb::Assertion_Failure &e)
+ {
+  std::cout << "Failed reading a deleted row\n";
+ }
+
+ try
+ {
+  testdb::File_Database db("double_delete.joedb");
+  auto city = db.new_city("Paris");
+  db.delete_city(city);
+  db.delete_city(city);
+ }
+ catch (const joedb::Assertion_Failure &e)
+ {
+  std::cout << "Double delete\n";
+ }
+
+ try
+ {
+  testdb::File_Database db("invalid_update.joedb");
+  auto city = db.new_city("Paris");
+  db.delete_city(city);
+  db.set_name(city, "Paris");
+ }
+ catch (const joedb::Assertion_Failure &e)
+ {
+  std::cout << "Invalid update\n";
+ }
+
+ return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  return file_test() ||
         schema_upgrade_test() ||
-        do_vector_test();
+        do_vector_test() ||
+        exceptions();
 }

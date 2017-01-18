@@ -151,3 +151,14 @@ Error opening vector_hole.joedb
 Non-contiguous insert in vector storage of table point
 Error opening vector_delete.joedb
 Can't delete in vector storage of table point
+Testing exceptions...
+city_by_name unique index failure
+Can't delete in vector storage of table translation
+Duplicate insert into table city
+Non-contiguous insert in vector storage of table translation
+insert_into: too big
+insert_vector: too big
+Paris
+Failed reading a deleted row
+Double delete
+Invalid update

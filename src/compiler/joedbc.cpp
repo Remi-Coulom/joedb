@@ -462,7 +462,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "   void insert_into(Table_Id table_id, Record_Id record_id) override\n";
  out << "   {\n";
  out << "    if (record_id <= 0 || (max_record_id && record_id > max_record_id))\n";
- out << "     throw joedb::Exception(\"insert_into: too big\");\n";
+ out << "     error(\"insert_into: too big\");\n";
  {
   bool first = true;
   for (auto &table: tables)
@@ -504,7 +504,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "   void insert_vector(Table_Id table_id, Record_Id record_id, Record_Id size) override\n";
  out << "   {\n";
  out << "    if (record_id <= 0 || size <= 0 || (max_record_id && (record_id > max_record_id || size > max_record_id)))\n";
- out << "     throw joedb::Exception(\"insert_vector: too big\");\n";
+ out << "     error(\"insert_vector: too big\");\n";
  {
   bool first = true;
   for (auto &table: tables)
