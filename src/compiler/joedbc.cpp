@@ -273,10 +273,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "   bool is_valid_record_id_for_" << tname << "(Record_Id record_id) const {return storage_of_" << tname << ".is_used(record_id + 1);}\n";
     out << "   joedb::Freedom_Keeper<data_of_" << tname << ">";
    break;
 
    case Compiler_Options::Table_Storage::vector:
+    out << "   bool is_valid_record_id_for_" << tname << "(Record_Id record_id) const {return record_id <= storage_of_" << tname << ".size() && record_id > 0;}\n";
     out << "   std::vector<data_of_" << tname << ">";
    break;
 
@@ -358,7 +360,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    out << "   void internal_delete_" << tname << "(Record_Id record_id)\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(storage_of_" << tname << ".is_used(record_id + 1));\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
 
    for (const auto &index: options.get_indices())
     if (index.table_id == table.first)
@@ -405,6 +407,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, type, true);
    out << "field_value_of_" << fname << "\n   )\n";
    out << "   {\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
    out << "    storage_of_" << tname << "[record_id - 1].field_value_of_" << fname;
    out << " = field_value_of_" << fname << ";\n";
 
@@ -480,6 +483,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "     if (record_id != storage_of_" << tname << ".size() + 1)\n";
     out << "      error(\"Non-contiguous insert in vector storage of table ";
     out << tname << "\");\n";
+   }
+   else
+   {
+    out << "     if (is_valid_record_id_for_" << tname << "(record_id))\n";
+    out << "      error(\"Duplicate insert into table " << tname << "\");\n";
    }
    out << "     if (storage_of_" << tname << ".size() < record_id)\n";
    out << "      storage_of_" << tname << ".resize(record_id);\n";
@@ -833,7 +841,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, type, true);
    out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(!record.is_null());\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.id));\n";
    out << "    return storage_of_" << tname;
    out << "[record.id - 1].field_value_of_" << fname << ";\n";
    out << "   }\n";
@@ -1114,7 +1122,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, type, true);
    out << "field_value_of_" << fname << ")\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(!record.is_null());\n";
    out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
    out << "field_value_of_" << fname << ");\n";
    out << "    journal.update_";

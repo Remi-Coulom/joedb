@@ -1,11 +1,12 @@
 #!/bin/bash
+set -e
 build_dir=../../compcmake/ninja_debug
 
 cd "$build_dir"
 ninja
 cd -
 
-rm -rvf *.joedb
+rm -rvf *.joedb compiler_test.out
 "$build_dir"/joedbi test.joedb <test.joedbi
 "$build_dir"/joedbi vector_hole.joedb <vector_hole.joedbi
 "$build_dir"/joedbi vector_delete.joedb <vector_delete.joedbi

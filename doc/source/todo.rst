@@ -4,12 +4,6 @@ TODO
 Short Term
 ----------
 
-- compiler safety:
-
-  - check valid record_id for listener updates and deletes
-  - #ifndef NDEBUG -> check double delete/insert, etc.
-  - max_record_id for listener inserts
-
 - make Readable_Writeable based on compiled db (or Readable only...)
 
 - Instead of throwing an exception: make it impossible at compile time to open a writeable journal with a read_only file.
@@ -18,6 +12,8 @@ Short Term
 
   - a separate table abstraction (that could be used for query output)
   - cursors on tables
+
+- An un-initialized field is undefined. Debug mode: check that no undefined value is read? Also: an index may have more than one field. Should not include a row into the index before all fields of the index are defined? Online one index columns triggers index update?
 
 - conan.io
 
