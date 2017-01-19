@@ -507,11 +507,29 @@ int exceptions()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+int checkpoints()
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::cout << "Checkpoints...\n";
+ testdb::File_Database db("checkpoint_test.joedb");
+ std::cout << db.ahead_of_checkpoint() << '\n';
+ db.checkpoint_full_commit();
+ std::cout << db.ahead_of_checkpoint() << '\n';
+ db.new_city("Paris");
+ std::cout << db.ahead_of_checkpoint() << '\n';
+ db.checkpoint_full_commit();
+ std::cout << db.ahead_of_checkpoint() << '\n';
+
+ return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  return file_test() ||
         schema_upgrade_test() ||
         do_vector_test() ||
-        exceptions();
+        exceptions() ||
+        checkpoints();
 }

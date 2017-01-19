@@ -986,6 +986,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   public:
    File_Database(const char *file_name);
 
+   uint64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
    void checkpoint_no_commit() {journal.checkpoint(0);}
    void checkpoint_half_commit() {journal.checkpoint(1);}
    void checkpoint_full_commit() {journal.checkpoint(2);}
