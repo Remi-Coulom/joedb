@@ -11,6 +11,8 @@ Short Term
 
 - make Readable_Writeable based on compiled db (or Readable only...)
 - make joedb_admin work on the new readable interface, and publish it
+- index and referential integrity: should be in the journal, and also implemented in the interpreted database.
+- performance of interpreted database: use vector instead of map for tables and fields (with a bool indicating if deleted)
 
 Journal File
 ------------
