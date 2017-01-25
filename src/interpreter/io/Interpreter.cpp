@@ -113,9 +113,15 @@ bool joedb::Readonly_Interpreter::process_command
   return true;
  else if (command == "table") ///////////////////////////////////////////////
  {
-  const size_t max_column_width = 25;
-
   const Table_Id table_id = parse_table(iss, out);
+
+  size_t max_column_width = 25;
+  {
+   size_t w;
+   if ((iss >> w).good())
+    max_column_width = w;
+  }
+
   if (table_id)
   {
    const auto &fields = db.get_fields(table_id);
@@ -178,7 +184,7 @@ bool joedb::Readonly_Interpreter::process_command
    size_t table_width = id_width;
    for (auto field: fields)
    {
-    if (column_width[field.first] > max_column_width)
+    if (max_column_width && column_width[field.first] > max_column_width)
      column_width[field.first] = max_column_width;
     table_width += column_width[field.first] + 1;
    }
@@ -258,7 +264,7 @@ bool joedb::Readonly_Interpreter::process_command
   out << '\n';
   out << "Displaying data\n";
   out << "~~~~~~~~~~~~~~~\n";
-  out << " table <table_name>\n";
+  out << " table <table_name> [<max_column_width>]\n";
   out << " schema\n";
   out << " dump\n";
   out << " sql\n";
