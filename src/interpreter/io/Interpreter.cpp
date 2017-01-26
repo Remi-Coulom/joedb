@@ -118,7 +118,7 @@ bool joedb::Readonly_Interpreter::process_command
   size_t max_column_width = 25;
   {
    size_t w;
-   if ((iss >> w).good())
+   if (iss >> w)
     max_column_width = w;
   }
 
