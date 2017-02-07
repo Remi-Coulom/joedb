@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
  if (argc <= 1)
  {
-  std::cerr << "usage: " << argv[0] << "[--base64] <file.joedb>\n";
+  std::cerr << "usage: " << argv[0] << " [--base64] <file.joedb>\n";
   return 1;
  }
 
@@ -28,7 +28,10 @@ int main(int argc, char **argv)
  joedb::Readonly_Journal journal(file);
  joedb::Database db;
  journal.replay_log(db);
- joedb::write_json(std::cout, db, base64);
+ const bool ok = joedb::write_json(std::cout, db, base64);
+
+ if (!ok)
+  std::cerr << "warning: a string could not be encoded. Maybe you should use --base64 instead.\n";
 
  return 0;
 }

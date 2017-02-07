@@ -1,5 +1,6 @@
 #include "type_io.h"
 #include "wide_char_display_width.h"
+#include "Exception.h"
 
 #include <iostream>
 #include <string>
@@ -212,7 +213,7 @@ void joedb::write_justified
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::write_string(std::ostream &out, const std::string &s)
+void joedb::write_string(std::ostream &out, const std::string &s, bool json)
 /////////////////////////////////////////////////////////////////////////////
 {
  out.put('"');
@@ -222,7 +223,19 @@ void joedb::write_string(std::ostream &out, const std::string &s)
   const uint8_t c = uint8_t(s[i]);
 
   if (c < 0x20)
-   write_octal_character(out, c);
+  {
+   if (json)
+   {
+    out.put('\\');
+    out.put('u');
+    out.put('0');
+    out.put('0');
+    out.put(get_hex_char_from_digit(uint8_t(c >> 4)));
+    out.put(get_hex_char_from_digit(uint8_t(c & 0x0f)));
+   }
+   else
+    write_octal_character(out, c);
+  }
   else if (c == '"')
    out.put('\\').put('"');
   else if (c == '\\')
@@ -255,7 +268,12 @@ void joedb::write_string(std::ostream &out, const std::string &s)
    out.put(s[i]);
   }
   else if (c & 0x80)
-   write_octal_character(out, c);
+  {
+   if (json)
+    throw Exception("json can't handle non-utf8 strings");
+   else
+    write_octal_character(out, c);
+  }
   else
    out.put(char(c));
  }

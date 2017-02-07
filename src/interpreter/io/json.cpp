@@ -6,9 +6,11 @@
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
+bool joedb::write_json(std::ostream &out, const Readable &db, bool base64)
 /////////////////////////////////////////////////////////////////////////////
 {
+ bool ok = true;
+
  //
  // First, create reference translations
  //
@@ -91,14 +93,27 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
       break;
 
       case Type::Type_Id::string:
+      {
+       const std::string &s = db.get_string(table_id, record_id, field_id);
        if (base64)
        {
         out << '"';
-        out << base64_encode(db.get_string(table_id, record_id, field_id));
+        out << base64_encode(s);
         out << '"';
        }
        else
-        joedb::write_string(out, db.get_string(table_id, record_id, field_id));
+       {
+        try
+        {
+         joedb::write_string(out, s, true);
+        }
+        catch (const joedb::Exception &e)
+        {
+         out << "!!! This string is not utf8 !!!\"";
+         ok = false;
+        }
+       }
+      }
       break;
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -122,4 +137,6 @@ void joedb::write_json(std::ostream &out, const Readable &db, bool base64)
  }
 
  out << "\n}\n";
+
+ return ok;
 }

@@ -7,7 +7,7 @@ namespace joedb
 {
  class Readable;
 
- void write_json(std::ostream &out, const Readable &db, bool base64);
+ bool write_json(std::ostream &out, const Readable &db, bool base64);
 }
 
 #endif
