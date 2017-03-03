@@ -75,6 +75,10 @@ else()
  )
 endif()
 
+add_library(joedb_static STATIC
+ $<TARGET_OBJECTS:joedb_objects>
+)
+
 add_executable(joedbi
  ../src/interpreter/io/joedbi.cpp
 )
@@ -226,6 +230,7 @@ install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../src/interpreter/io/joedb_browser DESTINATION bin)
 install(TARGETS joedb ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+install(TARGETS joedb_static ARCHIVE DESTINATION lib)
 
 file(GLOB all_includes ../src/includes/joedb/*.h)
 install(FILES ${all_includes} DESTINATION include/joedb)
