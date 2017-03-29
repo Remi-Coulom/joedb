@@ -6,7 +6,7 @@
 
 const uint32_t joedb::Readonly_Journal::version_number = 0x00000004;
 const uint32_t joedb::Readonly_Journal::compatible_version = 0x00000004;
-const uint64_t joedb::Readonly_Journal::header_size = 41;
+const size_t joedb::Readonly_Journal::header_size = 41;
 
 #define FORMAT_EXCEPTION(x)\
  do {if (!ignore_errors) throw Exception(x);} while(false)

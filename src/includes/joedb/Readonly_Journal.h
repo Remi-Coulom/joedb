@@ -24,7 +24,7 @@ namespace joedb
 
    static const uint32_t version_number;
    static const uint32_t compatible_version;
-   static const uint64_t header_size;
+   static const size_t header_size;
 
   protected:
    Generic_File &file;
