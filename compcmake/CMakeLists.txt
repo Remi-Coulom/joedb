@@ -195,6 +195,10 @@ set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/vector_test.cpp
  PROPERTIES GENERATED TRUE
 )
+set_source_files_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/multi_index.cpp
+ PROPERTIES GENERATED TRUE
+)
 add_executable(compiler_test EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
