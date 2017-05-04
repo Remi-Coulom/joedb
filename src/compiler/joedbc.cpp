@@ -383,10 +383,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
    {
-    out << "    data_of_" << tname << " &data = storage_of_";
+    out << "    {\n";
+    out << "     data_of_" << tname << " &data = storage_of_";
     out << tname << "[record_id - 1];\n";
-    out << "    data.iterator_over_" << index.name << " = ";
+    out << "     data.iterator_over_" << index.name << " = ";
     out << "index_of_" << index.name << ".end();\n";
+    out << "    }\n";
    }
 
   if (storage == Compiler_Options::Table_Storage::freedom_keeper)
