@@ -7,3 +7,5 @@ schema_v?.h
 schema_v?.cpp
 vector_test.h
 vector_test.cpp
+multi_index.h
+multi_index.cpp

@@ -200,6 +200,7 @@ add_executable(compiler_test EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v2.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/vector_test.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/multi_index.cpp
  ../test/compiler/compiler_test.cpp
 )
 target_link_libraries(compiler_test joedb)
