@@ -6,7 +6,7 @@ This explains how to install and use joedb.
 Compilation
 -----------
 
-The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_. Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`__ for its build system. It should be reasonably portable to many platforms, but because it was developed there, `Ubuntu <https://www.ubuntu.com/>`_ is likely to be the easiest one to use.
+The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_. Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`__ for its build system. So it should be portable to almost any platform. Here are some detailed instructions for the most common situations.
 
 Linux, MacOS (and maybe other variations of Unix)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
