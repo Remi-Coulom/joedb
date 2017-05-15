@@ -154,6 +154,20 @@ int file_test()
   std::cout << '\n';
  }
 
+ if (db.find_person_by_name("Totox").empty())
+  std::cout << "No Totox in the database\n";
+
+ {
+  const auto range = db.find_person_by_name("Toto");
+  int count = 0;
+  for (auto x = range.begin(); x != range.end(); ++x)
+   count++;
+  std::cout << "(begin != end) = " << (range.begin() != range.end()) << '\n';
+  std::cout << "empty = " << range.empty() << '\n';
+  std::cout << "count = " << count << '\n';
+  std::cout << "range.size() = " << range.size() << '\n';
+ }
+
  //
  // Standard find algorithm
  //

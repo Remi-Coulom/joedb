@@ -1295,11 +1295,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "     id_of_" << db.get_table_name(index.table_id);
    out << " operator*() const {return map_iterator->second;}\n";
    out << "   };\n";
-   out << "   iterator begin() {return range.first;}\n";
-   out << "   iterator end() {return range.second;}\n";
-   out << " };\n";
+   out << "   iterator begin() const {return range.first;}\n";
+   out << "   iterator end() const {return range.second;}\n";
+   out << "   bool empty() const {return range.first == range.second;}\n";
+   out << "   size_t size() const {return std::distance(range.first, range.second);}\n";
+   out << " };\n\n";
 
-   out << "   inline range_of_" << index.name << " Database::find_" << index.name << '(';
+   out << " inline range_of_" << index.name << " Database::find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     if (i > 0)
@@ -1310,8 +1312,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ") const\n";
-   out << "   {\n";
-   out << "    return range_of_" << index.name << "(*this";
+   out << " {\n";
+   out << "  return range_of_" << index.name << "(*this";
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     out << ", ";
@@ -1319,7 +1321,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ");\n";
-   out << "   }\n";
+   out << " }\n";
   }
 
 
