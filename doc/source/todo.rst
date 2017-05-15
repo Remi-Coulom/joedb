@@ -4,6 +4,7 @@ TODO
 Short Term
 ----------
 
+- Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update.
 - better readable interface:
 
   - a separate table abstraction (that could be used for query output)
