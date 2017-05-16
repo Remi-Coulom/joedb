@@ -82,6 +82,11 @@ Finding all Totos:
  1: New York
  4: Tokyo
  5: Barcelona
+No Totox in the database
+(begin != end) = 1
+empty = 0
+count = 3
+range.size() = 3
 Found Catherine!
 Found Catherine!
 Comment allez-vous?
