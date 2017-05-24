@@ -4,6 +4,7 @@ TODO
 Short Term
 ----------
 
+- Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update.
 - better readable interface:
 
