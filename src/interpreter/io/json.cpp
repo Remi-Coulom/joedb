@@ -4,12 +4,18 @@
 #include "base64.h"
 
 #include <iostream>
+#include <cmath>
 
 /////////////////////////////////////////////////////////////////////////////
-bool joedb::write_json(std::ostream &out, const Readable &db, bool base64)
+int joedb::write_json
 /////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Readable &db,
+ bool base64
+)
 {
- bool ok = true;
+ int result = JSON_Error::ok;
 
  //
  // First, create reference translations
@@ -110,7 +116,7 @@ bool joedb::write_json(std::ostream &out, const Readable &db, bool base64)
         catch (const joedb::Exception &e)
         {
          out << "!!! This string is not utf8 !!!\"";
-         ok = false;
+         result |= JSON_Error::utf8;
         }
        }
       }
@@ -118,8 +124,16 @@ bool joedb::write_json(std::ostream &out, const Readable &db, bool base64)
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
-       joedb::write_##type_id(out,\
-        db.get_##type_id(table_id, record_id, field_id));\
+      {\
+       const auto x = db.get_##type_id(table_id, record_id, field_id);\
+       if (std::isnan(x) || std::isinf(x))\
+       {\
+        out << '0';\
+        result |= JSON_Error::infnan;\
+       }\
+       else\
+        joedb::write_##type_id(out, x);\
+      }\
       break;
       #define TYPE_MACRO_NO_REFERENCE
       #define TYPE_MACRO_NO_STRING
@@ -138,5 +152,5 @@ bool joedb::write_json(std::ostream &out, const Readable &db, bool base64)
 
  out << "\n}\n";
 
- return ok;
+ return result;
 }
