@@ -17,17 +17,15 @@ Joedb offers many nice features that may make it more attractive than typical al
 - The database schema is compiled into C++ code that allows convenient type-safe data manipulation. Many errors that would be detected at run time with SQL, xml, or json will be detected at compile time instead.
 - Joedb is very simple, light, and fast.
 
-Joedb currently has some limitations:
+Joedb currently has some limitations that may be removed with future improvements:
 
-- The database must fit in memory.
-- Only one process can open the database at the same time.
-- C++ is the only supported programming language.
+- The database is stored in memory. So it must be small enough to fit in RAM, and the full journal has to be replayed from scractch when opening a file. This may change with support of on-disk data storage.
+- Only one process can open the database at the same time. This may change with a database server that would handle connections of many clients.
+- C++ is the only supported programming language. A rudimentary C wrapper is available. SQL support is planned.
 
-These limitations are likely to be removed in the future.
+Compared to history-less database, joedb has one fundamental drawback: frequently-updated values may make the joedb journal file grow very large.
 
-A drawback of the joedb approach is that the full journal has to be replayed from scratch when opening a file. Traditional databases have the data stored on disk, and can access it directly, without reading the full database first.
-
-Another fundamental drawback of the joedb approach is that frequently-updated values may make the joedb journal file grow much larger than an history-less database.
+So joedb might not be the best choice for every situation, but it is great if data fits in RAM, has to be stored safely on disk, and is manipulated by C++ code.
 
 An Example
 ----------
