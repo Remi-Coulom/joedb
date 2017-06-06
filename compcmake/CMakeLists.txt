@@ -151,33 +151,21 @@ add_executable(joedbc
 target_link_libraries(joedbc joedb)
 
 #############################################################################
-# Targets below require databases to be compiled
+# Databases that require compilation with joedbc
 #############################################################################
-set_source_files_properties(
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
- PROPERTIES GENERATED TRUE
+add_custom_command(
+ OUTPUT
+  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.h
+ COMMAND ${CMAKE_CURRENT_BINARY_DIR}/joedbc tutorial.joedbi tutorial.joedbc
+ DEPENDS
+  joedbc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.joedbi
+  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.joedbc
+ WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial
 )
-set_source_files_properties(
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
- PROPERTIES GENERATED TRUE
-)
-add_executable(tutorial EXCLUDE_FROM_ALL
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
- ../doc/source/tutorial/tutorial_main.cpp
-)
-target_link_libraries(tutorial joedb)
-add_executable(index_tutorial EXCLUDE_FROM_ALL
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
- ../doc/source/tutorial/index_tutorial.cpp
-)
-target_link_libraries(index_tutorial joedb)
-
-add_executable(wrapper_tutorial EXCLUDE_FROM_ALL
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
- ../doc/source/tutorial/tutorial_main.c
-)
-target_link_libraries(wrapper_tutorial joedb)
 
 set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
@@ -199,6 +187,29 @@ set_source_files_properties(
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/multi_index.cpp
  PROPERTIES GENERATED TRUE
 )
+
+#############################################################################
+# Targets below require databases to be compiled
+#############################################################################
+add_executable(tutorial
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial_main.cpp
+)
+target_link_libraries(tutorial joedb)
+
+add_executable(index_tutorial
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/index_tutorial.cpp
+)
+target_link_libraries(index_tutorial joedb)
+
+add_executable(wrapper_tutorial
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
+ ../doc/source/tutorial/tutorial_main.c
+)
+target_link_libraries(wrapper_tutorial joedb)
+
 add_executable(compiler_test EXCLUDE_FROM_ALL
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
