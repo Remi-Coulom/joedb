@@ -3,15 +3,10 @@
 dir=../../../compcmake/ninja_debug
 
 cd $dir
-ninja || exit 1
+ninja tutorial index_tutorial wrapper_tutorial || exit 1
 cd -
 
 rm -vf tutorial.joedb index_tutorial.joedb
-$dir/joedbc tutorial.joedbi tutorial.joedbc || exit 1
-
-cd $dir
-ninja tutorial index_tutorial wrapper_tutorial || exit 1
-cd -
 
 $dir/index_tutorial >index_tutorial.out
 $dir/tutorial >tutorial.out
