@@ -160,9 +160,9 @@ function(joedbc_build source_dir f namespace)
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_wrapper.h
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.h
-  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/joedbc ${f}.joedbi ${f}.joedbc
+  COMMAND joedbc ${f}.joedbi ${f}.joedbc
   DEPENDS
-   ${CMAKE_CURRENT_BINARY_DIR}/joedbc
+   joedbc
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${f}.joedbi
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${f}.joedbc
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}
@@ -180,9 +180,9 @@ joedbc_build(../benchmark joedbc_insert benchmark)
 add_custom_command(
  OUTPUT
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
- COMMAND ${CMAKE_CURRENT_BINARY_DIR}/generate_translation_header >translation.h
+ COMMAND generate_translation_header > translation.h
  DEPENDS
-  ${CMAKE_CURRENT_BINARY_DIR}/generate_translation_header
+  generate_translation_header
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
 )
@@ -190,9 +190,9 @@ add_custom_command(
 add_custom_command(
  OUTPUT
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
- COMMAND ${CMAKE_CURRENT_BINARY_DIR}/joedbi test.joedb <test.joedbi
+ COMMAND joedbi test.joedb < test.joedbi
  DEPENDS
-  ${CMAKE_CURRENT_BINARY_DIR}/joedbi
+  joedbi
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedbi
  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
 )

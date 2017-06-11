@@ -1168,12 +1168,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "     const joedb::Freedom_Keeper<data_of_" << tname << "> &fk;\n";
+    out << "     const joedb::Freedom_Keeper<data_of_" << tname << "> *fk;\n";
     out << "     size_t index;\n";
-    out << "     iterator(const joedb::Freedom_Keeper<data_of_" << tname << "> &fk): fk(fk), index(0) {}\n";
+    out << "     iterator(const joedb::Freedom_Keeper<data_of_" << tname << "> &fk): fk(&fk), index(0) {}\n";
     out << "    public:\n";
+    out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
-    out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
+    out << "     iterator &operator++() {index = fk->get_next(index); return *this;}\n";
     out << "     id_of_" << tname << " operator*() {return id_of_";
     out << tname << "(index - 1);}\n";
     out << "   };\n";
@@ -1192,6 +1193,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "     size_t index;\n";
     out << "     iterator(size_t index): index(index) {}\n";
     out << "    public:\n";
+    out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
     out << "     iterator &operator++() {index++; return *this;}\n";
     out << "     id_of_" << tname << " operator*() {return id_of_" << tname << "(index + 1);}\n";

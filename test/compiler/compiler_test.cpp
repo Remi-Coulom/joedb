@@ -488,7 +488,7 @@ int exceptions()
   db.delete_city(city);
   std::cout << db.get_name(city) << '\n';
  }
- catch (const joedb::Assertion_Failure &e)
+ catch (const joedb::Assertion_Failure &)
  {
   std::cout << "Failed reading a deleted row\n";
  }
@@ -500,7 +500,7 @@ int exceptions()
   db.delete_city(city);
   db.delete_city(city);
  }
- catch (const joedb::Assertion_Failure &e)
+ catch (const joedb::Assertion_Failure &)
  {
   std::cout << "Double delete\n";
  }
@@ -512,7 +512,7 @@ int exceptions()
   db.delete_city(city);
   db.set_name(city, "Paris");
  }
- catch (const joedb::Assertion_Failure &e)
+ catch (const joedb::Assertion_Failure &)
  {
   std::cout << "Invalid update\n";
  }

@@ -113,7 +113,7 @@ int joedb::write_json
         {
          joedb::write_string(out, s, true);
         }
-        catch (const joedb::Exception &e)
+        catch (const joedb::Exception &)
         {
          out << "!!! This string is not utf8 !!!\"";
          result |= JSON_Error::utf8;
@@ -121,6 +121,7 @@ int joedb::write_json
        }
       }
       break;
+
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
@@ -137,7 +138,25 @@ int joedb::write_json
       break;
       #define TYPE_MACRO_NO_REFERENCE
       #define TYPE_MACRO_NO_STRING
+      #define TYPE_MACRO_NO_INT
       #include "TYPE_MACRO.h"
+      #undef TYPE_MACRO_NO_INT
+      #undef TYPE_MACRO_NO_STRING
+      #undef TYPE_MACRO_NO_REFERENCE
+      #undef TYPE_MACRO
+
+      #define TYPE_MACRO(type, return_type, type_id, R, W)\
+      case Type::Type_Id::type_id:\
+      {\
+       const auto x = db.get_##type_id(table_id, record_id, field_id);\
+       joedb::write_##type_id(out, x);\
+      }\
+      break;
+      #define TYPE_MACRO_NO_REFERENCE
+      #define TYPE_MACRO_NO_STRING
+      #define TYPE_MACRO_NO_FLOAT
+      #include "TYPE_MACRO.h"
+      #undef TYPE_MACRO_NO_FLOAT
       #undef TYPE_MACRO_NO_STRING
       #undef TYPE_MACRO_NO_REFERENCE
       #undef TYPE_MACRO

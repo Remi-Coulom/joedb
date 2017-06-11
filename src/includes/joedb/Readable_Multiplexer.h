@@ -4,6 +4,11 @@
 #include "Multiplexer.h"
 #include "Readable_Writeable.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4250)
+#endif
+
 namespace joedb
 {
  class Readable_Multiplexer: public Readable_Writeable, public Multiplexer
@@ -55,5 +60,9 @@ namespace joedb
    #undef TYPE_MACRO
  };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif
