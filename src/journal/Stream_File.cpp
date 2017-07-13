@@ -27,22 +27,22 @@ int64_t joedb::Stream_File::get_size() const
 size_t joedb::Stream_File::read_buffer()
 /////////////////////////////////////////////////////////////////////////////
 {
- return size_t(stream.readsome(buffer, int64_t(buffer_size)));
+ return size_t(stream.readsome(buffer, std::streamsize(buffer_size)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Stream_File::write_buffer()
 /////////////////////////////////////////////////////////////////////////////
 {
- stream.write(buffer, int64_t(write_buffer_index));
+ stream.write(buffer, std::streamsize(write_buffer_index));
 }
 
 /////////////////////////////////////////////////////////////////////////////
 int joedb::Stream_File::seek(size_t offset)
 /////////////////////////////////////////////////////////////////////////////
 {
- stream.seekg(int64_t(offset));
- stream.seekp(int64_t(offset));
+ stream.seekg(std::streampos(int64_t(offset)));
+ stream.seekp(std::streampos(int64_t(offset)));
 
  int result = 0;
  if (!stream.good())
