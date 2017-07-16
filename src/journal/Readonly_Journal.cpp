@@ -224,10 +224,13 @@ void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
    lbl_perform_update_##type_id:\
    {\
     cpp_type value = read_method();\
-    writeable.update_##type_id(table_of_last_operation,\
-                                    record_of_last_operation,\
-                                    field_of_last_update,\
-                                    value);\
+    writeable.update_##type_id\
+    (\
+     table_of_last_operation,\
+     record_of_last_operation,\
+     field_of_last_update,\
+     value\
+    );\
    }\
    break;\
 \
@@ -242,11 +245,14 @@ void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
     std::vector<cpp_type> buffer(size);\
     for (size_t i = 0; i < size; i++)\
      buffer[i] = read_method();\
-    writeable.update_vector_##type_id(table_of_last_operation,\
-                                           record_of_last_operation,\
-                                           field_of_last_update,\
-                                           size,\
-                                           &buffer[0]);\
+    writeable.update_vector_##type_id\
+    (\
+     table_of_last_operation,\
+     record_of_last_operation,\
+     field_of_last_update,\
+     size,\
+     &buffer[0]\
+    );\
    }\
    break;
    #include "TYPE_MACRO.h"

@@ -4,7 +4,6 @@ TODO
 Short Term
 ----------
 
-- Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update.
 - better readable interface:
 
@@ -86,6 +85,7 @@ Server
 
 Other Ideas
 -----------
+- Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Raw commands in interpreter?
 - import from SQL
 - index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
