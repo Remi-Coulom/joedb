@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Manipulating databases via SQL APIs is not satisfying for C++ programmers who want compile-time syntax checking, and type safety. Object-relational mapping can solve this problem, but the additional level of abstraction may be very costly. Joedb is designed from scratch to be efficent when used in the C++ spirit of strong compile-time safety.  
+Manipulating databases via SQL APIs is not satisfying for C++ programmers who want compile-time syntax checking and type safety. An object-relational mapping can hide SQL strings somewhat, but the additional level of abstraction may be very costly. In order to solve these problems, joedb is designed from scratch to be efficient when used in the C++ spirit of strong compile-time safety.
 
 Joedb stands for the Journal-Only Embedded Database. With joedb, data is stored as a journal of all modifications. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple, and fast.
 
@@ -28,7 +28,7 @@ Joedb currently has some limitations that may be removed with future improvement
 - Only one process can open the database at the same time. This may change with a database server that would handle connections of many clients.
 - C++ is the only supported programming language. A rudimentary C wrapper is available. SQL support is planned.
 
-Compared to history-less database, joedb has one fundamental drawback: frequently-updated values may make the joedb journal file grow very large.
+Compared to history-less database, joedb has one fundamental drawback: frequently-updated values may make the joedb journal file grow large.
 
 So joedb might not be the best choice for every situation, but it is great if data fits in RAM, has to be stored safely on disk, and is manipulated by C++ code.
 
