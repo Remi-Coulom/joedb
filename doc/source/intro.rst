@@ -1,9 +1,14 @@
 Introduction
 ============
 
-Joedb is the Journal-Only Embedded Database. Its purpose is to allow crash-safe manipulation of data stored in permanent storage. Data is stored as a journal of all modifications. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple, and fast.
+Manipulating databases via SQL APIs is not satisfying for C++ programmers who want compile-time syntax checking, and type safety. Object-relational mapping can solve this problem, but the additional level of abstraction may be very costly. Joedb is designed from scratch to be efficent when used in the C++ spirit of strong compile-time safety.  
 
-Joedb comes with a compiler that takes a database schema as input, and produces C++ code. The generated C++ data-manipulation code is convenient to use, efficient, and type-safe.
+Joedb stands for the Journal-Only Embedded Database. With joedb, data is stored as a journal of all modifications. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple, and fast.
+
+A very minimal example that opens a database and prints the contents of a table looks like the code below:
+
+.. literalinclude:: ./tutorial/micro_tutorial.cpp
+   :language: c++
 
 
 Pros and Cons

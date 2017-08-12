@@ -206,6 +206,12 @@ add_executable(tutorial
 )
 target_link_libraries(tutorial joedb)
 
+add_executable(micro_tutorial
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/micro_tutorial.cpp
+)
+target_link_libraries(micro_tutorial joedb)
+
 add_executable(index_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/index_tutorial.cpp
