@@ -29,7 +29,7 @@ For instance, when using a database defined by this schema:
 
 It is possible to allocate and manipulate a vector of floats like this:
 
-.. code-block:: C++
+.. code-block:: c++
 
      const size_t n = 5;
      auto v = db.new_vector_of_float(n);
