@@ -23,7 +23,7 @@ Joedb currently has some limitations that may be removed with future improvement
 - Only one process can open the database at the same time. This may change with a database server that would handle connections of many clients.
 - C++ is the only supported programming language. A rudimentary C wrapper is available. SQL support is planned.
 
-Compared to history-less database, joedb has one fundamental drawback: frequently-updated values may make the joedb journal file grow very large.
+Compared to history-less databases, joedb has one fundamental drawback: frequently-updated values may make the joedb journal file grow very large.
 
 So joedb might not be the best choice for every situation, but it is great if data fits in RAM, has to be stored safely on disk, and is manipulated by C++ code.
 
