@@ -30,7 +30,7 @@ Then, in the next version, we wish to add a language table, and indicate a prefe
   add_field person preferred_language references language
   custom set_default_preferred_language_to_english
 
-Note that the first two lines are identical to ``schema_v1.joedbi``. For the automatic upgrade process to work, it is necessary to keep the first lines of the new schema identical to the old schema. For instance, if you wish to rename a field, you should not edit the field name directly, but append a ``rename_field`` operation instead.
+Note that the first two lines are identical to ``schema_v1.joedbi``. For the automatic upgrade process to work, it is necessary to keep the first lines of the new schema identical to the old schema. In particular, if you wish to rename a field, you should not edit the field name directly, but append a ``rename_field`` operation instead.
 
 The ``custom`` command defines the name of a custom function that the programmer has to implement.
 
