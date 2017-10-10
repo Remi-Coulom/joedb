@@ -19,7 +19,7 @@ Joedb offers many nice features that may make it more attractive than typical al
 
 Joedb currently has some limitations that may be removed with future improvements:
 
-- The database is stored in memory. So it must be small enough to fit in RAM, and the full journal has to be replayed from scractch when opening a file. This may change with support of on-disk data storage.
+- The database is stored in memory. So it must be small enough to fit in RAM, and the full journal has to be replayed from scratch when opening a file. This may change with support of on-disk data storage.
 - Only one process can open the database at the same time. This may change with a database server that would handle connections of many clients.
 - C++ is the only supported programming language. A rudimentary C wrapper is available. SQL support is planned.
 
