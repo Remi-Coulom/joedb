@@ -35,6 +35,13 @@ Crash resistance:
 .. [Moyer-2011] `Ensuring data reaches disk <http://lwn.net/Articles/457667/>`_
 .. [serverfault-2009] `SATA Disks that handle write caching properly? <http://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
 
+Structured data storage (with no history):
+
+- https://developers.google.com/protocol-buffers/
+- http://sqlite.org/
+- https://www.json.org/
+- https://en.wikipedia.org/wiki/XML
+
 Compression
 
 - https://code.google.com/p/snappy/ (used by LevelDB)
@@ -42,10 +49,6 @@ Compression
 Fast IO:
 
 - http://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
-
-SQLite:
-
-- http://sqlite.org/
 
 Berkeley DB:
 

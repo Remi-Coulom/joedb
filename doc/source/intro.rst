@@ -9,12 +9,12 @@ Joedb comes with a compiler that takes a database schema as input, and produces 
 Pros and Cons
 -------------
 
-Joedb offers many nice features that may make it more attractive than typical alternatives such as SQLite, xml, or json:
+Joedb offers many nice features that may make it more attractive than typical alternatives such as protobuf, SQLite, XML, or JSON:
 
 - Since a joedb file is append-only, its crash-safe operation does not require flushing data to disk as frequently as typical relational databases, which can make it an order of magnitude faster (see :doc:`checkpoints` for details and benchmarks).
 - The whole data history is remembered. So, no old data can ever be lost. It is also possible to add time stamps and comments to the journal, and use it as a log of the application (if the history has to be forgotten for privacy or disk-space reasons, it is also possible to pack it).
 - If the database schema of an application changes over time, joedb can upgrade old files to the new version automatically. The upgrade includes changes to the schema as well as custom data manipulation (see :doc:`schema_upgrade`).
-- The database schema is compiled into C++ code that allows convenient type-safe data manipulation. Many errors that would be detected at run time with SQL, xml, or json will be detected at compile time instead.
+- The database schema is compiled into C++ code that allows convenient type-safe data manipulation. Many errors that would be detected at run time with SQL, XML, or JSON will be detected at compile time instead.
 - Joedb is very simple, light, and fast.
 
 Joedb currently has some limitations that may be removed with future improvements:
