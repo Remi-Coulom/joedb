@@ -2,6 +2,8 @@
 #include "Exception.h"
 #include "is_identifier.h"
 
+#include <sstream>
+
 /////////////////////////////////////////////////////////////////////////////
 const std::map<Field_Id, std::string> &joedb::Database::get_fields
 /////////////////////////////////////////////////////////////////////////////
@@ -201,9 +203,15 @@ void joedb::Database::insert_vector
  if (it == tables.end())
   throw Exception("insert_vector: invalid table_id");
  if (record_id <= 0 ||
-     size <= 0 ||
      (max_record_id && (record_id > max_record_id || size > max_record_id)))
-  throw Exception("insert_vector: too big");
+ {
+  std::ostringstream error_message;
+  error_message << "insert_vector: ";
+  error_message << "record_id = " << record_id << "; ";
+  error_message << "size = " << size << "; ";
+  error_message << "max = " << max_record_id;
+  throw Exception(error_message.str());
+ }
 
  for (Record_Id i = 0; i < size; i++)
   it->second.insert_record(record_id + i);
