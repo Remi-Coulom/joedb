@@ -939,6 +939,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
     check_schema();
    }
+
+   Readonly_Database(const std::string &file_name):
+    Readonly_Database(file_name.c_str())
+   {
+   }
  };
 
  class File_Database: public Database
@@ -987,6 +992,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
   public:
    File_Database(const char *file_name);
+   File_Database(const std::string &file_name):
+    File_Database(file_name.c_str())
+   {
+   }
 
    uint64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
    void checkpoint_no_commit() {journal.checkpoint(0);}
