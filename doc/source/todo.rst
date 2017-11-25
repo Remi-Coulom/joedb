@@ -4,7 +4,8 @@ TODO
 Short Term
 ----------
 
-- Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update.
+- Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
+- Null default initial values
 - better readable interface:
 
   - a separate table abstraction (that could be used for query output)
