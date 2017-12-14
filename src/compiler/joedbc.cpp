@@ -1070,39 +1070,42 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   // new with all fields
   //
-  out << "   id_of_" << tname << " new_" << tname << '\n';
-  out << "   (\n    ";
+  if (!db.get_fields(table.first).empty())
   {
-   bool first = true;
+   out << "   id_of_" << tname << " new_" << tname << '\n';
+   out << "   (\n    ";
+   {
+    bool first = true;
+
+    for (const auto &field: db.get_fields(table.first))
+    {
+     const std::string &fname = field.second;
+
+     if (first)
+      first = false;
+     else
+      out << ",\n    ";
+
+     const Type &type = db.get_field_type(table.first, field.first);
+     write_type(out, db, type, true);
+     out << "field_value_of_" << fname;
+    }
+
+    out << '\n';
+   }
+   out << "   )\n";
+   out << "   {\n";
+   out << "    auto result = new_" << tname << "();\n";
 
    for (const auto &field: db.get_fields(table.first))
    {
     const std::string &fname = field.second;
-
-    if (first)
-     first = false;
-    else
-     out << ",\n    ";
-
-    const Type &type = db.get_field_type(table.first, field.first);
-    write_type(out, db, type, true);
-    out << "field_value_of_" << fname;
+    out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
    }
 
-   out << '\n';
+   out << "    return result;\n";
+   out << "   }\n\n";
   }
-  out << "   )\n";
-  out << "   {\n";
-  out << "    auto result = new_" << tname << "();\n";
-
-  for (const auto &field: db.get_fields(table.first))
-  {
-   const std::string &fname = field.second;
-   out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
-  }
-
-  out << "    return result;\n";
-  out << "   }\n\n";
 
   //
   // Delete

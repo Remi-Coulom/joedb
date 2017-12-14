@@ -246,6 +246,14 @@ int file_test()
   db.delete_city(v[1]);
  }
 
+ //
+ // New element in table with no field
+ //
+ {
+  auto x = db.new_table_with_no_field();
+  std::cout << "id in table_with_no_field: " << x.get_id() << '\n';
+ }
+
  return 0;
 }
 

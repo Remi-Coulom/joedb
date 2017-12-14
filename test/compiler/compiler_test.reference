@@ -112,6 +112,7 @@ Tokyo
 New York
 Beijing
 Barcelona
+id in table_with_no_field: 1
 v1 opened
 v1 re-opened
 v2 opened
@@ -169,7 +170,7 @@ Failed reading a deleted row
 Double delete
 Invalid update
 Checkpoints...
-236
+257
 0
 11
 0
