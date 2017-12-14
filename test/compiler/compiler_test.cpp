@@ -350,6 +350,20 @@ int do_vector_test()
  }
 
  //
+ // Allocating empty vectors works
+ //
+ {
+  {
+   vector_test::File_Database db("empty_vector.joedb");
+   db.new_vector_of_point(0);
+  }
+  {
+   vector_test::File_Database db("empty_vector.joedb");
+   std::cout << "empty size = " << db.get_point_table().get_size() << '\n';
+  }
+ }
+
+ //
  // Vector storage
  //
  {
