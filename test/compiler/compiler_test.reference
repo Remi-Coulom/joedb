@@ -162,7 +162,7 @@ Can't delete in vector storage of table translation
 Duplicate insert into table city
 Non-contiguous insert in vector storage of table translation
 insert_into: too big
-insert_vector: too big
+insert_vector: null record_id, or too big
 Paris
 Failed reading a deleted row
 Double delete
