@@ -94,6 +94,11 @@ add_executable(joedb_pack
 )
 target_link_libraries(joedb_pack joedb)
 
+add_executable(joedb_merge
+ ../src/interpreter/io/joedb_merge.cpp
+)
+target_link_libraries(joedb_merge joedb)
+
 add_executable(joedb_convert
  ../src/interpreter/io/joedb_convert.cpp
  $<TARGET_OBJECTS:joedb_objects>
