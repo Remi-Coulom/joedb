@@ -1352,6 +1352,8 @@ void generate_cpp
  const std::string &schema
 )
 {
+ const std::string &ns = options.get_namespace_name();
+
  out << "#include \"" << options.get_namespace_name() << ".h\"\n";
  out << "#include \"joedb/Stream_File.h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
@@ -1359,9 +1361,7 @@ void generate_cpp
  out << "#include <sstream>\n";
  out << "#include <ctime>\n";
  out << '\n';
- out << "using namespace " << options.get_namespace_name() << ";\n";
- out << '\n';
- out << "const std::string Database::schema_string(";
+ out << "const std::string " << ns << "::Database::schema_string(";
  write_string(out, schema);
  out << ", ";
  out << schema.size();
@@ -1369,35 +1369,35 @@ void generate_cpp
 
  out << R"RRR(
 /////////////////////////////////////////////////////////////////////////////
-void File_Database::write_comment(const std::string &comment)
+void )RRR" << ns << R"RRR(::File_Database::write_comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File_Database::write_timestamp()
+void )RRR" << ns << R"RRR(::File_Database::write_timestamp()
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.timestamp(std::time(0));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File_Database::write_timestamp(int64_t timestamp)
+void )RRR" << ns << R"RRR(::File_Database::write_timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void File_Database::write_valid_data()
+void )RRR" << ns << R"RRR(::File_Database::write_valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-File_Database::File_Database(const char *file_name):
+)RRR" << ns << R"RRR(::File_Database::File_Database(const char *file_name):
 /////////////////////////////////////////////////////////////////////////////
  file(file_name, joedb::Open_Mode::write_existing_or_create_new),
  journal(file),
