@@ -38,6 +38,8 @@ TEST(Merge_Test, merge_test)
 
  db[1].insert_into(city, 1);
  db[1].update_string(city, 1, city_name, "Lille");
+ db[1].insert_into(city, 2);
+ db[1].update_string(city, 2, city_name, "Maubeuge");
  db[1].insert_into(person, 1);
  db[1].update_string(person, 1, person_name, "Toto");
  db[1].update_reference(person, 1, person_home, 1);
@@ -51,8 +53,10 @@ TEST(Merge_Test, merge_test)
  merge(db[0], db[1]);
  merge(db[0], db[2]);
 
- EXPECT_EQ(db[0].get_last_record_id(city), 2UL);
+ EXPECT_EQ(db[0].get_last_record_id(city), 3UL);
  EXPECT_EQ(db[0].get_last_record_id(person), 2UL);
  EXPECT_EQ(db[0].get_string(city, 1, city_name), "Lille");
- EXPECT_EQ(db[0].get_string(city, 2, city_name), "Paris");
+ EXPECT_EQ(db[0].get_string(city, 3, city_name), "Paris");
+ EXPECT_EQ(db[0].get_reference(person, 1, person_home), 1UL);
+ EXPECT_EQ(db[0].get_reference(person, 2, person_home), 3UL);
 }

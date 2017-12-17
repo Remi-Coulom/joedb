@@ -77,7 +77,7 @@ int joedb::write_json
      else
       out << ',';
 
-     switch(type.get_type_id())
+     switch (type.get_type_id())
      {
       case Type::Type_Id::null:
       break;
