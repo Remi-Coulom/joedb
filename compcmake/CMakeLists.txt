@@ -54,6 +54,7 @@ add_library(joedb_objects OBJECT
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
  ../src/interpreter/io/json.cpp
+ ../src/interpreter/io/merge.cpp
  ../src/interpreter/io/type_io.cpp
  ../src/journal/File.cpp
  ../src/journal/Generic_File.cpp
@@ -122,6 +123,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
   ../test/Journal_File_Test.cpp
+  ../test/Merge_Test.cpp
   ../test/Multiplexer_Test.cpp
   ../test/pack_Test.cpp
   ../test/Selective_Writeable_Test.cpp
