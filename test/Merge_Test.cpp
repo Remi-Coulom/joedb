@@ -49,14 +49,18 @@ TEST(Merge_Test, merge_test)
  db[2].insert_into(person, 1);
  db[2].update_string(person, 1, person_name, "Titi");
  db[2].update_reference(person, 1, person_home, 1);
+ db[2].insert_into(person, 2);
+ db[2].update_string(person, 2, person_name, "Tutu");
+ db[2].update_reference(person, 2, person_home, 0);
 
  merge(db[0], db[1]);
  merge(db[0], db[2]);
 
  EXPECT_EQ(db[0].get_last_record_id(city), 3UL);
- EXPECT_EQ(db[0].get_last_record_id(person), 2UL);
+ EXPECT_EQ(db[0].get_last_record_id(person), 3UL);
  EXPECT_EQ(db[0].get_string(city, 1, city_name), "Lille");
  EXPECT_EQ(db[0].get_string(city, 3, city_name), "Paris");
  EXPECT_EQ(db[0].get_reference(person, 1, person_home), 1UL);
  EXPECT_EQ(db[0].get_reference(person, 2, person_home), 3UL);
+ EXPECT_EQ(db[0].get_reference(person, 3, person_home), 0UL);
 }

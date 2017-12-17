@@ -42,13 +42,15 @@ void joedb::merge(Database &merged, const Database &db)
 
       case Type::Type_Id::reference:
       {
+       Record_Id referenced = db.get_reference(table_id, record_id, field_id);
+       if (referenced > 0)
+        referenced += offset[type.get_table_id()];
        merged.update_reference
        (
         table_id,
         merged_record_id,
         field_id,
-        db.get_reference(table_id, record_id, field_id) +
-         offset[type.get_table_id()]
+        referenced
        );
       }
       break;
