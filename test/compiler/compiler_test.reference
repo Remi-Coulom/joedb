@@ -5,13 +5,13 @@ Database opened successfully
 Dump
 ====
  Persons: 3 (is_empty = 0)
-  3: Alexandre 1
-  2: Norbert 2
   1: Rémi 2
+  2: Norbert 2
+  3: Alexandre 1
 
  Cities: 2
-  2: Lille
   1: Paris
+  2: Lille
 
 
 Dump
@@ -24,31 +24,33 @@ Dump
 Dump
 ====
  Persons: 3 (is_empty = 0)
-  3: Catherine 0
-  2: Évariste 0
   1: Toto 2
+  2: Évariste 0
+  3: Catherine 0
 
  Cities: 4
-  4: Tokyo
-  3: Paris
-  2: New York
   1: Barcelona
+  2: New York
+  3: Paris
+  4: Tokyo
 
+first: 1: Barcelona
+last: 4: Tokyo
 Trying to update into a duplicate Paris: ...
 city_by_name unique index failure
 
 Dump
 ====
  Persons: 3 (is_empty = 0)
-  3: Catherine 0
-  2: Évariste 0
   1: Toto 2
+  2: Évariste 0
+  3: Catherine 0
 
  Cities: 4
-  4: Tokyo
-  3: Paris
-  2: New York
   1: Barcelona
+  2: New York
+  3: Paris
+  4: Tokyo
 
 
 Validity + get_at:
@@ -67,16 +69,16 @@ Paris
 Dump
 ====
  Persons: 5 (is_empty = 0)
-  5: Toto 1
-  4: Toto 4
-  3: Catherine 0
-  2: Évariste 0
   1: Toto 2
+  2: Évariste 0
+  3: Catherine 0
+  4: Toto 4
+  5: Toto 1
 
  Cities: 3
-  4: Tokyo
-  2: New York
   1: Barcelona
+  2: New York
+  4: Tokyo
 
 Finding all Totos:
  1: New York
@@ -140,8 +142,8 @@ custom set_default_preferred_language_to_english
 insert_into language 1
 update language 1 name "English"
 update language 1 id "en"
-update person 2 preferred_language 1
 update person 1 preferred_language 1
+update person 2 preferred_language 1
 comment "End of automatic schema upgrade"
 v[0] = 0
 v[1] = 0.1
@@ -149,6 +151,8 @@ v[2] = 0.2
 v[3] = 0.3
 v[4] = 0.4
 empty size = 0
+first().get_id() = 1
+last().get_id() = 5
 v[0] = {0, 1.234}
 v[1] = {0.1, 1.234}
 v[2] = {0.2, 1.234}

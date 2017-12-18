@@ -1187,6 +1187,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
     out << "     iterator &operator++() {index = fk->get_next(index); return *this;}\n";
+    out << "     iterator &operator--() {index = fk->get_previous(index); return *this;}\n";
     out << "     id_of_" << tname << " operator*() {return id_of_";
     out << tname << "(index - 1);}\n";
     out << "   };\n";
@@ -1207,7 +1208,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     out << "    public:\n";
     out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
-    out << "     iterator &operator++() {index++; return *this;}\n";
+    out << "     iterator &operator++() {++index; return *this;}\n";
+    out << "     iterator &operator--() {--index; return *this;}\n";
     out << "     id_of_" << tname << " operator*() {return id_of_" << tname << "(index + 1);}\n";
     out << "   };\n";
     out << '\n';
@@ -1220,6 +1222,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    break;
   }
 
+  out << "   id_of_" << tname << " first() {return *begin();}\n";
+  out << "   id_of_" << tname << " last() {return *--end();}\n";
 
   out << " };\n";
   out << '\n';
@@ -1246,7 +1250,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << " inline void File_Database::clear_" << tname << "_table()\n";
    out << " {\n";
    out << "  while (!get_" << tname << "_table().is_empty())\n";
-   out << "   delete_" << tname << "(*get_" << tname << "_table().begin());\n";
+   out << "   delete_" << tname << "(get_" << tname << "_table().last());\n";
    out << " }\n";
    out << '\n';
   }
@@ -1531,20 +1535,38 @@ int main(int argc, char **argv)
  // Generate code
  //
  {
-  std::ofstream h_file(compiler_options.get_namespace_name() + ".h");
+  std::ofstream h_file
+  (
+   compiler_options.get_namespace_name() + ".h",
+   std::ios::trunc
+  );
   write_initial_comment(h_file, compiler_options);
   generate_h(h_file, compiler_options);
  }
  {
-  std::ofstream cpp_file(compiler_options.get_namespace_name() + ".cpp");
+  std::ofstream cpp_file
+  (
+   compiler_options.get_namespace_name() + ".cpp",
+   std::ios::trunc
+  );
   write_initial_comment(cpp_file, compiler_options);
   generate_cpp(cpp_file, compiler_options, schema.str());
  }
 
  if (compiler_options.get_generate_c_wrapper())
  {
-  std::ofstream header(compiler_options.get_namespace_name() + "_wrapper.h");
-  std::ofstream body(compiler_options.get_namespace_name() + "_wrapper.cpp");
+  std::ofstream header
+  (
+   compiler_options.get_namespace_name() + "_wrapper.h",
+   std::ios::trunc
+  );
+
+  std::ofstream body
+  (
+   compiler_options.get_namespace_name() + "_wrapper.cpp",
+   std::ios::trunc
+  );
+
   write_initial_comment(header, compiler_options);
   write_initial_comment(body, compiler_options);
   joedb::generate_c_wrapper(header, body, compiler_options);

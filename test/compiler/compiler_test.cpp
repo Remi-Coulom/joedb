@@ -105,6 +105,11 @@ int file_test()
  db.new_person("Catherine", db.null_city());
  dump(db);
 
+ std::cout << "first: " << db.get_city_table().first().get_id() << ": ";
+ std::cout << db.get_name(db.get_city_table().first()) << '\n';
+ std::cout << "last: " << db.get_city_table().last().get_id() << ": ";
+ std::cout << db.get_name(db.get_city_table().last()) << '\n';
+
  //
  // Test unique index constraint
  //
@@ -385,6 +390,10 @@ int do_vector_test()
     db.set_x(v[i], 0.1f * float(i));
     db.set_y(v[i], 1.234f);
    }
+   std::cout << "first().get_id() = ";
+   std::cout << db.get_point_table().first().get_id() << '\n';
+   std::cout << "last().get_id() = ";
+   std::cout << db.get_point_table().last().get_id() << '\n';
   }
 
   {

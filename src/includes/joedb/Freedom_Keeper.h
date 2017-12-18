@@ -89,7 +89,7 @@ namespace joedb
    size_t push_back()
    {
     const size_t index = records.size();
-    records.push_back({true, records[free_list].next, 1});
+    records.push_back({true, records[free_list].next, free_list});
 
     records[records[free_list].next].previous = index;
     records[free_list].next = index;
@@ -117,11 +117,11 @@ namespace joedb
     records[record.previous].next = record.next;
     records[record.next].previous = record.previous;
 
-    record.next = records[used_list].next;
-    record.previous = 0;
+    record.previous = records[used_list].previous;
+    record.next = used_list;
 
-    records[records[used_list].next].previous = index;
-    records[used_list].next = index;
+    records[record.previous].next = index;
+    records[record.next].previous = index;
 
     used_count++;
    }
