@@ -28,23 +28,23 @@ namespace joedb
     return readable.get_tables();
    }
 
-   const std::map<Table_Id, std::string> &get_fields(Table_Id table_id) const
+   const std::map<Table_Id, std::string> &get_fields(Table_Id table_id) const override
    {
     return readable.get_fields(table_id);
    }
 
    const Type &get_field_type(Table_Id table_id,
-                              Field_Id field_id) const
+                              Field_Id field_id) const override
    {
     return readable.get_field_type(table_id, field_id);
    }
 
-   Record_Id get_last_record_id(Table_Id table_id) const
+   Record_Id get_last_record_id(Table_Id table_id) const override
    {
     return readable.get_last_record_id(table_id);
    }
 
-   bool is_used(Table_Id table_id, Record_Id record_id) const
+   bool is_used(Table_Id table_id, Record_Id record_id) const override
    {
     return readable.is_used(table_id, record_id);
    }
@@ -52,7 +52,7 @@ namespace joedb
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id(Table_Id table_id,\
                              Record_Id record_id,\
-                             Field_Id field_id) const\
+                             Field_Id field_id) const override\
    {\
     return readable.get_##type_id(table_id, record_id, field_id);\
    }
