@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <memory>
+#include <iomanip>
 
 namespace joedb
 {
@@ -30,19 +31,18 @@ namespace joedb
   File output_file(argv[argc - 1], Open_Mode::create_new);
   Journal_File output_journal(output_file);
 
-  //
-  // Storage for all databases
-  //
   const size_t input_files = size_t(argc - 2);
-  std::vector<std::string> schema(input_files);
-  std::vector<std::unique_ptr<Database>> db(input_files);
+  std::string reference_schema;
+  std::unique_ptr<Database> merged_db;
 
   //
-  // Load all input databases
+  // Loop over all file names
   //
   for (size_t i = 0; i < input_files; i++)
   {
-   db[i].reset(new Database());
+   std::cerr << std::setw(5) << i << ' ' << argv[i + 1] << "...";
+
+   std::unique_ptr<joedb::Database> db(new Database());
 
    File input_file(argv[i + 1], Open_Mode::read_existing);
    Readonly_Journal input_journal(input_file);
@@ -66,33 +66,34 @@ namespace joedb
    if (i == 0)
     multiplexer.add_writeable(output_schema);
    multiplexer.add_writeable(schema_filter);
-   multiplexer.add_writeable(*db[i]);
+   multiplexer.add_writeable(*db);
 
    input_journal.replay_log(multiplexer);
 
+   //
+   // Check that all databases have the same schema
+   //
    schema_file.flush();
-   schema[i] = schema_stream.str();
-  }
-
-  //
-  // Check that they have all the same schema
-  //
-  for (size_t i = 1; i < input_files; i++)
-   if (schema[i] != schema[0])
+   std::string schema = schema_stream.str();
+   if (i == 0)
+    reference_schema = schema;
+   else if (schema != reference_schema)
     throw Exception
     (
      argv[i + 1] + std::string(" does not have the same schema as ") + argv[1]
     );
- 
-  //
-  // Merge all input files into the output file
-  //
-  std::unique_ptr<Database> merged_db(db[0].release());
-  for (size_t i = 1; i < input_files; i++)
-  {
-   merge(*merged_db, *db[i]);
-   db[i].reset();
+
+   //
+   // Merge into the in-memory database
+   //
+   if (i == 0)
+    merged_db.reset(db.release());
+   else
+    merge(*merged_db, *db);
+
+   std::cerr << '\n';
   }
+
   dump_data(*merged_db, output_journal);
  
   return 0;
