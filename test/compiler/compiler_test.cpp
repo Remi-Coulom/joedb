@@ -246,9 +246,6 @@ int file_test()
        x != db.get_index_of_city_by_name().rend();
        ++x)
    std::cout << db.get_name(x->second) << '\n';
-
-  db.delete_city(v[0]);
-  db.delete_city(v[1]);
  }
 
  //

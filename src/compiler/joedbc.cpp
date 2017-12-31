@@ -185,7 +185,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   Record_Id get_id() const {return id;}\n";
   out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
+  out << "   bool operator!=(id_of_" << tname << " x) const {return id != x.id;}\n";
   out << "   bool operator<(id_of_" << tname << " x) const {return id < x.id;}\n";
+  out << "   bool operator>(id_of_" << tname << " x) const {return id > x.id;}\n";
+  out << "   bool operator<=(id_of_" << tname << " x) const {return id <= x.id;}\n";
+  out << "   bool operator>=(id_of_" << tname << " x) const {return id >= x.id;}\n";
   out << "   id_of_" << tname << " operator[](Record_Id i) const {return id_of_" << tname << "(id + i);}\n";
   out << " };\n";
  }
