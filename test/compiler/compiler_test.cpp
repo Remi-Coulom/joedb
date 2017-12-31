@@ -259,6 +259,26 @@ int file_test()
   std::cout << "id in table_with_no_field: " << x.get_id() << '\n';
  }
 
+ //
+ // Comparison operators
+ //
+ {
+  auto W = db.find_city_by_name("Washington");
+  auto B = db.find_city_by_name("Beijing");
+  std::cout << "W == B: " << (W == B) << '\n';
+  std::cout << "W != B: " << (W != B) << '\n';
+  std::cout << "W < B: " << (W < B) << '\n';
+  std::cout << "W <= B: " << (W <= B) << '\n';
+  std::cout << "W > B: " << (W > B) << '\n';
+  std::cout << "W >= B: " << (W >= B) << '\n';
+  std::cout << "B == B: " << (B == B) << '\n';
+  std::cout << "B != B: " << (B != B) << '\n';
+  std::cout << "B < B: " << (B < B) << '\n';
+  std::cout << "B <= B: " << (B <= B) << '\n';
+  std::cout << "B > B: " << (B > B) << '\n';
+  std::cout << "B >= B: " << (B >= B) << '\n';
+ }
+
  return 0;
 }
 
