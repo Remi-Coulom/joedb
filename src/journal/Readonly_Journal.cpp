@@ -123,6 +123,7 @@ void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
    case operation_t::end_of_file:
     if (file.get_position() != checkpoint_position)
      throw Exception("Unexpected end of file");
+   break;
 
    case operation_t::create_table:
    {
