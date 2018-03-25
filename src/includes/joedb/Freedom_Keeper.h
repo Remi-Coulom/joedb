@@ -8,7 +8,9 @@
 
 namespace joedb
 {
+ ////////////////////////////////////////////////////////////////////////////
  class EmptyRecord
+ ////////////////////////////////////////////////////////////////////////////
  {
   private:
    bool f;
@@ -20,8 +22,9 @@ namespace joedb
    bool is_free() const {return f;}
  };
 
- template<typename T = EmptyRecord>
- class Freedom_Keeper
+ ////////////////////////////////////////////////////////////////////////////
+ template<typename T = EmptyRecord> class Freedom_Keeper
+ ////////////////////////////////////////////////////////////////////////////
  {
   private: //////////////////////////////////////////////////////////////////
    struct Record
@@ -146,6 +149,99 @@ namespace joedb
     records[free_list].next = index;
 
     used_count--;
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Compact_Freedom_Keeper
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   bool compact;
+   size_t compact_used_size;
+   size_t compact_free_size;
+
+   Freedom_Keeper<> fk;
+
+   void lose_compactness()
+   {
+    compact = false;
+    while (fk.size() < compact_free_size)
+     fk.push_back();
+    for (size_t i = 0; i < compact_used_size; i++)
+     fk.use(i + 1);
+   }
+
+  public:
+   Compact_Freedom_Keeper():
+    compact(true),
+    compact_used_size(0),
+    compact_free_size(0)
+   {
+   }
+
+   size_t size() const
+   {
+    if (compact)
+     return compact_free_size;
+    else
+     return fk.size();
+   }
+
+   bool is_used(size_t index) const
+   {
+    if (compact)
+     return index - 1 < compact_used_size;
+    else
+     return fk.is_used(index);
+   }
+
+   bool is_free(size_t index) const
+   {
+    if (compact)
+     return index - 1 >= compact_used_size;
+    else
+     return fk.is_free(index);
+   }
+
+   void use(size_t index)
+   {
+    if (compact)
+    {
+     if (index == compact_used_size + 1)
+      compact_used_size++;
+     else
+     {
+      lose_compactness();
+      fk.use(index);
+     }
+    }
+    else
+     fk.use(index);
+   }
+
+   void free(size_t index)
+   {
+    if (compact)
+    {
+     if (index == compact_used_size && index > 0)
+      --compact_used_size;
+     else
+     {
+      lose_compactness();
+      fk.free(index);
+     }
+    }
+    else
+     fk.free(index);
+   }
+
+   size_t push_back()
+   {
+    if (compact)
+     return ++compact_free_size;
+    else
+     return fk.push_back();
    }
  };
 }

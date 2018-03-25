@@ -21,10 +21,10 @@ namespace joedb
    std::map<Field_Id, std::string> field_names;
    Field_Id current_field_id = 0;
 
-   Freedom_Keeper<> freedom;
+   Compact_Freedom_Keeper freedom;
 
   public:
-   const Freedom_Keeper<> &get_freedom() const {return freedom;}
+   const Compact_Freedom_Keeper &get_freedom() const {return freedom;}
 
    const std::map<Field_Id, Field> &get_fields() const {return fields;}
    Field_Id find_field(const std::string &name) const;
