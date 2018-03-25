@@ -166,10 +166,12 @@ namespace joedb
    void lose_compactness()
    {
     compact = false;
+
     while (fk.size() < compact_free_size)
      fk.push_back();
+
     for (size_t i = 0; i < compact_used_size; i++)
-     fk.use(i + 1);
+     fk.use(i + 2);
    }
 
   public:
@@ -191,7 +193,7 @@ namespace joedb
    bool is_used(size_t index) const
    {
     if (compact)
-     return index - 1 < compact_used_size;
+     return index - 2 < compact_used_size;
     else
      return fk.is_used(index);
    }
@@ -199,7 +201,7 @@ namespace joedb
    bool is_free(size_t index) const
    {
     if (compact)
-     return index - 1 >= compact_used_size;
+     return index - 2 >= compact_used_size;
     else
      return fk.is_free(index);
    }
@@ -208,7 +210,7 @@ namespace joedb
    {
     if (compact)
     {
-     if (index == compact_used_size + 1)
+     if (index == compact_used_size + 2 && compact_used_size < compact_free_size)
       compact_used_size++;
      else
      {
@@ -224,7 +226,7 @@ namespace joedb
    {
     if (compact)
     {
-     if (index == compact_used_size && index > 0)
+     if (index == compact_used_size + 1 && index > 1)
       --compact_used_size;
      else
      {
@@ -239,9 +241,14 @@ namespace joedb
    size_t push_back()
    {
     if (compact)
-     return ++compact_free_size;
+     return ++compact_free_size + 1;
     else
      return fk.push_back();
+   }
+
+   bool is_compact() const
+   {
+    return compact;
    }
  };
 }
