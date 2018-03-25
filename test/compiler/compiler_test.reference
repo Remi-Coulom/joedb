@@ -115,6 +115,18 @@ New York
 Beijing
 Barcelona
 id in table_with_no_field: 1
+W == B: 0
+W != B: 1
+W < B: 1
+W <= B: 1
+W > B: 0
+W >= B: 0
+B == B: 1
+B != B: 0
+B < B: 0
+B <= B: 1
+B > B: 0
+B >= B: 1
 v1 opened
 v1 re-opened
 v2 opened
