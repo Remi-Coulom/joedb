@@ -104,8 +104,12 @@ TEST_F(File_Test, read_write_integer)
   EXPECT_EQ(joedb_magic, new_file.read<uint64_t>());
  }
 
- std::random_device rd;
+#if 0
+ std::random_device rd; // not supported by valgrind
  std::mt19937_64 gen(rd());
+#else
+ std::mt19937_64 gen(0);
+#endif
  const int N = 1000;
 
  {
