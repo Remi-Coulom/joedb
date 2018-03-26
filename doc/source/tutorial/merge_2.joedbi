@@ -7,7 +7,7 @@ add_field person home references city
 insert_into city 1
 update city 1 name "Lille"
 insert_into city 2
-update city 1 name "Barcelona"
+update city 2 name "Barcelona"
 insert_into person 1
 update person 1 first_name "Albert"
 update person 1 last_name "Dupont"

@@ -75,7 +75,7 @@ int joedb::write_json
      if (first_value)
       first_value = false;
      else
-      out << ',';
+      out << ", ";
 
      switch (type.get_type_id())
      {

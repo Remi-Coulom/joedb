@@ -50,13 +50,13 @@ UPDATE "person" SET "city" = 15 WHERE "__id" = 3;
  "city":
  {
   "__size": 3,
-  "name": ["UGFyaXM=","TGlsbGU=","UMOpdGFvdWNobm9r"]
+  "name": ["UGFyaXM=", "TGlsbGU=", "UMOpdGFvdWNobm9r"]
  },
  "person":
  {
   "__size": 3,
-  "name": ["UsOpbWk=","Tm9yYmVydA==","QWxleGFuZHJl"],
-  "city": [1,1,2]
+  "name": ["UsOpbWk=", "Tm9yYmVydA==", "QWxleGFuZHJl"],
+  "city": [1, 1, 2]
  }
 }
 ------------------

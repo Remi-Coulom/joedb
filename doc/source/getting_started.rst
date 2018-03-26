@@ -70,6 +70,8 @@ For instance, this is the SQL output of the tutorial database:
 .. literalinclude:: ./tutorial/logdump.sql
    :language: sql
 
+.. _joedb_to_json:
+
 ``joedb_to_json``
 ^^^^^^^^^^^^^^^^^
 
@@ -92,12 +94,14 @@ In order to support schema recognition (see :doc:`schema_upgrade`), data definit
 
 ``joedb_browser`` uses ``joedb_logdump`` to produce an SQLite database, and invokes ``sqlitebrowser`` to browse it.
 
+.. _joedb_merge:
+
 ``joedb_merge``
 ^^^^^^^^^^^^^^^
 
 ``joedb_merge`` merges multiple files with the same schema into a single file that contains the concatenation of all tables. References are translated. Duplicates are not eliminated.
 
-.. literalinclude:: ./tutorial/joedbi_merge.out
+.. literalinclude:: ./tutorial/joedb_merge.out
    :language: none
 
 For instance, when merging those two databases:
