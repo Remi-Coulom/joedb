@@ -1,0 +1,18 @@
+create_table city
+add_field city name string
+create_table person
+add_field person first_name string
+add_field person last_name string
+add_field person home references city
+insert_into city 1
+update city 1 name "Lille"
+insert_into city 2
+update city 1 name "Paris"
+insert_into person 1
+update person 1 first_name "Rémi"
+update person 1 last_name "Coulom"
+update person 1 home 1
+insert_into person 2
+update person 2 first_name "Bill"
+update person 2 last_name "Jordan"
+update person 2 home 2

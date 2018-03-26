@@ -12,3 +12,6 @@ index_tutorial.joedb
 index_tutorial.out
 compiling.sh
 tutorial.json
+merge*.joedb
+merge*.json
+joedb_merge.out
