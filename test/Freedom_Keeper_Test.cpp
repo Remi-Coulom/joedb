@@ -56,10 +56,10 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
 {
  auto &fk = this->fk;
 
- EXPECT_EQ(0, fk.size());
- EXPECT_EQ(2, fk.push_back());
+ EXPECT_EQ(0UL, fk.size());
+ EXPECT_EQ(2UL, fk.push_back());
  EXPECT_TRUE(fk.is_free(2));
- EXPECT_EQ(1, fk.size());
+ EXPECT_EQ(1UL, fk.size());
  fk.use(2);
  EXPECT_FALSE(fk.is_free(2));
 
@@ -71,9 +71,9 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
  fk.use(fk.push_back()); // 8
 
  size_t pushed = fk.push_back();
- EXPECT_EQ(9, pushed);
+ EXPECT_EQ(9UL, pushed);
 
- EXPECT_EQ(8, fk.size());
+ EXPECT_EQ(8UL, fk.size());
  for (int i = 2; i <= 8; i++)
  {
   EXPECT_FALSE(fk.is_free(i));
@@ -82,7 +82,7 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
 
  fk.free(5);
 
- EXPECT_EQ(8, fk.size());
+ EXPECT_EQ(8UL, fk.size());
 
  EXPECT_TRUE(fk.is_free(9));
  EXPECT_TRUE(fk.is_free(5));

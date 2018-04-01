@@ -8,8 +8,8 @@ int main(int argc, char **argv)
  else
  {
   size_t N = 0;
-  std::sscanf(argv[1], "%lu", &N);
-  std::printf("N = %lu\n", N);
+  std::sscanf(argv[1], "%zu", &N);
+  std::printf("N = %zu\n", N);
 
   benchmark::File_Database db("insert.joedb");
 
