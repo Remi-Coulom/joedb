@@ -60,6 +60,21 @@ void write_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
+const char *get_type_name(Type type)
+/////////////////////////////////////////////////////////////////////////////
+{
+ #define TYPE_MACRO(a, b, type_id, r, w) #type_id,
+ static const char *type_string[] =
+ {
+  "null",
+  #include "TYPE_MACRO.h"
+ };
+ #undef TYPE_MACRO
+
+ return type_string[int(type.get_type_id())];
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void write_tuple_type
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -154,6 +169,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include "joedb/Exception.h"
 #include "joedb/Stream_File.h"
 #include "joedb/joedb_assert.h"
+#include "joedb/type_io.h"
 
 )RRR";
 
@@ -342,7 +358,25 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   if (index.unique)
   {
    out << "    if (!result.second)\n";
-   out << "     error(\"" << index.name << " unique index failure\");\n";
+   out << "    {\n";
+   out << "     std::ostringstream out;\n";
+   out << "     out << \"" << index.name << " unique index failure: (\";\n";
+   for (size_t i = 0; i < index.field_ids.size(); i++)
+   {
+    if (i > 0)
+     out << "out << \", \";\n";
+    const auto type = db.get_field_type(index.table_id, index.field_ids[i]);
+    out << "joedb::write_" << get_type_name(type) << "(out, ";
+    out << "data.field_value_of_";
+    out << db.get_field_name(index.table_id, index.field_ids[i]);
+    if (type.get_type_id() == Type::Type_Id::reference)
+     out << ".get_id()";
+    out << ");\n";
+   }
+   out << "     out << \") at id = \" << record_id << ' ';\n";
+   out << "     out << \"was already at id = \" << result.first->second.get_id();\n";
+   out << "     error(out.str().c_str());\n";
+   out << "    }\n";
    out << "    data.iterator_over_" << index.name << " = result.first;\n";
   }
   else

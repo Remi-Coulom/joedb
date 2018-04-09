@@ -2,6 +2,7 @@
 #include "schema_v1.h"
 #include "schema_v2.h"
 #include "vector_test.h"
+#include "multi_index.h"
 
 #include "File.h"
 #include "Journal_File.h"
@@ -467,6 +468,21 @@ int exceptions()
   db.new_city("Paris");
   db.new_city("Lille");
   db.new_city("Paris");
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  multi_index::File_Database db("multi_index_failure.joedb");
+  db.new_person("Chantal", "Dupont");
+  db.new_person("Rémi", "Coulom");
+  db.new_person("Rémi", "Munos");
+  db.new_person("Marcel", "Coulom");
+  db.new_person("Albert", "Premier");
+  db.new_person("Rémi", "Coulom");
  }
  catch (const joedb::Exception &e)
  {

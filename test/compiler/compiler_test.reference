@@ -37,7 +37,7 @@ Dump
 first: 1: Barcelona
 last: 4: Tokyo
 Trying to update into a duplicate Paris: ...
-city_by_name unique index failure
+city_by_name unique index failure: ("Paris") at id = 2 was already at id = 3
 
 Dump
 ====
@@ -175,7 +175,8 @@ Non-contiguous insert in vector storage of table point
 Error opening vector_delete.joedb
 Can't delete in vector storage of table point
 Testing exceptions...
-city_by_name unique index failure
+city_by_name unique index failure: ("Paris") at id = 3 was already at id = 1
+person_by_full_name unique index failure: ("Rémi", "Coulom") at id = 6 was already at id = 2
 Can't delete in vector storage of table translation
 Duplicate insert into table city
 Non-contiguous insert in vector storage of table translation
