@@ -413,7 +413,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  auto storage = options.get_table_options(table.first).storage;
+  const auto table_options = options.get_table_options(table.first);
+  const auto storage = table_options.storage;
+  const auto null_initialization = table_options.null_initialization;
 
   out << "   void internal_insert_" << tname << "(Record_Id record_id)\n";
   out << "   {\n";
@@ -431,6 +433,24 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   if (storage == Compiler_Options::Table_Storage::freedom_keeper)
    out << "    storage_of_" << tname << ".use(record_id + 1);\n";
+
+  if (null_initialization)
+   for (auto &field: db.get_fields(table.first))
+   {
+    const std::string &fname = field.second;
+    const Type &type = db.get_field_type(table.first, field.first);
+
+    out << "    storage_of_" << tname << "[record_id - 1].field_value_of_";
+    out << fname;
+    if (type.get_type_id() == Type::Type_Id::string)
+     out << ".clear()";
+    else if (type.get_type_id() == Type::Type_Id::reference)
+     out << " = id_of_" << db.get_table_name(type.get_table_id()) << "(0)";
+    else
+     out << " = 0";
+    out << ";\n";
+   }
+
   out << "   }\n";
  }
 
@@ -827,7 +847,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "    return id_of_" << tname << "(-1);\n";
+    out << "    return id_of_" << tname << "(Record_Id(-1));\n";
    break;
 
    case Compiler_Options::Table_Storage::vector:

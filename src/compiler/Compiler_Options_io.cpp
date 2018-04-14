@@ -113,6 +113,24 @@ bool joedb::parse_compiler_options
 
    compiler_options.set_table_storage(table_id, storage);
   }
+  else if (command == "set_table_null_initialization")
+  {
+   std::string table_name;
+   std::string null_initialization;
+   iss >> table_name >> null_initialization;
+
+   Table_Id table_id = db.find_table(table_name);
+   if (!table_id)
+   {
+    out << "Error: no such table: " << table_name << '\n';
+    return false;
+   }
+
+   if (null_initialization == "true")
+    compiler_options.set_table_null_initialization(table_id, true);
+   else if (null_initialization == "false")
+    compiler_options.set_table_null_initialization(table_id, false);
+  }
   else
   {
    out << "unknown command: " << command << '\n';
