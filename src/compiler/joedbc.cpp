@@ -1401,6 +1401,31 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
 
 
+ //
+ // Types class
+ //
+ out << "\n class Types\n";
+ out << " {\n";
+ out << "  public:\n";
+
+ std::vector<std::string> type_names;
+ type_names.push_back("Database");
+ type_names.push_back("File_Database");
+ type_names.push_back("Readonly_Database");
+ for (auto &table: tables)
+ {
+  const std::string &tname = table.second;
+  type_names.push_back("id_of_" + tname);
+ }
+
+ for (const std::string &type_name: type_names)
+ {
+  out << "   typedef " << options.get_namespace_name() << "::";
+  out << type_name << ' ' << type_name << ";\n";
+ }
+
+ out << " };\n";
+
  out << "}\n\n";
  out << "#endif\n";
 }
