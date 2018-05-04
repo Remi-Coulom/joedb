@@ -28,6 +28,7 @@ namespace joedb
    struct Table_Options
    {
     Table_Storage storage;
+    bool null_initialization;
    };
 
   private:
@@ -52,13 +53,24 @@ namespace joedb
     generate_c_wrapper(false)
    {
     for (auto table: db.get_tables())
+    {
      table_options[table.first].storage = freedom_keeper;
+     table_options[table.first].null_initialization = false;
+    }
    }
 
    void set_namespace_name(const std::string &s) {namespace_name = s;}
    void set_table_storage(Table_Id table_id, Table_Storage storage)
    {
     table_options[table_id].storage = storage;
+   }
+   void set_table_null_initialization
+   (
+    Table_Id table_id,
+    bool null_initialization
+   )
+   {
+    table_options[table_id].null_initialization = null_initialization;
    }
    void add_index(const Index &index) {indices.push_back(index);}
    void set_generate_c_wrapper(bool value) {generate_c_wrapper = value;}

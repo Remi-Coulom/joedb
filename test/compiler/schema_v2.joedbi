@@ -7,3 +7,4 @@ add_field language id string
 
 add_field person preferred_language references language
 custom set_default_preferred_language_to_english
+add_field person height float32

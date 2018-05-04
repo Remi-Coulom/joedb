@@ -151,6 +151,7 @@ add_field language name string
 add_field language id string
 add_field person preferred_language references language
 custom set_default_preferred_language_to_english
+add_field person height float32
 insert_into language 1
 update language 1 name "English"
 update language 1 id "en"
