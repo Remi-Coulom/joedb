@@ -11,6 +11,11 @@ namespace joedb
  {
   public:
    File(const char *file_name, Open_Mode mode);
+   File(const std::string &file_name, Open_Mode mode):
+    File(file_name.c_str(), mode)
+   {
+   }
+
    ~File() override;
    int64_t get_size() const override;
 
