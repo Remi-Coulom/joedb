@@ -64,7 +64,8 @@ namespace joedb
 
   for (size_t i = 0; i < file_names.size(); i++)
   {
-   std::cerr << std::setw(5) << i << ' ' << file_names[i] << "...";
+   std::cerr << std::setw(5) << i + 1 << " / ";
+   std::cerr << file_names.size() << ": " << file_names[i] << "...";
 
    std::unique_ptr<joedb::Database> db(new Database());
 
