@@ -18,10 +18,12 @@ namespace joedb
  int merge(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (argc < 3)
+  if (argc < 2)
   {
    std::cerr << "usage: " << argv[0];
    std::cerr << " <db_1.joedb> ... <db_N.joedb> <output.joedb>\n";
+   std::cerr << "or read file names from input stream: " << argv[0];
+   std::cerr << " <output.joedb>\n";
    return 1;
   }
  
@@ -31,20 +33,42 @@ namespace joedb
   File output_file(argv[argc - 1], Open_Mode::create_new);
   Journal_File output_journal(output_file);
 
-  const size_t input_files = size_t(argc - 2);
+  //
+  // List of files to be merged
+  //
+  std::vector<std::string> file_names;
+
+  for (int i = 1; i < argc - 1; i++)
+   file_names.push_back(argv[i]);
+
+  if (file_names.size() == 0)
+  {
+   std::cerr << "No input file on the command line: reading file names from standard input.\n";
+
+   std::string file_name;
+   while (std::cin >> file_name)
+    file_names.push_back(file_name);
+  }
+
+  if (file_names.size() == 0)
+  {
+   std::cerr << "Error: no input file\n";
+   return 1;
+  }
+
+  //
+  // Build merged db by looping over all files
+  //
   std::string reference_schema;
   std::unique_ptr<Database> merged_db;
 
-  //
-  // Loop over all file names
-  //
-  for (size_t i = 0; i < input_files; i++)
+  for (size_t i = 0; i < file_names.size(); i++)
   {
-   std::cerr << std::setw(5) << i << ' ' << argv[i + 1] << "...";
+   std::cerr << std::setw(5) << i << ' ' << file_names[i] << "...";
 
    std::unique_ptr<joedb::Database> db(new Database());
 
-   File input_file(argv[i + 1], Open_Mode::read_existing);
+   File input_file(file_names[i], Open_Mode::read_existing);
    Readonly_Journal input_journal(input_file);
 
    std::stringstream schema_stream;
@@ -80,7 +104,9 @@ namespace joedb
    else if (schema != reference_schema)
     throw Exception
     (
-     argv[i + 1] + std::string(" does not have the same schema as ") + argv[1]
+     file_names[i] +
+     std::string(" does not have the same schema as ") +
+     file_names[0]
     );
 
    //
