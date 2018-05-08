@@ -61,10 +61,11 @@ namespace joedb
   //
   std::string reference_schema;
   std::unique_ptr<Database> merged_db;
+  const int width = int(std::to_string(file_names.size()).size());
 
   for (size_t i = 0; i < file_names.size(); i++)
   {
-   std::cerr << std::setw(5) << i + 1 << " / ";
+   std::cerr << std::setw(width) << i + 1 << " / ";
    std::cerr << file_names.size() << ": " << file_names[i] << "...";
 
    std::unique_ptr<joedb::Database> db(new Database());
