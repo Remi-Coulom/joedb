@@ -37,7 +37,6 @@ New Operations and Types
 On-disk Storage
 ----------------
 - LevelDB: https://github.com/google/leveldb
-- FlatBuffers: https://google.github.io/flatbuffers/
 
 Compiler
 --------
