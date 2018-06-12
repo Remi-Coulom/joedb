@@ -7,6 +7,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #include <io.h>
+#include <stdio.h>
 #include <FileAPI.h>
 
 bool joedb::File::lock_file()
@@ -20,7 +21,7 @@ void joedb::File::sync()
  _commit(_fileno(file));
 }
 
-#else
+#elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 #include <sys/file.h>
 #include <unistd.h>
 
@@ -32,6 +33,18 @@ bool joedb::File::lock_file()
 void joedb::File::sync()
 {
  fsync(fileno(file));
+}
+
+#else
+#pragma message("warning: unknown system: no lock, no sync")
+
+bool joedb::File::lock_file()
+{
+ return true;
+}
+
+void joedb::File::sync()
+{
 }
 
 #endif
