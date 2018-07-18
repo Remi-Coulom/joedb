@@ -9,6 +9,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <FileAPI.h>
+#include <corecrt_io.h>
 
 bool joedb::File::lock_file()
 {
