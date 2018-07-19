@@ -1,4 +1,3 @@
-#define __STDC_WANT_LIB_EXT1__
 #include "File.h"
 #include "Exception.h"
 
@@ -57,7 +56,7 @@ bool joedb::File::try_open(const char *file_name, Open_Mode new_mode)
 {
  static const char *mode_string[3] = {"rb", "r+b", "w+b"};
  mode = new_mode;
- fopen_s(&file, file_name, mode_string[static_cast<size_t>(mode)]);
+ file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
  return file != 0;
 }
 
