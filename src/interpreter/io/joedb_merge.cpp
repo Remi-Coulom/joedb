@@ -62,69 +62,89 @@ namespace joedb
   std::string reference_schema;
   std::unique_ptr<Database> merged_db;
   const int width = int(std::to_string(file_names.size()).size());
+  int errors = 0;
 
   for (size_t i = 0; i < file_names.size(); i++)
   {
    std::cerr << std::setw(width) << i + 1 << " / ";
    std::cerr << file_names.size() << ": " << file_names[i] << "...";
 
-   std::unique_ptr<joedb::Database> db(new Database());
+   try
+   {
+    std::unique_ptr<joedb::Database> db(new Database());
 
-   File input_file(file_names[i], Open_Mode::read_existing);
-   Readonly_Journal input_journal(input_file);
+    File input_file(file_names[i], Open_Mode::read_existing);
+    Readonly_Journal input_journal(input_file);
 
-   std::stringstream schema_stream;
-   Stream_File schema_file(schema_stream, Open_Mode::create_new);
-   Journal_File schema_journal(schema_file);
-   Selective_Writeable schema_filter
-   (
-    schema_journal,
-    Selective_Writeable::Mode::schema
-   );
-
-   Selective_Writeable output_schema
-   (
-    output_journal,
-    Selective_Writeable::Mode::schema
-   );
-
-   Multiplexer multiplexer;
-   if (i == 0)
-    multiplexer.add_writeable(output_schema);
-   multiplexer.add_writeable(schema_filter);
-   multiplexer.add_writeable(*db);
-
-   input_journal.replay_log(multiplexer);
-
-   //
-   // Check that all databases have the same schema
-   //
-   schema_file.flush();
-   std::string schema = schema_stream.str();
-   if (i == 0)
-    reference_schema = schema;
-   else if (schema != reference_schema)
-    throw Exception
+    std::stringstream schema_stream;
+    Stream_File schema_file(schema_stream, Open_Mode::create_new);
+    Journal_File schema_journal(schema_file);
+    Selective_Writeable schema_filter
     (
-     file_names[i] +
-     std::string(" does not have the same schema as ") +
-     file_names[0]
+     schema_journal,
+     Selective_Writeable::Mode::schema
     );
 
-   //
-   // Merge into the in-memory database
-   //
-   if (i == 0)
-    merged_db.reset(db.release());
-   else
-    merge(*merged_db, *db);
+    Selective_Writeable output_schema
+    (
+     output_journal,
+     Selective_Writeable::Mode::schema
+    );
+
+    Multiplexer multiplexer;
+    if (!merged_db)
+     multiplexer.add_writeable(output_schema);
+    multiplexer.add_writeable(schema_filter);
+    multiplexer.add_writeable(*db);
+
+    input_journal.replay_log(multiplexer);
+
+    //
+    // Check that all databases have the same schema
+    //
+    schema_file.flush();
+    std::string schema = schema_stream.str();
+    if (!merged_db)
+     reference_schema = schema;
+    else if (schema != reference_schema)
+     throw Exception
+     (
+      file_names[i] +
+      std::string(" does not have the same schema as ") +
+      file_names[0]
+     );
+
+    //
+    // Merge into the in-memory database
+    //
+    if (!merged_db)
+     merged_db.reset(db.release());
+    else
+     merge(*merged_db, *db);
+   }
+   catch (const Exception &e)
+   {
+    std::cerr << ' ' << e.what();
+    errors++;
+   }
 
    std::cerr << '\n';
   }
 
-  dump_data(*merged_db, output_journal);
- 
-  return 0;
+  if (merged_db)
+  {
+   dump_data(*merged_db, output_journal);
+
+   if (errors > 0)
+   {
+    std::cerr << "Number of errors: " << errors << '\n';
+    return 1;
+   }
+   else
+    return 0;
+  }
+  else
+   return 1;
  }
 }
 
