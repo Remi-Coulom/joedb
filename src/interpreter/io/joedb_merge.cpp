@@ -136,12 +136,9 @@ namespace joedb
    dump_data(*merged_db, output_journal);
 
    if (errors > 0)
-   {
     std::cerr << "Number of errors: " << errors << '\n';
-    return 1;
-   }
-   else
-    return 0;
+
+   return 0;
   }
   else
    return 1;
