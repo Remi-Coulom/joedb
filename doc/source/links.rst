@@ -38,6 +38,7 @@ Crash resistance:
 Structured data storage (with no history):
 
 - https://developers.google.com/protocol-buffers/
+- https://google.github.io/flatbuffers/
 - http://sqlite.org/
 - https://www.json.org/
 - https://en.wikipedia.org/wiki/XML
