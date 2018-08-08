@@ -1416,6 +1416,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   const std::string &tname = table.second;
   type_names.push_back("id_of_" + tname);
+
+  out << "   typedef " << options.get_namespace_name() << "::container_of_";
+  out << tname << "::iterator iterator_of_" << tname << ";\n";
  }
 
  for (const std::string &type_name: type_names)
