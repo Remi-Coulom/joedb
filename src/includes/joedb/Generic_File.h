@@ -148,8 +148,8 @@ namespace joedb
      flush_write_buffer();
    }
 
-   template<typename T, int n> struct W;
-   template<typename T, int n> struct R;
+   template<typename T, size_t n> struct W;
+   template<typename T, size_t n> struct R;
 
    template<typename T>
    struct W<T, 1>
@@ -237,7 +237,7 @@ namespace joedb
     }
    };
 
-   template<typename T, int n> struct CW;
+   template<typename T, size_t n> struct CW;
 
    template<typename T>
    struct CW<T, 2>
