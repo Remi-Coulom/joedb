@@ -15,7 +15,7 @@ Prerequisites in Ubuntu can be installed with this command:
 
 .. code-block:: bash
 
-    sudo apt-get install g++ cmake ninja-build lcov unzip valgrind python-sphinx wget git-core sqlite3 libsqlite3-dev sqlitebrowser
+    sudo apt-get install g++ cmake ninja-build lcov unzip valgrind python-sphinx python-sphinx-rtd-theme wget git-core sqlite3 libsqlite3-dev sqlitebrowser
 
 Similar packages should be available in other systems. Joedb was compiled successfully on MacOS with `macports <https://www.macports.org>`_.
 
