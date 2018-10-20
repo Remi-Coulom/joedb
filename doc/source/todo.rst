@@ -16,6 +16,11 @@ Short Term
 - index and referential integrity: should be in the journal, and also implemented in the interpreted database.
 - performance of interpreted database: use vector instead of map for tables and fields (with a bool indicating if deleted)
 
+- generate code with string rvalue references:
+
+  - update is easy.
+  - new is a bit complicated, because it can take more than one string param.
+
 Journal File
 ------------
 - Instead of throwing an exception: make it impossible at compile time to open a writeable journal with a read_only file.
