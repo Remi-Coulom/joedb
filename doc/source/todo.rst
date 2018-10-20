@@ -4,6 +4,8 @@ TODO
 Short Term
 ----------
 
+- Pass strings by value for new and update
+
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
 - Null default initial values
 - better readable interface:
@@ -15,11 +17,6 @@ Short Term
 - make joedb_admin work on the new readable interface, and publish it
 - index and referential integrity: should be in the journal, and also implemented in the interpreted database.
 - performance of interpreted database: use vector instead of map for tables and fields (with a bool indicating if deleted)
-
-- generate code with string rvalue references:
-
-  - update is easy.
-  - new is a bit complicated, because it can take more than one string param.
 
 Journal File
 ------------
