@@ -236,7 +236,7 @@ void generate_c_wrapper
   body << name << "_get_next_" << tname << '(';
   body << name << "_db *db, " << name << "_id_of_" << tname <<" id)\n{\n";
   body << convert.str();
-  body << " return p->get_next_" << tname << "(" << name;
+  body << " return p->iterator_next_" << tname << "(" << name;
   body << "::id_of_" << tname << "(id)).get_id();\n";
   body << "}\n\n";
 

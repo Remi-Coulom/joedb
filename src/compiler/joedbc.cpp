@@ -856,7 +856,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   }
   out << "   }\n";
 
-  out << "   id_of_" << tname << " get_next_" << tname << "(id_of_" << tname << " id) const\n";
+  out << "   id_of_" << tname << " iterator_next_" << tname << "(id_of_" << tname << " id) const\n";
   out << "   {\n";
   switch(storage)
   {
