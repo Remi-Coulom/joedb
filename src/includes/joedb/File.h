@@ -10,7 +10,7 @@ namespace joedb
  class File: public Generic_File
  {
   public:
-   File(FILE *file): file(file) {}
+   File(std::FILE *file): file(file) {}
    File(const char *file_name, Open_Mode mode);
    File(const std::string &file_name, Open_Mode mode):
     File(file_name.c_str(), mode)
@@ -28,7 +28,7 @@ namespace joedb
 
   private:
    bool try_open(const char *file_name, Open_Mode mode);
-   FILE *file = 0;
+   std::FILE *file = 0;
    bool lock_file();
    void close_file();
  };

@@ -986,10 +986,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::File file;
    joedb::Readonly_Journal journal;
 
-  public:
-   Readonly_Database(const char *file_name):
-    file(file_name, joedb::Open_Mode::read_existing),
-    journal(file)
+   void initialize()
    {
     max_record_id = journal.get_checkpoint_position();
     journal.replay_log(*this);
@@ -998,9 +995,24 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     check_schema();
    }
 
+  public:
+   Readonly_Database(const char *file_name):
+    file(file_name, joedb::Open_Mode::read_existing),
+    journal(file)
+   {
+    initialize();
+   }
+
    Readonly_Database(const std::string &file_name):
     Readonly_Database(file_name.c_str())
    {
+   }
+
+   Readonly_Database(std::FILE *c_file):
+    file(c_file),
+    journal(file)
+   {
+    initialize();
    }
  };
 
