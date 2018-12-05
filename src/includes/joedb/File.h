@@ -10,6 +10,7 @@ namespace joedb
  class File: public Generic_File
  {
   public:
+   File(FILE *file): file(file) {}
    File(const char *file_name, Open_Mode mode);
    File(const std::string &file_name, Open_Mode mode):
     File(file_name.c_str(), mode)
