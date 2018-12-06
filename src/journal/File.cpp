@@ -57,7 +57,7 @@ bool joedb::File::try_open(const char *file_name, Open_Mode new_mode)
  static const char *mode_string[3] = {"rb", "r+b", "w+b"};
  mode = new_mode;
  file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
- return file != 0;
+ return file != nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ void joedb::File::close_file()
  {
   flush();
   fclose(file);
-  file = 0;
+  file = nullptr;
  }
 }
 

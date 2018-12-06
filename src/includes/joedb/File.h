@@ -3,14 +3,15 @@
 
 #include "Generic_File.h"
 
-#include <cstdio>
+#include <stdio.h>
 
 namespace joedb
 {
+ ///////////////////////////////////////////////////////////////////////////
  class File: public Generic_File
+ ///////////////////////////////////////////////////////////////////////////
  {
   public:
-   File(std::FILE *file): file(file) {set_position(0);}
    File(const char *file_name, Open_Mode mode);
    File(const std::string &file_name, Open_Mode mode):
     File(file_name.c_str(), mode)
@@ -21,6 +22,8 @@ namespace joedb
    int64_t get_size() const override;
 
   protected:
+   File(FILE *file): file(file) {}
+
    size_t read_buffer() override;
    void write_buffer() override;
    int seek(size_t offset) override;
@@ -28,9 +31,33 @@ namespace joedb
 
   private:
    bool try_open(const char *file_name, Open_Mode mode);
-   std::FILE *file = 0;
+   FILE *file = 0;
    bool lock_file();
    void close_file();
+ };
+
+ ///////////////////////////////////////////////////////////////////////////
+ class File_Slice: public File
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   File_Slice(FILE *file, size_t start, size_t length):
+    File(file),
+    start(start),
+    length(length)
+   {
+    seek(0);
+   }
+
+   ~File_Slice() override {}
+
+  protected:
+   int64_t get_size() const override {return int64_t(length);}
+   int seek(size_t offset) override {return File::seek(offset + start);}
+
+  private:
+   const size_t start;
+   const size_t length;
  };
 }
 
