@@ -980,16 +980,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  // File_Database
  //
  out << R"RRR(
- class Readonly_Database: public Database
+ class Generic_Readonly_Database: public Database
  {
   private:
-   joedb::File file;
    joedb::Readonly_Journal journal;
 
   public:
-   Readonly_Database(const char *file_name):
-    file(file_name, joedb::Open_Mode::read_existing),
-    journal(file)
+   Generic_Readonly_Database(joedb::Generic_File &file): journal(file)
    {
     max_record_id = journal.get_checkpoint_position();
     journal.replay_log(*this);
@@ -997,29 +994,33 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
     check_schema();
    }
+ };
 
-   Readonly_Database(const std::string &file_name):
-    Readonly_Database(file_name.c_str())
+ class Readonly_File_Initialization
+ {
+  public:
+   joedb::File file;
+
+   Readonly_File_Initialization(const char *file_name):
+    file(file_name, joedb::Open_Mode::read_existing)
    {
    }
  };
 
- class Slice_Database: public Database
+ class Readonly_Database:
+  private Readonly_File_Initialization,
+  public Generic_Readonly_Database
  {
-  private:
-   joedb::File_Slice file_slice;
-   joedb::Readonly_Journal journal;
-
   public:
-   Slice_Database(FILE *file, size_t start, size_t length):
-    file_slice(file, start, length),
-    journal(file_slice)
+   Readonly_Database(const char *file_name):
+    Readonly_File_Initialization(file_name),
+    Generic_Readonly_Database(file)
    {
-    max_record_id = length;
-    journal.replay_log(*this);
-    max_record_id = 0;
+   }
 
-    check_schema();
+   Readonly_Database(const std::string &file_name):
+    Readonly_Database(file_name.c_str())
+   {
    }
  };
 
