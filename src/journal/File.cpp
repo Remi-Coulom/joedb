@@ -4,7 +4,22 @@
 /////////////////////////////////////////////////////////////////////////////
 // System-specific functions
 /////////////////////////////////////////////////////////////////////////////
-#ifdef _WIN32
+
+#ifdef JOEDB_PORTABLE
+/////////////////////////////////////////////////////////////////////////////
+
+bool joedb::File::lock_file()
+{
+ return true;
+}
+
+void joedb::File::sync()
+{
+}
+
+#elif defined(_WIN32)
+/////////////////////////////////////////////////////////////////////////////
+
 #include <Windows.h>
 #include <io.h>
 #include <stdio.h>
@@ -23,6 +38,8 @@ void joedb::File::sync()
 }
 
 #elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+/////////////////////////////////////////////////////////////////////////////
+
 #include <sys/file.h>
 #include <unistd.h>
 
@@ -37,16 +54,9 @@ void joedb::File::sync()
 }
 
 #else
-#pragma message("warning: unknown system: no lock, no sync")
+/////////////////////////////////////////////////////////////////////////////
 
-bool joedb::File::lock_file()
-{
- return true;
-}
-
-void joedb::File::sync()
-{
-}
+#error("Error: Unknown system. Suggestion: try defining JOEDB_PORTABLE.")
 
 #endif
 
