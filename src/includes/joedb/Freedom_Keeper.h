@@ -29,9 +29,18 @@ namespace joedb
   private: //////////////////////////////////////////////////////////////////
    struct Record
    {
-    T data;
-    size_t next;
-    size_t previous;
+    public:
+     T data;
+     size_t next;
+     size_t previous;
+
+    public:
+     Record() {}
+     Record(bool f, size_t next, size_t previous):
+      data(f),
+      next(next),
+      previous(previous)
+     {}
    };
 
    size_t used_count;
@@ -92,7 +101,7 @@ namespace joedb
    size_t push_back()
    {
     const size_t index = records.size();
-    records.push_back({true, records[free_list].next, free_list});
+    records.emplace_back(true, records[free_list].next, free_list);
 
     records[records[free_list].next].previous = index;
     records[free_list].next = index;
