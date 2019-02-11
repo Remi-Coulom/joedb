@@ -122,6 +122,11 @@ bool joedb::Readonly_Interpreter::process_command
     max_column_width = w;
   }
 
+  size_t start = 0;
+  size_t length = 0;
+
+  iss >> start >> length;
+
   if (table_id)
   {
    const auto &fields = db.get_fields(table_id);
@@ -142,7 +147,11 @@ bool joedb::Readonly_Interpreter::process_command
    size_t rows = 0;
    const Record_Id last_record_id = db.get_last_record_id(table_id);
    for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
-    if (db.is_used(table_id, record_id))
+    if
+    (
+     db.is_used(table_id, record_id) &&
+     (length == 0 || (record_id >= start && record_id < start + length))
+    )
     {
      rows++;
      id_column.push_back(record_id);
@@ -264,7 +273,7 @@ bool joedb::Readonly_Interpreter::process_command
   out << '\n';
   out << "Displaying data\n";
   out << "~~~~~~~~~~~~~~~\n";
-  out << " table <table_name> [<max_column_width>]\n";
+  out << " table <table_name> [<max_column_width>] [start] [length]\n";
   out << " schema\n";
   out << " dump\n";
   out << " sql\n";
