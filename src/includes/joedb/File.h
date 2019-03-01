@@ -31,7 +31,7 @@ namespace joedb
 
   private:
    bool try_open(const char *file_name, Open_Mode mode);
-   FILE *file = 0;
+   FILE *file = nullptr;
    bool lock_file();
    void close_file();
  };
