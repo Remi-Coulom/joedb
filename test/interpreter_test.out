@@ -74,7 +74,7 @@ Commands unrelated to the database
 
 Displaying data
 ~~~~~~~~~~~~~~~
- table <table_name> [<max_column_width>]
+ table <table_name> [<max_column_width>] [start] [length]
  schema
  dump
  sql
