@@ -211,27 +211,27 @@ add_custom_command(
 add_executable(tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/tutorial_main.cpp
+ ../src/compiler/minimal_runtime.cpp
 )
-target_link_libraries(tutorial joedb)
 
 add_executable(micro_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/micro_tutorial.cpp
+ ../src/compiler/minimal_runtime.cpp
 )
-target_link_libraries(micro_tutorial joedb)
 
 add_executable(index_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/index_tutorial.cpp
+ ../src/compiler/minimal_runtime.cpp
 )
-target_link_libraries(index_tutorial joedb)
 
 add_executable(wrapper_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
  ../doc/source/tutorial/tutorial_main.c
+ ../src/compiler/minimal_runtime.cpp
 )
-target_link_libraries(wrapper_tutorial joedb)
 
 add_executable(compiler_test
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
@@ -247,14 +247,14 @@ target_link_libraries(compiler_test joedb)
 add_executable(generate_translation_header
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
+ ../src/compiler/minimal_runtime.cpp
 )
-target_link_libraries(generate_translation_header joedb)
 
 add_executable(joedbc_insert
  ${CMAKE_CURRENT_SOURCE_DIR}/../benchmark/benchmark.cpp
  ../benchmark/joedbc_insert.cpp
+ ../src/compiler/minimal_runtime.cpp
 )
-target_link_libraries(joedbc_insert joedb)
 
 #############################################################################
 # Packaging

@@ -364,9 +364,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
     if (i > 0)
-     out << "out << \", \";\n";
+     out << "     out << \", \";\n";
     const auto type = db.get_field_type(index.table_id, index.field_ids[i]);
-    out << "joedb::write_" << get_type_name(type) << "(out, ";
+    out << "     joedb::write_" << get_type_name(type) << "(out, ";
     out << "data.field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
     if (type.get_type_id() == Type::Type_Id::reference)

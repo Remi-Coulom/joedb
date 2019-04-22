@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 
+#include "minimal_runtime_io.cpp"
+
 /////////////////////////////////////////////////////////////////////////////
 std::string joedb::read_string(std::istream &in)
 /////////////////////////////////////////////////////////////////////////////
@@ -55,18 +57,6 @@ std::string joedb::read_string(std::istream &in)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-char joedb::get_hex_char_from_digit(uint8_t n)
-/////////////////////////////////////////////////////////////////////////////
-{
- n &= 0x0f;
-
- if (n < 10)
-  return char('0' + n);
- else
-  return char('a' + n - 10);
-}
-
-/////////////////////////////////////////////////////////////////////////////
 uint8_t joedb::get_hex_digit_from_char(char c)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -86,16 +76,6 @@ void joedb::write_hexa_character(std::ostream &out, uint8_t c)
  out.put('x');
  out.put(get_hex_char_from_digit(uint8_t(c >> 4)));
  out.put(get_hex_char_from_digit(uint8_t(c & 0x0f)));
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::write_octal_character(std::ostream &out, uint8_t c)
-/////////////////////////////////////////////////////////////////////////////
-{
- out.put('\\');
- out.put(char('0' + ((c >> 6) & 7)));
- out.put(char('0' + ((c >> 3) & 7)));
- out.put(char('0' + ((c >> 0) & 7)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -213,86 +193,10 @@ void joedb::write_justified
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::write_string(std::ostream &out, const std::string &s, bool json)
-/////////////////////////////////////////////////////////////////////////////
-{
- out.put('"');
-
- for (size_t i = 0; i < s.size(); i++)
- {
-  const uint8_t c = uint8_t(s[i]);
-
-  if (c < 0x20)
-  {
-   if (json)
-   {
-    out.put('\\');
-    out.put('u');
-    out.put('0');
-    out.put('0');
-    out.put(get_hex_char_from_digit(uint8_t(c >> 4)));
-    out.put(get_hex_char_from_digit(uint8_t(c & 0x0f)));
-   }
-   else
-    write_octal_character(out, c);
-  }
-  else if (c == '"')
-   out.put('\\').put('"');
-  else if (c == '\\')
-   out.put('\\').put('\\');
-  else if ((c & 0xe0) == 0xc0 &&
-           i + 1 < s.size() &&
-           (s[i + 1] & 0xc0) == 0x80)
-  {
-   out.put(s[i++]);
-   out.put(s[i]);
-  }
-  else if ((c & 0xf0) == 0xe0 &&
-           i + 2 < s.size() &&
-           (s[i + 1] & 0xc0) == 0x80 &&
-           (s[i + 2] & 0xc0) == 0x80)
-  {
-   out.put(s[i++]);
-   out.put(s[i++]);
-   out.put(s[i]);
-  }
-  else if ((c & 0xf8) == 0xf0 &&
-           i + 3 < s.size() &&
-           (s[i + 1] & 0xc0) == 0x80 &&
-           (s[i + 2] & 0xc0) == 0x80 &&
-           (s[i + 3] & 0xc0) == 0x80)
-  {
-   out.put(s[i++]);
-   out.put(s[i++]);
-   out.put(s[i++]);
-   out.put(s[i]);
-  }
-  else if (c & 0x80)
-  {
-   if (json)
-    throw Exception("json can't handle non-utf8 strings");
-   else
-    write_octal_character(out, c);
-  }
-  else
-   out.put(char(c));
- }
-
- out.put('"');
-}
-
-/////////////////////////////////////////////////////////////////////////////
 int8_t joedb::read_int8(std::istream &in)
 /////////////////////////////////////////////////////////////////////////////
 {
  int result;
  in >> result;
  return int8_t(result);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::write_int8(std::ostream &out, int8_t value)
-/////////////////////////////////////////////////////////////////////////////
-{
- out << int(value);
 }
