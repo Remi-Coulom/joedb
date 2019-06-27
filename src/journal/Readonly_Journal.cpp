@@ -1,6 +1,6 @@
-#include "Readonly_Journal.h"
-#include "Generic_File.h"
-#include "Exception.h"
+#include "joedb/Readonly_Journal.h"
+#include "joedb/Generic_File.h"
+#include "joedb/Exception.h"
 
 #include <vector>
 
@@ -256,7 +256,7 @@ void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
     );\
    }\
    break;
-   #include "TYPE_MACRO.h"
+   #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO
 
    case operation_t::custom:

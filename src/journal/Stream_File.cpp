@@ -1,5 +1,5 @@
-#include "Stream_File.h"
-#include "Exception.h"
+#include "joedb/Stream_File.h"
+#include "joedb/Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Stream_File::Stream_File(std::iostream &stream, Open_Mode mode):

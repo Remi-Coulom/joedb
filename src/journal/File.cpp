@@ -1,5 +1,5 @@
-#include "File.h"
-#include "Exception.h"
+#include "joedb/File.h"
+#include "joedb/Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // System-specific functions

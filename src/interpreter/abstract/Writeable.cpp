@@ -1,4 +1,4 @@
-#include "Writeable.h"
+#include "joedb/Writeable.h"
 
 namespace joedb
 {
@@ -12,6 +12,6 @@ namespace joedb
   for (Record_Id i = 0; i < size; i++)\
    update_##type_id(table_id, record_id + i, field_id, value[i]);\
  }
- #include "TYPE_MACRO.h"
+ #include "joedb/TYPE_MACRO.h"
  #undef TYPE_MACRO
 }

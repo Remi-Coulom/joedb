@@ -1,5 +1,5 @@
-#include "type_io.h"
-#include "Exception.h"
+#include "joedb/type_io.h"
+#include "joedb/Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
 char joedb::get_hex_char_from_digit(uint8_t n)
