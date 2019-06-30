@@ -306,6 +306,17 @@ int schema_upgrade_test()
   db.write_timestamp(12345);
  }
 
+ try
+ {
+  schema_v2::Readonly_Database db("upgrade_test.joedb");
+  std::cout << "Error: v2 should not open v1 readonly without upgrade\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << e.what() << '\n';
+  std::cout << "OK: v2 refuses to open v1 readonly.\n";
+ }
+
  {
   schema_v1::File_Database db("upgrade_test.joedb");
   std::cout << "v1 re-opened\n";

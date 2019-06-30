@@ -128,6 +128,8 @@ B <= B: 1
 B > B: 0
 B >= B: 1
 v1 opened
+This joedb file has an old schema, and must be upgraded first.
+OK: v2 refuses to open v1 readonly.
 v1 re-opened
 v2 opened
 v2 re-opened

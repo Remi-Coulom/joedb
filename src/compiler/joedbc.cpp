@@ -993,6 +993,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     max_record_id = 0;
 
     check_schema();
+
+    const size_t file_schema_size = schema_stream.str().size();
+    const size_t compiled_schema_size = schema_string.size();
+
+    if (file_schema_size != compiled_schema_size)
+     throw joedb::Exception
+     (
+      "This joedb file has an old schema, and must be upgraded first."
+     );
    }
  };
 
