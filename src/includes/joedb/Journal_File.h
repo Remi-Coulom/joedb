@@ -16,7 +16,7 @@ namespace joedb
   public:
    Journal_File(Generic_File &file);
 
-   uint64_t ahead_of_checkpoint() const;
+   int64_t ahead_of_checkpoint() const;
    void checkpoint(int commit_level);
 
    void create_table(const std::string &name) override;

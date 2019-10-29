@@ -8,6 +8,8 @@
 #ifdef JOEDB_PORTABLE
 /////////////////////////////////////////////////////////////////////////////
 
+#include <cstdio>
+
 bool joedb::File::lock_file()
 {
  return true;
@@ -15,6 +17,16 @@ bool joedb::File::lock_file()
 
 void joedb::File::sync()
 {
+}
+
+int joedb::File::seek(int64_t offset, int origin) const
+{
+ return std::fseek(file, long(offset), origin);
+}
+
+int64_t joedb::File::tell() const
+{
+ return std::ftell(file);
 }
 
 #elif defined(_WIN32)
@@ -37,11 +49,22 @@ void joedb::File::sync()
  _commit(_fileno(file));
 }
 
+int joedb::File::seek(int64_t offset, int origin) const
+{
+ return _fseeki64(file, offset, origin);
+}
+
+int64_t joedb::File::tell() const
+{
+ return _ftelli64(file);
+}
+
 #elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 /////////////////////////////////////////////////////////////////////////////
 
 #include <sys/file.h>
 #include <unistd.h>
+#include <stdio.h>
 
 bool joedb::File::lock_file()
 {
@@ -51,6 +74,16 @@ bool joedb::File::lock_file()
 void joedb::File::sync()
 {
  fsync(fileno(file));
+}
+
+int joedb::File::seek(int64_t offset, int origin) const
+{
+ return fseeko(file, off_t(offset), origin);
+}
+
+int64_t joedb::File::tell() const
+{
+ return ftello(file);
 }
 
 #else
@@ -122,10 +155,10 @@ void joedb::File::write_buffer()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int joedb::File::seek(size_t offset)
+int joedb::File::seek(int64_t offset)
 /////////////////////////////////////////////////////////////////////////////
 {
- return std::fseek(file, long(offset), SEEK_SET);
+ return seek(offset, SEEK_SET);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -144,10 +177,11 @@ void joedb::File::close_file()
 int64_t joedb::File::get_size() const
 /////////////////////////////////////////////////////////////////////////////
 {
- const long current_tell = std::ftell(file);
- std::fseek(file, 0, SEEK_END);
- const int64_t result = std::ftell(file);
- std::fseek(file, current_tell, SEEK_SET);
+ const int64_t current_tell = tell();
+ seek(0, SEEK_END);
+ const int64_t result = tell();
+ seek(current_tell, SEEK_SET);
+
  return result;
 }
 

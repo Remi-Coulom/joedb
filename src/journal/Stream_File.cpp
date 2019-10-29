@@ -38,11 +38,11 @@ void joedb::Stream_File::write_buffer()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int joedb::Stream_File::seek(size_t offset)
+int joedb::Stream_File::seek(int64_t offset)
 /////////////////////////////////////////////////////////////////////////////
 {
- stream.seekg(std::streampos(int64_t(offset)));
- stream.seekp(std::streampos(int64_t(offset)));
+ stream.seekg(std::streampos(offset));
+ stream.seekp(std::streampos(offset));
 
  int result = 0;
  if (!stream.good())

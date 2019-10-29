@@ -12,11 +12,11 @@ namespace joedb
   public:
    Readonly_Journal(Generic_File &file, bool ignore_errors = false);
 
-   size_t get_checkpoint_position() const {return checkpoint_position;}
+   int64_t get_checkpoint_position() const {return checkpoint_position;}
    void replay_log(Writeable &writeable);
    void rewind();
-   void seek(size_t position);
-   void play_until(Writeable &writeable, size_t end);
+   void seek(int64_t position);
+   void play_until(Writeable &writeable, int64_t end);
    void play_until_checkpoint(Writeable &writeable)
    {
     play_until(writeable, checkpoint_position);
@@ -29,7 +29,7 @@ namespace joedb
   protected:
    Generic_File &file;
    unsigned checkpoint_index;
-   size_t checkpoint_position;
+   int64_t checkpoint_position;
 
    Table_Id table_of_last_operation;
    Record_Id record_of_last_operation;

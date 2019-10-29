@@ -26,7 +26,7 @@ namespace joedb
 
    size_t read_buffer() override;
    void write_buffer() override;
-   int seek(size_t offset) override;
+   int seek(int64_t offset) override;
    void sync() override;
 
   private:
@@ -34,6 +34,8 @@ namespace joedb
    FILE *file = nullptr;
    bool lock_file();
    void close_file();
+   int seek(int64_t offset, int origin) const;
+   int64_t tell() const;
  };
 
  ///////////////////////////////////////////////////////////////////////////
@@ -53,7 +55,7 @@ namespace joedb
 
   protected:
    int64_t get_size() const override {return int64_t(length);}
-   int seek(size_t offset) override {return File::seek(offset + start);}
+   int seek(int64_t offset) override {return File::seek(offset + start);}
 
   private:
    const size_t start;

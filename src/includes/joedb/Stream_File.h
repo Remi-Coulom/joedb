@@ -16,7 +16,7 @@ namespace joedb
   protected:
    size_t read_buffer() override;
    void write_buffer() override;
-   int seek(size_t offset) override;
+   int seek(int64_t offset) override;
    void sync() override {}
 
   private:

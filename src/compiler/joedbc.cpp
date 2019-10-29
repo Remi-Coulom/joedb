@@ -988,7 +988,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   public:
    Generic_Readonly_Database(joedb::Generic_File &file): journal(file)
    {
-    max_record_id = journal.get_checkpoint_position();
+    max_record_id = Record_Id(journal.get_checkpoint_position());
     journal.replay_log(*this);
     max_record_id = 0;
 
@@ -1522,7 +1522,7 @@ void )RRR" << ns << R"RRR(::File_Database::write_valid_data()
  journal(file),
  ready_to_write(false)
 {
- max_record_id = journal.get_checkpoint_position();
+ max_record_id = Record_Id(journal.get_checkpoint_position());
  journal.replay_log(*this);
  max_record_id = 0;
 

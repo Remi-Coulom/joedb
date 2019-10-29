@@ -54,9 +54,9 @@ joedb::Readonly_Journal::Readonly_Journal
    //
    // Find the most recent checkpoint
    //
-   uint64_t pos[4];
+   int64_t pos[4];
    for (int i = 0; i < 4; i++)
-    pos[i] = file.read<uint64_t>();
+    pos[i] = file.read<int64_t>();
 
    if (pos[0] != pos[1] || pos[2] != pos[3])
     FORMAT_EXCEPTION("Checkpoint mismatch");
@@ -66,9 +66,9 @@ joedb::Readonly_Journal::Readonly_Journal
    for (unsigned i = 0; i < 2; i++)
     if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
     {
-     if (uint64_t(size_t(pos[2 * i])) != pos[2 * i])
+     if (int64_t(size_t(pos[2 * i])) != pos[2 * i])
       throw Exception("size_t is too small for this file");
-     checkpoint_position = size_t(pos[2 * i]);
+     checkpoint_position = pos[2 * i];
      checkpoint_index = i;
     }
 
@@ -80,11 +80,11 @@ joedb::Readonly_Journal::Readonly_Journal
    //
    int64_t file_size = file.get_size();
 
-   if (file_size > 0 && size_t(file_size) != checkpoint_position)
+   if (file_size > 0 && file_size != checkpoint_position)
     FORMAT_EXCEPTION("Checkpoint different from file size");
 
    if (ignore_errors)
-    checkpoint_position = size_t(file_size);
+    checkpoint_position = file_size;
   }
  }
 }
@@ -107,14 +107,14 @@ void joedb::Readonly_Journal::rewind()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::seek(size_t position)
+void joedb::Readonly_Journal::seek(int64_t position)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.set_position(position);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
+void joedb::Readonly_Journal::play_until(Writeable &writeable, int64_t end)
 /////////////////////////////////////////////////////////////////////////////
 {
  while(file.get_position() < end)

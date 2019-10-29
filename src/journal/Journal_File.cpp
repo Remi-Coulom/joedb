@@ -30,7 +30,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
 }
 
 /////////////////////////////////////////////////////////////////////////////
-uint64_t joedb::Journal_File::ahead_of_checkpoint() const
+int64_t joedb::Journal_File::ahead_of_checkpoint() const
 /////////////////////////////////////////////////////////////////////////////
 {
  return file.get_position() - checkpoint_position;
