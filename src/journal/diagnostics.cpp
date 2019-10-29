@@ -56,6 +56,8 @@ namespace joedb
   #include "../../VERSION"
   ;
   out << "\ncompiled: " << __DATE__ << ' ' << __TIME__ << '\n';
+  out << "sizeof(size_t) = " << sizeof(size_t) << '\n';
+  out << "sizeof(long) = " << sizeof(long) << '\n';
   out << "web site: https://www.remi-coulom.fr/joedb/\n";
  }
 }

@@ -3,6 +3,7 @@
 #include "joedb/Exception.h"
 
 #include <vector>
+#include <sstream>
 
 const uint32_t joedb::Readonly_Journal::version_number = 0x00000004;
 const uint32_t joedb::Readonly_Journal::compatible_version = 0x00000004;
@@ -285,7 +286,12 @@ void joedb::Readonly_Journal::play_until(Writeable &writeable, size_t end)
    break;
 
    default:
-    throw Exception("Unexpected operation");
+   {
+    std::ostringstream error;
+    error << "Unexpected operation: file.get_position() = ";
+    error << file.get_position();
+    throw Exception(error.str());
+   }
   }
  }
 
