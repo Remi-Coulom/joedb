@@ -11,4 +11,3 @@ debug
 release
 coverage
 .vs
-CMakeSettings.json
