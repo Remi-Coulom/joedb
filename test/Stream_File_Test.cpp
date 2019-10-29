@@ -12,17 +12,17 @@ TEST(Stream_File_Test, position_test)
  std::stringstream stream;
 
  Stream_File file(stream, Open_Mode::create_new);
- EXPECT_EQ(0ULL, file.get_position());
+ EXPECT_EQ(0LL, file.get_position());
 
  file.set_position(size_t(-1));
- EXPECT_EQ(0ULL, file.get_position());
+ EXPECT_EQ(0LL, file.get_position());
 
- const uint64_t N = 100;
+ const int64_t N = 100;
  for (int i = N; --i >= 0;)
   file.write<uint8_t>('x');
  EXPECT_EQ(N, file.get_position());
 
- const uint64_t pos = 12;
+ const int64_t pos = 12;
  file.set_position(pos);
  EXPECT_EQ(pos, file.get_position());
 

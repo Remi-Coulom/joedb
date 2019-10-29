@@ -26,8 +26,8 @@ Journal File
 - Try using a raw device (probably requires a big buffer)
 - joedb_fix
 - Compression
-- CRC for error detection
-- Deal properly with file size > 2Gb in 32-bit code
+- CRC for hardware error detection
+- Test (and don't allow) file size > 2Gb in 32-bit code
 
 New Operations and Types
 ------------------------

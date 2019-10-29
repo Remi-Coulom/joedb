@@ -313,5 +313,5 @@ joedb::Type joedb::Readonly_Journal::read_type()
 std::string joedb::Readonly_Journal::safe_read_string()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file.safe_read_string(checkpoint_position);
+ return file.safe_read_string(size_t(checkpoint_position));
 }
