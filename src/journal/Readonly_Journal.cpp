@@ -7,7 +7,7 @@
 
 const uint32_t joedb::Readonly_Journal::version_number = 0x00000004;
 const uint32_t joedb::Readonly_Journal::compatible_version = 0x00000004;
-const size_t joedb::Readonly_Journal::header_size = 41;
+const int64_t joedb::Readonly_Journal::header_size = 41;
 
 #define FORMAT_EXCEPTION(x)\
  do {if (!ignore_errors) throw Exception(x);} while(false)
@@ -242,7 +242,7 @@ void joedb::Readonly_Journal::play_until(Writeable &writeable, int64_t end)
     record_of_last_operation = file.compact_read<Record_Id>();\
     field_of_last_update = file.compact_read<Field_Id>();\
     Record_Id size = file.compact_read<Record_Id>();\
-    if (size > checkpoint_position || size < 0)\
+    if (int64_t(size) > checkpoint_position || size < 0)\
      throw Exception("update_vector too big");\
     std::vector<cpp_type> buffer(size);\
     for (size_t i = 0; i < size; i++)\
