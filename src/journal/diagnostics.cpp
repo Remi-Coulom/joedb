@@ -58,7 +58,7 @@ namespace joedb
   out << "\ncompiled: " << __DATE__ << ' ' << __TIME__ << '\n';
   out << "sizeof(size_t) = " << sizeof(size_t) << '\n';
   out << "sizeof(long) = " << sizeof(long) << '\n';
-  out << "sizeof(std::streampos) = " << sizeof(std::streampos) << '\n';
+  out << "sizeof(std::streamoff) = " << sizeof(std::streamoff) << '\n';
 #ifdef __unix__
   out << "sizeof(off_t) = " << sizeof(off_t) << '\n';
 #endif
