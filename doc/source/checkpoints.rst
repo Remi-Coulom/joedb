@@ -55,7 +55,7 @@ First the sqlite3 code:
 .. code-block:: c++
 
   sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
-  sqlite3_stmt *prepared_statement;
+  sqlite3_stmt* prepared_statement;
   sqlite3_prepare_v2(db,
                      "INSERT INTO BENCHMARK VALUES('TOTO', ?1)",
                      -1,
@@ -75,10 +75,8 @@ Then, the equivalent joedb code:
 
 .. code-block:: c++
 
-  const std::string toto = "TOTO"; // saves N calls to std::string's constructor
-
   for (int i = 1; i <= N; i++)
-   db.new_benchmark(toto, i);
+   db.new_benchmark("TOTO", i);
 
   db.checkpoint_full_commit();
 
