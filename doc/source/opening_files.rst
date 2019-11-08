@@ -1,0 +1,49 @@
+.. _opening_files:
+
+Opening Files
+=============
+
+Joedb offers different ways to open a file.
+
+With a file name
+----------------
+
+The simplest way to open a database is to give a file name.
+
+Opening a file for reading and writing (creates the file if it does not exist):
+
+.. code-block:: c++
+
+  tutorial::File_Database db("file.joedb");
+
+Opening a file for reading only (throws an exception if it does not exist):
+
+.. code-block:: c++
+
+  tutorial::Readonly_Database db("file.joedb");
+
+Using a C++ stream
+------------------
+
+All the commit methods of a database based on a C++ stream will flush the
+stream.
+
+Opening Android assets directly from the apk
+--------------------------------------------
+
+The Android NDK offers functions that return a file descriptor as well as a
+position and size of an asset within the apk (see the NDK Android Asset
+`Documentation <https://developer.android.com/ndk/reference/group/asset>`_). It
+is possible to directly open such an asset without extracting it, using a
+``File_Slice``. The constructor of a ``File_Slice`` takes 3 parameters: a C
+``FILE*`` , a starting position, and a file length. It can be used as shown in
+the example below:
+
+.. code-block:: c++
+
+  FILE* file = fdopen(file_descriptor, "rb");
+  joedb::File_Slice file_slice(file, start, length);
+  tutorial::Generic_Readonly_Database db(file_slice);
+
+Class Hierarchy
+---------------
