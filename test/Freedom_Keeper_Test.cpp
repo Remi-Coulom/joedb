@@ -97,6 +97,48 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TYPED_TEST(Freedom_Keeper_Test, previous_next)
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto &fk = this->fk;
+
+ EXPECT_EQ(0UL, fk.get_first_used());
+ EXPECT_EQ(1UL, fk.get_first_free());
+
+ EXPECT_EQ(0UL, fk.get_next(0UL));
+ EXPECT_EQ(0UL, fk.get_previous(0UL));
+
+ EXPECT_EQ(1UL, fk.get_next(1UL));
+ EXPECT_EQ(1UL, fk.get_previous(1UL));
+
+ fk.use(fk.push_back());
+
+ EXPECT_EQ(2UL, fk.get_first_used());
+
+ fk.use(fk.push_back());
+ fk.use(fk.push_back());
+
+ EXPECT_EQ(1UL, fk.get_first_free());
+
+ fk.push_back();
+
+ EXPECT_EQ(5UL, fk.get_first_free());
+
+ fk.push_back();
+ fk.push_back();
+
+ EXPECT_EQ(3UL, fk.get_next(2UL));
+ EXPECT_EQ(4UL, fk.get_next(3UL));
+ EXPECT_EQ(0UL, fk.get_next(4UL));
+ EXPECT_EQ(2UL, fk.get_next(0UL));
+
+ EXPECT_EQ(0UL, fk.get_previous(2UL));
+ EXPECT_EQ(2UL, fk.get_previous(3UL));
+ EXPECT_EQ(3UL, fk.get_previous(4UL));
+ EXPECT_EQ(4UL, fk.get_previous(0UL));
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Freedom_Keeper, compactness)
 /////////////////////////////////////////////////////////////////////////////
 {

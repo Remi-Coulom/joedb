@@ -259,6 +259,88 @@ namespace joedb
    {
     return compact;
    }
+
+   size_t get_first_free() const
+   {
+    if (compact)
+    {
+     if (compact_used_size == compact_free_size)
+      return 1;
+     else
+      return compact_used_size + 2;
+    }
+    else
+     return fk.get_first_free();
+   }
+
+   size_t get_first_used() const
+   {
+    if (compact)
+    {
+     if (compact_used_size == 0)
+      return 0;
+     else
+      return 2;
+    }
+    else
+     return fk.get_first_used();
+   }
+
+   size_t get_next(size_t index) const
+   {
+    if (compact)
+    {
+     if (index == 0)
+      return get_first_used();
+
+     if (index == 1)
+      return get_first_free();
+
+     size_t result = index + 1;
+
+     if (result == compact_used_size + 2)
+      return 0;
+
+     if (index == compact_free_size)
+      return 1;
+
+     return result;
+    }
+    else
+     return fk.get_next(index);
+   }
+
+   size_t get_previous(size_t index) const
+   {
+    if (compact)
+    {
+     if (index == 0)
+     {
+      if (compact_used_size == 0)
+       return 0;
+      else
+       return compact_used_size + 1;
+     }
+
+     if (index == 1)
+     {
+      if (compact_used_size == compact_free_size)
+       return 1;
+      else
+       return compact_free_size + 1;
+     }
+
+     size_t result = index - 1;
+
+     if (result == 1)
+      return 0;
+     if (result == compact_used_size + 1)
+      return 1;
+     return index - 1;
+    }
+    else
+     return fk.get_previous(index);
+   }
  };
 }
 
