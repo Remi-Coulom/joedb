@@ -5,6 +5,23 @@
 #include <sstream>
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Database::check_identifier
+/////////////////////////////////////////////////////////////////////////////
+(
+ const char *message,
+ const std::string &name
+) const
+{
+ if (!is_identifier(name))
+ {
+  std::ostringstream error_message;
+  error_message << message << ": invalid identifier: " << name;
+  throw Exception(error_message.str());
+ }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 const std::map<Field_Id, std::string> &joedb::Database::get_fields
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -77,8 +94,8 @@ return_type joedb::Database::get_##type_id(Table_Id table_id,\
 void joedb::Database::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (!is_identifier(name))
-  throw Exception("create_table: invalid identifier");
+ check_identifier("create_table", name);
+
  if (find_table(name))
   throw Exception("create_table: name already used");
 
@@ -106,8 +123,7 @@ void joedb::Database::rename_table
  const std::string &name
 )
 {
- if (!is_identifier(name))
-  throw Exception("rename_table: invalid identifier");
+ check_identifier("rename_table", name);
 
  auto table_it = tables.find(table_id);
  if (table_it == tables.end())
@@ -128,8 +144,7 @@ void joedb::Database::add_field
  Type type
 )
 {
- if (!is_identifier(name))
-  throw Exception("add_field: invalid identifier");
+ check_identifier("add_field", name);
 
  auto it = tables.find(table_id);
  if (it == tables.end())
@@ -158,8 +173,7 @@ void joedb::Database::rename_field
  const std::string &name
 )
 {
- if (!is_identifier(name))
-  throw Exception("rename_field: invalid identifier");
+ check_identifier("rename_field", name);
 
  auto table_it = tables.find(table_id);
  if (table_it == tables.end())

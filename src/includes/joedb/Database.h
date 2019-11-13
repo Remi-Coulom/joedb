@@ -17,6 +17,8 @@ namespace joedb
    std::map<Table_Id, std::string> table_names;
    Table_Id current_table_id = 0;
 
+   void check_identifier(const char *message, const std::string &name) const;
+
   public:
    Database(Record_Id max_record_id = 0): max_record_id(max_record_id) {}
 
