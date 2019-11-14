@@ -168,8 +168,11 @@ TEST_F(File_Test, position_test)
  File file("new.tmp", Open_Mode::create_new);
  EXPECT_EQ(0LL, file.get_position());
 
- file.set_position(size_t(-1));
- EXPECT_EQ(0LL, file.get_position());
+// That test was not correct
+// https://en.cppreference.com/w/cpp/io/c/fseek
+// "POSIX allows seeking beyond the existing end of file..."
+// file.set_position(size_t(-1));
+// EXPECT_EQ(0LL, file.get_position());
 
  const int64_t N = 100;
  for (int i = N; --i >= 0;)
