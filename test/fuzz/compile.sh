@@ -1,32 +1,13 @@
 #!/bin/bash
+set -e
 
-#############################################################################
-# http://llvm.org/docs/LibFuzzer.html#versions
-#############################################################################
-if [ ! -d third_party ]; then
- echo Installing clang ...
- mkdir TMP_CLANG
- cd TMP_CLANG
- git clone https://chromium.googlesource.com/chromium/src/tools/clang
- cd ..
- TMP_CLANG/clang/scripts/update.py
-fi
-
-#############################################################################
-# http://llvm.org/docs/LibFuzzer.html#building
-#############################################################################
-if [ ! -f libFuzzer.a ]; then
- echo Building libFuzzer.a ...
- git clone https://chromium.googlesource.com/chromium/llvm-project/llvm/lib/Fuzzer
- PATH=`pwd`/third_party/llvm-build/Release+Asserts/bin:$PATH
- ./Fuzzer/build.sh
-fi
+# sudo apt-get install libfuzzer-8-dev
 
 #############################################################################
 build()
 #############################################################################
 {
- ./third_party/llvm-build/Release+Asserts/bin/clang++\
+ clang++-8\
   -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
   -fsanitize-coverage=trace-pc-guard\
   -fsanitize=address\
@@ -56,7 +37,7 @@ build()
   ../../src/journal/Journal_File.cpp\
   ../../src/journal/Stream_File.cpp\
   ../../src/journal/Readonly_Journal.cpp\
-  ./libFuzzer.a\
+  /usr/lib/clang/8/lib/linux/libclang_rt.fuzzer-x86_64.a\
   -o "$1"_fuzzer
 }
 
