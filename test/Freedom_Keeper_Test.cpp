@@ -38,7 +38,7 @@ typedef ::testing::Types
 >
 fk_types;
 
-TYPED_TEST_CASE(Freedom_Keeper_Test, fk_types);
+TYPED_TEST_SUITE(Freedom_Keeper_Test, fk_types);
 
 /////////////////////////////////////////////////////////////////////////////
 TYPED_TEST(Freedom_Keeper_Test, errors)
