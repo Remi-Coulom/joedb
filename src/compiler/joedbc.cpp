@@ -748,7 +748,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     schema_file.flush();
 
     const size_t file_schema_size = schema_stream.str().size();
-    const size_t pos = joedb::Journal_File::header_size;
+    const size_t pos = size_t(joedb::Journal_File::header_size);
     const size_t len = file_schema_size - pos;
 
     if (schema_stream.str().compare(pos, len, schema_string, pos, len) != 0)
