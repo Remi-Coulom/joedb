@@ -2,11 +2,12 @@
 #include "File.h"
 #include "Readonly_Journal.h"
 #include "Database.h"
+#include "main_exception_catcher.h"
 
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-int main(int argc, char **argv)
+int joedb_to_json_main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (argc <= 1)
@@ -37,4 +38,11 @@ int main(int argc, char **argv)
   std::cerr << "warning: inf or nan value encoded as 0. JSON does not support inf and nan.\n";
 
  return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+int main(int argc, char **argv)
+/////////////////////////////////////////////////////////////////////////////
+{
+ return joedb::main_exception_catcher(joedb_to_json_main, argc, argv);
 }

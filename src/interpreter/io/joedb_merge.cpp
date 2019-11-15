@@ -6,6 +6,7 @@
 #include "Multiplexer.h"
 #include "dump.h"
 #include "merge.h"
+#include "main_exception_catcher.h"
 
 #include <iostream>
 #include <sstream>
@@ -15,7 +16,7 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- int merge(int argc, char **argv)
+ int merge_main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (argc < 2)
@@ -149,5 +150,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::merge(argc, argv);
+ return joedb::main_exception_catcher(joedb::merge_main, argc, argv);
 }

@@ -3,6 +3,7 @@
 
 #include "File.h"
 #include "Journal_File.h"
+#include "main_exception_catcher.h"
 
 #include <iostream>
 
@@ -35,7 +36,7 @@ namespace joedb
   }
   catch (const Exception &e)
   {
-   std::cerr << "Error: " << e.what() << '\n';
+   joedb::print_exception(e);
    return 1;
   }
  
