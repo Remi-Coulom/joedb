@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 tmp_sql=$(mktemp /tmp/joedb_browser.XXXXXX)
 tmp_sqlite=$(mktemp /tmp/joedb_browser.XXXXXX)
