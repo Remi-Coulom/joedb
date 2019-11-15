@@ -1084,7 +1084,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
    }
 
-   uint64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
+   int64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
    void checkpoint_no_commit() {journal.checkpoint(0);}
    void checkpoint_half_commit() {journal.checkpoint(1);}
    void checkpoint_full_commit() {journal.checkpoint(2);}
@@ -1403,7 +1403,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   iterator begin() const {return range.first;}\n";
    out << "   iterator end() const {return range.second;}\n";
    out << "   bool empty() const {return range.first == range.second;}\n";
-   out << "   size_t size() const {return std::distance(range.first, range.second);}\n";
+   out << "   size_t size() const {return size_t(std::distance(range.first, range.second));}\n";
    out << " };\n\n";
 
    out << " inline range_of_" << index.name << " Database::find_" << index.name << '(';
