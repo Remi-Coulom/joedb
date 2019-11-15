@@ -281,10 +281,10 @@ int file_test()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void schema_v2::File_Database::set_default_preferred_language_to_english
+void schema_v2::Generic_File_Database::set_default_preferred_language_to_english
 /////////////////////////////////////////////////////////////////////////////
 (
- File_Database &db
+ Generic_File_Database &db
 )
 {
  auto english = db.new_language("English", "en");

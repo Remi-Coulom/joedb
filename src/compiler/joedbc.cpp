@@ -188,7 +188,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << '\n';
   out << " class id_of_" << tname << "\n {\n";
   out << "  friend class Database;\n";
-  out << "  friend class File_Database;\n";
+  out << "  friend class Generic_File_Database;\n";
   for (auto &friend_table: tables)
    if (friend_table.first != table.first)
     out << "  friend class id_of_" << friend_table.second << ";\n";
@@ -1033,7 +1033,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
  };
 
- class File_Database: public Database
+ class Generic_File_Database: public Database
  {
   protected:
    void error(const char *message) override
@@ -1048,7 +1048,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
 
   private:
-   joedb::File file;
    joedb::Journal_File journal;
    bool ready_to_write;
 
@@ -1073,16 +1072,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   out << '\n';
   for (const auto &name: options.get_custom_names())
-   out << "   static void " << name << "(File_Database &db);\n";
+   out << "   static void " << name << "(Generic_File_Database &db);\n";
  }
 
  out << R"RRR(
   public:
-   File_Database(const char *file_name);
-   File_Database(const std::string &file_name):
-    File_Database(file_name.c_str())
-   {
-   }
+   Generic_File_Database(joedb::Generic_File &file);
 
    int64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
    void checkpoint_no_commit() {journal.checkpoint(0);}
@@ -1239,6 +1234,37 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << " };\n";
 
+ out << R"RRR(
+ class File_Initialization
+ {
+  public:
+   joedb::File file;
+
+   File_Initialization(const char *file_name):
+    file(file_name, joedb::Open_Mode::write_existing_or_create_new)
+   {
+   }
+ };
+
+ class File_Database:
+  public File_Initialization,
+  public Generic_File_Database
+ {
+  public:
+   File_Database(const char *file_name):
+    File_Initialization(file_name),
+    Generic_File_Database(file)
+   {
+   }
+
+   File_Database(const std::string &file_name):
+    File_Database(file_name.c_str())
+   {
+   }
+ };
+
+)RRR";
+
  //
  // Plain iteration over tables
  //
@@ -1334,7 +1360,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   if (has_delete)
   {
-   out << " inline void File_Database::clear_" << tname << "_table()\n";
+   out << " inline void Generic_File_Database::clear_" << tname << "_table()\n";
    out << " {\n";
    out << "  while (!get_" << tname << "_table().is_empty())\n";
    out << "   delete_" << tname << "(get_" << tname << "_table().last());\n";
@@ -1488,37 +1514,39 @@ void generate_cpp
 
  out << R"RRR(
 /////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::File_Database::write_comment(const std::string &comment)
+void )RRR" << ns << R"RRR(::Generic_File_Database::write_comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.comment(comment);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::File_Database::write_timestamp()
+void )RRR" << ns << R"RRR(::Generic_File_Database::write_timestamp()
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.timestamp(std::time(0));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::File_Database::write_timestamp(int64_t timestamp)
+void )RRR" << ns << R"RRR(::Generic_File_Database::write_timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.timestamp(timestamp);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::File_Database::write_valid_data()
+void )RRR" << ns << R"RRR(::Generic_File_Database::write_valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  journal.valid_data();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-)RRR" << ns << R"RRR(::File_Database::File_Database(const char *file_name):
+)RRR" << ns << R"RRR(::Generic_File_Database::Generic_File_Database
 /////////////////////////////////////////////////////////////////////////////
- file(file_name, joedb::Open_Mode::write_existing_or_create_new),
+(
+ joedb::Generic_File &file
+):
  journal(file),
  ready_to_write(false)
 {
