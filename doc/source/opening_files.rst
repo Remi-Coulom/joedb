@@ -3,12 +3,16 @@
 Opening Files
 =============
 
-Joedb offers different ways to open a file.
+Joedb offers different ways to open a file. The simplest way is to pass a file
+name to the constructor of either ``File_Database`` or ``Readonly_Database``.
+But subclasses of the ``joedb::File`` class allows using various sources of
+data, when passed as parameter to the constructor of either
+``Generic_File_Database`` or ``Generic_Readonly_Database``.
 
 With a file name
 ----------------
 
-The simplest way to open a database is to give a file name.
+The simplest way to open a database is to give a file name directly.
 
 Opening a file for reading and writing (creates the file if it does not exist):
 
@@ -47,3 +51,17 @@ the example below:
 
 Class Hierarchy
 ---------------
+
+.. code-block:: c++
+
+  // The Database class manages in-memory table storage.
+  // It has methods to read table content, but not to write it.
+  class Database;
+
+  // These are read-only databases based on a joedb::File
+  class Generic_Readonly_Database: public Database;
+  class Readonly_Database: public Generic_Readonly_Database;
+
+  // These are writeable databases based on a joedb::File
+  class Generic_File_Database: public Database;
+  class File_Database: public Generic_File_Database;
