@@ -1,7 +1,13 @@
 History
 =======
 
-- 2019-11-??: 3.0
+- 2019-11-15: 3.0
+
+  - More flexibility for opening files:
+
+    - A database can be based on a C++ stream (which allows compression, encryption, or building a database into an executable as a string).
+    - A read-only database can be opened directly from within an Android apk, without having to extract the file first.
+    - See :ref:`opening_files` for more details.
 
   - Better portability:
 
@@ -9,13 +15,9 @@ History
     - Unlike in Linux, ``fseek`` and ``ftell`` are 32-bit in Windows. So the previous version could not handle files larger than 2^31 bytes. This is now fixed, and very large files can be used in Windows.
     - Unlike Linux, Windows does no print any information when a program is terminated by an exception. Joedb tools in this version catch all exceptions, and print them before quitting.
 
-  - More flexibility for opening files:
+  - Main version number incremented because of one minor change: custom functions are now member of ``Generic_File_Database`` instead of the ``File_Database`` class.
 
-    - A read-only database can be opened directly from within an Android apk.
-    - A database can be based on a C++ stream (which allows compression, encryption, or building a database into an executable as a string).
-    - See :ref:`opening_files` for more details
-
-  - Main version number incremented because of one minor change: custom functions are now member of `Generic_File_Database` instead of the `File_Database` class;
+  - Minor fixes and improvements.
 
 - 2018-04-02: 2.1
 
