@@ -36,9 +36,9 @@ The ``custom`` command defines the name of a custom function that the programmer
 
 .. code-block:: c++
 
-  void schema_v2::File_Database::set_default_preferred_language_to_english
+  void schema_v2::Generic_File_Database::set_default_preferred_language_to_english
   ( 
-   Database &db
+   Generic_File_Database &db
   )
   {
    auto english = db.new_language("English", "en");

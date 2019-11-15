@@ -11,6 +11,7 @@
 #include "c_wrapper.h"
 #include "Dummy_Writeable.h"
 #include "is_identifier.h"
+#include "main_exception_catcher.h"
 
 #include <iostream>
 #include <fstream>
@@ -1616,7 +1617,7 @@ namespace joedb
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int main(int argc, char **argv)
+int joedbc_main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
  //
@@ -1716,4 +1717,11 @@ int main(int argc, char **argv)
  }
 
  return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+int main(int argc, char **argv)
+/////////////////////////////////////////////////////////////////////////////
+{
+ return joedb::main_exception_catcher(joedbc_main, argc, argv);
 }
