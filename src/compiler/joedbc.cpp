@@ -1540,10 +1540,10 @@ void )RRR" << ns << R"RRR(::File_Database::write_valid_data()
   joedb::Stream_File schema_file(schema, joedb::Open_Mode::read_existing);
   joedb::Readonly_Journal schema_journal(schema_file);
 
-  schema_journal.seek(file_schema_size);
+  schema_journal.seek(int64_t(file_schema_size));
   schema_journal.play_until_checkpoint(journal);
 
-  schema_journal.seek(file_schema_size);
+  schema_journal.seek(int64_t(file_schema_size));
   upgrading_schema = true;
   schema_journal.play_until_checkpoint(*this);
   upgrading_schema = false;
