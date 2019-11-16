@@ -214,6 +214,12 @@ add_executable(tutorial
  ../src/compiler/minimal_runtime.cpp
 )
 
+add_executable(stream_tutorial
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/stream_tutorial.cpp
+ ../src/compiler/minimal_runtime.cpp
+)
+
 add_executable(micro_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/micro_tutorial.cpp

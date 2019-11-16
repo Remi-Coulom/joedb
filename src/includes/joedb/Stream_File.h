@@ -7,6 +7,22 @@
 
 namespace joedb
 {
+ class Input_Stream_File: public Generic_File
+ {
+  public:
+   Input_Stream_File(std::istream &stream);
+   int64_t get_size() const override;
+
+  protected:
+   size_t read_buffer() override;
+   void write_buffer() override {}
+   int seek(int64_t offset) override;
+   void sync() override {}
+
+  private:
+   std::istream &stream;
+ };
+
  class Stream_File: public Generic_File
  {
   public:
