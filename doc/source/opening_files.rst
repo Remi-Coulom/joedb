@@ -3,11 +3,7 @@
 Opening Files
 =============
 
-Joedb offers different ways to open a file. The simplest way is to pass a file
-name to the constructor of either ``File_Database`` or ``Readonly_Database``.
-But subclasses of the ``joedb::Generic_File`` class allows using various
-sources of data, when passed as parameter to the constructor of either
-``Generic_File_Database`` or ``Generic_Readonly_Database``.
+Joedb offers different ways to open a file. The simplest way is to pass a file name to the constructor of either ``File_Database`` or ``Readonly_Database``.  But subclasses of the ``joedb::Generic_File`` class allows using various sources of data, when passed as parameter to the constructor of either ``Generic_File_Database`` or ``Generic_Readonly_Database``.
 
 With a file name
 ----------------
@@ -42,38 +38,30 @@ Available modes are:
 
   enum class Open_Mode
   {
-   read_existing,
+   read_existing, // mode of Readonly_Database
    write_existing,
    create_new,
-   write_existing_or_create_new
+   write_existing_or_create_new // mode of File_Database
   };
+
+So ``write_existing`` and ``create_new`` are available only with this method.
 
 Using a C++ stream
 ------------------
 
-``joedb::File`` is in fact a specialization of a more general ``joedb::Generic_File`` class that offers more flexibility. By subclassing ``joedb::Generic_File`` it is possible to let joedb use various ways to read and store data. Two such subclasses are ``joedb::Stream_File`` and ``joedb::Input_Stream_File``.
+``joedb::File`` is in fact a specialization of a more general ``joedb::Generic_File`` class that offers more flexibility. By subclassing ``joedb::Generic_File`` it is possible to let joedb use various ways to read and store data.
 
-The code below is an example of how to use those classes.
+Two such subclasses are ``joedb::Stream_File`` and ``joedb::Input_Stream_File``, that take a ``std::iostream`` and ``std::istream`` as constructor parameter. The code below is an example of how to use them.
 
 .. literalinclude:: ./tutorial/stream_tutorial.cpp
    :language: c++
 
-Using file streams is not likely to ever be useful in practice, because the
-methods described in the previous sections can achieve the same in a simpler
-and more efficient way. Typical usage are for reading built-in data from a
-``std::istringstream``, or for encrypting the database with an encrypting
-stream.
+Using file streams is not likely to ever be useful in practice, because the methods described in the previous sections can achieve the same in a simpler and more efficient way. Typical usage are for reading built-in data from a ``std::istringstream``, or for encrypting the database with an encrypting stream.
 
 Opening Android assets directly from the apk
 --------------------------------------------
 
-The Android NDK offers functions that return a file descriptor as well as a
-position and size of an asset within the apk (see the NDK Android Asset
-`Documentation <https://developer.android.com/ndk/reference/group/asset>`_). It
-is possible to directly open such an asset without extracting it, using a
-``File_Slice``. The constructor of a ``File_Slice`` takes 3 parameters: a C
-``FILE*`` , a starting position, and a file length. It can be used as shown in
-the example below:
+The Android NDK offers functions that return a file descriptor as well as a position and size of an asset within the apk (see the NDK Android Asset `Documentation <https://developer.android.com/ndk/reference/group/asset>`_). It is possible to directly open such an asset without extracting it, using a ``File_Slice``. The constructor of a ``File_Slice`` takes 3 parameters: a C ``FILE*`` , a starting position, and a file length. It can be used as shown in the example below:
 
 .. code-block:: c++
 
