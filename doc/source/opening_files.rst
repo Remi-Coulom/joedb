@@ -26,20 +26,43 @@ Opening a file for reading only (throws an exception if it does not exist):
 
   tutorial::Readonly_Database db("file.joedb");
 
-Using a joedb::File
--------------------
+Using a ``joedb::File``
+-----------------------
 
-The method described in the previous section is a shortcut.
+If you wish to have better control over the way the file is opened, you can open the database with a ``joedb::File`` instead.
+
+This is an example:
+
+.. literalinclude:: ./tutorial/file_tutorial.cpp
+   :language: c++
+
+Available modes are:
+
+.. code-block:: c++
+
+  enum class Open_Mode
+  {
+   read_existing,
+   write_existing,
+   create_new,
+   write_existing_or_create_new
+  };
 
 Using a C++ stream
 ------------------
 
-``joedb::File`` is in fact a specialization of a more general ``joedb::Generic_File`` class that offers more flexibility. By subclassing ``joedb::Generic_File`` it is possible to let joedb use various ways to read and store data.
+``joedb::File`` is in fact a specialization of a more general ``joedb::Generic_File`` class that offers more flexibility. By subclassing ``joedb::Generic_File`` it is possible to let joedb use various ways to read and store data. Two such subclasses are ``joedb::Stream_File`` and ``joedb::Input_Stream_File``.
+
+The code below is an example of how to use those classes.
 
 .. literalinclude:: ./tutorial/stream_tutorial.cpp
    :language: c++
 
-For the stream to work for writing, it must be seekable (no ``std::ios::app`` open mode). Files should be opened with ``std::ios::binary``.
+Using file streams is not likely to ever be useful in practice, because the
+methods described in the previous sections can achieve the same in a simpler
+and more efficient way. Typical usage are for reading built-in data from a
+``std::istringstream``, or for encrypting the database with an encrypting
+stream.
 
 Opening Android assets directly from the apk
 --------------------------------------------
