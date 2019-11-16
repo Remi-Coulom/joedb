@@ -1565,8 +1565,8 @@ void )RRR" << ns << R"RRR(::Generic_File_Database::write_valid_data()
  {
   journal.comment("Automatic schema upgrade");
 
-  std::stringstream schema(schema_string);
-  joedb::Stream_File schema_file(schema, joedb::Open_Mode::read_existing);
+  std::istringstream schema(schema_string);
+  joedb::Input_Stream_File schema_file(schema);
   joedb::Readonly_Journal schema_journal(schema_file);
 
   schema_journal.seek(int64_t(file_schema_size));
