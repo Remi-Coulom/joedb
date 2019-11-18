@@ -3,8 +3,6 @@ Introduction
 
 Joedb is the Journal-Only Embedded Database. Its purpose is to allow crash-safe manipulation of data stored in permanent storage. Data is stored as a journal of all modifications. This way, the whole data history is remembered, and it is possible to re-create any past state of the database. It is also a way to make the system extremely simple, and fast.
 
-Traditional relational database use a journal as an auxiliary structure to deal with crash recovery and transactions, and keep data in tables. Joedb takes the opposite approach, where the journal serves as the "official" storage of data, and tables are auxiliary structures that may be re-build from the journal if necessary.
-
 Joedb comes with a compiler that takes a database schema as input, and produces C++ code. The generated C++ data-manipulation code is convenient to use, efficient, and type-safe.
 
 

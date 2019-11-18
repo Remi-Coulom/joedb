@@ -56,8 +56,6 @@ Two such subclasses are ``joedb::Stream_File`` and ``joedb::Input_Stream_File``,
 .. literalinclude:: ./tutorial/stream_tutorial.cpp
    :language: c++
 
-Using file streams is not likely to ever be useful in practice, because the methods described in the previous sections can achieve the same in a simpler and more efficient way. Typical usage are for reading built-in data from a ``std::istringstream``, or for encrypting the database with an encrypting stream.
-
 Opening Android assets directly from the apk
 --------------------------------------------
 
