@@ -1,7 +1,7 @@
 History
 =======
 
-- 2019-11-15: 3.0
+- 2019-11-19: 3.0
 
   - More flexibility for opening files:
 
