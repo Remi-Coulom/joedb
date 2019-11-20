@@ -16,11 +16,14 @@ namespace joedb
    void replay_log(Writeable &writeable);
    void rewind();
    void seek(int64_t position);
+   void one_step(Writeable &writeable);
    void play_until(Writeable &writeable, int64_t end);
    void play_until_checkpoint(Writeable &writeable)
    {
     play_until(writeable, checkpoint_position);
    }
+
+   bool at_end_of_file() const;
 
    static const uint32_t version_number;
    static const uint32_t compatible_version;

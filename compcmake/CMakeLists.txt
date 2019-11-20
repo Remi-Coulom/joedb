@@ -214,6 +214,12 @@ add_executable(tutorial
  ../src/compiler/minimal_runtime.cpp
 )
 
+add_executable(step_by_step_replay
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/step_by_step_replay.cpp
+ ../doc/source/tutorial/step_by_step_replay.cpp
+ ../src/compiler/minimal_runtime.cpp
+)
+
 add_executable(file_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/file_tutorial.cpp
