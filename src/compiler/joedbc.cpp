@@ -162,6 +162,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include <map>
 #include <algorithm>
 #include <sstream>
+#include <memory>
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
@@ -983,12 +984,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
  class Generic_Readonly_Database: public Database
  {
-  private:
-   joedb::Readonly_Journal journal;
-
   public:
-   Generic_Readonly_Database(joedb::Generic_File &file): journal(file)
+   Generic_Readonly_Database(joedb::Generic_File &file)
    {
+    joedb::Readonly_Journal journal(file);
     max_record_id = Record_Id(journal.get_checkpoint_position());
     journal.replay_log(*this);
     max_record_id = 0;
@@ -1006,25 +1005,17 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
  };
 
- class Readonly_File_Initialization
- {
-  public:
-   joedb::File file;
-
-   Readonly_File_Initialization(const char *file_name):
-    file(file_name, joedb::Open_Mode::read_existing)
-   {
-   }
- };
-
- class Readonly_Database:
-  private Readonly_File_Initialization,
-  public Generic_Readonly_Database
+ class Readonly_Database: public Generic_Readonly_Database
  {
   public:
    Readonly_Database(const char *file_name):
-    Readonly_File_Initialization(file_name),
-    Generic_Readonly_Database(file)
+    Generic_Readonly_Database
+    (
+     *std::unique_ptr<joedb::Generic_File>
+     (
+      new joedb::File(file_name, joedb::Open_Mode::read_existing)
+     )
+    )
    {
    }
 
