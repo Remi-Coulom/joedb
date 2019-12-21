@@ -166,7 +166,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
-#include "joedb/Database.h"
 #include "joedb/Freedom_Keeper.h"
 #include "joedb/Exception.h"
 #include "joedb/Stream_File.h"
@@ -176,7 +175,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 )RRR";
 
  out << "namespace " << options.get_namespace_name() << "\n{\n";
- out << " class Database;\n\n";
 
  for (auto &table: tables)
  {
