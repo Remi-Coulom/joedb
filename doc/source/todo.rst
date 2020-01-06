@@ -6,6 +6,8 @@ Short Term
 
 - Pass strings by value for new and update
 
+- joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
+
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
 - Null default initial values
 - better readable interface:
