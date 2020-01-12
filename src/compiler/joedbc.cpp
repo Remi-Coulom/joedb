@@ -1457,6 +1457,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  type_names.push_back("Database");
  type_names.push_back("File_Database");
  type_names.push_back("Readonly_Database");
+ type_names.push_back("Generic_File_Database");
+ type_names.push_back("Generic_Readonly_Database");
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
