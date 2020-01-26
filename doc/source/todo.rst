@@ -9,6 +9,7 @@ Short Term
 - joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
 - joedbc should fail if there is an error when interpreting the joedbi. Centralize errors in joedb::Interpreter, and optionally throw on error.
 
+- run unit tests with address sanitizer instead of valgrind
 - Writeable -> Writable
 
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
