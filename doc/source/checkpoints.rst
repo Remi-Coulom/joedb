@@ -56,11 +56,14 @@ First the sqlite3 code:
 
   sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
   sqlite3_stmt* prepared_statement;
-  sqlite3_prepare_v2(db,
-                     "INSERT INTO BENCHMARK VALUES('TOTO', ?1)",
-                     -1,
-                     &prepared_statement,
-                     0);
+  sqlite3_prepare_v2
+  (
+   db,
+   "INSERT INTO BENCHMARK VALUES('TOTO', ?1)",
+   -1,
+   &prepared_statement,
+   0
+  );
 
   for (int i = 1; i <= N; i++)
   {
