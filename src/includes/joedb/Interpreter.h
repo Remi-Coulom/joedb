@@ -18,6 +18,16 @@ namespace joedb
    Type parse_type(std::istream &in, std::ostream &out) const;
    Table_Id parse_table(std::istream &in, std::ostream &out) const;
 
+   bool echo;
+   bool rethrow;
+
+   void after_command
+   (
+    std::ostream &out,
+    const std::string &line,
+    const Exception *exception
+   );
+
    virtual bool process_command
    (
     const std::string &line,
@@ -27,7 +37,15 @@ namespace joedb
    );
 
   public:
-   Readonly_Interpreter(Readable &db): db(db) {}
+   Readonly_Interpreter(Readable &db):
+    db(db),
+    echo(true),
+    rethrow(false)
+   {
+   }
+
+   void set_echo(bool echo) {this->echo = echo;}
+   void set_rethrow(bool rethrow) {this->rethrow = rethrow;}
 
    void main_loop(std::istream &in, std::ostream &out);
  };

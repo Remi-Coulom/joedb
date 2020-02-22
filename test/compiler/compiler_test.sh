@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 build_dir=../../compcmake/ninja_debug
 
@@ -8,9 +9,15 @@ cd "$build_dir"
 ninja joedbi joedbc compiler_test
 cd -
 
-"$build_dir"/joedbi vector_hole.joedb <vector_hole.joedbi
-"$build_dir"/joedbi vector_delete.joedb <vector_delete.joedbi
-"$build_dir"/joedbi multi_index.joedb <multi_index.joedbi
+generate_db()
+{
+ echo "echo off" | cat - $1.joedbi | "$build_dir/joedbi" $1.joedb
+}
+
+generate_db vector_hole
+generate_db vector_delete
+generate_db multi_index
+
 
 "$build_dir"/compiler_test >compiler_test.out
 

@@ -65,6 +65,37 @@ Table_Id joedb::Readonly_Interpreter::parse_table
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Interpreter::after_command
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const std::string &line,
+ const Exception *exception
+)
+{
+ if (exception)
+ {
+  std::stringstream error;
+  error << exception->what() << " (" << line << ')' << '\n';
+
+  if (rethrow)
+   throw Exception(error.str());
+  else
+   out << "Error: " << error.str();
+ }
+ else if (echo)
+  out << "OK: " << line << '\n';
+}
+
+#define ERROR_CHECK(x) do\
+{\
+ try {x; after_command(out, line, nullptr);}\
+ catch(const Exception &e)\
+ {after_command(out, line, &e);}\
+}\
+while(false)
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::Interpreter::update_value
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -90,14 +121,6 @@ void joedb::Interpreter::update_value
   #undef TYPE_MACRO
  }
 }
-
-#define ERROR_CHECK(x) do\
-{\
- try {x; out << "OK: " << line << '\n';}\
- catch(const Exception &e)\
- {out << "Error: " << e.what() << " (" << line << ')' << '\n';}\
-}\
-while(false)
 
 /////////////////////////////////////////////////////////////////////////////
 bool joedb::Readonly_Interpreter::process_command
@@ -270,6 +293,7 @@ bool joedb::Readonly_Interpreter::process_command
   out << " about\n";
   out << " help\n";
   out << " quit\n";
+  out << " echo on|off\n";
   out << '\n';
   out << "Displaying data\n";
   out << "~~~~~~~~~~~~~~~\n";
@@ -283,6 +307,16 @@ bool joedb::Readonly_Interpreter::process_command
  else if (command == "about") ///////////////////////////////////////////////
  {
   about_joedb(out);
+ }
+ else if (command == "echo") ////////////////////////////////////////////////
+ {
+  std::string parameter;
+  iss >> parameter;
+
+  if (parameter == "on")
+   set_echo(true);
+  else if (parameter == "off")
+   set_echo(false);
  }
  else if (command == "quit") ////////////////////////////////////////////////
   return false;

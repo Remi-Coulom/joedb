@@ -1645,6 +1645,8 @@ int joedbc_main(int argc, char **argv)
   multiplexer.add_writeable(custom_collector);
 
   Interpreter interpreter(multiplexer);
+  interpreter.set_echo(false);
+  interpreter.set_rethrow(true);
   interpreter.main_loop(joedbi_file, std::cerr);
  }
 

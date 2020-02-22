@@ -71,6 +71,7 @@ Commands unrelated to the database
  about
  help
  quit
+ echo on|off
 
 Displaying data
 ~~~~~~~~~~~~~~~

@@ -7,7 +7,6 @@ Short Term
 - Pass strings by value for new and update
 
 - joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
-- joedbc should fail if there is an error when interpreting the joedbi. Centralize errors in joedb::Interpreter, and optionally throw on error.
 
 - run unit tests with address sanitizer instead of valgrind
 - Writeable -> Writable
