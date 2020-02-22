@@ -5,6 +5,10 @@ Short Term
 ----------
 
 - Pass strings by value for new and update
+  - make a custom string class to trace constructors and destructor
+  - fix useless copies
+  - need to fix Writable + joedbc (it is a bit complicated)
+  - start by testing copy elision on a very simple toy simulation
 
 - joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
 
@@ -30,7 +34,6 @@ Journal File
 - high-performance system-specific implementation of joedb::File?
 - Try using a raw device (probably requires a big buffer)
 - joedb_fix
-- Compression
 - CRC for hardware error detection
 - Test (and don't allow) file size > 2Gb in 32-bit code
 
