@@ -15,8 +15,8 @@ namespace joedb
   protected:
    Readable &db;
 
-   Type parse_type(std::istream &in, std::ostream &out);
-   Table_Id parse_table(std::istream &in, std::ostream &out);
+   Type parse_type(std::istream &in, std::ostream &out) const;
+   Table_Id parse_table(std::istream &in, std::ostream &out) const;
 
    virtual bool process_command
    (

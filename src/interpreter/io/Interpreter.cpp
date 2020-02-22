@@ -22,7 +22,7 @@ joedb::Type joedb::Readonly_Interpreter::parse_type
 (
  std::istream &in,
  std::ostream &out
-)
+) const
 {
  std::string type_name;
  in >> type_name;
@@ -54,7 +54,7 @@ Table_Id joedb::Readonly_Interpreter::parse_table
 (
  std::istream &in,
  std::ostream &out
-)
+) const
 {
  std::string table_name;
  in >> table_name;
