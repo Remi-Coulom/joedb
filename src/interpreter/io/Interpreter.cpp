@@ -2,9 +2,9 @@
 #include "Database.h"
 #include "dump.h"
 #include "json.h"
-#include "Interpreter_Dump_Writeable.h"
-#include "SQL_Dump_Writeable.h"
-#include "Writeable.h"
+#include "Interpreter_Dump_Writable.h"
+#include "SQL_Dump_Writable.h"
+#include "Writable.h"
 #include "type_io.h"
 #include "is_identifier.h"
 #include "Journal_File.h"
@@ -266,18 +266,18 @@ bool joedb::Readonly_Interpreter::process_command
  }
  else if (command == "schema") //////////////////////////////////////////////
  {
-  Interpreter_Dump_Writeable dump_writeable(out);
-  dump(db, dump_writeable, true);
+  Interpreter_Dump_Writable dump_writable(out);
+  dump(db, dump_writable, true);
  }
  else if (command == "dump") ////////////////////////////////////////////////
  {
-  Interpreter_Dump_Writeable dump_writeable(out);
-  dump(db, dump_writeable);
+  Interpreter_Dump_Writable dump_writable(out);
+  dump(db, dump_writable);
  }
  else if (command == "sql") /////////////////////////////////////////////////
  {
-  SQL_Dump_Writeable dump_writeable(out);
-  dump(db, dump_writeable);
+  SQL_Dump_Writable dump_writable(out);
+  dump(db, dump_writable);
  }
  else if (command == "json") ////////////////////////////////////////////////
  {

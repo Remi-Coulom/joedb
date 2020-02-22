@@ -3,11 +3,11 @@
 
 #include "File.h"
 #include "Readonly_Journal.h"
-#include "Interpreter_Dump_Writeable.h"
-#include "SQL_Dump_Writeable.h"
+#include "Interpreter_Dump_Writable.h"
+#include "SQL_Dump_Writable.h"
 #include "diagnostics.h"
-#include "Selective_Writeable.h"
-#include "Raw_Dump_Writeable.h"
+#include "Selective_Writable.h"
+#include "Raw_Dump_Writable.h"
 #include "main_exception_catcher.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -86,22 +86,22 @@ int joedb_logdump_main(int argc, char **argv)
     return 1;
    }
 
-   std::shared_ptr<joedb::Writeable> writeable;
+   std::shared_ptr<joedb::Writable> writable;
 
    if (sql)
-    writeable = std::make_shared<joedb::SQL_Dump_Writeable>(std::cout);
+    writable = std::make_shared<joedb::SQL_Dump_Writable>(std::cout);
    else if (raw)
-    writeable = std::make_shared<joedb::Raw_Dump_Writeable>(std::cout);
+    writable = std::make_shared<joedb::Raw_Dump_Writable>(std::cout);
    else
-    writeable = std::make_shared<joedb::Interpreter_Dump_Writeable>(std::cout);
+    writable = std::make_shared<joedb::Interpreter_Dump_Writable>(std::cout);
 
    if (schema_only)
    {
-    joedb::Selective_Writeable w(*writeable, joedb::Selective_Writeable::Mode::schema);
+    joedb::Selective_Writable w(*writable, joedb::Selective_Writable::Mode::schema);
     journal->replay_log(w);
    }
    else
-    journal->replay_log(*writeable);
+    journal->replay_log(*writable);
   }
  }
 

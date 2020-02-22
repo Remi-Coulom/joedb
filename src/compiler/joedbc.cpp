@@ -2,14 +2,14 @@
 #include "File.h"
 #include "Stream_File.h"
 #include "Journal_File.h"
-#include "Selective_Writeable.h"
+#include "Selective_Writable.h"
 #include "Readable_Multiplexer.h"
 #include "Interpreter.h"
 #include "Compiler_Options.h"
 #include "Compiler_Options_io.h"
 #include "type_io.h"
 #include "c_wrapper.h"
-#include "Dummy_Writeable.h"
+#include "Dummy_Writable.h"
 #include "is_identifier.h"
 #include "main_exception_catcher.h"
 
@@ -252,7 +252,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << " class range_of_" << index.name << ";\n";
  out << '\n';
 
- out << " class Database: public joedb::Writeable\n {\n";
+ out << " class Database: public joedb::Writable\n {\n";
 
  for (auto &table: tables)
  {
@@ -485,7 +485,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
- // delete_from writeable function
+ // delete_from writable function
  //
  out << '\n';
  out << "   void delete_from(Table_Id table_id, Record_Id record_id) override\n";
@@ -1590,7 +1590,7 @@ void write_initial_comment(std::ostream &out, const Compiler_Options &options)
 namespace joedb
 /////////////////////////////////////////////////////////////////////////////
 {
- class Custom_Collector: public Dummy_Writeable
+ class Custom_Collector: public Dummy_Writable
  {
   private:
    std::vector<std::string> &names;
@@ -1637,12 +1637,12 @@ int joedbc_main(int argc, char **argv)
 
   Stream_File schema_file(schema, Open_Mode::create_new);
   Journal_File journal(schema_file);
-  Selective_Writeable schema_writeable(journal, Selective_Writeable::schema);
+  Selective_Writable schema_writable(journal, Selective_Writable::schema);
   Custom_Collector custom_collector(custom_names);
 
   Readable_Multiplexer multiplexer(db);
-  multiplexer.add_writeable(schema_writeable);
-  multiplexer.add_writeable(custom_collector);
+  multiplexer.add_writable(schema_writable);
+  multiplexer.add_writable(custom_collector);
 
   Interpreter interpreter(multiplexer);
   interpreter.set_echo(false);

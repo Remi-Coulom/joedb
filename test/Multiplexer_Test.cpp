@@ -3,7 +3,7 @@
 #include "Journal_File.h"
 #include "Database.h"
 #include "Interpreter.h"
-#include "Interpreter_Dump_Writeable.h"
+#include "Interpreter_Dump_Writable.h"
 #include "dump.h"
 
 #include "gtest/gtest.h"
@@ -51,13 +51,13 @@ TEST(Multiplexer_Test, interpreter_test)
   std::ostringstream multiplexed;
 
   {
-   Interpreter_Dump_Writeable dump_writeable(reference);
-   dump(reference_db, dump_writeable);
+   Interpreter_Dump_Writable dump_writable(reference);
+   dump(reference_db, dump_writable);
   }
 
   {
-   Interpreter_Dump_Writeable dump_writeable(multiplexed);
-   dump(multiplexed_db, dump_writeable);
+   Interpreter_Dump_Writable dump_writable(multiplexed);
+   dump(multiplexed_db, dump_writable);
   }
 
   EXPECT_EQ(reference.str(), multiplexed.str());

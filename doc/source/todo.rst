@@ -9,7 +9,6 @@ Short Term
 - joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
 
 - run unit tests with address sanitizer instead of valgrind
-- Writeable -> Writable
 
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
 - Null default initial values
@@ -18,14 +17,14 @@ Short Term
   - a separate table abstraction (that could be used for query output)
   - cursors on tables
 
-- make Readable_Writeable based on compiled db (or Readable only...)
+- make Readable_Writable based on compiled db (or Readable only...)
 - make joedb_admin work on the new readable interface, and publish it
 - index and referential integrity: should be in the journal, and also implemented in the interpreted database.
 - performance of interpreted database: use vector instead of map for tables and fields (with a bool indicating if deleted)
 
 Journal File
 ------------
-- Instead of throwing an exception: make it impossible at compile time to open a writeable journal with a read_only file.
+- Instead of throwing an exception: make it impossible at compile time to open a writable journal with a read_only file.
 - joedb_truncate <file> <position> (+optionally show position in logdump)
 - better than truncating: add an ``undo`` operation to the log. This way, it is possible to keep all branches of history.
 - high-performance system-specific implementation of joedb::File?
@@ -51,7 +50,7 @@ On-disk Storage
 Compiler
 --------
 - Allow opening a compiled db in "create_new" mode to throw if existing?
-- Should inheritance of compiled db from Writeable be protected?
+- Should inheritance of compiled db from Writable be protected?
 - An uninitialized field is undefined. Debug mode: check that no undefined value is read? Also: an index may have more than one field. Should not include a row into the index before all fields of the index are defined? Only one index columns triggers index update?
 - modularize code generation
 
@@ -105,7 +104,7 @@ Other Ideas
 - rapidly undo-able history
 - add explicit keyword to constructors
 - make some classes non-copyable
-- Use templates instead of virtual function calls for writeables?
+- Use templates instead of virtual function calls for writables?
 
   - compilation will be slower
   - compiled code may get bigger if more than one template instance

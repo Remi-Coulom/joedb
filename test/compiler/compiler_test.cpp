@@ -8,7 +8,7 @@
 #include "Journal_File.h"
 #include "Database.h"
 #include "translation.h"
-#include "Interpreter_Dump_Writeable.h"
+#include "Interpreter_Dump_Writable.h"
 
 #include <iostream>
 #include <algorithm>
@@ -358,8 +358,8 @@ int schema_upgrade_test()
  {
   joedb::File file("upgrade_test.joedb", joedb::Open_Mode::read_existing);
   joedb::Readonly_Journal journal(file);
-  joedb::Interpreter_Dump_Writeable writeable(std::cout);
-  journal.replay_log(writeable);
+  joedb::Interpreter_Dump_Writable writable(std::cout);
+  journal.replay_log(writable);
  }
 
  return 0;
@@ -504,7 +504,7 @@ int exceptions()
  {
   testdb::File_Database db("delete_in_vector_storage.joedb");
   auto translation = db.new_translation();
-  ((joedb::Writeable *)&db)->delete_from(5, translation.get_id());
+  ((joedb::Writable *)&db)->delete_from(5, translation.get_id());
  }
  catch (const joedb::Exception &e)
  {
@@ -514,8 +514,8 @@ int exceptions()
  try
  {
   testdb::File_Database db("duplicate_insert.joedb");
-  ((joedb::Writeable *)&db)->insert_into(1, 1);
-  ((joedb::Writeable *)&db)->insert_into(1, 1);
+  ((joedb::Writable *)&db)->insert_into(1, 1);
+  ((joedb::Writable *)&db)->insert_into(1, 1);
  }
  catch (const joedb::Exception &e)
  {
@@ -525,8 +525,8 @@ int exceptions()
  try
  {
   testdb::File_Database db("contiguous_vector.joedb");
-  ((joedb::Writeable *)&db)->insert_into(5, 1);
-  ((joedb::Writeable *)&db)->insert_into(5, 3);
+  ((joedb::Writable *)&db)->insert_into(5, 1);
+  ((joedb::Writable *)&db)->insert_into(5, 3);
  }
  catch (const joedb::Exception &e)
  {
@@ -537,7 +537,7 @@ int exceptions()
  {
   testdb::File_Database db("too_big.joedb");
   db.set_max_record_id(1000);
-  ((joedb::Writeable *)&db)->insert_into(1, 2000);
+  ((joedb::Writable *)&db)->insert_into(1, 2000);
  }
  catch (const joedb::Exception &e)
  {
@@ -548,7 +548,7 @@ int exceptions()
  {
   testdb::File_Database db("too_big.joedb");
   db.set_max_record_id(1000);
-  ((joedb::Writeable *)&db)->insert_vector(1, 1, 2000);
+  ((joedb::Writable *)&db)->insert_vector(1, 1, 2000);
  }
  catch (const joedb::Exception &e)
  {

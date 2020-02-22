@@ -80,6 +80,6 @@ Class Hierarchy
   class Generic_Readonly_Database: public Database;
   class Readonly_Database: public Generic_Readonly_Database;
 
-  // These are writeable databases based on a joedb::Generic_File
+  // These are writable databases based on a joedb::Generic_File
   class Generic_File_Database: public Database;
   class File_Database: public Generic_File_Database;

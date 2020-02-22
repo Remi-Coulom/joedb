@@ -1,9 +1,9 @@
 #include "dump.h"
 #include "Database.h"
-#include "Writeable.h"
+#include "Writable.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump(const Readable &db, Writeable &writeable, bool schema_only)
+void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
 /////////////////////////////////////////////////////////////////////////////
 {
  //
@@ -17,7 +17,7 @@ void joedb::dump(const Readable &db, Writeable &writeable, bool schema_only)
    ++table_id;
    table_map[table.first] = table_id;
 
-   writeable.create_table(table.second);
+   writable.create_table(table.second);
   }
  }
 
@@ -39,7 +39,7 @@ void joedb::dump(const Readable &db, Writeable &writeable, bool schema_only)
      type = Type::reference(table_map[type.get_table_id()]);
     field_maps[table.first][field.first] = field_id;
 
-    writeable.add_field(table_map[table.first], field.second, type);
+    writable.add_field(table_map[table.first], field.second, type);
    }
   }
  }
@@ -71,7 +71,7 @@ void joedb::dump(const Readable &db, Writeable &writeable, bool schema_only)
 
    if (size)
    {
-    writeable.insert_vector(table_map[table_id], record_id, size);
+    writable.insert_vector(table_map[table_id], record_id, size);
     record_id += size;
    }
   }
@@ -90,7 +90,7 @@ void joedb::dump(const Readable &db, Writeable &writeable, bool schema_only)
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
-       writeable.update_##type_id(table_map[table_id], record_id, field_maps[table_id][field_id], db.get_##type_id(table_id, record_id, field_id));\
+       writable.update_##type_id(table_map[table_id], record_id, field_maps[table_id][field_id], db.get_##type_id(table_id, record_id, field_id));\
       break;
       #include "TYPE_MACRO.h"
       #undef TYPE_MACRO
@@ -101,7 +101,7 @@ void joedb::dump(const Readable &db, Writeable &writeable, bool schema_only)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::dump_data(const Readable &db, Writeable &writeable)
+void joedb::dump_data(const Readable &db, Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  for (auto table: db.get_tables())
@@ -125,7 +125,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
 
    if (size)
    {
-    writeable.insert_vector(table_id, record_id, size);
+    writable.insert_vector(table_id, record_id, size);
 
     for (const auto &field: db.get_fields(table_id))
     {
@@ -142,7 +142,7 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
        std::vector<type> v(size);\
        for (Record_Id i = 0; i < size; i++)\
         v[i] = db.get_##type_id(table_id, record_id + i, field_id);\
-       writeable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
+       writable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
       }\
       break;
       #include "TYPE_MACRO.h"
@@ -156,22 +156,22 @@ void joedb::dump_data(const Readable &db, Writeable &writeable)
  }
 }
 
-#include "Selective_Writeable.h"
+#include "Selective_Writable.h"
 #include "Multiplexer.h"
 #include "Journal_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::pack(Readonly_Journal &input_journal, Writeable &writeable)
+void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
 
- Selective_Writeable schema_filter(writeable, Selective_Writeable::Mode::schema);
+ Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
  Multiplexer multiplexer;
- multiplexer.add_writeable(db);
- multiplexer.add_writeable(schema_filter);
+ multiplexer.add_writable(db);
+ multiplexer.add_writable(schema_filter);
 
  input_journal.replay_log(multiplexer);
 
- dump_data(db, writeable);
+ dump_data(db, writable);
 }

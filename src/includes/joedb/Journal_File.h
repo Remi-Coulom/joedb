@@ -1,14 +1,14 @@
 #ifndef joedb_Journal_File_declared
 #define joedb_Journal_File_declared
 
-#include "Writeable.h"
+#include "Writable.h"
 #include "Readonly_Journal.h"
 
 namespace joedb
 {
  class Generic_File;
 
- class Journal_File: public Readonly_Journal, public Writeable
+ class Journal_File: public Readonly_Journal, public Writable
  {
   private:
    int current_commit_level;

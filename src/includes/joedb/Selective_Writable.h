@@ -1,11 +1,11 @@
-#ifndef joedb_Selective_Writeable_declared
-#define joedb_Selective_Writeable_declared
+#ifndef joedb_Selective_Writable_declared
+#define joedb_Selective_Writable_declared
 
-#include "Writeable.h"
+#include "Writable.h"
 
 namespace joedb
 {
- class Selective_Writeable: public Writeable
+ class Selective_Writable: public Writable
  {
   public:
    enum Mode
@@ -19,13 +19,13 @@ namespace joedb
    };
 
   private:
-   Writeable &writeable;
+   Writable &writable;
    const Mode mode;
 
   public:
 
-   Selective_Writeable(Writeable &writeable, Mode mode):
-    writeable(writeable),
+   Selective_Writable(Writable &writable, Mode mode):
+    writable(writable),
     mode(mode)
    {
    }
@@ -36,20 +36,20 @@ namespace joedb
    void create_table(const std::string &name) override
    {
     if (mode & schema)
-     writeable.create_table(name);
+     writable.create_table(name);
    }
 
    void drop_table(Table_Id table_id) override
    {
     if (mode & schema)
-     writeable.drop_table(table_id);
+     writable.drop_table(table_id);
    }
 
    void rename_table(Table_Id table_id,
                      const std::string &name) override
    {
     if (mode & schema)
-     writeable.rename_table(table_id, name);
+     writable.rename_table(table_id, name);
    }
 
    void add_field(Table_Id table_id,
@@ -57,14 +57,14 @@ namespace joedb
                   Type type) override
    {
     if (mode & schema)
-     writeable.add_field(table_id, name, type);
+     writable.add_field(table_id, name, type);
    }
 
    void drop_field(Table_Id table_id,
                    Field_Id field_id) override
    {
     if (mode & schema)
-     writeable.drop_field(table_id, field_id);
+     writable.drop_field(table_id, field_id);
    }
 
    void rename_field(Table_Id table_id,
@@ -72,13 +72,13 @@ namespace joedb
                      const std::string &name) override
    {
     if (mode & schema)
-     writeable.rename_field(table_id, field_id, name);
+     writable.rename_field(table_id, field_id, name);
    }
 
    void custom(const std::string &name) override
    {
     if (mode & schema)
-     writeable.custom(name);
+     writable.custom(name);
    }
 
    //
@@ -87,19 +87,19 @@ namespace joedb
    void comment(const std::string &comment) override
    {
     if (mode & information)
-     writeable.comment(comment);
+     writable.comment(comment);
    }
 
    void timestamp(int64_t timestamp) override
    {
     if (mode & information)
-     writeable.timestamp(timestamp);
+     writable.timestamp(timestamp);
    }
 
    void valid_data() override
    {
     if (mode & information)
-     writeable.valid_data();
+     writable.valid_data();
    }
 
    //
@@ -108,7 +108,7 @@ namespace joedb
    void insert_into(Table_Id table_id, Record_Id record_id) override
    {
     if (mode & data)
-     writeable.insert_into(table_id, record_id);
+     writable.insert_into(table_id, record_id);
    }
 
    void insert_vector(Table_Id table_id,
@@ -116,13 +116,13 @@ namespace joedb
                       Record_Id size) override
    {
     if (mode & data)
-     writeable.insert_vector(table_id, record_id, size);
+     writable.insert_vector(table_id, record_id, size);
    }
 
    void delete_from(Table_Id table_id, Record_Id record_id) override
    {
     if (mode & data)
-     writeable.delete_from(table_id, record_id);
+     writable.delete_from(table_id, record_id);
    }
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -132,7 +132,7 @@ namespace joedb
                          return_type value) override\
    {\
     if (mode & data)\
-     writeable.update_##type_id(table_id, record_id, field_id, value);\
+     writable.update_##type_id(table_id, record_id, field_id, value);\
    }
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO

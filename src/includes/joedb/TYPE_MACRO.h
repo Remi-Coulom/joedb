@@ -25,4 +25,4 @@ TYPE_MACRO(int16_t, int16_t, int16, file.read<int16_t>, write<int16_t>)
 #endif
 
 // Warning: only add at the bottom to keep compatibility with previous versions
-// Don't forget to add case in SQL_Dump_Writeable
+// Don't forget to add case in SQL_Dump_Writable

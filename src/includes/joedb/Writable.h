@@ -1,5 +1,5 @@
-#ifndef joedb_Writeable_declared
-#define joedb_Writeable_declared
+#ifndef joedb_Writable_declared
+#define joedb_Writable_declared
 
 #include "Type.h"
 
@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- class Writeable
+ class Writable
  {
   public:
    virtual void create_table(const std::string &name) = 0;
@@ -46,7 +46,7 @@ namespace joedb
    #include "TYPE_MACRO.h"
    #undef TYPE_MACRO
 
-   virtual ~Writeable() {}
+   virtual ~Writable() {}
  };
 }
 

@@ -1,6 +1,6 @@
 #include "Interpreter.h"
-#include "Interpreter_Dump_Writeable.h"
-#include "SQL_Dump_Writeable.h"
+#include "Interpreter_Dump_Writable.h"
+#include "SQL_Dump_Writable.h"
 #include "Database.h"
 #include "gtest/gtest.h"
 #include "Readable_Multiplexer.h"
@@ -42,11 +42,11 @@ TEST_F(Interpreter_Test, main_test)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, Interpreter_Dump_Writeable)
+TEST_F(Interpreter_Test, Interpreter_Dump_Writable)
 {
  std::ostringstream dump_string;
- joedb::Interpreter_Dump_Writeable writeable(dump_string);
- db.add_writeable(writeable);
+ joedb::Interpreter_Dump_Writable writable(dump_string);
+ db.add_writable(writable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -63,11 +63,11 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Writeable)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, SQL_Dump_Writeable)
+TEST_F(Interpreter_Test, SQL_Dump_Writable)
 {
  std::ostringstream dump_string;
- joedb::SQL_Dump_Writeable writeable(dump_string);
- db.add_writeable(writeable);
+ joedb::SQL_Dump_Writable writable(dump_string);
+ db.add_writable(writable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());

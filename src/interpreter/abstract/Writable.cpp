@@ -1,9 +1,9 @@
-#include "joedb/Writeable.h"
+#include "joedb/Writable.h"
 
 namespace joedb
 {
  #define TYPE_MACRO(type, return_type, type_id, R, W)\
- void Writeable::update_vector_##type_id(Table_Id table_id,\
+ void Writable::update_vector_##type_id(Table_Id table_id,\
                                         Record_Id record_id,\
                                         Field_Id field_id,\
                                         Record_Id size,\

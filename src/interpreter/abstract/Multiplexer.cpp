@@ -1,13 +1,13 @@
 #include "Multiplexer.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Multiplexer::add_writeable(Writeable &writeable)
+void joedb::Multiplexer::add_writable(Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
- writeables.push_back(&writeable);
+ writables.push_back(&writable);
 }
 
-#define MULTIPLEX(x) do {for (auto w: writeables) w->x;} while(0)
+#define MULTIPLEX(x) do {for (auto w: writables) w->x;} while(0)
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Multiplexer::create_table(const std::string &name)

@@ -47,10 +47,10 @@ add_library(joedb_objects OBJECT
  ../src/interpreter/abstract/Database.cpp
  ../src/interpreter/abstract/Table.cpp
  ../src/interpreter/abstract/is_identifier.cpp
- ../src/interpreter/abstract/Writeable.cpp
+ ../src/interpreter/abstract/Writable.cpp
  ../src/interpreter/abstract/Multiplexer.cpp
  ../src/interpreter/io/base64.cpp
- ../src/interpreter/io/Dump_Writeable.cpp
+ ../src/interpreter/io/Dump_Writable.cpp
  ../src/interpreter/io/dump.cpp
  ../src/interpreter/io/Interpreter.cpp
  ../src/interpreter/io/json.cpp
@@ -126,7 +126,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Merge_Test.cpp
   ../test/Multiplexer_Test.cpp
   ../test/pack_Test.cpp
-  ../test/Selective_Writeable_Test.cpp
+  ../test/Selective_Writable_Test.cpp
   ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp

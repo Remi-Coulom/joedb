@@ -1,12 +1,12 @@
-#ifndef joedb_Raw_Dump_Writeable_declared
-#define joedb_Raw_Dump_Writeable_declared
+#ifndef joedb_Raw_Dump_Writable_declared
+#define joedb_Raw_Dump_Writable_declared
 
-#include "Dump_Writeable.h"
+#include "Dump_Writable.h"
 #include "type_io.h"
 
 namespace joedb
 {
- class Raw_Dump_Writeable: public Writeable
+ class Raw_Dump_Writable: public Writable
  {
   private:
    std::ostream &out;
@@ -35,7 +35,7 @@ namespace joedb
    }
 
   public:
-   Raw_Dump_Writeable(std::ostream &out): out(out) {}
+   Raw_Dump_Writable(std::ostream &out): out(out) {}
 
    void create_table(const std::string &name) override
    {

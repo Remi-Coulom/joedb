@@ -92,11 +92,11 @@ joedb::Readonly_Journal::Readonly_Journal
 #undef FORMAT_EXCEPTION
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::replay_log(Writeable &writeable)
+void joedb::Readonly_Journal::replay_log(Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  rewind();
- play_until_checkpoint(writeable);
+ play_until_checkpoint(writable);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -114,11 +114,11 @@ void joedb::Readonly_Journal::seek(int64_t position)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::play_until(Writeable &writeable, int64_t end)
+void joedb::Readonly_Journal::play_until(Writable &writable, int64_t end)
 /////////////////////////////////////////////////////////////////////////////
 {
  while(file.get_position() < end)
-  one_step(writeable);
+  one_step(writable);
  file.set_position(file.get_position()); // get ready for writing
 }
 
@@ -130,7 +130,7 @@ bool joedb::Readonly_Journal::at_end_of_file() const
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::one_step(Writeable &writeable)
+void joedb::Readonly_Journal::one_step(Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  switch(file.read<operation_t>())
@@ -143,14 +143,14 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
   case operation_t::create_table:
   {
    std::string name = safe_read_string();
-   writeable.create_table(name);
+   writable.create_table(name);
   }
   break;
 
   case operation_t::drop_table:
   {
    Table_Id table_id = file.compact_read<Table_Id>();
-   writeable.drop_table(table_id);
+   writable.drop_table(table_id);
   }
   break;
 
@@ -158,7 +158,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
   {
    Table_Id table_id = file.compact_read<Table_Id>();
    std::string name = safe_read_string();
-   writeable.rename_table(table_id, name);
+   writable.rename_table(table_id, name);
   }
   break;
 
@@ -167,7 +167,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
    Table_Id table_id = file.compact_read<Table_Id>();
    std::string name = safe_read_string();
    Type type = read_type();
-   writeable.add_field(table_id, name, type);
+   writable.add_field(table_id, name, type);
   }
   break;
 
@@ -175,7 +175,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
   {
    Table_Id table_id = file.compact_read<Table_Id>();
    Field_Id field_id = file.compact_read<Field_Id>();
-   writeable.drop_field(table_id, field_id);
+   writable.drop_field(table_id, field_id);
   }
   break;
 
@@ -184,7 +184,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
    Table_Id table_id = file.compact_read<Table_Id>();
    Field_Id field_id = file.compact_read<Field_Id>();
    std::string name = safe_read_string();
-   writeable.rename_field(table_id, field_id, name);
+   writable.rename_field(table_id, field_id, name);
   }
   break;
 
@@ -192,7 +192,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
   {
    Table_Id table_id = file.compact_read<Table_Id>();
    Record_Id record_id = file.compact_read<Record_Id>();
-   writeable.insert_into(table_id, record_id);
+   writable.insert_into(table_id, record_id);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
   }
@@ -203,14 +203,14 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
    Table_Id table_id = file.compact_read<Table_Id>();
    Record_Id record_id = file.compact_read<Record_Id>();
    Record_Id size = file.compact_read<Record_Id>();
-   writeable.insert_vector(table_id, record_id, size);
+   writable.insert_vector(table_id, record_id, size);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
   }
   break;
 
   case operation_t::append:
-   writeable.insert_into(table_of_last_operation,
+   writable.insert_into(table_of_last_operation,
                          ++record_of_last_operation);
   break;
 
@@ -218,7 +218,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
   {
    Table_Id table_id = file.compact_read<Table_Id>();
    Record_Id record_id = file.compact_read<Record_Id>();
-   writeable.delete_from(table_id, record_id);
+   writable.delete_from(table_id, record_id);
   }
   break;
 
@@ -240,7 +240,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
   lbl_perform_update_##type_id:\
   {\
    cpp_type value = read_method();\
-   writeable.update_##type_id\
+   writable.update_##type_id\
    (\
     table_of_last_operation,\
     record_of_last_operation,\
@@ -261,7 +261,7 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
    std::vector<cpp_type> buffer(size);\
    for (size_t i = 0; i < size; i++)\
     buffer[i] = read_method();\
-   writeable.update_vector_##type_id\
+   writable.update_vector_##type_id\
    (\
     table_of_last_operation,\
     record_of_last_operation,\
@@ -277,26 +277,26 @@ void joedb::Readonly_Journal::one_step(Writeable &writeable)
   case operation_t::custom:
   {
    std::string name = safe_read_string();
-   writeable.custom(name);
+   writable.custom(name);
   }
   break;
 
   case operation_t::comment:
   {
    std::string comment = safe_read_string();
-   writeable.comment(comment);
+   writable.comment(comment);
   }
   break;
 
   case operation_t::timestamp:
   {
    int64_t timestamp = file.read<int64_t>();
-   writeable.timestamp(timestamp);
+   writable.timestamp(timestamp);
   }
   break;
 
   case operation_t::valid_data:
-   writeable.valid_data();
+   writable.valid_data();
   break;
 
   default:

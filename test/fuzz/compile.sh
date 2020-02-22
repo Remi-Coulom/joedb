@@ -22,11 +22,11 @@ build()
   ../../src/external/wide_char_display_width.c\
   ../../src/interpreter/abstract/Database.cpp\
   ../../src/interpreter/abstract/is_identifier.cpp\
-  ../../src/interpreter/abstract/Writeable.cpp\
+  ../../src/interpreter/abstract/Writable.cpp\
   ../../src/interpreter/abstract/Multiplexer.cpp\
   ../../src/interpreter/abstract/Table.cpp\
   ../../src/interpreter/io/Interpreter.cpp\
-  ../../src/interpreter/io/Dump_Writeable.cpp\
+  ../../src/interpreter/io/Dump_Writable.cpp\
   ../../src/interpreter/io/type_io.cpp\
   ../../src/interpreter/io/dump.cpp\
   ../../src/interpreter/io/json.cpp\

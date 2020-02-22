@@ -1,7 +1,7 @@
 #ifndef joedb_Readonly_Journal_declared
 #define joedb_Readonly_Journal_declared
 
-#include "Writeable.h"
+#include "Writable.h"
 
 namespace joedb
 {
@@ -13,14 +13,14 @@ namespace joedb
    Readonly_Journal(Generic_File &file, bool ignore_errors = false);
 
    int64_t get_checkpoint_position() const {return checkpoint_position;}
-   void replay_log(Writeable &writeable);
+   void replay_log(Writable &writable);
    void rewind();
    void seek(int64_t position);
-   void one_step(Writeable &writeable);
-   void play_until(Writeable &writeable, int64_t end);
-   void play_until_checkpoint(Writeable &writeable)
+   void one_step(Writable &writable);
+   void play_until(Writable &writable, int64_t end);
+   void play_until_checkpoint(Writable &writable)
    {
-    play_until(writeable, checkpoint_position);
+    play_until(writable, checkpoint_position);
    }
 
    bool at_end_of_file() const;

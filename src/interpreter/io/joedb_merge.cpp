@@ -2,7 +2,7 @@
 #include "Journal_File.h"
 #include "Stream_File.h"
 #include "Database.h"
-#include "Selective_Writeable.h"
+#include "Selective_Writable.h"
 #include "Multiplexer.h"
 #include "dump.h"
 #include "merge.h"
@@ -80,23 +80,23 @@ namespace joedb
     std::stringstream schema_stream;
     Stream_File schema_file(schema_stream, Open_Mode::create_new);
     Journal_File schema_journal(schema_file);
-    Selective_Writeable schema_filter
+    Selective_Writable schema_filter
     (
      schema_journal,
-     Selective_Writeable::Mode::schema
+     Selective_Writable::Mode::schema
     );
 
-    Selective_Writeable output_schema
+    Selective_Writable output_schema
     (
      output_journal,
-     Selective_Writeable::Mode::schema
+     Selective_Writable::Mode::schema
     );
 
     Multiplexer multiplexer;
     if (!merged_db)
-     multiplexer.add_writeable(output_schema);
-    multiplexer.add_writeable(schema_filter);
-    multiplexer.add_writeable(*db);
+     multiplexer.add_writable(output_schema);
+    multiplexer.add_writable(schema_filter);
+    multiplexer.add_writable(*db);
 
     input_journal.replay_log(multiplexer);
 

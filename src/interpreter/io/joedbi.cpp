@@ -52,7 +52,7 @@ int joedbi_main(int argc, char **argv)
    joedb::Journal_File journal(*file);
    journal.replay_log(db);
    joedb::Readable_Multiplexer multiplexer(db);
-   multiplexer.add_writeable(journal);
+   multiplexer.add_writable(journal);
    joedb::Interpreter interpreter(multiplexer);
    interpreter.main_loop(std::cin, std::cout);
   }

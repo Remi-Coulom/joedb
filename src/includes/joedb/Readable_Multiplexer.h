@@ -2,7 +2,7 @@
 #define joedb_Readable_Multiplexer_declared
 
 #include "Multiplexer.h"
-#include "Readable_Writeable.h"
+#include "Readable_Writable.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -11,16 +11,16 @@
 
 namespace joedb
 {
- class Readable_Multiplexer: public Readable_Writeable, public Multiplexer
+ class Readable_Multiplexer: public Readable_Writable, public Multiplexer
  {
   private:
    Readable &readable;
 
   public:
-   Readable_Multiplexer(Readable_Writeable &readable_writeable):
-    readable(readable_writeable)
+   Readable_Multiplexer(Readable_Writable &readable_writable):
+    readable(readable_writable)
    {
-    add_writeable(readable_writeable);
+    add_writable(readable_writable);
    }
 
    const std::map<Table_Id, std::string> &get_tables() const override

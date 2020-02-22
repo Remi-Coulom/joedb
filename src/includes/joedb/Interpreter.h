@@ -4,7 +4,7 @@
 #include <iosfwd>
 
 #include "Type.h"
-#include "Readable_Writeable.h"
+#include "Readable_Writable.h"
 
 namespace joedb
 {
@@ -55,7 +55,7 @@ namespace joedb
 /////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Readable_Writeable &db;
+   Readable_Writable &db;
 
    void update_value(std::istream &in,
                      Table_Id table_id,
@@ -73,7 +73,7 @@ namespace joedb
    Record_Id max_record_id;
 
   public:
-   Interpreter(Readable_Writeable &db, Record_Id max_record_id = 0):
+   Interpreter(Readable_Writable &db, Record_Id max_record_id = 0):
     Readonly_Interpreter(db),
     db(db),
     max_record_id(max_record_id)

@@ -1,14 +1,14 @@
-#ifndef joedb_SQL_Dump_Writeable_declared
-#define joedb_SQL_Dump_Writeable_declared
+#ifndef joedb_SQL_Dump_Writable_declared
+#define joedb_SQL_Dump_Writable_declared
 
-#include "Dump_Writeable.h"
+#include "Dump_Writable.h"
 #include "type_io.h"
 
 #include <iostream>
 
 namespace joedb
 {
- class SQL_Dump_Writeable: public Dump_Writeable
+ class SQL_Dump_Writable: public Dump_Writable
  {
   private:
    void write_type(Type type)
@@ -64,18 +64,18 @@ namespace joedb
    std::string key_type = "INTEGER";
 
   public:
-   SQL_Dump_Writeable(std::ostream &out): Dump_Writeable(out) {}
+   SQL_Dump_Writable(std::ostream &out): Dump_Writable(out) {}
 
    void create_table(const std::string &name) override
    {
     out << "CREATE TABLE \"" << name << "\"(" << id_field_name << ' ' << key_type << " PRIMARY KEY);\n";
-    Schema_Writeable::create_table(name);
+    Schema_Writable::create_table(name);
    }
 
    void drop_table(Table_Id table_id) override
    {
     out << "DROP TABLE \"" << db.get_table_name(table_id) << "\";\n";
-    Schema_Writeable::drop_table(table_id);
+    Schema_Writable::drop_table(table_id);
    }
 
    void rename_table(Table_Id table_id,
@@ -83,7 +83,7 @@ namespace joedb
    {
     out << "ALTER TABLE \"" << db.get_table_name(table_id);
     out << "\" RENAME TO \"" << name << "\";\n";
-    Schema_Writeable::rename_table(table_id, name);
+    Schema_Writable::rename_table(table_id, name);
    }
 
    void add_field(Table_Id table_id,
@@ -94,14 +94,14 @@ namespace joedb
     out << "\" ADD \"" << name << "\" ";
     write_type(type);
     out << ";\n";
-    Schema_Writeable::add_field(table_id, name, type);
+    Schema_Writable::add_field(table_id, name, type);
    }
 
    void drop_field(Table_Id table_id, Field_Id field_id) override
    {
     out << "ALTER TABLE \"" << db.get_table_name(table_id);
     out << "\" DROP \"" << db.get_field_name(table_id, field_id) << "\";\n";
-    Schema_Writeable::drop_field(table_id, field_id);
+    Schema_Writable::drop_field(table_id, field_id);
    }
 
    void rename_field(Table_Id table_id,
@@ -110,7 +110,7 @@ namespace joedb
    {
     out << "ALTER TABLE \"" << db.get_table_name(table_id) << "\" RENAME COLUMN \"";
     out << db.get_field_name(table_id, field_id) << "\" TO \"" << name << "\";\n";
-    Schema_Writeable::rename_field(table_id, field_id, name);
+    Schema_Writable::rename_field(table_id, field_id, name);
    }
 
    void custom(const std::string &name) override

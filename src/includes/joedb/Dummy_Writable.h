@@ -1,11 +1,11 @@
-#ifndef joedb_Dummy_Writeable_declared
-#define joedb_Dummy_Writeable_declared
+#ifndef joedb_Dummy_Writable_declared
+#define joedb_Dummy_Writable_declared
 
-#include "Writeable.h"
+#include "Writable.h"
 
 namespace joedb
 {
- class Dummy_Writeable: public Writeable
+ class Dummy_Writable: public Writable
  {
   public:
    void create_table(const std::string &name) override {}

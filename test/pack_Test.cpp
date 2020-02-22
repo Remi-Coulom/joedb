@@ -3,7 +3,7 @@
 #include "joedb/Database.h"
 #include "joedb/Stream_File.h"
 #include "joedb/Journal_File.h"
-#include "Interpreter_Dump_Writeable.h"
+#include "Interpreter_Dump_Writable.h"
 #include "gtest/gtest.h"
 #include "Readable_Multiplexer.h"
 
@@ -46,7 +46,7 @@ update_vector float 7 value 2 0.8 9\n\
 
   Database db;
   Readable_Multiplexer multiplexer(db);
-  multiplexer.add_writeable(journal);
+  multiplexer.add_writable(journal);
 
   {
    std::istringstream joedbi_iss(joedbi);
@@ -63,8 +63,8 @@ update_vector float 7 value 2 0.8 9\n\
   Readonly_Journal journal(joedb_file);
 
   std::stringstream packed_ss;
-  Interpreter_Dump_Writeable writeable(packed_ss);
-  pack(journal, writeable);
+  Interpreter_Dump_Writable writable(packed_ss);
+  pack(journal, writable);
   EXPECT_EQ(packed_ss.str(), packed_result);
  }
 }

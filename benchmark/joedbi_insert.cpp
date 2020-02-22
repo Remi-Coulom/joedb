@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   Journal_File journal_file(file);
   Database db;
   Readable_Multiplexer multiplexer(db);
-  multiplexer.add_writeable(journal_file);
+  multiplexer.add_writable(journal_file);
 
   multiplexer.create_table("BENCHMARK");
   Table_Id table_id = multiplexer.find_table("BENCHMARK");

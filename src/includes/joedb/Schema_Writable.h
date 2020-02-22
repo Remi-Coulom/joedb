@@ -1,18 +1,18 @@
-#ifndef joedb_Schema_Writeable_declared
-#define joedb_Schema_Writeable_declared
+#ifndef joedb_Schema_Writable_declared
+#define joedb_Schema_Writable_declared
 
-#include "Writeable.h"
+#include "Writable.h"
 #include "Database.h"
 
 namespace joedb
 {
- class Schema_Writeable: public Writeable
+ class Schema_Writable: public Writable
  {
   protected:
    Database &db;
 
   public:
-   Schema_Writeable(Database &db): db(db) {}
+   Schema_Writable(Database &db): db(db) {}
 
    void create_table(const std::string &name) override
    {

@@ -3,17 +3,17 @@
 
 #include <vector>
 
-#include "Writeable.h"
+#include "Writable.h"
 
 namespace joedb
 {
- class Multiplexer: public virtual Writeable
+ class Multiplexer: public virtual Writable
  {
   private:
-   std::vector<Writeable *> writeables;
+   std::vector<Writable *> writables;
 
   public:
-   void add_writeable(Writeable &writeable);
+   void add_writable(Writable &writable);
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;

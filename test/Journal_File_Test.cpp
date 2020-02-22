@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 #include "dump.h"
 #include "Interpreter.h"
-#include "Interpreter_Dump_Writeable.h"
+#include "Interpreter_Dump_Writable.h"
 #include "Readable_Multiplexer.h"
 
 #include <fstream>
@@ -30,7 +30,7 @@ TEST_F(Journal_File_Test, basic_operations)
   File file("test.joedb", Open_Mode::create_new);
   Journal_File journal(file);
   Readable_Multiplexer multi(db1);
-  multi.add_writeable(journal);
+  multi.add_writable(journal);
 
   multi.create_table("deleted");
   multi.drop_table(db1.find_table("deleted"));
@@ -99,11 +99,11 @@ TEST_F(Journal_File_Test, basic_operations)
  std::ostringstream oss1;
  std::ostringstream oss2;
 
- Interpreter_Dump_Writeable writeable1(oss1);
- Interpreter_Dump_Writeable writeable2(oss2);
+ Interpreter_Dump_Writable writable1(oss1);
+ Interpreter_Dump_Writable writable2(oss2);
 
- joedb::dump(db1, writeable1);
- joedb::dump(db2, writeable2);
+ joedb::dump(db1, writable1);
+ joedb::dump(db2, writable2);
 
  EXPECT_EQ(oss1.str(), oss2.str());
 }
@@ -121,7 +121,7 @@ TEST_F(Journal_File_Test, interpreter_test)
 
   Database db_storage;
   Readable_Multiplexer db(db_storage);
-  db.add_writeable(journal);
+  db.add_writable(journal);
 
   Interpreter interpreter(db);
   std::ifstream in_file("interpreter_test.joedbi");
@@ -142,7 +142,7 @@ TEST_F(Journal_File_Test, interpreter_test)
 
   Database db_storage;
   Readable_Multiplexer db(db_storage);
-  db.add_writeable(journal_copy);
+  db.add_writable(journal_copy);
   journal.replay_log(db);
  }
 

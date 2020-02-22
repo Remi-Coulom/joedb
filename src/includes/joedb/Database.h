@@ -1,14 +1,14 @@
 #ifndef joedb_Database_declared
 #define joedb_Database_declared
 
-#include "Readable_Writeable.h"
+#include "Readable_Writable.h"
 #include "Table.h"
 
 #include <map>
 
 namespace joedb
 {
- class Database: public Readable_Writeable
+ class Database: public Readable_Writable
  {
   private:
    const Record_Id max_record_id;
@@ -41,7 +41,7 @@ namespace joedb
 
 
    //
-   // Writeable override
+   // Writable override
    //
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;
