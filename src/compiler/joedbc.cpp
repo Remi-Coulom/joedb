@@ -156,14 +156,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "#ifndef " << options.get_namespace_name() << "_Database_declared\n";
  out << "#define " << options.get_namespace_name() << "_Database_declared\n";
  out << R"RRR(
-#include <string>
-#include <cstdint>
-#include <vector>
-#include <map>
-#include <algorithm>
-#include <sstream>
-#include <memory>
-
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
 #include "joedb/Freedom_Keeper.h"
@@ -172,6 +164,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include "joedb/joedb_assert.h"
 #include "joedb/type_io.h"
 
+#include <string>
+#include <cstdint>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <sstream>
+#include <memory>
 )RRR";
 
  out << "namespace " << options.get_namespace_name() << "\n{\n";
@@ -1492,11 +1491,11 @@ void generate_cpp
  const std::string &ns = options.get_namespace_name();
 
  out << "#include \"" << options.get_namespace_name() << ".h\"\n";
- out << "#include \"joedb/Stream_File.h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
+ out << "#include \"joedb/Stream_File.h\"\n";
  out << '\n';
- out << "#include <sstream>\n";
  out << "#include <ctime>\n";
+ out << "#include <sstream>\n";
  out << '\n';
  out << "const std::string " << ns << "::Database::schema_string(";
  write_string(out, schema);
@@ -1516,7 +1515,7 @@ void )RRR" << ns << R"RRR(::Generic_File_Database::write_comment(const std::stri
 void )RRR" << ns << R"RRR(::Generic_File_Database::write_timestamp()
 /////////////////////////////////////////////////////////////////////////////
 {
- journal.timestamp(std::time(0));
+ journal.timestamp(std::time(nullptr));
 }
 
 /////////////////////////////////////////////////////////////////////////////
