@@ -119,7 +119,7 @@ int file_test()
  {
   db.set_name(New_York, "Paris");
  }
- catch(std::runtime_error e)
+ catch(const std::runtime_error &e)
  {
   std::cout << e.what() << '\n';
   db.set_name(New_York, "New York");

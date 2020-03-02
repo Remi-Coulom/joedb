@@ -26,7 +26,7 @@ int main()
   std::cout << "Trying to insert another Paris:\n";
   db.new_city("Paris");
  }
- catch(std::runtime_error e)
+ catch(const std::runtime_error &e)
  {
   std::cout << "Exception: " << e.what() << '\n';
  }
