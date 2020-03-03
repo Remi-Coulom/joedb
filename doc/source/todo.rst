@@ -4,11 +4,23 @@ TODO
 Short Term
 ----------
 
+- make a readonly File class that reads data from a char array. Use it for the
+  compiler. Actual char array instead of string literal (not zero terminated).
+  Should not copy any data to another buffer. A Generic_Readonly_File class?
+
+- tests for buffer overflow could be optimized when reading/writing large
+  pieces of data, such as strings or vectors.
+
+- only one file.check_write_buffer() call in write<T> and compact_write<T>:
+  make code shorter and simpler.
+
 - Pass strings by value for new and update
-  - make a custom string class to trace constructors and destructor
   - fix useless copies
   - need to fix Writable + joedbc (it is a bit complicated)
   - start by testing copy elision on a very simple toy simulation
+  - method for testing: use a very large string (100Mb) + pause execution with
+    sleep + look at process memory usage. (also measure execution time).
+  - main question: necessary to std::move or not?
 
 - joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
 
