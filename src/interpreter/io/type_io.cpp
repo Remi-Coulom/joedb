@@ -111,7 +111,7 @@ size_t joedb::utf8_display_size(const std::string &s)
 uint32_t joedb::read_utf8_char(size_t &i, const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
- const uint8_t *p = ((const uint8_t *)(s.c_str()) + i) ;
+ const uint8_t *p = (reinterpret_cast<const uint8_t *>(s.c_str()) + i);
 
  uint32_t result;
 

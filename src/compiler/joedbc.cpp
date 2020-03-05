@@ -125,7 +125,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  char const * const types[] =
  {
-  0,
+  nullptr,
 #define TYPE_MACRO(a, b, type_id, d, e) EXPAND_AND_STRINGIFY(type_id),
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
@@ -133,7 +133,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  char const * const cpp_types[] =
  {
-  0,
+  nullptr,
 #define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
@@ -141,7 +141,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  char const * const storage_types[] =
  {
-  0,
+  nullptr,
 #define TYPE_MACRO(storage, b, c, d, e) EXPAND_AND_STRINGIFY(storage),
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
@@ -1595,7 +1595,9 @@ namespace joedb
    std::vector<std::string> &names;
 
   public:
-   Custom_Collector(std::vector<std::string> &names): names(names) {}
+   explicit Custom_Collector(std::vector<std::string> &names): names(names)
+   {
+   }
 
    void custom(const std::string &name) override
    {

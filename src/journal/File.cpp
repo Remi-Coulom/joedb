@@ -135,7 +135,7 @@ joedb::File::File(const char *file_name, Open_Mode new_mode)
   throw Exception("File locked: " + std::string(file_name));
  }
 
- std::setvbuf(file, 0, _IONBF, 0);
+ std::setvbuf(file, nullptr, _IONBF, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -148,8 +148,8 @@ void generate_c_wrapper
  // Body
  ////////////////////////////////////////////////////////////////////////////
  std::ostringstream convert;
- convert << " " << name << "::File_Database *p = (" << name;
- convert << "::File_Database *)db;\n";
+ convert << " " << name << "::File_Database *p = reinterpret_cast<" << name;
+ convert << "::File_Database *>(db);\n";
 
  body << "#include \"" << name << "_wrapper.h\"\n";
  body << "#include \"" << name << ".h\"\n";
@@ -157,7 +157,7 @@ void generate_c_wrapper
 
  body << name << "_db *" << name << "_open_file(const char *file_name)\n";
  body << "{\n";
- body << " return (" << name << "_db *)(new " << name << "::File_Database(file_name));\n";
+ body << " return reinterpret_cast<" << name << "_db *>(new " << name << "::File_Database(file_name));\n";
  body << "}\n";
 
  body << "\nvoid " << name << "_delete(" << name << "_db *db)\n";

@@ -119,7 +119,7 @@ namespace joedb
     // Merge into the in-memory database
     //
     if (!merged_db)
-     merged_db.reset(db.release());
+     merged_db = std::move(db);
     else
      merge(*merged_db, *db);
    }

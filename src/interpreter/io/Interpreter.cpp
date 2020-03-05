@@ -432,7 +432,7 @@ bool joedb::Interpreter::process_command
   int64_t timestamp = 0;
   iss >> timestamp;
   if (iss.fail())
-   timestamp = std::time(0);
+   timestamp = std::time(nullptr);
   ERROR_CHECK(db.timestamp(timestamp));
  }
  else if (command == "valid_data") /////////////////////////////////////////
