@@ -26,6 +26,8 @@ Short Term
 
 - run unit tests with address sanitizer instead of valgrind
 
+- make a package for vcpkg and conan. Maybe build2?
+
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
 - Null default initial values
 - better readable interface:
