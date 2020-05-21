@@ -1,0 +1,14 @@
+#include "testdb_test.h"
+#include "testdb.h"
+
+/////////////////////////////////////////////////////////////////////////////
+int main()
+/////////////////////////////////////////////////////////////////////////////
+{
+ const testdb::Database &db = testdb::get_embedded_test();
+
+ for (auto person: db.get_person_table())
+  std::cout << db.get_name(person) << '\n';
+
+ return 0;
+}

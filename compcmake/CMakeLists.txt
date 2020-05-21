@@ -37,6 +37,7 @@ include_directories(
  ../src/interpreter/abstract
  ../src/interpreter/io
  ../src/journal
+ ../test/compiler
  ../../../emsdk_portable/emscripten/master/system/include
  ${GOOGLE_TEST}
  ${GOOGLE_TEST}/include
@@ -157,6 +158,10 @@ add_executable(joedbc
 )
 target_link_libraries(joedbc joedb)
 
+add_executable(joedb_embed
+ ../src/compiler/joedb_embed.cpp
+)
+
 #############################################################################
 # Custom commands
 #############################################################################
@@ -220,6 +225,17 @@ add_custom_command(
  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
 )
 
+add_custom_command(
+ OUTPUT
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test.cpp
+ COMMAND joedb_embed test.joedb testdb test
+ DEPENDS
+  joedb_embed
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
+ WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
+)
+
 #############################################################################
 # Targets below require databases to be compiled
 #############################################################################
@@ -280,6 +296,13 @@ target_link_libraries(compiler_test joedb)
 add_executable(generate_translation_header
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
+ ../src/compiler/minimal_runtime.cpp
+)
+
+add_executable(embedded_test
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/embedded_test.cpp
  ../src/compiler/minimal_runtime.cpp
 )
 

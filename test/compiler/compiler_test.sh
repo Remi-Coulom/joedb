@@ -6,7 +6,7 @@ build_dir=../../compcmake/ninja_debug
 rm -rvf *.joedb compiler_test.out
 
 cd "$build_dir"
-ninja joedbi joedbc compiler_test
+ninja joedbi joedbc compiler_test embedded_test
 cd -
 
 generate_db()
@@ -20,6 +20,7 @@ generate_db multi_index
 
 
 "$build_dir"/compiler_test >compiler_test.out
+"$build_dir"/embedded_test >>compiler_test.out
 
 #
 # Check differences with reference output
