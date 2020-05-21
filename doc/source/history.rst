@@ -1,6 +1,11 @@
 History
 =======
 
+- 2020-??-??: 3.1
+
+  - :ref:`joedb_embed`
+  - minor improvements
+
 - 2019-11-19: 3.0
 
   - More flexibility for opening files:

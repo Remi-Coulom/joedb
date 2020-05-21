@@ -14,3 +14,4 @@ tutorial.json
 merge*.joedb
 merge*.json
 joedb_merge.out
+joedb_embed.out

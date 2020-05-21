@@ -10,7 +10,8 @@ int main(int argc, char **argv)
  if (argc != 4)
  {
   std::cerr << "usage: " << argv[0];
-  std::cerr << " <joedb_file_name> <namespace> <identifier>\n";
+  std::cerr << " <file_name.joedb> <namespace> <identifier>\n";
+  std::cerr << "output: <namespace>_<identifer>.{h,cpp}\n";
   return 1;
  }
 
