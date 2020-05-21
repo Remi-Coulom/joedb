@@ -1,8 +1,5 @@
 #!/bin/bash
 make clean
-cd ./source/tutorial
-./generate.sh
-cd -
 make html
 
 cd build/html

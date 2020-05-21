@@ -18,8 +18,7 @@ Short Term
   - fix useless copies
   - need to fix Writable + joedbc (it is a bit complicated)
   - start by testing copy elision on a very simple toy simulation
-  - method for testing: use a very large string (100Mb) + pause execution with
-    sleep + look at process memory usage. (also measure execution time).
+  - method for testing: use a very large string (100Mb) + pause execution with sleep + look at process memory usage. (also measure execution time).
   - main question: necessary to std::move or not?
 
 - joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
