@@ -321,6 +321,7 @@ install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
 install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin)
+install(TARGETS joedb_embed RUNTIME DESTINATION bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../src/interpreter/io/joedb_browser DESTINATION bin)
 install(TARGETS joedb
  ARCHIVE DESTINATION lib
