@@ -3,6 +3,8 @@
 #include <string>
 #include <sstream>
 
+#include "joedb/type_io.h"
+
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
@@ -23,13 +25,10 @@ int main(int argc, char **argv)
  file_name << namespace_name << '_' << identifier;
 
  {
-  std::ofstream cpp(file_name.str() + ".cpp");
+  std::ofstream cpp(file_name.str() + ".cpp", std::ios::binary | std::ios::out);
 
   std::ostringstream file_content;
-  file_content << std::ifstream(joedb_file_name).rdbuf();
-
-  char const * const delimiter = "glouglou";
-  // TODO: generate delimiter from data
+  file_content << std::ifstream(joedb_file_name, std::ios::binary | std::ios::in).rdbuf();
 
   cpp << "#include \"" << file_name.str() << ".h\"\n";
   cpp << "#include \"" << namespace_name << ".h\"\n";
@@ -42,12 +41,21 @@ int main(int argc, char **argv)
 
   cpp << " const size_t " << identifier << "_size = ";
   cpp << file_content.str().size() << ";\n";
-  cpp << " char const * const " << identifier << "_data = R\"";
-  cpp << delimiter << "(";
-  cpp << file_content.str();
-  cpp << ")" << delimiter << "\";\n";
+  cpp << " char const * const " << identifier << "_data = ";
 
-  cpp << '\n';
+#if 0
+  {
+   char const * const delimiter = "glouglou";
+   // TODO: generate delimiter from data
+   cpp << "R\"" << delimiter << "(";
+   cpp << file_content.str();
+   cpp << ")" << delimiter << '\"'
+  }
+#else
+  joedb::write_string(cpp, file_content.str());
+#endif
+
+  cpp << ";\n\n";
   cpp << " const Database &get_embedded_" << identifier << "()\n";
   cpp << " {\n";
   cpp << "  static std::istringstream iss(std::string(" << identifier;
@@ -58,11 +66,14 @@ int main(int argc, char **argv)
   cpp << " }\n";
   // TODO: use a stream that does not copy the string
 
+  cpp << " size_t get_embedded_" << identifier << "_size() {return " << identifier << "_size;}\n";
+  cpp << " char const *get_embedded_" << identifier << "_data() {return " << identifier << "_data;}\n";
+
   cpp << "}\n";
  }
 
  {
-  std::ofstream h(file_name.str() + ".h");
+  std::ofstream h(file_name.str() + ".h", std::ios::binary | std::ios::out);
 
   {
    std::ostringstream guard_macro;
@@ -73,10 +84,14 @@ int main(int argc, char **argv)
    h << '\n';
   }
 
+  h << "\n#include <stddef.h>\n\n";
+
   h << "namespace " << namespace_name << '\n';
   h << "{\n";
   h << " class Database;\n";
   h << " const Database &get_embedded_" << identifier << "();\n";
+  h << " size_t get_embedded_" << identifier << "_size();\n";
+  h << " char const *get_embedded_" << identifier << "_data();\n";
   h << "}\n";
   h << '\n';
 

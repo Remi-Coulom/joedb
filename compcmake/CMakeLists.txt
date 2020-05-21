@@ -160,6 +160,7 @@ target_link_libraries(joedbc joedb)
 
 add_executable(joedb_embed
  ../src/compiler/joedb_embed.cpp
+ ../src/interpreter/io/minimal_runtime_io.cpp
 )
 
 #############################################################################
