@@ -89,6 +89,14 @@ namespace joedb
    }
    bool get_generate_c_wrapper() const {return generate_c_wrapper;}
    bool get_generate_js_wrapper() const {return generate_js_wrapper;}
+
+   bool has_freedom_keeper() const
+   {
+    for (const auto &option: table_options)
+     if (option.second.storage == freedom_keeper)
+      return true;
+    return false;
+   }
  };
 }
 

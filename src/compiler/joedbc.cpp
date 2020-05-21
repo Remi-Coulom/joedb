@@ -155,10 +155,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << "#ifndef " << options.get_namespace_name() << "_Database_declared\n";
  out << "#define " << options.get_namespace_name() << "_Database_declared\n";
+
+ if (options.has_freedom_keeper())
+  out << "#include \"joedb/Freedom_Keeper.h\"\n";
+
  out << R"RRR(
 #include "joedb/File.h"
 #include "joedb/Journal_File.h"
-#include "joedb/Freedom_Keeper.h"
 #include "joedb/Exception.h"
 #include "joedb/Stream_File.h"
 #include "joedb/joedb_assert.h"
