@@ -163,8 +163,6 @@ target_link_libraries(joedbc joedb)
 function(joedbc_build source_dir f namespace)
  add_custom_command(
   OUTPUT
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_wrapper.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_wrapper.h
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.h
   COMMAND joedbc ${f}.joedbi ${f}.joedbc
@@ -176,13 +174,30 @@ function(joedbc_build source_dir f namespace)
  )
 endfunction(joedbc_build)
 
-joedbc_build(../doc/source/tutorial tutorial tutorial)
 joedbc_build(../test/compiler test testdb)
 joedbc_build(../test/compiler schema_v1 schema_v1)
 joedbc_build(../test/compiler schema_v2 schema_v2)
 joedbc_build(../test/compiler vector_test vector_test)
 joedbc_build(../test/compiler multi_index multi_index)
 joedbc_build(../benchmark joedbc_insert benchmark)
+
+function(joedbc_build_wrapper source_dir f namespace)
+ add_custom_command(
+  OUTPUT
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_wrapper.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_wrapper.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.h
+  COMMAND joedbc ${f}.joedbi ${f}.joedbc
+  DEPENDS
+   joedbc
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${f}.joedbi
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${f}.joedbc
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}
+ )
+endfunction(joedbc_build_wrapper)
+
+joedbc_build_wrapper(../doc/source/tutorial tutorial tutorial)
 
 add_custom_command(
  OUTPUT
