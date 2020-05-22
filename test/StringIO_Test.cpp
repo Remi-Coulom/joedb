@@ -156,7 +156,7 @@ TEST(StringIO_Test, sql)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(StringIO_Test, base64)
+TEST(StringIO_Test, base64_encode)
 /////////////////////////////////////////////////////////////////////////////
 {
  EXPECT_EQ("TWFu", joedb::base64_encode("Man"));
@@ -165,4 +165,38 @@ TEST(StringIO_Test, base64)
  EXPECT_EQ("UsOpbWk=", joedb::base64_encode("Rémi"));
  EXPECT_EQ("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ", joedb::base64_encode("これは日本語です"));
  EXPECT_EQ("", joedb::base64_encode(""));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, base64_decode)
+/////////////////////////////////////////////////////////////////////////////
+{
+ EXPECT_EQ("Man", joedb::base64_decode("TWFu"));
+ EXPECT_EQ("Ma", joedb::base64_decode("TWE="));
+ EXPECT_EQ("M", joedb::base64_decode("TQ=="));
+ EXPECT_EQ("Rémi", joedb::base64_decode("UsOpbWk="));
+ EXPECT_EQ("これは日本語です", joedb::base64_decode("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ"));
+ EXPECT_EQ("", joedb::base64_decode(""));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, base64_random)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const size_t max_size = 100;
+ const int count = 10000;
+
+ auto sd = std::uniform_int_distribution<>(0, max_size);
+ auto cd = std::uniform_int_distribution<>(0, 255);
+ auto mt = std::mt19937(0);
+
+ for (int i = count; --i >= 0;)
+ {
+  std::string original(size_t(sd(mt)), ' ');
+
+  for (size_t j = 0; j < original.size(); j++)
+   original[j] = char(cd(mt));
+
+  EXPECT_EQ(original, joedb::base64_decode(joedb::base64_encode(original)));
+ }
 }

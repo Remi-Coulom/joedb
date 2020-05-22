@@ -132,6 +132,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
+  ../src/interpreter/io/base64_decode.cpp
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
 else()
