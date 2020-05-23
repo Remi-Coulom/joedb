@@ -1,4 +1,4 @@
-#include "base64.h"
+#include "joedb/base64.h"
 #include <stdint.h>
 
 namespace joedb

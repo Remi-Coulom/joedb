@@ -1,14 +1,23 @@
-#include "testdb_test.h"
+#include "testdb_test_base64.h"
+#include "testdb_test_raw.h"
+#include "testdb_test_escape.h"
 #include "testdb.h"
+
+/////////////////////////////////////////////////////////////////////////////
+void test(const testdb::Database &db)
+/////////////////////////////////////////////////////////////////////////////
+{
+ for (auto person: db.get_person_table())
+  std::cout << db.get_name(person) << '\n';
+}
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- const testdb::Database &db = testdb::get_embedded_test();
-
- for (auto person: db.get_person_table())
-  std::cout << db.get_name(person) << '\n';
+ test(testdb::get_embedded_test_base64());
+ test(testdb::get_embedded_test_raw());
+ test(testdb::get_embedded_test_escape());
 
  return 0;
 }

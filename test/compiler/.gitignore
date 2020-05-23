@@ -1,8 +1,8 @@
 *.joedb
 testdb.h
 testdb.cpp
-testdb_test.h
-testdb_test.cpp
+testdb_test*.h
+testdb_test*.cpp
 compiler_test.out
 translation.h
 schema_v?.h

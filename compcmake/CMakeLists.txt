@@ -162,6 +162,7 @@ target_link_libraries(joedbc joedb)
 add_executable(joedb_embed
  ../src/compiler/joedb_embed.cpp
  ../src/interpreter/io/minimal_runtime_io.cpp
+ ../src/interpreter/io/base64.cpp
 )
 
 #############################################################################
@@ -227,15 +228,30 @@ add_custom_command(
  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
 )
 
-add_custom_command(
- OUTPUT
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test.cpp
- COMMAND joedb_embed test.joedb testdb test
- DEPENDS
-  joedb_embed
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
- WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
+#############################################################################
+# joedb_embed test
+#############################################################################
+foreach(mode base64 raw escape)
+ add_custom_command(
+  OUTPUT
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_${mode}.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_${mode}.cpp
+  COMMAND joedb_embed --${mode} test.joedb testdb test_${mode}
+  DEPENDS
+   joedb_embed
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
+ )
+endforeach(mode)
+
+add_executable(embedded_test
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_base64.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_raw.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_escape.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/embedded_test.cpp
+ ../src/compiler/minimal_runtime.cpp
+ ../src/interpreter/io/base64_decode.cpp
 )
 
 #############################################################################
@@ -298,13 +314,6 @@ target_link_libraries(compiler_test joedb)
 add_executable(generate_translation_header
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
- ../src/compiler/minimal_runtime.cpp
-)
-
-add_executable(embedded_test
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/embedded_test.cpp
  ../src/compiler/minimal_runtime.cpp
 )
 
