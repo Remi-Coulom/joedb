@@ -55,7 +55,7 @@ int main(int argc, char **argv)
   }
 
   cpp << "#include \"" << file_name.str() << ".h\"\n";
-  cpp << "#include \"" << namespace_name << ".h\"\n";
+  cpp << "#include \"" << namespace_name << "_readonly.h\"\n";
   if (mode == base64)
    cpp << "#include \"joedb/base64.h\"\n";
   cpp << '\n';

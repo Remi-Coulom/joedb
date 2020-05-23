@@ -117,50 +117,350 @@ void write_index_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void generate_h(std::ostream &out, const Compiler_Options &options)
+// type arrays
 /////////////////////////////////////////////////////////////////////////////
-{
 #define STRINGIFY(X) #X
 #define EXPAND_AND_STRINGIFY(X) STRINGIFY(X)
 
- char const * const types[] =
- {
-  nullptr,
+static char const * const types[] =
+{
+ nullptr,
 #define TYPE_MACRO(a, b, type_id, d, e) EXPAND_AND_STRINGIFY(type_id),
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
- };
+};
 
- char const * const cpp_types[] =
- {
-  nullptr,
+static char const * const cpp_types[] =
+{
+ nullptr,
 #define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
- };
+};
 
- char const * const storage_types[] =
- {
-  nullptr,
+static char const * const storage_types[] =
+{
+ nullptr,
 #define TYPE_MACRO(storage, b, c, d, e) EXPAND_AND_STRINGIFY(storage),
 #include "TYPE_MACRO.h"
 #undef TYPE_MACRO
- };
+};
 
 #undef EXPAND_AND_STRINGIFY
 #undef STRINGIFY
 
+/////////////////////////////////////////////////////////////////////////////
+void generate_h(std::ostream &out, const Compiler_Options &options)
+/////////////////////////////////////////////////////////////////////////////
+{
  const Database &db = options.get_db();
  auto tables = db.get_tables();
 
- out << "#ifndef " << options.get_namespace_name() << "_Database_declared\n";
- out << "#define " << options.get_namespace_name() << "_Database_declared\n";
+ out << "#ifndef " << options.get_namespace_name();
+ out << "_Database_declared\n";
+ out << "#define " << options.get_namespace_name();
+ out << "_Database_declared\n";
+
+ out << '\n';
+ out << "#include \"" << options.get_namespace_name() << "_readonly.h\"\n";
+ out << '\n';
+
+ out << "namespace " << options.get_namespace_name() << "\n{\n";
+
+ //
+ // Database
+ //
+ out << R"RRR( class Generic_File_Database: public Database
+ {
+  protected:
+   void error(const char *message) override
+   {
+    if (ready_to_write)
+    {
+     write_timestamp();
+     write_comment(message);
+     checkpoint_no_commit();
+    }
+    Database::error(message);
+   }
+
+  private:
+   joedb::Journal_File journal;
+   bool ready_to_write;
+
+   void custom(const std::string &name) override
+   {
+    Database::custom(name);
+)RRR";
+
+ if (options.get_custom_names().size())
+ {
+  out << "    if (upgrading_schema)\n";
+  out << "    {\n";
+  for (const auto &name: options.get_custom_names())
+  {
+   out << "     if (name == \"" << name << "\")\n";
+   out << "      " << name << "(*this);\n";
+  }
+  out << "    }\n";
+ }
+ out << "   }\n";
+
+ if (options.get_custom_names().size())
+ {
+  out << '\n';
+  for (const auto &name: options.get_custom_names())
+   out << "   static void " << name << "(Generic_File_Database &db);\n";
+ }
+ out << R"RRR(
+  public:
+   Generic_File_Database(joedb::Generic_File &file);
+
+   int64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
+   void checkpoint_no_commit() {journal.checkpoint(0);}
+   void checkpoint_half_commit() {journal.checkpoint(1);}
+   void checkpoint_full_commit() {journal.checkpoint(2);}
+
+   void write_comment(const std::string &comment);
+   void write_timestamp();
+   void write_timestamp(int64_t timestamp);
+   void write_valid_data();
+)RRR";
+
+ for (auto &table: tables)
+ {
+  out << '\n';
+  const std::string &tname = table.second;
+  const auto storage = options.get_table_options(table.first).storage;
+  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
+
+  //
+  // Erase all elements of the table
+  //
+  if (has_delete)
+  {
+   out << "   void clear_" << tname << "_table();\n";
+   out << '\n';
+  }
+
+  //
+  // Uninitialized new
+  //
+  out << "   id_of_" << tname << " new_" << tname << "()\n";
+  out << "   {\n";
+
+  switch(storage)
+  {
+   case Compiler_Options::Table_Storage::freedom_keeper:
+    out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
+    out << "    id_of_" << tname << " result(free_record - 1);\n\n";
+   break;
+
+   case Compiler_Options::Table_Storage::vector:
+    out << "    const size_t size = storage_of_" << tname << ".size();\n";
+    out << "    storage_of_" << tname << ".resize(size + 1);\n";
+    out << "    id_of_" << tname << " result(size + 1);\n\n";
+   break;
+  }
+
+  out << "    internal_insert_" << tname << "(result.id);\n\n";
+  out << "    journal.insert_into(" << table.first << ", result.id);\n";
+  out << "    return result;\n";
+  out << "   }\n";
+  out << '\n';
+
+  //
+  // new uninitialized vector
+  //
+  out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
+  out << "   {\n";
+  out << "    id_of_" << tname << " result(storage_of_" << tname;
+  out << ".size() + 1);\n";
+  out << "    storage_of_" << tname << ".resize(storage_of_";
+  out << tname << ".size() + size);\n";
+  out << "    for (size_t i = 0; i < size; i++)\n";
+  out << "     internal_insert_" << tname << "(result.id + i);\n";
+  out << "    journal.insert_vector(" << table.first;
+  out << ", result.id, size);\n";
+  out << "    return result;\n";
+  out << "   }\n";
+  out << '\n';
+
+  //
+  // new with all fields
+  //
+  if (!db.get_fields(table.first).empty())
+  {
+   out << "   id_of_" << tname << " new_" << tname << '\n';
+   out << "   (\n    ";
+   {
+    bool first = true;
+
+    for (const auto &field: db.get_fields(table.first))
+    {
+     const std::string &fname = field.second;
+
+     if (first)
+      first = false;
+     else
+      out << ",\n    ";
+
+     const Type &type = db.get_field_type(table.first, field.first);
+     write_type(out, db, type, true);
+     out << "field_value_of_" << fname;
+    }
+
+    out << '\n';
+   }
+   out << "   )\n";
+   out << "   {\n";
+   out << "    auto result = new_" << tname << "();\n";
+
+   for (const auto &field: db.get_fields(table.first))
+   {
+    const std::string &fname = field.second;
+    out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
+   }
+
+   out << "    return result;\n";
+   out << "   }\n\n";
+  }
+
+  //
+  // Delete
+  //
+  if (has_delete)
+  {
+   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
+   out << "   {\n";
+   out << "    internal_delete_" << tname << "(record.id);\n";
+   out << "    journal.delete_from(" << table.first << ", record.id);\n";
+   out << "   }\n";
+  }
+
+  //
+  // Loop over fields
+  //
+  for (const auto &field: db.get_fields(table.first))
+  {
+   const std::string &fname = field.second;
+   const Type &type = db.get_field_type(table.first, field.first);
+
+   out << '\n';
+
+   //
+   // Setter
+   //
+   out << "   void set_" << fname;
+   out << "(id_of_" << tname << " record, ";
+   write_type(out, db, type, true);
+   out << "field_value_of_" << fname << ")\n";
+   out << "   {\n";
+   out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
+   out << "field_value_of_" << fname << ");\n";
+   out << "    journal.update_";
+   out << types[int(type.get_type_id())];
+   out << '(' << table.first << ", record.id, " << field.first << ", ";
+   out << "field_value_of_" << fname;
+   if (type.get_type_id() == Type::Type_Id::reference)
+    out << ".id";
+   out << ");\n";
+   out << "   }\n";
+  }
+ }
+
+ out << " };\n";
+
+ out << R"RRR(
+ class File_Initialization
+ {
+  public:
+   joedb::File file;
+
+   File_Initialization(const char *file_name):
+    file(file_name, joedb::Open_Mode::write_existing_or_create_new)
+   {
+   }
+ };
+
+ class File_Database:
+  public File_Initialization,
+  public Generic_File_Database
+ {
+  public:
+   File_Database(const char *file_name):
+    File_Initialization(file_name),
+    Generic_File_Database(file)
+   {
+   }
+
+   File_Database(const std::string &file_name):
+    File_Database(file_name.c_str())
+   {
+   }
+ };
+
+)RRR";
+
+ for (auto &table: tables)
+ {
+  const std::string &tname = table.second;
+  const auto storage = options.get_table_options(table.first).storage;
+  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
+
+  if (has_delete)
+  {
+   out << " inline void Generic_File_Database::clear_" << tname << "_table()\n";
+   out << " {\n";
+   out << "  while (!get_" << tname << "_table().is_empty())\n";
+   out << "   delete_" << tname << "(get_" << tname << "_table().last());\n";
+   out << " }\n";
+   out << '\n';
+  }
+ }
+
+ //
+ // Types class
+ //
+ out << " class Types: public Readonly_Types\n";
+ out << " {\n";
+ out << "  public:\n";
+
+ std::vector<std::string> type_names;
+ type_names.push_back("File_Database");
+ type_names.push_back("Generic_File_Database");
+
+ for (const std::string &type_name: type_names)
+ {
+  out << "   typedef " << options.get_namespace_name() << "::";
+  out << type_name << ' ' << type_name << ";\n";
+ }
+
+ out << " };\n";
+
+ out << "}\n\n";
+
+ out << "#endif\n";
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const Database &db = options.get_db();
+ auto tables = db.get_tables();
+
+ out << "#ifndef " << options.get_namespace_name();
+ out << "_readonly_Database_declared\n";
+ out << "#define " << options.get_namespace_name();
+ out << "_readonly_Database_declared\n";
+
+ out << '\n';
 
  if (options.has_freedom_keeper())
   out << "#include \"joedb/Freedom_Keeper.h\"\n";
 
- out << R"RRR(
-#include "joedb/File.h"
+ out << R"RRR(#include "joedb/File.h"
 #include "joedb/Journal_File.h"
 #include "joedb/Exception.h"
 #include "joedb/Stream_File.h"
@@ -174,6 +474,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 #include <algorithm>
 #include <sstream>
 #include <memory>
+
 )RRR";
 
  out << "namespace " << options.get_namespace_name() << "\n{\n";
@@ -1025,237 +1326,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
    }
  };
-
- class Generic_File_Database: public Database
- {
-  protected:
-   void error(const char *message) override
-   {
-    if (ready_to_write)
-    {
-     write_timestamp();
-     write_comment(message);
-     checkpoint_no_commit();
-    }
-    Database::error(message);
-   }
-
-  private:
-   joedb::Journal_File journal;
-   bool ready_to_write;
-
-   void custom(const std::string &name) override
-   {
-    Database::custom(name);
-)RRR";
- if (options.get_custom_names().size())
- {
-  out << "    if (upgrading_schema)\n";
-  out << "    {\n";
-  for (const auto &name: options.get_custom_names())
-  {
-   out << "     if (name == \"" << name << "\")\n";
-   out << "      " << name << "(*this);\n";
-  }
-  out << "    }\n";
- }
- out << "   }\n";
-
- if (options.get_custom_names().size())
- {
-  out << '\n';
-  for (const auto &name: options.get_custom_names())
-   out << "   static void " << name << "(Generic_File_Database &db);\n";
- }
-
- out << R"RRR(
-  public:
-   Generic_File_Database(joedb::Generic_File &file);
-
-   int64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
-   void checkpoint_no_commit() {journal.checkpoint(0);}
-   void checkpoint_half_commit() {journal.checkpoint(1);}
-   void checkpoint_full_commit() {journal.checkpoint(2);}
-
-   void write_comment(const std::string &comment);
-   void write_timestamp();
-   void write_timestamp(int64_t timestamp);
-   void write_valid_data();
-)RRR";
-
- for (auto &table: tables)
- {
-  out << '\n';
-  const std::string &tname = table.second;
-  const auto storage = options.get_table_options(table.first).storage;
-  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
-
-  //
-  // Erase all elements of the table
-  //
-  if (has_delete)
-  {
-   out << "   void clear_" << tname << "_table();\n";
-   out << '\n';
-  }
-
-  //
-  // Uninitialized new
-  //
-  out << "   id_of_" << tname << " new_" << tname << "()\n";
-  out << "   {\n";
-
-  switch(storage)
-  {
-   case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
-    out << "    id_of_" << tname << " result(free_record - 1);\n\n";
-   break;
-
-   case Compiler_Options::Table_Storage::vector:
-    out << "    const size_t size = storage_of_" << tname << ".size();\n";
-    out << "    storage_of_" << tname << ".resize(size + 1);\n";
-    out << "    id_of_" << tname << " result(size + 1);\n\n";
-   break;
-  }
-
-  out << "    internal_insert_" << tname << "(result.id);\n\n";
-  out << "    journal.insert_into(" << table.first << ", result.id);\n";
-  out << "    return result;\n";
-  out << "   }\n";
-  out << '\n';
-
-  //
-  // new uninitialized vector
-  //
-  out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
-  out << "   {\n";
-  out << "    id_of_" << tname << " result(storage_of_" << tname;
-  out << ".size() + 1);\n";
-  out << "    storage_of_" << tname << ".resize(storage_of_";
-  out << tname << ".size() + size);\n";
-  out << "    for (size_t i = 0; i < size; i++)\n";
-  out << "     internal_insert_" << tname << "(result.id + i);\n";
-  out << "    journal.insert_vector(" << table.first;
-  out << ", result.id, size);\n";
-  out << "    return result;\n";
-  out << "   }\n";
-  out << '\n';
-
-  //
-  // new with all fields
-  //
-  if (!db.get_fields(table.first).empty())
-  {
-   out << "   id_of_" << tname << " new_" << tname << '\n';
-   out << "   (\n    ";
-   {
-    bool first = true;
-
-    for (const auto &field: db.get_fields(table.first))
-    {
-     const std::string &fname = field.second;
-
-     if (first)
-      first = false;
-     else
-      out << ",\n    ";
-
-     const Type &type = db.get_field_type(table.first, field.first);
-     write_type(out, db, type, true);
-     out << "field_value_of_" << fname;
-    }
-
-    out << '\n';
-   }
-   out << "   )\n";
-   out << "   {\n";
-   out << "    auto result = new_" << tname << "();\n";
-
-   for (const auto &field: db.get_fields(table.first))
-   {
-    const std::string &fname = field.second;
-    out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
-   }
-
-   out << "    return result;\n";
-   out << "   }\n\n";
-  }
-
-  //
-  // Delete
-  //
-  if (has_delete)
-  {
-   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
-   out << "   {\n";
-   out << "    internal_delete_" << tname << "(record.id);\n";
-   out << "    journal.delete_from(" << table.first << ", record.id);\n";
-   out << "   }\n";
-  }
-
-  //
-  // Loop over fields
-  //
-  for (const auto &field: db.get_fields(table.first))
-  {
-   const std::string &fname = field.second;
-   const Type &type = db.get_field_type(table.first, field.first);
-
-   out << '\n';
-
-   //
-   // Setter
-   //
-   out << "   void set_" << fname;
-   out << "(id_of_" << tname << " record, ";
-   write_type(out, db, type, true);
-   out << "field_value_of_" << fname << ")\n";
-   out << "   {\n";
-   out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
-   out << "field_value_of_" << fname << ");\n";
-   out << "    journal.update_";
-   out << types[int(type.get_type_id())];
-   out << '(' << table.first << ", record.id, " << field.first << ", ";
-   out << "field_value_of_" << fname;
-   if (type.get_type_id() == Type::Type_Id::reference)
-    out << ".id";
-   out << ");\n";
-   out << "   }\n";
-  }
- }
-
- out << " };\n";
-
- out << R"RRR(
- class File_Initialization
- {
-  public:
-   joedb::File file;
-
-   File_Initialization(const char *file_name):
-    file(file_name, joedb::Open_Mode::write_existing_or_create_new)
-   {
-   }
- };
-
- class File_Database:
-  public File_Initialization,
-  public Generic_File_Database
- {
-  public:
-   File_Database(const char *file_name):
-    File_Initialization(file_name),
-    Generic_File_Database(file)
-   {
-   }
-
-   File_Database(const std::string &file_name):
-    File_Database(file_name.c_str())
-   {
-   }
- };
-
 )RRR";
 
  //
@@ -1265,7 +1335,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   const std::string &tname = table.second;
   const auto storage = options.get_table_options(table.first).storage;
-  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
   out << " class container_of_" << tname << "\n";
   out << " {\n";
@@ -1350,16 +1419,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "  std::sort(result.begin(), result.end(), comparator);\n";
   out << "  return result;\n";
   out << " }\n";
-
-  if (has_delete)
-  {
-   out << " inline void Generic_File_Database::clear_" << tname << "_table()\n";
-   out << " {\n";
-   out << "  while (!get_" << tname << "_table().is_empty())\n";
-   out << "   delete_" << tname << "(get_" << tname << "_table().last());\n";
-   out << " }\n";
-   out << '\n';
-  }
  }
 
  //
@@ -1452,15 +1511,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  // Types class
  //
- out << "\n class Types\n";
+ out << "\n class Readonly_Types\n";
  out << " {\n";
  out << "  public:\n";
 
  std::vector<std::string> type_names;
  type_names.push_back("Database");
- type_names.push_back("File_Database");
  type_names.push_back("Readonly_Database");
- type_names.push_back("Generic_File_Database");
  type_names.push_back("Generic_Readonly_Database");
  for (auto &table: tables)
  {
@@ -1484,6 +1541,24 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void generate_readonly_cpp
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Compiler_Options &options,
+ const std::string &schema
+)
+{
+ const std::string &ns = options.get_namespace_name();
+ out << "#include \"" << ns << "_readonly.h\"\n\n";
+ out << "const std::string " << ns << "::Database::schema_string(";
+ write_string(out, schema);
+ out << ", ";
+ out << schema.size();
+ out << ");\n";
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void generate_cpp
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -1494,18 +1569,13 @@ void generate_cpp
 {
  const std::string &ns = options.get_namespace_name();
 
- out << "#include \"" << options.get_namespace_name() << ".h\"\n";
+ out << "#include \"" << ns << "_readonly.cpp\"\n";
+ out << "#include \"" << ns << ".h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
  out << "#include \"joedb/Stream_File.h\"\n";
  out << '\n';
  out << "#include <ctime>\n";
  out << "#include <sstream>\n";
- out << '\n';
- out << "const std::string " << ns << "::Database::schema_string(";
- write_string(out, schema);
- out << ", ";
- out << schema.size();
- out << ");\n";
 
  out << R"RRR(
 /////////////////////////////////////////////////////////////////////////////
@@ -1676,6 +1746,24 @@ int joedbc_main(int argc, char **argv)
  //
  // Generate code
  //
+ {
+  std::ofstream h_file
+  (
+   compiler_options.get_namespace_name() + "_readonly.h",
+   std::ios::trunc
+  );
+  write_initial_comment(h_file, compiler_options);
+  generate_readonly_h(h_file, compiler_options);
+ }
+ {
+  std::ofstream cpp_file
+  (
+   compiler_options.get_namespace_name() + "_readonly.cpp",
+   std::ios::trunc
+  );
+  write_initial_comment(cpp_file, compiler_options);
+  generate_readonly_cpp(cpp_file, compiler_options, schema.str());
+ }
  {
   std::ofstream h_file
   (

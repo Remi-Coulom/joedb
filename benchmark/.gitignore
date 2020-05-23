@@ -1,3 +1,5 @@
 benchmark.h
 benchmark.cpp
+benchmark_readonly.h
+benchmark_readonly.cpp
 *.joedb
