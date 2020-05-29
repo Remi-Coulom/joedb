@@ -4,9 +4,7 @@ TODO
 Short Term
 ----------
 
-- make a readonly File class that reads data from a char array. Use it for the
-  compiler. Actual char array instead of string literal (not zero terminated).
-  Should not copy any data to another buffer. A Generic_Readonly_File class?
+- handle file sharing properly in Windows (many readers, one writer)
 
 - tests for buffer overflow could be optimized when reading/writing large
   pieces of data, such as strings or vectors.

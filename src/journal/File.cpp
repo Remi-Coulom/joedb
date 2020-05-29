@@ -42,6 +42,10 @@ bool joedb::File::lock_file()
 {
  HANDLE hFile = (HANDLE)_get_osfhandle(_fileno(file));
  return LockFile(hFile, 0, 0, 1, 0) == TRUE;
+ // Note: this prevents another process from reading
+ // -> Will fail with confusing "does not start by joedb" error
+ // -> Should produce an error message if it happens
+ // TODO: properly handle file sharing in Windows
 }
 
 void joedb::File::sync()
