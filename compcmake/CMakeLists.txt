@@ -231,7 +231,7 @@ add_custom_command(
 #############################################################################
 # joedb_embed test
 #############################################################################
-foreach(mode base64 raw escape)
+foreach(mode base64 escape)
  add_custom_command(
   OUTPUT
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_${mode}.h
@@ -247,7 +247,6 @@ endforeach(mode)
 add_executable(embedded_test
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_base64.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_raw.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_escape.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/embedded_test.cpp
  ../src/compiler/minimal_runtime.cpp

@@ -1,5 +1,4 @@
 #include "testdb_test_base64.h"
-#include "testdb_test_raw.h"
 #include "testdb_test_escape.h"
 #include "testdb.h"
 
@@ -16,7 +15,6 @@ int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  test(testdb::get_embedded_test_base64());
- test(testdb::get_embedded_test_raw());
  test(testdb::get_embedded_test_escape());
 
  return 0;
