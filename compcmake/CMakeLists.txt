@@ -126,6 +126,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Journal_File_Test.cpp
   ../test/Merge_Test.cpp
   ../test/Multiplexer_Test.cpp
+  ../test/nested_namespace_Test.cpp
   ../test/pack_Test.cpp
   ../test/Selective_Writable_Test.cpp
   ../test/Stream_File_Test.cpp
@@ -133,6 +134,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
   ../src/interpreter/io/base64_decode.cpp
+  ../src/compiler/nested_namespace.cpp
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
 else()
@@ -156,6 +158,7 @@ add_executable(joedbc
  ../src/compiler/joedbc.cpp
  ../src/compiler/Compiler_Options_io.cpp
  ../src/compiler/c_wrapper.cpp
+ ../src/compiler/nested_namespace.cpp
 )
 target_link_libraries(joedbc joedb)
 
@@ -163,6 +166,7 @@ add_executable(joedb_embed
  ../src/compiler/joedb_embed.cpp
  ../src/interpreter/io/minimal_runtime_io.cpp
  ../src/interpreter/io/base64.cpp
+ ../src/compiler/nested_namespace.cpp
 )
 
 #############################################################################
@@ -236,7 +240,7 @@ foreach(mode base64 escape)
   OUTPUT
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_${mode}.h
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_${mode}.cpp
-  COMMAND joedb_embed --${mode} test.joedb testdb test_${mode}
+  COMMAND joedb_embed --${mode} test.joedb my_namespace::is_nested::testdb test_${mode}
   DEPENDS
    joedb_embed
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb

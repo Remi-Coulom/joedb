@@ -2,6 +2,7 @@
 #include "Compiler_Options.h"
 #include "is_identifier.h"
 #include "Database.h"
+#include "nested_namespace.h"
 
 #include <iostream>
 #include <sstream>
@@ -27,11 +28,12 @@ bool joedb::parse_compiler_options
 
   if (command.size() == 0 || command[0] == '#')
    continue;
+
   if (command == "namespace")
   {
-   std::string namespace_name;
-   iss >> namespace_name;
-   compiler_options.set_namespace_name(namespace_name);
+   std::string s;
+   iss >> s;
+   compiler_options.set_name_space(split_namespace(s));
   }
   else if (command == "create_index" || command == "create_unique_index")
   {

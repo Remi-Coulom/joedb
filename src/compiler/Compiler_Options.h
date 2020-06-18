@@ -35,7 +35,7 @@ namespace joedb
    const Database &db;
    const std::vector<std::string> &custom_names;
 
-   std::string namespace_name;
+   std::vector<std::string> name_space;
    std::vector<Index> indices;
    std::map<Table_Id, Table_Options> table_options;
 
@@ -59,7 +59,10 @@ namespace joedb
     }
    }
 
-   void set_namespace_name(const std::string &s) {namespace_name = s;}
+   void set_name_space(std::vector<std::string> v)
+   {
+    name_space = std::move(v);
+   }
    void set_table_storage(Table_Id table_id, Table_Storage storage)
    {
     table_options[table_id].storage = storage;
@@ -81,7 +84,10 @@ namespace joedb
    {
     return custom_names;
    }
-   const std::string &get_namespace_name() const {return namespace_name;}
+   const std::vector<std::string> &get_name_space() const
+   {
+    return name_space;
+   }
    const std::vector<Index> &get_indices() const {return indices;}
    const Table_Options &get_table_options(Table_Id table_id) const
    {

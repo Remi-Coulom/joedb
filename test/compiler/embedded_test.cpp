@@ -3,7 +3,7 @@
 #include "testdb.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void test(const testdb::Database &db)
+void test(const my_namespace::is_nested::testdb::Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
  for (auto person: db.get_person_table())
@@ -14,8 +14,8 @@ void test(const testdb::Database &db)
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- test(testdb::get_embedded_test_base64());
- test(testdb::get_embedded_test_escape());
+ test(my_namespace::is_nested::testdb::get_embedded_test_base64());
+ test(my_namespace::is_nested::testdb::get_embedded_test_escape());
 
  return 0;
 }

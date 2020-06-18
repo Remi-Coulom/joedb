@@ -1,5 +1,6 @@
 #include "c_wrapper.h"
 #include "Compiler_Options.h"
+#include "nested_namespace.h"
 
 #include <iostream>
 #include <sstream>
@@ -30,7 +31,7 @@ void write_c_type
   case Type::Type_Id::reference:
   {
    const Table_Id referred = type.get_table_id();
-   out << options.get_namespace_name() << "_id_of_";
+   out << namespace_string(options.get_name_space(), "_") << "_id_of_";
    out << db.get_table_name(referred) << ' ';
   }
   break;
@@ -57,15 +58,19 @@ void generate_c_wrapper
  const Compiler_Options &options
 )
 {
- const std::string &name = options.get_namespace_name();
+ const std::string &name = namespace_string(options.get_name_space(), "_");
  const Database &db = options.get_db();
  auto tables = db.get_tables();
 
  ////////////////////////////////////////////////////////////////////////////
  // Header
  ////////////////////////////////////////////////////////////////////////////
- header << "#ifndef " << name << "_wrapper_declared\n";
- header << "#define " << name << "_wrapper_declared\n";
+ namespace_include_guard
+ (
+  header,
+  "_wrapper_declared",
+  options.get_name_space()
+ );
 
  header << "#include <stddef.h>\n";
  header << "#include \"index_types.h\"\n";

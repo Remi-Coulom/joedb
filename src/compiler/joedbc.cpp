@@ -12,6 +12,7 @@
 #include "Dummy_Writable.h"
 #include "is_identifier.h"
 #include "main_exception_catcher.h"
+#include "nested_namespace.h"
 
 #include <iostream>
 #include <fstream>
@@ -156,16 +157,18 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  const Database &db = options.get_db();
  auto tables = db.get_tables();
 
- out << "#ifndef " << options.get_namespace_name();
- out << "_Database_declared\n";
- out << "#define " << options.get_namespace_name();
- out << "_Database_declared\n";
+ namespace_include_guard
+ (
+  out,
+  "_Database_declared",
+  options.get_name_space()
+ );
 
  out << '\n';
- out << "#include \"" << options.get_namespace_name() << "_readonly.h\"\n";
+ out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << '\n';
 
- out << "namespace " << options.get_namespace_name() << "\n{\n";
+ namespace_open(out, options.get_name_space());
 
  //
  // Database
@@ -432,13 +435,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  for (const std::string &type_name: type_names)
  {
-  out << "   typedef " << options.get_namespace_name() << "::";
-  out << type_name << ' ' << type_name << ";\n";
+  out << "   typedef " << namespace_string(options.get_name_space());
+  out << "::" << type_name << ' ' << type_name << ";\n";
  }
 
  out << " };\n";
 
- out << "}\n\n";
+ namespace_close(out, options.get_name_space());
 
  out << "#endif\n";
 }
@@ -450,10 +453,12 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  const Database &db = options.get_db();
  auto tables = db.get_tables();
 
- out << "#ifndef " << options.get_namespace_name();
- out << "_readonly_Database_declared\n";
- out << "#define " << options.get_namespace_name();
- out << "_readonly_Database_declared\n";
+ namespace_include_guard
+ (
+  out,
+  "_readonly_Database_declared",
+  options.get_name_space()
+ );
 
  out << '\n';
 
@@ -477,7 +482,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
 
 )RRR";
 
- out << "namespace " << options.get_namespace_name() << "\n{\n";
+ namespace_open(out, options.get_name_space());
 
  for (auto &table: tables)
  {
@@ -1524,19 +1529,21 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   const std::string &tname = table.second;
   type_names.push_back("id_of_" + tname);
 
-  out << "   typedef " << options.get_namespace_name() << "::container_of_";
+  out << "   typedef " << namespace_string(options.get_name_space());
+  out << "::container_of_";
   out << tname << "::iterator iterator_of_" << tname << ";\n";
  }
 
  for (const std::string &type_name: type_names)
  {
-  out << "   typedef " << options.get_namespace_name() << "::";
-  out << type_name << ' ' << type_name << ";\n";
+  out << "   typedef " << namespace_string(options.get_name_space());
+  out << "::" << type_name << ' ' << type_name << ";\n";
  }
 
  out << " };\n";
 
- out << "}\n\n";
+ namespace_close(out, options.get_name_space());
+
  out << "#endif\n";
 }
 
@@ -1549,9 +1556,10 @@ void generate_readonly_cpp
  const std::string &schema
 )
 {
- const std::string &ns = options.get_namespace_name();
- out << "#include \"" << ns << "_readonly.h\"\n\n";
- out << "const std::string " << ns << "::Database::schema_string(";
+ const std::vector<std::string> &ns = options.get_name_space();
+ out << "#include \"" << ns.back() << "_readonly.h\"\n\n";
+ out << "const std::string " << namespace_string(ns);
+ out << "::Database::schema_string(";
  write_string(out, schema);
  out << ", ";
  out << schema.size();
@@ -1567,10 +1575,11 @@ void generate_cpp
  const std::string &schema
 )
 {
- const std::string &ns = options.get_namespace_name();
+ const std::string &file_name = options.get_name_space().back();
+ const std::string ns = namespace_string(options.get_name_space());
 
- out << "#include \"" << ns << "_readonly.cpp\"\n";
- out << "#include \"" << ns << ".h\"\n";
+ out << "#include \"" << file_name << "_readonly.cpp\"\n";
+ out << "#include \"" << file_name << ".h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
  out << "#include \"joedb/Stream_File.h\"\n";
  out << '\n';
@@ -1749,7 +1758,7 @@ int joedbc_main(int argc, char **argv)
  {
   std::ofstream h_file
   (
-   compiler_options.get_namespace_name() + "_readonly.h",
+   compiler_options.get_name_space().back() + "_readonly.h",
    std::ios::trunc
   );
   write_initial_comment(h_file, compiler_options);
@@ -1758,7 +1767,7 @@ int joedbc_main(int argc, char **argv)
  {
   std::ofstream cpp_file
   (
-   compiler_options.get_namespace_name() + "_readonly.cpp",
+   compiler_options.get_name_space().back() + "_readonly.cpp",
    std::ios::trunc
   );
   write_initial_comment(cpp_file, compiler_options);
@@ -1767,7 +1776,7 @@ int joedbc_main(int argc, char **argv)
  {
   std::ofstream h_file
   (
-   compiler_options.get_namespace_name() + ".h",
+   compiler_options.get_name_space().back() + ".h",
    std::ios::trunc
   );
   write_initial_comment(h_file, compiler_options);
@@ -1776,7 +1785,7 @@ int joedbc_main(int argc, char **argv)
  {
   std::ofstream cpp_file
   (
-   compiler_options.get_namespace_name() + ".cpp",
+   compiler_options.get_name_space().back() + ".cpp",
    std::ios::trunc
   );
   write_initial_comment(cpp_file, compiler_options);
@@ -1787,13 +1796,13 @@ int joedbc_main(int argc, char **argv)
  {
   std::ofstream header
   (
-   compiler_options.get_namespace_name() + "_wrapper.h",
+   compiler_options.get_name_space().back() + "_wrapper.h",
    std::ios::trunc
   );
 
   std::ofstream body
   (
-   compiler_options.get_namespace_name() + "_wrapper.cpp",
+   compiler_options.get_name_space().back() + "_wrapper.cpp",
    std::ios::trunc
   );
 

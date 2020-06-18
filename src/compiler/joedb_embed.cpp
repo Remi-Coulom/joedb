@@ -5,6 +5,7 @@
 
 #include "joedb/type_io.h"
 #include "joedb/base64.h"
+#include "nested_namespace.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -34,11 +35,12 @@ int main(int argc, char **argv)
  }
 
  char const * const joedb_file_name = argv[1];
- char const * const namespace_name = argv[2];
+ std::vector<std::string> name_space = joedb::split_namespace(argv[2]);
  char const * const identifier = argv[3];
 
+
  std::ostringstream file_name;
- file_name << namespace_name << '_' << identifier;
+ file_name << name_space.back() << '_' << identifier;
 
  {
   std::ofstream cpp
@@ -55,15 +57,14 @@ int main(int argc, char **argv)
   }
 
   cpp << "#include \"" << file_name.str() << ".h\"\n";
-  cpp << "#include \"" << namespace_name << "_readonly.h\"\n";
+  cpp << "#include \"" << name_space.back() << "_readonly.h\"\n";
   if (mode == base64)
    cpp << "#include \"joedb/base64.h\"\n";
   cpp << '\n';
   cpp << "#include <sstream>\n";
   cpp << '\n';
 
-  cpp << "namespace " << namespace_name << '\n';
-  cpp << "{\n";
+  joedb::namespace_open(cpp, name_space);
 
   cpp << " const size_t " << identifier << "_size = ";
   cpp << file_content.str().size() << ";\n";
@@ -111,7 +112,7 @@ int main(int argc, char **argv)
    cpp << "_data() {return " << identifier << "_data;}\n";
   }
 
-  cpp << "}\n";
+  joedb::namespace_close(cpp, name_space);
  }
 
  {
@@ -119,7 +120,7 @@ int main(int argc, char **argv)
 
   {
    std::ostringstream guard_macro;
-   guard_macro << namespace_name << '_' << identifier << "_declared";
+   guard_macro << name_space.back() << '_' << identifier << "_declared";
 
    h << "#ifndef " << guard_macro.str() << '\n';
    h << "#define " << guard_macro.str() << '\n';
@@ -128,8 +129,8 @@ int main(int argc, char **argv)
 
   h << "\n#include <stddef.h>\n\n";
 
-  h << "namespace " << namespace_name << '\n';
-  h << "{\n";
+  joedb::namespace_open(h, name_space);
+
   h << " class Database;\n";
   h << " const Database &get_embedded_" << identifier << "();\n";
 
@@ -139,8 +140,7 @@ int main(int argc, char **argv)
    h << " char const *get_embedded_" << identifier << "_data();\n";
   }
 
-  h << "}\n";
-  h << '\n';
+  joedb::namespace_close(h, name_space);
 
   h << "#endif\n";
  }
