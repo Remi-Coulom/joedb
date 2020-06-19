@@ -6,6 +6,8 @@ Short Term
 
 - handle file sharing properly in Windows (many readers, one writer)
 
+- ability to indicate minimum joedb version in joedbc (and joedbi?)
+
 - tests for buffer overflow could be optimized when reading/writing large
   pieces of data, such as strings or vectors.
 
