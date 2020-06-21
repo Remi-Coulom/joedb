@@ -18,6 +18,13 @@ namespace joedb
  void namespace_open(std::ostream &out, const std::vector<std::string> &n);
  void namespace_close(std::ostream &out, const std::vector<std::string> &n);
 
+ void namespace_write
+ (
+  std::ostream &out,
+  const std::vector<std::string> &n,
+  const char *delimiter
+ );
+
  void namespace_include_guard
  (
   std::ostream &out,

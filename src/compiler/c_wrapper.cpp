@@ -65,12 +65,7 @@ void generate_c_wrapper
  ////////////////////////////////////////////////////////////////////////////
  // Header
  ////////////////////////////////////////////////////////////////////////////
- namespace_include_guard
- (
-  header,
-  "_wrapper_declared",
-  options.get_name_space()
- );
+ namespace_include_guard(header, "wrapper", options.get_name_space());
 
  header << "#include <stddef.h>\n";
  header << "#include \"index_types.h\"\n";

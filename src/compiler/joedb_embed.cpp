@@ -38,7 +38,6 @@ int main(int argc, char **argv)
  std::vector<std::string> name_space = joedb::split_namespace(argv[2]);
  char const * const identifier = argv[3];
 
-
  std::ostringstream file_name;
  file_name << name_space.back() << '_' << identifier;
 
@@ -118,14 +117,7 @@ int main(int argc, char **argv)
  {
   std::ofstream h(file_name.str() + ".h", std::ios::binary | std::ios::out);
 
-  {
-   std::ostringstream guard_macro;
-   guard_macro << name_space.back() << '_' << identifier << "_declared";
-
-   h << "#ifndef " << guard_macro.str() << '\n';
-   h << "#define " << guard_macro.str() << '\n';
-   h << '\n';
-  }
+  joedb::namespace_include_guard(h, identifier, name_space);
 
   h << "\n#include <stddef.h>\n\n";
 

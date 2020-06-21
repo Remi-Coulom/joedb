@@ -27,6 +27,25 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void namespace_write
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  const std::vector<std::string> &n,
+  const char *delimiter
+ )
+ {
+  for (size_t i = 0;;)
+  {
+   out << n[i];
+   if (++i < n.size())
+    out << delimiter;
+   else
+    break;
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  std::string namespace_string
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -35,16 +54,7 @@ namespace joedb
  )
  {
   std::ostringstream result;
-
-  for (size_t i = 0;;)
-  {
-   result << n[i];
-   if (++i < n.size())
-    result << delimiter;
-   else
-    break;
-  }
-
+  namespace_write(result, n, delimiter);
   return result.str();
  }
 
@@ -76,7 +86,10 @@ namespace joedb
   const std::vector<std::string> &n
  )
  {
-  out << "#ifndef " << namespace_string(n, "_") << name << '\n';
-  out << "#define " << namespace_string(n, "_") << name << '\n';
+  std::ostringstream id;
+  namespace_write(id, n, "_");
+  id << '_' << name << "_declared\n";
+  out << "#ifndef " << id.str();
+  out << "#define " << id.str();
  }
 }

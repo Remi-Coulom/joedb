@@ -157,12 +157,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  const Database &db = options.get_db();
  auto tables = db.get_tables();
 
- namespace_include_guard
- (
-  out,
-  "_Database_declared",
-  options.get_name_space()
- );
+ namespace_include_guard(out, "Database", options.get_name_space());
 
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
@@ -453,12 +448,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  const Database &db = options.get_db();
  auto tables = db.get_tables();
 
- namespace_include_guard
- (
-  out,
-  "_readonly_Database_declared",
-  options.get_name_space()
- );
+ namespace_include_guard(out, "readonly_Database", options.get_name_space());
 
  out << '\n';
 
