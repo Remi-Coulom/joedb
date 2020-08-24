@@ -620,12 +620,23 @@ int iterators()
 {
  testdb::File_Database db("test.joedb");
 
- auto i = db.get_person_table().begin();
- std::cout << db.get_name(*i++) << '\n';
- std::cout << db.get_name(*i--) << '\n';
- std::cout << db.get_name(*i) << '\n';
- std::cout << db.get_name(*++i) << '\n';
- std::cout << db.get_name(*--i) << '\n';
+ {
+  auto i = db.get_person_table().begin();
+  std::cout << db.get_name(*i++) << '\n';
+  std::cout << db.get_name(*i--) << '\n';
+  std::cout << db.get_name(*i) << '\n';
+  std::cout << db.get_name(*++i) << '\n';
+  std::cout << db.get_name(*--i) << '\n';
+ }
+
+ {
+  auto i = db.get_translation_table().begin();
+  std::cout << db.get_translation(*i++) << '\n';
+  std::cout << db.get_translation(*i--) << '\n';
+  std::cout << db.get_translation(*i) << '\n';
+  std::cout << db.get_translation(*++i) << '\n';
+  std::cout << db.get_translation(*--i) << '\n';
+ }
 
  return 0;
 }

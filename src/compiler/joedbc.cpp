@@ -1381,7 +1381,9 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
     out << "     iterator &operator++() {++index; return *this;}\n";
+    out << "     iterator operator++(int) {auto copy = *this; ++index; return copy;}\n";
     out << "     iterator &operator--() {--index; return *this;}\n";
+    out << "     iterator operator--(int) {auto copy = *this; --index; return copy;}\n";
     out << "     id_of_" << tname << " operator*() {return id_of_" << tname << "(index + 1);}\n";
     out << "   };\n";
     out << '\n';
