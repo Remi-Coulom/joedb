@@ -615,6 +615,22 @@ int checkpoints()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+int iterators()
+/////////////////////////////////////////////////////////////////////////////
+{
+ testdb::File_Database db("test.joedb");
+
+ auto i = db.get_person_table().begin();
+ std::cout << db.get_name(*i++) << '\n';
+ std::cout << db.get_name(*i--) << '\n';
+ std::cout << db.get_name(*i) << '\n';
+ std::cout << db.get_name(*++i) << '\n';
+ std::cout << db.get_name(*--i) << '\n';
+
+ return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -622,5 +638,6 @@ int main()
         schema_upgrade_test() ||
         do_vector_test() ||
         exceptions() ||
-        checkpoints();
+        checkpoints() ||
+        iterators();
 }
