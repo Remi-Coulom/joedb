@@ -9,9 +9,6 @@ const uint32_t joedb::Readonly_Journal::version_number = 0x00000004;
 const uint32_t joedb::Readonly_Journal::compatible_version = 0x00000004;
 const int64_t joedb::Readonly_Journal::header_size = 41;
 
-#define FORMAT_EXCEPTION(x)\
- do {if (!ignore_errors) throw Exception(x);} while(false)
-
 /////////////////////////////////////////////////////////////////////////////
 joedb::Readonly_Journal::Readonly_Journal
 /////////////////////////////////////////////////////////////////////////////
@@ -26,6 +23,12 @@ joedb::Readonly_Journal::Readonly_Journal
  record_of_last_operation(0),
  field_of_last_update(0)
 {
+ auto format_exception = [ignore_errors](const char *message)
+ {
+  if (!ignore_errors)
+   throw Exception(message);
+ };
+
  //
  // Check the format of an existing joedb file
  //
@@ -40,7 +43,7 @@ joedb::Readonly_Journal::Readonly_Journal
       file.read<uint8_t>() != 'd' ||
       file.read<uint8_t>() != 'b')
   {
-   FORMAT_EXCEPTION("File does not start by 'joedb'");
+   format_exception("File does not start by 'joedb'");
   }
   else
   {
@@ -49,7 +52,7 @@ joedb::Readonly_Journal::Readonly_Journal
    //
    const uint32_t version = file.read<uint32_t>();
    if (version < compatible_version || version > version_number)
-    FORMAT_EXCEPTION("Unsupported format version");
+    format_exception("Unsupported format version");
 
    //
    // Find the most recent checkpoint
@@ -59,7 +62,7 @@ joedb::Readonly_Journal::Readonly_Journal
     pos[i] = file.read<int64_t>();
 
    if (pos[0] != pos[1] || pos[2] != pos[3])
-    FORMAT_EXCEPTION("Checkpoint mismatch");
+    format_exception("Checkpoint mismatch");
 
    checkpoint_position = 0;
 
@@ -73,7 +76,7 @@ joedb::Readonly_Journal::Readonly_Journal
     }
 
    if (checkpoint_position < header_size)
-    FORMAT_EXCEPTION("Checkpoint too small");
+    format_exception("Checkpoint too small");
 
    //
    // Compare to file size (if available)
@@ -81,15 +84,13 @@ joedb::Readonly_Journal::Readonly_Journal
    int64_t file_size = file.get_size();
 
    if (file_size > 0 && file_size != checkpoint_position)
-    FORMAT_EXCEPTION("Checkpoint different from file size");
+    format_exception("Checkpoint different from file size");
 
    if (ignore_errors)
     checkpoint_position = file_size;
   }
  }
 }
-
-#undef FORMAT_EXCEPTION
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::replay_log(Writable &writable)
