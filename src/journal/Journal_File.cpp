@@ -10,9 +10,6 @@ joedb::Journal_File::Journal_File(Generic_File &file):
  Readonly_Journal(file),
  current_commit_level(0)
 {
- if (file.get_mode() == Open_Mode::read_existing)
-  throw Exception("Opening a writable journal with a readonly file");
-
  if (file.get_mode() == Open_Mode::create_new)
  {
   file.write<uint8_t>('j');
