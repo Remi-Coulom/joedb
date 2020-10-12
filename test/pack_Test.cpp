@@ -1,11 +1,12 @@
-#include "dump.h"
-#include "Interpreter.h"
-#include "joedb/Database.h"
-#include "joedb/Stream_File.h"
-#include "joedb/Journal_File.h"
-#include "Interpreter_Dump_Writable.h"
+#include "joedb/io/dump.h"
+#include "joedb/io/Interpreter.h"
+#include "joedb/interpreter/Database.h"
+#include "joedb/journal/Stream_File.h"
+#include "joedb/journal/Journal_File.h"
+#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/Readable_Multiplexer.h"
+
 #include "gtest/gtest.h"
-#include "Readable_Multiplexer.h"
 
 #include <fstream>
 

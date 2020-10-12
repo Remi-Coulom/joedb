@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "../src/compiler/nested_namespace.h"
+#include "joedb/compiler/nested_namespace.h"
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(nested_namespace, splitting)

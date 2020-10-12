@@ -1,4 +1,5 @@
-#include "type_io.h"
+#include "joedb/io/type_io.h"
+
 #include "gtest/gtest.h"
 
 #include <sstream>

@@ -1,9 +1,9 @@
-#include "Interpreter.h"
-#include "Interpreter_Dump_Writable.h"
-#include "SQL_Dump_Writable.h"
-#include "Database.h"
+#include "joedb/io/Interpreter.h"
+#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/io/SQL_Dump_Writable.h"
+#include "joedb/interpreter/Database.h"
+#include "joedb/Readable_Multiplexer.h"
 #include "gtest/gtest.h"
-#include "Readable_Multiplexer.h"
 
 #include <fstream>
 #include <sstream>

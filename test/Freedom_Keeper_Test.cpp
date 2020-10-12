@@ -2,7 +2,7 @@
 #undef NDEBUG
 #endif
 
-#include "Freedom_Keeper.h"
+#include "joedb/Freedom_Keeper.h"
 #include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////

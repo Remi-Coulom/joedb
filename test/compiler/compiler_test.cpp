@@ -3,12 +3,12 @@
 #include "schema_v2.h"
 #include "vector_test.h"
 #include "multi_index.h"
-
-#include "File.h"
-#include "Journal_File.h"
-#include "Database.h"
 #include "translation.h"
-#include "Interpreter_Dump_Writable.h"
+
+#include "joedb/journal/File.h"
+#include "joedb/journal/Journal_File.h"
+#include "joedb/interpreter/Database.h"
+#include "joedb/io/Interpreter_Dump_Writable.h"
 
 #include <iostream>
 #include <algorithm>

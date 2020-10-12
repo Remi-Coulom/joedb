@@ -1,6 +1,7 @@
-#include "type_io.h"
-#include "base64.h"
-#include "wide_char_display_width.h"
+#include "joedb/io/type_io.h"
+#include "joedb/io/base64.h"
+#include "joedb/external/wide_char_display_width.h"
+
 #include "gtest/gtest.h"
 
 #include <sstream>

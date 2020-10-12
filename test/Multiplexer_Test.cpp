@@ -1,10 +1,10 @@
-#include "Readable_Multiplexer.h"
-#include "File.h"
-#include "Journal_File.h"
-#include "Database.h"
-#include "Interpreter.h"
-#include "Interpreter_Dump_Writable.h"
-#include "dump.h"
+#include "joedb/Readable_Multiplexer.h"
+#include "joedb/journal/File.h"
+#include "joedb/journal/Journal_File.h"
+#include "joedb/interpreter/Database.h"
+#include "joedb/io/Interpreter.h"
+#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/io/dump.h"
 
 #include "gtest/gtest.h"
 

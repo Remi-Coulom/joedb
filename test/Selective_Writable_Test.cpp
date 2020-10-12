@@ -1,7 +1,8 @@
-#include "Selective_Writable.h"
-#include "Readable_Multiplexer.h"
-#include "Interpreter_Dump_Writable.h"
-#include "Interpreter.h"
+#include "joedb/Selective_Writable.h"
+#include "joedb/Readable_Multiplexer.h"
+#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/io/Interpreter.h"
+
 #include "gtest/gtest.h"
 
 #include <fstream>

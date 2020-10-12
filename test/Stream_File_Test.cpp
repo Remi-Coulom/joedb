@@ -1,4 +1,5 @@
-#include "Stream_File.h"
+#include "joedb/journal/Stream_File.h"
+
 #include "gtest/gtest.h"
 
 #include <random>

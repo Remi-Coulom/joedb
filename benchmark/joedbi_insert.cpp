@@ -1,7 +1,7 @@
 #include <cstdio>
-#include "joedb/File.h"
-#include "joedb/Journal_File.h"
-#include "joedb/Database.h"
+#include "joedb/journal/File.h"
+#include "joedb/journal/Journal_File.h"
+#include "joedb/interpreter/Database.h"
 #include "joedb/Readable_Multiplexer.h"
 
 using namespace joedb;

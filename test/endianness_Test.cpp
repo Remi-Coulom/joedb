@@ -1,8 +1,8 @@
-#include "gtest/gtest.h"
+#include "joedb/journal/File.h"
+#include "joedb/journal/Readonly_Journal.h"
+#include "joedb/interpreter/Database.h"
 
-#include "File.h"
-#include "Readonly_Journal.h"
-#include "Database.h"
+#include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(endianness, reading)

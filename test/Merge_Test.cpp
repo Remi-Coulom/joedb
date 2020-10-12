@@ -1,5 +1,5 @@
-#include "merge.h"
-#include "Database.h"
+#include "joedb/io/merge.h"
+#include "joedb/interpreter/Database.h"
 
 #include "gtest/gtest.h"
 
