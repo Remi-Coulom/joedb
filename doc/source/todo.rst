@@ -21,8 +21,6 @@ Short Term
   - method for testing: use a very large string (100Mb) + pause execution with sleep + look at process memory usage. (also measure execution time).
   - main question: necessary to std::move or not?
 
-- joedbc option to generate code for read-only database only. This will produce a smaller binary when writing is not necessary.
-
 - run unit tests with address sanitizer instead of valgrind
 
 - make a package for vcpkg and conan. Maybe build2?
@@ -41,7 +39,6 @@ Short Term
 
 Journal File
 ------------
-- Instead of throwing an exception: make it impossible at compile time to open a writable journal with a read_only file.
 - joedb_truncate <file> <position> (+optionally show position in logdump)
 - better than truncating: add an ``undo`` operation to the log. This way, it is possible to keep all branches of history.
 - high-performance system-specific implementation of joedb::File?
@@ -65,7 +62,6 @@ On-disk Storage
 
 Compiler
 --------
-- Allow opening a compiled db in "create_new" mode to throw if existing?
 - Should inheritance of compiled db from Writable be protected?
 - An uninitialized field is undefined. Debug mode: check that no undefined value is read? Also: an index may have more than one field. Should not include a row into the index before all fields of the index are defined? Only one index columns triggers index update?
 - modularize code generation
