@@ -16,6 +16,8 @@ namespace joedb
   public:
    Journal_File(Generic_File &file);
 
+   void append_raw_tail(const std::vector<char> &data);
+
    int64_t ahead_of_checkpoint() const;
    void checkpoint(int commit_level);
 
