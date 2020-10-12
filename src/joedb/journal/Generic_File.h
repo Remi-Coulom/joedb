@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdint>
+#include <vector>
 
 #include "joedb/assert.h"
 
@@ -40,6 +41,9 @@ namespace joedb
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
    int64_t get_position() const {return position;}
+
+   std::vector<char> read_tail(int64_t starting_position);
+   void append_tail(const std::vector<char> &data);
 
    template<typename T>
    void write(T x)

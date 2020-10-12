@@ -30,43 +30,31 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void pull(Journal_File &journal) const override
+   void pull(Journal_File &client_journal) override
    //////////////////////////////////////////////////////////////////////////
    {
-    if
-    (
-     journal.get_checkpoint_position() <
-     server_journal.get_checkpoint_position()
-    )
-    {
-     journal.append_raw_tail
+    const int64_t client_position = client_journal.get_checkpoint_position();
+    const int64_t server_position = server_journal.get_checkpoint_position();
+
+    if (client_position < server_position)
+     client_journal.append_raw_tail
      (
-      server_journal.get_raw_tail
-      (
-       journal.get_checkpoint_position()
-      )
+      server_journal.get_raw_tail(client_position)
      );
-    }
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push(Readonly_Journal &journal) override
+   void push(Readonly_Journal &client_journal) override
    //////////////////////////////////////////////////////////////////////////
    {
-    if
-    (
-     server_journal.get_checkpoint_position() <
-     journal.get_checkpoint_position()
-    )
-    {
+    const int64_t client_position = client_journal.get_checkpoint_position();
+    const int64_t server_position = server_journal.get_checkpoint_position();
+
+    if (server_position < client_position)
      server_journal.append_raw_tail
      (
-      journal.get_raw_tail
-      (
-       server_journal.get_checkpoint_position()
-      )
+      client_journal.get_raw_tail(server_position)
      );
-    }
    }
 
   public:

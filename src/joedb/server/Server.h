@@ -16,8 +16,8 @@ namespace joedb
    virtual void lock() {}
    virtual void unlock() {}
 
-   virtual void pull(Journal_File &journal) const {}
-   virtual void push(Readonly_Journal &journal) {}
+   virtual void pull(Journal_File &client_journal) {}
+   virtual void push(Readonly_Journal &client_journal) {}
 
   public:
    virtual ~Server() {}

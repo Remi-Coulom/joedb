@@ -27,7 +27,7 @@ namespace joedb
 
    bool at_end_of_file() const;
 
-   std::vector<char> get_raw_tail(int64_t starting_position) const;
+   std::vector<char> get_raw_tail(int64_t starting_position);
 
    static const uint32_t version_number;
    static const uint32_t compatible_version;

@@ -24,16 +24,16 @@ TEST(Server, Interpreted_Client)
   lock.get_writable().create_table("person");
  }
 
- EXPECT_EQ(0ULL, client2.get_readable().get_tables().size());
+ EXPECT_EQ(0, int(client2.get_readable().get_tables().size()));
  client2.pull();
- EXPECT_EQ(1ULL, client2.get_readable().get_tables().size());
+ EXPECT_EQ(1, int(client2.get_readable().get_tables().size()));
 
  {
   Interpreted_Write_Lock lock(client2);
   lock.get_writable().create_table("city");
  }
 
- EXPECT_EQ(1ULL, client1.get_readable().get_tables().size());
+ EXPECT_EQ(1, int(client1.get_readable().get_tables().size()));
  client1.pull();
- EXPECT_EQ(2ULL, client1.get_readable().get_tables().size());
+ EXPECT_EQ(2, int(client1.get_readable().get_tables().size()));
 }

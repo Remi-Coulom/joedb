@@ -2,7 +2,6 @@
 #include "joedb/journal/Generic_File.h"
 #include "joedb/Exception.h"
 
-#include <vector>
 #include <sstream>
 
 const uint32_t joedb::Readonly_Journal::version_number = 0x00000004;
@@ -97,10 +96,9 @@ std::vector<char> joedb::Readonly_Journal::get_raw_tail
 /////////////////////////////////////////////////////////////////////////////
 (
  int64_t starting_position
-) const
+)
 {
- std::vector<char> result;
- return result;
+ return file.read_tail(starting_position);
 }
 
 /////////////////////////////////////////////////////////////////////////////

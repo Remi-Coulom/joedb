@@ -13,6 +13,47 @@ void joedb::Generic_File::set_position(int64_t new_position)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+std::vector<char> joedb::Generic_File::read_tail(int64_t starting_position)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const int64_t initial_position = get_position();
+
+ set_position(starting_position);
+ std::vector<char> result;
+
+ while (true)
+ {
+  const size_t n = read_buffer();
+  if (n == 0)
+   break;
+  result.insert(result.end(), buffer, buffer + n);
+ }
+
+ set_position(initial_position);
+
+ return result;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Generic_File::append_tail(const std::vector<char> &data)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const char *current = &data[0];
+ size_t remaining = data.size();
+
+ while (remaining)
+ {
+  const size_t n = remaining > buffer_size ? buffer_size : remaining;
+  std::copy(current, current + n, buffer); // TODO: avoid useless copy
+  write_buffer_index = n;
+  flush_write_buffer();
+  current += n;
+  remaining -= n;
+  position += n;
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::Generic_File::write_string(const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
