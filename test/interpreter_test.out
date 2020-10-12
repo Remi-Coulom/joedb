@@ -112,10 +112,10 @@ Data manipulation
  update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
  delete_from <table_name> <record_id>
 
-Error: create_table: name already used (create_table city)
+Error: create_table: name already used: city (create_table city)
 Error: create_table: invalid identifier: 123456 (create_table 123456)
-Error: rename_table: name already used (rename_table person city)
-Error: rename_field: name already used (rename_field person city name)
+Error: rename_table: name already used: city (rename_table person city)
+Error: rename_field: name already used: name (rename_field person city name)
 OK: drop_table city
 OK: drop_table person
 OK: create_table test

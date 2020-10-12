@@ -97,7 +97,7 @@ void joedb::Database::create_table(const std::string &name)
  check_identifier("create_table", name);
 
  if (find_table(name))
-  throw Exception("create_table: name already used");
+  throw Exception("create_table: name already used: " + name);
 
  ++current_table_id;
  tables.insert(std::make_pair(current_table_id, Table()));
@@ -130,7 +130,7 @@ void joedb::Database::rename_table
   throw Exception("rename_table: invalid table_id");
 
  if (find_table(name) != 0)
-  throw Exception("rename_table: name already used");
+  throw Exception("rename_table: name already used: " + name);
 
  table_names[table_id] = name;
 }
@@ -185,7 +185,7 @@ void joedb::Database::rename_field
   throw Exception("rename_field: invalid field_id");
 
  if (table_it->second.find_field(name))
-  throw Exception("rename_field: name already used");
+  throw Exception("rename_field: name already used: " + name);
 
  field_it->second = name;
 }
