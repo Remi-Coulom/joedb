@@ -333,7 +333,7 @@ install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin)
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../src/io/joedb_browser DESTINATION bin)
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../src/joedb/io/joedb_browser DESTINATION bin)
 install(TARGETS joedb
  ARCHIVE DESTINATION lib
  LIBRARY DESTINATION lib
@@ -341,8 +341,11 @@ install(TARGETS joedb
 )
 install(TARGETS joedb_static ARCHIVE DESTINATION lib)
 
-file(GLOB all_includes ../src/includes/joedb/*.h)
-install(FILES ${all_includes} DESTINATION include/joedb)
+file(GLOB_RECURSE all_includes RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/../src/ ../src/joedb/*.h)
+foreach(file ${all_includes})
+ get_filename_component(dir ${file} DIRECTORY)
+ install(FILES ../src/${file} DESTINATION include/${dir})
+endforeach()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
  set(CPACK_GENERATOR "DEB")
