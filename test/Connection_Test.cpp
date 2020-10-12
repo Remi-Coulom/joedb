@@ -1,4 +1,5 @@
-#include "joedb/server/Embedded_Server.h"
+#include "joedb/server/Embedded_Connection.h"
+#include "joedb/server/SSH_Connection.cpp"
 #include "joedb/server/Interpreted_Client.h"
 #include "joedb/journal/File.h"
 
@@ -7,17 +8,21 @@
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Server, Interpreted_Client)
+TEST(Connection, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
+#if 0
+ SSH_Connection connection("www.remi-coulom.fr", "server.joedb");
+#else
  File server_file("server.joedb", Open_Mode::create_new);
- Embedded_Server server(server_file);
+ Embedded_Connection connection(server_file);
+#endif
 
  File client1_file("client1.joedb", Open_Mode::create_new);
- Interpreted_Client client1(server, client1_file);
+ Interpreted_Client client1(connection, client1_file);
 
  File client2_file("client2.joedb", Open_Mode::create_new);
- Interpreted_Client client2(server, client2_file);
+ Interpreted_Client client2(connection, client2_file);
 
  {
   Interpreted_Write_Lock lock(client1);

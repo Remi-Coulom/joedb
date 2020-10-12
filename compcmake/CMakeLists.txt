@@ -126,7 +126,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/nested_namespace_Test.cpp
   ../test/pack_Test.cpp
   ../test/Selective_Writable_Test.cpp
-  ../test/Server_Test.cpp
+  ../test/Connection_Test.cpp
   ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp

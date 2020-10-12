@@ -1,15 +1,15 @@
-#ifndef joedb_Server_declared
-#define joedb_Server_declared
+#ifndef joedb_Connection_declared
+#define joedb_Connection_declared
 
 #include "joedb/journal/Journal_File.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Server
+ class Connection
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Server_Access;
+  friend class Connection_Control;
   friend class Write_Lock;
 
   private:
@@ -20,28 +20,42 @@ namespace joedb
    virtual void push(Readonly_Journal &client_journal) {}
 
   public:
-   virtual ~Server() {}
+   virtual ~Connection() {}
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Server_Access
+ class Connection_Control
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Write_Lock;
 
   private:
-   Server &server;
+   Connection &connection;
    Journal_File &journal;
    Writable &writable;
 
+   void write_lock()
+   {
+    connection.lock();
+    connection.pull(journal);
+    journal.play_until_checkpoint(writable);
+   }
+
+   void write_unlock()
+   {
+    journal.checkpoint(0);
+    connection.push(journal);
+    connection.unlock();
+   }
+
   public:
-   Server_Access
+   Connection_Control
    (
-    Server &server,
+    Connection &connection,
     Journal_File &journal,
     Writable &writable
    ):
-    server(server),
+    connection(connection),
     journal(journal),
     writable(writable)
    {
@@ -49,7 +63,9 @@ namespace joedb
 
    void pull()
    {
-    server.pull(journal);
+    connection.lock();
+    connection.pull(journal);
+    connection.unlock();
     journal.play_until_checkpoint(writable);
    }
  };
@@ -59,20 +75,17 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Server_Access &access;
+   Connection_Control &control;
 
   public:
-   Write_Lock(Server_Access &access): access(access)
+   Write_Lock(Connection_Control &control): control(control)
    {
-    access.server.lock();
-    access.pull();
+    control.write_lock();
    }
 
    ~Write_Lock()
    {
-    access.journal.checkpoint(0);
-    access.server.push(access.journal);
-    access.server.unlock();
+    control.write_unlock();
    }
  };
 }

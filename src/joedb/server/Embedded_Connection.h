@@ -1,14 +1,14 @@
-#ifndef joedb_Embedded_Server_declared
-#define joedb_Embedded_Server_declared
+#ifndef joedb_Embedded_Connection_declared
+#define joedb_Embedded_Connection_declared
 
-#include "joedb/server/Server.h"
+#include "joedb/server/Connection.h"
 
 #include <mutex>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Embedded_Server: public Server
+ class Embedded_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -59,7 +59,7 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Embedded_Server(Generic_File &file):
+   Embedded_Connection(Generic_File &file):
    //////////////////////////////////////////////////////////////////////////
     server_journal(file)
    {

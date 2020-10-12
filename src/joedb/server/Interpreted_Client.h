@@ -1,7 +1,7 @@
 #ifndef joedb_Interpreted_Client_declared
 #define joedb_Interpreted_Client_declared
 
-#include "joedb/server/Server.h"
+#include "joedb/server/Connection.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/Multiplexer.h"
 
@@ -17,16 +17,16 @@ namespace joedb
    Journal_File journal;
    Database database;
    Multiplexer multiplexer;
-   Server_Access access;
+   Connection_Control control;
 
   public:
    Interpreted_Client
    (
-    Server &server,
+    Connection &connection,
     Generic_File &local_file
    ):
     journal(local_file),
-    access(server, journal, database)
+    control(connection, journal, database)
    {
     multiplexer.add_writable(journal);
     multiplexer.add_writable(database);
@@ -37,7 +37,7 @@ namespace joedb
     return database;
    }
 
-   void pull() {access.pull();}
+   void pull() {control.pull();}
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ namespace joedb
   public:
    Interpreted_Write_Lock(Interpreted_Client &client):
     client(client),
-    write_lock(client.access)
+    write_lock(client.control)
    {
    }
 
