@@ -70,6 +70,7 @@ namespace joedb
 
    ~Write_Lock()
    {
+    access.journal.checkpoint(0);
     access.server.push(access.journal);
     access.server.unlock();
    }

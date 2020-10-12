@@ -1,3 +1,6 @@
 html
 *.info
 *.tmp
+server.joedb
+client1.joedb
+client2.joedb
