@@ -98,12 +98,9 @@ Compiler
 - C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
 
-Server
-------
-- Controls access to a single joedb file.
-- Manages history only. Each client manages its own individual table storage.
-- Clients can get/release exclusive write access.
-- Writes are broadcast to all clients, handled as triggers.
+Concurrency
+-----------
+- Implement a server (boost::asio or networking TS)
 
 Other Ideas
 -----------
