@@ -27,12 +27,17 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Threads REQUIRED)
 
-include (CheckIncludeFileCXX)
-check_include_file_cxx("libssh/libsshpp.hpp" HAS_SSH)
-if (HAS_SSH)
+if(WIN32)
+ find_package(libssh CONFIG)
+else()
+ include(CheckIncludeFileCXX)
+ check_include_file_cxx("libssh/libsshpp.hpp" libssh_FOUND)
+endif()
+
+if (libssh_FOUND)
  add_definitions(-DJOEDB_HAS_SSH)
 else()
- message("== ssh not found (fix: sudo apt install libssh-dev)")
+ message("== ssh not found (fix: sudo apt install libssh-dev or vcpkg install libssh:x64-windows)")
 endif()
 
 set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.10.0/googletest)
@@ -91,7 +96,7 @@ add_executable(joedbi
 )
 target_link_libraries(joedbi joedb)
 
-if (HAS_SSH)
+if (libssh_FOUND)
  add_executable(joedb_ssh_connect
   ../src/joedb/io/joedb_ssh_connect.cpp
  )
@@ -150,7 +155,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/compiler/nested_namespace.cpp
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
- if (HAS_SSH)
+ if (libssh_FOUND)
   target_link_libraries(joedb_test ssh)
  endif()
 else()
@@ -352,6 +357,9 @@ install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin)
+if(libssh_FOUND)
+ install(TARGETS joedb_ssh_connect RUNTIME DESTINATION bin)
+endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../src/joedb/io/joedb_browser DESTINATION bin)
 install(TARGETS joedb
  ARCHIVE DESTINATION lib

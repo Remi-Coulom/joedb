@@ -8,6 +8,17 @@
 #include <chrono>
 #include <iostream>
 
+//
+// Windows does not define those
+//
+#ifndef S_IRUSR
+#define	S_IRUSR	0000400
+#endif
+
+#ifndef S_IWUSR
+#define	S_IWUSR	0000200
+#endif
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -69,7 +80,7 @@ namespace joedb
 
    server_position = int64_t(attributes.get()->size);
   }
-  catch (const joedb::Exception &e)
+  catch (const joedb::Exception &)
   {
   }
 
