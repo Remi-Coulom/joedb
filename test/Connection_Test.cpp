@@ -1,5 +1,4 @@
 #include "joedb/server/Embedded_Connection.h"
-#include "joedb/server/System_SSH_Connection.cpp"
 #include "joedb/server/SSH_Connection.cpp"
 #include "joedb/server/Interpreted_Client.h"
 #include "joedb/journal/File.h"
@@ -12,7 +11,7 @@ using namespace joedb;
 TEST(Connection, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
-#if 0
+#if 1
  SSH_Connection connection("rcoulom", "www.remi-coulom.fr", 22, "server.joedb");
 #else
  File server_file("server.joedb", Open_Mode::create_new);

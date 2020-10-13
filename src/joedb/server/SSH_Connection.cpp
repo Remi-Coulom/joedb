@@ -44,12 +44,20 @@ namespace joedb
  void SSH_Connection::pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  ssh::SFTP_Attributes attributes
-  (
-   sftp_stat(sftp.get(), remote_file_name.c_str())
-  );
+  server_position = 0;
 
-  server_position = int64_t(attributes.get()->size);
+  try
+  {
+   ssh::SFTP_Attributes attributes
+   (
+    sftp_stat(sftp.get(), remote_file_name.c_str())
+   );
+
+   server_position = int64_t(attributes.get()->size);
+  }
+  catch (const joedb::Exception &e)
+  {
+  }
 
   const int64_t client_position = client_journal.get_checkpoint_position();
 
@@ -97,7 +105,7 @@ namespace joedb
    (
     sftp.get(),
     remote_file_name.c_str(),
-    O_WRONLY | O_APPEND,
+    O_WRONLY | O_APPEND | O_CREAT,
     S_IRWXU
    );
 
