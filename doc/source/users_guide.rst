@@ -10,3 +10,4 @@ User's Guide
    schema_upgrade
    checkpoints
    opening_files
+   concurrency

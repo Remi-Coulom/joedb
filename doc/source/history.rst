@@ -3,9 +3,11 @@ History
 
 - 2020-??-??: 3.1
 
+  - :ref:`concurrency`: a new mechanism to allow multiple distributed processes to access the same database.
+  - The ``Memory_File`` class can store a journal in RAM, and is convenient for temporary local storage when synchronizing with a remote database.
   - :ref:`joedb_embed`
   - support for generating code inside a nested namespace
-  - minor improvements
+  - other minor changes
 
 - 2019-11-19: 3.0
 
