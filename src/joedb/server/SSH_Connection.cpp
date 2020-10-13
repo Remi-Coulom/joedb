@@ -24,7 +24,7 @@ namespace joedb
     sftp.get(),
     mutex_file_name.c_str(),
     O_CREAT | O_EXCL,
-    S_IRWXU
+    S_IRUSR
    );
 
    if (file)
@@ -87,7 +87,7 @@ namespace joedb
     sftp.get(),
     remote_file_name.c_str(),
     O_RDONLY,
-    S_IRWXU
+    S_IRUSR | S_IWUSR
    );
 
    if (file)
@@ -129,7 +129,7 @@ namespace joedb
     sftp.get(),
     remote_file_name.c_str(),
     O_WRONLY | O_APPEND | O_CREAT,
-    S_IRWXU
+    S_IRUSR | S_IWUSR
    );
 
    if (file)
