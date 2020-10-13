@@ -19,7 +19,8 @@ TEST(Connection, Interpreted_Client)
   "www.remi-coulom.fr",
   22,
   "server.joedb",
-  true
+  true,
+  0
  );
 #else
  Memory_File server_file;

@@ -164,7 +164,8 @@ namespace joedb
   std::string host,
   int port,
   std::string remote_file_name,
-  bool trace
+  bool trace,
+  int ssh_log_level
  ):
   remote_file_name(remote_file_name),
   trace(trace),
@@ -175,8 +176,7 @@ namespace joedb
    user,
    host,
    port,
-//   SSH_LOG_PROTOCOL
-   SSH_LOG_NOLOG
+   ssh_log_level
   ),
   sftp(session),
   server_position(0)
@@ -246,7 +246,8 @@ namespace joedb
       host,
       port,
       remote_file_name,
-      trace
+      trace,
+      ssh_log_level
      )
     );
     return;
@@ -272,13 +273,15 @@ namespace joedb
   std::string host,
   int port,
   std::string remote_file_name,
-  bool trace
+  bool trace,
+  int ssh_log_level
  ):
   user(user),
   host(host),
   port(port),
   remote_file_name(remote_file_name),
-  trace(trace)
+  trace(trace),
+  ssh_log_level(ssh_log_level)
  {
   reset();
  }

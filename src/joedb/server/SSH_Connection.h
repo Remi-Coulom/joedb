@@ -40,7 +40,8 @@ namespace joedb
     std::string host,
     int port,
     std::string remote_file_name,
-    bool trace
+    bool trace,
+    int ssh_log_level
    );
  };
 
@@ -54,6 +55,7 @@ namespace joedb
    const int port;
    const std::string remote_file_name;
    const bool trace;
+   const int ssh_log_level;
 
    std::unique_ptr<SSH_Connection> connection;
 
@@ -71,7 +73,8 @@ namespace joedb
     std::string host,
     int port,
     std::string remote_file_name,
-    bool trace
+    bool trace,
+    int ssh_log_level
    );
  };
 }

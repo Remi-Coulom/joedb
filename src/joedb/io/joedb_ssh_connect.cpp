@@ -14,7 +14,7 @@ namespace joedb
  {
   if (argc < 5)
   {
-   std::cerr << "usage: " << argv[0] << " <user> <host> <port> <file_name>\n";
+   std::cerr << "usage: " << argv[0] << " <user> <host> <port> <file_name> [<ssh_log_level>]\n";
    return 1;
   }
   else
@@ -22,13 +22,18 @@ namespace joedb
    int port = 22;
    std::istringstream(argv[3]) >> port;
 
+   int ssh_log_level = 0;
+   if (argc == 6)
+    std::istringstream(argv[5]) >> ssh_log_level;
+
    SSH_Robust_Connection connection
    (
     argv[1],
     argv[2],
     port,
     argv[4],
-    true
+    true,
+    ssh_log_level
    );
 
    Memory_File file;
