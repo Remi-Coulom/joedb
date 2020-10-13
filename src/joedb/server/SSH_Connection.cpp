@@ -3,33 +3,40 @@
 
 #include <iostream>
 #include <fcntl.h>
+#include <thread>
+#include <chrono>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Connection::run(const std::string &command)
- ////////////////////////////////////////////////////////////////////////////
- {
-  std::cerr << "running: " << command << "... ";
-  ssh::Channel channel(session);
-  channel.request_exec(command.c_str());
-  const int exit_status = channel.get_exit_status();
-  std::cerr << "exit status: " << exit_status << '\n';
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void SSH_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  // TODO: avoid code injection
-  run("lockfile -1 " + remote_file_name + ".mutex");
+  while (true)
+  {
+   sftp_file file = sftp_open
+   (
+    sftp.get(),
+    mutex_file_name.c_str(),
+    O_CREAT | O_EXCL,
+    S_IRWXU
+   );
+
+   if (file)
+   {
+    sftp_close(file);
+    break;
+   }
+   else
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (sftp_unlink(sftp.get(), (remote_file_name + ".mutex").c_str()) < 0)
+  if (sftp_unlink(sftp.get(), mutex_file_name.c_str()) < 0)
    throw Exception("Error removing remote mutex");
  }
 
@@ -114,6 +121,7 @@ namespace joedb
   std::string remote_file_name
  ):
   remote_file_name(remote_file_name),
+  mutex_file_name(remote_file_name + std::string(".mutex")),
   session
   (
    user,

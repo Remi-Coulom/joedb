@@ -12,13 +12,12 @@ namespace joedb
  {
   private:
    const std::string remote_file_name;
+   const std::string mutex_file_name;
 
    ssh::Session session;
    ssh::SFTP sftp;
 
    int64_t server_position;
-
-   void run(const std::string &command);
 
    void lock() override;
    void unlock() override;
