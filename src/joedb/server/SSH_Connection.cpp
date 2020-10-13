@@ -44,7 +44,7 @@ namespace joedb
     break;
    }
    else
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
   if (trace)
