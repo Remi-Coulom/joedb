@@ -11,7 +11,7 @@ using namespace joedb;
 TEST(Connection, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
-#if 1
+#if JOEDB_HAS_SSH
  SSH_Connection connection
  (
   "rcoulom",

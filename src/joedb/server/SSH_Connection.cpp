@@ -1,3 +1,5 @@
+#ifdef JOEDB_HAS_SSH
+
 #include "joedb/server/SSH_Connection.h"
 #include "joedb/Exception.h"
 
@@ -170,3 +172,5 @@ namespace joedb
  {
  }
 }
+
+#endif
