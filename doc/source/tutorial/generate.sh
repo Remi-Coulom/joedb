@@ -11,6 +11,7 @@ rm -f tutorial.joedb index_tutorial.joedb
 
 $dir/index_tutorial >index_tutorial.out
 $dir/tutorial >tutorial.out
+$dir/concurrency_tutorial >concurrency_tutorial.out
 
 $dir/joedb_logdump tutorial.joedb >logdump.out
 $dir/joedb_logdump --sql tutorial.joedb >logdump.sql

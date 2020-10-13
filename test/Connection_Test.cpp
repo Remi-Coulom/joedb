@@ -1,7 +1,6 @@
 #include "joedb/server/Embedded_Connection.h"
 #include "joedb/server/SSH_Connection.cpp"
 #include "joedb/server/Interpreted_Client.h"
-#include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"

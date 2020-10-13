@@ -287,6 +287,12 @@ add_executable(tutorial
  ../src/joedb/compiler/minimal_runtime.cpp
 )
 
+add_executable(concurrency_tutorial
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/concurrency_tutorial.cpp
+ ../src/joedb/compiler/minimal_runtime.cpp
+)
+
 add_executable(step_by_step_replay
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/step_by_step_replay.cpp

@@ -161,6 +161,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
+ out << "#include \"joedb/server/Connection.h\"\n";
  out << '\n';
 
  namespace_open(out, options.get_name_space());
@@ -170,6 +171,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR( class Generic_File_Database: public Database
  {
+  friend class Client;
+
   protected:
    void error(const char *message) override
    {
@@ -418,15 +421,71 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
+ // Concurrency
+ //
+ out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ class Client
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  friend class Write_Lock;
+
+  private:
+   Generic_File_Database database;
+   joedb::Connection_Control control;
+
+  public:
+   Client
+   (
+    joedb::Connection &connection,
+    joedb::Generic_File &local_file
+   ):
+    database(local_file),
+    control(connection, database.journal, database)
+   {
+   }
+
+   const Database &get_database()
+   {
+    return database;
+   }
+
+   void pull()
+   {
+    control.pull();
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Write_Lock
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   Client &client;
+   joedb::Write_Lock write_lock;
+
+  public:
+   Write_Lock(Client &client): client(client), write_lock(client.control) {}
+   Generic_File_Database &get_database() {return client.database;}
+ };
+)RRR";
+
+ //
  // Types class
  //
- out << " class Types: public Readonly_Types\n";
- out << " {\n";
- out << "  public:\n";
+ out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ class Types: public Readonly_Types
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+)RRR";
 
  std::vector<std::string> type_names;
  type_names.push_back("File_Database");
  type_names.push_back("Generic_File_Database");
+ type_names.push_back("Client");
+ type_names.push_back("Write_Lock");
 
  for (const std::string &type_name: type_names)
  {

@@ -28,6 +28,14 @@ The C++ classes of joedb enforce these constraints automatically.
 Example C++ code
 ----------------
 
+.. literalinclude:: ./tutorial/concurrency_tutorial.cpp
+   :language: c++
+
+It produces this output:
+
+.. literalinclude:: ./tutorial/concurrency_tutorial.out
+   :language: none
+
 SSH Connection
 --------------
 
