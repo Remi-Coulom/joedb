@@ -2,6 +2,7 @@
 #include "joedb/server/SSH_Connection.cpp"
 #include "joedb/server/Interpreted_Client.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"
 
@@ -21,14 +22,14 @@ TEST(Connection, Interpreted_Client)
   true
  );
 #else
- File server_file("server.joedb", Open_Mode::create_new);
+ Memory_File server_file;
  Embedded_Connection connection(server_file);
 #endif
 
- File client1_file("client1.joedb", Open_Mode::create_new);
+ Memory_File client1_file;
  Interpreted_Client client1(connection, client1_file);
 
- File client2_file("client2.joedb", Open_Mode::create_new);
+ Memory_File client2_file;
  Interpreted_Client client2(connection, client2_file);
 
  {
