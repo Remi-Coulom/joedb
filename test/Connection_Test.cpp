@@ -12,7 +12,7 @@ TEST(Connection, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
 #if JOEDB_HAS_SSH
- SSH_Connection connection
+ SSH_Robust_Connection connection
  (
   "rcoulom",
   "www.remi-coulom.fr",

@@ -1,8 +1,12 @@
+#ifdef JOEDB_HAS_SSH
+
 #ifndef joedb_SSH_Connection_declared
 #define joedb_SSH_Connection_declared
 
 #include "joedb/server/Connection.h"
 #include "joedb/server/ssh_wrappers.h"
+
+#include <memory>
 
 namespace joedb
 {
@@ -10,6 +14,8 @@ namespace joedb
  class SSH_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
+  friend class SSH_Robust_Connection;
+
   private:
    const std::string remote_file_name;
    const bool trace;
@@ -37,6 +43,38 @@ namespace joedb
     bool trace
    );
  };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class SSH_Robust_Connection: public Connection
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   const std::string user;
+   const std::string host;
+   const int port;
+   const std::string remote_file_name;
+   const bool trace;
+
+   std::unique_ptr<SSH_Connection> connection;
+
+   void lock() override;
+   void unlock() override;
+   void pull(Journal_File &client_journal) override;
+   void push(Readonly_Journal &client_journal) override;
+
+   void reset();
+
+  public:
+   SSH_Robust_Connection
+   (
+    std::string user,
+    std::string host,
+    int port,
+    std::string remote_file_name,
+    bool trace
+   );
+ };
 }
 
+#endif
 #endif

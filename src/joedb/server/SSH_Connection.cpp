@@ -33,7 +33,7 @@ namespace joedb
     break;
    }
    else
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(3));
   }
 
   if (trace)
@@ -170,6 +170,103 @@ namespace joedb
   sftp(session),
   server_position(0)
  {
+ }
+
+#define RETRY(x, n)\
+ for (int i = n; --i >= 0;)\
+  try\
+  {\
+   x;\
+   return;\
+  }\
+  catch (const Exception &e)\
+  {\
+   if (trace)\
+    std::cerr << "Error: " << e.what() << '\n';\
+   reset();\
+  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SSH_Robust_Connection::lock()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  RETRY(connection->lock(), 2);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SSH_Robust_Connection::unlock()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  RETRY(connection->unlock(), 2);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SSH_Robust_Connection::pull(Journal_File &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  RETRY(connection->pull(client_journal), 2);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SSH_Robust_Connection::push(Readonly_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  RETRY(connection->push(client_journal), 2);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SSH_Robust_Connection::reset()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (trace && connection)
+  {
+   std::cerr << "An error occurred, trying to reset the connection...\n";
+   std::this_thread::sleep_for(std::chrono::seconds(10));
+  }
+
+  for (int i = 100; --i >= 0;)
+   try
+   {
+    connection.reset
+    (
+     new SSH_Connection
+     (
+      user,
+      host,
+      port,
+      remote_file_name,
+      trace
+     )
+    );
+    return;
+   }
+   catch (...)
+   {
+    if (trace)
+     std::cerr << "Connection failed. Retrying after a pause...\n";
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+   }
+
+  throw Exception("Impossible to connect. Giving up");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ SSH_Robust_Connection::SSH_Robust_Connection
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::string user,
+  std::string host,
+  int port,
+  std::string remote_file_name,
+  bool trace
+ ):
+  user(user),
+  host(host),
+  port(port),
+  remote_file_name(remote_file_name),
+  trace(trace)
+ {
+  reset();
  }
 }
 
