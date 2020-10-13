@@ -16,8 +16,8 @@ namespace joedb
  {
   while (true)
   {
-   const int result = std::system(command.c_str());
    std::cerr << "run: " << command << '\n';
+   const int result = std::system(command.c_str());
    if (result == 0)
     break;
    std::cerr << "execution result: " << result << '\n';

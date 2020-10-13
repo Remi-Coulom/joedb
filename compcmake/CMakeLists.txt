@@ -27,6 +27,14 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Threads REQUIRED)
 
+include (CheckIncludeFileCXX)
+check_include_file_cxx("libssh/libsshpp.hpp" HAS_SSH)
+if (HAS_SSH)
+ add_definitions(-DHAS_SSH)
+else()
+ message("== ssh not found (fix: sudo apt install libssh-dev)")
+endif()
+
 set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.10.0/googletest)
 
 include_directories(BEFORE SYSTEM
@@ -135,6 +143,9 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/compiler/nested_namespace.cpp
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
+ if (HAS_SSH)
+  target_link_libraries(joedb_test ssh)
+ endif()
 else()
  message("== WARNING: run ./get_gtest.sh for tests")
 endif()
