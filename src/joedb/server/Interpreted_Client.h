@@ -3,7 +3,7 @@
 
 #include "joedb/server/Connection.h"
 #include "joedb/interpreter/Database.h"
-#include "joedb/Multiplexer.h"
+#include "joedb/Readable_Multiplexer.h"
 
 namespace joedb
 {
@@ -16,7 +16,7 @@ namespace joedb
   private:
    Journal_File journal;
    Database database;
-   Multiplexer multiplexer;
+   Readable_Multiplexer multiplexer;
    Connection_Control control;
 
   public:
@@ -26,13 +26,13 @@ namespace joedb
     Generic_File &local_file
    ):
     journal(local_file),
+    multiplexer(database),
     control(connection, journal, database)
    {
     multiplexer.add_writable(journal);
-    multiplexer.add_writable(database);
    }
 
-   const Readable &get_readable()
+   Readable &get_readable()
    {
     return database;
    }
@@ -55,7 +55,7 @@ namespace joedb
    {
    }
 
-   Writable &get_writable()
+   Readable_Writable &get_database()
    {
     return client.multiplexer;
    }

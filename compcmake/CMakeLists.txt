@@ -91,6 +91,13 @@ add_executable(joedbi
 )
 target_link_libraries(joedbi joedb)
 
+if (HAS_SSH)
+ add_executable(joedb_ssh_connect
+  ../src/joedb/io/joedb_ssh_connect.cpp
+ )
+ target_link_libraries(joedb_ssh_connect joedb ssh)
+endif()
+
 add_executable(joedb_logdump
  ../src/joedb/io/joedb_logdump.cpp
 )

@@ -34,7 +34,7 @@ TEST(Connection, Interpreted_Client)
 
  {
   Interpreted_Write_Lock lock(client1);
-  lock.get_writable().create_table("person");
+  lock.get_database().create_table("person");
  }
 
  EXPECT_EQ(0, int(client2.get_readable().get_tables().size()));
@@ -43,7 +43,7 @@ TEST(Connection, Interpreted_Client)
 
  {
   Interpreted_Write_Lock lock(client2);
-  lock.get_writable().create_table("city");
+  lock.get_database().create_table("city");
  }
 
  EXPECT_EQ(1, int(client1.get_readable().get_tables().size()));
