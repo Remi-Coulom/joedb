@@ -12,7 +12,14 @@ TEST(Connection, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
 #if 1
- SSH_Connection connection("rcoulom", "www.remi-coulom.fr", 22, "server.joedb");
+ SSH_Connection connection
+ (
+  "rcoulom",
+  "www.remi-coulom.fr",
+  22,
+  "server.joedb",
+  true
+ );
 #else
  File server_file("server.joedb", Open_Mode::create_new);
  Embedded_Connection connection(server_file);

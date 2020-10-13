@@ -1,10 +1,10 @@
 #include "joedb/server/SSH_Connection.h"
 #include "joedb/Exception.h"
 
-#include <iostream>
 #include <fcntl.h>
 #include <thread>
 #include <chrono>
+#include <iostream>
 
 namespace joedb
 {
@@ -12,6 +12,9 @@ namespace joedb
  void SSH_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (trace)
+   std::cerr << full_remote_name << ": lock()... ";
+
   while (true)
   {
    sftp_file file = sftp_open
@@ -30,12 +33,18 @@ namespace joedb
    else
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
+
+  if (trace)
+   std::cerr << "done.\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (trace)
+   std::cerr << full_remote_name << ": unlock()\n";
+
   if (sftp_unlink(sftp.get(), mutex_file_name.c_str()) < 0)
    throw Exception("Error removing remote mutex");
  }
@@ -44,6 +53,9 @@ namespace joedb
  void SSH_Connection::pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (trace)
+   std::cerr << full_remote_name << ": pull()... ";
+
   server_position = 0;
 
   try
@@ -64,7 +76,9 @@ namespace joedb
   if (client_position < server_position)
   {
    std::vector<char> v(size_t(server_position - client_position));
-   std::cerr << "copying " << v.size() << " bytes from server.\n";
+
+   if (trace)
+    std::cerr << v.size() << " bytes... ";
 
    sftp_file file = sftp_open
    (
@@ -88,18 +102,25 @@ namespace joedb
    else
     throw Exception("Could not open remote file for reading");
   }
+
+  if (trace)
+   std::cerr << "done\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Connection::push(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (trace)
+   std::cerr << full_remote_name << ": push()... ";
+
   const int64_t client_position = client_journal.get_checkpoint_position();
   if (client_position > server_position)
   {
    std::vector<char> v(client_journal.get_raw_tail(server_position));
 
-   std::cerr << "copying " << v.size() << " bytes to server.\n";
+   if (trace)
+    std::cerr << v.size() << " bytes... ";
 
    sftp_file file = sftp_open
    (
@@ -117,6 +138,9 @@ namespace joedb
    else
     throw Exception("Could not open remote file for writing");
   }
+
+  if (trace)
+   std::cerr << "done\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -126,16 +150,18 @@ namespace joedb
   std::string user,
   std::string host,
   int port,
-  std::string remote_file_name
+  std::string remote_file_name,
+  bool trace
  ):
   remote_file_name(remote_file_name),
-  mutex_file_name(remote_file_name + std::string(".mutex")),
+  trace(trace),
+  mutex_file_name(remote_file_name + ".mutex"),
+  full_remote_name(user + "@" + host + ":" + remote_file_name),
   session
   (
    user,
    host,
    port,
-//   SSH_LOG_PACKET
 //   SSH_LOG_PROTOCOL
    SSH_LOG_NOLOG
   ),

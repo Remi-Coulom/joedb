@@ -12,7 +12,10 @@ namespace joedb
  {
   private:
    const std::string remote_file_name;
+   const bool trace;
+
    const std::string mutex_file_name;
+   const std::string full_remote_name;
 
    ssh::Session session;
    ssh::SFTP sftp;
@@ -30,7 +33,8 @@ namespace joedb
     std::string user,
     std::string host,
     int port,
-    std::string remote_file_name
+    std::string remote_file_name,
+    bool trace
    );
  };
 }
