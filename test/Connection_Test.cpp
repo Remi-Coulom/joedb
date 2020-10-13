@@ -13,8 +13,6 @@ TEST(Connection, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
 #if 0
- System_SSH_Connection connection("www.remi-coulom.fr", "server.joedb");
-#elif 1
  SSH_Connection connection("rcoulom", "www.remi-coulom.fr", 22, "server.joedb");
 #else
  File server_file("server.joedb", Open_Mode::create_new);
