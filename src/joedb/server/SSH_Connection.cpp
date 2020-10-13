@@ -29,16 +29,14 @@ namespace joedb
  void SSH_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  // TODO: avoid code injection
-  run("rm -f " + remote_file_name + ".mutex");
+  if (sftp_unlink(sftp.get(), (remote_file_name + ".mutex").c_str()) < 0)
+   throw Exception("Error removing remote mutex");
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Connection::pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  ssh::SFTP sftp(session);
-
   ssh::SFTP_Attributes attributes
   (
    sftp_stat(sftp.get(), remote_file_name.c_str())
@@ -84,7 +82,6 @@ namespace joedb
   const int64_t client_position = client_journal.get_checkpoint_position();
   if (client_position > server_position)
   {
-   ssh::SFTP sftp(session);
    std::vector<char> v(client_journal.get_raw_tail(server_position));
 
    std::cerr << "copying " << v.size() << " bytes to server.\n";
@@ -126,6 +123,7 @@ namespace joedb
 //   SSH_LOG_PROTOCOL
    SSH_LOG_NOLOG
   ),
+  sftp(session),
   server_position(0)
  {
  }
