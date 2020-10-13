@@ -1,20 +1,24 @@
-#ifndef joedb_Good_SSH_Connection_declared
-#define joedb_Good_SSH_Connection_declared
+#ifndef joedb_System_SSH_Connection_declared
+#define joedb_System_SSH_Connection_declared
 
 #include "joedb/server/Connection.h"
-#include "joedb/server/ssh_wrappers.h"
+#include "joedb/journal/File.h"
+
+#include <memory>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Good_SSH_Connection: public Connection
+ class System_SSH_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
+   static const std::string local_file_name;
+   const std::string host;
    const std::string remote_file_name;
 
-   ssh::Session session;
-   int64_t server_position;
+   std::unique_ptr<File> server_file;
+   std::unique_ptr<Journal_File> server_journal;
 
    void run(const std::string &command);
 
@@ -24,11 +28,9 @@ namespace joedb
    void push(Readonly_Journal &client_journal) override;
 
   public:
-   Good_SSH_Connection
+   System_SSH_Connection
    (
-    std::string user,
     std::string host,
-    int port,
     std::string remote_file_name
    );
  };

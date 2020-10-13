@@ -2,9 +2,7 @@
 #define joedb_SSH_Connection_declared
 
 #include "joedb/server/Connection.h"
-#include "joedb/journal/File.h"
-
-#include <memory>
+#include "joedb/server/ssh_wrappers.h"
 
 namespace joedb
 {
@@ -13,12 +11,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   static const std::string local_file_name;
-   const std::string host;
    const std::string remote_file_name;
 
-   std::unique_ptr<File> server_file;
-   std::unique_ptr<Journal_File> server_journal;
+   ssh::Session session;
+   int64_t server_position;
 
    void run(const std::string &command);
 
@@ -30,7 +26,9 @@ namespace joedb
   public:
    SSH_Connection
    (
+    std::string user,
     std::string host,
+    int port,
     std::string remote_file_name
    );
  };
