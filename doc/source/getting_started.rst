@@ -127,6 +127,17 @@ For instance, when merging those two databases:
 .. literalinclude:: ./tutorial/joedb_embed.out
    :language: none
 
+.. _joedb_ssh_connect:
+
+``joedb_ssh_connect``
+^^^^^^^^^^^^^^^^^^^^^
+
+``joedb_ssh_connect`` runs the ``joedbi`` interpreter concurrently on a shared
+remote database.
+
+.. literalinclude:: ./tutorial/joedb_ssh_connect.out
+   :language: none
+
 Example Code
 ------------
 
