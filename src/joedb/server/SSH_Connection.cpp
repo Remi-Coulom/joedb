@@ -251,10 +251,13 @@ namespace joedb
     );
     return;
    }
-   catch (...)
+   catch (const Exception &e)
    {
     if (trace)
-     std::cerr << "Connection failed. Retrying after a pause...\n";
+    {
+     std::cerr << "Connection failed: " << e.what() << '\n';
+     std::cerr << "Will retry after a pause...\n";
+    }
     std::this_thread::sleep_for(std::chrono::seconds(10));
    }
 
