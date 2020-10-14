@@ -11,7 +11,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class SSH_Connection: public Decomposed_Connection
+ class SSH_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class SSH_Robust_Connection;
@@ -28,10 +28,29 @@ namespace joedb
 
    int64_t server_position;
 
-   void lock() override;
-   void unlock() override;
-   void pull(Journal_File &client_journal) override;
-   void push(Readonly_Journal &client_journal) override;
+   void lock();
+   void unlock();
+   void raw_pull(Journal_File &client_journal);
+   void raw_push(Readonly_Journal &client_journal);
+
+   void pull(Journal_File &client_journal) override
+   {
+    lock();
+    raw_pull(client_journal);
+    unlock();
+   }
+
+   void lock_pull(Journal_File &client_journal) override
+   {
+    lock();
+    raw_pull(client_journal);
+   }
+
+   void push_unlock(Readonly_Journal &client_journal) override
+   {
+    raw_push(client_journal);
+    unlock();
+   }
 
   public:
    SSH_Connection
@@ -46,7 +65,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class SSH_Robust_Connection: public Decomposed_Connection
+ class SSH_Robust_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -59,10 +78,9 @@ namespace joedb
 
    std::unique_ptr<SSH_Connection> connection;
 
-   void lock() override;
-   void unlock() override;
    void pull(Journal_File &client_journal) override;
-   void push(Readonly_Journal &client_journal) override;
+   void lock_pull(Journal_File &client_journal) override;
+   void push_unlock(Readonly_Journal &client_journal) override;
 
    void reset();
 
