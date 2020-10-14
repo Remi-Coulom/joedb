@@ -104,7 +104,12 @@ Concurrency
 
   - ensure that we never write to the server file before the push is complete.
   - using a real mutex instead of a file mutex is considerably more efficient.
-  - Fused operations will be faster: lock+pull+unlock, lock+pull, push+unlock.
+  - Fused operations will be faster: lock_pull_unlock, lock_pull, push_unlock.
+
+- Make the system robust with respect to client disconnections
+
+  - set a timeout: clients not allowed to hold a lock for too long
+  - push_unlock must be prevented for a lock that timed out. Lock identifier should be returned by lock_pull, and passed to push_unlock. Push_unlock will fail if the lock was invalidated by a timeout.
 
 Other Ideas
 -----------
