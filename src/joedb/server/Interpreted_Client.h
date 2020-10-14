@@ -11,7 +11,7 @@ namespace joedb
  class Interpreted_Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Interpreted_Write_Lock;
+  friend class Interpreted_Lock;
 
   private:
    Journal_File journal;
@@ -32,7 +32,7 @@ namespace joedb
     multiplexer.add_writable(journal);
    }
 
-   Readable &get_readable()
+   Readable &get_database()
    {
     return database;
    }
@@ -41,17 +41,17 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Write_Lock
+ class Interpreted_Lock
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Interpreted_Client &client;
-   Write_Lock write_lock;
+   Lock lock;
 
   public:
-   Interpreted_Write_Lock(Interpreted_Client &client):
+   Interpreted_Lock(Interpreted_Client &client):
     client(client),
-    write_lock(client.control)
+    lock(client.control)
    {
    }
 

@@ -33,20 +33,20 @@ TEST(Connection, Interpreted_Client)
  Interpreted_Client client2(connection, client2_file);
 
  {
-  Interpreted_Write_Lock lock(client1);
+  Interpreted_Lock lock(client1);
   lock.get_database().create_table("person");
  }
 
- EXPECT_EQ(0, int(client2.get_readable().get_tables().size()));
+ EXPECT_EQ(0, int(client2.get_database().get_tables().size()));
  client2.pull();
- EXPECT_EQ(1, int(client2.get_readable().get_tables().size()));
+ EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
 
  {
-  Interpreted_Write_Lock lock(client2);
+  Interpreted_Lock lock(client2);
   lock.get_database().create_table("city");
  }
 
- EXPECT_EQ(1, int(client1.get_readable().get_tables().size()));
+ EXPECT_EQ(1, int(client1.get_database().get_tables().size()));
  client1.pull();
- EXPECT_EQ(2, int(client1.get_readable().get_tables().size()));
+ EXPECT_EQ(2, int(client1.get_database().get_tables().size()));
 }

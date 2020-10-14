@@ -62,7 +62,6 @@ On-disk Storage
 
 Compiler
 --------
-- Should inheritance of compiled db from Writable be protected?
 - An uninitialized field is undefined. Debug mode: check that no undefined value is read? Also: an index may have more than one field. Should not include a row into the index before all fields of the index are defined? Only one index columns triggers index update?
 - modularize code generation
 
@@ -100,7 +99,10 @@ Compiler
 
 Concurrency
 -----------
-- Implement a server (boost::asio or networking TS)
+- Use checkpoints on the server file to make the system robust to an incomplete push.
+- The only way to be really clean and efficient is to implement a server (boost::asio or networking TS):
+  - ensure that we never write to the server file before the push is complete.
+  - using a real mutex instead of a file mutex is considerably more efficient.
 
 Other Ideas
 -----------

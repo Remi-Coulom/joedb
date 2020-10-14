@@ -25,7 +25,7 @@ database, the operations must follow some constraints:
 
 The C++ classes of joedb enforce these constraints automatically.
 
-Example C++ code
+Example C++ Code
 ----------------
 
 .. literalinclude:: ./tutorial/concurrency_tutorial.cpp
@@ -36,8 +36,14 @@ It produces this output:
 .. literalinclude:: ./tutorial/concurrency_tutorial.out
    :language: none
 
-SSH Connection
---------------
+Different Types of Connection
+-----------------------------
+
+``Embedded_Connection``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+``SSH_Connection``
+^^^^^^^^^^^^^^^^^^
 
 Note: for libssh to work in Windows, I had to convert my Linux private key this
 way:
@@ -48,7 +54,17 @@ way:
 
 And rename the resulting id_rsa.pem to id_rsa.
 
-Server
-------
+``SSH_Robust_Connection``
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The most efficient way to handle concurrent access would be to use a server. A server would handle concurrency with a proper internal mutex instead of writing mutex files, which would be considerably more efficient. I'll implement one when the C++ networking TS becomes widely available.
+Wrapper around ``SSH_Connection`` that will try to reconnect whenever an exception is thrown.
+
+Joedb Server
+^^^^^^^^^^^^
+
+The most reliable and efficient way to handle concurrent access would be to use
+a server. A server would handle concurrency with a proper internal mutex
+instead of writing mutex files, which would be considerably more efficient. It
+could also handle incomplete pushes more reliably. I'll implement one when the
+C++ networking TS becomes widely available.
+

@@ -14,7 +14,8 @@ namespace joedb
  {
   if (argc < 5)
   {
-   std::cerr << "usage: " << argv[0] << " <user> <host> <port> <file_name> [<ssh_log_level>]\n";
+   std::cerr << "usage: " << argv[0];
+   std::cerr << " <user> <host> <port> <file_name> [<ssh_log_level>]\n";
    return 1;
   }
   else
@@ -53,13 +54,13 @@ namespace joedb
 
     if (input == "W")
     {
-     Interpreted_Write_Lock lock(client);
+     Interpreted_Lock lock(client);
      Interpreter(lock.get_database()).main_loop(std::cin, std::cout);
     }
     else if (input == "P")
      client.pull();
     else if (input == "R")
-     Readonly_Interpreter(client.get_readable()).main_loop(std::cin, std::cout);
+     Readonly_Interpreter(client.get_database()).main_loop(std::cin, std::cout);
     else if (input == "Q")
      break;
    }

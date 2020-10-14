@@ -428,7 +428,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  class Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Write_Lock;
+  friend class Lock;
 
   private:
    Generic_File_Database database;
@@ -457,15 +457,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Write_Lock
+ class Lock
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Client &client;
-   joedb::Write_Lock write_lock;
+   joedb::Lock lock;
 
   public:
-   Write_Lock(Client &client): client(client), write_lock(client.control) {}
+   Lock(Client &client): client(client), lock(client.control) {}
    Generic_File_Database &get_database() {return client.database;}
  };
 )RRR";
@@ -485,7 +485,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  type_names.push_back("File_Database");
  type_names.push_back("Generic_File_Database");
  type_names.push_back("Client");
- type_names.push_back("Write_Lock");
+ type_names.push_back("Lock");
 
  for (const std::string &type_name: type_names)
  {

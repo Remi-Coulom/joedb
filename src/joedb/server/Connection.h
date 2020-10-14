@@ -10,7 +10,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Connection_Control;
-  friend class Write_Lock;
 
   private:
    virtual void lock() {}
@@ -27,21 +26,21 @@ namespace joedb
  class Connection_Control
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Write_Lock;
+  friend class Lock;
 
   private:
    Connection &connection;
    Journal_File &journal;
    Writable &writable;
 
-   void write_lock()
+   void lock()
    {
     connection.lock();
     connection.pull(journal);
     journal.play_until_checkpoint(writable);
    }
 
-   void write_unlock()
+   void unlock()
    {
     journal.checkpoint(0);
     connection.push(journal);
@@ -71,21 +70,21 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Write_Lock
+ class Lock
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Connection_Control &control;
 
   public:
-   Write_Lock(Connection_Control &control): control(control)
+   Lock(Connection_Control &control): control(control)
    {
-    control.write_lock();
+    control.lock();
    }
 
-   ~Write_Lock()
+   ~Lock()
    {
-    control.write_unlock();
+    control.unlock();
    }
  };
 }

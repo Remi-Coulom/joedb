@@ -29,7 +29,7 @@ int main()
  // In order to get write access, it is necessary to create a lock.
  //
  {
-  tutorial::Write_Lock lock(client1);
+  tutorial::Lock lock(client1);
 
   lock.get_database().new_city("Paris");
   lock.get_database().new_city("New York");
