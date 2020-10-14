@@ -54,19 +54,9 @@ file on the server, named with ``.mutex`` appended to the name of the database
 file. The same mutex file is used to ensure the atomicity of the pull
 operation, so reads are blocked when one client has a write lock.
 
-There is no mechanism to deal with the situation where a client crashes or
-disconnects while holding the lock. The mutex file will remain on the server,
-and it will keep blocking. If this happens, you'll have to fix the situation
-manually.
-
-Note: for libssh to work in Windows, I had to convert my Linux private key this
-way:
-
-.. code-block:: none
-
-    openssl rsa -in ./id_rsa -outform pem >id_rsa.pem
-
-And rename the resulting id_rsa.pem to id_rsa.
+There is no mechanism to deal with crash or disconnection of a client holding
+the lock. The mutex file will remain on the server, and it will keep blocking.
+If this happens, you'll have to fix the situation manually.
 
 ``SSH_Robust_Connection``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
