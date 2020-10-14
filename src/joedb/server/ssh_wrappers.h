@@ -6,7 +6,7 @@
 
 #include "joedb/Exception.h"
 
-namespace ssh
+namespace joedb {namespace ssh
 {
  ////////////////////////////////////////////////////////////////////////////
  inline void check_not_null(void *p)
@@ -60,43 +60,6 @@ namespace ssh
     if (session)
      ssh_free(session);
    }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Channel
- ////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   const ssh_channel channel;
-
-  public:
-   Channel(const Session& session): channel(ssh_channel_new(session.get()))
-   { 
-    check_not_null(channel);
-    if (ssh_channel_open_session(channel) != SSH_OK)
-     throw joedb::Exception("Could not open ssh channel");
-   }
-
-  void request_exec(const char *command)
-  {
-   if (ssh_channel_request_exec(channel, command) != SSH_OK)
-    throw joedb::Exception("Could not execute command");
-  }
-
-  int get_exit_status()
-  {
-   return ssh_channel_get_exit_status(channel);
-  }
-
-  ~Channel()
-  {
-   if (channel)
-   {
-    ssh_channel_send_eof(channel);
-    ssh_channel_close(channel);
-    ssh_channel_free(channel);
-   }
-  }
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -158,6 +121,6 @@ namespace ssh
      sftp_attributes_free(attributes);
    }
  };
-}
+}}
 
 #endif
