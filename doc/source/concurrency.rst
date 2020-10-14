@@ -59,12 +59,7 @@ And rename the resulting id_rsa.pem to id_rsa.
 
 Wrapper around ``SSH_Connection`` that will try to reconnect whenever an exception is thrown.
 
-Joedb Server
-^^^^^^^^^^^^
+``Server_Connection``
+^^^^^^^^^^^^^^^^^^^^^
 
-The most reliable and efficient way to handle concurrent access would be to use
-a server. A server would handle concurrency with a proper internal mutex
-instead of writing mutex files, which would be considerably more efficient. It
-could also handle incomplete pushes more reliably. I'll implement one when the
-C++ networking TS becomes widely available.
-
+TODO.

@@ -12,14 +12,43 @@ namespace joedb
   friend class Connection_Control;
 
   private:
+   virtual void lock_pull_unlock(Journal_File &client_journal) {}
+   virtual void lock_pull(Journal_File &client_journal) {}
+   virtual void push_unlock(Readonly_Journal &client_journal) {}
+
+  public:
+   virtual ~Connection() {}
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Decomposed_Connection: public Connection
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
    virtual void lock() {}
    virtual void unlock() {}
 
    virtual void pull(Journal_File &client_journal) {}
    virtual void push(Readonly_Journal &client_journal) {}
 
-  public:
-   virtual ~Connection() {}
+   void lock_pull_unlock(Journal_File &client_journal) override
+   {
+    lock();
+    pull(client_journal);
+    unlock();
+   }
+
+   void lock_pull(Journal_File &client_journal) override
+   {
+    lock();
+    pull(client_journal);
+   }
+
+   void push_unlock(Readonly_Journal &client_journal) override
+   {
+    push(client_journal);
+    unlock();
+   }
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -35,16 +64,14 @@ namespace joedb
 
    void lock()
    {
-    connection.lock();
-    connection.pull(journal);
+    connection.lock_pull(journal);
     journal.play_until_checkpoint(writable);
    }
 
    void unlock()
    {
     journal.checkpoint(0);
-    connection.push(journal);
-    connection.unlock();
+    connection.push_unlock(journal);
    }
 
   public:
@@ -62,9 +89,7 @@ namespace joedb
 
    void pull()
    {
-    connection.lock();
-    connection.pull(journal);
-    connection.unlock();
+    connection.lock_pull_unlock(journal);
     journal.play_until_checkpoint(writable);
    }
  };

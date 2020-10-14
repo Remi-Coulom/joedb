@@ -101,8 +101,10 @@ Concurrency
 -----------
 - Use checkpoints on the server file to make the system robust to an incomplete push.
 - The only way to be really clean and efficient is to implement a server (boost::asio or networking TS):
+
   - ensure that we never write to the server file before the push is complete.
   - using a real mutex instead of a file mutex is considerably more efficient.
+  - Fused operations will be faster: lock+pull+unlock, lock+pull, push+unlock.
 
 Other Ideas
 -----------
