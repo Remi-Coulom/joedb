@@ -103,9 +103,12 @@ namespace joedb
 
    if (file)
    {
-    sftp_seek64(file, uint64_t(client_position));
-    sftp_read(file, v.data(), v.size());
+    int seek_result = sftp_seek64(file, uint64_t(client_position));
+    ssize_t read_result = sftp_read(file, v.data(), v.size());
     sftp_close(file);
+
+    if (seek_result < 0 || read_result != ssize_t(v.size()))
+     throw Exception("Error during sftp_read");
 
     client_journal.append_raw_tail
     (
@@ -115,6 +118,8 @@ namespace joedb
    else
     throw Exception("Could not open remote file for reading");
   }
+  else if (client_position > server_position)
+   throw Exception("Trying to pull when ahead of server");
 
   if (trace)
    std::cerr << "done\n";
