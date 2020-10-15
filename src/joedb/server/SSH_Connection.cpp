@@ -147,9 +147,38 @@ namespace joedb
 
    if (file)
    {
-    ssize_t written = sftp_write(file, v.data(), v.size());
+    //
+    // https://tools.ietf.org/html/draft-ietf-secsh-filexfer-00
+    //
+    // The maximum size of a packet is in practise determined by the client
+    // (the maximum size of read or write requests that it sends, plus a few
+    // bytes of packet overhead).  All servers SHOULD support packets of at
+    // least 34000 bytes (where the packet size refers to the full length,
+    // including the header above).  This should allow for reads and writes of
+    // at most 32768 bytes.
+    //
+    const size_t max_block_size = 32768;
+    const size_t size = v.size();
+    size_t written = 0;
+
+    while (written < size)
+    {
+     size_t block_size = size - written;
+
+     if (block_size > max_block_size)
+      block_size = max_block_size;
+
+     const ssize_t result = sftp_write(file, v.data() + written, block_size);
+
+     if (result <= 0)
+      break;
+
+     written += size_t(result);
+    }
+
     sftp_close(file);
-    if (written < ssize_t(v.size()))
+
+    if (written < size)
      throw Exception("Incomplete write during push");
    }
    else
