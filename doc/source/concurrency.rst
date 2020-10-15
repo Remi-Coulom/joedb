@@ -48,15 +48,20 @@ file that is not shared.
 ``SSH_Connection``
 ^^^^^^^^^^^^^^^^^^
 
-This allows sharing a file stored on a remote server via ssh. There is no need
-to run a special joedb server on the remote machine. Locking works with a mutex
-file on the server, named with ``.mutex`` appended to the name of the database
-file. The same mutex file is used to ensure the atomicity of the pull
-operation, so reads are blocked when one client has a write lock.
+This allows sharing a file stored on a remote machine via ssh. There is no need
+to run a joedb server. Locking works with a mutex file on the remote machine,
+named with ``.mutex`` appended to the name of the database file. The same mutex
+file is used to ensure the atomicity of the pull operation, so reads are
+blocked when one client has a write lock.
 
 There is no mechanism to deal with crash or disconnection of a client holding
 the lock. The mutex file will remain on the server, and it will keep blocking.
-If this happens, you'll have to fix the situation manually.
+If this happens, you'll have to fix the situation manually. If a disconnection
+occurred in the middle of a big push, then the server database might be
+incomplete. It should be fixed (for instance, by copying the database of the
+client that disconnected) before removing the mutex.
+
+If you need better performance or reliability, use the joedb server instead.
 
 ``SSH_Robust_Connection``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
