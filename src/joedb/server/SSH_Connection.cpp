@@ -152,7 +152,7 @@ namespace joedb
    {
     ssize_t written = sftp_write(file, v.data(), v.size());
     sftp_close(file);
-    if (written < v.size())
+    if (written < ssize_t(v.size()))
      throw Exception("Incomplete write during push");
    }
    else

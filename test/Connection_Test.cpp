@@ -1,5 +1,4 @@
 #include "joedb/server/Embedded_Connection.h"
-#include "joedb/server/SSH_Connection.cpp"
 #include "joedb/server/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 
@@ -11,20 +10,8 @@ using namespace joedb;
 TEST(Connection, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
-#if JOEDB_HAS_SSH
- SSH_Robust_Connection connection
- (
-  "rcoulom",
-  "www.remi-coulom.fr",
-  22,
-  "server.joedb",
-  true,
-  0
- );
-#else
  Memory_File server_file;
  Embedded_Connection connection(server_file);
-#endif
 
  Memory_File client1_file;
  Interpreted_Client client1(connection, client1_file);

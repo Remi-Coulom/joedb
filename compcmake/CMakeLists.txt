@@ -99,6 +99,7 @@ target_link_libraries(joedbi joedb)
 if (libssh_FOUND)
  add_executable(joedb_ssh_connect
   ../src/joedb/io/joedb_ssh_connect.cpp
+  ../src/joedb/server/SSH_Connection.cpp
  )
  target_link_libraries(joedb_ssh_connect joedb ssh)
 endif()
