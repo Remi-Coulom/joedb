@@ -49,7 +49,7 @@ file that is not shared.
 ^^^^^^^^^^^^^^^^^^
 
 This allows sharing a file stored on a remote machine via ssh. There is no need
-to run a joedb server. Locking works with a mutex file on the remote machine,
+to run a joedb server on the remote machine. Locking works with a mutex file,
 named with ``.mutex`` appended to the name of the database file. The same mutex
 file is used to ensure the atomicity of the pull operation, so reads are
 blocked when one client has a write lock.
