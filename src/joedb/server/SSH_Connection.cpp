@@ -118,7 +118,7 @@ namespace joedb
    else
     throw Exception("Could not open remote file for reading");
   }
-  else if (client_position > server_position)
+  else if (server_position > 0 && client_position > server_position)
    throw Exception("Trying to pull when ahead of server");
 
   if (trace)
