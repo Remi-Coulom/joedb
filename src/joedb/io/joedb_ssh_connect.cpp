@@ -27,7 +27,7 @@ namespace joedb
    if (argc == 6)
     std::istringstream(argv[5]) >> ssh_log_level;
 
-   SSH_Robust_Connection connection
+   SSH_Connection connection
    (
     argv[1],
     argv[2],
