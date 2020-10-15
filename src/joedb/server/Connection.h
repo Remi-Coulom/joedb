@@ -76,7 +76,7 @@ namespace joedb
     control.lock_pull();
    }
 
-   ~Lock()
+   ~Lock() noexcept(false)
    {
     try
     {
@@ -84,6 +84,8 @@ namespace joedb
     }
     catch (...)
     {
+     if (!std::uncaught_exception())
+      throw;
     }
    }
  };
