@@ -110,10 +110,7 @@ namespace joedb
     if (seek_result < 0 || read_result != ssize_t(v.size()))
      throw Exception("Error during sftp_read");
 
-    client_journal.append_raw_tail
-    (
-     v
-    );
+    client_journal.append_raw_tail(v);
    }
    else
     throw Exception("Could not open remote file for reading");
