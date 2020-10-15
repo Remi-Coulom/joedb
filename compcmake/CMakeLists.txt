@@ -31,7 +31,7 @@ if(WIN32)
  find_package(libssh CONFIG)
 else()
  include(CheckIncludeFileCXX)
- check_include_file_cxx("libssh/libsshpp.hpp" libssh_FOUND)
+ check_include_file_cxx("libssh/libssh.h" libssh_FOUND)
 endif()
 
 if (libssh_FOUND)
