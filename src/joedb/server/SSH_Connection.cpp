@@ -145,8 +145,10 @@ namespace joedb
 
    if (file)
    {
-    sftp_write(file, v.data(), v.size());
+    ssize_t written = sftp_write(file, v.data(), v.size());
     sftp_close(file);
+    if (written < v.size())
+     throw Exception("Incomplete write during push");
    }
    else
     throw Exception("Could not open remote file for writing");
