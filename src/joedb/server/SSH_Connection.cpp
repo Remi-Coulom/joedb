@@ -103,8 +103,8 @@ namespace joedb
 
    if (file)
    {
-    int seek_result = sftp_seek64(file, uint64_t(client_position));
-    ssize_t read_result = sftp_read(file, v.data(), v.size());
+    const int seek_result = sftp_seek64(file, uint64_t(client_position));
+    const ssize_t read_result = sftp_read(file, v.data(), v.size());
     sftp_close(file);
 
     if (seek_result < 0 || read_result != ssize_t(v.size()))
@@ -141,9 +141,11 @@ namespace joedb
    (
     sftp.get(),
     remote_file_name.c_str(),
-    O_WRONLY | O_APPEND | O_CREAT,
+    O_WRONLY | O_CREAT,
     S_IRUSR | S_IWUSR
    );
+
+   const int seek_result = sftp_seek64(file, uint64_t(server_position));
 
    if (file)
    {
@@ -161,7 +163,7 @@ namespace joedb
     const size_t size = v.size();
     size_t written = 0;
 
-    while (written < size)
+    while (seek_result >= 0 && written < size)
     {
      size_t block_size = size - written;
 
