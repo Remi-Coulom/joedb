@@ -60,8 +60,13 @@ Below is a list of commands the interpreter understands:
 
 The joedbc file should at least contain a ``namespace`` option that indicates the namespace in which the code will be generated. Other options indicate indexes, and which data structure should be used to store tables. These are explained in more details in the relevant sections: :doc:`indexes`, :doc:`vectors`.
 
+.. _joedb_logdump:
+
 ``joedb_logdump``
 ^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ./tutorial/joedb_logdump.out
+   :language: none
 
 ``joedb_logdump`` takes a joedb file name as parameter, and produces a sequence of joedbi commands. With the ``--sql`` option, it can produce SQL output. This way, joedb data can be easily imported into any system that understands SQL.
 

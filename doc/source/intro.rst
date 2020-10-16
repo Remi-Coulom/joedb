@@ -49,7 +49,7 @@ Running this tutorial will produce this output:
 .. literalinclude:: ./tutorial/tutorial.out
    :language: none
 
-All the data was stored in the tutorial.joedb file. The database file is a binary file, so it is not convenient to inspect it directly. The joedb_logdump tool will produce a readable log:
+All the data was stored in the tutorial.joedb file. The database file is a binary file, so it is not convenient to inspect it directly. The :ref:`joedb_logdump` tool will produce a readable log:
 
 .. literalinclude:: ./tutorial/logdump.out
    :language: none
