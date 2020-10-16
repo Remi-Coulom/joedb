@@ -1,5 +1,7 @@
 #include "joedb/journal/Generic_File.h"
 
+#include <algorithm>
+
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Generic_File::set_position(int64_t new_position)
 /////////////////////////////////////////////////////////////////////////////
@@ -44,12 +46,31 @@ void joedb::Generic_File::append_tail(const std::vector<char> &data)
  while (remaining)
  {
   const size_t n = remaining > buffer_size ? buffer_size : remaining;
-  std::copy(current, current + n, buffer); // TODO: avoid useless copy
+  std::copy_n(current, n, buffer); // TODO: avoid useless copy
   write_buffer_index = n;
   flush_write_buffer();
   current += n;
   remaining -= n;
   position += n;
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Generic_File::copy(Generic_File &file)
+/////////////////////////////////////////////////////////////////////////////
+{
+ flush();
+ file.flush();
+ file.set_position(0);
+
+ while (true)
+ {
+  const size_t n = file.read_buffer();
+  if (n == 0)
+   break;
+  std::copy_n(file.buffer, n, buffer);
+  write_buffer_index = n;
+  flush_write_buffer();
  }
 }
 

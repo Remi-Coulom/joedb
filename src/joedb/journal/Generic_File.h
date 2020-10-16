@@ -44,6 +44,7 @@ namespace joedb
 
    std::vector<char> read_tail(int64_t starting_position);
    void append_tail(const std::vector<char> &data);
+   void copy(Generic_File &source);
 
    template<typename T>
    void write(T x)

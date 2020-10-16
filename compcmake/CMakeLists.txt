@@ -140,6 +140,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
   ../test/endianness_Test.cpp
   ../test/File_Test.cpp
+  ../test/Generic_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
