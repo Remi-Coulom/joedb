@@ -262,9 +262,9 @@ namespace joedb
      std::cerr << "Trying to reconnect... ";
     try
     {
+     reset();
      if (trace)
       std::cerr << "Success!\n";
-     reset();
     }
     catch(const std::runtime_error &e)
     {
