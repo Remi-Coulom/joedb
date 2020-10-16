@@ -105,6 +105,9 @@ Concurrency
   - set a timeout: clients not allowed to hold a lock for too long.
   - push_unlock may fail if the lock timed out.
 
+- Optional CRC check before pulling to verify the content of the origin.
+- Decentralized operation thanks to CRC checks?
+
 Other Ideas
 -----------
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)

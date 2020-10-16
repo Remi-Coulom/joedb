@@ -11,9 +11,14 @@ Principle
 Concurrency works by letting each process have a local copy of the central
 database. Each process can keep data synchronized with 3 basic operations:
 
-- **pull**: update local data with new journal entries from the central database.
-- **lock_pull**: get exclusive write access to the central database. The lock operation may have to wait for another process to release its lock first. Also update local data.
-- **push_unlock**: update the central database with the local modifications, and release the lock. This works only if the database is currently locked by a previous **lock_pull**.
+- **pull**: update local data with new journal entries from the central
+  database.
+- **lock_pull**: get exclusive write access to the central database. The lock
+  operation may have to wait for another process to release its lock first.
+  Also update local data.
+- **push_unlock**: update the central database with the local modifications,
+  and release the lock. This works only if the database is currently locked by
+  a previous **lock_pull**.
 
 Joedb uses RAII to ensure locks and unlocks are correctly paired, and
 modifications to the local database can only occur during a lock.
