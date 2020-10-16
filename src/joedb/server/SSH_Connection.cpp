@@ -28,7 +28,10 @@ namespace joedb
   if (trace)
    std::cerr << full_remote_name << ": lock()... ";
 
-  while (true)
+  bool done = false;
+  const int max_attempts = 60;
+
+  for (int attempt = 1; attempt <= max_attempts; attempt++)
   {
    sftp_file file = sftp_open
    (
@@ -40,15 +43,28 @@ namespace joedb
 
    if (file)
    {
+    done = true;
     sftp_close(file);
     break;
    }
    else
+   {
+    if (trace)
+     std::cerr << "Retrying(" << attempt << "/" << max_attempts << ")... ";
     std::this_thread::sleep_for(std::chrono::seconds(1));
+   }
   }
 
   if (trace)
-   std::cerr << "done.\n";
+  {
+   if (done)
+    std::cerr << "done.\n";
+   else
+    std::cerr << "timeout.\n";
+  }
+
+  if (!done)
+   throw Exception("SSH_Connection::lock: timeout");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -218,79 +234,92 @@ namespace joedb
  {
  }
 
-#define RETRY(x, n)\
- for (int i = n; --i >= 0;)\
-  try\
-  {\
-   x;\
-   return;\
-  }\
-  catch (const Exception &e)\
-  {\
-   if (trace)\
-    std::cerr << "Error: " << e.what() << '\n';\
-   reset();\
+ ////////////////////////////////////////////////////////////////////////////
+ void SSH_Robust_Connection::retry(std::function<void()> f, bool call_reset)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  while (true)
+  {
+   try
+   {
+    f();
+    return;
+   }
+   catch(const std::runtime_error &e)
+   {
+    if (trace)
+     std::cerr << "Error: " << e.what() << '\n';
+   }
+
+   if (trace)
+    std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
+
+   std::this_thread::sleep_for(std::chrono::seconds(sleep_time));
+
+   if (call_reset)
+   {
+    try
+    {
+     reset();
+    }
+    catch(const std::runtime_error &e)
+    {
+     if (trace)
+      std::cerr << "Error: " << e.what() << '\n';
+    }
+   }
   }
+ }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Robust_Connection::pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  RETRY(connection->pull(client_journal), 2);
+  retry
+  (
+   [&client_journal,this](){connection->pull(client_journal);},
+   true
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Robust_Connection::lock_pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  RETRY(connection->lock_pull(client_journal), 2);
+  retry
+  (
+   [&client_journal,this](){connection->lock_pull(client_journal);},
+   true
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Robust_Connection::push_unlock(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  RETRY(connection->push_unlock(client_journal), 2);
+  retry
+  (
+   [&client_journal,this](){connection->push_unlock(client_journal);},
+   true
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SSH_Robust_Connection::reset()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (trace && connection)
-  {
-   std::cerr << "An error occurred, trying to reset the connection...\n";
-   std::this_thread::sleep_for(std::chrono::seconds(10));
-  }
-
-  for (int i = 100; --i >= 0;)
-   try
-   {
-    connection.reset
-    (
-     new SSH_Connection
-     (
-      user,
-      host,
-      port,
-      remote_file_name,
-      trace,
-      ssh_log_level
-     )
-    );
-    return;
-   }
-   catch (const Exception &e)
-   {
-    if (trace)
-    {
-     std::cerr << "Connection failed: " << e.what() << '\n';
-     std::cerr << "Will retry after a pause...\n";
-    }
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-   }
-
-  throw Exception("Impossible to connect. Giving up");
+  connection.reset
+  (
+   new SSH_Connection
+   (
+    user,
+    host,
+    port,
+    remote_file_name,
+    trace,
+    ssh_log_level
+   )
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -311,7 +340,7 @@ namespace joedb
   trace(trace),
   ssh_log_level(ssh_log_level)
  {
-  reset();
+  retry([this](){reset();}, false);
  }
 }
 

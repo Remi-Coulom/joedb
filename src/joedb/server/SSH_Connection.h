@@ -7,6 +7,7 @@
 #include "joedb/server/ssh_wrappers.h"
 
 #include <memory>
+#include <functional>
 
 namespace joedb
 {
@@ -76,7 +77,11 @@ namespace joedb
    const bool trace;
    const int ssh_log_level;
 
+   int sleep_time;
+
    std::unique_ptr<SSH_Connection> connection;
+
+   void retry(std::function<void()> f, bool call_reset);
 
    void pull(Journal_File &client_journal) override;
    void lock_pull(Journal_File &client_journal) override;
@@ -94,6 +99,8 @@ namespace joedb
     bool trace,
     int ssh_log_level
    );
+
+   void set_sleep_time(int seconds) {sleep_time = seconds;}
  };
 }
 
