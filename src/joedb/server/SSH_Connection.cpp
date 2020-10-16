@@ -258,8 +258,12 @@ namespace joedb
 
    if (call_reset)
    {
+    if (trace)
+     std::cerr << "Trying to reconnect... ";
     try
     {
+     if (trace)
+      std::cerr << "Success!\n";
      reset();
     }
     catch(const std::runtime_error &e)
@@ -308,6 +312,10 @@ namespace joedb
  void SSH_Robust_Connection::reset()
  ////////////////////////////////////////////////////////////////////////////
  {
+  // Restoring the server position is better if we reset during a push
+  const int64_t server_position = connection ?
+   connection->server_position : 0;
+
   connection.reset
   (
    new SSH_Connection
@@ -320,6 +328,8 @@ namespace joedb
     ssh_log_level
    )
   );
+
+  connection->server_position = server_position;
  }
 
  ////////////////////////////////////////////////////////////////////////////
