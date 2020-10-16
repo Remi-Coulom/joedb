@@ -27,12 +27,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Threads REQUIRED)
 
-if(WIN32)
- find_package(libssh CONFIG)
-else()
- include(CheckIncludeFileCXX)
- check_include_file_cxx("libssh/libssh.h" libssh_FOUND)
-endif()
+find_package(libssh)
 
 if (libssh_FOUND)
  add_definitions(-DJOEDB_HAS_SSH)
