@@ -27,10 +27,17 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(Threads REQUIRED)
 
-find_package(libssh)
+find_package(libssh QUIET)
+
+if(NOT libssh_FOUND)
+ unset(libssh_FOUND)
+ include(CheckIncludeFileCXX)
+ check_include_file_cxx("libssh/libssh.h" libssh_FOUND)
+endif()
 
 if (libssh_FOUND)
  add_definitions(-DJOEDB_HAS_SSH)
+ message("== ssh was found")
 else()
  message("== ssh not found (fix: sudo apt install libssh-dev or vcpkg install libssh:x64-windows)")
 endif()
