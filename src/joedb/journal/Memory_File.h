@@ -69,11 +69,11 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Memory_File():
+   Memory_File(Open_Mode mode = Open_Mode::create_new):
    //////////////////////////////////////////////////////////////////////////
     current(0)
    {
-    mode = Open_Mode::create_new;
+    this->mode = mode;
    }
  };
 }

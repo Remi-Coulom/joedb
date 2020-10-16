@@ -71,6 +71,7 @@ void joedb::Generic_File::copy(Generic_File &file)
   std::copy_n(file.buffer, n, buffer);
   write_buffer_index = n;
   flush_write_buffer();
+  position += n;
  }
 }
 
