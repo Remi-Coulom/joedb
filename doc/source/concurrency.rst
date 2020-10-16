@@ -71,8 +71,10 @@ If you need better performance or reliability, use the joedb server instead.
 ``SSH_Robust_Connection``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is a wrapper around ``SSH_Connection`` that will try to reconnect whenever
-an exception is thrown.
+This is a wrapper around ``SSH_Connection`` that will automatically reconnect
+and try again after a short pause whenever an exception is thrown. This way,
+the connection can resist to unexpected network errors or mutex timeouts. It
+will keep trying forever and never fail.
 
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
