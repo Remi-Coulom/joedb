@@ -2,7 +2,7 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/server/SSH_Connection.h"
 #include "joedb/server/Interpreted_Client.h"
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/File.h"
 
 #include <sstream>
 
@@ -37,7 +37,7 @@ namespace joedb
     ssh_log_level
    );
 
-   Memory_File file;
+   File file(argv[4], Open_Mode::write_existing_or_create_new);
    Interpreted_Client client(connection, file);
 
    while (std::cin)
