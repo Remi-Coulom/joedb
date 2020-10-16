@@ -106,7 +106,6 @@ Concurrency
   - push_unlock may fail if the lock timed out.
 
 - Optional CRC check before pulling to verify the content of the origin.
-- Decentralized operation thanks to CRC checks?
 - SSH_Connection should checkpoint the server file for better safety.
 
 Other Ideas
