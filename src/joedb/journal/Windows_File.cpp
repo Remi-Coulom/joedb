@@ -94,7 +94,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Windows_File::Windows_File(const char *file_name, const Open_Mode mode):
+ Windows_File::Windows_File(const char *file_name, Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
   file
   (
@@ -113,10 +113,15 @@ namespace joedb
   if (file == INVALID_HANDLE_VALUE)
    throw_last_error();
 
-  this->mode = mode;
+  if (mode == Open_Mode::write_existing_or_create_new)
+  {
+   if (GetLastError() == 0)
+    mode = Open_Mode::create_new;
+   else
+    mode = Open_Mode::write_existing;
+  }
 
-  if (mode == Open_Mode::write_existing_or_create_new && GetLastError() == 0)
-   this->mode = Open_Mode::create_new;
+  this->mode = mode;
  }
 
  /////////////////////////////////////////////////////////////////////////////

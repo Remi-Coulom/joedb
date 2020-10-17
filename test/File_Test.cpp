@@ -90,6 +90,12 @@ TEST_F(File_Test, open_success)
   new_file.flush();
   EXPECT_EQ(new_file.get_mode(), Open_Mode::create_new);
  }
+
+ {
+  File new_file("new.tmp", Open_Mode::write_existing_or_create_new);
+  new_file.flush();
+  EXPECT_EQ(new_file.get_mode(), Open_Mode::write_existing);
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
