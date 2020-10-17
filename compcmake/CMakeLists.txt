@@ -221,11 +221,6 @@ add_executable(joedb_file_type
  ../src/joedb/io/joedb_file_type.cpp
 )
 
-add_custom_target(print_file_type
- COMMAND joedb_file_type
- DEPENDS joedb_file_type
-)
-
 #############################################################################
 # Custom commands
 #############################################################################
