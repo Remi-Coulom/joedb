@@ -251,26 +251,32 @@ namespace joedb
      std::cerr << "Error: " << e.what() << '\n';
    }
 
-   if (trace)
-    std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
-
-   std::this_thread::sleep_for(std::chrono::seconds(sleep_time));
-
-   if (call_reset)
+   while (true)
    {
     if (trace)
-     std::cerr << "Trying to reconnect... ";
-    try
-    {
-     reset();
-     if (trace)
-      std::cerr << "Success!\n";
-    }
-    catch(const std::runtime_error &e)
+     std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
+
+    std::this_thread::sleep_for(std::chrono::seconds(sleep_time));
+
+    if (call_reset)
     {
      if (trace)
-      std::cerr << "Error: " << e.what() << '\n';
+      std::cerr << "Trying to reconnect... ";
+     try
+     {
+      reset();
+      if (trace)
+       std::cerr << "Success!\n";
+      break;
+     }
+     catch(const std::runtime_error &e)
+     {
+      if (trace)
+       std::cerr << "Error: " << e.what() << '\n';
+     }
     }
+    else
+     break;
    }
   }
  }
