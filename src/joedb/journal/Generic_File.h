@@ -17,8 +17,6 @@ namespace joedb
   write_existing_or_create_new
  };
 
- typedef std::underlying_type<Open_Mode>::type mode_type;
-
  class Generic_File
  {
   private:

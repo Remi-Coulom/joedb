@@ -49,6 +49,7 @@ TEST_F(File_Test, open_failure)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
+#ifndef JOEDB_PORTABLE
  std::remove("locked.tmp");
  {
   File locked_file_1("locked.tmp", Open_Mode::create_new);
@@ -67,6 +68,7 @@ TEST_F(File_Test, open_lock)
    File locked_file_2("locked.tmp", Open_Mode::write_existing)
   );
  }
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,6 +110,26 @@ TEST_F(File_Test, read_existing)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, long_consecutive_read_and_writes)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const int64_t N = 10000000;
+
+ std::remove("new.tmp");
+ File file("new.tmp", Open_Mode::create_new);
+
+ for (int64_t i = 0; i < N; i++)
+  file.write<int64_t>(i);
+
+ file.set_position(0);
+ for (int64_t i = 0; i < N; i++)
+ {
+  const int64_t x = file.read<int64_t>();
+  EXPECT_EQ(i, x);
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, read_write_integer)
 {
  {
@@ -129,36 +151,36 @@ TEST_F(File_Test, read_write_integer)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  for (int i = N; --i >= 0;)
+  for (int i = 0; i < N; i++)
   {
    uint16_t value = uint16_t(gen());
-   new_file.set_position(0);
+   new_file.set_position(i);
    new_file.compact_write<uint16_t>(value);
-   new_file.set_position(0);
+   new_file.set_position(i);
    EXPECT_EQ(value, new_file.compact_read<uint16_t>());
   }
  }
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  for (int i = N; --i >= 0;)
+  for (int i = 0; i < N; i++)
   {
    uint32_t value = uint32_t(gen());
-   new_file.set_position(0);
+   new_file.set_position(i);
    new_file.compact_write<uint32_t>(value);
-   new_file.set_position(0);
+   new_file.set_position(i);
    EXPECT_EQ(value, new_file.compact_read<uint32_t>());
   }
  }
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  for (int i = N; --i >= 0;)
+  for (int i = 0; i < N; i++)
   {
    uint64_t value = uint64_t(gen()) & 0x1fffffffffffffffULL;
-   new_file.set_position(0);
+   new_file.set_position(i);
    new_file.compact_write<uint64_t>(value);
-   new_file.set_position(0);
+   new_file.set_position(i);
    EXPECT_EQ(value, new_file.compact_read<uint64_t>());
   }
  }

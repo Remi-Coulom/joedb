@@ -101,10 +101,10 @@ namespace joedb
    CreateFileA
    (
     file_name,
-    desired_access[static_cast<mode_type>(mode)],
-    share_mode[static_cast<mode_type>(mode)],
+    desired_access[static_cast<size_t>(mode)],
+    share_mode[static_cast<size_t>(mode)],
     NULL,
-    creation_disposition[static_cast<mode_type>(mode)],
+    creation_disposition[static_cast<size_t>(mode)],
     FILE_ATTRIBUTE_NORMAL,
     NULL
    )
