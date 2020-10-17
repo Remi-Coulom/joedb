@@ -37,7 +37,7 @@ namespace joedb
     return database;
    }
 
-   void pull() {control.pull();}
+   int64_t pull() {return control.pull();}
  };
 
  ////////////////////////////////////////////////////////////////////////////

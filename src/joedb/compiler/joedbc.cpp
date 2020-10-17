@@ -450,9 +450,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     return database;
    }
 
-   void pull()
+   int64_t pull()
    {
-    control.pull();
+    return control.pull();
    }
  };
 

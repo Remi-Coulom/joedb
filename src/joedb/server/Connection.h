@@ -63,10 +63,11 @@ namespace joedb
    {
    }
 
-   void pull()
+   int64_t pull()
    {
-    connection.pull(journal);
+    server_position = connection.pull(journal);
     journal.play_until_checkpoint(writable);
+    return server_position;
    }
  };
 
