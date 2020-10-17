@@ -33,7 +33,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   const ssize_t result = ::write(fd, buffer, write_buffer_index);
-  if (result != write_buffer_index)
+  if (result != ssize_t(write_buffer_index))
    throw Exception("Error writing file");
  }
 

@@ -11,7 +11,7 @@ namespace joedb
  {
   public:
    File_Slice(FILE *file, size_t start, size_t length):
-    File(file),
+    Portable_File(file),
     start(start),
     length(length)
    {
@@ -28,7 +28,7 @@ namespace joedb
 
    int seek(int64_t offset) override
    {
-    return File::seek(offset + int64_t(start));
+    return Portable_File::seek(offset + int64_t(start));
    }
 
   private:
