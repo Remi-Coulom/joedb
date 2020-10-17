@@ -27,29 +27,32 @@ namespace joedb
    ssh::Session session;
    ssh::SFTP sftp;
 
-   int64_t server_position;
-
    void lock();
    void unlock();
-   void raw_pull(Journal_File &client_journal);
-   void raw_push(Readonly_Journal &client_journal);
+   int64_t raw_pull(Journal_File &client_journal);
+   void raw_push(Readonly_Journal &client_journal, int64_t server_position);
 
-   void pull(Journal_File &client_journal) override
+   int64_t pull(Journal_File &client_journal) override
    {
     lock();
-    raw_pull(client_journal);
+    const int64_t result = raw_pull(client_journal);
     unlock();
+    return result;
    }
 
-   void lock_pull(Journal_File &client_journal) override
+   int64_t lock_pull(Journal_File &client_journal) override
    {
     lock();
-    raw_pull(client_journal);
+    return raw_pull(client_journal);
    }
 
-   void push_unlock(Readonly_Journal &client_journal) override
+   void push_unlock
+   (
+    Readonly_Journal &client_journal,
+    int64_t server_position
+   ) override
    {
-    raw_push(client_journal);
+    raw_push(client_journal, server_position);
     unlock();
    }
 
@@ -81,11 +84,15 @@ namespace joedb
 
    std::unique_ptr<SSH_Connection> connection;
 
-   void retry(std::function<void()> f, bool call_reset);
+   int64_t retry(std::function<int64_t()> f);
 
-   void pull(Journal_File &client_journal) override;
-   void lock_pull(Journal_File &client_journal) override;
-   void push_unlock(Readonly_Journal &client_journal) override;
+   int64_t pull(Journal_File &client_journal) override;
+   int64_t lock_pull(Journal_File &client_journal) override;
+   void push_unlock
+   (
+    Readonly_Journal &client_journal,
+    int64_t server_position
+   ) override;
 
    void reset();
 

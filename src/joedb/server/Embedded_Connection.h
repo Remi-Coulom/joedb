@@ -13,7 +13,7 @@ namespace joedb
    Journal_File server_journal;
 
    //////////////////////////////////////////////////////////////////////////
-   void pull(Journal_File &client_journal) override
+   int64_t pull(Journal_File &client_journal) override
    //////////////////////////////////////////////////////////////////////////
    {
     const int64_t client_position = client_journal.get_checkpoint_position();
@@ -24,21 +24,26 @@ namespace joedb
      (
       server_journal.get_raw_tail(client_position)
      );
+
+    return server_position;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void lock_pull(Journal_File &client_journal) override
+   int64_t lock_pull(Journal_File &client_journal) override
    //////////////////////////////////////////////////////////////////////////
    {
-    pull(client_journal);
+    return pull(client_journal);
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push_unlock(Readonly_Journal &client_journal) override
+   void push_unlock
    //////////////////////////////////////////////////////////////////////////
+   (
+    Readonly_Journal &client_journal,
+    const int64_t server_position
+   ) override
    {
     const int64_t client_position = client_journal.get_checkpoint_position();
-    const int64_t server_position = server_journal.get_checkpoint_position();
 
     if (server_position < client_position)
      server_journal.append_raw_tail

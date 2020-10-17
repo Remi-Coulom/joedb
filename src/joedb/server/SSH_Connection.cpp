@@ -79,13 +79,13 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Connection::raw_pull(Journal_File &client_journal)
+ int64_t SSH_Connection::raw_pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (trace)
    std::cerr << full_remote_name << ": pull()... ";
 
-  server_position = 0;
+  int64_t server_position = 0;
 
   try
   {
@@ -136,11 +136,17 @@ namespace joedb
 
   if (trace)
    std::cerr << "done\n";
+
+  return server_position;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Connection::raw_push(Readonly_Journal &client_journal)
+ void SSH_Connection::raw_push
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal,
+  int64_t server_position
+ )
  {
   if (trace)
    std::cerr << full_remote_name << ": push()... ";
@@ -229,88 +235,93 @@ namespace joedb
    port,
    ssh_log_level
   ),
-  sftp(session),
-  server_position(0)
+  sftp(session)
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Robust_Connection::retry(std::function<void()> f, bool call_reset)
+ int64_t SSH_Robust_Connection::retry
  ////////////////////////////////////////////////////////////////////////////
+ (
+  std::function<int64_t()> f
+ )
  {
   while (true)
   {
-   try
-   {
-    f();
-    return;
-   }
-   catch(const std::runtime_error &e)
-   {
-    if (trace)
-     std::cerr << "Error: " << e.what() << '\n';
-   }
+   if (connection)
+    try
+    {
+     return f();
+    }
+    catch(const std::runtime_error &e)
+    {
+     if (trace)
+      std::cerr << "Error: " << e.what() << '\n';
+    }
 
    while (true)
    {
-    if (trace)
-     std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
-
-    std::this_thread::sleep_for(std::chrono::seconds(sleep_time));
-
-    if (call_reset)
+    if (connection)
     {
      if (trace)
-      std::cerr << "Trying to reconnect... ";
-     try
-     {
-      reset();
-      if (trace)
-       std::cerr << "Success!\n";
-      break;
-     }
-     catch(const std::runtime_error &e)
-     {
-      if (trace)
-       std::cerr << "Error: " << e.what() << '\n';
-     }
+      std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
+
+     std::this_thread::sleep_for(std::chrono::seconds(sleep_time));
     }
-    else
+
+    if (trace)
+     std::cerr << "Connecting... ";
+    try
+    {
+     reset();
+     if (trace)
+      std::cerr << "Success!\n";
      break;
+    }
+    catch(const std::runtime_error &e)
+    {
+     if (trace)
+      std::cerr << "Error: " << e.what() << '\n';
+    }
    }
   }
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Robust_Connection::pull(Journal_File &client_journal)
+ int64_t SSH_Robust_Connection::pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  retry
+  return retry
   (
-   [&client_journal,this](){connection->pull(client_journal);},
-   true
+   [&client_journal,this](){return connection->pull(client_journal);}
   );
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Robust_Connection::lock_pull(Journal_File &client_journal)
+ int64_t SSH_Robust_Connection::lock_pull(Journal_File &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  retry
+  return retry
   (
-   [&client_journal,this](){connection->lock_pull(client_journal);},
-   true
+   [&client_journal,this](){return connection->lock_pull(client_journal);}
   );
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Robust_Connection::push_unlock(Readonly_Journal &client_journal)
+ void SSH_Robust_Connection::push_unlock
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal,
+  int64_t server_position
+ )
  {
   retry
   (
-   [&client_journal,this](){connection->push_unlock(client_journal);},
-   true
+   [&client_journal,server_position,this]()->int64_t
+   {
+    connection->push_unlock(client_journal, server_position);
+    return 0;
+   }
   );
  }
 
@@ -318,10 +329,6 @@ namespace joedb
  void SSH_Robust_Connection::reset()
  ////////////////////////////////////////////////////////////////////////////
  {
-  // Restoring the server position is better if we reset during a push
-  const int64_t server_position = connection ?
-   connection->server_position : 0;
-
   connection.reset
   (
    new SSH_Connection
@@ -334,8 +341,6 @@ namespace joedb
     ssh_log_level
    )
   );
-
-  connection->server_position = server_position;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -356,7 +361,7 @@ namespace joedb
   trace(trace),
   ssh_log_level(ssh_log_level)
  {
-  retry([this](){reset();}, false);
+  retry([this]()->int64_t{return 0;});
  }
 }
 

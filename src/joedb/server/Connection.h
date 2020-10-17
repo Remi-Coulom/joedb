@@ -12,9 +12,15 @@ namespace joedb
   friend class Connection_Control;
 
   private:
-   virtual void pull(Journal_File &client_journal) = 0;
-   virtual void lock_pull(Journal_File &client_journal) = 0;
-   virtual void push_unlock(Readonly_Journal &client_journal) = 0;
+   virtual int64_t pull(Journal_File &client_journal) = 0;
+
+   virtual int64_t lock_pull(Journal_File &client_journal) = 0;
+
+   virtual void push_unlock
+   (
+    Readonly_Journal &client_journal,
+    int64_t server_position
+   ) = 0;
 
   public:
    virtual ~Connection() {}
@@ -30,17 +36,18 @@ namespace joedb
    Connection &connection;
    Journal_File &journal;
    Writable &writable;
+   int64_t server_position;
 
    void lock_pull()
    {
-    connection.lock_pull(journal);
+    server_position = connection.lock_pull(journal);
     journal.play_until_checkpoint(writable);
    }
 
    void push_unlock()
    {
     journal.checkpoint(0);
-    connection.push_unlock(journal);
+    connection.push_unlock(journal, server_position);
    }
 
   public:
