@@ -2,124 +2,104 @@
 #include "joedb/Exception.h"
 
 #include <sys/file.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
-#include <stdio.h>
 
-bool joedb::Posix_File::lock_file()
+namespace joedb
 {
- return flock(fileno(file), LOCK_EX | LOCK_NB) == 0;
-}
-
-void joedb::Posix_File::sync()
-{
- fsync(fileno(file));
-}
-
-int joedb::Posix_File::seek(int64_t offset, int origin) const
-{
- return fseeko(file, off_t(offset), origin);
-}
-
-int64_t joedb::Posix_File::tell() const
-{
- return ftello(file);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-bool joedb::Posix_File::try_open(const char *file_name, Open_Mode new_mode)
-/////////////////////////////////////////////////////////////////////////////
-{
- static const char *mode_string[3] = {"rb", "r+b", "w+b"};
- mode = new_mode;
- file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
- return file != nullptr;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Posix_File::Posix_File(const char *file_name, Open_Mode new_mode)
-/////////////////////////////////////////////////////////////////////////////
-{
- if (new_mode == Open_Mode::write_existing_or_create_new)
+ /////////////////////////////////////////////////////////////////////////////
+ bool Posix_File::lock_file()
+ /////////////////////////////////////////////////////////////////////////////
  {
-  try_open(file_name, Open_Mode::write_existing) ||
-  try_open(file_name, Open_Mode::create_new);
+  return flock(fd, LOCK_EX | LOCK_NB) == 0;
  }
- else if (new_mode == Open_Mode::create_new)
+
+ /////////////////////////////////////////////////////////////////////////////
+ size_t Posix_File::read_buffer()
+ /////////////////////////////////////////////////////////////////////////////
  {
-  if (try_open(file_name, Open_Mode::read_existing))
+  const ssize_t result = ::read(fd, buffer, buffer_size);
+
+  if (result < 0)
+   throw Exception("Error reading file");
+
+  return size_t(result);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Posix_File::write_buffer()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  const ssize_t result = ::write(fd, buffer, write_buffer_index);
+  if (result != write_buffer_index)
+   throw Exception("Error writing file");
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ int Posix_File::seek(int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  return int64_t(lseek(fd, off_t(offset), SEEK_SET)) != offset;
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Posix_File::sync()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  fsync(fd);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ Posix_File::Posix_File(const char *file_name, Open_Mode mode)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  if (mode == Open_Mode::write_existing_or_create_new)
   {
-   close_file();
-   throw Exception("File already exists: " + std::string(file_name));
+   fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
+
+   if (fd >= 0)
+    mode = Open_Mode::create_new;
+   else
+   {
+    fd = open(file_name, O_RDWR);
+    mode = Open_Mode::write_existing;
+   }
   }
+  else if (mode == Open_Mode::create_new)
+   fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
+  else if (mode == Open_Mode::write_existing)
+   fd = open(file_name, O_RDWR);
   else
-   try_open(file_name, Open_Mode::create_new);
+   fd = open(file_name, O_RDONLY);
+
+  if (fd < 0)
+   throw Exception("Could not create file: " + std::string(file_name));
+
+  if (mode != Open_Mode::read_existing && !lock_file())
+   throw Exception("File locked: " + std::string(file_name));
+
+  this->mode = mode;
  }
- else
-  try_open(file_name, new_mode);
 
- if (!file)
-  throw Exception("Cannot open file: " + std::string(file_name));
-
- if ((mode == Open_Mode::write_existing ||
-      mode == Open_Mode::create_new) && !lock_file())
+ /////////////////////////////////////////////////////////////////////////////
+ int64_t Posix_File::get_size() const
+ /////////////////////////////////////////////////////////////////////////////
  {
-  close_file();
-  throw Exception("File locked: " + std::string(file_name));
+  struct stat s;
+
+  if (fstat(fd, &s) == 0)
+   return int64_t(s.st_size);
+  else
+   return 0;
  }
 
- std::setvbuf(file, nullptr, _IONBF, 0);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-size_t joedb::Posix_File::read_buffer()
-/////////////////////////////////////////////////////////////////////////////
-{
- return std::fread(buffer, 1, buffer_size, file);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Posix_File::write_buffer()
-/////////////////////////////////////////////////////////////////////////////
-{
- const size_t written = std::fwrite(buffer, 1, write_buffer_index, file);
- if (written != write_buffer_index)
-  throw Exception("Error writing file");
-}
-
-/////////////////////////////////////////////////////////////////////////////
-int joedb::Posix_File::seek(int64_t offset)
-/////////////////////////////////////////////////////////////////////////////
-{
- return seek(offset, SEEK_SET);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Posix_File::close_file()
-/////////////////////////////////////////////////////////////////////////////
-{
- if (file)
+ /////////////////////////////////////////////////////////////////////////////
+ Posix_File::~Posix_File()
+ /////////////////////////////////////////////////////////////////////////////
  {
   flush();
-  fclose(file);
-  file = nullptr;
+  close(fd);
  }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-int64_t joedb::Posix_File::get_size() const
-/////////////////////////////////////////////////////////////////////////////
-{
- const int64_t current_tell = tell();
- seek(0, SEEK_END);
- const int64_t result = tell();
- seek(current_tell, SEEK_SET);
-
- return result;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Posix_File::~Posix_File()
-/////////////////////////////////////////////////////////////////////////////
-{
- close_file();
 }
