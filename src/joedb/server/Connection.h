@@ -61,6 +61,7 @@ namespace joedb
     journal(journal),
     writable(writable)
    {
+    journal.play_until_checkpoint(writable);
    }
 
    int64_t pull()
