@@ -20,6 +20,8 @@ endif()
 if(WIN32)
  message("== win32")
  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+ add_definitions(-DWIN32_LEAN_AND_MEAN)
+ add_definitions(-DNOMINMAX)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
@@ -29,7 +31,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Dependencies
 #############################################################################
 #add_definitions(-DJOEDB_PORTABLE)
-#add_definitions(-D_WIN32)
 
 include(CheckIncludeFileCXX)
 

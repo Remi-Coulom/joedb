@@ -1,132 +1,132 @@
 #include "joedb/journal/Windows_File.h"
 #include "joedb/Exception.h"
 
-#include <Windows.h>
-#include <io.h>
-#include <stdio.h>
-#include <FileAPI.h>
-#include <corecrt_io.h>
-
-bool joedb::Windows_File::lock_file()
+namespace joedb
 {
- HANDLE hFile = (HANDLE)_get_osfhandle(_fileno(file));
- return LockFile(hFile, 0, 0, 1, 0) == TRUE;
- // Note: this prevents another process from reading
- // -> Will fail with confusing "does not start by joedb" error
- // -> Should produce an error message if it happens
- // TODO: properly handle file sharing in Windows
-}
-
-void joedb::Windows_File::sync()
-{
- _commit(_fileno(file));
-}
-
-int joedb::Windows_File::seek(int64_t offset, int origin) const
-{
- return _fseeki64(file, offset, origin);
-}
-
-int64_t joedb::Windows_File::tell() const
-{
- return _ftelli64(file);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-bool joedb::Windows_File::try_open(const char *file_name, Open_Mode new_mode)
-/////////////////////////////////////////////////////////////////////////////
-{
- static const char *mode_string[3] = {"rb", "r+b", "w+b"};
- mode = new_mode;
- file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
- return file != nullptr;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Windows_File::Windows_File(const char *file_name, Open_Mode new_mode)
-/////////////////////////////////////////////////////////////////////////////
-{
- if (new_mode == Open_Mode::write_existing_or_create_new)
+ const DWORD Windows_File::desired_access[] =
  {
-  try_open(file_name, Open_Mode::write_existing) ||
-  try_open(file_name, Open_Mode::create_new);
+  GENERIC_READ,
+  GENERIC_READ | GENERIC_WRITE,
+  GENERIC_READ | GENERIC_WRITE,
+  GENERIC_READ | GENERIC_WRITE
+ };
+
+ const DWORD Windows_File::creation_disposition[] =
+ {
+  OPEN_EXISTING,
+  OPEN_EXISTING,
+  CREATE_NEW,
+  OPEN_ALWAYS
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_File::throw_last_error() const
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  const DWORD last_error = GetLastError();
+  LPVOID buffer;
+
+  FormatMessage
+  (
+   FORMAT_MESSAGE_ALLOCATE_BUFFER |
+   FORMAT_MESSAGE_FROM_SYSTEM,
+   NULL,
+   last_error,
+   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+   (LPTSTR) &buffer,
+   0,
+   NULL
+  );
+
+  std::string s((char *)buffer);
+
+  LocalFree(buffer);
+
+  throw Exception(s);
  }
- else if (new_mode == Open_Mode::create_new)
+
+ /////////////////////////////////////////////////////////////////////////////
+ size_t Windows_File::read_buffer()
+ /////////////////////////////////////////////////////////////////////////////
  {
-  if (try_open(file_name, Open_Mode::read_existing))
-  {
-   close_file();
-   throw Exception("File already exists: " + std::string(file_name));
-  }
+  DWORD result;
+
+  if (ReadFile(file, buffer, DWORD(buffer_size), &result, NULL))
+   return size_t(result);
   else
-   try_open(file_name, Open_Mode::create_new);
+   throw_last_error();
  }
- else
-  try_open(file_name, new_mode);
 
- if (!file)
-  throw Exception("Cannot open file: " + std::string(file_name));
-
- if ((mode == Open_Mode::write_existing ||
-      mode == Open_Mode::create_new) && !lock_file())
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_File::write_buffer()
+ /////////////////////////////////////////////////////////////////////////////
  {
-  close_file();
-  throw Exception("File locked: " + std::string(file_name));
+  if (!WriteFile(file, buffer, DWORD(write_buffer_index), NULL, NULL))
+   throw_last_error();
  }
 
- std::setvbuf(file, nullptr, _IONBF, 0);
-}
+ /////////////////////////////////////////////////////////////////////////////
+ int Windows_File::seek(int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  LARGE_INTEGER large_integer;
+  large_integer.QuadPart = offset;
 
-/////////////////////////////////////////////////////////////////////////////
-size_t joedb::Windows_File::read_buffer()
-/////////////////////////////////////////////////////////////////////////////
-{
- return std::fread(buffer, 1, buffer_size, file);
-}
+  if (SetFilePointerEx(file, large_integer, NULL, FILE_BEGIN))
+   return 0;
+  else
+   return 1;
+ }
 
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Windows_File::write_buffer()
-/////////////////////////////////////////////////////////////////////////////
-{
- const size_t written = std::fwrite(buffer, 1, write_buffer_index, file);
- if (written != write_buffer_index)
-  throw Exception("Error writing file");
-}
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_File::sync()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+ }
 
-/////////////////////////////////////////////////////////////////////////////
-int joedb::Windows_File::seek(int64_t offset)
-/////////////////////////////////////////////////////////////////////////////
-{
- return seek(offset, SEEK_SET);
-}
+ /////////////////////////////////////////////////////////////////////////////
+ Windows_File::Windows_File(const char *file_name, const Open_Mode mode):
+ /////////////////////////////////////////////////////////////////////////////
+  file
+  (
+   CreateFileA
+   (
+    file_name,
+    desired_access[static_cast<mode_type>(mode)],
+    FILE_SHARE_READ,
+    NULL,
+    creation_disposition[static_cast<mode_type>(mode)],
+    FILE_ATTRIBUTE_NORMAL,
+    NULL
+   )
+  )
+ {
+  if (file == INVALID_HANDLE_VALUE)
+   throw_last_error();
 
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Windows_File::close_file()
-/////////////////////////////////////////////////////////////////////////////
-{
- if (file)
+  this->mode = mode;
+
+  if (mode == Open_Mode::write_existing_or_create_new && GetLastError() == 0)
+   this->mode = Open_Mode::create_new;
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ int64_t Windows_File::get_size() const
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  LARGE_INTEGER result;
+
+  if (GetFileSizeEx(file, &result))
+   return int64_t(result.QuadPart);
+  else
+   throw_last_error();
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ Windows_File::~Windows_File()
+ /////////////////////////////////////////////////////////////////////////////
  {
   flush();
-  fclose(file);
-  file = nullptr;
+  CloseHandle(file);
  }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-int64_t joedb::Windows_File::get_size() const
-/////////////////////////////////////////////////////////////////////////////
-{
- const int64_t current_tell = tell();
- seek(0, SEEK_END);
- const int64_t result = tell();
- seek(current_tell, SEEK_SET);
-
- return result;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Windows_File::~Windows_File()
-/////////////////////////////////////////////////////////////////////////////
-{
- close_file();
 }

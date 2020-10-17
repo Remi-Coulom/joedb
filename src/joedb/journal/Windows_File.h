@@ -3,7 +3,7 @@
 
 #include "joedb/journal/Generic_File.h"
 
-#include <stdio.h>
+#include <windows.h>
 
 namespace joedb
 {
@@ -11,15 +11,14 @@ namespace joedb
  class Windows_File: public Generic_File
  ///////////////////////////////////////////////////////////////////////////
  {
-  public:
-   Windows_File(const char *file_name, Open_Mode mode);
-   Windows_File(const std::string &file_name, Open_Mode mode):
-    Windows_File(file_name.c_str(), mode)
-   {
-   }
+  private:
+   static const DWORD desired_access[];
+   static const DWORD creation_disposition[];
 
-   ~Windows_File() override;
-   int64_t get_size() const override;
+  private:
+   const HANDLE file;
+
+   void throw_last_error() const;
 
   protected:
    size_t read_buffer() override;
@@ -27,13 +26,16 @@ namespace joedb
    int seek(int64_t offset) override;
    void sync() override;
 
-  private:
-   bool try_open(const char *file_name, Open_Mode mode);
-   FILE *file = nullptr;
-   bool lock_file();
-   void close_file();
-   int seek(int64_t offset, int origin) const;
-   int64_t tell() const;
+  public:
+   Windows_File(const char *file_name, Open_Mode mode);
+   Windows_File(const std::string &file_name, Open_Mode mode):
+    Windows_File(file_name.c_str(), mode)
+   {
+   }
+
+   int64_t get_size() const override;
+
+   ~Windows_File() override;
  };
 }
 
