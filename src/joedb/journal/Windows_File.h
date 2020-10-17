@@ -13,6 +13,7 @@ namespace joedb
  {
   private:
    static const DWORD desired_access[];
+   static const DWORD share_mode[];
    static const DWORD creation_disposition[];
 
   private:

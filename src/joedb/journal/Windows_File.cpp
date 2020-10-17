@@ -11,6 +11,14 @@ namespace joedb
   GENERIC_READ | GENERIC_WRITE
  };
 
+ const DWORD Windows_File::share_mode[] =
+ {
+  FILE_SHARE_READ | FILE_SHARE_WRITE,
+  FILE_SHARE_READ,
+  FILE_SHARE_READ,
+  FILE_SHARE_READ
+ };
+
  const DWORD Windows_File::creation_disposition[] =
  {
   OPEN_EXISTING,
@@ -82,6 +90,7 @@ namespace joedb
  void Windows_File::sync()
  /////////////////////////////////////////////////////////////////////////////
  {
+  FlushFileBuffers(file);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -93,7 +102,7 @@ namespace joedb
    (
     file_name,
     desired_access[static_cast<mode_type>(mode)],
-    FILE_SHARE_READ,
+    share_mode[static_cast<mode_type>(mode)],
     NULL,
     creation_disposition[static_cast<mode_type>(mode)],
     FILE_ATTRIBUTE_NORMAL,
