@@ -13,6 +13,7 @@ Short Term
   make code shorter and simpler.
 
 - Pass strings by value for new and update
+
   - fix useless copies
   - need to fix Writable + joedbc (it is a bit complicated)
   - start by testing copy elision on a very simple toy simulation
@@ -39,8 +40,6 @@ Journal File
 ------------
 - joedb_truncate <file> <position> (+optionally show position in logdump)
 - better than truncating: add an ``undo`` operation to the log. This way, it is possible to keep all branches of history.
-- high-performance system-specific implementation of joedb::File?
-- Try using a raw device (probably requires a big buffer)
 - joedb_fix
 - CRC for hardware error detection
 - Test (and don't allow) file size > 2Gb in 32-bit code
