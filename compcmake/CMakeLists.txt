@@ -25,13 +25,23 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+#############################################################################
+# Dependencies
+#############################################################################
+include(CheckIncludeFileCXX)
+
+# Threads
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(Threads REQUIRED)
 
-find_package(libssh QUIET)
+# libssh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+ find_package(libssh QUIET)
+endif()
 
 if(NOT libssh_FOUND)
  unset(libssh_FOUND)
- include(CheckIncludeFileCXX)
  check_include_file_cxx("libssh/libssh.h" libssh_FOUND)
 endif()
 
@@ -42,8 +52,23 @@ else()
  message("== ssh not found (fix: sudo apt install libssh-dev or vcpkg install libssh:x64-windows)")
 endif()
 
+# Google Test
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.10.0/googletest)
 
+# SQLite 3
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+find_library(SQLITE3_LIBRARY sqlite3)
+if (SQLITE3_LIBRARY)
+ add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
+ target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
+else()
+ message("== WARNING: install sqlite3 for sqlite3 benchmarks")
+endif()
+
+#############################################################################
+# Includes
+#############################################################################
 include_directories(BEFORE SYSTEM
  ../src
 )
@@ -55,6 +80,9 @@ include_directories(
  ${GOOGLE_TEST}/include
 )
 
+#############################################################################
+# Build Targets
+#############################################################################
 add_library(joedb_objects OBJECT
  ../src/joedb/Writable.cpp
  ../src/joedb/Multiplexer.cpp
@@ -161,14 +189,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
 else()
  message("== WARNING: run ./get_gtest.sh for tests")
-endif()
-
-find_library(SQLITE3_LIBRARY sqlite3)
-if (SQLITE3_LIBRARY)
- add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
- target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
-else()
- message("== WARNING: install sqlite3 for sqlite3 benchmarks")
 endif()
 
 add_executable(joedbi_insert
