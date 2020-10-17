@@ -28,6 +28,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #############################################################################
 # Dependencies
 #############################################################################
+#add_definitions(-DJOEDB_PORTABLE)
+#add_definitions(-D_WIN32)
+
 include(CheckIncludeFileCXX)
 
 # Threads
@@ -209,6 +212,17 @@ add_executable(joedb_embed
  ../src/joedb/compiler/minimal_runtime_io.cpp
  ../src/joedb/io/base64.cpp
  ../src/joedb/compiler/nested_namespace.cpp
+)
+
+add_executable(joedb_file_type
+ ../src/joedb/journal/Generic_File.cpp
+ ../src/joedb/journal/File.cpp
+ ../src/joedb/io/joedb_file_type.cpp
+)
+
+add_custom_target(print_file_type
+ COMMAND joedb_file_type
+ DEPENDS joedb_file_type
 )
 
 #############################################################################
