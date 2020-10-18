@@ -515,6 +515,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   out << "#include \"joedb/Freedom_Keeper.h\"\n";
 
  out << R"RRR(#include "joedb/journal/File.h"
+#include "joedb/journal/File_Slice.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Stream_File.h"
 #include "joedb/Exception.h"
