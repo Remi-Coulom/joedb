@@ -120,12 +120,35 @@ namespace joedb
    if (file)
    {
     const int seek_result = sftp_seek64(file, uint64_t(client_position));
-    const ssize_t read_result = sftp_read(file, v.data(), v.size());
+    if (seek_result < 0)
+    {
+     sftp_close(file);
+     throw Exception("Error while seeking");
+    }
+
+    ssize_t total_read = 0;
+
+    while (total_read < ssize_t(v.size()))
+    {
+     const ssize_t read_result = sftp_read
+     (
+      file,
+      &v[total_read],
+      v.size() - total_read
+     );
+
+     if (read_result < 0)
+     {
+      sftp_close(file);
+      throw Exception("Error during sftp_read");
+     }
+
+     total_read += read_result;
+     if (trace)
+      std::cerr << -read_result;
+    }
+
     sftp_close(file);
-
-    if (seek_result < 0 || read_result != ssize_t(v.size()))
-     throw Exception("Error during sftp_read");
-
     client_journal.append_raw_tail(v);
    }
    else
@@ -135,7 +158,7 @@ namespace joedb
    throw Exception("Trying to pull when ahead of server");
 
   if (trace)
-   std::cerr << "done\n";
+   std::cerr << " done\n";
 
   return server_position;
  }
@@ -359,7 +382,8 @@ namespace joedb
   port(port),
   remote_file_name(remote_file_name),
   trace(trace),
-  ssh_log_level(ssh_log_level)
+  ssh_log_level(ssh_log_level),
+  sleep_time(10)
  {
   retry([this]()->int64_t{return 0;});
  }
