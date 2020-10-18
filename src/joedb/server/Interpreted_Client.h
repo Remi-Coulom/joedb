@@ -14,7 +14,7 @@ namespace joedb
   friend class Interpreted_Lock;
 
   private:
-   Journal_File journal;
+   Writable_Journal journal;
    Database database;
    Readable_Multiplexer multiplexer;
    Connection_Control control;

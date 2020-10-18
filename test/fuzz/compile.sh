@@ -34,7 +34,7 @@ build()
   ../../src/journal/diagnostics.cpp\
   ../../src/journal/File.cpp\
   ../../src/journal/Generic_File.cpp\
-  ../../src/journal/Journal_File.cpp\
+  ../../src/journal/Writable_File.cpp\
   ../../src/journal/Stream_File.cpp\
   ../../src/journal/Readonly_Journal.cpp\
   /usr/lib/clang/8/lib/linux/libclang_rt.fuzzer-x86_64.a\

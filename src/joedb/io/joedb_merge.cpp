@@ -2,7 +2,7 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Stream_File.h"
 #include "joedb/io/dump.h"
 #include "joedb/io/merge.h"
@@ -32,7 +32,7 @@ namespace joedb
   // Create output file
   //
   File output_file(argv[argc - 1], Open_Mode::create_new);
-  Journal_File output_journal(output_file);
+  Writable_Journal output_journal(output_file);
 
   //
   // List of files to be merged
@@ -79,7 +79,7 @@ namespace joedb
 
     std::stringstream schema_stream;
     Stream_File schema_file(schema_stream, Open_Mode::create_new);
-    Journal_File schema_journal(schema_file);
+    Writable_Journal schema_journal(schema_file);
     Selective_Writable schema_filter
     (
      schema_journal,

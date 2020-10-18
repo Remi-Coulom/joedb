@@ -2,7 +2,7 @@
 #include "joedb/io/Interpreter.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/Stream_File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/Readable_Multiplexer.h"
 
@@ -43,7 +43,7 @@ update_vector float 7 value 2 0.8 9\n\
 
  {
   Stream_File joedb_file(joedb_ss, Open_Mode::create_new);
-  Journal_File journal(joedb_file);
+  Writable_Journal journal(joedb_file);
 
   Database db;
   Readable_Multiplexer multiplexer(db);

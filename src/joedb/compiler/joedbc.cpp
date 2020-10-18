@@ -1,7 +1,7 @@
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Stream_File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/Selective_Writable.h"
 #include "joedb/Readable_Multiplexer.h"
 #include "joedb/io/Interpreter.h"
@@ -186,7 +186,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    }
 
   private:
-   joedb::Journal_File journal;
+   joedb::Writable_Journal journal;
    bool ready_to_write;
 
    void custom(const std::string &name) override
@@ -515,7 +515,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   out << "#include \"joedb/Freedom_Keeper.h\"\n";
 
  out << R"RRR(#include "joedb/journal/File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Stream_File.h"
 #include "joedb/Exception.h"
 #include "joedb/assert.h"
@@ -1099,14 +1099,14 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    bool upgrading_schema = false;
    std::stringstream schema_stream;
    joedb::Stream_File schema_file;
-   joedb::Journal_File schema_journal;
+   joedb::Writable_Journal schema_journal;
 
    void check_schema()
    {
     schema_file.flush();
 
     const size_t file_schema_size = schema_stream.str().size();
-    const size_t pos = size_t(joedb::Journal_File::header_size);
+    const size_t pos = size_t(joedb::Writable_Journal::header_size);
     const size_t len = file_schema_size - pos;
 
     if (schema_stream.str().compare(pos, len, schema_string, pos, len) != 0)
@@ -1773,7 +1773,7 @@ int joedbc_main(int argc, char **argv)
   }
 
   Stream_File schema_file(schema, Open_Mode::create_new);
-  Journal_File journal(schema_file);
+  Writable_Journal journal(schema_file);
   Selective_Writable schema_writable(journal, Selective_Writable::schema);
   Custom_Collector custom_collector(custom_names);
 

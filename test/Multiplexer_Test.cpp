@@ -1,6 +1,6 @@
 #include "joedb/Readable_Multiplexer.h"
 #include "joedb/journal/File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"

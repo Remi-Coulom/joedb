@@ -7,7 +7,6 @@
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/io/SQL_Dump_Writable.h"
 #include "joedb/io/type_io.h"
-#include "joedb/journal/Journal_File.h"
 #include "joedb/journal/diagnostics.h"
 #include "type_io.h"
 

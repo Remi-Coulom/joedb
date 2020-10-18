@@ -1,6 +1,6 @@
 #include <cstdio>
 #include "joedb/journal/File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/Readable_Multiplexer.h"
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   std::printf("N = %zu\n", N);
 
   File file(file_name, Open_Mode::create_new);
-  Journal_File journal_file(file);
+  Writable_Journal journal_file(file);
   Database db;
   Readable_Multiplexer multiplexer(db);
   multiplexer.add_writable(journal_file);

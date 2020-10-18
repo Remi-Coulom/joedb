@@ -1,11 +1,11 @@
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Generic_File.h"
 #include "joedb/Exception.h"
 
 #include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Journal_File::Journal_File(Generic_File &file):
+joedb::Writable_Journal::Writable_Journal(Generic_File &file):
 /////////////////////////////////////////////////////////////////////////////
  Readonly_Journal(file),
  current_commit_level(0)
@@ -27,7 +27,7 @@ joedb::Journal_File::Journal_File(Generic_File &file):
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::append_raw_tail(const std::vector<char> &data)
+void joedb::Writable_Journal::append_raw_tail(const std::vector<char> &data)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.set_position(checkpoint_position);
@@ -38,14 +38,14 @@ void joedb::Journal_File::append_raw_tail(const std::vector<char> &data)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int64_t joedb::Journal_File::ahead_of_checkpoint() const
+int64_t joedb::Writable_Journal::ahead_of_checkpoint() const
 /////////////////////////////////////////////////////////////////////////////
 {
  return file.get_position() - checkpoint_position;
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::checkpoint(int commit_level)
+void joedb::Writable_Journal::checkpoint(int commit_level)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (ahead_of_checkpoint() || commit_level > current_commit_level)
@@ -72,7 +72,7 @@ void joedb::Journal_File::checkpoint(int commit_level)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::create_table(const std::string &name)
+void joedb::Writable_Journal::create_table(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::create_table);
@@ -80,7 +80,7 @@ void joedb::Journal_File::create_table(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::drop_table(Table_Id table_id)
+void joedb::Writable_Journal::drop_table(Table_Id table_id)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::drop_table);
@@ -88,7 +88,7 @@ void joedb::Journal_File::drop_table(Table_Id table_id)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::rename_table
+void joedb::Writable_Journal::rename_table
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
@@ -101,7 +101,7 @@ void joedb::Journal_File::rename_table
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::add_field
+void joedb::Writable_Journal::add_field
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
@@ -118,7 +118,7 @@ void joedb::Journal_File::add_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::drop_field
+void joedb::Writable_Journal::drop_field
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
@@ -131,7 +131,7 @@ void joedb::Journal_File::drop_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::rename_field
+void joedb::Writable_Journal::rename_field
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
@@ -146,7 +146,7 @@ void joedb::Journal_File::rename_field
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::custom(const std::string &name)
+void joedb::Writable_Journal::custom(const std::string &name)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::custom);
@@ -154,7 +154,7 @@ void joedb::Journal_File::custom(const std::string &name)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::comment(const std::string &comment)
+void joedb::Writable_Journal::comment(const std::string &comment)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::comment);
@@ -162,7 +162,7 @@ void joedb::Journal_File::comment(const std::string &comment)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::timestamp(int64_t timestamp)
+void joedb::Writable_Journal::timestamp(int64_t timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::timestamp);
@@ -170,14 +170,14 @@ void joedb::Journal_File::timestamp(int64_t timestamp)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::valid_data()
+void joedb::Writable_Journal::valid_data()
 /////////////////////////////////////////////////////////////////////////////
 {
  file.write<operation_t>(operation_t::valid_data);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::insert_into
+void joedb::Writable_Journal::insert_into
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
@@ -201,7 +201,7 @@ void joedb::Journal_File::insert_into
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::insert_vector
+void joedb::Writable_Journal::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
@@ -219,7 +219,7 @@ void joedb::Journal_File::insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Journal_File::delete_from
+void joedb::Writable_Journal::delete_from
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
@@ -233,7 +233,7 @@ void joedb::Journal_File::delete_from
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, write_method)\
-void joedb::Journal_File::update_##type_id\
+void joedb::Writable_Journal::update_##type_id\
 (\
  Table_Id table_id,\
  Record_Id record_id,\
@@ -267,7 +267,7 @@ void joedb::Journal_File::update_##type_id\
  }\
  file.write_method(value);\
 }\
-void joedb::Journal_File::update_vector_##type_id\
+void joedb::Writable_Journal::update_vector_##type_id\
 (\
  Table_Id table_id,\
  Record_Id record_id,\
@@ -291,7 +291,7 @@ void joedb::Journal_File::update_vector_##type_id\
 #undef TYPE_MACRO
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Journal_File::~Journal_File()
+joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
  checkpoint(0);

@@ -1,6 +1,6 @@
 #include "joedb/journal/diagnostics.h"
 #include "joedb/journal/Generic_File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/io/type_io.h"
 
 #include <iostream>
@@ -48,10 +48,10 @@ namespace joedb
  {
   out << "About this version of joedb\n";
   out << "---------------------------\n";
-  out << "Journal_File::compatible_version: ";
-  out << Journal_File::compatible_version << '\n';
-  out << "Journal_File::version_number: ";
-  out << Journal_File::version_number << '\n';
+  out << "Writable_Journal::compatible_version: ";
+  out << Writable_Journal::compatible_version << '\n';
+  out << "Writable_Journal::version_number: ";
+  out << Writable_Journal::version_number << '\n';
   out << "version: " <<
   #include "../../VERSION"
   ;

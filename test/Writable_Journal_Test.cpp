@@ -1,4 +1,4 @@
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
 #include "joedb/io/dump.h"
 #include "joedb/io/Interpreter.h"
@@ -11,7 +11,7 @@
 
 using namespace joedb;
 
-class Journal_File_Test: public ::testing::Test
+class Writable_Journal_Test: public ::testing::Test
 {
  protected:
   virtual void TearDown()
@@ -22,14 +22,14 @@ class Journal_File_Test: public ::testing::Test
 };
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Journal_File_Test, basic_operations)
+TEST_F(Writable_Journal_Test, basic_operations)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db1;
 
  {
   File file("test.joedb", Open_Mode::create_new);
-  Journal_File journal(file);
+  Writable_Journal journal(file);
   Readable_Multiplexer multi(db1);
   multi.add_writable(journal);
 
@@ -110,7 +110,7 @@ TEST_F(Journal_File_Test, basic_operations)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Journal_File_Test, interpreter_test)
+TEST_F(Writable_Journal_Test, interpreter_test)
 /////////////////////////////////////////////////////////////////////////////
 {
  //
@@ -118,7 +118,7 @@ TEST_F(Journal_File_Test, interpreter_test)
  //
  {
   File file("test.joedb", Open_Mode::create_new);
-  Journal_File journal(file);
+  Writable_Journal journal(file);
 
   Database db_storage;
   Readable_Multiplexer db(db_storage);
@@ -139,7 +139,7 @@ TEST_F(Journal_File_Test, interpreter_test)
   Readonly_Journal journal(file);
 
   File file_copy("test_copy.joedb", Open_Mode::create_new);
-  Journal_File journal_copy(file_copy);
+  Writable_Journal journal_copy(file_copy);
 
   Database db_storage;
   Readable_Multiplexer db(db_storage);

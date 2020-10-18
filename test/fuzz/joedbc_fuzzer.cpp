@@ -2,7 +2,7 @@
 #include <string>
 
 #include "Stream_File.h"
-#include "Journal_File.h"
+#include "Readonly_Journal.h"
 #include "Database.h"
 #include "../compiler/testdb.cpp"
 

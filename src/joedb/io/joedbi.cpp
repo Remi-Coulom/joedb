@@ -3,7 +3,7 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 
 #include <iostream>
 #include <memory>
@@ -49,7 +49,7 @@ int joedbi_main(int argc, char **argv)
   }
   else
   {
-   joedb::Journal_File journal(*file);
+   joedb::Writable_Journal journal(*file);
    journal.replay_log(db);
    joedb::Readable_Multiplexer multiplexer(db);
    multiplexer.add_writable(journal);

@@ -1,7 +1,7 @@
 #ifndef joedb_Connection_declared
 #define joedb_Connection_declared
 
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 
 namespace joedb
 {
@@ -12,9 +12,9 @@ namespace joedb
   friend class Connection_Control;
 
   private:
-   virtual int64_t pull(Journal_File &client_journal) = 0;
+   virtual int64_t pull(Writable_Journal &client_journal) = 0;
 
-   virtual int64_t lock_pull(Journal_File &client_journal) = 0;
+   virtual int64_t lock_pull(Writable_Journal &client_journal) = 0;
 
    virtual void push_unlock
    (
@@ -34,7 +34,7 @@ namespace joedb
 
   private:
    Connection &connection;
-   Journal_File &journal;
+   Writable_Journal &journal;
    Writable &writable;
    int64_t server_position;
 
@@ -54,7 +54,7 @@ namespace joedb
    Connection_Control
    (
     Connection &connection,
-    Journal_File &journal,
+    Writable_Journal &journal,
     Writable &writable
    ):
     connection(connection),

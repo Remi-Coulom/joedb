@@ -29,10 +29,10 @@ namespace joedb
 
    void lock();
    void unlock();
-   int64_t raw_pull(Journal_File &client_journal);
+   int64_t raw_pull(Writable_Journal &client_journal);
    void raw_push(Readonly_Journal &client_journal, int64_t server_position);
 
-   int64_t pull(Journal_File &client_journal) override
+   int64_t pull(Writable_Journal &client_journal) override
    {
     lock();
     const int64_t result = raw_pull(client_journal);
@@ -40,7 +40,7 @@ namespace joedb
     return result;
    }
 
-   int64_t lock_pull(Journal_File &client_journal) override
+   int64_t lock_pull(Writable_Journal &client_journal) override
    {
     lock();
     return raw_pull(client_journal);
@@ -86,8 +86,8 @@ namespace joedb
 
    int64_t retry(std::function<int64_t()> f);
 
-   int64_t pull(Journal_File &client_journal) override;
-   int64_t lock_pull(Journal_File &client_journal) override;
+   int64_t pull(Writable_Journal &client_journal) override;
+   int64_t lock_pull(Writable_Journal &client_journal) override;
    void push_unlock
    (
     Readonly_Journal &client_journal,

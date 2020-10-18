@@ -4,7 +4,7 @@
 
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Readonly_Journal.h"
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::dump(const Readable &db, Writable &writable, bool schema_only)

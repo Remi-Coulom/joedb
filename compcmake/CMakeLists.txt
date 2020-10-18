@@ -103,7 +103,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/io/type_io.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Generic_File.cpp
- ../src/joedb/journal/Journal_File.cpp
+ ../src/joedb/journal/Writable_Journal.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/diagnostics.cpp
  ../src/joedb/journal/Stream_File.cpp
@@ -176,7 +176,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Freedom_Keeper_Test.cpp
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
-  ../test/Journal_File_Test.cpp
+  ../test/Writable_Journal_Test.cpp
   ../test/Merge_Test.cpp
   ../test/Multiplexer_Test.cpp
   ../test/nested_namespace_Test.cpp

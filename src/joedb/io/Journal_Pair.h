@@ -2,7 +2,7 @@
 #define joedb_Journal_Pair_declared
 
 #include "joedb/journal/File.h"
-#include "joedb/journal/Journal_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
@@ -15,7 +15,7 @@ namespace joedb
  (
   int argc,
   char **argv,
-  void (*process)(Readonly_Journal &, Journal_File &)
+  void (*process)(Readonly_Journal &, Writable_Journal &)
  )
  {
   if (argc != 3)
@@ -30,7 +30,7 @@ namespace joedb
    Readonly_Journal input_journal(input_file);
 
    File output_file(argv[2], Open_Mode::create_new);
-   Journal_File output_journal(output_file);
+   Writable_Journal output_journal(output_file);
 
    process(input_journal, output_journal);
   }

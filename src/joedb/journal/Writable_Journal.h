@@ -1,5 +1,5 @@
-#ifndef joedb_Journal_File_declared
-#define joedb_Journal_File_declared
+#ifndef joedb_Writable_Journal_declared
+#define joedb_Writable_Journal_declared
 
 #include "joedb/Writable.h"
 #include "joedb/journal/Readonly_Journal.h"
@@ -8,13 +8,13 @@ namespace joedb
 {
  class Generic_File;
 
- class Journal_File: public Readonly_Journal, public Writable
+ class Writable_Journal: public Readonly_Journal, public Writable
  {
   private:
    int current_commit_level;
 
   public:
-   Journal_File(Generic_File &file);
+   Writable_Journal(Generic_File &file);
 
    void append_raw_tail(const std::vector<char> &data);
 
@@ -56,7 +56,7 @@ namespace joedb
    #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO
 
-   ~Journal_File() override;
+   ~Writable_Journal() override;
  };
 }
 
