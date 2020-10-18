@@ -175,6 +175,8 @@ v[3] = {0.3, 1.234}
 v[4] = {0.4, 1.234}
 Error opening vector_hole.joedb
 Non-contiguous insert in vector storage of table point
+Error opening vector_hole_by_vector_insert.joedb
+Non-contiguous insert in vector storage of table point
 Error opening vector_delete.joedb
 Can't delete in vector storage of table point
 Testing exceptions...

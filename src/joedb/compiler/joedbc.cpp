@@ -886,7 +886,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   bool first = true;
   for (auto &table: tables)
   {
-   const std::string &tname = table.second;
+   const std::string &name = table.second;
    const auto storage = options.get_table_options(table.first).storage;
 
    out << "    ";
@@ -899,18 +899,18 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "    {\n";
    if (storage == Compiler_Options::Table_Storage::vector)
    {
-    out << "     if (record_id != storage_of_" << tname << ".size() + 1)\n";
+    out << "     if (record_id != storage_of_" << name << ".size() + 1)\n";
     out << "      error(\"Non-contiguous insert in vector storage of table ";
-    out << tname << "\");\n";
+    out << name << "\");\n";
    }
    else
    {
-    out << "     if (is_valid_record_id_for_" << tname << "(record_id))\n";
-    out << "      error(\"Duplicate insert into table " << tname << "\");\n";
+    out << "     if (is_valid_record_id_for_" << name << "(record_id))\n";
+    out << "      error(\"Duplicate insert into table " << name << "\");\n";
    }
-   out << "     if (storage_of_" << tname << ".size() < record_id)\n";
-   out << "      storage_of_" << tname << ".resize(record_id);\n";
-   out << "     internal_insert_" << tname << "(record_id);\n";
+   out << "     if (storage_of_" << name << ".size() < record_id)\n";
+   out << "      storage_of_" << name << ".resize(record_id);\n";
+   out << "     internal_insert_" << name << "(record_id);\n";
    out << "    }\n";
   }
  }
@@ -928,17 +928,29 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   bool first = true;
   for (auto &table: tables)
   {
+   const std::string &name = table.second;
+   const auto storage = options.get_table_options(table.first).storage;
+
    out << "    ";
    if (first)
     first = false;
    else
     out << "else ";
 
-   const std::string &name = table.second;
    out << "if (table_id == " << table.first << ")\n";
    out << "    {\n";
-   out << "     if (storage_of_" << name << ".size() < record_id + size - 1)\n";
-   out << "      storage_of_" << name << ".resize(record_id + size - 1);\n";
+   if (storage == Compiler_Options::Table_Storage::vector)
+   {
+    out << "     if (record_id != storage_of_" << name << ".size() + 1)\n";
+    out << "      error(\"Non-contiguous insert in vector storage of table ";
+    out << name << "\");\n";
+    out << "     storage_of_" << name << ".resize(record_id + size - 1);\n";
+   }
+   else
+   {
+    out << "     if (storage_of_" << name << ".size() < record_id + size - 1)\n";
+    out << "      storage_of_" << name << ".resize(record_id + size - 1);\n";
+   }
    out << "     for (Record_Id i = 0; i < size; i++)\n";
    out << "      internal_insert_" << name << "(record_id + i);\n";
    out << "    }\n";
