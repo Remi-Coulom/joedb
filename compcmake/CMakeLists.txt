@@ -12,6 +12,18 @@ if(CMAKE_COMPILER_IS_GNUCXX)
  set(CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
+if (UNIX)
+ set(CMAKE_CXX_FLAGS_DEBUG
+  "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address"
+ )
+ set(CMAKE_C_FLAGS_DEBUG
+  "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address"
+ )
+ set(CMAKE_LINKER_FLAGS_DEBUG
+  "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address"
+ )
+endif()
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  message("== clang")
  set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
@@ -171,6 +183,7 @@ target_link_libraries(file_benchmark joedb)
 if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
   ../test/endianness_Test.cpp
+  ../test/diagnostics_Test.cpp
   ../test/File_Test.cpp
   ../test/Generic_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp

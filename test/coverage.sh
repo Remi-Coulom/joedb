@@ -7,14 +7,7 @@ rm -vf `find . -name \*.gcno`
 ninja joedb_test || exit 1
 cd -
 
-if [[ $OSTYPE == *linux* ]]; then
- echo Linux
- valgrind ../compcmake/ninja_coverage/joedb_test || exit 1
-else
- echo Not Linux
- echo OSTYPE = \"$OSTYPE\"
- ../compcmake/ninja_coverage/joedb_test || exit 1
-fi
+../compcmake/ninja_coverage/joedb_test || exit 1
 
 read -p "Enter to continue..."
 ./generate-gcov-html.sh

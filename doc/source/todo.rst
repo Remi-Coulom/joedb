@@ -20,8 +20,6 @@ Short Term
   - method for testing: use a very large string (100Mb) + pause execution with sleep + look at process memory usage. (also measure execution time).
   - main question: necessary to std::move or not?
 
-- run unit tests with address sanitizer instead of valgrind
-
 - make a package for vcpkg and conan. Maybe build2?
 
 - Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
