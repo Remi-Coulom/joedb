@@ -15,6 +15,7 @@ generate_db()
 }
 
 generate_db vector_hole
+generate_db vector_hole_by_vector_insert
 generate_db vector_delete
 generate_db multi_index
 

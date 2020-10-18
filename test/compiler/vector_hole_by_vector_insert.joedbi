@@ -1,0 +1,5 @@
+create_table point
+add_field point x float32
+add_field point y float32
+insert_into point 1
+insert_vector point 3 5

@@ -447,6 +447,25 @@ int do_vector_test()
 
   try
   {
+   {
+    vector_test::File_Database db("vector_hole_by_vector_insert.joedb");
+    db.set_x(v[1], 1.234f);
+   }
+   {
+    joedb::File file("vector_hole_by_vector_insert.joedb", joedb::Open_Mode::read_existing);
+    joedb::Readonly_Journal journal(file);
+    joedb::Database database;
+    journal.replay_log(database);
+   }
+  }
+  catch (const joedb::Exception &e)
+  {
+   std::cout << "Error opening vector_hole_by_vector_insert.joedb\n";
+   std::cout << e.what() << '\n';
+  }
+
+  try
+  {
    vector_test::File_Database db("vector_delete.joedb");
   }
   catch (const joedb::Exception &e)
