@@ -53,7 +53,7 @@ namespace joedb
   out << "Writable_Journal::version_number: ";
   out << Writable_Journal::version_number << '\n';
   out << "version: " <<
-  #include "../../VERSION"
+  #include "../../../VERSION"
   ;
   out << "\ncompiled: " << __DATE__ << ' ' << __TIME__ << '\n';
   out << "sizeof(size_t) = " << sizeof(size_t) << '\n';

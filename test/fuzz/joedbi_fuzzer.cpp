@@ -1,8 +1,8 @@
 #include <sstream>
 #include <string>
 
-#include "Database.h"
-#include "Interpreter.h"
+#include "joedb/interpreter/Database.h"
+#include "joedb/io/Interpreter.h"
 
 /////////////////////////////////////////////////////////////////////////////
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)

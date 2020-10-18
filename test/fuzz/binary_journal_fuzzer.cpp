@@ -1,9 +1,9 @@
 #include <sstream>
 #include <string>
 
-#include "Stream_File.h"
-#include "Readonly_Journal.h"
-#include "Database.h"
+#include "joedb/journal/Stream_File.h"
+#include "joedb/journal/Readonly_Journal.h"
+#include "joedb/interpreter/Database.h"
 
 /////////////////////////////////////////////////////////////////////////////
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
