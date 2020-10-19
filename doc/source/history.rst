@@ -3,11 +3,16 @@ History
 
 - 2020-??-??: 3.1
 
-  - :ref:`concurrency`: a new mechanism to allow multiple distributed processes to access the same database.
-  - File sharing now works in Windows (one process can read a file while another is writing it).
-  - :ref:`joedb_embed`
-  - support for generating code inside a nested namespace
-  - other minor changes
+  - :ref:`concurrency`: a new mechanism to allow multiple distributed processes
+    to access the same remote database.
+  - File sharing now works in Windows (one process can read a file while
+    another is writing it, but two processes cannot open the same file for
+    writing).
+  - :ref:`joedb_embed` compiles the content of a database into a C++ string
+    literal.
+  - support for generating code inside a nested namespace (``namespace
+    deeply::nested::tutorial`` in the .joedbc file).
+  - Minor fixes and improvements
 
 - 2019-11-19: 3.0
 
