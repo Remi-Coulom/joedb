@@ -133,8 +133,8 @@ namespace joedb
      const ssize_t read_result = sftp_read
      (
       file,
-      &v[total_read],
-      v.size() - total_read
+      &v[size_t(total_read)],
+      v.size() - size_t(total_read)
      );
 
      if (read_result < 0)
@@ -385,7 +385,7 @@ namespace joedb
   ssh_log_level(ssh_log_level),
   sleep_time(10)
  {
-  retry([this]()->int64_t{return 0;});
+  retry([]()->int64_t{return 0;});
  }
 }
 
