@@ -33,7 +33,7 @@ void joedb::write_string(std::ostream &out, const std::string &s, bool json)
  {
   const uint8_t c = uint8_t(s[i]);
 
-  if (c < 0x20)
+  if (c < 0x20 || (c >= 0x7f && c < 0xa0))
   {
    if (json)
    {
