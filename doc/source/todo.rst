@@ -102,6 +102,10 @@ Concurrency
 
 - Optional CRC check before pulling to verify the content of the origin.
 - SSH_Connection should checkpoint the server file for better safety.
+- Add a **try_push** operation that tries to push without locking, and
+  succeeds only if the remote database has not changed since last pull. Also
+  add functions to let the client conveniently undo history starting from the
+  previous pull.
 
 Other Ideas
 -----------
