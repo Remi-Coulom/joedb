@@ -1,0 +1,5 @@
+create_table person
+add_field person name string
+add_field person number int32
+insert_into person 4êÑ¾“šus
+table person

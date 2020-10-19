@@ -101,7 +101,9 @@ size_t joedb::utf8_display_size(const std::string &s)
  for (size_t i = 0; i < s.size();)
  {
   uint32_t wide_char = read_utf8_char(i, s);
-  result += size_t(wide_char_display_width(uint32_t(wide_char)));
+  const int width = wide_char_display_width(uint32_t(wide_char));
+  if (width > 0)
+   result += size_t(wide_char_display_width(uint32_t(wide_char)));
  }
 
  return result;
