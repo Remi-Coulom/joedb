@@ -6,18 +6,22 @@ This explains how to install and use joedb.
 Compilation
 -----------
 
-The source code of joedb is available from `GitHub <https://github.com/Remi-Coulom/joedb>`_. Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`__ for its build system. So it should be portable to almost any platform. Here are some detailed instructions for the most common situations.
+The source code of the most recent stable release can be found on the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_. If you are more adventurous you can also clone the repository to get the most recent version: ``git clone https://github.com/Remi-Coulom/joedb.git``.
 
-Linux, MacOS (and maybe other variations of Unix)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`__ for
+its build system. So it should be portable to almost any platform. Here are
+some detailed instructions for the most common situations.
 
-Prerequisites in Ubuntu can be installed with this command:
+Linux
+^^^^^
+
+Minimal prerequisites in Ubuntu can be installed with this command:
 
 .. code-block:: bash
 
-    sudo apt-get install g++ cmake ninja-build git-core libssh-dev
+    sudo apt-get install g++ cmake ninja-build libssh-dev
 
-Similar packages should be available in other systems. Joedb was compiled successfully on MacOS with `macports <https://www.macports.org>`_.
+Similar packages should be available in other systems.
 
 When the necessary packages are installed, the following commands should get you ready:
 
@@ -40,10 +44,12 @@ If you wish to run coverage tests, documentation, and benchmarks, also install:
 Windows
 ^^^^^^^
 
-First, download and extract a zip file of a recent release from the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_.
+Visual Studio supports cmake, starting from version 2017. Use "Open a local folder" to open the ``compcmake`` folder of the archive.
 
-Visual Studio supports cmake, starting from version 2017. Use "File/Open/Folder..." to open the ``compcmake`` folder of the archive, then "CMake/Build All" should work.
-
+If you wish to use the ssh connection, you can install the libssh library with
+vcpkg: ``vcpkg install libssh:x64-windows``. For cmake to discover the vcpkg
+library, you will have to edit CMakeSettings.json to indicate the path to your
+vcpkg installation.
 
 Joedb Tools
 -----------
