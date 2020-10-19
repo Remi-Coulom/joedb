@@ -161,7 +161,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
- out << "#include \"joedb/server/Connection.h\"\n";
+ out << "#include \"joedb/concurrency/Connection.h\"\n";
  out << '\n';
 
  namespace_open(out, options.get_name_space());

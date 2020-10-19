@@ -3,8 +3,8 @@
 #ifndef joedb_SSH_Connection_declared
 #define joedb_SSH_Connection_declared
 
-#include "joedb/server/Connection.h"
-#include "joedb/server/ssh_wrappers.h"
+#include "joedb/concurrency/Connection.h"
+#include "joedb/concurrency/ssh_wrappers.h"
 
 #include <memory>
 #include <functional>

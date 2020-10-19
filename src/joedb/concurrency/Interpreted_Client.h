@@ -1,7 +1,7 @@
 #ifndef joedb_Interpreted_Client_declared
 #define joedb_Interpreted_Client_declared
 
-#include "joedb/server/Connection.h"
+#include "joedb/concurrency/Connection.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/Readable_Multiplexer.h"
 

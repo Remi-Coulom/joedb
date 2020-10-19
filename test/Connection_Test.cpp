@@ -1,5 +1,5 @@
-#include "joedb/server/Embedded_Connection.h"
-#include "joedb/server/Interpreted_Client.h"
+#include "joedb/concurrency/Embedded_Connection.h"
+#include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"

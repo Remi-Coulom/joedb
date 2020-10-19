@@ -1,6 +1,6 @@
 #ifdef JOEDB_HAS_SSH
 
-#include "joedb/server/SSH_Connection.h"
+#include "joedb/concurrency/SSH_Connection.h"
 #include "joedb/Exception.h"
 
 #include <fcntl.h>

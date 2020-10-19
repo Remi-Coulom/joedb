@@ -1,7 +1,7 @@
 #ifndef joedb_Embedded_Connection_declared
 #define joedb_Embedded_Connection_declared
 
-#include "joedb/server/Connection.h"
+#include "joedb/concurrency/Connection.h"
 
 namespace joedb
 {
