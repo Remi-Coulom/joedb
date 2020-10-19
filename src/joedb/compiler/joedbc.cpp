@@ -432,7 +432,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   private:
    Generic_File_Database database;
-   joedb::Connection_Control control;
+   joedb::Client joedb_client;
 
   public:
    Client
@@ -441,7 +441,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Generic_File &local_file
    ):
     database(local_file),
-    control(connection, database.journal, database)
+    joedb_client(connection, database.journal, database)
    {
    }
 
@@ -452,7 +452,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    int64_t pull()
    {
-    return control.pull();
+    return joedb_client.pull();
    }
  };
 
@@ -465,7 +465,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::Lock lock;
 
   public:
-   Lock(Client &client): client(client), lock(client.control) {}
+   Lock(Client &client): client(client), lock(client.joedb_client) {}
    Generic_File_Database &get_database() {return client.database;}
  };
 )RRR";

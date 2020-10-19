@@ -9,7 +9,7 @@ namespace joedb
  class Connection
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Connection_Control;
+  friend class Client;
 
   private:
    virtual int64_t pull(Writable_Journal &client_journal) = 0;
@@ -27,7 +27,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Connection_Control
+ class Client
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Lock;
@@ -51,7 +51,7 @@ namespace joedb
    }
 
   public:
-   Connection_Control
+   Client
    (
     Connection &connection,
     Writable_Journal &journal,
@@ -77,19 +77,19 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Connection_Control &control;
+   Client &client;
 
   public:
-   Lock(Connection_Control &control): control(control)
+   Lock(Client &client): client(client)
    {
-    control.lock_pull();
+    client.lock_pull();
    }
 
    ~Lock() noexcept(false)
    {
     try
     {
-     control.push_unlock();
+     client.push_unlock();
     }
     catch (...)
     {

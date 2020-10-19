@@ -17,7 +17,7 @@ namespace joedb
    Writable_Journal journal;
    Database database;
    Readable_Multiplexer multiplexer;
-   Connection_Control control;
+   Client client;
 
   public:
    Interpreted_Client
@@ -27,7 +27,7 @@ namespace joedb
    ):
     journal(local_file),
     multiplexer(database),
-    control(connection, journal, database)
+    client(connection, journal, database)
    {
     multiplexer.add_writable(journal);
    }
@@ -37,7 +37,10 @@ namespace joedb
     return database;
    }
 
-   int64_t pull() {return control.pull();}
+   int64_t pull()
+   {
+    return client.pull();
+   }
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -45,19 +48,19 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Interpreted_Client &client;
+   Interpreted_Client &interpreted_client;
    Lock lock;
 
   public:
-   Interpreted_Lock(Interpreted_Client &client):
-    client(client),
-    lock(client.control)
+   Interpreted_Lock(Interpreted_Client &interpreted_client):
+    interpreted_client(interpreted_client),
+    lock(interpreted_client.client)
    {
    }
 
    Readable_Writable &get_database()
    {
-    return client.multiplexer;
+    return interpreted_client.multiplexer;
    }
  };
 }
