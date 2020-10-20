@@ -37,8 +37,6 @@ namespace joedb
     ssh_log_level
    );
 
-   connection.set_sleep_time(5);
-
    File file(argv[4], Open_Mode::write_existing_or_create_new);
    Interpreted_Client client(connection, file);
 

@@ -1,9 +1,10 @@
-#ifdef JOEDB_HAS_SSH
-
 #ifndef joedb_SSH_Connection_declared
 #define joedb_SSH_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
+
+#ifdef JOEDB_HAS_SSH
+
 #include "joedb/concurrency/ssh_wrappers.h"
 
 #include <memory>
@@ -106,9 +107,46 @@ namespace joedb
     bool trace,
     int ssh_log_level
    );
-
-   void set_sleep_time(int seconds) {sleep_time = seconds;}
  };
+}
+
+#else
+
+namespace joedb
+{
+ ////////////////////////////////////////////////////////////////////////////
+ class SSH_Connection: public Connection
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   virtual int64_t pull(Writable_Journal &client_journal) {return 0;}
+
+   virtual int64_t lock_pull(Writable_Journal &client_journal) {return 0;}
+
+   virtual void push_unlock
+   (
+    Readonly_Journal &client_journal,
+    int64_t server_position
+   )
+   {
+   }
+
+  public:
+   SSH_Connection
+   (
+    std::string user,
+    std::string host,
+    int port,
+    std::string remote_file_name,
+    bool trace,
+    int ssh_log_level
+   )
+   {
+    throw Exception("SSH connection is not supported");
+   }
+ };
+
+ typedef SSH_Connection SSH_Robust_Connection;
 }
 
 #endif
