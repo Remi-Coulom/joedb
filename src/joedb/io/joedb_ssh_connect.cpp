@@ -1,6 +1,6 @@
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/main_exception_catcher.h"
-#include "joedb/concurrency/SSH_Connection.h"
+#include "joedb/concurrency/SSH_Robust_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/File.h"
 
