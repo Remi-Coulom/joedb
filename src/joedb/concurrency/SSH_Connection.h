@@ -2,6 +2,7 @@
 #define joedb_SSH_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
+#include "joedb/Exception.h"
 
 #ifdef JOEDB_HAS_SSH
 
@@ -104,10 +105,6 @@ namespace joedb
    {
     throw Exception("SSH connection is not supported");
    }
-
-   void reset();
-   ssh::Session &get_session();
-   ssh::SFTP &get_sftp();
  };
 }
 

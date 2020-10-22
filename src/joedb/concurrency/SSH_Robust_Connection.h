@@ -46,9 +46,9 @@ namespace joedb
     int ssh_log_level
    );
 
-   void ensure_connected();
-   ssh::Session &get_session();
-   ssh::SFTP &get_sftp();
+   void reconnect();
+   ssh::Session &get_session() {return connection->session;}
+   ssh::SFTP &get_sftp() {return connection->sftp;}
  };
 }
 

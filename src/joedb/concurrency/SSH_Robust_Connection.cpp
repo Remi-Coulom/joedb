@@ -29,31 +29,7 @@ namespace joedb
       std::cerr << "Error: " << e.what() << '\n';
     }
 
-   while (true)
-   {
-    if (connection)
-    {
-     if (trace)
-      std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
-
-     std::this_thread::sleep_for(std::chrono::seconds(sleep_time));
-    }
-
-    if (trace)
-     std::cerr << "Connecting... ";
-    try
-    {
-     reset();
-     if (trace)
-      std::cerr << "Success!\n";
-     break;
-    }
-    catch(const std::runtime_error &e)
-    {
-     if (trace)
-      std::cerr << "Error: " << e.what() << '\n';
-    }
-   }
+   reconnect();
   }
  }
 
@@ -133,6 +109,37 @@ namespace joedb
   sleep_time(10)
  {
   retry([]()->int64_t{return 0;});
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SSH_Robust_Connection::reconnect()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  while (true)
+  {
+   if (connection)
+   {
+    if (trace)
+     std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
+
+    std::this_thread::sleep_for(std::chrono::seconds(sleep_time));
+   }
+
+   if (trace)
+    std::cerr << "Connecting... ";
+   try
+   {
+    reset();
+    if (trace)
+     std::cerr << "Success!\n";
+    break;
+   }
+   catch(const std::runtime_error &e)
+   {
+    if (trace)
+     std::cerr << "Error: " << e.what() << '\n';
+   }
+  }
  }
 }
 

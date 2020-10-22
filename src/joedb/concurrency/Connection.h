@@ -36,6 +36,7 @@ namespace joedb
    Connection &connection;
    Writable_Journal &journal;
    Writable &writable;
+
    int64_t server_position;
 
    void lock_pull()

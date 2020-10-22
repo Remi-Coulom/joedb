@@ -52,20 +52,22 @@ find_package(Threads REQUIRED)
 
 # libssh
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
- find_package(libssh QUIET)
-endif()
+if(TRUE)
+ if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+  find_package(libssh QUIET)
+ endif()
 
-if(NOT libssh_FOUND)
- unset(libssh_FOUND)
- check_include_file_cxx("libssh/libssh.h" libssh_FOUND)
-endif()
+ if(NOT libssh_FOUND)
+  unset(libssh_FOUND)
+  check_include_file_cxx("libssh/libssh.h" libssh_FOUND)
+ endif()
 
-if (libssh_FOUND)
- add_definitions(-DJOEDB_HAS_SSH)
- message("== ssh was found")
-else()
- message("== ssh not found (fix: sudo apt install libssh-dev or vcpkg install libssh:x64-windows)")
+ if (libssh_FOUND)
+  add_definitions(-DJOEDB_HAS_SSH)
+  message("== ssh was found")
+ else()
+  message("== ssh not found (fix: sudo apt install libssh-dev or vcpkg install libssh:x64-windows)")
+ endif()
 endif()
 
 # Google Test
@@ -142,13 +144,15 @@ add_executable(joedbi
 )
 target_link_libraries(joedbi joedb)
 
+add_executable(joedb_ssh_connect
+ ../src/joedb/io/joedb_ssh_connect.cpp
+ ../src/joedb/concurrency/SSH_Connection.cpp
+ ../src/joedb/concurrency/SSH_Robust_Connection.cpp
+)
+target_link_libraries(joedb_ssh_connect joedb)
+
 if (libssh_FOUND)
- add_executable(joedb_ssh_connect
-  ../src/joedb/io/joedb_ssh_connect.cpp
-  ../src/joedb/concurrency/SSH_Connection.cpp
-  ../src/joedb/concurrency/SSH_Robust_Connection.cpp
- )
- target_link_libraries(joedb_ssh_connect joedb ssh)
+ target_link_libraries(joedb_ssh_connect ssh)
 endif()
 
 add_executable(joedb_logdump
