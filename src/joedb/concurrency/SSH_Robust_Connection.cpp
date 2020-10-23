@@ -115,9 +115,9 @@ namespace joedb
  void SSH_Robust_Connection::reconnect()
  ////////////////////////////////////////////////////////////////////////////
  {
-  while (true)
+  for (bool first_attempt = true; ; first_attempt = false)
   {
-   if (connection)
+   if (connection || !first_attempt)
    {
     if (trace)
      std::cerr << "Sleeping for " << sleep_time << " seconds...\n";
