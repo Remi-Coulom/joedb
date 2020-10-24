@@ -121,6 +121,30 @@ namespace joedb {namespace ssh
      sftp_attributes_free(attributes);
    }
  };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class SCP
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   const ssh_scp scp;
+
+  public:
+   SCP(Session &session, int mode, const char *location):
+    scp(ssh_scp_new(session.get(), mode, location))
+   {
+    check_not_null(scp);
+    session.check_result(ssh_scp_init(scp));
+   }
+
+   ssh_scp get() const {return scp;}
+
+   ~SCP()
+   {
+    ssh_scp_close(scp);
+    ssh_scp_free(scp);
+   }
+ };
 }}
 
 #endif
