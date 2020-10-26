@@ -3,7 +3,8 @@
 
 #include "joedb/concurrency/SSH_Connection.h"
 
-#ifdef JOEDB_HAS_SSH
+#include <memory>
+#include <functional>
 
 namespace joedb
 {
@@ -47,17 +48,12 @@ namespace joedb
    );
 
    void reconnect();
+
+#ifdef JOEDB_HAS_SSH
    ssh::Session &get_session() {return connection->session;}
    ssh::SFTP &get_sftp() {return connection->sftp;}
+#endif
  };
 }
 
-#else
-
-namespace joedb
-{
- typedef SSH_Connection SSH_Robust_Connection;
-}
-
-#endif
 #endif

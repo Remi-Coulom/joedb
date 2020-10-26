@@ -1,5 +1,3 @@
-#ifdef JOEDB_HAS_SSH
-
 #include "joedb/concurrency/SSH_Robust_Connection.h"
 #include "joedb/Exception.h"
 
@@ -142,5 +140,3 @@ namespace joedb
   }
  }
 }
-
-#endif

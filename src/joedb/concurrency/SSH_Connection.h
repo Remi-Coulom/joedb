@@ -8,9 +8,6 @@
 
 #include "joedb/concurrency/ssh_wrappers.h"
 
-#include <memory>
-#include <functional>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -79,6 +76,8 @@ namespace joedb
  class SSH_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
+  friend class SSH_Robust_Connection;
+
   private:
    virtual int64_t pull(Writable_Journal &client_journal) {return 0;}
 
