@@ -19,9 +19,7 @@ Minimal prerequisites in Ubuntu can be installed with this command:
 
 .. code-block:: bash
 
-    sudo apt-get install g++ cmake ninja-build libssh-dev
-
-Similar packages should be available in other systems.
+    sudo apt install g++ cmake ninja-build libssh-dev
 
 When the necessary packages are installed, the following commands should get you ready:
 
@@ -47,9 +45,7 @@ Windows
 Visual Studio supports cmake, starting from version 2017. Use "Open a local folder" to open the ``compcmake`` folder of the archive.
 
 If you wish to use the ssh connection, you can install the libssh library with
-vcpkg: ``vcpkg install libssh:x64-windows``. For cmake to discover the vcpkg
-library, you will have to edit CMakeSettings.json to indicate the path to your
-vcpkg installation.
+vcpkg: ``vcpkg install libssh:x64-windows``.
 
 Joedb Tools
 -----------
