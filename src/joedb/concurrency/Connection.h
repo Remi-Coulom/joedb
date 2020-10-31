@@ -22,6 +22,15 @@ namespace joedb
     int64_t server_position
    ) = 0;
 
+   virtual bool try_push
+   (
+    Readonly_Journal &client_journal,
+    int64_t server_position
+   )
+   {
+    return false;
+   }
+
   public:
    virtual ~Connection() {}
  };
@@ -31,6 +40,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Lock;
+  friend class Lockless_Push;
 
   private:
    Connection &connection;
@@ -50,6 +60,8 @@ namespace joedb
     journal.checkpoint(0);
     connection.push_unlock(journal, server_position);
    }
+
+   bool try_push() {return false;}
 
   public:
    Client
@@ -97,6 +109,28 @@ namespace joedb
      if (!std::uncaught_exception())
       throw;
     }
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Lockless_Push
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   Client &client;
+   // TODO: logic for temporary branch
+   // Requires reset method in Writable
+   // Store temporary in-memory journal + undo it if try_push fails
+
+  public:
+   Lockless_Push(Client &client): client(client)
+   {
+    client.pull();
+   }
+
+   bool try_push()
+   {
+    return client.try_push();
    }
  };
 }

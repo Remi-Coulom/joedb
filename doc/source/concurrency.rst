@@ -19,6 +19,8 @@ database. Each process can keep data synchronized with 3 basic operations:
 - **push_unlock**: update the central database with the local modifications,
   and release the lock. This works only if the database is currently locked by
   a previous **lock_pull**.
+- **try_push**: try pushing local data to the central database. Succeeds if
+  nothing has been written concurrently since the previous **pull**.
 
 Example C++ Code
 ----------------
