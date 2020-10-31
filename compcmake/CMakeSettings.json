@@ -10,8 +10,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
-      "variables": [],
-      "cmakeToolchain": "C:/cygwin/home/rcoulom/repos/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      "variables": []
     },
     {
       "name": "x64-Release",
@@ -23,8 +22,7 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "variables": [],
-      "cmakeToolchain": "C:/cygwin/home/rcoulom/repos/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      "variables": []
     }
   ]
 }
