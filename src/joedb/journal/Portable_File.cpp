@@ -78,7 +78,7 @@ namespace joedb
  int64_t joedb::Portable_File::get_size() const
  /////////////////////////////////////////////////////////////////////////////
  {
-  const int64_t current_tell = std::ftell(file);
+  const auto current_tell = std::ftell(file);
   std::fseek(file, 0, SEEK_END);
   const int64_t result = std::ftell(file);
   std::fseek(file, current_tell, SEEK_SET);
