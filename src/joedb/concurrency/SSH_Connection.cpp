@@ -145,7 +145,7 @@ namespace joedb
 
      total_read += read_result;
      if (trace)
-      std::cerr << -read_result;
+      std::cerr << read_result << ' ';
     }
 
     sftp_close(file);
@@ -158,7 +158,7 @@ namespace joedb
    throw Exception("Trying to pull when ahead of server");
 
   if (trace)
-   std::cerr << " done\n";
+   std::cerr << "done.\n";
 
   return server_position;
  }
@@ -233,7 +233,7 @@ namespace joedb
   }
 
   if (trace)
-   std::cerr << "done\n";
+   std::cerr << "done.\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
