@@ -103,6 +103,7 @@ Concurrency
 
 - Optional CRC check before pulling to verify the content of the origin.
 - SSH_Connection should checkpoint the server file for better safety.
+- joedb::Readonly_Connection (pull only).
 
 Other Ideas
 -----------
