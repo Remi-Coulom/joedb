@@ -9,7 +9,7 @@ Principle
 ---------
 
 Concurrency works by letting each process have a local copy of the central
-database. Each process can keep data synchronized with 4 basic operations:
+database. Each process can keep data synchronized with 3 basic operations:
 
 - **pull**: update local data with new journal entries from the central
   database.
@@ -19,8 +19,6 @@ database. Each process can keep data synchronized with 4 basic operations:
 - **push_unlock**: update the central database with the local modifications,
   and release the lock. This works only if the database is currently locked by
   a previous **lock_pull**.
-- **try_push**: try pushing local data to the central database. Succeeds if
-  nothing has been written concurrently since the previous **pull**.
 
 Example C++ Code
 ----------------
@@ -41,7 +39,7 @@ Connections
 
 The constructor of the ``tutorial::Client`` class takes two parameters: a
 connection, and a file for local storage. The connection is an object of the
-``joedb::Connection`` class, that provides the 4 basic operations described
+``joedb::Connection`` class, that provides the 3 basic operations described
 above. This section presents the different kinds of available connections.
 
 ``Embedded_Connection``
