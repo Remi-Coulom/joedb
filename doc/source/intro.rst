@@ -1,11 +1,10 @@
 Introduction
 ============
 
-Joedb is the Journal-Only Embedded Database. Its purpose is to allow crash-safe
-manipulation of data stored in permanent storage. Data is stored as a journal
-of all modifications. This way, the whole data history is remembered, and it is
-possible to re-create any past state of the database. It is also a way to make
-the system extremely simple, and fast.
+Joedb is the Journal-Only Embedded Database. It stores structured data as a
+journal of all modifications. This way, the whole data history is remembered,
+and it is possible to re-create any past state of the database. It is also a
+way to make the system extremely simple, and fast.
 
 Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
@@ -26,6 +25,9 @@ alternatives such as protobuf, SQLite, XML, or JSON:
   also possible to add time stamps and comments to the journal, and use it as a
   log of the application (if the history has to be forgotten for privacy or
   disk-space reasons, it is also possible to :ref:`pack <joedb_pack>` it).
+- The log structure makes it easy and efficient to synchronize many
+  replications of the same database in a :ref:`distributed application
+  <concurrency>`.
 - If the database schema of an application changes over time, joedb can upgrade
   old files to the new version automatically. The upgrade includes changes to
   the schema as well as custom data manipulation (see :doc:`schema_upgrade`).
@@ -41,7 +43,7 @@ improvements:
   and the full journal has to be replayed from scratch when opening a file.
   This may change with support of on-disk data storage.
 - C++ is the only supported programming language. A rudimentary C wrapper is
-  available. SQL support is planned.
+  available.
 
 Compared to history-less databases, joedb has one fundamental drawback:
 frequently-updated values may make the joedb journal file grow very large.
