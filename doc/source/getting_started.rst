@@ -3,8 +3,8 @@ Getting Started
 
 This explains how to install and use joedb.
 
-Compilation
------------
+Compiling joedb
+---------------
 
 The source code of the most recent stable release can be found on the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_. If you are more adventurous you can also clone the repository to get the most recent version: ``git clone https://github.com/Remi-Coulom/joedb.git``.
 
@@ -61,6 +61,8 @@ Below is a list of commands the interpreter understands:
 .. literalinclude:: ./tutorial/joedbi_help.out
    :language: none
 
+.. _joedbc:
+
 ``joedbc``
 ^^^^^^^^^^
 
@@ -94,6 +96,8 @@ This is the json output of the tutorial database:
 
 .. literalinclude:: ./tutorial/tutorial.json
    :language: json
+
+.. _joedb_pack:
 
 ``joedb_pack``
 ^^^^^^^^^^^^^^
