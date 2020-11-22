@@ -1717,6 +1717,7 @@ void )RRR" << ns << R"RRR(::Generic_File_Database::write_valid_data()
   upgrading_schema = false;
 
   journal.comment("End of automatic schema upgrade");
+  journal.checkpoint(0);
  }
 }
 )RRR";
