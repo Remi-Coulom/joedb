@@ -98,6 +98,7 @@ namespace joedb
   }
   catch (const joedb::Exception &)
   {
+   throw Exception("Could not stat remote file");
   }
 
   const int64_t client_position = client_journal.get_checkpoint_position();
@@ -154,7 +155,7 @@ namespace joedb
    else
     throw Exception("Could not open remote file for reading");
   }
-  else if (server_position > 0 && client_position > server_position)
+  else if (client_position > server_position)
    throw Exception("Trying to pull when ahead of server");
 
   if (trace)
