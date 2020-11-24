@@ -341,6 +341,20 @@ namespace joedb
     else
      return fk.get_previous(index);
    }
+
+   void append_vector(size_t size)
+   {
+    if (compact && compact_free_size == compact_used_size)
+    {
+     compact_free_size += size;
+     compact_used_size += size;
+    }
+    else
+    {
+     for (size_t i = 0; i < size; i++)
+      use(push_back());
+    }
+   }
  };
 }
 

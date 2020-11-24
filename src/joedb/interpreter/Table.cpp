@@ -62,3 +62,21 @@ void joedb::Table::insert_record(Record_Id record_id)
 
  freedom.use(record_id + 1);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Table::insert_vector(Record_Id record_id, Record_Id size)
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (freedom.is_compact() && record_id == freedom.size() + 1)
+ {
+  for (auto &field: fields)
+   field.second.resize(record_id + size - 1);
+
+  freedom.append_vector(size);
+ }
+ else
+ {
+  for (Record_Id i = 0; i < size; i++)
+   insert_record(record_id + i);
+ }
+}

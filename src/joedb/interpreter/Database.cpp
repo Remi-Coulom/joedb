@@ -227,8 +227,7 @@ void joedb::Database::insert_vector
   throw Exception(error_message.str());
  }
 
- for (Record_Id i = 0; i < size; i++)
-  it->second.insert_record(record_id + i);
+ it->second.insert_vector(record_id, size);
 }
 
 /////////////////////////////////////////////////////////////////////////////
