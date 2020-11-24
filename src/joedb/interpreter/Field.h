@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "joedb/Exception.h"
 #include "joedb/Type.h"
@@ -66,8 +67,7 @@ namespace joedb
    {\
     if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
-    for (Record_Id i = 0; i < size; i++)\
-     type_id##_column[record_id + i - 1] = value[i];\
+    std::copy_n(value, size, &type_id##_column[record_id - 1]);\
    }
    #include "joedb/TYPE_MACRO.h"
    #undef TYPE_MACRO
