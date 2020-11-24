@@ -1,39 +1,6 @@
 TODO
 ====
 
-Short Term
-----------
-
-- ability to indicate minimum joedb version in joedbc (and joedbi?)
-
-- tests for buffer overflow could be optimized when reading/writing large
-  pieces of data, such as strings or vectors.
-
-- only one file.check_write_buffer() call in write<T> and compact_write<T>:
-  make code shorter and simpler.
-
-- Pass strings by value for new and update
-
-  - fix useless copies
-  - need to fix Writable + joedbc (it is a bit complicated)
-  - start by testing copy elision on a very simple toy simulation
-  - method for testing: use a very large string (100Mb) + pause execution with sleep + look at process memory usage. (also measure execution time).
-  - main question: necessary to std::move or not?
-
-- make a package for vcpkg and conan. Maybe build2?
-
-- Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
-- Null default initial values
-- better readable interface:
-
-  - a separate table abstraction (that could be used for query output)
-  - cursors on tables
-
-- make Readable_Writable based on compiled db (or Readable only...)
-- make joedb_admin work on the new readable interface, and publish it
-- index and referential integrity: should be in the journal, and also implemented in the interpreted database.
-- performance of interpreted database: use vector instead of map for tables and fields (with a bool indicating if deleted)
-
 Journal File
 ------------
 - joedb_truncate <file> <position> (+optionally show position in logdump)
@@ -106,6 +73,40 @@ Concurrency
 
 Other Ideas
 -----------
+- ability to indicate minimum joedb version in joedbc (and joedbi?)
+
+- tests for buffer overflow could be optimized when reading/writing large
+  pieces of data, such as strings or vectors.
+
+- optimize vector update: read file directly into the column. Compiled db
+  should use column vectors as well. replace update_vector in joedb::Writable
+  by a method that returns a pointer for writing. No more cross-endianness.
+
+- only one file.check_write_buffer() call in write<T> and compact_write<T>:
+  make code shorter and simpler.
+
+- Pass strings by value for new and update
+
+  - fix useless copies
+  - need to fix Writable + joedbc (it is a bit complicated)
+  - start by testing copy elision on a very simple toy simulation
+  - method for testing: use a very large string (100Mb) + pause execution with sleep + look at process memory usage. (also measure execution time).
+  - main question: necessary to std::move or not?
+
+- make a package for vcpkg and conan. Maybe build2?
+
+- Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
+- Null default initial values
+- better readable interface:
+
+  - a separate table abstraction (that could be used for query output)
+  - cursors on tables
+
+- make Readable_Writable based on compiled db (or Readable only...)
+- make joedb_admin work on the new readable interface, and publish it
+- index and referential integrity: should be in the journal, and also implemented in the interpreted database.
+- performance of interpreted database: use vector instead of map for tables and fields (with a bool indicating if deleted)
+
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Raw commands in interpreter?
 - import from SQL
