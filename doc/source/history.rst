@@ -3,7 +3,7 @@ History
 
 - 2020-??-??: 3.1
 
-  - :ref:`concurrency`: a new mechanism to allow multiple distributed processes
+  - :doc:`concurrency`: a new mechanism to allow multiple distributed processes
     to access the same remote database.
   - File sharing now works in Windows (one process can read a file while
     another is writing it, but two processes cannot open the same file for
