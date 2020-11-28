@@ -425,7 +425,7 @@ install(TARGETS joedb_static ARCHIVE DESTINATION lib)
 
 file(GLOB_RECURSE all_includes RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/../src/ ../src/joedb/*.h)
 foreach(file ${all_includes})
- get_filename_component(dir ${file} DIRECTORY)
+ get_filename_component(dir ${file} PATH)
  install(FILES ../src/${file} DESTINATION include/${dir})
 endforeach()
 
