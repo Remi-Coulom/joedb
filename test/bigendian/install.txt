@@ -1,9 +1,19 @@
+=============================================================================
+Installing and connecting to the virtual machine
+=============================================================================
 http://create.stephan-brumme.com/big-endian/
 
-Download image:
-http://create.stephan-brumme.com/big-endian/debian-wheezy-powerpc.qcow2
-
-Download openbios-ppc:
-https://github.com/qemu/qemu/blob/master/pc-bios/openbios-ppc
-
+sudo apt install qemu
+wget http://create.stephan-brumme.com/big-endian/debian-wheezy-powerpc.qcow2
+wget https://github.com/qemu/qemu/raw/master/pc-bios/openbios-ppc
+qemu-system-ppc -hda debian-wheezy-powerpc.qcow2 -L bios -m 1G -g 1024x768x8 -redir tcp:2222::22
 ssh -A -p 2222 user@localhost
+#user password: user
+#root password: root
+
+=============================================================================
+Compiling and running joedb inside the virtual machine
+=============================================================================
+vi /etc/apt/sources.list # replace "ftp." by "archive."
+apt-get update
+apt-get install unzip git cmake make vim libssh-dev
