@@ -497,7 +497,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  namespace_close(out, options.get_name_space());
 
- out << "#endif\n";
+ out << "\n#endif\n";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1610,7 +1610,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
 
  namespace_close(out, options.get_name_space());
 
- out << "#endif\n";
+ out << "\n#endif\n";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1650,77 +1650,81 @@ void generate_cpp
  out << "#include \"joedb/journal/Stream_File.h\"\n";
  out << '\n';
  out << "#include <ctime>\n";
- out << "#include <sstream>\n";
+ out << "#include <sstream>\n\n";
+
+ namespace_open(out, options.get_name_space());
 
  out << R"RRR(
-/////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::Generic_File_Database::write_comment(const std::string &comment)
-/////////////////////////////////////////////////////////////////////////////
-{
- journal.comment(comment);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::Generic_File_Database::write_timestamp()
-/////////////////////////////////////////////////////////////////////////////
-{
- journal.timestamp(std::time(nullptr));
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::Generic_File_Database::write_timestamp(int64_t timestamp)
-/////////////////////////////////////////////////////////////////////////////
-{
- journal.timestamp(timestamp);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void )RRR" << ns << R"RRR(::Generic_File_Database::write_valid_data()
-/////////////////////////////////////////////////////////////////////////////
-{
- journal.valid_data();
-}
-
-/////////////////////////////////////////////////////////////////////////////
-)RRR" << ns << R"RRR(::Generic_File_Database::Generic_File_Database
-/////////////////////////////////////////////////////////////////////////////
-(
- joedb::Generic_File &file
-):
- journal(file),
- ready_to_write(false)
-{
- max_record_id = Record_Id(journal.get_checkpoint_position());
- journal.replay_log(*this);
- max_record_id = 0;
-
- ready_to_write = true;
- check_schema();
-
- const size_t file_schema_size = schema_stream.str().size();
- const size_t compiled_schema_size = schema_string.size();
-
- if (file_schema_size < compiled_schema_size)
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::write_comment(const std::string &comment)
+ ////////////////////////////////////////////////////////////////////////////
  {
-  journal.comment("Automatic schema upgrade");
-
-  std::istringstream schema(schema_string);
-  joedb::Input_Stream_File schema_file(schema);
-  joedb::Readonly_Journal schema_journal(schema_file);
-
-  schema_journal.seek(int64_t(file_schema_size));
-  schema_journal.play_until_checkpoint(journal);
-
-  schema_journal.seek(int64_t(file_schema_size));
-  upgrading_schema = true;
-  schema_journal.play_until_checkpoint(*this);
-  upgrading_schema = false;
-
-  journal.comment("End of automatic schema upgrade");
-  journal.checkpoint(0);
+  journal.comment(comment);
  }
-}
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::write_timestamp()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  journal.timestamp(std::time(nullptr));
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::write_timestamp(int64_t timestamp)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  journal.timestamp(timestamp);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::write_valid_data()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  journal.valid_data();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Generic_File_Database::Generic_File_Database
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  joedb::Generic_File &file
+ ):
+  journal(file),
+  ready_to_write(false)
+ {
+  max_record_id = Record_Id(journal.get_checkpoint_position());
+  journal.replay_log(*this);
+  max_record_id = 0;
+
+  ready_to_write = true;
+  check_schema();
+
+  const size_t file_schema_size = schema_stream.str().size();
+  const size_t compiled_schema_size = schema_string.size();
+
+  if (file_schema_size < compiled_schema_size)
+  {
+   journal.comment("Automatic schema upgrade");
+
+   std::istringstream schema(schema_string);
+   joedb::Input_Stream_File schema_file(schema);
+   joedb::Readonly_Journal schema_journal(schema_file);
+
+   schema_journal.seek(int64_t(file_schema_size));
+   schema_journal.play_until_checkpoint(journal);
+
+   schema_journal.seek(int64_t(file_schema_size));
+   upgrading_schema = true;
+   schema_journal.play_until_checkpoint(*this);
+   upgrading_schema = false;
+
+   journal.comment("End of automatic schema upgrade");
+   journal.checkpoint(0);
+  }
+ }
 )RRR";
+
+ namespace_close(out, options.get_name_space());
 }
 
 /////////////////////////////////////////////////////////////////////////////
