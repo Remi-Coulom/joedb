@@ -24,3 +24,45 @@ TEST(nested_namespace, namespace_write)
  joedb::namespace_write(out, n, "!");
  EXPECT_EQ("split!this!name", out.str());
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(nested_namespace, namespace_string)
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto n = joedb::split_namespace("split::this::name");
+ EXPECT_EQ("split..this..name", joedb::namespace_string(n, ".."));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(nested_namespace, namespace_open)
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto n = joedb::split_namespace("split::this::name");
+ std::ostringstream out;
+ joedb::namespace_open(out, n);
+ EXPECT_EQ("namespace split {namespace this {namespace name {\n", out.str());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(nested_namespace, namespace_close)
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto n = joedb::split_namespace("split::this::name");
+ std::ostringstream out;
+ joedb::namespace_close(out, n);
+ EXPECT_EQ("}}}\n", out.str());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(nested_namespace, namespace_include_guard)
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto n = joedb::split_namespace("split::this::name");
+ std::ostringstream out;
+ joedb::namespace_include_guard(out, "X", n);
+ EXPECT_EQ
+ (
+  "#ifndef split_this_name_X_declared\n#define split_this_name_X_declared\n",
+  out.str()
+ );
+}
