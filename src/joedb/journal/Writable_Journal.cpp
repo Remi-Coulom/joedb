@@ -30,11 +30,11 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
 void joedb::Writable_Journal::append_raw_tail(const std::vector<char> &data)
 /////////////////////////////////////////////////////////////////////////////
 {
+ const int64_t old_position = file.get_position();
  file.set_position(checkpoint_position);
  file.append_tail(data);
- const int64_t old_checkpoint_position = checkpoint_position;
  checkpoint(0);
- file.set_position(old_checkpoint_position);
+ file.set_position(old_position);
 }
 
 /////////////////////////////////////////////////////////////////////////////

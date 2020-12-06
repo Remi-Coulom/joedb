@@ -189,6 +189,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::Writable_Journal journal;
    bool ready_to_write;
 
+   void initialize();
+
    void custom(const std::string &name) override
    {
     Database::custom(name);
@@ -216,6 +218,11 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
   public:
    Generic_File_Database(joedb::Generic_File &file);
+   Generic_File_Database
+   (
+    joedb::Generic_File &file,
+    joedb::Connection &connection
+   );
 
    int64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
    void checkpoint_no_commit() {journal.checkpoint(0);}
@@ -440,7 +447,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Connection &connection,
     joedb::Generic_File &local_file
    ):
-    database(local_file),
+    database(local_file, connection),
     joedb_client(connection, database.journal, database)
    {
    }
@@ -1684,19 +1691,15 @@ void generate_cpp
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Generic_File_Database::Generic_File_Database
+ void Generic_File_Database::initialize()
  ////////////////////////////////////////////////////////////////////////////
- (
-  joedb::Generic_File &file
- ):
-  journal(file),
-  ready_to_write(false)
  {
   max_record_id = Record_Id(journal.get_checkpoint_position());
+  ready_to_write = false;
   journal.replay_log(*this);
+  ready_to_write = true;
   max_record_id = 0;
 
-  ready_to_write = true;
   check_schema();
 
   const size_t file_schema_size = schema_stream.str().size();
@@ -1721,6 +1724,29 @@ void generate_cpp
    journal.comment("End of automatic schema upgrade");
    journal.checkpoint(0);
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Generic_File_Database::Generic_File_Database
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  joedb::Generic_File &file,
+  joedb::Connection &connection
+ ):
+  journal(file)
+ {
+  connection.locked_operation(journal, [this](){initialize();});
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Generic_File_Database::Generic_File_Database
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  joedb::Generic_File &file
+ ):
+  journal(file)
+ {
+  initialize();
  }
 )RRR";
 

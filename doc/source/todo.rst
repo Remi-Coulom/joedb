@@ -70,7 +70,6 @@ Concurrency
 
 - Optional CRC check before pulling to verify the content of the origin.
 - joedb::Readonly_Connection (pull only).
-- Compiled client should allow schema upgrade (from out-of-date server)
 
 Other Ideas
 -----------
