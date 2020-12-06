@@ -113,7 +113,7 @@ TEST_F(File_Test, read_existing)
 TEST_F(File_Test, long_consecutive_read_and_writes)
 /////////////////////////////////////////////////////////////////////////////
 {
- const int64_t N = 10000000;
+ const int64_t N = 1000000;
 
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
