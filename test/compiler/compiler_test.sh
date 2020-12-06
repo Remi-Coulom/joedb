@@ -1,12 +1,19 @@
 #!/bin/bash
 
 set -e
-build_dir=../../compcmake/ninja_debug
+
+if [ -d ../../compcmake/debug ]; then
+ build_dir=../../compcmake/debug
+ build_command=make
+else
+ build_dir=../../compcmake/ninja_debug
+ build_command=ninja
+fi
 
 rm -rvf *.joedb compiler_test.out
 
 cd "$build_dir"
-ninja joedbi joedbc compiler_test embedded_test
+$build_command joedbi joedbc compiler_test embedded_test
 cd -
 
 generate_db()
