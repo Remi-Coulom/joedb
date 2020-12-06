@@ -6,7 +6,7 @@ http://create.stephan-brumme.com/big-endian/
 sudo apt install qemu
 wget http://create.stephan-brumme.com/big-endian/debian-wheezy-powerpc.qcow2
 wget https://github.com/qemu/qemu/raw/master/pc-bios/openbios-ppc
-qemu-system-ppc -hda debian-wheezy-powerpc.qcow2 -L bios -m 1G -g 1024x768x8 -redir tcp:2222::22
+./start.sh
 ssh -A -p 2222 user@localhost
 #user password: user
 #root password: root
