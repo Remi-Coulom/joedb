@@ -1,6 +1,15 @@
 #!/bin/bash
 TZ='Europe/Paris'
-cd ../compcmake/ninja_debug
-ninja joedb_test || exit 1
+
+if [ -d ../compcmake/ninja_debug ]; then
+ build_dir=../compcmake/ninja_debug
+ build_command=ninja
+else
+ build_dir=../compcmake/debug
+ build_command=make
+fi
+
+cd $build_dir
+$build_command joedb_test || exit 1
 cd -
-../compcmake/ninja_debug/joedb_test --gtest_filter="$1*"
+$build_dir/joedb_test --gtest_filter="$1*"
