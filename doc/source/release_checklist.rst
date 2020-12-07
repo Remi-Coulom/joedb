@@ -18,7 +18,6 @@ Packaging
 ---------
 
 - Linux: cpack -G DEB
-- Windows: zip of renamed installed directory to joedb-VERSION-Windows-x64
 - test deb package installation (on newly installed machine)
 
 New release on github
