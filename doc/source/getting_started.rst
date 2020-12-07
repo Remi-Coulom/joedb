@@ -12,8 +12,7 @@ On Ubuntu, you can install joedb this way:
 
 .. code-block:: bash
 
-    sudo apt install gdebi-core
-    sudo gdebi ./joedb-4.0.0-Ubuntu-18.04-amd64.deb
+    sudo apt install ./joedb-4.0.0-Ubuntu-18.04-amd64.deb
 
 Uninstall:
 
