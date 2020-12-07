@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 2.8.4)
+cmake_minimum_required(VERSION 3.0.0)
 
 file(STRINGS "../VERSION" QUOTED_JOEDB_VERSION)
 string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
-message("== JOEDB_VERSION = ${JOEDB_VERSION}")
 
-project(joedb)
+project(joedb VERSION ${JOEDB_VERSION})
+
+message("== JOEDB_VERSION = ${JOEDB_VERSION}")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
@@ -429,11 +430,38 @@ foreach(file ${all_includes})
  install(FILES ../src/${file} DESTINATION include/${dir})
 endforeach()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
- set(CPACK_GENERATOR "DEB")
- set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rémi Coulom")
-else()
- message("== Generic package, CMAKE_SYSTEM_NAME = " ${CMAKE_SYSTEM_NAME})
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+ execute_process(
+  COMMAND lsb_release -s -i
+  OUTPUT_VARIABLE CSN_SYSTEM
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+ )
+ execute_process(
+  COMMAND lsb_release -s -r
+  OUTPUT_VARIABLE CSN_RELEASE
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+ )
+ execute_process(
+  COMMAND dpkg --print-architecture
+  OUTPUT_VARIABLE CSN_ARCHI
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+ )
+ set(CPACK_SYSTEM_NAME "${CSN_SYSTEM}-${CSN_RELEASE}-${CSN_ARCHI}")
 endif()
+message("-- CPACK_SYSTEM_NAME = ${CPACK_SYSTEM_NAME}")
+
+set(CPACK_PACKAGE_NAME "joedb")
+set(CPACK_PACKAGE_VENDOR "Kayufu")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Journal-Only Embedded Database")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.remi-coulom.fr/joedb/")
+set(CPACK_PACKAGE_CONTACT "Rémi Coulom")
+set(CPACK_STRIP_FILES TRUE)
+set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.remi-coulom.fr/joedb/")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
 
 include(CPack)

@@ -3,8 +3,25 @@ Getting Started
 
 This explains how to install and use joedb.
 
-Compiling joedb
----------------
+Installing with a package
+-------------------------
+
+You can find some ready-made deb packages on the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_.
+
+On Ubuntu, you can install joedb this way:
+
+.. code-block:: bash
+
+    sudo dpkg -i joedb-4.0.0-Ubuntu-18.04-amd64.deb
+
+Uninstall:
+
+.. code-block:: bash
+
+    sudo dpkg -r joedb
+
+Compiling from source
+---------------------
 
 The source code of the most recent stable release can be found on the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_. If you are more adventurous you can also clone the repository to get the most recent version: ``git clone https://github.com/Remi-Coulom/joedb.git``.
 

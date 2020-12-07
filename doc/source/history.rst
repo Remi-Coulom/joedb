@@ -1,7 +1,7 @@
 History
 =======
 
-- 2020-??-??: 3.1
+- 2020-12-07: 4.0
 
   - :doc:`concurrency`: a new mechanism to allow multiple distributed processes
     to access the same remote database.
@@ -12,6 +12,7 @@ History
     literal.
   - support for generating code inside a nested namespace (``namespace
     deeply::nested::tutorial`` in the .joedbc file).
+  - .deb packages are provided for easy installation.
   - Minor fixes and improvements
 
 - 2019-11-19: 3.0

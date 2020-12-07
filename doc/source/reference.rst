@@ -7,5 +7,6 @@ Reference
    file_format
    todo
    links
+   release_checklist
    history
    license
