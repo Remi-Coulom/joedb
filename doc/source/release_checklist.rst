@@ -18,14 +18,15 @@ Packaging
 ---------
 
 - Linux: cpack -G DEB
-- test deb package installation on newly installed virtual machine. Installed dependencies should allow compiling and testing the joedb source code.
+- Windows: zip of renamed installed directory to joedb-VERSION-Windows-x64
+- test deb package installation (on newly installed machine)
 
 New release on github
 ---------------------
 
- - Commit and push to github
- - Go to https://github.com/Remi-Coulom/joedb/releases/new
- - Tag version: "vA.B.C"
- - Title: "Version A.B.C"
- - Add binary packages
- - Then click "publish release"
+- Commit and push to github
+- Go to https://github.com/Remi-Coulom/joedb/releases/new
+- Tag version: "vA.B.C"
+- Title: "Version A.B.C"
+- Add binary packages
+- Then click "publish release"
