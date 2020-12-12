@@ -57,11 +57,11 @@ int main(int argc, char **argv)
 
   cpp << "#include \"" << file_name.str() << ".h\"\n";
   cpp << "#include \"" << name_space.back() << "_readonly.h\"\n";
+  cpp << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   if (mode == base64)
    cpp << "#include \"joedb/io/base64.h\"\n";
   cpp << '\n';
-  cpp << "#include <sstream>\n";
-  cpp << '\n';
+  cpp << "#include <memory>\n\n";
 
   joedb::namespace_open(cpp, name_space);
 
@@ -83,23 +83,32 @@ int main(int argc, char **argv)
    cpp << '"' << joedb::base64_encode(file_content.str()) << '"';
 
   cpp << ";\n\n";
-  cpp << " const Database &get_embedded_" << identifier << "()\n";
+
+  cpp << " struct struct_for_" << identifier << '\n';
   cpp << " {\n";
+  cpp << "  std::unique_ptr<Database> db;\n";
+  cpp << '\n';
+  cpp << "  struct_for_" << identifier << "()\n";
+  cpp << "  {\n";
 
   if (mode == base64)
   {
-   cpp << "  static std::istringstream iss(joedb::base64_decode(";
-   cpp << identifier << "_data));\n";
+   cpp << "   const std::string decoded(joedb::base64_decode(" << identifier << "_data));\n";
+   cpp << "   joedb::Readonly_Memory_File file(&decoded[0], decoded.size());\n";
   }
   else
   {
-   cpp << "  static std::istringstream iss(std::string(" << identifier;
-   cpp << "_data, " << identifier << "_size));\n";
+   cpp << "   joedb::Readonly_Memory_File file(" << identifier << "_data, " << identifier << "_size);\n";
   }
 
-  cpp << "  static joedb::Input_Stream_File file(iss);\n";
-  cpp << "  static Generic_Readonly_Database db(file);\n";
-  cpp << "  return db;\n";
+  cpp << "   db.reset(new Generic_Readonly_Database(file));\n";
+  cpp << "  }\n";
+  cpp << " };\n";
+  cpp << '\n';
+  cpp << " const Database &get_embedded_" << identifier << "()\n";
+  cpp << " {\n";
+  cpp << "  static struct_for_" << identifier << " s;\n";
+  cpp << "  return *s.db;\n";
   cpp << " }\n";
 
   if (mode != base64)
