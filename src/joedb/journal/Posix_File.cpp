@@ -75,7 +75,7 @@ namespace joedb
    fd = open(file_name, O_RDONLY);
 
   if (fd < 0)
-   throw Exception("Could not create file: " + std::string(file_name));
+   throw Exception("Could not open file: " + std::string(file_name));
 
   if (mode != Open_Mode::read_existing && !lock_file())
    throw Exception("File locked: " + std::string(file_name));
