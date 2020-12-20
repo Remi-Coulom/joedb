@@ -44,7 +44,6 @@ Compiler
     - incrementally updated group-by queries
 
 - use std::set and std::multiset for indexes? Might be better for strings.
-- store each field as a vector
 - before_update_vector: ask for storage pointer to the listener
 - Table options:
 
@@ -80,9 +79,9 @@ Other Ideas
 - tests for buffer overflow could be optimized when reading/writing large
   pieces of data, such as strings or vectors.
 
-- optimize vector update: read file directly into the column. Compiled db
-  should use column vectors as well. replace update_vector in joedb::Writable
-  by a method that returns a pointer for writing.
+- optimize vector update: read file directly into the column. Replace
+  update_vector in joedb::Writable by a method that returns a pointer for
+  writing.
 
 - only one file.check_write_buffer() call in write<T> and compact_write<T>:
   make code shorter and simpler.

@@ -199,6 +199,22 @@ namespace joedb
      return fk.size();
    }
 
+   bool is_empty() const
+   {
+    if (compact)
+     return compact_used_size == 0;
+    else
+     return fk.is_empty();
+   }
+
+   size_t get_used_count() const
+   {
+    if (compact)
+     return compact_used_size;
+    else
+     return fk.get_used_count();
+   }
+
    bool is_used(size_t index) const
    {
     if (compact)
@@ -213,6 +229,18 @@ namespace joedb
      return index - 2 >= compact_used_size;
     else
      return fk.is_free(index);
+   }
+
+   size_t get_free_record()
+   {
+    if (compact)
+    {
+     if (compact_free_size == compact_used_size)
+      ++compact_free_size;
+     return compact_used_size + 2;
+    }
+    else
+     return fk.get_free_record();
    }
 
    void use(size_t index)
@@ -301,7 +329,7 @@ namespace joedb
      if (result == compact_used_size + 2)
       return 0;
 
-     if (index == compact_free_size)
+     if (index == compact_free_size + 2)
       return 1;
 
      return result;
@@ -340,6 +368,17 @@ namespace joedb
     }
     else
      return fk.get_previous(index);
+   }
+
+   void resize(size_t size)
+   {
+    if (compact)
+    {
+     if (compact_free_size < size)
+      compact_free_size = size;
+    }
+    else
+     fk.resize(size);
    }
 
    void append_vector(size_t size)

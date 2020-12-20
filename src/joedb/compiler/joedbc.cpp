@@ -260,7 +260,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "    size_t free_record = storage_of_" << tname << ".get_free_record();\n";
+    out << "    size_t free_record = storage_of_" << tname << ".freedom_keeper.get_free_record();\n";
+    out << "    storage_of_" << tname << ".resize(storage_of_" << tname << ".freedom_keeper.size());\n";
     out << "    id_of_" << tname << " result(free_record - 1);\n\n";
    break;
 
@@ -518,8 +519,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
 
  out << '\n';
 
- if (options.has_freedom_keeper())
-  out << "#include \"joedb/Freedom_Keeper.h\"\n";
+ out << "#include \"joedb/Freedom_Keeper.h\"\n";
 
  out << R"RRR(#include "joedb/journal/File.h"
 #include "joedb/journal/File_Slice.h"
@@ -579,37 +579,44 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  const auto storage = options.get_table_options(table.first).storage;
 
   out << "\n struct data_of_" << tname;
 
-  if (storage == Compiler_Options::Table_Storage::freedom_keeper)
-   out << ": public joedb::EmptyRecord";
-
   out <<"\n {\n";
 
-  if (storage == Compiler_Options::Table_Storage::freedom_keeper)
-  {
-   out << "  data_of_" << tname << "() {}\n";
-   out << "  data_of_" << tname << "(bool f): joedb::EmptyRecord(f) {}\n";
-  }
+  std::vector<std::string> fields;
 
   for (const auto &field: db.get_fields(table.first))
   {
-   out << "  ";
+   out << "  std::vector<";
    write_type(out, db, db.get_field_type(table.first, field.first), false);
-   out << "field_value_of_" << field.second << ";\n";
+   fields.push_back("field_value_of_" + field.second);
+   out << "> " << fields.back() << ";\n";
   }
 
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
    {
-    out << "  ";
+    out << "  std::vector<";
     write_index_type(out, db, index);
-    out << "::iterator ";
-    out << "iterator_over_" << index.name << ";\n";
+    out << "::iterator> ";
+    fields.push_back("iterator_over_" + index.name);
+    out << fields.back() << ";\n";
    }
 
+  out << '\n';
+  out << "  joedb::Compact_Freedom_Keeper freedom_keeper;\n";
+  out << '\n';
+  out << "  size_t size() const {return freedom_keeper.size();}\n";
+  out << '\n';
+  out << "  void resize(size_t new_size)\n";
+  out << "  {\n";
+
+  fields.push_back("freedom_keeper");
+  for (const std::string &field: fields)
+   out << "   " << field << ".resize(new_size);\n";
+
+  out << "  }\n";
   out << " };\n\n";
  }
 
@@ -654,27 +661,12 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  const auto storage = options.get_table_options(table.first).storage;
 
-  switch(storage)
-  {
-   case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "   bool is_valid_record_id_for_" << tname << "(Record_Id record_id) const {return storage_of_" << tname << ".is_used(record_id + 1);}\n";
-    out << "   joedb::Freedom_Keeper<data_of_" << tname << ">";
-   break;
+  out << "   data_of_" << tname << " storage_of_" << tname << ";\n";
 
-   case Compiler_Options::Table_Storage::vector:
-    out << "   bool is_valid_record_id_for_" << tname << "(Record_Id record_id) const {return record_id <= storage_of_" << tname << ".size() && record_id > 0;}\n";
-    out << "   std::vector<data_of_" << tname << ">";
-   break;
-
-   default:
-    out << "   // Error. storage = " << int(storage) << '\n';
-    out << "   // table_id = " << table.first << '\n';
-   break;
-  }
-
-  out << " storage_of_" << tname << ";\n";
+  out << "   bool is_valid_record_id_for_" << tname;
+  out << "(Record_Id record_id) const {return storage_of_" << tname;
+  out << ".freedom_keeper.is_used(record_id + 1);}\n";
  }
 
  //
@@ -694,7 +686,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   out << "   void remove_index_of_" << index.name << "(Record_Id record_id)\n";
   out << "   {\n";
   out << "    auto &iterator = storage_of_" << tname;
-  out << "[record_id - 1].iterator_over_" << index.name << ";\n";
+  out << ".iterator_over_" << index.name << "[record_id - 1];\n";
   out << "    if (iterator != index_of_" << index.name << ".end())\n";
   out << "    {\n";
   out << "     index_of_" << index.name << ".erase(iterator);\n";
@@ -704,8 +696,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
 
   out << "   void add_index_of_" << index.name << "(Record_Id record_id)\n";
   out << "   {\n";
-  out << "    " << "data_of_" << tname << " &data = storage_of_";
-  out << tname << "[record_id - 1];\n";
   out << "    auto result = index_of_" << index.name;
   out << ".insert\n    (\n     ";
   write_index_type(out, db, index);
@@ -716,8 +706,9 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   {
    if (i > 0)
     out << ", ";
-   out << "data.field_value_of_";
+   out << "storage_of_" << tname << ".field_value_of_";
    out << db.get_field_name(index.table_id, index.field_ids[i]);
+   out << "[record_id - 1]";
   }
   out << ')';
   out << ",\n      id_of_" << tname << "(record_id)\n     )\n    );\n";
@@ -733,8 +724,9 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
      out << "     out << \", \";\n";
     const auto type = db.get_field_type(index.table_id, index.field_ids[i]);
     out << "     joedb::write_" << get_type_name(type) << "(out, ";
-    out << "data.field_value_of_";
+    out << "storage_of_" << tname << ".field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
+    out << "[record_id - 1]";
     if (type.get_type_id() == Type::Type_Id::reference)
      out << ".get_id()";
     out << ");\n";
@@ -743,10 +735,10 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "     out << \"was already at id = \" << result.first->second.get_id();\n";
    out << "     error(out.str().c_str());\n";
    out << "    }\n";
-   out << "    data.iterator_over_" << index.name << " = result.first;\n";
+   out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[record_id - 1] = result.first;\n";
   }
   else
-   out << "    data.iterator_over_" << index.name << " = result;\n";
+   out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[record_id - 1] = result;\n";
   out << "   }\n";
  }
 
@@ -770,7 +762,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     if (index.table_id == table.first)
      out << "    remove_index_of_" << index.name << "(record_id);\n";
 
-   out << "    storage_of_" << tname << ".free(record_id + 1);\n";
+   out << "    storage_of_" << tname << ".freedom_keeper.free(record_id + 1);\n";
    out << "   }\n";
   }
  }
@@ -780,7 +772,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  {
   const std::string &tname = table.second;
   const auto table_options = options.get_table_options(table.first);
-  const auto storage = table_options.storage;
   const auto null_initialization = table_options.null_initialization;
 
   out << "   void internal_insert_" << tname << "(Record_Id record_id)\n";
@@ -789,16 +780,12 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
    {
-    out << "    {\n";
-    out << "     data_of_" << tname << " &data = storage_of_";
-    out << tname << "[record_id - 1];\n";
-    out << "     data.iterator_over_" << index.name << " = ";
+    out << "    storage_of_" << tname;
+    out << ".iterator_over_" << index.name << "[record_id - 1] = ";
     out << "index_of_" << index.name << ".end();\n";
-    out << "    }\n";
    }
 
-  if (storage == Compiler_Options::Table_Storage::freedom_keeper)
-   out << "    storage_of_" << tname << ".use(record_id + 1);\n";
+  out << "    storage_of_" << tname << ".freedom_keeper.use(record_id + 1);\n";
 
   if (null_initialization)
    for (auto &field: db.get_fields(table.first))
@@ -806,8 +793,8 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     const std::string &fname = field.second;
     const Type &type = db.get_field_type(table.first, field.first);
 
-    out << "    storage_of_" << tname << "[record_id - 1].field_value_of_";
-    out << fname;
+    out << "    storage_of_" << tname << ".field_value_of_";
+    out << fname << "[record_id - 1]";
     if (type.get_type_id() == Type::Type_Id::string)
      out << ".clear()";
     else if (type.get_type_id() == Type::Type_Id::reference)
@@ -834,8 +821,8 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "field_value_of_" << fname << "\n   )\n";
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
-   out << "    storage_of_" << tname << "[record_id - 1].field_value_of_" << fname;
-   out << " = field_value_of_" << fname << ";\n";
+   out << "    storage_of_" << tname << ".field_value_of_" << fname;
+   out << "[record_id - 1] = field_value_of_" << fname << ";\n";
 
    for (const auto &index: options.get_indices())
     if (index.table_id == table.first &&
@@ -1211,7 +1198,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "    return id_of_" << tname << "(storage_of_" << tname << ".get_first_used() - 1);\n";
+    out << "    return id_of_" << tname << "(storage_of_" << tname << ".freedom_keeper.get_first_used() - 1);\n";
    break;
 
    case Compiler_Options::Table_Storage::vector:
@@ -1239,7 +1226,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "    return id_of_" << tname << "(storage_of_" << tname << ".get_next(id.get_id() + 1) - 1);\n";
+    out << "    return id_of_" << tname << "(storage_of_" << tname << ".freedom_keeper.get_next(id.get_id() + 1) - 1);\n";
    break;
 
    case Compiler_Options::Table_Storage::vector:
@@ -1281,7 +1268,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.id));\n";
    out << "    return storage_of_" << tname;
-   out << "[record.id - 1].field_value_of_" << fname << ";\n";
+   out << ".field_value_of_" << fname << "[record.id - 1];\n";
    out << "   }\n";
   }
  }
@@ -1429,16 +1416,16 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "     const joedb::Freedom_Keeper<data_of_" << tname << "> *fk;\n";
+    out << "     const joedb::Compact_Freedom_Keeper &fk;\n";
     out << "     size_t index;\n";
-    out << "     iterator(const joedb::Freedom_Keeper<data_of_" << tname << "> &fk): fk(&fk), index(0) {}\n";
+    out << "     iterator(const data_of_" << tname << " &data): fk(data.freedom_keeper), index(0) {}\n";
     out << "    public:\n";
     out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
-    out << "     iterator &operator++() {index = fk->get_next(index); return *this;}\n";
-    out << "     iterator operator++(int) {auto copy = *this; index = fk->get_next(index); return copy;}\n";
-    out << "     iterator &operator--() {index = fk->get_previous(index); return *this;}\n";
-    out << "     iterator operator--(int) {auto copy = *this; index = fk->get_previous(index); return copy;}\n";
+    out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
+    out << "     iterator operator++(int) {auto copy = *this; index = fk.get_next(index); return copy;}\n";
+    out << "     iterator &operator--() {index = fk.get_previous(index); return *this;}\n";
+    out << "     iterator operator--(int) {auto copy = *this; index = fk.get_previous(index); return copy;}\n";
     out << "     id_of_" << tname << " operator*() {return id_of_";
     out << tname << "(index - 1);}\n";
     out << "   };\n";
@@ -1446,11 +1433,11 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     out << "   iterator begin() {return ++iterator(db.storage_of_" << tname << ");}\n";
     out << "   iterator end() {return iterator(db.storage_of_" << tname << ");}\n";
     out << "   bool is_empty() const {return db.storage_of_" << tname
-        << ".is_empty();}\n";
-    out << "   size_t get_size() const {return db.storage_of_" << tname << ".get_used_count();}\n";
+        << ".freedom_keeper.is_empty();}\n";
+    out << "   size_t get_size() const {return db.storage_of_" << tname << ".freedom_keeper.get_used_count();}\n";
     out << "   static id_of_" << tname << " get_at(size_t i) {return id_of_"
         << tname << "(i);}\n";
-    out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".is_used(i + 1);}\n";
+    out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".freedom_keeper.is_used(i + 1);}\n";
    break;
 
    case Compiler_Options::Table_Storage::vector:
