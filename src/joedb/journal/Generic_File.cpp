@@ -91,8 +91,7 @@ std::string joedb::Generic_File::read_string()
  std::string s;
  size_t size = compact_read<size_t>();
  s.resize(size);
- for (size_t i = 0; i < size; i++)
-  s[i] = char(getc());
+ read_data(&s[0], size);
  return s;
 }
 

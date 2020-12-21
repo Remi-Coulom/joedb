@@ -19,13 +19,6 @@ namespace joedb
 
  class Generic_File
  {
-  private:
-   static inline uint8_t is_big_endian()
-   {
-    const uint16_t n = 0x0100;
-    return *(const uint8_t *)&n;
-   }
-
   public:
    Generic_File()
    {
@@ -66,11 +59,11 @@ namespace joedb
    template<typename T>
    T compact_read()
    {
-    uint8_t first_byte = getc();
+    uint8_t first_byte = uint8_t(getc());
     int extra_bytes = first_byte >> 5;
     T result = first_byte & 0x1f;
     while (extra_bytes--)
-     result = T((result << 8) | getc());
+     result = T((result << 8) | uint8_t(getc()));
     return result;
    }
 
@@ -112,7 +105,7 @@ namespace joedb
     position++;
    }
 
-   uint8_t getc()
+   char getc()
    {
     JOEDB_ASSERT(write_buffer_index == 0);
 
@@ -120,18 +113,31 @@ namespace joedb
     {
      read_buffer_size = read_buffer();
      read_buffer_index = 0;
+     if (read_buffer_size == 0)
+     {
+      end_of_file = true;
+      return 0;
+     }
     }
 
-    if (read_buffer_index < read_buffer_size)
+    position++;
+    return buffer[read_buffer_index++];
+   }
+
+   void read_data(char *data, size_t n)
+   {
+    JOEDB_ASSERT(write_buffer_index == 0);
+
+    if (read_buffer_index + n <= read_buffer_size)
     {
-     position++;
-     return (uint8_t)buffer[read_buffer_index++];
+     for (size_t i = 0; i < n; i++)
+      data[i] = buffer[read_buffer_index + i];
+     read_buffer_index += n;
+     position += n;
     }
     else
-    {
-     end_of_file = true;
-     return 0;
-    }
+     for (size_t i = 0; i < n; i++)
+      data[i] = getc();
    }
 
    void reset_read_buffer()
@@ -172,16 +178,8 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     if (is_big_endian())
-     {
-      file.putc(p[1]);
-      file.putc(p[0]);
-     }
-     else
-     {
-      file.putc(p[0]);
-      file.putc(p[1]);
-     }
+     file.putc(p[0]);
+     file.putc(p[1]);
      file.check_write_buffer();
     }
    };
@@ -192,20 +190,10 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     if (is_big_endian())
-     {
-      file.putc(p[3]);
-      file.putc(p[2]);
-      file.putc(p[1]);
-      file.putc(p[0]);
-     }
-     else
-     {
-      file.putc(p[0]);
-      file.putc(p[1]);
-      file.putc(p[2]);
-      file.putc(p[3]);
-     }
+     file.putc(p[0]);
+     file.putc(p[1]);
+     file.putc(p[2]);
+     file.putc(p[3]);
      file.check_write_buffer();
     }
    };
@@ -216,28 +204,14 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     if (is_big_endian())
-     {
-      file.putc(p[7]);
-      file.putc(p[6]);
-      file.putc(p[5]);
-      file.putc(p[4]);
-      file.putc(p[3]);
-      file.putc(p[2]);
-      file.putc(p[1]);
-      file.putc(p[0]);
-     }
-     else
-     {
-      file.putc(p[0]);
-      file.putc(p[1]);
-      file.putc(p[2]);
-      file.putc(p[3]);
-      file.putc(p[4]);
-      file.putc(p[5]);
-      file.putc(p[6]);
-      file.putc(p[7]);
-     }
+     file.putc(p[0]);
+     file.putc(p[1]);
+     file.putc(p[2]);
+     file.putc(p[3]);
+     file.putc(p[4]);
+     file.putc(p[5]);
+     file.putc(p[6]);
+     file.putc(p[7]);
      file.check_write_buffer();
     }
    };
@@ -348,17 +322,8 @@ namespace joedb
     static T read(Generic_File &file)
     {
      T result;
-     uint8_t *p = reinterpret_cast<uint8_t *>(&result);
-     if (is_big_endian())
-     {
-      p[1] = file.getc();
-      p[0] = file.getc();
-     }
-     else
-     {
-      p[0] = file.getc();
-      p[1] = file.getc();
-     }
+     char *p = reinterpret_cast<char *>(&result);
+     file.read_data(p, 2);
      return result;
     }
    };
@@ -369,21 +334,8 @@ namespace joedb
     static T read(Generic_File &file)
     {
      T result;
-     uint8_t *p = reinterpret_cast<uint8_t *>(&result);
-     if (is_big_endian())
-     {
-      p[3] = file.getc();
-      p[2] = file.getc();
-      p[1] = file.getc();
-      p[0] = file.getc();
-     }
-     else
-     {
-      p[0] = file.getc();
-      p[1] = file.getc();
-      p[2] = file.getc();
-      p[3] = file.getc();
-     }
+     char *p = reinterpret_cast<char *>(&result);
+     file.read_data(p, 4);
      return result;
     }
    };
@@ -394,29 +346,8 @@ namespace joedb
     static T read(Generic_File &file)
     {
      T result;
-     uint8_t *p = reinterpret_cast<uint8_t *>(&result);
-     if (is_big_endian())
-     {
-      p[7] = file.getc();
-      p[6] = file.getc();
-      p[5] = file.getc();
-      p[4] = file.getc();
-      p[3] = file.getc();
-      p[2] = file.getc();
-      p[1] = file.getc();
-      p[0] = file.getc();
-     }
-     else
-     {
-      p[0] = file.getc();
-      p[1] = file.getc();
-      p[2] = file.getc();
-      p[3] = file.getc();
-      p[4] = file.getc();
-      p[5] = file.getc();
-      p[6] = file.getc();
-      p[7] = file.getc();
-     }
+     char *p = reinterpret_cast<char *>(&result);
+     file.read_data(p, 8);
      return result;
     }
    };
