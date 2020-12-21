@@ -54,7 +54,6 @@ namespace joedb
                                 Record_Id size,\
                                 const type *value) override;
    #include "joedb/TYPE_MACRO.h"
-   #undef TYPE_MACRO
 
    ~Writable_Journal() override;
  };

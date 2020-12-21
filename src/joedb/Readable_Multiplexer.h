@@ -56,8 +56,7 @@ namespace joedb
    {\
     return readable.get_##type_id(table_id, record_id, field_id);\
    }
-   #include "TYPE_MACRO.h"
-   #undef TYPE_MACRO
+   #include "joedb/TYPE_MACRO.h"
  };
 }
 

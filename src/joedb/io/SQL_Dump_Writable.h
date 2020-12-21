@@ -166,8 +166,6 @@ namespace joedb
    }
    #define TYPE_MACRO_NO_STRING
    #include "joedb/TYPE_MACRO.h"
-   #undef TYPE_MACRO_NO_STRING
-   #undef TYPE_MACRO
 
    void update_string(Table_Id table_id,
                       Record_Id record_id,

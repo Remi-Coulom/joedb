@@ -73,7 +73,6 @@ namespace joedb
     update_next_##type_id,\
     update_vector_##type_id,
     #include "joedb/TYPE_MACRO.h"
-    #undef TYPE_MACRO
    };
  };
 }

@@ -288,7 +288,6 @@ void joedb::Writable_Journal::update_vector_##type_id\
   file.write_method(value[i]);\
 }
 #include "joedb/TYPE_MACRO.h"
-#undef TYPE_MACRO
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Writable_Journal::~Writable_Journal()

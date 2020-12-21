@@ -140,10 +140,6 @@ int joedb::write_json
       #define TYPE_MACRO_NO_STRING
       #define TYPE_MACRO_NO_INT
       #include "joedb/TYPE_MACRO.h"
-      #undef TYPE_MACRO_NO_INT
-      #undef TYPE_MACRO_NO_STRING
-      #undef TYPE_MACRO_NO_REFERENCE
-      #undef TYPE_MACRO
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
@@ -156,10 +152,6 @@ int joedb::write_json
       #define TYPE_MACRO_NO_STRING
       #define TYPE_MACRO_NO_FLOAT
       #include "joedb/TYPE_MACRO.h"
-      #undef TYPE_MACRO_NO_FLOAT
-      #undef TYPE_MACRO_NO_STRING
-      #undef TYPE_MACRO_NO_REFERENCE
-      #undef TYPE_MACRO
      }
     }
 

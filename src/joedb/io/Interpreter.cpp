@@ -40,8 +40,6 @@ joedb::Type joedb::Readonly_Interpreter::parse_type
   return Type::type_id();
  #define TYPE_MACRO_NO_REFERENCE
  #include "joedb/TYPE_MACRO.h"
- #undef TYPE_MACRO_NO_REFERENCE
- #undef TYPE_MACRO
 
  out << "Error: unknown type\n";
  return Type();
@@ -117,7 +115,6 @@ void joedb::Interpreter::update_value
   }\
   break;
   #include "joedb/TYPE_MACRO.h"
-  #undef TYPE_MACRO
  }
 }
 
@@ -190,7 +187,6 @@ bool joedb::Readonly_Interpreter::process_command
         write_##type_id(ss, db.get_##type_id(table_id, record_id, field.first));\
        break;
        #include "joedb/TYPE_MACRO.h"
-       #undef TYPE_MACRO
       }
 
       ss.flush();
@@ -506,7 +502,6 @@ bool joedb::Interpreter::process_command
     }\
     break;
     #include "joedb/TYPE_MACRO.h"
-    #undef TYPE_MACRO
    }
   }
  }

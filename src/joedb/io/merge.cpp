@@ -69,7 +69,6 @@ void joedb::merge(Database &merged, const Database &db)
       break;
       #define TYPE_MACRO_NO_REFERENCE
       #include "joedb/TYPE_MACRO.h"
-      #undef TYPE_MACRO
      }
     }
    }

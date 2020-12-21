@@ -15,7 +15,6 @@ namespace joedb
     null,
     #define TYPE_MACRO(a, b, c, d, e) c,
     #include "joedb/TYPE_MACRO.h"
-    #undef TYPE_MACRO
    };
 
    #define TYPE_MACRO(a, b, c, d, e) 1 +
@@ -23,7 +22,6 @@ namespace joedb
     #include "joedb/TYPE_MACRO.h"
     1
    };
-   #undef TYPE_MACRO
 
   private:
    Type_Id type_id;
@@ -46,8 +44,6 @@ namespace joedb
    static Type type_id() {return Type(Type_Id::type_id);};
    #define TYPE_MACRO_NO_REFERENCE
    #include "joedb/TYPE_MACRO.h"
-   #undef TYPE_MACRO_NO_REFERENCE
-   #undef TYPE_MACRO
 
    static Type reference(Table_Id table_id)
    {

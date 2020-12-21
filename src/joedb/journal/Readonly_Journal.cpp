@@ -258,8 +258,10 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
     value\
    );\
   }\
-  break;\
-\
+  break;
+  #include "joedb/TYPE_MACRO.h"
+
+  #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
   case operation_t::update_vector_##type_id:\
   {\
    table_of_last_operation = file.compact_read<Table_Id>();\
@@ -282,7 +284,6 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   }\
   break;
   #include "joedb/TYPE_MACRO.h"
-  #undef TYPE_MACRO
 
   case operation_t::custom:
   {

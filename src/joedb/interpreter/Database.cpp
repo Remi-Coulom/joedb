@@ -87,7 +87,6 @@ return_type joedb::Database::get_##type_id(Table_Id table_id,\
  return table_it->second.get_##type_id(record_id, field_id);\
 }
 #include "joedb/TYPE_MACRO.h"
-#undef TYPE_MACRO
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Database::create_table(const std::string &name)
@@ -268,4 +267,3 @@ void joedb::Database::update_vector_##type_id(Table_Id table_id,\
  it->second.update_vector_##type_id(record_id, field_id, size, value);\
 }
 #include "joedb/TYPE_MACRO.h"
-#undef TYPE_MACRO

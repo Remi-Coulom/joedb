@@ -19,7 +19,6 @@ namespace joedb
    #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
    std::vector<cpp_type> type_id##_column;
    #include "joedb/TYPE_MACRO.h"
-   #undef TYPE_MACRO
 
   public:
    Field(const Type &type, size_t size):
@@ -38,7 +37,6 @@ namespace joedb
      #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
      case Type::Type_Id::type_id: type_id##_column.resize(size); break;
      #include "joedb/TYPE_MACRO.h"
-     #undef TYPE_MACRO
     }
    }
 
@@ -70,7 +68,6 @@ namespace joedb
     std::copy_n(value, size, &type_id##_column[record_id - 1]);\
    }
    #include "joedb/TYPE_MACRO.h"
-   #undef TYPE_MACRO
  };
 }
 

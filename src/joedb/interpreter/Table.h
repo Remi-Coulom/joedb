@@ -65,7 +65,6 @@ namespace joedb
     it->second.set_vector_##type_id(record_id, size, value);\
    }
    #include "joedb/TYPE_MACRO.h"
-   #undef TYPE_MACRO
  };
 }
 

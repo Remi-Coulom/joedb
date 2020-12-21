@@ -24,7 +24,6 @@ namespace joedb
                                      Record_Id record_id,\
                                      Field_Id field_id) const = 0;
    #include "joedb/TYPE_MACRO.h"
-   #undef TYPE_MACRO
 
    // TODO: iterators to iterate over table rows?
    // Not convenient and efficient with virtual functions

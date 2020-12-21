@@ -157,6 +157,6 @@ void joedb::Multiplexer::update_vector_##type_id\
   update_vector_##type_id(table_id, record_id, field_id, size, value)\
  );\
 }
-#include "TYPE_MACRO.h"
-#undef TYPE_MACRO
+#include "joedb/TYPE_MACRO.h"
+
 #undef MULTIPLEX

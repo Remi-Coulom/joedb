@@ -97,7 +97,6 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
        writable.update_##type_id(table_map[table_id], record_id, field_maps[table_id][field_id], db.get_##type_id(table_id, record_id, field_id));\
       break;
       #include "joedb/TYPE_MACRO.h"
-      #undef TYPE_MACRO
      }
     }
   }
@@ -150,7 +149,6 @@ void joedb::dump_data(const Readable &db, Writable &writable)
       }\
       break;
       #include "joedb/TYPE_MACRO.h"
-      #undef TYPE_MACRO
      }
     }
 

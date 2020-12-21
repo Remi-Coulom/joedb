@@ -55,9 +55,6 @@ void write_type
   #define TYPE_MACRO_NO_STRING
   #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
-  #undef TYPE_MACRO_NO_REFERENCE
-  #undef TYPE_MACRO_NO_STRING
-  #undef TYPE_MACRO
  }
 }
 
@@ -71,7 +68,6 @@ const char *get_type_name(Type type)
   "null",
   #include "joedb/TYPE_MACRO.h"
  };
- #undef TYPE_MACRO
 
  return type_string[int(type.get_type_id())];
 }
@@ -128,7 +124,6 @@ static char const * const types[] =
  nullptr,
 #define TYPE_MACRO(a, b, type_id, d, e) EXPAND_AND_STRINGIFY(type_id),
 #include "joedb/TYPE_MACRO.h"
-#undef TYPE_MACRO
 };
 
 static char const * const cpp_types[] =
@@ -136,7 +131,6 @@ static char const * const cpp_types[] =
  nullptr,
 #define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
 #include "joedb/TYPE_MACRO.h"
-#undef TYPE_MACRO
 };
 
 static char const * const storage_types[] =
@@ -144,7 +138,6 @@ static char const * const storage_types[] =
  nullptr,
 #define TYPE_MACRO(storage, b, c, d, e) EXPAND_AND_STRINGIFY(storage),
 #include "joedb/TYPE_MACRO.h"
-#undef TYPE_MACRO
 };
 
 #undef EXPAND_AND_STRINGIFY

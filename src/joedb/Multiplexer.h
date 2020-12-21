@@ -44,8 +44,7 @@ namespace joedb
                                 Field_Id field_id,\
                                 Record_Id size,\
                                 const type *value) override;
-   #include "TYPE_MACRO.h"
-   #undef TYPE_MACRO
+   #include "joedb/TYPE_MACRO.h"
  };
 }
 

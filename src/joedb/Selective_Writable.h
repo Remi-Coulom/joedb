@@ -134,8 +134,7 @@ namespace joedb
     if (mode & data)\
      writable.update_##type_id(table_id, record_id, field_id, value);\
    }
-   #include "TYPE_MACRO.h"
-   #undef TYPE_MACRO
+   #include "joedb/TYPE_MACRO.h"
  };
 }
 

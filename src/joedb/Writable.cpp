@@ -13,5 +13,4 @@ namespace joedb
    update_##type_id(table_id, record_id + i, field_id, value[i]);\
  }
  #include "joedb/TYPE_MACRO.h"
- #undef TYPE_MACRO
 }
