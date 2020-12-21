@@ -23,29 +23,25 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t read_buffer() override
+   size_t raw_read(char *buffer, size_t size) override
    //////////////////////////////////////////////////////////////////////////
    {
-    size_t n = buffer_size;
-    const size_t max = data.size() - current;
-    if (n > max)
-     n = max;
+    const size_t max_size = data.size() - current;
+    const size_t n = std::min(size, max_size);
     std::copy_n(&data[current], n, buffer);
     current += n;
     return n;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void write_buffer() override
+   void raw_write(const char *buffer, size_t size) override
    //////////////////////////////////////////////////////////////////////////
    {
-    const size_t end = current + write_buffer_index;
+    const size_t end = current + size;
     if (end > data.size())
      data.resize(end);
-
-    std::copy_n(buffer, write_buffer_index, &data[current]);
-
-    current += write_buffer_index;
+    std::copy_n(buffer, size, &data[current]);
+    current += size;
    }
 
    //////////////////////////////////////////////////////////////////////////

@@ -81,22 +81,33 @@ namespace joedb
   protected:
    Open_Mode mode;
 
-   virtual size_t read_buffer() = 0;
-   virtual void write_buffer() = 0;
+   virtual size_t raw_read(char *buffer, size_t size) = 0;
+   virtual void raw_write(const char *buffer, size_t size) = 0;
    virtual int seek(int64_t offset) = 0;
    virtual void sync() = 0;
 
+  private:
    enum {buffer_size = (1 << 12)};
    enum {buffer_extra = 8};
 
    char buffer[buffer_size + buffer_extra];
    size_t write_buffer_index;
-
-  private:
    size_t read_buffer_index;
    size_t read_buffer_size;
    bool end_of_file;
    int64_t position;
+
+   void read_buffer()
+   {
+    read_buffer_size = raw_read(buffer, buffer_size);
+    read_buffer_index = 0;
+   }
+
+   void write_buffer()
+   {
+    raw_write(buffer, write_buffer_index);
+    write_buffer_index = 0;
+   }
 
    void putc(char c)
    {
@@ -111,8 +122,8 @@ namespace joedb
 
     if (read_buffer_index >= read_buffer_size)
     {
-     read_buffer_size = read_buffer();
-     read_buffer_index = 0;
+     read_buffer();
+
      if (read_buffer_size == 0)
      {
       end_of_file = true;
@@ -147,16 +158,10 @@ namespace joedb
     end_of_file = false;
    }
 
-   void flush_write_buffer()
-   {
-    write_buffer();
-    write_buffer_index = 0;
-   }
-
    void check_write_buffer()
    {
     if (write_buffer_index >= buffer_size)
-     flush_write_buffer();
+     write_buffer();
    }
 
    template<typename T, size_t n> struct W;

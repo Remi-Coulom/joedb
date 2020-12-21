@@ -17,10 +17,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Posix_File::read_buffer()
+ size_t Posix_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const ssize_t result = ::read(fd, buffer, buffer_size);
+  const ssize_t result = ::read(fd, buffer, size);
 
   if (result < 0)
    throw Exception("Error reading file");
@@ -29,11 +29,12 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_File::write_buffer()
+ void Posix_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const ssize_t result = ::write(fd, buffer, write_buffer_index);
-  if (result != ssize_t(write_buffer_index))
+  const ssize_t result = ::write(fd, buffer, size);
+
+  if (result != ssize_t(size))
    throw Exception("Error writing file");
  }
 

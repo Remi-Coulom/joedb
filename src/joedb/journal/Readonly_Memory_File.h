@@ -13,7 +13,7 @@ namespace joedb
  {
   private:
    const char * const data;
-   const size_t size;
+   const size_t data_size;
 
    size_t current;
 
@@ -21,24 +21,22 @@ namespace joedb
    int64_t get_size() const override
    //////////////////////////////////////////////////////////////////////////
    {
-    return int64_t(size);
+    return int64_t(data_size);
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t read_buffer() override
+   size_t raw_read(char *buffer, size_t size) override
    //////////////////////////////////////////////////////////////////////////
    {
-    size_t n = buffer_size;
-    const size_t max = size - current;
-    if (n > max)
-     n = max;
+    const size_t max_size = data_size - current;
+    const size_t n = std::min(size, max_size);
     std::copy_n(&data[current], n, buffer);
     current += n;
     return n;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void write_buffer() override
+   void raw_write(const char *buffer, size_t size) override
    //////////////////////////////////////////////////////////////////////////
    {
    }
@@ -67,7 +65,7 @@ namespace joedb
    Readonly_Memory_File(const void *memory, size_t size):
    //////////////////////////////////////////////////////////////////////////
     data((char *)memory),
-    size(size),
+    data_size(size),
     current(0)
    {
     this->mode = joedb::Open_Mode::read_existing;

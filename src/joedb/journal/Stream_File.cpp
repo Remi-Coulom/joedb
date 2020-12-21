@@ -24,10 +24,10 @@ int64_t joedb::Input_Stream_File::get_size() const
 }
 
 /////////////////////////////////////////////////////////////////////////////
-size_t joedb::Input_Stream_File::read_buffer()
+size_t joedb::Input_Stream_File::raw_read(char *buffer, size_t size)
 /////////////////////////////////////////////////////////////////////////////
 {
- return size_t(stream.readsome(buffer, std::streamsize(buffer_size)));
+ return size_t(stream.readsome(buffer, std::streamsize(size)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -69,17 +69,17 @@ int64_t joedb::Stream_File::get_size() const
 }
 
 /////////////////////////////////////////////////////////////////////////////
-size_t joedb::Stream_File::read_buffer()
+size_t joedb::Stream_File::raw_read(char *buffer, size_t size)
 /////////////////////////////////////////////////////////////////////////////
 {
- return size_t(stream.readsome(buffer, std::streamsize(buffer_size)));
+ return size_t(stream.readsome(buffer, std::streamsize(size)));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Stream_File::write_buffer()
+void joedb::Stream_File::raw_write(const char *buffer, size_t size)
 /////////////////////////////////////////////////////////////////////////////
 {
- stream.write(buffer, std::streamsize(write_buffer_index));
+ stream.write(buffer, std::streamsize(size));
  if (!stream.good())
   throw Exception("Error writing to stream");
 }

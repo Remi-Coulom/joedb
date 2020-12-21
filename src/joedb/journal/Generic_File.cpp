@@ -25,10 +25,10 @@ std::vector<char> joedb::Generic_File::read_tail(int64_t starting_position)
 
  while (true)
  {
-  const size_t n = read_buffer();
-  if (n == 0)
+  read_buffer();
+  if (read_buffer_size == 0)
    break;
-  result.insert(result.end(), buffer, buffer + n);
+  result.insert(result.end(), buffer, buffer + read_buffer_size);
  }
 
  set_position(initial_position);
@@ -40,19 +40,8 @@ std::vector<char> joedb::Generic_File::read_tail(int64_t starting_position)
 void joedb::Generic_File::append_tail(const std::vector<char> &data)
 /////////////////////////////////////////////////////////////////////////////
 {
- const char *current = &data[0];
- size_t remaining = data.size();
-
- while (remaining)
- {
-  const size_t n = remaining > buffer_size ? buffer_size : remaining;
-  std::copy_n(current, n, buffer); // TODO: avoid useless copy
-  write_buffer_index = n;
-  flush_write_buffer();
-  current += n;
-  remaining -= n;
-  position += n;
- }
+ raw_write(&data[0], data.size());
+ position += data.size();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,13 +54,13 @@ void joedb::Generic_File::copy(Generic_File &file)
 
  while (true)
  {
-  const size_t n = file.read_buffer();
-  if (n == 0)
+  file.read_buffer();
+  if (file.read_buffer_size == 0)
    break;
-  std::copy_n(file.buffer, n, buffer);
-  write_buffer_index = n;
-  flush_write_buffer();
-  position += n;
+  std::copy_n(file.buffer, file.read_buffer_size, buffer);
+  write_buffer_index = file.read_buffer_size;
+  write_buffer();
+  position += file.read_buffer_size;
  }
 }
 
@@ -115,7 +104,7 @@ void joedb::Generic_File::flush()
 /////////////////////////////////////////////////////////////////////////////
 {
  if (write_buffer_index)
-  flush_write_buffer();
+  write_buffer();
 }
 
 /////////////////////////////////////////////////////////////////////////////
