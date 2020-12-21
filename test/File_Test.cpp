@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 
 #include <random>
+#include <cstdio>
 
 using namespace joedb;
 

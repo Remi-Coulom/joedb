@@ -19,8 +19,8 @@ namespace joedb
   protected:
    Portable_File(std::FILE *file): file(file) {}
 
-   size_t read_buffer() override;
-   void write_buffer() override;
+   size_t raw_read(char *buffer, size_t size) override;
+   void raw_write(const char *buffer, size_t size) override;
    int seek(int64_t offset) override;
    void sync() override {}
 

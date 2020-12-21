@@ -200,6 +200,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Multiplexer_Test.cpp
   ../test/nested_namespace_Test.cpp
   ../test/pack_Test.cpp
+  ../test/Polymorphic_File_Test.cpp
   ../test/Selective_Writable_Test.cpp
   ../test/Connection_Test.cpp
   ../test/Stream_File_Test.cpp
@@ -208,6 +209,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/type_io_Test.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
+  ../src/joedb/journal/Portable_File.cpp
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
 else()

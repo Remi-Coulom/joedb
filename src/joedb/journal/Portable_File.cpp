@@ -26,18 +26,18 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t joedb::Portable_File::read_buffer()
+ size_t joedb::Portable_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  return std::fread(buffer, 1, buffer_size, file);
+  return std::fread(buffer, 1, size, file);
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void joedb::Portable_File::write_buffer()
+ void joedb::Portable_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const size_t written = std::fwrite(buffer, 1, write_buffer_index, file);
-  if (written != write_buffer_index)
+  const size_t written = std::fwrite(buffer, 1, size, file);
+  if (written != size)
    throw Exception("Error writing file");
  }
 
