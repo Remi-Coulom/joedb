@@ -73,8 +73,10 @@ TEST(Polymorphic_File, Portable_File)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * file_name = "portable_file_test.joedb";
- joedb::Portable_File file(file_name, joedb::Open_Mode::create_new);
- polymorphic_test(file);
+ {
+  joedb::Portable_File file(file_name, joedb::Open_Mode::create_new);
+  polymorphic_test(file);
+ }
  std::remove(file_name);
 }
 
@@ -84,7 +86,9 @@ TEST(Polymorphic_File, File)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * file_name = "file_test.joedb";
- joedb::File file(file_name, joedb::Open_Mode::create_new);
- polymorphic_test(file);
+ {
+  joedb::File file(file_name, joedb::Open_Mode::create_new);
+  polymorphic_test(file);
+ }
  std::remove(file_name);
 }

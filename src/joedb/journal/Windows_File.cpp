@@ -54,22 +54,22 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Windows_File::read_buffer()
+ size_t Windows_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   DWORD result;
 
-  if (ReadFile(file, buffer, DWORD(buffer_size), &result, NULL))
+  if (ReadFile(file, buffer, DWORD(size), &result, NULL))
    return size_t(result);
   else
    throw_last_error();
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::write_buffer()
+ void Windows_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (!WriteFile(file, buffer, DWORD(write_buffer_index), NULL, NULL))
+  if (!WriteFile(file, buffer, DWORD(size), NULL, NULL))
    throw_last_error();
  }
 
