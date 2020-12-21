@@ -283,6 +283,33 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    );\
   }\
   break;
+  #define TYPE_MACRO_NO_INT
+  #define TYPE_MACRO_NO_FLOAT
+  #include "joedb/TYPE_MACRO.h"
+
+  #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+  case operation_t::update_vector_##type_id:\
+  {\
+   table_of_last_operation = file.compact_read<Table_Id>();\
+   record_of_last_operation = file.compact_read<Record_Id>();\
+   field_of_last_update = file.compact_read<Field_Id>();\
+   Record_Id size = file.compact_read<Record_Id>();\
+   if (int64_t(size) > checkpoint_position || size < 0)\
+    throw Exception("update_vector too big");\
+   std::vector<cpp_type> buffer(size);\
+   file.read_data((char *)&buffer[0], size * sizeof(cpp_type));\
+   writable.update_vector_##type_id\
+   (\
+    table_of_last_operation,\
+    record_of_last_operation,\
+    field_of_last_update,\
+    size,\
+    &buffer[0]\
+   );\
+  }\
+  break;
+  #define TYPE_MACRO_NO_STRING
+  #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
 
   case operation_t::custom:
