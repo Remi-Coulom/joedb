@@ -3,7 +3,8 @@
 
 #include "joedb/journal/Generic_File.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 namespace joedb
 {

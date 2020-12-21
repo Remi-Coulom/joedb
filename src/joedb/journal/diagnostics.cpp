@@ -3,7 +3,8 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/io/type_io.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 namespace joedb
 {

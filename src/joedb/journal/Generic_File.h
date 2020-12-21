@@ -50,6 +50,45 @@ namespace joedb
     return R<T, sizeof(T)>::read(*this);
    }
 
+   void read_data(char *data, size_t n)
+   {
+    JOEDB_ASSERT(write_buffer_index == 0);
+
+    if (read_buffer_index + n <= read_buffer_size)
+    {
+     for (size_t i = 0; i < n; i++)
+      data[i] = buffer[read_buffer_index++];
+     position += n;
+    }
+    else
+    {
+     const size_t n0 = read_buffer_size - read_buffer_index;
+
+     for (size_t i = 0; i < n0; i++)
+      data[i] = buffer[read_buffer_index++];
+     position += n0;
+
+     if (n <= buffer_size)
+     {
+      read_buffer();
+
+      for (size_t i = n0; i < n; i++)
+       data[i] = buffer[read_buffer_index++];
+      position += n - n0;
+
+      if (read_buffer_index > read_buffer_size)
+       end_of_file = true;
+     }
+     else
+     {
+      const size_t actually_read = raw_read(data + n0, n - n0);
+      position += actually_read;
+      if (n0 + actually_read < n)
+       end_of_file = true;
+     }
+    }
+   }
+
    template<typename T>
    void compact_write(T x)
    {
@@ -133,22 +172,6 @@ namespace joedb
 
     position++;
     return buffer[read_buffer_index++];
-   }
-
-   void read_data(char *data, size_t n)
-   {
-    JOEDB_ASSERT(write_buffer_index == 0);
-
-    if (read_buffer_index + n <= read_buffer_size)
-    {
-     for (size_t i = 0; i < n; i++)
-      data[i] = buffer[read_buffer_index + i];
-     read_buffer_index += n;
-     position += n;
-    }
-    else
-     for (size_t i = 0; i < n; i++)
-      data[i] = getc();
    }
 
    void reset_read_buffer()
