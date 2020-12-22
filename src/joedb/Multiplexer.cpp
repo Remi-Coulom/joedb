@@ -156,6 +156,22 @@ void joedb::Multiplexer::update_vector_##type_id\
  (\
   update_vector_##type_id(table_id, record_id, field_id, size, value)\
  );\
+}\
+type *joedb::Multiplexer::get_own_##type_id##_storage\
+(\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id\
+)\
+{\
+ type *result = nullptr;\
+ for (auto w: writables)\
+ {\
+  result = w->get_own_##type_id##_storage(table_id, record_id, field_id);\
+  if (result)\
+   break;\
+ }\
+ return result;\
 }
 #include "joedb/TYPE_MACRO.h"
 
