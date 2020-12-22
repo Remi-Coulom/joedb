@@ -9,6 +9,8 @@
 
 namespace joedb
 {
+ class Compact_Freedom_Keeper;
+
  class Readable
  {
   public:
@@ -19,6 +21,7 @@ namespace joedb
 
    virtual Record_Id get_last_record_id(Table_Id table_id) const = 0;
    virtual bool is_used(Table_Id table_id, Record_Id record_id) const = 0;
+   virtual const Compact_Freedom_Keeper &get_freedom(Table_Id table_id) const = 0;
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual return_type get_##type_id\
    (\

@@ -114,16 +114,24 @@ void joedb::dump_data(const Readable &db, Writable &writable)
 
   Record_Id record_id = 1;
 
+  const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(table_id);
+
   while (record_id <= last_record_id)
   {
-   while (record_id <= last_record_id &&
-          !db.is_used(table_id, record_id))
+   while
+   (
+    record_id <= last_record_id &&
+    !freedom_keeper.is_used(record_id + 1)
+   )
     record_id++;
 
    Record_Id size = 0;
 
-   while (record_id + size <= last_record_id &&
-          db.is_used(table_id, record_id + size))
+   while
+   (
+    record_id + size <= last_record_id &&
+    freedom_keeper.is_used(record_id + size + 1)
+   )
     size++;
 
    if (size)

@@ -76,6 +76,20 @@ bool joedb::Database::is_used
  return table_it->second.freedom.is_used(record_id + 1);
 }
 
+/////////////////////////////////////////////////////////////////////////////
+const joedb::Compact_Freedom_Keeper &joedb::Database::get_freedom
+/////////////////////////////////////////////////////////////////////////////
+(
+ Table_Id table_id
+) const
+{
+ auto table_it = tables.find(table_id);
+ if (table_it == tables.end())
+  throw Exception("bad table id");
+ else
+  return table_it->second.freedom;
+}
+
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
 return_type joedb::Database::get_##type_id\
 (\

@@ -49,6 +49,11 @@ namespace joedb
     return readable.is_used(table_id, record_id);
    }
 
+   const Compact_Freedom_Keeper &get_freedom(Table_Id table_id) const override
+   {
+    return readable.get_freedom(table_id);
+   }
+
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id(Table_Id table_id,\
                              Record_Id record_id,\

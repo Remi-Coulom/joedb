@@ -32,6 +32,7 @@ namespace joedb
 
    Record_Id get_last_record_id(Table_Id table_id) const override;
    bool is_used(Table_Id table_id, Record_Id record_id) const override;
+   const Compact_Freedom_Keeper &get_freedom(Table_Id table_id) const override;
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id\
    (\
