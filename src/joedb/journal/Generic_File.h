@@ -198,7 +198,6 @@ namespace joedb
    }
 
    template<typename T, size_t n> struct W;
-   template<typename T, size_t n> struct R;
 
    template<typename T>
    struct W<T, 1>
@@ -216,8 +215,16 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     file.putc(p[0]);
-     file.putc(p[1]);
+     if (is_big_endian())
+     {
+      file.putc(p[1]);
+      file.putc(p[0]);
+     }
+     else
+     {
+      file.putc(p[0]);
+      file.putc(p[1]);
+     }
      file.check_write_buffer();
     }
    };
@@ -228,10 +235,20 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     file.putc(p[0]);
-     file.putc(p[1]);
-     file.putc(p[2]);
-     file.putc(p[3]);
+     if (is_big_endian())
+     {
+      file.putc(p[3]);
+      file.putc(p[2]);
+      file.putc(p[1]);
+      file.putc(p[0]);
+     }
+     else
+     {
+      file.putc(p[0]);
+      file.putc(p[1]);
+      file.putc(p[2]);
+      file.putc(p[3]);
+     }
      file.check_write_buffer();
     }
    };
@@ -242,14 +259,28 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     file.putc(p[0]);
-     file.putc(p[1]);
-     file.putc(p[2]);
-     file.putc(p[3]);
-     file.putc(p[4]);
-     file.putc(p[5]);
-     file.putc(p[6]);
-     file.putc(p[7]);
+     if (is_big_endian())
+     {
+      file.putc(p[7]);
+      file.putc(p[6]);
+      file.putc(p[5]);
+      file.putc(p[4]);
+      file.putc(p[3]);
+      file.putc(p[2]);
+      file.putc(p[1]);
+      file.putc(p[0]);
+     }
+     else
+     {
+      file.putc(p[0]);
+      file.putc(p[1]);
+      file.putc(p[2]);
+      file.putc(p[3]);
+      file.putc(p[4]);
+      file.putc(p[5]);
+      file.putc(p[6]);
+      file.putc(p[7]);
+     }
      file.check_write_buffer();
     }
    };
@@ -345,48 +376,95 @@ namespace joedb
     }
    };
 
-   template<typename T>
-   struct R<T, 1>
+  public:
+   static inline uint8_t is_big_endian()
    {
+    const uint16_t n = 0x0100;
+    return *(const uint8_t *)&n;
+   }
+
+   template<typename T, size_t n> struct R;
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 1>
+   //////////////////////////////////////////////////////////////////////////
+   {
+    static T swap(T x)
+    {
+     return x;
+    }
+
     static T read(Generic_File &file)
     {
      return T(file.getc());
     }
    };
 
-   template<typename T>
-   struct R<T, 2>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 2>
+   //////////////////////////////////////////////////////////////////////////
    {
+    static T swap(T x)
+    {
+     char *p = reinterpret_cast<char *>(&x);
+     std::swap(p[0], p[1]);
+    }
+
     static T read(Generic_File &file)
     {
      T result;
-     char *p = reinterpret_cast<char *>(&result);
-     file.read_data(p, 2);
-     return result;
+     file.read_data(reinterpret_cast<char *>(&result), 2);
+     if (is_big_endian())
+      return swap(result);
+     else
+      return result;
     }
    };
 
-   template<typename T>
-   struct R<T, 4>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 4>
+   //////////////////////////////////////////////////////////////////////////
    {
+    static T swap(T x)
+    {
+     char *p = reinterpret_cast<char *>(&x);
+     std::swap(p[0], p[3]);
+     std::swap(p[1], p[2]);
+    }
+
     static T read(Generic_File &file)
     {
      T result;
-     char *p = reinterpret_cast<char *>(&result);
-     file.read_data(p, 4);
-     return result;
+     file.read_data(reinterpret_cast<char *>(&result), 4);
+     if (is_big_endian())
+      return swap(result);
+     else
+      return result;
     }
    };
 
-   template<typename T>
-   struct R<T, 8>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 8>
+   //////////////////////////////////////////////////////////////////////////
    {
+    static T swap(T x)
+    {
+     char *p = reinterpret_cast<char *>(&x);
+     std::swap(p[0], p[7]);
+     std::swap(p[1], p[6]);
+     std::swap(p[2], p[5]);
+     std::swap(p[3], p[4]);
+    }
+
     static T read(Generic_File &file)
     {
      T result;
-     char *p = reinterpret_cast<char *>(&result);
-     file.read_data(p, 8);
-     return result;
+     file.read_data(reinterpret_cast<char *>(&result), 8);
+
+     if (is_big_endian())
+      return swap(result);
+     else
+      return result;
     }
    };
  };
