@@ -34,15 +34,33 @@ namespace joedb
    virtual void delete_from(Table_Id table_id, Record_Id record_id) = 0;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   virtual void update_##type_id(Table_Id table_id,\
-                                 Record_Id record_id,\
-                                 Field_Id field_id,\
-                                 return_type value) = 0;\
-   virtual void update_vector_##type_id(Table_Id table_id,\
-                                        Record_Id record_id,\
-                                        Field_Id field_id,\
-                                        Record_Id size,\
-                                        const type *value);
+   \
+   virtual void update_##type_id\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id,\
+    return_type value\
+   ) = 0;\
+   \
+   virtual void update_vector_##type_id\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id,\
+    Record_Id size,\
+    const type *value\
+   );\
+   \
+   virtual type *get_own_##type_id##_storage\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id\
+   )\
+   {\
+    return nullptr;\
+   }
    #include "joedb/TYPE_MACRO.h"
 
    virtual ~Writable() {}
