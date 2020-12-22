@@ -57,6 +57,11 @@ namespace joedb
  size_t Windows_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
+  const size_t max_size = 1ULL << 31;
+
+  if (size > max_size)
+   size = max_size;
+
   DWORD result;
 
   if (ReadFile(file, buffer, DWORD(size), &result, NULL))
@@ -69,6 +74,7 @@ namespace joedb
  void Windows_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
+  // TODO: support for large writes
   if (!WriteFile(file, buffer, DWORD(size), NULL, NULL))
    throw_last_error();
  }
