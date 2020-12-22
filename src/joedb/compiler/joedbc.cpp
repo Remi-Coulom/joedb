@@ -1409,16 +1409,16 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   switch(storage)
   {
    case Compiler_Options::Table_Storage::freedom_keeper:
-    out << "     const joedb::Compact_Freedom_Keeper &fk;\n";
+    out << "     const joedb::Compact_Freedom_Keeper *fk;\n"; // must use pointer for copy constructor
     out << "     size_t index;\n";
-    out << "     iterator(const data_of_" << tname << " &data): fk(data.freedom_keeper), index(0) {}\n";
+    out << "     iterator(const data_of_" << tname << " &data): fk(&data.freedom_keeper), index(0) {}\n";
     out << "    public:\n";
     out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
     out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
-    out << "     iterator &operator++() {index = fk.get_next(index); return *this;}\n";
-    out << "     iterator operator++(int) {auto copy = *this; index = fk.get_next(index); return copy;}\n";
-    out << "     iterator &operator--() {index = fk.get_previous(index); return *this;}\n";
-    out << "     iterator operator--(int) {auto copy = *this; index = fk.get_previous(index); return copy;}\n";
+    out << "     iterator &operator++() {index = fk->get_next(index); return *this;}\n";
+    out << "     iterator operator++(int) {auto copy = *this; index = fk->get_next(index); return copy;}\n";
+    out << "     iterator &operator--() {index = fk->get_previous(index); return *this;}\n";
+    out << "     iterator operator--(int) {auto copy = *this; index = fk->get_previous(index); return copy;}\n";
     out << "     id_of_" << tname << " operator*() {return id_of_";
     out << tname << "(index - 1);}\n";
     out << "   };\n";
