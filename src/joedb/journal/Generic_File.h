@@ -84,7 +84,7 @@ namespace joedb
     }
     else
     {
-     const size_t n0 = read_buffer_size - read_buffer_index;
+     size_t n0 = read_buffer_size - read_buffer_index;
 
      for (size_t i = 0; i < n0; i++)
       data[i] = buffer[read_buffer_index++];
@@ -103,9 +103,18 @@ namespace joedb
      }
      else
      {
-      const size_t actually_read = raw_read(data + n0, n - n0);
-      position += actually_read;
-      if (n0 + actually_read < n)
+      while (true)
+      {
+       const size_t actually_read = raw_read(data + n0, n - n0);
+
+       position += actually_read;
+       n0 += actually_read;
+
+       if (n0 == n || actually_read == 0)
+        break;
+      }
+
+      if (n0 < n)
        end_of_file = true;
      }
     }

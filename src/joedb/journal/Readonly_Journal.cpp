@@ -356,7 +356,6 @@ void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t si
 #define TYPE_MACRO_NO_FLOAT
 #include "joedb/TYPE_MACRO.h"
 
-
 #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
 void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t size)\
 {\
