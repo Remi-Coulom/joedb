@@ -29,7 +29,7 @@ void joedb::merge(Database &merged, const Database &db)
   // TODO: use vector insertions for better performance
 
   for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
-   if (freedom_keeper.is_used(record_id))
+   if (freedom_keeper.is_used(record_id + 1))
    {
     const Record_Id merged_record_id = record_id + offset[table_id];
     merged.insert_into(table_id, merged_record_id);
