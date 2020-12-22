@@ -45,6 +45,10 @@ namespace joedb
    Type read_type();
    std::string safe_read_string();
 
+   #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+   void read_vector_of_##type_id(cpp_type *data, size_t size);
+   #include "joedb/TYPE_MACRO.h"
+
    enum class operation_t: uint8_t
    {
     end_of_file   = 0x00,

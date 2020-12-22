@@ -44,11 +44,33 @@ namespace joedb
    {
     W<T, sizeof(T)>::write(*this, x);
    }
+
    template<typename T>
    T read()
    {
     return R<T, sizeof(T)>::read(*this);
    }
+
+   template<typename T>
+   void compact_write(T x)
+   {
+    CW<T, sizeof(T)>::write(*this, x);
+   }
+
+   template<typename T>
+   T compact_read()
+   {
+    uint8_t first_byte = uint8_t(getc());
+    int extra_bytes = first_byte >> 5;
+    T result = first_byte & 0x1f;
+    while (extra_bytes--)
+     result = T((result << 8) | uint8_t(getc()));
+    return result;
+   }
+
+   void write_string(const std::string &s);
+   std::string read_string();
+   std::string safe_read_string(size_t max_size);
 
    void read_data(char *data, size_t n)
    {
@@ -88,27 +110,6 @@ namespace joedb
      }
     }
    }
-
-   template<typename T>
-   void compact_write(T x)
-   {
-    CW<T, sizeof(T)>::write(*this, x);
-   }
-
-   template<typename T>
-   T compact_read()
-   {
-    uint8_t first_byte = uint8_t(getc());
-    int extra_bytes = first_byte >> 5;
-    T result = first_byte & 0x1f;
-    while (extra_bytes--)
-     result = T((result << 8) | uint8_t(getc()));
-    return result;
-   }
-
-   void write_string(const std::string &s);
-   std::string read_string();
-   std::string safe_read_string(size_t max_size);
 
    void flush(); // flushes the write buffer to the system
    void commit(); // flush and write to disk (fsync)

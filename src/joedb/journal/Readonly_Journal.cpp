@@ -258,10 +258,8 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
     value\
    );\
   }\
-  break;
-  #include "joedb/TYPE_MACRO.h"
-
-  #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+  break;\
+\
   case operation_t::update_vector_##type_id:\
   {\
    table_of_last_operation = file.compact_read<Table_Id>();\
@@ -271,8 +269,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    if (int64_t(size) > checkpoint_position || size < 0)\
     throw Exception("update_vector too big");\
    std::vector<cpp_type> buffer(size);\
-   for (size_t i = 0; i < size; i++)\
-    buffer[i] = read_method();\
+   read_vector_of_##type_id(&buffer[0], size);\
    writable.update_vector_##type_id\
    (\
     table_of_last_operation,\
@@ -283,33 +280,6 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    );\
   }\
   break;
-  #define TYPE_MACRO_NO_INT
-  #define TYPE_MACRO_NO_FLOAT
-  #include "joedb/TYPE_MACRO.h"
-
-  #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
-  case operation_t::update_vector_##type_id:\
-  {\
-   table_of_last_operation = file.compact_read<Table_Id>();\
-   record_of_last_operation = file.compact_read<Record_Id>();\
-   field_of_last_update = file.compact_read<Field_Id>();\
-   Record_Id size = file.compact_read<Record_Id>();\
-   if (int64_t(size) > checkpoint_position || size < 0)\
-    throw Exception("update_vector too big");\
-   std::vector<cpp_type> buffer(size);\
-   file.read_data((char *)&buffer[0], size * sizeof(cpp_type));\
-   writable.update_vector_##type_id\
-   (\
-    table_of_last_operation,\
-    record_of_last_operation,\
-    field_of_last_update,\
-    size,\
-    &buffer[0]\
-   );\
-  }\
-  break;
-  #define TYPE_MACRO_NO_STRING
-  #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
 
   case operation_t::custom:
@@ -364,3 +334,23 @@ std::string joedb::Readonly_Journal::safe_read_string()
 {
  return file.safe_read_string(size_t(checkpoint_position));
 }
+
+#define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t size)\
+{\
+ for (size_t i = 0; i < size; i++)\
+  data[i] = read_method();\
+}
+#define TYPE_MACRO_NO_INT
+#define TYPE_MACRO_NO_FLOAT
+#include "joedb/TYPE_MACRO.h"
+
+
+#define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t size)\
+{\
+ file.read_data((char *)data, size * sizeof(cpp_type));\
+}
+#define TYPE_MACRO_NO_STRING
+#define TYPE_MACRO_NO_REFERENCE
+#include "joedb/TYPE_MACRO.h"
