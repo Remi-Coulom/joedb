@@ -245,25 +245,45 @@ void joedb::Database::delete_from
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-void joedb::Database::update_##type_id(Table_Id table_id,\
-                                       Record_Id record_id,\
-                                       Field_Id field_id,\
-                                       return_type value)\
+void joedb::Database::update_##type_id\
+(\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id,\
+ return_type value\
+)\
 {\
  auto it = tables.find(table_id);\
  if (it == tables.end())\
   throw Exception("update: invalid table_id");\
  it->second.update_##type_id(record_id, field_id, value);\
 }\
-void joedb::Database::update_vector_##type_id(Table_Id table_id,\
-                                              Record_Id record_id,\
-                                              Field_Id field_id,\
-                                              Record_Id size,\
-                                              const type *value)\
+\
+void joedb::Database::update_vector_##type_id\
+(\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id,\
+ Record_Id size,\
+ const type *value\
+)\
 {\
  auto it = tables.find(table_id);\
  if (it == tables.end())\
   throw Exception("update_vector: invalid table_id");\
  it->second.update_vector_##type_id(record_id, field_id, size, value);\
+}\
+\
+type *joedb::Database::get_own_##type_id##_storage\
+(\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id\
+)\
+{\
+ auto it = tables.find(table_id);\
+ if (it == tables.end())\
+  throw Exception("get_own_storage: invalid table_id");\
+ return it->second.get_own_##type_id##_storage(record_id, field_id);\
 }
 #include "joedb/TYPE_MACRO.h"

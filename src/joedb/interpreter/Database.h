@@ -63,15 +63,27 @@ namespace joedb
    void delete_from(Table_Id table_id, Record_Id record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   void update_##type_id(Table_Id table_id,\
-                         Record_Id record_id,\
-                         Field_Id field_id,\
-                         return_type value) override;\
-   void update_vector_##type_id(Table_Id table_id,\
-                                Record_Id record_id,\
-                                Field_Id field_id,\
-                                Record_Id size,\
-                                const type *value) override;
+   void update_##type_id\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id,\
+    return_type value\
+   ) override;\
+   void update_vector_##type_id\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id,\
+    Record_Id size,\
+    const type *value\
+   ) override;\
+   type *get_own_##type_id##_storage\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id\
+   ) override;
    #include "joedb/TYPE_MACRO.h"
  };
 }
