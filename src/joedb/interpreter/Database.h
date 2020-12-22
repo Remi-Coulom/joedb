@@ -33,11 +33,19 @@ namespace joedb
    Record_Id get_last_record_id(Table_Id table_id) const override;
    bool is_used(Table_Id table_id, Record_Id record_id) const override;
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   return_type get_##type_id(Table_Id table_id,\
-                             Record_Id record_id,\
-                             Field_Id field_id) const override;
+   return_type get_##type_id\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id\
+   ) const override;\
+   const type &get_##type_id##_storage\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id\
+   ) const override;
    #include "joedb/TYPE_MACRO.h"
-
 
    //
    // Writable override

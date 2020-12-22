@@ -74,6 +74,12 @@ namespace joedb
     if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
     return &type_id##_column[record_id - 1];\
+   }\
+   const cpp_type *get_own_##type_id##_storage(Record_Id record_id) const\
+   {\
+    if (type.get_type_id() != Type::Type_Id::type_id)\
+     throw Exception("type error");\
+    return &type_id##_column[record_id - 1];\
    }
    #include "joedb/TYPE_MACRO.h"
  };

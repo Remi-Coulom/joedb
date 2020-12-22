@@ -77,14 +77,29 @@ bool joedb::Database::is_used
 }
 
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
-return_type joedb::Database::get_##type_id(Table_Id table_id,\
-                                           Record_Id record_id,\
-                                           Field_Id field_id) const\
+return_type joedb::Database::get_##type_id\
+(\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id\
+) const\
 {\
  auto table_it = tables.find(table_id);\
  if (table_it == tables.end())\
   throw Exception("get: invalid table_id");\
  return table_it->second.get_##type_id(record_id, field_id);\
+}\
+const type &joedb::Database::get_##type_id##_storage\
+(\
+ Table_Id table_id,\
+ Record_Id record_id,\
+ Field_Id field_id\
+) const\
+{\
+ auto table_it = tables.find(table_id);\
+ if (table_it == tables.end())\
+  throw Exception("get_storage: invalid table_id");\
+ return *table_it->second.get_own_##type_id##_storage(record_id, field_id);\
 }
 #include "joedb/TYPE_MACRO.h"
 

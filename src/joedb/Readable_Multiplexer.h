@@ -55,7 +55,17 @@ namespace joedb
                              Field_Id field_id) const override\
    {\
     return readable.get_##type_id(table_id, record_id, field_id);\
+   }\
+   const type &get_##type_id##_storage\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id\
+   ) const override\
+   {\
+    return readable.get_##type_id##_storage(table_id, record_id, field_id);\
    }
+
    #include "joedb/TYPE_MACRO.h"
  };
 }

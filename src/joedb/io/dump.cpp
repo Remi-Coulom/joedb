@@ -142,10 +142,19 @@ void joedb::dump_data(const Readable &db, Writable &writable)
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
       {\
-       std::vector<type> v(size);\
-       for (Record_Id i = 0; i < size; i++)\
-        v[i] = db.get_##type_id(table_id, record_id + i, field_id);\
-       writable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
+       writable.update_vector_##type_id\
+       (\
+        table_id,\
+        record_id,\
+        field_id,\
+        size,\
+        &db.get_##type_id##_storage\
+        (\
+         table_id,\
+         record_id,\
+         field_id\
+        )\
+       );\
       }\
       break;
       #include "joedb/TYPE_MACRO.h"
