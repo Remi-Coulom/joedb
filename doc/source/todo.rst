@@ -72,14 +72,9 @@ Concurrency
 Other Ideas
 -----------
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
-
 - apply schema upgrade to readonly databases (custom functions)
-
-- tests for buffer overflow could be optimized when reading/writing large
-  pieces of data, such as strings or vectors.
-
 - optimize vector update: read file directly into the column thanks to get_own_storage.
-
+- allow writing vectors in compiled code
 - only one file.check_write_buffer() call in write<T> and compact_write<T>:
   make code shorter and simpler.
 
