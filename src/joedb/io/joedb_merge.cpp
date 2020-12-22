@@ -104,10 +104,9 @@ namespace joedb
     // Check that all databases have the same schema
     //
     schema_file.flush();
-    std::string schema = schema_stream.str();
     if (!merged_db)
-     reference_schema = schema;
-    else if (schema != reference_schema)
+     reference_schema = schema_stream.str();
+    else if (schema_stream.str() != reference_schema)
      throw Exception
      (
       file_names[i] +
