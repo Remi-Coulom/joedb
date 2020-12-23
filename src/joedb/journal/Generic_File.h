@@ -393,9 +393,8 @@ namespace joedb
    template<typename T> struct R<T, 1>
    //////////////////////////////////////////////////////////////////////////
    {
-    static T swap(T x)
+    static void swap(T &x)
     {
-     return x;
     }
 
     static T read(Generic_File &file)
@@ -408,7 +407,7 @@ namespace joedb
    template<typename T> struct R<T, 2>
    //////////////////////////////////////////////////////////////////////////
    {
-    static T swap(T x)
+    static void swap(T &x)
     {
      char *p = reinterpret_cast<char *>(&x);
      std::swap(p[0], p[1]);
@@ -419,9 +418,8 @@ namespace joedb
      T result;
      file.read_data(reinterpret_cast<char *>(&result), 2);
      if (is_big_endian())
-      return swap(result);
-     else
-      return result;
+      swap(result);
+     return result;
     }
    };
 
@@ -429,7 +427,7 @@ namespace joedb
    template<typename T> struct R<T, 4>
    //////////////////////////////////////////////////////////////////////////
    {
-    static T swap(T x)
+    static void swap(T &x)
     {
      char *p = reinterpret_cast<char *>(&x);
      std::swap(p[0], p[3]);
@@ -441,9 +439,8 @@ namespace joedb
      T result;
      file.read_data(reinterpret_cast<char *>(&result), 4);
      if (is_big_endian())
-      return swap(result);
-     else
-      return result;
+      swap(result);
+     return result;
     }
    };
 
@@ -451,7 +448,7 @@ namespace joedb
    template<typename T> struct R<T, 8>
    //////////////////////////////////////////////////////////////////////////
    {
-    static T swap(T x)
+    static void swap(T &x)
     {
      char *p = reinterpret_cast<char *>(&x);
      std::swap(p[0], p[7]);
@@ -464,11 +461,9 @@ namespace joedb
     {
      T result;
      file.read_data(reinterpret_cast<char *>(&result), 8);
-
      if (is_big_endian())
-      return swap(result);
-     else
-      return result;
+      swap(result);
+     return result;
     }
    };
  };

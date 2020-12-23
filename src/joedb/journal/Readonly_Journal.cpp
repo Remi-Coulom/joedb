@@ -362,7 +362,7 @@ void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t si
  file.read_data((char *)data, size * sizeof(cpp_type));\
  if (Generic_File::is_big_endian() && sizeof(cpp_type) > 1)\
   for (size_t i = 0; i < size; i++)\
-   data[i] = Generic_File::R<cpp_type, sizeof(cpp_type)>::swap(data[i]);\
+   Generic_File::R<cpp_type, sizeof(cpp_type)>::swap(data[i]);\
 }
 #define TYPE_MACRO_NO_STRING
 #define TYPE_MACRO_NO_REFERENCE
