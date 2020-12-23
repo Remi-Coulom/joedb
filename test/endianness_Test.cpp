@@ -16,4 +16,6 @@ TEST(endianness, reading)
  EXPECT_EQ(258, db.get_int16(1, 1, 2));
  EXPECT_EQ(16909060, db.get_int32(1, 1, 3));
  EXPECT_EQ(72623859790382856, db.get_int64(1, 1, 4));
+ EXPECT_EQ(123.0f, db.get_float32(1, 1, 5));
+ EXPECT_EQ(456.0, db.get_float64(1, 1, 6));
 }
