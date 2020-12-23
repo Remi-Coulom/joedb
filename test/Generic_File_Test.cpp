@@ -29,6 +29,8 @@ TEST(Generic_File, readonly_memory_file)
  joedb::Readonly_Memory_File file(data, size);
 
  EXPECT_EQ(file.read<uint32_t>(), 0x03020100UL);
+ file.read<uint32_t>();
+ file.read<uint32_t>();
 }
 
 /////////////////////////////////////////////////////////////////////////////
