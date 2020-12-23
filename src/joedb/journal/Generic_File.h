@@ -84,21 +84,25 @@ namespace joedb
     }
     else
     {
-     size_t n0 = read_buffer_size - read_buffer_index;
+     size_t n0 = 0;
 
-     for (size_t i = 0; i < n0; i++)
-      data[i] = buffer[read_buffer_index++];
-     position += n0;
+     while (n0 < n && read_buffer_index < read_buffer_size)
+     {
+      data[n0++] = buffer[read_buffer_index++];
+      position++;
+     }
 
      if (n <= buffer_size)
      {
       read_buffer();
 
-      for (size_t i = n0; i < n; i++)
-       data[i] = buffer[read_buffer_index++];
-      position += n - n0;
+      while (n0 < n && read_buffer_index < read_buffer_size)
+      {
+       data[n0++] = buffer[read_buffer_index++];
+       position++;
+      }
 
-      if (read_buffer_index > read_buffer_size)
+      if (n0 < n)
        end_of_file = true;
      }
      else
