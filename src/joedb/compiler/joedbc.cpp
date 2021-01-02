@@ -18,6 +18,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <set>
 
 using namespace joedb;
 
@@ -947,11 +948,23 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  out << "   }\n";
 
  //
+ // set of existing types in the database
+ //
+ std::set<Type::Type_Id> db_types;
+
+ for (auto &table: tables)
+  for (auto &field: db.get_fields(table.first))
+   db_types.insert(db.get_field_type(table.first, field.first).get_type_id());
+
+ //
  // update
  //
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
+   if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
+    continue;
+
    out << '\n';
    out << "   void update_" << types[type_id] << '\n';
    out << "   (\n";
@@ -1019,6 +1032,9 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
+   if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
+    continue;
+
    out << '\n';
    out << "   void update_vector_" << types[type_id] << '\n';
    out << "   (\n";
@@ -1088,6 +1104,9 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
+   if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
+    continue;
+
    out << '\n';
    out << "   " << storage_types[type_id];
    out << " *get_own_" << types[type_id] << "_storage\n";

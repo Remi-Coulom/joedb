@@ -40,7 +40,7 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   ) = 0;\
+   ) {}\
    virtual void update_vector_##type_id\
    (\
     Table_Id table_id,\
