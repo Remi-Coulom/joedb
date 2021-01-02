@@ -1,6 +1,11 @@
 History
 =======
 
+- 2021-01-??: 5.0
+
+  - Performance improvements of operations on large :doc:`vectors`.
+  - ``set_table_storage`` option in .joedbc is now ignored and produces a warning. 
+
 - 2020-12-07: 4.0
 
   - :doc:`concurrency`: a new mechanism to allow multiple distributed processes
