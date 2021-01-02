@@ -19,15 +19,8 @@ namespace joedb
     std::vector<Field_Id> field_ids;
    };
 
-   enum Table_Storage
-   {
-    freedom_keeper,
-    vector
-   };
-
    struct Table_Options
    {
-    Table_Storage storage;
     bool null_initialization;
    };
 
@@ -54,7 +47,6 @@ namespace joedb
    {
     for (auto table: db.get_tables())
     {
-     table_options[table.first].storage = freedom_keeper;
      table_options[table.first].null_initialization = false;
     }
    }
@@ -62,10 +54,6 @@ namespace joedb
    void set_name_space(std::vector<std::string> v)
    {
     name_space = std::move(v);
-   }
-   void set_table_storage(Table_Id table_id, Table_Storage storage)
-   {
-    table_options[table_id].storage = storage;
    }
    void set_table_null_initialization
    (
@@ -95,14 +83,6 @@ namespace joedb
    }
    bool get_generate_c_wrapper() const {return generate_c_wrapper;}
    bool get_generate_js_wrapper() const {return generate_js_wrapper;}
-
-   bool has_freedom_keeper() const
-   {
-    for (const auto &option: table_options)
-     if (option.second.storage == freedom_keeper)
-      return true;
-    return false;
-   }
  };
 }
 

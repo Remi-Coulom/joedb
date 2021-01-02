@@ -173,18 +173,10 @@ v[1] = {0.1, 1.234}
 v[2] = {0.2, 1.234}
 v[3] = {0.3, 1.234}
 v[4] = {0.4, 1.234}
-Error opening vector_hole.joedb
-Non-contiguous insert in vector storage of table point
-Error opening vector_hole_by_vector_insert.joedb
-Non-contiguous insert in vector storage of table point
-Error opening vector_delete.joedb
-Can't delete in vector storage of table point
 Testing exceptions...
 city_by_name unique index failure: ("Paris") at id = 3 was already at id = 1
 person_by_full_name unique index failure: ("Rémi", "Coulom") at id = 6 was already at id = 2
-Can't delete in vector storage of table translation
 Duplicate insert into table city
-Non-contiguous insert in vector storage of table translation
 insert_into: too big
 insert_vector: null record_id, or too big
 Paris

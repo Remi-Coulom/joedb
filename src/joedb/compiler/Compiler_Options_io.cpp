@@ -90,30 +90,7 @@ bool joedb::parse_compiler_options
   }
   else if (command == "set_table_storage")
   {
-   std::string table_name;
-   std::string storage_string;
-
-   iss >> table_name >> storage_string;
-
-   Table_Id table_id = db.find_table(table_name);
-   if (!table_id)
-   {
-    out << "Error: no such table: " << table_name << '\n';
-    return false;
-   }
-
-   Compiler_Options::Table_Storage storage;
-   if (storage_string == "freedom_keeper")
-    storage = Compiler_Options::Table_Storage::freedom_keeper;
-   else if (storage_string == "vector")
-    storage = Compiler_Options::Table_Storage::vector;
-   else
-   {
-    out << "Error: unknown table storage: " << storage_string << '\n';
-    return false;
-   }
-
-   compiler_options.set_table_storage(table_id, storage);
+   out << "Warning: set_table_storage is deprecated\n";
   }
   else if (command == "set_table_null_initialization")
   {

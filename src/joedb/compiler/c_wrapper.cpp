@@ -95,8 +95,6 @@ void generate_c_wrapper
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  const auto storage = options.get_table_options(table.first).storage;
-  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
   header << '\n';
   header << name << "_id_of_" << tname << ' ';
@@ -111,12 +109,9 @@ void generate_c_wrapper
   header << name << "_id_of_" << tname << ' ';
   header << name << "_get_next_" << tname << '(' << name << "_db *db, " << name << "_id_of_" << tname <<" id);\n";
 
-  if (has_delete)
-  {
-   header << "void " << name << "_delete_" << tname;
-   header << '(' << name << "_db *db, ";
-   header << name << "_id_of_" << tname << " id);\n";
-  }
+  header << "void " << name << "_delete_" << tname;
+  header << '(' << name << "_db *db, ";
+  header << name << "_id_of_" << tname << " id);\n";
 
   for (const auto &field: db.get_fields(table.first))
   {
@@ -201,8 +196,6 @@ void generate_c_wrapper
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  const auto storage = options.get_table_options(table.first).storage;
-  const bool has_delete = storage == Compiler_Options::Table_Storage::freedom_keeper;
 
   body << name << "_id_of_" << tname << ' ';
   body << name << "_new_" << tname << '(' << name << "_db *db)\n{\n";
@@ -237,16 +230,13 @@ void generate_c_wrapper
   body << "::id_of_" << tname << "(id)).get_id();\n";
   body << "}\n\n";
 
-  if (has_delete)
-  {
-   body << "void " << name << "_delete_" << tname;
-   body << '(' << name << "_db *db, ";
-   body << name << "_id_of_" << tname << " id)\n{\n";
-   body << convert.str();
-   body << ' ' << "p->delete_" << tname;
-   body << '(' << name << "::id_of_" << tname << "(id));\n";
-   body << "}\n\n";
-  }
+  body << "void " << name << "_delete_" << tname;
+  body << '(' << name << "_db *db, ";
+  body << name << "_id_of_" << tname << " id)\n{\n";
+  body << convert.str();
+  body << ' ' << "p->delete_" << tname;
+  body << '(' << name << "::id_of_" << tname << "(id));\n";
+  body << "}\n\n";
 
   for (const auto &field: db.get_fields(table.first))
   {

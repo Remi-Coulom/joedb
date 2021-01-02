@@ -449,7 +449,7 @@ int do_vector_test()
   {
    {
     vector_test::File_Database db("vector_hole_by_vector_insert.joedb");
-    db.set_x(v[1], 1.234f);
+    db.set_x(v[0], 1.234f);
    }
    {
     joedb::File file("vector_hole_by_vector_insert.joedb", joedb::Open_Mode::read_existing);
