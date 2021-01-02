@@ -556,7 +556,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   out << "\n  public:\n";
   out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
   out << "   id_of_" << tname << "(): id(0) {}\n";
-  out << "   operator bool() const {return id != 0;}\n";
+  out << "   operator Record_Id() const {return id;}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   Record_Id get_id() const {return id;}\n";
   out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
@@ -582,7 +582,10 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   for (const auto &field: db.get_fields(table.first))
   {
    out << "  std::vector<";
-   write_type(out, db, db.get_field_type(table.first, field.first), false);
+   out << storage_types
+   [
+    int(db.get_field_type(table.first, field.first).get_type_id())
+   ];
    fields.push_back("field_value_of_" + field.second);
    out << "> " << fields.back() << ";\n";
   }
@@ -720,8 +723,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     out << "storage_of_" << tname << ".field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
     out << "[record_id - 1]";
-    if (type.get_type_id() == Type::Type_Id::reference)
-     out << ".get_id()";
     out << ");\n";
    }
    out << "     out << \") at id = \" << record_id << ' ';\n";
@@ -1082,6 +1083,65 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
+ // get_own_storage
+ //
+ {
+  for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
+  {
+   out << '\n';
+   out << "   " << storage_types[type_id];
+   out << " *get_own_" << types[type_id] << "_storage\n";
+   out << "   (\n";
+   out << "    Table_Id table_id,\n";
+   out << "    Record_Id record_id,\n";
+   out << "    Field_Id field_id\n";
+   out << "   )\n";
+   out << "   override\n";
+   out << "   {\n";
+
+   for (auto &table: tables)
+   {
+    bool has_typed_field = false;
+
+    for (auto &field: db.get_fields(table.first))
+    {
+     const Type &type = db.get_field_type(table.first, field.first);
+     if (int(type.get_type_id()) == type_id)
+     {
+      has_typed_field = true;
+      break;
+     }
+    }
+
+    if (has_typed_field)
+    {
+     out << "    if (table_id == " << table.first << ")\n";
+     out << "    {\n";
+
+     for (auto &field: db.get_fields(table.first))
+     {
+      const Type &type = db.get_field_type(table.first, field.first);
+      if (int(type.get_type_id()) == type_id)
+      {
+       out << "     if (field_id == " << field.first << ")\n";
+       out << "     {\n";
+       out << "      return storage_of_" << table.second;
+       out << ".field_value_of_" << field.second << ".data();\n";
+       out << "     }\n";
+      }
+     }
+
+     out << "     return nullptr;\n";
+     out << "    }\n";
+    }
+   }
+
+   out << "    return nullptr;\n";
+   out << "   }\n";
+  }
+ }
+
+ //
  // Informative events are ignored
  //
  out << R"RRR(
@@ -1260,8 +1320,10 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.id));\n";
-   out << "    return storage_of_" << tname;
-   out << ".field_value_of_" << fname << "[record.id - 1];\n";
+   out << "    return (";
+   write_type(out, db, type, true);
+   out << ")(storage_of_" << tname;
+   out << ".field_value_of_" << fname << "[record.id - 1]);\n";
    out << "   }\n";
   }
  }
