@@ -9,7 +9,7 @@
 TEST(Freedom_Keeper, exceptions)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Freedom_Keeper<> fk;
+ joedb::Freedom_Keeper fk;
 
  EXPECT_ANY_THROW(fk.use(0));
  EXPECT_ANY_THROW(fk.use(1));
@@ -33,7 +33,7 @@ class Freedom_Keeper_Test: public ::testing::Test
 
 typedef ::testing::Types
 <
- joedb::Freedom_Keeper<>,
+ joedb::Freedom_Keeper,
  joedb::Compact_Freedom_Keeper
 >
 fk_types;
