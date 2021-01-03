@@ -32,10 +32,17 @@ namespace joedb
  void Posix_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const ssize_t result = ::write(fd, buffer, size);
+  size_t written = 0;
 
-  if (result != ssize_t(size))
-   throw Exception("Error writing file");
+  while (written < size)
+  {
+   const ssize_t result = ::write(fd, buffer + written, size - written);
+
+   if (result < 0)
+    throw Exception("Error writing file");
+   else
+    written += size_t(result);
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////

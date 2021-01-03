@@ -29,6 +29,28 @@ namespace joedb
   file.commit();
   polymorphic_readonly_test(file);
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void large_write_test(Generic_File &file)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (sizeof(size_t) > 4)
+  {
+   const size_t n = (1ULL << 29) + 10000ULL;
+   const uint64_t magic = 1234567890ULL;
+   std::vector<uint64_t> buffer(n);
+   std::fill_n(buffer.begin(), n, magic);
+
+   file.write_data((char *)buffer.data(), n * sizeof(uint64_t));
+
+   std::fill_n(buffer.begin(), n, 0);
+   file.set_position(0);
+   file.read_data((char *)buffer.data(), n * sizeof(uint64_t));
+
+   for (size_t i = 0; i < n; i += 1000)
+    EXPECT_EQ(buffer[i], magic);
+  }
+ }
 }
 
 #include "joedb/journal/Readonly_Memory_File.h"
@@ -79,6 +101,19 @@ TEST(Polymorphic_File, Portable_File)
  }
  std::remove(file_name);
 }
+#if 0
+/////////////////////////////////////////////////////////////////////////////
+TEST(Polymorphic_File, Portable_File_large_write)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const char * file_name = "portable_file_test.joedb";
+ {
+  joedb::Portable_File file(file_name, joedb::Open_Mode::create_new);
+  large_write_test(file);
+ }
+ std::remove(file_name);
+}
+#endif
 
 #include "joedb/journal/File.h"
 /////////////////////////////////////////////////////////////////////////////
@@ -89,6 +124,17 @@ TEST(Polymorphic_File, File)
  {
   joedb::File file(file_name, joedb::Open_Mode::create_new);
   polymorphic_test(file);
+ }
+ std::remove(file_name);
+}
+/////////////////////////////////////////////////////////////////////////////
+TEST(Polymorphic_File, File_large_write)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const char * file_name = "file_test.joedb";
+ {
+  joedb::File file(file_name, joedb::Open_Mode::create_new);
+  large_write_test(file);
  }
  std::remove(file_name);
 }
