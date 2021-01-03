@@ -435,6 +435,27 @@ int do_vector_test()
    }
   }
 
+  {
+   vector_test::File_Database db("vector_test.joedb");
+   auto x = db.update_vector_of_x(v, n);
+   auto y = db.update_vector_of_y(v, n);
+
+   for (size_t i = 0; i < n; i++)
+   {
+    x[i] = 0.2f * float(i);
+    y[i] = 5.678f;
+   }
+  }
+
+  {
+   vector_test::Readonly_Database db("vector_test.joedb");
+   for (size_t i = 0; i < n; i++)
+   {
+    std::cout << "v[" << i << "] = {" << db.get_x(v[i]);
+    std::cout << ", " << db.get_y(v[i]) << "}\n";
+   }
+  }
+
   try
   {
    vector_test::File_Database db("vector_hole.joedb");

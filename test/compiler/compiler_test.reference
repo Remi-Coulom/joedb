@@ -173,6 +173,11 @@ v[1] = {0.1, 1.234}
 v[2] = {0.2, 1.234}
 v[3] = {0.3, 1.234}
 v[4] = {0.4, 1.234}
+v[0] = {0, 5.678}
+v[1] = {0.2, 5.678}
+v[2] = {0.4, 5.678}
+v[3] = {0.6, 5.678}
+v[4] = {0.8, 5.678}
 Testing exceptions...
 city_by_name unique index failure: ("Paris") at id = 3 was already at id = 1
 person_by_full_name unique index failure: ("Rémi", "Coulom") at id = 6 was already at id = 2

@@ -327,6 +327,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    const std::string &fname = field.second;
    const Type &type = db.get_field_type(table.first, field.first);
+   const char *storage_type = storage_types[int(type.get_type_id())];
 
    out << '\n';
 
@@ -347,6 +348,49 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    if (type.get_type_id() == Type::Type_Id::reference)
     out << ".id";
    out << ");\n";
+   out << "   }\n\n";
+
+   //
+   // Vector updater
+   //
+   out << "   class vector_updater_for_" << tname << "__" << fname << '\n';
+   out << "   {\n";
+   out << "    private:\n";
+   out << "     Generic_File_Database &db;\n";
+   out << "     const id_of_" << tname << " record;\n";
+   out << "     const size_t size;\n";
+   out << '\n';
+   out << "    public:\n";
+   out << "     vector_updater_for_" << tname << "__" << fname << '\n';
+   out << "     (\n";
+   out << "      Generic_File_Database &db,\n";
+   out << "      id_of_" << tname << " record,\n";
+   out << "      size_t size\n";
+   out << "     ):\n";
+   out << "      db(db),\n";
+   out << "      record(record),\n";
+   out << "      size(size)\n";
+   out << "     {\n";
+   out << "     }\n";
+   out << '\n';
+   out << "     " << storage_type << " &operator[](size_t i)\n";
+   out << "     {\n";
+   out << "      return db.storage_of_" << tname;
+   out << ".field_value_of_" << fname << "[record.id + i - 1];\n";
+   out << "     }\n";
+   out << '\n';
+   out << "     ~vector_updater_for_" << tname << "__" << fname << "()\n";
+   out << "     {\n";
+   out << "      db.internal_update_vector_" << tname << "__" << fname << "(record, size, &(*this)[0]);\n";
+   out << "      db.journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record, " << field.first << ", size, &(*this)[0]);\n";
+   out << "     }\n";
+   out << "   };\n\n";
+
+   out << "   vector_updater_for_" << tname << "__" << fname;
+   out << " update_vector_of_" << fname << "(id_of_" << tname;
+   out << " record, size_t size)\n";
+   out << "   {\n";
+   out << "    return vector_updater_for_" << tname << "__" << fname << "(*this, record, size);\n";
    out << "   }\n";
   }
  }

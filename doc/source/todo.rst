@@ -74,8 +74,6 @@ Performance
 
 - vector optimization:
 
-  - get_own_storage for direct update of compiled database
-  - vector update in compiled database
   - optimize vector writing with large raw_writes
 
 - interpreted database
