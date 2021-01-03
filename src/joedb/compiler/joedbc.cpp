@@ -778,9 +778,11 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   for (auto &field: db.get_fields(table.first))
   {
    const std::string &fname = field.second;
+   const Type &type = db.get_field_type(table.first, field.first);
+   const char *storage_type = storage_types[int(type.get_type_id())];
+
    out << "   void internal_update_" << tname << "__" << fname;
    out << "\n   (\n    Record_Id record_id,\n    ";
-   const Type &type = db.get_field_type(table.first, field.first);
    write_type(out, db, type, true);
    out << "field_value_of_" << fname << "\n   )\n";
    out << "   {\n";
@@ -797,7 +799,34 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
      out << "    remove_index_of_" << index.name << "(record_id);\n";
      out << "    add_index_of_" << index.name << "(record_id);\n";
     }
-   out << "   }\n";
+   out << "   }\n\n";
+
+   out << "   void internal_update_vector_" << tname << "__" << fname << '\n';
+   out << "   (\n";
+   out << "    Record_Id record_id,\n";
+   out << "    size_t size,\n";
+   out << "    const " << storage_type << " *value\n";
+   out << "   )\n";
+   out << "   {\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id + size - 1));\n";
+   out << "    " << storage_type << " *target = &storage_of_" << tname;
+   out << ".field_value_of_" << fname << "[record_id - 1];\n";
+   out << "    if (target != value)\n";
+   out << "     std::copy_n(value, size, target);\n";
+
+   for (const auto &index: options.get_indices())
+    if (index.table_id == table.first &&
+        std::find(index.field_ids.begin(),
+                  index.field_ids.end(),
+                  field.first) != index.field_ids.end())
+    {
+     out << "    for (size_t i = 0; i < size; i++)\n";
+     out << "     remove_index_of_" << index.name << "(record_id + i);\n";
+     out << "    for (size_t i = 0; i < size; i++)\n";
+     out << "     add_index_of_" << index.name << "(record_id + i);\n";
+    }
+   out << "   }\n\n";
   }
  }
 
@@ -1014,17 +1043,8 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
       {
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
-       out << "      for (Record_Id i = 0; i < size; i++)\n";
-       out << "       internal_update_" << table.second;
-       out << "__" << field.second << "(record_id + i, ";
-       if (type.get_type_id() != Type::Type_Id::reference)
-        out << "value[i]";
-       else
-       {
-        out << "id_of_" << db.get_table_name(type.get_table_id());
-        out << "(value[i])";
-       }
-       out << ");\n";
+       out << "      internal_update_vector_" << table.second;
+       out << "__" << field.second << "(record_id, size, value);\n";
        out << "      return;\n";
        out << "     }\n";
       }
