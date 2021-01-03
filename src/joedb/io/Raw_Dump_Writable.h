@@ -37,7 +37,9 @@ namespace joedb
 
    void create_table(const std::string &name) override
    {
-    out << "create_table " << name << '\n';
+    out << "create_table ";
+    write_string(out, name);
+    out << '\n';
    }
 
    void drop_table(Table_Id table_id) override
@@ -48,14 +50,18 @@ namespace joedb
    void rename_table(Table_Id table_id,
                      const std::string &name) override
    {
-    out << "rename_table " << table_id << ' ' << name << '\n';
+    out << "rename_table " << table_id << ' ';
+    write_string(out, name);
+    out << '\n';
    }
 
    void add_field(Table_Id table_id,
                   const std::string &name,
                   Type type) override
    {
-    out << "add_field " << table_id << ' ' << name << ' ';
+    out << "add_field " << table_id << ' ';
+    write_string(out, name);
+    out << ' ';
     write_type(type);
     out << '\n';
    }
@@ -70,12 +76,16 @@ namespace joedb
                      const std::string &name) override
    {
     out << "rename_field " << table_id << ' ';
-    out << field_id << ' ' << name << '\n';
+    out << field_id << ' ';
+    write_string(out, name);
+    out << '\n';
    }
 
    void custom(const std::string &name) override
    {
-    out << "custom " << name << '\n';
+    out << "custom ";
+    write_string(out, name);
+    out << '\n';
    }
 
    void comment(const std::string &comment) override
