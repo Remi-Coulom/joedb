@@ -256,6 +256,24 @@ namespace joedb
      fk.use(index);
    }
 
+   void use_vector(size_t index, size_t size)
+   {
+    if
+    (
+     compact &&
+     index == compact_used_size + 2 &&
+     compact_used_size + size <= compact_free_size
+    )
+    {
+     compact_used_size += size;
+    }
+    else
+    {
+     for (size_t i = 0; i < size; i++)
+      use(index + i);
+    }
+   }
+
    void free(size_t index)
    {
     if (compact)

@@ -263,8 +263,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << ".size() + 1);\n";
   out << "    storage_of_" << tname << ".resize(storage_of_";
   out << tname << ".size() + size);\n";
-  out << "    for (size_t i = 0; i < size; i++)\n";
-  out << "     internal_insert_" << tname << "(result.id + i);\n";
+  out << "    internal_vector_insert_" << tname << "(result.id, size);\n";
   out << "    journal.insert_vector(" << table.first;
   out << ", result.id, size);\n";
   out << "    return result;\n";
@@ -812,6 +811,23 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     out << ";\n";
    }
 
+  out << "   }\n\n";
+
+  out << "   void internal_vector_insert_" << tname << "(Record_Id record_id, Record_Id size)\n";
+  out << "   {\n";
+  out << "    storage_of_" << tname << ".freedom_keeper.use_vector(record_id + 1, size);\n";
+
+  for (const auto &index: options.get_indices())
+   if (index.table_id == table.first)
+   {
+    out << "    std::fill_n\n";
+    out << "    (\n";
+    out << "     &storage_of_" << tname << ".iterator_over_" << index.name << "[record_id - 1],\n";
+    out << "     size,\n";
+    out << "     index_of_" << index.name << ".end()\n";
+    out << "    );\n";
+   }
+
   out << "   }\n";
  }
 
@@ -954,8 +970,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "    {\n";
    out << "     if (storage_of_" << name << ".size() < record_id + size - 1)\n";
    out << "      storage_of_" << name << ".resize(record_id + size - 1);\n";
-   out << "     for (Record_Id i = 0; i < size; i++)\n";
-   out << "      internal_insert_" << name << "(record_id + i);\n";
+   out << "     internal_vector_insert_" << name << "(record_id, size);\n";
    out << "    }\n";
   }
  }
