@@ -284,8 +284,19 @@ void joedb::Writable_Journal::update_vector_##type_id\
  table_of_last_operation = table_id;\
  record_of_last_operation = record_id;\
  field_of_last_update = field_id;\
- for (Record_Id i = 0; i < size; i++)\
-  file.write_method(value[i]);\
+\
+ if\
+ (\
+  Generic_File::is_big_endian() ||\
+  Type::Type_Id::type_id == Type::Type_Id::string ||\
+  Type::Type_Id::type_id == Type::Type_Id::reference\
+ )\
+ {\
+  for (size_t i = 0; i < size; i++)\
+   file.write_method(value[i]);\
+ }\
+ else\
+  file.write_data((char *)value, size * sizeof(type));\
 }
 #include "joedb/TYPE_MACRO.h"
 

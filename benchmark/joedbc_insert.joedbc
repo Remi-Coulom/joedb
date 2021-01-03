@@ -1,2 +1,1 @@
 namespace benchmark
-set_table_storage benchmark vector

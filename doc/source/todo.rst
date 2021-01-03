@@ -72,10 +72,6 @@ Concurrency
 Performance
 -----------
 
-- vector optimization:
-
-  - optimize vector writing with large raw_writes
-
 - interpreted database
 
   - use vector instead of map for tables and fields (with a bool indicating if deleted)

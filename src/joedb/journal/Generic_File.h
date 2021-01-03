@@ -72,6 +72,13 @@ namespace joedb
    std::string read_string();
    std::string safe_read_string(size_t max_size);
 
+   void write_data(const char *data, size_t n)
+   {
+    flush();
+    raw_write(data, n);
+    position += n;
+   }
+
    void read_data(char *data, size_t n)
    {
     JOEDB_ASSERT(write_buffer_index == 0);
