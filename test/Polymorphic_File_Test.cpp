@@ -48,7 +48,7 @@ namespace joedb
    file.read_data((char *)buffer.data(), n * sizeof(uint64_t));
 
    for (size_t i = 0; i < n; i += 1000)
-    EXPECT_EQ(buffer[i], magic);
+    ASSERT_EQ(buffer[i], magic) << "difference at index " << i;
   }
  }
 }

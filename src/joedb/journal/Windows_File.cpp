@@ -74,9 +74,23 @@ namespace joedb
  void Windows_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  // TODO: support for large writes
-  if (!WriteFile(file, buffer, DWORD(size), NULL, NULL))
-   throw_last_error();
+  const size_t max_size = 1ULL << 31;
+  size_t written = 0;
+
+  while (written < size)
+  {
+   const size_t remaining = size - written;
+   size_t block_size;
+   if (remaining > max_size)
+    block_size = max_size;
+   else
+    block_size = remaining;
+
+   if (!WriteFile(file, buffer + written, DWORD(block_size), NULL, NULL))
+    throw_last_error();
+
+   written += block_size;
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////
