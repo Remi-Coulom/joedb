@@ -410,11 +410,9 @@ int do_vector_test()
  // Vector storage
  //
  {
-  vector_test::id_of_point v;
-
   {
    vector_test::File_Database db("vector_test.joedb");
-   v = db.new_vector_of_point(n);
+   auto v = db.new_vector_of_point(n);
    for (size_t i = 0; i < n; i++)
    {
     db.set_x(v[i], 0.1f * float(i));
@@ -427,16 +425,8 @@ int do_vector_test()
   }
 
   {
-   vector_test::Readonly_Database db("vector_test.joedb");
-   for (size_t i = 0; i < n; i++)
-   {
-    std::cout << "v[" << i << "] = {" << db.get_x(v[i]);
-    std::cout << ", " << db.get_y(v[i]) << "}\n";
-   }
-  }
-
-  {
    vector_test::File_Database db("vector_test.joedb");
+   auto v = db.new_vector_of_point(n);
    auto x = db.update_vector_of_x(v, n);
    auto y = db.update_vector_of_y(v, n);
 
@@ -449,7 +439,8 @@ int do_vector_test()
 
   {
    vector_test::Readonly_Database db("vector_test.joedb");
-   for (size_t i = 0; i < n; i++)
+   auto v = db.get_point_table().first();
+   for (size_t i = 0; i < 2 * n; i++)
    {
     std::cout << "v[" << i << "] = {" << db.get_x(v[i]);
     std::cout << ", " << db.get_y(v[i]) << "}\n";
@@ -470,7 +461,7 @@ int do_vector_test()
   {
    {
     vector_test::File_Database db("vector_hole_by_vector_insert.joedb");
-    db.set_x(v[0], 1.234f);
+    db.set_x(db.get_point_table().first(), 1.234f);
    }
    {
     joedb::File file("vector_hole_by_vector_insert.joedb", joedb::Open_Mode::read_existing);

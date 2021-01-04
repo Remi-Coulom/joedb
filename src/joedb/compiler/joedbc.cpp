@@ -1167,7 +1167,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
        out << "      return storage_of_" << table.second;
-       out << ".field_value_of_" << field.second << ".data();\n";
+       out << ".field_value_of_" << field.second << ".data() + record_id - 1;\n";
        out << "     }\n";
       }
      }
