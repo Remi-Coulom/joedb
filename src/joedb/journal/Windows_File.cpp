@@ -80,11 +80,7 @@ namespace joedb
   while (written < size)
   {
    const size_t remaining = size - written;
-   size_t block_size;
-   if (remaining > max_size)
-    block_size = max_size;
-   else
-    block_size = remaining;
+   const size_t block_size = std::min(max_size, remaining);
 
    if (!WriteFile(file, buffer + written, DWORD(block_size), NULL, NULL))
     throw_last_error();
