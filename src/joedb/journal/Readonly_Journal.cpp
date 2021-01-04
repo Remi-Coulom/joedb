@@ -280,8 +280,8 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
     buffer.resize(size);\
     data = &buffer[0];\
    }\
-   else if (record_of_last_operation + size - 1 > writable.get_storage_capacity(table_of_last_operation))\
-    throw Exception("update_vector too big");\
+   else if (record_of_last_operation <= 0 || record_of_last_operation + size - 1 > writable.get_storage_capacity(table_of_last_operation))\
+    throw Exception("update_vector out of range");\
    read_vector_of_##type_id(data, size);\
    writable.update_vector_##type_id\
    (\
