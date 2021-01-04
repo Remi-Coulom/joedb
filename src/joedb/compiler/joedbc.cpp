@@ -1133,7 +1133,8 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "   (\n";
    out << "    Table_Id table_id,\n";
    out << "    Record_Id record_id,\n";
-   out << "    Field_Id field_id\n";
+   out << "    Field_Id field_id,\n";
+   out << "    Record_Id &capacity\n";
    out << "   )\n";
    out << "   override\n";
    out << "   {\n";
@@ -1156,6 +1157,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     {
      out << "    if (table_id == " << table.first << ")\n";
      out << "    {\n";
+     out << "     capacity = Record_Id(storage_of_" << table.second << ".freedom_keeper.size());\n";
 
      for (auto &field: db.get_fields(table.first))
      {
@@ -1179,21 +1181,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "   }\n";
   }
  }
-
- //
- // get_storage_capacity
- //
- out << "   Record_Id get_storage_capacity(Table_Id table_id) const override\n";
- out << "   {\n";
- for (auto &table: tables)
- {
-  const Table_Id id = table.first;
-  const auto &name = table.second;
-  out << "    if (table_id == " << id << ")\n";
-  out << "     return Record_Id(storage_of_" << name << ".freedom_keeper.size());\n";
- }
- out << "    return 0;\n";
- out << "   }\n";
 
  //
  // Informative events are ignored

@@ -54,7 +54,8 @@ namespace joedb
    (\
     Table_Id table_id,\
     Record_Id record_id,\
-    Field_Id field_id\
+    Field_Id field_id,\
+    Record_Id &capacity\
    ) override;
    #include "joedb/TYPE_MACRO.h"
  };

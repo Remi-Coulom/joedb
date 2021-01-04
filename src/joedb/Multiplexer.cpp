@@ -161,13 +161,15 @@ type *joedb::Multiplexer::get_own_##type_id##_storage\
 (\
  Table_Id table_id,\
  Record_Id record_id,\
- Field_Id field_id\
+ Field_Id field_id,\
+ Record_Id &capacity\
 )\
 {\
+ capacity = 0;\
  type *result = nullptr;\
  for (auto w: writables)\
  {\
-  result = w->get_own_##type_id##_storage(table_id, record_id, field_id);\
+  result = w->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
   if (result)\
    break;\
  }\

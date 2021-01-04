@@ -273,16 +273,6 @@ void joedb::Database::delete_from
 }
 
 /////////////////////////////////////////////////////////////////////////////
-Record_Id joedb::Database::get_storage_capacity(Table_Id table_id) const
-/////////////////////////////////////////////////////////////////////////////
-{
- auto it = tables.find(table_id);
- if (it == tables.end())
-  throw Exception("get_storage_capacity: invalid table_id");
- return it->second.get_storage_capacity();
-}
-
-/////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
 void joedb::Database::update_##type_id\
 (\
@@ -317,12 +307,14 @@ type *joedb::Database::get_own_##type_id##_storage\
 (\
  Table_Id table_id,\
  Record_Id record_id,\
- Field_Id field_id\
+ Field_Id field_id,\
+ Record_Id &capacity\
 )\
 {\
  auto it = tables.find(table_id);\
  if (it == tables.end())\
   throw Exception("get_own_storage: invalid table_id");\
+ capacity = it->second.get_storage_capacity();\
  return it->second.get_own_##type_id##_storage(record_id, field_id);\
 }
 #include "joedb/TYPE_MACRO.h"

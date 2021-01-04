@@ -127,6 +127,7 @@ TEST(Polymorphic_File, File)
  }
  std::remove(file_name);
 }
+#if 0
 /////////////////////////////////////////////////////////////////////////////
 TEST(Polymorphic_File, File_large_write)
 /////////////////////////////////////////////////////////////////////////////
@@ -138,3 +139,4 @@ TEST(Polymorphic_File, File_large_write)
  }
  std::remove(file_name);
 }
+#endif
