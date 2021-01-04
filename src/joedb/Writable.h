@@ -33,6 +33,8 @@ namespace joedb
                               Record_Id size) = 0;
    virtual void delete_from(Table_Id table_id, Record_Id record_id) = 0;
 
+   virtual Record_Id get_storage_capacity(Table_Id table_id) const {return 0;}
+
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual void update_##type_id\
    (\

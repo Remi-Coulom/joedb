@@ -71,6 +71,8 @@ namespace joedb
                       Record_Id size) override;
    void delete_from(Table_Id table_id, Record_Id record_id) override;
 
+   Record_Id get_storage_capacity(Table_Id table_id) const override;
+
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id\
    (\

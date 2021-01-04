@@ -35,6 +35,8 @@ namespace joedb
    void insert_record(Record_Id record_id);
    void insert_vector(Record_Id record_id, Record_Id size);
 
+   Record_Id get_storage_capacity() const {return Record_Id(freedom.size());}
+
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id(Record_Id rid, Field_Id fid) const\
    {\

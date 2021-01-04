@@ -273,6 +273,16 @@ void joedb::Database::delete_from
 }
 
 /////////////////////////////////////////////////////////////////////////////
+Record_Id joedb::Database::get_storage_capacity(Table_Id table_id) const
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto it = tables.find(table_id);
+ if (it == tables.end())
+  throw Exception("get_storage_capacity: invalid table_id");
+ return it->second.get_storage_capacity();
+}
+
+/////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, W)\
 void joedb::Database::update_##type_id\
 (\

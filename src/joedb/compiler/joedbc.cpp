@@ -1181,6 +1181,21 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  }
 
  //
+ // get_storage_capacity
+ //
+ out << "   Record_Id get_storage_capacity(Table_Id table_id) const override\n";
+ out << "   {\n";
+ for (auto &table: tables)
+ {
+  const Table_Id id = table.first;
+  const auto &name = table.second;
+  out << "    if (table_id == " << id << ")\n";
+  out << "     return Record_Id(storage_of_" << name << ".freedom_keeper.size());\n";
+ }
+ out << "    return 0;\n";
+ out << "   }\n";
+
+ //
  // Informative events are ignored
  //
  out << R"RRR(
