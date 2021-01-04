@@ -75,7 +75,6 @@ Performance
 - interpreted database
 
   - use vector instead of map for tables and fields (with a bool indicating if deleted)
-  - merge is very inefficient -> use fast vector copies
 
 - Pass strings by value for new and update
 

@@ -59,6 +59,16 @@ namespace joedb
    {\
     capacity = 0;\
     return nullptr;\
+   }\
+   const type *get_own_##type_id##_const_storage\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id,\
+    Record_Id &capacity\
+   ) const\
+   {\
+    return ((Writable *)(this))->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
    }
    #include "joedb/TYPE_MACRO.h"
 
