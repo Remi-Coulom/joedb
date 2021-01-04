@@ -868,8 +868,8 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    out << "    const " << storage_type << " *value\n";
    out << "   )\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
-   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id + size - 1));\n";
+   out << "    for (size_t i = 0; i < size; i++)\n";
+   out << "     JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id + i));\n";
    out << "    " << storage_type << " *target = &storage_of_" << tname;
    out << ".field_value_of_" << fname << "[record_id - 1];\n";
    out << "    if (target != value)\n";
