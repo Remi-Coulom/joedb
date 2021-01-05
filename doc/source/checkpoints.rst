@@ -40,15 +40,15 @@ Bulk Insert
 
 The table below is the minimum of 10 runs, with N = 10,000,000 rows inserted.
 
-+------+---------+--------+
-|      | sqlite3 | joedb  |
-+======+=========+========+
-| real | 10.266s | 2.803s |
-+------+---------+--------+
-| user |  7.838s | 0.567s |
-+------+---------+--------+
-| sys  |  0.319s | 0.200s |
-+------+---------+--------+
++------+---------+--------+----------------+
+|      | sqlite3 | joedb  | joedb (vector) |
++======+=========+========+================+
+| real | 10.266s | 2.803s |         1.937s |
++------+---------+--------+----------------+
+| user |  7.838s | 0.567s |         0.231s |
++------+---------+--------+----------------+
+| sys  |  0.319s | 0.200s |         0.192s |
++------+---------+--------+----------------+
 
 First the sqlite3 code:
 
@@ -84,6 +84,24 @@ Then, the equivalent joedb code:
   db.checkpoint_full_commit();
 
 The joedb code not only uses 13 times less CPU time, it is also shorter, much more readable, and has many less potential run-time errors.
+
+The performance of joedb can be further improved by using :doc:`vector insertions <vectors>`:
+
+.. code-block:: c++
+
+  {
+   auto v = db.new_vector_of_benchmark(N);
+   auto name = db.update_vector_of_name(v, N);
+   auto value = db.update_vector_of_value(v, N);
+
+   for (size_t i = 0; i < N; i++)
+   {
+    name[i] = "TOTO";
+    value[i] = int64_t(i + 1);
+   }
+  }
+
+  db.checkpoint_full_commit();
 
 Commit Rate
 ~~~~~~~~~~~
