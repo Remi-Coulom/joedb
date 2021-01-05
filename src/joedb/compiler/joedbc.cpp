@@ -23,6 +23,36 @@
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
+// type arrays
+/////////////////////////////////////////////////////////////////////////////
+#define STRINGIFY(X) #X
+#define EXPAND_AND_STRINGIFY(X) STRINGIFY(X)
+
+static char const * const types[] =
+{
+ nullptr,
+#define TYPE_MACRO(a, b, type_id, d, e) EXPAND_AND_STRINGIFY(type_id),
+#include "joedb/TYPE_MACRO.h"
+};
+
+static char const * const cpp_types[] =
+{
+ nullptr,
+#define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
+#include "joedb/TYPE_MACRO.h"
+};
+
+static char const * const storage_types[] =
+{
+ nullptr,
+#define TYPE_MACRO(storage, b, c, d, e) EXPAND_AND_STRINGIFY(storage),
+#include "joedb/TYPE_MACRO.h"
+};
+
+#undef EXPAND_AND_STRINGIFY
+#undef STRINGIFY
+
+/////////////////////////////////////////////////////////////////////////////
 void write_type
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -88,7 +118,7 @@ void write_tuple_type
   if (i > 0)
    out << ", ";
   const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-  write_type(out, db, type, false);
+  out << storage_types[int(type.get_type_id())];
  }
  out << ">";
 }
@@ -113,36 +143,6 @@ void write_index_type
 
  out << ", id_of_" << db.get_table_name(index.table_id) << ">";
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// type arrays
-/////////////////////////////////////////////////////////////////////////////
-#define STRINGIFY(X) #X
-#define EXPAND_AND_STRINGIFY(X) STRINGIFY(X)
-
-static char const * const types[] =
-{
- nullptr,
-#define TYPE_MACRO(a, b, type_id, d, e) EXPAND_AND_STRINGIFY(type_id),
-#include "joedb/TYPE_MACRO.h"
-};
-
-static char const * const cpp_types[] =
-{
- nullptr,
-#define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
-#include "joedb/TYPE_MACRO.h"
-};
-
-static char const * const storage_types[] =
-{
- nullptr,
-#define TYPE_MACRO(storage, b, c, d, e) EXPAND_AND_STRINGIFY(storage),
-#include "joedb/TYPE_MACRO.h"
-};
-
-#undef EXPAND_AND_STRINGIFY
-#undef STRINGIFY
 
 /////////////////////////////////////////////////////////////////////////////
 void generate_h(std::ostream &out, const Compiler_Options &options)
