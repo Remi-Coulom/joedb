@@ -19,17 +19,13 @@ int main(int argc, char **argv)
 #else
   {
    auto v = db.new_vector_of_benchmark(N);
+   auto name = db.update_vector_of_name(v, N);
+   auto value = db.update_vector_of_value(v, N);
 
+   for (size_t i = 0; i < N; i++)
    {
-    auto value = db.update_vector_of_value(v, N);
-    for (size_t i = 0; i < N; i++)
-     value[i] = int64_t(i + 1);
-   }
-
-   {
-    auto name = db.update_vector_of_name(v, N);
-    for (size_t i = 0; i < N; i++)
-     name[i] = "TOTO";
+    name[i] = "TOTO";
+    value[i] = int64_t(i + 1);
    }
   }
 #endif
