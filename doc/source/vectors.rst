@@ -40,3 +40,6 @@ replaced by:
 The destructor of the ``value`` object will perform a single large write of the
 data to the joedb file, which is more efficient than writing each record one by
 one.
+
+If a joedb file was created by a succession of different insertions and
+updates, then its loading performance will not be optimal. Optimal loading performance can be obtained by packing the file with :ref:`joedb_pack`.
