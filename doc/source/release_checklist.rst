@@ -5,7 +5,7 @@ Code Tests
 ----------
 
 - add tests to improve coverage if necessary
-- run tests in Windows, Linux, and PowerPC virtual machine
+- run tests in Windows, Cygwin, Linux, and PowerPC virtual machine
 - run the 3 fuzzers for a while
 
 Documentation
