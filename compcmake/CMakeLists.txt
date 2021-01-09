@@ -106,7 +106,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/Writable.cpp
  ../src/joedb/Multiplexer.cpp
  ../src/joedb/is_identifier.cpp
- ../src/joedb/external/wide_char_display_width.c
+ ../src/joedb/external/wide_char_display_width.cpp
  ../src/joedb/interpreter/Database.cpp
  ../src/joedb/interpreter/Table.cpp
  ../src/joedb/io/base64.cpp
@@ -153,7 +153,7 @@ add_executable(joedb_ssh_connect
 target_link_libraries(joedb_ssh_connect joedb)
 
 if (libssh_FOUND)
- target_link_libraries(joedb_ssh_connect ssh)
+ target_link_libraries(joedb_ssh_connect ${LIBSSH_LIBRARIES})
 endif()
 
 add_executable(joedb_logdump

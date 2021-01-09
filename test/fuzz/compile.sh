@@ -14,7 +14,7 @@ build()
   -std=c++11\
   -I ../../src\
   "$1"_fuzzer.cpp\
-  ../../src/joedb/external/wide_char_display_width.c\
+  ../../src/joedb/external/wide_char_display_width.cpp\
   ../../src/joedb/interpreter/Database.cpp\
   ../../src/joedb/is_identifier.cpp\
   ../../src/joedb/Writable.cpp\
