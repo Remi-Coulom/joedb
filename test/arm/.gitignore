@@ -1,0 +1,4 @@
+vmlinuz
+initrd.img
+*.tar.gz
+vexpress.img
