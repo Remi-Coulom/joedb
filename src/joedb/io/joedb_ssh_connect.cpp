@@ -2,6 +2,7 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/concurrency/SSH_Robust_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Shared_Local_File.h"
 #include "joedb/journal/File.h"
 
 #include <sstream>
@@ -37,7 +38,7 @@ namespace joedb
     ssh_log_level
    );
 
-   File file(argv[4], Open_Mode::write_existing_or_create_new);
+   Shared_Local_File file(argv[4]);
    Interpreted_Client client(connection, file);
 
    while (std::cin)
