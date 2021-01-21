@@ -8,6 +8,10 @@
 
 #include "joedb/concurrency/ssh_wrappers.h"
 
+#include <mutex>
+#include <condition_variable>
+#include <thread>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -25,6 +29,13 @@ namespace joedb
 
    ssh::Session session;
    ssh::SFTP sftp;
+
+   enum {keepalive_interval = 240};
+   bool keepalive_thread_must_stop;
+   std::mutex keepalive_mutex;
+   std::condition_variable keepalive_condition;
+   std::thread keepalive_thread;
+   void keepalive();
 
    void lock();
    void unlock();
@@ -65,6 +76,8 @@ namespace joedb
     bool trace,
     int ssh_log_level
    );
+
+   ~SSH_Connection();
  };
 }
 

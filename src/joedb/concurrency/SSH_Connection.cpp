@@ -22,9 +22,32 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ void SSH_Connection::keepalive()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::unique_lock<std::mutex> lock(keepalive_mutex);
+
+  while (true)
+  {
+   keepalive_condition.wait_for
+   (
+    lock,
+    std::chrono::seconds(keepalive_interval)
+   );
+
+   if (keepalive_thread_must_stop)
+    break;
+   else
+    ssh_send_ignore(session.get(), "keepalive");
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void SSH_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock<std::mutex> lock(keepalive_mutex);
+
   if (trace)
    std::cerr << full_remote_name << ": lock()... ";
 
@@ -71,6 +94,8 @@ namespace joedb
  void SSH_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock<std::mutex> lock(keepalive_mutex);
+
   if (trace)
    std::cerr << full_remote_name << ": unlock()\n";
 
@@ -82,6 +107,8 @@ namespace joedb
  int64_t SSH_Connection::raw_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock<std::mutex> lock(keepalive_mutex);
+
   if (trace)
    std::cerr << full_remote_name << ": pull()... ";
 
@@ -172,6 +199,8 @@ namespace joedb
   int64_t server_position
  )
  {
+  std::unique_lock<std::mutex> lock(keepalive_mutex);
+
   if (trace)
    std::cerr << full_remote_name << ": push()... ";
 
@@ -259,8 +288,21 @@ namespace joedb
    port,
    ssh_log_level
   ),
-  sftp(session)
+  sftp(session),
+  keepalive_thread([this](){keepalive();})
  {
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ SSH_Connection::~SSH_Connection()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  {
+   std::unique_lock<std::mutex> lock(keepalive_mutex);
+   keepalive_thread_must_stop = true;
+   keepalive_condition.notify_one();
+  }
+  keepalive_thread.join();
  }
 }
 
