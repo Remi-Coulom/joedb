@@ -29,7 +29,7 @@ namespace joedb
    std::cerr << full_remote_name << ": lock()... ";
 
   bool done = false;
-  const int max_attempts = 60;
+  const int max_attempts = 600;
 
   for (int attempt = 1; attempt <= max_attempts; attempt++)
   {
