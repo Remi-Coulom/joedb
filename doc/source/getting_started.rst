@@ -84,9 +84,16 @@ Below is a list of commands the interpreter understands:
 ``joedbc``
 ^^^^^^^^^^
 
-``joedbc`` is the joedb compiler. It takes two file names as parameters. The first file should contain joedbi commands to create the database schema. The second file contains compiler options.
+.. literalinclude:: ./tutorial/joedbc.out
+   :language: none
 
-The joedbc file should at least contain a ``namespace`` option that indicates the namespace in which the code will be generated. Other options indicate indexes, and which data structure should be used to store tables. These are explained in more details in the relevant sections: :doc:`indexes`, :doc:`vectors`.
+``joedbc`` is the joedb compiler. It takes two file names as parameters. The
+first file should contain joedbi commands to create the database schema. The
+second file contains compiler options.
+
+The joedbc file must at least contain a ``namespace`` option that indicates the
+namespace in which the code will be generated. It can also be used to
+:doc:`define indexes <indexes>`.
 
 .. _joedb_logdump:
 

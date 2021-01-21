@@ -20,4 +20,5 @@ joedb_embed.out
 concurrency_tutorial.out
 joedb_ssh_connect.out
 joedb_logdump.out
+joedbc.out
 tutorial
