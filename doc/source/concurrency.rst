@@ -13,9 +13,8 @@ database. Each process can keep data synchronized with 3 basic operations:
 
 - **pull**: update local data with new journal entries from the central
   database.
-- **lock_pull**: get exclusive write access to the central database. The lock
-  operation may have to wait for another process to release its lock first.
-  Also update local data.
+- **lock_pull**: get exclusive write access to the central database, and update
+  local data.
 - **push_unlock**: update the central database with the local modifications,
   and release the lock. This works only if the database is currently locked by
   a previous **lock_pull**.
@@ -61,12 +60,12 @@ blocked when one client has a write lock.
 
 There is no mechanism to deal with crash or disconnection of a client holding
 the lock. The mutex file will remain on the server, and it will keep blocking.
-If this happens, you'll have to fix the situation manually. If a disconnection
+If this happens, the situation has to be fixed manually. If a disconnection
 occurred in the middle of a big push, then the server database might be
 incomplete. It should be fixed (for instance, by copying the database of the
 client that disconnected) before removing the mutex.
 
-If you need better performance or reliability, use the joedb server instead.
+For better performance or reliability, use the joedb server instead.
 
 ``SSH_Robust_Connection``
 ^^^^^^^^^^^^^^^^^^^^^^^^^

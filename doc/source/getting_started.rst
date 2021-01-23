@@ -8,7 +8,7 @@ Installing with a package
 
 You can find some ready-made deb packages on the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_.
 
-On Ubuntu, you can install joedb this way:
+On Ubuntu, joedb can be installed this way:
 
 .. code-block:: bash
 
@@ -24,7 +24,10 @@ Uninstall:
 Compiling from source
 ---------------------
 
-The source code of the most recent stable release can be found on the `github Release page <https://github.com/Remi-Coulom/joedb/releases>`_. If you are more adventurous you can also clone the repository to get the most recent version: ``git clone https://github.com/Remi-Coulom/joedb.git``.
+The source code of the most recent stable release can be found on the `github
+Release page <https://github.com/Remi-Coulom/joedb/releases>`_. You can also
+clone the repository to get the most recent development version: ``git clone
+https://github.com/Remi-Coulom/joedb.git``.
 
 Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`__ for
 its build system. So it should be portable to almost any platform. Here are
@@ -39,19 +42,19 @@ Minimal prerequisites in Ubuntu can be installed with this command:
 
     sudo apt install g++ cmake ninja-build libssh-dev
 
-When the necessary packages are installed, the following commands should get you ready:
+When the necessary packages are installed, the following commands should compile everything:
 
 .. literalinclude:: ./tutorial/compiling.sh
    :language: bash
 
-If you wish to install joedb system-wide, you can run:
+These commands will install joedb system-wide:
 
 .. code-block:: bash
 
     sudo ninja install
     sudo ldconfig
 
-If you wish to run coverage tests, documentation, and benchmarks, also install:
+To run coverage tests, documentation, and benchmarks, also install:
 
 .. code-block:: bash
 
@@ -60,10 +63,11 @@ If you wish to run coverage tests, documentation, and benchmarks, also install:
 Windows
 ^^^^^^^
 
-Visual Studio supports cmake, starting from version 2017. Use "Open a local folder" to open the ``compcmake`` folder of the archive.
+Visual Studio supports cmake, starting from version 2017. Use "Open a local
+folder" to open the ``compcmake`` folder of the archive.
 
-If you wish to use the ssh connection, you can install the libssh library with
-vcpkg: ``vcpkg install libssh:x64-windows``.
+For the ssh connection, libssh is necessary, and can be installed with vcpkg:
+``vcpkg install libssh:x64-windows``.
 
 Joedb Tools
 -----------

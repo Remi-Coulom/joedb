@@ -61,6 +61,9 @@ Concurrency
 -----------
 - Separate class for SSH_Mutex, SSH_Lock, SSH_Keepalive (+thread-safe access to ssh connection)
 - Lock the SSH Mutex when copying to memory in Shared_Local_File
+- Local file connection (with .mutex as well, compatible with SSH_Connection and Shared_local_File)
+- Update (and check) remote checkpoint for better safety? This may have a
+  significant performance cost. If it is costly, make it an option.
 - Make a server (boost::asio or networking TS).
 - Make the system robust with respect to client disconnections during write
 

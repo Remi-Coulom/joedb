@@ -25,7 +25,7 @@ Opening a file for reading only (throws an exception if it does not exist):
 Using a ``joedb::File``
 -----------------------
 
-If you wish to have better control over the way the file is opened, you can open the database with a ``joedb::File`` instead.
+Opening the database with a ``joedb::File`` gives better control of the way the file is opened.
 
 This is an example:
 
