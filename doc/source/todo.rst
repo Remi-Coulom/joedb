@@ -59,6 +59,8 @@ Compiler
 
 Concurrency
 -----------
+- Separate class for SSH_Mutex, SSH_Lock, SSH_Keepalive (+thread-safe access to ssh connection)
+- Lock the SSH Mutex when copying to memory in Shared_Local_File
 - Make a server (boost::asio or networking TS).
 - Make the system robust with respect to client disconnections during write
 
