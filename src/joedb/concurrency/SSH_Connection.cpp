@@ -22,27 +22,6 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Connection::keepalive()
- ////////////////////////////////////////////////////////////////////////////
- {
-  ssh::Session_Lock lock(thread_safe_ssh_session);
-
-  while (true)
-  {
-   keepalive_condition.wait_for
-   (
-    lock,
-    std::chrono::seconds(keepalive_interval)
-   );
-
-   if (keepalive_thread_must_stop)
-    break;
-   else
-    ssh_send_ignore(lock.get_ssh_session(), "keepalive");
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void SSH_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -288,20 +267,8 @@ namespace joedb
    port,
    ssh_log_level
   ),
-  keepalive_thread([this](){keepalive();})
+  keepalive_thread(thread_safe_ssh_session)
  {
- }
-
- ////////////////////////////////////////////////////////////////////////////
- SSH_Connection::~SSH_Connection()
- ////////////////////////////////////////////////////////////////////////////
- {
-  {
-   ssh::Session_Lock lock(thread_safe_ssh_session);
-   keepalive_thread_must_stop = true;
-   keepalive_condition.notify_one();
-  }
-  keepalive_thread.join();
  }
 }
 

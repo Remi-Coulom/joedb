@@ -8,9 +8,7 @@
 
 #include "joedb/ssh/wrappers.h"
 #include "joedb/ssh/Thread_Safe_Session.h"
-
-#include <condition_variable>
-#include <thread>
+#include "joedb/ssh/Keepalive_Thread.h"
 
 namespace joedb
 {
@@ -28,12 +26,7 @@ namespace joedb
    const std::string full_remote_name;
 
    ssh::Thread_Safe_Session thread_safe_ssh_session;
-
-   enum {keepalive_interval = 240};
-   bool keepalive_thread_must_stop;
-   std::condition_variable keepalive_condition;
-   std::thread keepalive_thread;
-   void keepalive();
+   ssh::Keepalive_Thread keepalive_thread;
 
    void lock();
    void unlock();
@@ -74,8 +67,6 @@ namespace joedb
     bool trace,
     int ssh_log_level
    );
-
-   ~SSH_Connection();
  };
 }
 

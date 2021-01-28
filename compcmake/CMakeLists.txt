@@ -153,6 +153,7 @@ add_executable(joedb_ssh_connect
  ../src/joedb/concurrency/SSH_Connection.cpp
  ../src/joedb/concurrency/SSH_Robust_Connection.cpp
  ../src/joedb/concurrency/Shared_Local_File.cpp
+ ../src/joedb/ssh/Keepalive_Thread.cpp
 )
 target_link_libraries(joedb_ssh_connect joedb)
 

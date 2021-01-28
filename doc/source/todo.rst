@@ -59,7 +59,6 @@ Compiler
 
 Concurrency
 -----------
-- Separate class for SSH_Mutex, SSH_Lock, SSH_Keepalive (+thread-safe access to ssh connection)
 - Lock the SSH Mutex when copying to memory in Shared_Local_File
 - Local file connection (with .mutex as well, compatible with SSH_Connection and Shared_local_File)
 - Update (and check) remote checkpoint for better safety? This may have a
