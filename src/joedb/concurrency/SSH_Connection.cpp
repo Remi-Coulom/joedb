@@ -4,21 +4,9 @@
 #include "joedb/ssh/Thread_Safe_Session.h"
 #include "joedb/Exception.h"
 
-#include <fcntl.h>
 #include <thread>
 #include <chrono>
 #include <iostream>
-
-//
-// Windows does not define those
-//
-#ifndef S_IRUSR
-#define	S_IRUSR	0000400
-#endif
-
-#ifndef S_IWUSR
-#define	S_IWUSR	0000200
-#endif
 
 namespace joedb
 {

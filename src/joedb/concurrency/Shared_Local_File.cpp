@@ -24,7 +24,7 @@ namespace joedb
     )
    );
   }
-  catch(const joedb::Exception &e)
+  catch(const joedb::Exception &)
   {
    try
    {
