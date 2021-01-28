@@ -25,7 +25,7 @@ namespace joedb
  void SSH_Connection::keepalive()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::unique_lock<std::mutex> lock(keepalive_mutex);
+  ssh::Session_Lock lock(thread_safe_ssh_session);
 
   while (true)
   {
@@ -38,7 +38,7 @@ namespace joedb
    if (keepalive_thread_must_stop)
     break;
    else
-    ssh_send_ignore(session.get(), "keepalive");
+    ssh_send_ignore(lock.get_ssh_session(), "keepalive");
   }
  }
 
@@ -46,7 +46,7 @@ namespace joedb
  void SSH_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::unique_lock<std::mutex> lock(keepalive_mutex);
+  ssh::Session_Lock lock(thread_safe_ssh_session);
 
   if (trace)
    std::cerr << full_remote_name << ": lock()... ";
@@ -58,7 +58,7 @@ namespace joedb
   {
    sftp_file file = sftp_open
    (
-    sftp.get(),
+    lock.get_sftp_session(),
     mutex_file_name.c_str(),
     O_CREAT | O_EXCL,
     S_IRUSR
@@ -94,12 +94,12 @@ namespace joedb
  void SSH_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::unique_lock<std::mutex> lock(keepalive_mutex);
+  ssh::Session_Lock lock(thread_safe_ssh_session);
 
   if (trace)
    std::cerr << full_remote_name << ": unlock()\n";
 
-  if (sftp_unlink(sftp.get(), mutex_file_name.c_str()) < 0)
+  if (sftp_unlink(lock.get_sftp_session(), mutex_file_name.c_str()) < 0)
    throw Exception("Error removing remote mutex");
  }
 
@@ -107,7 +107,7 @@ namespace joedb
  int64_t SSH_Connection::raw_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::unique_lock<std::mutex> lock(keepalive_mutex);
+  ssh::Session_Lock lock(thread_safe_ssh_session);
 
   if (trace)
    std::cerr << full_remote_name << ": pull()... ";
@@ -118,7 +118,7 @@ namespace joedb
   {
    ssh::SFTP_Attributes attributes
    (
-    sftp_stat(sftp.get(), remote_file_name.c_str())
+    sftp_stat(lock.get_sftp_session(), remote_file_name.c_str())
    );
 
    server_position = int64_t(attributes.get()->size);
@@ -139,7 +139,7 @@ namespace joedb
 
    sftp_file file = sftp_open
    (
-    sftp.get(),
+    lock.get_sftp_session(),
     remote_file_name.c_str(),
     O_RDONLY,
     S_IRUSR | S_IWUSR
@@ -199,7 +199,7 @@ namespace joedb
   int64_t server_position
  )
  {
-  std::unique_lock<std::mutex> lock(keepalive_mutex);
+  ssh::Session_Lock lock(thread_safe_ssh_session);
 
   if (trace)
    std::cerr << full_remote_name << ": push()... ";
@@ -214,7 +214,7 @@ namespace joedb
 
    sftp_file file = sftp_open
    (
-    sftp.get(),
+    lock.get_sftp_session(),
     remote_file_name.c_str(),
     O_WRONLY | O_CREAT,
     S_IRUSR | S_IWUSR
@@ -281,14 +281,13 @@ namespace joedb
   trace(trace),
   mutex_file_name(remote_file_name + ".mutex"),
   full_remote_name(user + "@" + host + ":" + remote_file_name),
-  session
+  thread_safe_ssh_session
   (
    user,
    host,
    port,
    ssh_log_level
   ),
-  sftp(session),
   keepalive_thread([this](){keepalive();})
  {
  }
@@ -298,7 +297,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   {
-   std::unique_lock<std::mutex> lock(keepalive_mutex);
+   ssh::Session_Lock lock(thread_safe_ssh_session);
    keepalive_thread_must_stop = true;
    keepalive_condition.notify_one();
   }

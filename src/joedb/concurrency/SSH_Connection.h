@@ -7,8 +7,8 @@
 #ifdef JOEDB_HAS_SSH
 
 #include "joedb/ssh/wrappers.h"
+#include "joedb/ssh/Thread_Safe_Session.h"
 
-#include <mutex>
 #include <condition_variable>
 #include <thread>
 
@@ -27,12 +27,10 @@ namespace joedb
    const std::string mutex_file_name;
    const std::string full_remote_name;
 
-   ssh::Session session;
-   ssh::SFTP sftp;
+   ssh::Thread_Safe_Session thread_safe_ssh_session;
 
    enum {keepalive_interval = 240};
    bool keepalive_thread_must_stop;
-   std::mutex keepalive_mutex;
    std::condition_variable keepalive_condition;
    std::thread keepalive_thread;
    void keepalive();

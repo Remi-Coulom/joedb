@@ -19,6 +19,14 @@ namespace joedb
   }
 
   ///////////////////////////////////////////////////////////////////////////
+  inline void check_ssh_session_result(ssh_session session, int result)
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   if (result != SSH_OK)
+    throw joedb::Exception(ssh_get_error(session));
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
   class Session
   ///////////////////////////////////////////////////////////////////////////
   {
@@ -53,8 +61,7 @@ namespace joedb
 
     void check_result(int result) const
     {
-     if (result != SSH_OK)
-      throw joedb::Exception(ssh_get_error(session));
+     check_ssh_session_result(session, result);
     }
 
     ~Session()
@@ -132,11 +139,11 @@ namespace joedb
     const ssh_scp scp;
 
    public:
-    SCP(Session &session, int mode, const char *location):
-     scp(ssh_scp_new(session.get(), mode, location))
+    SCP(ssh_session session, int mode, const char *location):
+     scp(ssh_scp_new(session, mode, location))
     {
      check_not_null(scp);
-     session.check_result(ssh_scp_init(scp));
+     check_ssh_session_result(session, ssh_scp_init(scp));
     }
 
     ssh_scp get() const {return scp;}

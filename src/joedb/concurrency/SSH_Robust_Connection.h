@@ -50,8 +50,7 @@ namespace joedb
    void reconnect();
 
 #ifdef JOEDB_HAS_SSH
-   ssh::Session &get_session() {return connection->session;}
-   ssh::SFTP &get_sftp() {return connection->sftp;}
+   ssh::Thread_Safe_Session &get_session() {return connection->thread_safe_ssh_session;}
 #endif
  };
 }
