@@ -6,7 +6,7 @@
 
 #ifdef JOEDB_HAS_SSH
 
-#include "joedb/concurrency/ssh_wrappers.h"
+#include "joedb/ssh/wrappers.h"
 
 #include <mutex>
 #include <condition_variable>
