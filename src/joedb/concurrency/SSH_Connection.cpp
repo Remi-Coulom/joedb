@@ -1,6 +1,7 @@
 #ifdef JOEDB_HAS_SSH
 
 #include "joedb/concurrency/SSH_Connection.h"
+#include "joedb/ssh/Thread_Safe_Session.h"
 #include "joedb/Exception.h"
 
 #include <fcntl.h>
@@ -22,74 +23,13 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void SSH_Connection::lock()
- ////////////////////////////////////////////////////////////////////////////
- {
-  ssh::Session_Lock lock(thread_safe_ssh_session);
-
-  if (trace)
-   std::cerr << full_remote_name << ": lock()... ";
-
-  bool done = false;
-  const int max_attempts = 600;
-
-  for (int attempt = 1; attempt <= max_attempts; attempt++)
-  {
-   sftp_file file = sftp_open
-   (
-    lock.get_sftp_session(),
-    mutex_file_name.c_str(),
-    O_CREAT | O_EXCL,
-    S_IRUSR
-   );
-
-   if (file)
-   {
-    done = true;
-    sftp_close(file);
-    break;
-   }
-   else
-   {
-    if (trace)
-     std::cerr << "Retrying(" << attempt << "/" << max_attempts << ")... ";
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-   }
-  }
-
-  if (trace)
-  {
-   if (done)
-    std::cerr << "done.\n";
-   else
-    std::cerr << "timeout.\n";
-  }
-
-  if (!done)
-   throw Exception("SSH_Connection::lock: timeout");
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void SSH_Connection::unlock()
- ////////////////////////////////////////////////////////////////////////////
- {
-  ssh::Session_Lock lock(thread_safe_ssh_session);
-
-  if (trace)
-   std::cerr << full_remote_name << ": unlock()\n";
-
-  if (sftp_unlink(lock.get_sftp_session(), mutex_file_name.c_str()) < 0)
-   throw Exception("Error removing remote mutex");
- }
-
- ////////////////////////////////////////////////////////////////////////////
  int64_t SSH_Connection::raw_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  ssh::Session_Lock lock(thread_safe_ssh_session);
+  ssh::Session_Lock lock(remote_mutex.session);
 
-  if (trace)
-   std::cerr << full_remote_name << ": pull()... ";
+  if (remote_mutex.trace)
+   std::cerr << remote_mutex.full_remote_name << ": pull()... ";
 
   int64_t server_position = 0;
 
@@ -97,7 +37,7 @@ namespace joedb
   {
    ssh::SFTP_Attributes attributes
    (
-    sftp_stat(lock.get_sftp_session(), remote_file_name.c_str())
+    sftp_stat(lock.get_sftp_session(), remote_mutex.remote_file_name.c_str())
    );
 
    server_position = int64_t(attributes.get()->size);
@@ -113,13 +53,13 @@ namespace joedb
   {
    std::vector<char> v(size_t(server_position - client_position));
 
-   if (trace)
+   if (remote_mutex.trace)
     std::cerr << v.size() << " bytes... ";
 
    sftp_file file = sftp_open
    (
     lock.get_sftp_session(),
-    remote_file_name.c_str(),
+    remote_mutex.remote_file_name.c_str(),
     O_RDONLY,
     S_IRUSR | S_IWUSR
    );
@@ -151,7 +91,7 @@ namespace joedb
      }
 
      total_read += read_result;
-     if (trace)
+     if (remote_mutex.trace)
       std::cerr << read_result << ' ';
     }
 
@@ -164,7 +104,7 @@ namespace joedb
   else if (client_position > server_position)
    throw Exception("Trying to pull when ahead of server");
 
-  if (trace)
+  if (remote_mutex.trace)
    std::cerr << "done.\n";
 
   return server_position;
@@ -178,23 +118,23 @@ namespace joedb
   int64_t server_position
  )
  {
-  ssh::Session_Lock lock(thread_safe_ssh_session);
+  ssh::Session_Lock lock(remote_mutex.session);
 
-  if (trace)
-   std::cerr << full_remote_name << ": push()... ";
+  if (remote_mutex.trace)
+   std::cerr << remote_mutex.full_remote_name << ": push()... ";
 
   const int64_t client_position = client_journal.get_checkpoint_position();
   if (client_position > server_position)
   {
    std::vector<char> v(client_journal.get_raw_tail(server_position));
 
-   if (trace)
+   if (remote_mutex.trace)
     std::cerr << v.size() << " bytes... ";
 
    sftp_file file = sftp_open
    (
     lock.get_sftp_session(),
-    remote_file_name.c_str(),
+    remote_mutex.remote_file_name.c_str(),
     O_WRONLY | O_CREAT,
     S_IRUSR | S_IWUSR
    );
@@ -241,33 +181,15 @@ namespace joedb
     throw Exception("Could not open remote file for writing");
   }
 
-  if (trace)
+  if (remote_mutex.trace)
    std::cerr << "done.\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SSH_Connection::SSH_Connection
+ SSH_Connection::SSH_Connection(ssh::Remote_Mutex &remote_mutex):
  ////////////////////////////////////////////////////////////////////////////
- (
-  std::string user,
-  std::string host,
-  int port,
-  std::string remote_file_name,
-  bool trace,
-  int ssh_log_level
- ):
-  remote_file_name(remote_file_name),
-  trace(trace),
-  mutex_file_name(remote_file_name + ".mutex"),
-  full_remote_name(user + "@" + host + ":" + remote_file_name),
-  thread_safe_ssh_session
-  (
-   user,
-   host,
-   port,
-   ssh_log_level
-  ),
-  keepalive_thread(thread_safe_ssh_session)
+  remote_mutex(remote_mutex),
+  keepalive_thread(remote_mutex.session)
  {
  }
 }

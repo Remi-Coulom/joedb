@@ -22,6 +22,7 @@ namespace joedb
    public:
     Session_Lock(Thread_Safe_Session &thread_safe_session);
     operator std::unique_lock<std::mutex> &() {return lock;}
+
     ssh_session get_ssh_session() const;
     sftp_session get_sftp_session() const;
   };
@@ -54,6 +55,9 @@ namespace joedb
     {
      return Session_Lock(*this);
     }
+
+    const std::string &get_user() {return session.get_user();}
+    const std::string &get_host() {return session.get_host();}
   };
 
   ///////////////////////////////////////////////////////////////////////////

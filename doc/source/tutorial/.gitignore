@@ -21,4 +21,5 @@ concurrency_tutorial.out
 joedb_ssh_connect.out
 joedb_logdump.out
 joedbc.out
+joedb_pack.out
 tutorial

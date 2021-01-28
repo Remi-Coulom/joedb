@@ -5,8 +5,9 @@ History
 
   - Performance improvements of operations on large :doc:`vectors <vectors>`.
   - ``set_table_storage`` option in .joedbc is now ignored and produces a warning. 
-  - ``SSH_Connection`` keeps the connection alive during a long period of
-    inactivity by sending ignore messages to the server from time to time.
+  - ``SSH_Connection`` was deeply refactored. It keeps the connection alive
+    during a long period of inactivity by sending ignore messages to the server
+    from time to time. ``SSH_Robust_Connection`` was removed.
 
 - 2020-12-07: 4.0
 

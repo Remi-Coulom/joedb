@@ -45,5 +45,6 @@ data to the joedb file, which is more compact and efficient than writing each
 record one by one.
 
 If a joedb file was created by a succession of different insertions and
-updates, then its loading performance will not be optimal. Optimal loading
-performance can be obtained by packing the file with :ref:`joedb_pack`.
+updates, then the storage of a column will not be contiguous in the joedb file,
+and loading performance will not be optimal. Optimal loading performance can be
+obtained by packing the file with :ref:`joedb_pack`.

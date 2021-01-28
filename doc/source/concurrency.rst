@@ -67,13 +67,6 @@ client that disconnected) before removing the mutex.
 
 For better performance or reliability, use the joedb server instead.
 
-``SSH_Robust_Connection``
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This is a wrapper around ``SSH_Connection`` that will automatically reconnect
-and try again after a short pause whenever an exception is thrown. This way,
-the connection can survive long network outages.
-
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
 

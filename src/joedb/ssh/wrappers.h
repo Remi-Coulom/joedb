@@ -31,16 +31,20 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    private:
+    const std::string user;
+    const std::string host;
     const ssh_session session;
 
    public:
     Session
     (
-     const std::string &user,
-     const std::string &host,
+     std::string user,
+     std::string host,
      int port,
      int verbosity
     ):
+     user(user),
+     host(host),
      session(ssh_new())
     {
      check_not_null(session);
@@ -58,6 +62,9 @@ namespace joedb
     {
      return session;
     }
+
+    const std::string &get_user() {return user;}
+    const std::string &get_host() {return host;}
 
     void check_result(int result) const
     {

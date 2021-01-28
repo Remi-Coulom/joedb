@@ -131,6 +131,9 @@ This is the json output of the tutorial database:
 ``joedb_pack``
 ^^^^^^^^^^^^^^
 
+.. literalinclude:: ./tutorial/joedb_pack.out
+   :language: none
+
 ``joedb_pack`` takes two file names as parameters. It will pack the first file into the second one. Packing a file removes all its history, and keeps only the most recent data.
 
 In order to support schema recognition (see :doc:`schema_upgrade`), data-definition commands are not packed. They are left as-is, at the beginning of the log, in the same order as in the original file.

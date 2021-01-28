@@ -148,17 +148,15 @@ add_executable(joedbi
 )
 target_link_libraries(joedbi joedb)
 
-add_executable(joedb_ssh_connect
- ../src/joedb/io/joedb_ssh_connect.cpp
- ../src/joedb/concurrency/SSH_Connection.cpp
- ../src/joedb/concurrency/SSH_Robust_Connection.cpp
- ../src/joedb/concurrency/Shared_Local_File.cpp
- ../src/joedb/ssh/Keepalive_Thread.cpp
-)
-target_link_libraries(joedb_ssh_connect joedb)
-
 if (libssh_FOUND)
- target_link_libraries(joedb_ssh_connect ${LIBSSH_LIBRARIES})
+ add_executable(joedb_ssh_connect
+  ../src/joedb/io/joedb_ssh_connect.cpp
+  ../src/joedb/concurrency/SSH_Connection.cpp
+  ../src/joedb/concurrency/Shared_Local_File.cpp
+  ../src/joedb/ssh/Keepalive_Thread.cpp
+  ../src/joedb/ssh/Remote_Mutex.cpp
+ )
+ target_link_libraries(joedb_ssh_connect joedb ${LIBSSH_LIBRARIES})
 endif()
 
 add_executable(joedb_logdump

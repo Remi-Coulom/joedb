@@ -32,3 +32,4 @@ set +e
 ( cd $dir && PATH="." && joedb_ssh_connect ) 2>joedb_ssh_connect.out
 ( cd $dir && PATH="." && joedb_logdump ) 2>joedb_logdump.out
 ( cd $dir && PATH="." && joedbc ) 2>joedbc.out
+( cd $dir && PATH="." && joedb_pack ) 2>joedb_pack.out
