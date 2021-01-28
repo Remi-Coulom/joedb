@@ -38,10 +38,7 @@ namespace joedb
    if (trace)
     std::cerr << full_remote_name << ": lock()... ";
 
-   bool done = false;
-   const int max_attempts = 600;
-
-   for (int attempt = 1; attempt <= max_attempts; attempt++)
+   while (true)
    {
     sftp_file file = sftp_open
     (
@@ -53,28 +50,19 @@ namespace joedb
 
     if (file)
     {
-     done = true;
      sftp_close(file);
      break;
     }
     else
     {
      if (trace)
-      std::cerr << "Retrying(" << attempt << "/" << max_attempts << ")... ";
+      std::cerr << '.';
      std::this_thread::sleep_for(std::chrono::seconds(1));
     }
    }
 
    if (trace)
-   {
-    if (done)
-     std::cerr << "done.\n";
-    else
-     std::cerr << "timeout.\n";
-   }
-
-   if (!done)
-    throw Exception("SSH_Connection::lock: timeout");
+    std::cerr << "done.\n";
   }
 
   ///////////////////////////////////////////////////////////////////////////
