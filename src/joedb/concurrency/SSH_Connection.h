@@ -20,7 +20,7 @@ namespace joedb
 
    int64_t pull(Writable_Journal &client_journal) override
    {
-    ssh::Remote_Lock lock(remote_mutex);
+    Mutex_Lock lock(remote_mutex);
     const int64_t result = raw_pull(client_journal);
     return result;
    }

@@ -39,7 +39,7 @@ namespace joedb
    ssh::Remote_Mutex remote_mutex(session, file_name, true);
    SSH_Connection connection(remote_mutex);
 
-   Shared_Local_File file(file_name);
+   Shared_Local_File file(remote_mutex, file_name);
    Interpreted_Client client(connection, file);
 
    while (std::cin)

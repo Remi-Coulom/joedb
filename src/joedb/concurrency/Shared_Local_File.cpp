@@ -1,12 +1,17 @@
 #include "joedb/concurrency/Shared_Local_File.h"
+#include "joedb/concurrency/Mutex.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
 
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- Shared_Local_File::Shared_Local_File(const std::string &file_name)
+ Shared_Local_File::Shared_Local_File
  /////////////////////////////////////////////////////////////////////////////
+ (
+  Mutex &mutex,
+  const std::string &file_name
+ )
  {
   try
   {
@@ -23,6 +28,7 @@ namespace joedb
   {
    try
    {
+    Mutex_Lock lock(mutex);
     joedb::File readonly_file(file_name, joedb::Open_Mode::read_existing);
     file.reset(new joedb::Memory_File(joedb::Open_Mode::write_existing));
     file->copy(readonly_file);

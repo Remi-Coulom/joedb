@@ -1,6 +1,8 @@
 #ifndef joedb_ssh_Remote_Mutex_declared
 #define joedb_ssh_Remote_Mutex_declared
 
+#include "joedb/concurrency/Mutex.h"
+
 #include <string>
 
 namespace joedb
@@ -10,7 +12,7 @@ namespace joedb
   class Thread_Safe_Session;
 
   ///////////////////////////////////////////////////////////////////////////
-  class Remote_Mutex
+  class Remote_Mutex: public Mutex
   ///////////////////////////////////////////////////////////////////////////
   {
    public:
@@ -29,27 +31,8 @@ namespace joedb
      bool trace
     );
 
-    void lock();
-    void unlock();
-  };
-
-  ///////////////////////////////////////////////////////////////////////////
-  class Remote_Lock
-  ///////////////////////////////////////////////////////////////////////////
-  {
-   private:
-    Remote_Mutex &mutex;
-
-   public:
-    Remote_Lock(Remote_Mutex &mutex): mutex(mutex)
-    {
-     mutex.lock();
-    }
-
-    ~Remote_Lock()
-    {
-     mutex.unlock();
-    }
+    void lock() override;
+    void unlock() override;
   };
  }
 }
