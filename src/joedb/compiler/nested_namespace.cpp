@@ -14,7 +14,7 @@ namespace joedb
 
   size_t current = 0;
   size_t next = 0;
-  
+
   while ((next = s.find(delimiter, current)) != std::string::npos)
   {
    result.push_back(s.substr(current, next - current));

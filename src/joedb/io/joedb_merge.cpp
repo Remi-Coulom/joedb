@@ -27,7 +27,7 @@ namespace joedb
    std::cerr << " <output.joedb>\n";
    return 1;
   }
- 
+
   //
   // Create output file
   //

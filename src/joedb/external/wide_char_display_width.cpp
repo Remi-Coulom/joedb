@@ -118,7 +118,7 @@ int wide_char_display_width(uint32_t ucs)
 
   /* if we arrive here, ucs is not a combining or C0/C1 control character */
 
-  return 1 + 
+  return 1 +
     (ucs >= 0x1100 &&
      (ucs <= 0x115f ||                    /* Hangul Jamo init. consonants */
       (ucs >= 0x2e80 && ucs <= 0xa4cf && (ucs & ~0x0011UL) != 0x300a &&

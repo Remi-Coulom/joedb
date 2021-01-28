@@ -19,11 +19,11 @@ namespace joedb
  )
  {
   if (argc != 3)
-  { 
+  {
    std::cerr << "usage: " << argv[0] << " <input.joedb> <output.joedb>\n";
    return 1;
-  } 
- 
+  }
+
   try
   {
    File input_file(argv[1], Open_Mode::read_existing);
@@ -39,7 +39,7 @@ namespace joedb
    joedb::print_exception(e);
    return 1;
   }
- 
+
   return 0;
  }
 }
