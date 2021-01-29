@@ -13,11 +13,7 @@ namespace joedb
 
    while (true)
    {
-    condition.wait_for
-    (
-     lock,
-     std::chrono::seconds(interval)
-    );
+    condition.wait_for(lock, std::chrono::seconds(interval));
 
     if (must_stop)
      break;
