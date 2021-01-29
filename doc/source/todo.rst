@@ -59,10 +59,8 @@ Compiler
 
 Concurrency
 -----------
-- Local file connection (with .mutex as well, compatible with SSH_Connection and Shared_local_File)
-- Update (and check) remote checkpoint for better safety? This may have a
-  significant performance cost. If it is costly, make it an option.
-- Make a server (boost::asio or networking TS).
+- Dont waste time with ugly .mutex files: make a server
+- Event listener class instead of trace flag?
 - Make the system robust with respect to client disconnections during write
 
   - set a timeout: clients not allowed to hold a lock for too long.
