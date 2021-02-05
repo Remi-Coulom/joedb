@@ -9,7 +9,7 @@ Principle
 ---------
 
 Concurrency works by letting each process have a local copy of the central
-database. Each process can keep data synchronized with 3 basic operations:
+database. Each process can keep data synchronized with 3 operations:
 
 - **pull**: update local data with new journal entries from the central
   database.
@@ -38,8 +38,9 @@ Connections
 
 The constructor of the ``tutorial::Client`` class takes two parameters: a
 connection, and a file for local storage. The connection is an object of the
-``joedb::Connection`` class, that provides the 3 basic operations described
-above. This section presents the different kinds of available connections.
+``joedb::Connection`` class, that provides the 3 synchronization operations
+(pull, lock_pull, push_unlock). This section presents the different kinds of
+available connections.
 
 ``Embedded_Connection``
 ^^^^^^^^^^^^^^^^^^^^^^^
