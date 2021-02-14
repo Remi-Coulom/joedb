@@ -9,7 +9,7 @@ using namespace joedb;
 TEST(Merge_Test, merge_test)
 /////////////////////////////////////////////////////////////////////////////
 {
- const int databases = 3;
+ const int databases = 4;
  Database db[databases];
 
  Table_Id person;
@@ -55,6 +55,7 @@ TEST(Merge_Test, merge_test)
 
  merge(db[0], db[1]);
  merge(db[0], db[2]);
+ merge(db[0], db[3]);
 
  EXPECT_EQ(db[0].get_last_record_id(city), 3UL);
  EXPECT_EQ(db[0].get_last_record_id(person), 3UL);
