@@ -26,7 +26,11 @@ void joedb::merge(Database &merged, const Database &db)
   const Record_Id last_record_id = db.get_last_record_id(table_id);
   const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(table_id);
 
-  if (freedom_keeper.is_compact())
+  if (last_record_id == 0)
+  {
+   // do nothing, table is empty
+  }
+  else if (freedom_keeper.is_compact())
   {
    merged.insert_vector(table_id, offset[table_id] + 1, last_record_id);
 
