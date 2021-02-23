@@ -24,7 +24,7 @@ On-disk Storage
 
 Compiler
 --------
-- An uninitialized field is undefined. Debug mode: check that no undefined value is read?
+- set_table_storage last N (for web access log) (last 0 = none)
 - modularize code generation
 
   - Each module should have:
