@@ -21,22 +21,28 @@ int joedbi_main(int argc, char **argv)
  }
  else
  {
-  std::shared_ptr<joedb::File> file;
+  std::unique_ptr<joedb::File> file;
 
   try
   {
-   file = std::make_shared<joedb::File>
+   file.reset
    (
-    argv[1],
-    joedb::Open_Mode::write_existing_or_create_new
+    new joedb::File
+    (
+     argv[1],
+     joedb::Open_Mode::write_existing_or_create_new
+    )
    );
   }
   catch (const joedb::Exception &)
   {
-   file = std::make_shared<joedb::File>
+   file.reset
    (
-    argv[1],
-    joedb::Open_Mode::read_existing
+    new joedb::File
+    (
+     argv[1],
+     joedb::Open_Mode::read_existing
+    )
    );
   }
 
