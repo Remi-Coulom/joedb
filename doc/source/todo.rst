@@ -110,6 +110,7 @@ Other Ideas
 - make joedb_admin work on the new readable interface, and publish it
 - index and referential integrity: should be in the journal, and also implemented in the interpreted database.
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
+- Note that SQL does not support inf and nan. Use NULL instead.
 - Raw commands in interpreter?
 - import from SQL
 - index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).

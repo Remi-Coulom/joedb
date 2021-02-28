@@ -1,4 +1,5 @@
 #include "joedb/Selective_Writable.h"
+#include "joedb/Multiplexer.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/diagnostics.h"
@@ -17,7 +18,7 @@ int joedb_logdump_main(int argc, char **argv)
  if (argc <= 1)
  {
   std::cerr << "usage: " << argv[0];
-  std::cerr << " [--sql] [--raw] [--header] [--schema-only] [--ignore-errors] <file.joedb>\n";
+  std::cerr << " [--sql] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] <file.joedb>\n";
   return 1;
  }
  else
@@ -27,6 +28,7 @@ int joedb_logdump_main(int argc, char **argv)
   bool header = false;
   bool schema_only = false;
   bool ignore_errors = false;
+  bool load = false;
 
   int arg_index = 1;
 
@@ -60,6 +62,12 @@ int joedb_logdump_main(int argc, char **argv)
    arg_index++;
   }
 
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--load")
+  {
+   load = true;
+   arg_index++;
+  }
+
   joedb::File file(argv[arg_index], joedb::Open_Mode::read_existing);
 
   if (header)
@@ -86,19 +94,31 @@ int joedb_logdump_main(int argc, char **argv)
     return 1;
    }
 
-   std::shared_ptr<joedb::Writable> writable;
+   std::unique_ptr<joedb::Writable> writable;
 
    if (sql)
-    writable = std::make_shared<joedb::SQL_Dump_Writable>(std::cout);
+    writable.reset(new joedb::SQL_Dump_Writable(std::cout));
    else if (raw)
-    writable = std::make_shared<joedb::Raw_Dump_Writable>(std::cout);
+    writable.reset(new joedb::Raw_Dump_Writable(std::cout));
    else
-    writable = std::make_shared<joedb::Interpreter_Dump_Writable>(std::cout);
+    writable.reset(new joedb::Interpreter_Dump_Writable(std::cout));
 
    if (schema_only)
    {
-    joedb::Selective_Writable w(*writable, joedb::Selective_Writable::Mode::schema);
-    journal->replay_log(w);
+    joedb::Selective_Writable selective_writable
+    (
+     *writable,
+     joedb::Selective_Writable::Mode::schema
+    );
+    journal->replay_log(selective_writable);
+   }
+   else if (load)
+   {
+    joedb::Database db;
+    joedb::Multiplexer multiplexer;
+    multiplexer.add_writable(db);
+    multiplexer.add_writable(*writable);
+    journal->replay_log(multiplexer);
    }
    else
     journal->replay_log(*writable);
