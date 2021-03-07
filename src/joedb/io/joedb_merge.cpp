@@ -24,7 +24,8 @@ namespace joedb
    std::cerr << "usage: " << argv[0];
    std::cerr << " <db_1.joedb> ... <db_N.joedb> <output.joedb>\n";
    std::cerr << "or read file names from input stream: " << argv[0];
-   std::cerr << " <output.joedb>\n";
+   std::cerr << " <output.joedb> <file_list.txt\n";
+   std::cerr << "Note: output file must not already exist\n";
    return 1;
   }
 

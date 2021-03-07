@@ -6,6 +6,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
+#include <sstream>
 
 namespace joedb
 {
@@ -83,7 +85,12 @@ namespace joedb
    fd = open(file_name, O_RDONLY);
 
   if (fd < 0)
-   throw Exception("Could not open file: " + std::string(file_name));
+  {
+   std::stringstream error_message;
+   error_message << "Could not open " << file_name << ": ";
+   error_message << strerror(errno) << '.';
+   throw Exception(error_message.str());
+  }
 
   if (mode != Open_Mode::read_existing && !lock_file())
    throw Exception("File locked: " + std::string(file_name));
