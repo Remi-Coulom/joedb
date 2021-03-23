@@ -73,6 +73,8 @@ Concurrency
 Performance
 -----------
 
+- vector of size 1: write ordinary insert and update to the journal instead
+
 - interpreted database
 
   - use vector instead of map for tables and fields (with a bool indicating if deleted)
