@@ -88,6 +88,19 @@ else()
  message("== WARNING: install sqlite3 for sqlite3 benchmarks")
 endif()
 
+# Networking TS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set (NETWORKING_DIR "${PROJECT_SOURCE_DIR}/../../networking-ts-impl")
+
+if (IS_DIRECTORY "${NETWORKING_DIR}")
+ set(HAS_NETWORKING TRUE)
+ message("== networking found")
+ include_directories(BEFORE SYSTEM ${NETWORKING_DIR}/include)
+else()
+ set(HAS_NETWORKING FALSE)
+ message("== networking not found")
+endif()
+
 #############################################################################
 # Includes
 #############################################################################
@@ -244,6 +257,14 @@ add_executable(joedb_file_type
  ../src/joedb/journal/File.cpp
  ../src/joedb/io/joedb_file_type.cpp
 )
+
+if (HAS_NETWORKING)
+ add_executable(joedb_server
+  ../src/joedb/io/joedb_server.cpp
+  ../src/joedb/concurrency/Server.cpp
+ )
+ target_link_libraries(joedb_server joedb)
+endif()
 
 #############################################################################
 # Custom commands
