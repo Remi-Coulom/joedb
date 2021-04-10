@@ -167,7 +167,8 @@ def GetCompilationInfoForFile( filename ):
   return database.GetCompilationInfoForFile( filename )
 
 
-def FlagsForFile( filename, **kwargs ):
+def Settings(**kwargs):
+  filename = kwargs['filename']
   if database:
     # Bear in mind that compilation_info.compiler_flags_ does NOT return a
     # python list, but a "list-like" StringVec object
