@@ -60,7 +60,7 @@ A simple example of how to use joedb is available in the
 ``tutorial.joedbi`` file:
 
 .. literalinclude:: ./tutorial/tutorial.joedbi
-   :language: none
+   :language: joedbi
 
 Compiler instructions are in ``tutorial.joedbc``:
 

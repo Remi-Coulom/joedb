@@ -9,7 +9,7 @@ Joedb offers functions to allocate a set of consecutive rows in a table, and
 manipulate them like a vector. For instance, when using a database defined by
 this schema:
 
-.. code-block:: none
+.. code-block:: joedbi
 
     create_table float
     add_field float value float32

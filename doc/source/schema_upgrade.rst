@@ -21,7 +21,7 @@ simple schema with persons and their names:
 
 ``schema_v1.joedbi``:
 
-.. code-block:: none
+.. code-block:: joedbi
 
   create_table person
   add_field person name string
@@ -32,7 +32,7 @@ set the default language of existing persons to English.
 
 ``schema_v2.joedbi``:
 
-.. code-block:: none
+.. code-block:: joedbi
 
   create_table person
   add_field person name string
