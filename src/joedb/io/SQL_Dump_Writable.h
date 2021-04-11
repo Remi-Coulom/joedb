@@ -165,6 +165,7 @@ namespace joedb
     out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
    }
    #define TYPE_MACRO_NO_STRING
+   #define TYPE_MACRO_NO_REFERENCE
    #include "joedb/TYPE_MACRO.h"
 
    void update_string(Table_Id table_id,
@@ -175,6 +176,22 @@ namespace joedb
     out << "UPDATE \"" << db.get_table_name(table_id);
     out << "\" SET \"" << db.get_field_name(table_id, field_id) << "\" = ";
     joedb::write_sql_string(out, value);
+    out << " WHERE " << id_field_name << " = " << record_id << ";\n";
+   }
+
+   void update_reference(Table_Id table_id,
+                         Record_Id record_id,
+                         Field_Id field_id,
+                         Record_Id value) override
+   {
+    out << "UPDATE \"" << db.get_table_name(table_id);
+    out << "\" SET \"" << db.get_field_name(table_id, field_id) << "\" = ";
+
+    if (value == 0)
+     out << "NULL";
+    else
+     out << value;
+
     out << " WHERE " << id_field_name << " = " << record_id << ";\n";
    }
  };
