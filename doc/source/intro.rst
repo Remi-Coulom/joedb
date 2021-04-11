@@ -82,9 +82,9 @@ used to manipulate data conveniently in C++, as shown in the
 
 This program can be compiled with this command:
 
-.. code-block:: none
+.. code-block:: bash
 
-    $ c++ -o tutorial tutorial_main.cpp tutorial.cpp -ljoedb
+    c++ -o tutorial tutorial_main.cpp tutorial.cpp -ljoedb
 
 Running the resulting program will produce this output:
 
