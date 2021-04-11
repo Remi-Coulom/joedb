@@ -58,7 +58,7 @@ To run coverage tests, documentation, and benchmarks, also install:
 
 .. code-block:: bash
 
-    sudo apt-get install lcov python-sphinx python-sphinx-rtd-theme python-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser
+    sudo apt-get install lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser
 
 Windows
 ^^^^^^^
