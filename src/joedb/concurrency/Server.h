@@ -4,11 +4,16 @@
 #include "joedb/journal/Writable_Journal.h"
 
 #include <list>
+#include <atomic>
 
 #include <experimental/io_context>
 #include <experimental/internet>
 
 namespace net = std::experimental::net;
+
+#ifndef CDECL
+#define CDECL
+#endif
 
 namespace joedb
 {
@@ -17,9 +22,14 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
+   static std::atomic<bool> interrupted;
+   static void CDECL signal_handler(int sig);
+   enum {interrupt_check_seconds = 5};
+
    joedb::Writable_Journal &journal;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
+   net::steady_timer timer;
 
    struct Connection_Data
    {
@@ -35,9 +45,12 @@ namespace joedb
    void start_accept();
    void handle_accept
    (
-    const std::error_code &error,
+    std::error_code error,
     net::ip::tcp::socket socket
    );
+
+   void start_interrupt_timer();
+   void handle_interrupt_timer(std::error_code error);
 
   public:
    Server
