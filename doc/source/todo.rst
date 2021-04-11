@@ -96,6 +96,7 @@ Performance
 
 Other Ideas
 -----------
+- use hdoc for documentation? https://hdoc.io/
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
 - apply schema upgrade to readonly databases (custom functions)
 - only one file.check_write_buffer() call in write<T> and compact_write<T>:
