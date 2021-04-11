@@ -96,4 +96,4 @@ binary file, so it is not convenient to inspect it directly. The
 :ref:`joedb_logdump` tool will produce a readable log:
 
 .. literalinclude:: ./tutorial/logdump.out
-   :language: none
+   :language: joedbi

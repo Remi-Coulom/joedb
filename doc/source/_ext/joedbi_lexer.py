@@ -11,6 +11,11 @@ class JoedbiLexer(RegexLexer):
             (r'create_table\s+', Keyword, 'table'),
             (r'add_field\s+', Keyword, 'table_field_type'),
             (r'custom\s+', Keyword, 'custom'),
+            (r'comment\s+', Keyword, 'literal'),
+            (r'insert_into\s+', Keyword, 'table_literal'),
+            (r'update\s+', Keyword, 'table_integer_field_literal'),
+            (r'delete_from\s+', Keyword, 'table_integer'),
+            (r'timestamp\s+', Keyword, 'timestamp'),
             (r'.+', Literal)
         ],
         'table': [
@@ -28,8 +33,32 @@ class JoedbiLexer(RegexLexer):
         ],
         'custom': [
             (r'[a-zA-Z_]\w*', Name.Function)
+        ],
+        'literal': [
+            (r"\"([^\\\"]|\\.)*\"", Literal.String),
+            (r"\d+", Number.Integer)
+        ],
+        'integer': [
+            (r"\d+", Number.Integer)
+        ],
+        'table_literal': [
+            (r'[a-zA-Z_]\w*\s+', Name.Class, 'literal')
+        ],
+        'table_integer_field_literal': [
+            (r'[a-zA-Z_]\w*\s+', Name.Class, 'integer_field_literal')
+        ],
+        'integer_field_literal': [
+            (r"\d+\s+", Number.Integer, 'field_literal')
+        ],
+        'field_literal': [
+            (r'[a-zA-Z_]\w*\s+', Name.Variable, 'literal')
+        ],
+        'table_integer': [
+            (r'[a-zA-Z_]\w*\s+', Name.Class, 'integer')
+        ],
+        'timestamp': [
+            (r'[a-zA-Z0-9\ \-\:]+', Literal.String)
         ]
-
     }
 
 def setup(app):
