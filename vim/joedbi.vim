@@ -35,11 +35,11 @@ syn match joedbi_comment "#.*$"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 hi def link joedbi_keyword              Statement
 hi def link joedbi_comment              Comment
-hi def link joedbi_table                Special
-hi def link joedbi_table_field          Special
-hi def link joedbi_table_field_type     Special
-hi def link joedbi_field                Identifier
-hi def link joedbi_field_type           Identifier
+hi def link joedbi_table                Identifier
+hi def link joedbi_table_field          Identifier
+hi def link joedbi_table_field_type     Identifier
+hi def link joedbi_field                Special
+hi def link joedbi_field_type           Special
 hi def link joedbi_type                 Type
 hi def link joedbi_function             Function
 

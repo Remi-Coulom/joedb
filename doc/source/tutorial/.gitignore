@@ -7,7 +7,7 @@ tutorial_wrapper.cpp
 edited_tutorial.h
 tutorial.joedb
 tutorial.out
-logdump.out
+logdump.joedbi
 logdump.sql
 joedbi_help.out
 index_tutorial.joedb
