@@ -19,8 +19,6 @@ code to adjust table content during an upgrade.
 Here is an example that shows how it works. Let's suppose we start from a
 simple schema with persons and their names:
 
-``schema_v1.joedbi``:
-
 .. code-block:: joedbi
 
   create_table person
@@ -29,8 +27,6 @@ simple schema with persons and their names:
 Then, in the next version, we wish to add a language table, and indicate a
 preferred language for each person. When upgrading an old database, we wish to
 set the default language of existing persons to English.
-
-``schema_v2.joedbi``:
 
 .. code-block:: joedbi
 
