@@ -1,8 +1,9 @@
 History
 =======
 
-- 2021-01-??: 5.0
+- 2021-??-??: 5.0
 
+  - vim syntax highlighting for ``joedbi`` and ``joedbc`` files.
   - Performance improvements of operations on large :doc:`vectors <vectors>`.
   - ``set_table_storage`` option in .joedbc is now ignored and produces a warning. 
   - ``SSH_Connection`` was deeply refactored. It keeps the connection alive
