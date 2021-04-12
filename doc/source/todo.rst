@@ -117,7 +117,6 @@ Other Ideas
 - Raw commands in interpreter?
 - import from SQL
 - index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
-- vim syntax and completer with YouCompleteMe
 - GUI editor similar to the icga database editor (fastcgi, interpreter)
 - rapidly undo-able history
 - add explicit keyword to constructors
