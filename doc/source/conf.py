@@ -34,7 +34,8 @@ sys.path.append(os.path.abspath("./_ext"))
 extensions = [
     'sphinx.ext.imgmath',
     'sphinxcontrib.spelling',
-    'joedbi_lexer'
+    'joedbi_lexer',
+    'joedbc_lexer'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

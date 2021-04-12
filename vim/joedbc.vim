@@ -3,6 +3,8 @@ if exists("b:current_syntax")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syn keyword joedbc_keyword generate_c_wrapper
+
 syn keyword joedbc_keyword namespace nextgroup=joedbc_namespace skipwhite
 
 syn match joedbc_namespace '[a-zA-Z_]\w*' contained nextgroup=joedbc_namespace_continuation

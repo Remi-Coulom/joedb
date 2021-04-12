@@ -17,7 +17,7 @@ Note that there must be no space around the comma.
 For example, the joedb tutorial has these index definitions:
 
 .. literalinclude:: ./tutorial/tutorial.joedbc
-   :language: none
+   :language: joedbc
 
 So, two cities can't have the same name, but two persons can. An update that would create a duplicate city name will throw an exception.
 

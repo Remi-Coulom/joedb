@@ -65,7 +65,7 @@ A simple example of how to use joedb is available in the
 Compiler instructions are in ``tutorial.joedbc``:
 
 .. literalinclude:: ./tutorial/tutorial.joedbc
-   :language: none
+   :language: joedbc
 
 This tutorial database can be compiled into C++ source code with :ref:`joedbc`:
 
