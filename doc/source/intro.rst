@@ -69,9 +69,9 @@ Compiler instructions are in ``tutorial.joedbc``:
 
 This tutorial database can be compiled into C++ source code with :ref:`joedbc`:
 
-.. code-block:: none
+.. code-block:: bash
 
-    $ joedbc tutorial.joedbi tutorial.joedbc
+    joedbc tutorial.joedbi tutorial.joedbc
 
 This will produce ``tutorial.h`` and ``tutorial.cpp``, two files that can be
 used to manipulate data conveniently in C++, as shown in the
