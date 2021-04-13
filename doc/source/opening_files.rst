@@ -3,12 +3,14 @@
 Opening Files
 =============
 
-Joedb offers different ways to open a file. The simplest way is to pass a file name to the constructor of either ``File_Database`` or ``Readonly_Database``.  But subclasses of the ``joedb::Generic_File`` class allows using various sources of data, when passed as parameter to the constructor of either ``Generic_File_Database`` or ``Generic_Readonly_Database``.
+The simplest way to open a file is to pass a file name to the constructor of
+either ``File_Database`` or ``Readonly_Database``. But subclasses of the
+``joedb::Generic_File`` class allows using various sources of data, when passed
+as parameter to the constructor of either ``Generic_File_Database`` or
+``Generic_Readonly_Database``.
 
-With a file name
-----------------
-
-The simplest way to open a database is to give a file name directly.
+Using ``Database`` constructors
+-------------------------------
 
 Opening a file for reading and writing (creates the file if it does not exist):
 
@@ -46,7 +48,7 @@ Available modes are:
 
 So ``write_existing`` and ``create_new`` are available only with this method.
 
-Using a C++ stream
+Using a C++ Stream
 ------------------
 
 ``joedb::File`` is in fact a specialization of a more general ``joedb::Generic_File`` class that offers more flexibility. By subclassing ``joedb::Generic_File`` it is possible to let joedb use various ways to read and store data.
@@ -56,10 +58,19 @@ Two such subclasses are ``joedb::Stream_File`` and ``joedb::Input_Stream_File``,
 .. literalinclude:: ./tutorial/stream_tutorial.cpp
    :language: c++
 
-Opening Android assets directly from the apk
+Memory Files
+------------
+
+``joedb::Readonly_Memory_File`` and ``joedb::Memory_File`` allow reading or
+writing joedb files from/to memory.
+
+:ref:`joedb_embed` can be used to embed a joedb database into a C++ string
+literal.
+
+Opening Android Assets Directly from the APK
 --------------------------------------------
 
-The Android NDK offers functions that return a file descriptor as well as a position and size of an asset within the apk (see the NDK Android Asset `Documentation <https://developer.android.com/ndk/reference/group/asset>`_). It is possible to directly open such an asset without extracting it, using a ``File_Slice``. The constructor of a ``File_Slice`` takes 3 parameters: a C ``FILE*`` , a starting position, and a file length. It can be used as shown in the example below:
+The Android NDK offers functions that return a file descriptor as well as a position and size of an asset within the APK (see the NDK Android Asset `Documentation <https://developer.android.com/ndk/reference/group/asset>`_). It is possible to directly open such an asset without extracting it, using a ``File_Slice``. The constructor of a ``File_Slice`` takes 3 parameters: a C ``FILE*`` , a starting position, and a file length. It can be used as shown in the example below:
 
 .. code-block:: c++
 
@@ -69,6 +80,9 @@ The Android NDK offers functions that return a file descriptor as well as a posi
 
 Class Hierarchy
 ---------------
+
+Database
+^^^^^^^^
 
 .. code-block:: c++
 
@@ -83,3 +97,22 @@ Class Hierarchy
   // These are writable databases based on a joedb::Generic_File
   class Generic_File_Database: public Database;
   class File_Database: public Generic_File_Database;
+
+File
+^^^^
+
+.. code-block:: c++
+
+  class Generic_File;
+
+  // File is a typedef of one of these 3 system-specific classes:
+  class Posix_File: public Generic_File;
+  class Windows_File: public Generic_File;
+  class Portable_File: public Generic_File;
+
+  class Memory_File: public Generic_File;
+  class Readonly_Memory_File: public Generic_File;
+
+  class Stream_File: public Generic_File;
+
+  class File_Slice: public Portable_File;

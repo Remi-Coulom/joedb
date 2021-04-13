@@ -3,7 +3,8 @@
 Concurrency
 ===========
 
-Joedb offers mechanisms to access a single database from multiple processes.
+Joedb offers mechanisms to access a single database from multiple processes on
+the same machine, or from remote machines over the network.
 
 Principle
 ---------

@@ -76,7 +76,7 @@ Compiling joedb produces a few executable tools.
 
 ``joedbi``
 ^^^^^^^^^^
-``joedbi`` is the joedb interpreter. When invoked without parameters, it will create a database in memory. When invoked with a parameter, it will open it as a file. A database will be created if it does not exist yet.
+``joedbi`` is the joedb interpreter. When invoked without parameters, it will create a database in memory. When invoked with a parameter, it will open a file.
 
 Below is a list of commands the interpreter understands:
 

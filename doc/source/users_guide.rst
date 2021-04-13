@@ -5,9 +5,9 @@ User's Guide
    :maxdepth: 2
 
    getting_started
-   indexes
    vectors
    schema_upgrade
+   concurrency
    checkpoints
    opening_files
-   concurrency
+   indexes
