@@ -4,6 +4,8 @@
 #include <functional>
 #include <csignal>
 
+#include <experimental/buffer>
+
 namespace joedb
 {
  std::atomic<bool> Server::interrupted(false);
@@ -32,6 +34,21 @@ namespace joedb
   );
  }
 
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::write_handler
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  Connection connection,
+  const std::error_code &error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   std::cerr << "Successfully wrote data\n";
+  }
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  void Server::handle_accept
  ////////////////////////////////////////////////////////////////////////////
@@ -44,6 +61,28 @@ namespace joedb
   {
    connections.emplace_back(std::move(socket));
    std::cerr << "Created a new connection\n";
+
+   Connection connection = std::prev(connections.end());
+
+   connection->buffer[0] = 'j';
+   connection->buffer[1] = 'o';
+   connection->buffer[2] = 'e';
+   connection->buffer[3] = 'd';
+   connection->buffer[4] = 'b';
+
+   net::async_write
+   (
+    connection->socket,
+    net::buffer(connection->buffer, 5),
+    std::bind
+    (
+     &Server::write_handler,
+     this,
+     connection,
+     std::placeholders::_1,
+     std::placeholders::_2
+    )
+   );
   }
 
   start_accept();

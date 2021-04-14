@@ -1,4 +1,8 @@
 #include "joedb/concurrency/Server_Connection.h"
+#include "joedb/Exception.h"
+
+#include <iostream>
+#include <experimental/buffer>
 
 namespace joedb
 {
@@ -47,11 +51,34 @@ namespace joedb
  ):
   socket(io_context)
  {
+  std::cerr << "Connecting... ";
+
   net::ip::tcp::resolver resolver(io_context);
   net::connect
   (
    socket,
    resolver.resolve(host_name, port_name)
   );
+
+  std::cerr << "Waiting for \"joedb\"... ";
+
+  {
+   char buffer[5];
+   net::read(socket, net::buffer(buffer, sizeof(buffer)));
+
+   if
+   (
+    buffer[0] != 'j' ||
+    buffer[1] != 'o' ||
+    buffer[2] != 'e' ||
+    buffer[3] != 'd' ||
+    buffer[4] != 'b'
+   )
+   {
+    throw Exception("bad reply from server");
+   }
+  }
+
+  std::cerr << "OK.\n";
  }
 }

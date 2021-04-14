@@ -34,6 +34,8 @@ namespace joedb
    struct Connection_Data
    {
     net::ip::tcp::socket socket;
+    enum {buffer_size = 1024};
+    char buffer[buffer_size];
 
     Connection_Data(net::ip::tcp::socket &&socket): socket(std::move(socket))
     {
@@ -41,6 +43,14 @@ namespace joedb
    };
 
    std::list<Connection_Data> connections;
+   typedef std::list<Connection_Data>::iterator Connection;
+
+   void write_handler
+   (
+    Connection connection,
+    const std::error_code &error,
+    size_t bytes_transferred
+   );
 
    void start_accept();
    void handle_accept
