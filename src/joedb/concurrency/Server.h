@@ -24,7 +24,7 @@ namespace joedb
   private:
    static std::atomic<bool> interrupted;
    static void CDECL signal_handler(int sig);
-   enum {interrupt_check_seconds = 5};
+   enum {interrupt_check_seconds = 2};
 
    joedb::Writable_Journal &journal;
    net::io_context &io_context;

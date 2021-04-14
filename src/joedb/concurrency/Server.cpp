@@ -43,6 +43,7 @@ namespace joedb
   if (!error)
   {
    connections.emplace_back(std::move(socket));
+   std::cerr << "Created a new connection\n";
   }
 
   start_accept();
