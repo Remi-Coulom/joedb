@@ -1,10 +1,9 @@
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/main_exception_catcher.h"
+#include "joedb/io/run_interpreted_client.h"
 #include "joedb/concurrency/SSH_Connection.h"
-#include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Shared_Local_File.h"
 #include "joedb/ssh/Thread_Safe_Session.h"
-#include "joedb/journal/File.h"
 
 #include <sstream>
 
@@ -40,32 +39,7 @@ namespace joedb
    SSH_Connection connection(remote_mutex);
 
    Shared_Local_File file(remote_mutex, file_name);
-   Interpreted_Client client(connection, file);
-
-   while (std::cin)
-   {
-    std::cout << "R(read), P(pull), W(write), or Q(quit)? ";
-    std::cout.flush();
-    std::string input;
-
-    if (!(std::cin >> input))
-    {
-     std::cout << '\n';
-     break;
-    }
-
-    if (input == "W")
-    {
-     Interpreted_Lock lock(client);
-     Interpreter(lock.get_database()).main_loop(std::cin, std::cout);
-    }
-    else if (input == "P")
-     client.pull();
-    else if (input == "R")
-     Readonly_Interpreter(client.get_database()).main_loop(std::cin, std::cout);
-    else if (input == "Q")
-     break;
-   }
+   run_interpreted_client(connection, file);
   }
 
   return 0;

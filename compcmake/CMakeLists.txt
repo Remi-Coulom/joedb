@@ -264,6 +264,13 @@ if (HAS_NETWORKING)
   ../src/joedb/concurrency/Server.cpp
  )
  target_link_libraries(joedb_server joedb)
+
+ add_executable(joedb_server_connect
+  ../src/joedb/io/joedb_server_connect.cpp
+  ../src/joedb/concurrency/Server_Connection.cpp
+  ../src/joedb/concurrency/Shared_Local_File.cpp
+ )
+ target_link_libraries(joedb_server_connect joedb)
 endif()
 
 #############################################################################

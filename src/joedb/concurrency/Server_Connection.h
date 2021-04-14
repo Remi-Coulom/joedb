@@ -2,16 +2,18 @@
 #define joedb_Server_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
+#include "joedb/concurrency/Mutex.h"
 
 #include <experimental/io_context>
 #include <experimental/internet>
+#include <experimental/socket>
 
 namespace net = std::experimental::net;
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Server_Connection: public Connection
+ class Server_Connection: public Connection, public Mutex
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -27,6 +29,10 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t server_position
    ) override;
+
+   void lock() override;
+
+   void unlock() override;
 
   public:
    Server_Connection(const char *host_name, const char *port_name);

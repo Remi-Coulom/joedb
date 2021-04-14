@@ -1,12 +1,13 @@
 #ifndef joedb_Shared_Local_File_declared
 #define joedb_Shared_Local_File_declared
 
+#include "joedb/journal/Generic_File.h"
+
 #include <memory>
 #include <string>
 
 namespace joedb
 {
- class Generic_File;
  class Mutex;
 
  ////////////////////////////////////////////////////////////////////////////
