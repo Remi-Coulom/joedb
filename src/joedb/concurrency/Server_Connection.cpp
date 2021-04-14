@@ -75,7 +75,7 @@ namespace joedb
     buffer[4] != 'b'
    )
    {
-    throw Exception("bad reply from server");
+    throw Exception("unexpected reply from server");
    }
   }
 
