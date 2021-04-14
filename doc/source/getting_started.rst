@@ -176,16 +176,36 @@ For instance, when merging those two databases:
 .. literalinclude:: ./tutorial/joedb_embed.out
    :language: none
 
-.. _joedb_ssh_connect:
+.. _joedb_server:
 
-``joedb_ssh_connect``
+``joedb_server``
+^^^^^^^^^^^^^^^^
+
+Run a server to share a database.
+
+.. literalinclude:: ./tutorial/joedb_server.out
+   :language: none
+
+.. _joedb_client:
+
+``joedb_client``
+^^^^^^^^^^^^^^^^
+
+Connect to a :ref:`joedb_server`.
+
+.. literalinclude:: ./tutorial/joedb_client.out
+   :language: none
+
+.. _joedb_ssh_client:
+
+``joedb_ssh_client``
 ^^^^^^^^^^^^^^^^^^^^^
 
-``joedb_ssh_connect`` runs the ``joedbi`` interpreter :doc:`concurrently
-<concurrency>` on a shared remote database.
+Connect to a shared remote database via ssh.
 
-.. literalinclude:: ./tutorial/joedb_ssh_connect.out
+.. literalinclude:: ./tutorial/joedb_ssh_client.out
    :language: none
+
 
 Example Code
 ------------

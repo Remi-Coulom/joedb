@@ -29,7 +29,9 @@ $dir/joedb_to_json merged.joedb >merged.json
 set +e
 ( cd $dir && PATH="." && joedb_merge ) 2>joedb_merge.out
 ( cd $dir && PATH="." && joedb_embed ) 2>joedb_embed.out
-( cd $dir && PATH="." && joedb_ssh_connect ) 2>joedb_ssh_connect.out
 ( cd $dir && PATH="." && joedb_logdump ) 2>joedb_logdump.out
 ( cd $dir && PATH="." && joedbc ) 2>joedbc.out
 ( cd $dir && PATH="." && joedb_pack ) 2>joedb_pack.out
+( cd $dir && PATH="." && joedb_server ) 2>joedb_server.out
+( cd $dir && PATH="." && joedb_client ) 2>joedb_client.out
+( cd $dir && PATH="." && joedb_ssh_client ) 2>joedb_ssh_client.out
