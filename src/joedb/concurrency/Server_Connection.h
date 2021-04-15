@@ -7,6 +7,7 @@
 #include <experimental/io_context>
 #include <experimental/internet>
 #include <experimental/socket>
+#include <experimental/buffer>
 
 namespace net = std::experimental::net;
 
@@ -19,6 +20,9 @@ namespace joedb
   private:
    net::io_context io_context;
    net::ip::tcp::socket socket;
+
+   enum {buffer_size = 1024};
+   char buffer[buffer_size];
 
    int64_t pull(Writable_Journal &client_journal) override;
 

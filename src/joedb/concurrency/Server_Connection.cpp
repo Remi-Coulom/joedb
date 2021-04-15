@@ -17,6 +17,7 @@ namespace joedb
  int64_t Server_Connection::lock_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
+  lock();
   return 0;
  }
 
@@ -28,18 +29,51 @@ namespace joedb
   int64_t server_position
  )
  {
+  unlock();
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::cerr << "Obtaining lock... ";
+
+  buffer[0] = 'l';
+
+  if (net::write(socket, net::buffer(buffer, 1)) != 1)
+   throw Exception("Could not send lock command to server");
+
+  if
+  (
+   net::read(socket, net::buffer(buffer, 1)) != 1 ||
+   buffer[0] != 'l'
+  )
+  {
+   throw Exception("Could not obtain lock confirmation from server");
+  }
+
+  std::cerr << "OK\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::cerr << "Releasing lock... ";
+
+  buffer[0] = 'u';
+
+  if (net::write(socket, net::buffer(buffer, 1)) != 1)
+   throw Exception("Could not send unlock command to server");
+
+  if
+  (
+   net::read(socket, net::buffer(buffer, 1)) != 1 ||
+   buffer[0] != 'u'
+  )
+   throw Exception("Could not obtain unlock confirmation from server");
+
+  std::cerr << "OK\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -62,21 +96,17 @@ namespace joedb
 
   std::cerr << "Waiting for \"joedb\"... ";
 
+  if
+  (
+   net::read(socket, net::buffer(buffer, 5)) != 5 ||
+   buffer[0] != 'j' ||
+   buffer[1] != 'o' ||
+   buffer[2] != 'e' ||
+   buffer[3] != 'd' ||
+   buffer[4] != 'b'
+  )
   {
-   char buffer[5];
-   net::read(socket, net::buffer(buffer, sizeof(buffer)));
-
-   if
-   (
-    buffer[0] != 'j' ||
-    buffer[1] != 'o' ||
-    buffer[2] != 'e' ||
-    buffer[3] != 'd' ||
-    buffer[4] != 'b'
-   )
-   {
-    throw Exception("unexpected reply from server");
-   }
+   throw Exception("Did not receive \"joedb\" from server");
   }
 
   std::cerr << "OK.\n";

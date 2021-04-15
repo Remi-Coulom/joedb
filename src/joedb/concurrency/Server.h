@@ -4,6 +4,7 @@
 #include "joedb/journal/Writable_Journal.h"
 
 #include <list>
+#include <queue>
 #include <atomic>
 
 #include <experimental/io_context>
@@ -36,8 +37,11 @@ namespace joedb
     net::ip::tcp::socket socket;
     enum {buffer_size = 1024};
     char buffer[buffer_size];
+    bool locking;
 
-    Connection_Data(net::ip::tcp::socket &&socket): socket(std::move(socket))
+    Connection_Data(net::ip::tcp::socket &&socket):
+     socket(std::move(socket)),
+     locking(false)
     {
     }
    };
@@ -45,12 +49,27 @@ namespace joedb
    std::list<Connection_Data> connections;
    typedef std::list<Connection_Data>::iterator Connection;
 
+   bool locked;
+   std::queue<Connection> lock_queue;
+   void lock_dequeue();
+
+   void read_handler
+   (
+    Connection connection,
+    const std::error_code &error,
+    size_t bytes_transferred
+   );
+
+   void read_some(Connection connection);
+
    void write_handler
    (
     Connection connection,
     const std::error_code &error,
     size_t bytes_transferred
    );
+
+   void write_buffer(Connection connection, size_t size);
 
    void start_accept();
    void handle_accept

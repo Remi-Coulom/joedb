@@ -35,6 +35,81 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
+ void Server::lock_dequeue()
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  if (!locked && !lock_queue.empty())
+  {
+   std::cerr << "Locking\n";
+   locked = true;
+   Connection connection = lock_queue.front();
+   lock_queue.pop();
+   write_buffer(connection, 1);
+  }
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::read_handler
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  Connection connection,
+  const std::error_code &error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   std::cerr << "Received command: " << connection->buffer[0] << '\n';
+
+   switch (connection->buffer[0])
+   {
+    case 'l':
+     if (!connection->locking)
+     {
+      connection->locking = true;
+      lock_queue.push(connection);
+      lock_dequeue();
+      return;
+     }
+    break;
+
+    case 'u':
+     if (connection->locking)
+     {
+      std::cerr << "Unlocking\n";
+      connection->locking = false;
+      locked = false;
+      write_buffer(connection, 1);
+      lock_dequeue();
+     }
+    break;
+   }
+
+   read_some(connection);
+  }
+
+  // TODO: error management
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::read_some(Connection connection)
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  connection->socket.async_read_some
+  (
+   net::buffer(connection->buffer, connection->buffer_size),
+   std::bind
+   (
+    &Server::read_handler,
+    this,
+    connection,
+    std::placeholders::_1,
+    std::placeholders::_2
+   )
+  );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
  void Server::write_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -46,7 +121,29 @@ namespace joedb
   if (!error)
   {
    std::cerr << "Successfully wrote data\n";
+   read_some(connection);
   }
+
+  // TODO: error management
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::write_buffer(Connection connection, size_t size)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  net::async_write
+  (
+   connection->socket,
+   net::buffer(connection->buffer, size),
+   std::bind
+   (
+    &Server::write_handler,
+    this,
+    connection,
+    std::placeholders::_1,
+    std::placeholders::_2
+   )
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -70,20 +167,10 @@ namespace joedb
    connection->buffer[3] = 'd';
    connection->buffer[4] = 'b';
 
-   net::async_write
-   (
-    connection->socket,
-    net::buffer(connection->buffer, 5),
-    std::bind
-    (
-     &Server::write_handler,
-     this,
-     connection,
-     std::placeholders::_1,
-     std::placeholders::_2
-    )
-   );
+   write_buffer(connection, 5);
   }
+
+  // TODO: handle errors
 
   start_accept();
  }
@@ -114,6 +201,8 @@ namespace joedb
    io_context.stop();
   }
 
+  // TODO: handle errors
+
   start_interrupt_timer();
  }
 
@@ -128,7 +217,8 @@ namespace joedb
   journal(journal),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
-  timer(io_context)
+  timer(io_context),
+  locked(false)
  {
   std::cerr << "port = " << acceptor.local_endpoint().port() << '\n';
 
