@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.3)
 
 file(STRINGS "../VERSION" QUOTED_JOEDB_VERSION)
 string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
@@ -7,9 +7,15 @@ project(joedb VERSION ${JOEDB_VERSION})
 
 message("== JOEDB_VERSION = ${JOEDB_VERSION}")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 11)
+
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
- set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -pedantic -Wconversion -pthread")
+ set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wconversion -pthread")
  set(CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
@@ -27,7 +33,7 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  message("== clang")
- set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
+ set(CMAKE_CXX_FLAGS "-Wall")
 endif()
 
 if(WIN32)
@@ -36,9 +42,6 @@ if(WIN32)
  add_definitions(-DWIN32_LEAN_AND_MEAN)
  add_definitions(-DNOMINMAX)
 endif()
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #############################################################################
 # Dependencies
@@ -259,12 +262,16 @@ add_executable(joedb_file_type
 )
 
 if (HAS_NETWORKING)
- add_executable(joedb_server
-  ../src/joedb/io/joedb_server.cpp
-  ../src/joedb/concurrency/Server.cpp
- )
- target_link_libraries(joedb_server joedb)
- set_property(TARGET joedb_server PROPERTY CXX_STANDARD 20)
+ if ("cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+  add_executable(joedb_server
+   ../src/joedb/io/joedb_server.cpp
+   ../src/joedb/concurrency/Server.cpp
+  )
+  target_link_libraries(joedb_server joedb)
+  set_property(TARGET joedb_server PROPERTY CXX_STANDARD 20)
+ else()
+  message("== joedb_server requires C++20 coroutines")
+ endif()
 
  add_executable(joedb_client
   ../src/joedb/io/joedb_client.cpp
