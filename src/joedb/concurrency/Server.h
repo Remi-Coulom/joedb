@@ -36,7 +36,7 @@ namespace joedb
    struct Session
    {
     net::ip::tcp::socket socket;
-    enum {buffer_size = (1 << 16) - 1};
+    enum {buffer_size = (1 << 13)};
     char buffer[buffer_size];
     bool locking;
 
