@@ -16,6 +16,17 @@ namespace joedb
   public:
    Writable_Journal(Generic_File &file);
 
+   class Tail_Writer
+   {
+    private:
+     const int64_t old_position;
+     Writable_Journal &journal;
+    public:
+     Tail_Writer(Writable_Journal &journal);
+     void append(const char *buffer, size_t size);
+     ~Tail_Writer();
+   };
+
    void append_raw_tail(const std::vector<char> &data);
 
    int64_t ahead_of_checkpoint() const;

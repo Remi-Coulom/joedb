@@ -26,6 +26,17 @@ namespace joedb
 
   std::cerr << "size = " << size << "... ";
 
+  {
+   Writable_Journal::Tail_Writer tail_writer(client_journal);
+
+   for (int64_t read = 0; read < size;)
+   {
+    const size_t n = socket.read_some(net::buffer(buffer, buffer_size));
+    tail_writer.append(buffer, n);
+    read += n;
+   }
+  }
+
   std::cerr << "OK\n";
 
   return 0;
