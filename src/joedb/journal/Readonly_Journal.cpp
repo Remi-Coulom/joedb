@@ -364,7 +364,7 @@ void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t si
 void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t size)\
 {\
  file.read_data((char *)data, size * sizeof(cpp_type));\
- if (Generic_File::is_big_endian() && sizeof(cpp_type) > 1)\
+ if (is_big_endian() && sizeof(cpp_type) > 1)\
   for (size_t i = 0; i < size; i++)\
    Generic_File::R<cpp_type, sizeof(cpp_type)>::swap(data[i]);\
 }

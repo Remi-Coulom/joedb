@@ -3,9 +3,9 @@
 
 #include "joedb/journal/Writable_Journal.h"
 
-#include <list>
 #include <queue>
 #include <atomic>
+#include <memory>
 
 #include <experimental/io_context>
 #include <experimental/internet>
@@ -32,44 +32,45 @@ namespace joedb
    net::ip::tcp::acceptor acceptor;
    net::steady_timer timer;
 
-   struct Connection_Data
+   struct Session
    {
     net::ip::tcp::socket socket;
     enum {buffer_size = 1024};
     char buffer[buffer_size];
     bool locking;
 
-    Connection_Data(net::ip::tcp::socket &&socket):
-     socket(std::move(socket)),
-     locking(false)
-    {
-    }
+    Session(net::ip::tcp::socket &&socket);
+    ~Session();
    };
 
-   std::list<Connection_Data> connections;
-   typedef std::list<Connection_Data>::iterator Connection;
-
    bool locked;
-   std::queue<Connection> lock_queue;
+   std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
 
-   void read_handler
+   void pull_handler
    (
-    Connection connection,
+    std::shared_ptr<Session> session,
     const std::error_code &error,
     size_t bytes_transferred
    );
 
-   void read_some(Connection connection);
+   void read_command_handler
+   (
+    std::shared_ptr<Session> session,
+    const std::error_code &error,
+    size_t bytes_transferred
+   );
+
+   void read_command(std::shared_ptr<Session> session);
 
    void write_handler
    (
-    Connection connection,
+    std::shared_ptr<Session> session,
     const std::error_code &error,
     size_t bytes_transferred
    );
 
-   void write_buffer(Connection connection, size_t size);
+   void write_buffer(std::shared_ptr<Session> session, size_t size);
 
    void start_accept();
    void handle_accept

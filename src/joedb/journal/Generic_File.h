@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "joedb/assert.h"
+#include "joedb/is_big_endian.h"
 
 namespace joedb
 {
@@ -388,12 +389,6 @@ namespace joedb
    };
 
   public:
-   static inline uint8_t is_big_endian()
-   {
-    const uint16_t n = 0x0100;
-    return *(const uint8_t *)&n;
-   }
-
    template<typename T, size_t n> struct R;
 
    //////////////////////////////////////////////////////////////////////////

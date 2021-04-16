@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/network_integers.h"
 #include "joedb/Exception.h"
 
 #include <iostream>
@@ -10,6 +11,23 @@ namespace joedb
  int64_t Server_Connection::pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::cerr << "Pulling... ";
+
+  buffer[0] = 'p';
+  const int64_t checkpoint = client_journal.get_checkpoint_position();
+  to_network(checkpoint, buffer + 1);
+  net::write(socket, net::buffer(buffer, 9));
+
+  net::read(socket, net::buffer(buffer, 17));
+  if (buffer[0] != 'p' && from_network(buffer + 1) != checkpoint)
+   throw Exception("Could not pull from server");
+
+  const int64_t size = from_network(buffer + 9);
+
+  std::cerr << "size = " << size << "... ";
+
+  std::cerr << "OK\n";
+
   return 0;
  }
 
@@ -39,18 +57,10 @@ namespace joedb
   std::cerr << "Obtaining lock... ";
 
   buffer[0] = 'l';
-
-  if (net::write(socket, net::buffer(buffer, 1)) != 1)
-   throw Exception("Could not send lock command to server");
-
-  if
-  (
-   net::read(socket, net::buffer(buffer, 1)) != 1 ||
-   buffer[0] != 'l'
-  )
-  {
+  net::write(socket, net::buffer(buffer, 1));
+  net::read(socket, net::buffer(buffer, 1));
+  if (buffer[0] != 'l')
    throw Exception("Could not obtain lock confirmation from server");
-  }
 
   std::cerr << "OK\n";
  }
@@ -62,16 +72,7 @@ namespace joedb
   std::cerr << "Releasing lock... ";
 
   buffer[0] = 'u';
-
-  if (net::write(socket, net::buffer(buffer, 1)) != 1)
-   throw Exception("Could not send unlock command to server");
-
-  if
-  (
-   net::read(socket, net::buffer(buffer, 1)) != 1 ||
-   buffer[0] != 'u'
-  )
-   throw Exception("Could not obtain unlock confirmation from server");
+  net::write(socket, net::buffer(buffer, 1));
 
   std::cerr << "OK\n";
  }
@@ -83,7 +84,8 @@ namespace joedb
   const char *host_name,
   const char *port_name
  ):
-  socket(io_context)
+  socket(io_context),
+  buffer(new char[buffer_size])
  {
   std::cerr << "Connecting... ";
 
@@ -95,6 +97,8 @@ namespace joedb
   );
 
   std::cerr << "Waiting for \"joedb\"... ";
+
+  char buffer[5];
 
   if
   (
@@ -110,5 +114,12 @@ namespace joedb
   }
 
   std::cerr << "OK.\n";
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Server_Connection::~Server_Connection()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  delete[] buffer;
  }
 }

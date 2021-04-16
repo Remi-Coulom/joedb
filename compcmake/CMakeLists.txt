@@ -262,16 +262,11 @@ add_executable(joedb_file_type
 )
 
 if (HAS_NETWORKING)
- if ("cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-  add_executable(joedb_server
-   ../src/joedb/io/joedb_server.cpp
-   ../src/joedb/concurrency/Server.cpp
-  )
-  target_link_libraries(joedb_server joedb)
-  set_property(TARGET joedb_server PROPERTY CXX_STANDARD 20)
- else()
-  message("== joedb_server requires C++20 coroutines")
- endif()
+ add_executable(joedb_server
+  ../src/joedb/io/joedb_server.cpp
+  ../src/joedb/concurrency/Server.cpp
+ )
+ target_link_libraries(joedb_server joedb)
 
  add_executable(joedb_client
   ../src/joedb/io/joedb_client.cpp

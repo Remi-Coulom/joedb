@@ -21,8 +21,8 @@ namespace joedb
    net::io_context io_context;
    net::ip::tcp::socket socket;
 
-   enum {buffer_size = 1024};
-   char buffer[buffer_size];
+   enum {buffer_size = (1 << 16)};
+   char *buffer;
 
    int64_t pull(Writable_Journal &client_journal) override;
 
@@ -40,6 +40,7 @@ namespace joedb
 
   public:
    Server_Connection(const char *host_name, const char *port_name);
+   ~Server_Connection() override;
  };
 }
 
