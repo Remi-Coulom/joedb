@@ -65,7 +65,10 @@ namespace joedb
 
    const int64_t size = journal.get_checkpoint_position() - checkpoint;
    to_network(size, session->buffer + 9);
+
    write_buffer(session, 17);
+
+   read_command(session);
   }
  }
 
@@ -99,6 +102,7 @@ namespace joedb
        std::placeholders::_2
       )
      );
+     return;
     }
     break;
 
@@ -117,7 +121,6 @@ namespace joedb
       std::cerr << "Unlocking\n";
       session->locking = false;
       locked = false;
-      write_buffer(session, 1);
       lock_dequeue();
      }
     break;
@@ -200,9 +203,9 @@ namespace joedb
 
    write_buffer(session, 5);
    read_command(session);
-  }
 
-  start_accept();
+   start_accept();
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -242,13 +245,16 @@ namespace joedb
  void Server::handle_interrupt_timer(std::error_code error)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (interrupted)
+  if (!error)
   {
-   std::cerr << "Interruption detected\n";
-   io_context.stop();
-  }
+   if (interrupted)
+   {
+    std::cerr << "Interruption detected\n";
+    io_context.stop();
+   }
 
-  start_interrupt_timer();
+   start_interrupt_timer();
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
