@@ -36,7 +36,7 @@ namespace joedb
    struct Session
    {
     net::ip::tcp::socket socket;
-    enum {buffer_size = 1024};
+    enum {buffer_size = (1 << 16) - 1};
     char buffer[buffer_size];
     bool locking;
 
@@ -47,6 +47,15 @@ namespace joedb
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
+
+   void pull_transfer_handler
+   (
+    std::shared_ptr<Session> session,
+    int64_t sent,
+    int64_t size,
+    const std::error_code &error,
+    size_t bytes_transferred
+   );
 
    void pull_handler
    (

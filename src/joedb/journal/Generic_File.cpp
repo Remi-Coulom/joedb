@@ -31,6 +31,10 @@ std::vector<char> joedb::Generic_File::read_tail(int64_t starting_position)
   result.insert(result.end(), buffer, buffer + read_buffer_size);
  }
 
+ // This is inefficient: useless copy via the buffer
+ // Should use raw read directly + raw_seek back to where it was
+ // resize the vector as necessary
+
  set_position(initial_position);
 
  return result;

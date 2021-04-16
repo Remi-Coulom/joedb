@@ -48,6 +48,52 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
+ void Server::pull_transfer_handler
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  int64_t sent,
+  int64_t size,
+  const std::error_code &error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   const int64_t remaining = size - sent;
+
+   std::cerr << '.';
+
+   if (remaining > 0)
+   {
+    int64_t write_size = remaining;
+    if (write_size > Session::buffer_size)
+     write_size = Session::buffer_size;
+
+    // read file to buffer
+
+    net::async_write
+    (
+     session->socket,
+     net::buffer(session->buffer, size_t(write_size)),
+     std::bind
+     (
+      &Server::pull_transfer_handler,
+      this,
+      session,
+      sent + write_size,
+      size,
+      std::placeholders::_1,
+      std::placeholders::_2
+     )
+    );
+   }
+   else
+    std::cerr << '\n';
+  }
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
  void Server::pull_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -66,9 +112,21 @@ namespace joedb
    const int64_t size = journal.get_checkpoint_position() - checkpoint;
    to_network(size, session->buffer + 9);
 
-   write_buffer(session, 17);
-
-   read_command(session);
+   net::async_write
+   (
+    session->socket,
+    net::buffer(session->buffer, 17),
+    std::bind
+    (
+     &Server::pull_transfer_handler,
+     this,
+     session,
+     0,
+     size,
+     std::placeholders::_1,
+     std::placeholders::_2
+    )
+   );
   }
  }
 
@@ -102,7 +160,6 @@ namespace joedb
        std::placeholders::_2
       )
      );
-     return;
     }
     break;
 
