@@ -1,5 +1,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
+#include "joedb/journal/Async_Reader.h"
+#include "joedb/journal/Async_Writer.h"
 
 #include "gtest/gtest.h"
 
@@ -87,15 +89,15 @@ TEST(Generic_File, async)
   file.write<int32_t>(i);
  file.flush();
 
- joedb::Memory_File::Async_Reader reader1(file, 0, 128);
- joedb::Memory_File::Async_Reader reader2(file, 128, 256);
- joedb::Memory_File::Async_Writer writer(file, 40000);
+ joedb::Async_Reader reader1(file, 0, 128);
+ joedb::Async_Reader reader2(file, 128, 256);
+ joedb::Async_Writer writer(file, 40000);
 
  joedb::Memory_File file1;
  joedb::Memory_File file2;
 
- joedb::Memory_File::Async_Writer writer1(file1, 0);
- joedb::Memory_File::Async_Writer writer2(file2, 0);
+ joedb::Async_Writer writer1(file1, 0);
+ joedb::Async_Writer writer2(file2, 0);
 
  const size_t buffer_size = 32;
  char buffer[buffer_size];
