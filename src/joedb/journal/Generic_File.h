@@ -10,7 +10,9 @@
 
 namespace joedb
 {
+ ////////////////////////////////////////////////////////////////////////////
  enum class Open_Mode
+ ////////////////////////////////////////////////////////////////////////////
  {
   read_existing,
   write_existing,
@@ -18,136 +20,10 @@ namespace joedb
   write_existing_or_create_new
  };
 
+ ////////////////////////////////////////////////////////////////////////////
  class Generic_File
+ ////////////////////////////////////////////////////////////////////////////
  {
-  public:
-   Generic_File()
-   {
-    write_buffer_index = 0;
-    reset_read_buffer();
-    position = 0;
-   }
-
-   Open_Mode get_mode() const {return mode;}
-
-   bool is_end_of_file() const {return end_of_file;}
-
-   // set_position must be called when switching between write and read
-   void set_position(int64_t position);
-   int64_t get_position() const {return position;}
-
-   std::vector<char> read_tail(int64_t starting_position);
-   void append_tail(const char *data, size_t size);
-   void append_tail(const std::vector<char> &data);
-   void copy(Generic_File &source);
-
-   template<typename T>
-   void write(T x)
-   {
-    W<T, sizeof(T)>::write(*this, x);
-   }
-
-   template<typename T>
-   T read()
-   {
-    return R<T, sizeof(T)>::read(*this);
-   }
-
-   template<typename T>
-   void compact_write(T x)
-   {
-    CW<T, sizeof(T)>::write(*this, x);
-   }
-
-   template<typename T>
-   T compact_read()
-   {
-    uint8_t first_byte = uint8_t(getc());
-    int extra_bytes = first_byte >> 5;
-    T result = first_byte & 0x1f;
-    while (extra_bytes--)
-     result = T((result << 8) | uint8_t(getc()));
-    return result;
-   }
-
-   void write_string(const std::string &s);
-   std::string read_string();
-   std::string safe_read_string(size_t max_size);
-
-   void write_data(const char *data, size_t n)
-   {
-    flush();
-    raw_write(data, n);
-    position += n;
-   }
-
-   void read_data(char *data, size_t n)
-   {
-    JOEDB_ASSERT(write_buffer_index == 0);
-
-    if (read_buffer_index + n <= read_buffer_size)
-    {
-     for (size_t i = 0; i < n; i++)
-      data[i] = buffer[read_buffer_index++];
-     position += n;
-    }
-    else
-    {
-     size_t n0 = 0;
-
-     while (n0 < n && read_buffer_index < read_buffer_size)
-     {
-      data[n0++] = buffer[read_buffer_index++];
-      position++;
-     }
-
-     if (n <= buffer_size)
-     {
-      read_buffer();
-
-      while (n0 < n && read_buffer_index < read_buffer_size)
-      {
-       data[n0++] = buffer[read_buffer_index++];
-       position++;
-      }
-
-      if (n0 < n)
-       end_of_file = true;
-     }
-     else
-     {
-      while (true)
-      {
-       const size_t actually_read = raw_read(data + n0, n - n0);
-
-       position += actually_read;
-       n0 += actually_read;
-
-       if (n0 == n || actually_read == 0)
-        break;
-      }
-
-      if (n0 < n)
-       end_of_file = true;
-     }
-    }
-   }
-
-   void flush(); // flushes the write buffer to the system
-   void commit(); // flush and write to disk (fsync)
-
-   virtual ~Generic_File() {}
-
-   virtual int64_t get_size() const {return -1;} // -1 means no known size
-
-  protected:
-   Open_Mode mode;
-
-   virtual size_t raw_read(char *buffer, size_t size) = 0;
-   virtual void raw_write(const char *buffer, size_t size) = 0;
-   virtual int seek(int64_t offset) = 0;
-   virtual void sync() = 0;
-
   private:
    enum {buffer_size = (1 << 12)};
    enum {buffer_extra = 8};
@@ -389,7 +265,134 @@ namespace joedb
     }
    };
 
+  protected:
+   Open_Mode mode;
+
+   virtual size_t raw_read(char *buffer, size_t size) = 0;
+   virtual void raw_write(const char *buffer, size_t size) = 0;
+   virtual int seek(int64_t offset) = 0;
+   virtual void sync() = 0;
+
   public:
+   Generic_File()
+   {
+    write_buffer_index = 0;
+    reset_read_buffer();
+    position = 0;
+   }
+
+   Open_Mode get_mode() const {return mode;}
+
+   bool is_end_of_file() const {return end_of_file;}
+
+   // set_position must be called when switching between write and read
+   void set_position(int64_t position);
+   int64_t get_position() const {return position;}
+
+   std::vector<char> read_tail(int64_t starting_position);
+   void append_tail(const char *data, size_t size);
+   void append_tail(const std::vector<char> &data);
+   void copy(Generic_File &source);
+
+   template<typename T>
+   void write(T x)
+   {
+    W<T, sizeof(T)>::write(*this, x);
+   }
+
+   template<typename T>
+   T read()
+   {
+    return R<T, sizeof(T)>::read(*this);
+   }
+
+   template<typename T>
+   void compact_write(T x)
+   {
+    CW<T, sizeof(T)>::write(*this, x);
+   }
+
+   template<typename T>
+   T compact_read()
+   {
+    uint8_t first_byte = uint8_t(getc());
+    int extra_bytes = first_byte >> 5;
+    T result = first_byte & 0x1f;
+    while (extra_bytes--)
+     result = T((result << 8) | uint8_t(getc()));
+    return result;
+   }
+
+   void write_string(const std::string &s);
+   std::string read_string();
+   std::string safe_read_string(size_t max_size);
+
+   void write_data(const char *data, size_t n)
+   {
+    flush();
+    raw_write(data, n);
+    position += n;
+   }
+
+   void read_data(char *data, size_t n)
+   {
+    JOEDB_ASSERT(write_buffer_index == 0);
+
+    if (read_buffer_index + n <= read_buffer_size)
+    {
+     for (size_t i = 0; i < n; i++)
+      data[i] = buffer[read_buffer_index++];
+     position += n;
+    }
+    else
+    {
+     size_t n0 = 0;
+
+     while (n0 < n && read_buffer_index < read_buffer_size)
+     {
+      data[n0++] = buffer[read_buffer_index++];
+      position++;
+     }
+
+     if (n <= buffer_size)
+     {
+      read_buffer();
+
+      while (n0 < n && read_buffer_index < read_buffer_size)
+      {
+       data[n0++] = buffer[read_buffer_index++];
+       position++;
+      }
+
+      if (n0 < n)
+       end_of_file = true;
+     }
+     else
+     {
+      while (true)
+      {
+       const size_t actually_read = raw_read(data + n0, n - n0);
+
+       position += actually_read;
+       n0 += actually_read;
+
+       if (n0 == n || actually_read == 0)
+        break;
+      }
+
+      if (n0 < n)
+       end_of_file = true;
+     }
+    }
+   }
+
+   void flush(); // flushes the write buffer to the system
+   void commit(); // flush and write to disk (fsync)
+
+   virtual ~Generic_File() {}
+
+   virtual int64_t get_size() const {return -1;} // -1 means no known size
+
    template<typename T, size_t n> struct R;
 
    //////////////////////////////////////////////////////////////////////////
