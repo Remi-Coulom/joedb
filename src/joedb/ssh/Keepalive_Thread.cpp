@@ -11,7 +11,7 @@ namespace joedb
   {
    ssh::Session_Lock lock(session);
 
-   while (true)
+   while (!must_stop)
    {
     condition.wait_for(lock, std::chrono::seconds(interval));
 
