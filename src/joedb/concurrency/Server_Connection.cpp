@@ -10,6 +10,8 @@ namespace joedb
  int64_t Server_Connection::pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock<std::mutex> lock(mutex);
+
   std::cerr << "Pulling... ";
 
   buffer[0] = 'p';
@@ -61,26 +63,30 @@ namespace joedb
   int64_t server_position
  )
  {
-  Async_Reader reader = client_journal.get_tail_reader(server_position);
-
-  if (reader.get_remaining() > 0)
   {
-   buffer[0] = 'P';
-   to_network(server_position, buffer + 1);
-   to_network(reader.get_remaining(), buffer + 9);
+   std::unique_lock<std::mutex> lock(mutex);
 
-   std::cerr << "pushing " << reader.get_remaining() << " bytes:";
+   Async_Reader reader = client_journal.get_tail_reader(server_position);
 
-   net::write(socket, net::buffer(buffer, 17));
-
-   while (reader.get_remaining() > 0)
+   if (reader.get_remaining() > 0)
    {
-    const size_t size = reader.read(buffer, buffer_size);
-    net::write(socket, net::buffer(buffer, size));
-    std::cerr << ' ' << size;
-   }
+    buffer[0] = 'P';
+    to_network(server_position, buffer + 1);
+    to_network(reader.get_remaining(), buffer + 9);
 
-   std::cerr << '\n';
+    std::cerr << "pushing " << reader.get_remaining() << " bytes:";
+
+    net::write(socket, net::buffer(buffer, 17));
+
+    while (reader.get_remaining() > 0)
+    {
+     const size_t size = reader.read(buffer, buffer_size);
+     net::write(socket, net::buffer(buffer, size));
+     std::cerr << ' ' << size;
+    }
+
+    std::cerr << '\n';
+   }
   }
 
   unlock();
@@ -90,6 +96,8 @@ namespace joedb
  void Server_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock<std::mutex> lock(mutex);
+
   std::cerr << "Obtaining lock... ";
 
   buffer[0] = 'l';
@@ -105,6 +113,8 @@ namespace joedb
  void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock<std::mutex> lock(mutex);
+
   std::cerr << "Releasing lock... ";
 
   buffer[0] = 'u';
@@ -117,6 +127,27 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server_Connection::keep_alive()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::unique_lock<std::mutex> lock(mutex);
+
+  while (true)
+  {
+   condition.wait_for(lock, std::chrono::seconds(keep_alive_interval));
+
+   if (keep_alive_thread_must_stop)
+    break;
+   else
+   {
+    buffer[0] = 'i';
+    net::write(socket, net::buffer(buffer, 1));
+    net::read(socket, net::buffer(buffer, 1));
+   }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Server_Connection::Server_Connection
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -124,8 +155,12 @@ namespace joedb
   const char *port_name
  ):
   socket(io_context),
+  keep_alive_thread_must_stop(false),
+  keep_alive_thread([this]{keep_alive();}),
   buffer(new char[buffer_size])
  {
+  std::unique_lock<std::mutex> lock(mutex);
+
   std::cerr << "Connecting... ";
 
   net::ip::tcp::resolver resolver(io_context);
@@ -160,5 +195,13 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   delete[] buffer;
+
+  {
+   std::unique_lock<std::mutex> lock(mutex);
+   keep_alive_thread_must_stop = true;
+   condition.notify_one();
+  }
+
+  keep_alive_thread.join();
  }
 }

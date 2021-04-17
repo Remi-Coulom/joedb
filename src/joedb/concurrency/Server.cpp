@@ -284,6 +284,10 @@ namespace joedb
      }
     break;
 
+    case 'i':
+     write_buffer(session, 1);
+    break;
+
     default:
      std::cerr << "Unexpected command\n";
     return;
