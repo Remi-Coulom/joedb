@@ -132,35 +132,29 @@ namespace joedb
  {
   std::unique_lock<std::mutex> lock(mutex);
 
-  while (true)
-  {
-   condition.wait_for(lock, std::chrono::seconds(keep_alive_interval));
+  std::cerr << "keep_alive() thread started\n";
 
-   if (keep_alive_thread_must_stop)
-    break;
-   else
-   {
-    buffer[0] = 'i';
-    net::write(socket, net::buffer(buffer, 1));
-    net::read(socket, net::buffer(buffer, 1));
-   }
+  while (!keep_alive_thread_must_stop)
+  {
+   buffer[0] = 'i';
+   net::write(socket, net::buffer(buffer, 1));
+   net::read(socket, net::buffer(buffer, 1));
+
+   condition.wait_for(lock, std::chrono::seconds(keep_alive_interval));
   }
+
+  std::cerr << "keep_alive() thread stopping\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Connection::Server_Connection
+ Socket_Construction::Socket_Construction
  ////////////////////////////////////////////////////////////////////////////
  (
   const char *host_name,
   const char *port_name
  ):
-  socket(io_context),
-  keep_alive_thread_must_stop(false),
-  keep_alive_thread([this]{keep_alive();}),
-  buffer(new char[buffer_size])
+  socket(io_context)
  {
-  std::unique_lock<std::mutex> lock(mutex);
-
   std::cerr << "Connecting... ";
 
   net::ip::tcp::resolver resolver(io_context);
@@ -191,11 +185,23 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ Server_Connection::Server_Connection
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const char *host_name,
+  const char *port_name
+ ):
+  Socket_Construction(host_name, port_name),
+  buffer(new char[buffer_size]),
+  keep_alive_thread_must_stop(false),
+  keep_alive_thread([this](){keep_alive();})
+ {
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Server_Connection::~Server_Connection()
  ////////////////////////////////////////////////////////////////////////////
  {
-  delete[] buffer;
-
   {
    std::unique_lock<std::mutex> lock(mutex);
    keep_alive_thread_must_stop = true;
@@ -203,5 +209,7 @@ namespace joedb
   }
 
   keep_alive_thread.join();
+
+  delete[] buffer;
  }
 }

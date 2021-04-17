@@ -12,21 +12,31 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Server_Connection: public Connection, public Mutex
+ struct Socket_Construction
  ////////////////////////////////////////////////////////////////////////////
  {
+  net::io_context io_context;
+  net::ip::tcp::socket socket;
+
+  Socket_Construction(const char *host_name, const char *port_name);
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Server_Connection:
+ ////////////////////////////////////////////////////////////////////////////
+  public Connection,
+  public Mutex,
+  private Socket_Construction
+ {
   private:
-   net::io_context io_context;
-   net::ip::tcp::socket socket;
+   enum {buffer_size = (1 << 13)};
+   char *buffer;
 
    std::mutex mutex;
    std::condition_variable condition;
    bool keep_alive_thread_must_stop;
    std::thread keep_alive_thread;
    enum {keep_alive_interval = 240};
-
-   enum {buffer_size = (1 << 13)};
-   char *buffer;
 
    int64_t pull(Writable_Journal &client_journal) override;
 
