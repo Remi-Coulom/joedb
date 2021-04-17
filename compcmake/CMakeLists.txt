@@ -91,17 +91,27 @@ else()
  message("== WARNING: install sqlite3 for sqlite3 benchmarks")
 endif()
 
-# Networking TS
+# Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set (NETWORKING_DIR "${PROJECT_SOURCE_DIR}/../../networking-ts-impl")
+check_include_file_cxx("net" HAS_NET)
+if (HAS_NET)
+ add_definitions(-DJOEDB_HAS_NET)
+endif()
 
-if (IS_DIRECTORY "${NETWORKING_DIR}")
+check_include_file_cxx("boost/asio/ts/net.hpp" HAS_BOOST_NET)
+if (HAS_BOOST_NET)
+ add_definitions(-DJOEDB_HAS_BOOST_NET)
+endif()
+
+check_include_file_cxx("experimental/net" HAS_EXPERIMENTAL_NET)
+if (HAS_EXPERIMENTAL_NET)
+ add_definitions(-DJOEDB_HAS_EXPERIMENTAL_NET)
+endif()
+
+if (HAS_NET OR HAS_BOOST_NET OR HAS_EXPERIMENTAL_NET)
  set(HAS_NETWORKING TRUE)
- message("== networking found")
- include_directories(BEFORE SYSTEM ${NETWORKING_DIR}/include)
 else()
- set(HAS_NETWORKING FALSE)
- message("== networking not found")
+ message("== no networking")
 endif()
 
 #############################################################################
@@ -231,6 +241,10 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/journal/Portable_File.cpp
  )
  target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
+
+ # This definition is necessary for cygwin
+ # https://github.com/google/googletest/pull/2839
+ target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
 else()
  message("== WARNING: run ./get_gtest.sh for tests")
 endif()

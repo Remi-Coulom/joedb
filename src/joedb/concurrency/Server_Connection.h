@@ -3,12 +3,7 @@
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Mutex.h"
-
-#include <experimental/io_context>
-#include <experimental/internet>
-#include <experimental/socket>
-
-namespace net = std::experimental::net;
+#include "joedb/concurrency/net.h"
 
 namespace joedb
 {

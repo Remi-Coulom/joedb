@@ -5,8 +5,6 @@
 #include <functional>
 #include <csignal>
 
-#include <experimental/buffer>
-
 namespace joedb
 {
  std::atomic<bool> Server::interrupted(false);
