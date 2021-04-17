@@ -51,8 +51,7 @@ namespace joedb
    void pull_transfer_handler
    (
     std::shared_ptr<Session> session,
-    int64_t sent,
-    int64_t size,
+    Async_Reader reader,
     const std::error_code &error,
     size_t bytes_transferred
    );

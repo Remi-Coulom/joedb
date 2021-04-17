@@ -47,42 +47,38 @@ namespace joedb
   }
  }
 
- ///////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  void Server::pull_transfer_handler
- ///////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  int64_t sent,
-  int64_t size,
+  Async_Reader reader,
   const std::error_code &error,
   size_t bytes_transferred
  )
  {
   if (!error)
   {
-   const int64_t remaining = size - sent;
-
    std::cerr << '.';
 
-   if (remaining > 0)
+   if (reader.get_remaining() > 0)
    {
-    int64_t write_size = remaining;
-    if (write_size > Session::buffer_size)
-     write_size = Session::buffer_size;
-
-    // read file to buffer
+    const size_t size = reader.read
+    (
+     session->buffer,
+     Session::buffer_size
+    );
 
     net::async_write
     (
      session->socket,
-     net::buffer(session->buffer, size_t(write_size)),
+     net::buffer(session->buffer, size_t(size)),
      std::bind
      (
       &Server::pull_transfer_handler,
       this,
       session,
-      sent + write_size,
-      size,
+      reader,
       std::placeholders::_1,
       std::placeholders::_2
      )
@@ -109,24 +105,24 @@ namespace joedb
    session->buffer[0] = 'p';
    to_network(checkpoint, session->buffer + 1);
 
-   const int64_t size = journal.get_checkpoint_position() - checkpoint;
-   to_network(size, session->buffer + 9);
+   Async_Reader reader = journal.get_tail_reader(checkpoint);
+   to_network(reader.get_remaining(), session->buffer + 9);
 
-   net::async_write
-   (
-    session->socket,
-    net::buffer(session->buffer, 17),
-    std::bind
+   if (reader.get_remaining() > 0)
+    net::async_write
     (
-     &Server::pull_transfer_handler,
-     this,
-     session,
-     0,
-     size,
-     std::placeholders::_1,
-     std::placeholders::_2
-    )
-   );
+     session->socket,
+     net::buffer(session->buffer, 17),
+     std::bind
+     (
+      &Server::pull_transfer_handler,
+      this,
+      session,
+      reader,
+      std::placeholders::_1,
+      std::placeholders::_2
+     )
+    );
   }
  }
 
