@@ -15,32 +15,6 @@ void joedb::Generic_File::set_position(int64_t new_position)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-std::vector<char> joedb::Generic_File::read_tail(int64_t starting_position)
-/////////////////////////////////////////////////////////////////////////////
-{
- const int64_t initial_position = get_position();
-
- set_position(starting_position);
- std::vector<char> result;
-
- while (true)
- {
-  read_buffer();
-  if (read_buffer_size == 0)
-   break;
-  result.insert(result.end(), buffer, buffer + read_buffer_size);
- }
-
- // This is inefficient: useless copy via the buffer
- // Should use raw read directly + raw_seek back to where it was
- // resize the vector as necessary
-
- set_position(initial_position);
-
- return result;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 void joedb::Generic_File::copy(Generic_File &file)
 /////////////////////////////////////////////////////////////////////////////
 {

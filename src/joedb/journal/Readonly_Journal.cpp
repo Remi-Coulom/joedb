@@ -98,7 +98,16 @@ std::vector<char> joedb::Readonly_Journal::get_raw_tail
  int64_t starting_position
 )
 {
- return file.read_tail(starting_position);
+ std::vector<char> result;
+ const int64_t size = get_checkpoint_position() - starting_position;
+
+ if (size > 0)
+ {
+  result.resize(size_t(size));
+  get_tail_reader(starting_position).read(result.data(), result.size());
+ }
+
+ return result;
 }
 
 /////////////////////////////////////////////////////////////////////////////

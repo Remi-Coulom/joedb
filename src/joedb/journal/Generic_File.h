@@ -293,8 +293,6 @@ namespace joedb
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
    int64_t get_position() const {return position;}
-
-   std::vector<char> read_tail(int64_t starting_position);
    void copy(Generic_File &source);
 
    template<typename T>

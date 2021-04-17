@@ -2,14 +2,15 @@
 #define joedb_Readonly_Journal_declared
 
 #include "joedb/Writable.h"
+#include "joedb/journal/Async_Reader.h"
 
 #include <vector>
 
 namespace joedb
 {
- class Generic_File;
-
+ ////////////////////////////////////////////////////////////////////////////
  class Readonly_Journal
+ ////////////////////////////////////////////////////////////////////////////
  {
   public:
    Readonly_Journal(Generic_File &file, bool ignore_errors = false);
@@ -26,6 +27,11 @@ namespace joedb
    }
 
    bool at_end_of_file() const;
+
+   Async_Reader get_tail_reader(int64_t start_position) const
+   {
+    return Async_Reader(file, start_position, get_checkpoint_position());
+   }
 
    std::vector<char> get_raw_tail(int64_t starting_position);
 
