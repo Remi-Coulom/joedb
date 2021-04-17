@@ -9,7 +9,7 @@ namespace net = std::net;
 namespace net = std::experimental::net;
 #elif JOEDB_HAS_BOOST_NET
 #include <boost/asio/ts/net.hpp>
-namespace net = boost::asio::ts::net;
+namespace net = boost::asio;
 #else
 #error No networking
 #endif

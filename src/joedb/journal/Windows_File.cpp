@@ -68,6 +68,8 @@ namespace joedb
    return size_t(result);
   else
    throw_last_error();
+
+  return 0;
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -150,6 +152,8 @@ namespace joedb
    return int64_t(result.QuadPart);
   else
    throw_last_error();
+
+  return 0;
  }
 
  /////////////////////////////////////////////////////////////////////////////
