@@ -267,6 +267,7 @@ if (HAS_NETWORKING)
   ../src/joedb/concurrency/Server.cpp
  )
  target_link_libraries(joedb_server joedb)
+ set_property(TARGET joedb_server PROPERTY CXX_STANDARD 14)
 
  add_executable(joedb_client
   ../src/joedb/io/joedb_client.cpp

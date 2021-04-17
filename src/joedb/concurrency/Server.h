@@ -48,6 +48,29 @@ namespace joedb
    std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
 
+   void push_transfer_handler
+   (
+    std::shared_ptr<Session> session,
+    int64_t size,
+    std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+    const std::error_code &error,
+    size_t bytes_transferred
+   );
+
+   void push_transfer
+   (
+    std::shared_ptr<Session> session,
+    int64_t size,
+    std::unique_ptr<Writable_Journal::Tail_Writer> writer
+   );
+
+   void push_handler
+   (
+    std::shared_ptr<Session> session,
+    const std::error_code &error,
+    size_t bytes_transferred
+   );
+
    void pull_transfer_handler
    (
     std::shared_ptr<Session> session,

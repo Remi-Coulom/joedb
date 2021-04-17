@@ -40,7 +40,10 @@ namespace joedb
 
   std::cerr << " OK\n";
 
-  return 0;
+  if (size < 0)
+   throw Exception("Client checkpoint is ahead of server checkpoint");
+
+  return client_journal.get_checkpoint_position();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -48,7 +51,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   lock();
-  return 0;
+  return pull(client_journal);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -59,6 +62,28 @@ namespace joedb
   int64_t server_position
  )
  {
+  Async_Reader reader = client_journal.get_tail_reader(server_position);
+
+  if (reader.get_remaining() > 0)
+  {
+   buffer[0] = 'P';
+   to_network(server_position, buffer + 1);
+   to_network(reader.get_remaining(), buffer + 9);
+
+   std::cerr << "pushing " << reader.get_remaining() << " bytes:";
+
+   net::write(socket, net::buffer(buffer, 17));
+
+   while (reader.get_remaining() > 0)
+   {
+    const size_t size = reader.read(buffer, buffer_size);
+    net::write(socket, net::buffer(buffer, size));
+    std::cerr << ' ' << size;
+   }
+
+   std::cerr << '\n';
+  }
+
   unlock();
  }
 
@@ -85,6 +110,9 @@ namespace joedb
 
   buffer[0] = 'u';
   net::write(socket, net::buffer(buffer, 1));
+  net::read(socket, net::buffer(buffer, 1));
+  if (buffer[0] != 'u')
+   throw Exception("Could not obtain unlock confirmation from server");
 
   std::cerr << "OK\n";
  }

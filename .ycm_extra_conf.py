@@ -193,6 +193,6 @@ def Settings(**kwargs):
     final_flags = MakeRelativePathsInFlagsAbsolute( flags, relative_to )
 
   return {
-    'flags': final_flags + ['-x', 'c++'] + ['--std', 'c++11'],
+    'flags': final_flags + ['-x', 'c++'] + ['--std', 'c++14'],
     'do_cache': True
   }

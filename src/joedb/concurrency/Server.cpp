@@ -34,9 +34,9 @@ namespace joedb
   std::cerr << "Destroyed Session\n";
  }
 
- ///////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  void Server::lock_dequeue()
- ///////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   if (!locked && !lock_queue.empty())
   {
@@ -44,6 +44,100 @@ namespace joedb
    locked = true;
    write_buffer(lock_queue.front(), 1);
    lock_queue.pop();
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::push_transfer_handler
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  int64_t size,
+  std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+  const std::error_code &error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   std::cerr << '.';
+
+   writer->append(session->buffer, bytes_transferred);
+   size -= bytes_transferred;
+   push_transfer(session, size, std::move(writer));
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::push_transfer
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  int64_t size,
+  std::unique_ptr<Writable_Journal::Tail_Writer> writer
+ )
+ {
+  if (size > 0)
+   net::async_read
+   (
+    session->socket,
+    net::buffer(session->buffer, size_t(size)),
+    [this, size, session, moved_writer = std::move(writer)]
+    (
+     const std::error_code &error,
+     size_t bytes_transferred
+    ) mutable
+    {
+     push_transfer_handler
+     (
+      session,
+      size,
+      std::move(moved_writer),
+      error,
+      bytes_transferred
+     );
+    }
+   );
+  else
+  {
+   read_command(session);
+   std::cerr << '\n';
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::push_handler
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  const std::error_code &error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   const int64_t start = from_network(session->buffer);
+   const int64_t size = from_network(session->buffer + 8);
+
+   std::cerr << "Pushing, start = " << start << ", size = " << size << '\n';
+
+   if (start == journal.get_checkpoint_position())
+   {
+    std::unique_ptr<Writable_Journal::Tail_Writer> writer
+    (
+     new Writable_Journal::Tail_Writer
+     (
+      journal
+     )
+    );
+
+    push_transfer(session, size, std::move(writer));
+   }
+   else
+   {
+    std::cerr << "Error: journal.get_checkpoint_position() = ";
+    std::cerr << journal.get_checkpoint_position() << '\n';
+   }
   }
  }
 
@@ -108,21 +202,20 @@ namespace joedb
    Async_Reader reader = journal.get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
 
-   if (reader.get_remaining() > 0)
-    net::async_write
+   net::async_write
+   (
+    session->socket,
+    net::buffer(session->buffer, 17),
+    std::bind
     (
-     session->socket,
-     net::buffer(session->buffer, 17),
-     std::bind
-     (
-      &Server::pull_transfer_handler,
-      this,
-      session,
-      reader,
-      std::placeholders::_1,
-      std::placeholders::_2
-     )
-    );
+     &Server::pull_transfer_handler,
+     this,
+     session,
+     reader,
+     std::placeholders::_1,
+     std::placeholders::_2
+    )
+   );
   }
  }
 
@@ -142,7 +235,6 @@ namespace joedb
    switch (session->buffer[0])
    {
     case 'p':
-    {
      net::async_read
      (
       session->socket,
@@ -156,8 +248,23 @@ namespace joedb
        std::placeholders::_2
       )
      );
-    }
     break;
+
+    case 'P':
+     net::async_read
+     (
+      session->socket,
+      net::buffer(session->buffer, 16),
+      std::bind
+      (
+       &Server::push_handler,
+       this,
+       session,
+       std::placeholders::_1,
+       std::placeholders::_2
+      )
+     );
+    return;
 
     case 'l':
      if (!session->locking)
@@ -175,8 +282,13 @@ namespace joedb
       session->locking = false;
       locked = false;
       lock_dequeue();
+      write_buffer(session, 1);
      }
     break;
+
+    default:
+     std::cerr << "Unexpected command\n";
+    return;
    }
 
    read_command(session);

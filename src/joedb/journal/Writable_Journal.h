@@ -26,6 +26,8 @@ namespace joedb
      const int64_t old_checkpoint;
      Async_Writer writer;
 
+     Tail_Writer(const Tail_Writer &) = delete;
+
     public:
      Tail_Writer(Writable_Journal &journal):
       journal(journal),
