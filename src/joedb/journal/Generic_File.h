@@ -295,8 +295,6 @@ namespace joedb
    int64_t get_position() const {return position;}
 
    std::vector<char> read_tail(int64_t starting_position);
-   void append_tail(const char *data, size_t size);
-   void append_tail(const std::vector<char> &data);
    void copy(Generic_File &source);
 
    template<typename T>

@@ -29,6 +29,7 @@ namespace joedb
     file.seek(current);
     file.raw_write(buffer, size);
     current += size;
+    file.position = current;
    }
  };
 }

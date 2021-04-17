@@ -3,12 +3,13 @@
 
 #include "joedb/Writable.h"
 #include "joedb/journal/Readonly_Journal.h"
+#include "joedb/journal/Async_Writer.h"
 
 namespace joedb
 {
- class Generic_File;
-
+ ////////////////////////////////////////////////////////////////////////////
  class Writable_Journal: public Readonly_Journal, public Writable
+ ////////////////////////////////////////////////////////////////////////////
  {
   private:
    int current_commit_level;
@@ -16,15 +17,33 @@ namespace joedb
   public:
    Writable_Journal(Generic_File &file);
 
+   //////////////////////////////////////////////////////////////////////////
    class Tail_Writer
+   //////////////////////////////////////////////////////////////////////////
    {
     private:
-     const int64_t old_position;
      Writable_Journal &journal;
+     const int64_t old_checkpoint;
+     Async_Writer writer;
+
     public:
-     Tail_Writer(Writable_Journal &journal);
-     void append(const char *buffer, size_t size);
-     ~Tail_Writer();
+     Tail_Writer(Writable_Journal &journal):
+      journal(journal),
+      old_checkpoint(journal.get_checkpoint_position()),
+      writer(journal.file, old_checkpoint)
+     {
+     }
+
+     void append(const char *buffer, size_t size)
+     {
+      writer.write(buffer, size);
+     }
+
+     ~Tail_Writer()
+     {
+      journal.checkpoint(0);
+      journal.file.set_position(old_checkpoint);
+     }
    };
 
    void append_raw_tail(const std::vector<char> &data);
