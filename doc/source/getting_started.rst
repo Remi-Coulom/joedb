@@ -40,7 +40,7 @@ Minimal prerequisites in Ubuntu can be installed with this command:
 
 .. code-block:: bash
 
-    sudo apt install g++ cmake ninja-build libssh-dev
+    sudo apt install g++ cmake ninja-build libssh-dev libboost-dev
 
 When the necessary packages are installed, the following commands should compile everything:
 
@@ -68,6 +68,8 @@ folder" to open the ``compcmake`` folder of the archive.
 
 For the ssh connection, libssh is necessary, and can be installed with vcpkg:
 ``vcpkg install libssh:x64-windows``.
+
+For the server and its client: ``.\vcpkg.exe install boost-asio:x64-windows``.
 
 Joedb Tools
 -----------
