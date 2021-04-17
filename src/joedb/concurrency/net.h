@@ -8,6 +8,9 @@ namespace net = std::net;
 #include <experimental/net>
 namespace net = std::experimental::net;
 #elif JOEDB_HAS_BOOST_NET
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <boost/asio/ts/net.hpp>
 namespace net = boost::asio;
 #else
