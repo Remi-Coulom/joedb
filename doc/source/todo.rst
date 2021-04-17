@@ -59,7 +59,15 @@ Compiler
 
 Concurrency
 -----------
-- Dont waste time with ugly .mutex files: make a server
+- joedb_server:
+
+  - convenient ssh wrapper to run the server remotely and create a tunnel
+  - lock timeout
+  - fuse net writes (lock + pull, push + unlock, ...)
+  - protocol version (server gives its version number at start)
+  - fuzzer + unit testing
+  - event listener instead of direct writes to std::cerr
+
 - Event listener class instead of trace flag?
 - Make the system robust with respect to client disconnections during write
 
