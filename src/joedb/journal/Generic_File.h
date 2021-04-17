@@ -294,6 +294,65 @@ namespace joedb
    void append_tail(const std::vector<char> &data);
    void copy(Generic_File &source);
 
+   //////////////////////////////////////////////////////////////////////////
+   class Async_Reader
+   //////////////////////////////////////////////////////////////////////////
+   {
+    private:
+     Generic_File &file;
+     const int64_t end;
+     int64_t current;
+
+    public:
+     Async_Reader(Generic_File &file, int64_t start, int64_t end):
+      file(file),
+      end(end),
+      current(start)
+     {
+     }
+
+     size_t read(char *buffer, size_t capacity)
+     {
+      size_t size = size_t(end - current);
+
+      if (size > 0)
+      {
+       if (size > capacity)
+        size = capacity;
+
+       file.seek(current);
+       file.raw_read(buffer, size);
+
+       current += size;
+      }
+
+      return size;
+     }
+   };
+
+   //////////////////////////////////////////////////////////////////////////
+   class Async_Writer
+   //////////////////////////////////////////////////////////////////////////
+   {
+    private:
+     Generic_File &file;
+     int64_t current;
+
+    public:
+     Async_Writer(Generic_File &file, int64_t start):
+      file(file),
+      current(start)
+     {
+     }
+
+     void write(const char *buffer, size_t size)
+     {
+      file.seek(current);
+      file.raw_write(buffer, size);
+      current += size;
+     }
+   };
+
    template<typename T>
    void write(T x)
    {

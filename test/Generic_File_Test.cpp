@@ -77,3 +77,49 @@ TEST(Generic_File, read_data)
  file.read_data((char *)&data[0], sizeof(int32_t) * file_size);
  EXPECT_TRUE(file.is_end_of_file());
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Generic_File, async)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ for (int32_t i = 0; i < 10000; i++)
+  file.write<int32_t>(i);
+ file.flush();
+
+ joedb::Memory_File::Async_Reader reader1(file, 0, 128);
+ joedb::Memory_File::Async_Reader reader2(file, 128, 256);
+ joedb::Memory_File::Async_Writer writer(file, 40000);
+
+ joedb::Memory_File file1;
+ joedb::Memory_File file2;
+
+ joedb::Memory_File::Async_Writer writer1(file1, 0);
+ joedb::Memory_File::Async_Writer writer2(file2, 0);
+
+ const size_t buffer_size = 32;
+ char buffer[buffer_size];
+
+ for (int32_t i = 4; --i >= 0;)
+ {
+  writer1.write(buffer, reader1.read(buffer, buffer_size));
+  writer2.write(buffer, reader2.read(buffer, buffer_size));
+  *((int32_t *)buffer) = i;
+  writer.write(buffer, sizeof(int32_t));
+ }
+
+ file.set_position(0);
+ file1.set_position(0);
+ file2.set_position(0);
+
+ for (int i = 0; i < 32; i++)
+ {
+  EXPECT_EQ(file.read<int32_t>(), i);
+  EXPECT_EQ(file1.read<int32_t>(), i);
+  EXPECT_EQ(file2.read<int32_t>(), i + 32);
+ }
+
+ file.set_position(40000);
+ for (int32_t i = 4; --i >= 0;)
+  EXPECT_EQ(file.read<int32_t>(), i);
+}
