@@ -29,7 +29,7 @@ Release page <https://github.com/Remi-Coulom/joedb/releases>`_. You can also
 clone the repository to get the most recent development version: ``git clone
 https://github.com/Remi-Coulom/joedb.git``.
 
-Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`__ for
+Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`_ for
 its build system. So it should be portable to almost any platform. Here are
 some detailed instructions for the most common situations.
 
@@ -63,13 +63,10 @@ To run coverage tests, documentation, and benchmarks, also install:
 Windows
 ^^^^^^^
 
-Visual Studio supports cmake, starting from version 2017. Use "Open a local
-folder" to open the ``compcmake`` folder of the archive.
-
-For the ssh connection, libssh is necessary, and can be installed with vcpkg:
-``vcpkg install libssh:x64-windows``.
-
-For the server and its client: ``.\vcpkg.exe install boost-asio:x64-windows``.
+Visual Studio can open the CMake project located in the ``compcmake`` folder.
+For the network connections, dependencies can be installed with `vcpkg
+<https://github.com/microsoft/vcpkg>`_:
+``vcpkg install libssh:x64-windows boost-asio:x64-windows``.
 
 Joedb Tools
 -----------
