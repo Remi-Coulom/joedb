@@ -66,7 +66,10 @@ Windows
 Visual Studio can open the CMake project located in the ``compcmake`` folder.
 For the network connections, dependencies can be installed with `vcpkg
 <https://github.com/microsoft/vcpkg>`_:
-``vcpkg install libssh:x64-windows boost-asio:x64-windows``.
+
+.. code-block:: bash
+
+    vcpkg install libssh:x64-windows boost-asio:x64-windows
 
 Joedb Tools
 -----------
