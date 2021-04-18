@@ -201,9 +201,11 @@ namespace joedb
    const int64_t start = from_network(session->buffer);
    const int64_t size = from_network(session->buffer + 8);
 
-   const bool conflict =
-    (start != journal.get_checkpoint_position() && size != 0) ||
-    (locked && session->state != Session::State::locking);
+   const bool conflict = (size != 0) &&
+   (
+    start != journal.get_checkpoint_position() ||
+    (locked && session->state != Session::State::locking)
+   );
 
    if (session->state != Session::State::locking)
    {
