@@ -95,7 +95,7 @@ namespace joedb
   {
    const size_t size = reader.read(buffer, buffer_size);
    net::write(socket, net::buffer(buffer, size));
-   std::cerr << ' ' << size;
+   std::cerr << size << ' ';
   }
 
   net::read(socket, net::buffer(buffer, 1));
