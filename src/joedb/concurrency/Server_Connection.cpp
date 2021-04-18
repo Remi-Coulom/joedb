@@ -153,13 +153,23 @@ namespace joedb
 
   std::cerr << "keep_alive() thread started\n";
 
-  while (!keep_alive_thread_must_stop)
+  try
   {
-   buffer[0] = 'i';
-   net::write(socket, net::buffer(buffer, 1));
-   net::read(socket, net::buffer(buffer, 1));
+   while (!keep_alive_thread_must_stop)
+   {
+    condition.wait_for(lock, std::chrono::seconds(keep_alive_interval));
 
-   condition.wait_for(lock, std::chrono::seconds(keep_alive_interval));
+    if (keep_alive_thread_must_stop)
+     break;
+
+    buffer[0] = 'i';
+
+    net::write(socket, net::buffer(buffer, 1));
+    net::read(socket, net::buffer(buffer, 1));
+   }
+  }
+  catch(...)
+  {
   }
 
   std::cerr << "keep_alive() thread stopping\n";
@@ -237,8 +247,14 @@ namespace joedb
  Server_Connection::~Server_Connection()
  ////////////////////////////////////////////////////////////////////////////
  {
-  buffer[0] = 'Q';
-  net::write(socket, net::buffer(buffer, 1));
+  try
+  {
+   buffer[0] = 'Q';
+   net::write(socket, net::buffer(buffer, 1));
+  }
+  catch(...)
+  {
+  }
 
   {
    std::unique_lock<std::mutex> lock(mutex);
