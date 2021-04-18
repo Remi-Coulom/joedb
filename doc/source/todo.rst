@@ -66,13 +66,6 @@ Concurrency
   - fuzzer + unit testing
   - event listener instead of direct writes to std::cerr
 
-- Event listener class instead of trace flag?
-- Make the system robust with respect to client disconnections during write
-
-  - set a timeout: clients not allowed to hold a lock for too long.
-  - push_unlock may fail if the lock timed out, and the checkpoint advanced on
-    the server.
-
 - Optional CRC check before pulling to verify the content of the origin.
 
 Performance

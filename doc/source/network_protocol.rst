@@ -18,6 +18,7 @@ U      checkpoint       push-unlock
 l                       lock
 u                       unlock
 i                       ignore (used to keep the connection alive)
+Q                       quit
 ====== ================ ======================================================
 
 
@@ -35,9 +36,10 @@ P      checkpoint       reply to P
 L      checkpoint       reply to L
        size
        data
-U                       reply to U when no timeout
+U                       reply to U when the push succeeded
+C                       replu to U when the push failed (conflict)
 l                       reply to l
-u                       reply to u when no timeout
-T                       reply to U or u, in case of timeout
+u                       reply to u (no timeout)
+t                       reply to u (timeout)
 i                       reply to i
 ====== ================ ======================================================

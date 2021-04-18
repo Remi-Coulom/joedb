@@ -20,7 +20,7 @@ namespace joedb
  Server::Session::Session(net::ip::tcp::socket && socket):
  ////////////////////////////////////////////////////////////////////////////
   socket(std::move(socket)),
-  state(unlocked)
+  state(not_locking)
  {
   std::cerr << "Created a new session\n";
  }
@@ -67,7 +67,7 @@ namespace joedb
    else if (session->state == Session::State::waiting_for_lock_pull)
     pull(session);
 
-   session->state = Session::State::locked;
+   session->state = Session::State::locking;
   }
  }
 
@@ -75,7 +75,7 @@ namespace joedb
  void Server::lock(std::shared_ptr<Session> session, Session::State state)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (session->state == Session::State::unlocked)
+  if (session->state == Session::State::not_locking)
   {
    session->state = state;
    lock_queue.push(session);
@@ -87,10 +87,10 @@ namespace joedb
  void Server::unlock(std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (session->state == Session::State::locked)
+  if (session->state == Session::State::locking)
   {
    std::cerr << "Unlocking\n";
-   session->state = Session::State::unlocked;
+   session->state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
 
@@ -120,6 +120,7 @@ namespace joedb
   std::shared_ptr<Session> session,
   int64_t size,
   std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+  bool conflict,
   std::error_code error,
   size_t bytes_transferred
  )
@@ -131,7 +132,7 @@ namespace joedb
    if (writer)
     writer->append(session->buffer, bytes_transferred);
    size -= bytes_transferred;
-   push_transfer(session, size, std::move(writer));
+   push_transfer(session, size, std::move(writer), conflict);
   }
  }
 
@@ -141,7 +142,8 @@ namespace joedb
  (
   std::shared_ptr<Session> session,
   int64_t size,
-  std::unique_ptr<Writable_Journal::Tail_Writer> writer
+  std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+  bool conflict
  )
  {
   if (size > 0)
@@ -149,7 +151,7 @@ namespace joedb
    (
     session->socket,
     net::buffer(session->buffer, size_t(size)),
-    [this, size, session, moved_writer = std::move(writer)]
+    [this, size, session, moved_writer = std::move(writer), conflict]
     (
      std::error_code error,
      size_t bytes_transferred
@@ -160,6 +162,7 @@ namespace joedb
       session,
       size,
       std::move(moved_writer),
+      conflict,
       error,
       bytes_transferred
      );
@@ -169,10 +172,10 @@ namespace joedb
   {
    std::cerr << '\n';
    unlock(session);
-   if (writer)
-    session->buffer[0] = 'U';
+   if (conflict)
+    session->buffer[0] = 'C';
    else
-    session->buffer[0] = 'T';
+    session->buffer[0] = 'U';
    write_buffer_and_next_command(session, 1);
   }
  }
@@ -193,18 +196,34 @@ namespace joedb
 
    std::cerr << "Pushing, start = " << start << ", size = " << size << '\n';
 
-   if (start == journal.get_checkpoint_position())
+   const bool conflict =
+    (start != journal.get_checkpoint_position() && size != 0) ||
+    (locked && session->state != Session::State::locking);
+
+   if (session->state != Session::State::locking)
    {
-    std::unique_ptr<Writable_Journal::Tail_Writer> writer;
-    if (session->state == Session::State::locked)
-     writer.reset (new Writable_Journal::Tail_Writer(journal));
-    push_transfer(session, size, std::move(writer));
+    std::cerr << "Trying to push while not locking.\n";
+    if (!conflict && !locked)
+    {
+     std::cerr << "OK, this session can take the lock.\n";
+     lock(session, Session::State::locking);
+    }
    }
-   else
-   {
-    std::cerr << "Error: journal.get_checkpoint_position() = ";
-    std::cerr << journal.get_checkpoint_position() << '\n';
-   }
+
+   if (session->state == Session::State::locking)
+    lock_timeout_timer.cancel();
+
+   std::unique_ptr<Writable_Journal::Tail_Writer> writer;
+   if (!conflict && size > 0)
+    writer.reset(new Writable_Journal::Tail_Writer(journal));
+
+   push_transfer
+   (
+    session,
+    size,
+    std::move(writer),
+    conflict
+   );
   }
  }
 
@@ -354,15 +373,20 @@ namespace joedb
     break;
 
     case 'u':
-     if (session->state == Session::State::locked)
+     if (session->state == Session::State::locking)
       unlock(session);
      else
-      session->buffer[0] = 'T';
+      session->buffer[0] = 't';
      write_buffer_and_next_command(session, 1);
     break;
 
     case 'i':
      write_buffer_and_next_command(session, 1);
+    break;
+
+    case 'Q':
+     if (session->state == Session::State::locking)
+      unlock(session);
     break;
 
     default:

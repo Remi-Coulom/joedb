@@ -98,21 +98,14 @@ namespace joedb
    std::cerr << ' ' << size;
   }
 
-  std::cerr << '\n';
-
   net::read(socket, net::buffer(buffer, 1));
 
-  if (buffer[0] != 'U')
-  {
-   if (buffer[0] == 'T')
-   {
-    std::cerr << "The lock timed out!\n";
-    if (push_size > 0)
-     throw Exception("Push failed because the lock timed out");
-   }
-   else
-    throw Exception("Unexpected server reply");
-  }
+  if (buffer[0] == 'U')
+   std::cerr << "OK\n";
+  else if (buffer[0] == 'C')
+   throw Exception("Conflict: push failed");
+  else
+   throw Exception("Unexpected server reply");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -143,10 +136,13 @@ namespace joedb
   buffer[0] = 'u';
   net::write(socket, net::buffer(buffer, 1));
   net::read(socket, net::buffer(buffer, 1));
-  if (buffer[0] != 'u')
-   throw Exception("Unexpected server reply");
 
-  std::cerr << "OK\n";
+  if (buffer[0] == 'u')
+   std::cerr << "OK\n";
+  else if (buffer[0] == 't')
+   std::cerr << "The lock had timed out\n";
+  else
+   throw Exception("Unexpected server reply");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -241,6 +237,9 @@ namespace joedb
  Server_Connection::~Server_Connection()
  ////////////////////////////////////////////////////////////////////////////
  {
+  buffer[0] = 'Q';
+  net::write(socket, net::buffer(buffer, 1));
+
   {
    std::unique_lock<std::mutex> lock(mutex);
    keep_alive_thread_must_stop = true;

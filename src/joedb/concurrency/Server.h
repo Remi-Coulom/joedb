@@ -33,7 +33,7 @@ namespace joedb
     net::ip::tcp::socket socket;
     enum {buffer_size = (1 << 13)};
     char buffer[buffer_size];
-    enum State {unlocked, waiting_for_lock, waiting_for_lock_pull, locked};
+    enum State {not_locking, waiting_for_lock, waiting_for_lock_pull, locking};
     State state;
 
     Session(net::ip::tcp::socket &&socket);
@@ -58,6 +58,7 @@ namespace joedb
     std::shared_ptr<Session> session,
     int64_t size,
     std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+    bool conflict,
     std::error_code error,
     size_t bytes_transferred
    );
@@ -66,7 +67,8 @@ namespace joedb
    (
     std::shared_ptr<Session> session,
     int64_t size,
-    std::unique_ptr<Writable_Journal::Tail_Writer> writer
+    std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+    bool conflict
    );
 
    void push_handler
