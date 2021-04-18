@@ -87,7 +87,7 @@ namespace joedb
 
   const int64_t push_size = reader.get_remaining();
 
-  std::cerr << "pushing " << push_size << " bytes:";
+  std::cerr << "pushing " << push_size << " bytes: ";
 
   net::write(socket, net::buffer(buffer, 17));
 

@@ -147,6 +147,9 @@ namespace joedb
  )
  {
   if (size > 0)
+  {
+   std::cerr << '.';
+
    net::async_read
    (
     session->socket,
@@ -168,15 +171,19 @@ namespace joedb
      );
     }
    );
+  }
   else
   {
-   std::cerr << '\n';
-   unlock(session);
    if (conflict)
     session->buffer[0] = 'C';
    else
     session->buffer[0] = 'U';
+
+   std::cerr << " done. Returning '" << session->buffer[0] << "'\n";
+
    write_buffer_and_next_command(session, 1);
+
+   unlock(session);
   }
  }
 
@@ -193,8 +200,6 @@ namespace joedb
   {
    const int64_t start = from_network(session->buffer);
    const int64_t size = from_network(session->buffer + 8);
-
-   std::cerr << "Pushing, start = " << start << ", size = " << size << '\n';
 
    const bool conflict =
     (start != journal.get_checkpoint_position() && size != 0) ||
@@ -216,6 +221,8 @@ namespace joedb
    std::unique_ptr<Writable_Journal::Tail_Writer> writer;
    if (!conflict && size > 0)
     writer.reset(new Writable_Journal::Tail_Writer(journal));
+
+   std::cerr << "Pushing, start = " << start << ", size = " << size << ':';
 
    push_transfer
    (
@@ -266,7 +273,7 @@ namespace joedb
    }
    else
    {
-    std::cerr << '\n';
+    std::cerr << " OK\n";
     read_command(session);
    }
   }
@@ -291,7 +298,7 @@ namespace joedb
    to_network(reader.get_remaining(), session->buffer + 9);
 
    std::cerr << "Pulling from checkpoint = " << checkpoint;
-   std::cerr << ", size = " << reader.get_remaining() << '\n';
+   std::cerr << ", size = " << reader.get_remaining() << ':';
 
    net::async_write
    (
