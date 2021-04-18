@@ -63,8 +63,6 @@ Concurrency
 
   - convenient ssh wrapper to run the server remotely and create a tunnel
   - lock timeout
-  - fuse net writes (lock + pull, push + unlock, and their replies)
-  - protocol version (server gives its version number at start)
   - readonly option (indicated at start)
   - fuzzer + unit testing
   - event listener instead of direct writes to std::cerr
