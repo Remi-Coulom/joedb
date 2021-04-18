@@ -33,7 +33,8 @@ namespace joedb
     net::ip::tcp::socket socket;
     enum {buffer_size = (1 << 13)};
     char buffer[buffer_size];
-    bool locking;
+    enum State {unlocked, waiting_for_lock, waiting_for_lock_pull, locked};
+    State state;
 
     Session(net::ip::tcp::socket &&socket);
     ~Session();
@@ -42,6 +43,8 @@ namespace joedb
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
+   void lock(std::shared_ptr<Session> session, Session::State state);
+   void unlock(std::shared_ptr<Session> session);
 
    void push_transfer_handler
    (
@@ -81,6 +84,8 @@ namespace joedb
     size_t bytes_transferred
    );
 
+   void pull(std::shared_ptr<Session> session);
+
    void read_command_handler
    (
     std::shared_ptr<Session> session,
@@ -90,21 +95,33 @@ namespace joedb
 
    void read_command(std::shared_ptr<Session> session);
 
-   void write_handler
+   void write_buffer_and_next_command_handler
    (
     std::shared_ptr<Session> session,
     const std::error_code &error,
     size_t bytes_transferred
    );
 
-   void write_buffer(std::shared_ptr<Session> session, size_t size);
+   void write_buffer_and_next_command
+   (
+    std::shared_ptr<Session> session,
+    size_t size
+   );
 
-   void start_accept();
+   void handshake_handler
+   (
+    std::shared_ptr<Session> session,
+    const std::error_code &error,
+    size_t bytes_transferred
+   );
+
    void handle_accept
    (
     std::error_code error,
     net::ip::tcp::socket socket
    );
+
+   void start_accept();
 
    void start_interrupt_timer();
    void handle_interrupt_timer(std::error_code error);

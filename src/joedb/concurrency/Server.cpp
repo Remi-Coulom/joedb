@@ -20,7 +20,7 @@ namespace joedb
  Server::Session::Session(net::ip::tcp::socket && socket):
  ////////////////////////////////////////////////////////////////////////////
   socket(std::move(socket)),
-  locking(false)
+  state(unlocked)
  {
   std::cerr << "Created a new session\n";
  }
@@ -40,9 +40,38 @@ namespace joedb
   {
    std::cerr << "Locking\n";
    locked = true;
-   write_buffer(lock_queue.front(), 1);
+   std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
+
+   if (session->state == Session::State::waiting_for_lock)
+    write_buffer_and_next_command(session, 1);
+   else if (session->state == Session::State::waiting_for_lock_pull)
+    pull(session);
+
+   session->state = Session::State::locked;
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::lock(std::shared_ptr<Session> session, Session::State state)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (session->state == Session::State::unlocked)
+  {
+   session->state = state;
+   lock_queue.push(session);
+   lock_dequeue();
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::unlock(std::shared_ptr<Session> session)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::cerr << "Unlocking\n";
+  session->state = Session::State::unlocked;
+  locked = false;
+  lock_dequeue();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -98,8 +127,10 @@ namespace joedb
    );
   else
   {
-   read_command(session);
    std::cerr << '\n';
+   unlock(session);
+   session->buffer[0] = 'U';
+   write_buffer_and_next_command(session, 1);
   }
  }
 
@@ -151,10 +182,10 @@ namespace joedb
  {
   if (!error)
   {
-   std::cerr << '.';
-
    if (reader.get_remaining() > 0)
    {
+    std::cerr << '.';
+
     const size_t size = reader.read
     (
      session->buffer,
@@ -177,7 +208,10 @@ namespace joedb
     );
    }
    else
+   {
     std::cerr << '\n';
+    read_command(session);
+   }
   }
  }
 
@@ -218,6 +252,25 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
+ void Server::pull(std::shared_ptr<Session> session)
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  net::async_read
+  (
+   session->socket,
+   net::buffer(session->buffer, 8),
+   std::bind
+   (
+    &Server::pull_handler,
+    this,
+    session,
+    std::placeholders::_1,
+    std::placeholders::_2
+   )
+  );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
  void Server::read_command_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -232,68 +285,53 @@ namespace joedb
 
    switch (session->buffer[0])
    {
-    case 'p':
-     net::async_read
-     (
-      session->socket,
-      net::buffer(session->buffer, 8),
-      std::bind
-      (
-       &Server::pull_handler,
-       this,
-       session,
-       std::placeholders::_1,
-       std::placeholders::_2
-      )
-     );
+    case 'P':
+     pull(session);
     break;
 
-    case 'P':
-     net::async_read
-     (
-      session->socket,
-      net::buffer(session->buffer, 16),
-      std::bind
-      (
-       &Server::push_handler,
-       this,
-       session,
-       std::placeholders::_1,
-       std::placeholders::_2
-      )
-     );
-    return;
+    case 'L':
+     lock(session, Session::State::waiting_for_lock_pull);
+    break;
 
-    case 'l':
-     if (!session->locking)
+    case 'U':
+     if (session->state == Session::State::locked)
      {
-      session->locking = true;
-      lock_queue.push(session);
-      lock_dequeue();
+      net::async_read
+      (
+       session->socket,
+       net::buffer(session->buffer, 16),
+       std::bind
+       (
+        &Server::push_handler,
+        this,
+        session,
+        std::placeholders::_1,
+        std::placeholders::_2
+       )
+      );
      }
     break;
 
+    case 'l':
+     lock(session, Session::State::waiting_for_lock);
+    break;
+
     case 'u':
-     if (session->locking)
+     if (session->state == Session::State::locked)
      {
-      std::cerr << "Unlocking\n";
-      session->locking = false;
-      locked = false;
-      lock_dequeue();
-      write_buffer(session, 1);
+      unlock(session);
+      write_buffer_and_next_command(session, 1);
      }
     break;
 
     case 'i':
-     write_buffer(session, 1);
+     write_buffer_and_next_command(session, 1);
     break;
 
     default:
      std::cerr << "Unexpected command\n";
-    return;
+    break;
    }
-
-   read_command(session);
   }
  }
 
@@ -301,6 +339,7 @@ namespace joedb
  void Server::read_command(std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
+  std::cerr << "Waiting for next command.\n";
   net::async_read
   (
    session->socket,
@@ -317,7 +356,43 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::write_handler
+ void Server::write_buffer_and_next_command_handler
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  const std::error_code &error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+   read_command(session);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::write_buffer_and_next_command
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  size_t size
+ )
+ {
+  net::async_write
+  (
+   session->socket,
+   net::buffer(session->buffer, size),
+   std::bind
+   (
+    &Server::write_buffer_and_next_command_handler,
+    this,
+    session,
+    std::placeholders::_1,
+    std::placeholders::_2
+   )
+  );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::handshake_handler
  ///////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
@@ -327,28 +402,28 @@ namespace joedb
  {
   if (!error)
   {
-   std::cerr << "Successfully wrote data\n";
+   if
+   (
+    session->buffer[0] == 'j' &&
+    session->buffer[1] == 'o' &&
+    session->buffer[2] == 'e' &&
+    session->buffer[3] == 'd' &&
+    session->buffer[4] == 'b'
+   )
+   {
+    const int64_t client_version = from_network(session->buffer + 5);
+
+    std::cerr << "client_version = " << client_version << '\n';
+    const int64_t server_version = 1;
+    to_network(server_version, session->buffer + 5);
+
+    write_buffer_and_next_command(session, 13);
+   }
+   else
+    std::cerr << "Bad handshake\n";
   }
  }
 
- ////////////////////////////////////////////////////////////////////////////
- void Server::write_buffer(std::shared_ptr<Session> session, size_t size)
- ////////////////////////////////////////////////////////////////////////////
- {
-  net::async_write
-  (
-   session->socket,
-   net::buffer(session->buffer, size),
-   std::bind
-   (
-    &Server::write_handler,
-    this,
-    session,
-    std::placeholders::_1,
-    std::placeholders::_2
-   )
-  );
- }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::handle_accept
@@ -362,14 +437,19 @@ namespace joedb
   {
    std::shared_ptr<Session> session(new Session(std::move(socket)));
 
-   session->buffer[0] = 'j';
-   session->buffer[1] = 'o';
-   session->buffer[2] = 'e';
-   session->buffer[3] = 'd';
-   session->buffer[4] = 'b';
-
-   write_buffer(session, 5);
-   read_command(session);
+   net::async_read
+   (
+    session->socket,
+    net::buffer(session->buffer, 13),
+    std::bind
+    (
+     &Server::handshake_handler,
+     this,
+     session,
+     std::placeholders::_1,
+     std::placeholders::_2
+    )
+   );
 
    start_accept();
   }

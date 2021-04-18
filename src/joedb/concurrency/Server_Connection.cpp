@@ -7,14 +7,18 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::pull(Writable_Journal &client_journal)
+ int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  char pull_type
+ )
  {
   std::unique_lock<std::mutex> lock(mutex);
 
-  std::cerr << "Pulling... ";
+  std::cerr << "Pulling(" << pull_type << ")... ";
 
-  buffer[0] = 'p';
+  buffer[0] = pull_type;
   const int64_t checkpoint = client_journal.get_checkpoint_position();
   to_network(checkpoint, buffer + 1);
   net::write(socket, net::buffer(buffer, 9));
@@ -32,7 +36,11 @@ namespace joedb
 
    for (int64_t read = 0; read < size;)
    {
-    const size_t n = socket.read_some(net::buffer(buffer, buffer_size));
+    const int64_t remaining = size - read;
+    size_t read_size = size_t(remaining);
+    if (read_size > buffer_size)
+     read_size = buffer_size;
+    const size_t n = socket.read_some(net::buffer(buffer, read_size));
     tail_writer.append(buffer, n);
     read += n;
     std::cerr << '.';
@@ -48,11 +56,17 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_Connection::pull(Writable_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return pull(client_journal, 'P');
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  int64_t Server_Connection::lock_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  lock();
-  return pull(client_journal);
+  return pull(client_journal, 'L');
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -63,33 +77,33 @@ namespace joedb
   int64_t server_position
  )
  {
+  std::unique_lock<std::mutex> lock(mutex);
+
+  Async_Reader reader = client_journal.get_tail_reader(server_position);
+
+  if (reader.get_remaining() > 0)
   {
-   std::unique_lock<std::mutex> lock(mutex);
+   buffer[0] = 'U';
+   to_network(server_position, buffer + 1);
+   to_network(reader.get_remaining(), buffer + 9);
 
-   Async_Reader reader = client_journal.get_tail_reader(server_position);
+   std::cerr << "pushing " << reader.get_remaining() << " bytes:";
 
-   if (reader.get_remaining() > 0)
+   net::write(socket, net::buffer(buffer, 17));
+
+   while (reader.get_remaining() > 0)
    {
-    buffer[0] = 'P';
-    to_network(server_position, buffer + 1);
-    to_network(reader.get_remaining(), buffer + 9);
-
-    std::cerr << "pushing " << reader.get_remaining() << " bytes:";
-
-    net::write(socket, net::buffer(buffer, 17));
-
-    while (reader.get_remaining() > 0)
-    {
-     const size_t size = reader.read(buffer, buffer_size);
-     net::write(socket, net::buffer(buffer, size));
-     std::cerr << ' ' << size;
-    }
-
-    std::cerr << '\n';
+    const size_t size = reader.read(buffer, buffer_size);
+    net::write(socket, net::buffer(buffer, size));
+    std::cerr << ' ' << size;
    }
+
+   std::cerr << '\n';
   }
 
-  unlock();
+  net::read(socket, net::buffer(buffer, 1));
+  if (buffer[0] != 'U')
+   throw Exception("Unexpected server reply");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -104,7 +118,7 @@ namespace joedb
   net::write(socket, net::buffer(buffer, 1));
   net::read(socket, net::buffer(buffer, 1));
   if (buffer[0] != 'l')
-   throw Exception("Could not obtain lock confirmation from server");
+   throw Exception("Unexpected server reply");
 
   std::cerr << "OK\n";
  }
@@ -121,7 +135,7 @@ namespace joedb
   net::write(socket, net::buffer(buffer, 1));
   net::read(socket, net::buffer(buffer, 1));
   if (buffer[0] != 'u')
-   throw Exception("Could not obtain unlock confirmation from server");
+   throw Exception("Unexpected server reply");
 
   std::cerr << "OK\n";
  }
@@ -164,13 +178,24 @@ namespace joedb
    resolver.resolve(host_name, port_name)
   );
 
-  std::cerr << "Waiting for \"joedb\"... ";
+  char buffer[5 + 8];
 
-  char buffer[5];
+  buffer[0] = 'j';
+  buffer[1] = 'o';
+  buffer[2] = 'e';
+  buffer[3] = 'd';
+  buffer[4] = 'b';
+
+  const int64_t client_version = 1;
+  to_network(client_version, buffer + 5);
+
+  net::write(socket, net::buffer(buffer, 5 + 8));
+  net::read(socket, net::buffer(buffer, 5 + 8));
+
+  std::cerr << "Waiting for \"joedb\"... ";
 
   if
   (
-   net::read(socket, net::buffer(buffer, 5)) != 5 ||
    buffer[0] != 'j' ||
    buffer[1] != 'o' ||
    buffer[2] != 'e' ||
@@ -181,7 +206,12 @@ namespace joedb
    throw Exception("Did not receive \"joedb\" from server");
   }
 
-  std::cerr << "OK.\n";
+  const int64_t server_version = from_network(buffer + 5);
+
+  if (server_version == 0)
+   throw Exception("Client version rejected by server");
+
+  std::cerr << "server_version = " << server_version << ". OK.\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
