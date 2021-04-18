@@ -26,7 +26,7 @@ namespace joedb
    joedb::Writable_Journal &journal;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
-   net::steady_timer timer;
+   net::steady_timer interrupt_timer;
 
    struct Session
    {
@@ -40,18 +40,25 @@ namespace joedb
     ~Session();
    };
 
+   const uint32_t lock_timeout_seconds;
+   net::steady_timer lock_timeout_timer;
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
    void lock(std::shared_ptr<Session> session, Session::State state);
    void unlock(std::shared_ptr<Session> session);
+   void lock_timeout_handler
+   (
+    std::shared_ptr<Session> session,
+    std::error_code error
+   );
 
    void push_transfer_handler
    (
     std::shared_ptr<Session> session,
     int64_t size,
     std::unique_ptr<Writable_Journal::Tail_Writer> writer,
-    const std::error_code &error,
+    std::error_code error,
     size_t bytes_transferred
    );
 
@@ -65,7 +72,7 @@ namespace joedb
    void push_handler
    (
     std::shared_ptr<Session> session,
-    const std::error_code &error,
+    std::error_code error,
     size_t bytes_transferred
    );
 
@@ -73,14 +80,14 @@ namespace joedb
    (
     std::shared_ptr<Session> session,
     Async_Reader reader,
-    const std::error_code &error,
+    std::error_code error,
     size_t bytes_transferred
    );
 
    void pull_handler
    (
     std::shared_ptr<Session> session,
-    const std::error_code &error,
+    std::error_code error,
     size_t bytes_transferred
    );
 
@@ -89,7 +96,7 @@ namespace joedb
    void read_command_handler
    (
     std::shared_ptr<Session> session,
-    const std::error_code &error,
+    std::error_code error,
     size_t bytes_transferred
    );
 
@@ -98,7 +105,7 @@ namespace joedb
    void write_buffer_and_next_command_handler
    (
     std::shared_ptr<Session> session,
-    const std::error_code &error,
+    std::error_code error,
     size_t bytes_transferred
    );
 
@@ -111,7 +118,7 @@ namespace joedb
    void handshake_handler
    (
     std::shared_ptr<Session> session,
-    const std::error_code &error,
+    std::error_code error,
     size_t bytes_transferred
    );
 
@@ -131,7 +138,8 @@ namespace joedb
    (
     joedb::Writable_Journal &journal,
     net::io_context &io_context,
-    uint16_t port
+    uint16_t port,
+    uint32_t lock_timeout_seconds
    );
  };
 }

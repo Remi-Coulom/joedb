@@ -35,8 +35,9 @@ P      checkpoint       reply to P
 L      checkpoint       reply to L
        size
        data
-U                       reply to U
+U                       reply to U when no timeout
 l                       reply to l
-u                       reply to u
+u                       reply to u when no timeout
+T                       reply to U or u, in case of timeout
 i                       reply to i
 ====== ================ ======================================================

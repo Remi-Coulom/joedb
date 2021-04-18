@@ -81,29 +81,38 @@ namespace joedb
 
   Async_Reader reader = client_journal.get_tail_reader(server_position);
 
-  if (reader.get_remaining() > 0)
+  buffer[0] = 'U';
+  to_network(server_position, buffer + 1);
+  to_network(reader.get_remaining(), buffer + 9);
+
+  const int64_t push_size = reader.get_remaining();
+
+  std::cerr << "pushing " << push_size << " bytes:";
+
+  net::write(socket, net::buffer(buffer, 17));
+
+  while (reader.get_remaining() > 0)
   {
-   buffer[0] = 'U';
-   to_network(server_position, buffer + 1);
-   to_network(reader.get_remaining(), buffer + 9);
-
-   std::cerr << "pushing " << reader.get_remaining() << " bytes:";
-
-   net::write(socket, net::buffer(buffer, 17));
-
-   while (reader.get_remaining() > 0)
-   {
-    const size_t size = reader.read(buffer, buffer_size);
-    net::write(socket, net::buffer(buffer, size));
-    std::cerr << ' ' << size;
-   }
-
-   std::cerr << '\n';
+   const size_t size = reader.read(buffer, buffer_size);
+   net::write(socket, net::buffer(buffer, size));
+   std::cerr << ' ' << size;
   }
 
+  std::cerr << '\n';
+
   net::read(socket, net::buffer(buffer, 1));
+
   if (buffer[0] != 'U')
-   throw Exception("Unexpected server reply");
+  {
+   if (buffer[0] == 'T')
+   {
+    std::cerr << "The lock timed out!\n";
+    if (push_size > 0)
+     throw Exception("Push failed because the lock timed out");
+   }
+   else
+    throw Exception("Unexpected server reply");
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

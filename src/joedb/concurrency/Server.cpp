@@ -43,6 +43,25 @@ namespace joedb
    std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
 
+   if (lock_timeout_seconds > 0)
+   {
+    lock_timeout_timer.expires_after
+    (
+     std::chrono::seconds(lock_timeout_seconds)
+    );
+
+    lock_timeout_timer.async_wait
+    (
+     std::bind
+     (
+      &Server::lock_timeout_handler,
+      this,
+      session,
+      std::placeholders::_1
+     )
+    );
+   }
+
    if (session->state == Session::State::waiting_for_lock)
     write_buffer_and_next_command(session, 1);
    else if (session->state == Session::State::waiting_for_lock_pull)
@@ -68,10 +87,30 @@ namespace joedb
  void Server::unlock(std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::cerr << "Unlocking\n";
-  session->state = Session::State::unlocked;
-  locked = false;
-  lock_dequeue();
+  if (session->state == Session::State::locked)
+  {
+   std::cerr << "Unlocking\n";
+   session->state = Session::State::unlocked;
+   locked = false;
+   lock_timeout_timer.cancel();
+
+   lock_dequeue();
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::lock_timeout_handler
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  std::error_code error
+ )
+ {
+  if (!error)
+  {
+   std::cerr << "Timeout!\n";
+   unlock(session);
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -81,7 +120,7 @@ namespace joedb
   std::shared_ptr<Session> session,
   int64_t size,
   std::unique_ptr<Writable_Journal::Tail_Writer> writer,
-  const std::error_code &error,
+  std::error_code error,
   size_t bytes_transferred
  )
  {
@@ -89,7 +128,8 @@ namespace joedb
   {
    std::cerr << '.';
 
-   writer->append(session->buffer, bytes_transferred);
+   if (writer)
+    writer->append(session->buffer, bytes_transferred);
    size -= bytes_transferred;
    push_transfer(session, size, std::move(writer));
   }
@@ -111,7 +151,7 @@ namespace joedb
     net::buffer(session->buffer, size_t(size)),
     [this, size, session, moved_writer = std::move(writer)]
     (
-     const std::error_code &error,
+     std::error_code error,
      size_t bytes_transferred
     ) mutable
     {
@@ -129,7 +169,10 @@ namespace joedb
   {
    std::cerr << '\n';
    unlock(session);
-   session->buffer[0] = 'U';
+   if (writer)
+    session->buffer[0] = 'U';
+   else
+    session->buffer[0] = 'T';
    write_buffer_and_next_command(session, 1);
   }
  }
@@ -139,7 +182,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  const std::error_code &error,
+  std::error_code error,
   size_t bytes_transferred
  )
  {
@@ -152,14 +195,9 @@ namespace joedb
 
    if (start == journal.get_checkpoint_position())
    {
-    std::unique_ptr<Writable_Journal::Tail_Writer> writer
-    (
-     new Writable_Journal::Tail_Writer
-     (
-      journal
-     )
-    );
-
+    std::unique_ptr<Writable_Journal::Tail_Writer> writer;
+    if (session->state == Session::State::locked)
+     writer.reset (new Writable_Journal::Tail_Writer(journal));
     push_transfer(session, size, std::move(writer));
    }
    else
@@ -176,7 +214,7 @@ namespace joedb
  (
   std::shared_ptr<Session> session,
   Async_Reader reader,
-  const std::error_code &error,
+  std::error_code error,
   size_t bytes_transferred
  )
  {
@@ -220,19 +258,21 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  const std::error_code &error,
+  std::error_code error,
   size_t bytes_transferred
  )
  {
   if (!error)
   {
    const int64_t checkpoint = from_network(session->buffer);
-   std::cerr << "Pulling from checkpoint = " << checkpoint << '\n';
    session->buffer[0] = 'p';
    to_network(checkpoint, session->buffer + 1);
 
    Async_Reader reader = journal.get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
+
+   std::cerr << "Pulling from checkpoint = " << checkpoint;
+   std::cerr << ", size = " << reader.get_remaining() << '\n';
 
    net::async_write
    (
@@ -275,7 +315,7 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  const std::error_code &error,
+  std::error_code error,
   size_t bytes_transferred
  )
  {
@@ -294,22 +334,19 @@ namespace joedb
     break;
 
     case 'U':
-     if (session->state == Session::State::locked)
-     {
-      net::async_read
+     net::async_read
+     (
+      session->socket,
+      net::buffer(session->buffer, 16),
+      std::bind
       (
-       session->socket,
-       net::buffer(session->buffer, 16),
-       std::bind
-       (
-        &Server::push_handler,
-        this,
-        session,
-        std::placeholders::_1,
-        std::placeholders::_2
-       )
-      );
-     }
+       &Server::push_handler,
+       this,
+       session,
+       std::placeholders::_1,
+       std::placeholders::_2
+      )
+     );
     break;
 
     case 'l':
@@ -318,10 +355,10 @@ namespace joedb
 
     case 'u':
      if (session->state == Session::State::locked)
-     {
       unlock(session);
-      write_buffer_and_next_command(session, 1);
-     }
+     else
+      session->buffer[0] = 'T';
+     write_buffer_and_next_command(session, 1);
     break;
 
     case 'i':
@@ -360,7 +397,7 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  const std::error_code &error,
+  std::error_code error,
   size_t bytes_transferred
  )
  {
@@ -396,7 +433,7 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  const std::error_code &error,
+  std::error_code error,
   size_t bytes_transferred
  )
  {
@@ -476,8 +513,12 @@ namespace joedb
  void Server::start_interrupt_timer()
  ////////////////////////////////////////////////////////////////////////////
  {
-  timer.expires_after(std::chrono::seconds(interrupt_check_seconds));
-  timer.async_wait
+  interrupt_timer.expires_after
+  (
+   std::chrono::seconds(interrupt_check_seconds)
+  );
+
+  interrupt_timer.async_wait
   (
    std::bind
    (
@@ -510,12 +551,15 @@ namespace joedb
  (
   joedb::Writable_Journal &journal,
   net::io_context &io_context,
-  uint16_t port
+  uint16_t port,
+  uint32_t lock_timeout_seconds
  ):
   journal(journal),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
-  timer(io_context),
+  interrupt_timer(io_context),
+  lock_timeout_seconds(lock_timeout_seconds),
+  lock_timeout_timer(io_context),
   locked(false)
  {
   std::cerr << "port = " << acceptor.local_endpoint().port() << '\n';

@@ -62,7 +62,6 @@ Concurrency
 - joedb_server:
 
   - convenient ssh wrapper to run the server remotely and create a tunnel
-  - lock timeout
   - readonly option (indicated at start)
   - fuzzer + unit testing
   - event listener instead of direct writes to std::cerr

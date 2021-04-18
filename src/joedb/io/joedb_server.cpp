@@ -11,16 +11,31 @@
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (argc != 2 && argc != 4)
+ std::cerr << "sizeof(std::error_code): " << sizeof(std::error_code) << '\n';
+
+ if (argc != 2 && argc != 4 && argc != 6)
  {
-  std::cerr << "usage: " << argv[0] << " [--port p] <filename.joedb>\n";
+  std::cerr << "usage: " << argv[0];
+  std::cerr << " [--port p] [--timeout t] <filename.joedb>\n";
   return 1;
  }
 
  uint16_t port = 0;
+ uint32_t timeout = 0;
 
- if (argc >= 4 && std::strcmp(argv[1], "--port") == 0)
-  std::istringstream(argv[2]) >> port;
+ int32_t index = 1;
+
+ if (argc >= index + 3 && std::strcmp(argv[index], "--port") == 0)
+ {
+  std::istringstream(argv[index + 1]) >> port;
+  index += 2;
+ }
+
+ if (argc >= index + 3 && std::strcmp(argv[index], "--timeout") == 0)
+ {
+  std::istringstream(argv[index + 1]) >> timeout;
+  index += 2;
+ }
 
  joedb::File file
  (
@@ -31,7 +46,7 @@ int main(int argc, char **argv)
  joedb::Writable_Journal journal(file);
 
  net::io_context io_context;
- joedb::Server server(journal, io_context, port);
+ joedb::Server server(journal, io_context, port, timeout);
  io_context.run();
 
  return 0;
