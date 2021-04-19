@@ -183,7 +183,7 @@ For instance, when merging those two databases:
 ``joedb_server``
 ^^^^^^^^^^^^^^^^
 
-Run a server to share a database.
+Run a server to share a database. See :doc:`concurrency` for more information.
 
 .. literalinclude:: ./tutorial/joedb_server.out
    :language: none

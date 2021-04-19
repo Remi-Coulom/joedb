@@ -67,9 +67,12 @@ occurred in the middle of a big push, then the server database might be
 incomplete. It should be fixed (for instance, by copying the database of the
 client that disconnected) before removing the mutex.
 
-For better performance or reliability, use the joedb server instead.
+For better performance or reliability, use the :ref:`joedb server <joedb_server>` instead.
 
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
 
-TODO. Will be much more efficient and reliable than ``SSH_Connection``.
+``Server_Connection`` allows connecting to a running :ref:`joedb_server`. The
+server can use a timeout for the lock, and allows simultaneous pulls by many
+clients, so it should offer much better performance and reliability than
+``SSH_Connection``.
