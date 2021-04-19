@@ -9,7 +9,8 @@ History
   - ``SSH_Connection`` was deeply refactored. It keeps the connection alive
     during a long period of inactivity by sending ignore messages to the server
     from time to time. ``SSH_Robust_Connection`` was removed.
-  - :ref:`joedb_server`
+  - :ref:`joedb_server` offers much better scalability and reliability than
+    ``SSH_Connection`̀`.
 
 - 2020-12-07: 4.0
 
