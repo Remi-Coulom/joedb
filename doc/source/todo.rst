@@ -62,7 +62,9 @@ Concurrency
 - joedb_server:
 
   - fuzzer + unit testing
+  - use coroutines
   - event listener instead of direct writes to std::cerr
+  - SSL
 
 - Optional CRC check before pulling to verify the content of the origin.
 - SSH_Connection: use sftp_async_read and sftp_async_write.
