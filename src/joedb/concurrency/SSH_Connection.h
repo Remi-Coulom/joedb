@@ -41,8 +41,17 @@ namespace joedb
     remote_mutex.unlock();
    }
 
+   void lock() override {remote_mutex.lock();}
+
+   void unlock() override {remote_mutex.unlock();}
+
   public:
-   SSH_Connection(ssh::Remote_Mutex &remote_mutex);
+   SSH_Connection
+   (
+    ssh::Thread_Safe_Session &session,
+    std::string remote_file_name,
+    bool trace
+   );
 
    ssh::Thread_Safe_Session &get_session() {return remote_mutex.session;}
  };

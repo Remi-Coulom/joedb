@@ -2,7 +2,6 @@
 #define joedb_Server_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
-#include "joedb/concurrency/Mutex.h"
 #include "joedb/concurrency/net.h"
 
 #include <mutex>
@@ -22,11 +21,8 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Server_Connection:
+ class Server_Connection: public Connection, private Socket_Construction
  ////////////////////////////////////////////////////////////////////////////
-  public Connection,
-  public Mutex,
-  private Socket_Construction
  {
   private:
    enum {buffer_size = (1 << 13)};

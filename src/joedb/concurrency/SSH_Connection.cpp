@@ -174,10 +174,15 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SSH_Connection::SSH_Connection(ssh::Remote_Mutex &remote_mutex):
+ SSH_Connection::SSH_Connection
  ////////////////////////////////////////////////////////////////////////////
-  remote_mutex(remote_mutex),
-  keepalive_thread(remote_mutex.session)
+ (
+  ssh::Thread_Safe_Session &session,
+  std::string remote_file_name,
+  bool trace
+ ):
+  remote_mutex(session, remote_file_name, trace),
+  keepalive_thread(session)
  {
  }
 }

@@ -2,13 +2,14 @@
 #define joedb_Connection_declared
 
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/concurrency/Mutex.h"
 
 #include <functional>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Connection
+ class Connection: public Mutex
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Client;

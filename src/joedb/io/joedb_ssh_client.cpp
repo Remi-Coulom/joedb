@@ -35,10 +35,9 @@ namespace joedb
     std::istringstream(argv[5]) >> ssh_log_level;
 
    ssh::Thread_Safe_Session session(user, host, port, ssh_log_level);
-   ssh::Remote_Mutex remote_mutex(session, file_name, true);
-   SSH_Connection connection(remote_mutex);
+   SSH_Connection connection(session, file_name, true);
 
-   Shared_Local_File file(remote_mutex, file_name);
+   Shared_Local_File file(connection, file_name);
    run_interpreted_client(connection, file);
   }
 
