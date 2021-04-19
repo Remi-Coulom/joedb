@@ -24,7 +24,7 @@ namespace joedb
   net::write(socket, net::buffer(buffer, 9));
 
   net::read(socket, net::buffer(buffer, 17));
-  if (buffer[0] != 'p' && from_network(buffer + 1) != checkpoint)
+  if (buffer[0] != pull_type && from_network(buffer + 1) != checkpoint)
    throw Exception("Could not pull from server");
 
   const int64_t size = from_network(buffer + 9);

@@ -297,9 +297,7 @@ namespace joedb
  {
   if (!error)
   {
-   const int64_t checkpoint = from_network(session->buffer);
-   session->buffer[0] = 'p';
-   to_network(checkpoint, session->buffer + 1);
+   const int64_t checkpoint = from_network(session->buffer + 1);
 
    Async_Reader reader = journal.get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
@@ -331,7 +329,7 @@ namespace joedb
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer, 8),
+   net::buffer(session->buffer + 1, 8),
    std::bind
    (
     &Server::pull_handler,
