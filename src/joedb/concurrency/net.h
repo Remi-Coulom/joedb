@@ -13,6 +13,9 @@ namespace net = std::experimental::net;
 #endif
 #include <boost/asio/ts/net.hpp>
 namespace net = boost::asio;
+#elif JOEDB_HAS_ASIO_NET
+#include <asio/ts/net.hpp>
+namespace net = asio;
 #else
 #error No networking
 #endif
