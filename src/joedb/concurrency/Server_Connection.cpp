@@ -201,7 +201,7 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 1;
+  const int64_t client_version = 2;
   to_network(client_version, buffer + 5);
 
   net::write(socket, net::buffer(buffer, 5 + 8));
@@ -227,6 +227,9 @@ namespace joedb
    throw Exception("Client version rejected by server");
 
   std::cerr << "server_version = " << server_version << ". OK.\n";
+
+  if (server_version < 2)
+   throw Exception("Unsupported server version");
  }
 
  ////////////////////////////////////////////////////////////////////////////

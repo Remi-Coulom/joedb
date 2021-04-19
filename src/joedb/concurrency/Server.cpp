@@ -487,8 +487,14 @@ namespace joedb
     const int64_t client_version = from_network(session->buffer + 5);
 
     std::cerr << "client_version = " << client_version << '\n';
-    const int64_t server_version = 1;
-    to_network(server_version, session->buffer + 5);
+
+    if (client_version < 2)
+     to_network(0, session->buffer + 5);
+    else
+    {
+     const int64_t server_version = 2;
+     to_network(server_version, session->buffer + 5);
+    }
 
     write_buffer_and_next_command(session, 13);
    }
