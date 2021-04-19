@@ -61,7 +61,6 @@ Concurrency
 -----------
 - joedb_server:
 
-  - deal properly with an incomplete push
   - fuzzer + unit testing
   - event listener instead of direct writes to std::cerr
 

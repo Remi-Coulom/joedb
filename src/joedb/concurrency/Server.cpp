@@ -118,8 +118,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  int64_t size,
-  std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+  size_t offset,
+  size_t remaining_size,
   bool conflict,
   std::error_code error,
   size_t bytes_transferred
@@ -129,10 +129,13 @@ namespace joedb
   {
    std::cerr << '.';
 
-   if (writer)
-    writer->append(session->buffer, bytes_transferred);
-   size -= bytes_transferred;
-   push_transfer(session, size, std::move(writer), conflict);
+   push_transfer
+   (
+    session,
+    offset + bytes_transferred,
+    remaining_size - bytes_transferred,
+    conflict
+   );
   }
  }
 
@@ -141,20 +144,20 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  int64_t size,
-  std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+  size_t offset,
+  size_t remaining_size,
   bool conflict
  )
  {
-  if (size > 0)
+  if (remaining_size > 0)
   {
    std::cerr << '.';
 
    net::async_read
    (
     session->socket,
-    net::buffer(session->buffer, size_t(size)),
-    [this, size, session, moved_writer = std::move(writer), conflict]
+    net::buffer(&push_buffer[offset], remaining_size),
+    [this, session, offset, remaining_size, conflict]
     (
      std::error_code error,
      size_t bytes_transferred
@@ -163,8 +166,8 @@ namespace joedb
      push_transfer_handler
      (
       session,
-      size,
-      std::move(moved_writer),
+      offset,
+      remaining_size,
       conflict,
       error,
       bytes_transferred
@@ -177,7 +180,10 @@ namespace joedb
    if (conflict)
     session->buffer[0] = 'C';
    else
+   {
+    journal.append_raw_tail(push_buffer.data(), offset);
     session->buffer[0] = 'U';
+   }
 
    std::cerr << " done. Returning '" << session->buffer[0] << "'\n";
 
@@ -220,17 +226,16 @@ namespace joedb
    if (session->state == Session::State::locking)
     lock_timeout_timer.cancel();
 
-   std::unique_ptr<Writable_Journal::Tail_Writer> writer;
-   if (!conflict && size > 0)
-    writer.reset(new Writable_Journal::Tail_Writer(journal));
+   if (!conflict && size > int64_t(push_buffer.size()))
+    push_buffer.resize(size_t(size));
 
    std::cerr << "Pushing, start = " << start << ", size = " << size << ':';
 
    push_transfer
    (
     session,
-    size,
-    std::move(writer),
+    0,
+    size_t(size),
     conflict
    );
   }

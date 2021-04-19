@@ -52,12 +52,13 @@ namespace joedb
     std::shared_ptr<Session> session,
     std::error_code error
    );
+   std::vector<char> push_buffer;
 
    void push_transfer_handler
    (
     std::shared_ptr<Session> session,
-    int64_t size,
-    std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+    size_t offset,
+    size_t remaining_size,
     bool conflict,
     std::error_code error,
     size_t bytes_transferred
@@ -66,8 +67,8 @@ namespace joedb
    void push_transfer
    (
     std::shared_ptr<Session> session,
-    int64_t size,
-    std::unique_ptr<Writable_Journal::Tail_Writer> writer,
+    size_t offset,
+    size_t remaining_size,
     bool conflict
    );
 
