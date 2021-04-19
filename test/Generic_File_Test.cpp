@@ -106,8 +106,7 @@ TEST(Generic_File, async)
  {
   writer1.write(buffer, reader1.read(buffer, buffer_size));
   writer2.write(buffer, reader2.read(buffer, buffer_size));
-  *((int32_t *)buffer) = i;
-  writer.write(buffer, sizeof(int32_t));
+  writer.write((char *)&i, sizeof(int32_t));
  }
 
  file.set_position(0);
