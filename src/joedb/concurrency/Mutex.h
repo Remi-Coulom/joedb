@@ -1,6 +1,8 @@
 #ifndef joedb_Mutex_declared
 #define joedb_Mutex_declared
 
+#include <exception>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -26,9 +28,17 @@ namespace joedb
     mutex.lock();
    }
 
-   ~Mutex_Lock()
+   ~Mutex_Lock() noexcept(false)
    {
-    mutex.unlock();
+    try
+    {
+     mutex.unlock();
+    }
+    catch (...)
+    {
+     if (!std::uncaught_exception())
+      throw;
+    }
    }
  };
 }
