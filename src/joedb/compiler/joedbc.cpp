@@ -155,7 +155,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
- out << "#include \"joedb/concurrency/Connection.h\"\n";
+ out << "#include \"joedb/concurrency/Client.h\"\n";
  out << '\n';
 
  namespace_open(out, options.get_name_space());
@@ -481,7 +481,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   private:
    Client &client;
-   joedb::Lock lock;
+   joedb::Client_Write_Lock lock;
 
   public:
    Lock(Client &client): client(client), lock(client.joedb_client) {}
@@ -1762,7 +1762,7 @@ void generate_cpp
  ):
   journal(file)
  {
-  joedb::Mutex_Lock lock(connection);
+  joedb::Connection_Write_Lock lock(connection, journal);
   initialize();
  }
 

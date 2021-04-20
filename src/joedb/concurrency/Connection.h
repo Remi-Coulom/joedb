@@ -11,6 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Client;
+  friend class Connection_Write_Lock;
 
   private:
    virtual int64_t pull(Writable_Journal &client_journal) = 0;
@@ -28,70 +29,32 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Client
+ class Connection_Write_Lock
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Lock;
-
   private:
    Connection &connection;
    Writable_Journal &journal;
-   Writable &writable;
-
-   int64_t server_position;
-
-   void lock_pull()
-   {
-    server_position = connection.lock_pull(journal);
-    journal.play_until_checkpoint(writable);
-   }
-
-   void push_unlock()
-   {
-    journal.checkpoint(0);
-    connection.push_unlock(journal, server_position);
-   }
+   const int64_t server_position;
 
   public:
-   Client
+   Connection_Write_Lock
    (
     Connection &connection,
-    Writable_Journal &journal,
-    Writable &writable
+    Writable_Journal &journal
    ):
     connection(connection),
     journal(journal),
-    writable(writable)
+    server_position(connection.lock_pull(journal))
    {
-    journal.play_until_checkpoint(writable);
    }
 
-   int64_t pull()
-   {
-    server_position = connection.pull(journal);
-    journal.play_until_checkpoint(writable);
-    return server_position;
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Lock
- ////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Client &client;
-
-  public:
-   Lock(Client &client): client(client)
-   {
-    client.lock_pull();
-   }
-
-   ~Lock() noexcept(false)
+   ~Connection_Write_Lock() noexcept(false)
    {
     try
     {
-     client.push_unlock();
+     journal.checkpoint(0);
+     connection.push_unlock(journal, server_position);
     }
     catch (...)
     {

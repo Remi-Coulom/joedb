@@ -1,7 +1,7 @@
 #ifndef joedb_Interpreted_Client_declared
 #define joedb_Interpreted_Client_declared
 
-#include "joedb/concurrency/Connection.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/Readable_Multiplexer.h"
 
@@ -49,7 +49,7 @@ namespace joedb
  {
   private:
    Interpreted_Client &interpreted_client;
-   Lock lock;
+   Client_Write_Lock lock;
 
   public:
    Interpreted_Lock(Interpreted_Client &interpreted_client):
