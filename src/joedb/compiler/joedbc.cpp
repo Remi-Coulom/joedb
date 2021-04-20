@@ -1,6 +1,6 @@
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
-#include "joedb/journal/Stream_File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Selective_Writable.h"
 #include "joedb/Readable_Multiplexer.h"
@@ -17,7 +17,6 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <sstream>
 #include <set>
 
 using namespace joedb;
@@ -535,13 +534,15 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(#include "joedb/journal/File.h"
 #include "joedb/journal/File_Slice.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/journal/Stream_File.h"
+#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/Exception.h"
 #include "joedb/assert.h"
 #include "joedb/io/type_io.h"
 
 #include <string>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 #include <map>
 #include <algorithm>
@@ -1196,21 +1197,29 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR(
   protected:
-   static const std::string schema_string;
+   static const char * schema_string;
+   static const size_t schema_string_size;
    bool upgrading_schema = false;
-   std::stringstream schema_stream;
-   joedb::Stream_File schema_file;
+   joedb::Memory_File schema_file;
    joedb::Writable_Journal schema_journal;
 
    void check_schema()
    {
     schema_file.flush();
 
-    const size_t file_schema_size = schema_stream.str().size();
     const size_t pos = size_t(joedb::Writable_Journal::header_size);
-    const size_t len = file_schema_size - pos;
+    const size_t schema_file_size = schema_file.get_data().size();
 
-    if (schema_stream.str().compare(pos, len, schema_string, pos, len) != 0)
+    if
+    (
+     schema_file_size > schema_string_size ||
+     std::memcmp
+     (
+      schema_file.get_data().data() + pos,
+      schema_string + pos,
+      schema_file_size - pos
+     ) != 0
+    )
      throw joedb::Exception("Trying to open a file with incompatible schema");
    }
 
@@ -1271,7 +1280,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   public:
    Database():
     max_record_id(0),
-    schema_file(schema_stream, joedb::Open_Mode::create_new),
     schema_journal(schema_file)
    {}
 )RRR";
@@ -1424,10 +1432,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
 
     check_schema();
 
-    const size_t file_schema_size = schema_stream.str().size();
-    const size_t compiled_schema_size = schema_string.size();
-
-    if (file_schema_size != compiled_schema_size)
+    if (schema_file.get_data().size() != schema_string_size)
      throw joedb::Exception
      (
       "This joedb file has an old schema, and must be upgraded first."
@@ -1653,17 +1658,18 @@ void generate_readonly_cpp
 (
  std::ostream &out,
  const Compiler_Options &options,
- const std::string &schema
+ const std::vector<char> &schema
 )
 {
  const std::vector<std::string> &ns = options.get_name_space();
  out << "#include \"" << ns.back() << "_readonly.h\"\n\n";
- out << "const std::string " << namespace_string(ns);
- out << "::Database::schema_string(";
- write_string(out, schema);
- out << ", ";
- out << schema.size();
- out << ");\n";
+ out << "const char * " << namespace_string(ns);
+ out << "::Database::schema_string = ";
+ write_string(out, std::string(schema.data(), schema.size()));
+ out << ";\n";
+ out << "const size_t " << namespace_string(ns);
+ out << "::Database::schema_string_size = " << schema.size();
+ out << ";\n";
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1671,8 +1677,7 @@ void generate_cpp
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Compiler_Options &options,
- const std::string &schema
+ const Compiler_Options &options
 )
 {
  const std::string &file_name = options.get_name_space().back();
@@ -1681,10 +1686,9 @@ void generate_cpp
  out << "#include \"" << file_name << "_readonly.cpp\"\n";
  out << "#include \"" << file_name << ".h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
- out << "#include \"joedb/journal/Stream_File.h\"\n";
+ out << "#include \"joedb/journal/Memory_File.h\"\n";
  out << '\n';
  out << "#include <ctime>\n";
- out << "#include <sstream>\n\n";
 
  namespace_open(out, options.get_name_space());
 
@@ -1729,15 +1733,13 @@ void generate_cpp
 
   check_schema();
 
-  const size_t file_schema_size = schema_stream.str().size();
-  const size_t compiled_schema_size = schema_string.size();
+  const size_t file_schema_size = schema_file.get_data().size();
 
-  if (file_schema_size < compiled_schema_size)
+  if (file_schema_size < schema_string_size)
   {
    journal.comment("Automatic schema upgrade");
 
-   std::istringstream schema(schema_string);
-   joedb::Input_Stream_File schema_file(schema);
+   joedb::Readonly_Memory_File schema_file(schema_string, schema_string_size);
    joedb::Readonly_Journal schema_journal(schema_file);
 
    schema_journal.seek(int64_t(file_schema_size));
@@ -1833,7 +1835,7 @@ int joedbc_main(int argc, char **argv)
  // Read file.joedbi
  //
  Database db;
- std::stringstream schema;
+ Memory_File schema_file;
  std::vector<std::string> custom_names;
 
  {
@@ -1844,7 +1846,6 @@ int joedbc_main(int argc, char **argv)
    return 1;
   }
 
-  Stream_File schema_file(schema, Open_Mode::create_new);
   Writable_Journal journal(schema_file);
   Selective_Writable schema_writable(journal, Selective_Writable::schema);
   Custom_Collector custom_collector(custom_names);
@@ -1896,7 +1897,7 @@ int joedbc_main(int argc, char **argv)
    std::ios::trunc
   );
   write_initial_comment(cpp_file, compiler_options);
-  generate_readonly_cpp(cpp_file, compiler_options, schema.str());
+  generate_readonly_cpp(cpp_file, compiler_options, schema_file.get_data());
  }
  {
   std::ofstream h_file
@@ -1914,7 +1915,7 @@ int joedbc_main(int argc, char **argv)
    std::ios::trunc
   );
   write_initial_comment(cpp_file, compiler_options);
-  generate_cpp(cpp_file, compiler_options, schema.str());
+  generate_cpp(cpp_file, compiler_options);
  }
 
  if (compiler_options.get_generate_c_wrapper())
