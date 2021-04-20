@@ -37,7 +37,7 @@ L      checkpoint       reply to L
        size
        data
 U                       reply to U when the push succeeded
-C                       replu to U when the push failed (conflict)
+C                       reply to U when the push failed (conflict)
 l                       reply to l
 u                       reply to u (no timeout)
 t                       reply to u (timeout)

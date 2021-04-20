@@ -51,6 +51,11 @@ allow concurrent access to the same file from another process. This class is
 convenient to allow the same polymorphic code to work either with a shared
 remote database or a local file that is not shared.
 
+``Server_Connection``
+^^^^^^^^^^^^^^^^^^^^^
+
+``Server_Connection`` allows connecting to a running :ref:`joedb_server`.
+
 ``SSH_Connection``
 ^^^^^^^^^^^^^^^^^^
 
@@ -67,10 +72,7 @@ occurred in the middle of a big push, then the server database might be
 incomplete. It should be fixed (for instance, by copying the database of the
 client that disconnected) before removing the mutex.
 
-``Server_Connection``
-^^^^^^^^^^^^^^^^^^^^^
-
-``Server_Connection`` allows connecting to a running :ref:`joedb_server`. The
-server does not use a mutex file, can set a timeout for the lock, and allows
-simultaneous pulls. It should offer much better performance and reliability
-than ``SSH_Connection``.
+``SSH_Connection`` is simple and convenient, but its performance and
+reliability are far worse than ``Server_Connection``. If you need the
+encryption and authentication of ssh, you can also use a ``Server_Connection``
+with an ssh tunnel.
