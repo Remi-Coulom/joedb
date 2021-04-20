@@ -30,13 +30,14 @@ namespace joedb
 
    struct Session
    {
+    Server &server;
     net::ip::tcp::socket socket;
     enum {buffer_size = (1 << 13)};
     char buffer[buffer_size];
     enum State {not_locking, waiting_for_lock, waiting_for_lock_pull, locking};
     State state;
 
-    Session(net::ip::tcp::socket &&socket);
+    Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();
    };
 
@@ -46,7 +47,7 @@ namespace joedb
    std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
    void lock(std::shared_ptr<Session> session, Session::State state);
-   void unlock(std::shared_ptr<Session> session);
+   void unlock(Session &session);
    void lock_timeout_handler
    (
     std::shared_ptr<Session> session,

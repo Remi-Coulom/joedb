@@ -17,8 +17,9 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server::Session::Session(net::ip::tcp::socket && socket):
+ Server::Session::Session(Server &server, net::ip::tcp::socket && socket):
  ////////////////////////////////////////////////////////////////////////////
+  server(server),
   socket(std::move(socket)),
   state(not_locking)
  {
@@ -29,6 +30,11 @@ namespace joedb
  Server::Session::~Session()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (state == locking)
+  {
+   std::cerr << "Removing lock held by dying session.\n";
+   server.unlock(*this);
+  }
   std::cerr << "Destroyed Session\n";
  }
 
@@ -84,13 +90,13 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::unlock(std::shared_ptr<Session> session)
+ void Server::unlock(Session &session)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (session->state == Session::State::locking)
+  if (session.state == Session::State::locking)
   {
    std::cerr << "Unlocking\n";
-   session->state = Session::State::not_locking;
+   session.state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
 
@@ -109,7 +115,7 @@ namespace joedb
   if (!error)
   {
    std::cerr << "Timeout!\n";
-   unlock(session);
+   unlock(*session);
   }
  }
 
@@ -189,7 +195,7 @@ namespace joedb
 
    write_buffer_and_next_command(session, 1);
 
-   unlock(session);
+   unlock(*session);
   }
  }
 
@@ -386,7 +392,7 @@ namespace joedb
 
     case 'u':
      if (session->state == Session::State::locking)
-      unlock(session);
+      unlock(*session);
      else
       session->buffer[0] = 't';
      write_buffer_and_next_command(session, 1);
@@ -398,7 +404,7 @@ namespace joedb
 
     case 'Q':
      if (session->state == Session::State::locking)
-      unlock(session);
+      unlock(*session);
     break;
 
     default:
@@ -514,7 +520,7 @@ namespace joedb
  {
   if (!error)
   {
-   std::shared_ptr<Session> session(new Session(std::move(socket)));
+   std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
 
    net::async_read
    (
