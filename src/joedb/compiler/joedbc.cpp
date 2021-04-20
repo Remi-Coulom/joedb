@@ -534,6 +534,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(#include "joedb/journal/File.h"
 #include "joedb/journal/File_Slice.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/Stream_File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/Exception.h"
