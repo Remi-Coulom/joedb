@@ -4,8 +4,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/concurrency/Mutex.h"
 
-#include <functional>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -27,14 +25,6 @@ namespace joedb
 
   public:
    virtual ~Connection() {}
-
-   void locked_operation(Writable_Journal &journal, std::function<void()> f)
-   {
-    const int64_t server_position = lock_pull(journal);
-    f();
-    journal.checkpoint(0);
-    push_unlock(journal, server_position);
-   }
  };
 
  ////////////////////////////////////////////////////////////////////////////

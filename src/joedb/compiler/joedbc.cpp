@@ -1762,7 +1762,8 @@ void generate_cpp
  ):
   journal(file)
  {
-  connection.locked_operation(journal, [this](){initialize();});
+  joedb::Mutex_Lock lock(connection);
+  initialize();
  }
 
  ////////////////////////////////////////////////////////////////////////////
