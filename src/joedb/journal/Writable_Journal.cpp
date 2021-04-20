@@ -308,5 +308,5 @@ void joedb::Writable_Journal::update_vector_##type_id\
 joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
- checkpoint(0);
+ try {checkpoint(0);} catch (...) {}
 }

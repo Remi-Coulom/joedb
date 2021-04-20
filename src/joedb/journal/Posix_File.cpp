@@ -114,7 +114,7 @@ namespace joedb
  Posix_File::~Posix_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  flush();
+  try {flush();} catch (...) {}
   close(fd);
  }
 }

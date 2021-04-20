@@ -160,7 +160,7 @@ namespace joedb
  Windows_File::~Windows_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  flush();
+  try {flush();} catch (...) {}
   CloseHandle(file);
  }
 }

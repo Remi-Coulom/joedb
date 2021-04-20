@@ -14,7 +14,6 @@ namespace joedb
   private:
    bool try_open(const char *file_name, Open_Mode mode);
    std::FILE *file = nullptr;
-   void close_file();
 
   protected:
    Portable_File(std::FILE *file): file(file) {}

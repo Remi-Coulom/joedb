@@ -14,18 +14,6 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void joedb::Portable_File::close_file()
- /////////////////////////////////////////////////////////////////////////////
- {
-  if (file)
-  {
-   flush();
-   fclose(file);
-   file = nullptr;
-  }
- }
-
- /////////////////////////////////////////////////////////////////////////////
  size_t joedb::Portable_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -49,8 +37,12 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- joedb::Portable_File::Portable_File(const char *file_name, Open_Mode new_mode)
+ joedb::Portable_File::Portable_File
  /////////////////////////////////////////////////////////////////////////////
+ (
+  const char *file_name,
+  Open_Mode new_mode
+ )
  {
   if (new_mode == Open_Mode::write_existing_or_create_new)
   {
@@ -61,7 +53,7 @@ namespace joedb
   {
    if (try_open(file_name, Open_Mode::read_existing))
    {
-    close_file();
+    fclose(file);
     throw Exception("File already exists: " + std::string(file_name));
    }
    else
@@ -90,6 +82,7 @@ namespace joedb
  joedb::Portable_File::~Portable_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  close_file();
+  try {flush();} catch (...) {}
+  fclose(file);
  }
 }
