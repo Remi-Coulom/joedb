@@ -43,9 +43,15 @@ namespace joedb
 
      ~Tail_Writer()
      {
-      writer.seek();
-      journal.checkpoint(0);
-      journal.file.set_position(old_checkpoint);
+      try
+      {
+       writer.seek();
+       journal.checkpoint(0);
+       journal.file.set_position(old_checkpoint);
+      }
+      catch (...)
+      {
+      }
      }
    };
 
