@@ -201,7 +201,7 @@ Connect to a :ref:`joedb_server`.
 .. _joedb_ssh_client:
 
 ``joedb_ssh_client``
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 Connect to a remote :ref:`joedb_server` via ssh.
 
