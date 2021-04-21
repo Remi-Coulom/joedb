@@ -191,6 +191,11 @@ if (libssh_FOUND)
   ../src/joedb/ssh/Remote_Mutex.cpp
  )
  target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
+
+ add_executable(test_forward_channel
+  ../src/joedb/ssh/test_forward_channel.cpp
+ )
+ target_link_libraries(test_forward_channel joedb ${LIBSSH_LIBRARIES})
 endif()
 
 add_executable(joedb_logdump
