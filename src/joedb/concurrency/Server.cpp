@@ -24,6 +24,7 @@ namespace joedb
   state(not_locking)
  {
   std::cerr << "Created a new session\n";
+  ++server.session_count;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -36,6 +37,8 @@ namespace joedb
    server.unlock(*this);
   }
   std::cerr << "Destroyed Session\n";
+  --server.session_count;
+  std::cerr << "session_count = " << server.session_count << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -606,6 +609,7 @@ namespace joedb
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   interrupt_timer(io_context),
+  session_count(0),
   lock_timeout_seconds(lock_timeout_seconds),
   lock_timeout_timer(io_context),
   locked(false)

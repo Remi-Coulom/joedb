@@ -28,6 +28,8 @@ namespace joedb
    net::ip::tcp::acceptor acceptor;
    net::steady_timer interrupt_timer;
 
+   int64_t session_count;
+
    struct Session
    {
     Server &server;
