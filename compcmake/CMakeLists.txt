@@ -192,10 +192,12 @@ if (libssh_FOUND)
  )
  target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
 
- add_executable(test_forward_channel
-  ../src/joedb/ssh/test_forward_channel.cpp
+ add_executable(joedb_ssh_server_client
+  ../src/joedb/io/joedb_ssh_server_client.cpp
+  ../src/joedb/concurrency/Server_Connection.cpp
+  ../src/joedb/concurrency/Shared_Local_File.cpp
  )
- target_link_libraries(test_forward_channel joedb ${LIBSSH_LIBRARIES})
+ target_link_libraries(joedb_ssh_server_client joedb ${LIBSSH_LIBRARIES})
 endif()
 
 add_executable(joedb_logdump
