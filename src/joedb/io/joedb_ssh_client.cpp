@@ -1,9 +1,8 @@
-#include "joedb/io/Interpreter.h"
+#include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/Shared_Local_File.h"
+#include "joedb/ssh/Forward_Channel.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
-#include "joedb/concurrency/SSH_Connection.h"
-#include "joedb/concurrency/Shared_Local_File.h"
-#include "joedb/ssh/Thread_Safe_Session.h"
 
 #include <sstream>
 
@@ -13,29 +12,24 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (argc < 5)
+  if (argc != 5)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " <user> <host> <port> <file_name> [<ssh_log_level>]\n";
+   std::cerr << " <user> <host> <joedb_port> <file_name>\n";
    return 1;
   }
   else
   {
    const char *user = argv[1];
-
    const char *host = argv[2];
-
-   int port = 22;
-   std::istringstream(argv[3]) >> port;
-
    const char *file_name = argv[4];
 
-   int ssh_log_level = 0;
-   if (argc == 6)
-    std::istringstream(argv[5]) >> ssh_log_level;
+   uint16_t joedb_port = 0;
+   std::istringstream(argv[3]) >> joedb_port;
 
-   ssh::Thread_Safe_Session session(user, host, port, ssh_log_level);
-   SSH_Connection connection(session, file_name, true);
+   ssh::Session session(user, host, 22, 0);
+   ssh::Forward_Channel channel(session, "localhost", joedb_port);
+   Server_Connection connection(channel);
 
    Shared_Local_File file(connection, file_name);
    run_interpreted_client(connection, file);

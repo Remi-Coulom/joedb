@@ -203,11 +203,20 @@ Connect to a :ref:`joedb_server`.
 ``joedb_ssh_client``
 ^^^^^^^^^^^^^^^^^^^^^
 
-Connect to a shared remote database via ssh.
+Connect to a remote :ref:`joedb_server` via ssh.
 
 .. literalinclude:: ./tutorial/joedb_ssh_client.out
    :language: none
 
+.. _joedb_ssh_client:
+
+``joedb_ssh_connect``
+^^^^^^^^^^^^^^^^^^^^^
+
+Connect to a remote database via ssh, without using a server on the remote host.
+
+.. literalinclude:: ./tutorial/joedb_ssh_client.out
+   :language: none
 
 Example Code
 ------------

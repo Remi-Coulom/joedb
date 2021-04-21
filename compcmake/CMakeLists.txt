@@ -183,21 +183,21 @@ add_executable(joedbi
 target_link_libraries(joedbi joedb)
 
 if (libssh_FOUND)
- add_executable(joedb_ssh_client
-  ../src/joedb/io/joedb_ssh_client.cpp
+ add_executable(joedb_ssh_connect
+  ../src/joedb/io/joedb_ssh_connect.cpp
   ../src/joedb/concurrency/SSH_Connection.cpp
   ../src/joedb/concurrency/Shared_Local_File.cpp
   ../src/joedb/ssh/Keepalive_Thread.cpp
   ../src/joedb/ssh/Remote_Mutex.cpp
  )
- target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
+ target_link_libraries(joedb_ssh_connect joedb ${LIBSSH_LIBRARIES})
 
- add_executable(joedb_ssh_server_client
-  ../src/joedb/io/joedb_ssh_server_client.cpp
+ add_executable(joedb_ssh_client
+  ../src/joedb/io/joedb_ssh_client.cpp
   ../src/joedb/concurrency/Server_Connection.cpp
   ../src/joedb/concurrency/Shared_Local_File.cpp
  )
- target_link_libraries(joedb_ssh_server_client joedb ${LIBSSH_LIBRARIES})
+ target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
 endif()
 
 add_executable(joedb_logdump
@@ -481,6 +481,7 @@ install(TARGETS joedb_merge RUNTIME DESTINATION bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin)
 if(libssh_FOUND)
  install(TARGETS joedb_ssh_client RUNTIME DESTINATION bin)
+ install(TARGETS joedb_ssh_connect RUNTIME DESTINATION bin)
 endif()
 if (HAS_NETWORKING)
  install(TARGETS joedb_client RUNTIME DESTINATION bin)
