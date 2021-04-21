@@ -5,7 +5,6 @@
 
 #include <libssh/libssh.h>
 #include <libssh/sftp.h>
-#include <string>
 
 //
 // Windows does not define those
