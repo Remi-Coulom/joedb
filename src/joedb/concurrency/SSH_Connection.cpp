@@ -2,10 +2,8 @@
 
 #include "joedb/concurrency/SSH_Connection.h"
 #include "joedb/ssh/Thread_Safe_Session.h"
-#include "joedb/Exception.h"
+#include "joedb/ssh/SFTP_Attributes.h"
 
-#include <thread>
-#include <chrono>
 #include <iostream>
 
 namespace joedb

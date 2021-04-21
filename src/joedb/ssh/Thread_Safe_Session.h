@@ -1,7 +1,8 @@
 #ifndef joedb_ssh_Thread_Safe_Session_declared
 #define joedb_ssh_Thread_Safe_Session_declared
 
-#include "joedb/ssh/wrappers.h"
+#include "joedb/ssh/Session.h"
+#include "joedb/ssh/SFTP.h"
 
 #include <mutex>
 
