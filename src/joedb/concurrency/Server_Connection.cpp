@@ -21,9 +21,9 @@ namespace joedb
   buffer[0] = pull_type;
   const int64_t checkpoint = client_journal.get_checkpoint_position();
   to_network(checkpoint, buffer + 1);
-  net::write(socket, net::buffer(buffer, 9));
+  channel.write(buffer, 9);
 
-  net::read(socket, net::buffer(buffer, 17));
+  channel.read(buffer, 17);
   if (buffer[0] != pull_type && from_network(buffer + 1) != checkpoint)
    throw Exception("Could not pull from server");
 
@@ -40,7 +40,7 @@ namespace joedb
     size_t read_size = size_t(remaining);
     if (read_size > buffer_size)
      read_size = buffer_size;
-    const size_t n = socket.read_some(net::buffer(buffer, read_size));
+    const size_t n = channel.read_some(buffer, read_size);
     tail_writer.append(buffer, n);
     read += n;
     std::cerr << '.';
@@ -89,16 +89,16 @@ namespace joedb
 
   std::cerr << "pushing " << push_size << " bytes: ";
 
-  net::write(socket, net::buffer(buffer, 17));
+  channel.write(buffer, 17);
 
   while (reader.get_remaining() > 0)
   {
    const size_t size = reader.read(buffer, buffer_size);
-   net::write(socket, net::buffer(buffer, size));
+   channel.write(buffer, size);
    std::cerr << size << ' ';
   }
 
-  net::read(socket, net::buffer(buffer, 1));
+  channel.read(buffer, 1);
 
   if (buffer[0] == 'U')
    std::cerr << "OK\n";
@@ -117,8 +117,8 @@ namespace joedb
   std::cerr << "Obtaining lock... ";
 
   buffer[0] = 'l';
-  net::write(socket, net::buffer(buffer, 1));
-  net::read(socket, net::buffer(buffer, 1));
+  channel.write(buffer, 1);
+  channel.read(buffer, 1);
   if (buffer[0] != 'l')
    throw Exception("Unexpected server reply");
 
@@ -134,8 +134,8 @@ namespace joedb
   std::cerr << "Releasing lock... ";
 
   buffer[0] = 'u';
-  net::write(socket, net::buffer(buffer, 1));
-  net::read(socket, net::buffer(buffer, 1));
+  channel.write(buffer, 1);
+  channel.read(buffer, 1);
 
   if (buffer[0] == 'u')
    std::cerr << "OK\n";
@@ -164,8 +164,8 @@ namespace joedb
 
     buffer[0] = 'i';
 
-    net::write(socket, net::buffer(buffer, 1));
-    net::read(socket, net::buffer(buffer, 1));
+    channel.write(buffer, 1);
+    channel.read(buffer, 1);
    }
   }
   catch(...)
@@ -176,22 +176,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Socket_Construction::Socket_Construction
+ Server_Handshake::Server_Handshake(Channel &channel): channel(channel)
  ////////////////////////////////////////////////////////////////////////////
- (
-  const char *host_name,
-  const char *port_name
- ):
-  socket(io_context)
  {
   std::cerr << "Connecting... ";
-
-  net::ip::tcp::resolver resolver(io_context);
-  net::connect
-  (
-   socket,
-   resolver.resolve(host_name, port_name)
-  );
 
   char buffer[5 + 8];
 
@@ -204,8 +192,8 @@ namespace joedb
   const int64_t client_version = 2;
   to_network(client_version, buffer + 5);
 
-  net::write(socket, net::buffer(buffer, 5 + 8));
-  net::read(socket, net::buffer(buffer, 5 + 8));
+  channel.write(buffer, 5 + 8);
+  channel.read(buffer, 5 + 8);
 
   std::cerr << "Waiting for \"joedb\"... ";
 
@@ -233,13 +221,9 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Connection::Server_Connection
+ Server_Connection::Server_Connection(Channel &channel):
  ////////////////////////////////////////////////////////////////////////////
- (
-  const char *host_name,
-  const char *port_name
- ):
-  Socket_Construction(host_name, port_name),
+  Server_Handshake(channel),
   buffer(new char[buffer_size]),
   keep_alive_thread_must_stop(false),
   keep_alive_thread([this](){keep_alive();})
@@ -253,7 +237,7 @@ namespace joedb
   try
   {
    buffer[0] = 'Q';
-   net::write(socket, net::buffer(buffer, 1));
+   channel.write(buffer, 1);
   }
   catch(...)
   {

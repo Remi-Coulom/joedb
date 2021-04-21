@@ -1,6 +1,7 @@
 #ifndef joedb_ssh_Forward_Channel_declared
 #define joedb_ssh_Forward_Channel_declared
 
+#include "joedb/concurrency/Channel.h"
 #include "joedb/ssh/Session.h"
 
 namespace joedb
@@ -8,14 +9,16 @@ namespace joedb
  namespace ssh
  {
   ///////////////////////////////////////////////////////////////////////////
-  class Forward_Channel
+  class Forward_Channel: public joedb::Channel
   ///////////////////////////////////////////////////////////////////////////
   {
    private:
     const ssh_channel channel;
 
    public:
+    /////////////////////////////////////////////////////////////////////////
     Forward_Channel
+    /////////////////////////////////////////////////////////////////////////
     (
      Session &session,
      const char *remote_host,
@@ -38,7 +41,9 @@ namespace joedb
      );
     }
 
-    size_t write_some(const char *data, size_t size)
+    /////////////////////////////////////////////////////////////////////////
+    size_t write_some(const char *data, size_t size) override
+    /////////////////////////////////////////////////////////////////////////
     {
      const int result = ssh_channel_write(channel, data, uint32_t(size));
      if (result == SSH_ERROR)
@@ -46,13 +51,22 @@ namespace joedb
      return size_t(result);
     }
 
-    size_t read_some(char *data, size_t size)
+    /////////////////////////////////////////////////////////////////////////
+    size_t read_some(char *data, size_t size) override
+    /////////////////////////////////////////////////////////////////////////
     {
      {
       ssh_channel channels[2] = {channel, nullptr};
+
       while (true)
       {
-       const int result = ssh_channel_select(channels, nullptr, nullptr, nullptr);
+       const int result = ssh_channel_select
+       (
+        channels,
+        nullptr,
+        nullptr,
+        nullptr
+       );
        if (result != SSH_EINTR)
         break;
       }
@@ -65,7 +79,9 @@ namespace joedb
      return size_t(result);
     }
 
+    /////////////////////////////////////////////////////////////////////////
     ~Forward_Channel()
+    /////////////////////////////////////////////////////////////////////////
     {
      ssh_channel_free(channel);
     }

@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Shared_Local_File.h"
+#include "joedb/concurrency/Network_Channel.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
 
@@ -20,7 +21,8 @@ namespace joedb
    const char *port = argv[2];
    const char *file_name = argv[3];
 
-   Server_Connection connection(host, port);
+   Network_Channel channel(host, port);
+   Server_Connection connection(channel);
 
    Shared_Local_File file(connection, file_name);
    run_interpreted_client(connection, file);

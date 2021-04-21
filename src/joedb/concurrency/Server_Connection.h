@@ -2,7 +2,7 @@
 #define joedb_Server_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
-#include "joedb/concurrency/net.h"
+#include "joedb/concurrency/Channel.h"
 
 #include <mutex>
 #include <condition_variable>
@@ -11,17 +11,16 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- struct Socket_Construction
+ struct Server_Handshake
  ////////////////////////////////////////////////////////////////////////////
  {
-  net::io_context io_context;
-  net::ip::tcp::socket socket;
+  Channel &channel;
 
-  Socket_Construction(const char *host_name, const char *port_name);
+  Server_Handshake(Channel &channel);
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Server_Connection: public Connection, private Socket_Construction
+ class Server_Connection: public Connection, private Server_Handshake
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -53,7 +52,7 @@ namespace joedb
    void keep_alive();
 
   public:
-   Server_Connection(const char *host_name, const char *port_name);
+   Server_Connection(Channel &channel);
    ~Server_Connection() override;
  };
 }
