@@ -38,6 +38,7 @@ namespace joedb
   }
   std::cerr << "Destroyed Session\n";
   --server.session_count;
+  std::cerr << "port = " << server.acceptor.local_endpoint().port() << "; ";
   std::cerr << "session_count = " << server.session_count << '\n';
  }
 
