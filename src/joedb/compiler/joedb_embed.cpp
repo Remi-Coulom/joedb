@@ -101,7 +101,7 @@ int main(int argc, char **argv)
    cpp << "   joedb::Readonly_Memory_File file(" << identifier << "_data, " << identifier << "_size);\n";
   }
 
-  cpp << "   db.reset(new Generic_Readonly_Database(file));\n";
+  cpp << "   db.reset(new Readonly_Database(file));\n";
   cpp << "  }\n";
   cpp << " };\n";
   cpp << '\n';

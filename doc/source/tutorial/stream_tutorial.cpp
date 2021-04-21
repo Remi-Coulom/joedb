@@ -51,7 +51,7 @@ int main()
   );
 
   joedb::Input_Stream_File file(stream);
-  tutorial::Generic_Readonly_Database db(file);
+  tutorial::Readonly_Database db(file);
   for (auto city: db.get_city_table())
    std::cout << db.get_name(city) << '\n';
  }

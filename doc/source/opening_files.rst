@@ -5,12 +5,10 @@ Opening Files
 
 The simplest way to open a file is to pass a file name to the constructor of
 either ``File_Database`` or ``Readonly_Database``. But subclasses of the
-``joedb::Generic_File`` class allows using various sources of data, when passed
-as parameter to the constructor of either ``Generic_File_Database`` or
-``Generic_Readonly_Database``.
+``joedb::Generic_File`` class allows using various sources of data.
 
-Using ``Database`` constructors
--------------------------------
+Directly passing file names to constructors
+-------------------------------------------
 
 Opening a file for reading and writing (creates the file if it does not exist):
 
@@ -76,30 +74,10 @@ The Android NDK offers functions that return a file descriptor as well as a posi
 
   FILE* file = fdopen(file_descriptor, "rb");
   joedb::File_Slice file_slice(file, start, length);
-  tutorial::Generic_Readonly_Database db(file_slice);
+  tutorial::Readonly_Database db(file_slice);
 
 Class Hierarchy
 ---------------
-
-Database
-^^^^^^^^
-
-.. code-block:: c++
-
-  // The Database class manages in-memory table storage.
-  // It has methods to read table content, but not to write it.
-  class Database;
-
-  // These are read-only databases based on a joedb::Generic_File
-  class Generic_Readonly_Database: public Database;
-  class Readonly_Database: public Generic_Readonly_Database;
-
-  // These are writable databases based on a joedb::Generic_File
-  class Generic_File_Database: public Database;
-  class File_Database: public Generic_File_Database;
-
-File
-^^^^
 
 .. code-block:: c++
 

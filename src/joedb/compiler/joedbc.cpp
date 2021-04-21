@@ -1420,10 +1420,10 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  // File_Database
  //
  out << R"RRR(
- class Generic_Readonly_Database: public Database
+ class Readonly_Database: public Database
  {
-  protected:
-   void initialize(joedb::Generic_File &file)
+  public:
+   Readonly_Database(joedb::Generic_File &file)
    {
     joedb::Readonly_Journal journal(file);
     max_record_id = Record_Id(journal.get_checkpoint_position());
@@ -1439,22 +1439,17 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
      );
    }
 
-   Generic_Readonly_Database() {}
-
-  public:
-   Generic_Readonly_Database(joedb::Generic_File &file)
+   Readonly_Database(joedb::Generic_File &&file):
+    Readonly_Database(file)
    {
-    initialize(file);
    }
- };
 
- class Readonly_Database: public Generic_Readonly_Database
- {
-  public:
-   Readonly_Database(const char *file_name)
+   Readonly_Database(const char *file_name):
+    Readonly_Database
+    (
+     joedb::File(file_name, joedb::Open_Mode::read_existing)
+    )
    {
-    joedb::File file(file_name, joedb::Open_Mode::read_existing);
-    initialize(file);
    }
 
    Readonly_Database(const std::string &file_name):
@@ -1631,7 +1626,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  std::vector<std::string> type_names;
  type_names.push_back("Database");
  type_names.push_back("Readonly_Database");
- type_names.push_back("Generic_Readonly_Database");
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
