@@ -3,6 +3,7 @@
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Shared_Local_File.h"
 #include "joedb/io/Interpreter.h"
 
 #include <iostream>
@@ -14,9 +15,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Connection &connection,
-  Generic_File &file
+  const char *file_name
  )
  {
+  Shared_Local_File file(connection, file_name);
   Interpreted_Client client(connection, file);
 
   while (std::cin)

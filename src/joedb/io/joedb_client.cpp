@@ -24,8 +24,7 @@ namespace joedb
    Network_Channel channel(host, port);
    Server_Connection connection(channel);
 
-   Shared_Local_File file(connection, file_name);
-   run_interpreted_client(connection, file);
+   run_interpreted_client(connection, file_name);
   }
 
   return 0;

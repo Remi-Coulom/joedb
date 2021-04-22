@@ -142,5 +142,5 @@ Connect to a remote :ref:`joedb_server` via ssh.
 
 Connect to a remote database via ssh, without using a server on the remote host.
 
-.. literalinclude:: ./tutorial/joedb_ssh_client.out
+.. literalinclude:: ./tutorial/joedb_ssh_connect.out
    :language: none
