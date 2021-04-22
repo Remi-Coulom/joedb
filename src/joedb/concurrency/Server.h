@@ -43,6 +43,8 @@ namespace joedb
     ~Session();
    };
 
+   void write_status();
+
    const uint32_t lock_timeout_seconds;
    net::steady_timer lock_timeout_timer;
    bool locked;

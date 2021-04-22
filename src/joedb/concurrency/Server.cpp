@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/network_integers.h"
+#include "joedb/io/Dump_Writable.h"
 
 #include <iostream>
 #include <functional>
@@ -38,8 +39,16 @@ namespace joedb
   }
   std::cerr << "Destroyed Session\n";
   --server.session_count;
-  std::cerr << "port = " << server.acceptor.local_endpoint().port() << "; ";
-  std::cerr << "session_count = " << server.session_count << '\n';
+  server.write_status();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::write_status()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::cerr << joedb::Dump_Writable::get_local_time(std::time(nullptr));
+  std::cerr << "; port = " << acceptor.local_endpoint().port();
+  std::cerr << "; session_count = " << session_count << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -404,6 +413,7 @@ namespace joedb
 
     case 'i':
      write_buffer_and_next_command(session, 1);
+     write_status();
     break;
 
     case 'Q':
@@ -422,7 +432,6 @@ namespace joedb
  void Server::read_command(std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  std::cerr << "Waiting for next command.\n";
   net::async_read
   (
    session->socket,
@@ -615,7 +624,7 @@ namespace joedb
   lock_timeout_timer(io_context),
   locked(false)
  {
-  std::cerr << "port = " << acceptor.local_endpoint().port() << '\n';
+  write_status();
 
   std::signal(SIGINT, signal_handler);
 
