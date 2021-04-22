@@ -26,6 +26,7 @@ namespace joedb
  {
   std::cerr << "Created a new session\n";
   ++server.session_count;
+  server.write_status();
  }
 
  ////////////////////////////////////////////////////////////////////////////
