@@ -6,6 +6,7 @@ Reference
 
    file_format
    network_protocol
+   tools
    todo
    links
    release_checklist
