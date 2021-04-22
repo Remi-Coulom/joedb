@@ -3,9 +3,9 @@ History
 
 - 2021-??-??: 5.0
 
-  - Big improvements to :doc:`concurrency`: joedb now has a :doc:`network
-    protocol`, and a :doc:`server <joedb_server>` for efficient and reliable
-    communication.
+  - Big improvements to :doc:`concurrency <concurrency>`: joedb now has a
+    :doc:`network protocol <network_protocol>`, and a :ref:`server
+    <joedb_server>` for efficient and reliable communication.
   - Performance improvements of operations on large :doc:`vectors <vectors>`.
   - vim syntax highlighting for ``joedbi`` and ``joedbc`` files.
   - Minor fixes and improvements

@@ -54,12 +54,12 @@ remote database or a local file that is not shared.
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
 
-``Server_Connection`` allows connecting to a running :ref:`joedb_server`.
+``Server_Connection`` allows connecting to a running :ref:`joedb_server` using the joedb :doc:`network protocol <network_protocol>`.
 
-When connecting to a remote machine, you can get encryption and authentication
-with ssh port forwarding. This can be done conveniently with the
-`ssh:::Forward_Channel`` class. See the source code of `joedb_ssh_client` for
-an example of use.
+When connecting to a remote machine, ssh port forwarding can provide encryption
+and authentication. This can be done conveniently with the
+``ssh::Forward_Channel`` class. See the source code of ``joedb_ssh_client``
+for an example of use.
 
 ``ssh::Connection``
 ^^^^^^^^^^^^^^^^^^^

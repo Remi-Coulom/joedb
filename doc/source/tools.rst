@@ -4,7 +4,7 @@ Tools
 Joedb comes with a collection of command-line tools.
 
 ``joedbi``
----------
+----------
 ``joedbi`` is the joedb interpreter. When invoked without parameters, it creates a database in memory. When invoked with a parameter, it opens a file.
 
 Below is a list of commands the interpreter understands:
@@ -135,7 +135,7 @@ Connect to a remote :ref:`joedb_server` via ssh.
 .. literalinclude:: ./tutorial/joedb_ssh_client.out
    :language: none
 
-.. _joedb_ssh_client:
+.. _joedb_ssh_connect:
 
 ``joedb_ssh_connect``
 ---------------------
