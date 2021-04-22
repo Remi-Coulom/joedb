@@ -25,8 +25,8 @@ alternatives such as protobuf, SQLite, XML, or JSON:
   also possible to add time stamps and comments to the journal, and use it as a
   log of the application (if the history has to be forgotten for privacy or
   disk-space reasons, it is also possible to :ref:`pack <joedb_pack>` it).
-- Joedb comes with a :ref:`server <joedb_server>` that allows efficient
-  communication with a :doc:`remote database <concurrency>`.
+- Joedb comes with a :ref:`server <joedb_server>` that make it easy to develop
+  efficient :doc:`distributed applications <concurrency>`.
 - If the database schema of an application changes over time, joedb can upgrade
   old files to the new version automatically. The upgrade includes changes to
   the schema as well as custom data manipulation (see :doc:`schema_upgrade`).
