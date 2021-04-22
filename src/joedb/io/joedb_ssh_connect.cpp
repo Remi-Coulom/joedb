@@ -1,9 +1,9 @@
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
-#include "joedb/concurrency/SSH_Connection.h"
-#include "joedb/concurrency/Shared_Local_File.h"
+#include "joedb/ssh/Connection.h"
 #include "joedb/ssh/Thread_Safe_Session.h"
+#include "joedb/concurrency/Shared_Local_File.h"
 
 #include <sstream>
 
@@ -35,7 +35,7 @@ namespace joedb
     std::istringstream(argv[5]) >> ssh_log_level;
 
    ssh::Thread_Safe_Session session(user, host, port, ssh_log_level);
-   SSH_Connection connection(session, file_name, true);
+   ssh::Connection connection(session, file_name, true);
 
    Shared_Local_File file(connection, file_name);
    run_interpreted_client(connection, file);

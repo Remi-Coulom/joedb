@@ -291,7 +291,7 @@ endif()
 if (libssh_FOUND)
  add_executable(joedb_ssh_connect
   ../src/joedb/io/joedb_ssh_connect.cpp
-  ../src/joedb/concurrency/SSH_Connection.cpp
+  ../src/joedb/ssh/Connection.cpp
   ../src/joedb/ssh/Keepalive_Thread.cpp
   ../src/joedb/ssh/Remote_Mutex.cpp
  )

@@ -3,14 +3,12 @@ History
 
 - 2021-??-??: 5.0
 
-  - vim syntax highlighting for ``joedbi`` and ``joedbc`` files.
+  - Big improvements to :doc:`concurrency`: joedb now has a :doc:`network
+    protocol`, and a :doc:`server <joedb_server>` for efficient and reliable
+    communication.
   - Performance improvements of operations on large :doc:`vectors <vectors>`.
-  - ``set_table_storage`` option in .joedbc is now ignored and produces a warning. 
-  - ``SSH_Connection`` was deeply refactored. It keeps the connection alive
-    during a long period of inactivity by sending ignore messages to the server
-    from time to time. ``SSH_Robust_Connection`` was removed.
-  - :ref:`joedb_server` offers better performance and reliability than
-    ``SSH_Connection``.
+  - vim syntax highlighting for ``joedbi`` and ``joedbc`` files.
+  - Minor fixes and improvements
 
 - 2020-12-07: 4.0
 
