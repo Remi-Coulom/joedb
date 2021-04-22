@@ -159,6 +159,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/diagnostics.cpp
  ../src/joedb/journal/Stream_File.cpp
+ ../src/joedb/concurrency/Shared_Local_File.cpp
 )
 
 # The shared library does not work with Visual Studio: link statically
@@ -173,32 +174,10 @@ else()
  )
 endif()
 
-add_library(joedb_static STATIC
- $<TARGET_OBJECTS:joedb_objects>
-)
-
 add_executable(joedbi
  ../src/joedb/io/joedbi.cpp
 )
 target_link_libraries(joedbi joedb)
-
-if (libssh_FOUND)
- add_executable(joedb_ssh_connect
-  ../src/joedb/io/joedb_ssh_connect.cpp
-  ../src/joedb/concurrency/SSH_Connection.cpp
-  ../src/joedb/concurrency/Shared_Local_File.cpp
-  ../src/joedb/ssh/Keepalive_Thread.cpp
-  ../src/joedb/ssh/Remote_Mutex.cpp
- )
- target_link_libraries(joedb_ssh_connect joedb ${LIBSSH_LIBRARIES})
-
- add_executable(joedb_ssh_client
-  ../src/joedb/io/joedb_ssh_client.cpp
-  ../src/joedb/concurrency/Server_Connection.cpp
-  ../src/joedb/concurrency/Shared_Local_File.cpp
- )
- target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
-endif()
 
 add_executable(joedb_logdump
  ../src/joedb/io/joedb_logdump.cpp
@@ -217,7 +196,11 @@ target_link_libraries(joedb_merge joedb)
 
 add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
- $<TARGET_OBJECTS:joedb_objects>
+ ../src/joedb/Writable.cpp
+ ../src/joedb/journal/File.cpp
+ ../src/joedb/journal/Generic_File.cpp
+ ../src/joedb/journal/Readonly_Journal.cpp
+ ../src/joedb/journal/Writable_Journal.cpp
 )
 
 add_executable(joedb_to_json
@@ -301,9 +284,24 @@ if (HAS_NETWORKING)
  add_executable(joedb_client
   ../src/joedb/io/joedb_client.cpp
   ../src/joedb/concurrency/Server_Connection.cpp
-  ../src/joedb/concurrency/Shared_Local_File.cpp
  )
  target_link_libraries(joedb_client joedb)
+endif()
+
+if (libssh_FOUND)
+ add_executable(joedb_ssh_connect
+  ../src/joedb/io/joedb_ssh_connect.cpp
+  ../src/joedb/concurrency/SSH_Connection.cpp
+  ../src/joedb/ssh/Keepalive_Thread.cpp
+  ../src/joedb/ssh/Remote_Mutex.cpp
+ )
+ target_link_libraries(joedb_ssh_connect joedb ${LIBSSH_LIBRARIES})
+
+ add_executable(joedb_ssh_client
+  ../src/joedb/io/joedb_ssh_client.cpp
+  ../src/joedb/concurrency/Server_Connection.cpp
+ )
+ target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
 endif()
 
 #############################################################################
@@ -493,7 +491,6 @@ install(TARGETS joedb
  LIBRARY DESTINATION lib
  RUNTIME DESTINATION bin
 )
-install(TARGETS joedb_static ARCHIVE DESTINATION lib)
 
 file(GLOB_RECURSE all_includes RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/../src/ ../src/joedb/*.h)
 foreach(file ${all_includes})
@@ -533,7 +530,7 @@ set(CPACK_STRIP_FILES TRUE)
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.remi-coulom.fr/joedb/")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake, g++, ninja-build, libssh-dev")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake, g++, ninja-build, libssh-dev, libboost-dev")
 set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
 
 include(CPack)
