@@ -151,8 +151,6 @@ namespace joedb
  {
   std::unique_lock<std::mutex> lock(mutex);
 
-  std::cerr << "keep_alive() thread started\n";
-
   try
   {
    while (!keep_alive_thread_must_stop)
@@ -171,8 +169,6 @@ namespace joedb
   catch(...)
   {
   }
-
-  std::cerr << "keep_alive() thread stopping\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,7 @@ namespace joedb
   socket(std::move(socket)),
   state(not_locking)
  {
-  std::cerr << "Created a new session\n";
+  std::cerr << this << ": created\n";
   ++server.session_count;
   server.write_status();
  }
@@ -38,7 +38,7 @@ namespace joedb
    std::cerr << "Removing lock held by dying session.\n";
    server.unlock(*this);
   }
-  std::cerr << "Destroyed Session\n";
+  std::cerr << this << ": deleted\n";
   --server.session_count;
   server.write_status();
  }
@@ -58,10 +58,11 @@ namespace joedb
  {
   if (!locked && !lock_queue.empty())
   {
-   std::cerr << "Locking\n";
    locked = true;
    std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
+
+   std::cerr << session.get() << ": locking\n";
 
    if (lock_timeout_seconds > 0)
    {
@@ -109,7 +110,7 @@ namespace joedb
  {
   if (session.state == Session::State::locking)
   {
-   std::cerr << "Unlocking\n";
+   std::cerr << &session << ": unlocking\n";
    session.state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
@@ -372,7 +373,7 @@ namespace joedb
  {
   if (!error)
   {
-   std::cerr << "Received command: " << session->buffer[0] << '\n';
+   std::cerr << session.get() << ": " << session->buffer[0] << '\n';
 
    switch (session->buffer[0])
    {
