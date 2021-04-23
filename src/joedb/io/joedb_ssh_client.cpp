@@ -27,15 +27,15 @@ namespace joedb
    uint16_t joedb_port = 0;
    std::istringstream(argv[3]) >> joedb_port;
 
-   int port = 22;
+   int ssh_port = 22;
    if (argc > 5)
-    std::istringstream(argv[4]) >> port;
+    std::istringstream(argv[4]) >> ssh_port;
 
    int ssh_log_level = 0;
    if (argc > 6)
     std::istringstream(argv[5]) >> ssh_log_level;
 
-   ssh::Session session(user, host, port, ssh_log_level);
+   ssh::Session session(user, host, ssh_port, ssh_log_level);
    ssh::Forward_Channel channel(session, "localhost", joedb_port);
    Server_Connection connection(channel);
 
