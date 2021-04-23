@@ -55,23 +55,6 @@ namespace joedb
     size_t read_some(char *data, size_t size) override
     /////////////////////////////////////////////////////////////////////////
     {
-     {
-      ssh_channel channels[2] = {channel, nullptr};
-
-      while (true)
-      {
-       const int result = ssh_channel_select
-       (
-        channels,
-        nullptr,
-        nullptr,
-        nullptr
-       );
-       if (result != SSH_EINTR)
-        break;
-      }
-     }
-
      const int result = ssh_channel_read(channel, data, uint32_t(size), 0);
      if (result == SSH_ERROR)
       throw joedb::Exception("Error reading from channel");
