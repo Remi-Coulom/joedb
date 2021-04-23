@@ -67,6 +67,9 @@ Concurrency
 
 - Optional CRC check before pulling to verify the content of the origin.
 - ssh::Connection: use sftp_async_read and sftp_async_write.
+- Shared_Local_File: don't copy the file to memory. Create a File_Continuation
+  class that takes a readonly and a writable file, and uses the writable file
+  for the header and the continuation: only the header has to be copied.
 
 Performance
 -----------
