@@ -162,6 +162,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/journal/diagnostics.cpp
  ../src/joedb/journal/Stream_File.cpp
  ../src/joedb/concurrency/Shared_Local_File.cpp
+ ../src/joedb/concurrency/Server_Connection.cpp
 )
 
 # The shared library does not work with Visual Studio: link statically
@@ -285,7 +286,6 @@ if (HAS_NETWORKING)
 
  add_executable(joedb_client
   ../src/joedb/io/joedb_client.cpp
-  ../src/joedb/concurrency/Server_Connection.cpp
  )
  target_link_libraries(joedb_client joedb)
 endif()
@@ -301,7 +301,6 @@ if (libssh_FOUND)
 
  add_executable(joedb_ssh_client
   ../src/joedb/io/joedb_ssh_client.cpp
-  ../src/joedb/concurrency/Server_Connection.cpp
  )
  target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
 endif()
