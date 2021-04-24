@@ -1459,6 +1459,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  };
 
  typedef Readonly_Database Generic_Readonly_Database;
+
 )RRR";
 
  //
