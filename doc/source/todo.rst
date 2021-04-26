@@ -73,6 +73,7 @@ Concurrency
 - use timeouts for reads in ssh::Forward_Channel and Network_Channel
 - make a Robust_Server_Connection that tries to reconnect whenever an error
   occurs.
+- performance: merge socket writes.
 
 Performance
 -----------
