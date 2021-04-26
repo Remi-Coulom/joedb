@@ -70,6 +70,9 @@ Concurrency
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
   class that takes a readonly and a writable file, and uses the writable file
   for the header and the continuation: only the header has to be copied.
+- use timeouts for reads in ssh::Forward_Channel and Network_Channel
+- make a Robust_Server_Connection that tries to reconnect whenever an error
+  occurs.
 
 Performance
 -----------
