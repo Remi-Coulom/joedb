@@ -59,6 +59,8 @@ namespace joedb
 
     const std::string &get_user() {return session.get_user();}
     const std::string &get_host() {return session.get_host();}
+
+    std::mutex &get_mutex() {return mutex;}
   };
 
   ///////////////////////////////////////////////////////////////////////////

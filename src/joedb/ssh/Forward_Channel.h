@@ -2,7 +2,7 @@
 #define joedb_ssh_Forward_Channel_declared
 
 #include "joedb/concurrency/Channel.h"
-#include "joedb/ssh/Session.h"
+#include "joedb/ssh/Thread_Safe_Session.h"
 
 namespace joedb
 {
@@ -13,33 +13,10 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    private:
-    const ssh_channel channel;
+    std::mutex &mutex;
+    ssh_channel channel;
 
-   public:
-    /////////////////////////////////////////////////////////////////////////
-    Forward_Channel
-    /////////////////////////////////////////////////////////////////////////
-    (
-     Session &session,
-     const char *remote_host,
-     uint16_t remote_port
-    ):
-     channel(ssh_channel_new(session.get()))
-    {
-     check_not_null(channel);
-     check_ssh_session_result
-     (
-      session.get(),
-      ssh_channel_open_forward
-      (
-       channel,
-       remote_host,
-       remote_port,
-       "localhost",
-       remote_port
-      )
-     );
-    }
+    std::mutex &get_mutex() override {return mutex;}
 
     /////////////////////////////////////////////////////////////////////////
     size_t write_some(const char *data, size_t size) override
@@ -68,10 +45,39 @@ namespace joedb
      return size_t(result);
     }
 
+   public:
+    /////////////////////////////////////////////////////////////////////////
+    Forward_Channel
+    /////////////////////////////////////////////////////////////////////////
+    (
+     Thread_Safe_Session &session,
+     const char *remote_host,
+     uint16_t remote_port
+    ):
+     mutex(session.get_mutex())
+    {
+     Session_Lock lock(session);
+     channel = ssh_channel_new(lock.get_ssh_session());
+     check_not_null(channel);
+     check_ssh_session_result
+     (
+      lock.get_ssh_session(),
+      ssh_channel_open_forward
+      (
+       channel,
+       remote_host,
+       remote_port,
+       "localhost",
+       remote_port
+      )
+     );
+    }
+
     /////////////////////////////////////////////////////////////////////////
     ~Forward_Channel()
     /////////////////////////////////////////////////////////////////////////
     {
+     std::unique_lock<std::mutex> lock(mutex);
      ssh_channel_free(channel);
     }
   };

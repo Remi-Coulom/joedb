@@ -35,7 +35,7 @@ namespace joedb
    if (argc > 6)
     std::istringstream(argv[5]) >> ssh_log_level;
 
-   ssh::Session session(user, host, ssh_port, ssh_log_level);
+   ssh::Thread_Safe_Session session(user, host, ssh_port, ssh_log_level);
    ssh::Forward_Channel channel(session, "localhost", joedb_port);
    Server_Connection connection(channel);
 

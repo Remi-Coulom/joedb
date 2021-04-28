@@ -11,22 +11,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
+   std::mutex mutex;
    net::io_context io_context;
    net::ip::tcp::socket socket;
 
-  public:
-   //////////////////////////////////////////////////////////////////////////
-   Network_Channel(const char *host_name, const char *port_name):
-   //////////////////////////////////////////////////////////////////////////
-    socket(io_context)
-   {
-    net::ip::tcp::resolver resolver(io_context);
-    net::connect
-    (
-     socket,
-     resolver.resolve(host_name, port_name)
-    );
-   }
+   std::mutex &get_mutex() override {return mutex;}
 
    //////////////////////////////////////////////////////////////////////////
    size_t write_some(const char *data, size_t size) override
@@ -40,6 +29,20 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     return socket.read_some(net::buffer(data, size));
+   }
+
+  public:
+   //////////////////////////////////////////////////////////////////////////
+   Network_Channel(const char *host_name, const char *port_name):
+   //////////////////////////////////////////////////////////////////////////
+    socket(io_context)
+   {
+    net::ip::tcp::resolver resolver(io_context);
+    net::connect
+    (
+     socket,
+     resolver.resolve(host_name, port_name)
+    );
    }
  };
 }

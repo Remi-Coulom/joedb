@@ -14,16 +14,16 @@ namespace joedb
   char pull_type
  )
  {
-  std::unique_lock<std::mutex> lock(mutex);
+  Channel_Lock lock(channel);
 
   std::cerr << "Pulling(" << pull_type << ")... ";
 
   buffer[0] = pull_type;
   const int64_t checkpoint = client_journal.get_checkpoint_position();
   to_network(checkpoint, buffer + 1);
-  channel.write(buffer, 9);
+  lock.write(buffer, 9);
 
-  channel.read(buffer, 17);
+  lock.read(buffer, 17);
   if (buffer[0] != pull_type && from_network(buffer + 1) != checkpoint)
    throw Exception("Could not pull from server");
 
@@ -40,7 +40,7 @@ namespace joedb
     size_t read_size = size_t(remaining);
     if (read_size > buffer_size)
      read_size = buffer_size;
-    const size_t n = channel.read_some(buffer, read_size);
+    const size_t n = lock.read_some(buffer, read_size);
     tail_writer.append(buffer, n);
     read += n;
     std::cerr << '.';
@@ -77,7 +77,7 @@ namespace joedb
   int64_t server_position
  )
  {
-  std::unique_lock<std::mutex> lock(mutex);
+  Channel_Lock lock(channel);
 
   Async_Reader reader = client_journal.get_tail_reader(server_position);
 
@@ -89,16 +89,16 @@ namespace joedb
 
   std::cerr << "pushing " << push_size << " bytes: ";
 
-  channel.write(buffer, 17);
+  lock.write(buffer, 17);
 
   while (reader.get_remaining() > 0)
   {
    const size_t size = reader.read(buffer, buffer_size);
-   channel.write(buffer, size);
+   lock.write(buffer, size);
    std::cerr << size << ' ';
   }
 
-  channel.read(buffer, 1);
+  lock.read(buffer, 1);
 
   if (buffer[0] == 'U')
    std::cerr << "OK\n";
@@ -112,13 +112,13 @@ namespace joedb
  void Server_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::unique_lock<std::mutex> lock(mutex);
+  Channel_Lock lock(channel);
 
   std::cerr << "Obtaining lock... ";
 
   buffer[0] = 'l';
-  channel.write(buffer, 1);
-  channel.read(buffer, 1);
+  lock.write(buffer, 1);
+  lock.read(buffer, 1);
   if (buffer[0] != 'l')
    throw Exception("Unexpected server reply");
 
@@ -129,13 +129,13 @@ namespace joedb
  void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::unique_lock<std::mutex> lock(mutex);
+  Channel_Lock lock(channel);
 
   std::cerr << "Releasing lock... ";
 
   buffer[0] = 'u';
-  channel.write(buffer, 1);
-  channel.read(buffer, 1);
+  lock.write(buffer, 1);
+  lock.read(buffer, 1);
 
   if (buffer[0] == 'u')
    std::cerr << "OK\n";
@@ -149,7 +149,7 @@ namespace joedb
  void Server_Connection::keep_alive()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::unique_lock<std::mutex> lock(mutex);
+  Channel_Lock lock(channel);
 
   try
   {
@@ -162,8 +162,8 @@ namespace joedb
 
     buffer[0] = 'i';
 
-    channel.write(buffer, 1);
-    channel.read(buffer, 1);
+    lock.write(buffer, 1);
+    lock.read(buffer, 1);
    }
   }
   catch(...)
@@ -188,10 +188,12 @@ namespace joedb
   const int64_t client_version = 2;
   to_network(client_version, buffer + 5);
 
-  channel.write(buffer, 5 + 8);
-  channel.read(buffer, 5 + 8);
-
-  std::cerr << "Waiting for \"joedb\"... ";
+  {
+   Channel_Lock lock(channel);
+   lock.write(buffer, 5 + 8);
+   std::cerr << "Waiting for \"joedb\"... ";
+   lock.read(buffer, 5 + 8);
+  }
 
   if
   (
@@ -232,15 +234,16 @@ namespace joedb
  {
   try
   {
+   Channel_Lock lock(channel);
    buffer[0] = 'Q';
-   channel.write(buffer, 1);
+   lock.write(buffer, 1);
   }
   catch(...)
   {
   }
 
   {
-   std::unique_lock<std::mutex> lock(mutex);
+   Channel_Lock lock(channel);
    keep_alive_thread_must_stop = true;
    condition.notify_one();
   }

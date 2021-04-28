@@ -27,7 +27,6 @@ namespace joedb
    enum {buffer_size = (1 << 13)};
    char *buffer;
 
-   std::mutex mutex;
    std::condition_variable condition;
    bool keep_alive_thread_must_stop;
    std::thread keep_alive_thread;
