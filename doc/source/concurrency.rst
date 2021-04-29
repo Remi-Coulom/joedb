@@ -58,21 +58,8 @@ remote database or a local file that is not shared.
 
 When connecting to a remote machine, ssh port forwarding can provide encryption
 and authentication. This can be done conveniently with the
-``ssh::Forward_Channel`` class. See the source code of ``joedb_ssh_client``
-for an example of use.
+``ssh::Forward_Channel`` class. The source code of :ref:`joedb_ssh_client`
+shows an example of use:
 
-``ssh::Connection``
-^^^^^^^^^^^^^^^^^^^
-
-This allows sharing a file stored on a remote machine via ssh, without running
-a joedb server on the remote machine. Locking works with a mutex file, named
-with ``.mutex`` appended to the name of the database file. The same mutex file
-is used to ensure the atomicity of the pull operation, so reads are blocked
-when one client has a write lock.
-
-There is no mechanism to deal with crash or disconnection of a client holding
-the lock. The mutex file will remain on the server, and it will keep blocking.
-If this happens, the situation has to be fixed manually. If a disconnection
-occurred in the middle of a big push, then the server database might be
-incomplete. It should be fixed (for instance, by copying the database of the
-client that disconnected) before removing the mutex.
+.. literalinclude:: ../../src/joedb/io/joedb_ssh_client.cpp
+   :language: c++

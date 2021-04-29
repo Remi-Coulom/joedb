@@ -134,13 +134,3 @@ Connect to a remote :ref:`joedb_server` via ssh.
 
 .. literalinclude:: ./tutorial/joedb_ssh_client.out
    :language: none
-
-.. _joedb_ssh_connect:
-
-``joedb_ssh_connect``
----------------------
-
-Connect to a remote database via ssh, without using a server on the remote host.
-
-.. literalinclude:: ./tutorial/joedb_ssh_connect.out
-   :language: none

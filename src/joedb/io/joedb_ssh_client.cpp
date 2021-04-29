@@ -1,5 +1,4 @@
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/concurrency/Shared_Local_File.h"
 #include "joedb/ssh/Forward_Channel.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
@@ -9,20 +8,20 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (argc < 5)
   {
-   std::cerr << "usage: " << argv[0];
-   std::cerr << " <user> <host> <joedb_port> <file_name> [<ssh_port> [<ssh_log_level>]]\n";
+   std::cerr << "usage: " << argv[0] <<
+   " <user> <host> <joedb_port> <file_name> [<ssh_port> [<ssh_log_level>]]\n";
    return 1;
   }
   else
   {
-   const char *user = argv[1];
-   const char *host = argv[2];
-   const char *file_name = argv[4];
+   const char * const user = argv[1];
+   const char * const host = argv[2];
+   const char * const file_name = argv[4];
 
    uint16_t joedb_port = 0;
    std::istringstream(argv[3]) >> joedb_port;

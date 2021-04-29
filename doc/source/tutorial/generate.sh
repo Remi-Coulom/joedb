@@ -35,4 +35,3 @@ set +e
 ( cd $dir && PATH="." && joedb_server ) 2>joedb_server.out
 ( cd $dir && PATH="." && joedb_client ) 2>joedb_client.out
 ( cd $dir && PATH="." && joedb_ssh_client ) 2>joedb_ssh_client.out
-( cd $dir && PATH="." && joedb_ssh_connect ) 2>joedb_ssh_connect.out
