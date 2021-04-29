@@ -152,6 +152,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/io/Dump_Writable.cpp
  ../src/joedb/io/dump.cpp
  ../src/joedb/io/Interpreter.cpp
+ ../src/joedb/io/Interpreter_Dump_Writable.cpp
  ../src/joedb/io/json.cpp
  ../src/joedb/io/merge.cpp
  ../src/joedb/io/SQL_Dump_Writable.cpp
