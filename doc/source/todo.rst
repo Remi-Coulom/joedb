@@ -69,10 +69,13 @@ Concurrency
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
   class that takes a readonly and a writable file, and uses the writable file
   for the header and the continuation: only the header has to be copied.
-- use timeouts for reads in ssh::Forward_Channel and Network_Channel
-- make a Robust_Server_Connection that tries to reconnect whenever an error
-  occurs.
 - performance: merge socket writes.
+- Possibility to create a notification channel, from server to client. Client
+  is given an id at connection time. This id can be used  to create an
+  additional channel with the server. The server notifies of pushes that makes
+  the client out of date. It won't notify again if the client ignores the
+  notification and does not pull. Also notify of the server quitting. Server
+  may send ping to the client to make sure it is still alive.
 
 Performance
 -----------
