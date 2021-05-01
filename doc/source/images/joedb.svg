@@ -16,6 +16,9 @@
   {
    font-family: monospace;
    font-size: 10px;
+   line-height: 1.2em;
+   white-space: pre;
+   dominant-baseline: central;
   }
   .keyword
   {
@@ -37,38 +40,50 @@
    font-weight: normal;
    fill: #902000;
   }
+  .literal
+  {
+   font-weight: normal;
+   fill: #4070a0;
+  }
+  .header
+  {
+   font-weight: bold;
+   font-size: 14px;
+   font-family: sans-serif;
+   text-anchor: middle;
+   dominant-baseline: central;
+  }
+  .header-block
+  {
+   fill:#cceeaa;
+   stroke-width:0.5;
+   stroke:#a0a0a0;
+  }
  </style>
 
  <rect x="0" y="0" width="600" height="300" class="background"/>
 
- <rect x="0.6em" y="0.6em" class="code-block code" width="250" height="6.6em"/>
+ <g transform="translate(16,42)">
+  <rect class="header-block header" x="0" y="-1.8em" width="251" height="1.8em"/>
+  <text x="125" y="-0.9em" class="header">Database Schema</text>
+  <rect class="code-block code" x="0" y="0" width="251" height="8.4em"/>
+  <text x="0.6em" y="1.1em" class="code"><tspan class="keyword">create_table</tspan> <tspan class="table">city</tspan>
+<tspan class="keyword">add_field</tspan> <tspan class="table">city</tspan> <tspan class="field">name</tspan> <tspan class="type">string</tspan>
+<tspan class="keyword">create_table</tspan> <tspan class="table">person</tspan>
+<tspan class="keyword">add_field</tspan> <tspan class="table">person</tspan> <tspan class="field">first_name</tspan> <tspan class="type">string</tspan>
+<tspan class="keyword">add_field</tspan> <tspan class="table">person</tspan> <tspan class="field">last_name</tspan> <tspan class="type">string</tspan>
+<tspan class="keyword">add_field</tspan> <tspan class="table">person</tspan> <tspan class="field">home</tspan> <tspan class="type">references city</tspan></text>
+ </g>
 
- <text x="1.2em" y="0.6em" class="code">
-  <tspan x="1.2em" dy="1.2em">
-   <tspan class="keyword">create_table</tspan>
-   <tspan class="table">city</tspan>
-  </tspan>
-  <tspan x="1.2em" dy="1.2em">
-   <tspan class="keyword">add_field</tspan>
-   <tspan class="table">city</tspan>
-   <tspan class="field">name</tspan>
-   <tspan class="type">string</tspan>
-  </tspan>
-  <tspan x="1.2em" dy="1.2em">
-   <tspan class="keyword">create_table</tspan>
-   <tspan class="table">person</tspan>
-  </tspan>
-  <tspan x="1.2em" dy="1.2em">
-   <tspan class="keyword">add_field</tspan>
-   <tspan class="table">person</tspan>
-   <tspan class="field">name</tspan>
-   <tspan class="type">string</tspan>
-  </tspan>
-  <tspan x="1.2em" dy="1.2em">
-   <tspan class="keyword">add_field</tspan>
-   <tspan class="table">person</tspan>
-   <tspan class="field">home</tspan>
-   <tspan class="type">references city</tspan>
-  </tspan>
- </text>
+ <g transform="translate(283,42)">
+  <rect class="header-block header" x="0" y="-1.8em" width="301" height="1.8em"/>
+  <text x="155" y="-0.9em" class="header">C++ Code</text>
+  <rect class="code-block code" x="0" y="0" width="301" height="8.4em"/>
+  <text x="0.6em" y="1.1em" class="code">tutorial::File_Database db(<tspan class="literal">"tutorial.joedb"</tspan>);
+
+db.new_city(<tspan class="literal">"Tokyo"</tspan>);
+
+<tspan class="keyword">for</tspan> (<tspan class="keyword">auto</tspan> person: db.get_person_table())
+ std::cout &lt;&lt; db.get_first_name(person) &lt;&lt; <tspan class="literal">'\n'</tspan>;</text>
+ </g>
 </svg>
