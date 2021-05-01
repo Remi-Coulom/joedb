@@ -10,6 +10,9 @@ Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
 efficient, and type-safe.
 
+Joedb can operate as an embedded database, but it also supports
+:doc:`concurrent access to a remote server <concurrency>`.
+
 .. image:: images/joedb.svg
 
 Pros and Cons
@@ -26,14 +29,13 @@ alternatives such as protobuf, SQLite, XML, or JSON:
   also possible to add time stamps and comments to the journal, and use it as a
   log of the application (if the history has to be forgotten for privacy or
   disk-space reasons, it is also possible to :ref:`pack <joedb_pack>` it).
-- Joedb comes with a :ref:`server <joedb_server>` that make it easy to develop
-  efficient :doc:`distributed applications <concurrency>`.
 - If the database schema of an application changes over time, joedb can upgrade
   old files to the new version automatically. The upgrade includes changes to
   the schema as well as custom data manipulation (see :doc:`schema_upgrade`).
 - The database schema is compiled into C++ code that allows convenient
   type-safe data manipulation. Many errors that would be detected at run time
   with SQL, XML, or JSON will be detected at compile time instead.
+- Joedb comes with a server, which makes it easy to develop :doc:`distributed applications <concurrency>`.
 - Joedb is very simple, light, and fast.
 
 Joedb currently has some limitations that may be removed with future
