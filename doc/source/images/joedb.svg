@@ -1,0 +1,74 @@
+<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+ <style>
+  .background
+  {
+   fill:#f8f8f8;
+   stroke-width:1;
+   stroke:#a0a0a0;
+  }
+  .code-block
+  {
+   fill:#eeffcc;
+   stroke-width:0.5;
+   stroke:#a0a0a0;
+  }
+  .code
+  {
+   font-family: monospace;
+   font-size: 10px;
+  }
+  .keyword
+  {
+   font-weight: bold;
+   fill: #007020;
+  }
+  .table
+  {
+   font-weight: bold;
+   fill: #0e84b5;
+  }
+  .field
+  {
+   font-weight: normal;
+   fill: #bb60d5;
+  }
+  .type
+  {
+   font-weight: normal;
+   fill: #902000;
+  }
+ </style>
+
+ <rect x="0" y="0" width="600" height="300" class="background"/>
+
+ <rect x="0.6em" y="0.6em" class="code-block code" width="250" height="6.6em"/>
+
+ <text x="1.2em" y="0.6em" class="code">
+  <tspan x="1.2em" dy="1.2em">
+   <tspan class="keyword">create_table</tspan>
+   <tspan class="table">city</tspan>
+  </tspan>
+  <tspan x="1.2em" dy="1.2em">
+   <tspan class="keyword">add_field</tspan>
+   <tspan class="table">city</tspan>
+   <tspan class="field">name</tspan>
+   <tspan class="type">string</tspan>
+  </tspan>
+  <tspan x="1.2em" dy="1.2em">
+   <tspan class="keyword">create_table</tspan>
+   <tspan class="table">person</tspan>
+  </tspan>
+  <tspan x="1.2em" dy="1.2em">
+   <tspan class="keyword">add_field</tspan>
+   <tspan class="table">person</tspan>
+   <tspan class="field">name</tspan>
+   <tspan class="type">string</tspan>
+  </tspan>
+  <tspan x="1.2em" dy="1.2em">
+   <tspan class="keyword">add_field</tspan>
+   <tspan class="table">person</tspan>
+   <tspan class="field">home</tspan>
+   <tspan class="type">references city</tspan>
+  </tspan>
+ </text>
+</svg>

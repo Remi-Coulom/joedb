@@ -10,6 +10,7 @@ Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
 efficient, and type-safe.
 
+.. image:: images/joedb.svg
 
 Pros and Cons
 -------------
