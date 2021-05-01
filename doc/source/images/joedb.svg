@@ -79,7 +79,6 @@
    font-family: serif;
    font-size: 10px;
    line-height: 1.2em;
-   white-space: pre;
    dominant-baseline: central;
   }
   .joedb-arrow
@@ -153,18 +152,22 @@
   <rect class="data-header-block header" x="0" y="-26" width="142.5" height="26"/>
   <text x="71.25" y="-13" class="header">Tabular Data</text>
   <rect class="data-block" x="0" y="0" width="142.5" height="46"/>
-  <text x="0.6em" y="1.1em" class="data">• For easy direct access
-• Not permanent
-• Can be in RAM</text>
+  <text x="0.6em" y="0" class="data">
+   <tspan x="0.6em" dy="1.2em">• For easy direct access</tspan>
+   <tspan x="0.6em" dy="1.2em">• Not permanent</tspan> 
+   <tspan x="0.6em" dy="1.2em">• Can be in RAM</tspan>
+  </text>
  </g>
 
  <g transform="translate(441.5,238)">
   <rect class="data-header-block header" x="0" y="-26" width="142.5" height="26"/>
   <text x="71.25" y="-13" class="header">Journal</text>
   <rect class="data-block" x="0" y="0" width="142.5" height="46"/>
-  <text x="0.6em" y="1.1em" class="data">• Whole data history
-• Stored on disk
-• Crash safe</text>
+  <text x="0.6em" y="0" class="data">
+   <tspan x="0.6em" dy="1.2em">• Whole data history</tspan>
+   <tspan x="0.6em" dy="1.2em">• Stored on disk</tspan> 
+   <tspan x="0.6em" dy="1.2em">• Crash-safe transactions</tspan>
+  </text>
  </g>
 
 </svg>
