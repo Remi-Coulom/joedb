@@ -59,6 +59,26 @@
    stroke-width:0.5;
    stroke:#a0a0a0;
   }
+  .data-header-block
+  {
+   fill:#eeddaa;
+   stroke-width:0.5;
+   stroke:#a0a0a0;
+  }
+  .data-block
+  {
+   fill:#fff8dd;
+   stroke-width:0.5;
+   stroke:#a0a0a0;
+  }
+  .data
+  {
+   font-family: serif;
+   font-size: 10px;
+   line-height: 1.2em;
+   white-space: pre;
+   dominant-baseline: central;
+  }
   .joedb-arrow
   {
    stroke:#68b;
@@ -87,9 +107,11 @@
 
  <line class="joedb-arrow" x1="141.5" y1="170" x2="273" y2="170" marker-end="url(#joedb-arrowhead)"/>
  <line class="joedb-arrow" x1="141.5" y1="100" x2="141.5" y2="140" marker-end="url(#joedb-arrowhead)"/>
- <line class="execute-arrow" x1="438" y1="100" x2="438" y2="147" marker-end="url(#execute-arrowhead)"/>
+ <line class="execute-arrow" x1="433.5" y1="100" x2="433.5" y2="147" marker-end="url(#execute-arrowhead)"/>
+ <line class="execute-arrow" x1="354.25" y1="183" x2="354.25" y2="202" marker-end="url(#execute-arrowhead)"/>
+ <line class="execute-arrow" x1="513.75" y1="183" x2="513.75" y2="202" marker-end="url(#execute-arrowhead)"/>
 
- <g transform="translate(16,42)">
+<g transform="translate(16,42)">
   <rect class="header-block header" x="0" y="-26" width="251" height="26"/>
   <text x="125" y="-13" class="header">Database Schema</text>
   <rect class="code-block code" x="0" y="0" width="251" height="8.4em"/>
@@ -103,7 +125,7 @@
 
  <g transform="translate(283,42)">
   <rect class="header-block header" x="0" y="-26" width="301" height="26"/>
-  <text x="155" y="-13" class="header">C++ Code</text>
+  <text x="155" y="-13" class="header">Application Code</text>
   <rect class="code-block code" x="0" y="0" width="301" height="8.4em"/>
   <text x="0.6em" y="1.1em" class="code">tutorial::File_Database db(<tspan class="literal">"tutorial.joedb"</tspan>);
 
@@ -120,7 +142,25 @@ db.new_city(<tspan class="literal">"Tokyo"</tspan>);
 
  <g transform="translate(283,170)">
   <rect class="header-block header" x="0" y="-13" width="301" height="26"/>
-  <text x="155" y="0" class="header">Generated C++</text>
+  <text x="155" y="0" class="header">Generated Code</text>
+ </g>
+
+ <g transform="translate(283,238)">
+  <rect class="data-header-block header" x="0" y="-26" width="142.5" height="26"/>
+  <text x="71.25" y="-13" class="header">Tabular Data</text>
+  <rect class="data-block" x="0" y="0" width="142.5" height="46"/>
+  <text x="0.6em" y="1.1em" class="data">• For easy direct access
+• Not permanent
+• Can be in RAM</text>
+ </g>
+
+ <g transform="translate(441.5,238)">
+  <rect class="data-header-block header" x="0" y="-26" width="142.5" height="26"/>
+  <text x="71.25" y="-13" class="header">Journal</text>
+  <rect class="data-block" x="0" y="0" width="142.5" height="46"/>
+  <text x="0.6em" y="1.1em" class="data">• Whole data history
+• Stored on disk
+• Crash safe</text>
  </g>
 
 </svg>
