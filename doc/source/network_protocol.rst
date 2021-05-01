@@ -17,7 +17,7 @@ U      checkpoint       push-unlock
        data
 l                       lock
 u                       unlock
-i                       ignore (used to keep the connection alive)
+i                       ping (used to keep the connection alive)
 Q                       quit
 ====== ================ ======================================================
 
