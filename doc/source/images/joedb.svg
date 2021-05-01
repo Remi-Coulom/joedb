@@ -59,13 +59,39 @@
    stroke-width:0.5;
    stroke:#a0a0a0;
   }
+  .joedb-arrow
+  {
+   stroke:#68b;
+   stroke-width:2;
+  }
+  .execute-arrow
+  {
+   stroke:#888;
+   stroke-width:2;
+  }
  </style>
+
+ <defs>
+  <marker id="joedb-arrowhead" markerWidth="5" markerHeight="4" refX="0" refY="2" orient="auto">
+   <polygon fill="#68b" points="0 0, 5 2, 0 4"/>
+  </marker>
+ </defs>
+
+ <defs>
+  <marker id="execute-arrowhead" markerWidth="5" markerHeight="4" refX="0" refY="2" orient="auto">
+   <polygon fill="#888" points="0 0, 5 2, 0 4"/>
+  </marker>
+ </defs>
 
  <rect x="0" y="0" width="600" height="300" class="background"/>
 
+ <line class="joedb-arrow" x1="141.5" y1="170" x2="273" y2="170" marker-end="url(#joedb-arrowhead)"/>
+ <line class="joedb-arrow" x1="141.5" y1="100" x2="141.5" y2="140" marker-end="url(#joedb-arrowhead)"/>
+ <line class="execute-arrow" x1="438" y1="100" x2="438" y2="147" marker-end="url(#execute-arrowhead)"/>
+
  <g transform="translate(16,42)">
-  <rect class="header-block header" x="0" y="-1.8em" width="251" height="1.8em"/>
-  <text x="125" y="-0.9em" class="header">Database Schema</text>
+  <rect class="header-block header" x="0" y="-26" width="251" height="26"/>
+  <text x="125" y="-13" class="header">Database Schema</text>
   <rect class="code-block code" x="0" y="0" width="251" height="8.4em"/>
   <text x="0.6em" y="1.1em" class="code"><tspan class="keyword">create_table</tspan> <tspan class="table">city</tspan>
 <tspan class="keyword">add_field</tspan> <tspan class="table">city</tspan> <tspan class="field">name</tspan> <tspan class="type">string</tspan>
@@ -76,8 +102,8 @@
  </g>
 
  <g transform="translate(283,42)">
-  <rect class="header-block header" x="0" y="-1.8em" width="301" height="1.8em"/>
-  <text x="155" y="-0.9em" class="header">C++ Code</text>
+  <rect class="header-block header" x="0" y="-26" width="301" height="26"/>
+  <text x="155" y="-13" class="header">C++ Code</text>
   <rect class="code-block code" x="0" y="0" width="301" height="8.4em"/>
   <text x="0.6em" y="1.1em" class="code">tutorial::File_Database db(<tspan class="literal">"tutorial.joedb"</tspan>);
 
@@ -86,4 +112,15 @@ db.new_city(<tspan class="literal">"Tokyo"</tspan>);
 <tspan class="keyword">for</tspan> (<tspan class="keyword">auto</tspan> person: db.get_person_table())
  std::cout &lt;&lt; db.get_first_name(person) &lt;&lt; <tspan class="literal">'\n'</tspan>;</text>
  </g>
+
+ <g transform="translate(16,170)">
+  <ellipse cx="125.5" cy="0" rx="50" ry="20" style="fill:#99bbee;stroke:#a0a0a0;stroke-width:0.5" />
+  <text x="125.5" y="0" class="header">joedbc</text>
+ </g>
+
+ <g transform="translate(283,170)">
+  <rect class="header-block header" x="0" y="-13" width="301" height="26"/>
+  <text x="155" y="0" class="header">Generated C++</text>
+ </g>
+
 </svg>
