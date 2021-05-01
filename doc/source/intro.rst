@@ -13,7 +13,7 @@ efficient, and type-safe.
 Joedb can operate as an embedded database, but it also supports
 :doc:`concurrent access to a remote server <concurrency>`.
 
-.. image:: images/joedb.svg
+.. image:: images/joedb.*
 
 Pros and Cons
 -------------
