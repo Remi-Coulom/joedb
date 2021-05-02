@@ -32,7 +32,7 @@ import sphinx_rtd_theme
 sys.path.append(os.path.abspath("./_ext"))
 
 extensions = [
-    'breathe',
+#    'breathe',
     'sphinx.ext.imgmath',
     'sphinxcontrib.spelling',
     'joedbi_lexer',
@@ -40,9 +40,9 @@ extensions = [
 ]
 
 # Breathe Configuration
-sys.path.append( "/usr/lib/python3/dist-packages" )
-breathe_projects = {"joedb": "../doxygen/xml"}
-breathe_default_project = "joedb"
+#sys.path.append( "/usr/lib/python3/dist-packages" )
+#breathe_projects = {"joedb": "../doxygen/xml"}
+#breathe_default_project = "joedb"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
