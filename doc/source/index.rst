@@ -8,3 +8,4 @@ Joedb, the Journal-Only Embedded Database
    intro
    users_guide
    reference
+   doxygen/source_documentation

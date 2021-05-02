@@ -4,7 +4,7 @@
 
 namespace joedb
 {
- static const std::string delimiter("::");
+ static const std::string delimiter{"::"};
 
  ////////////////////////////////////////////////////////////////////////////
  std::vector<std::string> split_namespace(const std::string &s)
