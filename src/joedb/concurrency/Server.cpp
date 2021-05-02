@@ -11,7 +11,6 @@
 namespace joedb
 {
  std::atomic<bool> Server::interrupted(false);
- static std::error_code ignored_error;
 
  ////////////////////////////////////////////////////////////////////////////
  void CDECL Server::signal_handler(int sig)
@@ -24,7 +23,7 @@ namespace joedb
  std::ostream &Server::Session::write_id(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << id << " (" << address.to_string() << "): ";
+  out << id << ": ";
   return out;
  }
 
@@ -32,7 +31,6 @@ namespace joedb
  Server::Session::Session(Server &server, net::ip::tcp::socket && socket):
  ////////////////////////////////////////////////////////////////////////////
   id(++server.session_id),
-  address(socket.remote_endpoint(ignored_error).address()),
   server(server),
   socket(std::move(socket)),
   state(not_locking)

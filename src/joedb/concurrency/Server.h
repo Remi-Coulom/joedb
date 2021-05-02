@@ -36,7 +36,6 @@ namespace joedb
    struct Session
    {
     const int64_t id;
-    const net::ip::address address;
     Server &server;
     net::ip::tcp::socket socket;
     enum {buffer_size = (1 << 13)};
