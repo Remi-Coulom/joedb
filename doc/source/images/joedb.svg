@@ -76,7 +76,7 @@
   }
   .data
   {
-   font-family: serif;
+   font-family: sans-serif;
    font-size: 10px;
    line-height: 1.2em;
    dominant-baseline: central;
