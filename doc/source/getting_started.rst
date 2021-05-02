@@ -36,13 +36,15 @@ some detailed instructions for the most common situations.
 Linux
 ^^^^^
 
-Prerequisites in Ubuntu can be installed with this command (libssh and libboost are not necessary if you don't wish to use the server):
+Prerequisites in Ubuntu can be installed with this command (libssh and libboost
+are not necessary if you don't wish to use the server):
 
 .. code-block:: bash
 
     sudo apt install g++ cmake ninja-build libssh-dev libboost-dev
 
-When the necessary packages are installed, the following commands should compile everything:
+When the necessary packages are installed, the following commands should
+compile everything:
 
 .. literalinclude:: ./tutorial/compiling.sh
    :language: bash
@@ -58,7 +60,7 @@ To run coverage tests, documentation, and benchmarks, also install:
 
 .. code-block:: bash
 
-    sudo apt-get install lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser wget unzip
+    sudo apt-get install lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser wget unzip doxygen graphviz python3-breathe
 
 Windows
 ^^^^^^^
