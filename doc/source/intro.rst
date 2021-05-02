@@ -10,8 +10,8 @@ Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
 efficient, and type-safe.
 
-Joedb can operate as an embedded database, but it also supports
-:doc:`concurrent access to a remote server <concurrency>`.
+Joedb can operate as an embedded database, but also has a server that supports
+:doc:`concurrent access to a database <concurrency>`.
 
 .. image:: images/joedb.*
 
@@ -19,8 +19,12 @@ Pros and Cons
 -------------
 
 Joedb offers many nice features that may make it more attractive than typical
-alternatives such as protobuf, SQLite, XML, or JSON:
+alternatives such as `Protocol Buffers <https://developers.google.com/protocol-buffers>`_, `FlatBuffers <https://google.github.io/flatbuffers/>`_, `SQLite <https://www.sqlite.org/index.html>`_, `XML <https://en.wikipedia.org/wiki/XML>`_, or `JSON <https://www.json.org/json-en.html>`_:
 
+- Unlike XML or JSON, joedb is a binary file format that does not require any
+  parsing, which makes reading and writing data much faster.
+- Unlike Protocol Buffers or FlatBuffers, joedb works like a database, and can
+  incrementally update data stored on disk in a crash-safe way.
 - Since a joedb file is append-only, its crash-safe operation does not require
   flushing data to disk as frequently as typical relational databases, which
   can make it an order of magnitude faster (see :doc:`checkpoints` for details
@@ -35,7 +39,8 @@ alternatives such as protobuf, SQLite, XML, or JSON:
 - The database schema is compiled into C++ code that allows convenient
   type-safe data manipulation. Many errors that would be detected at run time
   with SQL, XML, or JSON will be detected at compile time instead.
-- Joedb comes with a server, which makes it easy to develop :doc:`distributed applications <concurrency>`.
+- Joedb comes with a server, which makes it easy to develop :doc:`distributed
+  applications <concurrency>`.
 - Joedb is very simple, light, and fast.
 
 Joedb currently has some limitations that may be removed with future

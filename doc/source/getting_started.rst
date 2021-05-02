@@ -36,7 +36,7 @@ some detailed instructions for the most common situations.
 Linux
 ^^^^^
 
-Minimal prerequisites in Ubuntu can be installed with this command:
+Prerequisites in Ubuntu can be installed with this command (libssh and libboost are not necessary if you don't wish to use the server):
 
 .. code-block:: bash
 
