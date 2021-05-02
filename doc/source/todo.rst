@@ -20,7 +20,11 @@ New Operations and Types
 
 On-disk Storage
 ----------------
-- LevelDB: https://github.com/google/leveldb
+- In a directory
+- A checkpoint file (2 copies, valid if identical)
+- A subdirectory for each table
+- One file per column vector
+- One file for string data (string column = size + start_index)
 
 Compiler
 --------
