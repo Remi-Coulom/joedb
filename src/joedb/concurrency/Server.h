@@ -23,21 +23,28 @@ namespace joedb
    static void CDECL signal_handler(int sig);
    enum {interrupt_check_seconds = 2};
 
+   const uint16_t port;
+
    joedb::Writable_Journal &journal;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
    net::steady_timer interrupt_timer;
 
    int64_t session_count;
+   int64_t session_id;
 
    struct Session
    {
+    const int64_t id;
+    const net::ip::address address;
     Server &server;
     net::ip::tcp::socket socket;
     enum {buffer_size = (1 << 13)};
     char buffer[buffer_size];
     enum State {not_locking, waiting_for_lock, waiting_for_lock_pull, locking};
     State state;
+
+    std::ostream &write_id(std::ostream &out);
 
     Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();

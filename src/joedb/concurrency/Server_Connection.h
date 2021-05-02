@@ -11,12 +11,18 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- struct Server_Handshake
+ class Server_Handshake
  ////////////////////////////////////////////////////////////////////////////
  {
-  Channel &channel;
+  private:
+   int64_t session_id;
 
-  Server_Handshake(Channel &channel);
+  public:
+   Channel &channel;
+
+   Server_Handshake(Channel &channel);
+
+   int64_t get_session_id() const {return session_id;}
  };
 
  ////////////////////////////////////////////////////////////////////////////

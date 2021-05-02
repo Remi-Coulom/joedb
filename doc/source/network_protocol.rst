@@ -1,7 +1,7 @@
 Network Protocol
 ================
 
-checkpoint, size, and version information are sent as 64-bit small-endian numbers.
+checkpoint, size, version, and session_id are sent as 64-bit small-endian numbers.
 
 Client to Server
 ----------------
@@ -29,7 +29,7 @@ Server to Client
 Prefix Data             Description
 ====== ================ ======================================================
 joedb  server_version   reply to joedb.
-                        server_version = 0 means client_version is rejected.
+       session_id       server_version = 0 means client_version is rejected.
 P      checkpoint       reply to P
        size
        data

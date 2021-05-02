@@ -3,12 +3,15 @@
 #include "joedb/io/Dump_Writable.h"
 
 #include <iostream>
+#include <iomanip>
 #include <functional>
 #include <csignal>
+#include <sstream>
 
 namespace joedb
 {
  std::atomic<bool> Server::interrupted(false);
+ static std::error_code ignored_error;
 
  ////////////////////////////////////////////////////////////////////////////
  void CDECL Server::signal_handler(int sig)
@@ -18,13 +21,23 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ std::ostream &Server::Session::write_id(std::ostream &out)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << id << " (" << address.to_string() << "): ";
+  return out;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Server::Session::Session(Server &server, net::ip::tcp::socket && socket):
  ////////////////////////////////////////////////////////////////////////////
+  id(++server.session_id),
+  address(socket.remote_endpoint(ignored_error).address()),
   server(server),
   socket(std::move(socket)),
   state(not_locking)
  {
-  std::cerr << this << ": created\n";
+  write_id(std::cerr) << "created\n";
   ++server.session_count;
   server.write_status();
  }
@@ -35,10 +48,10 @@ namespace joedb
  {
   if (state == locking)
   {
-   std::cerr << "Removing lock held by dying session.\n";
+   write_id(std::cerr) << "removing lock held by dying session.\n";
    server.unlock(*this);
   }
-  std::cerr << this << ": deleted\n";
+  write_id(std::cerr) << "deleted\n";
   --server.session_count;
   server.write_status();
  }
@@ -47,9 +60,11 @@ namespace joedb
  void Server::write_status()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::cerr << '\n';
   std::cerr << joedb::Dump_Writable::get_local_time(std::time(nullptr));
-  std::cerr << "; port = " << acceptor.local_endpoint().port();
+  std::cerr << "; port = " << port;
   std::cerr << "; session_count = " << session_count << '\n';
+  std::cerr << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -62,7 +77,7 @@ namespace joedb
    std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
 
-   std::cerr << session.get() << ": locking\n";
+   session->write_id(std::cerr) << "locking\n";
 
    if (lock_timeout_seconds > 0)
    {
@@ -110,7 +125,7 @@ namespace joedb
  {
   if (session.state == Session::State::locking)
   {
-   std::cerr << &session << ": unlocking\n";
+   session.write_id(std::cerr) << "unlocking\n";
    session.state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
@@ -129,7 +144,7 @@ namespace joedb
  {
   if (!error)
   {
-   std::cerr << "Timeout!\n";
+   session->write_id(std::cerr) << "timeout\n";
    unlock(*session);
   }
  }
@@ -236,10 +251,10 @@ namespace joedb
 
    if (session->state != Session::State::locking)
    {
-    std::cerr << "Trying to push while not locking.\n";
+    session->write_id(std::cerr) << "trying to push while not locking.\n";
     if (!conflict && !locked)
     {
-     std::cerr << "OK, this session can take the lock.\n";
+     session->write_id(std::cerr) << "OK, this session can take the lock.\n";
      lock(session, Session::State::locking);
     }
    }
@@ -250,7 +265,8 @@ namespace joedb
    if (!conflict && size > int64_t(push_buffer.size()))
     push_buffer.resize(size_t(size));
 
-   std::cerr << "Pushing, start = " << start << ", size = " << size << ':';
+   session->write_id(std::cerr) << "pushing, start = ";
+   std::cerr << start << ", size = " << size << ':';
 
    push_transfer
    (
@@ -323,8 +339,8 @@ namespace joedb
    Async_Reader reader = journal.get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
 
-   std::cerr << "Pulling from checkpoint = " << checkpoint;
-   std::cerr << ", size = " << reader.get_remaining() << ':';
+   session->write_id(std::cerr) << "pulling from checkpoint = ";
+   std::cerr << checkpoint << ", size = " << reader.get_remaining() << ':';
 
    net::async_write
    (
@@ -373,7 +389,7 @@ namespace joedb
  {
   if (!error)
   {
-   std::cerr << session.get() << ": " << session->buffer[0] << '\n';
+   session->write_id(std::cerr) << session->buffer[0] << '\n';
 
    switch (session->buffer[0])
    {
@@ -424,7 +440,7 @@ namespace joedb
     break;
 
     default:
-     std::cerr << "Unexpected command\n";
+     session->write_id(std::cerr) << "unexpected command\n";
     break;
    }
   }
@@ -507,20 +523,23 @@ namespace joedb
    {
     const int64_t client_version = from_network(session->buffer + 5);
 
-    std::cerr << "client_version = " << client_version << '\n';
+    session->write_id(std::cerr) << "client_version = ";
+    std::cerr << client_version << '\n';
 
-    if (client_version < 2)
+    if (client_version < 3)
      to_network(0, session->buffer + 5);
     else
     {
-     const int64_t server_version = 2;
+     const int64_t server_version = 3;
      to_network(server_version, session->buffer + 5);
     }
 
-    write_buffer_and_next_command(session, 13);
+    to_network(session->id, session->buffer + 5 + 8);
+
+    write_buffer_and_next_command(session, 5 + 8 + 8);
    }
    else
-    std::cerr << "Bad handshake\n";
+    session->write_id(std::cerr) << "bad handshake\n";
   }
  }
 
@@ -617,11 +636,13 @@ namespace joedb
   uint16_t port,
   uint32_t lock_timeout_seconds
  ):
+  port(port),
   journal(journal),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   interrupt_timer(io_context),
   session_count(0),
+  session_id(0),
   lock_timeout_seconds(lock_timeout_seconds),
   lock_timeout_timer(io_context),
   locked(false)

@@ -177,7 +177,7 @@ namespace joedb
  {
   std::cerr << "Connecting... ";
 
-  char buffer[5 + 8];
+  char buffer[5 + 8 + 8];
 
   buffer[0] = 'j';
   buffer[1] = 'o';
@@ -185,14 +185,14 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 2;
+  const int64_t client_version = 3;
   to_network(client_version, buffer + 5);
 
   {
    Channel_Lock lock(channel);
    lock.write(buffer, 5 + 8);
    std::cerr << "Waiting for \"joedb\"... ";
-   lock.read(buffer, 5 + 8);
+   lock.read(buffer, 5 + 8 + 8);
   }
 
   if
@@ -212,10 +212,13 @@ namespace joedb
   if (server_version == 0)
    throw Exception("Client version rejected by server");
 
-  std::cerr << "server_version = " << server_version << ". OK.\n";
+  std::cerr << "server_version = " << server_version << ". ";
 
-  if (server_version < 2)
+  if (server_version < 3)
    throw Exception("Unsupported server version");
+
+  session_id = from_network(buffer + 5 + 8);
+  std::cerr << "session_id = " << session_id << ". OK.\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
