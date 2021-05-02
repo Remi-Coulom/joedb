@@ -16,7 +16,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  std::cerr << "Pulling(" << pull_type << ")... ";
+  std::cerr << get_session_id() << ": pulling(" << pull_type << ")... ";
 
   buffer[0] = pull_type;
   const int64_t checkpoint = client_journal.get_checkpoint_position();
@@ -87,7 +87,8 @@ namespace joedb
 
   const int64_t push_size = reader.get_remaining();
 
-  std::cerr << "pushing " << push_size << " bytes: ";
+  std::cerr << get_session_id() << ": pushing(U)... size = " << push_size;
+  std::cerr << "... ";
 
   lock.write(buffer, 17);
 
@@ -114,7 +115,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  std::cerr << "Obtaining lock... ";
+  std::cerr << get_session_id() << ": obtaining lock... ";
 
   buffer[0] = 'l';
   lock.write(buffer, 1);
@@ -131,7 +132,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  std::cerr << "Releasing lock... ";
+  std::cerr << get_session_id() << ": releasing lock... ";
 
   buffer[0] = 'u';
   lock.write(buffer, 1);
