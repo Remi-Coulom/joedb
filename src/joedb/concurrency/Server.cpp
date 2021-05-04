@@ -634,10 +634,10 @@ namespace joedb
   uint16_t port,
   uint32_t lock_timeout_seconds
  ):
-  port(port),
   journal(journal),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
+  port(acceptor.local_endpoint().port()),
   interrupt_timer(io_context),
   session_count(0),
   session_id(0),

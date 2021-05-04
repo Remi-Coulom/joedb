@@ -23,11 +23,10 @@ namespace joedb
    static void CDECL signal_handler(int sig);
    enum {interrupt_check_seconds = 2};
 
-   const uint16_t port;
-
    joedb::Writable_Journal &journal;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
+   const uint16_t port;
    net::steady_timer interrupt_timer;
 
    int64_t session_count;
