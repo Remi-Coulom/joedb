@@ -85,10 +85,10 @@ of the log, in the same order as in the original file.
 ``joedb_merge``
 ---------------
 
-``joedb_merge`` merges multiple files with the same schema into a single file that contains the concatenation of all tables. References are translated. Duplicates are not eliminated.
-
 .. literalinclude:: ./tutorial/joedb_merge.out
    :language: none
+
+``joedb_merge`` merges multiple files with the same schema into a single file that contains the concatenation of all tables. References are translated. Duplicates are not eliminated.
 
 For instance, when merging those two databases:
 
@@ -108,37 +108,37 @@ For instance, when merging those two databases:
 ``joedb_embed``
 ---------------
 
-``joedb_embed`` compiles a joedb database file into a C++ string literal, and a function to open it as a ``Database``. ``embedded_test`` shows an example of use.
-
 .. literalinclude:: ./tutorial/joedb_embed.out
    :language: none
+
+``joedb_embed`` compiles a joedb database file into a C++ string literal, and a function to open it as a ``Database``. ``embedded_test`` shows an example of use.
 
 .. _joedb_server:
 
 ``joedb_server``
 ----------------
 
-Run a server to share a database. See :doc:`concurrency` for more information.
-
 .. literalinclude:: ./tutorial/joedb_server.out
    :language: none
+
+Run a server to share a database. See :doc:`concurrency` for more information.
 
 .. _joedb_client:
 
 ``joedb_client``
 ----------------
 
-Connect to a :ref:`joedb_server`.
-
 .. literalinclude:: ./tutorial/joedb_client.out
    :language: none
+
+Connect to a :ref:`joedb_server`.
 
 .. _joedb_ssh_client:
 
 ``joedb_ssh_client``
 --------------------
 
-Connect to a remote :ref:`joedb_server` via ssh.
-
 .. literalinclude:: ./tutorial/joedb_ssh_client.out
    :language: none
+
+Connect to a remote :ref:`joedb_server` via ssh.
