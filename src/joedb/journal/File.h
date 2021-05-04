@@ -3,7 +3,7 @@
 
 #ifdef JOEDB_PORTABLE
 #define JOEDB_FILE Portable_File
-#elif defined(_WIN32)
+#elif defined(_WIN32) && !defined(__cplusplus_winrt)
 #define JOEDB_FILE Windows_File
 #elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 #define JOEDB_FILE Posix_File
