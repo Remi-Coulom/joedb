@@ -68,6 +68,7 @@ Concurrency
   - fuzzer + unit testing
   - use coroutines
   - event listener instead of direct writes to std::cerr
+  - indicate checkpoint type for each push (commit or no_commit)
 
 - Optional CRC check before pulling to verify the content of the origin.
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
