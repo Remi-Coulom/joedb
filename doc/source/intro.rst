@@ -22,7 +22,8 @@ Joedb offers many nice features that may make it more attractive than typical
 alternatives such as `Protocol Buffers <https://developers.google.com/protocol-buffers>`_, `FlatBuffers <https://google.github.io/flatbuffers/>`_, `SQLite <https://www.sqlite.org/index.html>`_, `XML <https://en.wikipedia.org/wiki/XML>`_, or `JSON <https://www.json.org/json-en.html>`_:
 
 - Unlike XML or JSON, joedb is a binary file format that does not require any
-  parsing, which makes reading and writing data much faster.
+  parsing. So, joedb files are much smaller, and processing data is much
+  faster.
 - Unlike Protocol Buffers or FlatBuffers, joedb works like a database, and can
   incrementally update data stored on disk in a crash-safe way.
 - Since a joedb file is append-only, its crash-safe operation does not require

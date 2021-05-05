@@ -11,7 +11,7 @@ format (least significant byte first).
 ====== ======================= ==============================================
 Offset Value                   Description
 ====== ======================= ==============================================
-0      'j' 'o' 'e' 'd' 'b'     "joedb" file signature
+0      6a 6f 65 64 62          "joedb" file signature
 5      04 00 00 00             uint32_t file-format version
 9      9e 00 00 00 00 00 00 00 uint64_t checkpoint 1, copy 1
 17     9e 00 00 00 00 00 00 00 uint64_t checkpoint 1, copy 2

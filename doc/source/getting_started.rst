@@ -73,6 +73,10 @@ For the network connections, dependencies can be installed with `vcpkg
 
     vcpkg install libssh:x64-windows boost-asio:x64-windows
 
+The `install` target of this project will produce a directory in
+`joedb/compcmake/out/install`. To have direct access to these tools from the
+command line, or from other Visual Studio projects ... (TODO).
+
 Example Code
 ------------
 
@@ -84,3 +88,14 @@ Example code is located in the ``doc/source/tutorial`` directory:
 - ``index_tutorial.cpp`` illustrates how to use :doc:`indexes`,
 - and ``generate.sh`` is a bash script that will compile all the code and run the programs.
 
+Using joedb with cmake
+----------------------
+
+If you are using cmake, you can handle dependencies automatically by including
+joedb/compcmake/joedbc.cmake in your CMakeLists.txt. This is what it contains:
+
+.. literalinclude:: ../../compcmake/joedbc.cmake
+   :language: cmake
+
+You may have to adjust the HINTS so that it finds the location of your joedbc.
+TODO: show example of use in tutorial.
