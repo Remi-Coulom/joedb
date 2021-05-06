@@ -74,6 +74,8 @@ Concurrency
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
   class that takes a readonly and a writable file, and uses the writable file
   for the header and the continuation: only the header has to be copied.
+- File_Continuation can be used to create a branch (and cancel transaction in
+  case of failure to push).
 - performance: merge socket writes.
 - Possibility to create a notification channel, from server to client. Client
   is given an id at connection time. This id can be used  to create an
