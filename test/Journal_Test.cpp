@@ -32,6 +32,7 @@ TEST(Journal, seek)
   file.get_data().data(),
   file.get_data().size()
  );
+ joedb::Readonly_Journal journal2(readonly_file);
 }
 
 /////////////////////////////////////////////////////////////////////////////

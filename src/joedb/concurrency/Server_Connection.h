@@ -17,16 +17,17 @@ namespace joedb
   private:
    int64_t session_id;
 
-  public:
+  protected:
    Channel &channel;
 
+  public:
    Server_Handshake(Channel &channel);
 
    int64_t get_session_id() const {return session_id;}
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Server_Connection: public Connection, private Server_Handshake
+ class Server_Connection: public Connection, public Server_Handshake
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
