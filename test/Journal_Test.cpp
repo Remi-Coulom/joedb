@@ -1,5 +1,6 @@
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/interpreter/Database.h"
 #include "gtest/gtest.h"
 
@@ -25,6 +26,12 @@ TEST(Journal, seek)
 
  journal.seek(0);
  EXPECT_FALSE(journal.at_end_of_file());
+
+ joedb::Readonly_Memory_File readonly_file
+ (
+  file.get_data().data(),
+  file.get_data().size()
+ );
 }
 
 /////////////////////////////////////////////////////////////////////////////

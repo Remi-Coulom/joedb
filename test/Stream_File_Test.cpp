@@ -15,7 +15,7 @@ TEST(Stream_File_Test, position_test)
  Stream_File file(stream, Open_Mode::create_new);
  EXPECT_EQ(0LL, file.get_position());
 
- file.set_position(size_t(-1));
+ file.set_position(int64_t(size_t(-1)));
  EXPECT_EQ(0LL, file.get_position());
 
  const int64_t N = 100;
@@ -30,4 +30,15 @@ TEST(Stream_File_Test, position_test)
  const uint8_t x = file.read<uint8_t>();
  EXPECT_EQ('x', x);
  EXPECT_EQ(pos + 1, file.get_position());
+
+ file.set_position(0);
+ file.write_data("xxxxxx", 7);
+ file.set_position(0);
+ EXPECT_EQ(file.read<char>(), 'x');
+ EXPECT_EQ(file.read<char>(), 'x');
+ EXPECT_EQ(file.read<char>(), 'x');
+ EXPECT_EQ(file.read<char>(), 'x');
+ EXPECT_EQ(file.read<char>(), 'x');
+ EXPECT_EQ(file.read<char>(), 'x');
+ EXPECT_EQ(file.read<char>(), 0);
 }

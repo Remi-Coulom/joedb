@@ -33,6 +33,11 @@ TEST(Generic_File, readonly_memory_file)
  EXPECT_EQ(file.read<uint32_t>(), 0x03020100UL);
  file.read<uint32_t>();
  file.read<uint32_t>();
+
+ file.set_position(0);
+ EXPECT_EQ(0, file.get_position());
+ file.set_position(-1);
+ EXPECT_EQ(0, file.get_position());
 }
 
 /////////////////////////////////////////////////////////////////////////////
