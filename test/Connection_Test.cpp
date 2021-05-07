@@ -24,6 +24,10 @@ TEST(Connection, Interpreted_Client)
   lock.get_database().create_table("person");
  }
 
+ {
+  joedb::Mutex_Lock lock(connection);
+ }
+
  EXPECT_EQ(0, int(client2.get_database().get_tables().size()));
  client2.pull();
  EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
