@@ -26,6 +26,8 @@ build()
   ../../src/joedb/io/dump.cpp\
   ../../src/joedb/io/json.cpp\
   ../../src/joedb/io/base64.cpp\
+  ../../src/joedb/io/SQL_Dump_Writable.cpp\
+  ../../src/joedb/io/Interpreter_Dump_Writable.cpp\
   ../../src/joedb/journal/diagnostics.cpp\
   ../../src/joedb/journal/File.cpp\
   ../../src/joedb/journal/Generic_File.cpp\
