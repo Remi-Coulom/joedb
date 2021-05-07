@@ -1,7 +1,7 @@
 History
 =======
 
-- 2021-??-??: 5.0
+- 2021-05-08: 5.0
 
   - Big improvements to :doc:`concurrency <concurrency>`: joedb now has a
     :doc:`network protocol <network_protocol>`, and a :ref:`server
