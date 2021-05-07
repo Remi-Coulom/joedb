@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -31,7 +32,7 @@ TEST(Server_Connection, basic)
 
  try
  {
-  joedb::Server_Connection server_connection(channel);
+  joedb::Server_Connection connection(channel);
   FAIL() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -51,7 +52,7 @@ TEST(Server_Connection, basic)
 
  try
  {
-  joedb::Server_Connection server_connection(channel);
+  joedb::Server_Connection connection(channel);
   FAIL() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -67,10 +68,32 @@ TEST(Server_Connection, basic)
  channel.write<char>('b');
  channel.write<int64_t>(3);
  channel.write<int64_t>(1234);
+ channel.write<char>('l');
+ channel.write<char>('u');
+ channel.write<char>('P');
+ channel.write<int64_t>(41);
+ channel.write<int64_t>(0);
+ channel.write<char>('L');
+ channel.write<int64_t>(41);
+ channel.write<int64_t>(0);
+ channel.write<char>('U');
  channel.set_position(0);
 
  {
-  joedb::Server_Connection server_connection(channel);
-  EXPECT_EQ(server_connection.get_session_id(), 1234);
+  joedb::Server_Connection connection(channel);
+  EXPECT_EQ(connection.get_session_id(), 1234);
+
+  {
+   joedb::Mutex_Lock lock (connection);
+  }
+
+  joedb::Memory_File client_file;
+  joedb::Interpreted_Client client(connection, client_file);
+
+  client.pull();
+
+  {
+   joedb::Interpreted_Lock lock(client);
+  }
  }
 }
