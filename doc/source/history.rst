@@ -6,6 +6,8 @@ History
   - Big improvements to :doc:`concurrency <concurrency>`: joedb now has a
     :doc:`network protocol <network_protocol>`, and a :ref:`server
     <joedb_server>` for efficient and reliable communication.
+  - The old serverless ``SSH_Connection`` was removed completely. It was
+    inefficient and unreliable. Using the server is much better.
   - Performance improvements of operations on large :doc:`vectors <vectors>`.
   - vim syntax highlighting for ``joedbi`` and ``joedbc`` files.
   - Minor fixes and improvements
