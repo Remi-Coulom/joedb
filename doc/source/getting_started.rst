@@ -13,7 +13,7 @@ On Ubuntu, joedb can be installed this way:
 .. code-block:: bash
 
     sudo apt update
-    sudo apt install ./joedb-4.0.0-Ubuntu-18.04-amd64.deb
+    sudo apt install ./joedb-5.0.0-Ubuntu-18.04-amd64.deb
 
 Uninstall:
 
