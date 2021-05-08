@@ -77,12 +77,12 @@ Concurrency
 - File_Continuation can be used to create a branch (and cancel transaction in
   case of failure to push).
 - performance: merge socket writes.
-- Possibility to create a notification channel, from server to client. Client
-  is given an id at connection time. This id can be used  to create an
-  additional channel with the server. The server notifies of pushes that makes
-  the client out of date. It won't notify again if the client ignores the
-  notification and does not pull. Also notify of the server quitting. Server
-  may send ping to the client to make sure it is still alive.
+- Notifications from server to client, in a second channel:
+
+  - when another client makes a push
+  - when the lock times out
+  - when the server is interrupted
+  - ping
 
 Performance
 -----------
