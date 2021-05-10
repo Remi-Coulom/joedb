@@ -65,8 +65,11 @@ int main(int argc, char **argv)
 
   joedb::namespace_open(cpp, name_space);
 
-  cpp << " const size_t " << identifier << "_size = ";
-  cpp << file_content.str().size() << ";\n";
+  if (mode != base64)
+  {
+   cpp << " const size_t " << identifier << "_size = ";
+   cpp << file_content.str().size() << ";\n";
+  }
   cpp << " char const * const " << identifier << "_data = ";
 
   if (mode == raw)

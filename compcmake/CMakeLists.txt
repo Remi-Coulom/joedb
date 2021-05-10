@@ -15,7 +15,7 @@ set(CMAKE_C_STANDARD 11)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
- set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wconversion -pthread")
+ set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wconversion")
  set(CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
 endif()
 
@@ -52,6 +52,8 @@ include(CheckIncludeFileCXX)
 
 # Threads
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
 # libssh
@@ -179,6 +181,7 @@ else()
   $<TARGET_OBJECTS:joedb_objects>
  )
 endif()
+target_link_libraries(joedb Threads::Threads)
 
 add_executable(joedbi
  ../src/joedb/io/joedbi.cpp
