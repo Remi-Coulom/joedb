@@ -153,9 +153,9 @@
   <text x="71.25" y="-13" class="header">Tabular Data</text>
   <rect class="data-block" x="0" y="0" width="142.5" height="46"/>
   <text x="0.6em" y="0" class="data">
-   <tspan x="0.6em" dy="1.2em">• For easy direct access</tspan>
-   <tspan x="0.6em" dy="1.2em">• Not permanent</tspan> 
-   <tspan x="0.6em" dy="1.2em">• Can be in RAM</tspan>
+   <tspan x="0.6em" dy="1.2em">• std::vector column</tspan>
+   <tspan x="0.6em" dy="1.2em">• reference: vector index</tspan>
+   <tspan x="0.6em" dy="1.2em">• optional std::map</tspan>
   </text>
  </g>
 
