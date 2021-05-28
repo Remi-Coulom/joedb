@@ -514,7 +514,7 @@ int do_vector_test()
 
   {
    constexpr int n = 3;
-   auto v = db.new_vector_of_person(n);
+   auto v = db.get_person_table().first();
    auto name = db.update_vector_of_name(v, n);
    name[0] = "Joe";
    name[1] = "Max";
@@ -527,6 +527,13 @@ int do_vector_test()
     std::cout << db.get_name(remi) << '\n';
    else
     std::cout << "Rémi not found\n";
+  }
+  {
+   auto joe = db.find_person_by_name("Joe");
+   if (joe)
+    std::cout << db.get_name(joe) << '\n';
+   else
+    std::cout << "Joe not found\n";
   }
  }
 

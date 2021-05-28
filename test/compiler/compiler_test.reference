@@ -178,6 +178,9 @@ v[6] = {0.2, 5.678}
 v[7] = {0.4, 5.678}
 v[8] = {0.6, 5.678}
 v[9] = {0.8, 5.678}
+Rémi
+Rémi not found
+Joe
 Testing exceptions...
 city_by_name unique index failure: ("Paris") at id = 3 was already at id = 1
 person_by_full_name unique index failure: ("Rémi", "Coulom") at id = 6 was already at id = 2
