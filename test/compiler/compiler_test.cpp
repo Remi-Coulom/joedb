@@ -6,6 +6,7 @@
 #include "translation.h"
 
 #include "joedb/journal/File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 
@@ -484,6 +485,48 @@ int do_vector_test()
   {
    std::cout << "Error opening vector_delete.joedb\n";
    std::cout << e.what() << '\n';
+  }
+ }
+
+ //
+ // Vector of strings with a unique index
+ //
+ {
+  joedb::Memory_File file;
+  vector_test::Generic_File_Database db(file);
+
+  {
+   constexpr int n = 3;
+   auto v = db.new_vector_of_person(n);
+   auto name = db.update_vector_of_name(v, n);
+   name[0] = "Rémi";
+   name[1] = "Paul";
+   name[2] = "Liza";
+  }
+
+  {
+   auto remi = db.find_person_by_name("Rémi");
+   if (remi)
+    std::cout << db.get_name(remi) << '\n';
+   else
+    std::cout << "Rémi not found\n";
+  }
+
+  {
+   constexpr int n = 3;
+   auto v = db.new_vector_of_person(n);
+   auto name = db.update_vector_of_name(v, n);
+   name[0] = "Joe";
+   name[1] = "Max";
+   name[2] = "Liz";
+  }
+
+  {
+   auto remi = db.find_person_by_name("Rémi");
+   if (remi)
+    std::cout << db.get_name(remi) << '\n';
+   else
+    std::cout << "Rémi not found\n";
   }
  }
 

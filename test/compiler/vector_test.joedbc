@@ -1,1 +1,2 @@
 namespace vector_test
+create_unique_index person_by_name person name

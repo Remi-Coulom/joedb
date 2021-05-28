@@ -1,3 +1,6 @@
 create_table point
 add_field point x float32
 add_field point y float32
+
+create_table person
+add_field person name string
