@@ -46,10 +46,10 @@ available connections.
 ``Embedded_Connection``
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-This will create a connection to a file opened in the same program. It does not
-allow concurrent access to the same file from another process. This class is
-convenient to allow the same polymorphic code to work either with a shared
-remote database or a local file that is not shared.
+``Embedded_Connection`` creates a connection to a file opened in the same
+program. It does not allow concurrent access to the same file from another
+process. This class is convenient to allow the same polymorphic code to work
+either with a shared remote database or a local file that is not shared.
 
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
