@@ -93,7 +93,7 @@ const char *get_type_name(Type type)
 /////////////////////////////////////////////////////////////////////////////
 {
  #define TYPE_MACRO(a, b, type_id, r, w) #type_id,
- static const char *type_string[] =
+ static const char * const type_string[] =
  {
   "null",
   #include "joedb/TYPE_MACRO.h"

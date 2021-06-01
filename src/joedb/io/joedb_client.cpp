@@ -17,9 +17,9 @@ namespace joedb
   }
   else
   {
-   const char *host = argv[1];
-   const char *port = argv[2];
-   const char *file_name = argv[3];
+   const char * const host = argv[1];
+   const char * const port = argv[2];
+   const char * const file_name = argv[3];
 
    Network_Channel channel(host, port);
    Server_Connection connection(channel);

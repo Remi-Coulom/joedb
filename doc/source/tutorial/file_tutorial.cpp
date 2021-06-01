@@ -4,7 +4,7 @@
 int file_tutorial_main()
 /////////////////////////////////////////////////////////////////////////////
 {
- const char *file_name = "file_tutorial.joedb";
+ const char * const file_name = "file_tutorial.joedb";
 
  //
  // Create a new database and write something

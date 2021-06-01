@@ -6,7 +6,7 @@
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- const char *file_name = "stream_tutorial.joedb";
+ const char * const file_name = "stream_tutorial.joedb";
 
  //
  // Create the database and write something
