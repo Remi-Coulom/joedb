@@ -51,6 +51,7 @@ Compiler
 - Table options:
 
   - single_row: compiled to a simple struct, with simpler getters.
+  - no_delete: allows more efficient indexing (+smaller code)
 
 - Compiler utilities:
 
