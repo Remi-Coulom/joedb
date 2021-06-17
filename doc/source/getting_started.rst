@@ -73,8 +73,8 @@ For the network connections, dependencies can be installed with `vcpkg
 
     vcpkg install libssh:x64-windows boost-asio:x64-windows
 
-The `install` target of this project will produce a directory in
-`joedb/compcmake/out/install`. You may have to copy the generated files
+The ``install`` target of this project will produce a directory in
+``joedb/compcmake/out/install``. You may have to copy the generated files
 elsewhere, or adjust your system's PATH in order to make the tools easily
 available on the command line.
 
