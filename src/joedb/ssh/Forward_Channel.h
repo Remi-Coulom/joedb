@@ -67,8 +67,8 @@ namespace joedb
        channel,
        remote_host,
        remote_port,
-       "localhost",
-       remote_port
+       "", // unused parameter
+       0   // unused parameter
       )
      );
     }
