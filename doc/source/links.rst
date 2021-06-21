@@ -9,6 +9,7 @@ Database with history/revisions:
 - http://stackoverflow.com/questions/9484714/how-to-store-datas-change-history
 - http://stackoverflow.com/questions/9852703/store-all-data-changes-with-every-details-like-stackoverflow
 - http://stackoverflow.com/questions/12321200/database-row-snapshots-revisions
+- https://opendata.stackexchange.com/questions/748/is-there-a-git-for-data
 
 - http://www.oracle.com/technetwork/issue-archive/2008/08-jul/o48totalrecall-092147.html
 - http://www.zodb.org/en/latest/
@@ -21,6 +22,7 @@ Database with history/revisions:
 - http://samza.apache.org/
 - http://www.pgconf.us/2015/event/60/
 - https://github.com/attic-labs/noms
+- https://github.com/dolthub/dolt
 
 Fast in-memory database with on-disk persistence
 
