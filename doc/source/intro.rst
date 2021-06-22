@@ -19,13 +19,20 @@ Pros and Cons
 -------------
 
 Joedb offers many nice features that may make it more attractive than typical
-alternatives such as `Protocol Buffers <https://developers.google.com/protocol-buffers>`_, `FlatBuffers <https://google.github.io/flatbuffers/>`_, `SQLite <https://www.sqlite.org/index.html>`_, `XML <https://en.wikipedia.org/wiki/XML>`_, or `JSON <https://www.json.org/json-en.html>`_:
+alternatives such as
+`Protocol Buffers <https://developers.google.com/protocol-buffers>`_,
+`FlatBuffers <https://google.github.io/flatbuffers/>`_,
+`SQLite <https://www.sqlite.org/index.html>`_,
+`XML <https://en.wikipedia.org/wiki/XML>`_,
+or `JSON <https://www.json.org/json-en.html>`_:
 
 - Unlike XML or JSON, joedb is a binary file format that does not require any
   parsing. So, joedb files are much smaller, and processing data is much
   faster.
-- Unlike Protocol Buffers or FlatBuffers, joedb works like a database, and can
-  incrementally update data stored on disk in a crash-safe way.
+- Unlike Protocol Buffers or FlatBuffers, joedb works like a database: it can
+  incrementally update data stored on disk in a crash-safe way, and has a
+  network protocol to handle :doc:`concurrent connections <concurrency>` of
+  multiple clients to a database server.
 - Since a joedb file is append-only, its crash-safe operation does not require
   flushing data to disk as frequently as typical relational databases, which
   can make it an order of magnitude faster (see :doc:`checkpoints` for details
@@ -40,8 +47,6 @@ alternatives such as `Protocol Buffers <https://developers.google.com/protocol-b
 - The database schema is compiled into C++ code that allows convenient
   type-safe data manipulation. Many errors that would be detected at run time
   with SQL, XML, or JSON will be detected at compile time instead.
-- Joedb comes with a server, which makes it easy to develop :doc:`distributed
-  applications <concurrency>`.
 - Joedb is very simple, light, and fast.
 
 Joedb currently has some limitations that may be removed with future
