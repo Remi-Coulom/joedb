@@ -7,9 +7,12 @@ namespace joedb
 {
  class Compiler_Options;
 
- void generate_c_wrapper(std::ostream &header,
-                         std::ostream &body,
-                         const joedb::Compiler_Options &compiler_options);
+ void generate_c_wrapper
+ (
+  std::ostream &header,
+  std::ostream &body,
+  const joedb::Compiler_Options &compiler_options
+ );
 }
 
 #endif
