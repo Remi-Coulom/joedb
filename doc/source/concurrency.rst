@@ -56,10 +56,12 @@ either with a shared remote database or a local file that is not shared.
 
 ``Server_Connection`` allows connecting to a running :ref:`joedb_server` using the joedb :doc:`network protocol <network_protocol>`.
 
-When connecting to a remote machine, ssh port forwarding can provide encryption
-and authentication. This can be done conveniently with the
-``ssh::Forward_Channel`` class. The source code of :ref:`joedb_ssh_client`
-shows an example of use:
+The constructor of ``Server_Connection`` takes a ``joedb::Channel`` parameter. Two channel classes are provided:
+
+ * ``joedb::Network_Channel`` opens a network socket to the server directly.
+ * ``joedb::ssh::Forward_Channel`` connects to the server with ssh encryption and authentication.
+
+The source code of :ref:`joedb_ssh_client` shows an example of use:
 
 .. literalinclude:: ../../src/joedb/io/joedb_ssh_client.cpp
    :language: c++
