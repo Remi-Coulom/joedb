@@ -69,6 +69,7 @@ void generate_c_wrapper
 
  header << "\n#ifdef __cplusplus\n";
  header << "extern \"C\" {\n";
+ header << "using joedb::Record_Id;\n";
  header << "#else\n";
  header << "#include <stdbool.h>\n";
  header << "#endif\n\n";

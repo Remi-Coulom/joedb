@@ -553,6 +553,12 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
 
  namespace_open(out, options.get_name_space());
 
+ out << R"RRR( using joedb::Record_Id;
+ using joedb::Table_Id;
+ using joedb::Field_Id;
+
+)RRR";
+
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
