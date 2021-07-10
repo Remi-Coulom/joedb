@@ -20,13 +20,19 @@ namespace joedb
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;
    void rename_table(Table_Id table_id, const std::string &name) override;
-   void add_field(Table_Id table_id,
-                  const std::string &name,
-                  Type type) override;
+   void add_field
+   (
+    Table_Id table_id,
+    const std::string &name,
+    Type type
+   ) override;
    void drop_field(Table_Id table_id, Field_Id field_id) override;
-   void rename_field(Table_Id table_id,
-                     Field_Id field_id,
-                     const std::string &name) override;
+   void rename_field
+   (
+    Table_Id table_id,
+    Field_Id field_id,
+    const std::string &name
+   ) override;
    void custom(const std::string &name) override;
    void comment(const std::string &comment) override;
    void timestamp(int64_t timestamp) override;

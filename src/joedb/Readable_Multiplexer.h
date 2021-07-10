@@ -33,8 +33,11 @@ namespace joedb
     return readable.get_fields(table_id);
    }
 
-   const Type &get_field_type(Table_Id table_id,
-                              Field_Id field_id) const override
+   const Type &get_field_type
+   (
+    Table_Id table_id,
+    Field_Id field_id
+   ) const override
    {
     return readable.get_field_type(table_id, field_id);
    }

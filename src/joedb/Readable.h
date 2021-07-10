@@ -19,8 +19,11 @@ namespace joedb
    (
     Table_Id table_id
    ) const = 0;
-   virtual const Type &get_field_type(Table_Id table_id,
-                                      Field_Id field_id) const = 0;
+   virtual const Type &get_field_type
+   (
+    Table_Id table_id,
+    Field_Id field_id
+   ) const = 0;
 
    virtual Record_Id get_last_record_id(Table_Id table_id) const = 0;
    virtual bool is_used(Table_Id table_id, Record_Id record_id) const = 0;
@@ -82,8 +85,11 @@ namespace joedb
      return it->second;
    }
 
-   const std::string &get_field_name(Table_Id table_id,
-                                     Field_Id field_id) const
+   const std::string &get_field_name
+   (
+    Table_Id table_id,
+    Field_Id field_id
+   ) const
    {
     try
     {
