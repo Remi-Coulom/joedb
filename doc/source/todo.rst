@@ -140,7 +140,7 @@ joedb_admin
 
 Other Ideas
 -----------
-- joedb_merge and joedb_pack should remove holes, and produce compact vectors.
+- Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
 - apply schema upgrade to readonly databases (custom functions)
 - only one file.check_write_buffer() call in write<T> and compact_write<T>:
