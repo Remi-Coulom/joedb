@@ -125,9 +125,9 @@ Performance
 
 joedb_admin
 -----------
- - serve with boost::beast.
- - work as a client to a joedb_server.
- - customizable GUI, similar to the icga database editor.
+- serve with boost::beast.
+- work as a client to a joedb_server.
+- customizable GUI, similar to the icga database editor.
 
 Other Ideas
 -----------
