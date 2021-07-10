@@ -28,7 +28,6 @@ On-disk Storage
 
 Compiler
 --------
-- set_table_storage last N (for web access log) (last 0 = none)
 - modularize code generation
 
   - Each module should have:
@@ -52,6 +51,7 @@ Compiler
 
   - single_row: compiled to a simple struct, with simpler getters.
   - no_delete: allows more efficient indexing (+smaller code)
+  - last N (for web access log) (last 0 = none)
 
 - Compiler utilities:
 
@@ -61,6 +61,14 @@ Compiler
 
 - C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
+
+Better Freedom_Keeper
+---------------------
+- index returned by public methods of Freedom_Keeper should be record ids.
+- No need to maintain a linked list of individual records
+- A linked list of intervals instead, to unify everything?
+- Let joedb_merge fuse intervals to remove holes (100% update_vector)
+- Get ready for "last-N" storage, and no_delete option (force single interval).
 
 Concurrency
 -----------
@@ -131,7 +139,6 @@ Other Ideas
 - Note that SQL does not support inf and nan. Use NULL instead.
 - Raw commands in interpreter?
 - import from SQL
-- index returned by public methods of Freedom_Keeper should be like a std::vector (start at zero, don't count used_list and free_list).
 - GUI editor similar to the icga database editor (fastcgi, interpreter)
 - rapidly undo-able history
 - add explicit keyword to constructors
