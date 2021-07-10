@@ -48,7 +48,7 @@ namespace joedb
    std::cerr << "No input file on the command line: reading file names from standard input.\n";
 
    std::string file_name;
-   while (std::cin >> file_name)
+   while (std::cin >> file_name) // note: no file name with white space
     file_names.push_back(file_name);
   }
 
