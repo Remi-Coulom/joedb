@@ -3,20 +3,32 @@ TODO
 
 Journal File
 ------------
+- Hashing for hardware error detection, and checking that client.joedb matches
+  server.joedb before pulling. Git is transitioning to SHA-256, so this may be
+  a good choice. Find a code that can be easily updated incrementally when
+  appending data.
 - joedb_truncate <file> <position> (+optionally show position in logdump)
-- better than truncating: add an ``undo`` operation to the log. This way, it is possible to keep all branches of history.
+- better than truncating: add an ``undo`` operation to the log. This way, it is
+  possible to keep all branches of history.
 - joedb_fix
-- CRC for hardware error detection
 - Test (and don't allow) file size > 2Gb in 32-bit code
 
 New Operations and Types
 ------------------------
+- Needs a way to modify multiple columns atomically (allows unique_index to
+  work + better trigger invocations). New operations:
+
+  - start/end atomic record update
+  - insert_and_start_atomic_update.
+  - Also for vector insertions and updates.
+
 - Use diff for large-string update
 - Differentiate between "storage type" and "usage type":
 
   - remove bool type and use int8 instead, with bool usage
   - usages: bool(int8), date(int64).
-  - custom usage label: ip address(int32), URL(string), PNG file(string), UTF8(string) (use base64 instead for json output), ...?
+  - custom usage label: ip address(int32), URL(string), PNG file(string),
+    UTF8(string) (use base64 instead for json output), ...?
 
 On-disk Storage
 ----------------
@@ -25,6 +37,7 @@ On-disk Storage
 - A subdirectory for each table
 - One file per column vector
 - One file for string data (string column = size + start_index)
+- Use memory-mapped files (is there a portable way?)
 
 Compiler
 --------
@@ -51,7 +64,11 @@ Compiler
 
   - single_row: compiled to a simple struct, with simpler getters.
   - no_delete: allows more efficient indexing (+smaller code)
+<<<<<<< HEAD
   - last N (for web access log) (last 0 = none)
+=======
+  - set_table_storage last N (for web access log) (last 0 = none)
+>>>>>>> eea404b3d4af717130940fdf01f677200bb90c1c
 
 - Compiler utilities:
 
@@ -102,13 +119,14 @@ Performance
 
   - use vector instead of map for tables and fields (with a bool indicating if deleted)
 
-- Pass strings by value for new and update
+- Pass strings by value for new and update (or use C++17 string_view?)
 
   - fix useless copies
   - need to fix Writable + joedbc (it is a bit complicated)
   - start by testing copy elision on a very simple toy simulation
-  - method for testing: use a very large string (100Mb) + pause execution with sleep + look at process memory usage. (also measure execution time).
-  - main question: necessary to std::move or not?
+  - method for testing: use a very large string (100Mb) + pause execution with
+    sleep + look at process memory usage. (also measure execution time).
+  - necessary to std::move or not?
 
 - Use templates instead of virtual function calls for writables?
 
@@ -116,6 +134,12 @@ Performance
   - compiled code may get bigger if more than one template instance
   - but avoiding virtual calls makes code run faster (and may get smaller)
   - worth it only if measurably faster
+
+joedb_admin
+-----------
+ - serve with boost::beast.
+ - work as a client to a joedb_server.
+ - customizable GUI, similar to the icga database editor.
 
 Other Ideas
 -----------
@@ -125,7 +149,6 @@ Other Ideas
 - only one file.check_write_buffer() call in write<T> and compact_write<T>:
   make code shorter and simpler.
 - make a package for vcpkg and conan. Maybe build2?
-- Unique index over multiple columns should work. Needs a way to modify multiple columns atomically. New operation: start/end atomic record update. Also new operation: insert_and_start_atomic_update. Make it work also for vector insertions.
 - Null default initial values
 - better readable interface:
 
@@ -133,13 +156,13 @@ Other Ideas
   - cursors on tables
 
 - make Readable_Writable based on compiled db (or Readable only...)
-- make joedb_admin work on the new readable interface, and publish it
-- index and referential integrity: should be in the journal, and also implemented in the interpreted database.
+- index and referential integrity: should be in the journal, and also
+  implemented in the interpreted database?
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Note that SQL does not support inf and nan. Use NULL instead.
 - Raw commands in interpreter?
 - import from SQL
 - GUI editor similar to the icga database editor (fastcgi, interpreter)
-- rapidly undo-able history
+- rapidly undo-able history?
 - add explicit keyword to constructors
 - make some classes non-copyable
