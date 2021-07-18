@@ -41,6 +41,7 @@ On-disk Storage
 
 Compiler
 --------
+- check that vector range is OK in constructor of vector update
 - modularize code generation
 
   - Each module should have:
