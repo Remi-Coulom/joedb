@@ -144,10 +144,10 @@ include_directories(
 # Build Targets
 #############################################################################
 add_library(joedb_objects OBJECT
+ ../src/external/wide_char_display_width.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/Multiplexer.cpp
  ../src/joedb/is_identifier.cpp
- ../src/joedb/external/wide_char_display_width.cpp
  ../src/joedb/interpreter/Database.cpp
  ../src/joedb/interpreter/Table.cpp
  ../src/joedb/io/base64.cpp

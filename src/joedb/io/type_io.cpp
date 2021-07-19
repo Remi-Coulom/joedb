@@ -1,6 +1,6 @@
 #include "joedb/io/type_io.h"
-#include "joedb/external/wide_char_display_width.h"
 #include "joedb/Exception.h"
+#include "external/wide_char_display_width.h"
 
 #include <iostream>
 #include <string>
