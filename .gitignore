@@ -3,3 +3,4 @@
 *.exe
 *.pyc
 oprofile_data
+.cache
