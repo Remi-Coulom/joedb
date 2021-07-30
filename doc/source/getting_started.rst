@@ -41,7 +41,7 @@ are not necessary if you don't wish to use the server):
 
 .. code-block:: bash
 
-    sudo apt install git g++ cmake ninja-build libssh-dev libboost-dev
+    sudo apt install git g++ cmake ninja-build libssh-dev libboost-dev libboost-system-dev
 
 When the necessary packages are installed, the following commands should
 compile everything:
