@@ -4,6 +4,7 @@
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/Memory_File.h"
 
 #include <iostream>
 #include <memory>
@@ -21,30 +22,39 @@ int joedbi_main(int argc, char **argv)
  }
  else
  {
-  std::unique_ptr<joedb::File> file;
+  std::unique_ptr<joedb::Generic_File> file;
+  joedb::Memory_File *pipe = nullptr;
 
-  try
+  const std::string file_name(argv[1]);
+
+  if (file_name == "--pipe")
   {
-   file.reset
-   (
-    new joedb::File
-    (
-     argv[1],
-     joedb::Open_Mode::write_existing_or_create_new
-    )
-   );
+   pipe = new joedb::Memory_File(joedb::Open_Mode::create_new);
+   file.reset(pipe);
   }
-  catch (const joedb::Exception &)
-  {
-   file.reset
-   (
-    new joedb::File
+  else
+   try
+   {
+    file.reset
     (
-     argv[1],
-     joedb::Open_Mode::read_existing
-    )
-   );
-  }
+     new joedb::File
+     (
+      file_name,
+      joedb::Open_Mode::write_existing_or_create_new
+     )
+    );
+   }
+   catch (const joedb::Exception &)
+   {
+    file.reset
+    (
+     new joedb::File
+     (
+      file_name,
+      joedb::Open_Mode::read_existing
+     )
+    );
+   }
 
   if (file->get_mode() == joedb::Open_Mode::read_existing)
   {
@@ -55,12 +65,21 @@ int joedbi_main(int argc, char **argv)
   }
   else
   {
-   joedb::Writable_Journal journal(*file);
-   journal.replay_log(db);
-   joedb::Readable_Multiplexer multiplexer(db);
-   multiplexer.add_writable(journal);
-   joedb::Interpreter interpreter(multiplexer);
-   interpreter.main_loop(std::cin, std::cout);
+   {
+    joedb::Writable_Journal journal(*file);
+    journal.replay_log(db);
+    joedb::Readable_Multiplexer multiplexer(db);
+    multiplexer.add_writable(journal);
+    joedb::Interpreter interpreter(multiplexer);
+    interpreter.set_echo(!pipe);
+    interpreter.main_loop(std::cin, std::cout);
+   }
+
+   if (pipe)
+   {
+    const std::vector<char> data = pipe->get_data();
+    std::cout.write(data.data(), std::streamsize(data.size()));
+   }
   }
  }
 
