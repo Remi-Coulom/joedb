@@ -1,11 +1,15 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/multi_server_readonly.h"
+#include "joedb/io/Interpreter.h"
+#include "joedb/interpreter/Database.h"
 #include "joedb/concurrency/Server.h"
-#include "joedb/journal/Stream_File.h"
+#include "joedb/journal/Memory_File.h"
+#include "joedb/Readable_Multiplexer.h"
 
 #include <iostream>
 #include <list>
 #include <memory>
+#include <fstream>
 
 namespace joedb
 {
@@ -37,7 +41,27 @@ namespace joedb
  int main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  multi_server::Readonly_Database db((Input_Stream_File(std::cin)));
+  if (argc != 2)
+  {
+   std::cerr << "usage: " << argv[0] << " <config.joedbi>\n";
+   return 1;
+  }
+
+  Memory_File memory_file(Open_Mode::create_new);
+  Writable_Journal journal(memory_file);
+
+  {
+   Database db;
+   Readable_Multiplexer multiplexer(db);
+   multiplexer.add_writable(journal);
+   Interpreter interpreter(multiplexer);
+   std::ifstream joedbi_file(argv[1]);
+   interpreter.set_echo(false);
+   interpreter.main_loop(joedbi_file, std::cout);
+   journal.checkpoint(0);
+  }
+
+  multi_server::Readonly_Database db(journal);
 
   net::io_context io_context;
 
