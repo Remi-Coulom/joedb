@@ -6,11 +6,7 @@
 void joedb::Generic_File::set_position(int64_t new_position)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (new_position == get_position())
-  return;
-
  flush();
-
  if (!seek(new_position))
  {
   position = new_position;

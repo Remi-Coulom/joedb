@@ -29,7 +29,10 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   stream.read(buffer, std::streamsize(size));
-  return size_t(stream.gcount());
+  size_t result = size_t(stream.gcount());
+  if (result < size)
+   stream.clear();
+  return result;
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -74,7 +77,10 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   stream.read(buffer, std::streamsize(size));
-  return size_t(stream.gcount());
+  size_t result = size_t(stream.gcount());
+  if (result < size)
+   stream.clear();
+  return result;
  }
 
  /////////////////////////////////////////////////////////////////////////////
