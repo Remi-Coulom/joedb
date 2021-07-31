@@ -12,4 +12,5 @@ fi
 cd $build_dir
 $build_command joedb_test || exit 1
 cd -
+rm -vf *.tmp
 $build_dir/joedb_test --gtest_filter="$1*"
