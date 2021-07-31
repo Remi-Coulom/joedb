@@ -192,6 +192,7 @@ TEST(Polymorphic_File, File_Slice)
  {
   joedb::File file(file_name, joedb::Open_Mode::create_new);
   polymorphic_journal_test(file);
+  file.set_position(60);
   file.write(42);
  }
 

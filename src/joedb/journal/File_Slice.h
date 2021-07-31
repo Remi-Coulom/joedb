@@ -15,6 +15,7 @@ namespace joedb
     start(start),
     length(length)
    {
+    mode = Open_Mode::read_existing;
     seek(0);
    }
 

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+set -e
+
+cd ../compcmake/ninja_coverage
+ninja joedb_test
+cd -
+
+rm -vf *.tmp
+../compcmake/ninja_coverage/joedb_test
+
 cd ../src
 src_dir=`pwd`
 cd -
