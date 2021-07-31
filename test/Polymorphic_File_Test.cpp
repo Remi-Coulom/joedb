@@ -135,10 +135,12 @@ TEST(Polymorphic_File, Portable_File)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * file_name = "portable_file_test.joedb.tmp";
+
  {
   joedb::Portable_File file(file_name, joedb::Open_Mode::create_new);
   polymorphic_test(file);
  }
+
  std::remove(file_name);
 }
 
@@ -147,10 +149,12 @@ TEST(Polymorphic_File, Portable_File_large_write)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * file_name = "portable_file_test.joedb.tmp";
+
  {
   joedb::Portable_File file(file_name, joedb::Open_Mode::create_new);
   large_write_test(file);
  }
+
  std::remove(file_name);
 }
 
@@ -159,16 +163,20 @@ TEST(Polymorphic_File, File)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * file_name = "file_test.joedb.tmp";
+
  {
   joedb::File file(file_name, joedb::Open_Mode::create_new);
   polymorphic_test(file);
-  std::remove(file_name);
  }
+
+ std::remove(file_name);
+
  {
   joedb::File file(file_name, joedb::Open_Mode::create_new);
   polymorphic_journal_test(file);
-  std::remove(file_name);
  }
+
+ std::remove(file_name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -176,10 +184,12 @@ TEST(Polymorphic_File, File_large_write)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * file_name = "file_test.joedb.tmp";
+
  {
   joedb::File file(file_name, joedb::Open_Mode::create_new);
   large_write_test(file);
  }
+
  std::remove(file_name);
 }
 
