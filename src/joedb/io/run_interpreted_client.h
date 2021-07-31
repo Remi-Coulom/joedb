@@ -5,6 +5,7 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Shared_Local_File.h"
 #include "joedb/io/Interpreter.h"
+#include "joedb/journal/Memory_File.h"
 
 #include <iostream>
 
@@ -18,8 +19,14 @@ namespace joedb
   const char *file_name
  )
  {
-  Shared_Local_File file(connection, file_name);
-  Interpreted_Client client(connection, file);
+  std::unique_ptr<Generic_File> file
+  (
+   (file_name && *file_name) ?
+   (Generic_File *)(new Shared_Local_File(connection, file_name)) :
+   (Generic_File *)(new Memory_File())
+  );
+
+  Interpreted_Client client(connection, *file);
 
   while (std::cin)
   {

@@ -11,18 +11,18 @@ namespace joedb
  int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (argc < 5)
+  if (argc < 4)
   {
    std::cerr << "usage: " << argv[0] <<
-   " <user> <host> <remote_port> <local_file_name>" <<
-   " [<ssh_port> [<ssh_log_level>]]\n";
+   " <user> <host> <remote_port> [<local_file_name>" <<
+   " [<ssh_port> [<ssh_log_level>]]]\n";
    return 1;
   }
   else
   {
    const char * const user = argv[1];
    const char * const host = argv[2];
-   const char * const file_name = argv[4];
+   const char * const file_name = argc > 4 ? argv[4] : nullptr;
 
    uint16_t joedb_port = 0;
    std::istringstream(argv[3]) >> joedb_port;

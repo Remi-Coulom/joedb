@@ -10,16 +10,17 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (argc != 4)
+  if (argc != 3 && argc != 4)
   {
-   std::cerr << "usage: " << argv[0] << " <host> <port> <file_name>\n";
+   std::cerr << "usage: " << argv[0];
+   std::cerr << " <host> <port> [<local_file_name>]\n";
    return 1;
   }
   else
   {
    const char * const host = argv[1];
    const char * const port = argv[2];
-   const char * const file_name = argv[3];
+   const char * const file_name = argc > 3 ? argv[3] : nullptr;
 
    Network_Channel channel(host, port);
    Server_Connection connection(channel);
