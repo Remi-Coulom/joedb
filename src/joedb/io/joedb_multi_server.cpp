@@ -1,6 +1,7 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/multi_server_readonly.h"
 #include "joedb/concurrency/Server.h"
+#include "joedb/journal/Stream_File.h"
 
 #include <iostream>
 #include <list>
@@ -36,15 +37,9 @@ namespace joedb
  int main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (argc < 2)
-  {
-   std::cerr << "usage: " << argv[0] << " <multi_server.joedb>\n";
-   return 1;
-  }
+  multi_server::Readonly_Database db((Input_Stream_File(std::cin)));
 
   net::io_context io_context;
-
-  multi_server::Readonly_Database db(argv[1]);
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
