@@ -1429,9 +1429,8 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  class Readonly_Database: public Database
  {
   public:
-   Readonly_Database(joedb::Generic_File &file)
+   Readonly_Database(joedb::Readonly_Journal &journal)
    {
-    joedb::Readonly_Journal journal(file);
     max_record_id = Record_Id(journal.get_checkpoint_position());
     journal.replay_log(*this);
     max_record_id = 0;
@@ -1443,6 +1442,16 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
      (
       "This joedb file has an old schema, and must be upgraded first."
      );
+   }
+
+   Readonly_Database(joedb::Readonly_Journal &&journal):
+    Readonly_Database(journal)
+   {
+   }
+
+   Readonly_Database(joedb::Generic_File &file):
+    Readonly_Database(joedb::Readonly_Journal(file))
+   {
    }
 
    Readonly_Database(joedb::Generic_File &&file):
