@@ -505,6 +505,7 @@ endif()
 if (HAS_NETWORKING)
  install(TARGETS joedb_client RUNTIME DESTINATION bin)
  install(TARGETS joedb_server RUNTIME DESTINATION bin)
+ install(TARGETS joedb_multi_server RUNTIME DESTINATION bin)
 endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../src/joedb/io/joedb_browser DESTINATION bin)
 install(TARGETS joedb
