@@ -59,8 +59,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   std::cerr << '\n';
+  std::cerr << port << ": ";
   std::cerr << joedb::Dump_Writable::get_local_time(std::time(nullptr));
-  std::cerr << "; port = " << port;
   std::cerr << "; session_count = " << session_count << '\n';
   std::cerr << '\n';
  }
