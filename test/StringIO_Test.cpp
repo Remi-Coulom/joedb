@@ -1,6 +1,6 @@
 #include "joedb/io/type_io.h"
 #include "joedb/io/base64.h"
-#include "joedb/external/wide_char_display_width.h"
+#include "external/wide_char_display_width.h"
 
 #include "gtest/gtest.h"
 
