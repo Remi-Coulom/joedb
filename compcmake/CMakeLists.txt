@@ -296,6 +296,14 @@ if (HAS_NETWORKING)
  target_link_libraries(joedb_server joedb)
  set_property(TARGET joedb_server PROPERTY CXX_STANDARD 14)
 
+ add_executable(joedb_multi_server
+  ../src/joedb/io/joedb_multi_server.cpp
+  ../src/joedb/io/multi_server_readonly.cpp
+  ../src/joedb/concurrency/Server.cpp
+ )
+ target_link_libraries(joedb_multi_server joedb)
+ set_property(TARGET joedb_multi_server PROPERTY CXX_STANDARD 14)
+
  add_executable(joedb_client
   ../src/joedb/io/joedb_client.cpp
  )
@@ -303,6 +311,7 @@ if (HAS_NETWORKING)
 
  if (HAS_BOOST_NET)
   target_link_libraries(joedb_server ${Boost_LIBRARIES})
+  target_link_libraries(joedb_multi_server ${Boost_LIBRARIES})
   target_link_libraries(joedb_client ${Boost_LIBRARIES})
  endif()
 endif()
@@ -320,6 +329,8 @@ endif()
 function(joedbc_build source_dir f namespace)
  add_custom_command(
   OUTPUT
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_readonly.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_readonly.h
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.h
   COMMAND joedbc ${f}.joedbi ${f}.joedbc
@@ -337,6 +348,7 @@ joedbc_build(../test/compiler schema_v2 schema_v2)
 joedbc_build(../test/compiler vector_test vector_test)
 joedbc_build(../test/compiler multi_index multi_index)
 joedbc_build(../benchmark joedbc_insert benchmark)
+joedbc_build(../src/joedb/io multi_server multi_server)
 
 function(joedbc_build_wrapper source_dir f namespace)
  add_custom_command(

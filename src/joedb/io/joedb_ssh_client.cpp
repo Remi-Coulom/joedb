@@ -22,10 +22,11 @@ namespace joedb
   {
    const char * const user = argv[1];
    const char * const host = argv[2];
-   const char * const file_name = argc > 4 ? argv[4] : nullptr;
 
    uint16_t joedb_port = 0;
    std::istringstream(argv[3]) >> joedb_port;
+
+   const char * const file_name = argc > 4 ? argv[4] : nullptr;
 
    int ssh_port = 22;
    if (argc > 5)

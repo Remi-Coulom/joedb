@@ -23,7 +23,7 @@ namespace joedb
  std::ostream &Server::Session::write_id(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << id << ": ";
+  out << server.port << '(' << id << "): ";
   return out;
  }
 

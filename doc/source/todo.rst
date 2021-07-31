@@ -27,6 +27,7 @@ New Operations and Types
 
   - remove bool type and use int8 instead, with bool usage
   - usages: bool(int8), date(int64).
+  - uint8, uint16, uint32, uint64
   - custom usage label: ip address(int32), URL(string), PNG file(string),
     UTF8(string) (use base64 instead for json output), ...?
 
