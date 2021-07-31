@@ -76,6 +76,8 @@ The Android NDK offers functions that return a file descriptor as well as a posi
   joedb::File_Slice file_slice(file, start, length);
   tutorial::Readonly_Database db(file_slice);
 
+Note: the destructor of joedb::File_Slice will fclose the file. You must not fclose it.
+
 Class Hierarchy
 ---------------
 
