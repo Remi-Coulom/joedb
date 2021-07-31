@@ -9,69 +9,58 @@
 #include <iostream>
 #include <memory>
 
-/////////////////////////////////////////////////////////////////////////////
-int joedbi_main(int argc, char **argv)
-/////////////////////////////////////////////////////////////////////////////
+namespace joedb
 {
- joedb::Database db;
-
- if (argc <= 1)
+ /////////////////////////////////////////////////////////////////////////////
+ int main(int argc, char **argv)
+ /////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Interpreter interpreter(db);
-  interpreter.main_loop(std::cin, std::cout);
- }
- else
- {
-  std::unique_ptr<joedb::Generic_File> file;
-  const std::string file_name(argv[1]);
+  Database db;
 
-  try
+  if (argc <= 1)
   {
-   file.reset
-   (
-    new joedb::File
-    (
-     file_name,
-     joedb::Open_Mode::write_existing_or_create_new
-    )
-   );
-  }
-  catch (const joedb::Exception &)
-  {
-   file.reset
-   (
-    new joedb::File
-    (
-     file_name,
-     joedb::Open_Mode::read_existing
-    )
-   );
-  }
-
-  if (file->get_mode() == joedb::Open_Mode::read_existing)
-  {
-   joedb::Readonly_Journal journal(*file);
-   journal.replay_log(db);
-   joedb::Readonly_Interpreter interpreter(db);
+   Interpreter interpreter(db);
    interpreter.main_loop(std::cin, std::cout);
   }
   else
   {
-   joedb::Writable_Journal journal(*file);
-   journal.replay_log(db);
-   joedb::Readable_Multiplexer multiplexer(db);
-   multiplexer.add_writable(journal);
-   joedb::Interpreter interpreter(multiplexer);
-   interpreter.main_loop(std::cin, std::cout);
-  }
- }
+   std::unique_ptr<Generic_File> file;
+   const char * const file_name = argv[1];
 
- return 0;
+   try
+   {
+    file.reset(new File(file_name, Open_Mode::write_existing_or_create_new));
+   }
+   catch (const Exception &)
+   {
+    file.reset(new File(file_name, Open_Mode::read_existing));
+   }
+
+   if (file->get_mode() == Open_Mode::read_existing)
+   {
+    Readonly_Journal journal(*file);
+    journal.replay_log(db);
+    Readonly_Interpreter interpreter(db);
+    interpreter.main_loop(std::cin, std::cout);
+   }
+   else
+   {
+    Writable_Journal journal(*file);
+    journal.replay_log(db);
+    Readable_Multiplexer multiplexer(db);
+    multiplexer.add_writable(journal);
+    Interpreter interpreter(multiplexer);
+    interpreter.main_loop(std::cin, std::cout);
+   }
+  }
+
+  return 0;
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedbi_main, argc, argv);
+ return joedb::main_exception_catcher(joedb::main, argc, argv);
 }
