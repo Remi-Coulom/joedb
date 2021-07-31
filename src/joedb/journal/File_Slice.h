@@ -11,11 +11,10 @@ namespace joedb
  {
   public:
    File_Slice(FILE *file, size_t start, size_t length):
-    Portable_File(file),
+    Portable_File(file, Open_Mode::read_existing),
     start(start),
     length(length)
    {
-    mode = Open_Mode::read_existing;
     seek(0);
    }
 

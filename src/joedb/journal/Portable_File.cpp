@@ -8,8 +8,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   static const char *mode_string[3] = {"rb", "r+b", "w+b"};
-  mode = new_mode;
-  file = std::fopen(file_name, mode_string[static_cast<size_t>(mode)]);
+  set_mode(new_mode);
+  file = std::fopen(file_name, mode_string[static_cast<size_t>(get_mode())]);
   return file != nullptr;
  }
 
@@ -42,7 +42,8 @@ namespace joedb
  (
   const char *file_name,
   Open_Mode new_mode
- )
+ ):
+  Generic_File(new_mode)
  {
   if (new_mode == Open_Mode::write_existing_or_create_new)
   {
