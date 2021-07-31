@@ -2,6 +2,7 @@
 #define joedb_SHA_256_declared
 
 #include <array>
+#include <stdint.h>
 
 // https://en.wikipedia.org/wiki/SHA-2
 
