@@ -270,8 +270,13 @@ namespace joedb
     }
    };
 
-  protected:
    Open_Mode mode;
+
+  protected:
+   void set_mode(Open_Mode mode)
+   {
+    this->mode = mode;
+   }
 
    virtual size_t raw_read(char *buffer, size_t size) = 0;
    virtual void raw_write(const char *buffer, size_t size) = 0;
@@ -279,7 +284,7 @@ namespace joedb
    virtual void sync() = 0;
 
   public:
-   Generic_File()
+   explicit Generic_File(Open_Mode mode): mode(mode)
    {
     write_buffer_index = 0;
     reset_read_buffer();

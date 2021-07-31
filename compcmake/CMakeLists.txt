@@ -20,15 +20,16 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if (UNIX)
- set(CMAKE_CXX_FLAGS_DEBUG
-  "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address"
- )
- set(CMAKE_C_FLAGS_DEBUG
-  "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address"
- )
- set(CMAKE_LINKER_FLAGS_DEBUG
-  "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address"
- )
+ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#  "-fsanitize=memory" unfortunately triggers many errors in the standard lib
+#  set(JOEDB_DEBUG_FLAGS "-fno-omit-frame-pointer -fsanitize=memory")
+  set(JOEDB_DEBUG_FLAGS "-fno-omit-frame-pointer -fsanitize=address")
+ else()
+  set(JOEDB_DEBUG_FLAGS "-fno-omit-frame-pointer -fsanitize=address")
+ endif()
+ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${JOEDB_DEBUG_FLAGS}")
+ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${JOEDB_DEBUG_FLAGS}")
+ set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} ${JOEDB_DEBUG_FLAGS}")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -81,7 +82,7 @@ endif()
 
 # Google Test
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.10.0/googletest)
+set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.11.0/googletest)
 
 # SQLite 3
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -166,6 +167,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/diagnostics.cpp
  ../src/joedb/journal/Stream_File.cpp
+ ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/concurrency/Shared_Local_File.cpp
  ../src/joedb/concurrency/Server_Connection.cpp
 )

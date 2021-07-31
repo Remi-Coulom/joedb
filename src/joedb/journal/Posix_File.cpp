@@ -62,8 +62,9 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Posix_File::Posix_File(const char *file_name, Open_Mode mode)
+ Posix_File::Posix_File(const char *file_name, Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
+  Generic_File(mode)
  {
   if (mode == Open_Mode::write_existing_or_create_new)
   {
@@ -95,7 +96,7 @@ namespace joedb
   if (mode != Open_Mode::read_existing && !lock_file())
    throw Exception("File locked: " + std::string(file_name));
 
-  this->mode = mode;
+  set_mode(mode);
  }
 
  /////////////////////////////////////////////////////////////////////////////

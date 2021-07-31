@@ -1,15 +1,8 @@
 #!/bin/bash
 
-favorite_compiler=g++
-compiler_option=""
-compiler_path=`which $favorite_compiler`
-if [ "$compiler_path" != "" ]; then
- echo Found $favorite_compiler: $compiler_path
- compiler_option="-DCMAKE_CXX_COMPILER=$compiler_path"
-else
- echo $favorite_compiler not found
-fi
-echo compiler_option:$compiler_option
+# select compiler with:
+# sudo update-alternatives --config c++
+# sudo update-alternatives --config cc
 
 ninja_path=`which ninja`
 if [ "$ninja_path" != "" ]; then
@@ -31,6 +24,6 @@ function generate {
  cd ..
 }
 
-generate "$build_system_prefix"release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler_option
-generate "$build_system_prefix"debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler_option
-generate "$build_system_prefix"coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler_option
+generate "$build_system_prefix"release cmake $build_system -DCMAKE_BUILD_TYPE=Release
+generate "$build_system_prefix"debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug
+generate "$build_system_prefix"coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage

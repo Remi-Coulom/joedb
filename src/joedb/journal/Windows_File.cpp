@@ -114,6 +114,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  Windows_File::Windows_File(const char *file_name, Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
+  Generic_File(mode),
   file
   (
    CreateFileA
@@ -134,12 +135,10 @@ namespace joedb
   if (mode == Open_Mode::write_existing_or_create_new)
   {
    if (GetLastError() == 0)
-    mode = Open_Mode::create_new;
+    set_mode(Open_Mode::create_new);
    else
-    mode = Open_Mode::write_existing;
+    set_mode(Open_Mode::write_existing);
   }
-
-  this->mode = mode;
  }
 
  /////////////////////////////////////////////////////////////////////////////

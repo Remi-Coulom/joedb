@@ -16,7 +16,11 @@ namespace joedb
    std::FILE *file = nullptr;
 
   protected:
-   Portable_File(std::FILE *file): file(file) {}
+   Portable_File(std::FILE *file, Open_Mode mode):
+    Generic_File(mode),
+    file(file)
+   {
+   }
 
    size_t raw_read(char *buffer, size_t size) override;
    void raw_write(const char *buffer, size_t size) override;
