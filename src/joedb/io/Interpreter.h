@@ -57,10 +57,13 @@ namespace joedb
   private:
    Readable_Writable &db;
 
-   void update_value(std::istream &in,
-                     Table_Id table_id,
-                     Record_Id record_id,
-                     Field_Id field_id);
+   void update_value
+   (
+    std::istream &in,
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id
+   );
 
    bool process_command
    (
