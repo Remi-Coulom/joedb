@@ -28,7 +28,8 @@ namespace joedb
  size_t Input_Stream_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  return size_t(stream.readsome(buffer, std::streamsize(size)));
+  stream.read(buffer, std::streamsize(size));
+  return size_t(stream.gcount());
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -72,7 +73,8 @@ namespace joedb
  size_t Stream_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  return size_t(stream.readsome(buffer, std::streamsize(size)));
+  stream.read(buffer, std::streamsize(size));
+  return size_t(stream.gcount());
  }
 
  /////////////////////////////////////////////////////////////////////////////
