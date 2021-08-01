@@ -52,6 +52,11 @@ int main(int argc, char **argv)
 
   {
    std::ifstream in(joedb_file_name, std::ios::binary | std::ios::in);
+   if (!in.good())
+   {
+    std::cerr << "Error opening " << joedb_file_name << '\n';
+    return 1;
+   }
    file_content << in.rdbuf();
   }
 
