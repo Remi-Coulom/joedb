@@ -6,4 +6,3 @@
 #include "../journal/Generic_File.cpp"
 #include "../journal/Writable_Journal.cpp"
 #include "../journal/Readonly_Journal.cpp"
-#include "../journal/Stream_File.cpp"

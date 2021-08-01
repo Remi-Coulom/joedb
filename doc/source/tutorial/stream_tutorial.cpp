@@ -1,4 +1,5 @@
 #include "tutorial.h"
+#include "joedb/journal/Stream_File.h"
 
 #include <fstream>
 

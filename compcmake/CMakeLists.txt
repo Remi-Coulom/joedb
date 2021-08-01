@@ -443,6 +443,7 @@ add_executable(stream_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/stream_tutorial.cpp
  ../src/joedb/compiler/minimal_runtime.cpp
+ ../src/joedb/journal/Stream_File.cpp
 )
 
 add_executable(micro_tutorial
