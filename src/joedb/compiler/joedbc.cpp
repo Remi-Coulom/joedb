@@ -532,10 +532,8 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  out << "#include \"joedb/Freedom_Keeper.h\"\n";
 
  out << R"RRR(#include "joedb/journal/File.h"
-#include "joedb/journal/File_Slice.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/Exception.h"
 #include "joedb/assert.h"
 #include "joedb/io/type_io.h"
@@ -1700,7 +1698,7 @@ void generate_cpp
  out << "#include \"" << file_name << "_readonly.cpp\"\n";
  out << "#include \"" << file_name << ".h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
- out << "#include \"joedb/journal/Memory_File.h\"\n";
+ out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
  out << '\n';
  out << "#include <ctime>\n";
 
