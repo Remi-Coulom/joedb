@@ -3,13 +3,12 @@
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/journal/Stream_File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/io/dump.h"
 #include "joedb/io/merge.h"
 #include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
-#include <sstream>
 #include <memory>
 #include <iomanip>
 
@@ -61,7 +60,7 @@ namespace joedb
   //
   // Build merged db by looping over all files
   //
-  std::string reference_schema;
+  std::vector<char> reference_schema;
   std::unique_ptr<Database> merged_db;
   const int width = int(std::to_string(file_names.size()).size());
   int errors = 0;
@@ -78,8 +77,7 @@ namespace joedb
     File input_file(file_names[i], Open_Mode::read_existing);
     Readonly_Journal input_journal(input_file);
 
-    std::stringstream schema_stream;
-    Stream_File schema_file(schema_stream, Open_Mode::create_new);
+    Memory_File schema_file(Open_Mode::create_new);
     Writable_Journal schema_journal(schema_file);
     Selective_Writable schema_filter
     (
@@ -106,8 +104,8 @@ namespace joedb
     //
     schema_file.flush();
     if (!merged_db)
-     reference_schema = schema_stream.str();
-    else if (schema_stream.str() != reference_schema)
+     reference_schema = schema_file.get_data();
+    else if (schema_file.get_data() != reference_schema)
      throw Exception
      (
       file_names[i] +
