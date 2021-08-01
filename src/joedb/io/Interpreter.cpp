@@ -439,8 +439,12 @@ namespace joedb
   else if (command == "insert_into") ///////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
+
    Record_Id record_id = 0;
    iss >> record_id;
+   if (record_id == 0)
+    record_id = db.get_last_record_id(table_id) + 1;
+
    ERROR_CHECK(
     db.insert_into(table_id, record_id);
     if (iss.good())
