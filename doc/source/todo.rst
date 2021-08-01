@@ -95,6 +95,10 @@ Concurrency
   - event listener instead of direct writes to std::cerr
   - indicate checkpoint type for each push (commit or no_commit)
 
+- joedb_client:
+
+  - make it asynchronous instead of using threads
+
 - Optional CRC check before pulling to verify the content of the origin.
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
   class that takes a readonly and a writable file, and uses the writable file
@@ -145,6 +149,7 @@ Other Ideas
 - Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
 - apply schema upgrade to readonly databases (custom functions)
+- Stream_File should be based on std::streambuf instead of std::iostream
 - only one file.check_write_buffer() call in write<T> and compact_write<T>:
   make code shorter and simpler.
 - make a package for vcpkg and conan. Maybe build2?
