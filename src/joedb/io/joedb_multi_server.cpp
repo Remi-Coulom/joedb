@@ -71,12 +71,15 @@ namespace joedb
   {
    servers.push_back
    (
-    std::make_unique<Server_Data>
+    std::unique_ptr<Server_Data>
     (
-     io_context,
-     db.get_file_name(server),
-     db.get_port(server),
-     db.get_timeout(server)
+     new Server_Data
+     (
+      io_context,
+      db.get_file_name(server),
+      db.get_port(server),
+      db.get_timeout(server)
+     )
     )
    );
   }
