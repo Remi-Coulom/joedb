@@ -24,7 +24,8 @@ namespace joedb
   protected:
    size_t raw_read(char *buffer, size_t size)  override;
    void raw_write(const char *buffer, size_t size) override;
-   int seek(int64_t offset) override;
+   int raw_seek(int64_t offset) override;
+   int64_t raw_get_size() const override;
    void sync() override;
 
   public:
@@ -33,8 +34,6 @@ namespace joedb
     Windows_File(file_name.c_str(), mode)
    {
    }
-
-   int64_t get_size() const override;
 
    ~Windows_File() override;
  };
