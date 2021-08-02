@@ -21,6 +21,7 @@ namespace joedb
    void sync() override;
 
   public:
+   Posix_File(int fd, Open_Mode mode): Generic_File(mode), fd(fd) {}
    Posix_File(const char *file_name, Open_Mode mode);
    Posix_File(const std::string &file_name, Open_Mode mode):
     Posix_File(file_name.c_str(), mode)

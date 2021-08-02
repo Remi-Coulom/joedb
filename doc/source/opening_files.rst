@@ -65,34 +65,17 @@ writing joedb files from/to memory.
 :ref:`joedb_embed` can be used to embed a joedb database into a C++ string
 literal.
 
-Opening Android Assets Directly from the APK
---------------------------------------------
+File slices
+-----------
 
-The Android NDK offers functions that return a file descriptor as well as a position and size of an asset within the APK (see the NDK Android Asset `Documentation <https://developer.android.com/ndk/reference/group/asset>`_). It is possible to directly open such an asset without extracting it, using a ``File_Slice``. The constructor of a ``File_Slice`` takes 3 parameters: a C ``FILE*`` , a starting position, and a file length. It can be used as shown in the example below:
-
-.. code-block:: c++
-
-  FILE* file = fdopen(file_descriptor, "rb");
-  joedb::File_Slice file_slice(file, start, length);
-  tutorial::Readonly_Database db(file_slice);
-
-Note: the destructor of joedb::File_Slice will fclose the file. You must not fclose it.
-
-Class Hierarchy
----------------
+The Android NDK offers functions that return a file descriptor as well as a
+position and size of an asset within the APK (see the NDK Android Asset
+`Documentation <https://developer.android.com/ndk/reference/group/asset>`_).
+It is possible to directly open such an asset without extracting it, using the
+``set_slice`` member function of ``joedb::Generic_File``. Here is an example:
 
 .. code-block:: c++
 
-  class Generic_File;
-
-  // File is a typedef of one of these 3 system-specific classes:
-  class Posix_File: public Generic_File;
-  class Windows_File: public Generic_File;
-  class Portable_File: public Generic_File;
-
-  class Memory_File: public Generic_File;
-  class Readonly_Memory_File: public Generic_File;
-
-  class Stream_File: public Generic_File;
-
-  class File_Slice: public Portable_File;
+  joedb::Posix_File file(file_descriptor, joedb::Open_Mode::read_existing);
+  file.set_slice(start, length);
+  tutorial::Readonly_Database db(file);
