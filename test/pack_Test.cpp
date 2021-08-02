@@ -1,7 +1,8 @@
 #include "joedb/io/dump.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/interpreter/Database.h"
-#include "joedb/journal/Stream_File.h"
+#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/Readable_Multiplexer.h"
@@ -39,11 +40,10 @@ insert_vector float 7 2\n\
 update_vector float 7 value 2 0.8 9\n\
 ";
 
- std::stringstream joedb_ss;
+ Memory_File file(Open_Mode::create_new);
 
  {
-  Stream_File joedb_file(joedb_ss, Open_Mode::create_new);
-  Writable_Journal journal(joedb_file);
+  Writable_Journal journal(file);
 
   Database db;
   Readable_Multiplexer multiplexer(db);
@@ -59,9 +59,9 @@ update_vector float 7 value 2 0.8 9\n\
  }
 
  {
-  std::stringstream joedb_ss_bis(joedb_ss.str());
-  Stream_File joedb_file(joedb_ss_bis, Open_Mode::read_existing);
-  Readonly_Journal journal(joedb_file);
+  const auto v = file.get_data();
+  joedb::Readonly_Memory_File readonly_file(v.data(), v.size());
+  Readonly_Journal journal(readonly_file);
 
   std::stringstream packed_ss;
   Interpreter_Dump_Writable writable(packed_ss);
