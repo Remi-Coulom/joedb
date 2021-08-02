@@ -30,9 +30,8 @@ namespace joedb
 
    virtual bool process_command
    (
-    const std::string &line,
-    std::istream &iss,
     const std::string &command,
+    std::istream &iss,
     std::ostream &out
    );
 
@@ -67,9 +66,8 @@ namespace joedb
 
    bool process_command
    (
-    const std::string &line,
-    std::istream &iss,
     const std::string &command,
+    std::istream &iss,
     std::ostream &out
    ) override;
 

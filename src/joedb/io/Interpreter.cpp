@@ -60,7 +60,7 @@ namespace joedb
   if (!table_id)
   {
    std::stringstream error;
-   error << "No such table: " << table_name << '\n';
+   error << "No such table: " << table_name;
    throw Exception(error.str());
   }
   return table_id;
@@ -78,7 +78,8 @@ namespace joedb
   if (exception)
   {
    std::stringstream error;
-   error << exception->what() << " (" << line << ')' << '\n';
+   error << exception->what();
+   error << "\nCommand was: " << line << '\n';
 
    if (rethrow)
     throw Exception(error.str());
@@ -119,9 +120,8 @@ namespace joedb
  bool Readonly_Interpreter::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
-  const std::string &line,
-  std::istream &iss,
   const std::string &command,
+  std::istream &iss,
   std::ostream &out
  )
  {
@@ -322,15 +322,14 @@ namespace joedb
  bool Interpreter::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
-  const std::string &line,
-  std::istream &iss,
   const std::string &command,
+  std::istream &iss,
   std::ostream &out
  )
  {
   if (command == "help") ////////////////////////////////////////////////////
   {
-   Readonly_Interpreter::process_command(line, iss, command, out);
+   Readonly_Interpreter::process_command(command, iss, out);
    out << "Logging\n";
    out << "~~~~~~~\n";
    out << " timestamp [<stamp>] (if no value is given, use current time)\n";
@@ -509,7 +508,7 @@ namespace joedb
    db.delete_from(table_id, record_id);
   }
   else
-   return Readonly_Interpreter::process_command(line, iss, command, out);
+   return Readonly_Interpreter::process_command(command, iss, out);
 
   return true;
  }
@@ -532,7 +531,7 @@ namespace joedb
 
    try
    {
-    const bool again = process_command(line, iss, command, out);
+    const bool again = process_command(command, iss, out);
     after_command(out, line, nullptr);
     if (!again)
      break;
