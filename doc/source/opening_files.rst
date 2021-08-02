@@ -62,11 +62,7 @@ Availalble subclasses:
    :ref:`joedb_embed` can be used to embed a joedb database into a C++ string
    literal.
  - ``joedb::File`` is a typedef to either ``joedb::Windows_File``, ``joedb::Posix_File``, or ``joedb::Portable_File``.
-
-Here is an example of using ``joedb::Stream_File`` with ``std::filebuf``.
-
-.. literalinclude:: ./tutorial/stream_tutorial.cpp
-   :language: c++
+ - ``joedb::Interpreted_File`` can read joedbi commands directly.
 
 .. _file_slices:
 

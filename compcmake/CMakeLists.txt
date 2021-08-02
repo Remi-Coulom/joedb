@@ -168,6 +168,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/journal/diagnostics.cpp
  ../src/joedb/journal/Stream_File.cpp
  ../src/joedb/journal/SHA_256.cpp
+ ../src/joedb/journal/Interpreted_File.cpp
  ../src/joedb/concurrency/Shared_Local_File.cpp
  ../src/joedb/concurrency/Server_Connection.cpp
 )

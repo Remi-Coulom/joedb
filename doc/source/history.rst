@@ -5,8 +5,9 @@ History
 
   - Re-organize file classes:
 
-    - ``joedb::File_Slice`` is removed. All file classes can be :ref:`sliced <file_slices>` now.
-    - ``joedb::Stream_File`` uses a ``std::streambuf`` instead of ``std::iostream``.
+    - ``File_Slice`` is removed. All file classes can be :ref:`sliced <file_slices>` now.
+    - ``Stream_File`` uses a ``std::streambuf`` instead of ``std::iostream``.
+    - new ``Interpreted_File`` can read joedbi commands directly.
 
   - :ref:`joedb_multi_server`.
   - Minor fixes and improvements.
