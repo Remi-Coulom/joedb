@@ -53,17 +53,14 @@ namespace joedb
 
   for (auto server: db.get_server_table())
   {
-   servers.push_back
+   servers.emplace_back
    (
-    std::unique_ptr<Server_Data>
+    new Server_Data
     (
-     new Server_Data
-     (
-      io_context,
-      db.get_file_name(server),
-      db.get_port(server),
-      db.get_timeout(server)
-     )
+     io_context,
+     db.get_file_name(server),
+     db.get_port(server),
+     db.get_timeout(server)
     )
    );
   }
