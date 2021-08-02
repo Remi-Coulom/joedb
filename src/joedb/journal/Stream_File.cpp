@@ -54,7 +54,7 @@ namespace joedb
 
   while (written < size)
   {
-   const ssize_t result = streambuf.sputn(buffer + written, size - written);
+   const auto result = streambuf.sputn(buffer + written, size - written);
    if (result <= 0)
     throw Exception("Could not write to stream");
    written += size_t(result);
