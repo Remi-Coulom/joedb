@@ -440,12 +440,6 @@ add_executable(file_tutorial
  ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(micro_tutorial
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
- ../doc/source/tutorial/micro_tutorial.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
-)
-
 add_executable(index_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/index_tutorial.cpp
