@@ -12,6 +12,8 @@ namespace joedb
   private:
    int fd;
 
+   void throw_last_error(const char *action, const char *file_name) const;
+
   protected:
    size_t raw_read(char *buffer, size_t size) override;
    void raw_write(const char *buffer, size_t size) override;

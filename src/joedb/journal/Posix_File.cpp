@@ -12,13 +12,29 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
+ void Posix_File::throw_last_error
+ /////////////////////////////////////////////////////////////////////////////
+ (
+  const char *action,
+  const char *file_name
+ ) const
+ {
+  std::stringstream error_message;
+  error_message << action;
+  if (file_name)
+   error_message << ' ' << file_name;
+  error_message << ": " << strerror(errno) << '.';
+  throw Exception(error_message.str());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  size_t Posix_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   const ssize_t result = ::read(fd, buffer, size);
 
   if (result < 0)
-   throw Exception("Error reading file");
+   throw_last_error("Reading file", nullptr);
 
   return size_t(result);
  }
@@ -34,7 +50,7 @@ namespace joedb
    const ssize_t result = ::write(fd, buffer + written, size - written);
 
    if (result < 0)
-    throw Exception("Error writing file");
+    throw_last_error("Writing file", nullptr);
    else
     written += size_t(result);
   }
@@ -81,17 +97,12 @@ namespace joedb
    fd = open(file_name, O_RDONLY);
 
   if (fd < 0)
-  {
-   std::stringstream error_message;
-   error_message << "Could not open " << file_name << ": ";
-   error_message << strerror(errno) << '.';
-   throw Exception(error_message.str());
-  }
+   throw_last_error("Opening", file_name);
 
   if (mode != Open_Mode::read_existing && flock(fd, LOCK_EX | LOCK_NB))
   {
    close(fd);
-   throw Exception("File locked: " + std::string(file_name));
+   throw_last_error("Locking", file_name);
   }
  }
 
