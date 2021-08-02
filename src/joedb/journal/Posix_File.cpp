@@ -19,12 +19,9 @@ namespace joedb
   const char *file_name
  ) const
  {
-  std::stringstream error_message;
-  error_message << action;
-  if (file_name)
-   error_message << ' ' << file_name;
-  error_message << ": " << strerror(errno) << '.';
-  throw Exception(error_message.str());
+  std::stringstream message;
+  message << action << ' ' << file_name << ": " << strerror(errno) << '.';
+  throw Exception(message.str());
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -34,7 +31,7 @@ namespace joedb
   const ssize_t result = ::read(fd, buffer, size);
 
   if (result < 0)
-   throw_last_error("Reading file", nullptr);
+   throw_last_error("Reading", "file");
 
   return size_t(result);
  }
@@ -50,7 +47,7 @@ namespace joedb
    const ssize_t result = ::write(fd, buffer + written, size - written);
 
    if (result < 0)
-    throw_last_error("Writing file", nullptr);
+    throw_last_error("Writing", "file");
    else
     written += size_t(result);
   }

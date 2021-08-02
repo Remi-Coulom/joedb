@@ -46,6 +46,9 @@ namespace joedb
    NULL
   );
 
+  // TODO: print file name + remove trailing new lines
+  // (GetFileInformationByHandleEx)
+
   std::string s((char *)buffer);
 
   LocalFree(buffer);
