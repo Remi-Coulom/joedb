@@ -4,6 +4,7 @@
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Portable_File.h"
+#include "joedb/journal/Stream_File.h"
 #include "joedb/journal/File.h"
 
 #include "gtest/gtest.h"
@@ -104,7 +105,6 @@ TEST(Polymorphic_File, Memory_File)
  }
 }
 
-#include "joedb/journal/Stream_File.h"
 /////////////////////////////////////////////////////////////////////////////
 TEST(Polymorphic_File, Stream_File)
 /////////////////////////////////////////////////////////////////////////////
