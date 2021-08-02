@@ -28,7 +28,12 @@ namespace joedb
    {
     const size_t max_size = data.size() - current;
     const size_t n = std::min(size, max_size);
-    std::copy_n(&data[current], n, buffer);
+#ifdef _DEBUG
+    if (n > 0) // This is needed for debug mode with Visual C++
+#endif
+    {
+     std::copy_n(&data[current], n, buffer);
+    }
     current += n;
     return n;
    }
