@@ -54,7 +54,7 @@ Using a ``joedb::Generic_File``
 ``joedb::Generic_File`` it is possible to let joedb use various ways to read
 and store data.
 
-Availalble subclasses:
+Available subclasses:
 
  - ``joedb::Stream_File`` uses a ``std::streambuf``.
  - ``joedb::Memory_File`` writes to a ``std::vector<char>`` in memory.
