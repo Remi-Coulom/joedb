@@ -5,6 +5,7 @@
 #include "joedb/io/Interpreter.h"
 
 #include <iostream>
+#include <fstream>
 
 namespace joedb
 {
@@ -19,7 +20,10 @@ namespace joedb
   Interpreter interpreter(multiplexer);
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
-  interpreter.main_loop(file, std::cout);
+  {
+   std::ofstream null_stream;
+   interpreter.main_loop(file, null_stream);
+  }
   journal.checkpoint(0);
   this->set_position(0);
   set_mode(Open_Mode::read_existing);
