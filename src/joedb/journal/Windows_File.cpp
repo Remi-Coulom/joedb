@@ -1,6 +1,8 @@
 #include "joedb/journal/Windows_File.h"
 #include "joedb/Exception.h"
 
+#include <sstream>
+
 namespace joedb
 {
  const DWORD Windows_File::desired_access[] =
@@ -28,8 +30,12 @@ namespace joedb
  };
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::throw_last_error() const
+ void Windows_File::throw_last_error
  /////////////////////////////////////////////////////////////////////////////
+ (
+  const char *action,
+  const char *file_name
+ ) const
  {
   const DWORD last_error = GetLastError();
   LPVOID buffer;
@@ -46,14 +52,13 @@ namespace joedb
    NULL
   );
 
-  // TODO: print file name + remove trailing new lines
-  // (GetFileInformationByHandleEx)
-
-  std::string s((char *)buffer);
-
+  std::string error((const char *)buffer);
   LocalFree(buffer);
+  error.erase(error.find_last_not_of(" \r\n") + 1);
 
-  throw Exception(s);
+  std::stringstream message;
+  message << action << ' ' << file_name << ": " << error;
+  throw Exception(message.str());
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -70,7 +75,7 @@ namespace joedb
   if (ReadFile(file, buffer, DWORD(size), &result, NULL))
    return size_t(result);
   else
-   throw_last_error();
+   throw_last_error("Reading", "file");
 
   return 0;
  }
@@ -88,7 +93,7 @@ namespace joedb
    const size_t block_size = std::min(max_size, remaining);
 
    if (!WriteFile(file, buffer + written, DWORD(block_size), NULL, NULL))
-    throw_last_error();
+    throw_last_error("Writing", "file");
 
    written += block_size;
   }
@@ -133,7 +138,7 @@ namespace joedb
   )
  {
   if (file == INVALID_HANDLE_VALUE)
-   throw_last_error();
+   throw_last_error("Opening", file_name);
 
   if (mode == Open_Mode::write_existing_or_create_new)
   {
@@ -153,7 +158,7 @@ namespace joedb
   if (GetFileSizeEx(file, &result))
    return int64_t(result.QuadPart);
   else
-   throw_last_error();
+   throw_last_error("Getting size of", "file");
 
   return 0;
  }

@@ -19,7 +19,11 @@ namespace joedb
   private:
    const HANDLE file;
 
-   void throw_last_error() const;
+   void throw_last_error
+   (
+    const char *action,
+    const char *file_name
+   ) const;
 
   protected:
    size_t raw_read(char *buffer, size_t size)  override;
@@ -30,6 +34,7 @@ namespace joedb
 
   public:
    Windows_File(const char *file_name, Open_Mode mode);
+
    Windows_File(const std::string &file_name, Open_Mode mode):
     Windows_File(file_name.c_str(), mode)
    {
