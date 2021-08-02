@@ -66,8 +66,8 @@ Available subclasses:
 
 .. _file_slices:
 
-File slices
------------
+File Slices (for Android APK)
+-----------------------------
 
 The Android NDK offers functions that return a file descriptor as well as a
 position and size of an asset within the APK (see the NDK Android Asset
