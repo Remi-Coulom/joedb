@@ -88,7 +88,20 @@ For instance, when merging those two databases:
 .. literalinclude:: ./tutorial/joedb_server.out
    :language: none
 
-Run a server to share a database. See :doc:`concurrency` for more information.
+Run a server to share a single database. See :doc:`concurrency` for more information.
+
+.. _joedb_multi_server:
+
+``joedb_multi_server``
+----------------------
+
+.. literalinclude:: ./tutorial/joedb_multi_server.out
+   :language: none
+
+Run a server to share multiple databases. The config file lists all databases like this:
+
+.. literalinclude:: ../../test/multi_server.joedbi
+   :language: joedbi
 
 .. _joedb_client:
 

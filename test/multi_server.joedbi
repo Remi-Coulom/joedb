@@ -3,5 +3,5 @@ add_field server file_name string
 add_field server port int32
 add_field server timeout int32
 
-insert_into server 1 "test_1.joedb" 2001 0
-insert_into server 2 "test_2.joedb" 2002 0
+insert_into server 0 "test_1.joedb" 2001 0
+insert_into server 0 "test_2.joedb" 2002 0

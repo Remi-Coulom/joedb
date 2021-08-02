@@ -3,45 +3,26 @@
 
 #include "joedb/journal/Generic_File.h"
 
-#include <istream>
-#include <ostream>
+#include <streambuf>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Input_Stream_File: public Generic_File
- ////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   Input_Stream_File(std::istream &stream);
-   int64_t raw_get_size() const override;
-
-  protected:
-   size_t raw_read(char *buffer, size_t size) override;
-   void raw_write(const char *buffer, size_t size) override {};
-   int raw_seek(int64_t offset) override;
-   void sync() override {}
-
-  private:
-   std::istream &stream;
- };
-
- ////////////////////////////////////////////////////////////////////////////
  class Stream_File: public Generic_File
  ////////////////////////////////////////////////////////////////////////////
  {
-  public:
-   Stream_File(std::iostream &stream, Open_Mode mode);
-   int64_t raw_get_size() const override;
+  private:
+   std::streambuf &streambuf;
 
   protected:
    size_t raw_read(char *buffer, size_t size) override;
    void raw_write(const char *buffer, size_t size) override;
    int raw_seek(int64_t offset) override;
+   int64_t raw_get_size() const override;
    void sync() override {}
 
-  private:
-   std::iostream &stream;
+  public:
+   Stream_File(std::streambuf &streambuf, Open_Mode mode);
  };
 }
 

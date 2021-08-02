@@ -149,7 +149,6 @@ Other Ideas
 - Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
 - apply schema upgrade to readonly databases (custom functions)
-- Stream_File should be based on std::streambuf instead of std::iostream
 - only one file.check_write_buffer() call in write<T> and compact_write<T>:
   make code shorter and simpler.
 - make a package for vcpkg and conan. Maybe build2?

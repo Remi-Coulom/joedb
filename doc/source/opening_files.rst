@@ -46,24 +46,27 @@ Available modes are:
 
 So ``write_existing`` and ``create_new`` are available only with this method.
 
-Using a C++ Stream
-------------------
+Using a ``joedb::Generic_File``
+-------------------------------
 
-``joedb::File`` is in fact a specialization of a more general ``joedb::Generic_File`` class that offers more flexibility. By subclassing ``joedb::Generic_File`` it is possible to let joedb use various ways to read and store data.
+``joedb::File`` is in fact a specialization of a more general
+``joedb::Generic_File`` class that offers more flexibility. By subclassing
+``joedb::Generic_File`` it is possible to let joedb use various ways to read
+and store data.
 
-Two such subclasses are ``joedb::Stream_File`` and ``joedb::Input_Stream_File``, that take a ``std::iostream`` and ``std::istream`` as constructor parameter. The code below is an example of how to use them.
+Availalble subclasses:
+
+ - ``joedb::Stream_File`` uses a ``std::streambuf``.
+ - ``joedb::Memory_File`` writes to a ``std::vector<char>`` in memory.
+ - ``joedb::Readonly_Memory_File`` reads from ``const char *``.
+   :ref:`joedb_embed` can be used to embed a joedb database into a C++ string
+   literal.
+ - ``joedb::File`` is a typedef to either ``joedb::Windows_File``, ``joedb::Posix_File``, or ``joedb::Portable_File``.
+
+Here is an example of using ``joedb::Stream_File`` with ``std::filebuf``.
 
 .. literalinclude:: ./tutorial/stream_tutorial.cpp
    :language: c++
-
-Memory Files
-------------
-
-``joedb::Readonly_Memory_File`` and ``joedb::Memory_File`` allow reading or
-writing joedb files from/to memory.
-
-:ref:`joedb_embed` can be used to embed a joedb database into a C++ string
-literal.
 
 File slices
 -----------

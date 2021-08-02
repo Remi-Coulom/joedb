@@ -18,8 +18,9 @@ namespace joedb
  void polymorphic_readonly_test(Generic_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
-  EXPECT_EQ(file.get_size(), 4);
+  EXPECT_EQ(file.get_size(), 8);
   EXPECT_EQ(file.read<int32_t>(), 1234);
+  EXPECT_EQ(file.read<int32_t>(), 5678);
   file.set_position(2);
   EXPECT_EQ(file.read<int16_t>(), 0);
   file.set_position(0);
@@ -32,6 +33,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   file.write<int32_t>(1234);
+  file.write<int32_t>(5678);
   file.set_position(0);
   file.commit();
   polymorphic_readonly_test(file);
@@ -86,8 +88,8 @@ namespace joedb
 TEST(Polymorphic_File, Readonly_Memory_File)
 /////////////////////////////////////////////////////////////////////////////
 {
- const uint8_t memory[4] = {0xd2, 0x04, 0x00, 0x00};
- joedb::Readonly_Memory_File file(memory, 4);
+ const uint8_t memory[8] = {0xd2, 0x04, 0x00, 0x00, 0x2e, 0x16, 0x00, 0x00};
+ joedb::Readonly_Memory_File file(memory, 8);
  joedb::polymorphic_readonly_test(file);
 }
 
@@ -110,21 +112,14 @@ TEST(Polymorphic_File, Stream_File)
 /////////////////////////////////////////////////////////////////////////////
 {
  {
-  std::stringstream stream;
-
-  {
-   joedb::Stream_File file(stream, joedb::Open_Mode::write_existing);
-   polymorphic_test(file);
-  }
-
-  std::istringstream istream(stream.str());
-  joedb::Input_Stream_File readonly_file(istream);
-  joedb::polymorphic_readonly_test(readonly_file);
+  std::stringbuf stringbuf;
+  joedb::Stream_File file(stringbuf, joedb::Open_Mode::create_new);
+  polymorphic_test(file);
  }
 
  {
-  std::stringstream stream;
-  joedb::Stream_File file(stream, joedb::Open_Mode::create_new);
+  std::stringbuf stringbuf;
+  joedb::Stream_File file(stringbuf, joedb::Open_Mode::create_new);
   polymorphic_journal_test(file);
  }
 }

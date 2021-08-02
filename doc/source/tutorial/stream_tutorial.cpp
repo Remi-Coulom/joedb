@@ -14,13 +14,14 @@ int main()
  // (If a file already exists, it will be erased)
  //
  {
-  std::fstream stream
+  std::filebuf filebuf;
+  filebuf.open
   (
    file_name,
    std::ios::binary | std::ios::out
   );
 
-  joedb::Stream_File file(stream, joedb::Open_Mode::create_new);
+  joedb::Stream_File file(filebuf, joedb::Open_Mode::create_new);
   tutorial::Generic_File_Database db(file);
   db.new_city("Villeneuve d'Ascq");
  }
@@ -30,13 +31,14 @@ int main()
  // (If the file does not exist, it will fail)
  //
  {
-  std::fstream stream
+  std::filebuf filebuf;
+  filebuf.open
   (
    file_name,
    std::ios::binary | std::ios::out | std::ios::in
   );
 
-  joedb::Stream_File file(stream, joedb::Open_Mode::write_existing);
+  joedb::Stream_File file(filebuf, joedb::Open_Mode::write_existing);
   tutorial::Generic_File_Database db(file);
   db.new_city("Tombouctou");
  }
@@ -45,13 +47,14 @@ int main()
  // Use a C++ istream to re-open the database read-only
  //
  {
-  std::ifstream stream
+  std::filebuf filebuf;
+  filebuf.open
   (
    file_name,
    std::ios::binary | std::ios::in
   );
 
-  joedb::Input_Stream_File file(stream);
+  joedb::Stream_File file(filebuf, joedb::Open_Mode::read_existing);
   tutorial::Readonly_Database db(file);
   for (auto city: db.get_city_table())
    std::cout << db.get_name(city) << '\n';

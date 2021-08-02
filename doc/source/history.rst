@@ -1,6 +1,16 @@
 History
 =======
 
+- 2021-08-??: 6.0
+
+  - Re-organize file classes:
+
+    - ``joedb::File_Slice`` is removed. All file classes can be sliced now.
+    - ``joedb::Stream_File`` uses a ``std::streambuf`` instead of ``std::iostream``.
+
+  - :ref:`joedb_multi_server`.
+  - Minor fixes and improvements.
+
 - 2021-05-08: 5.0
 
   - Big improvements to :doc:`concurrency <concurrency>`: joedb now has a

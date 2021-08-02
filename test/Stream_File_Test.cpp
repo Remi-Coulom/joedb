@@ -2,7 +2,6 @@
 
 #include "gtest/gtest.h"
 
-#include <random>
 #include <sstream>
 
 using namespace joedb;
@@ -10,9 +9,9 @@ using namespace joedb;
 /////////////////////////////////////////////////////////////////////////////
 TEST(Stream_File_Test, position_test)
 {
- std::stringstream stream;
+ std::stringbuf stringbuf;
 
- Stream_File file(stream, Open_Mode::create_new);
+ Stream_File file(stringbuf, Open_Mode::create_new);
  EXPECT_EQ(0LL, file.get_position());
 
  file.set_position(int64_t(size_t(-1)));

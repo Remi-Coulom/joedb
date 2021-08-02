@@ -4,71 +4,38 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- Input_Stream_File::Input_Stream_File(std::istream &stream):
- /////////////////////////////////////////////////////////////////////////////
-  Generic_File(Open_Mode::read_existing),
-  stream(stream)
- {
-  if (!stream.good())
-   throw Exception("!stream.good()");
- }
-
- /////////////////////////////////////////////////////////////////////////////
- int64_t Input_Stream_File::raw_get_size() const
- /////////////////////////////////////////////////////////////////////////////
- {
-  const std::streampos pos = stream.tellg();
-  stream.seekg(0, std::ios_base::end);
-  const std::streampos result = stream.tellg();
-  stream.seekg(pos);
-  return int64_t(result);
- }
-
- /////////////////////////////////////////////////////////////////////////////
- size_t Input_Stream_File::raw_read(char *buffer, size_t size)
- /////////////////////////////////////////////////////////////////////////////
- {
-  stream.read(buffer, std::streamsize(size));
-  size_t result = size_t(stream.gcount());
-  if (result < size)
-   stream.clear();
-  return result;
- }
-
- /////////////////////////////////////////////////////////////////////////////
- int Input_Stream_File::raw_seek(int64_t offset)
- /////////////////////////////////////////////////////////////////////////////
- {
-  stream.seekg(std::streampos(offset));
-
-  int result = 0;
-  if (!stream.good())
-  {
-   stream.clear();
-   result = 1;
-  }
-
-  return result;
- }
-
- /////////////////////////////////////////////////////////////////////////////
- Stream_File::Stream_File(std::iostream &stream, Open_Mode mode):
+ Stream_File::Stream_File(std::streambuf &streambuf, Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
   Generic_File(mode),
-  stream(stream)
+  streambuf(streambuf)
  {
-  if (!stream.good())
-   throw Exception("!stream.good()");
  }
 
  /////////////////////////////////////////////////////////////////////////////
  int64_t Stream_File::raw_get_size() const
  /////////////////////////////////////////////////////////////////////////////
  {
-  const std::streampos pos = stream.tellg();
-  stream.seekg(0, std::ios_base::end);
-  const std::streampos result = stream.tellg();
-  stream.seekg(pos);
+  const auto pos = streambuf.pubseekoff
+  (
+   0,
+   std::ios_base::cur,
+   std::ios_base::in
+  );
+
+  const auto result = streambuf.pubseekoff
+  (
+   0,
+   std::ios_base::end,
+   std::ios_base::in
+  );
+
+  streambuf.pubseekoff
+  (
+   pos,
+   std::ios_base::beg,
+   std::ios_base::in
+  );
+
   return int64_t(result);
  }
 
@@ -76,36 +43,32 @@ namespace joedb
  size_t Stream_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  stream.read(buffer, std::streamsize(size));
-  size_t result = size_t(stream.gcount());
-  if (result < size)
-   stream.clear();
-  return result;
+  return size_t(streambuf.sgetn(buffer, size));
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Stream_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  stream.write(buffer, std::streamsize(size));
-  if (!stream.good())
-   throw Exception("Error writing to stream");
+  size_t written = 0;
+
+  while (written < size)
+  {
+   const ssize_t result = streambuf.sputn(buffer + written, size - written);
+   if (result <= 0)
+    throw Exception("Could not write to stream");
+   written += size_t(result);
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////
  int Stream_File::raw_seek(int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
-  stream.seekg(std::streampos(offset));
-  stream.seekp(std::streampos(offset));
+  if (offset < 0)
+   return 1;
 
-  int result = 0;
-  if (!stream.good())
-  {
-   stream.clear();
-   result = 1;
-  }
-
-  return result;
+  const auto pos = streambuf.pubseekoff(offset, std::ios_base::beg);
+  return pos != offset;
  }
 }
