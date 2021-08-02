@@ -35,8 +35,8 @@ class JoedbiLexer(RegexLexer):
             (r'[a-zA-Z_]\w*', Name.Function)
         ],
         'literal': [
-            (r"\"([^\\\"]|\\.)*\"", Literal.String),
-            (r"\d+", Number.Integer)
+            (r'\s*\"([^\\\"]|\\.)*\"', Literal.String),
+            (r'\s*\d+', Number.Integer)
         ],
         'integer': [
             (r"\d+", Number.Integer)
