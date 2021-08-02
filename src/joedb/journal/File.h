@@ -5,8 +5,10 @@
 #define JOEDB_FILE Portable_File
 #elif defined(_WIN32) && !defined(__cplusplus_winrt)
 #define JOEDB_FILE Windows_File
+#define JOEDB_FILE_IS_WINDOWS_FILE
 #elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 #define JOEDB_FILE Posix_File
+#define JOEDB_FILE_IS_POSIX_FILE
 #else
 #error("Error: Unknown system. Suggestion: try defining JOEDB_PORTABLE.")
 #endif
