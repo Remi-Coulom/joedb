@@ -43,8 +43,7 @@ namespace joedb
   #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
 
-  out << "Error: unknown type\n";
-  return Type();
+  throw Exception("unknown type");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -59,7 +58,11 @@ namespace joedb
   in >> table_name;
   Table_Id table_id = db.find_table(table_name);
   if (!table_id)
-   out << "Error: no such table: " << table_name << '\n';
+  {
+   std::stringstream error;
+   error << "No such table: " << table_name << '\n';
+   throw Exception(error.str());
+  }
   return table_id;
  }
 
@@ -85,14 +88,6 @@ namespace joedb
   else if (echo)
    out << "OK: " << line << '\n';
  }
-
- #define ERROR_CHECK(x) do\
- {\
-  try {x; after_command(out, line, nullptr);}\
-  catch(const Exception &e)\
-  {after_command(out, line, &e);}\
- }\
- while(false)
 
  ////////////////////////////////////////////////////////////////////////////
  void Interpreter::update_value
@@ -318,7 +313,7 @@ namespace joedb
   else if (command == "quit") ///////////////////////////////////////////////
    return false;
   else
-   out << "Error: unknown command: " << command << ". For a list of available commands, try \"help\".\n";
+   throw Exception("Unknown command. For a list of available commands, try \"help\".");
 
   return true;
  }
@@ -372,19 +367,19 @@ namespace joedb
   {
    std::string table_name;
    iss >> table_name;
-   ERROR_CHECK(db.create_table(table_name));
+   db.create_table(table_name);
   }
   else if (command == "drop_table") /////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
-   ERROR_CHECK(db.drop_table(table_id));
+   db.drop_table(table_id);
   }
   else if (command == "rename_table") ///////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
    std::string new_name;
    iss >> new_name;
-   ERROR_CHECK(db.rename_table(table_id, new_name));
+   db.rename_table(table_id, new_name);
   }
   else if (command == "add_field") //////////////////////////////////////////
   {
@@ -393,7 +388,7 @@ namespace joedb
    iss >> field_name;
    Type type = parse_type(iss, out);
    if (type.get_type_id() != Type::Type_Id::null)
-    ERROR_CHECK(db.add_field(table_id, field_name, type));
+    db.add_field(table_id, field_name, type);
   }
   else if (command == "drop_field") ////////////////////////////////////////
   {
@@ -401,7 +396,7 @@ namespace joedb
    std::string field_name;
    iss >> field_name;
    Field_Id field_id = db.find_field(table_id, field_name);
-   ERROR_CHECK(db.drop_field(table_id, field_id));
+   db.drop_field(table_id, field_id);
   }
   else if (command == "rename_field") //////////////////////////////////////
   {
@@ -411,18 +406,18 @@ namespace joedb
    Field_Id field_id = db.find_field(table_id, field_name);
    std::string new_field_name;
    iss >> new_field_name;
-   ERROR_CHECK(db.rename_field(table_id, field_id, new_field_name));
+   db.rename_field(table_id, field_id, new_field_name);
   }
   else if (command == "custom") ////////////////////////////////////////////
   {
    std::string name;
    iss >> name;
-   ERROR_CHECK(db.custom(name));
+   db.custom(name);
   }
   else if (command == "comment") ///////////////////////////////////////////
   {
    const std::string comment = joedb::read_string(iss);
-   ERROR_CHECK(db.comment(comment));
+   db.comment(comment);
   }
   else if (command == "timestamp") /////////////////////////////////////////
   {
@@ -430,11 +425,11 @@ namespace joedb
    iss >> timestamp;
    if (iss.fail())
     timestamp = std::time(nullptr);
-   ERROR_CHECK(db.timestamp(timestamp));
+   db.timestamp(timestamp);
   }
   else if (command == "valid_data") ////////////////////////////////////////
   {
-   ERROR_CHECK(db.valid_data());
+   db.valid_data();
   }
   else if (command == "insert_into") ///////////////////////////////////////
   {
@@ -445,19 +440,14 @@ namespace joedb
    if (record_id == 0)
     record_id = db.get_last_record_id(table_id) + 1;
 
-   ERROR_CHECK(
-    db.insert_into(table_id, record_id);
-    if (iss.good())
-     for (const auto &field: db.get_fields(table_id))
-     {
-      update_value(iss, table_id, record_id, field.first);
-      if (iss.fail())
-      {
-       out << "Error: failed parsing value\n";
-       break;
-      }
-     }
-   );
+   db.insert_into(table_id, record_id);
+   if (iss.good())
+    for (const auto &field: db.get_fields(table_id))
+    {
+     update_value(iss, table_id, record_id, field.first);
+     if (iss.fail())
+      throw Exception("failed parsing value");
+    }
   }
   else if (command == "insert_vector") /////////////////////////////////////
   {
@@ -465,7 +455,7 @@ namespace joedb
    Record_Id record_id = 0;
    Record_Id size = 0;
    iss >> record_id >> size;
-   ERROR_CHECK(db.insert_vector(table_id, record_id, size));
+   db.insert_vector(table_id, record_id, size);
   }
   else if (command == "update") ////////////////////////////////////////////
   {
@@ -475,7 +465,7 @@ namespace joedb
    std::string field_name;
    iss >> field_name;
    Field_Id field_id = db.find_field(table_id, field_name);
-   ERROR_CHECK(update_value(iss, table_id, record_id, field_id));
+   update_value(iss, table_id, record_id, field_id);
   }
   else if (command == "update_vector") /////////////////////////////////////
   {
@@ -489,13 +479,13 @@ namespace joedb
    iss >> size;
 
    if (max_record_id != 0 && size >= max_record_id)
-    out << "Error: vector is too big\n";
+    throw Exception("vector is too big");
    else
    {
     switch(db.get_field_type(table_id, field_id).get_type_id())
     {
      case Type::Type_Id::null:
-      out << "Error: bad field\n";
+      throw Exception("bad field");
      break;
 
      #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -504,7 +494,7 @@ namespace joedb
       std::vector<type> v(size);\
       for (size_t i = 0; i < size; i++)\
        v[i] = joedb::read_##type_id(iss);\
-      ERROR_CHECK(db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]));\
+      db.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
      }\
      break;
      #include "joedb/TYPE_MACRO.h"
@@ -516,15 +506,13 @@ namespace joedb
    const Table_Id table_id = parse_table(iss, out);
    Record_Id record_id = 0;
    iss >> record_id;
-   ERROR_CHECK(db.delete_from(table_id, record_id));
+   db.delete_from(table_id, record_id);
   }
   else
    return Readonly_Interpreter::process_command(line, iss, command, out);
 
   return true;
  }
-
- #undef ERROR_CHECK
 
  ////////////////////////////////////////////////////////////////////////////
  void Readonly_Interpreter::main_loop
@@ -542,8 +530,17 @@ namespace joedb
    std::string command;
    iss >> command;
 
-   if (!process_command(line, iss, command, out))
-    break;
+   try
+   {
+    const bool again = process_command(line, iss, command, out);
+    after_command(out, line, nullptr);
+    if (!again)
+     break;
+   }
+   catch (const Exception &e)
+   {
+    after_command(out, line, &e);
+   }
   }
  }
 }
