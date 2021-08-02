@@ -8,7 +8,7 @@ int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  //
- // This setups a configuration with a server and 2 clients.
+ // This sets up a configuration with a server and 2 clients.
  // Usually, clients would be in separate processes, but we can run
  // everything in the same program, for the sake of illustration.
  //
