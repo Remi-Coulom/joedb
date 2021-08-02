@@ -7,8 +7,8 @@ The simplest way to open a file is to pass a file name to the constructor of
 either ``File_Database`` or ``Readonly_Database``. But subclasses of the
 ``joedb::Generic_File`` class allows using various sources of data.
 
-Directly passing file names to constructors
--------------------------------------------
+Database constructors
+---------------------
 
 Opening a file for reading and writing (creates the file if it does not exist):
 
@@ -67,6 +67,8 @@ Here is an example of using ``joedb::Stream_File`` with ``std::filebuf``.
 
 .. literalinclude:: ./tutorial/stream_tutorial.cpp
    :language: c++
+
+.. _file_slices:
 
 File slices
 -----------
