@@ -12,8 +12,6 @@ namespace joedb
   private:
    int fd;
 
-   bool lock_file();
-
   protected:
    size_t raw_read(char *buffer, size_t size) override;
    void raw_write(const char *buffer, size_t size) override;

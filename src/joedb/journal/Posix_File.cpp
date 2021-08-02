@@ -12,13 +12,6 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- bool Posix_File::lock_file()
- /////////////////////////////////////////////////////////////////////////////
- {
-  return flock(fd, LOCK_EX | LOCK_NB) == 0;
- }
-
- /////////////////////////////////////////////////////////////////////////////
  size_t Posix_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -77,6 +70,8 @@ namespace joedb
     fd = open(file_name, O_RDWR);
     mode = Open_Mode::write_existing;
    }
+
+   set_mode(mode);
   }
   else if (mode == Open_Mode::create_new)
    fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
@@ -93,10 +88,11 @@ namespace joedb
    throw Exception(error_message.str());
   }
 
-  if (mode != Open_Mode::read_existing && !lock_file())
+  if (mode != Open_Mode::read_existing && flock(fd, LOCK_EX | LOCK_NB))
+  {
+   close(fd);
    throw Exception("File locked: " + std::string(file_name));
-
-  set_mode(mode);
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////
