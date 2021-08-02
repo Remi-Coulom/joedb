@@ -5,7 +5,6 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Portable_File.h"
 #include "joedb/journal/File.h"
-#include "joedb/journal/File_Slice.h"
 
 #include "gtest/gtest.h"
 
@@ -207,11 +206,10 @@ TEST(Polymorphic_File, File_Slice)
  }
 
  {
-  FILE *file = std::fopen(file_name, "rb");
-  joedb::File_Slice file_slice(file, 0, 60);
-  EXPECT_EQ(file_slice.get_mode(), joedb::Open_Mode::read_existing);
-  polymorphic_journal_readonly_test(file_slice);
-  // don't fclose the file: it is closed by the portable file
+  joedb::File file(file_name, joedb::Open_Mode::read_existing);
+  EXPECT_ANY_THROW(joedb::Readonly_Journal journal(file));
+  file.set_slice(0, 60);
+  polymorphic_journal_readonly_test(file);
  }
 
  std::remove(file_name);

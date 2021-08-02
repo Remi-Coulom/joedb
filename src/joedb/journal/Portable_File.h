@@ -24,7 +24,7 @@ namespace joedb
 
    size_t raw_read(char *buffer, size_t size) override;
    void raw_write(const char *buffer, size_t size) override;
-   int seek(int64_t offset) override;
+   int raw_seek(int64_t offset) override;
    void sync() override {}
 
   public:
@@ -34,7 +34,7 @@ namespace joedb
    {
    }
 
-   int64_t get_size() const override;
+   int64_t raw_get_size() const override;
 
    ~Portable_File() override;
  };

@@ -22,6 +22,25 @@ TEST(Generic_File, copy)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Generic_File, slice)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ file.write<uint64_t>(1);
+ file.write<uint64_t>(2);
+ file.write<uint64_t>(3);
+
+ file.set_position(0);
+ EXPECT_EQ(file.read<uint64_t>(), 1ULL);
+ EXPECT_EQ(file.get_size(), 24);
+
+ file.set_slice(8, 8);
+ file.set_position(0);
+ EXPECT_EQ(file.read<uint64_t>(), 2ULL);
+ EXPECT_EQ(file.get_size(), 8);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Generic_File, readonly_memory_file)
 /////////////////////////////////////////////////////////////////////////////
 {

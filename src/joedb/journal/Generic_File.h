@@ -39,6 +39,8 @@ namespace joedb
    size_t read_buffer_size;
    bool end_of_file;
    int64_t position;
+   int64_t slice_start;
+   int64_t slice_length;
 
    void read_buffer()
    {
@@ -280,15 +282,30 @@ namespace joedb
 
    virtual size_t raw_read(char *buffer, size_t size) = 0;
    virtual void raw_write(const char *buffer, size_t size) = 0;
-   virtual int seek(int64_t offset) = 0;
+   virtual int raw_seek(int64_t offset) = 0;
+   virtual int64_t raw_get_size() const = 0; // -1 means no known size
    virtual void sync() = 0;
 
+   int seek(int64_t offset)
+   {
+    return raw_seek(offset + slice_start);
+   }
+
   public:
-   explicit Generic_File(Open_Mode mode): mode(mode)
+   Generic_File(Open_Mode mode): mode(mode)
    {
     write_buffer_index = 0;
     reset_read_buffer();
     position = 0;
+    slice_start = 0;
+    slice_length = 0;
+   }
+
+   void set_slice(int64_t start, int64_t length)
+   {
+    slice_start = start;
+    slice_length = length;
+    set_position(0);
    }
 
    Open_Mode get_mode() const {return mode;}
@@ -397,7 +414,13 @@ namespace joedb
 
    virtual ~Generic_File() {}
 
-   virtual int64_t get_size() const {return -1;} // -1 means no known size
+   int64_t get_size() const
+   {
+    if (slice_length)
+     return slice_length;
+    else
+     return raw_get_size();
+   }
 
    template<typename T, size_t n> struct R;
 
