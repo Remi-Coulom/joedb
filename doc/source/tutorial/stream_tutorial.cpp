@@ -44,7 +44,7 @@ int main()
  }
 
  //
- // Use a C++ istream to re-open the database read-only
+ // Re-open the database read-only
  //
  {
   std::filebuf filebuf;
