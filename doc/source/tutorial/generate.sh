@@ -16,7 +16,8 @@ $dir/concurrency_tutorial >concurrency_tutorial.out
 $dir/joedb_logdump tutorial.joedb >logdump.joedbi
 $dir/joedb_logdump --sql tutorial.joedb >logdump.sql
 $dir/joedb_to_json tutorial.joedb >tutorial.json
-echo help | $dir/joedbi >joedbi_help.out
+echo "echo off
+help" | $dir/joedbi >joedbi_help.out
 
 rm -f merge_1.joedb merge_2.joedb merged.joedb
 $dir/joedbi merge_1.joedb <merge_1.joedbi >/dev/null
