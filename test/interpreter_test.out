@@ -122,13 +122,13 @@ Data manipulation
 OK: help
 OK: 
 Error: create_table: name already used: city
-Command was: create_table city
+Line 21: create_table city
 Error: create_table: invalid identifier: 123456
-Command was: create_table 123456
+Line 22: create_table 123456
 Error: rename_table: name already used: city
-Command was: rename_table person city
+Line 23: rename_table person city
 Error: rename_field: name already used: name
-Command was: rename_field person city name
+Line 24: rename_field person city name
 OK: 
 OK: drop_table city
 OK: drop_table person
@@ -137,17 +137,17 @@ OK:
 OK: create_table test
 OK: add_field test a int32
 Error: add_field: name already used
-Command was: add_field test a int32
+Line 32: add_field test a int32
 OK: add_field test b int64
 Error: unknown type
-Command was: add_field test c qsdfqsdf
+Line 34: add_field test c qsdfqsdf
 Error: No such table: qsdfqsdf
-Command was: drop_table qsdfqsdf
+Line 35: drop_table qsdfqsdf
 Error: Unknown command. For a list of available commands, try "help".
-Command was: qsdfqsdf
+Line 36: qsdfqsdf
 OK: insert_into test 1 1234 5678
 Error: insert: record_id already in use
-Command was: insert_into test 1 1234 5678
+Line 38: insert_into test 1 1234 5678
 OK: add_field test d string
 OK: add_field test e boolean
 create_table test
@@ -163,17 +163,17 @@ update test 1 e 0
 OK: dump
 OK: 
 Error: drop_field: invalid field_id
-Command was: drop_field test qsdfqsdf
+Line 43: drop_field test qsdfqsdf
 OK: drop_field test a
 Error: failed parsing value
-Command was: insert_into test 2 3 "4"
+Line 45: insert_into test 2 3 "4"
 OK: delete_from test 2
 Error: delete_record: bad record_id
-Command was: delete_from test 123
+Line 47: delete_from test 123
 Error: bad field
-Command was: update test 1 a 56789
+Line 48: update test 1 a 56789
 Error: update: invalid record_id
-Command was: update test 2 b 56789
+Line 49: update test 2 b 56789
 OK: update test 1 b 56789
 create_table test
 add_field test b int64
@@ -218,7 +218,7 @@ OK: add_field float value float32
 OK: insert_vector float 1 5
 OK: update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
 Error: bad field
-Command was: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
+Line 83: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
 OK: 
 OK: create_table toto
 OK: add_field toto value string
@@ -226,30 +226,30 @@ OK: insert_vector toto 3 1
 OK: insert_vector toto 5 1
 OK: update toto 3 value "toto"
 Error: update_vector: invalid record_id range
-Command was: update_vector toto 5 value 2 "kiki" "kuku"
+Line 90: update_vector toto 5 value 2 "kiki" "kuku"
 OK: 
 Error: rename_table: invalid identifier: __toto__
-Command was: rename_table toto __toto__
+Line 92: rename_table toto __toto__
 Error: No such table: azersdf
-Command was: rename_table azersdf toto
+Line 93: rename_table azersdf toto
 Error: add_field: invalid identifier: __field__
-Command was: add_field toto __field__ string
+Line 94: add_field toto __field__ string
 Error: No such table: azersdf
-Command was: add_field azersdf field string
+Line 95: add_field azersdf field string
 Error: No such table: azersdf
-Command was: drop_field azersdf field
+Line 96: drop_field azersdf field
 Error: rename_field: invalid identifier: __value__
-Command was: rename_field toto value __value__
+Line 97: rename_field toto value __value__
 Error: No such table: azersdf
-Command was: rename_field azersdf value valux
+Line 98: rename_field azersdf value valux
 Error: rename_field: invalid field_id
-Command was: rename_field toto valux valux
+Line 99: rename_field toto valux valux
 Error: No such table: azersdf
-Command was: insert_into azersdf 1
+Line 100: insert_into azersdf 1
 Error: No such table: azersdf
-Command was: insert_vector azersdf 1 1
+Line 101: insert_vector azersdf 1 1
 Error: No such table: azersdf
-Command was: delete_from azersdf 1
+Line 102: delete_from azersdf 1
 OK: 
 create_table all_types
 create_table float

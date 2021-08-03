@@ -24,6 +24,7 @@ namespace joedb
    void after_command
    (
     std::ostream &out,
+    int64_t line_number,
     const std::string &line,
     const Exception *exception
    );

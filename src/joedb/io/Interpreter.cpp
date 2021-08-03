@@ -71,6 +71,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
+  int64_t line_number,
   const std::string &line,
   const Exception *exception
  )
@@ -79,7 +80,7 @@ namespace joedb
   {
    std::stringstream error;
    error << exception->what();
-   error << "\nCommand was: " << line << '\n';
+   error << "\nLine " << line_number << ": " << line << '\n';
 
    if (rethrow)
     throw Exception(error.str());
@@ -521,10 +522,13 @@ namespace joedb
   std::ostream &out
  )
  {
+  int64_t line_number = 0;
+
   std::string line;
 
   while(std::getline(in, line))
   {
+   line_number++;
    std::istringstream iss(line);
    std::string command;
    iss >> command;
@@ -532,13 +536,13 @@ namespace joedb
    try
    {
     const bool again = process_command(command, iss, out);
-    after_command(out, line, nullptr);
+    after_command(out, line_number, line, nullptr);
     if (!again)
      break;
    }
    catch (const Exception &e)
    {
-    after_command(out, line, &e);
+    after_command(out, line_number, line, &e);
    }
   }
  }
