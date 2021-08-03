@@ -94,6 +94,7 @@ Concurrency
   - use coroutines
   - event listener instead of direct writes to std::cerr
   - indicate checkpoint type for each push (commit or no_commit)
+  - option to serve readonly
 
 - joedb_client:
 
