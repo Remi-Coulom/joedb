@@ -95,6 +95,7 @@ Concurrency
   - event listener instead of direct writes to std::cerr
   - indicate checkpoint type for each push (commit or no_commit)
   - option to serve readonly
+  - indicate commit level for a push
 
 - joedb_client:
 
