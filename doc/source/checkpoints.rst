@@ -41,10 +41,13 @@ The joedb compiler produces three checkpoint functions:
   that data up to the previous checkpoint is safely recoverable. Data of the
   current checkpoint is written to disk, but recovery may require care if the
   second checkpoint copy does not make it to the disk before the crash.
-- ``checkpoint_no_commit()``: Performs step 1 and 3 only. This will not flush
-  data to disk, but it will flush it to the operating system. This protects
-  data from an application crash, but not from an operating-system crash. It is
-  tremendously faster than full or half commit.
+- ``checkpoint_no_commit()``: Performs step 1 and 3 only. This does not flush
+  data to permanent storage, but it flushes it to the operating system. This
+  protects data from an application crash, but not from an operating-system
+  crash. It is tremendously faster than full or half commit. It is still safe
+  in the sense that, although the most recent modification may be lost, the
+  database won't be corrupted, and all the data that had reached permanent
+  storage before the system crash can be recovered safely.
 
 The safety of the half_commit and no_commit versions depends on the operating
 system, file system, and disk hardware. According to the SQLite documentation
@@ -132,15 +135,15 @@ Commit Rate
 
 Instead of one big commit at the end, each insert is now committed to disk one by one. With N = 100:
 
-+------+---------+---------------------+---------------------+
-|      | sqlite3 | joedb (full_commit) | joedb (half_commit) |
-+======+=========+=====================+=====================+
-| real | 5.434s  | 3.184s              | 1.549s              |
-+------+---------+---------------------+---------------------+
-| user | 0.006s  | 0.003s              | 0.002s              |
-+------+---------+---------------------+---------------------+
-| sys  | 0.021s  | 0.016s              | 0.009s              |
-+------+---------+---------------------+---------------------+
++------+---------+---------------------+---------------------+-------------------+
+|      | sqlite3 | joedb (full_commit) | joedb (half_commit) | joedb (no_commit) |
++======+=========+=====================+=====================+===================+
+| real | 5.434s  | 3.184s              | 1.549s              | 0.004s            |
++------+---------+---------------------+---------------------+-------------------+
+| user | 0.006s  | 0.003s              | 0.002s              | 0.002s            |
++------+---------+---------------------+---------------------+-------------------+
+| sys  | 0.021s  | 0.016s              | 0.009s              | 0.009s            |
++------+---------+---------------------+---------------------+-------------------+
 
 Thanks to its simple append-only file structure, joedb can operate safely with
 less synchronization operations than sqlite3, which makes it about 1.7 or 3.5
