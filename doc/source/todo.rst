@@ -68,6 +68,9 @@ Compiler
   - no_delete: allows more efficient indexing (+smaller code)
   - last N (for web access log) (last 0 = none)
 
+- Allow the user to write custom event-processing functions and store
+  information in custom data structures (for instance: collect statistics from
+  web access log without storing whole log in RAM).
 - Compiler utilities:
 
   - referential integrity
