@@ -45,6 +45,25 @@ if(WIN32)
 endif()
 
 #############################################################################
+# Custom add_executable
+#############################################################################
+cmake_policy(SET CMP0069 NEW)
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+
+function(ipo_add_executable)
+ add_executable(${ARGV})
+ if (ipo_supported)
+  set_property(TARGET ${ARGV0} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+ endif()
+endfunction(ipo_add_executable)
+
+function(joedb_add_executable)
+ ipo_add_executable(${ARGV})
+ target_link_libraries(${ARGV0} joedb)
+endfunction(joedb_add_executable)
+
+#############################################################################
 # Dependencies
 #############################################################################
 #add_definitions(-DJOEDB_PORTABLE)
@@ -88,7 +107,7 @@ set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.11.0/googletest
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_library(SQLITE3_LIBRARY sqlite3)
 if (SQLITE3_LIBRARY)
- add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
+ ipo_add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
  target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
 else()
  message("== WARNING: install sqlite3 for sqlite3 benchmarks")
@@ -172,6 +191,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/journal/Interpreted_File.cpp
  ../src/joedb/concurrency/Shared_Local_File.cpp
  ../src/joedb/concurrency/Server_Connection.cpp
+ ../src/joedb/concurrency/Server.cpp
 )
 
 # The shared library does not work with Visual Studio: link statically
@@ -187,27 +207,18 @@ else()
 endif()
 target_link_libraries(joedb Threads::Threads)
 
-add_executable(joedbi
- ../src/joedb/io/joedbi.cpp
-)
-target_link_libraries(joedbi joedb)
+if (HAS_BOOST_NET)
+ target_link_libraries(joedb ${Boost_LIBRARIES})
+endif()
 
-add_executable(joedb_logdump
- ../src/joedb/io/joedb_logdump.cpp
-)
-target_link_libraries(joedb_logdump joedb)
+joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
+joedb_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
+joedb_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
+joedb_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
+joedb_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
+joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
 
-add_executable(joedb_pack
- ../src/joedb/io/joedb_pack.cpp
-)
-target_link_libraries(joedb_pack joedb)
-
-add_executable(joedb_merge
- ../src/joedb/io/joedb_merge.cpp
-)
-target_link_libraries(joedb_merge joedb)
-
-add_executable(joedb_convert
+ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/journal/File.cpp
@@ -216,18 +227,8 @@ add_executable(joedb_convert
  ../src/joedb/journal/Writable_Journal.cpp
 )
 
-add_executable(joedb_to_json
- ../src/joedb/io/joedb_to_json.cpp
-)
-target_link_libraries(joedb_to_json joedb)
-
-add_executable(file_benchmark
- ../benchmark/file_benchmark.cpp
-)
-target_link_libraries(file_benchmark joedb)
-
 if(EXISTS "${GOOGLE_TEST}/include")
- add_executable(joedb_test
+ joedb_add_executable(joedb_test
   ../test/endianness_Test.cpp
   ../test/diagnostics_Test.cpp
   ../test/File_Test.cpp
@@ -255,7 +256,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
  )
- target_link_libraries(joedb_test ${CMAKE_THREAD_LIBS_INIT} joedb)
 
  # This definition is necessary for cygwin
  # https://github.com/google/googletest/pull/2839
@@ -264,63 +264,44 @@ else()
  message("== WARNING: run ./get_gtest.sh for tests")
 endif()
 
-add_executable(joedbi_insert
- ../benchmark/joedbi_insert.cpp
-)
-target_link_libraries(joedbi_insert joedb)
-
-add_executable(joedbc
+joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
+joedb_add_executable(joedbc
  ../src/joedb/compiler/joedbc.cpp
  ../src/joedb/compiler/Compiler_Options_io.cpp
  ../src/joedb/compiler/c_wrapper.cpp
  ../src/joedb/compiler/nested_namespace.cpp
 )
-target_link_libraries(joedbc joedb)
 
-add_executable(joedb_embed
+joedb_add_executable(joedb_embed
  ../src/joedb/compiler/joedb_embed.cpp
- ../src/joedb/compiler/minimal_runtime_io.cpp
  ../src/joedb/io/base64.cpp
  ../src/joedb/compiler/nested_namespace.cpp
 )
 
-add_executable(joedb_file_type
+ipo_add_executable(joedb_file_type
  ../src/joedb/journal/Generic_File.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/io/joedb_file_type.cpp
 )
 
 if (HAS_NETWORKING)
- add_executable(joedb_server
-  ../src/joedb/io/joedb_server.cpp
-  ../src/joedb/concurrency/Server.cpp
- )
- target_link_libraries(joedb_server joedb)
+ joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
 
- add_executable(joedb_multi_server
+ joedb_add_executable(joedb_multi_server
   ../src/joedb/io/joedb_multi_server.cpp
   ../src/joedb/io/multi_server_readonly.cpp
-  ../src/joedb/concurrency/Server.cpp
  )
- target_link_libraries(joedb_multi_server joedb)
 
- add_executable(joedb_client
+ joedb_add_executable(joedb_client
   ../src/joedb/io/joedb_client.cpp
  )
- target_link_libraries(joedb_client joedb)
-
- if (HAS_BOOST_NET)
-  target_link_libraries(joedb_server ${Boost_LIBRARIES})
-  target_link_libraries(joedb_multi_server ${Boost_LIBRARIES})
-  target_link_libraries(joedb_client ${Boost_LIBRARIES})
- endif()
 endif()
 
 if (libssh_FOUND)
- add_executable(joedb_ssh_client
+ joedb_add_executable(joedb_ssh_client
   ../src/joedb/io/joedb_ssh_client.cpp
  )
- target_link_libraries(joedb_ssh_client joedb ${LIBSSH_LIBRARIES})
+ target_link_libraries(joedb_ssh_client ${LIBSSH_LIBRARIES})
 endif()
 
 #############################################################################
@@ -405,56 +386,49 @@ foreach(mode base64 escape)
  )
 endforeach(mode)
 
-add_executable(embedded_test
+joedb_add_executable(embedded_test
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_base64.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_escape.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/embedded_test.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
  ../src/joedb/io/base64_decode.cpp
 )
 
 #############################################################################
 # Targets below require databases to be compiled
 #############################################################################
-add_executable(tutorial
+joedb_add_executable(tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/tutorial_main.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(concurrency_tutorial
+joedb_add_executable(concurrency_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/concurrency_tutorial.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(step_by_step_replay
+joedb_add_executable(step_by_step_replay
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/step_by_step_replay.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(file_tutorial
+joedb_add_executable(file_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/file_tutorial.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(index_tutorial
+joedb_add_executable(index_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/index_tutorial.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(wrapper_tutorial
+joedb_add_executable(wrapper_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
  ../doc/source/tutorial/tutorial_main.c
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(compiler_test
+joedb_add_executable(compiler_test
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v2.cpp
@@ -463,18 +437,15 @@ add_executable(compiler_test
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
  ../test/compiler/compiler_test.cpp
 )
-target_link_libraries(compiler_test joedb)
 
-add_executable(generate_translation_header
+joedb_add_executable(generate_translation_header
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
-add_executable(joedbc_insert
+joedb_add_executable(joedbc_insert
  ${CMAKE_CURRENT_SOURCE_DIR}/../benchmark/benchmark.cpp
  ../benchmark/joedbc_insert.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
 )
 
 #############################################################################
