@@ -2,7 +2,6 @@
 #define joedb_get_time_string
 
 #include <stdint.h>
-#include <iosfwd>
 #include <string>
 
 namespace joedb
