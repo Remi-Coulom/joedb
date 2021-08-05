@@ -112,7 +112,7 @@ namespace joedb
   if (fstat(fd, &s) == 0)
    return int64_t(s.st_size);
   else
-   return 0;
+   return -1;
  }
 
  /////////////////////////////////////////////////////////////////////////////
