@@ -1,7 +1,9 @@
 #ifndef joedb_Raw_Dump_Writable_declared
 #define joedb_Raw_Dump_Writable_declared
 
-#include "joedb/io/Dump_Writable.h"
+#include "joedb/Writable.h"
+
+#include <iostream>
 
 namespace joedb
 {
