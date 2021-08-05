@@ -1,6 +1,12 @@
 TODO
 ====
 
+short term (before review):
+- Rewrite Freedom Keeper
+- Check vector range for vector update
+- SHA 256
+- File_continuation
+
 Journal File
 ------------
 - Hashing for hardware error detection, and checking that client.joedb matches
@@ -127,14 +133,14 @@ Performance
 
   - use vector instead of map for tables and fields (with a bool indicating if deleted)
 
-- Pass strings by value for new and update (or use C++17 string_view?)
+- Pass strings by value for new and update
 
   - fix useless copies
   - need to fix Writable + joedbc (it is a bit complicated)
   - start by testing copy elision on a very simple toy simulation
-  - method for testing: use a very large string (100Mb) + pause execution with
-    sleep + look at process memory usage. (also measure execution time).
   - necessary to std::move or not?
+  - is the compiler allowed to perform the optimization by itself, even if
+    the function is passed a const reference?
 
 - Use templates instead of virtual function calls for writables?
 
