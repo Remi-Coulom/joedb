@@ -9,9 +9,13 @@ namespace joedb
  class Mutex
  ////////////////////////////////////////////////////////////////////////////
  {
-  public:
+  friend class Mutex_Lock;
+
+  private:
    virtual void lock() = 0;
    virtual void unlock() = 0;
+
+  public:
    virtual ~Mutex() {}
  };
 
