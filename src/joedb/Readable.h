@@ -11,7 +11,9 @@ namespace joedb
 {
  class Compact_Freedom_Keeper;
 
+ ////////////////////////////////////////////////////////////////////////////
  class Readable
+ ////////////////////////////////////////////////////////////////////////////
  {
   public:
    virtual const std::map<Table_Id, std::string> &get_tables() const = 0;
@@ -44,8 +46,6 @@ namespace joedb
    #include "joedb/TYPE_MACRO.h"
 
    // TODO: iterators to iterate over table rows?
-   // Not convenient and efficient with virtual functions
-   // Use templates instead of virtual functions?
 
    virtual ~Readable() {}
 
