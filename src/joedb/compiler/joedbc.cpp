@@ -9,7 +9,6 @@
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/io/type_io.h"
 #include "joedb/compiler/c_wrapper.h"
-#include "joedb/Dummy_Writable.h"
 #include "joedb/is_identifier.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/compiler/nested_namespace.h"
@@ -1811,7 +1810,7 @@ void write_initial_comment(std::ostream &out, const Compiler_Options &options)
 namespace joedb
 /////////////////////////////////////////////////////////////////////////////
 {
- class Custom_Collector: public Dummy_Writable
+ class Custom_Collector: public Writable
  {
   private:
    std::vector<std::string> &names;
