@@ -40,6 +40,8 @@ namespace joedb
     break;
    }
 
+   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
    if (input == "W")
    {
     Interpreted_Lock lock(client);
