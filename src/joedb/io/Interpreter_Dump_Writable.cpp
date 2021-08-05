@@ -1,5 +1,6 @@
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/io/type_io.h"
+#include "joedb/io/get_time_string.h"
 
 #include <iostream>
 
@@ -23,7 +24,7 @@ namespace joedb
    #include "joedb/TYPE_MACRO.h"
 
    case Type::Type_Id::reference:
-    out << "references " << db.get_table_name(type.get_table_id());
+    out << "references " << get_table_name(type.get_table_id());
    break;
   }
  }
@@ -33,15 +34,15 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "create_table " << name << '\n';
-  Schema_Writable::create_table(name);
+  Database_Schema::create_table(name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Interpreter_Dump_Writable::drop_table(Table_Id table_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "drop_table " << db.get_table_name(table_id) << '\n';
-  Schema_Writable::drop_table(table_id);
+  out << "drop_table " << get_table_name(table_id) << '\n';
+  Database_Schema::drop_table(table_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -52,8 +53,8 @@ namespace joedb
   const std::string &name
  )
  {
-  out << "rename_table " << db.get_table_name(table_id) << ' ' << name << '\n';
-  Schema_Writable::rename_table(table_id, name);
+  out << "rename_table " << get_table_name(table_id) << ' ' << name << '\n';
+  Database_Schema::rename_table(table_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -65,10 +66,10 @@ namespace joedb
   Type type
  )
  {
-  out << "add_field " << db.get_table_name(table_id) << ' ' << name << ' ';
+  out << "add_field " << get_table_name(table_id) << ' ' << name << ' ';
   write_type(type);
   out << '\n';
-  Schema_Writable::add_field(table_id, name, type);
+  Database_Schema::add_field(table_id, name, type);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -79,9 +80,9 @@ namespace joedb
   Field_Id field_id
  )
  {
-  out << "drop_field " << db.get_table_name(table_id) << ' ';
-  out << db.get_field_name(table_id, field_id) << '\n';
-  Schema_Writable::drop_field(table_id, field_id);
+  out << "drop_field " << get_table_name(table_id) << ' ';
+  out << get_field_name(table_id, field_id) << '\n';
+  Database_Schema::drop_field(table_id, field_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -93,9 +94,9 @@ namespace joedb
   const std::string &name
  )
  {
-  out << "rename_field " << db.get_table_name(table_id) << ' ';
-  out << db.get_field_name(table_id, field_id) << ' ' << name << '\n';
-  Schema_Writable::rename_field(table_id, field_id, name);
+  out << "rename_field " << get_table_name(table_id) << ' ';
+  out << get_field_name(table_id, field_id) << ' ' << name << '\n';
+  Database_Schema::rename_field(table_id, field_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -119,7 +120,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "timestamp " << timestamp << ' ';
-  out << get_local_time(timestamp) << '\n';
+  out << get_time_string(timestamp) << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -137,7 +138,7 @@ namespace joedb
   Record_Id record_id
  )
  {
-  out << "insert_into " << db.get_table_name(table_id) << ' ';
+  out << "insert_into " << get_table_name(table_id) << ' ';
   out << record_id << '\n';
  }
 
@@ -150,7 +151,7 @@ namespace joedb
   Record_Id size
  )
  {
-  out << "insert_vector " << db.get_table_name(table_id) << ' ';
+  out << "insert_vector " << get_table_name(table_id) << ' ';
   out << record_id << ' ' << size << '\n';
  }
 
@@ -162,7 +163,7 @@ namespace joedb
   Record_Id record_id
  )
  {
-  out << "delete_from " << db.get_table_name(table_id) << ' ';
+  out << "delete_from " << get_table_name(table_id) << ' ';
   out << record_id << '\n';
  }
 
@@ -175,9 +176,9 @@ namespace joedb
   return_type value\
  )\
  {\
-  out << "update " << db.get_table_name(table_id) << ' ';\
+  out << "update " << get_table_name(table_id) << ' ';\
   out << record_id << ' ';\
-  out << db.get_field_name(table_id, field_id) << ' ';\
+  out << get_field_name(table_id, field_id) << ' ';\
   joedb::write_##type_id(out, value);\
   out << '\n';\
  }\
@@ -190,9 +191,9 @@ namespace joedb
   const type *value\
  )\
  {\
-  out << "update_vector " << db.get_table_name(table_id) << ' ';\
+  out << "update_vector " << get_table_name(table_id) << ' ';\
   out << record_id << ' ';\
-  out << db.get_field_name(table_id, field_id) << ' ';\
+  out << get_field_name(table_id, field_id) << ' ';\
   out << size;\
   for (Record_Id i = 0; i < size; i++)\
   {\

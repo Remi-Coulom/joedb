@@ -152,7 +152,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/interpreter/Database.cpp
  ../src/joedb/interpreter/Table.cpp
  ../src/joedb/io/base64.cpp
- ../src/joedb/io/Dump_Writable.cpp
+ ../src/joedb/io/get_time_string.cpp
  ../src/joedb/io/dump.cpp
  ../src/joedb/io/Interpreter.cpp
  ../src/joedb/io/Interpreter_Dump_Writable.cpp

@@ -14,7 +14,7 @@ namespace joedb
 
  class Table
  {
-  friend class Database;
+  friend class Database_Schema;
 
   private:
    std::map<Field_Id, Field> fields;

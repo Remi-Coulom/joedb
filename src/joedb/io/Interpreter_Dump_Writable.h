@@ -1,19 +1,20 @@
 #ifndef joedb_Interpreter_Dump_Writable_declared
 #define joedb_Interpreter_Dump_Writable_declared
 
-#include "joedb/io/Dump_Writable.h"
+#include "joedb/interpreter/Database.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Interpreter_Dump_Writable: public Dump_Writable
+ class Interpreter_Dump_Writable: public Database_Schema
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
+   std::ostream &out;
    void write_type(Type type);
 
   public:
-   Interpreter_Dump_Writable(std::ostream &out): Dump_Writable(out) {}
+   Interpreter_Dump_Writable(std::ostream &out): out(out) {}
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;

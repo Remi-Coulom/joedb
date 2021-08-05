@@ -1,5 +1,6 @@
 #include "joedb/io/SQL_Dump_Writable.h"
 #include "joedb/io/type_io.h"
+#include "joedb/io/get_time_string.h"
 
 #include <iostream>
 
@@ -30,7 +31,7 @@ namespace joedb
    case Type::Type_Id::reference:
    {
     out << key_type << " REFERENCES ";
-    out << '\"' << db.get_table_name(type.get_table_id()) << '\"';
+    out << '\"' << get_table_name(type.get_table_id()) << '\"';
    }
    break;
 
@@ -62,15 +63,15 @@ namespace joedb
  {
   out << "CREATE TABLE \"" << name << "\"(" << id_field_name <<
          ' ' << key_type << " PRIMARY KEY);\n";
-  Schema_Writable::create_table(name);
+  Database_Schema::create_table(name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SQL_Dump_Writable::drop_table(Table_Id table_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "DROP TABLE \"" << db.get_table_name(table_id) << "\";\n";
-  Schema_Writable::drop_table(table_id);
+  out << "DROP TABLE \"" << get_table_name(table_id) << "\";\n";
+  Database_Schema::drop_table(table_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -81,9 +82,9 @@ namespace joedb
   const std::string &name
  )
  {
-  out << "ALTER TABLE \"" << db.get_table_name(table_id);
+  out << "ALTER TABLE \"" << get_table_name(table_id);
   out << "\" RENAME TO \"" << name << "\";\n";
-  Schema_Writable::rename_table(table_id, name);
+  Database_Schema::rename_table(table_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -95,20 +96,20 @@ namespace joedb
   Type type
  )
  {
-  out << "ALTER TABLE \"" << db.get_table_name(table_id);
+  out << "ALTER TABLE \"" << get_table_name(table_id);
   out << "\" ADD \"" << name << "\" ";
   write_type(type);
   out << ";\n";
-  Schema_Writable::add_field(table_id, name, type);
+  Database_Schema::add_field(table_id, name, type);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void SQL_Dump_Writable::drop_field(Table_Id table_id, Field_Id field_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "ALTER TABLE \"" << db.get_table_name(table_id);
-  out << "\" DROP \"" << db.get_field_name(table_id, field_id) << "\";\n";
-  Schema_Writable::drop_field(table_id, field_id);
+  out << "ALTER TABLE \"" << get_table_name(table_id);
+  out << "\" DROP \"" << get_field_name(table_id, field_id) << "\";\n";
+  Database_Schema::drop_field(table_id, field_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -120,9 +121,9 @@ namespace joedb
   const std::string &name
  )
  {
-  out << "ALTER TABLE \"" << db.get_table_name(table_id) << "\" RENAME COLUMN \"";
-  out << db.get_field_name(table_id, field_id) << "\" TO \"" << name << "\";\n";
-  Schema_Writable::rename_field(table_id, field_id, name);
+  out << "ALTER TABLE \"" << get_table_name(table_id) << "\" RENAME COLUMN \"";
+  out << get_field_name(table_id, field_id) << "\" TO \"" << name << "\";\n";
+  Database_Schema::rename_field(table_id, field_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -143,7 +144,7 @@ namespace joedb
  void SQL_Dump_Writable::timestamp(int64_t timestamp)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "-- " << get_local_time(timestamp) << '\n';
+  out << "-- " << joedb::get_time_string(timestamp) << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -157,7 +158,7 @@ namespace joedb
  void SQL_Dump_Writable::insert_into(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "INSERT INTO \"" << db.get_table_name(table_id);
+  out << "INSERT INTO \"" << get_table_name(table_id);
   out << "\"(" << id_field_name << ") VALUES(" << record_id << ");\n";
  }
 
@@ -178,7 +179,7 @@ namespace joedb
  void SQL_Dump_Writable::delete_from(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "DELETE FROM \"" << db.get_table_name(table_id);
+  out << "DELETE FROM \"" << get_table_name(table_id);
   out << "\" WHERE " << id_field_name << " = " << record_id << ";\n";
  }
 
@@ -191,8 +192,8 @@ namespace joedb
   return_type value\
  )\
  {\
-  out << "UPDATE \"" << db.get_table_name(table_id);\
-  out << "\" SET \"" << db.get_field_name(table_id, field_id) << "\" = ";\
+  out << "UPDATE \"" << get_table_name(table_id);\
+  out << "\" SET \"" << get_field_name(table_id, field_id) << "\" = ";\
   joedb::write_##type_id(out, value);\
   out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
  }
@@ -209,8 +210,8 @@ namespace joedb
   Field_Id field_id,
   const std::string &value)
  {
-  out << "UPDATE \"" << db.get_table_name(table_id);
-  out << "\" SET \"" << db.get_field_name(table_id, field_id) << "\" = ";
+  out << "UPDATE \"" << get_table_name(table_id);
+  out << "\" SET \"" << get_field_name(table_id, field_id) << "\" = ";
   joedb::write_sql_string(out, value);
   out << " WHERE " << id_field_name << " = " << record_id << ";\n";
  }
@@ -225,8 +226,8 @@ namespace joedb
   Record_Id value
  )
  {
-  out << "UPDATE \"" << db.get_table_name(table_id);
-  out << "\" SET \"" << db.get_field_name(table_id, field_id) << "\" = ";
+  out << "UPDATE \"" << get_table_name(table_id);
+  out << "\" SET \"" << get_field_name(table_id, field_id) << "\" = ";
 
   if (value == 0)
    out << "NULL";

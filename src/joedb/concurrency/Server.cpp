@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/network_integers.h"
-#include "joedb/io/Dump_Writable.h"
+#include "joedb/io/get_time_string.h"
 
 #include <iostream>
 #include <iomanip>
@@ -60,7 +60,7 @@ namespace joedb
  {
   std::cerr << '\n';
   std::cerr << port << ": ";
-  std::cerr << joedb::Dump_Writable::get_local_time(std::time(nullptr));
+  std::cerr << get_time_string(std::time(nullptr));
   std::cerr << "; session_count = " << session_count << '\n';
   std::cerr << '\n';
  }

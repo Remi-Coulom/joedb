@@ -8,11 +8,11 @@
 
 namespace joedb
 {
- class Database: public Readable_Writable
+ ///////////////////////////////////////////////////////////////////////////
+ class Database_Schema: public Readable_Writable
+ ///////////////////////////////////////////////////////////////////////////
  {
-  private:
-   const Record_Id max_record_id;
-
+  protected:
    std::map<Table_Id, Table> tables;
    std::map<Table_Id, std::string> table_names;
    Table_Id current_table_id = 0;
@@ -20,15 +20,24 @@ namespace joedb
    void check_identifier(const char *message, const std::string &name) const;
 
   public:
-   Database(Record_Id max_record_id = 0): max_record_id(max_record_id) {}
-
    //
    // Readable override
    //
-   const std::map<Table_Id, std::string> &get_tables() const override {return table_names;}
-   const std::map<Field_Id, std::string> &get_fields(Table_Id table_id) const override;
-   const Type &get_field_type(Table_Id table_id,
-                              Field_Id field_id) const override;
+   const std::map<Table_Id, std::string> &get_tables() const override
+   {
+    return table_names;
+   }
+
+   const std::map<Field_Id, std::string> &get_fields
+   (
+    Table_Id table_id
+   ) const override;
+
+   const Type &get_field_type
+   (
+    Table_Id table_id,
+    Field_Id field_id
+   ) const override;
 
    Record_Id get_last_record_id(Table_Id table_id) const override;
    bool is_used(Table_Id table_id, Record_Id record_id) const override;
@@ -64,6 +73,43 @@ namespace joedb
    void comment(const std::string &comment) override {};
    void timestamp(int64_t timestamp) override {};
    void valid_data() override {};
+
+   void insert_into(Table_Id table_id, Record_Id record_id) override {}
+   void insert_vector(Table_Id table_id,
+                      Record_Id record_id,
+                      Record_Id size) override {}
+   void delete_from(Table_Id table_id, Record_Id record_id) override {}
+
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   void update_##type_id\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id,\
+    return_type value\
+   ) override {}\
+   type *get_own_##type_id##_storage\
+   (\
+    Table_Id table_id,\
+    Record_Id record_id,\
+    Field_Id field_id,\
+    Record_Id &capacity\
+   ) override {}
+   #include "joedb/TYPE_MACRO.h"
+ };
+
+ ///////////////////////////////////////////////////////////////////////////
+ class Database: public Database_Schema
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   const Record_Id max_record_id;
+
+  public:
+   Database(Record_Id max_record_id = 0):
+    max_record_id(max_record_id)
+   {
+   }
 
    void insert_into(Table_Id table_id, Record_Id record_id) override;
    void insert_vector(Table_Id table_id,

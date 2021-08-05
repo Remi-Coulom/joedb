@@ -1,11 +1,11 @@
-#include "joedb/io/Dump_Writable.h"
+#include "joedb/io/get_time_string.h"
 
 #include <ctime>
 
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- std::string Dump_Writable::get_local_time(int64_t timestamp)
+ std::string get_time_string(int64_t timestamp)
  /////////////////////////////////////////////////////////////////////////////
  {
   const size_t buffer_size = 24;
