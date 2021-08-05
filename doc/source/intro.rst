@@ -28,7 +28,8 @@ or `JSON <https://www.json.org/json-en.html>`_:
 
 - Unlike XML or JSON, joedb is a binary file format that does not require any
   parsing. So, joedb files are much smaller, and processing data is much
-  faster.
+  faster. Joedb also comes with a text format that can be easily read or
+  modified by humans, if necessary.
 - Unlike Protocol Buffers or FlatBuffers, joedb works like a database: it can
   incrementally update data stored on disk in a crash-safe way, and has a
   network protocol to handle :doc:`concurrent connections <concurrency>` of
