@@ -43,7 +43,7 @@ namespace joedb
  size_t Stream_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  return size_t(streambuf.sgetn(buffer, size));
+  return size_t(streambuf.sgetn(buffer, std::streamsize(size)));
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,11 @@ namespace joedb
 
   while (written < size)
   {
-   const auto result = streambuf.sputn(buffer + written, size - written);
+   const auto result = streambuf.sputn
+   (
+    buffer + written,
+    std::streamsize(size - written)
+   );
    if (result <= 0)
     throw Exception("Could not write to stream");
    written += size_t(result);
