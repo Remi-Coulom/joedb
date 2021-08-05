@@ -150,6 +150,7 @@ add_library(joedb_objects OBJECT
  ../src/joedb/Multiplexer.cpp
  ../src/joedb/is_identifier.cpp
  ../src/joedb/interpreter/Database.cpp
+ ../src/joedb/interpreter/Database_Schema.cpp
  ../src/joedb/interpreter/Table.cpp
  ../src/joedb/io/base64.cpp
  ../src/joedb/io/get_time_string.cpp
