@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.9)
 
 file(STRINGS "../VERSION" QUOTED_JOEDB_VERSION)
 string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
