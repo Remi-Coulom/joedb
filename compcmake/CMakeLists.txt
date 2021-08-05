@@ -163,7 +163,7 @@ include_directories(
 #############################################################################
 # Build Targets
 #############################################################################
-add_library(joedb_objects OBJECT
+set(JOEDB_SOURCES
  ../src/external/wide_char_display_width.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/Multiplexer.cpp
@@ -191,19 +191,18 @@ add_library(joedb_objects OBJECT
  ../src/joedb/journal/Interpreted_File.cpp
  ../src/joedb/concurrency/Shared_Local_File.cpp
  ../src/joedb/concurrency/Server_Connection.cpp
- ../src/joedb/concurrency/Server.cpp
 )
+
+if (HAS_NETWORKING)
+ set(JOEDB_SOURCES ${JOEDB_SOURCES} ../src/joedb/concurrency/Server.cpp)
+endif()
 
 # The shared library does not work with Visual Studio: link statically
 if (UNIX)
- add_library(joedb SHARED
-  $<TARGET_OBJECTS:joedb_objects>
- )
+ add_library(joedb SHARED ${JOEDB_SOURCES})
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
 else()
- add_library(joedb STATIC
-  $<TARGET_OBJECTS:joedb_objects>
- )
+ add_library(joedb STATIC ${JOEDB_SOURCES})
 endif()
 target_link_libraries(joedb Threads::Threads)
 
