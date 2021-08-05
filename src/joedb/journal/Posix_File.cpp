@@ -112,7 +112,9 @@ namespace joedb
   if (fstat(fd, &s) == 0)
    return int64_t(s.st_size);
   else
-   return -1;
+   throw_last_error("Getting size of", "file");
+
+  return -1;
  }
 
  /////////////////////////////////////////////////////////////////////////////

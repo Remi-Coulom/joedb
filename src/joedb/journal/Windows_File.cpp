@@ -160,7 +160,7 @@ namespace joedb
   else
    throw_last_error("Getting size of", "file");
 
-  return 0;
+  return -1;
  }
 
  /////////////////////////////////////////////////////////////////////////////
