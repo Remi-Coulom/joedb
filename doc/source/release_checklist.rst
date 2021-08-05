@@ -14,6 +14,7 @@ Code Tests
   - MacOS
 
 - run the 3 fuzzers for a while
+- check that compilation works without networking, without ssh
 
 Documentation
 -------------
