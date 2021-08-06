@@ -22,7 +22,7 @@ namespace joedb
    void check_position()
    {
     if (journal.get_position() > server_position)
-     throw Exception("Ahead of server");
+     throw Exception("Can't pull: failed transaction wrote to local db.");
    }
 
    void lock_pull()

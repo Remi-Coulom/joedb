@@ -86,7 +86,7 @@ TEST(Connection, Transaction_Failure)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_EQ(e.what(), std::string("cancelled"));
+  EXPECT_EQ(std::string(e.what()), "cancelled");
  }
 
  //
@@ -112,7 +112,11 @@ TEST(Connection, Transaction_Failure)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_EQ(std::string(e.what()), "Ahead of server");
+  EXPECT_EQ
+  (
+   std::string(e.what()),
+   "Can't pull: failed transaction wrote to local db."
+  );
  }
 
  client2.pull();
