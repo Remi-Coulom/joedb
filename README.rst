@@ -6,12 +6,9 @@ journal of all modifications. This way, the whole data history is remembered,
 and it is possible to re-create any past state of the database. It is also a
 way to make the system extremely simple, and fast.
 
-Joedb comes with a compiler that takes a database schema as input, and produces
-C++ code. The generated C++ data-manipulation code is convenient to use,
-efficient, and type-safe.
-
-Joedb can operate as an embedded database, but it also supports concurrent
-access to a remote server.
+Storing data history also allows efficient distributed applications. Joedb has
+a network protocol that lets multiple processes access shared data
+concurrently. So joedb works a bit like git for structured data.
 
 .. image:: doc/source/images/joedb.svg
 

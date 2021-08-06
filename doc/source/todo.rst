@@ -2,10 +2,26 @@ TODO
 ====
 
 short term (before review):
+
+- enum for commit level
+- Unit tests for new features (Interpreted_File, ...)
 - Rewrite Freedom Keeper
 - Check vector range for vector update
+- File_Continuation:
+
+  - no need of mutex lock (use valid checkpoint)
+  - a Connection is not a Mutex (probably remove Mutex class completely)
+
+- If an exception is thrown while the remote database is locked, then nothing
+  should be pushed in the lock destructor. Ideas:
+
+  - Disconnect if anything goes wrong locally during a transaction?
+  - Use File_Continuation and undo by replaying the full log from the start?
+  - Code of the transaction should be in a lambda that will be called inside
+    a client function within a try block.
+
 - SHA 256
-- File_continuation
+- Throw carefully from destructors (Files, Tail_Writer, ...)
 
 Journal File
 ------------
