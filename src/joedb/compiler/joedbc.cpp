@@ -1695,6 +1695,7 @@ void generate_cpp
  out << "#include \"" << file_name << "_readonly.cpp\"\n";
  out << "#include \"" << file_name << ".h\"\n";
  out << "#include \"joedb/Exception.h\"\n";
+ out << "#include \"joedb/Dummy_Writable.h\"\n";
  out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
  out << '\n';
  out << "#include <ctime>\n";
@@ -1773,8 +1774,15 @@ void generate_cpp
  ):
   journal(file)
  {
-  joedb::Connection_Write_Lock lock(connection, journal);
-  initialize();
+  joedb::Dummy_Writable dummy_writable;
+  joedb::Client client(connection, journal, dummy_writable);
+  client.write_transaction
+  (
+   [this]()
+   {
+    initialize();
+   }
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////

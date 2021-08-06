@@ -11,7 +11,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Client;
-  friend class Connection_Write_Lock;
 
   private:
    virtual int64_t pull(Writable_Journal &client_journal) = 0;
@@ -26,42 +25,6 @@ namespace joedb
 
   public:
    virtual ~Connection() {}
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Connection_Write_Lock
- ////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Connection &connection;
-   Writable_Journal &journal;
-   const int64_t server_position;
-
-  public:
-   Connection_Write_Lock
-   (
-    Connection &connection,
-    Writable_Journal &journal
-   ):
-    connection(connection),
-    journal(journal),
-    server_position(connection.lock_pull(journal))
-   {
-   }
-
-   ~Connection_Write_Lock() noexcept(false)
-   {
-    try
-    {
-     journal.checkpoint(0);
-     connection.push_unlock(journal, server_position);
-    }
-    catch (...)
-    {
-     if (!std::uncaught_exception())
-      throw;
-    }
-   }
  };
 }
 
