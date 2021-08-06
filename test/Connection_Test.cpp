@@ -19,10 +19,13 @@ TEST(Connection, Interpreted_Client)
  Memory_File client2_file;
  Interpreted_Client client2(connection, client2_file);
 
- {
-  Interpreted_Lock lock(client1);
-  lock.get_database().create_table("person");
- }
+ client1.write_transaction
+ (
+  [](Readable_Writable &db)
+  {
+   db.create_table("person");
+  }
+ );
 
  {
   joedb::Mutex_Lock lock(connection);
@@ -32,10 +35,13 @@ TEST(Connection, Interpreted_Client)
  client2.pull();
  EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
 
- {
-  Interpreted_Lock lock(client2);
-  lock.get_database().create_table("city");
- }
+ client2.write_transaction
+ (
+  [](Readable_Writable &db)
+  {
+   db.create_table("city");
+  }
+ );
 
  EXPECT_EQ(1, int(client1.get_database().get_tables().size()));
  client1.pull();

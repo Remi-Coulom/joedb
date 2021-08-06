@@ -41,26 +41,19 @@ namespace joedb
    {
     return client.pull();
    }
- };
 
- ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Lock
- ////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Interpreted_Client &interpreted_client;
-   Client_Write_Lock lock;
-
-  public:
-   Interpreted_Lock(Interpreted_Client &interpreted_client):
-    interpreted_client(interpreted_client),
-    lock(interpreted_client.client)
+   void write_transaction
+   (
+    std::function<void(Readable_Writable&)> transaction
+   )
    {
-   }
-
-   Readable_Writable &get_database()
-   {
-    return interpreted_client.multiplexer;
+    client.write_transaction
+    (
+     [&]()
+     {
+      transaction(multiplexer);
+     }
+    );
    }
  };
 }

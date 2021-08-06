@@ -44,8 +44,13 @@ namespace joedb
 
    if (input == "W")
    {
-    Interpreted_Lock lock(client);
-    Interpreter(lock.get_database()).main_loop(std::cin, std::cout);
+    client.write_transaction
+    (
+     [](Readable_Writable &db)
+     {
+      Interpreter(db).main_loop(std::cin, std::cout);
+     }
+    );
    }
    else if (input == "P")
     client.pull();

@@ -92,8 +92,6 @@ TEST(Server_Connection, basic)
 
   client.pull();
 
-  {
-   joedb::Interpreted_Lock lock(client);
-  }
+  client.write_transaction([](joedb::Readable_Writable &db){});
  }
 }

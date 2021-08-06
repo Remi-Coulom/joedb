@@ -11,7 +11,7 @@ namespace joedb
  {
   friend class Mutex_Lock;
 
-  private:
+  public:
    virtual void lock() = 0;
    virtual void unlock() = 0;
 

@@ -3,6 +3,8 @@
 
 #include "joedb/concurrency/Connection.h"
 
+#include <functional>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -49,6 +51,23 @@ namespace joedb
     server_position = connection.pull(journal);
     journal.play_until_checkpoint(writable);
     return server_position;
+   }
+
+   void write_transaction(std::function<void()> transaction)
+   {
+    lock_pull();
+
+    try
+    {
+     transaction();
+    }
+    catch (...)
+    {
+     connection.unlock();
+     throw;
+    }
+
+    push_unlock();
    }
  };
 
