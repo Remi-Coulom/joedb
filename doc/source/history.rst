@@ -10,6 +10,9 @@ History
     - new ``Interpreted_File`` can read joedbi commands directly.
 
   - :ref:`joedb_multi_server`.
+  - Exception-safe transactions: if any exception is thrown by a client while
+    writing, then none of what was written since the previous lock-pull will be
+    pushed to the server.
   - Minor fixes and improvements.
 
 - 2021-05-08: 5.0

@@ -15,7 +15,10 @@ namespace joedb
   public:
    Readonly_Journal(Generic_File &file, bool ignore_errors = false);
 
+   bool at_end_of_file() const;
+   int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint_position() const {return checkpoint_position;}
+
    void replay_log(Writable &writable);
    void rewind();
    void seek(int64_t position);
@@ -25,8 +28,6 @@ namespace joedb
    {
     play_until(writable, checkpoint_position);
    }
-
-   bool at_end_of_file() const;
 
    Async_Reader get_tail_reader(int64_t start_position) const
    {

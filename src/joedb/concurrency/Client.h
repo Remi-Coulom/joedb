@@ -2,6 +2,7 @@
 #define joedb_Client_declared
 
 #include "joedb/concurrency/Connection.h"
+#include "joedb/Exception.h"
 
 #include <functional>
 
@@ -18,8 +19,15 @@ namespace joedb
 
    int64_t server_position;
 
+   void check_position()
+   {
+    if (journal.get_position() > server_position)
+     throw Exception("Ahead of server");
+   }
+
    void lock_pull()
    {
+    check_position();
     server_position = connection.lock_pull(journal);
     journal.play_until_checkpoint(writable);
    }
@@ -28,6 +36,7 @@ namespace joedb
    {
     journal.checkpoint(0);
     connection.push_unlock(journal, server_position);
+    server_position = journal.get_checkpoint_position();
    }
 
   public:
@@ -42,10 +51,12 @@ namespace joedb
     writable(writable)
    {
     journal.play_until_checkpoint(writable);
+    server_position = journal.get_position();
    }
 
    int64_t pull()
    {
+    check_position();
     server_position = connection.pull(journal);
     journal.play_until_checkpoint(writable);
     return server_position;
@@ -62,12 +73,6 @@ namespace joedb
     catch (...)
     {
      connection.unlock();
-     journal.checkpoint(0);
-#if 0 // take care of this later
-     if (journal.get_checkpoint_position() != server_position)
-      // kill connection
-      ;
-#endif
      throw;
     }
 
