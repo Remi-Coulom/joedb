@@ -12,7 +12,8 @@ History
   - :ref:`joedb_multi_server`.
   - Exception-safe transactions: if any exception is thrown by a client while
     writing, then none of what was written since the previous lock-pull will be
-    pushed to the server.
+    pushed to the server. The previous approach, based on a Lock object, was
+    defective and is not available any more.
   - Minor fixes and improvements.
 
 - 2021-05-08: 5.0
