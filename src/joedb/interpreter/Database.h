@@ -19,9 +19,12 @@ namespace joedb
    }
 
    void insert_into(Table_Id table_id, Record_Id record_id) override;
-   void insert_vector(Table_Id table_id,
-                      Record_Id record_id,
-                      Record_Id size) override;
+   void insert_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Record_Id size
+   ) override;
    void delete_from(Table_Id table_id, Record_Id record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
