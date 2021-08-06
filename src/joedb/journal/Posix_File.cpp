@@ -19,7 +19,7 @@ namespace joedb
   const char *file_name
  ) const
  {
-  std::stringstream message;
+  std::ostringstream message;
   message << action << ' ' << file_name << ": " << strerror(errno) << '.';
   throw Exception(message.str());
  }
