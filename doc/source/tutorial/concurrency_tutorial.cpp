@@ -23,19 +23,21 @@ int main()
 
  //
  // The databases are empty. client1 will add a few cities.
- // In order to get write access, it is necessary to create a lock.
+ // Writing to the client database cannot occur outside of a transaction.
+ // If the transaction function throws, then nothing is pushed to the server.
  //
- {
-  tutorial::Lock lock(client1);
-
-  lock.get_database().new_city("Paris");
-  lock.get_database().new_city("New York");
-  lock.get_database().new_city("Tokyo");
- }
+ client1.write_transaction
+ (
+  [](tutorial::Generic_File_Database &db)
+  {
+   db.new_city("Paris");
+   db.new_city("New York");
+   db.new_city("Tokyo");
+  }
+ );
 
  //
- // The lock is released. Unlike the get_database() method of the lock,
- // the get_database() method of the client is read-only.
+ // client1.get_database() gives a read-only access to the local copy
  //
  std::cout << "Number of cities for client1: ";
  std::cout << client1.get_database().get_city_table().get_size() << '\n';

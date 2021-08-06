@@ -445,8 +445,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  class Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Lock;
-
   private:
    Generic_File_Database database;
    joedb::Client joedb_client;
@@ -471,19 +469,20 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     return joedb_client.pull();
    }
- };
 
- ////////////////////////////////////////////////////////////////////////////
- class Lock
- ////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Client &client;
-   joedb::Client_Write_Lock lock;
-
-  public:
-   Lock(Client &client): client(client), lock(client.joedb_client) {}
-   Generic_File_Database &get_database() {return client.database;}
+   void write_transaction
+   (
+    std::function<void(Generic_File_Database&)> transaction
+   )
+   {
+    joedb_client.write_transaction
+    (
+     [&]()
+     {
+      transaction(database);
+     }
+    );
+   }
  };
 )RRR";
 
@@ -502,7 +501,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  type_names.push_back("File_Database");
  type_names.push_back("Generic_File_Database");
  type_names.push_back("Client");
- type_names.push_back("Lock");
 
  for (const std::string &type_name: type_names)
  {

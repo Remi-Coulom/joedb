@@ -23,8 +23,8 @@ database. Each process can keep data synchronized with 3 operations:
 Example C++ Code
 ----------------
 
-Joedb uses RAII to ensure locks and unlocks are correctly paired, and
-modifications to the local database can only occur during a lock.
+The compiler produces code that ensures that locks and unlocks are correctly
+paired, and modifications to the local database can only occur during a lock.
 
 .. literalinclude:: ./tutorial/concurrency_tutorial.cpp
    :language: c++

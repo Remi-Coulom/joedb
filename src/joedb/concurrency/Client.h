@@ -64,37 +64,16 @@ namespace joedb
     catch (...)
     {
      connection.unlock();
+     journal.checkpoint(0);
+#if 0 // take care of this later
+     if (journal.get_checkpoint_position() != server_position)
+      // kill connection
+      ;
+#endif
      throw;
     }
 
     push_unlock();
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Client_Write_Lock
- ////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Client &client;
-
-  public:
-   Client_Write_Lock(Client &client): client(client)
-   {
-    client.lock_pull();
-   }
-
-   ~Client_Write_Lock() noexcept(false)
-   {
-    try
-    {
-     client.push_unlock();
-    }
-    catch (...)
-    {
-     if (!std::uncaught_exception())
-      throw;
-    }
    }
  };
 }
