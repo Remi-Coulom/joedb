@@ -11,8 +11,6 @@ namespace joedb
  class Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Client_Write_Lock;
-
   private:
    Connection &connection;
    Writable_Journal &journal;

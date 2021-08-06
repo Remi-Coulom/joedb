@@ -11,8 +11,6 @@ namespace joedb
  class Interpreted_Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Interpreted_Lock;
-
   private:
    Writable_Journal journal;
    Database database;
