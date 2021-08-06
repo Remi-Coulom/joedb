@@ -3,7 +3,7 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
 
-#include <sstream>
+#include <cstdlib>
 
 namespace joedb
 {
@@ -22,19 +22,10 @@ namespace joedb
   {
    const char * const user = argv[1];
    const char * const host = argv[2];
-
-   uint16_t joedb_port = 0;
-   std::istringstream(argv[3]) >> joedb_port;
-
+   const uint16_t joedb_port = uint16_t(std::atoi(argv[3]));
    const char * const file_name = argc > 4 ? argv[4] : nullptr;
-
-   int ssh_port = 22;
-   if (argc > 5)
-    std::istringstream(argv[5]) >> ssh_port;
-
-   int ssh_log_level = 0;
-   if (argc > 6)
-    std::istringstream(argv[6]) >> ssh_log_level;
+   const int ssh_port = argc > 5 ? std::atoi(argv[5]) : 22;
+   const int ssh_log_level = argc > 6 ? std::atoi(argv[6]) : 0;
 
    ssh::Thread_Safe_Session session(user, host, ssh_port, ssh_log_level);
    ssh::Forward_Channel channel(session, "localhost", joedb_port);

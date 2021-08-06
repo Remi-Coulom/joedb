@@ -4,8 +4,8 @@
 #include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
-#include <sstream>
 #include <cstring>
+#include <cstdlib>
 #include <joedb/journal/Generic_File.h>
 
 namespace joedb
@@ -28,13 +28,13 @@ namespace joedb
 
   if (argc >= index + 3 && std::strcmp(argv[index], "--port") == 0)
   {
-   std::istringstream(argv[index + 1]) >> port;
+   port = uint16_t(std::atoi(argv[index + 1]));
    index += 2;
   }
 
   if (argc >= index + 3 && std::strcmp(argv[index], "--timeout") == 0)
   {
-   std::istringstream(argv[index + 1]) >> timeout;
+   timeout = uint32_t(std::atoi(argv[index + 1]));
    index += 2;
   }
 
