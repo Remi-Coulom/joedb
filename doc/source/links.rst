@@ -23,6 +23,7 @@ Database with history/revisions:
 - http://www.pgconf.us/2015/event/60/
 - https://github.com/attic-labs/noms
 - https://github.com/dolthub/dolt
+- `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
 
 Fast in-memory database with on-disk persistence
 
