@@ -8,7 +8,8 @@ way to make the system extremely simple, and fast.
 
 Storing data history also allows efficient distributed applications. Joedb has
 a network protocol that lets multiple processes access shared data
-concurrently. So joedb works a bit like git for structured data.
+concurrently. So joedb works a bit like git for structured data (without
+merging).
 
 .. image:: doc/source/images/joedb.svg
 

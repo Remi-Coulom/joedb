@@ -9,7 +9,7 @@ way to make the system extremely simple, and fast.
 Storing data history also allows efficient distributed applications. Joedb has
 a network protocol that lets multiple processes access shared data
 :doc:`concurrently <concurrency>`. So joedb works a bit like `git
-<https://git-scm.com/>`_ for structured data.
+<https://git-scm.com/>`_ for structured data (without merging).
 
 Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
