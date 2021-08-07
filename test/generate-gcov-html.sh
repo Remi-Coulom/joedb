@@ -12,7 +12,7 @@ lcov --directory ../compcmake/ninja_coverage\
      --rc lcov_branch_coverage=1\
      --output-file all.info || exit 1
 
-lcov --remove all.info '/opt/local/*' '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/googletest/*'\
+lcov --remove all.info '/opt/local/*' '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/googletest/*' '*/repos/asio/*'\
      --rc lcov_branch_coverage=1\
      --output app.info || exit 1
 
