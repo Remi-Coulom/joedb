@@ -80,6 +80,7 @@ TEST(Connection, Transaction_Failure)
    [](Readable_Writable &db)
    {
     db.create_table("city");
+    db.checkpoint(Commit_Level::no_commit);
     throw joedb::Exception("cancelled");
    }
   );

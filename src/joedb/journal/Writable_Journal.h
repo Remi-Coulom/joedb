@@ -8,15 +8,6 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- enum class Commit_Level
- ////////////////////////////////////////////////////////////////////////////
- {
-  no_commit,
-  half_commit,
-  full_commit
- };
-
- ////////////////////////////////////////////////////////////////////////////
  class Writable_Journal: public Readonly_Journal, public Writable
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -68,7 +59,7 @@ namespace joedb
    void append_raw_tail(const std::vector<char> &data);
 
    int64_t ahead_of_checkpoint() const;
-   void checkpoint(Commit_Level commit_level);
+   void checkpoint(Commit_Level commit_level) override;
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;

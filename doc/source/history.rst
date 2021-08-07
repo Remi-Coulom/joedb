@@ -14,6 +14,7 @@ History
     writing, then none of what was written since the previous lock-pull will be
     pushed to the server. The previous approach, based on a Lock object, was
     defective and is not available any more.
+  - Databases must be explictly checkpointed before destruction.
   - Minor fixes and improvements.
 
 - 2021-05-08: 5.0

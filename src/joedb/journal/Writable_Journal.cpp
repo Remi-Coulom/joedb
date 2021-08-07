@@ -1,6 +1,7 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Generic_File.h"
 #include "joedb/Exception.h"
+#include "joedb/Destructor_Logger.h"
 
 #include <vector>
 
@@ -52,7 +53,7 @@ int64_t joedb::Writable_Journal::ahead_of_checkpoint() const
 void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (ahead_of_checkpoint() || commit_level > current_commit_level)
+ if (ahead_of_checkpoint() > 0 || commit_level > current_commit_level)
  {
   checkpoint_index ^= 1;
   checkpoint_position = file.get_position();
@@ -308,5 +309,17 @@ void joedb::Writable_Journal::update_vector_##type_id\
 joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
- try {checkpoint(Commit_Level::no_commit);} catch (...) {}
+ if (ahead_of_checkpoint() > 0)
+ {
+  Destructor_Logger::write("error: ahead_of_checkpoint in destructor");
+
+  try
+  {
+   file.flush();
+  }
+  catch (...)
+  {
+   Destructor_Logger::write("error: failed to flush file in destructor");
+  }
+ }
 }

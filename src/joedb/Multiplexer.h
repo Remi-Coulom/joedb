@@ -37,6 +37,7 @@ namespace joedb
    void comment(const std::string &comment) override;
    void timestamp(int64_t timestamp) override;
    void valid_data() override;
+   void checkpoint(Commit_Level commit_level) override;
    void insert_into(Table_Id table_id, Record_Id record_id) override;
    void insert_vector
    (

@@ -279,6 +279,8 @@ int file_test()
   std::cout << "B >= B: " << (B >= B) << '\n';
  }
 
+ db.checkpoint_no_commit();
+
  return 0;
 }
 
@@ -306,6 +308,7 @@ int schema_upgrade_test()
   db.new_person("Rémi");
   db.write_comment("This is a comment");
   db.write_timestamp(12345);
+  db.checkpoint_no_commit();
  }
 
  try
@@ -384,6 +387,7 @@ int do_vector_test()
    v = db.new_vector_of_float(n);
    for (size_t i = 0; i < n; i++)
     db.set_value(v[i], 0.1f * float(i));
+   db.checkpoint_no_commit();
   }
 
   {
@@ -400,6 +404,7 @@ int do_vector_test()
   {
    vector_test::File_Database db("empty_vector.joedb");
    db.new_vector_of_point(0);
+   db.checkpoint_no_commit();
   }
   {
    vector_test::File_Database db("empty_vector.joedb");
@@ -419,6 +424,7 @@ int do_vector_test()
     db.set_x(v[i], 0.1f * float(i));
     db.set_y(v[i], 1.234f);
    }
+   db.checkpoint_no_commit();
    std::cout << "first().get_id() = ";
    std::cout << db.get_point_table().first().get_id() << '\n';
    std::cout << "last().get_id() = ";
@@ -428,14 +434,19 @@ int do_vector_test()
   {
    vector_test::File_Database db("vector_test.joedb");
    auto v = db.new_vector_of_point(n);
-   auto x = db.update_vector_of_x(v, n);
-   auto y = db.update_vector_of_y(v, n);
 
-   for (size_t i = 0; i < n; i++)
    {
-    x[i] = 0.2f * float(i);
-    y[i] = 5.678f;
+    auto x = db.update_vector_of_x(v, n);
+    auto y = db.update_vector_of_y(v, n);
+
+    for (size_t i = 0; i < n; i++)
+    {
+     x[i] = 0.2f * float(i);
+     y[i] = 5.678f;
+    }
    }
+
+   db.checkpoint_no_commit();
   }
 
   {
@@ -463,6 +474,7 @@ int do_vector_test()
    {
     vector_test::File_Database db("vector_hole_by_vector_insert.joedb");
     db.set_x(db.get_point_table().first(), 1.234f);
+    db.checkpoint_no_commit();
    }
    {
     joedb::File file("vector_hole_by_vector_insert.joedb", joedb::Open_Mode::read_existing);
@@ -535,6 +547,8 @@ int do_vector_test()
    else
     std::cout << "Joe not found\n";
   }
+
+  db.checkpoint_no_commit();
  }
 
  //
@@ -544,6 +558,7 @@ int do_vector_test()
   vector_test::File_Database db("vector_test.joedb");
   db.write_timestamp();
   db.write_comment("This was a timestamp.");
+  db.checkpoint_no_commit();
  }
 
  return 0;
@@ -561,6 +576,7 @@ int exceptions()
   db.new_city("Paris");
   db.new_city("Lille");
   db.new_city("Paris");
+  db.checkpoint_no_commit();
  }
  catch (const joedb::Exception &e)
  {
@@ -576,6 +592,7 @@ int exceptions()
   db.new_person("Marcel", "Coulom");
   db.new_person("Albert", "Premier");
   db.new_person("Rémi", "Coulom");
+  db.checkpoint_no_commit();
  }
  catch (const joedb::Exception &e)
  {
@@ -587,6 +604,7 @@ int exceptions()
   testdb::File_Database db("delete_in_vector_storage.joedb");
   auto translation = db.new_translation();
   ((joedb::Writable *)&db)->delete_from(5, translation.get_id());
+  db.checkpoint_no_commit();
  }
  catch (const joedb::Exception &e)
  {
@@ -598,6 +616,7 @@ int exceptions()
   testdb::File_Database db("duplicate_insert.joedb");
   ((joedb::Writable *)&db)->insert_into(1, 1);
   ((joedb::Writable *)&db)->insert_into(1, 1);
+  db.checkpoint_no_commit();
  }
  catch (const joedb::Exception &e)
  {
@@ -609,6 +628,7 @@ int exceptions()
   testdb::File_Database db("contiguous_vector.joedb");
   ((joedb::Writable *)&db)->insert_into(5, 1);
   ((joedb::Writable *)&db)->insert_into(5, 3);
+  db.checkpoint_no_commit();
  }
  catch (const joedb::Exception &e)
  {
@@ -620,6 +640,7 @@ int exceptions()
   testdb::File_Database db("too_big.joedb");
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_into(1, 2000);
+  db.checkpoint_no_commit();
  }
  catch (const joedb::Exception &e)
  {
@@ -631,6 +652,7 @@ int exceptions()
   testdb::File_Database db("too_big.joedb");
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_vector(1, 1, 2000);
+  db.checkpoint_no_commit();
  }
  catch (const joedb::Exception &e)
  {
@@ -643,6 +665,7 @@ int exceptions()
   auto city = db.new_city("Paris");
   std::cout << db.get_name(city) << '\n';
   db.delete_city(city);
+  db.checkpoint_no_commit();
   std::cout << db.get_name(city) << '\n';
  }
  catch (const joedb::Assertion_Failure &)
@@ -655,6 +678,7 @@ int exceptions()
   testdb::File_Database db("double_delete.joedb");
   auto city = db.new_city("Paris");
   db.delete_city(city);
+  db.checkpoint_no_commit();
   db.delete_city(city);
  }
  catch (const joedb::Assertion_Failure &)
@@ -667,6 +691,7 @@ int exceptions()
   testdb::File_Database db("invalid_update.joedb");
   auto city = db.new_city("Paris");
   db.delete_city(city);
+  db.checkpoint_no_commit();
   db.set_name(city, "Paris");
  }
  catch (const joedb::Assertion_Failure &)
@@ -698,7 +723,7 @@ int checkpoints()
 int iterators()
 /////////////////////////////////////////////////////////////////////////////
 {
- testdb::File_Database db("test.joedb");
+ testdb::Readonly_Database db("test.joedb");
 
  {
   auto i = db.get_person_table().begin();

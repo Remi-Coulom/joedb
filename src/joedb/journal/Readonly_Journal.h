@@ -27,6 +27,7 @@ namespace joedb
    void play_until_checkpoint(Writable &writable)
    {
     play_until(writable, checkpoint_position);
+    writable.checkpoint(Commit_Level::no_commit);
    }
 
    Async_Reader get_tail_reader(int64_t start_position) const

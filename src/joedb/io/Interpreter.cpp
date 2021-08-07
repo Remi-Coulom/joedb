@@ -546,4 +546,16 @@ namespace joedb
    }
   }
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreter::main_loop
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::istream &in,
+  std::ostream &out
+ )
+ {
+  Readonly_Interpreter::main_loop(in, out);
+  db.checkpoint(Commit_Level::no_commit);
+ }
 }

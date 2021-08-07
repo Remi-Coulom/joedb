@@ -1220,8 +1220,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
 
    void check_schema()
    {
-    schema_file.flush();
-
     const size_t pos = size_t(joedb::Writable_Journal::header_size);
     const size_t schema_file_size = schema_file.get_data().size();
 
@@ -1241,11 +1239,13 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    void create_table(const std::string &name) override
    {
     schema_journal.create_table(name);
+    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
    void drop_table(Table_Id table_id) override
    {
     schema_journal.drop_table(table_id);
+    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
    void rename_table
@@ -1255,6 +1255,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    ) override
    {
     schema_journal.rename_table(table_id, name);
+    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
    void add_field
@@ -1265,11 +1266,13 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    ) override
    {
     schema_journal.add_field(table_id, name, type);
+    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
    void drop_field(Table_Id table_id, Field_Id field_id) override
    {
     schema_journal.drop_field(table_id, field_id);
+    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
    void rename_field
@@ -1280,11 +1283,13 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    ) override
    {
     schema_journal.rename_field(table_id, field_id, name);
+    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
    void custom(const std::string &name) override
    {
     schema_journal.custom(name);
+    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 )RRR";
 

@@ -7,7 +7,18 @@
 
 namespace joedb
 {
+ ////////////////////////////////////////////////////////////////////////////
+ enum class Commit_Level
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  no_commit,
+  half_commit,
+  full_commit
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
  class Writable
+ ////////////////////////////////////////////////////////////////////////////
  {
   public:
    virtual void create_table(const std::string &name) {}
@@ -32,6 +43,7 @@ namespace joedb
    virtual void comment(const std::string &comment) {}
    virtual void timestamp(int64_t timestamp) {}
    virtual void valid_data() {}
+   virtual void checkpoint(Commit_Level commit_level) {}
 
    virtual void insert_into(Table_Id table_id, Record_Id record_id) {}
    virtual void insert_vector

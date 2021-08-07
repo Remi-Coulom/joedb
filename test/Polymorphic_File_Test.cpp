@@ -55,6 +55,7 @@ namespace joedb
   {
    Writable_Journal journal(file);
    journal.comment("This is a comment");
+   journal.checkpoint(Commit_Level::no_commit);
   }
   polymorphic_journal_readonly_test(file);
  }
@@ -198,6 +199,7 @@ TEST(Polymorphic_File, File_Slice)
   polymorphic_journal_test(file);
   file.set_position(60);
   file.write(42);
+  file.flush();
  }
 
  {

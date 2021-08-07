@@ -102,6 +102,11 @@ namespace joedb
      writable.valid_data();
    }
 
+   void checkpoint(Commit_Level commit_level)
+   {
+    writable.checkpoint(commit_level);
+   }
+
    //
    // data events
    //

@@ -80,6 +80,8 @@ namespace joedb
     db(db),
     max_record_id(max_record_id)
    {}
+
+   void main_loop(std::istream &in, std::ostream &out);
  };
 }
 
