@@ -1,4 +1,4 @@
-#include "testdb.h"
+#include "testdb_readonly.h"
 
 #include <iostream>
 
@@ -6,7 +6,7 @@
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- my_namespace::is_nested::testdb::File_Database db("test.joedb");
+ my_namespace::is_nested::testdb::Readonly_Database db("test.joedb");
 
  std::cout << "#ifndef translation_declared\n";
  std::cout << "#define translation_declared\n\n";
