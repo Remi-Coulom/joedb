@@ -283,6 +283,7 @@ ipo_add_executable(joedb_file_type
  ../src/joedb/journal/Generic_File.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/io/joedb_file_type.cpp
+ ../src/joedb/Destructor_Logger.cpp
 )
 
 if (HAS_NETWORKING)
