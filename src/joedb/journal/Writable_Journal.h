@@ -50,7 +50,7 @@ namespace joedb
       writer.write(buffer, size);
      }
 
-     ~Tail_Writer()
+     ~Tail_Writer() noexcept(false)
      {
       try
       {
@@ -60,6 +60,8 @@ namespace joedb
       }
       catch (...)
       {
+       if (!std::uncaught_exception())
+        throw;
       }
      }
    };
@@ -104,7 +106,7 @@ namespace joedb
                                 const type *value) override;
    #include "joedb/TYPE_MACRO.h"
 
-   ~Writable_Journal() override;
+   ~Writable_Journal() noexcept(false) override;
  };
 }
 

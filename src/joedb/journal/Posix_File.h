@@ -30,7 +30,7 @@ namespace joedb
 
    int64_t raw_get_size() const override;
 
-   ~Posix_File() override;
+   ~Posix_File() noexcept(false) override;
  };
 }
 

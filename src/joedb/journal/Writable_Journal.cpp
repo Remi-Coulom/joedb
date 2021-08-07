@@ -305,8 +305,16 @@ void joedb::Writable_Journal::update_vector_##type_id\
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::~Writable_Journal()
+joedb::Writable_Journal::~Writable_Journal() noexcept(false)
 /////////////////////////////////////////////////////////////////////////////
 {
- try {checkpoint(Commit_Level::no_commit);} catch (...) {}
+ try
+ {
+  checkpoint(Commit_Level::no_commit);
+ }
+ catch (...)
+ {
+  if (!std::uncaught_exception())
+   throw;
+ }
 }

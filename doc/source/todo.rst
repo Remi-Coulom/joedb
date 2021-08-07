@@ -11,7 +11,6 @@ short term (before review):
   - a Connection is not a Mutex (probably remove Mutex class completely)
 
 - SHA 256
-- Throw carefully from destructors (Files, Tail_Writer, ...)
 - Throw if more than one journal is opened on the same file?
 
 Journal File
