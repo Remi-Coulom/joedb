@@ -121,6 +121,7 @@ Concurrency
 
   - make it asynchronous instead of using threads
 
+- Connection via domain sockets / named pipes
 - Optional CRC check before pulling to verify the content of the origin.
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
   class that takes a readonly and a writable file, and uses the writable file
