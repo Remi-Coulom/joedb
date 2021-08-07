@@ -9,6 +9,7 @@ namespace joedb
  {
   public:
    virtual void write(const char *message) = 0;
+   virtual ~Logger() {}
  };
 }
 
