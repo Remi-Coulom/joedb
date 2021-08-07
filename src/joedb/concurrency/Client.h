@@ -65,7 +65,7 @@ namespace joedb
     {
      journal.play_until_checkpoint(writable);
      transaction();
-     journal.checkpoint(0);
+     journal.checkpoint(Commit_Level::no_commit);
     }
     catch (...)
     {

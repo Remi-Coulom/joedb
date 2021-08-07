@@ -86,7 +86,7 @@ TEST_F(Writable_Journal_Test, basic_operations)
    multi.update_float32(table_id, 1, float32_field_id, 3.14f);
    multi.update_float64(table_id, 1, float64_field_id, 3.141592653589);
   }
-  journal.checkpoint(2);
+  journal.checkpoint(Commit_Level::full_commit);
  }
 
  Database db2;

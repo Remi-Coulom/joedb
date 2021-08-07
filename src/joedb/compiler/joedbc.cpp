@@ -216,10 +216,25 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Connection &connection
    );
 
-   int64_t ahead_of_checkpoint() const {return journal.ahead_of_checkpoint();}
-   void checkpoint_no_commit() {journal.checkpoint(0);}
-   void checkpoint_half_commit() {journal.checkpoint(1);}
-   void checkpoint_full_commit() {journal.checkpoint(2);}
+   int64_t ahead_of_checkpoint() const
+   {
+    return journal.ahead_of_checkpoint();
+   }
+
+   void checkpoint_no_commit()
+   {
+    journal.checkpoint(joedb::Commit_Level::no_commit);
+   }
+
+   void checkpoint_half_commit()
+   {
+    journal.checkpoint(joedb::Commit_Level::half_commit);
+   }
+
+   void checkpoint_full_commit()
+   {
+    journal.checkpoint(joedb::Commit_Level::full_commit);
+   }
 
    void write_comment(const std::string &comment);
    void write_timestamp();
@@ -1761,7 +1776,7 @@ void generate_cpp
    upgrading_schema = false;
 
    journal.comment("End of automatic schema upgrade");
-   journal.checkpoint(0);
+   journal.checkpoint(joedb::Commit_Level::no_commit);
   }
  }
 

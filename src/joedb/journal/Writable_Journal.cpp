@@ -8,7 +8,7 @@
 joedb::Writable_Journal::Writable_Journal(Generic_File &file):
 /////////////////////////////////////////////////////////////////////////////
  Readonly_Journal(file),
- current_commit_level(0)
+ current_commit_level(Commit_Level::no_commit)
 {
  if (file.get_mode() == Open_Mode::create_new)
  {
@@ -22,7 +22,7 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
   file.write<int64_t>(0);
   file.write<int64_t>(0);
   file.write<int64_t>(0);
-  checkpoint(0);
+  checkpoint(Commit_Level::no_commit);
  }
 }
 
@@ -49,7 +49,7 @@ int64_t joedb::Writable_Journal::ahead_of_checkpoint() const
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::checkpoint(int commit_level)
+void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (ahead_of_checkpoint() || commit_level > current_commit_level)
@@ -62,13 +62,13 @@ void joedb::Writable_Journal::checkpoint(int commit_level)
   file.write<uint64_t>(uint64_t(checkpoint_position));
 
   file.flush();
-  if (commit_level > 0)
+  if (commit_level > Commit_Level::no_commit)
    file.commit();
 
   file.write<uint64_t>(uint64_t(checkpoint_position));
 
   file.flush();
-  if (commit_level > 1)
+  if (commit_level > Commit_Level::half_commit)
    file.commit();
 
   file.set_position(checkpoint_position);
@@ -308,5 +308,5 @@ void joedb::Writable_Journal::update_vector_##type_id\
 joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
- try {checkpoint(0);} catch (...) {}
+ try {checkpoint(Commit_Level::no_commit);} catch (...) {}
 }

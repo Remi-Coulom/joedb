@@ -8,11 +8,20 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ enum class Commit_Level
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  no_commit,
+  half_commit,
+  full_commit
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
  class Writable_Journal: public Readonly_Journal, public Writable
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   int current_commit_level;
+   Commit_Level current_commit_level;
 
   public:
    Writable_Journal(Generic_File &file);
@@ -46,7 +55,7 @@ namespace joedb
       try
       {
        writer.seek();
-       journal.checkpoint(0);
+       journal.checkpoint(Commit_Level::no_commit);
        journal.file.set_position(old_checkpoint);
       }
       catch (...)
@@ -59,7 +68,7 @@ namespace joedb
    void append_raw_tail(const std::vector<char> &data);
 
    int64_t ahead_of_checkpoint() const;
-   void checkpoint(int commit_level);
+   void checkpoint(Commit_Level commit_level);
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;

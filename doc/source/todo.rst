@@ -3,7 +3,6 @@ TODO
 
 short term (before review):
 
-- enum for commit level
 - Unit tests for new features (Interpreted_File, ...)
 - Rewrite Freedom Keeper
 - Check vector range for vector update
