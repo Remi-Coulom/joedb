@@ -18,6 +18,7 @@ class File_Test: public::testing::Test
    file.write<uint64_t>(joedb_magic);
    file.write<bool>(false);
    file.write<bool>(true);
+   file.flush();
   }
 
   virtual void TearDown()
@@ -55,6 +56,7 @@ TEST_F(File_Test, open_lock)
  {
   File locked_file_1("locked.tmp", Open_Mode::create_new);
   locked_file_1.write<int>(1234);
+  locked_file_1.flush();
 
   EXPECT_ANY_THROW
   (

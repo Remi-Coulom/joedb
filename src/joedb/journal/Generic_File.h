@@ -291,6 +291,8 @@ namespace joedb
     return raw_seek(offset + slice_start);
    }
 
+   void destructor_flush() noexcept;
+
   public:
    Generic_File(Open_Mode mode): mode(mode)
    {

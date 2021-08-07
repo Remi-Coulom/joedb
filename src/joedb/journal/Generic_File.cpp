@@ -1,4 +1,5 @@
 #include "joedb/journal/Generic_File.h"
+#include "joedb/Destructor_Logger.h"
 
 #include <algorithm>
 
@@ -75,6 +76,24 @@ void joedb::Generic_File::flush()
 {
  if (write_buffer_index)
   write_buffer();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Generic_File::destructor_flush() noexcept
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (write_buffer_index)
+ {
+  Destructor_Logger::write("warning: an unflushed file is being destroyed");
+  try
+  {
+   flush();
+  }
+  catch (...)
+  {
+   Destructor_Logger::write("error: failed to flush file in destructor");
+  }
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

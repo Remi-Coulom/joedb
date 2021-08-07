@@ -168,6 +168,7 @@ set(JOEDB_SOURCES
  ../src/joedb/Writable.cpp
  ../src/joedb/Multiplexer.cpp
  ../src/joedb/is_identifier.cpp
+ ../src/joedb/Destructor_Logger.cpp
  ../src/joedb/interpreter/Database.cpp
  ../src/joedb/interpreter/Database_Schema.cpp
  ../src/joedb/interpreter/Table.cpp
@@ -219,6 +220,7 @@ joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
+ ../src/joedb/Destructor_Logger.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Generic_File.cpp

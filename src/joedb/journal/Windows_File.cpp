@@ -167,7 +167,7 @@ namespace joedb
  Windows_File::~Windows_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  try {flush();} catch (...) {}
+  destructor_flush();
   CloseHandle(file);
  }
 }

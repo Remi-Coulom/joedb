@@ -83,7 +83,7 @@ namespace joedb
  joedb::Portable_File::~Portable_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  try {flush();} catch (...) {}
+  destructor_flush();
   fclose(file);
  }
 }
