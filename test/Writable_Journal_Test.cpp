@@ -124,6 +124,9 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Readable_Multiplexer db(db_storage);
   db.add_writable(journal);
 
+  Writable dummy_writable;
+  db.add_writable(dummy_writable);
+
   Interpreter interpreter(db);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
