@@ -53,7 +53,11 @@ int64_t joedb::Writable_Journal::ahead_of_checkpoint() const
 void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (ahead_of_checkpoint() > 0 || commit_level > current_commit_level)
+ if
+ (
+  ahead_of_checkpoint() > 0 ||
+  (ahead_of_checkpoint() == 0 && commit_level > current_commit_level)
+ )
  {
   checkpoint_index ^= 1;
   checkpoint_position = file.get_position();
@@ -310,16 +314,5 @@ joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
  if (ahead_of_checkpoint() > 0)
- {
   Destructor_Logger::write("error: ahead_of_checkpoint in destructor");
-
-  try
-  {
-   file.flush();
-  }
-  catch (...)
-  {
-   Destructor_Logger::write("error: failed to flush file in destructor");
-  }
- }
 }
