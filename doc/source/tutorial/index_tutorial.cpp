@@ -73,5 +73,7 @@ int main()
   std::cout << db.get_first_name(person) << '\n';
  }
 
+ db.checkpoint_no_commit();
+
  return 0;
 }

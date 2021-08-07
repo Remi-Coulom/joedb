@@ -61,5 +61,10 @@ int main()
  db.write_timestamp();
  db.write_comment("The End");
 
+ //
+ // This flushes data to permanent storage (and must be done explicitly)
+ //
+ db.checkpoint_no_commit();
+
  return 0;
 }
