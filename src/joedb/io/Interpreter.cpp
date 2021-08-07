@@ -59,7 +59,7 @@ namespace joedb
   Table_Id table_id = db.find_table(table_name);
   if (!table_id)
   {
-   std::stringstream error;
+   std::ostringstream error;
    error << "No such table: " << table_name;
    throw Exception(error.str());
   }
@@ -78,7 +78,7 @@ namespace joedb
  {
   if (exception)
   {
-   std::stringstream error;
+   std::ostringstream error;
    error << exception->what();
    error << "\nLine " << line_number << ": " << line << '\n';
 
@@ -174,7 +174,7 @@ namespace joedb
       id_column.push_back(record_id);
       for (auto field: fields)
       {
-       std::stringstream ss;
+       std::ostringstream ss;
 
        switch (db.get_field_type(table_id, field.first).get_type_id())
        {
@@ -201,7 +201,7 @@ namespace joedb
     //
     size_t id_width = 0;
     {
-     std::stringstream ss;
+     std::ostringstream ss;
      ss << last_record_id;
      ss.flush();
      id_width = ss.str().size();

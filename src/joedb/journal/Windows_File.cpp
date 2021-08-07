@@ -56,7 +56,7 @@ namespace joedb
   LocalFree(buffer);
   error.erase(error.find_last_not_of(" \r\n") + 1);
 
-  std::stringstream message;
+  std::ostringstream message;
   message << action << ' ' << file_name << ": " << error;
   throw Exception(message.str());
  }
