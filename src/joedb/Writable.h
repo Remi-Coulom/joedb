@@ -81,7 +81,7 @@ namespace joedb
    }
    #include "joedb/TYPE_MACRO.h"
 
-   virtual ~Writable() noexcept(false) {}
+   virtual ~Writable() {}
  };
 }
 

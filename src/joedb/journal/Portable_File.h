@@ -36,7 +36,7 @@ namespace joedb
 
    int64_t raw_get_size() const override;
 
-   ~Portable_File() noexcept(false) override;
+   ~Portable_File() override;
  };
 }
 

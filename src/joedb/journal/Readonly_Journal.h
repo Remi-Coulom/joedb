@@ -14,7 +14,6 @@ namespace joedb
  {
   public:
    Readonly_Journal(Generic_File &file, bool ignore_errors = false);
-   ~Readonly_Journal() noexcept(false) {}
 
    bool at_end_of_file() const;
    int64_t get_position() const {return file.get_position();}

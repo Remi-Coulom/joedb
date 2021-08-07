@@ -80,19 +80,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- joedb::Portable_File::~Portable_File() noexcept(false)
+ joedb::Portable_File::~Portable_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  try
-  {
-   flush();
-  }
-  catch (...)
-  {
-   if (!std::uncaught_exception())
-    throw;
-  }
-
+  try {flush();} catch (...) {}
   fclose(file);
  }
 }

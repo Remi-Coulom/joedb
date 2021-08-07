@@ -412,7 +412,7 @@ namespace joedb
    void flush(); // flushes the write buffer to the system
    void commit(); // flush and write to disk (fsync)
 
-   virtual ~Generic_File() noexcept(false) {}
+   virtual ~Generic_File() {}
 
    int64_t get_size() const
    {

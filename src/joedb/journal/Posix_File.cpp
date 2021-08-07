@@ -118,18 +118,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Posix_File::~Posix_File() noexcept(false)
+ Posix_File::~Posix_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  try
-  {
-   flush();
-  }
-  catch (...)
-  {
-   if (!std::uncaught_exception())
-    throw;
-  }
+  try {flush();} catch (...) {}
   close(fd);
  }
 }

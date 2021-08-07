@@ -164,19 +164,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Windows_File::~Windows_File() noexcept(false)
+ Windows_File::~Windows_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  try
-  {
-   flush();
-  }
-  catch (...)
-  {
-   if (!std::uncaught_exception())
-    throw;
-  }
-
+  try {flush();} catch (...) {}
   CloseHandle(file);
  }
 }

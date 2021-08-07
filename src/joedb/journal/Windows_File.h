@@ -40,7 +40,7 @@ namespace joedb
    {
    }
 
-   ~Windows_File() noexcept(false) override;
+   ~Windows_File() override;
  };
 }
 
