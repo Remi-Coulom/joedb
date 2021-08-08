@@ -3,9 +3,6 @@ TODO
 
 short term (before review):
 
-- Get rid of all destructors that can fail:
-  - compiled value updater (replace by function, change class name)
-  - Mutex_Lock (just remove it)
 - test joedb_merge, joedb_pack, ...
 - Rewrite Freedom Keeper
 - Check vector range for vector update
@@ -15,7 +12,7 @@ short term (before review):
   - a Connection is not a Mutex (probably remove Mutex class completely)
 
 - SHA 256
-- Throw if more than one journal is opened on the same file?
+- Throw if more than one writable journal is opened on the same file?
 
 Journal File
 ------------

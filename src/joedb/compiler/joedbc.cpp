@@ -154,6 +154,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << "#include \"joedb/concurrency/Client.h\"\n";
+ out << "#include \"joedb/Posthumous_Thrower.h\"\n";
  out << '\n';
 
  namespace_open(out, options.get_name_space());
@@ -375,7 +376,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    //
    // Vector updater
    //
-   out << "   class vector_updater_for_" << tname << "__" << fname << '\n';
+   out << "   class vector_updater_for_" << tname << "__" << fname;
+   out << ": public joedb::Posthumous_Thrower" << '\n';
    out << "   {\n";
    out << "    private:\n";
    out << "     Generic_File_Database &db;\n";
@@ -403,8 +405,15 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << '\n';
    out << "     ~vector_updater_for_" << tname << "__" << fname << "()\n";
    out << "     {\n";
-   out << "      db.internal_update_vector_" << tname << "__" << fname << "(record, size, &(*this)[0]);\n";
-   out << "      db.journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record, " << field.first << ", size, &(*this)[0]);\n";
+   out << "      try\n";
+   out << "      {\n";
+   out << "       db.internal_update_vector_" << tname << "__" << fname << "(record, size, &(*this)[0]);\n";
+   out << "       db.journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record, " << field.first << ", size, &(*this)[0]);\n";
+   out << "      }\n";
+   out << "      catch (...)\n";
+   out << "      {\n";
+   out << "       please_throw_after_my_death();\n";
+   out << "      }\n";
    out << "     }\n";
    out << "   };\n\n";
 
