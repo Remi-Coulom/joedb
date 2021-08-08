@@ -3,16 +3,11 @@ TODO
 
 short term (before review):
 
-- test joedb_merge, joedb_pack, ...
 - Rewrite Freedom Keeper
 - Check vector range for vector update
-- File_Continuation:
-
-  - no need of mutex lock (use valid checkpoint)
-  - a Connection is not a Mutex (probably remove Mutex class completely)
-
 - SHA 256
-- Throw if more than one writable journal is opened on the same file?
+- File_Continuation: no need of mutex lock (use valid checkpoint)
+- test joedb_merge, joedb_pack, ...
 
 Journal File
 ------------
