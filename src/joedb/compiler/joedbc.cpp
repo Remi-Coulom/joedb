@@ -412,7 +412,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "      }\n";
    out << "      catch (...)\n";
    out << "      {\n";
-   out << "       please_throw_after_my_death();\n";
+   out << "       postpone_exception();\n";
    out << "      }\n";
    out << "     }\n";
    out << "   };\n\n";

@@ -3,6 +3,7 @@
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Channel.h"
+#include "joedb/Posthumous_Thrower.h"
 
 #include <mutex>
 #include <condition_variable>
@@ -27,8 +28,11 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Server_Connection: public Connection, public Server_Handshake
+ class Server_Connection:
  ////////////////////////////////////////////////////////////////////////////
+  public Connection,
+  public Server_Handshake,
+  public Posthumous_Thrower
  {
   private:
    enum {buffer_size = (1 << 13)};

@@ -240,22 +240,19 @@ namespace joedb
  {
   try
   {
-   Channel_Lock lock(channel);
-   buffer[0] = 'Q';
-   lock.write(buffer, 1);
+   {
+    Channel_Lock lock(channel);
+    buffer[0] = 'Q';
+    lock.write(buffer, 1);
+    keep_alive_thread_must_stop = true;
+    condition.notify_one();
+   }
+   keep_alive_thread.join();
+   delete[] buffer;
   }
   catch(...)
   {
+   postpone_exception();
   }
-
-  {
-   Channel_Lock lock(channel);
-   keep_alive_thread_must_stop = true;
-   condition.notify_one();
-  }
-
-  keep_alive_thread.join();
-
-  delete[] buffer;
  }
 }

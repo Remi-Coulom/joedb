@@ -40,7 +40,7 @@ namespace joedb
     }
     catch (...)
     {
-     please_throw_after_my_death();
+     postpone_exception();
     }
    }
  };

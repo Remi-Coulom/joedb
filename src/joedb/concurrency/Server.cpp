@@ -44,14 +44,21 @@ namespace joedb
  Server::Session::~Session()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (state == locking)
+  try
   {
-   write_id(std::cerr) << "removing lock held by dying session.\n";
-   server.unlock(*this);
+   --server.session_count;
+   if (state == locking)
+   {
+    write_id(std::cerr) << "removing lock held by dying session.\n";
+    server.unlock(*this);
+   }
+   write_id(std::cerr) << "deleted\n";
+   server.write_status();
   }
-  write_id(std::cerr) << "deleted\n";
-  --server.session_count;
-  server.write_status();
+  catch (...)
+  {
+   postpone_exception();
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

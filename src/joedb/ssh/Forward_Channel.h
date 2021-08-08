@@ -77,8 +77,14 @@ namespace joedb
     ~Forward_Channel()
     /////////////////////////////////////////////////////////////////////////
     {
-     std::unique_lock<std::mutex> lock(mutex);
-     ssh_channel_free(channel);
+     try
+     {
+      std::unique_lock<std::mutex> lock(mutex);
+      ssh_channel_free(channel);
+     }
+     catch(...)
+     {
+     }
     }
   };
  }

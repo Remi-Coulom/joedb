@@ -35,7 +35,7 @@ namespace joedb
    Posthumous_Catcher *catcher = nullptr;
 
   protected:
-   void please_throw_after_my_death() noexcept
+   void postpone_exception() noexcept
    {
     if (catcher)
      catcher->catch_current_exception();

@@ -35,12 +35,18 @@ namespace joedb
   Keepalive_Thread::~Keepalive_Thread()
   ///////////////////////////////////////////////////////////////////////////
   {
+   try
    {
-    ssh::Session_Lock lock(session);
-    must_stop = true;
-    condition.notify_one();
+    {
+     ssh::Session_Lock lock(session);
+     must_stop = true;
+     condition.notify_one();
+    }
+    thread.join();
    }
-   thread.join();
+   catch(...)
+   {
+   }
   }
  }
 }

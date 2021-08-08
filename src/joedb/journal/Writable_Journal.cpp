@@ -314,6 +314,12 @@ void joedb::Writable_Journal::update_vector_##type_id\
 joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
- if (ahead_of_checkpoint() > 0)
-  Destructor_Logger::write("error: ahead_of_checkpoint in destructor");
+ try
+ {
+  if (ahead_of_checkpoint() > 0)
+   Destructor_Logger::write("error: ahead_of_checkpoint in destructor");
+ }
+ catch(...)
+ {
+ }
 }
