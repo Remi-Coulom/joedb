@@ -4,7 +4,6 @@ TODO
 short term (before review):
 
 - Get rid of all destructors that can fail:
-  - Tail_Writer (replace by function)
   - compiled value updater (replace by function, change class name)
   - Mutex_Lock (just remove it)
 - test joedb_merge, joedb_pack, ...
