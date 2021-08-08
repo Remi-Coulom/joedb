@@ -33,6 +33,7 @@ void joedb::Writable_Journal::append_raw_tail(const char *data, size_t size)
 {
  Tail_Writer tail_writer(*this);
  tail_writer.append(data, size);
+ tail_writer.finish();
 }
 
 /////////////////////////////////////////////////////////////////////////////

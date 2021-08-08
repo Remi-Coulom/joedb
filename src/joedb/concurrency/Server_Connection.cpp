@@ -45,6 +45,8 @@ namespace joedb
     read += n;
     std::cerr << '.';
    }
+
+   tail_writer.finish();
   }
 
   std::cerr << " OK\n";

@@ -41,17 +41,11 @@ namespace joedb
       writer.write(buffer, size);
      }
 
-     ~Tail_Writer()
+     void finish()
      {
-      try
-      {
-       writer.seek();
-       journal.checkpoint(Commit_Level::no_commit);
-       journal.file.set_position(old_checkpoint);
-      }
-      catch (...)
-      {
-      }
+      writer.seek();
+      journal.checkpoint(Commit_Level::no_commit);
+      journal.file.set_position(old_checkpoint);
      }
    };
 
