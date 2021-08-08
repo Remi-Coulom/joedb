@@ -23,6 +23,8 @@ namespace joedb
     int64_t server_position
    ) = 0;
 
+   void unlock() override = 0;
+
   public:
    virtual ~Connection() {}
  };

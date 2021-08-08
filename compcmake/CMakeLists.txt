@@ -253,6 +253,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Journal_Test.cpp
   ../test/Server_Connection_Test.cpp
   ../test/SHA_256_Test.cpp
+  ../test/Mutex_Test.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp

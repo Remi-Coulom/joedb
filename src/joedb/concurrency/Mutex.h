@@ -1,7 +1,7 @@
 #ifndef joedb_Mutex_declared
 #define joedb_Mutex_declared
 
-#include <exception>
+#include "joedb/Posthumous_Thrower.h"
 
 namespace joedb
 {
@@ -11,7 +11,7 @@ namespace joedb
  {
   friend class Mutex_Lock;
 
-  protected:
+  private:
    virtual void lock() = 0;
    virtual void unlock() = 0;
 
@@ -20,7 +20,7 @@ namespace joedb
  };
 
  ///////////////////////////////////////////////////////////////////////////
- class Mutex_Lock
+ class Mutex_Lock: public Posthumous_Thrower
  ///////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -32,7 +32,7 @@ namespace joedb
     mutex.lock();
    }
 
-   ~Mutex_Lock() noexcept(false)
+   ~Mutex_Lock()
    {
     try
     {
@@ -40,8 +40,7 @@ namespace joedb
     }
     catch (...)
     {
-     if (!std::uncaught_exception())
-      throw;
+     please_throw_after_my_death();
     }
    }
  };
