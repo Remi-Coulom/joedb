@@ -172,7 +172,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     {
      write_timestamp();
      write_comment(message);
-     checkpoint_no_commit();
+     checkpoint();
     }
     Database::error(message);
    }
@@ -234,6 +234,16 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    void checkpoint_full_commit()
    {
     journal.checkpoint(joedb::Commit_Level::full_commit);
+   }
+
+   void checkpoint()
+   {
+    checkpoint_no_commit();
+   }
+
+   void checkpoint(joedb::Commit_Level commit_level) override
+   {
+    journal.checkpoint(commit_level);
    }
 
    void write_comment(const std::string &comment);

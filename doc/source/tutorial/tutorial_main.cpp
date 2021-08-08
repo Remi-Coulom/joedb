@@ -62,9 +62,9 @@ int main()
  db.write_comment("The End");
 
  //
- // This flushes data to permanent storage (and must be done explicitly)
+ // Writes to the database must be confirmed by an explicit checkpoint
  //
- db.checkpoint_no_commit();
+ db.checkpoint();
 
  return 0;
 }
