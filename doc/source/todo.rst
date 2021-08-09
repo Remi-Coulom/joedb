@@ -4,10 +4,7 @@ TODO
 short term (before review):
 
 - Rewrite Freedom Keeper
-- Check vector range for vector update
 - SHA 256
-- File_Continuation: no need of mutex lock (use valid checkpoint)
-- test joedb_merge, joedb_pack, ...
 
 Journal File
 ------------
