@@ -155,6 +155,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << "#include \"joedb/concurrency/Client.h\"\n";
  out << "#include \"joedb/Posthumous_Thrower.h\"\n";
+ out << "#include \"joedb/Range.h\"\n";
  out << '\n';
 
  namespace_open(out, options.get_name_space());
