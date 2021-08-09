@@ -15,7 +15,11 @@ namespace joedb
    virtual void lock() = 0;
    virtual void unlock() = 0;
 
+   Mutex(const Mutex&) = delete;
+   Mutex &operator=(const Mutex&) = delete;
+
   public:
+   Mutex() {}
    virtual ~Mutex() {}
  };
 
@@ -25,6 +29,9 @@ namespace joedb
  {
   private:
    Mutex &mutex;
+
+   Mutex_Lock(const Mutex_Lock&) = delete;
+   Mutex_Lock &operator=(const Mutex_Lock&) = delete;
 
   public:
    Mutex_Lock(Mutex &mutex): mutex(mutex)
