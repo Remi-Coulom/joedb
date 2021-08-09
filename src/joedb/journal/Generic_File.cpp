@@ -1,5 +1,4 @@
 #include "joedb/journal/Generic_File.h"
-#include "joedb/Destructor_Logger.h"
 
 #include <algorithm>
 
@@ -91,7 +90,7 @@ void joedb::Generic_File::destructor_flush() noexcept
   }
   catch (...)
   {
-   Destructor_Logger::write("error: failed to flush file in destructor");
+   postpone_exception("failed to flush in Generic_File destructor");
   }
  }
 }

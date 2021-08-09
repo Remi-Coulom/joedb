@@ -13,7 +13,7 @@ namespace joedb
    static Logger *the_logger;
 
   public:
-   static void write(const char * message);
+   static void write(const char * message) noexcept;
    static void set_logger(Logger &new_logger);
  };
 }

@@ -57,7 +57,7 @@ namespace joedb
   }
   catch (...)
   {
-   postpone_exception();
+   postpone_exception("exception in Session destructor");
   }
  }
 

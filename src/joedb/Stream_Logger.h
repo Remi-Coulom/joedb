@@ -14,9 +14,15 @@ namespace joedb
   private:
    std::ostream &out;
 
-   void write(const char *message) override
+   void write(const char *message) noexcept override
    {
-    out << "joedb: " << message << '\n';
+    try
+    {
+     out << "joedb: " << message << '\n';
+    }
+    catch (...)
+    {
+    }
    }
 
   public:

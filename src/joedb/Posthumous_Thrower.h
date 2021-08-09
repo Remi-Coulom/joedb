@@ -1,7 +1,8 @@
 #ifndef joedb_Posthumous_Thrower_declared
 #define joedb_Posthumous_Thrower_declared
 
-#include <exception>
+#include "joedb/Destructor_Logger.h"
+#include "joedb/Exception.h"
 
 namespace joedb
 {
@@ -14,9 +15,23 @@ namespace joedb
   private:
    std::exception_ptr exception;
 
-   void catch_current_exception() noexcept
+   void catch_current_exception(const char *message) noexcept
    {
-    exception = std::current_exception();
+    if (!exception)
+    {
+     exception = std::current_exception();
+     if (!exception)
+      try
+      {
+       throw Exception(message);
+      }
+      catch (...)
+      {
+       exception = std::current_exception();
+      }
+    }
+    if (message)
+     Destructor_Logger::write(message);
    }
 
   public:
@@ -35,10 +50,10 @@ namespace joedb
    Posthumous_Catcher *catcher = nullptr;
 
   protected:
-   void postpone_exception() noexcept
+   void postpone_exception(const char *message = nullptr) noexcept
    {
     if (catcher)
-     catcher->catch_current_exception();
+     catcher->catch_current_exception(message);
    }
 
   public:

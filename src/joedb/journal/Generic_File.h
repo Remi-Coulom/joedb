@@ -7,6 +7,7 @@
 
 #include "joedb/assert.h"
 #include "joedb/is_big_endian.h"
+#include "joedb/Posthumous_Thrower.h"
 
 namespace joedb
 {
@@ -21,7 +22,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Generic_File
+ class Generic_File: public Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Async_Reader;

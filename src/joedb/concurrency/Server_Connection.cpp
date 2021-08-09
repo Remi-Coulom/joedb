@@ -252,7 +252,7 @@ namespace joedb
   }
   catch(...)
   {
-   postpone_exception();
+   postpone_exception("exception in Server_Connection destructor");
   }
  }
 }

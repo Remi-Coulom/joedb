@@ -40,7 +40,7 @@ namespace joedb
     }
     catch (...)
     {
-     postpone_exception();
+     postpone_exception("could not unlock mutex");
     }
    }
  };

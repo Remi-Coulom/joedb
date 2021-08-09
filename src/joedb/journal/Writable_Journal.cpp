@@ -1,7 +1,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Generic_File.h"
 #include "joedb/Exception.h"
-#include "joedb/Destructor_Logger.h"
 
 #include <vector>
 
@@ -314,12 +313,6 @@ void joedb::Writable_Journal::update_vector_##type_id\
 joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
- try
- {
-  if (ahead_of_checkpoint() > 0)
-   Destructor_Logger::write("error: ahead_of_checkpoint in destructor");
- }
- catch(...)
- {
- }
+ if (ahead_of_checkpoint() > 0)
+  postpone_exception("Ahead_of_checkpoint in Writable_Journal destructor");
 }

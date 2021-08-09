@@ -7,7 +7,7 @@ namespace joedb
  Logger *Destructor_Logger::the_logger = &default_logger;
 
  ////////////////////////////////////////////////////////////////////////////
- void Destructor_Logger::write(const char * message)
+ void Destructor_Logger::write(const char * message) noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
   the_logger->write(message);
