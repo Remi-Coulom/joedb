@@ -119,14 +119,18 @@ The performance of joedb can be further improved by using :doc:`vector insertion
 
   {
    auto v = db.new_vector_of_benchmark(N);
-   auto name = db.update_vector_of_name(v, N);
-   auto value = db.update_vector_of_value(v, N);
 
-   for (size_t i = 0; i < N; i++)
+   db.update_vector_of_name(v, N, [N](joedb::Span<std::string> name)
    {
-    name[i] = "TOTO";
-    value[i] = int64_t(i + 1);
-   }
+    for (size_t i = 0; i < N; i++)
+     name[i] = "TOTO";
+   });
+
+   db.update_vector_of_value(v, N, [N](joedb::Span<int64_t> value)
+   {
+    for (size_t i = 0; i < N; i++)
+     value[i] = int64_t(i + 1);
+   });
   }
 
   db.checkpoint_full_commit();

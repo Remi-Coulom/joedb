@@ -14,7 +14,9 @@ History
     writing, then none of what was written since the previous lock-pull will be
     pushed to the server. The previous approach, based on a Lock object, was
     defective and is not available any more.
-  - New approach to vector updates that allows testing for write errors.
+  - New approach to vector updates that allows testing for write errors
+    (previous version wrote data in a destructor, which could cause unwanted
+    program terminations in case of error).
   - Databases must be explictly checkpointed before destruction.
   - Minor fixes and improvements.
 

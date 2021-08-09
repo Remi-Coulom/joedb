@@ -20,16 +20,16 @@ int main(int argc, char **argv)
   {
    auto v = db.new_vector_of_benchmark(N);
 
-   db.update_vector_of_name(v, N, [&](joedb::Span<std::string> name)
+   db.update_vector_of_name(v, N, [N](joedb::Span<std::string> name)
    {
-    db.update_vector_of_value(v, N, [&](joedb::Span<int64_t> value)
-    {
-     for (size_t i = 0; i < N; i++)
-     {
-      name[i] = "TOTO";
-      value[i] = int64_t(i + 1);
-     }
-    });
+    for (size_t i = 0; i < N; i++)
+     name[i] = "TOTO";
+   });
+
+   db.update_vector_of_value(v, N, [N](joedb::Span<int64_t> value)
+   {
+    for (size_t i = 0; i < N; i++)
+     value[i] = int64_t(i + 1);
    });
   }
 #endif
