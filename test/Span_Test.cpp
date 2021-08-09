@@ -1,16 +1,16 @@
-#include "joedb/Range.h"
+#include "joedb/Span.h"
 #include "gtest/gtest.h"
 
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Range, test)
+TEST(Span, test)
 /////////////////////////////////////////////////////////////////////////////
 {
  const int size = 5;
 
  int array[size + 1];
- joedb::Range<int> range(array, size);
+ joedb::Span<int> range(array, size);
 
  const int magic = 123;
 

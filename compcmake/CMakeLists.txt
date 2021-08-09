@@ -254,7 +254,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Server_Connection_Test.cpp
   ../test/SHA_256_Test.cpp
   ../test/Mutex_Test.cpp
-  ../test/Range_Test.cpp
+  ../test/Span_Test.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp

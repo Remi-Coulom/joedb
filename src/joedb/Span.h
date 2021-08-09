@@ -1,5 +1,5 @@
-#ifndef joedb_Range_declared
-#define joedb_Range_declared
+#ifndef joedb_Span_declared
+#define joedb_Span_declared
 
 #include "joedb/assert.h"
 
@@ -8,7 +8,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- template<typename T> class Range
+ template<typename T> class Span
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -16,7 +16,7 @@ namespace joedb
    size_t size;
 
   public:
-   Range(T *p, size_t size): p(p), size(size)
+   Span(T *p, size_t size): p(p), size(size)
    {
    }
 
