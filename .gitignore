@@ -4,3 +4,4 @@
 *.pyc
 oprofile_data
 .cache
+compile_commands.json
