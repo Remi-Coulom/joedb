@@ -24,25 +24,25 @@ namespace joedb
     )
    );
   }
-  catch(const joedb::Exception &)
+  catch (...)
   {
-   Posthumous_Catcher catcher;
-
-   try
-   {
-    Mutex_Lock lock(mutex);
-    lock.set_catcher(catcher);
-    joedb::File readonly_file(file_name, joedb::Open_Mode::read_existing);
-    file.reset(new joedb::Memory_File(joedb::Open_Mode::write_existing));
-    file->copy(readonly_file);
-    file->set_position(0);
-   }
-   catch(...)
-   {
-    file.reset(new joedb::Memory_File(joedb::Open_Mode::create_new));
-   }
-
-   catcher.rethrow();
+   mutex.run_while_locked
+   (
+    [&]()
+    {
+     try
+     {
+      joedb::File readonly_file(file_name, joedb::Open_Mode::read_existing);
+      file.reset(new joedb::Memory_File(joedb::Open_Mode::write_existing));
+      file->copy(readonly_file);
+      file->set_position(0);
+     }
+     catch (...)
+     {
+      file.reset(new joedb::Memory_File(joedb::Open_Mode::create_new));
+     }
+    }
+   );
   }
  }
 }

@@ -1,7 +1,8 @@
 #ifndef joedb_Mutex_declared
 #define joedb_Mutex_declared
 
-#include "joedb/Posthumous_Thrower.h"
+#include <functional>
+#include <exception>
 
 namespace joedb
 {
@@ -21,34 +22,36 @@ namespace joedb
   public:
    Mutex() {}
    virtual ~Mutex() {}
- };
 
- ///////////////////////////////////////////////////////////////////////////
- class Mutex_Lock: public Posthumous_Thrower
- ///////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Mutex &mutex;
-
-   Mutex_Lock(const Mutex_Lock&) = delete;
-   Mutex_Lock &operator=(const Mutex_Lock&) = delete;
-
-  public:
-   Mutex_Lock(Mutex &mutex): mutex(mutex)
+   /////////////////////////////////////////////////////////////////////////
+   void run_while_locked(std::function<void()> f)
+   /////////////////////////////////////////////////////////////////////////
    {
-    mutex.lock();
-   }
+    lock();
 
-   ~Mutex_Lock()
-   {
+    std::exception_ptr exception;
+
     try
     {
-     mutex.unlock();
+     f();
     }
     catch (...)
     {
-     postpone_exception("could not unlock mutex");
+     exception = std::current_exception();
     }
+
+    try
+    {
+     unlock();
+    }
+    catch (...)
+    {
+     if (!exception) // ??? maybe create a combined exception if both failed
+      throw;
+    }
+
+    if (exception)
+     std::rethrow_exception(exception);
    }
  };
 }

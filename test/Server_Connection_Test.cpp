@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Mutex_Lock.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 

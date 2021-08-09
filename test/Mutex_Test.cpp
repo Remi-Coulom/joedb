@@ -1,4 +1,4 @@
-#include "joedb/concurrency/Mutex.h"
+#include "joedb/concurrency/Mutex_Lock.h"
 
 #include "gtest/gtest.h"
 
