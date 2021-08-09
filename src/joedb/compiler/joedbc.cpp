@@ -154,7 +154,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << "#include \"joedb/concurrency/Client.h\"\n";
- out << "#include \"joedb/Posthumous_Thrower.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
  out << '\n';
 
@@ -375,55 +374,22 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   }\n\n";
 
    //
-   // Vector updater
+   // Vector update
    //
-   out << "   class vector_updater_for_" << tname << "__" << fname;
-   out << ": public joedb::Posthumous_Thrower" << '\n';
+   out << "   void update_vector_of_" << fname << "(id_of_" << tname;
+   out << " record, size_t size, std::function<void(joedb::Span<";
+   out << storage_type << ">)> f)\n";
    out << "   {\n";
-   out << "    private:\n";
-   out << "     Generic_File_Database &db;\n";
-   out << "     const id_of_" << tname << " record;\n";
-   out << "     const size_t size;\n";
-   out << '\n';
-   out << "    public:\n";
-   out << "     vector_updater_for_" << tname << "__" << fname << '\n';
-   out << "     (\n";
-   out << "      Generic_File_Database &db,\n";
-   out << "      id_of_" << tname << " record,\n";
-   out << "      size_t size\n";
-   out << "     ):\n";
-   out << "      db(db),\n";
-   out << "      record(record),\n";
-   out << "      size(size)\n";
-   out << "     {\n";
-   out << "     }\n";
-   out << '\n';
-   out << "     " << storage_type << " &operator[](size_t i)\n";
-   out << "     {\n";
-   out << "      return db.storage_of_" << tname;
-   out << ".field_value_of_" << fname << "[record.id + i - 1];\n";
-   out << "     }\n";
-   out << '\n';
-   out << "     ~vector_updater_for_" << tname << "__" << fname << "()\n";
-   out << "     {\n";
-   out << "      try\n";
-   out << "      {\n";
-   out << "       db.internal_update_vector_" << tname << "__" << fname << "(record, size, &(*this)[0]);\n";
-   out << "       db.journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record, " << field.first << ", size, &(*this)[0]);\n";
-   out << "      }\n";
-   out << "      catch (...)\n";
-   out << "      {\n";
-   out << "       postpone_exception();\n";
-   out << "      }\n";
-   out << "     }\n";
-   out << "   };\n\n";
-
-   out << "   vector_updater_for_" << tname << "__" << fname;
-   out << " update_vector_of_" << fname << "(id_of_" << tname;
-   out << " record, size_t size)\n";
-   out << "   {\n";
-   out << "    return vector_updater_for_" << tname << "__" << fname << "(*this, record, size);\n";
-   out << "   }\n";
+   out << "    std::exception_ptr exception;\n";
+   out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
+   out << ".field_value_of_" << fname << "[record.id - 1], size);\n";
+   out << "    try {f(span);}\n";
+   out << "    catch (...) {exception = std::current_exception();}\n";
+   out << "    internal_update_vector_" << tname << "__" << fname << "(record, size, span.begin());\n";
+   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record, " << field.first << ", size, span.begin());\n";
+   out << "    if (exception)\n";
+   out << "     std::rethrow_exception(exception);\n";
+   out << "   }\n\n";
   }
  }
 

@@ -435,16 +435,17 @@ int do_vector_test()
    vector_test::File_Database db("vector_test.joedb");
    auto v = db.new_vector_of_point(n);
 
+   db.update_vector_of_x(v, n, [&](joedb::Span<float> x)
    {
-    auto x = db.update_vector_of_x(v, n);
-    auto y = db.update_vector_of_y(v, n);
-
-    for (size_t i = 0; i < n; i++)
+    db.update_vector_of_y(v, n, [&](joedb::Span<float> y)
     {
-     x[i] = 0.2f * float(i);
-     y[i] = 5.678f;
-    }
-   }
+     for (size_t i = 0; i < n; i++)
+     {
+      x[i] = 0.2f * float(i);
+      y[i] = 5.678f;
+     }
+    });
+   });
 
    db.checkpoint();
   }
@@ -510,10 +511,12 @@ int do_vector_test()
   {
    constexpr int n = 3;
    auto v = db.new_vector_of_person(n);
-   auto name = db.update_vector_of_name(v, n);
-   name[0] = "Rémi";
-   name[1] = "Paul";
-   name[2] = "Liza";
+   db.update_vector_of_name(v, n, [](joedb::Span<std::string> name)
+   {
+    name[0] = "Rémi";
+    name[1] = "Paul";
+    name[2] = "Liza";
+   });
   }
 
   {
@@ -527,10 +530,12 @@ int do_vector_test()
   {
    constexpr int n = 3;
    auto v = db.get_person_table().first();
-   auto name = db.update_vector_of_name(v, n);
-   name[0] = "Joe";
-   name[1] = "Max";
-   name[2] = "Liz";
+   db.update_vector_of_name(v, n, [](joedb::Span<std::string> name)
+   {
+    name[0] = "Joe";
+    name[1] = "Max";
+    name[2] = "Liz";
+   });
   }
 
   {

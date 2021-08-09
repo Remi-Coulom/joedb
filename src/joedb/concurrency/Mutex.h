@@ -27,9 +27,9 @@ namespace joedb
    void run_while_locked(std::function<void()> f)
    /////////////////////////////////////////////////////////////////////////
    {
-    lock();
-
     std::exception_ptr exception;
+
+    lock();
 
     try
     {
@@ -40,15 +40,7 @@ namespace joedb
      exception = std::current_exception();
     }
 
-    try
-    {
-     unlock();
-    }
-    catch (...)
-    {
-     if (!exception) // ??? maybe create a combined exception if both failed
-      throw;
-    }
+    unlock();
 
     if (exception)
      std::rethrow_exception(exception);

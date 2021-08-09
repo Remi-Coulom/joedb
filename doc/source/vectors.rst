@@ -18,12 +18,12 @@ It is possible to allocate and manipulate a vector of floats like this:
 
 .. code-block:: c++
 
-    const size_t vector_size = 5;
-    auto vector = db.new_vector_of_float(vector_size);
-    for (size_t i = 0; i < vector_size; i++)
-     db.set_value(vector[i], 0.1f * float(i));
+    const size_t size = 5;
+    auto v = db.new_vector_of_float(size);
+    for (size_t i = 0; i < size; i++)
+     db.set_value(v[i], 0.1f * float(i));
 
-``vector`` is a usual reference, and can be stored in a field of type
+``v`` is a usual reference, and can be stored in a field of type
 ``references float``.
 
 The loop above will write vector values one by one. In order to efficiently
@@ -32,17 +32,16 @@ instead:
 
 .. code-block:: c++
 
-    const size_t vector_size = 5;
-    auto vector = db.new_vector_of_float(vector_size);
+    const size_t size = 5;
+    auto v = db.new_vector_of_float(size);
+    db.update_vector_of_value(v, size, [size](joedb::Span<float> value)
     {
-     auto value = db.update_vector_of_value(vector, vector_size);
-     for (size_t i = 0; i < vector_size; i++)
+     for (size_t i = 0; i < size; i++)
       value[i] = 0.1f * float(i);
-    }
+    });
 
-The destructor of the ``value`` object will perform a single large write of the
-data to the joedb file, which is more compact and efficient than writing each
-record one by one.
+This will perform a single large write of the data to the joedb file, which is
+more compact and efficient than writing each record one by one.
 
 If a joedb file was created by a succession of different insertions and
 updates, then the storage of a column will not be contiguous in the joedb file,
