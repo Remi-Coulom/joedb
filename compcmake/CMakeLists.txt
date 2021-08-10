@@ -53,6 +53,12 @@ if (CMAKE_VERSION VERSION_GREATER 3.9)
  check_ipo_supported(RESULT ipo_supported)
 endif()
 
+if (ipo_supported)
+ message("-- IPO supported")
+else()
+ message("-- IPO not supported")
+endif()
+
 function(ipo_add_executable)
  add_executable(${ARGV})
  if (ipo_supported)
