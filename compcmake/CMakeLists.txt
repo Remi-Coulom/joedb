@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.3)
 
 file(STRINGS "../VERSION" QUOTED_JOEDB_VERSION)
 string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
@@ -47,9 +47,17 @@ endif()
 #############################################################################
 # Custom add_executable
 #############################################################################
-cmake_policy(SET CMP0069 NEW)
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ipo_supported)
+if (CMAKE_VERSION VERSION_GREATER 3.9)
+ cmake_policy(SET CMP0069 NEW)
+ include(CheckIPOSupported)
+ check_ipo_supported(RESULT ipo_supported)
+endif()
+
+if (ipo_supported)
+ message("-- IPO supported")
+else()
+ message("-- IPO not supported")
+endif()
 
 function(ipo_add_executable)
  add_executable(${ARGV})
