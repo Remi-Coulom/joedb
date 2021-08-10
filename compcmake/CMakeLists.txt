@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.9)
+#cmake_minimum_required(VERSION 3.3)
+#For some reasons requiring 3.9 is necessary in MSVC
 
 file(STRINGS "../VERSION" QUOTED_JOEDB_VERSION)
 string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
