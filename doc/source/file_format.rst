@@ -61,4 +61,4 @@ Number Compact representation
 Log Entry
 ---------
 
-Should be documented in the code. Include pretty-printed C++ header file here.
+See ``joedb/journal/Readonly_Journal.cpp``.

@@ -135,6 +135,9 @@ The performance of joedb can be further improved by using :doc:`vector insertion
 
   db.checkpoint_full_commit();
 
+Writing large vectors is faster than inserting elements one by one in a loop,
+especially for primitive types.
+
 Commit Rate
 ~~~~~~~~~~~
 

@@ -7,7 +7,7 @@ The simplest way to open a file is to pass a file name to the constructor of
 either ``File_Database`` or ``Readonly_Database``. But subclasses of the
 ``joedb::Generic_File`` class allows using various sources of data.
 
-Database constructors
+Database Constructors
 ---------------------
 
 Opening a file for reading and writing (creates the file if it does not exist):
