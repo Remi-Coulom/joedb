@@ -19,17 +19,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- constexpr uint32_t endian_shuffle(uint32_t x)
- ////////////////////////////////////////////////////////////////////////////
- {
-  return
-   ((x & 0x000000ff) << 24) |
-   ((x & 0x0000ff00) <<  8) |
-   ((x & 0x00ff0000) >>  8) |
-   ((x & 0xff000000) >> 24);
- }
-
- ////////////////////////////////////////////////////////////////////////////
  class SHA_256
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -76,19 +65,23 @@ namespace joedb
    const std::array<uint32_t, 8> &get_hash() const {return h;}
 
    /////////////////////////////////////////////////////////////////////////
-   void process_chunk(const uint32_t *data)
+   void process_chunk(const uint8_t *data)
    /////////////////////////////////////////////////////////////////////////
    {
-    // process 512 bits (32 * 16) of data
+    // process 512 bits (32 * 16, 8 * 64) of data
 
     std::array<uint32_t, 64> w;
 
     if (is_big_endian())
-     std::copy_n(data, 16, &w[0]);
+     std::copy_n(data, 64, reinterpret_cast<uint8_t *>(&w[0]));
     else
     {
      for (uint32_t i = 0; i < 16; i++)
-      w[i] = endian_shuffle(data[i]);
+      w[i] =
+      (uint32_t(data[4 * i + 0]) << 24) |
+      (uint32_t(data[4 * i + 1]) << 16) |
+      (uint32_t(data[4 * i + 2]) <<  8) |
+      (uint32_t(data[4 * i + 3])      );
     }
 
     for (uint32_t i = 16; i < 64; i++)
@@ -136,7 +129,7 @@ namespace joedb
    {
     // data points to the final n bytes, 0 <= n < 64
     std::array<uint32_t, 32> final_chunks{};
-    uint8_t *byte_buffer = (uint8_t *)&final_chunks[0];
+    uint8_t *byte_buffer = reinterpret_cast<uint8_t *>(&final_chunks[0]);
     uint32_t n = uint32_t(total_length_in_bytes & 0x3fULL);
     std::copy_n(data, n, byte_buffer);
     byte_buffer[n] = 0x80;
@@ -153,7 +146,7 @@ namespace joedb
     }
 
     for (uint32_t i = 0; i < chunk_count; i++)
-     process_chunk(&final_chunks[16 * i]);
+     process_chunk(reinterpret_cast<uint8_t *>(&final_chunks[16 * i]));
    }
  };
 }
