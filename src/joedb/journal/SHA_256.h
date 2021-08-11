@@ -1,6 +1,8 @@
 #ifndef joedb_SHA_256_declared
 #define joedb_SHA_256_declared
 
+#include "joedb/is_big_endian.h"
+
 #include <array>
 #include <stdint.h>
 #include <algorithm>
@@ -14,6 +16,17 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   return (x >> n) | (x << ((-n) & 31));
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ constexpr uint32_t endian_shuffle(uint32_t x)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return
+   ((x & 0x000000ff) << 24) |
+   ((x & 0x0000ff00) <<  8) |
+   ((x & 0x00ff0000) >>  8) |
+   ((x & 0xff000000) >> 24);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -63,19 +76,27 @@ namespace joedb
    const std::array<uint32_t, 8> &get_hash() const {return h;}
 
    /////////////////////////////////////////////////////////////////////////
-   void process_chunk(uint32_t *data) // process 512 bits (32 * 16) of data
+   void process_chunk(const uint32_t *data)
    /////////////////////////////////////////////////////////////////////////
    {
-    std::array<uint32_t, 64> w{};
+    // process 512 bits (32 * 16) of data
 
-    std::copy_n(data, 16, &w[0]);
+    std::array<uint32_t, 64> w;
+
+    if (is_big_endian())
+     std::copy_n(data, 16, &w[0]);
+    else
+    {
+     for (uint32_t i = 0; i < 16; i++)
+      w[i] = endian_shuffle(data[i]);
+    }
 
     for (uint32_t i = 16; i < 64; i++)
     {
      const uint32_t w0 = w[i - 15];
-     const uint32_t s0 = rotr(w0, 7) ^ rotr(w0, 18) ^ rotr(w0, 3);
+     const uint32_t s0 = rotr(w0, 7) ^ rotr(w0, 18) ^ (w0 >> 3);
      const uint32_t w1 = w[i - 2];
-     const uint32_t s1 = rotr(w1, 17) ^ rotr(w1, 19) ^ rotr(w1, 10);
+     const uint32_t s1 = rotr(w1, 17) ^ rotr(w1, 19) ^ (w1 >> 10);
 
      w[i] = w[i - 16] + s0 + w[i - 7] + s1;
     }
@@ -85,10 +106,10 @@ namespace joedb
     for (uint32_t i = 0; i < 64; i++)
     {
      const uint32_t S1 = rotr(x[4], 6) ^ rotr(x[4], 11) ^ rotr(x[4], 25);
-     const uint32_t ch = (x[4] & x[5]) ^ (~x[4] & x[6]);
+     const uint32_t ch = (x[4] & x[5]) ^ ((~x[4]) & x[6]);
      const uint32_t temp1 = x[7] + S1 + ch + k[i] + w[i];
      const uint32_t S0 = rotr(x[0], 2) ^ rotr(x[0], 13) ^ rotr(x[0], 22);
-     const uint32_t maj = (x[0] & x[1]) ^ (x[0] & x[2]) ^ (x[1] & x[3]);
+     const uint32_t maj = (x[0] & x[1]) ^ (x[0] & x[2]) ^ (x[1] & x[2]);
      const uint32_t temp2 = S0 + maj;
 
      x[7] = x[6];
@@ -103,6 +124,36 @@ namespace joedb
 
     for (uint32_t i = 0; i < 8; i++)
      h[i] += x[i];
+   }
+
+   /////////////////////////////////////////////////////////////////////////
+   void process_final_chunk
+   /////////////////////////////////////////////////////////////////////////
+   (
+    const char * const data,
+    const uint64_t total_length_in_bytes
+   )
+   {
+    // data points to the final n bytes, 0 <= n < 64
+    std::array<uint32_t, 32> final_chunks{};
+    uint8_t *byte_buffer = (uint8_t *)&final_chunks[0];
+    uint32_t n = uint32_t(total_length_in_bytes & 0x3fULL);
+    std::copy_n(data, n, byte_buffer);
+    byte_buffer[n] = 0x80;
+
+    const int chunk_count = n + 9 <= 64 ? 1 : 2;
+
+    {
+     uint64_t length_in_bits = total_length_in_bytes * 8;
+     for (int index = chunk_count * 64, i = 8; --index, --i >= 0;)
+     {
+      byte_buffer[index] = uint8_t(length_in_bits);
+      length_in_bits >>= 8;
+     }
+    }
+
+    for (uint32_t i = 0; i < chunk_count; i++)
+     process_chunk(&final_chunks[16 * i]);
    }
  };
 }

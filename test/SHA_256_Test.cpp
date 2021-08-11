@@ -14,17 +14,25 @@ TEST(SHA_256, rotr)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(SHA_256, endian_shuffle)
+/////////////////////////////////////////////////////////////////////////////
+{
+ EXPECT_EQ(joedb::endian_shuffle(0x11223344U), 0x44332211U);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(SHA_256, sha_256)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::SHA_256 sha_256;
-
- uint32_t chunk[16];
- for (uint32_t i = 0; i < 16; i++)
-  chunk[i] = i;
-
- sha_256.process_chunk(chunk);
-
+ sha_256.process_final_chunk("abc", 3);
  const std::array<uint32_t, 8> &h = sha_256.get_hash();
- EXPECT_EQ(h[0], 1746806733U);
+ EXPECT_EQ(h[0], 0xba7816bfU);
+ EXPECT_EQ(h[1], 0x8f01cfeaU);
+ EXPECT_EQ(h[2], 0x414140deU);
+ EXPECT_EQ(h[3], 0x5dae2223U);
+ EXPECT_EQ(h[4], 0xb00361a3U);
+ EXPECT_EQ(h[5], 0x96177a9cU);
+ EXPECT_EQ(h[6], 0xb410ff61U);
+ EXPECT_EQ(h[7], 0xf20015adU);
 }
