@@ -3,11 +3,19 @@
 
 #include <array>
 #include <stdint.h>
+#include <algorithm>
 
 // https://en.wikipedia.org/wiki/SHA-2
 
 namespace joedb
 {
+ ////////////////////////////////////////////////////////////////////////////
+ constexpr uint32_t rotr(uint32_t x, uint8_t n)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return (x >> n) | (x << ((-n) & 31));
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  class SHA_256
  ////////////////////////////////////////////////////////////////////////////
@@ -51,12 +59,50 @@ namespace joedb
    std::array<uint32_t, 8> h;
 
   public:
-   SHA_256(): h(h_init)
-   {
-   }
+   SHA_256(): h(h_init) {}
+   const std::array<uint32_t, 8> &get_hash() const {return h;}
 
-   void process_chunk(uint32_t *data)
+   /////////////////////////////////////////////////////////////////////////
+   void process_chunk(uint32_t *data) // process 512 bits (32 * 16) of data
+   /////////////////////////////////////////////////////////////////////////
    {
+    std::array<uint32_t, 64> w{};
+
+    std::copy_n(data, 16, &w[0]);
+
+    for (uint32_t i = 16; i < 64; i++)
+    {
+     const uint32_t w0 = w[i - 15];
+     const uint32_t s0 = rotr(w0, 7) ^ rotr(w0, 18) ^ rotr(w0, 3);
+     const uint32_t w1 = w[i - 2];
+     const uint32_t s1 = rotr(w1, 17) ^ rotr(w1, 19) ^ rotr(w1, 10);
+
+     w[i] = w[i - 16] + s0 + w[i - 7] + s1;
+    }
+
+    std::array<uint32_t, 8> x(h);
+
+    for (uint32_t i = 0; i < 64; i++)
+    {
+     const uint32_t S1 = rotr(x[4], 6) ^ rotr(x[4], 11) ^ rotr(x[4], 25);
+     const uint32_t ch = (x[4] & x[5]) ^ (~x[4] & x[6]);
+     const uint32_t temp1 = x[7] + S1 + ch + k[i] + w[i];
+     const uint32_t S0 = rotr(x[0], 2) ^ rotr(x[0], 13) ^ rotr(x[0], 22);
+     const uint32_t maj = (x[0] & x[1]) ^ (x[0] & x[2]) ^ (x[1] & x[3]);
+     const uint32_t temp2 = S0 + maj;
+
+     x[7] = x[6];
+     x[6] = x[5];
+     x[5] = x[4];
+     x[4] = x[3] + temp1;
+     x[3] = x[2];
+     x[2] = x[1];
+     x[1] = x[0];
+     x[0] = temp1 + temp2;
+    };
+
+    for (uint32_t i = 0; i < 8; i++)
+     h[i] += x[i];
    }
  };
 }
