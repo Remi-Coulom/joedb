@@ -19,7 +19,7 @@ TEST(SHA_256, sha_256)
 {
  joedb::SHA_256 sha_256;
  sha_256.process_final_chunk("abc", 3);
- const std::array<uint32_t, 8> &h = sha_256.get_hash();
+ const joedb::SHA_256::Hash &h = sha_256.get_hash();
  EXPECT_EQ(h[0], 0xba7816bfU);
  EXPECT_EQ(h[1], 0x8f01cfeaU);
  EXPECT_EQ(h[2], 0x414140deU);

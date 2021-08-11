@@ -238,6 +238,11 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Writable_Journal.cpp
 )
 
+ipo_add_executable(sha_256
+ ../src/joedb/io/sha_256.cpp
+ ../src/joedb/journal/SHA_256.cpp
+)
+
 if(EXISTS "${GOOGLE_TEST}/include")
  joedb_add_executable(joedb_test
   ../test/endianness_Test.cpp

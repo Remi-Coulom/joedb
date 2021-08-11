@@ -22,7 +22,7 @@ namespace joedb
  class SHA_256
  ////////////////////////////////////////////////////////////////////////////
  {
-  public:
+  private:
    static constexpr std::array<uint32_t, 8> h_init
    {
     {
@@ -57,15 +57,18 @@ namespace joedb
     0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
    };
 
+  public:
+   typedef std::array<uint32_t, 8> Hash;
+
   private:
-   std::array<uint32_t, 8> h;
+   Hash h;
 
   public:
    SHA_256(): h(h_init) {}
-   const std::array<uint32_t, 8> &get_hash() const {return h;}
+   const Hash &get_hash() const {return h;}
 
    /////////////////////////////////////////////////////////////////////////
-   void process_chunk(const uint8_t *data)
+   void process_chunk(const char *data)
    /////////////////////////////////////////////////////////////////////////
    {
     // process 512 bits (32 * 16, 8 * 64) of data
@@ -76,12 +79,14 @@ namespace joedb
      std::copy_n(data, 64, reinterpret_cast<uint8_t *>(&w[0]));
     else
     {
+     const uint8_t *u8_data = reinterpret_cast<const uint8_t *>(data);
+
      for (uint32_t i = 0; i < 16; i++)
       w[i] =
-      (uint32_t(data[4 * i + 0]) << 24) |
-      (uint32_t(data[4 * i + 1]) << 16) |
-      (uint32_t(data[4 * i + 2]) <<  8) |
-      (uint32_t(data[4 * i + 3])      );
+      (uint32_t(u8_data[4 * i + 0]) << 24) |
+      (uint32_t(u8_data[4 * i + 1]) << 16) |
+      (uint32_t(u8_data[4 * i + 2]) <<  8) |
+      (uint32_t(u8_data[4 * i + 3])      );
     }
 
     for (uint32_t i = 16; i < 64; i++)
@@ -94,7 +99,7 @@ namespace joedb
      w[i] = w[i - 16] + s0 + w[i - 7] + s1;
     }
 
-    std::array<uint32_t, 8> x(h);
+    Hash x(h);
 
     for (uint32_t i = 0; i < 64; i++)
     {
@@ -146,7 +151,7 @@ namespace joedb
     }
 
     for (uint32_t i = 0; i < chunk_count; i++)
-     process_chunk(reinterpret_cast<uint8_t *>(&final_chunks[16 * i]));
+     process_chunk(reinterpret_cast<char *>(&final_chunks[16 * i]));
    }
  };
 }
