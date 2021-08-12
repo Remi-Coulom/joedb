@@ -476,13 +476,10 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     std::function<void(Generic_File_Database&)> transaction
    )
    {
-    joedb_client.write_transaction
-    (
-     [&]()
-     {
-      transaction(database);
-     }
-    );
+    joedb_client.write_transaction([&]()
+    {
+     transaction(database);
+    });
    }
  };
 )RRR";
@@ -1782,13 +1779,10 @@ void generate_cpp
  {
   joedb::Writable dummy_writable;
   joedb::Client client(connection, journal, dummy_writable);
-  client.write_transaction
-  (
-   [this]()
-   {
-    initialize();
-   }
-  );
+  client.write_transaction([this]()
+  {
+   initialize();
+  });
  }
 
  ////////////////////////////////////////////////////////////////////////////

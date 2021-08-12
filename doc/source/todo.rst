@@ -100,6 +100,7 @@ Concurrency
   - option to serve readonly
   - indicate commit level for a push
   - cache SHA-256 calculations + efficient incremental update.
+  - perform hash calculations asynchronously (don't block whole server)
 
 - joedb_client:
 
