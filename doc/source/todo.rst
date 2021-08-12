@@ -100,6 +100,7 @@ Concurrency
   - indicate checkpoint type for each push (commit or no_commit)
   - option to serve readonly
   - indicate commit level for a push
+  - cache SHA-256 calculations + efficient incremental update.
 
 - joedb_client:
 
