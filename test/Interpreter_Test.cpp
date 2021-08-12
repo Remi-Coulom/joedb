@@ -3,6 +3,8 @@
 #include "joedb/io/SQL_Dump_Writable.h"
 #include "joedb/io/Raw_Dump_Writable.h"
 #include "joedb/interpreter/Database.h"
+#include "joedb/journal/Interpreted_File.h"
+#include "joedb/journal/Readonly_Journal.h"
 #include "joedb/Readable_Multiplexer.h"
 #include "gtest/gtest.h"
 
@@ -11,7 +13,9 @@
 
 using namespace joedb;
 
+/////////////////////////////////////////////////////////////////////////////
 class Interpreter_Test: public::testing::Test
+/////////////////////////////////////////////////////////////////////////////
 {
  protected:
   Database db_storage;
@@ -27,6 +31,7 @@ class Interpreter_Test: public::testing::Test
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(Interpreter_Test, main_test)
+/////////////////////////////////////////////////////////////////////////////
 {
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -44,6 +49,7 @@ TEST_F(Interpreter_Test, main_test)
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(Interpreter_Test, Interpreter_Dump_Writable)
+/////////////////////////////////////////////////////////////////////////////
 {
  std::ostringstream dump_string;
  joedb::Interpreter_Dump_Writable writable(dump_string);
@@ -65,6 +71,7 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Writable)
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(Interpreter_Test, SQL_Dump_Writable)
+/////////////////////////////////////////////////////////////////////////////
 {
  std::ostringstream dump_string;
  joedb::SQL_Dump_Writable writable(dump_string);
@@ -86,6 +93,7 @@ TEST_F(Interpreter_Test, SQL_Dump_Writable)
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(Interpreter_Test, Raw_Dump_Writable)
+/////////////////////////////////////////////////////////////////////////////
 {
  std::ostringstream dump_string;
  joedb::Raw_Dump_Writable writable(dump_string);
@@ -103,4 +111,23 @@ TEST_F(Interpreter_Test, Raw_Dump_Writable)
  reference_string << reference_file.rdbuf();
 
  EXPECT_EQ(reference_string.str(), dump_string.str());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Interpreter, Interpreted_File)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::stringstream ss;
+ ss << "create_table person\n";
+ ss << "insert_into person 0\n";
+ ss << "insert_into person 0\n";
+ ss << "insert_into person 0\n";
+ ss << "create_table city\n";
+ ss.seekg(0);
+
+ joedb::Interpreted_File file(ss);
+ joedb::Readonly_Journal journal(file);
+ Database db;
+ journal.play_until_checkpoint(db);
+ EXPECT_EQ(db.get_tables().size(), 2ULL);
 }
