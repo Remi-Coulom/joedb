@@ -4,9 +4,9 @@
 
 #include <sstream>
 
-const uint32_t joedb::Readonly_Journal::version_number = 0x00000004;
-const uint32_t joedb::Readonly_Journal::compatible_version = 0x00000004;
-const int64_t joedb::Readonly_Journal::header_size = 41;
+constexpr uint32_t joedb::Readonly_Journal::version_number;
+constexpr uint32_t joedb::Readonly_Journal::compatible_version;
+constexpr int64_t joedb::Readonly_Journal::header_size;
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Readonly_Journal::Readonly_Journal

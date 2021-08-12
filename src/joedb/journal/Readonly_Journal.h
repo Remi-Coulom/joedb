@@ -64,6 +64,7 @@ namespace joedb
    bool at_end_of_file() const;
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint_position() const {return checkpoint_position;}
+   bool is_empty() const {return file.get_size() == header_size;}
 
    void replay_log(Writable &writable);
    void rewind();
@@ -88,9 +89,9 @@ namespace joedb
     return file.get_hash(header_size, checkpoint - header_size);
    }
 
-   static const uint32_t version_number;
-   static const uint32_t compatible_version;
-   static const int64_t header_size;
+   static constexpr uint32_t version_number = 0x00000004;
+   static constexpr uint32_t compatible_version = 0x00000004;
+   static constexpr int64_t header_size = 41;
  };
 }
 
