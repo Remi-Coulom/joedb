@@ -55,6 +55,16 @@ namespace joedb
      );
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   bool check_hash(Readonly_Journal &client_journal) override
+   //////////////////////////////////////////////////////////////////////////
+   {
+    const int64_t checkpoint = client_journal.get_checkpoint_position();
+    return
+     client_journal.get_hash(checkpoint) ==
+     server_journal.get_hash(checkpoint);
+   }
+
   public:
    //////////////////////////////////////////////////////////////////////////
    Embedded_Connection(Generic_File &file):
