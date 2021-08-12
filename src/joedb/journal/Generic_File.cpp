@@ -136,7 +136,7 @@ namespace joedb
     sha_256.process_chunk(&buffer[i * chunk_size]);
 
    const uint32_t remainder = uint32_t(read_count % chunk_size);
-   if (remainder || current_size == size)
+   if (remainder || current_size >= size || read_count == 0)
    {
     sha_256.process_final_chunk
     (
@@ -155,6 +155,7 @@ namespace joedb
  SHA_256::Hash Generic_File::get_hash()
  ////////////////////////////////////////////////////////////////////////////
  {
+  flush();
   return get_hash(0, get_size());
  }
 }
