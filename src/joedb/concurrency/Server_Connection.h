@@ -36,7 +36,7 @@ namespace joedb
  {
   private:
    enum {buffer_size = (1 << 13)};
-   char *buffer;
+   std::vector<char> buffer;
 
    std::condition_variable condition;
    bool keep_alive_thread_must_stop;

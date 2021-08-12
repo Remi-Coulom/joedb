@@ -15,8 +15,8 @@ namespace joedb
   std::cerr << get_session_id() << ": obtaining lock... ";
 
   buffer[0] = 'l';
-  lock.write(buffer, 1);
-  lock.read(buffer, 1);
+  lock.write(buffer.data(), 1);
+  lock.read(buffer.data(), 1);
   if (buffer[0] != 'l')
    throw Exception("Unexpected server reply");
 
@@ -32,8 +32,8 @@ namespace joedb
   std::cerr << get_session_id() << ": releasing lock... ";
 
   buffer[0] = 'u';
-  lock.write(buffer, 1);
-  lock.read(buffer, 1);
+  lock.write(buffer.data(), 1);
+  lock.read(buffer.data(), 1);
 
   if (buffer[0] == 'u')
    std::cerr << "OK\n";
@@ -57,14 +57,14 @@ namespace joedb
 
   buffer[0] = pull_type;
   const int64_t checkpoint = client_journal.get_checkpoint_position();
-  to_network(checkpoint, buffer + 1);
-  lock.write(buffer, 9);
+  to_network(checkpoint, buffer.data() + 1);
+  lock.write(buffer.data(), 9);
 
-  lock.read(buffer, 17);
-  if (buffer[0] != pull_type && from_network(buffer + 1) != checkpoint)
+  lock.read(buffer.data(), 17);
+  if (buffer[0] != pull_type && from_network(buffer.data() + 1) != checkpoint)
    throw Exception("Could not pull from server");
 
-  const int64_t size = from_network(buffer + 9);
+  const int64_t size = from_network(buffer.data() + 9);
 
   std::cerr << "size = " << size << "...";
 
@@ -77,8 +77,8 @@ namespace joedb
     size_t read_size = size_t(remaining);
     if (read_size > buffer_size)
      read_size = buffer_size;
-    const size_t n = lock.read_some(buffer, read_size);
-    tail_writer.append(buffer, n);
+    const size_t n = lock.read_some(buffer.data(), read_size);
+    tail_writer.append(buffer.data(), n);
     read += n;
     std::cerr << '.';
    }
@@ -121,24 +121,24 @@ namespace joedb
   Async_Reader reader = client_journal.get_tail_reader(server_position);
 
   buffer[0] = 'U';
-  to_network(server_position, buffer + 1);
-  to_network(reader.get_remaining(), buffer + 9);
+  to_network(server_position, buffer.data() + 1);
+  to_network(reader.get_remaining(), buffer.data() + 9);
 
   const int64_t push_size = reader.get_remaining();
 
   std::cerr << get_session_id() << ": pushing(U)... size = " << push_size;
   std::cerr << "... ";
 
-  lock.write(buffer, 17);
+  lock.write(buffer.data(), 17);
 
   while (reader.get_remaining() > 0)
   {
-   const size_t size = reader.read(buffer, buffer_size);
-   lock.write(buffer, size);
+   const size_t size = reader.read(buffer.data(), buffer_size);
+   lock.write(buffer.data(), size);
    std::cerr << size << ' ';
   }
 
-  lock.read(buffer, 1);
+  lock.read(buffer.data(), 1);
 
   if (buffer[0] == 'U')
    std::cerr << "OK\n";
@@ -159,14 +159,14 @@ namespace joedb
   buffer[0] = 'H';
 
   const int64_t checkpoint = client_journal.get_checkpoint_position();
-  to_network(checkpoint, buffer + 1);
+  to_network(checkpoint, buffer.data() + 1);
 
   SHA_256::Hash hash = client_journal.get_hash(checkpoint);
-  std::copy_n(reinterpret_cast<const char *>(&hash[0]), 32, buffer + 9);
+  std::copy_n(reinterpret_cast<const char *>(&hash[0]), 32, buffer.data() + 9);
   // TODO: endian
 
-  lock.write(buffer, 41);
-  lock.read(buffer, 1);
+  lock.write(buffer.data(), 41);
+  lock.read(buffer.data(), 1);
 
   const bool result = (buffer[0] == 'H');
 
@@ -195,8 +195,8 @@ namespace joedb
 
     buffer[0] = 'i';
 
-    lock.write(buffer, 1);
-    lock.read(buffer, 1);
+    lock.write(buffer.data(), 1);
+    lock.read(buffer.data(), 1);
    }
   }
   catch(...)
@@ -258,7 +258,7 @@ namespace joedb
  Server_Connection::Server_Connection(Channel &channel):
  ////////////////////////////////////////////////////////////////////////////
   Server_Handshake(channel),
-  buffer(new char[buffer_size]),
+  buffer(buffer_size),
   keep_alive_thread_must_stop(false),
   keep_alive_thread([this](){keep_alive();})
  {
@@ -272,9 +272,9 @@ namespace joedb
   {
    Channel_Lock lock(channel);
    buffer[0] = 'Q';
-   lock.write(buffer, 1);
+   lock.write(buffer.data(), 1);
   }
-  catch(...)
+  catch (...)
   {
    postpone_exception("Could not write to server");
   }
@@ -285,11 +285,9 @@ namespace joedb
    condition.notify_one();
    keep_alive_thread.join();
   }
-  catch(...)
+  catch (...)
   {
    postpone_exception("Could not join keep-alive thread");
   }
-
-  delete[] buffer;
  }
 }
