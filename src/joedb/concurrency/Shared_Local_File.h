@@ -20,7 +20,7 @@ namespace joedb
   public:
    Shared_Local_File(Mutex &mutex, const std::string &file_name);
 
-   operator joedb::Generic_File&() {return *file;}
+   joedb::Generic_File &get_file() const {return *file;}
  };
 }
 

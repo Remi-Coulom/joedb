@@ -19,12 +19,18 @@ namespace joedb
   const char *file_name
  )
  {
-  std::unique_ptr<Generic_File> file
-  (
-   (file_name && *file_name) ?
-   (Generic_File *)(new Shared_Local_File(connection, file_name)) :
-   (Generic_File *)(new Memory_File())
-  );
+  std::unique_ptr<Shared_Local_File> shared_local_file;
+  Memory_File memory_file;
+
+  Generic_File *file;
+
+  if (file_name && *file_name)
+  {
+   shared_local_file.reset(new Shared_Local_File(connection, file_name));
+   file = &shared_local_file->get_file();
+  }
+  else
+   file = &memory_file;
 
   Interpreted_Client client(connection, *file);
 

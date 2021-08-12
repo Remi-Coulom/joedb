@@ -19,12 +19,12 @@ TEST(Shared_Local_File, basic)
 
  {
   joedb::Shared_Local_File shared_file1(connection, file_name);
-  joedb::Generic_File &file1(shared_file1);
+  joedb::Generic_File &file1(shared_file1.get_file());
   file1.write<int>(1234);
   file1.flush();
 
   joedb::Shared_Local_File shared_file2(connection, file_name);
-  joedb::Generic_File &file2(shared_file2);
+  joedb::Generic_File &file2(shared_file2.get_file());
   EXPECT_EQ(file2.read<int>(), 1234);
   file2.set_position(file2.get_position());
   file2.write<int>(5678);
