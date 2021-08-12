@@ -44,6 +44,6 @@ l                       reply to l
 u                       reply to u (no timeout)
 t                       reply to u (timeout)
 H                       reply to H, hash is matching
-h                       reply to h, hash mismatch
+h                       reply to H, hash mismatch
 i                       reply to i
 ====== ================ ======================================================
