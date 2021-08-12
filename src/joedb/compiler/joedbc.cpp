@@ -156,6 +156,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "#include \"joedb/concurrency/Client.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
  out << '\n';
+ out << "#include <functional>\n";
+ out << '\n';
 
  namespace_open(out, options.get_name_space());
 
@@ -183,6 +185,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    bool ready_to_write;
 
    void initialize();
+   void auto_upgrade();
 
    void custom(const std::string &name) override
    {
@@ -209,13 +212,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   static void " << name << "(Generic_File_Database &db);\n";
  }
  out << R"RRR(
-  public:
-   Generic_File_Database(joedb::Generic_File &file);
    Generic_File_Database
    (
     joedb::Generic_File &file,
     joedb::Connection &connection
    );
+
+  public:
+   Generic_File_Database(joedb::Generic_File &file);
 
    int64_t ahead_of_checkpoint() const
    {
@@ -448,7 +452,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   private:
    Generic_File_Database database;
-   joedb::Client joedb_client;
+   joedb::Client client;
 
   public:
    Client
@@ -457,8 +461,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Generic_File &local_file
    ):
     database(local_file, connection),
-    joedb_client(connection, database.journal, database)
+    client(connection, database.journal, database)
    {
+    client.write_transaction([this]()
+    {
+     database.auto_upgrade();
+    });
    }
 
    const Database &get_database()
@@ -468,7 +476,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    int64_t pull()
    {
-    return joedb_client.pull();
+    return client.pull();
    }
 
    void write_transaction
@@ -476,7 +484,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     std::function<void(Generic_File_Database&)> transaction
    )
    {
-    joedb_client.write_transaction([&]()
+    client.write_transaction([&]()
     {
      transaction(database);
     });
@@ -1745,7 +1753,12 @@ void generate_cpp
   max_record_id = 0;
 
   check_schema();
+ }
 
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::auto_upgrade()
+ ////////////////////////////////////////////////////////////////////////////
+ {
   const size_t file_schema_size = schema_file.get_data().size();
 
   if (file_schema_size < schema_string_size)
@@ -1777,12 +1790,7 @@ void generate_cpp
  ):
   journal(file)
  {
-  joedb::Writable dummy_writable;
-  joedb::Client client(connection, journal, dummy_writable);
-  client.write_transaction([this]()
-  {
-   initialize();
-  });
+  initialize();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -1794,6 +1802,7 @@ void generate_cpp
   journal(file)
  {
   initialize();
+  auto_upgrade();
  }
 )RRR";
 
