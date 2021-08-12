@@ -7,6 +7,43 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ void Server_Connection::lock()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Channel_Lock lock(channel);
+
+  std::cerr << get_session_id() << ": obtaining lock... ";
+
+  buffer[0] = 'l';
+  lock.write(buffer, 1);
+  lock.read(buffer, 1);
+  if (buffer[0] != 'l')
+   throw Exception("Unexpected server reply");
+
+  std::cerr << "OK\n";
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server_Connection::unlock()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Channel_Lock lock(channel);
+
+  std::cerr << get_session_id() << ": releasing lock... ";
+
+  buffer[0] = 'u';
+  lock.write(buffer, 1);
+  lock.read(buffer, 1);
+
+  if (buffer[0] == 'u')
+   std::cerr << "OK\n";
+  else if (buffer[0] == 't')
+   std::cerr << "The lock had timed out\n";
+  else
+   throw Exception("Unexpected server reply");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -112,40 +149,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::lock()
+ bool Server_Connection::check_hash(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Channel_Lock lock(channel);
-
-  std::cerr << get_session_id() << ": obtaining lock... ";
-
-  buffer[0] = 'l';
-  lock.write(buffer, 1);
-  lock.read(buffer, 1);
-  if (buffer[0] != 'l')
-   throw Exception("Unexpected server reply");
-
-  std::cerr << "OK\n";
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::unlock()
- ////////////////////////////////////////////////////////////////////////////
- {
-  Channel_Lock lock(channel);
-
-  std::cerr << get_session_id() << ": releasing lock... ";
-
-  buffer[0] = 'u';
-  lock.write(buffer, 1);
-  lock.read(buffer, 1);
-
-  if (buffer[0] == 'u')
-   std::cerr << "OK\n";
-  else if (buffer[0] == 't')
-   std::cerr << "The lock had timed out\n";
-  else
-   throw Exception("Unexpected server reply");
+  return false;
  }
 
  ////////////////////////////////////////////////////////////////////////////

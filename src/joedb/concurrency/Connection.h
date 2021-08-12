@@ -13,6 +13,8 @@ namespace joedb
   friend class Client;
 
   private:
+   void unlock() override = 0;
+
    virtual int64_t pull(Writable_Journal &client_journal) = 0;
 
    virtual int64_t lock_pull(Writable_Journal &client_journal) = 0;
@@ -23,7 +25,7 @@ namespace joedb
     int64_t server_position
    ) = 0;
 
-   void unlock() override = 0;
+   virtual bool check_hash(Readonly_Journal &client_journal) = 0;
 
   public:
    virtual ~Connection() {}

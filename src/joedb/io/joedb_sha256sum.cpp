@@ -16,12 +16,13 @@ int main(int argc, char **argv)
  for (int i = 1; i < argc; i++)
  {
   const char * const file_name = argv[i];
+
   try
   {
    joedb::File file(file_name, joedb::Open_Mode::read_existing);
-   joedb::SHA_256::Hash h = file.get_hash();
+   joedb::SHA_256::Hash hash = file.get_hash();
    for (uint32_t i = 0; i < 8; i++)
-    std::cout << std::setw(8) << h[i];
+    std::cout << std::setw(8) << hash[i];
    std::cout << "  " << file_name << '\n';
   }
   catch (const joedb::Exception &e)

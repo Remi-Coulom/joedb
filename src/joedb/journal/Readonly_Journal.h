@@ -12,35 +12,6 @@ namespace joedb
  class Readonly_Journal
  ////////////////////////////////////////////////////////////////////////////
  {
-  public:
-   Readonly_Journal(Generic_File &file, bool ignore_errors = false);
-
-   bool at_end_of_file() const;
-   int64_t get_position() const {return file.get_position();}
-   int64_t get_checkpoint_position() const {return checkpoint_position;}
-
-   void replay_log(Writable &writable);
-   void rewind();
-   void seek(int64_t position);
-   void one_step(Writable &writable);
-   void play_until(Writable &writable, int64_t end);
-   void play_until_checkpoint(Writable &writable)
-   {
-    play_until(writable, checkpoint_position);
-    writable.checkpoint(Commit_Level::no_commit);
-   }
-
-   Async_Reader get_tail_reader(int64_t start_position) const
-   {
-    return Async_Reader(file, start_position, get_checkpoint_position());
-   }
-
-   std::vector<char> get_raw_tail(int64_t starting_position);
-
-   static const uint32_t version_number;
-   static const uint32_t compatible_version;
-   static const int64_t header_size;
-
   protected:
    Generic_File &file;
    unsigned checkpoint_index;
@@ -86,6 +57,40 @@ namespace joedb
     update_vector_##type_id,
     #include "joedb/TYPE_MACRO.h"
    };
+
+  public:
+   Readonly_Journal(Generic_File &file, bool ignore_errors = false);
+
+   bool at_end_of_file() const;
+   int64_t get_position() const {return file.get_position();}
+   int64_t get_checkpoint_position() const {return checkpoint_position;}
+
+   void replay_log(Writable &writable);
+   void rewind();
+   void seek(int64_t position);
+   void one_step(Writable &writable);
+   void play_until(Writable &writable, int64_t end);
+   void play_until_checkpoint(Writable &writable)
+   {
+    play_until(writable, checkpoint_position);
+    writable.checkpoint(Commit_Level::no_commit);
+   }
+
+   Async_Reader get_tail_reader(int64_t start_position) const
+   {
+    return Async_Reader(file, start_position, get_checkpoint_position());
+   }
+
+   std::vector<char> get_raw_tail(int64_t starting_position);
+
+   SHA_256::Hash get_hash(int64_t checkpoint)
+   {
+    return file.get_hash(header_size, checkpoint - header_size);
+   }
+
+   static const uint32_t version_number;
+   static const uint32_t compatible_version;
+   static const int64_t header_size;
  };
 }
 

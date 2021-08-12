@@ -43,6 +43,10 @@ namespace joedb
    std::thread keep_alive_thread;
    enum {keep_alive_interval = 240};
 
+   void lock() override;
+
+   void unlock() override;
+
    int64_t pull(Writable_Journal &client_journal, char pull_type);
 
    int64_t pull(Writable_Journal &client_journal) override;
@@ -55,9 +59,7 @@ namespace joedb
     int64_t server_position
    ) override;
 
-   void lock() override;
-
-   void unlock() override;
+   bool check_hash(Readonly_Journal &client_journal) override;
 
    void keep_alive();
 

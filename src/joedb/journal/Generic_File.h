@@ -374,11 +374,6 @@ namespace joedb
    Open_Mode mode;
 
   protected:
-   void set_mode(Open_Mode mode)
-   {
-    this->mode = mode;
-   }
-
    virtual size_t raw_read(char *buffer, size_t size) = 0;
    virtual void raw_write(const char *buffer, size_t size) = 0;
    virtual int raw_seek(int64_t offset) = 0;
@@ -412,6 +407,13 @@ namespace joedb
     slice_start = start;
     slice_length = length;
     set_position(0);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void set_mode(Open_Mode mode)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    this->mode = mode;
    }
 
    //////////////////////////////////////////////////////////////////////////

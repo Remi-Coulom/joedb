@@ -23,7 +23,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   static constexpr std::array<uint32_t, 8> h_init
+   static constexpr std::array<uint32_t, 8> hash_init
    {
     {
      0x6a09e667,
@@ -61,11 +61,11 @@ namespace joedb
    typedef std::array<uint32_t, 8> Hash;
 
   private:
-   Hash h;
+   Hash hash;
 
   public:
-   SHA_256(): h(h_init) {}
-   const Hash &get_hash() const {return h;}
+   SHA_256(): hash(hash_init) {}
+   const Hash &get_hash() const {return hash;}
 
    /////////////////////////////////////////////////////////////////////////
    void process_chunk(const char *data)
@@ -99,7 +99,7 @@ namespace joedb
      w[i] = w[i - 16] + s0 + w[i - 7] + s1;
     }
 
-    Hash x(h);
+    Hash x(hash);
 
     for (uint32_t i = 0; i < 64; i++)
     {
@@ -121,7 +121,7 @@ namespace joedb
     };
 
     for (uint32_t i = 0; i < 8; i++)
-     h[i] += x[i];
+     hash[i] += x[i];
    }
 
    /////////////////////////////////////////////////////////////////////////
