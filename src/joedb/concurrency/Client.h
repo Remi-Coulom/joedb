@@ -32,7 +32,7 @@ namespace joedb
     journal(journal),
     writable(writable)
    {
-    if (!connection.check_hash(journal))
+    if (!journal.is_empty() && !connection.check_hash(journal))
      throw Exception("Hash mismatch");
     journal.play_until_checkpoint(writable);
     server_position = journal.get_position();
