@@ -26,6 +26,9 @@ TEST(Server, basic)
  joedb::Memory_File client_file_1;
  joedb::Memory_File client_file_2;
 
+ //
+ // Basic operation
+ //
  {
   joedb::Network_Channel channel_1("localhost", port);
   joedb::Server_Connection connection_1(channel_1);
@@ -54,6 +57,9 @@ TEST(Server, basic)
   }
  }
 
+ //
+ // Reconnect after disconnection, with a good non-empty database
+ //
  client_file_1.set_position(0);
  client_file_1.set_mode(joedb::Open_Mode::write_existing);
 
@@ -63,6 +69,37 @@ TEST(Server, basic)
   joedb::Interpreted_Client client_1(connection_1, client_file_1);
  }
 
+ //
+ // Try reconnecting with a mismatched database
+ //
+ {
+  joedb::Memory_File file;
+
+  {
+   joedb::Writable_Journal journal(file);
+   journal.create_table("city");
+   journal.checkpoint(joedb::Commit_Level::no_commit);
+  }
+
+  file.set_position(0);
+  file.set_mode(joedb::Open_Mode::write_existing);
+
+  joedb::Network_Channel channel("localhost", port);
+  joedb::Server_Connection connection(channel);
+  try
+  {
+   joedb::Interpreted_Client client(connection, file);
+   FAIL() << "This should not work";
+  }
+  catch (const joedb::Exception &e)
+  {
+   EXPECT_STREQ(e.what(), "Hash mismatch");
+  }
+ }
+
+ //
+ // The end
+ //
  server.interrupt();
  server_thread.join();
 }
