@@ -384,6 +384,46 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
+ void Server::check_hash_handler
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  std::error_code error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   const int64_t checkpoint = from_network(session->buffer + 1);
+   SHA_256::Hash hash;
+   std::copy_n(session->buffer + 9, 64, reinterpret_cast<char *>(&hash[0]));
+   // TODO: endian
+   if (journal.get_hash(checkpoint) != hash)
+    session->buffer[0] = 'h';
+   write_buffer_and_next_command(session, 1);
+  }
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::check_hash(std::shared_ptr<Session> session)
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  net::async_read
+  (
+   session->socket,
+   net::buffer(session->buffer + 1, 72),
+   std::bind
+   (
+    &Server::check_hash_handler,
+    this,
+    session,
+    std::placeholders::_1,
+    std::placeholders::_2
+   )
+  );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
  void Server::read_command_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -432,6 +472,10 @@ namespace joedb
      else
       session->buffer[0] = 't';
      write_buffer_and_next_command(session, 1);
+    break;
+
+    case 'H':
+     check_hash(session);
     break;
 
     case 'i':
@@ -535,7 +579,7 @@ namespace joedb
      to_network(0, session->buffer + 5);
     else
     {
-     const int64_t server_version = 3;
+     const int64_t server_version = 4;
      to_network(server_version, session->buffer + 5);
     }
 

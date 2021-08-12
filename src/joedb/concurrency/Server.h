@@ -107,6 +107,15 @@ namespace joedb
 
    void pull(std::shared_ptr<Session> session);
 
+   void check_hash_handler
+   (
+    std::shared_ptr<Session> session,
+    std::error_code error,
+    size_t bytes_transferred
+   );
+
+   void check_hash(std::shared_ptr<Session> session);
+
    void read_command_handler
    (
     std::shared_ptr<Session> session,
