@@ -396,7 +396,7 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
    SHA_256::Hash hash;
-   std::copy_n(session->buffer + 9, 64, reinterpret_cast<char *>(&hash[0]));
+   std::copy_n(session->buffer + 9, 32, reinterpret_cast<char *>(&hash[0]));
    // TODO: endian
    if (journal.get_hash(checkpoint) != hash)
     session->buffer[0] = 'h';
@@ -411,7 +411,7 @@ namespace joedb
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer + 1, 72),
+   net::buffer(session->buffer + 1, 40),
    std::bind
    (
     &Server::check_hash_handler,

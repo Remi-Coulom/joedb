@@ -162,10 +162,10 @@ namespace joedb
   to_network(checkpoint, buffer + 1);
 
   SHA_256::Hash hash = client_journal.get_hash(checkpoint);
-  std::copy_n(reinterpret_cast<char *>(&hash[0]), 64, buffer + 9);
+  std::copy_n(reinterpret_cast<const char *>(&hash[0]), 32, buffer + 9);
   // TODO: endian
 
-  lock.write(buffer, 73);
+  lock.write(buffer, 41);
   lock.read(buffer, 1);
 
   const bool result = (buffer[0] == 'H');
