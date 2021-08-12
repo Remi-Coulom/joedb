@@ -43,26 +43,34 @@ namespace joedb
    int64_t slice_start;
    int64_t slice_length;
 
+   //////////////////////////////////////////////////////////////////////////
    void read_buffer()
+   //////////////////////////////////////////////////////////////////////////
    {
     read_buffer_size = raw_read(buffer, buffer_size);
     read_buffer_index = 0;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void write_buffer()
+   //////////////////////////////////////////////////////////////////////////
    {
     raw_write(buffer, write_buffer_index);
     write_buffer_index = 0;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void putc(char c)
+   //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(read_buffer_size == 0 && !end_of_file);
     buffer[write_buffer_index++] = c;
     position++;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    char getc()
+   //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(write_buffer_index == 0);
 
@@ -81,23 +89,108 @@ namespace joedb
     return buffer[read_buffer_index++];
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void reset_read_buffer()
+   //////////////////////////////////////////////////////////////////////////
    {
     read_buffer_index = 0;
     read_buffer_size = 0;
     end_of_file = false;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void check_write_buffer()
+   //////////////////////////////////////////////////////////////////////////
    {
     if (write_buffer_index >= buffer_size)
      write_buffer();
    }
 
+   template<typename T, size_t n> struct R;
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 1>
+   //////////////////////////////////////////////////////////////////////////
+   {
+    static void change_endianness(T &x)
+    {
+    }
+
+    static T read(Generic_File &file)
+    {
+     return T(file.getc());
+    }
+   };
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 2>
+   //////////////////////////////////////////////////////////////////////////
+   {
+    static void change_endianness(T &x)
+    {
+     char *p = reinterpret_cast<char *>(&x);
+     std::swap(p[0], p[1]);
+    }
+
+    static T read(Generic_File &file)
+    {
+     T result;
+     file.read_data(reinterpret_cast<char *>(&result), 2);
+     if (is_big_endian())
+      change_endianness(result);
+     return result;
+    }
+   };
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 4>
+   //////////////////////////////////////////////////////////////////////////
+   {
+    static void change_endianness(T &x)
+    {
+     char *p = reinterpret_cast<char *>(&x);
+     std::swap(p[0], p[3]);
+     std::swap(p[1], p[2]);
+    }
+
+    static T read(Generic_File &file)
+    {
+     T result;
+     file.read_data(reinterpret_cast<char *>(&result), 4);
+     if (is_big_endian())
+      change_endianness(result);
+     return result;
+    }
+   };
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct R<T, 8>
+   //////////////////////////////////////////////////////////////////////////
+   {
+    static void change_endianness(T &x)
+    {
+     char *p = reinterpret_cast<char *>(&x);
+     std::swap(p[0], p[7]);
+     std::swap(p[1], p[6]);
+     std::swap(p[2], p[5]);
+     std::swap(p[3], p[4]);
+    }
+
+    static T read(Generic_File &file)
+    {
+     T result;
+     file.read_data(reinterpret_cast<char *>(&result), 8);
+     if (is_big_endian())
+      change_endianness(result);
+     return result;
+    }
+   };
+
    template<typename T, size_t n> struct W;
 
-   template<typename T>
-   struct W<T, 1>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct W<T, 1>
+   //////////////////////////////////////////////////////////////////////////
    {
     static void write(Generic_File &file, T x)
     {
@@ -106,8 +199,9 @@ namespace joedb
     }
    };
 
-   template<typename T>
-   struct W<T, 2>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct W<T, 2>
+   //////////////////////////////////////////////////////////////////////////
    {
     static void write(Generic_File &file, T x)
     {
@@ -126,8 +220,9 @@ namespace joedb
     }
    };
 
-   template<typename T>
-   struct W<T, 4>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct W<T, 4>
+   //////////////////////////////////////////////////////////////////////////
    {
     static void write(Generic_File &file, T x)
     {
@@ -150,8 +245,9 @@ namespace joedb
     }
    };
 
-   template<typename T>
-   struct W<T, 8>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct W<T, 8>
+   //////////////////////////////////////////////////////////////////////////
    {
     static void write(Generic_File &file, T x)
     {
@@ -184,8 +280,9 @@ namespace joedb
 
    template<typename T, size_t n> struct CW;
 
-   template<typename T>
-   struct CW<T, 2>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct CW<T, 2>
+   //////////////////////////////////////////////////////////////////////////
    {
     static void write(Generic_File &file, T x)
     {
@@ -211,8 +308,9 @@ namespace joedb
     }
    };
 
-   template<typename T>
-   struct CW<T, 4>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct CW<T, 4>
+   //////////////////////////////////////////////////////////////////////////
    {
     static void write(Generic_File &file, T x)
     {
@@ -250,8 +348,9 @@ namespace joedb
     }
    };
 
-   template<typename T>
-   struct CW<T, 8>
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> struct CW<T, 8>
+   //////////////////////////////////////////////////////////////////////////
    {
     static void write(Generic_File &file, T x)
     {
@@ -295,7 +394,9 @@ namespace joedb
    void destructor_flush() noexcept;
 
   public:
+   //////////////////////////////////////////////////////////////////////////
    Generic_File(Open_Mode mode): mode(mode)
+   //////////////////////////////////////////////////////////////////////////
    {
     write_buffer_index = 0;
     reset_read_buffer();
@@ -304,11 +405,24 @@ namespace joedb
     slice_length = 0;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void set_slice(int64_t start, int64_t length)
+   //////////////////////////////////////////////////////////////////////////
    {
+    flush();
     slice_start = start;
     slice_length = length;
     set_position(0);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   int64_t get_size() const
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (slice_length)
+     return slice_length;
+    else
+     return raw_get_size();
    }
 
    Open_Mode get_mode() const {return mode;}
@@ -320,26 +434,37 @@ namespace joedb
    int64_t get_position() const {return position;}
    void copy(Generic_File &source);
 
-   template<typename T>
-   void write(T x)
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> void write(T x)
+   //////////////////////////////////////////////////////////////////////////
    {
     W<T, sizeof(T)>::write(*this, x);
    }
 
-   template<typename T>
-   T read()
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> T read()
+   //////////////////////////////////////////////////////////////////////////
    {
     return R<T, sizeof(T)>::read(*this);
    }
 
-   template<typename T>
-   void compact_write(T x)
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> static void change_endianness(T &x)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    R<T, sizeof(T)>::change_endianness(x);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> void compact_write(T x)
+   //////////////////////////////////////////////////////////////////////////
    {
     CW<T, sizeof(T)>::write(*this, x);
    }
 
-   template<typename T>
-   T compact_read()
+   //////////////////////////////////////////////////////////////////////////
+   template<typename T> T compact_read()
+   //////////////////////////////////////////////////////////////////////////
    {
     uint8_t first_byte = uint8_t(getc());
     int extra_bytes = first_byte >> 5;
@@ -353,14 +478,18 @@ namespace joedb
    std::string read_string();
    std::string safe_read_string(size_t max_size);
 
+   //////////////////////////////////////////////////////////////////////////
    void write_data(const char *data, size_t n)
+   //////////////////////////////////////////////////////////////////////////
    {
     flush();
     raw_write(data, n);
     position += n;
    }
 
+   //////////////////////////////////////////////////////////////////////////
    void read_data(char *data, size_t n)
+   //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(write_buffer_index == 0);
 
@@ -416,94 +545,6 @@ namespace joedb
    void commit(); // flush and write to disk (fsync)
 
    virtual ~Generic_File() {}
-
-   int64_t get_size() const
-   {
-    if (slice_length)
-     return slice_length;
-    else
-     return raw_get_size();
-   }
-
-   template<typename T, size_t n> struct R;
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 1>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void swap(T &x)
-    {
-    }
-
-    static T read(Generic_File &file)
-    {
-     return T(file.getc());
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 2>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void swap(T &x)
-    {
-     char *p = reinterpret_cast<char *>(&x);
-     std::swap(p[0], p[1]);
-    }
-
-    static T read(Generic_File &file)
-    {
-     T result;
-     file.read_data(reinterpret_cast<char *>(&result), 2);
-     if (is_big_endian())
-      swap(result);
-     return result;
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 4>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void swap(T &x)
-    {
-     char *p = reinterpret_cast<char *>(&x);
-     std::swap(p[0], p[3]);
-     std::swap(p[1], p[2]);
-    }
-
-    static T read(Generic_File &file)
-    {
-     T result;
-     file.read_data(reinterpret_cast<char *>(&result), 4);
-     if (is_big_endian())
-      swap(result);
-     return result;
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 8>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void swap(T &x)
-    {
-     char *p = reinterpret_cast<char *>(&x);
-     std::swap(p[0], p[7]);
-     std::swap(p[1], p[6]);
-     std::swap(p[2], p[5]);
-     std::swap(p[3], p[4]);
-    }
-
-    static T read(Generic_File &file)
-    {
-     T result;
-     file.read_data(reinterpret_cast<char *>(&result), 8);
-     if (is_big_endian())
-      swap(result);
-     return result;
-    }
-   };
  };
 }
 

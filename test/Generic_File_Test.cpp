@@ -66,7 +66,7 @@ void check_data(int32_t *data, int32_t start, int32_t count)
  for (int i = 0; i < count; i++)
  {
   if (joedb::is_big_endian())
-   joedb::Generic_File::R<int32_t, 4>::swap(data[i]);
+   joedb::Generic_File::change_endianness(data[i]);
   EXPECT_EQ(start + i, data[i]);
  }
 }
