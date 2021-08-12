@@ -400,8 +400,14 @@ namespace joedb
    for (uint32_t i = 0; i < 8; i++)
     hash[i] = uint32_from_network(session->buffer + 9 + 4 * i);
 
-   if (journal.get_hash(checkpoint) != hash)
+   if
+   (
+    checkpoint > journal.get_checkpoint_position() ||
+    journal.get_hash(checkpoint) != hash
+   )
+   {
     session->buffer[0] = 'h';
+   }
 
    session->write_id(std::cerr) << "hash for checkpoint = ";
    std::cerr << checkpoint << ", result = " << session->buffer[0] << '\n';

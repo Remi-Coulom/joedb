@@ -4,6 +4,7 @@ TODO
 short term (before review):
 
 - Rewrite Freedom Keeper
+- Silence outputs of Server and Server_Connection
 
 Journal File
 ------------
