@@ -150,7 +150,7 @@ namespace joedb
      }
     }
 
-    for (uint32_t i = 0; i < chunk_count; i++)
+    for (uint32_t i = 0; i < uint32_t(chunk_count); i++)
      process_chunk(reinterpret_cast<char *>(&final_chunks[16 * i]));
    }
  };
