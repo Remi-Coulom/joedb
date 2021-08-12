@@ -17,6 +17,8 @@ U      checkpoint       push-unlock
        data
 l                       lock
 u                       unlock
+H      checkpoint       check SHA-256 hash code
+       hash (32 bytes)
 i                       ping (used to keep the connection alive)
 Q                       quit
 ====== ================ ======================================================
@@ -41,5 +43,7 @@ C                       reply to U when the push failed (conflict)
 l                       reply to l
 u                       reply to u (no timeout)
 t                       reply to u (timeout)
+H                       reply to H, hash is matching
+h                       reply to h, hash mismatch
 i                       reply to i
 ====== ================ ======================================================
