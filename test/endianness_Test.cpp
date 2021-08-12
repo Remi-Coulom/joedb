@@ -36,3 +36,19 @@ TEST(endianness, network_integers)
   }
  }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(endianness, uint32_t)
+/////////////////////////////////////////////////////////////////////////////
+{
+ for (uint32_t i = 0; i <= +500; i++)
+ {
+  char buffer[4];
+  for (int shift = 0; shift < 24; shift++)
+  {
+   const uint32_t n = i << shift;
+   joedb::uint32_to_network(n, buffer);
+   EXPECT_EQ(n, joedb::uint32_from_network(buffer));
+  }
+ }
+}

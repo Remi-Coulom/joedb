@@ -396,8 +396,10 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
    SHA_256::Hash hash;
-   std::copy_n(session->buffer + 9, 32, reinterpret_cast<char *>(&hash[0]));
-   // TODO: endian
+
+   for (uint32_t i = 0; i < 8; i++)
+    hash[i] = uint32_from_network(session->buffer + 9 + 4 * i);
+
    if (journal.get_hash(checkpoint) != hash)
     session->buffer[0] = 'h';
 

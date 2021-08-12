@@ -33,6 +33,27 @@ namespace joedb
   buffer[6] = char(n >> 48);
   buffer[7] = char(n >> 56);
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ inline uint32_t uint32_from_network(const char *buffer)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return
+   uint32_t(uint8_t(buffer[3])) << 24 |
+   uint32_t(uint8_t(buffer[2])) << 16 |
+   uint32_t(uint8_t(buffer[1])) <<  8 |
+   uint32_t(uint8_t(buffer[0]));
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ inline void uint32_to_network(uint32_t n, char *buffer)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  buffer[0] = char(n      );
+  buffer[1] = char(n >>  8);
+  buffer[2] = char(n >> 16);
+  buffer[3] = char(n >> 24);
+ }
 }
 
 #endif
