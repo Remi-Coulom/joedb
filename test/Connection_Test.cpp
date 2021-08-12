@@ -138,7 +138,7 @@ TEST(Connection, hash)
  }
 
  {
-  Memory_File client_file(Open_Mode::create_new);
+  Memory_File client_file;
 
   {
    Writable_Journal journal(client_file);
