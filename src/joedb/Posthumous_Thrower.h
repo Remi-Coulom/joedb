@@ -30,8 +30,6 @@ namespace joedb
        exception = std::current_exception();
       }
     }
-    if (message)
-     Destructor_Logger::write(message);
    }
 
   public:
@@ -54,6 +52,8 @@ namespace joedb
    {
     if (catcher)
      catcher->catch_current_exception(message);
+    if (message)
+     Destructor_Logger::write(message);
    }
 
   public:
