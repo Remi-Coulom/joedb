@@ -21,6 +21,8 @@ History
     won't checkpoint any more, because this would risk checkpointing a failed
     buffer flush, and because write errors cannot be handled properly in
     destructors.
+  - Use SHA-256 hash to compare the client database with the server database
+    at connection time.
   - Minor fixes and improvements.
 
 - 2021-05-08: 5.0
