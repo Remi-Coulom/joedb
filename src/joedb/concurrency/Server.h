@@ -164,6 +164,8 @@ namespace joedb
     uint16_t port,
     uint32_t lock_timeout_seconds
    );
+
+   uint16_t get_port() const {return port;}
  };
 }
 
