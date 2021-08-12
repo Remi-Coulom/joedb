@@ -400,6 +400,10 @@ namespace joedb
    // TODO: endian
    if (journal.get_hash(checkpoint) != hash)
     session->buffer[0] = 'h';
+
+   session->write_id(std::cerr) << "hash for checkpoint = ";
+   std::cerr << checkpoint << ", result = " << session->buffer[0] << '\n';
+
    write_buffer_and_next_command(session, 1);
   }
  }
