@@ -8,6 +8,7 @@
 #include "joedb/assert.h"
 #include "joedb/is_big_endian.h"
 #include "joedb/Posthumous_Thrower.h"
+#include "joedb/journal/SHA_256.h"
 
 namespace joedb
 {
@@ -27,8 +28,6 @@ namespace joedb
  {
   friend class Async_Reader;
   friend class Async_Writer;
-
-  // TODO: should create an intermediate "Buffered_File" class ?
 
   private:
    enum {buffer_size = (1 << 12)};
@@ -543,6 +542,9 @@ namespace joedb
 
    void flush(); // flushes the write buffer to the system
    void commit(); // flush and write to disk (fsync)
+
+   SHA_256::Hash get_hash(int64_t start, int64_t size);
+   SHA_256::Hash get_hash();
 
    virtual ~Generic_File() {}
  };

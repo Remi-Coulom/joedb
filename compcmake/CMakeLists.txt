@@ -238,8 +238,8 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Writable_Journal.cpp
 )
 
-ipo_add_executable(sha_256
- ../src/joedb/io/sha_256.cpp
+ipo_add_executable(joedb_sha256sum
+ ../src/joedb/io/joedb_sha256sum.cpp
  ../src/joedb/journal/SHA_256.cpp
 )
 
