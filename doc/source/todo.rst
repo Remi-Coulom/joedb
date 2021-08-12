@@ -4,14 +4,10 @@ TODO
 short term (before review):
 
 - Rewrite Freedom Keeper
-- SHA 256
 
 Journal File
 ------------
-- Hashing for hardware error detection, and checking that client.joedb matches
-  server.joedb before pulling. Git is transitioning to SHA-256, so this may be
-  a good choice. Find a code that can be easily updated incrementally when
-  appending data.
+- Hashing for hardware error detection.
 - joedb_truncate <file> <position> (+optionally show position in logdump)
 - better than truncating: add an ``undo`` operation to the log. This way, it is
   possible to keep all branches of history.
@@ -110,7 +106,6 @@ Concurrency
   - make it asynchronous instead of using threads
 
 - Connection via domain sockets / named pipes
-- Optional CRC check before pulling to verify the content of the origin.
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
   class that takes a readonly and a writable file, and uses the writable file
   for the header and the continuation: only the header has to be copied.
