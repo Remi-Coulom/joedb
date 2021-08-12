@@ -235,6 +235,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Generic_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
+ ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/journal/Writable_Journal.cpp
 )
 
@@ -299,6 +300,7 @@ joedb_add_executable(joedb_embed
 ipo_add_executable(joedb_file_type
  ../src/joedb/journal/Generic_File.cpp
  ../src/joedb/journal/File.cpp
+ ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/io/joedb_file_type.cpp
  ../src/joedb/Destructor_Logger.cpp
 )
