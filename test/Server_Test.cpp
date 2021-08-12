@@ -2,6 +2,7 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Network_Channel.h"
 #include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Mutex_Lock.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -22,29 +23,45 @@ TEST(Server, basic)
  std::string port_string = port_stream.str();
  const char * const port = port_string.c_str();
 
- joedb::Network_Channel channel_1("localhost", port);
- joedb::Server_Connection connection_1(channel_1);
  joedb::Memory_File client_file_1;
- joedb::Interpreted_Client client_1(connection_1, client_file_1);
-
- joedb::Network_Channel channel_2("localhost", port);
- joedb::Server_Connection connection_2(channel_2);
  joedb::Memory_File client_file_2;
- joedb::Interpreted_Client client_2(connection_2, client_file_2);
 
- client_1.pull();
-
- client_1.write_transaction([](joedb::Readable_Writable &db)
  {
-  db.create_table("person");
- });
+  joedb::Network_Channel channel_1("localhost", port);
+  joedb::Server_Connection connection_1(channel_1);
+  joedb::Interpreted_Client client_1(connection_1, client_file_1);
 
- EXPECT_EQ(client_1.get_database().get_tables().size(), 1ULL);
- EXPECT_EQ(client_2.get_database().get_tables().size(), 0ULL);
+  joedb::Network_Channel channel_2("localhost", port);
+  joedb::Server_Connection connection_2(channel_2);
+  joedb::Interpreted_Client client_2(connection_2, client_file_2);
 
- client_2.pull();
+  client_1.pull();
 
- EXPECT_EQ(client_2.get_database().get_tables().size(), 1ULL);
+  client_1.write_transaction([](joedb::Readable_Writable &db)
+  {
+   db.create_table("person");
+  });
+
+  EXPECT_EQ(client_1.get_database().get_tables().size(), 1ULL);
+  EXPECT_EQ(client_2.get_database().get_tables().size(), 0ULL);
+
+  client_2.pull();
+
+  EXPECT_EQ(client_2.get_database().get_tables().size(), 1ULL);
+
+  {
+   joedb::Mutex_Lock lock(connection_1);
+  }
+ }
+
+ client_file_1.set_position(0);
+ client_file_1.set_mode(joedb::Open_Mode::write_existing);
+
+ {
+  joedb::Network_Channel channel_1("localhost", port);
+  joedb::Server_Connection connection_1(channel_1);
+  joedb::Interpreted_Client client_1(connection_1, client_file_1);
+ }
 
  server.interrupt();
  server_thread.join();
