@@ -152,7 +152,30 @@ namespace joedb
  bool Server_Connection::check_hash(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return false;
+  Channel_Lock lock(channel);
+
+  std::cerr << get_session_id() << ": checking_hash... ";
+
+  buffer[0] = 'H';
+
+  const int64_t checkpoint = client_journal.get_checkpoint_position();
+  to_network(checkpoint, buffer + 1);
+
+  SHA_256::Hash hash = client_journal.get_hash(checkpoint);
+  std::copy_n(reinterpret_cast<char *>(&hash[0]), 64, buffer + 9);
+  // TODO: endian
+
+  lock.write(buffer, 73);
+  lock.read(buffer, 1);
+
+  const bool result = (buffer[0] == 'H');
+
+  if (result)
+   std::cerr << "OK\n";
+  else
+   std::cerr << "Error\n";
+
+  return result;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -195,7 +218,7 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 3;
+  const int64_t client_version = 4;
   to_network(client_version, buffer + 5);
 
   {
@@ -224,7 +247,7 @@ namespace joedb
 
   std::cerr << "server_version = " << server_version << ". ";
 
-  if (server_version < 3)
+  if (server_version < 4)
    throw Exception("Unsupported server version");
 
   session_id = from_network(buffer + 5 + 8);
@@ -247,19 +270,26 @@ namespace joedb
  {
   try
   {
-   {
-    Channel_Lock lock(channel);
-    buffer[0] = 'Q';
-    lock.write(buffer, 1);
-    keep_alive_thread_must_stop = true;
-    condition.notify_one();
-   }
-   keep_alive_thread.join();
-   delete[] buffer;
+   Channel_Lock lock(channel);
+   buffer[0] = 'Q';
+   lock.write(buffer, 1);
   }
   catch(...)
   {
-   postpone_exception("exception in Server_Connection destructor");
+   postpone_exception("Could not write to server");
   }
+
+  try
+  {
+   keep_alive_thread_must_stop = true;
+   condition.notify_one();
+   keep_alive_thread.join();
+  }
+  catch(...)
+  {
+   postpone_exception("Could not join keep-alive thread");
+  }
+
+  delete[] buffer;
  }
 }
