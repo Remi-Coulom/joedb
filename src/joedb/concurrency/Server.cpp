@@ -8,6 +8,9 @@
 #include <csignal>
 #include <sstream>
 
+#define LOG if (log) *log
+#define LOGID if (log) session->write_id(*log)
+
 namespace joedb
 {
  std::atomic<bool> Server::interrupted(false);
@@ -35,7 +38,8 @@ namespace joedb
   socket(std::move(socket)),
   state(not_locking)
  {
-  write_id(std::cerr) << "created\n";
+  if (server.log)
+   write_id(*server.log) << "created\n";
   ++server.session_count;
   server.write_status();
  }
@@ -49,10 +53,12 @@ namespace joedb
    --server.session_count;
    if (state == locking)
    {
-    write_id(std::cerr) << "removing lock held by dying session.\n";
+    if (server.log)
+     write_id(*server.log) << "removing lock held by dying session.\n";
     server.unlock(*this);
    }
-   write_id(std::cerr) << "deleted\n";
+   if (server.log)
+    write_id(*server.log) << "deleted\n";
    server.write_status();
   }
   catch (...)
@@ -65,11 +71,14 @@ namespace joedb
  void Server::write_status()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::cerr << '\n';
-  std::cerr << port << ": ";
-  std::cerr << get_time_string(std::time(nullptr));
-  std::cerr << "; session_count = " << session_count << '\n';
-  std::cerr << '\n';
+  if (log)
+  {
+   *log << '\n';
+   *log << port << ": ";
+   *log << get_time_string(std::time(nullptr));
+   *log << "; session_count = " << session_count << '\n';
+   *log << '\n';
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -82,7 +91,7 @@ namespace joedb
    std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
 
-   session->write_id(std::cerr) << "locking\n";
+   LOGID << "locking\n";
 
    if (lock_timeout_seconds > 0)
    {
@@ -130,7 +139,7 @@ namespace joedb
  {
   if (session.state == Session::State::locking)
   {
-   session.write_id(std::cerr) << "unlocking\n";
+   if (log) session.write_id(*log) << "unlocking\n";
    session.state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
@@ -149,7 +158,7 @@ namespace joedb
  {
   if (!error)
   {
-   session->write_id(std::cerr) << "timeout\n";
+   LOGID << "timeout\n";
    unlock(*session);
   }
  }
@@ -168,7 +177,7 @@ namespace joedb
  {
   if (!error)
   {
-   std::cerr << '.';
+   LOG << '.';
 
    push_transfer
    (
@@ -192,7 +201,7 @@ namespace joedb
  {
   if (remaining_size > 0)
   {
-   std::cerr << '.';
+   LOG << '.';
 
    net::async_read
    (
@@ -226,7 +235,7 @@ namespace joedb
     session->buffer[0] = 'U';
    }
 
-   std::cerr << " done. Returning '" << session->buffer[0] << "'\n";
+   LOG << " done. Returning '" << session->buffer[0] << "'\n";
 
    write_buffer_and_next_command(session, 1);
 
@@ -256,10 +265,10 @@ namespace joedb
 
    if (session->state != Session::State::locking)
    {
-    session->write_id(std::cerr) << "trying to push while not locking.\n";
+    LOGID << "trying to push while not locking.\n";
     if (!conflict && !locked)
     {
-     session->write_id(std::cerr) << "OK, this session can take the lock.\n";
+     LOGID << "OK, this session can take the lock.\n";
      lock(session, Session::State::locking);
     }
    }
@@ -270,8 +279,7 @@ namespace joedb
    if (!conflict && size > int64_t(push_buffer.size()))
     push_buffer.resize(size_t(size));
 
-   session->write_id(std::cerr) << "pushing, start = ";
-   std::cerr << start << ", size = " << size << ':';
+   LOGID << "pushing, start = " << start << ", size = " << size << ':';
 
    push_transfer
    (
@@ -297,7 +305,7 @@ namespace joedb
   {
    if (reader.get_remaining() > 0)
    {
-    std::cerr << '.';
+    LOG << '.';
 
     const size_t size = reader.read
     (
@@ -322,7 +330,7 @@ namespace joedb
    }
    else
    {
-    std::cerr << " OK\n";
+    LOG << " OK\n";
     read_command(session);
    }
   }
@@ -344,8 +352,8 @@ namespace joedb
    Async_Reader reader = journal.get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
 
-   session->write_id(std::cerr) << "pulling from checkpoint = ";
-   std::cerr << checkpoint << ", size = " << reader.get_remaining() << ':';
+   LOGID << "pulling from checkpoint = " << checkpoint << ", size = "
+         << reader.get_remaining() << ':';
 
    net::async_write
    (
@@ -409,8 +417,8 @@ namespace joedb
     session->buffer[0] = 'h';
    }
 
-   session->write_id(std::cerr) << "hash for checkpoint = ";
-   std::cerr << checkpoint << ", result = " << session->buffer[0] << '\n';
+   LOGID << "hash for checkpoint = " << checkpoint << ", result = "
+         << session->buffer[0] << '\n';
 
    write_buffer_and_next_command(session, 1);
   }
@@ -446,7 +454,7 @@ namespace joedb
  {
   if (!error)
   {
-   session->write_id(std::cerr) << session->buffer[0] << '\n';
+   LOGID << session->buffer[0] << '\n';
 
    switch (session->buffer[0])
    {
@@ -501,7 +509,7 @@ namespace joedb
     break;
 
     default:
-     session->write_id(std::cerr) << "unexpected command\n";
+     LOGID << "unexpected command\n";
     break;
    }
   }
@@ -584,8 +592,7 @@ namespace joedb
    {
     const int64_t client_version = from_network(session->buffer + 5);
 
-    session->write_id(std::cerr) << "client_version = ";
-    std::cerr << client_version << '\n';
+    LOGID << "client_version = " << client_version << '\n';
 
     if (client_version < 3)
      to_network(0, session->buffer + 5);
@@ -600,7 +607,7 @@ namespace joedb
     write_buffer_and_next_command(session, 5 + 8 + 8);
    }
    else
-    session->write_id(std::cerr) << "bad handshake\n";
+    LOGID << "bad handshake\n";
   }
  }
 
@@ -680,7 +687,7 @@ namespace joedb
   {
    if (interrupted)
    {
-    std::cerr << "Interruption detected\n";
+    LOG << "Interruption detected\n";
     io_context.stop();
    }
 
@@ -695,7 +702,8 @@ namespace joedb
   joedb::Writable_Journal &journal,
   net::io_context &io_context,
   uint16_t port,
-  uint32_t lock_timeout_seconds
+  uint32_t lock_timeout_seconds,
+  std::ostream *log
  ):
   journal(journal),
   io_context(io_context),
@@ -706,7 +714,8 @@ namespace joedb
   session_id(0),
   lock_timeout_seconds(lock_timeout_seconds),
   lock_timeout_timer(io_context),
-  locked(false)
+  locked(false),
+  log(log)
  {
   write_status();
 
@@ -716,3 +725,5 @@ namespace joedb
   start_accept();
  }
 }
+#undef LOGID
+#undef LOG

@@ -29,7 +29,7 @@ namespace joedb
    ):
     file(file_name, Open_Mode::write_existing_or_create_new),
     journal(file),
-    server(journal, io_context, uint16_t(port), uint32_t(timeout))
+    server(journal, io_context, uint16_t(port), uint32_t(timeout), &std::cerr)
    {
    }
  };

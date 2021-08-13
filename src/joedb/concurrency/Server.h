@@ -8,6 +8,7 @@
 #include <queue>
 #include <atomic>
 #include <memory>
+#include <iosfwd>
 
 #ifndef CDECL
 #define CDECL
@@ -156,13 +157,16 @@ namespace joedb
    void start_interrupt_timer();
    void handle_interrupt_timer(std::error_code error);
 
+   std::ostream *log;
+
   public:
    Server
    (
     joedb::Writable_Journal &journal,
     net::io_context &io_context,
     uint16_t port,
-    uint32_t lock_timeout_seconds
+    uint32_t lock_timeout_seconds,
+    std::ostream *log
    );
 
    uint16_t get_port() const {return port;}

@@ -47,7 +47,7 @@ namespace joedb
   Writable_Journal journal(file);
 
   net::io_context io_context;
-  Server server(journal, io_context, port, timeout);
+  Server server(journal, io_context, port, timeout, &std::cerr);
   io_context.run();
 
   return 0;
