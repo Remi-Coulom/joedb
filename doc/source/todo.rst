@@ -97,7 +97,6 @@ Concurrency
 
   - fuzzer + unit testing
   - use coroutines
-  - event listener instead of direct writes to std::cerr
   - option to serve readonly
   - indicate commit level for a push
   - cache SHA-256 calculations + efficient incremental update.

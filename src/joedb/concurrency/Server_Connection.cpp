@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#define LOG(x) do {if (log) *log << x;} while (false)
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -12,7 +14,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  std::cerr << get_session_id() << ": obtaining lock... ";
+  LOG(get_session_id() << ": obtaining lock... ");
 
   buffer[0] = 'l';
   lock.write(buffer.data(), 1);
@@ -20,7 +22,7 @@ namespace joedb
   if (buffer[0] != 'l')
    throw Exception("Unexpected server reply");
 
-  std::cerr << "OK\n";
+  LOG("OK\n");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -29,16 +31,16 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  std::cerr << get_session_id() << ": releasing lock... ";
+  LOG(get_session_id() << ": releasing lock... ");
 
   buffer[0] = 'u';
   lock.write(buffer.data(), 1);
   lock.read(buffer.data(), 1);
 
   if (buffer[0] == 'u')
-   std::cerr << "OK\n";
+   LOG("OK\n");
   else if (buffer[0] == 't')
-   std::cerr << "The lock had timed out\n";
+   LOG("The lock had timed out\n");
   else
    throw Exception("Unexpected server reply");
  }
@@ -53,7 +55,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  std::cerr << get_session_id() << ": pulling(" << pull_type << ")... ";
+  LOG(get_session_id() << ": pulling(" << pull_type << ")... ");
 
   buffer[0] = pull_type;
   const int64_t checkpoint = client_journal.get_checkpoint_position();
@@ -66,7 +68,7 @@ namespace joedb
 
   const int64_t size = from_network(buffer.data() + 9);
 
-  std::cerr << "size = " << size << "...";
+  LOG("size = " << size << "...");
 
   {
    Writable_Journal::Tail_Writer tail_writer(client_journal);
@@ -80,13 +82,13 @@ namespace joedb
     const size_t n = lock.read_some(buffer.data(), read_size);
     tail_writer.append(buffer.data(), n);
     read += n;
-    std::cerr << '.';
+    LOG('.');
    }
 
    tail_writer.finish();
   }
 
-  std::cerr << " OK\n";
+  LOG(" OK\n");
 
   if (size < 0)
    throw Exception("Client checkpoint is ahead of server checkpoint");
@@ -126,8 +128,7 @@ namespace joedb
 
   const int64_t push_size = reader.get_remaining();
 
-  std::cerr << get_session_id() << ": pushing(U)... size = " << push_size;
-  std::cerr << "... ";
+  LOG(get_session_id() << ": pushing(U)... size = " << push_size << "... ");
 
   lock.write(buffer.data(), 17);
 
@@ -135,13 +136,13 @@ namespace joedb
   {
    const size_t size = reader.read(buffer.data(), buffer_size);
    lock.write(buffer.data(), size);
-   std::cerr << size << ' ';
+   LOG(size << ' ');
   }
 
   lock.read(buffer.data(), 1);
 
   if (buffer[0] == 'U')
-   std::cerr << "OK\n";
+   LOG("OK\n");
   else if (buffer[0] == 'C')
    throw Exception("Conflict: push failed");
   else
@@ -154,7 +155,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  std::cerr << get_session_id() << ": checking_hash... ";
+  LOG(get_session_id() << ": checking_hash... ");
 
   buffer[0] = 'H';
 
@@ -171,9 +172,9 @@ namespace joedb
   const bool result = (buffer[0] == 'H');
 
   if (result)
-   std::cerr << "OK\n";
+   LOG("OK\n");
   else
-   std::cerr << "Error\n";
+   LOG("Error\n");
 
   return result;
  }
@@ -205,10 +206,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Handshake::Server_Handshake(Channel &channel): channel(channel)
+ Server_Handshake::Server_Handshake(Channel &channel, std::ostream *log):
  ////////////////////////////////////////////////////////////////////////////
+  channel(channel),
+  log(log)
  {
-  std::cerr << "Connecting... ";
+  LOG("Connecting... ");
 
   char buffer[5 + 8 + 8];
 
@@ -224,7 +227,7 @@ namespace joedb
   {
    Channel_Lock lock(channel);
    lock.write(buffer, 5 + 8);
-   std::cerr << "Waiting for \"joedb\"... ";
+   LOG("Waiting for \"joedb\"... ");
    lock.read(buffer, 5 + 8 + 8);
   }
 
@@ -245,19 +248,19 @@ namespace joedb
   if (server_version == 0)
    throw Exception("Client version rejected by server");
 
-  std::cerr << "server_version = " << server_version << ". ";
+  LOG("server_version = " << server_version << ". ");
 
   if (server_version < 4)
    throw Exception("Unsupported server version");
 
   session_id = from_network(buffer + 5 + 8);
-  std::cerr << "session_id = " << session_id << ". OK.\n";
+  LOG("session_id = " << session_id << ". OK.\n");
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Connection::Server_Connection(Channel &channel):
+ Server_Connection::Server_Connection(Channel &channel, std::ostream *log):
  ////////////////////////////////////////////////////////////////////////////
-  Server_Handshake(channel),
+  Server_Handshake(channel, log),
   buffer(buffer_size),
   keep_alive_thread_must_stop(false),
   keep_alive_thread([this](){keep_alive();})
@@ -291,3 +294,5 @@ namespace joedb
   }
  }
 }
+
+#undef LOG

@@ -33,7 +33,7 @@ TEST(Server_Connection, basic)
 
  try
  {
-  joedb::Server_Connection connection(channel);
+  joedb::Server_Connection connection(channel, nullptr);
   FAIL() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -53,7 +53,7 @@ TEST(Server_Connection, basic)
 
  try
  {
-  joedb::Server_Connection connection(channel);
+  joedb::Server_Connection connection(channel, nullptr);
   FAIL() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -81,7 +81,7 @@ TEST(Server_Connection, basic)
  channel.set_position(0);
 
  {
-  joedb::Server_Connection connection(channel);
+  joedb::Server_Connection connection(channel, nullptr);
   EXPECT_EQ(connection.get_session_id(), 1234);
 
   {

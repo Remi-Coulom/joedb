@@ -23,7 +23,7 @@ namespace joedb
    const char * const file_name = argc > 3 ? argv[3] : nullptr;
 
    Network_Channel channel(host, port);
-   Server_Connection connection(channel);
+   Server_Connection connection(channel, &std::cerr);
 
    run_interpreted_client(connection, file_name);
   }

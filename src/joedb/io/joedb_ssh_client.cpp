@@ -29,7 +29,7 @@ namespace joedb
 
    ssh::Thread_Safe_Session session(user, host, ssh_port, ssh_log_level);
    ssh::Forward_Channel channel(session, "localhost", joedb_port);
-   Server_Connection connection(channel);
+   Server_Connection connection(channel, &std::cerr);
 
    run_interpreted_client(connection, file_name);
   }

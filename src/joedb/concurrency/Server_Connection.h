@@ -8,6 +8,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <thread>
+#include <iosfwd>
 
 namespace joedb
 {
@@ -20,9 +21,10 @@ namespace joedb
 
   protected:
    Channel &channel;
+   std::ostream *log;
 
   public:
-   Server_Handshake(Channel &channel);
+   Server_Handshake(Channel &channel, std::ostream *log);
 
    int64_t get_session_id() const {return session_id;}
  };
@@ -64,7 +66,7 @@ namespace joedb
    void keep_alive();
 
   public:
-   Server_Connection(Channel &channel);
+   Server_Connection(Channel &channel, std::ostream *log);
    ~Server_Connection() override;
  };
 }
