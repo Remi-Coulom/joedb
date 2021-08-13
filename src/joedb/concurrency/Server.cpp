@@ -8,8 +8,8 @@
 #include <csignal>
 #include <sstream>
 
-#define LOG if (log) *log
-#define LOGID if (log) session->write_id(*log)
+#define LOG(x) do {if (log) *log << x;} while (false)
+#define LOGID(x) do {if (log) session->write_id(*log) << x;} while (false)
 
 namespace joedb
 {
@@ -91,7 +91,7 @@ namespace joedb
    std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
 
-   LOGID << "locking\n";
+   LOGID("locking\n");
 
    if (lock_timeout_seconds > 0)
    {
@@ -158,7 +158,7 @@ namespace joedb
  {
   if (!error)
   {
-   LOGID << "timeout\n";
+   LOGID("timeout\n");
    unlock(*session);
   }
  }
@@ -177,7 +177,7 @@ namespace joedb
  {
   if (!error)
   {
-   LOG << '.';
+   LOG('.');
 
    push_transfer
    (
@@ -201,7 +201,7 @@ namespace joedb
  {
   if (remaining_size > 0)
   {
-   LOG << '.';
+   LOG('.');
 
    net::async_read
    (
@@ -235,7 +235,7 @@ namespace joedb
     session->buffer[0] = 'U';
    }
 
-   LOG << " done. Returning '" << session->buffer[0] << "'\n";
+   LOG(" done. Returning '" << session->buffer[0] << "'\n");
 
    write_buffer_and_next_command(session, 1);
 
@@ -265,10 +265,10 @@ namespace joedb
 
    if (session->state != Session::State::locking)
    {
-    LOGID << "trying to push while not locking.\n";
+    LOGID("trying to push while not locking.\n");
     if (!conflict && !locked)
     {
-     LOGID << "OK, this session can take the lock.\n";
+     LOGID("OK, this session can take the lock.\n");
      lock(session, Session::State::locking);
     }
    }
@@ -279,7 +279,7 @@ namespace joedb
    if (!conflict && size > int64_t(push_buffer.size()))
     push_buffer.resize(size_t(size));
 
-   LOGID << "pushing, start = " << start << ", size = " << size << ':';
+   LOGID("pushing, start = " << start << ", size = " << size << ':');
 
    push_transfer
    (
@@ -305,7 +305,7 @@ namespace joedb
   {
    if (reader.get_remaining() > 0)
    {
-    LOG << '.';
+    LOG('.');
 
     const size_t size = reader.read
     (
@@ -330,7 +330,7 @@ namespace joedb
    }
    else
    {
-    LOG << " OK\n";
+    LOG(" OK\n");
     read_command(session);
    }
   }
@@ -352,8 +352,8 @@ namespace joedb
    Async_Reader reader = journal.get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
 
-   LOGID << "pulling from checkpoint = " << checkpoint << ", size = "
-         << reader.get_remaining() << ':';
+   LOGID("pulling from checkpoint = " << checkpoint << ", size = "
+    << reader.get_remaining() << ':');
 
    net::async_write
    (
@@ -417,8 +417,8 @@ namespace joedb
     session->buffer[0] = 'h';
    }
 
-   LOGID << "hash for checkpoint = " << checkpoint << ", result = "
-         << session->buffer[0] << '\n';
+   LOGID("hash for checkpoint = " << checkpoint << ", result = "
+    << session->buffer[0] << '\n');
 
    write_buffer_and_next_command(session, 1);
   }
@@ -454,7 +454,7 @@ namespace joedb
  {
   if (!error)
   {
-   LOGID << session->buffer[0] << '\n';
+   LOGID(session->buffer[0] << '\n');
 
    switch (session->buffer[0])
    {
@@ -509,7 +509,7 @@ namespace joedb
     break;
 
     default:
-     LOGID << "unexpected command\n";
+     LOGID("unexpected command\n");
     break;
    }
   }
@@ -592,7 +592,7 @@ namespace joedb
    {
     const int64_t client_version = from_network(session->buffer + 5);
 
-    LOGID << "client_version = " << client_version << '\n';
+    LOGID("client_version = " << client_version << '\n');
 
     if (client_version < 3)
      to_network(0, session->buffer + 5);
@@ -607,7 +607,7 @@ namespace joedb
     write_buffer_and_next_command(session, 5 + 8 + 8);
    }
    else
-    LOGID << "bad handshake\n";
+    LOGID("bad handshake\n");
   }
  }
 
@@ -687,7 +687,7 @@ namespace joedb
   {
    if (interrupted)
    {
-    LOG << "Interruption detected\n";
+    LOG("Interruption detected\n");
     io_context.stop();
    }
 
