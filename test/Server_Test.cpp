@@ -2,7 +2,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Network_Channel.h"
 #include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/concurrency/Mutex_Lock.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -52,9 +51,7 @@ TEST(Server, basic)
 
   EXPECT_EQ(client_2.get_database().get_tables().size(), 1ULL);
 
-  {
-   joedb::Mutex_Lock lock(connection_1);
-  }
+  connection_1.run_while_locked([](){});
  }
 
  //

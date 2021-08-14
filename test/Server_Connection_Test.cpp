@@ -1,6 +1,5 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/concurrency/Mutex_Lock.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -84,9 +83,7 @@ TEST(Server_Connection, basic)
   joedb::Server_Connection connection(channel, nullptr);
   EXPECT_EQ(connection.get_session_id(), 1234);
 
-  {
-   joedb::Mutex_Lock lock (connection);
-  }
+  connection.run_while_locked([](){});
 
   joedb::Memory_File client_file;
   joedb::Interpreted_Client client(connection, client_file);
