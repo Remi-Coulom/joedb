@@ -504,9 +504,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 )RRR";
 
  std::vector<std::string> type_names;
- type_names.push_back("File_Database");
- type_names.push_back("Generic_File_Database");
- type_names.push_back("Client");
+ type_names.emplace_back("File_Database");
+ type_names.emplace_back("Generic_File_Database");
+ type_names.emplace_back("Client");
 
  for (const std::string &type_name: type_names)
  {
@@ -611,7 +611,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    [
     int(db.get_field_type(table.first, field.first).get_type_id())
    ];
-   fields.push_back("field_value_of_" + field.second);
+   fields.emplace_back("field_value_of_" + field.second);
    out << "> " << fields.back() << ";\n";
   }
 
@@ -621,7 +621,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
     out << "  std::vector<";
     write_index_type(out, db, index);
     out << "::iterator> ";
-    fields.push_back("iterator_over_" + index.name);
+    fields.emplace_back("iterator_over_" + index.name);
     out << fields.back() << ";\n";
    }
 
@@ -633,7 +633,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   out << "  void resize(size_t new_size)\n";
   out << "  {\n";
 
-  fields.push_back("freedom_keeper");
+  fields.emplace_back("freedom_keeper");
   for (const std::string &field: fields)
    out << "   " << field << ".resize(new_size);\n";
 
@@ -1546,7 +1546,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   out << " {\n";
   out << "  std::vector<id_of_" << tname << "> result;\n";
   out << "  for (auto x: get_" << tname << "_table())\n";
-  out << "   result.push_back(x);\n";
+  out << "   result.emplace_back(x);\n";
   out << "  std::sort(result.begin(), result.end(), comparator);\n";
   out << "  return result;\n";
   out << " }\n";
@@ -1647,12 +1647,12 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  out << "  public:\n";
 
  std::vector<std::string> type_names;
- type_names.push_back("Database");
- type_names.push_back("Readonly_Database");
+ type_names.emplace_back("Database");
+ type_names.emplace_back("Readonly_Database");
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  type_names.push_back("id_of_" + tname);
+  type_names.emplace_back("id_of_" + tname);
 
   out << "   typedef " << namespace_string(options.get_name_space());
   out << "::container_of_";
@@ -1839,7 +1839,7 @@ namespace joedb
    {
     if (!is_identifier(name))
      throw Exception("custom: invalid identifier");
-    names.push_back(name);
+    names.emplace_back(name);
    }
  };
 }

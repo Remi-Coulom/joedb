@@ -40,7 +40,7 @@ namespace joedb
   std::vector<std::string> file_names;
 
   for (int i = 1; i < argc - 1; i++)
-   file_names.push_back(argv[i]);
+   file_names.emplace_back(argv[i]);
 
   if (file_names.size() == 0)
   {
@@ -48,7 +48,7 @@ namespace joedb
 
    std::string file_name;
    while (std::cin >> file_name) // note: no file name with white space
-    file_names.push_back(file_name);
+    file_names.emplace_back(std::move(file_name));
   }
 
   if (file_names.size() == 0)

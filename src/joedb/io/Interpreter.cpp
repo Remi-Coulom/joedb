@@ -171,7 +171,7 @@ namespace joedb
      )
      {
       rows++;
-      id_column.push_back(record_id);
+      id_column.emplace_back(record_id);
       for (auto field: fields)
       {
        std::ostringstream ss;
@@ -188,11 +188,13 @@ namespace joedb
        }
 
        ss.flush();
-       const std::string &s = ss.str();
-       columns[field.first].push_back(s);
-       const size_t width = utf8_display_size(s);
-       if (column_width[field.first] < width)
-        column_width[field.first] = width;
+       {
+        std::string s = ss.str();
+        const size_t width = utf8_display_size(s);
+        if (column_width[field.first] < width)
+         column_width[field.first] = width;
+        columns[field.first].emplace_back(std::move(s));
+       }
       }
      }
 

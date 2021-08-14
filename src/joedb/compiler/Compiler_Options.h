@@ -65,7 +65,10 @@ namespace joedb
    {
     table_options[table_id].null_initialization = null_initialization;
    }
-   void add_index(const Index &index) {indices.push_back(index);}
+   void add_index(const Index &&index)
+   {
+    indices.emplace_back(std::move(index));
+   }
    void set_generate_c_wrapper(bool value) {generate_c_wrapper = value;}
    void set_generate_js_wrapper(bool value) {generate_js_wrapper = value;}
 

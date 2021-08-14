@@ -17,7 +17,7 @@ namespace joedb
  void Multiplexer::add_writable(Writable &writable)
  ////////////////////////////////////////////////////////////////////////////
  {
-  writables.push_back(writable);
+  writables.emplace_back(writable);
  }
 
  #define MULTIPLEX(x) do {for (auto w: writables) w.get().x;} while(0)

@@ -17,11 +17,11 @@ namespace joedb
 
   while ((next = s.find(delimiter, current)) != std::string::npos)
   {
-   result.push_back(s.substr(current, next - current));
+   result.emplace_back(s.substr(current, next - current));
    current = next + delimiter.size();
   }
 
-  result.push_back(s.substr(current, s.size() - current));
+  result.emplace_back(s.substr(current, s.size() - current));
 
   return result;
  }

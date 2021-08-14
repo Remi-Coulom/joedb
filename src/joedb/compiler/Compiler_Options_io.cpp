@@ -51,7 +51,7 @@ bool joedb::parse_compiler_options
     std::istringstream column_ss(s);
     std::string column;
     while (std::getline(column_ss, column, ','))
-     index_columns.push_back(column);
+     index_columns.emplace_back(std::move(column));
    }
 
    if (!joedb::is_identifier(index.name))
@@ -75,10 +75,10 @@ bool joedb::parse_compiler_options
      out << "Error: no such field: " << field_name << '\n';
      return false;
     }
-    index.field_ids.push_back(field_id);
+    index.field_ids.emplace_back(field_id);
    }
 
-   compiler_options.add_index(index);
+   compiler_options.add_index(std::move(index));
   }
   else if (command == "generate_c_wrapper")
   {
