@@ -183,9 +183,7 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
  Database db;
 
  Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
- Multiplexer multiplexer;
- multiplexer.add_writable(db);
- multiplexer.add_writable(schema_filter);
+ Multiplexer multiplexer{db, schema_filter};
 
  input_journal.replay_log(multiplexer);
 

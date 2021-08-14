@@ -3,13 +3,24 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ Multiplexer::Multiplexer
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::initializer_list<std::reference_wrapper<Writable>> initializer_list
+ )
+ {
+  for (auto writable: initializer_list)
+   add_writable(writable.get());
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Multiplexer::add_writable(Writable &writable)
  ////////////////////////////////////////////////////////////////////////////
  {
-  writables.push_back(&writable);
+  writables.push_back(writable);
  }
 
- #define MULTIPLEX(x) do {for (auto w: writables) w->x;} while(0)
+ #define MULTIPLEX(x) do {for (auto w: writables) w.get().x;} while(0)
 
  ////////////////////////////////////////////////////////////////////////////
  void Multiplexer::create_table(const std::string &name)
@@ -178,7 +189,7 @@ namespace joedb
   type *result = nullptr;\
   for (auto w: writables)\
   {\
-   result = w->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
+   result = w.get().get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
    if (result)\
     break;\
   }\

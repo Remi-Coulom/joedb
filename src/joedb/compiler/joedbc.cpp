@@ -1876,11 +1876,7 @@ int joedbc_main(int argc, char **argv)
   Selective_Writable schema_writable(journal, Selective_Writable::schema);
   Custom_Collector custom_collector(custom_names);
 
-  Multiplexer multiplexer;
-  multiplexer.add_writable(db);
-  multiplexer.add_writable(schema_writable);
-  multiplexer.add_writable(custom_collector);
-
+  Multiplexer multiplexer{db, schema_writable, custom_collector};
   Interpreter interpreter(db, multiplexer);
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);

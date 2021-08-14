@@ -23,9 +23,9 @@ class Interpreter_Test: public::testing::Test
   Interpreter interpreter;
 
   Interpreter_Test():
+   multiplexer{db},
    interpreter(db, multiplexer)
   {
-   multiplexer.add_writable(db);
   }
 };
 

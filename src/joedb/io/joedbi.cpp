@@ -47,9 +47,7 @@ namespace joedb
    {
     Writable_Journal journal(*file);
     journal.replay_log(db);
-    Multiplexer multiplexer;
-    multiplexer.add_writable(db);
-    multiplexer.add_writable(journal);
+    Multiplexer multiplexer{db, journal};
     Interpreter interpreter(db, multiplexer);
     interpreter.main_loop(std::cin, std::cout);
    }

@@ -11,7 +11,9 @@
 
 using namespace joedb;
 
+/////////////////////////////////////////////////////////////////////////////
 class Writable_Journal_Test: public ::testing::Test
+/////////////////////////////////////////////////////////////////////////////
 {
  protected:
   virtual void TearDown()
@@ -30,9 +32,7 @@ TEST_F(Writable_Journal_Test, basic_operations)
  {
   File file("test.joedb", Open_Mode::create_new);
   Writable_Journal journal(file);
-  Multiplexer multi;
-  multi.add_writable(db1);
-  multi.add_writable(journal);
+  Multiplexer multi{db1, journal};
 
   multi.create_table("deleted");
   multi.drop_table(db1.find_table("deleted"));
@@ -122,9 +122,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Writable_Journal journal(file);
 
   Database db;
-  Multiplexer multiplexer;
-  multiplexer.add_writable(db);
-  multiplexer.add_writable(journal);
+  Multiplexer multiplexer{db, journal};
 
   Writable dummy_writable;
   multiplexer.add_writable(dummy_writable);
@@ -146,11 +144,9 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   File file_copy("test_copy.joedb", Open_Mode::create_new);
   Writable_Journal journal_copy(file_copy);
 
-  Database db_storage;
-  Multiplexer db;
-  db.add_writable(db_storage);
-  db.add_writable(journal_copy);
-  journal.replay_log(db);
+  Database db;
+  Multiplexer multiplexer{db, journal_copy};
+  journal.replay_log(multiplexer);
  }
 
  //

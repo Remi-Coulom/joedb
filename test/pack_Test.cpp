@@ -46,9 +46,7 @@ update_vector float 7 value 2 0.8 9\n\
   Writable_Journal journal(file);
 
   Database db;
-  Multiplexer multiplexer;
-  multiplexer.add_writable(db);
-  multiplexer.add_writable(journal);
+  Multiplexer multiplexer{db, journal};
 
   {
    std::istringstream joedbi_iss(joedbi);

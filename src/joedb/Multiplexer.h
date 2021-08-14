@@ -2,6 +2,8 @@
 #define joedb_Multiplexer_declared
 
 #include <vector>
+#include <initializer_list>
+#include <functional>
 
 #include "Writable.h"
 
@@ -12,9 +14,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::vector<Writable *> writables;
+   std::vector<std::reference_wrapper<Writable>> writables;
 
   public:
+   Multiplexer() {}
+   Multiplexer(std::initializer_list<std::reference_wrapper<Writable>>);
    void add_writable(Writable &writable);
 
    void create_table(const std::string &name) override;

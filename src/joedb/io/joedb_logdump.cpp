@@ -115,9 +115,7 @@ int joedb_logdump_main(int argc, char **argv)
    else if (load)
    {
     joedb::Database db;
-    joedb::Multiplexer multiplexer;
-    multiplexer.add_writable(db);
-    multiplexer.add_writable(*writable);
+    joedb::Multiplexer multiplexer{db, *writable};
     journal->replay_log(multiplexer);
    }
    else

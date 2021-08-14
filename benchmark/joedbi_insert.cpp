@@ -23,9 +23,7 @@ int main(int argc, char **argv)
   File file(file_name, Open_Mode::create_new);
   Writable_Journal journal_file(file);
   Database db;
-  Multiplexer multiplexer;
-  multiplexer.add_writable(journal_file);
-  multiplexer.add_writable(db);
+  Multiplexer multiplexer{db, journal_file};
 
   multiplexer.create_table("BENCHMARK");
   Table_Id table_id = db.find_table("BENCHMARK");

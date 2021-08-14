@@ -91,11 +91,9 @@ namespace joedb
      Selective_Writable::Mode::schema
     );
 
-    Multiplexer multiplexer;
+    Multiplexer multiplexer{*db, schema_filter};
     if (!merged_db)
      multiplexer.add_writable(output_schema);
-    multiplexer.add_writable(schema_filter);
-    multiplexer.add_writable(*db);
 
     input_journal.replay_log(multiplexer);
 

@@ -15,9 +15,7 @@ namespace joedb
  {
   Writable_Journal journal(*this);
   Database db;
-  Multiplexer multiplexer;
-  multiplexer.add_writable(db);
-  multiplexer.add_writable(journal);
+  Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer);
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);

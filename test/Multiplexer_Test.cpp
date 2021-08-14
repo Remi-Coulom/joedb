@@ -34,9 +34,7 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  Database multiplexed_db;
  {
-  Multiplexer multiplexer;
-  multiplexer.add_writable(multiplexed_db);
-
+  Multiplexer multiplexer{multiplexed_db};
   Interpreter interpreter(multiplexed_db, multiplexer);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());

@@ -24,10 +24,9 @@ namespace joedb
     Generic_File &local_file
    ):
     journal(local_file),
+    multiplexer{database, journal},
     client(connection, journal, database)
    {
-    multiplexer.add_writable(database);
-    multiplexer.add_writable(journal);
    }
 
    Readable &get_database()

@@ -46,12 +46,7 @@ TEST(Selective_Writable_Test, basic)
                                     Selective_Writable::Mode::data_and_schema);
 
   Database db;
-  Multiplexer multiplexer;
-  multiplexer.add_writable(db);
-  multiplexer.add_writable(select_schema);
-  multiplexer.add_writable(select_information);
-  multiplexer.add_writable(select_data);
-
+  Multiplexer multiplexer{db, select_schema, select_information, select_data};
   Interpreter interpreter(db, multiplexer);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
