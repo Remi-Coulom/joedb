@@ -21,9 +21,9 @@ TEST(Connection, Interpreted_Client)
 
  client1.write_transaction
  (
-  [](Readable_Writable &db)
+  [](Readable &readable, Writable &writable)
   {
-   db.create_table("person");
+   writable.create_table("person");
   }
  );
 
@@ -35,9 +35,9 @@ TEST(Connection, Interpreted_Client)
 
  client2.write_transaction
  (
-  [](Readable_Writable &db)
+  [](Readable &readable, Writable &writable)
   {
-   db.create_table("city");
+   writable.create_table("city");
   }
  );
 
@@ -59,9 +59,9 @@ TEST(Connection, Transaction_Failure)
  Memory_File client2_file;
  Interpreted_Client client2(connection, client2_file);
 
- client1.write_transaction([](Readable_Writable &db)
+ client1.write_transaction([](Readable &readable, Writable &writable)
  {
-  db.create_table("person");
+  writable.create_table("person");
  });
 
  client2.pull();
@@ -69,10 +69,10 @@ TEST(Connection, Transaction_Failure)
 
  try
  {
-  client1.write_transaction([](Readable_Writable &db)
+  client1.write_transaction([](Readable &readable, Writable &writable)
   {
-   db.create_table("city");
-   db.checkpoint(Commit_Level::no_commit);
+   writable.create_table("city");
+   writable.checkpoint(Commit_Level::no_commit);
    throw joedb::Exception("cancelled");
   });
   FAIL() << "transaction should have thrown";
@@ -95,9 +95,9 @@ TEST(Connection, Transaction_Failure)
 
  try
  {
-  client1.write_transaction([](Readable_Writable &db)
+  client1.write_transaction([](Readable &readable, Writable &writable)
   {
-   db.create_table("country");
+   writable.create_table("country");
   });
   FAIL() << "interrupted write should have prevented transaction";
  }
@@ -126,10 +126,10 @@ TEST(Connection, hash)
 
   {
    Interpreted_Client client(connection, client_file);
-   client.write_transaction([](Readable_Writable &db)
+   client.write_transaction([](Readable &readable, Writable &writable)
    {
-    db.create_table("person");
-    db.create_table("city");
+    writable.create_table("person");
+    writable.create_table("city");
    });
   }
  }

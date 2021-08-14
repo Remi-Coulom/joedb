@@ -50,9 +50,9 @@ namespace joedb
 
    if (input == "W")
    {
-    client.write_transaction([](Readable_Writable &db)
+    client.write_transaction([](Readable &readable, Writable &writable)
     {
-     Interpreter(db).main_loop(std::cin, std::cout);
+     Interpreter(readable, writable).main_loop(std::cin, std::cout);
     });
    }
    else if (input == "P")

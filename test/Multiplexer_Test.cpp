@@ -1,4 +1,4 @@
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database.h"
@@ -22,7 +22,7 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  Database reference_db;
  {
-  Interpreter interpreter(reference_db);
+  Interpreter interpreter(reference_db, reference_db);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
@@ -34,9 +34,10 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  Database multiplexed_db;
  {
-  Readable_Multiplexer multiplexer(multiplexed_db);
+  Multiplexer multiplexer;
+  multiplexer.add_writable(multiplexed_db);
 
-  Interpreter interpreter(multiplexer);
+  Interpreter interpreter(multiplexed_db, multiplexer);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;

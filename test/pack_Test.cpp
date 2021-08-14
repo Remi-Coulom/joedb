@@ -5,7 +5,7 @@
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 
 #include "gtest/gtest.h"
 
@@ -46,14 +46,15 @@ update_vector float 7 value 2 0.8 9\n\
   Writable_Journal journal(file);
 
   Database db;
-  Readable_Multiplexer multiplexer(db);
+  Multiplexer multiplexer;
+  multiplexer.add_writable(db);
   multiplexer.add_writable(journal);
 
   {
    std::istringstream joedbi_iss(joedbi);
    std::ostringstream joedbi_oss;
 
-   Interpreter interpreter(multiplexer);
+   Interpreter interpreter(db, multiplexer);
    interpreter.main_loop(joedbi_iss, joedbi_oss);
   }
  }

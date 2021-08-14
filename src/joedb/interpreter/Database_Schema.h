@@ -1,7 +1,8 @@
 #ifndef joedb_Database_Schema_declared
 #define joedb_Database_Schema_declared
 
-#include "joedb/Readable_Writable.h"
+#include "joedb/Readable.h"
+#include "joedb/Writable.h"
 #include "joedb/interpreter/Table.h"
 
 #include <map>
@@ -9,7 +10,7 @@
 namespace joedb
 {
  ///////////////////////////////////////////////////////////////////////////
- class Database_Schema: public Readable_Writable
+ class Database_Schema: public Readable, public Writable
  ///////////////////////////////////////////////////////////////////////////
  {
   protected:

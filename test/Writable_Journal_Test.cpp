@@ -3,7 +3,7 @@
 #include "joedb/io/dump.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 
 #include "gtest/gtest.h"
 
@@ -30,16 +30,17 @@ TEST_F(Writable_Journal_Test, basic_operations)
  {
   File file("test.joedb", Open_Mode::create_new);
   Writable_Journal journal(file);
-  Readable_Multiplexer multi(db1);
+  Multiplexer multi;
+  multi.add_writable(db1);
   multi.add_writable(journal);
 
   multi.create_table("deleted");
   multi.drop_table(db1.find_table("deleted"));
   multi.create_table("table_test");
-  const Table_Id table_id = multi.find_table("table_test");
+  const Table_Id table_id = db1.find_table("table_test");
   multi.insert_into(table_id, 1);
   multi.add_field(table_id, "field", Type::int32());
-  const Field_Id field_id = multi.find_field(table_id, "field");
+  const Field_Id field_id = db1.find_field(table_id, "field");
   multi.update_int32(table_id, 1, field_id, 1234);
   multi.delete_from(table_id, 1);
   multi.insert_into(table_id, 2);
@@ -47,19 +48,19 @@ TEST_F(Writable_Journal_Test, basic_operations)
   multi.drop_field(table_id, field_id);
 
   multi.add_field(table_id, "big_field", Type::int64());
-  const Field_Id big_field_id = multi.find_field(table_id, "big_field");
+  const Field_Id big_field_id = db1.find_field(table_id, "big_field");
   multi.update_int64(table_id, 2, big_field_id, 1234567ULL);
 
   multi.add_field(table_id, "new_field", Type::reference(table_id));
-  const Field_Id new_field = multi.find_field(table_id, "new_field");
+  const Field_Id new_field = db1.find_field(table_id, "new_field");
   multi.update_reference(table_id, 2, new_field, 2);
   multi.add_field(table_id, "name", Type::string());
-  const Field_Id name_id = multi.find_field(table_id, "name");
+  const Field_Id name_id = db1.find_field(table_id, "name");
   multi.update_string(table_id, 2, name_id, "Aristide");
 
   {
    multi.create_table("type_test");
-   const Table_Id table_id = multi.find_table("type_test");
+   const Table_Id table_id = db1.find_table("type_test");
    multi.insert_into(table_id, 1);
 
    multi.add_field(table_id, "string", Type::string());
@@ -70,13 +71,13 @@ TEST_F(Writable_Journal_Test, basic_operations)
    multi.add_field(table_id, "float32", Type::float32());
    multi.add_field(table_id, "float64", Type::float64());
 
-   const Field_Id string_field_id = multi.find_field(table_id, "string");
-   const Field_Id int32_field_id = multi.find_field(table_id, "int32");
-   const Field_Id int64_field_id = multi.find_field(table_id, "int64");
-   const Field_Id reference_field_id = multi.find_field(table_id, "reference");
-   const Field_Id bool_field_id = multi.find_field(table_id, "bool");
-   const Field_Id float32_field_id = multi.find_field(table_id, "float32");
-   const Field_Id float64_field_id = multi.find_field(table_id, "float64");
+   const Field_Id string_field_id = db1.find_field(table_id, "string");
+   const Field_Id int32_field_id = db1.find_field(table_id, "int32");
+   const Field_Id int64_field_id = db1.find_field(table_id, "int64");
+   const Field_Id reference_field_id = db1.find_field(table_id, "reference");
+   const Field_Id bool_field_id = db1.find_field(table_id, "bool");
+   const Field_Id float32_field_id = db1.find_field(table_id, "float32");
+   const Field_Id float64_field_id = db1.find_field(table_id, "float64");
 
    multi.update_string(table_id, 1, string_field_id, "SuperString");
    multi.update_int32(table_id, 1, int32_field_id, 1234);
@@ -120,14 +121,15 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   File file("test.joedb", Open_Mode::create_new);
   Writable_Journal journal(file);
 
-  Database db_storage;
-  Readable_Multiplexer db(db_storage);
-  db.add_writable(journal);
+  Database db;
+  Multiplexer multiplexer;
+  multiplexer.add_writable(db);
+  multiplexer.add_writable(journal);
 
   Writable dummy_writable;
-  db.add_writable(dummy_writable);
+  multiplexer.add_writable(dummy_writable);
 
-  Interpreter interpreter(db);
+  Interpreter interpreter(db, multiplexer);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
@@ -145,7 +147,8 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Writable_Journal journal_copy(file_copy);
 
   Database db_storage;
-  Readable_Multiplexer db(db_storage);
+  Multiplexer db;
+  db.add_writable(db_storage);
   db.add_writable(journal_copy);
   journal.replay_log(db);
  }

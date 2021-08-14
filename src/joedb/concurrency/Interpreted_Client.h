@@ -3,7 +3,7 @@
 
 #include "joedb/concurrency/Client.h"
 #include "joedb/interpreter/Database.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 
 namespace joedb
 {
@@ -14,7 +14,7 @@ namespace joedb
   private:
    Writable_Journal journal;
    Database database;
-   Readable_Multiplexer multiplexer;
+   Multiplexer multiplexer;
    Client client;
 
   public:
@@ -24,9 +24,9 @@ namespace joedb
     Generic_File &local_file
    ):
     journal(local_file),
-    multiplexer(database),
     client(connection, journal, database)
    {
+    multiplexer.add_writable(database);
     multiplexer.add_writable(journal);
    }
 
@@ -42,14 +42,14 @@ namespace joedb
 
    void write_transaction
    (
-    std::function<void(Readable_Writable&)> transaction
+    std::function<void(Readable&, Writable&)> transaction
    )
    {
     client.write_transaction
     (
      [&]()
      {
-      transaction(multiplexer);
+      transaction(database, multiplexer);
      }
     );
    }

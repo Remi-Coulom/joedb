@@ -39,10 +39,13 @@ TEST(Server, basic)
 
   client_1.pull();
 
-  client_1.write_transaction([](joedb::Readable_Writable &db)
-  {
-   db.create_table("person");
-  });
+  client_1.write_transaction
+  (
+   [](joedb::Readable &readable, joedb::Writable &writable)
+   {
+    writable.create_table("person");
+   }
+  );
 
   EXPECT_EQ(client_1.get_database().get_tables().size(), 1ULL);
   EXPECT_EQ(client_2.get_database().get_tables().size(), 0ULL);

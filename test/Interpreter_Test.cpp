@@ -5,7 +5,7 @@
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 #include "gtest/gtest.h"
 
 #include <fstream>
@@ -18,14 +18,14 @@ class Interpreter_Test: public::testing::Test
 /////////////////////////////////////////////////////////////////////////////
 {
  protected:
-  Database db_storage;
-  Readable_Multiplexer db;
+  Database db;
+  Multiplexer multiplexer;
   Interpreter interpreter;
 
   Interpreter_Test():
-   db(db_storage),
-   interpreter(db)
+   interpreter(db, multiplexer)
   {
+   multiplexer.add_writable(db);
   }
 };
 
@@ -53,7 +53,7 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Writable)
 {
  std::ostringstream dump_string;
  joedb::Interpreter_Dump_Writable writable(dump_string);
- db.add_writable(writable);
+ multiplexer.add_writable(writable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -75,7 +75,7 @@ TEST_F(Interpreter_Test, SQL_Dump_Writable)
 {
  std::ostringstream dump_string;
  joedb::SQL_Dump_Writable writable(dump_string);
- db.add_writable(writable);
+ multiplexer.add_writable(writable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -97,7 +97,7 @@ TEST_F(Interpreter_Test, Raw_Dump_Writable)
 {
  std::ostringstream dump_string;
  joedb::Raw_Dump_Writable writable(dump_string);
- db.add_writable(writable);
+ multiplexer.add_writable(writable);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());

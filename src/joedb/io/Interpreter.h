@@ -13,7 +13,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   Readable &db;
+   Readable &readable;
 
    Type parse_type(std::istream &in, std::ostream &out) const;
    Table_Id parse_table(std::istream &in, std::ostream &out) const;
@@ -37,8 +37,8 @@ namespace joedb
    );
 
   public:
-   Readonly_Interpreter(Readable &db):
-    db(db),
+   Readonly_Interpreter(Readable &readable):
+    readable(readable),
     echo(true),
     rethrow(false)
    {
@@ -55,7 +55,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Readable_Writable &db;
+   Writable &writable;
 
    void update_value
    (
@@ -75,9 +75,14 @@ namespace joedb
    Record_Id max_record_id;
 
   public:
-   Interpreter(Readable_Writable &db, Record_Id max_record_id = 0):
-    Readonly_Interpreter(db),
-    db(db),
+   Interpreter
+   (
+    Readable &readable,
+    Writable &writable,
+    Record_Id max_record_id = 0
+   ):
+    Readonly_Interpreter(readable),
+    writable(writable),
     max_record_id(max_record_id)
    {}
 

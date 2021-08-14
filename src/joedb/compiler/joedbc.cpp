@@ -3,7 +3,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Selective_Writable.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/compiler/Compiler_Options.h"
 #include "joedb/compiler/Compiler_Options_io.h"
@@ -1876,11 +1876,12 @@ int joedbc_main(int argc, char **argv)
   Selective_Writable schema_writable(journal, Selective_Writable::schema);
   Custom_Collector custom_collector(custom_names);
 
-  Readable_Multiplexer multiplexer(db);
+  Multiplexer multiplexer;
+  multiplexer.add_writable(db);
   multiplexer.add_writable(schema_writable);
   multiplexer.add_writable(custom_collector);
 
-  Interpreter interpreter(multiplexer);
+  Interpreter interpreter(db, multiplexer);
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
   interpreter.main_loop(joedbi_file, std::cerr);

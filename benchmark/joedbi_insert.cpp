@@ -2,7 +2,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 
 using namespace joedb;
 
@@ -23,15 +23,16 @@ int main(int argc, char **argv)
   File file(file_name, Open_Mode::create_new);
   Writable_Journal journal_file(file);
   Database db;
-  Readable_Multiplexer multiplexer(db);
+  Multiplexer multiplexer;
   multiplexer.add_writable(journal_file);
+  multiplexer.add_writable(db);
 
   multiplexer.create_table("BENCHMARK");
-  Table_Id table_id = multiplexer.find_table("BENCHMARK");
+  Table_Id table_id = db.find_table("BENCHMARK");
   multiplexer.add_field(table_id, "NAME", Type::string());
-  Field_Id name_id = multiplexer.find_field(table_id, "NAME");
+  Field_Id name_id = db.find_field(table_id, "NAME");
   multiplexer.add_field(table_id, "VALUE", Type::int64());
-  Field_Id value_id = multiplexer.find_field(table_id, "VALUE");
+  Field_Id value_id = db.find_field(table_id, "VALUE");
 
   const std::string name_string("TOTO");
 

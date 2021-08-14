@@ -90,6 +90,9 @@ TEST(Server_Connection, basic)
 
   client.pull();
 
-  client.write_transaction([](joedb::Readable_Writable &db){});
+  client.write_transaction
+  (
+   [](joedb::Readable &readable, joedb::Writable &writable){}
+  );
  }
 }

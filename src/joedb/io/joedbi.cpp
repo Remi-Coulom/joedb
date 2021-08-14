@@ -1,4 +1,4 @@
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/interpreter/Database.h"
@@ -19,7 +19,7 @@ namespace joedb
 
   if (argc <= 1)
   {
-   Interpreter interpreter(db);
+   Interpreter interpreter(db, db);
    interpreter.main_loop(std::cin, std::cout);
   }
   else
@@ -47,9 +47,10 @@ namespace joedb
    {
     Writable_Journal journal(*file);
     journal.replay_log(db);
-    Readable_Multiplexer multiplexer(db);
+    Multiplexer multiplexer;
+    multiplexer.add_writable(db);
     multiplexer.add_writable(journal);
-    Interpreter interpreter(multiplexer);
+    Interpreter interpreter(db, multiplexer);
     interpreter.main_loop(std::cin, std::cout);
    }
   }

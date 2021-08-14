@@ -1,5 +1,5 @@
 #include "joedb/Selective_Writable.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/io/Interpreter.h"
 
@@ -46,12 +46,13 @@ TEST(Selective_Writable_Test, basic)
                                     Selective_Writable::Mode::data_and_schema);
 
   Database db;
-  Readable_Multiplexer multiplexer(db);
+  Multiplexer multiplexer;
+  multiplexer.add_writable(db);
   multiplexer.add_writable(select_schema);
   multiplexer.add_writable(select_information);
   multiplexer.add_writable(select_data);
 
-  Interpreter interpreter(multiplexer);
+  Interpreter interpreter(db, multiplexer);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;

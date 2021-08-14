@@ -1,7 +1,7 @@
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database.h"
-#include "joedb/Readable_Multiplexer.h"
+#include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
 
 #include <iostream>
@@ -15,9 +15,10 @@ namespace joedb
  {
   Writable_Journal journal(*this);
   Database db;
-  Readable_Multiplexer multiplexer(db);
+  Multiplexer multiplexer;
+  multiplexer.add_writable(db);
   multiplexer.add_writable(journal);
-  Interpreter interpreter(multiplexer);
+  Interpreter interpreter(db, multiplexer);
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
   {
