@@ -26,23 +26,20 @@ namespace joedb
   }
   catch (...)
   {
-   mutex.run_while_locked
-   (
-    [&]()
+   mutex.run_while_locked([&]()
+   {
+    try
     {
-     try
-     {
-      joedb::File readonly_file(file_name, joedb::Open_Mode::read_existing);
-      file.reset(new joedb::Memory_File(joedb::Open_Mode::write_existing));
-      file->copy(readonly_file);
-      file->set_position(0);
-     }
-     catch (...)
-     {
-      file.reset(new joedb::Memory_File(joedb::Open_Mode::create_new));
-     }
+     joedb::File readonly_file(file_name, joedb::Open_Mode::read_existing);
+     file.reset(new joedb::Memory_File(joedb::Open_Mode::write_existing));
+     file->copy(readonly_file);
+     file->set_position(0);
     }
-   );
+    catch (...)
+    {
+     file.reset(new joedb::Memory_File(joedb::Open_Mode::create_new));
+    }
+   });
   }
  }
 }

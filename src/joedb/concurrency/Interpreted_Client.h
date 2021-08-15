@@ -44,13 +44,10 @@ namespace joedb
     std::function<void(Readable&, Writable&)> transaction
    )
    {
-    client.transaction
-    (
-     [&]()
-     {
-      transaction(database, multiplexer);
-     }
-    );
+    client.transaction([&]()
+    {
+     transaction(database, multiplexer);
+    });
    }
  };
 }
