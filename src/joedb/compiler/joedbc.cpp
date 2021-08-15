@@ -274,8 +274,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
   out << "    id_of_" << tname << " result(storage_of_" << tname << ".freedom_keeper.get_free_record() - 1);\n";
   out << "    storage_of_" << tname << ".resize(storage_of_" << tname << ".freedom_keeper.size());\n";
-  out << "    internal_insert_" << tname << "(result.id);\n\n";
-  out << "    journal.insert_into(" << table.first << ", result.id);\n";
+  out << "    internal_insert_" << tname << "(result.get_id());\n\n";
+  out << "    journal.insert_into(" << table.first << ", result.get_id());\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -289,9 +289,9 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   out << ".size() + 1);\n";
   out << "    storage_of_" << tname << ".resize(storage_of_";
   out << tname << ".size() + size);\n";
-  out << "    internal_vector_insert_" << tname << "(result.id, size);\n";
+  out << "    internal_vector_insert_" << tname << "(result.get_id(), size);\n";
   out << "    journal.insert_vector(" << table.first;
-  out << ", result.id, size);\n";
+  out << ", result.get_id(), size);\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -341,8 +341,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
   out << "   {\n";
-  out << "    internal_delete_" << tname << "(record.id);\n";
-  out << "    journal.delete_from(" << table.first << ", record.id);\n";
+  out << "    internal_delete_" << tname << "(record.get_id());\n";
+  out << "    journal.delete_from(" << table.first << ", record.get_id());\n";
   out << "   }\n";
 
   //
@@ -364,14 +364,14 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, type, true);
    out << "field_value_of_" << fname << ")\n";
    out << "   {\n";
-   out << "    internal_update_" << tname << "__" << fname << "(record.id, ";
+   out << "    internal_update_" << tname << "__" << fname << "(record.get_id(), ";
    out << "field_value_of_" << fname << ");\n";
    out << "    journal.update_";
    out << types[int(type.get_type_id())];
-   out << '(' << table.first << ", record.id, " << field.first << ", ";
+   out << '(' << table.first << ", record.get_id(), " << field.first << ", ";
    out << "field_value_of_" << fname;
    if (type.get_type_id() == Type::Type_Id::reference)
-    out << ".id";
+    out << ".get_id()";
    out << ");\n";
    out << "   }\n\n";
 
@@ -383,7 +383,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   {\n";
    out << "    std::exception_ptr exception;\n";
    out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
-   out << ".field_value_of_" << fname << "[record.id - 1], size);\n";
+   out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
    out << "    try {f(span);}\n";
    out << "    catch (...) {exception = std::current_exception();}\n";
    out << "    internal_update_vector_" << tname << "__" << fname << "(record, size, span.begin());\n";
@@ -564,12 +564,6 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
   const std::string &tname = table.second;
   out << '\n';
   out << " class id_of_" << tname << "\n {\n";
-  out << "  friend class Database;\n";
-  out << "  friend class Generic_File_Database;\n";
-  for (auto &friend_table: tables)
-   if (friend_table.first != table.first)
-    out << "  friend class id_of_" << friend_table.second << ";\n";
-  out << "  friend class container_of_"  << tname << ";\n";
   out << "\n  private:\n";
   out << "   Record_Id id;\n";
   out << "\n  public:\n";
@@ -1344,11 +1338,11 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
    write_type(out, db, type, true);
    out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.id));\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.get_id()));\n";
    out << "    return (";
    write_type(out, db, type, true);
    out << ")(storage_of_" << tname;
-   out << ".field_value_of_" << fname << "[record.id - 1]);\n";
+   out << ".field_value_of_" << fname << "[record.get_id() - 1]);\n";
    out << "   }\n";
   }
  }
