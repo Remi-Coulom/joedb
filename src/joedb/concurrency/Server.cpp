@@ -8,21 +8,7 @@
 #include <csignal>
 #include <sstream>
 
-//#define DO_WITH_LOG(log, x) do {} while(false)
-//799776
-
-//#define DO_WITH_LOG(log, x) do {{x;}} while (false)
-//799960
-
-//#define DO_WITH_LOG(log, x) do {if (log) {x;}} while (false)
-//804056
-
-//#define DO_WITH_LOG(log, x) do {if (log) {x; log->flush();}} while (false)
-//804248
-
 #define DO_WITH_LOG(log, x) do {try{if (log) {x; log->flush();}}catch(...){}} while (false)
-//804248
-
 #define LOG(x) DO_WITH_LOG(log, *log << x)
 #define LOGID(x) DO_WITH_LOG(log, session->write_id(*log) << x)
 
@@ -66,15 +52,9 @@ namespace joedb
 
   if (state == locking)
   {
-   try
-   {
-    DO_WITH_LOG(server.log,
-     write_id(*server.log) << "removing lock held by dying session.\n";
-    );
-   }
-   catch (...)
-   {
-   }
+   DO_WITH_LOG(server.log,
+    write_id(*server.log) << "removing lock held by dying session.\n";
+   );
 
    try
    {
@@ -87,16 +67,10 @@ namespace joedb
    }
   }
 
-  try
-  {
-   DO_WITH_LOG(server.log,
-    write_id(*server.log) << "deleted\n";
-    server.write_status();
-   );
-  }
-  catch (...)
-  {
-  }
+  DO_WITH_LOG(server.log,
+   write_id(*server.log) << "deleted\n";
+   server.write_status();
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
