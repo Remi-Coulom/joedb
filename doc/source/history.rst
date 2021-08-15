@@ -22,7 +22,7 @@ History
     buffer flush, and because write errors cannot be handled properly in
     destructors.
   - SHA-256 is used to compare the client database with the server database at
-    connection time. This makes pulling into the wrong file impossible.
+    connection time. This prevents pulling into the wrong file.
   - Minor fixes and improvements.
 
 - 2021-05-08: 5.0
