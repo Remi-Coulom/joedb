@@ -7,9 +7,8 @@
 #include <csignal>
 #include <sstream>
 
-#define DO_WITH_LOG(log, x) do {try{if (log) {x; log->flush();}}catch(...){}} while (false)
-#define LOG(x) DO_WITH_LOG(log, *log << x)
-#define LOGID(x) DO_WITH_LOG(log, session->write_id(*log) << x)
+#define LOG(x) log([&](std::ostream &out){out << x;})
+#define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
 
 namespace joedb
 {
@@ -38,7 +37,10 @@ namespace joedb
   socket(std::move(socket)),
   state(not_locking)
  {
-  DO_WITH_LOG(server.log, write_id(*server.log) << "created\n");
+  server.log([this](std::ostream &out)
+  {
+   write_id(out) << "created\n";
+  });
   ++server.session_count;
   server.write_status();
  }
@@ -51,9 +53,10 @@ namespace joedb
 
   if (state == locking)
   {
-   DO_WITH_LOG(server.log,
-    write_id(*server.log) << "removing lock held by dying session.\n";
-   );
+   server.log([this](std::ostream &out)
+   {
+    write_id(out) << "removing lock held by dying session.\n";
+   });
 
    try
    {
@@ -66,23 +69,26 @@ namespace joedb
    }
   }
 
-  DO_WITH_LOG(server.log,
-   write_id(*server.log) << "deleted\n";
-   server.write_status();
-  );
+  server.log([this](std::ostream &out)
+  {
+   write_id(out) << "deleted\n";
+  });
+
+  server.write_status();
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::write_status()
  ////////////////////////////////////////////////////////////////////////////
  {
-  DO_WITH_LOG(log, 
-   *log << '\n';
-   *log << port << ": ";
-   *log << get_time_string(std::time(nullptr));
-   *log << "; session_count = " << session_count << '\n';
-   *log << '\n';
-  );
+  log([this](std::ostream &out)
+  {
+   out << '\n';
+   out << port << ": ";
+   out << get_time_string(std::time(nullptr));
+   out << "; session_count = " << session_count << '\n';
+   out << '\n';
+  });
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -143,7 +149,10 @@ namespace joedb
  {
   if (session.state == Session::State::locking)
   {
-   DO_WITH_LOG(log, session.write_id(*log) << "unlocking\n");
+   log([&session](std::ostream &out)
+   {
+    session.write_id(out) << "unlocking\n";
+   });
    session.state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
@@ -707,7 +716,7 @@ namespace joedb
   net::io_context &io_context,
   uint16_t port,
   uint32_t lock_timeout_seconds,
-  std::ostream *log
+  std::ostream *log_pointer
  ):
   journal(journal),
   io_context(io_context),
@@ -719,7 +728,7 @@ namespace joedb
   lock_timeout_seconds(lock_timeout_seconds),
   lock_timeout_timer(io_context),
   locked(false),
-  log(log)
+  log_pointer(log_pointer)
  {
   write_status();
 
@@ -729,5 +738,6 @@ namespace joedb
   start_accept();
  }
 }
+
 #undef LOGID
 #undef LOG

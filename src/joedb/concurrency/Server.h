@@ -156,7 +156,22 @@ namespace joedb
    void start_interrupt_timer();
    void handle_interrupt_timer(std::error_code error);
 
-   std::ostream *log;
+   std::ostream *log_pointer;
+
+   template<typename F> void log(F f) noexcept
+   {
+    if (log_pointer)
+    {
+     try
+     {
+      f(*log_pointer);
+      log_pointer->flush();
+     }
+     catch (...)
+     {
+     }
+    }
+   }
 
   public:
    Server
@@ -165,7 +180,7 @@ namespace joedb
     net::io_context &io_context,
     uint16_t port,
     uint32_t lock_timeout_seconds,
-    std::ostream *log
+    std::ostream *log_pointer
    );
 
    uint16_t get_port() const {return port;}
