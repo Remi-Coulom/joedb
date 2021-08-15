@@ -41,7 +41,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     if (journal.get_position() > server_position)
-     throw Exception("Can't pull: failed transaction wrote to local db.");
+     throw Exception("Can't pull: client journal moved ahead of server.");
    }
 
    //////////////////////////////////////////////////////////////////////////
