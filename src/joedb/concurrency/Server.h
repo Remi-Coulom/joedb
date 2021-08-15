@@ -3,7 +3,6 @@
 
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/concurrency/net.h"
-#include "joedb/Posthumous_Thrower.h"
 
 #include <queue>
 #include <atomic>
@@ -34,7 +33,7 @@ namespace joedb
    int64_t session_count;
    int64_t session_id;
 
-   struct Session: public Posthumous_Thrower
+   struct Session
    {
     const int64_t id;
     Server &server;

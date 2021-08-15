@@ -48,23 +48,39 @@ namespace joedb
  Server::Session::~Session()
  ////////////////////////////////////////////////////////////////////////////
  {
-  try
+  --server.session_count;
+
+  if (state == locking)
   {
-   --server.session_count;
-   if (state == locking)
-   {
-    if (server.log)
+   if (server.log)
+    try
+    {
      write_id(*server.log) << "removing lock held by dying session.\n";
+    }
+    catch (...)
+    {
+    }
+
+   try
+   {
     server.unlock(*this);
    }
-   if (server.log)
+   catch (...)
+   {
+    // What should we do? maybe post the exception?
+    // This may not be a problem any more with coroutines.
+   }
+  }
+
+  if (server.log)
+   try
+   {
     write_id(*server.log) << "deleted\n";
-   server.write_status();
-  }
-  catch (...)
-  {
-   postpone_exception("exception in Session destructor");
-  }
+    server.write_status();
+   }
+   catch (...)
+   {
+   }
  }
 
  ////////////////////////////////////////////////////////////////////////////
