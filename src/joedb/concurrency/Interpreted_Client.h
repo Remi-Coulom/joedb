@@ -39,12 +39,12 @@ namespace joedb
     return client.pull();
    }
 
-   void write_transaction
+   void transaction
    (
     std::function<void(Readable&, Writable&)> transaction
    )
    {
-    client.write_transaction
+    client.transaction
     (
      [&]()
      {

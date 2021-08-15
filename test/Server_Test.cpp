@@ -39,7 +39,7 @@ TEST(Server, basic)
 
   client_1.pull();
 
-  client_1.write_transaction
+  client_1.transaction
   (
    [](joedb::Readable &readable, joedb::Writable &writable)
    {

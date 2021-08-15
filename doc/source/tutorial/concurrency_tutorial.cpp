@@ -26,7 +26,7 @@ int main()
  // Writing to the client database cannot occur outside of a transaction.
  // If the transaction function throws, then nothing is pushed to the server.
  //
- client1.write_transaction([](tutorial::Generic_File_Database &db)
+ client1.transaction([](tutorial::Generic_File_Database &db)
  {
   db.new_city("Paris");
   db.new_city("New York");

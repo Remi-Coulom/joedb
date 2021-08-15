@@ -19,7 +19,7 @@ TEST(Connection, Interpreted_Client)
  Memory_File client2_file;
  Interpreted_Client client2(connection, client2_file);
 
- client1.write_transaction
+ client1.transaction
  (
   [](Readable &readable, Writable &writable)
   {
@@ -33,7 +33,7 @@ TEST(Connection, Interpreted_Client)
  client2.pull();
  EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
 
- client2.write_transaction
+ client2.transaction
  (
   [](Readable &readable, Writable &writable)
   {
@@ -59,7 +59,7 @@ TEST(Connection, Transaction_Failure)
  Memory_File client2_file;
  Interpreted_Client client2(connection, client2_file);
 
- client1.write_transaction([](Readable &readable, Writable &writable)
+ client1.transaction([](Readable &readable, Writable &writable)
  {
   writable.create_table("person");
  });
@@ -69,7 +69,7 @@ TEST(Connection, Transaction_Failure)
 
  try
  {
-  client1.write_transaction([](Readable &readable, Writable &writable)
+  client1.transaction([](Readable &readable, Writable &writable)
   {
    writable.create_table("city");
    writable.checkpoint(Commit_Level::no_commit);
@@ -95,7 +95,7 @@ TEST(Connection, Transaction_Failure)
 
  try
  {
-  client1.write_transaction([](Readable &readable, Writable &writable)
+  client1.transaction([](Readable &readable, Writable &writable)
   {
    writable.create_table("country");
   });
@@ -126,7 +126,7 @@ TEST(Connection, hash)
 
   {
    Interpreted_Client client(connection, client_file);
-   client.write_transaction([](Readable &readable, Writable &writable)
+   client.transaction([](Readable &readable, Writable &writable)
    {
     writable.create_table("person");
     writable.create_table("city");

@@ -463,7 +463,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     database(local_file, connection),
     client(connection, database.journal, database)
    {
-    client.write_transaction([this]()
+    client.transaction([this]()
     {
      database.auto_upgrade();
     });
@@ -479,12 +479,12 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     return client.pull();
    }
 
-   void write_transaction
+   void transaction
    (
     std::function<void(Generic_File_Database&)> transaction
    )
    {
-    client.write_transaction([&]()
+    client.transaction([&]()
     {
      transaction(database);
     });
