@@ -1,19 +1,14 @@
 TODO
 ====
 
-short term (before review):
-
-- Rewrite Freedom Keeper
-- Silence outputs of Server and Server_Connection
-
 Journal File
 ------------
-- Hashing for hardware error detection.
 - joedb_truncate <file> <position> (+optionally show position in logdump)
-- better than truncating: add an ``undo`` operation to the log. This way, it is
-  possible to keep all branches of history.
+- Add an ``undo`` operation to the log. This way, it is possible to keep all
+  branches of history.
 - joedb_fix
-- Test (and don't allow) file size > 2Gb in 32-bit code
+- Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also
+  test if 64-bit overflows).
 
 New Operations and Types
 ------------------------
@@ -86,7 +81,7 @@ Better Freedom_Keeper
 ---------------------
 - index returned by public methods of Freedom_Keeper should be record ids.
 - No need to maintain a linked list of individual records
-- A linked list of intervals instead, to unify everything?
+- A linked list of intervals instead, to unify everything
 - Let joedb_merge fuse intervals to remove holes (100% update_vector)
 - joedb_to_json can also become more efficient
 - Get ready for "last-N" storage, and no_delete option (force single interval).
@@ -137,7 +132,7 @@ C++ language questions
   - in ``joedb/journal/Memory_File.h``. MSVC complains in debug mode.
   - pessimistic: https://stackoverflow.com/questions/29844298/is-it-legal-to-call-memcpy-with-zero-length-on-a-pointer-just-past-the-end-of-an
   - optimistic: https://en.cppreference.com/w/cpp/string/byte/memcpy
-  - by the way, we should decide whether its is legal for joedb vectors as
+  - by the way, we should decide whether it is legal for joedb vectors as
     well. Do like C++.
 
 Performance
@@ -167,14 +162,11 @@ Other Ideas
   - a separate table abstraction (that could be used for query output)
   - cursors on tables
 
-- make Readable_Writable based on compiled db (or Readable only...)
+- compiled Readable
 - index and referential integrity: should be in the journal, and also
   implemented in the interpreted database?
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Note that SQL does not support inf and nan. Use NULL instead.
 - Raw commands in interpreter?
 - import from SQL
-- GUI editor similar to the icga database editor (fastcgi, interpreter)
 - rapidly undo-able history?
-- add explicit keyword to constructors
-- make some classes non-copyable
