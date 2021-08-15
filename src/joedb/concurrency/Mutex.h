@@ -1,7 +1,6 @@
 #ifndef joedb_Mutex_declared
 #define joedb_Mutex_declared
 
-#include <functional>
 #include <exception>
 
 namespace joedb
@@ -24,7 +23,7 @@ namespace joedb
    virtual ~Mutex() {}
 
    /////////////////////////////////////////////////////////////////////////
-   void run_while_locked(std::function<void()> f)
+   template<typename F> void run_while_locked(F f)
    /////////////////////////////////////////////////////////////////////////
    {
     std::exception_ptr exception;

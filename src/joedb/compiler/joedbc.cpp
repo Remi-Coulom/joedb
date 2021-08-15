@@ -156,8 +156,6 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "#include \"joedb/concurrency/Client.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
  out << '\n';
- out << "#include <functional>\n";
- out << '\n';
 
  namespace_open(out, options.get_name_space());
 
@@ -380,9 +378,8 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
    //
    // Vector update
    //
-   out << "   void update_vector_of_" << fname << "(id_of_" << tname;
-   out << " record, size_t size, std::function<void(joedb::Span<";
-   out << storage_type << ">)> f)\n";
+   out << "   template<typename F> void update_vector_of_" << fname;
+   out << "(id_of_" << tname << " record, size_t size, F f)\n";
    out << "   {\n";
    out << "    std::exception_ptr exception;\n";
    out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
@@ -479,10 +476,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     return client.pull();
    }
 
-   void transaction
-   (
-    std::function<void(Generic_File_Database&)> transaction
-   )
+   template<typename F> void transaction(F transaction)
    {
     client.transaction([&]()
     {

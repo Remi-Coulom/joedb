@@ -39,10 +39,7 @@ namespace joedb
     return client.pull();
    }
 
-   void transaction
-   (
-    std::function<void(Readable&, Writable&)> transaction
-   )
+   template<typename F> void transaction(F transaction)
    {
     client.transaction([&]()
     {

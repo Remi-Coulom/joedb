@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include <functional>
 #include <csignal>
 #include <sstream>
 
