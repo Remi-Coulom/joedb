@@ -9,8 +9,6 @@ int main()
 {
  //
  // This sets up a configuration with a server and 2 clients.
- // Usually, clients would be in separate processes, but we can run
- // everything in the same program, for the sake of illustration.
  //
  joedb::Memory_File server_file;
  joedb::Embedded_Connection connection(server_file);
@@ -23,8 +21,6 @@ int main()
 
  //
  // The databases are empty. client1 will add a few cities.
- // Writing to the client database cannot occur outside of a transaction.
- // If the transaction function throws, then nothing is pushed to the server.
  //
  client1.transaction([](tutorial::Generic_File_Database &db)
  {
