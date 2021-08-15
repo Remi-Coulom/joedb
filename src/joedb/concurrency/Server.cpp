@@ -8,8 +8,23 @@
 #include <csignal>
 #include <sstream>
 
-#define LOG(x) do {if (log) *log << x;} while (false)
-#define LOGID(x) do {if (log) session->write_id(*log) << x;} while (false)
+//#define DO_WITH_LOG(log, x) do {} while(false)
+//799776
+
+//#define DO_WITH_LOG(log, x) do {{x;}} while (false)
+//799960
+
+//#define DO_WITH_LOG(log, x) do {if (log) {x;}} while (false)
+//804056
+
+//#define DO_WITH_LOG(log, x) do {if (log) {x; log->flush();}} while (false)
+//804248
+
+#define DO_WITH_LOG(log, x) do {try{if (log) {x; log->flush();}}catch(...){}} while (false)
+//804248
+
+#define LOG(x) DO_WITH_LOG(log, *log << x)
+#define LOGID(x) DO_WITH_LOG(log, session->write_id(*log) << x)
 
 namespace joedb
 {
@@ -38,8 +53,7 @@ namespace joedb
   socket(std::move(socket)),
   state(not_locking)
  {
-  if (server.log)
-   write_id(*server.log) << "created\n";
+  DO_WITH_LOG(server.log, write_id(*server.log) << "created\n");
   ++server.session_count;
   server.write_status();
  }
@@ -52,14 +66,15 @@ namespace joedb
 
   if (state == locking)
   {
-   if (server.log)
-    try
-    {
+   try
+   {
+    DO_WITH_LOG(server.log,
      write_id(*server.log) << "removing lock held by dying session.\n";
-    }
-    catch (...)
-    {
-    }
+    );
+   }
+   catch (...)
+   {
+   }
 
    try
    {
@@ -72,29 +87,29 @@ namespace joedb
    }
   }
 
-  if (server.log)
-   try
-   {
+  try
+  {
+   DO_WITH_LOG(server.log,
     write_id(*server.log) << "deleted\n";
     server.write_status();
-   }
-   catch (...)
-   {
-   }
+   );
+  }
+  catch (...)
+  {
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::write_status()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (log)
-  {
+  DO_WITH_LOG(log, 
    *log << '\n';
    *log << port << ": ";
    *log << get_time_string(std::time(nullptr));
    *log << "; session_count = " << session_count << '\n';
    *log << '\n';
-  }
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -155,7 +170,7 @@ namespace joedb
  {
   if (session.state == Session::State::locking)
   {
-   if (log) session.write_id(*log) << "unlocking\n";
+   DO_WITH_LOG(log, session.write_id(*log) << "unlocking\n");
    session.state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
