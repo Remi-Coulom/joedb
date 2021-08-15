@@ -88,6 +88,14 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- Make concurrency work to open local files
+
+  - file locking allows multiple local processes to write to the same file
+  - no need of running a server
+  - use the same journal (and file) for remote and local
+  - need to redesign file locking a little bit (private ability to unlock,
+    with Client as friend?)
+ 
 - joedb_server:
 
   - fuzzer + unit testing
