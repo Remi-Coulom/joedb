@@ -106,7 +106,7 @@ TEST(Connection, Transaction_Failure)
   EXPECT_STREQ
   (
    e.what(),
-   "Can't pull: failed transaction wrote to local db."
+   "Can't pull: client journal moved ahead of server."
   );
  }
 
