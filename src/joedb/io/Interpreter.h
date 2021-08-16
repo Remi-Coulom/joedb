@@ -2,6 +2,8 @@
 #define joedb_Interpreter_declared
 
 #include "joedb/Type.h"
+#include "joedb/Readable.h"
+#include "joedb/Writable.h"
 
 #include <iosfwd>
 
