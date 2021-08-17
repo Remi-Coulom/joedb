@@ -6,8 +6,8 @@ User's Guide
 
    getting_started
    opening_files
-   checkpoints
    vectors
+   checkpoints
    schema_upgrade
    indexes
    concurrency
