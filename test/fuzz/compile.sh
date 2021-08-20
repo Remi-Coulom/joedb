@@ -21,6 +21,7 @@ build()
   ../../src/joedb/Writable.cpp\
   ../../src/joedb/Multiplexer.cpp\
   ../../src/joedb/interpreter/Table.cpp\
+  ../../src/joedb/Destructor_Logger.cpp\
   ../../src/joedb/io/Interpreter.cpp\
   ../../src/joedb/io/type_io.cpp\
   ../../src/joedb/io/dump.cpp\
@@ -33,6 +34,7 @@ build()
   ../../src/joedb/journal/File.cpp\
   ../../src/joedb/journal/Generic_File.cpp\
   ../../src/joedb/journal/Writable_Journal.cpp\
+  ../../src/joedb/journal/SHA_256.cpp\
   ../../src/joedb/journal/Stream_File.cpp\
   ../../src/joedb/journal/Readonly_Journal.cpp\
   /usr/lib/clang/8/lib/linux/libclang_rt.fuzzer-x86_64.a\
