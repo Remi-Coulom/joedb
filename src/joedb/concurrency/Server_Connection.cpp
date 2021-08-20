@@ -274,6 +274,7 @@ namespace joedb
   try
   {
    Channel_Lock lock(channel);
+   keep_alive_thread_must_stop = true;
    buffer[0] = 'Q';
    lock.write(buffer.data(), 1);
   }
@@ -284,7 +285,6 @@ namespace joedb
 
   try
   {
-   keep_alive_thread_must_stop = true;
    condition.notify_one();
    keep_alive_thread.join();
   }
