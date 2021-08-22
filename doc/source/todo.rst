@@ -105,10 +105,8 @@ Concurrency
   - cache SHA-256 calculations + efficient incremental update.
   - perform hash calculations asynchronously (don't block whole server)
 
-- joedb_client:
-
-  - make it asynchronous instead of using threads
-
+- schema upgrade: if an old client pulls a schema upgrade coming from a new
+  client, then it must fail.
 - Connection via domain sockets / named pipes
 - Shared_Local_File: don't copy the file to memory. Create a File_Continuation
   class that takes a readonly and a writable file, and uses the writable file
