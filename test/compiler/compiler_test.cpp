@@ -9,6 +9,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/concurrency/Embedded_Connection.h"
 
 #include <iostream>
 #include <algorithm>
@@ -365,6 +366,42 @@ int schema_upgrade_test()
   joedb::Readonly_Journal journal(file);
   joedb::Interpreter_Dump_Writable writable(std::cout);
   journal.replay_log(writable);
+ }
+
+ return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+int client_test()
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File server_file;
+ joedb::Embedded_Connection connection(server_file);
+
+ joedb::Memory_File client_v1_file;
+ schema_v1::Client client_v1(connection, client_v1_file);
+
+ client_v1.transaction([](schema_v1::Generic_File_Database &db)
+ {
+  db.new_person("Toto");
+ });
+
+ joedb::Memory_File client_v2_file;
+ schema_v2::Client client_v2(connection, client_v2_file);
+
+ client_v2.transaction([](schema_v2::Generic_File_Database &db)
+ {
+  db.new_language("French", "fr");
+ });
+
+ try
+ {
+  client_v1.pull();
+  std::cout << "Error: client_v1 should not be able to pull new schema\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << "OK, expected exception: " << e.what() << '\n';
  }
 
  return 0;
@@ -757,6 +794,7 @@ int main()
 {
  return file_test() ||
         schema_upgrade_test() ||
+        client_test() ||
         do_vector_test() ||
         exceptions() ||
         checkpoints() ||
