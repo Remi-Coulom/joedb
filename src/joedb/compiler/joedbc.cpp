@@ -450,6 +450,13 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
   private:
    Generic_File_Database database;
    joedb::Client client;
+   int64_t schema_checkpoint;
+
+   void check_schema()
+   {
+    if (database.schema_journal.get_checkpoint_position() > schema_checkpoint)
+     throw joedb::Exception("Can't upgrade schema during pull");
+   }
 
   public:
    Client
@@ -464,6 +471,7 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
     {
      database.auto_upgrade();
     });
+    schema_checkpoint = database.schema_journal.get_checkpoint_position();
    }
 
    const Database &get_database()
@@ -473,13 +481,16 @@ void generate_h(std::ostream &out, const Compiler_Options &options)
 
    int64_t pull()
    {
-    return client.pull();
+    const int64_t result = client.pull();
+    check_schema();
+    return result;
    }
 
    template<typename F> void transaction(F transaction)
    {
     client.transaction([&]()
     {
+     check_schema();
      transaction(database);
     });
    }

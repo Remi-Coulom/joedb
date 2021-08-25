@@ -381,6 +381,9 @@ int client_test()
  joedb::Memory_File client_v1_file;
  schema_v1::Client client_v1(connection, client_v1_file);
 
+ joedb::Memory_File client_v1bis_file;
+ schema_v1::Client client_v1bis(connection, client_v1bis_file);
+
  client_v1.transaction([](schema_v1::Generic_File_Database &db)
  {
   db.new_person("Toto");
@@ -397,6 +400,18 @@ int client_test()
  try
  {
   client_v1.pull();
+  std::cout << "Error: client_v1 should not be able to pull new schema\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << "OK, expected exception: " << e.what() << '\n';
+ }
+
+ try
+ {
+  client_v1bis.transaction([](schema_v1::Generic_File_Database &db)
+  {
+  });
   std::cout << "Error: client_v1 should not be able to pull new schema\n";
  }
  catch (const joedb::Exception &e)

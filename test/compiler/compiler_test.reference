@@ -160,6 +160,8 @@ update language 1 id "en"
 update person 1 preferred_language 1
 update person 2 preferred_language 1
 comment "End of automatic schema upgrade"
+OK, expected exception: Can't upgrade schema during pull
+OK, expected exception: Can't upgrade schema during pull
 v[0] = 0
 v[1] = 0.1
 v[2] = 0.2
