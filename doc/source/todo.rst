@@ -133,14 +133,6 @@ C++ language questions
   - is the compiler allowed to perform the optimization by itself, even if
     the function is passed a const reference?
 
-- Is it undefined behavior to make a copy of size zero past the end?
-
-  - in ``joedb/journal/Memory_File.h``. MSVC complains in debug mode.
-  - pessimistic: https://stackoverflow.com/questions/29844298/is-it-legal-to-call-memcpy-with-zero-length-on-a-pointer-just-past-the-end-of-an
-  - optimistic: https://en.cppreference.com/w/cpp/string/byte/memcpy
-  - by the way, we should decide whether it is legal for joedb vectors as
-    well. Do like C++.
-
 Performance
 -----------
 
