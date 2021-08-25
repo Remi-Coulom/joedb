@@ -19,9 +19,9 @@ namespace joedb
 
   for (size_t i = 0; i < N; i++)
   {
-   const int32_t word = (uint8_t(input[3 * i + 0]) << 16) |
-                        (uint8_t(input[3 * i + 1]) <<  8) |
-                        (uint8_t(input[3 * i + 2])      );
+   const uint32_t word = (uint32_t(uint8_t(input[3 * i + 0])) << 16) |
+                         (uint32_t(uint8_t(input[3 * i + 1])) <<  8) |
+                         (uint32_t(uint8_t(input[3 * i + 2]))      );
    result[4 * i + 0] = base64_codes[(word >> 18)       ];
    result[4 * i + 1] = base64_codes[(word >> 12) & 0x3f];
    result[4 * i + 2] = base64_codes[(word >>  6) & 0x3f];
