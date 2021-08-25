@@ -893,7 +893,7 @@ void generate_readonly_h(std::ostream &out, const Compiler_Options &options)
  out << "   {\n";
  {
   bool first = true;
-  for (auto table: tables)
+  for (auto &table: tables)
   {
    const std::string &tname = table.second;
 
