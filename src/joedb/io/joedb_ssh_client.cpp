@@ -14,7 +14,7 @@ namespace joedb
   if (argc < 4)
   {
    std::cerr << "usage: " << argv[0] <<
-   " <user> <host> <remote_port> [<local_file_name>" <<
+   " <user> <host> <joedb_port> [<local_file_name>" <<
    " [<ssh_port> [<ssh_log_level>]]]\n";
    return 1;
   }
