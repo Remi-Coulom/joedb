@@ -91,11 +91,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  Posix_File::Posix_File(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
-  Generic_File
-  (
-   mode,
-   mode == Open_Mode::read_existing || mode == Open_Mode::shared_write
-  )
+  Generic_File(mode)
  {
   if
   (
