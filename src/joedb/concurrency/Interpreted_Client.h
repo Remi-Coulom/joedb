@@ -29,7 +29,7 @@ namespace joedb
    {
    }
 
-   Readable &get_database()
+   const Readable &get_database() const
    {
     return database;
    }

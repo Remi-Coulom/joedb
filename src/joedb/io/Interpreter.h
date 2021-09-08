@@ -14,7 +14,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   Readable &readable;
+   const Readable &readable;
 
    Type parse_type(std::istream &in, std::ostream &out) const;
    Table_Id parse_table(std::istream &in, std::ostream &out) const;
@@ -38,7 +38,7 @@ namespace joedb
    );
 
   public:
-   Readonly_Interpreter(Readable &readable):
+   Readonly_Interpreter(const Readable &readable):
     readable(readable),
     echo(true),
     rethrow(false)
