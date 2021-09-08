@@ -200,7 +200,6 @@ set(JOEDB_SOURCES
  ../src/joedb/journal/Stream_File.cpp
  ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/journal/Interpreted_File.cpp
- ../src/joedb/concurrency/Shared_Local_File.cpp
  ../src/joedb/concurrency/Server_Connection.cpp
 )
 
@@ -266,7 +265,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
-  ../test/Shared_Local_File_Test.cpp
   ../test/Journal_Test.cpp
   ../test/Server_Connection_Test.cpp
   ../test/SHA_256_Test.cpp
