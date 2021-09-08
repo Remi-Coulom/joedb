@@ -63,6 +63,8 @@ namespace joedb
     throw Exception("Could not write to stream");
    written += size_t(result);
   }
+
+  streambuf.pubsync();
  }
 
  /////////////////////////////////////////////////////////////////////////////
