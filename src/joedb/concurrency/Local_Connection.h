@@ -43,7 +43,7 @@ namespace joedb
     file.unlock();
    }
 
-   bool check_hash(Readonly_Journal &client_journal) override
+   bool check_client_journal(Readonly_Journal &client_journal) override
    {
     return client_journal.is_same_file(file);
    }

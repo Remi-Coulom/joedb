@@ -25,7 +25,7 @@ namespace joedb
     int64_t server_position
    ) = 0;
 
-   virtual bool check_hash(Readonly_Journal &client_journal) = 0;
+   virtual bool check_client_journal(Readonly_Journal &client_journal) = 0;
 
   public:
    virtual ~Connection() {}

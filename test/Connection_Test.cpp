@@ -152,7 +152,7 @@ TEST(Connection, hash)
   }
   catch (const joedb::Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Hash mismatch");
+   EXPECT_STREQ(e.what(), "Bad client journal");
   }
  }
 

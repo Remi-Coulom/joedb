@@ -61,7 +61,7 @@ namespace joedb
     int64_t server_position
    ) override;
 
-   bool check_hash(Readonly_Journal &client_journal) override;
+   bool check_client_journal(Readonly_Journal &client_journal) override;
 
    void keep_alive();
 

@@ -30,8 +30,8 @@ namespace joedb
     journal(journal),
     writable(writable)
    {
-    if (!connection.check_hash(journal))
-     throw Exception("Hash mismatch");
+    if (!connection.check_client_journal(journal))
+     throw Exception("Bad client journal");
     journal.play_until_checkpoint(writable);
     server_position = journal.get_position();
    }

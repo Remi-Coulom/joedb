@@ -150,7 +150,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Server_Connection::check_hash(Readonly_Journal &client_journal)
+ bool Server_Connection::check_client_journal(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
   Channel_Lock lock(channel);

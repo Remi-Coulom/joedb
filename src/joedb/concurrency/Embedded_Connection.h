@@ -56,7 +56,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool check_hash(Readonly_Journal &client_journal) override
+   bool check_client_journal(Readonly_Journal &client_journal) override
    //////////////////////////////////////////////////////////////////////////
    {
     const int64_t checkpoint = client_journal.get_checkpoint_position();
