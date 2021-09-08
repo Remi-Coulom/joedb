@@ -89,6 +89,11 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- new open_mode: shared
+  - does not throw on checkpoint mismatch
+  - can be used instead of Shared_Local_File
+  - use same code for constructor and refresh_checkpoint
+- File locking in Windows
 - joedb_server:
 
   - fuzzer + unit testing
