@@ -277,7 +277,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
  )
 
  if (HAS_NETWORKING)
-  target_sources(joedb_test ../test/Server_Test.cpp)
+  target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
  endif()
 
  # This definition is necessary for cygwin
