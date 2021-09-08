@@ -25,4 +25,5 @@ joedb_server.out
 joedb_multi_server.out
 joedb_client.out
 joedb_ssh_client.out
+joedb_local_client.out
 tutorial

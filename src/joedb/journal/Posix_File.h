@@ -9,10 +9,23 @@ namespace joedb
  class Posix_File: public Generic_File
  ///////////////////////////////////////////////////////////////////////////
  {
+  template<typename File_Type> friend class Local_Connection;
+
   private:
    int fd;
 
    void throw_last_error(const char *action, const char *file_name) const;
+
+   bool try_lock();
+   void lock();
+   void unlock();
+
+   Posix_File(const char *file_name, Open_Mode mode, bool locked);
+
+   Posix_File(const std::string &file_name, Open_Mode mode, bool locked):
+    Posix_File(file_name.c_str(), mode, locked)
+   {
+   }
 
   protected:
    size_t raw_read(char *buffer, size_t size) override;
@@ -21,10 +34,17 @@ namespace joedb
    void sync() override;
 
   public:
-   Posix_File(int fd, Open_Mode mode): Generic_File(mode), fd(fd) {}
-   Posix_File(const char *file_name, Open_Mode mode);
+   Posix_File(int fd, Open_Mode mode): Generic_File(mode), fd(fd)
+   {
+   }
+
+   Posix_File(const char *file_name, Open_Mode mode):
+    Posix_File(file_name, mode, mode != Open_Mode::read_existing)
+   {
+   }
+
    Posix_File(const std::string &file_name, Open_Mode mode):
-    Posix_File(file_name.c_str(), mode)
+    Posix_File(file_name.c_str(), mode, mode != Open_Mode::read_existing)
    {
    }
 

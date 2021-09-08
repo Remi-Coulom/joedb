@@ -37,3 +37,4 @@ set +e
 ( cd $dir && PATH="." && joedb_multi_server ) 2>joedb_multi_server.out
 ( cd $dir && PATH="." && joedb_client ) 2>joedb_client.out
 ( cd $dir && PATH="." && joedb_ssh_client ) 2>joedb_ssh_client.out
+( cd $dir && PATH="." && joedb_local_client ) 2>joedb_local_client.out

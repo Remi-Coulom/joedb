@@ -103,6 +103,16 @@ Run a server to share multiple databases. The config file lists all databases li
 .. literalinclude:: ../../test/multi_server.joedbi
    :language: joedbi
 
+.. _joedb_local_client:
+
+``joedb_local_client``
+----------------------
+
+.. literalinclude:: ./tutorial/joedb_local_client.out
+   :language: none
+
+Serverless concurrent connection to a local file.
+
 .. _joedb_client:
 
 ``joedb_client``

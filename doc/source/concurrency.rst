@@ -51,6 +51,20 @@ program. It does not allow concurrent access to the same file from another
 process. This class is convenient to allow the same polymorphic code to work
 either with a shared remote database or a local file that is not shared.
 
+``Local_Connection``
+^^^^^^^^^^^^^^^^^^^^
+
+``Local_Connection`` allows serverless concurrent connection to a local file
+from multiple processes running on the same machine. It is a template that
+takes a file type as parameter. It works only with file classes that support
+locking, such as ``Posix_File`` and ``Windows_File``. The file parameter of the
+client constructor must be the value returned by the ``get_file()`` method.
+
+The source code of :ref:`joedb_local_client` shows an example of use:
+
+.. literalinclude:: ../../src/joedb/io/joedb_local_client.cpp
+   :language: c++
+
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
 

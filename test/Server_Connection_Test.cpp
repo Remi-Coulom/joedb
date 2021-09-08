@@ -70,6 +70,7 @@ TEST(Server_Connection, basic)
  channel.write<int64_t>(1234);
  channel.write<char>('l');
  channel.write<char>('u');
+ channel.write<char>('H');
  channel.write<char>('P');
  channel.write<int64_t>(41);
  channel.write<int64_t>(0);

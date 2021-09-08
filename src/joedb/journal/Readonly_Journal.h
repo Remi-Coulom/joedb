@@ -65,7 +65,12 @@ namespace joedb
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint_position() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == header_size;}
+   bool is_same_file(const Generic_File &file) const
+   {
+    return &this->file == &file;
+   }
 
+   void refresh_checkpoint();
    void replay_log(Writable &writable);
    void rewind();
    void seek(int64_t position);

@@ -1,8 +1,10 @@
 History
 =======
 
-- 2021-08-??: 6.0
+- 2021-09-??: 6.0
 
+  - new ``Local_Connection`` class for local serverless :doc:`concurrent
+    <concurrency>` access to a file.
   - Re-organize file classes:
 
     - ``File_Slice`` is removed. All file classes can be :ref:`sliced <file_slices>` now.

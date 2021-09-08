@@ -2,3 +2,4 @@ html
 *.info
 *.tmp
 multi_server.joedb
+local_connection.joedb

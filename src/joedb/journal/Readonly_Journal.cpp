@@ -95,6 +95,28 @@ joedb::Readonly_Journal::Readonly_Journal
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::refresh_checkpoint()
+/////////////////////////////////////////////////////////////////////////////
+{
+ const int64_t old_checkpoint_position = checkpoint_position;
+ const int64_t checkpoint_offset = 5 + 4;
+ file.set_position(checkpoint_offset);
+
+ int64_t pos[4];
+ for (int i = 0; i < 4; i++)
+  pos[i] = file.read<int64_t>();
+
+ for (unsigned i = 0; i < 2; i++)
+  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
+  {
+   checkpoint_position = pos[2 * i];
+   checkpoint_index = i;
+  }
+
+ file.set_position(old_checkpoint_position);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 std::vector<char> joedb::Readonly_Journal::get_raw_tail
 /////////////////////////////////////////////////////////////////////////////
 (

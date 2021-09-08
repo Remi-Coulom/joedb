@@ -272,6 +272,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Mutex_Test.cpp
   ../test/Span_Test.cpp
   ../test/Server_Test.cpp
+  ../test/Local_Connection_Test.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
@@ -304,6 +305,10 @@ ipo_add_executable(joedb_file_type
  ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/io/joedb_file_type.cpp
  ../src/joedb/Destructor_Logger.cpp
+)
+
+joedb_add_executable(joedb_local_client
+ ../src/joedb/io/joedb_local_client.cpp
 )
 
 if (HAS_NETWORKING)
