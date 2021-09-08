@@ -270,12 +270,15 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/SHA_256_Test.cpp
   ../test/Mutex_Test.cpp
   ../test/Span_Test.cpp
-  ../test/Server_Test.cpp
   ../test/Local_Connection_Test.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
  )
+
+ if (HAS_NETWORKING)
+  target_sources(joedb_test ../test/Server_Test.cpp)
+ endif()
 
  # This definition is necessary for cygwin
  # https://github.com/google/googletest/pull/2839
