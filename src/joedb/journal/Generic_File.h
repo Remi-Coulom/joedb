@@ -373,7 +373,7 @@ namespace joedb
    };
 
    Open_Mode mode;
-   bool shared;
+   const bool shared;
 
   protected:
    virtual size_t raw_read(char *buffer, size_t size) = 0;
