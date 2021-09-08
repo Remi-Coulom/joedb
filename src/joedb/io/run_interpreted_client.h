@@ -37,7 +37,7 @@ namespace joedb
 
     client.transaction([](Readable &readable, Writable &writable)
     {
-     std::cout << "OK\n";
+     std::cout << " OK\n";
      std::cout.flush();
      Interpreter(readable, writable).main_loop(std::cin, std::cout);
     });
