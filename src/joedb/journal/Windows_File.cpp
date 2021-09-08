@@ -10,6 +10,7 @@ namespace joedb
   GENERIC_READ,
   GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE,
+  GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE
  };
 
@@ -18,7 +19,8 @@ namespace joedb
   FILE_SHARE_READ | FILE_SHARE_WRITE,
   FILE_SHARE_READ,
   FILE_SHARE_READ,
-  FILE_SHARE_READ
+  FILE_SHARE_READ,
+  FILE_SHARE_READ | FILE_SHARE_WRITE
  };
 
  const DWORD Windows_File::creation_disposition[] =
@@ -26,6 +28,7 @@ namespace joedb
   OPEN_EXISTING,
   OPEN_EXISTING,
   CREATE_NEW,
+  OPEN_ALWAYS,
   OPEN_ALWAYS
  };
 
@@ -59,6 +62,45 @@ namespace joedb
   std::ostringstream message;
   message << action << ' ' << file_name << ": " << error;
   throw Exception(message.str());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_File::lock()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  OVERLAPPED overlapped;
+  overlapped.Offset = 0;
+  overlapped.OffsetHigh = 0;
+  overlapped.hEvent = 0;
+
+  LockFileEx
+  (
+   file,
+   LOCKFILE_EXCLUSIVE_LOCK,
+   0,
+   1,
+   0,
+   &overlapped
+  );
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_File::unlock()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  OVERLAPPED overlapped;
+  overlapped.Offset = 0;
+  overlapped.OffsetHigh = 0;
+  overlapped.hEvent = 0;
+
+  UnlockFileEx
+  (
+   file,
+   0,
+   1,
+   0,
+   &overlapped
+  );
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -120,9 +162,13 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Windows_File::Windows_File(const char *file_name, Open_Mode mode):
+ Windows_File::Windows_File(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
-  Generic_File(mode),
+  Generic_File
+  (
+   mode,
+   mode == Open_Mode::read_existing || mode == Open_Mode::shared_write
+  ),
   file
   (
    CreateFileA
@@ -140,7 +186,11 @@ namespace joedb
   if (file == INVALID_HANDLE_VALUE)
    throw_last_error("Opening", file_name);
 
-  if (mode == Open_Mode::write_existing_or_create_new)
+  if
+  (
+   mode == Open_Mode::write_existing_or_create_new ||
+   mode == Open_Mode::shared_write
+  )
   {
    if (GetLastError() == 0)
     set_mode(Open_Mode::create_new);

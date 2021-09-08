@@ -89,7 +89,6 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- File locking in Windows
 - joedb_server:
 
   - fuzzer + unit testing

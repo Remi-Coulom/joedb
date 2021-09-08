@@ -11,6 +11,8 @@ namespace joedb
  class Windows_File: public Generic_File
  ///////////////////////////////////////////////////////////////////////////
  {
+  template<typename File_Type> friend class Local_Connection;
+
   private:
    static const DWORD desired_access[];
    static const DWORD share_mode[];
@@ -24,6 +26,9 @@ namespace joedb
     const char *action,
     const char *file_name
    ) const;
+
+   void lock();
+   void unlock();
 
   protected:
    size_t raw_read(char *buffer, size_t size)  override;
