@@ -262,3 +262,17 @@ TEST_F(File_Test, eof)
  file.read<uint8_t>();
  EXPECT_TRUE(file.is_end_of_file());
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, flush)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("new.tmp");
+ File file1("new.tmp", Open_Mode::shared_write);
+ file1.write<int32_t>(1234);
+ file1.flush();
+
+ File file2("new.tmp", Open_Mode::shared_write);
+ file2.set_position(0);
+ EXPECT_EQ(1234, file2.read<int32_t>());
+}
