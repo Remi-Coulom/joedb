@@ -3,8 +3,6 @@
 
 #include "joedb/journal/Generic_File.h"
 
-#include <algorithm>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -28,7 +26,7 @@ namespace joedb
    {
     const size_t max_size = data.size() - current;
     const size_t n = std::min(size, max_size);
-    std::copy_n(std::next(data.begin(), current), n, buffer);
+    std::copy_n(data.data() + current, n, buffer);
     current += n;
     return n;
    }
@@ -67,7 +65,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    Memory_File(Open_Mode mode = Open_Mode::create_new):
    //////////////////////////////////////////////////////////////////////////
-    Generic_File(mode),
+    Generic_File(mode, false),
     current(0)
    {
    }

@@ -64,7 +64,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    Readonly_Memory_File(const void *memory, size_t size):
    //////////////////////////////////////////////////////////////////////////
-    Generic_File(joedb::Open_Mode::read_existing),
+    Generic_File(joedb::Open_Mode::read_existing, false),
     data((char *)memory),
     data_size(size),
     current(0)

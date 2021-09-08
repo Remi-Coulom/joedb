@@ -89,23 +89,33 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Posix_File::Posix_File(const char *file_name, Open_Mode mode, bool locked):
+ Posix_File::Posix_File(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
-  Generic_File(mode)
+  Generic_File
+  (
+   mode,
+   mode == Open_Mode::read_existing || mode == Open_Mode::shared_write
+  )
  {
-  if (mode == Open_Mode::write_existing_or_create_new)
+  if
+  (
+   mode == Open_Mode::write_existing_or_create_new ||
+   mode == Open_Mode::shared_write
+  )
   {
    fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
 
+   Open_Mode new_mode;
+
    if (fd >= 0)
-    mode = Open_Mode::create_new;
+    new_mode = Open_Mode::create_new;
    else
    {
     fd = open(file_name, O_RDWR);
-    mode = Open_Mode::write_existing;
+    new_mode = Open_Mode::write_existing;
    }
 
-   set_mode(mode);
+   Generic_File::set_mode(new_mode);
   }
   else if (mode == Open_Mode::create_new)
    fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
@@ -117,10 +127,13 @@ namespace joedb
   if (fd < 0)
    throw_last_error("Opening", file_name);
 
-  if (locked && !try_lock())
+  if (mode != Open_Mode::read_existing && !Generic_File::is_shared())
   {
-   close(fd);
-   throw_last_error("Locking", file_name);
+   if (!try_lock())
+   {
+    close(fd);
+    throw_last_error("Locking", file_name);
+   }
   }
  }
 

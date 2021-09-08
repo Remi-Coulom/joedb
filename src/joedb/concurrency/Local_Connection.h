@@ -50,7 +50,7 @@ namespace joedb
 
   public:
    Local_Connection(const char *file_name):
-    file(file_name, Open_Mode::write_existing_or_create_new, false)
+    file(file_name, Open_Mode::shared_write)
    {
    }
 

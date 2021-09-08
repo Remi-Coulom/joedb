@@ -22,7 +22,7 @@ namespace joedb
    void sync() override {}
 
   public:
-   Stream_File(std::streambuf &streambuf, Open_Mode mode);
+   Stream_File(std::streambuf &streambuf, Open_Mode mode, bool shared = false);
  };
 }
 

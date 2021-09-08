@@ -4,9 +4,14 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- Stream_File::Stream_File(std::streambuf &streambuf, Open_Mode mode):
+ Stream_File::Stream_File
  /////////////////////////////////////////////////////////////////////////////
-  Generic_File(mode),
+ (
+  std::streambuf &streambuf,
+  Open_Mode mode,
+  bool shared
+ ):
+  Generic_File(mode, shared),
   streambuf(streambuf)
  {
  }

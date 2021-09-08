@@ -20,13 +20,6 @@ namespace joedb
    void lock();
    void unlock();
 
-   Posix_File(const char *file_name, Open_Mode mode, bool locked);
-
-   Posix_File(const std::string &file_name, Open_Mode mode, bool locked):
-    Posix_File(file_name.c_str(), mode, locked)
-   {
-   }
-
   protected:
    size_t raw_read(char *buffer, size_t size) override;
    void raw_write(const char *buffer, size_t size) override;
@@ -34,17 +27,16 @@ namespace joedb
    void sync() override;
 
   public:
-   Posix_File(int fd, Open_Mode mode): Generic_File(mode), fd(fd)
+   Posix_File(int fd, Open_Mode mode):
+    Generic_File(Open_Mode::read_existing, true),
+    fd(fd)
    {
    }
 
-   Posix_File(const char *file_name, Open_Mode mode):
-    Posix_File(file_name, mode, mode != Open_Mode::read_existing)
-   {
-   }
+   Posix_File(const char *file_name, Open_Mode mode);
 
    Posix_File(const std::string &file_name, Open_Mode mode):
-    Posix_File(file_name.c_str(), mode, mode != Open_Mode::read_existing)
+    Posix_File(file_name.c_str(), mode)
    {
    }
 
