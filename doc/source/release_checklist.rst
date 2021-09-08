@@ -12,6 +12,7 @@ Code Tests
   - Linux (gcc and clang), at least Ubuntu 16, 18, and 20.
   - PowerPC virtual machine
   - MacOS
+  - Release and Debug modes
 
 - run the 3 fuzzers for a while
 - check that compilation works without networking, without ssh
