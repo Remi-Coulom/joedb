@@ -1,3 +1,4 @@
+#ifndef JOEDB_PORTABLE
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Interpreted_Client.h"
@@ -63,3 +64,4 @@ TEST(Local_Connection, simple_operation)
  client1.pull();
  EXPECT_EQ(2, int(client1.get_database().get_tables().size()));
 }
+#endif

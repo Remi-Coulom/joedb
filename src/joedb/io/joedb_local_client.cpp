@@ -16,11 +16,13 @@ namespace joedb
   }
   else
   {
+#ifndef JOEDB_PORTABLE
    const char * const file_name = argv[1];
 
    Local_Connection<File> connection(file_name);
    Interpreted_Client client(connection, connection.get_file());
    run_interpreted_client(client);
+#endif
   }
 
   return 0;

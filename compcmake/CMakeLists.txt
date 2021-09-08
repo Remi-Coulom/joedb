@@ -233,6 +233,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/Destructor_Logger.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/journal/File.cpp
+ ../src/joedb/journal/Stream_File.cpp
  ../src/joedb/journal/Generic_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/SHA_256.cpp
