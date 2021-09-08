@@ -93,6 +93,7 @@ Logging
  timestamp [<stamp>] (if no value is given, use current time)
  comment "<comment_string>"
  valid_data
+ checkpoint
 
 Data definition
 ~~~~~~~~~~~~~~~

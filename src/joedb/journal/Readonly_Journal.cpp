@@ -62,15 +62,18 @@ joedb::Readonly_Journal::Readonly_Journal
    //
    // Compare to file size (if available)
    //
-   int64_t file_size = file.get_size();
-
-   if (file_size > 0)
+   if (!file.is_shared())
    {
-    if (file_size != checkpoint_position)
-     format_exception("Checkpoint different from file size");
+    int64_t file_size = file.get_size();
 
-    if (ignore_errors)
-     checkpoint_position = file_size;
+    if (file_size > 0)
+    {
+     if (file_size != checkpoint_position)
+      format_exception("Checkpoint different from file size");
+
+     if (ignore_errors)
+      checkpoint_position = file_size;
+    }
    }
   }
  }
