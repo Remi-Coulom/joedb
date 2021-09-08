@@ -338,6 +338,7 @@ namespace joedb
    out << " timestamp [<stamp>] (if no value is given, use current time)\n";
    out << " comment \"<comment_string>\"\n";
    out << " valid_data\n";
+   out << " checkpoint\n";
    out << '\n';
    out << "Data definition\n";
    out << "~~~~~~~~~~~~~~~\n";
@@ -432,6 +433,10 @@ namespace joedb
   else if (command == "valid_data") ////////////////////////////////////////
   {
    writable.valid_data();
+  }
+  else if (command == "checkpoint") ////////////////////////////////////////
+  {
+   writable.checkpoint(Commit_Level::no_commit);
   }
   else if (command == "insert_into") ///////////////////////////////////////
   {
