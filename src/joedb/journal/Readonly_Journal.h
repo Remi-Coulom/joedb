@@ -12,6 +12,9 @@ namespace joedb
  class Readonly_Journal
  ////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   void read_checkpoint();
+
   protected:
    Generic_File &file;
    unsigned checkpoint_index;

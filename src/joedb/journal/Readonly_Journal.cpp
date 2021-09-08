@@ -53,26 +53,8 @@ joedb::Readonly_Journal::Readonly_Journal
    if (version < compatible_version || version > version_number)
     format_exception("Unsupported format version");
 
-   //
-   // Find the most recent checkpoint
-   //
-   int64_t pos[4];
-   for (int i = 0; i < 4; i++)
-    pos[i] = file.read<int64_t>();
-
-   if (pos[0] != pos[1] || pos[2] != pos[3])
-    format_exception("Checkpoint mismatch");
-
    checkpoint_position = 0;
-
-   for (unsigned i = 0; i < 2; i++)
-    if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
-    {
-     if (int64_t(size_t(pos[2 * i])) != pos[2 * i])
-      throw Exception("size_t is too small for this file");
-     checkpoint_position = pos[2 * i];
-     checkpoint_index = i;
-    }
+   read_checkpoint();
 
    if (checkpoint_position < header_size)
     format_exception("Checkpoint too small");
@@ -95,24 +77,35 @@ joedb::Readonly_Journal::Readonly_Journal
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::read_checkpoint()
+/////////////////////////////////////////////////////////////////////////////
+{
+ int64_t pos[4];
+ for (int i = 0; i < 4; i++)
+  pos[i] = file.read<int64_t>();
+
+ if (!file.is_shared())
+  if (pos[0] != pos[1] || pos[2] != pos[3])
+   throw Exception("Checkpoint mismatch");
+
+ for (unsigned i = 0; i < 2; i++)
+  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
+  {
+   if (int64_t(size_t(pos[2 * i])) != pos[2 * i])
+    throw Exception("size_t is too small for this file");
+   checkpoint_position = pos[2 * i];
+   checkpoint_index = i;
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::refresh_checkpoint()
 /////////////////////////////////////////////////////////////////////////////
 {
  const int64_t old_checkpoint_position = checkpoint_position;
  const int64_t checkpoint_offset = 5 + 4;
  file.set_position(checkpoint_offset);
-
- int64_t pos[4];
- for (int i = 0; i < 4; i++)
-  pos[i] = file.read<int64_t>();
-
- for (unsigned i = 0; i < 2; i++)
-  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
-  {
-   checkpoint_position = pos[2 * i];
-   checkpoint_index = i;
-  }
-
+ read_checkpoint();
  file.set_position(old_checkpoint_position);
 }
 

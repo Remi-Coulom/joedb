@@ -89,14 +89,6 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- new open_mode: shared_write
-  - does not try_lock
-  - add "shared" boolean in addition to Open_Mode in Generic_File
-  - journal does not throw in case of imperfect checkpoints in shared mode
-  - use same code for constructor and refresh_checkpoint
-  - make sure checkpoint region is read atomically
-  - Remove Shared_Local_File & Mutex
-  - No need of lock + unlock in network protocol any more
 - File locking in Windows
 - joedb_server:
 
