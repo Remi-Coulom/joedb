@@ -113,12 +113,12 @@ Run a server to share multiple databases. The config file lists all databases li
 
 Serverless concurrent connection to a local file.
 
-.. _joedb_client:
+.. _joedb_network_client:
 
-``joedb_client``
-----------------
+``joedb_network_client``
+------------------------
 
-.. literalinclude:: ./tutorial/joedb_client.out
+.. literalinclude:: ./tutorial/joedb_network_client.out
    :language: none
 
 Connect to a :ref:`joedb_server`.

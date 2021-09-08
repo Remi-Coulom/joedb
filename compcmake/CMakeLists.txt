@@ -318,8 +318,8 @@ if (HAS_NETWORKING)
   ../src/joedb/io/multi_server_readonly.cpp
  )
 
- joedb_add_executable(joedb_client
-  ../src/joedb/io/joedb_client.cpp
+ joedb_add_executable(joedb_network_client
+  ../src/joedb/io/joedb_network_client.cpp
  )
 endif()
 
@@ -484,11 +484,12 @@ install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin)
+install(TARGETS joedb_local_client RUNTIME DESTINATION bin)
 if(libssh_FOUND)
  install(TARGETS joedb_ssh_client RUNTIME DESTINATION bin)
 endif()
 if (HAS_NETWORKING)
- install(TARGETS joedb_client RUNTIME DESTINATION bin)
+ install(TARGETS joedb_network_client RUNTIME DESTINATION bin)
  install(TARGETS joedb_server RUNTIME DESTINATION bin)
  install(TARGETS joedb_multi_server RUNTIME DESTINATION bin)
 endif()
