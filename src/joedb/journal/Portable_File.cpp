@@ -26,7 +26,11 @@ namespace joedb
   Open_Mode new_mode
  )
  {
-  if (new_mode == Open_Mode::write_existing_or_create_new)
+  if
+  (
+   new_mode == Open_Mode::write_existing_or_create_new ||
+   new_mode == Open_Mode::shared_write
+  )
   {
    try_open(file_name, Open_Mode::write_existing) ||
    try_open(file_name, Open_Mode::create_new);
