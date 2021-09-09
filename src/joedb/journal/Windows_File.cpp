@@ -73,15 +73,10 @@ namespace joedb
   overlapped.OffsetHigh = 0;
   overlapped.hEvent = 0;
 
-  LockFileEx
-  (
-   file,
-   LOCKFILE_EXCLUSIVE_LOCK,
-   0,
-   1,
-   0,
-   &overlapped
-  );
+  if (!LockFileEx(file, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &overlapped))
+  {
+   throw_last_error("Locking", "file");
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -93,14 +88,10 @@ namespace joedb
   overlapped.OffsetHigh = 0;
   overlapped.hEvent = 0;
 
-  UnlockFileEx
-  (
-   file,
-   0,
-   1,
-   0,
-   &overlapped
-  );
+  if (!UnlockFileEx(file, 0, 1, 0, &overlapped))
+  {
+   throw_last_error("Unlocking", "file");
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////
