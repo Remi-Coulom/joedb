@@ -1,6 +1,7 @@
 #include "joedb/journal/diagnostics.h"
 #include "joedb/journal/Generic_File.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/File.h"
 #include "joedb/io/type_io.h"
 
 #include <istream>
@@ -63,6 +64,7 @@ namespace joedb
 #ifdef __unix__
   out << "sizeof(off_t) = " << sizeof(off_t) << '\n';
 #endif
+  out << "File = " << JOEDB_INCLUDE(JOEDB_FILE, h) << '\n';
   out << "web site: https://www.remi-coulom.fr/joedb/\n";
  }
 }
