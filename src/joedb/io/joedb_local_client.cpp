@@ -22,6 +22,9 @@ namespace joedb
    Local_Connection<File> connection(file_name);
    Interpreted_Client client(connection, connection.get_file());
    run_interpreted_client(client);
+#else
+   std::cerr << "No locking support on this system\n";
+   return 1;
 #endif
   }
 
