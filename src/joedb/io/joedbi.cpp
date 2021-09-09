@@ -31,8 +31,10 @@ namespace joedb
    {
     file.reset(new File(file_name, Open_Mode::write_existing_or_create_new));
    }
-   catch (const Exception &)
+   catch (const Exception &e)
    {
+    std::cout << e.what() << '\n';
+    std::cout << "Opening file read-only.\n";
     file.reset(new File(file_name, Open_Mode::read_existing));
    }
 
