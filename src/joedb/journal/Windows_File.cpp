@@ -1,7 +1,7 @@
 #include "joedb/journal/Windows_File.h"
 #include "joedb/Exception.h"
 
-#include <sstream>
+#include <algorithm>
 
 namespace joedb
 {
@@ -50,18 +50,23 @@ namespace joedb
    NULL,
    last_error,
    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-   (LPTSTR) &buffer,
+   (LPTSTR)&buffer,
    0,
    NULL
   );
 
   std::string error((const char *)buffer);
   LocalFree(buffer);
-  error.erase(error.find_last_not_of(" \r\n") + 1);
+  error.erase
+  (
+   std::find_if_not(error.rbegin(), error.rend(), std::isspace).base(),
+   error.end()
+  );
 
-  std::ostringstream message;
-  message << action << ' ' << file_name << ": " << error;
-  throw Exception(message.str());
+  throw Exception
+  (
+   std::string(action) + ' ' + std::string(file_name) + ": " + error
+  );
  }
 
  /////////////////////////////////////////////////////////////////////////////
