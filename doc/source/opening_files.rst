@@ -41,10 +41,15 @@ Available modes are:
    read_existing, // mode of Readonly_Database
    write_existing,
    create_new,
-   write_existing_or_create_new // mode of File_Database
+   write_existing_or_create_new, // mode of File_Database
+   shared_write
   };
 
 So ``write_existing`` and ``create_new`` are available only with this method.
+
+``shared_write`` is dangerous, and requires synchronization (see
+:doc:`concurrency` for details). Other write modes will use file locking to
+prevent more than one process from writing to the same file simultaneously.
 
 Using a ``joedb::Generic_File``
 -------------------------------
