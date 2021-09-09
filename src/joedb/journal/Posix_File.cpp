@@ -126,10 +126,7 @@ namespace joedb
   if (mode != Open_Mode::read_existing && !Generic_File::is_shared())
   {
    if (!try_lock())
-   {
-    close(fd);
     throw_last_error("Locking", file_name);
-   }
   }
  }
 
@@ -151,7 +148,10 @@ namespace joedb
  Posix_File::~Posix_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  destructor_flush();
-  close(fd);
+  if (fd >= 0)
+  {
+   destructor_flush();
+   close(fd);
+  }
  }
 }
