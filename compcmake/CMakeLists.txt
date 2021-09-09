@@ -318,7 +318,7 @@ if (HAS_NETWORKING)
 
  joedb_add_executable(joedb_multi_server
   ../src/joedb/io/joedb_multi_server.cpp
-  ../src/joedb/io/multi_server_readonly.cpp
+  ../src/db/multi_server_readonly.cpp
  )
 
  joedb_add_executable(joedb_network_client
@@ -358,7 +358,7 @@ joedbc_build(../test/compiler schema_v2 schema_v2)
 joedbc_build(../test/compiler vector_test vector_test)
 joedbc_build(../test/compiler multi_index multi_index)
 joedbc_build(../benchmark joedbc_insert benchmark)
-joedbc_build(../src/joedb/io multi_server multi_server)
+joedbc_build(../src/db multi_server multi_server)
 
 function(joedbc_build_wrapper source_dir f namespace)
  add_custom_command(
