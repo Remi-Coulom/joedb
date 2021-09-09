@@ -1,11 +1,10 @@
 #include "joedb/journal/Posix_File.h"
 #include "joedb/Exception.h"
 
-#include <sys/file.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 #include <string.h>
 #include <sstream>
 
@@ -28,21 +27,39 @@ namespace joedb
  bool Posix_File::try_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  return flock(fd, LOCK_EX | LOCK_NB) == 0;
+  struct flock fl;
+  fl.l_type = F_WRLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = 0;
+
+  return fcntl(fd, F_SETLK, &fl) != -1;
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Posix_File::lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  flock(fd, LOCK_EX);
+  struct flock fl;
+  fl.l_type = F_WRLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = 0;
+
+  fcntl(fd, F_SETLKW, &fl);
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Posix_File::unlock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  flock(fd, LOCK_UN);
+  struct flock fl;
+  fl.l_type = F_UNLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start = 0;
+  fl.l_len = 0;
+
+  fcntl(fd, F_SETLK, &fl);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -126,10 +143,7 @@ namespace joedb
   if (mode != Open_Mode::read_existing && !Generic_File::is_shared())
   {
    if (!try_lock())
-   {
-    close(fd);
     throw_last_error("Locking", file_name);
-   }
   }
  }
 
@@ -151,7 +165,10 @@ namespace joedb
  Posix_File::~Posix_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  destructor_flush();
-  close(fd);
+  if (fd >= 0)
+  {
+   destructor_flush();
+   close(fd);
+  }
  }
 }
