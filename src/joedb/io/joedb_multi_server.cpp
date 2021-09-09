@@ -1,5 +1,5 @@
 #include "joedb/io/main_exception_catcher.h"
-#include "joedb/io/multi_server_readonly.h"
+#include "db/multi_server_readonly.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/journal/Interpreted_File.h"
 
