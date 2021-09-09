@@ -20,6 +20,7 @@ TEST(Span, test)
  for (size_t i = 0; i < range.get_size(); i++)
   EXPECT_EQ(range[i], magic);
 
+#ifndef NDEBUG
  try
  {
   range[range.get_size()] = 0;
@@ -28,4 +29,5 @@ TEST(Span, test)
  catch (...)
  {
  }
+#endif
 }
