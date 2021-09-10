@@ -31,12 +31,11 @@ class Freedom_Keeper_Test: public ::testing::Test
   T fk;
 };
 
-typedef ::testing::Types
+using fk_types = ::testing::Types
 <
  joedb::Freedom_Keeper,
  joedb::Compact_Freedom_Keeper
->
-fk_types;
+>;
 
 TYPED_TEST_SUITE(Freedom_Keeper_Test, fk_types,);
 
