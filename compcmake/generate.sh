@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # select compiler with:
 # sudo update-alternatives --config c++
@@ -27,3 +28,9 @@ function generate {
 generate "$build_system_prefix"release cmake $build_system -DCMAKE_BUILD_TYPE=Release
 generate "$build_system_prefix"debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug
 generate "$build_system_prefix"coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage
+
+clangpp_path=`which clang++`
+clang_path=`which clang`
+if [ "$clang_path" != "" ]; then
+ generate "$build_system_prefix"clang cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="$clangpp_path" -DCMAKE_C_COMPILER="$clang_path"
+fi

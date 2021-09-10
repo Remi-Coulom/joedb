@@ -4,7 +4,7 @@
 
 namespace joedb
 {
- static const std::string delimiter{"::"};
+ static const std::string scope_delimiter{"::"};
 
  ////////////////////////////////////////////////////////////////////////////
  std::vector<std::string> split_namespace(const std::string &s)
@@ -15,10 +15,10 @@ namespace joedb
   size_t current = 0;
   size_t next = 0;
 
-  while ((next = s.find(delimiter, current)) != std::string::npos)
+  while ((next = s.find(scope_delimiter, current)) != std::string::npos)
   {
    result.emplace_back(s.substr(current, next - current));
-   current = next + delimiter.size();
+   current = next + scope_delimiter.size();
   }
 
   result.emplace_back(s.substr(current, s.size() - current));

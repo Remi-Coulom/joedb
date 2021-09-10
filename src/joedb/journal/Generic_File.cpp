@@ -119,7 +119,7 @@ namespace joedb
 
   const uint32_t chunk_size = 64;
   const uint32_t chunks = 2048;
-  std::vector<char> buffer(chunk_size * chunks);
+  std::vector<char> hashing_buffer(chunk_size * chunks);
 
   int64_t current_size = 0;
 
@@ -129,18 +129,18 @@ namespace joedb
    if (current_size + int64_t(requested_size) > size)
     requested_size = size_t(size - current_size);
 
-   const size_t read_count = raw_read(&buffer[0], requested_size);
+   const size_t read_count = raw_read(&hashing_buffer[0], requested_size);
    current_size += read_count;
    const uint32_t full_chunks = uint32_t(read_count / chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
-    sha_256.process_chunk(&buffer[i * chunk_size]);
+    sha_256.process_chunk(&hashing_buffer[i * chunk_size]);
 
    const uint32_t remainder = uint32_t(read_count % chunk_size);
    if (remainder || current_size >= size || read_count == 0)
    {
     sha_256.process_final_chunk
     (
-     &buffer[full_chunks * chunk_size],
+     &hashing_buffer[full_chunks * chunk_size],
      uint64_t(current_size)
     );
     break;
