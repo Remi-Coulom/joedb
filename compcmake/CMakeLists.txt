@@ -17,8 +17,12 @@ set(CMAKE_C_STANDARD 11)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
- set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wconversion")
- set(CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage")
+ set(CMAKE_CXX_FLAGS
+  "-Wall -Wextra -Wno-unused-parameter -Wduplicated-cond -Wshadow=local -pedantic -Wconversion"
+ )
+ set(CMAKE_CXX_FLAGS_COVERAGE
+  "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
+ )
 endif()
 
 if (UNIX)

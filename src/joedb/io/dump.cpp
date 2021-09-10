@@ -59,9 +59,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
   const Table_Id table_id = table.first;
   const Record_Id last_record_id = db.get_last_record_id(table_id);
 
-  Record_Id record_id = 1;
-
-  while (record_id <= last_record_id)
+  for (Record_Id record_id = 1; record_id <= last_record_id;)
   {
    while (record_id <= last_record_id &&
           !db.is_used(table_id, record_id))

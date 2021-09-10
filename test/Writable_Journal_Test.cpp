@@ -37,26 +37,29 @@ TEST_F(Writable_Journal_Test, basic_operations)
   multi.create_table("deleted");
   multi.drop_table(db1.find_table("deleted"));
   multi.create_table("table_test");
-  const Table_Id table_id = db1.find_table("table_test");
-  multi.insert_into(table_id, 1);
-  multi.add_field(table_id, "field", Type::int32());
-  const Field_Id field_id = db1.find_field(table_id, "field");
-  multi.update_int32(table_id, 1, field_id, 1234);
-  multi.delete_from(table_id, 1);
-  multi.insert_into(table_id, 2);
-  multi.update_int32(table_id, 2, field_id, 4567);
-  multi.drop_field(table_id, field_id);
 
-  multi.add_field(table_id, "big_field", Type::int64());
-  const Field_Id big_field_id = db1.find_field(table_id, "big_field");
-  multi.update_int64(table_id, 2, big_field_id, 1234567ULL);
+  {
+   const Table_Id table_id = db1.find_table("table_test");
+   multi.insert_into(table_id, 1);
+   multi.add_field(table_id, "field", Type::int32());
+   const Field_Id field_id = db1.find_field(table_id, "field");
+   multi.update_int32(table_id, 1, field_id, 1234);
+   multi.delete_from(table_id, 1);
+   multi.insert_into(table_id, 2);
+   multi.update_int32(table_id, 2, field_id, 4567);
+   multi.drop_field(table_id, field_id);
 
-  multi.add_field(table_id, "new_field", Type::reference(table_id));
-  const Field_Id new_field = db1.find_field(table_id, "new_field");
-  multi.update_reference(table_id, 2, new_field, 2);
-  multi.add_field(table_id, "name", Type::string());
-  const Field_Id name_id = db1.find_field(table_id, "name");
-  multi.update_string(table_id, 2, name_id, "Aristide");
+   multi.add_field(table_id, "big_field", Type::int64());
+   const Field_Id big_field_id = db1.find_field(table_id, "big_field");
+   multi.update_int64(table_id, 2, big_field_id, 1234567ULL);
+
+   multi.add_field(table_id, "new_field", Type::reference(table_id));
+   const Field_Id new_field = db1.find_field(table_id, "new_field");
+   multi.update_reference(table_id, 2, new_field, 2);
+   multi.add_field(table_id, "name", Type::string());
+   const Field_Id name_id = db1.find_field(table_id, "name");
+   multi.update_string(table_id, 2, name_id, "Aristide");
+  }
 
   {
    multi.create_table("type_test");

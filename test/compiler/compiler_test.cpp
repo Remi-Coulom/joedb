@@ -426,12 +426,11 @@ int client_test()
 int do_vector_test()
 /////////////////////////////////////////////////////////////////////////////
 {
- const size_t n = 5;
-
  //
  // Freedom_keeper version
  //
  {
+  const size_t n = 5;
   testdb::id_of_float v;
 
   {
@@ -468,6 +467,8 @@ int do_vector_test()
  // Vector storage
  //
  {
+  const size_t n = 5;
+
   {
    vector_test::File_Database db("vector_test.joedb");
    auto v = db.new_vector_of_point(n);

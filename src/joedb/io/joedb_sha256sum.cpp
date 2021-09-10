@@ -14,9 +14,9 @@ int main(int argc, char **argv)
  std::cout << std::hex;
  std::cout << std::setfill('0');
 
- for (int i = 1; i < argc; i++)
+ for (int arg_index = 1; arg_index < argc; arg_index++)
  {
-  const char * const file_name = argv[i];
+  const char * const file_name = argv[arg_index];
 
   try
   {
