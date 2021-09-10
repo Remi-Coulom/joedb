@@ -1328,6 +1328,14 @@ static void generate_readonly_h
   out << "(Comparator comparator) const;\n\n";
 
   //
+  // Easy access to null
+  //
+  out << "   static id_of_" << tname << " null_" << tname << "()\n";
+  out << "   {\n";
+  out << "    return id_of_" << tname << "();\n";
+  out << "   }\n";
+
+  //
   // Loop over fields
   //
   for (const auto &field: db.get_fields(table.first))
@@ -1420,19 +1428,6 @@ static void generate_readonly_h
   }
 
  out << " };\n";
-
- //
- // Null objects
- //
- for (auto &table: tables)
- {
-  out << '\n';
-  const std::string &tname = table.second;
-  out << "   inline id_of_" << tname << " null_" << tname << "()\n";
-  out << "   {\n";
-  out << "    return id_of_" << tname << "();\n";
-  out << "   }\n";
- }
 
  //
  // File_Database

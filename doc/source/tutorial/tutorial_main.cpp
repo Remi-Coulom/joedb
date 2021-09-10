@@ -22,7 +22,7 @@ int main()
  auto Amsterdam = db.new_city("Amsterdam");
 
  db.new_person("Rémi", "Coulom", Lille);
- db.new_person("Bertrand", "Picard", tutorial::null_city());
+ db.new_person("Bertrand", "Picard", db.null_city());
 
  auto Aristide = db.new_person("Aristide", "Martines", Amsterdam);
 
