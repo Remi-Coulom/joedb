@@ -44,8 +44,7 @@ namespace joedb
    return 1;
   }
 
-  std::ifstream config(argv[1]);
-  multi_server::Readonly_Database db((Interpreted_File(config)));
+  multi_server::Readonly_Database db((Interpreted_File(argv[1])));
 
   net::io_context io_context;
 

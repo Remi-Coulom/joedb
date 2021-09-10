@@ -3,6 +3,8 @@
 
 #include "joedb/journal/Memory_File.h"
 
+#include <fstream>
+
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////// 
@@ -11,6 +13,16 @@ namespace joedb
  {
   public:
    Interpreted_File(std::istream &file);
+
+   Interpreted_File(std::istream &&file):
+    Interpreted_File(file)
+   {
+   }
+
+   Interpreted_File(const char *file_name):
+    Interpreted_File(std::ifstream(file_name))
+   {
+   }
  };
 }
 
