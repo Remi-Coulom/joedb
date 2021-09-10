@@ -808,7 +808,7 @@ static int checkpoints()
 static int iterators()
 /////////////////////////////////////////////////////////////////////////////
 {
- testdb::Readonly_Database db("test.joedb");
+ testdb::Readonly_Database db(joedb::Interpreted_File("db/test.joedbi"));
 
  {
   auto i = db.get_person_table().begin();
