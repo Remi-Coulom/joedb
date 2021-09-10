@@ -531,7 +531,11 @@ int do_vector_test()
     db.checkpoint();
    }
    {
-    joedb::File file("vector_hole_by_vector_insert.joedb", joedb::Open_Mode::read_existing);
+    joedb::File file
+    (
+     "vector_hole_by_vector_insert.joedb",
+     joedb::Open_Mode::read_existing
+    );
     joedb::Readonly_Journal journal(file);
     joedb::Database database;
     journal.replay_log(database);
