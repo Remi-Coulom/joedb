@@ -305,14 +305,6 @@ joedb_add_executable(joedb_embed
  ../src/joedb/compiler/nested_namespace.cpp
 )
 
-ipo_add_executable(joedb_file_type
- ../src/joedb/journal/Generic_File.cpp
- ../src/joedb/journal/File.cpp
- ../src/joedb/journal/SHA_256.cpp
- ../src/joedb/io/joedb_file_type.cpp
- ../src/joedb/Destructor_Logger.cpp
-)
-
 joedb_add_executable(joedb_local_client
  ../src/joedb/io/joedb_local_client.cpp
 )
