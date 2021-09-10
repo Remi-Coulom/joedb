@@ -62,8 +62,8 @@ namespace joedb
  void namespace_open(std::ostream &out, const std::vector<std::string> &n)
  ////////////////////////////////////////////////////////////////////////////
  {
-  for (size_t i = 0; i < n.size(); i++)
-   out << "namespace " << n[i] << " {";
+  for (const auto &name: n)
+   out << "namespace " << name << " {";
   out << "\n";
  }
 

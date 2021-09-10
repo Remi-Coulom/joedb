@@ -14,16 +14,26 @@ int main(int argc, char **argv)
   std::remove("insert.sqlite3");
   sqlite3 *db;
   sqlite3_open("insert.sqlite3", &db);
-  sqlite3_exec(db, "CREATE TABLE BENCHMARK(NAME TEXT, VALUE INTEGER)", 0, 0, 0);
-  //sqlite3_exec(db, "PRAGMA synchronous=OFF", 0, 0, 0);
+  sqlite3_exec
+  (
+   db,
+   "CREATE TABLE BENCHMARK(NAME TEXT, VALUE INTEGER)",
+   nullptr,
+   nullptr,
+   nullptr
+  );
+  //sqlite3_exec(db, "PRAGMA synchronous=OFF", nullptr, nullptr, nullptr);
 
-  sqlite3_exec(db, "BEGIN TRANSACTION", 0, 0, 0);
+  sqlite3_exec(db, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
   sqlite3_stmt *prepared_statement;
-  sqlite3_prepare_v2(db,
-                     "INSERT INTO BENCHMARK VALUES('TOTO', ?1)",
-                     -1,
-                     &prepared_statement,
-                     0);
+  sqlite3_prepare_v2
+  (
+   db,
+   "INSERT INTO BENCHMARK VALUES('TOTO', ?1)",
+   -1,
+   &prepared_statement,
+   nullptr
+  );
 
   for (int i = 1; i <= N; i++)
   {
@@ -32,7 +42,7 @@ int main(int argc, char **argv)
    sqlite3_reset(prepared_statement);
   }
 
-  sqlite3_exec(db, "END TRANSACTION", 0, 0, 0);
+  sqlite3_exec(db, "END TRANSACTION", nullptr, nullptr, nullptr);
  }
 
  return 0;

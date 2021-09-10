@@ -34,7 +34,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
  find_program(HAS_CLANG_TIDY clang-tidy)
  if (HAS_CLANG_TIDY)
-  set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,readability-*,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,readability-*,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,concurrency-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list)
  else()
   message("-- no clang-tidy")
  endif()

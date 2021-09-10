@@ -195,8 +195,8 @@ TEST(StringIO_Test, base64_random)
  {
   std::string original(size_t(sd(mt)), ' ');
 
-  for (size_t j = 0; j < original.size(); j++)
-   original[j] = char(cd(mt));
+  for (char &c: original)
+   c = char(cd(mt));
 
   EXPECT_EQ(original, joedb::base64_decode(joedb::base64_encode(original)));
  }

@@ -12,7 +12,7 @@ static const uint64_t joedb_magic = 0x0000620165646A6FULL;
 class File_Test: public::testing::Test
 {
  protected:
-  virtual void SetUp()
+  void SetUp() override
   {
    File file("existing.tmp", Open_Mode::create_new);
    file.write<uint64_t>(joedb_magic);
@@ -21,7 +21,7 @@ class File_Test: public::testing::Test
    file.flush();
   }
 
-  virtual void TearDown()
+  void TearDown() override
   {
    std::remove("locked.tmp");
    std::remove("existing.tmp");

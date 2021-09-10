@@ -16,7 +16,7 @@ class Writable_Journal_Test: public ::testing::Test
 /////////////////////////////////////////////////////////////////////////////
 {
  protected:
-  virtual void TearDown()
+  void TearDown() override
   {
    std::remove("test.joedb");
    std::remove("test_copy.joedb");
