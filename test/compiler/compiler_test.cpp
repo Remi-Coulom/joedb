@@ -6,8 +6,9 @@
 #include "translation.h"
 
 #include "joedb/journal/File.h"
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Generic_File.h"
 #include "joedb/journal/Interpreted_File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Embedded_Connection.h"
@@ -475,9 +476,10 @@ static int do_vector_test()
  //
  {
   const size_t n = 5;
+  joedb::Memory_File file;
 
   {
-   vector_test::File_Database db("vector_test.joedb");
+   vector_test::Generic_File_Database db(file);
    auto v = db.new_vector_of_point(n);
    for (size_t i = 0; i < n; i++)
    {
@@ -491,8 +493,10 @@ static int do_vector_test()
    std::cout << db.get_point_table().last().get_id() << '\n';
   }
 
+  file.set_mode(joedb::Open_Mode::write_existing);
+
   {
-   vector_test::File_Database db("vector_test.joedb");
+   vector_test::Generic_File_Database db(file);
    auto v = db.new_vector_of_point(n);
 
    db.update_vector_of_x(v, n, [&](joedb::Span<float> x)
@@ -511,7 +515,7 @@ static int do_vector_test()
   }
 
   {
-   vector_test::Readonly_Database db("vector_test.joedb");
+   vector_test::Readonly_Database db(file);
    auto v = db.get_point_table().first();
    for (size_t i = 0; i < 2 * n; i++)
    {
@@ -519,50 +523,50 @@ static int do_vector_test()
     std::cout << ", " << db.get_y(v[i]) << "}\n";
    }
   }
+ }
 
-  try
+ try
+ {
+  joedb::Interpreted_File file("vector_hole.joedbi");
+  vector_test::Generic_File_Database db(file);
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << "Error opening vector_hole.joedb\n";
+  std::cout << e.what() << '\n';
+ }
+
+ try
+ {
+  joedb::Interpreted_File file("vector_hole_by_vector_insert.joedbi");
+
   {
-   joedb::Interpreted_File file("vector_hole.joedbi");
    vector_test::Generic_File_Database db(file);
+   db.set_x(db.get_point_table().first(), 1.234f);
+   db.checkpoint();
   }
-  catch (const joedb::Exception &e)
   {
-   std::cout << "Error opening vector_hole.joedb\n";
-   std::cout << e.what() << '\n';
+   file.set_mode(joedb::Open_Mode::read_existing);
+   joedb::Readonly_Journal journal(file);
+   joedb::Database database;
+   journal.replay_log(database);
   }
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << "Error opening vector_hole_by_vector_insert.joedb\n";
+  std::cout << e.what() << '\n';
+ }
 
-  try
-  {
-   joedb::Interpreted_File file("vector_hole_by_vector_insert.joedbi");
-
-   {
-    vector_test::Generic_File_Database db(file);
-    db.set_x(db.get_point_table().first(), 1.234f);
-    db.checkpoint();
-   }
-   {
-    file.set_mode(joedb::Open_Mode::read_existing);
-    joedb::Readonly_Journal journal(file);
-    joedb::Database database;
-    journal.replay_log(database);
-   }
-  }
-  catch (const joedb::Exception &e)
-  {
-   std::cout << "Error opening vector_hole_by_vector_insert.joedb\n";
-   std::cout << e.what() << '\n';
-  }
-
-  try
-  {
-   joedb::Interpreted_File file("vector_delete.joedbi");
-   vector_test::Generic_File_Database db(file);
-  }
-  catch (const joedb::Exception &e)
-  {
-   std::cout << "Error opening vector_delete.joedb\n";
-   std::cout << e.what() << '\n';
-  }
+ try
+ {
+  joedb::Interpreted_File file("vector_delete.joedbi");
+  vector_test::Generic_File_Database db(file);
+ }
+ catch (const joedb::Exception &e)
+ {
+  std::cout << "Error opening vector_delete.joedb\n";
+  std::cout << e.what() << '\n';
  }
 
  //
@@ -624,7 +628,8 @@ static int do_vector_test()
  // timestamp
  //
  {
-  vector_test::File_Database db("vector_test.joedb");
+  joedb::Memory_File file;
+  vector_test::Generic_File_Database db(file);
   db.write_timestamp();
   db.write_comment("This was a timestamp.");
   db.checkpoint();
