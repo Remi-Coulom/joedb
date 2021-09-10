@@ -80,7 +80,10 @@ endfunction(joedb_add_executable)
 #############################################################################
 # Dependencies
 #############################################################################
-#add_definitions(-DJOEDB_PORTABLE)
+set(JOEDB_PORTABLE FALSE)
+if (JOEDB_PORTABLE)
+ add_definitions(-DJOEDB_PORTABLE)
+endif()
 
 include(CheckIncludeFileCXX)
 
@@ -305,9 +308,11 @@ joedb_add_executable(joedb_embed
  ../src/joedb/compiler/nested_namespace.cpp
 )
 
-joedb_add_executable(joedb_local_client
- ../src/joedb/io/joedb_local_client.cpp
-)
+if (NOT JOEDB_PORTABLE)
+ joedb_add_executable(joedb_local_client
+  ../src/joedb/io/joedb_local_client.cpp
+ )
+endif()
 
 if (HAS_NETWORKING)
  joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
@@ -483,7 +488,9 @@ install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin)
-install(TARGETS joedb_local_client RUNTIME DESTINATION bin)
+if (NOT JOEDB_PORTABLE)
+ install(TARGETS joedb_local_client RUNTIME DESTINATION bin)
+endif()
 if(libssh_FOUND)
  install(TARGETS joedb_ssh_client RUNTIME DESTINATION bin)
 endif()
