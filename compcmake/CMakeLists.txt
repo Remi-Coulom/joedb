@@ -18,7 +18,7 @@ set(CMAKE_C_STANDARD 11)
 if(CMAKE_COMPILER_IS_GNUCXX)
  message("== gcc")
  set(CMAKE_CXX_FLAGS
-  "-Wall -Wextra -Wno-unused-parameter -Wduplicated-cond -Wshadow=local -pedantic -Wconversion -Wstack-usage=32768 -Wunused-macros -Wc++14-compat -Wc++17-compat -Wcast-qual -Wcast-align=strict -Wparentheses -Wlogical-op -Wmissing-declarations"
+  "-Wall -Wextra -Wno-unused-parameter -Wduplicated-cond -Wshadow=local -pedantic -Wconversion -Wstack-usage=131072 -Wunused-macros -Wc++14-compat -Wc++17-compat -Wcast-qual -Wcast-align=strict -Wparentheses -Wlogical-op -Wmissing-declarations"
  )
  set(CMAKE_CXX_FLAGS_COVERAGE
   "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
