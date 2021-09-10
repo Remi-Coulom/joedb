@@ -305,7 +305,7 @@ void joedb::Writable_Journal::update_vector_##type_id\
    file.write_method(value[i]);\
  }\
  else\
-  file.write_data((char *)value, size * sizeof(type));\
+  file.write_data((const char *)value, size * sizeof(type));\
 }
 #include "joedb/TYPE_MACRO.h"
 

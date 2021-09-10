@@ -89,7 +89,7 @@ namespace joedb
     Record_Id &capacity\
    ) const\
    {\
-    return ((Writable *)(this))->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
+    return (const_cast<Writable *>(this))->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
    }
    #include "joedb/TYPE_MACRO.h"
 
