@@ -1,6 +1,6 @@
-#include "testdb_test_base64.h"
-#include "testdb_test_escape.h"
-#include "testdb.h"
+#include "db/testdb_test_base64.h"
+#include "db/testdb_test_escape.h"
+#include "db/testdb.h"
 
 /////////////////////////////////////////////////////////////////////////////
 static void test(const my_namespace::is_nested::testdb::Database &db)

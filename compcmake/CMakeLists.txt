@@ -396,11 +396,11 @@ function(joedbc_build source_dir f namespace)
  )
 endfunction(joedbc_build)
 
-joedbc_build(../test/compiler test testdb)
-joedbc_build(../test/compiler schema_v1 schema_v1)
-joedbc_build(../test/compiler schema_v2 schema_v2)
-joedbc_build(../test/compiler vector_test vector_test)
-joedbc_build(../test/compiler multi_index multi_index)
+joedbc_build(../test/compiler/db test testdb)
+joedbc_build(../test/compiler/db schema_v1 schema_v1)
+joedbc_build(../test/compiler/db schema_v2 schema_v2)
+joedbc_build(../test/compiler/db vector_test vector_test)
+joedbc_build(../test/compiler/db multi_index multi_index)
 joedbc_build(../benchmark joedbc_insert benchmark)
 joedbc_build(../src/db multi_server multi_server)
 
@@ -436,10 +436,10 @@ add_custom_command(
  OUTPUT
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
  COMMAND ${CMAKE_COMMAND} -E remove test.joedb
- COMMAND joedbi test.joedb < test.joedbi
+ COMMAND joedbi test.joedb < db/test.joedbi
  DEPENDS
   joedbi
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedbi
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.joedbi
  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
 )
 
@@ -449,20 +449,20 @@ add_custom_command(
 foreach(mode base64 escape)
  add_custom_command(
   OUTPUT
-   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_${mode}.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_${mode}.cpp
-  COMMAND joedb_embed --${mode} test.joedb my_namespace::is_nested::testdb test_${mode}
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_${mode}.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_${mode}.cpp
+  COMMAND joedb_embed --${mode} ../test.joedb my_namespace::is_nested::testdb test_${mode}
   DEPENDS
    joedb_embed
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db
  )
 endforeach(mode)
 
 joedb_add_executable(embedded_test
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_base64.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb_test_escape.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_base64.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_escape.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/embedded_test.cpp
  ../src/joedb/io/base64_decode.cpp
 )
@@ -502,17 +502,17 @@ joedb_add_executable(wrapper_tutorial
 )
 
 joedb_add_executable(compiler_test
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v1.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/schema_v2.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/vector_test.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/multi_index.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v1.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v2.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/vector_test.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/multi_index.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
  ../test/compiler/compiler_test.cpp
 )
 
 joedb_add_executable(generate_translation_header
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/testdb.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
  ../test/compiler/generate_translation_header.cpp
 )
 

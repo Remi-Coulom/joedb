@@ -1,8 +1,8 @@
-#include "testdb.h"
-#include "schema_v1.h"
-#include "schema_v2.h"
-#include "vector_test.h"
-#include "multi_index.h"
+#include "db/testdb.h"
+#include "db/schema_v1.h"
+#include "db/schema_v2.h"
+#include "db/vector_test.h"
+#include "db/multi_index.h"
 #include "translation.h"
 
 #include "joedb/journal/File.h"
