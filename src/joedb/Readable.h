@@ -15,6 +15,10 @@ namespace joedb
  class Readable
  ////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   static const std::string default_table_name;
+   static const std::string default_field_name;
+
   public:
    virtual const std::map<Table_Id, std::string> &get_tables() const = 0;
    virtual const std::map<Field_Id, std::string> &get_fields
@@ -78,8 +82,7 @@ namespace joedb
     auto it = tables.find(table_id);
     if (it == tables.end())
     {
-     static const std::string default_name = "__unknown_table__";
-     return default_name;
+     return default_table_name;
     }
     else
      return it->second;
@@ -102,8 +105,7 @@ namespace joedb
     {
     }
 
-    static const std::string default_name = "__unknown_field__";
-    return default_name;
+    return default_field_name;
    }
  };
 }

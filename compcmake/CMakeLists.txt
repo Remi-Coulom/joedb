@@ -213,6 +213,7 @@ include_directories(
 #############################################################################
 set(JOEDB_SOURCES
  ../src/external/wide_char_display_width.cpp
+ ../src/joedb/Readable.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/Multiplexer.cpp
  ../src/joedb/is_identifier.cpp
