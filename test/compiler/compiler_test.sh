@@ -16,17 +16,6 @@ cd "$build_dir"
 $build_command joedbi joedbc compiler_test embedded_test
 cd -
 
-generate_db()
-{
- echo "echo off" | cat - $1.joedbi | "$build_dir/joedbi" $1.joedb
-}
-
-generate_db vector_hole
-generate_db vector_hole_by_vector_insert
-generate_db vector_delete
-generate_db multi_index
-
-
 "$build_dir"/compiler_test >compiler_test.out
 "$build_dir"/embedded_test >>compiler_test.out
 

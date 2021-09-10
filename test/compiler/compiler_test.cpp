@@ -7,6 +7,7 @@
 
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Interpreted_File.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Embedded_Connection.h"
@@ -515,7 +516,8 @@ static int do_vector_test()
 
   try
   {
-   vector_test::File_Database db("vector_hole.joedb");
+   joedb::Interpreted_File file("vector_hole.joedbi");
+   vector_test::Generic_File_Database db(file);
   }
   catch (const joedb::Exception &e)
   {
@@ -525,17 +527,15 @@ static int do_vector_test()
 
   try
   {
+   joedb::Interpreted_File file("vector_hole_by_vector_insert.joedbi");
+
    {
-    vector_test::File_Database db("vector_hole_by_vector_insert.joedb");
+    vector_test::Generic_File_Database db(file);
     db.set_x(db.get_point_table().first(), 1.234f);
     db.checkpoint();
    }
    {
-    joedb::File file
-    (
-     "vector_hole_by_vector_insert.joedb",
-     joedb::Open_Mode::read_existing
-    );
+    file.set_position(0);
     joedb::Readonly_Journal journal(file);
     joedb::Database database;
     journal.replay_log(database);
@@ -549,7 +549,8 @@ static int do_vector_test()
 
   try
   {
-   vector_test::File_Database db("vector_delete.joedb");
+   joedb::Interpreted_File file("vector_delete.joedbi");
+   vector_test::Generic_File_Database db(file);
   }
   catch (const joedb::Exception &e)
   {
@@ -647,7 +648,8 @@ static int exceptions()
 
  try
  {
-  multi_index::File_Database db("multi_index_failure.joedb");
+  joedb::Memory_File file;
+  multi_index::Generic_File_Database db(file);
   db.new_person("Chantal", "Dupont");
   db.new_person("Rémi", "Coulom");
   db.new_person("Rémi", "Munos");
