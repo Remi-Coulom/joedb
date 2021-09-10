@@ -39,7 +39,7 @@ Connections
 
 The constructor of the ``tutorial::Client`` class takes two parameters: a
 connection, and a file for local storage. The connection is an object of the
-``joedb::Connection`` class, that provides the 3 synchronization operations
+``Connection`` class, that provides the 3 synchronization operations
 (pull, lock_pull, push_unlock). This section presents the different kinds of
 available connections.
 
@@ -70,10 +70,10 @@ The source code of :ref:`joedb_local_client` shows an example of use:
 
 ``Server_Connection`` allows connecting to a running :ref:`joedb_server` using the joedb :doc:`network protocol <network_protocol>`.
 
-The constructor of ``Server_Connection`` takes a ``joedb::Channel`` parameter. Two channel classes are provided:
+The constructor of ``Server_Connection`` takes a ``Channel`` parameter. Two channel classes are provided:
 
- * ``joedb::Network_Channel`` opens a network socket to the server directly.
- * ``joedb::ssh::Forward_Channel`` connects to the server with ssh encryption and authentication.
+ * ``Network_Channel`` opens a network socket to the server directly.
+ * ``ssh::Forward_Channel`` connects to the server with ssh encryption and authentication.
 
 The source code of :ref:`joedb_ssh_client` shows an example of use:
 
