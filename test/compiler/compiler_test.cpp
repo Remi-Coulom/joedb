@@ -635,7 +635,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("unique_index_failure.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   db.new_city("Paris");
   db.new_city("Lille");
   db.new_city("Paris");
@@ -665,7 +666,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("delete_in_vector_storage.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   auto translation = db.new_translation();
   ((joedb::Writable *)&db)->delete_from(5, translation.get_id());
   db.checkpoint();
@@ -677,7 +679,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("duplicate_insert.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   ((joedb::Writable *)&db)->insert_into(1, 1);
   ((joedb::Writable *)&db)->insert_into(1, 1);
   db.checkpoint();
@@ -689,7 +692,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("contiguous_vector.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   ((joedb::Writable *)&db)->insert_into(5, 1);
   ((joedb::Writable *)&db)->insert_into(5, 3);
   db.checkpoint();
@@ -701,7 +705,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("too_big.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_into(1, 2000);
   db.checkpoint();
@@ -713,7 +718,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("too_big.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_vector(1, 1, 2000);
   db.checkpoint();
@@ -725,7 +731,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("read_error.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   auto city = db.new_city("Paris");
   std::cout << db.get_name(city) << '\n';
   db.delete_city(city);
@@ -739,7 +746,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("double_delete.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
   db.checkpoint();
@@ -752,7 +760,8 @@ static int exceptions()
 
  try
  {
-  testdb::File_Database db("invalid_update.joedb");
+  joedb::Memory_File file;
+  testdb::Generic_File_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
   db.checkpoint();
@@ -771,7 +780,8 @@ static int checkpoints()
 /////////////////////////////////////////////////////////////////////////////
 {
  std::cout << "Checkpoints...\n";
- testdb::File_Database db("checkpoint_test.joedb");
+ joedb::Memory_File file;
+ testdb::Generic_File_Database db(file);
  std::cout << db.ahead_of_checkpoint() << '\n';
  db.checkpoint_full_commit();
  std::cout << db.ahead_of_checkpoint() << '\n';
