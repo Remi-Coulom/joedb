@@ -302,8 +302,10 @@ void schema_v2::Generic_File_Database::set_default_preferred_language_to_english
 static int schema_upgrade_test()
 /////////////////////////////////////////////////////////////////////////////
 {
+ joedb::Memory_File file;
+
  {
-  schema_v1::File_Database db("upgrade_test.joedb");
+  schema_v1::Generic_File_Database db(file);
   std::cout << "v1 opened\n";
 
   db.new_person("Toto");
@@ -313,9 +315,11 @@ static int schema_upgrade_test()
   db.checkpoint();
  }
 
+ file.set_mode(joedb::Open_Mode::write_existing);
+
  try
  {
-  schema_v2::Readonly_Database db("upgrade_test.joedb");
+  schema_v2::Readonly_Database db(file);
   std::cout << "Error: v2 should not open v1 readonly without upgrade\n";
  }
  catch (const joedb::Exception &e)
@@ -325,23 +329,23 @@ static int schema_upgrade_test()
  }
 
  {
-  schema_v1::File_Database db("upgrade_test.joedb");
+  schema_v1::Generic_File_Database db(file);
   std::cout << "v1 re-opened\n";
  }
 
  {
-  schema_v2::File_Database db("upgrade_test.joedb");
+  schema_v2::Generic_File_Database db(file);
   std::cout << "v2 opened\n";
  }
 
  {
-  schema_v2::File_Database db("upgrade_test.joedb");
+  schema_v2::Generic_File_Database db(file);
   std::cout << "v2 re-opened\n";
  }
 
  try
  {
-  schema_v1::File_Database db("upgrade_test.joedb");
+  schema_v1::Generic_File_Database db(file);
   std::cout << "Error: v1 code should not open v2 files\n";
  }
  catch (const joedb::Exception &e)
@@ -352,7 +356,7 @@ static int schema_upgrade_test()
 
  try
  {
-  schema_v1::Readonly_Database db("upgrade_test.joedb");
+  schema_v1::Readonly_Database db(file);
   std::cout << "Error: v1 code should not open v2 files\n";
  }
  catch (const joedb::Exception &e)
@@ -363,7 +367,6 @@ static int schema_upgrade_test()
 
 
  {
-  joedb::File file("upgrade_test.joedb", joedb::Open_Mode::read_existing);
   joedb::Readonly_Journal journal(file);
   joedb::Interpreter_Dump_Writable writable(std::cout);
   journal.replay_log(writable);
@@ -453,13 +456,16 @@ static int do_vector_test()
  // Allocating empty vectors works
  //
  {
+  joedb::Memory_File file;
+
   {
-   vector_test::File_Database db("empty_vector.joedb");
+   vector_test::Generic_File_Database db(file);
    db.new_vector_of_point(0);
    db.checkpoint();
   }
   {
-   vector_test::File_Database db("empty_vector.joedb");
+   file.set_mode(joedb::Open_Mode::read_existing);
+   vector_test::Readonly_Database db(file);
    std::cout << "empty size = " << db.get_point_table().get_size() << '\n';
   }
  }
@@ -535,7 +541,7 @@ static int do_vector_test()
     db.checkpoint();
    }
    {
-    file.set_position(0);
+    file.set_mode(joedb::Open_Mode::read_existing);
     joedb::Readonly_Journal journal(file);
     joedb::Database database;
     journal.replay_log(database);

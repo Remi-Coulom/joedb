@@ -28,6 +28,8 @@ joedb::Readonly_Journal::Readonly_Journal
    throw Exception(message);
  };
 
+ file.set_position(0);
+
  //
  // Check the format of an existing joedb file
  //
