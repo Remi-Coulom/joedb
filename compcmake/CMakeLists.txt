@@ -50,7 +50,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")
  endif()
 
- set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
 endif()
 
 #############################################################################
@@ -317,6 +317,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Local_Connection_Test.cpp
   ../test/compiler/Compiler_Test.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/multi_index.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp

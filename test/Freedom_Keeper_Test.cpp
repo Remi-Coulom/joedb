@@ -1,10 +1,7 @@
-#ifdef NDEBUG
-#undef NDEBUG
-#endif
-
 #include "joedb/Freedom_Keeper.h"
 #include "gtest/gtest.h"
 
+#ifndef NDEBUG
 /////////////////////////////////////////////////////////////////////////////
 TEST(Freedom_Keeper, exceptions)
 /////////////////////////////////////////////////////////////////////////////
@@ -23,6 +20,7 @@ TEST(Freedom_Keeper, exceptions)
  EXPECT_ANY_THROW(fk.free(0));
  EXPECT_ANY_THROW(fk.free(10));
 }
+#endif
 
 template<typename T>
 class Freedom_Keeper_Test: public ::testing::Test
@@ -39,6 +37,7 @@ using fk_types = ::testing::Types
 
 TYPED_TEST_SUITE(Freedom_Keeper_Test, fk_types,);
 
+#ifndef NDEBUG
 /////////////////////////////////////////////////////////////////////////////
 TYPED_TEST(Freedom_Keeper_Test, errors)
 /////////////////////////////////////////////////////////////////////////////
@@ -48,6 +47,7 @@ TYPED_TEST(Freedom_Keeper_Test, errors)
  EXPECT_ANY_THROW(fk.use(1));
  EXPECT_ANY_THROW(fk.use(2));
 }
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 TYPED_TEST(Freedom_Keeper_Test, basic)
