@@ -7,7 +7,7 @@ string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
 
 project(joedb VERSION ${JOEDB_VERSION})
 
-message("== JOEDB_VERSION = ${JOEDB_VERSION}")
+message("== JOEDB_VERSION = ${JOEDB_VERSION}; CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -39,7 +39,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("-- no clang-tidy")
  endif()
 
- set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
+ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
+
+ if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")
+ endif()
+
  set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 endif()
 
@@ -114,7 +119,9 @@ find_package(Threads REQUIRED)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if(TRUE)
  if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-  find_package(libssh QUIET)
+  if(NOT ${CMAKE_SYSTEM_NAME} EQUAL Darwin)
+   find_package(libssh QUIET)
+  endif()
  endif()
 
  if(NOT libssh_FOUND)
@@ -129,7 +136,14 @@ if(TRUE)
   add_definitions(-DJOEDB_HAS_SSH)
   message("== ssh was found (${LIBSSH_LIBRARIES})")
  else()
-  message("== ssh not found (fix: sudo apt install libssh-dev or vcpkg install libssh:x64-windows)")
+  message("== ssh not found")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+   message("   suggestion: sudo apt install libssh-dev")
+  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+   message("   suggestion: sudo port install libssh")
+  elseif(WIN32)
+   message("   suggestion: vcpkg install libssh:x64-windows")
+  endif()
  endif()
 endif()
 
