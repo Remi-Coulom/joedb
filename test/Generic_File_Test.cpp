@@ -60,7 +60,7 @@ TEST(Generic_File, readonly_memory_file)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void check_data(int32_t *data, int32_t start, int32_t count)
+static void check_data(int32_t *data, int32_t start, int32_t count)
 /////////////////////////////////////////////////////////////////////////////
 {
  for (int i = 0; i < count; i++)
