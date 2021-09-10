@@ -32,12 +32,12 @@ namespace joedb
 
    if (input == "W")
    {
-    std::cout << "connecting...";
+    std::cout << "connecting...\n";
     std::cout.flush();
 
     client.transaction([](Readable &readable, Writable &writable)
     {
-     std::cout << " OK\n";
+     std::cout << "OK\n";
      std::cout.flush();
      Interpreter(readable, writable).main_loop(std::cin, std::cout);
     });
