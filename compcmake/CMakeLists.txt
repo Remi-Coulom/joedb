@@ -15,6 +15,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 
+enable_testing()
+add_test(NAME build_all
+ COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config "$<CONFIG>"
+)
+
 #############################################################################
 if(CMAKE_COMPILER_IS_GNUCXX)
 #############################################################################
@@ -322,6 +327,12 @@ if(EXISTS "${GOOGLE_TEST}/include")
  # This definition is necessary for cygwin
  # https://github.com/google/googletest/pull/2839
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
+
+ add_test(NAME joedb_test
+  COMMAND joedb_test
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test
+ )
+ SET_TESTS_PROPERTIES(joedb_test PROPERTIES DEPENDS build_all)
 else()
  message("== WARNING: run ./get_gtest.sh for tests")
 endif()
