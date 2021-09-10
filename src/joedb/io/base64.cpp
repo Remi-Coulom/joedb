@@ -15,7 +15,7 @@ namespace joedb
   const size_t remainder = input.size() % 3;
 
   std::string result;
-  result.resize(4 * (N + (remainder != 0)));
+  result.resize(4 * (N + static_cast<size_t>(remainder != 0)));
 
   for (size_t i = 0; i < N; i++)
   {

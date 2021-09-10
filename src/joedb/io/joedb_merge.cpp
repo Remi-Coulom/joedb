@@ -42,7 +42,7 @@ namespace joedb
   for (int i = 1; i < argc - 1; i++)
    file_names.emplace_back(argv[i]);
 
-  if (file_names.size() == 0)
+  if (file_names.empty())
   {
    std::cerr << "No input file on the command line: reading file names from standard input.\n";
 
@@ -51,7 +51,7 @@ namespace joedb
     file_names.emplace_back(std::move(file_name));
   }
 
-  if (file_names.size() == 0)
+  if (file_names.empty())
   {
    std::cerr << "Error: no input file\n";
    return 1;

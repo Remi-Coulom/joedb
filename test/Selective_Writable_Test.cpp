@@ -22,7 +22,7 @@ static bool identical(const char *name_1, const char *name_2)
  string_1 << file_1.rdbuf();
  string_2 << file_2.rdbuf();
 
- return string_1.str() == string_2.str() && string_1.str().size() > 0;
+ return string_1.str() == string_2.str() && !string_1.str().empty();
 }
 
 /////////////////////////////////////////////////////////////////////////////

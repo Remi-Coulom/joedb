@@ -74,7 +74,7 @@ namespace joedb
   int64_t line_number,
   const std::string &line,
   const Exception *exception
- )
+ ) const
  {
   if (exception)
   {
@@ -126,7 +126,7 @@ namespace joedb
   std::ostream &out
  )
  {
-  if (command.size() == 0 || command[0] == '#') /////////////////////////////
+  if (command.empty() || command[0] == '#') /////////////////////////////////
    return true;
   else if (command == "table") //////////////////////////////////////////////
   {

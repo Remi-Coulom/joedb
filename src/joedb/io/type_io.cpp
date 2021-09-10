@@ -30,7 +30,8 @@ std::string joedb::read_string(std::istream &in)
 
    if (c == 'x')
    {
-    char c1, c0;
+    char c1;
+    char c0;
     in.get(c1).get(c0);
     const uint8_t n1 = get_hex_digit_from_char(c1);
     const uint8_t n0 = get_hex_digit_from_char(c0);
@@ -38,7 +39,8 @@ std::string joedb::read_string(std::istream &in)
    }
    else if (c >= '0' && c <= '9')
    {
-    char c1, c0;
+    char c1;
+    char c0;
     in.get(c1).get(c0);
     const uint8_t n2 = uint8_t(c  - '0');
     const uint8_t n1 = uint8_t(c1 - '0');
@@ -167,7 +169,7 @@ void joedb::write_justified
   const size_t char_width = size_t(wide_char_display_width(wide_char));
 
   if (length + char_width < width ||
-      (length + char_width == width && !s.c_str()[i]))
+      (length + char_width == width && s.c_str()[i] == 0))
   {
    length += char_width;
    for (size_t j = previous_i; j < i; j++)

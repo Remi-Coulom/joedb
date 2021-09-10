@@ -28,7 +28,7 @@ namespace joedb
     int64_t line_number,
     const std::string &line,
     const Exception *exception
-   );
+   ) const;
 
    virtual bool process_command
    (
@@ -45,8 +45,8 @@ namespace joedb
    {
    }
 
-   void set_echo(bool echo) {this->echo = echo;}
-   void set_rethrow(bool rethrow) {this->rethrow = rethrow;}
+   void set_echo(bool new_echo) {echo = new_echo;}
+   void set_rethrow(bool new_rethrow) {rethrow = new_rethrow;}
 
    void main_loop(std::istream &in, std::ostream &out);
  };

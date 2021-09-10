@@ -26,7 +26,7 @@ bool joedb::parse_compiler_options
 
   const Database &db = compiler_options.get_db();
 
-  if (command.size() == 0 || command[0] == '#')
+  if (command.empty() || command[0] == '#')
    continue;
 
   if (command == "namespace")

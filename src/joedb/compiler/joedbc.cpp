@@ -190,7 +190,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     Database::custom(name);
 )RRR";
 
- if (options.get_custom_names().size())
+ if (!options.get_custom_names().empty())
  {
   out << "    if (upgrading_schema)\n";
   out << "    {\n";
@@ -203,7 +203,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  }
  out << "   }\n";
 
- if (options.get_custom_names().size())
+ if (!options.get_custom_names().empty())
  {
   out << '\n';
   for (const auto &name: options.get_custom_names())
@@ -644,7 +644,7 @@ static void generate_readonly_h
   out << " };\n\n";
  }
 
- for (auto &index: options.get_indices())
+ for (const auto &index: options.get_indices())
   if (!index.unique)
    out << " class range_of_" << index.name << ";\n";
  out << '\n';
@@ -657,7 +657,7 @@ static void generate_readonly_h
   out << "  friend class container_of_"  << table.second << ";\n";
  }
 
- for (auto &index: options.get_indices())
+ for (const auto &index: options.get_indices())
   if (!index.unique)
    out << "  friend class range_of_" << index.name << ";\n";
 
@@ -696,7 +696,7 @@ static void generate_readonly_h
  //
  // Indices
  //
- if (options.get_indices().size())
+ if (!options.get_indices().empty())
   out << '\n';
 
  for (const auto &index: options.get_indices())
@@ -805,7 +805,7 @@ static void generate_readonly_h
   out << "    storage_of_" << tname << ".freedom_keeper.use(record_id + 1);\n";
 
   if (null_initialization)
-   for (auto &field: db.get_fields(table.first))
+   for (const auto &field: db.get_fields(table.first))
    {
     const std::string &fname = field.second;
     const Type &type = db.get_field_type(table.first, field.first);
@@ -845,7 +845,7 @@ static void generate_readonly_h
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  for (auto &field: db.get_fields(table.first))
+  for (const auto &field: db.get_fields(table.first))
   {
    const std::string &fname = field.second;
    const Type &type = db.get_field_type(table.first, field.first);
@@ -992,7 +992,7 @@ static void generate_readonly_h
  std::set<Type::Type_Id> db_types;
 
  for (auto &table: tables)
-  for (auto &field: db.get_fields(table.first))
+  for (const auto &field: db.get_fields(table.first))
    db_types.insert(db.get_field_type(table.first, field.first).get_type_id());
 
  //
@@ -1019,7 +1019,7 @@ static void generate_readonly_h
    {
     bool has_typed_field = false;
 
-    for (auto &field: db.get_fields(table.first))
+    for (const auto &field: db.get_fields(table.first))
     {
      const Type &type = db.get_field_type(table.first, field.first);
      if (int(type.get_type_id()) == type_id)
@@ -1034,7 +1034,7 @@ static void generate_readonly_h
      out << "    if (table_id == " << table.first << ")\n";
      out << "    {\n";
 
-     for (auto &field: db.get_fields(table.first))
+     for (const auto &field: db.get_fields(table.first))
      {
       const Type &type = db.get_field_type(table.first, field.first);
       if (int(type.get_type_id()) == type_id)
@@ -1090,7 +1090,7 @@ static void generate_readonly_h
    {
     bool has_typed_field = false;
 
-    for (auto &field: db.get_fields(table.first))
+    for (const auto &field: db.get_fields(table.first))
     {
      const Type &type = db.get_field_type(table.first, field.first);
      if (int(type.get_type_id()) == type_id)
@@ -1105,7 +1105,7 @@ static void generate_readonly_h
      out << "    if (table_id == " << table.first << ")\n";
      out << "    {\n";
 
-     for (auto &field: db.get_fields(table.first))
+     for (const auto &field: db.get_fields(table.first))
      {
       const Type &type = db.get_field_type(table.first, field.first);
       if (int(type.get_type_id()) == type_id)
@@ -1153,7 +1153,7 @@ static void generate_readonly_h
    {
     bool has_typed_field = false;
 
-    for (auto &field: db.get_fields(table.first))
+    for (const auto &field: db.get_fields(table.first))
     {
      const Type &type = db.get_field_type(table.first, field.first);
      if (int(type.get_type_id()) == type_id)
@@ -1169,7 +1169,7 @@ static void generate_readonly_h
      out << "    {\n";
      out << "     capacity = Record_Id(storage_of_" << table.second << ".freedom_keeper.size());\n";
 
-     for (auto &field: db.get_fields(table.first))
+     for (const auto &field: db.get_fields(table.first))
      {
       const Type &type = db.get_field_type(table.first, field.first);
       if (int(type.get_type_id()) == type_id)
@@ -1328,15 +1328,6 @@ static void generate_readonly_h
   out << "(Comparator comparator) const;\n\n";
 
   //
-  // Easy access to null
-  //
-  out << "   static id_of_" << tname << " null_" << tname << "()\n";
-  out << "   {\n";
-  out << "    return id_of_" << tname << "();\n";
-  out << "   }\n\n";
-
-
-  //
   // Loop over fields
   //
   for (const auto &field: db.get_fields(table.first))
@@ -1429,6 +1420,19 @@ static void generate_readonly_h
   }
 
  out << " };\n";
+
+ //
+ // Null objects
+ //
+ for (auto &table: tables)
+ {
+  out << '\n';
+  const std::string &tname = table.second;
+  out << "   inline id_of_" << tname << " null_" << tname << "()\n";
+  out << "   {\n";
+  out << "    return id_of_" << tname << "();\n";
+  out << "   }\n";
+ }
 
  //
  // File_Database

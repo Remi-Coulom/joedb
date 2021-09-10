@@ -68,9 +68,9 @@ namespace joedb
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint_position() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == header_size;}
-   bool is_same_file(const Generic_File &file) const
+   bool is_same_file(const Generic_File &other_file) const
    {
-    return &this->file == &file;
+    return &file == &other_file;
    }
 
    void refresh_checkpoint();
@@ -90,7 +90,7 @@ namespace joedb
     return Async_Reader(file, start_position, get_checkpoint_position());
    }
 
-   std::vector<char> get_raw_tail(int64_t starting_position);
+   std::vector<char> get_raw_tail(int64_t starting_position) const;
 
    SHA_256::Hash get_hash(int64_t checkpoint)
    {

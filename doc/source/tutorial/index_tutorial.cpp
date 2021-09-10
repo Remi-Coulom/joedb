@@ -46,9 +46,9 @@ int main()
  db.new_person("John", "Smith", Tokyo);
  db.new_person("Hiroshi", "Yamada", Tokyo);
  db.new_person("René", "Dubois", Tokyo);
- db.new_person("Hélène", "Dubois", db.null_city());
- db.new_person("Daniel", "Dubois", db.null_city());
- db.new_person("Laurent", "Dubois", db.null_city());
+ db.new_person("Hélène", "Dubois", tutorial::null_city());
+ db.new_person("Daniel", "Dubois", tutorial::null_city());
+ db.new_person("Laurent", "Dubois", tutorial::null_city());
  db.new_person("Albert", "Camus", Paris);
 
  //

@@ -12,7 +12,7 @@ namespace joedb
  (
   const char *message,
   const std::string &name
- ) const
+ )
  {
   if (!is_identifier(name))
   {
@@ -47,8 +47,8 @@ namespace joedb
   auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    return null_type;
-  auto &fields = table_it->second.get_fields();
-  auto field_it = fields.find(field_id);
+  const auto &fields = table_it->second.get_fields();
+  const auto field_it = fields.find(field_id);
   if (field_it == fields.end())
    return null_type;
   return field_it->second.get_type();

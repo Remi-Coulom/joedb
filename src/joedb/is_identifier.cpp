@@ -18,7 +18,7 @@ bool joedb::is_number(char c)
 bool joedb::is_identifier(const std::string &s)
 /////////////////////////////////////////////////////////////////////////////
 {
- if (s.size() == 0)
+ if (s.empty())
   return false;
 
  if (is_number(s[0]))

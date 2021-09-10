@@ -105,8 +105,8 @@ static int file_test()
  db.new_city("Paris");
  db.new_city("Tokyo");
  db.new_person("Toto", New_York);
- db.new_person("Évariste", db.null_city());
- db.new_person("Catherine", db.null_city());
+ db.new_person("Évariste", testdb::null_city());
+ db.new_person("Catherine", testdb::null_city());
  dump(db);
 
  std::cout << "first: " << db.get_city_table().first().get_id() << ": ";
@@ -140,7 +140,7 @@ static int file_test()
   bool valid = db.get_city_table().is_valid_at(i);
   std::cout << i << ": ";
   if (valid)
-   std::cout << db.get_name(db.get_city_table().get_at(i));
+   std::cout << db.get_name(testdb::container_of_city::get_at(i));
   else
    std::cout << "invalid!";
   std::cout << '\n';
@@ -221,8 +221,8 @@ static int file_test()
  // Sorting
  //
  std::cout << "Sorting with explicit sort:\n";
- db.new_person("Zoé", db.null_city());
- db.new_person("Albert", db.null_city());
+ db.new_person("Zoé", testdb::null_city());
+ db.new_person("Albert", testdb::null_city());
  auto by_name = [&](testdb::id_of_person p_1, testdb::id_of_person p_2)
                 {
                  return db.get_name(p_1) < db.get_name(p_2);
@@ -234,7 +234,7 @@ static int file_test()
  // Sorting with index
  //
  std::cout << "Sorting with index:\n";
- for (auto &x: db.get_index_of_person_by_name())
+ for (const auto &x: db.get_index_of_person_by_name())
   std::cout << db.get_name(x.second) << '\n';
 
  //

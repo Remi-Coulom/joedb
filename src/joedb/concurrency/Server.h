@@ -43,7 +43,7 @@ namespace joedb
     enum State {not_locking, waiting_for_lock, waiting_for_lock_pull, locking};
     State state;
 
-    std::ostream &write_id(std::ostream &out);
+    std::ostream &write_id(std::ostream &out) const;
 
     Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();

@@ -8,7 +8,7 @@ namespace joedb
  Field_Id Table::find_field(const std::string &name) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  for (auto &field: field_names)
+  for (const auto &field: field_names)
    if (field.second == name)
     return field.first;
   return 0;

@@ -117,7 +117,7 @@ std::vector<char> joedb::Readonly_Journal::get_raw_tail
 /////////////////////////////////////////////////////////////////////////////
 (
  int64_t starting_position
-)
+) const
 {
  std::vector<char> result;
  const int64_t size = get_checkpoint_position() - starting_position;

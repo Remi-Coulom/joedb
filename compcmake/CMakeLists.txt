@@ -15,7 +15,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 
+#############################################################################
 if(CMAKE_COMPILER_IS_GNUCXX)
+#############################################################################
  message("== gcc")
  set(CMAKE_CXX_FLAGS
   "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wduplicated-cond -Wshadow=local -Wconversion -Wstack-usage=131072 -Wunused-macros -Wc++14-compat -Wc++17-compat -Wcast-qual -Wcast-align=strict -Wparentheses -Wlogical-op -Wmissing-declarations"
@@ -25,7 +27,25 @@ if(CMAKE_COMPILER_IS_GNUCXX)
  )
 endif()
 
+#############################################################################
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#############################################################################
+ message("== clang")
+
+ find_program(HAS_CLANG_TIDY clang-tidy)
+ if (HAS_CLANG_TIDY)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy -checks=-*,readability-*,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix)
+ else()
+  message("-- no clang-tidy")
+ endif()
+
+ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
+ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+endif()
+
+#############################################################################
 if (UNIX)
+#############################################################################
  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #  "-fsanitize=memory" unfortunately triggers many errors in the standard lib
 #  set(JOEDB_DEBUG_FLAGS "-fno-omit-frame-pointer -fsanitize=memory")
@@ -38,13 +58,9 @@ if (UNIX)
  set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} ${JOEDB_DEBUG_FLAGS}")
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
- message("== clang")
- set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
- set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-endif()
-
+#############################################################################
 if(WIN32)
+#############################################################################
  message("== win32")
  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
  add_definitions(-DWIN32_LEAN_AND_MEAN)
