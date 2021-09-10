@@ -315,6 +315,8 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Mutex_Test.cpp
   ../test/Span_Test.cpp
   ../test/Local_Connection_Test.cpp
+  ../test/compiler/Compiler_Test.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp

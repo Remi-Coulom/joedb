@@ -805,33 +805,6 @@ static int checkpoints()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-static int iterators()
-/////////////////////////////////////////////////////////////////////////////
-{
- testdb::Readonly_Database db(joedb::Interpreted_File("db/test.joedbi"));
-
- {
-  auto i = db.get_person_table().begin();
-  std::cout << db.get_name(*i++) << '\n';
-  std::cout << db.get_name(*i--) << '\n';
-  std::cout << db.get_name(*i) << '\n';
-  std::cout << db.get_name(*++i) << '\n';
-  std::cout << db.get_name(*--i) << '\n';
- }
-
- {
-  auto i = db.get_translation_table().begin();
-  std::cout << db.get_translation(*i++) << '\n';
-  std::cout << db.get_translation(*i--) << '\n';
-  std::cout << db.get_translation(*i) << '\n';
-  std::cout << db.get_translation(*++i) << '\n';
-  std::cout << db.get_translation(*--i) << '\n';
- }
-
- return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -840,6 +813,5 @@ int main()
         client_test() ||
         do_vector_test() ||
         exceptions() ||
-        checkpoints() ||
-        iterators();
+        checkpoints();
 }
