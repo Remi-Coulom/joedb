@@ -12,6 +12,13 @@ namespace joedb
   private:
    File_Type file;
 
+   virtual int64_t handshake(Readonly_Journal &client_journal) override
+   {
+    if (!client_journal.is_same_file(file))
+     throw joedb::Exception("Local_Connection to wrong file");
+    return client_journal.get_checkpoint_position();
+   }
+
    void lock() override
    {
     file.lock();
@@ -43,9 +50,13 @@ namespace joedb
     file.unlock();
    }
 
-   bool check_client_journal(Readonly_Journal &client_journal) override
+   bool check_matching_content
+   (
+    Readonly_Journal &client_journal,
+    int64_t checkpoint
+   ) override
    {
-    return client_journal.is_same_file(file);
+    return true;
    }
 
   public:

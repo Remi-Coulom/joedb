@@ -13,37 +13,23 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Server_Handshake
+ class Server_Connection: public Connection, public Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   int64_t session_id;
-
-  protected:
    Channel &channel;
    std::ostream *log;
 
-  public:
-   Server_Handshake(Channel &channel, std::ostream *log);
-
-   int64_t get_session_id() const {return session_id;}
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Server_Connection:
- ////////////////////////////////////////////////////////////////////////////
-  public Connection,
-  public Server_Handshake,
-  public Posthumous_Thrower
- {
-  private:
    enum {buffer_size = (1 << 13)};
    std::vector<char> buffer;
 
+   int64_t session_id;
    std::condition_variable condition;
    bool keep_alive_thread_must_stop;
    std::thread keep_alive_thread;
    enum {keep_alive_interval = 240};
+
+   int64_t handshake(Readonly_Journal &client_journal) override;
 
    void lock() override;
 
@@ -61,12 +47,19 @@ namespace joedb
     int64_t server_position
    ) override;
 
-   bool check_client_journal(Readonly_Journal &client_journal) override;
+   bool check_matching_content
+   (
+    Readonly_Journal &client_journal,
+    int64_t checkpoint
+   ) override;
 
    void keep_alive();
 
   public:
    Server_Connection(Channel &channel, std::ostream *log);
+
+   int64_t get_session_id() const {return session_id;}
+
    ~Server_Connection() override;
  };
 }

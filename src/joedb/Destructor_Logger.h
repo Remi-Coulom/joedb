@@ -14,7 +14,9 @@ namespace joedb
 
   public:
    static void write(const char * message) noexcept;
-   static void set_logger(Logger &new_logger);
+   static void set_logger(Logger *new_logger);
+   static void remove_logger();
+   static void set_logger();
  };
 }
 

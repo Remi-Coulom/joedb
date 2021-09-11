@@ -33,6 +33,9 @@ TEST(Server_Connection, basic)
  try
  {
   joedb::Server_Connection connection(channel, nullptr);
+  joedb::Memory_File client_file;
+  joedb::Interpreted_Client client(connection, client_file);
+
   FAIL() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -53,6 +56,9 @@ TEST(Server_Connection, basic)
  try
  {
   joedb::Server_Connection connection(channel, nullptr);
+  joedb::Memory_File client_file;
+  joedb::Interpreted_Client client(connection, client_file);
+
   FAIL() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -66,11 +72,12 @@ TEST(Server_Connection, basic)
  channel.write<char>('e');
  channel.write<char>('d');
  channel.write<char>('b');
- channel.write<int64_t>(4);
+ channel.write<int64_t>(5);
  channel.write<int64_t>(1234);
+ channel.write<int64_t>(41);
+ channel.write<char>('H');
  channel.write<char>('l');
  channel.write<char>('u');
- channel.write<char>('H');
  channel.write<char>('P');
  channel.write<int64_t>(41);
  channel.write<int64_t>(0);
@@ -82,12 +89,13 @@ TEST(Server_Connection, basic)
 
  {
   joedb::Server_Connection connection(channel, nullptr);
+  joedb::Memory_File client_file;
+  joedb::Interpreted_Client client(connection, client_file);
+
   EXPECT_EQ(connection.get_session_id(), 1234);
 
   connection.run_while_locked([](){});
 
-  joedb::Memory_File client_file;
-  joedb::Interpreted_Client client(connection, client_file);
 
   client.pull();
 

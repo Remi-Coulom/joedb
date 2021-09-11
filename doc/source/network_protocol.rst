@@ -32,6 +32,7 @@ Prefix Data             Description
 ====== ================ ======================================================
 joedb  server_version   reply to joedb.
        session_id       server_version = 0 means client_version is rejected.
+       checkpoint
 P      checkpoint       reply to P
        size
        data

@@ -607,17 +607,18 @@ namespace joedb
 
     LOGID("client_version = " << client_version << '\n');
 
-    if (client_version < 3)
+    if (client_version < 5)
      to_network(0, session->buffer + 5);
     else
     {
-     const int64_t server_version = 4;
+     const int64_t server_version = 5;
      to_network(server_version, session->buffer + 5);
     }
 
     to_network(session->id, session->buffer + 5 + 8);
+    to_network(journal.get_checkpoint_position(), session->buffer + 5 + 8 + 8);
 
-    write_buffer_and_next_command(session, 5 + 8 + 8);
+    write_buffer_and_next_command(session, 5 + 8 + 8 + 8);
    }
    else
     LOGID("bad handshake\n");

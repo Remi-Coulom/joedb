@@ -150,8 +150,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Server_Connection::check_client_journal(Readonly_Journal &client_journal)
+ bool Server_Connection::check_matching_content
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal,
+  int64_t checkpoint
+ )
  {
   Channel_Lock lock(channel);
 
@@ -159,7 +163,6 @@ namespace joedb
 
   buffer[0] = 'H';
 
-  const int64_t checkpoint = client_journal.get_checkpoint_position();
   to_network(checkpoint, buffer.data() + 1);
 
   SHA_256::Hash hash = client_journal.get_hash(checkpoint);
@@ -206,14 +209,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Handshake::Server_Handshake(Channel &channel, std::ostream *log):
+ int64_t Server_Connection::handshake(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
-  channel(channel),
-  log(log)
  {
   LOG("Connecting... ");
-
-  char buffer[5 + 8 + 8];
 
   buffer[0] = 'j';
   buffer[1] = 'o';
@@ -221,14 +220,14 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 4;
-  to_network(client_version, buffer + 5);
+  const int64_t client_version = 5;
+  to_network(client_version, buffer.data() + 5);
 
   {
    Channel_Lock lock(channel);
-   lock.write(buffer, 5 + 8);
+   lock.write(buffer.data(), 5 + 8);
    LOG("Waiting for \"joedb\"... ");
-   lock.read(buffer, 5 + 8 + 8);
+   lock.read(buffer.data(), 5 + 8 + 8 + 8);
   }
 
   if
@@ -243,27 +242,39 @@ namespace joedb
    throw Exception("Did not receive \"joedb\" from server");
   }
 
-  const int64_t server_version = from_network(buffer + 5);
+  const int64_t server_version = from_network(buffer.data() + 5);
 
   if (server_version == 0)
    throw Exception("Client version rejected by server");
 
   LOG("server_version = " << server_version << ". ");
 
-  if (server_version < 4)
+  if (server_version < client_version)
    throw Exception("Unsupported server version");
 
-  session_id = from_network(buffer + 5 + 8);
-  LOG("session_id = " << session_id << ". OK.\n");
+  session_id = from_network(buffer.data() + 5 + 8);
+  const int64_t server_checkpoint = from_network(buffer.data() + 5 + 8 + 8);
+
+  LOG
+  (
+   "session_id = " << session_id <<
+   "; server_checkpoint = " << server_checkpoint <<
+   ". OK.\n"
+  );
+
+  keep_alive_thread_must_stop = false;
+  keep_alive_thread = std::thread([this](){keep_alive();});
+
+  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
  Server_Connection::Server_Connection(Channel &channel, std::ostream *log):
  ////////////////////////////////////////////////////////////////////////////
-  Server_Handshake(channel, log),
+  channel(channel),
+  log(log),
   buffer(buffer_size),
-  keep_alive_thread_must_stop(false),
-  keep_alive_thread([this](){keep_alive();})
+  session_id(-1)
  {
  }
 
@@ -286,7 +297,8 @@ namespace joedb
   try
   {
    condition.notify_one();
-   keep_alive_thread.join();
+   if (keep_alive_thread.joinable())
+    keep_alive_thread.join();
   }
   catch (...)
   {

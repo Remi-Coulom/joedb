@@ -12,23 +12,52 @@ namespace joedb
   private:
    Writable_Journal server_journal;
 
-   void lock() override {}
-   void unlock() override {}
+   //////////////////////////////////////////////////////////////////////////
+   int64_t handshake(Readonly_Journal &client_journal) override
+   //////////////////////////////////////////////////////////////////////////
+   {
+    return server_journal.get_checkpoint_position();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool check_matching_content
+   //////////////////////////////////////////////////////////////////////////
+   (
+    Readonly_Journal &client_journal,
+    int64_t checkpoint
+   ) override
+   {
+    return
+     client_journal.get_hash(checkpoint) ==
+     server_journal.get_hash(checkpoint);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void lock() override
+   //////////////////////////////////////////////////////////////////////////
+   {
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void unlock() override
+   //////////////////////////////////////////////////////////////////////////
+   {
+   }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t pull(Writable_Journal &client_journal) override
    //////////////////////////////////////////////////////////////////////////
    {
-    const int64_t client_position = client_journal.get_checkpoint_position();
-    const int64_t server_position = server_journal.get_checkpoint_position();
+    const int64_t client_checkpoint=client_journal.get_checkpoint_position();
+    const int64_t server_checkpoint=server_journal.get_checkpoint_position();
 
-    if (client_position < server_position)
+    if (client_checkpoint < server_checkpoint)
      client_journal.append_raw_tail
      (
-      server_journal.get_raw_tail(client_position)
+      server_journal.get_raw_tail(client_checkpoint)
      );
 
-    return server_position;
+    return server_checkpoint;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -43,26 +72,16 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &client_journal,
-    const int64_t server_position
+    const int64_t server_checkpoint
    ) override
    {
-    const int64_t client_position = client_journal.get_checkpoint_position();
+    const int64_t client_checkpoint=client_journal.get_checkpoint_position();
 
-    if (server_position < client_position)
+    if (server_checkpoint < client_checkpoint)
      server_journal.append_raw_tail
      (
-      client_journal.get_raw_tail(server_position)
+      client_journal.get_raw_tail(server_checkpoint)
      );
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   bool check_client_journal(Readonly_Journal &client_journal) override
-   //////////////////////////////////////////////////////////////////////////
-   {
-    const int64_t checkpoint = client_journal.get_checkpoint_position();
-    return
-     client_journal.get_hash(checkpoint) ==
-     server_journal.get_hash(checkpoint);
    }
 
   public:

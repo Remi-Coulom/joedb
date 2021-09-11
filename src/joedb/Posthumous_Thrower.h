@@ -57,9 +57,9 @@ namespace joedb
    }
 
   public:
-   void set_catcher(Posthumous_Catcher &catcher) noexcept
+   void set_catcher(Posthumous_Catcher &new_catcher) noexcept
    {
-    this->catcher = &catcher;
+    catcher = &new_catcher;
    }
  };
 }

@@ -5,6 +5,10 @@ History
 
   - new ``Local_Connection`` class for local serverless :doc:`concurrent
     <concurrency>` access to a file.
+  - SHA-256 is used to compare the client database with the server database at
+    connection time. This prevents pulling into the wrong file. This also
+    allows making offline modifications to a local database, and pushing them
+    later to a remote server (if there is no conflict).
   - Re-organize file classes:
 
     - ``File_Slice`` is removed. All file classes can be :ref:`sliced <file_slices>` now.
@@ -23,8 +27,6 @@ History
     won't checkpoint any more, because this would risk checkpointing a failed
     buffer flush, and because write errors cannot be handled properly in
     destructors.
-  - SHA-256 is used to compare the client database with the server database at
-    connection time. This prevents pulling into the wrong file.
   - Minor fixes and improvements.
 
 - 2021-05-08: 5.0

@@ -14,8 +14,7 @@ namespace joedb
    Connection &connection;
    Writable_Journal &journal;
    Writable &writable;
-
-   int64_t server_position;
+   bool cancelled_transaction_data;
 
   public:
    //////////////////////////////////////////////////////////////////////////
@@ -28,38 +27,50 @@ namespace joedb
    ):
     connection(connection),
     journal(journal),
-    writable(writable)
+    writable(writable),
+    cancelled_transaction_data(false)
    {
-    if (!connection.check_client_journal(journal))
-     throw Exception("Bad client journal");
-    journal.play_until_checkpoint(writable);
-    server_position = journal.get_position();
-   }
+    const int64_t server_checkpoint = connection.handshake(journal);
+    const int64_t client_checkpoint = journal.get_checkpoint_position();
 
-   //////////////////////////////////////////////////////////////////////////
-   void check_position()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (journal.get_position() > server_position)
-     throw Exception("Can't pull: client journal moved ahead of server.");
+    if
+    (
+     !connection.check_matching_content
+     (
+      journal,
+      std::min(server_checkpoint, client_checkpoint)
+     )
+    )
+    {
+     throw Exception("Client data does not match the server");
+    }
+
+    if (client_checkpoint > server_checkpoint)
+    {
+     connection.push_unlock(journal, server_checkpoint);
+    }
+
+    journal.rewind();
+    journal.play_until_checkpoint(writable);
    }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t pull()
    //////////////////////////////////////////////////////////////////////////
    {
-    check_position();
-    server_position = connection.pull(journal);
+    const int64_t server_checkpoint = connection.pull(journal);
     journal.play_until_checkpoint(writable);
-    return server_position;
+    return server_checkpoint;
    }
 
    //////////////////////////////////////////////////////////////////////////
    template<typename F> void transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    check_position();
-    server_position = connection.lock_pull(journal);
+    if (cancelled_transaction_data)
+     throw Exception("Local journal contains cancelled transaction");
+
+    const int64_t server_checkpoint = connection.lock_pull(journal);
 
     try
     {
@@ -69,12 +80,13 @@ namespace joedb
     }
     catch (...)
     {
+     if (journal.get_position() > server_checkpoint)
+      cancelled_transaction_data = true;
      connection.unlock();
      throw;
     }
 
-    connection.push_unlock(journal, server_position);
-    server_position = journal.get_checkpoint_position();
+    connection.push_unlock(journal, server_checkpoint);
    }
  };
 }

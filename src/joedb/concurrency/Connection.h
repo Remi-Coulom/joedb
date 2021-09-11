@@ -13,6 +13,15 @@ namespace joedb
   friend class Client;
 
   private:
+   virtual int64_t handshake(Readonly_Journal &client_journal) = 0;
+
+   virtual bool check_matching_content
+   (
+    Readonly_Journal &client_journal,
+    int64_t checkpoint
+   ) = 0;
+
+   void lock() override = 0;
    void unlock() override = 0;
 
    virtual int64_t pull(Writable_Journal &client_journal) = 0;
@@ -22,10 +31,8 @@ namespace joedb
    virtual void push_unlock
    (
     Readonly_Journal &client_journal,
-    int64_t server_position
+    int64_t server_checkpoint
    ) = 0;
-
-   virtual bool check_client_journal(Readonly_Journal &client_journal) = 0;
 
   public:
    virtual ~Connection() {}

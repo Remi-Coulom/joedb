@@ -11,10 +11,12 @@
 TEST(Server, basic)
 /////////////////////////////////////////////////////////////////////////////
 {
+ std::ostream * const log_stream = nullptr;
+
  joedb::Memory_File server_file;
  joedb::Writable_Journal server_journal(server_file);
  net::io_context io_context;
- joedb::Server server(server_journal, io_context, 0, 0, nullptr);
+ joedb::Server server(server_journal, io_context, 0, 0, log_stream);
  std::thread server_thread([&io_context](){io_context.run();});
 
  std::ostringstream port_stream;
@@ -30,11 +32,11 @@ TEST(Server, basic)
  //
  {
   joedb::Network_Channel channel_1("localhost", port);
-  joedb::Server_Connection connection_1(channel_1, nullptr);
+  joedb::Server_Connection connection_1(channel_1, log_stream);
   joedb::Interpreted_Client client_1(connection_1, client_file_1);
 
   joedb::Network_Channel channel_2("localhost", port);
-  joedb::Server_Connection connection_2(channel_2, nullptr);
+  joedb::Server_Connection connection_2(channel_2, log_stream);
   joedb::Interpreted_Client client_2(connection_2, client_file_2);
 
   client_1.pull();
@@ -60,12 +62,11 @@ TEST(Server, basic)
  //
  // Reconnect after disconnection, with a good non-empty database
  //
- client_file_1.set_position(0);
  client_file_1.set_mode(joedb::Open_Mode::write_existing);
 
  {
   joedb::Network_Channel channel_1("localhost", port);
-  joedb::Server_Connection connection_1(channel_1, nullptr);
+  joedb::Server_Connection connection_1(channel_1, log_stream);
   joedb::Interpreted_Client client_1(connection_1, client_file_1);
  }
 
@@ -81,11 +82,10 @@ TEST(Server, basic)
    journal.checkpoint(joedb::Commit_Level::no_commit);
   }
 
-  file.set_position(0);
   file.set_mode(joedb::Open_Mode::write_existing);
 
   joedb::Network_Channel channel("localhost", port);
-  joedb::Server_Connection connection(channel, nullptr);
+  joedb::Server_Connection connection(channel, log_stream);
   try
   {
    joedb::Interpreted_Client client(connection, file);
@@ -93,7 +93,7 @@ TEST(Server, basic)
   }
   catch (const joedb::Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Bad client journal");
+   EXPECT_STREQ(e.what(), "Client data does not match the server");
   }
  }
 
