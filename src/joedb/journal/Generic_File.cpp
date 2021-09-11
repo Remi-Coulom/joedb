@@ -21,7 +21,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   flush();
-  source.flush();
   source.set_position(0);
 
   while (true)
