@@ -11,6 +11,7 @@ namespace joedb
  {
   private:
    Generic_File &file;
+   const int64_t initial_position;
    const int64_t end;
    int64_t current;
 
@@ -19,6 +20,7 @@ namespace joedb
    Async_Reader(Generic_File &file, int64_t start, int64_t end):
    //////////////////////////////////////////////////////////////////////////
     file(file),
+    initial_position(file.get_position()),
     end(end),
     current(start)
    {
@@ -49,6 +51,13 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     return end - current;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   ~Async_Reader()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    file.seek(initial_position);
    }
  };
 }

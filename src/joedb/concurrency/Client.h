@@ -50,7 +50,6 @@ namespace joedb
      connection.push_unlock(journal, server_checkpoint);
     }
 
-    journal.rewind();
     journal.play_until_checkpoint(writable);
    }
 
