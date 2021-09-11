@@ -7,7 +7,10 @@ set -e
 build()
 #############################################################################
 {
- clang++-8\
+ echo "Building $1..."
+ echo "run with: ./$1_fuzzer $1_corpus"
+
+ clang++\
   -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
   -fsanitize-coverage=trace-pc-guard\
   -fsanitize=address\
@@ -18,6 +21,7 @@ build()
   ../../src/joedb/interpreter/Database.cpp\
   ../../src/joedb/interpreter/Database_Schema.cpp\
   ../../src/joedb/is_identifier.cpp\
+  ../../src/joedb/Readable.cpp\
   ../../src/joedb/Writable.cpp\
   ../../src/joedb/Multiplexer.cpp\
   ../../src/joedb/interpreter/Table.cpp\
@@ -44,7 +48,7 @@ build()
 build "binary_journal"
 build "joedbi"
 
-cd ../compiler
-./compiler_test.sh
+cd ../../compcmake/ninja_clang
+ninja joedb_test
 cd -
 build "joedbc"

@@ -1,7 +1,7 @@
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/interpreter/Database.h"
-#include "../compiler/testdb.cpp"
+#include "../compiler/db/testdb.cpp"
 
 /////////////////////////////////////////////////////////////////////////////
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
