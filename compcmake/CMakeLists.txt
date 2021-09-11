@@ -320,6 +320,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/multi_index.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v1.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v2.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/vector_test.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp

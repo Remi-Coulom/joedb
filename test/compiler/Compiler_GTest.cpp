@@ -2,7 +2,11 @@
 #include "db/multi_index.h"
 #include "db/schema_v1.h"
 #include "db/schema_v2.h"
+#include "db/vector_test.h"
+#include "joedb/Exception.h"
 #include "joedb/journal/Interpreted_File.h"
+#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Embedded_Connection.h"
 
@@ -333,5 +337,218 @@ TEST(Compiler, client)
  catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "Can't upgrade schema during pull");
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, vector)
+/////////////////////////////////////////////////////////////////////////////
+{
+ //
+ // Freedom_keeper version
+ //
+ {
+  joedb::Memory_File file;
+
+  const size_t n = 5;
+  testdb::id_of_float v;
+
+  {
+   testdb::Generic_File_Database db(file);
+   v = db.new_vector_of_float(n);
+   for (size_t i = 0; i < n; i++)
+    db.set_value(v[i], 0.1f * float(i));
+   db.checkpoint();
+  }
+
+  file.set_mode(joedb::Open_Mode::read_existing);
+
+  {
+   testdb::Readonly_Database db(file);
+   for (size_t i = 0; i < n; i++)
+    EXPECT_EQ(db.get_value(v[i]), 0.1f * float(i));
+  }
+ }
+
+ //
+ // Allocating empty vectors works
+ //
+ {
+  joedb::Memory_File file;
+
+  {
+   vector_test::Generic_File_Database db(file);
+   db.new_vector_of_point(0);
+   db.checkpoint();
+  }
+  {
+   file.set_mode(joedb::Open_Mode::read_existing);
+   vector_test::Readonly_Database db(file);
+   EXPECT_EQ(db.get_point_table().get_size(), 0ULL);
+  }
+ }
+
+ //
+ // Vector storage
+ //
+ {
+  const size_t n = 5;
+  joedb::Memory_File file;
+
+  {
+   vector_test::Generic_File_Database db(file);
+   auto v = db.new_vector_of_point(n);
+   for (size_t i = 0; i < n; i++)
+   {
+    db.set_x(v[i], 0.1f * float(i));
+    db.set_y(v[i], 1.234f);
+   }
+   db.checkpoint();
+
+   EXPECT_EQ(db.get_point_table().first().get_id(), 1ULL);
+   EXPECT_EQ(db.get_point_table().last().get_id(), 5ULL);
+  }
+
+  file.set_mode(joedb::Open_Mode::write_existing);
+
+  {
+   vector_test::Generic_File_Database db(file);
+   auto v = db.new_vector_of_point(n);
+
+   db.update_vector_of_x(v, n, [&](joedb::Span<float> x)
+   {
+    db.update_vector_of_y(v, n, [&](joedb::Span<float> y)
+    {
+     for (size_t i = 0; i < n; i++)
+     {
+      x[i] = 0.2f * float(i);
+      y[i] = 5.678f;
+     }
+    });
+   });
+
+   db.checkpoint();
+  }
+
+  {
+   vector_test::Readonly_Database db(file);
+   auto v = db.get_point_table().first();
+   for (size_t i = 0; i < n; i++)
+   {
+    EXPECT_EQ(db.get_x(v[i]), 0.1f * float(i));
+    EXPECT_EQ(db.get_y(v[i]), 1.234f);
+   }
+   for (size_t i = n; i < 2 * n; i++)
+   {
+    EXPECT_EQ(db.get_x(v[i]), 0.2f * float(i - n));
+    EXPECT_EQ(db.get_y(v[i]), 5.678f);
+   }
+  }
+ }
+
+ try
+ {
+  joedb::Interpreted_File file("compiler/vector_hole.joedbi");
+  vector_test::Generic_File_Database db(file);
+ }
+ catch (const joedb::Exception &e)
+ {
+  ADD_FAILURE() << e.what();
+ }
+
+ try
+ {
+  joedb::Interpreted_File file("compiler/vector_hole_by_vector_insert.joedbi");
+
+  {
+   vector_test::Generic_File_Database db(file);
+   db.set_x(db.get_point_table().first(), 1.234f);
+   db.checkpoint();
+  }
+  {
+   file.set_mode(joedb::Open_Mode::read_existing);
+   joedb::Readonly_Journal journal(file);
+   joedb::Database database;
+   journal.replay_log(database);
+  }
+ }
+ catch (const joedb::Exception &e)
+ {
+  ADD_FAILURE() << e.what();
+ }
+ catch (const joedb::Assertion_Failure &e)
+ {
+  ADD_FAILURE() << e.what();
+ }
+
+ try
+ {
+  joedb::Interpreted_File file("compiler/vector_delete.joedbi");
+  vector_test::Generic_File_Database db(file);
+ }
+ catch (const joedb::Exception &e)
+ {
+  ADD_FAILURE() << e.what();
+ }
+
+ //
+ // Vector of strings with a unique index
+ //
+ {
+  joedb::Memory_File file;
+  vector_test::Generic_File_Database db(file);
+
+  {
+   constexpr int n = 3;
+   auto v = db.new_vector_of_person(n);
+   db.update_vector_of_name(v, n, [](joedb::Span<std::string> name)
+   {
+    name[0] = "Rémi";
+    name[1] = "Paul";
+    name[2] = "Liza";
+   });
+  }
+
+  {
+   auto remi = db.find_person_by_name("Rémi");
+   if (remi)
+    EXPECT_EQ(db.get_name(remi), "Rémi");
+   else
+    ADD_FAILURE() << "Rémi not found";
+  }
+
+  {
+   constexpr int n = 3;
+   auto v = db.get_person_table().first();
+   db.update_vector_of_name(v, n, [](joedb::Span<std::string> name)
+   {
+    name[0] = "Joe";
+    name[1] = "Max";
+    name[2] = "Liz";
+   });
+  }
+
+  EXPECT_FALSE(db.find_person_by_name("Rémi"));
+
+  {
+   auto joe = db.find_person_by_name("Joe");
+   if (joe)
+    EXPECT_EQ(db.get_name(joe), "Joe");
+   else
+    ADD_FAILURE() << "Joe not found";
+  }
+
+  db.checkpoint();
+ }
+
+ //
+ // timestamp
+ //
+ {
+  joedb::Memory_File file;
+  vector_test::Generic_File_Database db(file);
+  db.write_timestamp();
+  db.write_comment("This was a timestamp.");
+  db.checkpoint();
  }
 }

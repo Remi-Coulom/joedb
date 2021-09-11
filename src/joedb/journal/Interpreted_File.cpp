@@ -4,15 +4,15 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
 
-#include <iostream>
-#include <fstream>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  Interpreted_File::Interpreted_File(std::istream &file)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (!file.good())
+   throw Exception("!file.good() in Interpreted_File::Interpreted_File");
+
   Writable_Journal journal(*this);
   Database db;
   Multiplexer multiplexer{db, journal};
