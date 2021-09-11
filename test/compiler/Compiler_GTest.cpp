@@ -1,7 +1,10 @@
 #include "db/testdb.h"
 #include "db/multi_index.h"
+#include "db/schema_v1.h"
+#include "db/schema_v2.h"
 #include "joedb/journal/Interpreted_File.h"
-#include <stdexcept>
+#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/concurrency/Embedded_Connection.h"
 
 using namespace my_namespace::is_nested;
 
@@ -203,4 +206,132 @@ TEST(Compiler, checkpoints)
  EXPECT_TRUE(db.ahead_of_checkpoint() > 0);
  db.checkpoint_full_commit();
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void schema_v2::Generic_File_Database::set_default_preferred_language_to_english
+/////////////////////////////////////////////////////////////////////////////
+(
+ Generic_File_Database &db
+)
+{
+ auto english = db.new_language("English", "en");
+ for (auto person: db.get_person_table())
+  db.set_preferred_language(person, english);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, schema_upgrade)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+
+ {
+  schema_v1::Generic_File_Database db(file);
+
+  db.new_person("Toto");
+  db.new_person("Rémi");
+  db.write_comment("This is a comment");
+  db.write_timestamp(12345);
+  db.checkpoint();
+ }
+
+ file.set_mode(joedb::Open_Mode::write_existing);
+
+ try
+ {
+  schema_v2::Readonly_Database db(file);
+  ADD_FAILURE() << "v2 should not open v1 readonly without upgrade\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  EXPECT_STREQ(e.what(), "This joedb file has an old schema, and must be upgraded first.");
+ }
+
+ {
+  schema_v1::Generic_File_Database db(file);
+ }
+
+ {
+  schema_v2::Generic_File_Database db(file);
+
+  const auto toto = db.get_person_table().first();
+  EXPECT_EQ("Toto", db.get_name(toto));
+  const auto english = db.get_language_table().first();
+  EXPECT_EQ("English", db.get_name(english));
+  EXPECT_EQ(english, db.get_preferred_language(toto));
+ }
+
+ {
+  schema_v2::Generic_File_Database db(file);
+ }
+
+ try
+ {
+  schema_v1::Generic_File_Database db(file);
+  ADD_FAILURE() << "v1 code should not open v2 files\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  EXPECT_STREQ(e.what(), "Trying to open a file with incompatible schema");
+ }
+
+ try
+ {
+  schema_v1::Readonly_Database db(file);
+  ADD_FAILURE() << "v1 code should not open v2 files\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  EXPECT_STREQ(e.what(), "Trying to open a file with incompatible schema");
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, client)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File server_file;
+ joedb::Embedded_Connection connection(server_file);
+
+ joedb::Memory_File client_v1_file;
+ schema_v1::Client client_v1(connection, client_v1_file);
+
+ joedb::Memory_File client_v1bis_file;
+ schema_v1::Client client_v1bis(connection, client_v1bis_file);
+
+ client_v1.transaction([](schema_v1::Generic_File_Database &db)
+ {
+  db.new_person("Toto");
+ });
+
+ joedb::Memory_File client_v2_file;
+ schema_v2::Client client_v2(connection, client_v2_file);
+
+ client_v2.transaction([](schema_v2::Generic_File_Database &db)
+ {
+  db.new_language("French", "fr");
+ });
+
+ try
+ {
+  client_v1.pull();
+  ADD_FAILURE() << "client_v1 should not be able to pull new schema\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  EXPECT_STREQ(e.what(), "Can't upgrade schema during pull");
+ }
+
+ try
+ {
+  client_v1bis.transaction([](schema_v1::Generic_File_Database &db)
+  {
+  });
+  ADD_FAILURE() <<  "client_v1 should not be able to pull new schema\n";
+ }
+ catch (const joedb::Exception &e)
+ {
+  EXPECT_STREQ(e.what(), "Can't upgrade schema during pull");
+ }
 }

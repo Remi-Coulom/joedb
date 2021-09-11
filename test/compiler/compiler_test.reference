@@ -127,41 +127,6 @@ B < B: 0
 B <= B: 1
 B > B: 0
 B >= B: 1
-v1 opened
-This joedb file has an old schema, and must be upgraded first.
-OK: v2 refuses to open v1 readonly.
-v1 re-opened
-v2 opened
-v2 re-opened
-Trying to open a file with incompatible schema
-OK: v1 code does not open v2 file
-Trying to open a file with incompatible schema
-OK: v1 code does not open v2 file
-comment "Automatic schema upgrade"
-create_table person
-add_field person name string
-comment "End of automatic schema upgrade"
-insert_into person 1
-update person 1 name "Toto"
-insert_into person 2
-update person 2 name "Rémi"
-comment "This is a comment"
-timestamp 12345 1970-01-01 03:25:45 GMT
-comment "Automatic schema upgrade"
-create_table language
-add_field language name string
-add_field language id string
-add_field person preferred_language references language
-custom set_default_preferred_language_to_english
-add_field person height float32
-insert_into language 1
-update language 1 name "English"
-update language 1 id "en"
-update person 1 preferred_language 1
-update person 2 preferred_language 1
-comment "End of automatic schema upgrade"
-OK, expected exception: Can't upgrade schema during pull
-OK, expected exception: Can't upgrade schema during pull
 v[0] = 0
 v[1] = 0.1
 v[2] = 0.2
