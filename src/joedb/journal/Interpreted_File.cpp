@@ -24,7 +24,6 @@ namespace joedb
    interpreter.main_loop(file, null_stream);
   }
   journal.checkpoint(Commit_Level::no_commit);
-  this->set_position(0);
   set_mode(Open_Mode::write_existing);
  }
 }
