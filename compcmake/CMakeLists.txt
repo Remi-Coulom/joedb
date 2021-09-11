@@ -304,7 +304,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/pack_Test.cpp
   ../test/Polymorphic_File_Test.cpp
   ../test/Selective_Writable_Test.cpp
-  ../test/Connection_Test.cpp
+  ../test/Client_Test.cpp
   ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp
   ../test/Test_Main.cpp
