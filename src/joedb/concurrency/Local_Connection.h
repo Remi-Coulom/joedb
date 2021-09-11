@@ -35,12 +35,6 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   int64_t lock_pull(Writable_Journal &client_journal) override
-   {
-    file.lock();
-    return pull(client_journal);
-   }
-
    void push_unlock
    (
     Readonly_Journal &client_journal,
