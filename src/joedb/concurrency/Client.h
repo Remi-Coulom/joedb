@@ -16,6 +16,12 @@ namespace joedb
    Writable &writable;
    bool cancelled_transaction_data;
 
+   void check_cancelled_transaction_data()
+   {
+    if (cancelled_transaction_data)
+     throw Exception("Local journal contains cancelled transaction");
+   }
+
   public:
    //////////////////////////////////////////////////////////////////////////
    Client
@@ -57,6 +63,7 @@ namespace joedb
    int64_t pull()
    //////////////////////////////////////////////////////////////////////////
    {
+    check_cancelled_transaction_data();
     const int64_t server_checkpoint = connection.pull(journal);
     journal.play_until_checkpoint(writable);
     return server_checkpoint;
@@ -66,9 +73,7 @@ namespace joedb
    template<typename F> void transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    if (cancelled_transaction_data)
-     throw Exception("Local journal contains cancelled transaction");
-
+    check_cancelled_transaction_data();
     const int64_t server_checkpoint = connection.lock_pull(journal);
 
     try
