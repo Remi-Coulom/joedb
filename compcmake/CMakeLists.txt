@@ -321,6 +321,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v1.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v2.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/vector_test.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
@@ -505,14 +506,6 @@ joedb_add_executable(wrapper_tutorial
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
  ../doc/source/tutorial/tutorial_main.c
-)
-
-joedb_add_executable(compiler_test
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/vector_test.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/multi_index.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
- ../test/compiler/compiler_test.cpp
 )
 
 joedb_add_executable(generate_translation_header

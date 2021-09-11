@@ -14,10 +14,9 @@ rm -rvf *.joedb compiler_test.out
 
 echo "build_dir=$build_dir"
 cd "$build_dir"
-$build_command joedbc compiler_test embedded_test
+$build_command joedbc embedded_test
 cd -
 
-"$build_dir"/compiler_test >compiler_test.out
 "$build_dir"/embedded_test >>compiler_test.out
 
 #

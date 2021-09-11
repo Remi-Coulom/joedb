@@ -2,7 +2,9 @@
 #include "db/multi_index.h"
 #include "db/schema_v1.h"
 #include "db/schema_v2.h"
+#include "db/testdb_readonly.h"
 #include "db/vector_test.h"
+#include "translation.h"
 #include "joedb/Exception.h"
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Generic_File.h"
@@ -13,6 +15,269 @@
 using namespace my_namespace::is_nested;
 
 #include "gtest/gtest.h"
+
+/////////////////////////////////////////////////////////////////////////////
+static const std::string &get_translation
+/////////////////////////////////////////////////////////////////////////////
+(
+ const testdb::Database &db,
+ joedb::Record_Id string_id_id,
+ joedb::Record_Id language_id
+)
+{
+ const testdb::id_of_string_id string_id(string_id_id);
+ const testdb::id_of_language language(language_id);
+ const testdb::id_of_language english(translation::language::en);
+
+ auto translation = db.find_translation_by_ids(string_id, language);
+
+ if (translation.is_null())
+  translation = db.find_translation_by_ids(string_id, english);
+
+ if (!translation.is_null())
+  return db.get_translation(translation);
+
+ const static std::string error("Translation error!");
+ return error;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, file_test)
+/////////////////////////////////////////////////////////////////////////////
+{
+ //
+ // First, try to open the database
+ //
+ joedb::Interpreted_File file ("compiler/db/test.joedbi");
+ testdb::Generic_File_Database db(file);
+
+ //
+ // Check table sizes
+ //
+ EXPECT_EQ(db.get_city_table().get_size(), 2ULL);
+ EXPECT_EQ(db.get_person_table().get_size(), 3ULL);
+
+ //
+ // Clear Persons and cities
+ //
+ db.clear_city_table();
+ db.clear_person_table();
+
+ //
+ // Print table sizes
+ //
+ EXPECT_EQ(db.get_city_table().get_size(), 0ULL);
+ EXPECT_EQ(db.get_person_table().get_size(), 0ULL);
+
+ //
+ // Insert some
+ //
+ db.new_city("Barcelona");
+ auto New_York = db.new_city("New York");
+ db.new_city("Paris");
+ db.new_city("Tokyo");
+ db.new_person("Toto", New_York);
+ db.new_person("Évariste", db.null_city());
+ db.new_person("Catherine", db.null_city());
+
+ EXPECT_EQ(db.get_person_table().get_size(), 3ULL);
+ EXPECT_EQ(db.get_city_table().get_size(), 4ULL);
+
+ EXPECT_EQ(db.get_city_table().first().get_id(), 1ULL);
+ EXPECT_EQ(db.get_city_table().last().get_id(), 4ULL);
+ EXPECT_EQ(db.get_name(db.get_city_table().first()), "Barcelona");
+ EXPECT_EQ(db.get_name(db.get_city_table().last()), "Tokyo");
+
+ //
+ // Test unique index constraint
+ //
+ try
+ {
+  db.set_name(New_York, "Paris");
+  ADD_FAILURE() << "duplicate Paris";
+ }
+ catch(const std::runtime_error &e)
+ {
+  EXPECT_STREQ(e.what(), "city_by_name unique index failure: (\"Paris\") at id = 2 was already at id = 3");
+  db.set_name(New_York, "New York");
+ }
+
+ //
+ // Validity + get_at
+ //
+ EXPECT_EQ(db.get_name(db.find_city_by_name("Paris")), "Paris");
+ db.delete_city(db.find_city_by_name("Paris"));
+
+ EXPECT_FALSE(db.get_city_table().is_valid_at(0));
+ EXPECT_TRUE (db.get_city_table().is_valid_at(1));
+ EXPECT_TRUE (db.get_city_table().is_valid_at(2));
+ EXPECT_FALSE(db.get_city_table().is_valid_at(3));
+ EXPECT_TRUE (db.get_city_table().is_valid_at(4));
+ EXPECT_FALSE(db.get_city_table().is_valid_at(5));
+ EXPECT_FALSE(db.get_city_table().is_valid_at(6));
+
+ EXPECT_EQ(db.get_name(testdb::container_of_city::get_at(1)), "Barcelona");
+ EXPECT_EQ(db.get_name(testdb::container_of_city::get_at(4)), "Tokyo");
+
+ //
+ // Loop over not-unique index
+ //
+ db.new_person("Toto", db.find_city_by_name("Tokyo"));
+ db.new_person("Toto", db.find_city_by_name("Barcelona"));
+
+ {
+  int count = 0;
+  for (auto toto: db.find_person_by_name("Toto"))
+  {
+   EXPECT_EQ(db.get_name(toto), "Toto");
+   count++;
+  }
+  EXPECT_EQ(count, 3);
+ }
+
+ EXPECT_TRUE(db.find_person_by_name("Totox").empty());
+
+ {
+  const auto range = db.find_person_by_name("Toto");
+  int count = 0;
+  for (auto x = range.begin(); x != range.end(); ++x)
+   count++;
+  EXPECT_TRUE(range.begin() != range.end());
+  EXPECT_FALSE(range.empty());
+  EXPECT_EQ(count, 3);
+  EXPECT_EQ(range.size(), 3ULL);
+ }
+
+ //
+ // Standard find algorithm
+ //
+ {
+  auto i = std::find_if
+  (
+   db.get_person_table().begin(),
+   db.get_person_table().end(),
+   [&](testdb::id_of_person person)
+   {
+    return db.get_name(person) == "Catherine";
+   }
+  );
+  EXPECT_TRUE(i != db.get_person_table().end());
+ }
+
+ //
+ // Isn't it simpler with a plain loop?
+ //
+ {
+  bool found = false;
+  for (auto person: db.get_person_table())
+   if (db.get_name(person) == "Catherine")
+   {
+    found = true;
+    break;
+   }
+  EXPECT_TRUE(found);
+ }
+
+ //
+ // Translation test
+ //
+ EXPECT_EQ
+ (
+  get_translation
+  (
+   db,
+   translation::how_are_you,
+   translation::language::fr
+  ),
+  "Comment allez-vous?"
+ );
+
+ //
+ // Sorting
+ //
+ {
+  db.new_person("Zoé", db.null_city());
+  db.new_person("Albert", db.null_city());
+  auto by_name = [&](testdb::id_of_person p_1, testdb::id_of_person p_2)
+  {
+   return db.get_name(p_1) < db.get_name(p_2);
+  };
+
+  std::vector<std::string> v;
+  for (auto person: db.sorted_person(by_name))
+   v.emplace_back(db.get_name(person));
+
+  EXPECT_EQ(v.front(), "Albert");
+  EXPECT_EQ(v.back(), "Évariste");
+ }
+
+ //
+ // Sorting with index
+ //
+ {
+  std::vector<std::string> v;
+  for (const auto &x: db.get_index_of_person_by_name())
+   v.emplace_back(db.get_name(x.second));
+
+  EXPECT_EQ(v.front(), "Albert");
+  EXPECT_EQ(v.back(), "Évariste");
+ }
+
+ //
+ // Inserting a vector with a unique index
+ //
+ {
+  auto v = db.new_vector_of_city(2);
+  db.set_name(v[0], "Washington");
+  db.set_name(v[1], "Beijing");
+
+  std::vector<std::string> vs;
+
+  for
+  (
+   auto x = db.get_index_of_city_by_name().rbegin();
+   x != db.get_index_of_city_by_name().rend();
+   ++x
+  )
+  {
+   vs.emplace_back(db.get_name(x->second));
+  }
+
+  EXPECT_EQ(vs.front(), "Washington");
+  EXPECT_EQ(vs.back(), "Barcelona");
+ }
+
+ //
+ // New element in table with no field
+ //
+ {
+  auto x = db.new_table_with_no_field();
+  EXPECT_EQ(x.get_id(), 1ULL);
+ }
+
+ //
+ // Comparison operators
+ //
+ {
+  auto W = db.find_city_by_name("Washington");
+  auto B = db.find_city_by_name("Beijing");
+
+  EXPECT_FALSE(W == B);
+  EXPECT_TRUE (W != B);
+  EXPECT_TRUE (W <  B);
+  EXPECT_TRUE (W <= B);
+  EXPECT_FALSE(W >  B);
+  EXPECT_FALSE(W >= B);
+  EXPECT_TRUE (B == B);
+  EXPECT_FALSE(B != B);
+  EXPECT_FALSE(B <  B);
+  EXPECT_TRUE (B <= B);
+  EXPECT_FALSE(B >  B);
+  EXPECT_TRUE (B >= B);
+ }
+
+ db.checkpoint();
+}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, exceptions)
