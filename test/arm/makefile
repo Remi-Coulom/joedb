@@ -13,25 +13,28 @@ joedb_test:\
  ../../test/pack_Test.cpp\
  ../../test/Polymorphic_File_Test.cpp\
  ../../test/Selective_Writable_Test.cpp\
- ../../test/Connection_Test.cpp\
+ ../../test/Client_Test.cpp\
  ../../test/Stream_File_Test.cpp\
  ../../test/StringIO_Test.cpp\
  ../../test/Test_Main.cpp\
  ../../test/type_io_Test.cpp\
- ../../test/Shared_Local_File_Test.cpp\
  ../../test/Journal_Test.cpp\
  ../../test/Server_Connection_Test.cpp\
+ ../../src/external/wide_char_display_width.cpp\
+ ../../src/joedb/journal/SHA_256.cpp\
+ ../../src/joedb/Destructor_Logger.cpp\
  ../../src/joedb/io/base64_decode.cpp\
  ../../src/joedb/compiler/nested_namespace.cpp\
  ../../src/joedb/journal/Portable_File.cpp\
+ ../../src/joedb/Readable.cpp\
  ../../src/joedb/Writable.cpp\
  ../../src/joedb/Multiplexer.cpp\
  ../../src/joedb/is_identifier.cpp\
- ../../src/joedb/external/wide_char_display_width.cpp\
  ../../src/joedb/interpreter/Database.cpp\
  ../../src/joedb/interpreter/Table.cpp\
+ ../../src/joedb/interpreter/Database_Schema.cpp\
  ../../src/joedb/io/base64.cpp\
- ../../src/joedb/io/Dump_Writable.cpp\
+ ../../src/joedb/io/get_time_string.cpp\
  ../../src/joedb/io/dump.cpp\
  ../../src/joedb/io/Interpreter.cpp\
  ../../src/joedb/io/Interpreter_Dump_Writable.cpp\
@@ -42,10 +45,10 @@ joedb_test:\
  ../../src/joedb/io/type_io.cpp\
  ../../src/joedb/journal/File.cpp\
  ../../src/joedb/journal/Generic_File.cpp\
+ ../../src/joedb/journal/Interpreted_File.cpp\
  ../../src/joedb/journal/Writable_Journal.cpp\
  ../../src/joedb/journal/Readonly_Journal.cpp\
  ../../src/joedb/journal/diagnostics.cpp\
  ../../src/joedb/journal/Stream_File.cpp\
- ../../src/joedb/concurrency/Shared_Local_File.cpp\
  ../../src/joedb/concurrency/Server_Connection.cpp
-	arm-linux-gnueabihf-g++ -pthread -o $@ $^ -I../../src -I ../../compcmake/googletest-release-1.10.0/googletest/include -I ../../compcmake/googletest-release-1.10.0/googletest
+	arm-linux-gnueabihf-g++ -pthread -o $@ $^ -I../../src -I ../../compcmake/googletest-release-1.11.0/googletest/include -I ../../compcmake/googletest-release-1.11.0/googletest
