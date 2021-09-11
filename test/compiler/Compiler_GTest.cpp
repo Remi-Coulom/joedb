@@ -189,3 +189,18 @@ TEST(Compiler, iterators)
   EXPECT_EQ(db.get_translation(*--i), "Hello");
  }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, checkpoints)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ testdb::Generic_File_Database db(file);
+ EXPECT_EQ(db.ahead_of_checkpoint(), 0);
+ db.checkpoint_full_commit();
+ EXPECT_EQ(db.ahead_of_checkpoint(), 0);
+ db.new_city("Paris");
+ EXPECT_TRUE(db.ahead_of_checkpoint() > 0);
+ db.checkpoint_full_commit();
+ EXPECT_EQ(db.ahead_of_checkpoint(), 0);
+}
