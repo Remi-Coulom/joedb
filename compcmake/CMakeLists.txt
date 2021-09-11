@@ -316,12 +316,15 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Span_Test.cpp
   ../test/Local_Connection_Test.cpp
   ../test/compiler/Compiler_GTest.cpp
+  ../test/compiler/embedded_GTest.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/multi_index.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v1.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v2.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/vector_test.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_base64.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_escape.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
@@ -465,14 +468,6 @@ foreach(mode base64 escape)
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db
  )
 endforeach(mode)
-
-joedb_add_executable(embedded_test
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_base64.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/testdb_test_escape.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/embedded_test.cpp
- ../src/joedb/io/base64_decode.cpp
-)
 
 #############################################################################
 # Targets below require databases to be compiled

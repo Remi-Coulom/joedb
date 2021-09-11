@@ -7,11 +7,10 @@ Running Tests
 Tests are located in the ``test`` directory. There you can run:
 
   - ``./test.sh`` run the tests
-  - ``./coverage.sh`` run tests, and produce coverage data with gcov. For this to work, the compiler must be gcc, not clang.
+  - ``./coverage.sh`` run tests, and produce coverage data with gcov.
 
 ``test`` has some subdirectories:
 
-  - ``compiler``: run ``./compiler-test.sh`` there to test the compiler.
   - ``fuzz``: contains 3 fuzzers, and their corpus. Calling ``./compile.sh`` compiles the fuzzers. The you can run fuzzer X with ``./X_fuzzer X_corpus``.
   - ``bigendian`` has documentation to run a big-endian virtual machine with qemu
   - ``arm`` uses qemu to run tests on ARM.
