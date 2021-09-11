@@ -24,7 +24,7 @@ TEST(Journal, seek)
  joedb::Readonly_Journal journal(file);
  EXPECT_TRUE(journal.at_end_of_file());
 
- journal.seek(0);
+ journal.set_position(0);
  EXPECT_FALSE(journal.at_end_of_file());
 
  joedb::Readonly_Memory_File readonly_file

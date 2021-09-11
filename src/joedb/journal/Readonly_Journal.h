@@ -76,7 +76,7 @@ namespace joedb
    void refresh_checkpoint();
    void replay_log(Writable &writable);
    void rewind();
-   void seek(int64_t position);
+   void set_position(int64_t position);
    void one_step(Writable &writable);
    void play_until(Writable &writable, int64_t end);
    void play_until_checkpoint(Writable &writable)

@@ -205,7 +205,7 @@ TEST(Connection, synchronize_server_at_handshake)
   client_file.set_mode(Open_Mode::write_existing);
   {
    Writable_Journal journal(client_file);
-   journal.seek(journal.get_checkpoint_position());
+   journal.set_position(journal.get_checkpoint_position());
    journal.create_table("city");
    journal.checkpoint(Commit_Level::no_commit);
   }
@@ -256,7 +256,7 @@ TEST(Connection, synchronization_error_at_handshake)
  client_file.set_mode(Open_Mode::write_existing);
  {
   Writable_Journal journal(client_file);
-  journal.seek(journal.get_checkpoint_position());
+  journal.set_position(journal.get_checkpoint_position());
   journal.create_table("city");
   journal.checkpoint(Commit_Level::no_commit);
  }

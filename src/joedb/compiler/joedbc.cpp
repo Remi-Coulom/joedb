@@ -1770,10 +1770,10 @@ static void generate_cpp
    joedb::Readonly_Memory_File schema_file(schema_string, schema_string_size);
    joedb::Readonly_Journal schema_journal(schema_file);
 
-   schema_journal.seek(int64_t(file_schema_size));
+   schema_journal.set_position(int64_t(file_schema_size));
    schema_journal.play_until_checkpoint(journal);
 
-   schema_journal.seek(int64_t(file_schema_size));
+   schema_journal.set_position(int64_t(file_schema_size));
    upgrading_schema = true;
    schema_journal.play_until_checkpoint(*this);
    upgrading_schema = false;
