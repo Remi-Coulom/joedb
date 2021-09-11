@@ -68,6 +68,9 @@ namespace joedb
     const int64_t server_checkpoint
    ) override
    {
+    if (server_checkpoint != server_journal.get_checkpoint_position())
+     throw Exception("pushing from bad checkpoint");
+
     const int64_t client_checkpoint=client_journal.get_checkpoint_position();
 
     if (server_checkpoint < client_checkpoint)
