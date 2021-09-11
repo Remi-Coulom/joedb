@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-# select compiler with:
-# sudo update-alternatives --config c++
-# sudo update-alternatives --config cc
-
 ninja_path=`which ninja`
 if [ "$ninja_path" != "" ]; then
  build_system_prefix="ninja_"
@@ -25,9 +21,14 @@ function generate {
  cd ..
 }
 
-generate "$build_system_prefix"release cmake $build_system -DCMAKE_BUILD_TYPE=Release
-generate "$build_system_prefix"debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug
-generate "$build_system_prefix"coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage
+gpp_path=`which g++`
+gcc_path=`which gcc`
+if [ "$gcc_path" != "" ]; then
+ compiler="-DCMAKE_CXX_COMPILER=$gpp_path -DCMAKE_C_COMPILER=$gcc_path"
+ generate "$build_system_prefix"release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
+ generate "$build_system_prefix"debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
+ generate "$build_system_prefix"coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler
+fi
 
 clangpp_path=`which clang++`
 clang_path=`which clang`
