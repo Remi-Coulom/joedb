@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, ubuntu-latest]
+        os: [ubuntu-18.04, ubuntu-20.04]
 
     steps:
     - uses: actions/checkout@v2
@@ -24,6 +24,10 @@ jobs:
       working-directory: ${{github.workspace}}/compcmake
       run: ./generate.sh
 
-    - name: Test
+    - name: Test with gcc in debug mode
       working-directory: ${{github.workspace}}/compcmake/gcc_debug
+      run: ctest -V
+
+    - name: Test with clang in release mode
+      working-directory: ${{github.workspace}}/compcmake/clang_release
       run: ctest -V
