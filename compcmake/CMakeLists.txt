@@ -289,7 +289,7 @@ ipo_add_executable(joedb_sha256sum
 )
 
 if(EXISTS "${GOOGLE_TEST}/include")
- joedb_add_executable(joedb_test
+ add_executable(joedb_test
   ../test/endianness_Test.cpp
   ../test/diagnostics_Test.cpp
   ../test/File_Test.cpp
@@ -329,6 +329,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
  )
+ target_link_libraries(joedb_test joedb)
 
  if (HAS_NETWORKING)
   target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
