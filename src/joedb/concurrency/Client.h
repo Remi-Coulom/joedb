@@ -14,12 +14,12 @@ namespace joedb
    Connection &connection;
    Writable_Journal &journal;
    Writable &writable;
-   bool cancelled_transaction_data;
+   int64_t server_checkpoint;
 
-   void check_cancelled_transaction_data()
+   void throw_if_pull_when_ahead()
    {
-    if (cancelled_transaction_data)
-     throw Exception("Local journal contains cancelled transaction");
+    if (journal.get_position() > server_checkpoint)
+     throw Exception("can't pull: client is ahead of server");
    }
 
   public:
@@ -33,10 +33,9 @@ namespace joedb
    ):
     connection(connection),
     journal(journal),
-    writable(writable),
-    cancelled_transaction_data(false)
+    writable(writable)
    {
-    const int64_t server_checkpoint = connection.handshake(journal);
+    server_checkpoint = connection.handshake(journal);
     const int64_t client_checkpoint = journal.get_checkpoint_position();
 
     if
@@ -52,19 +51,25 @@ namespace joedb
     }
 
     if (client_checkpoint > server_checkpoint)
-    {
-     connection.push_unlock(journal, server_checkpoint);
-    }
+     push_unlock(); // TODO: optional
 
     journal.play_until_checkpoint(writable);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void push_unlock()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    connection.push_unlock(journal, server_checkpoint);
+    server_checkpoint = journal.get_checkpoint_position();
    }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t pull()
    //////////////////////////////////////////////////////////////////////////
    {
-    check_cancelled_transaction_data();
-    const int64_t server_checkpoint = connection.pull(journal);
+    throw_if_pull_when_ahead();
+    server_checkpoint = connection.pull(journal);
     journal.play_until_checkpoint(writable);
     return server_checkpoint;
    }
@@ -73,8 +78,8 @@ namespace joedb
    template<typename F> void transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    check_cancelled_transaction_data();
-    const int64_t server_checkpoint = connection.lock_pull(journal);
+    throw_if_pull_when_ahead();
+    server_checkpoint = connection.lock_pull(journal);
 
     try
     {
@@ -84,13 +89,11 @@ namespace joedb
     }
     catch (...)
     {
-     if (journal.get_position() > server_checkpoint)
-      cancelled_transaction_data = true;
      connection.unlock();
      throw;
     }
 
-    connection.push_unlock(journal, server_checkpoint);
+    push_unlock();
    }
  };
 }

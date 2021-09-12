@@ -98,7 +98,7 @@ TEST(Client, Transaction_Failure)
   }
   catch (const joedb::Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Local journal contains cancelled transaction");
+   EXPECT_STREQ(e.what(), "can't pull: client is ahead of server");
   }
 
   client2.pull();

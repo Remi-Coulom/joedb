@@ -17,14 +17,13 @@ class Debug_Channel: public joedb::Channel, public joedb::Memory_File
    return 1;
   }
   std::mutex &get_mutex() override {return mutex;}
-
- public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Server_Connection, basic)
 /////////////////////////////////////////////////////////////////////////////
 {
+ std::ostream * const log = nullptr;
  Debug_Channel channel;
 
  channel.write<char>('x');
@@ -32,11 +31,11 @@ TEST(Server_Connection, basic)
 
  try
  {
-  joedb::Server_Connection connection(channel, nullptr);
+  joedb::Server_Connection connection(channel, log);
   joedb::Memory_File client_file;
   joedb::Interpreted_Client client(connection, client_file);
 
-  FAIL() << "Should have thrown";
+  ADD_FAILURE() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
  {
@@ -55,11 +54,11 @@ TEST(Server_Connection, basic)
 
  try
  {
-  joedb::Server_Connection connection(channel, nullptr);
+  joedb::Server_Connection connection(channel, log);
   joedb::Memory_File client_file;
   joedb::Interpreted_Client client(connection, client_file);
 
-  FAIL() << "Should have thrown";
+  ADD_FAILURE() << "Should have thrown";
  }
  catch (const joedb::Exception &e)
  {
@@ -88,14 +87,13 @@ TEST(Server_Connection, basic)
  channel.set_position(0);
 
  {
-  joedb::Server_Connection connection(channel, nullptr);
+  joedb::Server_Connection connection(channel, log);
   joedb::Memory_File client_file;
   joedb::Interpreted_Client client(connection, client_file);
 
   EXPECT_EQ(connection.get_session_id(), 1234);
 
   connection.run_while_locked([](){});
-
 
   client.pull();
 
