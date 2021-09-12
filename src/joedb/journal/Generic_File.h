@@ -510,19 +510,16 @@ namespace joedb
 
     if (read_buffer_index + n <= read_buffer_size)
     {
-     for (size_t i = 0; i < n; i++)
-      data[i] = buffer[read_buffer_index++];
+     std::copy_n(buffer + read_buffer_index, n, data);
+     read_buffer_index += n;
      position += n;
     }
     else
     {
-     size_t n0 = 0;
-
-     while (n0 < n && read_buffer_index < read_buffer_size)
-     {
-      data[n0++] = buffer[read_buffer_index++];
-      position++;
-     }
+     size_t n0 = read_buffer_size - read_buffer_index;
+     std::copy_n(buffer + read_buffer_index, n0, data);
+     read_buffer_index += n0;
+     position += n0;
 
      if (n <= buffer_size)
      {
@@ -533,9 +530,6 @@ namespace joedb
        data[n0++] = buffer[read_buffer_index++];
        position++;
       }
-
-      if (n0 < n)
-       end_of_file = true;
      }
      else
      {
@@ -549,10 +543,10 @@ namespace joedb
        if (n0 == n || actually_read == 0)
         break;
       }
-
-      if (n0 < n)
-       end_of_file = true;
      }
+
+     if (n0 < n)
+      end_of_file = true;
     }
    }
 
