@@ -17,10 +17,13 @@ jobs:
       working-directory: ${{github.workspace}}/compcmake
       run: ./get_gtest.sh
 
+    - name: install dependencies
+      run: sudo apt-get -y install cmake ninja-build libssh-dev libboost-dev libboost-system-dev
+
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
       run: ./generate.sh
 
     - name: Test
-      working-directory: ${{github.workspace}}/compcmake/ninja_debug
+      working-directory: ${{github.workspace}}/compcmake/gcc_debug
       run: ctest -V
