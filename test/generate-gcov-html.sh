@@ -7,7 +7,7 @@ cd -
 
 mkdir -p html
 
-lcov --directory ../compcmake/ninja_coverage\
+lcov --directory ../compcmake/gcc_coverage\
      --capture\
      --rc lcov_branch_coverage=1\
      --output-file all.info || exit 1

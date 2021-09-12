@@ -47,8 +47,4 @@ build()
 
 build "binary_journal"
 build "joedbi"
-
-cd ../../compcmake/ninja_clang
-ninja joedb_test
-cd -
 build "joedbc"

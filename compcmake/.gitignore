@@ -12,3 +12,5 @@ release
 coverage
 .vs
 out
+clang_*
+gcc_*
