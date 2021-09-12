@@ -579,7 +579,7 @@ set(CPACK_STRIP_FILES TRUE)
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.remi-coulom.fr/joedb/")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "cmake, g++, ninja-build, libssh-dev, libboost-dev")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libssh-dev, libboost-dev, libboost-system-dev")
 set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
 
 include(CPack)

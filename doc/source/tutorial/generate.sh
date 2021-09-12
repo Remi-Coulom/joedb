@@ -1,11 +1,8 @@
 #!/bin/bash
 set -e
 
-dir=../../../compcmake/ninja_debug
-
-cd $dir
-ninja
-cd -
+dir=../../../compcmake/gcc_debug
+cmake --build $dir
 
 rm -f tutorial.joedb index_tutorial.joedb
 
