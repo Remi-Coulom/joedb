@@ -178,7 +178,7 @@ TEST(Client, hash)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Client, synchronize_server_at_handshake)
+TEST(Client, push)
 /////////////////////////////////////////////////////////////////////////////
 {
  Memory_File server_file;
@@ -211,10 +211,12 @@ TEST(Client, synchronize_server_at_handshake)
   }
 
   //
-  // Connect again: this should update the server
+  // Connect again, and update the server
   //
   {
    Interpreted_Client client(connection, client_file);
+   EXPECT_TRUE(client.get_checkpoint_difference() > 0);
+   client.push();
   }
  }
 
@@ -224,6 +226,7 @@ TEST(Client, synchronize_server_at_handshake)
  {
   Memory_File client_file;
   Interpreted_Client client(connection, client_file);
+  EXPECT_TRUE(client.get_checkpoint_difference() < 0);
   client.pull();
   EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
  }
