@@ -3,6 +3,9 @@ name: Universal test
 on:
   workflow_dispatch:
 
+env:
+  BUILD_TYPE: Debug
+
 jobs:
   build:
     runs-on: ${{matrix.os}}
@@ -24,8 +27,8 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
-      run: cmake -B build
+      run: cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Test
       working-directory: ${{github.workspace}}/compcmake/build
-      run: ctest -V
+      run: ctest -V -C $BUILD_TYPE
