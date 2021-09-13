@@ -1,19 +1,2 @@
-=============================================================================
-Installing and connecting to the virtual machine
-=============================================================================
-http://create.stephan-brumme.com/big-endian/
-
-sudo apt install qemu
-wget http://create.stephan-brumme.com/big-endian/debian-wheezy-powerpc.qcow2
-wget https://github.com/qemu/qemu/raw/master/pc-bios/openbios-ppc
-./start.sh
-ssh -A -p 2222 user@localhost
-#user password: user
-#root password: root
-
-=============================================================================
-Compiling and running joedb inside the virtual machine
-=============================================================================
-vi /etc/apt/sources.list # replace "ftp." by "archive."
-apt-get update
-apt-get install unzip git cmake make vim libssh-dev
+sudo apt-get install gcc-multilib-mips-linux-gnu g++-multilib-mips-linux-gnu gcc-mips-linux-gnu qemu-user
+qemu-mips -L /usr/mips-linux-gnu ./bigendian/joedb_test
