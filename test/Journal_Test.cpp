@@ -110,34 +110,6 @@ TEST(Journal, checkpoint_mismatch)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Journal, checkpoint_too_small)
-/////////////////////////////////////////////////////////////////////////////
-{
- joedb::Memory_File file(joedb::Open_Mode::read_existing);
- file.write<char>('j');
- file.write<char>('o');
- file.write<char>('e');
- file.write<char>('d');
- file.write<char>('b');
- file.write<uint32_t>(4);
- file.write<uint64_t>(0);
- file.write<uint64_t>(0);
- file.write<uint64_t>(10);
- file.write<uint64_t>(10);
- file.set_position(0);
-
- try
- {
-  joedb::Readonly_Journal journal(file);
-  FAIL() << "Should have thrown an exception";
- }
- catch (const joedb::Exception &e)
- {
-  EXPECT_STREQ(e.what(), "Checkpoint too small");
- }
-}
-
-/////////////////////////////////////////////////////////////////////////////
 TEST(Journal, checkpoint_different_from_file_size)
 /////////////////////////////////////////////////////////////////////////////
 {

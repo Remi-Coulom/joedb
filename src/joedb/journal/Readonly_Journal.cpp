@@ -55,11 +55,8 @@ joedb::Readonly_Journal::Readonly_Journal
    if (version < compatible_version || version > version_number)
     format_exception("Unsupported format version");
 
-   checkpoint_position = 0;
+   checkpoint_position = header_size;
    read_checkpoint();
-
-   if (checkpoint_position < header_size)
-    format_exception("Checkpoint too small");
 
    //
    // Compare to file size (if available)
