@@ -8,14 +8,24 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Client
+ class Interpreted_Client_Data
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  protected:
+   Writable_Journal journal;
+   Database database;
+
+   Interpreted_Client_Data(Generic_File &local_file): journal(local_file)
+   {
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Interpreted_Client: public Interpreted_Client_Data, public Client
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Writable_Journal journal;
-   Database database;
    Multiplexer multiplexer;
-   Client client;
 
   public:
    Interpreted_Client
@@ -23,9 +33,9 @@ namespace joedb
     Connection &connection,
     Generic_File &local_file
    ):
-    journal(local_file),
-    multiplexer{database, journal},
-    client(connection, journal, database)
+    Interpreted_Client_Data(local_file),
+    Client(connection, Interpreted_Client_Data::journal, database),
+    multiplexer{database, Interpreted_Client_Data::journal}
    {
    }
 
@@ -34,14 +44,9 @@ namespace joedb
     return database;
    }
 
-   int64_t pull()
-   {
-    return client.pull();
-   }
-
    template<typename F> void transaction(F transaction)
    {
-    client.transaction([&]()
+    Client::transaction([&]()
     {
      transaction(database, multiplexer);
     });

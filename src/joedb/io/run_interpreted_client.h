@@ -18,7 +18,16 @@ namespace joedb
  {
   while (std::cin)
   {
-   std::cout << "R(read), P(pull), W(write), or Q(quit)? ";
+   const int64_t diff = client.get_checkpoint_difference();
+
+   if (diff > 0)
+    std::cout << "You can push " << diff << " bytes. ";
+   else if (diff < 0)
+    std::cout << "You can pull " << -diff << " bytes. ";
+   else
+    std::cout << "In sync. ";
+
+   std::cout << "R(read), P(pull), S(push), T(transaction), or Q(quit)? ";
    std::cout.flush();
    std::string input;
 
@@ -30,20 +39,20 @@ namespace joedb
 
    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-   if (input == "W")
+   if (input == "T")
    {
     std::cout << "connecting...\n";
-    std::cout.flush();
 
     client.transaction([](Readable &readable, Writable &writable)
     {
      std::cout << "OK\n";
-     std::cout.flush();
      Interpreter(readable, writable).main_loop(std::cin, std::cout);
     });
    }
    else if (input == "P")
     client.pull();
+   else if (input == "S")
+    client.push();
    else if (input == "R")
     Readonly_Interpreter(client.get_database()).main_loop(std::cin, std::cout);
    else if (input == "Q")

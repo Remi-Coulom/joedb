@@ -22,6 +22,12 @@ namespace joedb
      throw Exception("can't pull: client is ahead of server");
    }
 
+   void push_unlock()
+   {
+    connection.push_unlock(journal, server_checkpoint);
+    server_checkpoint = journal.get_checkpoint_position();
+   }
+
   public:
    //////////////////////////////////////////////////////////////////////////
    Client
@@ -50,18 +56,14 @@ namespace joedb
      throw Exception("Client data does not match the server");
     }
 
-    if (client_checkpoint > server_checkpoint)
-     push_unlock(); // TODO: optional
-
     journal.play_until_checkpoint(writable);
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push_unlock()
+   int64_t get_checkpoint_difference() const
    //////////////////////////////////////////////////////////////////////////
    {
-    connection.push_unlock(journal, server_checkpoint);
-    server_checkpoint = journal.get_checkpoint_position();
+    return journal.get_checkpoint_position() - server_checkpoint;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -72,6 +74,14 @@ namespace joedb
     server_checkpoint = connection.pull(journal);
     journal.play_until_checkpoint(writable);
     return server_checkpoint;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void push()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (get_checkpoint_difference() > 0)
+     push_unlock();
    }
 
    //////////////////////////////////////////////////////////////////////////
