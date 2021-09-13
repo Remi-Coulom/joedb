@@ -1,0 +1,30 @@
+name: build and test on ubuntus
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      working-directory: ${{github.workspace}}/compcmake
+      run: ./generate.sh
+
+    - name: Test with gcc in debug mode
+      working-directory: ${{github.workspace}}/compcmake/gcc_debug
+      run: ctest -V
+
+    - name: Test with gcc with joedb::File = joedb::Portable_File
+      working-directory: ${{github.workspace}}/compcmake/gcc_portable
+      run: ctest -V
+
+    - name: Test with clang in release mode
+      working-directory: ${{github.workspace}}/compcmake/clang_release
+      run: ctest -V
