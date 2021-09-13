@@ -12,27 +12,40 @@ namespace joedb
   private:
    File_Type file;
 
-   virtual int64_t handshake(Readonly_Journal &client_journal) override
+   int64_t handshake(Readonly_Journal &client_journal) override
    {
     if (!client_journal.is_same_file(file))
      throw joedb::Exception("Local_Connection to wrong file");
     return client_journal.get_checkpoint_position();
    }
 
-   void lock() override
+   void lock() final override
    {
     file.lock();
    }
 
-   void unlock() override
+   void unlock() final override
    {
     file.unlock();
    }
 
-   int64_t pull(Writable_Journal &client_journal) override
+   int64_t private_pull(Writable_Journal &client_journal)
    {
     client_journal.refresh_checkpoint();
     return client_journal.get_checkpoint_position();
+   }
+
+   int64_t pull(Writable_Journal &client_journal) override
+   {
+    int64_t result;
+    run_while_locked([&](){result = private_pull(client_journal);});
+    return result;
+   }
+
+   int64_t lock_pull(Writable_Journal &client_journal) override
+   {
+    lock();
+    return private_pull(client_journal);
    }
 
    void push_unlock
@@ -41,7 +54,7 @@ namespace joedb
     int64_t server_position
    ) override
    {
-    file.unlock();
+    unlock();
    }
 
    bool check_matching_content
