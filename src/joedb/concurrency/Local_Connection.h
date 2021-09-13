@@ -37,9 +37,8 @@ namespace joedb
 
    int64_t pull(Writable_Journal &client_journal) override
    {
-    lock();
-    const int64_t result = private_pull(client_journal);
-    unlock();
+    int64_t result;
+    run_while_locked([&](){result = private_pull(client_journal);});
     return result;
    }
 
