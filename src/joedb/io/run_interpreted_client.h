@@ -24,8 +24,6 @@ namespace joedb
     std::cout << "You can push " << diff << " bytes. ";
    else if (diff < 0)
     std::cout << "You can pull " << -diff << " bytes. ";
-   else
-    std::cout << "In sync. ";
 
    std::cout << "R(read), P(pull), S(push), T(transaction), or Q(quit)? ";
    std::cout.flush();
