@@ -11,13 +11,13 @@ namespace joedb
  {
   if (argc != 3)
   {
-   std::cerr << "usage: " << argv[0] << " <client.joedb> <server.joedb>\n";
+   std::cerr << "usage: " << argv[0] << " <server.joedb> <client.joedb>\n";
    return 1;
   }
   else
   {
-   const char * const client_file_name = argv[1];
-   const char * const server_file_name = argv[2];
+   const char * const server_file_name = argv[1];
+   const char * const client_file_name = argv[2];
 
    File server_file(server_file_name, Open_Mode::write_existing_or_create_new);
    Embedded_Connection connection(server_file);
