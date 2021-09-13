@@ -29,23 +29,17 @@ namespace joedb
     file.unlock();
    }
 
-   int64_t private_pull(Writable_Journal &client_journal)
-   {
-    client_journal.refresh_checkpoint();
-    return client_journal.get_checkpoint_position();
-   }
-
    int64_t pull(Writable_Journal &client_journal) override
    {
-    int64_t result;
-    run_while_locked([&](){result = private_pull(client_journal);});
-    return result;
+    run_while_locked([&](){client_journal.refresh_checkpoint();});
+    return client_journal.get_checkpoint_position();
    }
 
    int64_t lock_pull(Writable_Journal &client_journal) override
    {
     lock();
-    return private_pull(client_journal);
+    client_journal.refresh_checkpoint();
+    return client_journal.get_checkpoint_position();
    }
 
    void push_unlock
