@@ -18,7 +18,7 @@ jobs:
       run: ./get_gtest.sh
 
     - name: install dependencies
-      run: sudo apt-get -y install cmake ninja-build libssh-dev libboost-dev libboost-system-dev
+      run: sudo apt-get -y install cmake ninja-build libssh-dev libboost-dev libboost-system-dev clang-tidy
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
