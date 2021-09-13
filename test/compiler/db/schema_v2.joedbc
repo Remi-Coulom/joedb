@@ -1,3 +1,4 @@
 namespace schema_v2
 create_unique_index language_by_id language id
 set_table_null_initialization person true
+generate_c_wrapper

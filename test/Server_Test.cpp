@@ -6,12 +6,14 @@
 #include "gtest/gtest.h"
 
 #include <thread>
+#include <fstream>
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Server, basic)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::ostream * const log_stream = nullptr;
+ std::ofstream dummy_log;
+ std::ostream * const log_stream = &dummy_log;
 
  joedb::Memory_File server_file;
  joedb::Writable_Journal server_journal(server_file);
