@@ -1,15 +1,5 @@
 makefile
-ninja*
-mingw*
-vs2013*
-vs2015*
-vs2017*
-googletest-release-*
-*.zip
 build
-debug
-release
-coverage
 .vs
 out
 clang_*
