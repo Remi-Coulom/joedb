@@ -3,9 +3,6 @@ name: Universal test
 on:
   workflow_dispatch:
 
-env:
-  BUILD_TYPE: Debug
-
 jobs:
   build:
     runs-on: ${{matrix.os}}
@@ -14,11 +11,15 @@ jobs:
         os: [windows-2022, windows-2019, windows-2016, ubuntu-20.04, ubuntu-18.04, macos-11, macos-10.15]
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@master
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
-      run: cmake -B ${{github.workspace}}/compcmake/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B build
 
     - name: Test
       working-directory: ${{github.workspace}}/compcmake/build

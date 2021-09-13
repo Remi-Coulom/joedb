@@ -11,14 +11,14 @@ jobs:
         os: [ubuntu-18.04, ubuntu-20.04]
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-    - name: get gtest
-      working-directory: ${{github.workspace}}/compcmake
-      run: ./get_gtest.sh
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@master
 
-    - name: install dependencies
-      run: sudo apt-get -y install cmake ninja-build libssh-dev libboost-dev libboost-system-dev clang-tidy
+    - name: Install dependencies
+      run: sudo apt-get -y install cmake ninja-build libssh-dev clang-tidy
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
