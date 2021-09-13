@@ -107,8 +107,8 @@ endfunction(joedb_add_executable)
 #############################################################################
 # Dependencies
 #############################################################################
-set(JOEDB_PORTABLE FALSE)
-if (JOEDB_PORTABLE)
+if (DEFINED JOEDB_PORTABLE)
+ message("-- JOEDB_PORTABLE")
  add_definitions(-DJOEDB_PORTABLE)
 endif()
 
@@ -366,7 +366,7 @@ joedb_add_executable(joedb_embedded_client
  ../src/joedb/io/joedb_embedded_client.cpp
 )
 
-if (NOT JOEDB_PORTABLE)
+if (NOT DEFINED JOEDB_PORTABLE)
  joedb_add_executable(joedb_local_client
   ../src/joedb/io/joedb_local_client.cpp
  )

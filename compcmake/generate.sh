@@ -35,6 +35,7 @@ if [ "$gcc_path" != "" ]; then
  compiler="-DCMAKE_CXX_COMPILER=$gpp_path -DCMAKE_C_COMPILER=$gcc_path"
  generate gcc_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
  generate gcc_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
+ generate gcc_portable cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DJOEDB_PORTABLE=TRUE $compiler
  generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler
 fi
 
