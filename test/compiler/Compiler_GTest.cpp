@@ -396,7 +396,7 @@ TEST(Compiler, exceptions)
   db.get_name(city);
   ADD_FAILURE() << "reading a deleted row";
  }
- catch (const joedb::Assertion_Failure &a)
+ catch (const joedb::Assertion_Failure &)
  {
  }
 #endif
@@ -412,7 +412,7 @@ TEST(Compiler, exceptions)
   db.delete_city(city);
   ADD_FAILURE() << "double delete";
  }
- catch (const joedb::Assertion_Failure &a)
+ catch (const joedb::Assertion_Failure &)
  {
  }
 #endif
@@ -428,7 +428,7 @@ TEST(Compiler, exceptions)
   db.set_name(city, "Paris");
   ADD_FAILURE() << "update of deleted row";
  }
- catch (const joedb::Assertion_Failure &a)
+ catch (const joedb::Assertion_Failure &)
  {
  }
 #endif
