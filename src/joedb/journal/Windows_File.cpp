@@ -2,6 +2,7 @@
 #include "joedb/Exception.h"
 
 #include <algorithm>
+#include <cctype>
 
 namespace joedb
 {
