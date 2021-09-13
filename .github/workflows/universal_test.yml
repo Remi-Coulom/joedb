@@ -1,0 +1,25 @@
+name: Universal test
+
+on:
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Debug
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      working-directory: ${{github.workspace}}/compcmake
+      run: cmake -B ${{github.workspace}}/compcmake/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/compcmake/build
+      run: ctest -V
