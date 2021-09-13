@@ -104,11 +104,11 @@ void joedb::Readonly_Journal::read_checkpoint()
 void joedb::Readonly_Journal::refresh_checkpoint()
 /////////////////////////////////////////////////////////////////////////////
 {
- const int64_t old_checkpoint_position = checkpoint_position;
+ const int64_t old_position = file.get_position();
  const int64_t checkpoint_offset = 5 + 4;
  file.set_position(checkpoint_offset);
  read_checkpoint();
- file.set_position(old_checkpoint_position);
+ file.set_position(old_position);
 }
 
 /////////////////////////////////////////////////////////////////////////////
