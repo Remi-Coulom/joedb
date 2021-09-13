@@ -7,8 +7,9 @@ jobs:
   build:
     runs-on: ${{matrix.os}}
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-10.15]
+        os: [windows-2022, macos-10.15]
 
     steps:
     - name: Checkout repository
@@ -28,8 +29,14 @@ jobs:
 
     - name: Build
       working-directory: ${{github.workspace}}/compcmake/build
-      run: cmake --build .
+      run: cmake --build . --target joedb_test
 
-    - name: Test
+    - name: Test in Windows
       working-directory: ${{github.workspace}}/test
-      run: ../compcmake/build/Debug/joedb_test
+      run: if [ "$RUNNER_OS" == "Windows" ]; then ../compcmake/build/Debug/joedb_test; else echo "Not Windows"; fi
+      shell: bash
+
+    - name: Test not in Windows
+      working-directory: ${{github.workspace}}/compcmake/build
+      run: if [ "$RUNNER_OS" != "Windows" ]; then ctest -V; else echo "Windows"; fi
+      shell: bash
