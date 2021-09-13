@@ -154,7 +154,9 @@ endif()
 
 # Google Test
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set(GOOGLE_TEST ${CMAKE_CURRENT_SOURCE_DIR}/googletest-release-1.11.0/googletest)
+set(GOOGLE_TEST
+ ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/googletest/googletest
+)
 
 # SQLite 3
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -169,14 +171,14 @@ endif()
 # Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
- set(ASIO_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../asio/asio/include)
+ set(ASIO_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/asio/asio/include)
  if (EXISTS "${ASIO_DIRECTORY}/asio/ts/net.hpp")
-  message("-- Found asio next to joedb")
+  message("-- Found asio in submodules")
   include_directories(${ASIO_DIRECTORY})
   set(HAS_ASIO_NET TRUE)
   add_definitions(-DJOEDB_HAS_ASIO_NET)
  else()
-  message("-- Did not find asio next to joedb")
+  message("-- Did not find asio in submodules")
   find_package(Boost COMPONENTS system)
   if (Boost_FOUND)
    if (EXISTS "${Boost_INCLUDE_DIRS}/boost/asio/ts/net.hpp")
