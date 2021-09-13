@@ -1,3 +1,4 @@
 namespace multi_index
 create_unique_index person_by_full_name person first_name,last_name
 create_index person_by_name person last_name
+generate_c_wrapper
