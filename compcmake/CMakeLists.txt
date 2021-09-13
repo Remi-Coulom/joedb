@@ -362,6 +362,10 @@ joedb_add_executable(joedb_embed
  ../src/joedb/compiler/nested_namespace.cpp
 )
 
+joedb_add_executable(joedb_embedded_client
+ ../src/joedb/io/joedb_embedded_client.cpp
+)
+
 if (NOT JOEDB_PORTABLE)
  joedb_add_executable(joedb_local_client
   ../src/joedb/io/joedb_local_client.cpp
