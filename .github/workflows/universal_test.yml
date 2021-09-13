@@ -14,9 +14,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Checkout submodules
+    - name: git submodule init
       working-directory: ${{github.workspace}}
       run: git submodule init
+
+    - name: git submodule update
+      working-directory: ${{github.workspace}}
       run: git submodule update
 
     - name: Configure CMake
