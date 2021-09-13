@@ -444,17 +444,15 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR(
  ////////////////////////////////////////////////////////////////////////////
- class Client
+ class Client: private Generic_File_Database, public joedb::Client
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Generic_File_Database database;
-   joedb::Client client;
    int64_t schema_checkpoint;
 
-   void check_schema()
+   void throw_if_schema_changed()
    {
-    if (database.schema_journal.get_checkpoint_position() > schema_checkpoint)
+    if (schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
    }
 
@@ -464,34 +462,37 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Connection &connection,
     joedb::Generic_File &local_file
    ):
-    database(local_file, connection),
-    client(connection, database.journal, database)
+    Generic_File_Database(local_file, connection),
+    joedb::Client(connection, Generic_File_Database::journal, *this)
    {
-    client.transaction([this]()
+    if (requires_schema_upgrade())
     {
-     database.auto_upgrade();
-    });
-    schema_checkpoint = database.schema_journal.get_checkpoint_position();
+     push();
+     joedb::Client::transaction([this](){
+      auto_upgrade();
+     });
+    }
+    schema_checkpoint = schema_journal.get_checkpoint_position();
    }
 
    const Database &get_database()
    {
-    return database;
+    return *this;
    }
 
    int64_t pull()
    {
-    const int64_t result = client.pull();
-    check_schema();
+    const int64_t result = joedb::Client::pull();
+    throw_if_schema_changed();
     return result;
    }
 
    template<typename F> void transaction(F transaction)
    {
-    client.transaction([&]()
+    joedb::Client::transaction([&]()
     {
-     check_schema();
-     transaction(database);
+     throw_if_schema_changed();
+     transaction(*(Generic_File_Database *)this);
     });
    }
  };
@@ -1212,6 +1213,11 @@ static void generate_readonly_h
    joedb::Memory_File schema_file;
    joedb::Writable_Journal schema_journal;
 
+   bool requires_schema_upgrade() const
+   {
+    return schema_file.get_data().size() < schema_string_size;
+   }
+
    void check_schema()
    {
     const size_t pos = size_t(joedb::Writable_Journal::header_size);
@@ -1444,7 +1450,7 @@ static void generate_readonly_h
 
     check_schema();
 
-    if (schema_file.get_data().size() != schema_string_size)
+    if (requires_schema_upgrade())
      throw joedb::Exception
      (
       "This joedb file has an old schema, and must be upgraded first."

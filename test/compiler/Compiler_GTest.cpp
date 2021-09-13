@@ -606,6 +606,34 @@ TEST(Compiler, client)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, client_push)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File client_file;
+
+ {
+  testdb::Generic_File_Database db(client_file);
+  db.new_person("Rémi", db.null_city());
+  db.checkpoint();
+ }
+
+ joedb::Memory_File server_file;
+
+ {
+  joedb::Embedded_Connection connection(server_file);
+  client_file.set_mode(joedb::Open_Mode::write_existing);
+  testdb::Client client(connection, client_file);
+  EXPECT_TRUE(client.get_checkpoint_difference() > 0);
+  client.push();
+  EXPECT_TRUE(client.get_checkpoint_difference() == 0);
+ }
+
+ server_file.set_mode(joedb::Open_Mode::read_existing);
+ testdb::Readonly_Database db(server_file);
+ EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, vector)
 /////////////////////////////////////////////////////////////////////////////
 {
