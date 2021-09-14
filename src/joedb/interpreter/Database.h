@@ -13,10 +13,7 @@ namespace joedb
    const Record_Id max_record_id;
 
   public:
-   Database(Record_Id max_record_id = 0):
-    max_record_id(max_record_id)
-   {
-   }
+   Database(Record_Id max_record_id = 0);
 
    void insert_into(Table_Id table_id, Record_Id record_id) override;
    void insert_vector
@@ -51,6 +48,8 @@ namespace joedb
     Record_Id &capacity\
    ) override;
    #include "joedb/TYPE_MACRO.h"
+
+   ~Database();
  };
 }
 

@@ -74,6 +74,8 @@ namespace joedb
     Record_Id &capacity\
    ) override;
    #include "joedb/TYPE_MACRO.h"
+
+   ~Multiplexer();
  };
 }
 
