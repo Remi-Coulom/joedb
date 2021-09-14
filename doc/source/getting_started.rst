@@ -36,12 +36,18 @@ some detailed instructions for the most common situations.
 Linux
 ^^^^^
 
-Prerequisites in Ubuntu can be installed with this command (libssh and libboost
-are not necessary if you don't wish to use the server):
+Prerequisites in Ubuntu can be installed with this command (ninja and libssh
+are optional, but nice to have):
 
 .. code-block:: bash
 
-    sudo apt install git g++ cmake ninja-build libssh-dev libboost-dev libboost-system-dev
+    sudo apt install git g++ cmake ninja-build libssh-dev
+
+For test coverage, documentation, and benchmarks, also install:
+
+.. code-block:: bash
+
+    sudo apt-get install lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser
 
 When the necessary packages are installed, the following commands should
 compile everything:
@@ -53,14 +59,8 @@ These commands will install joedb system-wide:
 
 .. code-block:: bash
 
-    sudo ninja install
+    sudo cmake --build . install
     sudo ldconfig
-
-To run coverage tests, documentation, and benchmarks, also install:
-
-.. code-block:: bash
-
-    sudo apt-get install lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser wget unzip doxygen graphviz python3-breathe
 
 Windows
 ^^^^^^^

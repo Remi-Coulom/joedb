@@ -1,9 +1,9 @@
 Vectors
 =======
 
-Joedb stores each column of a table in a ``std::vector`` container. This allows
-very efficient data manipulation: a large column of a primitive type (float or
-int) can be read from or written to a joedb file with a single system call.
+Joedb stores each column of a table in a ``std::vector``. This makes data
+manipulation efficient: a large column of a primitive type (float or int) can
+be read from or written to a joedb file with a single system call.
 
 Joedb offers functions to allocate a set of consecutive rows in a table, and
 manipulate them like a vector. For instance, when using a database defined by
@@ -34,9 +34,9 @@ instead:
 
     const size_t size = 5;
     auto v = db.new_vector_of_float(size);
-    db.update_vector_of_value(v, size, [size](joedb::Span<float> value)
+    db.update_vector_of_value(v, size, [](joedb::Span<float> value)
     {
-     for (size_t i = 0; i < size; i++)
+     for (size_t i = 0; i < value.get_size(); i++)
       value[i] = 0.1f * float(i);
     });
 

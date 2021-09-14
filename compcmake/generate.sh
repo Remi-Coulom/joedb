@@ -1,6 +1,8 @@
 #!/bin/bash
 echo Generating cmake build directories...
 
+git submodule update --init --recursive
+
 build_system=""
 ninja_path=`which ninja`
 if [ "$ninja_path" != "" ]; then
