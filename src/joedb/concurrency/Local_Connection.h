@@ -16,6 +16,8 @@ namespace joedb
    {
     if (!client_journal.is_same_file(file))
      throw joedb::Exception("Local_Connection to wrong file");
+
+    run_while_locked([&](){client_journal.refresh_checkpoint();});
     return client_journal.get_checkpoint_position();
    }
 

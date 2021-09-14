@@ -55,7 +55,6 @@ joedb::Readonly_Journal::Readonly_Journal
    if (version < compatible_version || version > version_number)
     format_exception("Unsupported format version");
 
-   checkpoint_position = header_size;
    read_checkpoint();
 
    //
@@ -82,6 +81,8 @@ joedb::Readonly_Journal::Readonly_Journal
 void joedb::Readonly_Journal::read_checkpoint()
 /////////////////////////////////////////////////////////////////////////////
 {
+ checkpoint_position = header_size;
+
  int64_t pos[4];
  for (int i = 0; i < 4; i++)
   pos[i] = file.read<int64_t>();
