@@ -185,6 +185,8 @@ namespace joedb
 
    uint16_t get_port() const {return port;}
    void interrupt() {interrupted = true;}
+
+   ~Server();
  };
 }
 
