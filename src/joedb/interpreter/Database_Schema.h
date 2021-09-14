@@ -76,6 +76,8 @@ namespace joedb
    ) override;
    void drop_field(Table_Id table_id, Field_Id field_id) override;
    void rename_field(Table_Id, Field_Id, const std::string &name) override;
+
+   virtual ~Database_Schema() override;
  };
 }
 
