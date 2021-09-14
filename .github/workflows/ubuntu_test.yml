@@ -35,3 +35,15 @@ jobs:
     - name: Test with clang in release mode
       working-directory: ${{github.workspace}}/compcmake/clang_release
       run: ctest -V
+
+    - name: deb packaging
+      working-directory: ${{github.workspace}}/compcmake/clang_release
+      run: cpack -G DEB
+
+    - name: deb install
+      working-directory: ${{github.workspace}}/compcmake/clang_release
+      run: sudo apt-get --yes install ./joedb*.deb
+
+    - name: about
+      working-directory: /
+      run: echo "about" | joedbi
