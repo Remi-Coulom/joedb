@@ -15,7 +15,6 @@ History
     - ``Stream_File`` uses a ``std::streambuf`` instead of ``std::iostream``.
     - new ``Interpreted_File`` can read joedbi commands directly.
 
-  - :ref:`joedb_multi_server`.
   - Exception-safe :doc:`transactions <concurrency>`: if any exception is
     thrown by a client while writing, then none of what was written since the
     previous lock-pull will be pushed to the server. The previous approach,
