@@ -32,8 +32,6 @@ instead:
 
 .. code-block:: c++
 
-    const size_t size = 5;
-    auto v = db.new_vector_of_float(size);
     db.update_vector_of_value(v, size, [](joedb::Span<float> value)
     {
      for (size_t i = 0; i < value.get_size(); i++)
