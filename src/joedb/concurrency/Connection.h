@@ -39,7 +39,7 @@ namespace joedb
    ) = 0;
 
   public:
-   virtual ~Connection() {}
+   virtual ~Connection() = default;
  };
 }
 

@@ -18,7 +18,7 @@ namespace joedb
    virtual std::mutex &get_mutex() = 0;
 
   public:
-   virtual ~Channel() {}
+   virtual ~Channel() = default;
  };
 
  ////////////////////////////////////////////////////////////////////////////

@@ -93,7 +93,7 @@ namespace joedb
    }
    #include "joedb/TYPE_MACRO.h"
 
-   virtual ~Writable() {}
+   virtual ~Writable() = default;
  };
 }
 
