@@ -247,6 +247,7 @@ set(JOEDB_SOURCES
  ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/journal/Interpreted_File.cpp
  ../src/joedb/concurrency/Server_Connection.cpp
+ ../src/joedb/concurrency/Network_Channel.cpp
 )
 
 if (HAS_NETWORKING)

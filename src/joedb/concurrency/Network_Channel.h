@@ -32,18 +32,8 @@ namespace joedb
    }
 
   public:
-   //////////////////////////////////////////////////////////////////////////
-   Network_Channel(const char *host_name, const char *port_name):
-   //////////////////////////////////////////////////////////////////////////
-    socket(io_context)
-   {
-    net::ip::tcp::resolver resolver(io_context);
-    net::connect
-    (
-     socket,
-     resolver.resolve(host_name, port_name)
-    );
-   }
+   Network_Channel(const char *host_name, const char *port_name);
+   ~Network_Channel() override;
  };
 }
 
