@@ -240,6 +240,7 @@ set(JOEDB_SOURCES
  ../src/joedb/io/type_io.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Generic_File.cpp
+ ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Writable_Journal.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/diagnostics.cpp

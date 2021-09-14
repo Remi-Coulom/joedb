@@ -62,13 +62,7 @@ namespace joedb
    }
 
   public:
-   //////////////////////////////////////////////////////////////////////////
-   Memory_File(Open_Mode mode = Open_Mode::create_new):
-   //////////////////////////////////////////////////////////////////////////
-    Generic_File(mode, false),
-    current(0)
-   {
-   }
+   Memory_File(Open_Mode mode = Open_Mode::create_new);
 
    //////////////////////////////////////////////////////////////////////////
    const std::vector<char> &get_data() const
@@ -76,6 +70,8 @@ namespace joedb
    {
     return data;
    }
+
+   ~Memory_File() override;
  };
 }
 
