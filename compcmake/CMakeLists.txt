@@ -54,7 +54,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 #############################################################################
-if (UNIX)
+if (UNIX AND NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
 #############################################################################
  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #  "-fsanitize=memory" unfortunately triggers many errors in the standard lib
@@ -170,35 +170,17 @@ endif()
 
 # Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
- set(ASIO_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/asio/asio/include)
+set(ASIO_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/asio/asio/include)
+if (TRUE)
  if (EXISTS "${ASIO_DIRECTORY}/asio/ts/net.hpp")
   message("-- Found asio in submodules")
   include_directories(${ASIO_DIRECTORY})
-  set(HAS_ASIO_NET TRUE)
   add_definitions(-DJOEDB_HAS_ASIO_NET)
+  set(HAS_NETWORKING TRUE)
+  message("== networking OK")
  else()
-  message("-- Did not find asio in submodules")
-  find_package(Boost COMPONENTS system)
-  if (Boost_FOUND)
-   if (EXISTS "${Boost_INCLUDE_DIRS}/boost/asio/ts/net.hpp")
-    set(HAS_BOOST_NET TRUE)
-    add_definitions(-DJOEDB_HAS_BOOST_NET)
-   else()
-    message("-- Found boost, but it does not have asio/ts/net.hpp")
-   endif()
-  else()
-   message("-- find_package did not find Boost")
-  endif()
+  message("== no networking. Try git submodule update --init --recursive")
  endif()
-endif()
-
-if (HAS_ASIO_NET OR HAS_BOOST_NET)
- set(HAS_NETWORKING TRUE)
- message("== networking OK")
-else()
- message("== no networking")
- message("== maybe try: git clone git@github.com:chriskohlhoff/asio.git")
 endif()
 
 #############################################################################
@@ -248,25 +230,26 @@ set(JOEDB_SOURCES
  ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/journal/Interpreted_File.cpp
  ../src/joedb/concurrency/Server_Connection.cpp
- ../src/joedb/concurrency/Network_Channel.cpp
 )
 
 if (HAS_NETWORKING)
- set(JOEDB_SOURCES ${JOEDB_SOURCES} ../src/joedb/concurrency/Server.cpp)
+ set(JOEDB_SOURCES ${JOEDB_SOURCES}
+  ../src/joedb/concurrency/Server.cpp
+  ../src/joedb/concurrency/Network_Channel.cpp
+ )
 endif()
 
 # The shared library does not work with Visual Studio: link statically
 if (UNIX)
  add_library(joedb SHARED ${JOEDB_SOURCES})
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
+ if(HAS_NETWORKING AND ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+  target_link_libraries(joedb wsock32 ws2_32)
+ endif()
 else()
  add_library(joedb STATIC ${JOEDB_SOURCES})
 endif()
 target_link_libraries(joedb Threads::Threads)
-
-if (HAS_BOOST_NET)
- target_link_libraries(joedb ${Boost_LIBRARIES})
-endif()
 
 joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
 joedb_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
@@ -387,6 +370,21 @@ if (HAS_NETWORKING)
  joedb_add_executable(joedb_network_client
   ../src/joedb/io/joedb_network_client.cpp
  )
+
+ if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+  foreach(target
+   joedb
+   joedb_server
+   joedb_multi_server
+   joedb_test
+   joedb_network_client
+  )
+   target_compile_definitions(${target} PRIVATE
+    -D_WIN32_WINNT=0x0601 -D__USE_W32_SOCKETS
+   )
+  endforeach()
+ endif()
+
 endif()
 
 if (libssh_FOUND)
@@ -588,7 +586,7 @@ set(CPACK_STRIP_FILES TRUE)
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.remi-coulom.fr/joedb/")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libssh-dev, libboost-dev, libboost-system-dev")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libssh-dev")
 set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
 
 include(CPack)

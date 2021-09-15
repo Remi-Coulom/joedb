@@ -65,13 +65,19 @@ These commands will install joedb system-wide:
 Windows
 ^^^^^^^
 
-Visual Studio can open the CMake project located in the ``compcmake`` folder.
-For the network connections, dependencies can be installed with `vcpkg
-<https://github.com/microsoft/vcpkg>`_:
+First, get submodules:
 
 .. code-block:: bash
 
-    vcpkg install libssh:x64-windows boost-asio:x64-windows
+    git submodule update --init --recursive
+
+libssh can be installed with `vcpkg <https://github.com/microsoft/vcpkg>`_:
+
+.. code-block:: bash
+
+    vcpkg install libssh:x64-windows
+
+Visual Studio can open the CMake project located in the ``compcmake`` folder.
 
 The ``install`` target of this project will produce a directory in
 ``joedb/compcmake/out/install``. You may have to copy the generated files
