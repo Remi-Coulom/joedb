@@ -8,7 +8,7 @@ History
   - SHA-256 is used to compare the client database with the server database at
     connection time. This prevents pulling into the wrong file. This also
     allows making offline modifications to a local database, and pushing them
-    later to a remote server (if there is no conflict).
+    later to a remote server.
   - Re-organize file classes:
 
     - ``File_Slice`` is removed. All file classes can be :ref:`sliced <file_slices>` now.
