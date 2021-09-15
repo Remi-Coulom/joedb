@@ -89,6 +89,8 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- reading and writing buffers: don't use network_integers.h, but create a
+  Buffer_File class, and use write<int64_t>
 - joedb_server:
 
   - fuzzer + unit testing
