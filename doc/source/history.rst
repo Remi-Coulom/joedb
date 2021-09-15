@@ -1,7 +1,7 @@
 History
 =======
 
-- 2021-09-??: 6.0
+- 2021-09-15: 6.0
 
   - new ``Local_Connection`` class for local serverless :doc:`concurrent
     <concurrency>` access to a file.
