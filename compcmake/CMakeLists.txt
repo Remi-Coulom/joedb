@@ -332,7 +332,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
  )
  SET_TESTS_PROPERTIES(joedb_test PROPERTIES DEPENDS build_all)
 else()
- message("== WARNING: run ./get_gtest.sh for tests")
+ message("== WARNING: googletest is missing")
 endif()
 
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
