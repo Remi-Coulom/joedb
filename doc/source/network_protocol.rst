@@ -6,22 +6,22 @@ checkpoint, size, version, and session_id are sent as 64-bit small-endian number
 Client to Server
 ----------------
 
-====== ================ ======================================================
-Prefix Data             Description
-====== ================ ======================================================
-joedb  client_version   first message, sent at connection time
-P      checkpoint       pull
-L      checkpoint       lock-pull
-U      checkpoint       push-unlock
+====== ================= ======================================================
+Prefix Data              Description
+====== ================= ======================================================
+joedb  client_version    first message, sent at connection time
+P      checkpoint        pull
+L      checkpoint        lock-pull
+U      checkpoint        push-unlock
        size
        data
-l                       lock
-u                       unlock
-H      checkpoint       check SHA-256 hash code
+l                        lock
+u                        unlock
+H      checkpoint        check SHA-256 hash code
        hash (32 bytes)
-i                       ping (used to keep the connection alive)
-Q                       quit
-====== ================ ======================================================
+i                        ping (used to keep the connection alive)
+Q                        quit
+====== ================= ======================================================
 
 
 Server to Client
@@ -30,8 +30,8 @@ Server to Client
 ====== ================ ======================================================
 Prefix Data             Description
 ====== ================ ======================================================
-joedb  server_version   reply to joedb.
-       session_id       server_version = 0 means client_version is rejected.
+joedb  server_version   | reply to joedb.
+       session_id       | server_version = 0 means client_version is rejected.
        checkpoint
 P      checkpoint       reply to P
        size
