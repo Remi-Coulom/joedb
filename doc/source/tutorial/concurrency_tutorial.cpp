@@ -11,12 +11,12 @@ int main()
  // This sets up a configuration with a server and 2 clients.
  //
  joedb::Memory_File server_file;
+ joedb::Memory_File client1_file;
+ joedb::Memory_File client2_file;
+
  joedb::Embedded_Connection connection(server_file);
 
- joedb::Memory_File client1_file;
  tutorial::Client client1(connection, client1_file);
-
- joedb::Memory_File client2_file;
  tutorial::Client client2(connection, client2_file);
 
  //
