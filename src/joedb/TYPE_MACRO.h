@@ -10,7 +10,7 @@ TYPE_MACRO(int32_t, int32_t, int32, file.read<int32_t>, write<int32_t>)
 TYPE_MACRO(int64_t, int64_t, int64, file.read<int64_t>, write<int64_t>)
 #endif
 #ifndef TYPE_MACRO_NO_REFERENCE
-TYPE_MACRO(Record_Id, Record_Id, reference, file.compact_read<Record_Id>, compact_write<Record_Id>)
+TYPE_MACRO(joedb::Record_Id, joedb::Record_Id, reference, file.compact_read<joedb::Record_Id>, compact_write<joedb::Record_Id>)
 #endif
 #ifndef TYPE_MACRO_NO_INT
 TYPE_MACRO(char, bool, boolean, file.read<char>, write<char>)
