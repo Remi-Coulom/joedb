@@ -23,7 +23,7 @@ namespace joedb
    const char * const user = argv[1];
    const char * const host = argv[2];
    const uint16_t joedb_port = uint16_t(std::atoi(argv[3]));
-   const char * const file_name = argc > 4 ? argv[4] : nullptr;
+   const char * const local_file_name = argc > 4 ? argv[4] : nullptr;
    const int ssh_port = argc > 5 ? std::atoi(argv[5]) : 22;
    const int ssh_log_level = argc > 6 ? std::atoi(argv[6]) : 0;
 
@@ -31,7 +31,7 @@ namespace joedb
    ssh::Forward_Channel channel(session, "localhost", joedb_port);
    Server_Connection connection(channel, &std::cerr);
 
-   run_interpreted_client(connection, file_name);
+   run_interpreted_client(connection, local_file_name);
   }
 
   return 0;
