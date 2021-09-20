@@ -37,6 +37,9 @@ Crash resistance:
 .. [SQLite-AC] `Atomic Commit In SQLite <http://sqlite.org/atomiccommit.html>`_
 .. [Moyer-2011] `Ensuring data reaches disk <http://lwn.net/Articles/457667/>`_
 .. [serverfault-2009] `SATA Disks that handle write caching properly? <http://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
+.. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
+
+.. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
 
 Structured data storage (with no history):
 
