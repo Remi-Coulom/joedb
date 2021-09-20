@@ -107,6 +107,8 @@ Concurrency
 - File_Continuation can be used to create a branch (and cancel transaction in
   case of failure to push).
 - performance: merge socket writes.
+- Connection_Multiplexer for safe backups. One of the connections must serve as
+  global lock. One thread per connection? Compare the contents of pulls?
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
