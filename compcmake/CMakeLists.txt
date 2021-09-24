@@ -239,6 +239,12 @@ if (HAS_NETWORKING)
  )
 endif()
 
+if(libssh_FOUND)
+ set(JOEDB_SOURCES ${JOEDB_SOURCES}
+  ../src/joedb/ssh/Forward_Channel.cpp
+ )
+endif()
+
 # The shared library does not work with Visual Studio: link statically
 if (UNIX)
  add_library(joedb SHARED ${JOEDB_SOURCES})
@@ -250,6 +256,9 @@ else()
  add_library(joedb STATIC ${JOEDB_SOURCES})
 endif()
 target_link_libraries(joedb Threads::Threads)
+if(libssh_FOUND)
+ target_link_libraries(joedb ${LIBSSH_LIBRARIES})
+endif()
 
 joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
 joedb_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
@@ -391,7 +400,6 @@ if (libssh_FOUND)
  joedb_add_executable(joedb_ssh_client
   ../src/joedb/io/joedb_ssh_client.cpp
  )
- target_link_libraries(joedb_ssh_client ${LIBSSH_LIBRARIES})
 endif()
 
 #############################################################################
