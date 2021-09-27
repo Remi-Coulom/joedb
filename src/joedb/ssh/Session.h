@@ -3,6 +3,8 @@
 
 #include "joedb/ssh/ssh.h"
 
+#include <string>
+
 namespace joedb
 {
  namespace ssh
@@ -19,13 +21,13 @@ namespace joedb
    public:
     Session
     (
-     std::string user,
-     std::string host,
+     std::string user_parameter,
+     std::string host_parameter,
      int port,
      int verbosity
     ):
-     user(user),
-     host(host),
+     user(std::move(user_parameter)),
+     host(std::move(host_parameter)),
      session(ssh_new())
     {
      check_not_null(session);

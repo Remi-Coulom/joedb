@@ -3,6 +3,8 @@
 
 #include "joedb/ssh/Session.h"
 
+#include <string>
+
 namespace joedb
 {
  namespace ssh
