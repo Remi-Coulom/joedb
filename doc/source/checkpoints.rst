@@ -45,10 +45,7 @@ The joedb compiler produces three checkpoint functions:
   This does not flush data to permanent storage, but it flushes it to the
   operating system. This protects data from an application crash, but not from
   an operating-system crash. It is tremendously faster than full or half
-  commit. It is still safe in the sense that, although the most recent
-  modification may be lost, the database won't be corrupted, and all the data
-  that had reached permanent storage before the system crash can be recovered
-  safely.
+  commit.
 
 The safety of the half_commit and no_commit versions depends on the operating
 system, file system, and disk hardware. According to the SQLite documentation
@@ -111,8 +108,8 @@ Then, the equivalent joedb code:
 
   db.checkpoint_full_commit();
 
-The joedb code not only uses 7 times less CPU time, it is also shorter, much
-more readable, and has many less potential run-time errors.
+The joedb code is not only faster, it is also shorter, much more readable,
+and has many less potential run-time errors.
 
 The performance of joedb can be further improved by using :doc:`vector insertions <vectors>`:
 
