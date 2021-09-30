@@ -60,25 +60,25 @@ Benchmarks
 ----------
 
 The source code for these benchmarks can be found in the joedb/benchmark
-directory. They were run on a Linux machine with an i7-5930K CPU, and WDC
-WD20EZRX-00D8PB0 hard drive, with an ext4 file system.
+directory. They were run on an Ubuntu 20.04 machine with an AMD Ryzen 7 5800X
+CPU, and a 2Tb Corsair MP600 NVMe SSD, with an encrypted ext4 file system.
 
 Bulk Insert
 ~~~~~~~~~~~
 
-The table below is the minimum of 10 runs, with N = 10,000,000 rows inserted.
+The table below is the minimum of 10 runs, with N = 100,000,000 rows inserted.
 
 +------+---------+--------+----------------+
 |      | sqlite3 | joedb  | joedb (vector) |
 +======+=========+========+================+
-| real | 10.266s | 2.803s |         1.937s |
+| real | 28.600s | 6.532s |         2.963s |
 +------+---------+--------+----------------+
-| user |  7.838s | 0.567s |         0.231s |
+| user | 27.562s | 3.725s |         1.433s |
 +------+---------+--------+----------------+
-| sys  |  0.319s | 0.200s |         0.192s |
+| sys  |  0.895s | 2.758s |         1.348s |
 +------+---------+--------+----------------+
 
-First the sqlite3 code:
+First the sqlite3 code (without error checking):
 
 .. code-block:: c++
 
@@ -111,7 +111,8 @@ Then, the equivalent joedb code:
 
   db.checkpoint_full_commit();
 
-The joedb code not only uses 13 times less CPU time, it is also shorter, much more readable, and has many less potential run-time errors.
+The joedb code not only uses 7 times less CPU time, it is also shorter, much
+more readable, and has many less potential run-time errors.
 
 The performance of joedb can be further improved by using :doc:`vector insertions <vectors>`:
 
@@ -141,21 +142,21 @@ especially for primitive types.
 Commit Rate
 ~~~~~~~~~~~
 
-Instead of one big commit at the end, each insert is now committed to disk one by one. With N = 100:
+Instead of one big commit at the end, each insert is now committed to disk one
+by one. With N = 1000:
 
 +------+---------+---------------------+---------------------+-------------------+
 |      | sqlite3 | joedb (full_commit) | joedb (half_commit) | joedb (no_commit) |
 +======+=========+=====================+=====================+===================+
-| real | 5.434s  | 3.184s              | 1.549s              | 0.004s            |
+| real | 2.543s  | 2.000s              | 1.211s              | 0.002s            |
 +------+---------+---------------------+---------------------+-------------------+
-| user | 0.006s  | 0.003s              | 0.002s              | 0.004s            |
+| user | 0.027s  | 0.004s              | 0.003s              | 0.000s            |
 +------+---------+---------------------+---------------------+-------------------+
-| sys  | 0.021s  | 0.016s              | 0.009s              | 0.000s            |
+| sys  | 0.130s  | 0.038s              | 0.020s              | 0.002s            |
 +------+---------+---------------------+---------------------+-------------------+
 
-Thanks to its simple append-only file structure, joedb can operate safely with
-less synchronization operations than sqlite3, which makes it about 1.7 or 3.5
-times faster, depending on synchronization mode.
+There is much less difference in performance compared to a big transaction, but
+joedb is still faster.
 
 Note also that joedb does not require a file system: it can also operate over a
 raw device directly, which might offer additional opportunities for performance
