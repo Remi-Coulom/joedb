@@ -133,7 +133,31 @@ TEST(Journal, checkpoint_different_from_file_size)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Checkpoint different from file size");
+  EXPECT_STREQ(e.what(), "Checkpoint is bigger than file size");
+ }
+
+ file.set_position(0);
+ file.write<char>('j');
+ file.write<char>('o');
+ file.write<char>('e');
+ file.write<char>('d');
+ file.write<char>('b');
+ file.write<uint32_t>(4);
+ file.write<uint64_t>(0);
+ file.write<uint64_t>(0);
+ file.write<uint64_t>(41);
+ file.write<uint64_t>(41);
+ file.write<uint64_t>(0);
+ file.set_position(0);
+
+ try
+ {
+  joedb::Readonly_Journal journal(file);
+  FAIL() << "Should have thrown an exception";
+ }
+ catch (const joedb::Exception &e)
+ {
+  EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size");
  }
 }
 
