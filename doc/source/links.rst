@@ -28,6 +28,7 @@ Database with history/revisions:
 Fast in-memory database with on-disk persistence
 
 - http://redis.io/ (the AOF persistence option is very similar to joedb)
+- https://prevayler.org/
 
 Crash resistance:
 
