@@ -1,6 +1,11 @@
 Links
 =====
 
+Fast in-memory database with on-disk log persistence
+
+- http://redis.io/ (the AOF persistence option is very similar to joedb)
+- https://prevayler.org/
+
 Database with history/revisions:
 
 - http://stackoverflow.com/questions/39281/database-design-for-revisions
@@ -24,11 +29,6 @@ Database with history/revisions:
 - https://github.com/attic-labs/noms
 - https://github.com/dolthub/dolt
 - `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
-
-Fast in-memory database with on-disk persistence
-
-- http://redis.io/ (the AOF persistence option is very similar to joedb)
-- https://prevayler.org/
 
 Crash resistance:
 
