@@ -533,6 +533,7 @@ joedb_add_executable(joedbc_insert
 #############################################################################
 install(TARGETS joedbc RUNTIME DESTINATION bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin)
+install(TARGETS joedb_convert RUNTIME DESTINATION bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
 install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)

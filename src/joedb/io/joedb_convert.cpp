@@ -7,7 +7,15 @@ namespace joedb
  static void process(Readonly_Journal &input, Writable_Journal &output)
  /////////////////////////////////////////////////////////////////////////////
  {
-  input.replay_log(output);
+  try
+  {
+   input.replay_log(output);
+  }
+  catch (const Exception &e)
+  {
+   output.checkpoint(Commit_Level::no_commit);
+   std::cout << "Error: " << e.what() << '\n';
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////

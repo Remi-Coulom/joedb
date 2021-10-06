@@ -6,6 +6,7 @@
 #include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
+#include <cstring>
 
 namespace joedb
 {
@@ -18,18 +19,22 @@ namespace joedb
   void (*process)(Readonly_Journal &, Writable_Journal &)
  )
  {
-  if (argc != 3)
+  if (argc != 3 && argc != 4)
   {
-   std::cerr << "usage: " << argv[0] << " <input.joedb> <output.joedb>\n";
+   std::cerr << "usage: " << argv[0] << " <input.joedb> <output.joedb> [--fix]\n";
    return 1;
   }
 
   try
   {
-   File input_file(argv[1], Open_Mode::read_existing);
-   Readonly_Journal input_journal(input_file);
+   const char *input_file_name = argv[1];
+   const char *output_file_name = argv[2];
+   const bool ignore_errors = (argc == 4 && std::strcmp(argv[3], "--fix") == 0);
 
-   File output_file(argv[2], Open_Mode::create_new);
+   File input_file(input_file_name, Open_Mode::read_existing);
+   Readonly_Journal input_journal(input_file, ignore_errors);
+
+   File output_file(output_file_name, Open_Mode::create_new);
    Writable_Journal output_journal(output_file);
 
    process(input_journal, output_journal);
