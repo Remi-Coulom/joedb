@@ -1,4 +1,4 @@
-#include "joedb/io/Journal_Pair.h"
+#include "joedb/io/process_journal_pair.h"
 #include "joedb/io/main_exception_catcher.h"
 
 namespace joedb
@@ -14,7 +14,7 @@ namespace joedb
   catch (const Exception &e)
   {
    output.checkpoint(Commit_Level::no_commit);
-   std::cout << "Error: " << e.what() << '\n';
+   throw;
   }
  }
 

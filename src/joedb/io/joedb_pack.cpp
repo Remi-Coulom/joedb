@@ -1,5 +1,5 @@
 #include "joedb/io/dump.h"
-#include "joedb/io/Journal_Pair.h"
+#include "joedb/io/process_journal_pair.h"
 
 namespace joedb
 {
