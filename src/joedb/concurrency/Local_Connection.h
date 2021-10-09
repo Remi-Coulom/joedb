@@ -73,7 +73,7 @@ namespace joedb
    {
    }
 
-   Generic_File &get_file() {return file;}
+   File_Type &get_file() {return file;}
  };
 }
 
