@@ -39,6 +39,7 @@ if [ "$gcc_path" != "" ]; then
  generate gcc_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
  generate gcc_portable cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DJOEDB_PORTABLE=TRUE $compiler
  generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler
+ generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
 fi
 
 clangpp_path=`which clang++`
