@@ -7,6 +7,7 @@ Reference
    file_format
    network_protocol
    tools
+   compiler_output
    developers_guide
    todo
    links
