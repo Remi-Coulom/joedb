@@ -938,4 +938,5 @@ TEST(Compiler, index_iteration)
 
  EXPECT_EQ(db.next(tokyo), lille);
  EXPECT_EQ(db.previous(lille), tokyo);
+ EXPECT_EQ(db.next(paris), db.get_city_table().get_end());
 }
