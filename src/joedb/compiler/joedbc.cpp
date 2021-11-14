@@ -1547,8 +1547,8 @@ static void generate_readonly_h
   out << tname << "(index - 1);}\n";
   out << "   };\n";
   out << '\n';
-  out << "   iterator begin() {return ++iterator(db.storage_of_" << tname << ");}\n";
-  out << "   iterator end() {return iterator(db.storage_of_" << tname << ");}\n";
+  out << "   iterator begin() const {return ++iterator(db.storage_of_" << tname << ");}\n";
+  out << "   iterator end() const {return iterator(db.storage_of_" << tname << ");}\n";
   out << "   bool is_empty() const {return db.storage_of_" << tname
       << ".freedom_keeper.is_empty();}\n";
   out << "   size_t get_size() const {return db.storage_of_" << tname << ".freedom_keeper.get_used_count();}\n";
@@ -1556,9 +1556,9 @@ static void generate_readonly_h
       << tname << "(i);}\n";
   out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".freedom_keeper.is_used(i + 1);}\n";
 
-  out << "   id_of_" << tname << " first() {return *begin();}\n";
-  out << "   id_of_" << tname << " last() {return *--end();}\n";
-  out << "   id_of_" << tname << " get_end() {return *end();}\n";
+  out << "   id_of_" << tname << " first() const {return *begin();}\n";
+  out << "   id_of_" << tname << " last() const {return *--end();}\n";
+  out << "   id_of_" << tname << " get_end() const {return *end();}\n";
 
   out << " };\n";
   out << '\n';
