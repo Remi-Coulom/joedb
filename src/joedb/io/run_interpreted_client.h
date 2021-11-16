@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <memory>
+#include <limits>
 
 namespace joedb
 {
