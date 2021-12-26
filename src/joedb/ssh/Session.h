@@ -46,8 +46,8 @@ namespace joedb
      return session;
     }
 
-    const std::string &get_user() {return user;}
-    const std::string &get_host() {return host;}
+    const std::string &get_user() const {return user;}
+    const std::string &get_host() const {return host;}
 
     void check_result(int result) const
     {

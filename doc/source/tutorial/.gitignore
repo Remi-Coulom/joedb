@@ -20,6 +20,7 @@ joedb_embed.out
 concurrency_tutorial.out
 joedb_logdump.out
 joedbc.out
+joedb_convert.out
 joedb_pack.out
 joedb_server.out
 joedb_multi_server.out

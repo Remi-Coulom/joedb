@@ -916,3 +916,27 @@ TEST(Compiler, vector)
   db.checkpoint();
  }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, index_iteration)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ testdb::Generic_File_Database db(file);
+
+ const auto tokyo = db.new_city("Tokyo");
+ const auto lille = db.new_city("Lille");
+ const auto abidjan = db.new_city("Abidjan");
+ const auto paris = db.new_city("Paris");
+
+ db.checkpoint_no_commit();
+
+ EXPECT_EQ(db.next_city_by_name(lille), paris);
+ EXPECT_EQ(db.next_city_by_name(paris), tokyo);
+ EXPECT_EQ(db.previous_city_by_name(lille), abidjan);
+ EXPECT_EQ(db.previous_city_by_name(abidjan), db.null_city());
+
+ EXPECT_EQ(db.next(tokyo), lille);
+ EXPECT_EQ(db.previous(lille), tokyo);
+ EXPECT_EQ(db.next(paris), db.get_city_table().get_end());
+}

@@ -1314,19 +1314,14 @@ static void generate_readonly_h
   //
   out << "   container_of_" << tname << " get_" << tname << "_table() const;\n\n";
 
-  out << "   id_of_" << tname << " get_beginning_of_" << tname << "() const\n";
+  out << "   id_of_" << tname << " next(id_of_" << tname << " id) const\n";
   out << "   {\n";
-  out << "    return id_of_" << tname << "(storage_of_" << tname << ".freedom_keeper.get_first_used() - 1);\n";
-  out << "   }\n";
+  out << "    return id_of_" << tname << "\n    (\n     storage_of_" << tname << ".freedom_keeper.get_next(id.get_id() + 1) - 1\n    );\n";
+  out << "   }\n\n";
 
-  out << "   id_of_" << tname << " get_end_of_" << tname << "() const\n";
+  out << "   id_of_" << tname << " previous(id_of_" << tname << " id) const\n";
   out << "   {\n";
-  out << "    return id_of_" << tname << "(Record_Id(-1));\n";
-  out << "   }\n";
-
-  out << "   id_of_" << tname << " iterator_next_" << tname << "(id_of_" << tname << " id) const\n";
-  out << "   {\n";
-  out << "    return id_of_" << tname << "(storage_of_" << tname << ".freedom_keeper.get_next(id.get_id() + 1) - 1);\n";
+  out << "    return id_of_" << tname << "\n    (\n     storage_of_" << tname << ".freedom_keeper.get_previous(id.get_id() + 1) - 1\n    );\n";
   out << "   }\n\n";
 
   out << "   template<class Comparator>\n";
@@ -1389,6 +1384,31 @@ static void generate_readonly_h
   {
    const std::string &tname = db.get_table_name(index.table_id);
    out << '\n';
+
+   out << "   id_of_" << tname << " next_" << index.name << '(';
+   out << "id_of_" << tname << " id)\n";
+   out << "   {\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_id()));\n";
+   out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id() - 1];\n";
+   out << "    ++iterator;\n";
+   out << "    if (iterator != index_of_" << index.name << ".end())\n";
+   out << "     return iterator->second;\n";
+   out << "    else\n";
+   out << "     return id_of_" << tname << "();\n";
+   out << "   }\n";
+
+   out << "   id_of_" << tname << " previous_" << index.name << '(';
+   out << "id_of_" << tname << " id)\n";
+   out << "   {\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_id()));\n";
+   out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id() - 1];\n";
+   out << "    --iterator;\n";
+   out << "    if (iterator != index_of_" << index.name << ".end())\n";
+   out << "     return iterator->second;\n";
+   out << "    else\n";
+   out << "     return id_of_" << tname << "();\n";
+   out << "   }\n";
+
    out << "   id_of_" << tname << " find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
@@ -1527,8 +1547,8 @@ static void generate_readonly_h
   out << tname << "(index - 1);}\n";
   out << "   };\n";
   out << '\n';
-  out << "   iterator begin() {return ++iterator(db.storage_of_" << tname << ");}\n";
-  out << "   iterator end() {return iterator(db.storage_of_" << tname << ");}\n";
+  out << "   iterator begin() const {return ++iterator(db.storage_of_" << tname << ");}\n";
+  out << "   iterator end() const {return iterator(db.storage_of_" << tname << ");}\n";
   out << "   bool is_empty() const {return db.storage_of_" << tname
       << ".freedom_keeper.is_empty();}\n";
   out << "   size_t get_size() const {return db.storage_of_" << tname << ".freedom_keeper.get_used_count();}\n";
@@ -1536,8 +1556,9 @@ static void generate_readonly_h
       << tname << "(i);}\n";
   out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".freedom_keeper.is_used(i + 1);}\n";
 
-  out << "   id_of_" << tname << " first() {return *begin();}\n";
-  out << "   id_of_" << tname << " last() {return *--end();}\n";
+  out << "   id_of_" << tname << " first() const {return *begin();}\n";
+  out << "   id_of_" << tname << " last() const {return *--end();}\n";
+  out << "   id_of_" << tname << " get_end() const {return *end();}\n";
 
   out << " };\n";
   out << '\n';

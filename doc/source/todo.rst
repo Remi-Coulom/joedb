@@ -39,6 +39,12 @@ On-disk Storage
 
 Compiler
 --------
+- allow reading dropped fields in custom functions that are invoked before the
+  drop. Store data in a column vector, and clear the vector at the time of the
+  drop. Make sure field id is not reused.
+- joedb::Span<joedb::Record_Id> when updating vectors of references is bad.
+  Should use strong typing (id_of_X). (joedb::Record_Id itself should also be
+  strongly typed) (look at BOOST_STRONG_TYPEDEF).
 - check that vector range is OK in constructor of vector update
 - Open_Mode parameter for File_Database constructor
 - modularize code generation

@@ -56,17 +56,14 @@ endif()
 #############################################################################
 if (UNIX AND NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
 #############################################################################
- if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #  "-fsanitize=memory" unfortunately triggers many errors in the standard lib
-#  set(JOEDB_DEBUG_FLAGS "-fno-omit-frame-pointer -fsanitize=memory")
-  set(JOEDB_DEBUG_FLAGS "-fno-omit-frame-pointer -fsanitize=address")
- else()
-  set(JOEDB_DEBUG_FLAGS "-fno-omit-frame-pointer -fsanitize=address")
- endif()
- set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${JOEDB_DEBUG_FLAGS}")
- set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${JOEDB_DEBUG_FLAGS}")
- set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} ${JOEDB_DEBUG_FLAGS}")
+#  set(JOEDB_ASAN_FLAGS "-fno-omit-frame-pointer -fsanitize=memory")
+ set(JOEDB_ASAN_FLAGS "-fno-omit-frame-pointer -fsanitize=address")
 endif()
+
+set(CMAKE_CXX_FLAGS_ASAN "${CMAKE_CXX_FLAGS_DEBUG} ${JOEDB_ASAN_FLAGS}")
+set(CMAKE_C_FLAGS_ASAN "${CMAKE_C_FLAGS_DEBUG} ${JOEDB_ASAN_FLAGS}")
+set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_LINKER_FLAGS_DEBUG} ${JOEDB_ASAN_FLAGS}")
 
 #############################################################################
 if(WIN32)
@@ -533,6 +530,7 @@ joedb_add_executable(joedbc_insert
 #############################################################################
 install(TARGETS joedbc RUNTIME DESTINATION bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin)
+install(TARGETS joedb_convert RUNTIME DESTINATION bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
 install(TARGETS joedb_pack RUNTIME DESTINATION bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin)

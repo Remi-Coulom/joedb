@@ -59,6 +59,22 @@ of the log, in the same order as in the original file.
 
 .. _joedb_merge:
 
+``joedb_convert``
+-----------------
+
+.. literalinclude:: ./tutorial/joedb_convert.out
+   :language: none
+
+This copies the input to the output. ``--ignore-error`` sets the checkpoint
+value to the file length, and can be used to recover a damaged file.
+
+In case the joedb file format ever changes in a way that is not compatible with
+the previous version, then this tool can be used to perform the conversion. The
+new format is first implemented in write functions. At this moment,
+``joedb_convert`` is still able to read the old format, and writes the new
+format. This happened in the early days of joedb, but is not likely to happen
+again in the future.
+
 ``joedb_merge``
 ---------------
 
@@ -131,7 +147,7 @@ Connect to a :ref:`joedb_server`.
 .. literalinclude:: ./tutorial/joedb_ssh_client.out
    :language: none
 
-Connect to a remote :ref:`joedb_server` via ssh.
+Connect to a :ref:`joedb_server` via ssh.
 
 .. _joedb_embed:
 

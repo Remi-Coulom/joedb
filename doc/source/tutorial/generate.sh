@@ -29,6 +29,7 @@ set +e
 ( cd $dir && PATH="." && joedb_embed ) 2>joedb_embed.out
 ( cd $dir && PATH="." && joedb_logdump ) 2>joedb_logdump.out
 ( cd $dir && PATH="." && joedbc ) 2>joedbc.out
+( cd $dir && PATH="." && joedb_convert ) 2>joedb_convert.out
 ( cd $dir && PATH="." && joedb_pack ) 2>joedb_pack.out
 ( cd $dir && PATH="." && joedb_server ) 2>joedb_server.out
 ( cd $dir && PATH="." && joedb_multi_server ) 2>joedb_multi_server.out

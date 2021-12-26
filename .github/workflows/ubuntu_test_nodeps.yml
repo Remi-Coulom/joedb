@@ -17,8 +17,8 @@ jobs:
       working-directory: ${{github.workspace}}/compcmake
       run: ./generate.sh
 
-    - name: Test with gcc in debug mode
-      working-directory: ${{github.workspace}}/compcmake/gcc_debug
+    - name: Test with gcc in asan mode
+      working-directory: ${{github.workspace}}/compcmake/gcc_asan
       run: ctest -V
 
     - name: Test with gcc with joedb::File = joedb::Portable_File
