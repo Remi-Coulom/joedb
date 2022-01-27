@@ -75,6 +75,9 @@ static int joedb_logdump_main(int argc, char **argv)
    arg_index++;
   }
 
+  if (arg_index != argc - 1)
+   return joedb_logdump_main(1, argv);
+
   joedb::File file(argv[arg_index], joedb::Open_Mode::read_existing);
 
   if (header)
