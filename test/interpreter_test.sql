@@ -28,7 +28,7 @@ UPDATE "test" SET "a" = 1234 WHERE "__id" = 1;
 UPDATE "test" SET "b" = 5678 WHERE "__id" = 1;
 ALTER TABLE "test" ADD "d" TEXT;
 ALTER TABLE "test" ADD "e" SMALLINT;
-ALTER TABLE "test" DROP "a";
+ALTER TABLE "test" DROP COLUMN "a";
 INSERT INTO "test"("__id") VALUES(2);
 UPDATE "test" SET "b" = 3 WHERE "__id" = 2;
 UPDATE "test" SET "d" = X'34' WHERE "__id" = 2;

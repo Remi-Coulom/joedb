@@ -108,7 +108,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "ALTER TABLE \"" << get_table_name(table_id);
-  out << "\" DROP \"" << get_field_name(table_id, field_id) << "\";\n";
+  out << "\" DROP COLUMN \"" << get_field_name(table_id, field_id) << "\";\n";
   Database_Schema::drop_field(table_id, field_id);
  }
 
