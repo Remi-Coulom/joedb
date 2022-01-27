@@ -6,7 +6,7 @@ tmp_sqlite=$(mktemp /tmp/joedb_browser.XXXXXX)
 
 {
  echo "BEGIN;"
- joedb_logdump --sql "$1" || exit 1
+ joedb_logdump --sqlite "$1" || exit 1
  echo "COMMIT;"
 } >"$tmp_sql"
 

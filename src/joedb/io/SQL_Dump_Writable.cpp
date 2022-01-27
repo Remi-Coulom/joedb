@@ -107,6 +107,8 @@ namespace joedb
  void SQL_Dump_Writable::drop_field(Table_Id table_id, Field_Id field_id)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (!drop_column)
+   out << "-- ";
   out << "ALTER TABLE \"" << get_table_name(table_id);
   out << "\" DROP COLUMN \"" << get_field_name(table_id, field_id) << "\";\n";
   Database_Schema::drop_field(table_id, field_id);

@@ -18,12 +18,13 @@ static int joedb_logdump_main(int argc, char **argv)
  if (argc <= 1)
  {
   std::cerr << "usage: " << argv[0];
-  std::cerr << " [--sql] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] <file.joedb>\n";
+  std::cerr << " [--sql] [--sqlite] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] <file.joedb>\n";
   return 1;
  }
  else
  {
   bool sql = false;
+  bool sqlite = false;
   bool raw = false;
   bool header = false;
   bool schema_only = false;
@@ -35,6 +36,12 @@ static int joedb_logdump_main(int argc, char **argv)
   if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sql")
   {
    sql = true;
+   arg_index++;
+  }
+
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sqlite")
+  {
+   sqlite = true;
    arg_index++;
   }
 
@@ -98,6 +105,8 @@ static int joedb_logdump_main(int argc, char **argv)
 
    if (sql)
     writable.reset(new joedb::SQL_Dump_Writable(std::cout));
+   else if (sqlite)
+    writable.reset(new joedb::SQL_Dump_Writable(std::cout, false));
    else if (raw)
     writable.reset(new joedb::Raw_Dump_Writable(std::cout));
    else

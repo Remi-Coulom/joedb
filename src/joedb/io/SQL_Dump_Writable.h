@@ -11,12 +11,16 @@ namespace joedb
  {
   private:
    std::ostream &out;
+   const bool drop_column;
    void write_type(Type type);
    std::string id_field_name = "\"__id\"";
    std::string key_type = "INTEGER";
 
   public:
-   SQL_Dump_Writable(std::ostream &out): out(out) {}
+   SQL_Dump_Writable(std::ostream &out, bool drop_column = true):
+    out(out),
+    drop_column(drop_column)
+   {}
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;
