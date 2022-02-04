@@ -1,14 +1,15 @@
 Introduction
 ============
 
-Joedb is the Journal-Only Embedded Database. Joedb stores structured data as a
-journal of all modifications. This way, the whole data history is remembered,
-and it is possible to re-create any past state of the database. It is also a
-way to make the system extremely simple, and fast.
+Joedb is the Journal-Only Embedded Database. Joedb keeps tabular data in
+memory, and writes a journal of all modifications to a file. This way, the
+whole data history is remembered, and it is possible to re-create any past
+state of the database. It is also a way to make the system extremely simple,
+and fast.
 
-Storing data history also allows efficient distributed applications. Joedb has
-a network protocol that lets multiple processes access shared data
-:doc:`concurrently <concurrency>`. It works a bit like `git
+Storing data history allows efficient incremental updates in distributed
+applications. Joedb has a network protocol that lets multiple processes access
+shared data :doc:`concurrently <concurrency>`. It works a bit like `git
 <https://git-scm.com/>`_ for structured data (without merging).
 
 Joedb comes with a compiler that takes a database schema as input, and produces
