@@ -9,8 +9,7 @@ and fast.
 
 Storing data history allows efficient incremental updates in distributed
 applications. Joedb has a network protocol that lets multiple processes access
-shared data concurrently. It works a bit like git for structured data (without
-merging).
+a shared journal concurrently.
 
 .. image:: doc/source/images/joedb.svg
 

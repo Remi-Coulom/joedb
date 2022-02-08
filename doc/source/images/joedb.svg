@@ -132,7 +132,7 @@
   <text x="155" y="-13" class="header">Application Code</text>
   <rect class="code-block code" x="0" y="0" width="301" height="8.4em"/>
   <text x="0.6em" y="0" class="code">
-   <tspan x="0.6em" dy="1.2em">tutorial::File_Database db(</tspan><tspan class="literal">"tutorial.joedb"</tspan><tspan>);</tspan> 
+   <tspan x="0.6em" dy="1.2em">tutorial::File_Database db(</tspan><tspan class="literal">"tutorial.joedb"</tspan><tspan>);</tspan>
    <tspan x="0.6em" dy="2.4em">db.new_city(</tspan><tspan class="literal">"Tokyo"</tspan><tspan>);</tspan>
    <tspan x="0.6em" dy="2.4em" class="keyword">for</tspan> (<tspan class="keyword">auto</tspan> person: db.get_person_table())
    <tspan x="0.6em" dy="1.2em"> std::cout &lt;&lt; db.get_first_name(person) &lt;&lt; </tspan><tspan class="literal">'\n'</tspan>;</text>
@@ -165,7 +165,7 @@
   <rect class="data-block" x="0" y="0" width="142.5" height="46"/>
   <text x="0.6em" y="0" class="data">
    <tspan x="0.6em" dy="1.2em">• Whole data history</tspan>
-   <tspan x="0.6em" dy="1.2em">• Stored on disk</tspan> 
+   <tspan x="0.6em" dy="1.2em">• Stored in a file</tspan>
    <tspan x="0.6em" dy="1.2em">• Crash-safe transactions</tspan>
   </text>
  </g>
