@@ -64,7 +64,7 @@ namespace joedb
   {
    try
    {
-    std::unique_lock<std::mutex> lock(mutex);
+    std::lock_guard<std::mutex> lock(mutex);
     ssh_channel_free(channel);
    }
    catch(...)
