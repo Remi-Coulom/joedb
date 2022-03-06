@@ -1473,7 +1473,7 @@ static void generate_readonly_h
     if (requires_schema_upgrade())
      throw joedb::Exception
      (
-      "This joedb file has an old schema, and must be upgraded first."
+      "Schema is out of date. Can't upgrade a read-only database."
      );
    }
 

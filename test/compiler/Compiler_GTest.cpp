@@ -514,7 +514,7 @@ TEST(Compiler, schema_upgrade)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "This joedb file has an old schema, and must be upgraded first.");
+  EXPECT_STREQ(e.what(), "Schema is out of date. Can't upgrade a read-only database.");
  }
 
  {
