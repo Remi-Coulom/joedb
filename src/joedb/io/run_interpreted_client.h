@@ -40,7 +40,8 @@ namespace joedb
 
    if (input == "T")
    {
-    std::cout << "Starting transaction...\n";
+    std::cout << "Waiting for lock... ";
+    std::cout.flush();
 
     client.transaction([](Readable &readable, Writable &writable)
     {
