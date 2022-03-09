@@ -40,7 +40,7 @@ namespace joedb
 
    if (input == "T")
    {
-    std::cout << "connecting...\n";
+    std::cout << "Starting transaction...\n";
 
     client.transaction([](Readable &readable, Writable &writable)
     {
