@@ -45,7 +45,8 @@ Available modes are:
    shared_write
   };
 
-So ``write_existing`` and ``create_new`` are available only with this method.
+So ``write_existing``, ``create_new``, and ``shared_write`` are available only
+with this method.
 
 ``shared_write`` is dangerous, and requires synchronization (see
 :doc:`concurrency` for details). Other write modes will use file locking to
