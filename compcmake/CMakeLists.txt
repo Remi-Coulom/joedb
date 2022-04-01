@@ -109,6 +109,8 @@ if (DEFINED JOEDB_PORTABLE)
  add_definitions(-DJOEDB_PORTABLE)
 endif()
 
+include(CheckIncludeFileCXX)
+
 # Threads
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
