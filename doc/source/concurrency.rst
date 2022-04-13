@@ -19,6 +19,17 @@ database. Each process can keep data synchronized with 3 operations:
 - **push_unlock**: update the central database with the local modifications,
   and release the lock.
 
+So it works a bit like `git <https://git-scm.com/>`_, with the significant
+exception that merging branches is not possible. History must be linear, and a
+global mutex is used to prevent branches from diverging.
+
+When using a remote network connection, a local copy of the database can be
+kept in permanent storage between connections. `SHA-256
+<https://en.wikipedia.org/wiki/SHA-2>`_ is used at connection time, to check
+that the contents of the local and remote copies match. Offline modifications
+to the local copy can be made, and then pushed to the server when connecting
+later.
+
 Example C++ Code
 ----------------
 

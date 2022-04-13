@@ -106,10 +106,13 @@ Concurrency
   - cache SHA-256 calculations + efficient incremental update.
   - perform hash calculations asynchronously (don't block whole server)
 
-- Connection via domain sockets / named pipes
 - performance: merge socket writes.
-- Connection_Multiplexer for safe backups. One of the connections must serve as
-  global lock. One thread per connection? Compare the contents of pulls?
+- joedb_server should use a connection instead of opening a file directly. This
+  would allow chaining two servers for real-time backups. This would also allow
+  processes running on the same machine as the server to open the file
+  directly. run_interpreted_client should offer the possibility to start a
+  server. Exclusive_Local_Connection to get same behaviour as before for
+  joedb_server.
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push

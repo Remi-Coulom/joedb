@@ -22,6 +22,12 @@ int main()
  //
  // The databases are empty. client1 will add a few cities.
  //
+ // The transaction function takes a lambda as parameter.
+ // The lock_pull operation is performed before the lambda, and the push_unlock
+ // operation is performed after the lambda, if no exception was thrown.
+ // If any exception was thrown during the lambda, then the changes
+ // are not pushed to the server, and the server is unlocked.
+ //
  client1.transaction([](tutorial::Generic_File_Database &db)
  {
   db.new_city("Paris");
