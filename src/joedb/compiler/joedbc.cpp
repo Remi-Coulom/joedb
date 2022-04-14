@@ -154,6 +154,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << "#include \"joedb/concurrency/Client.h\"\n";
+ out << "#include \"joedb/concurrency/Local_Connection.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
  out << '\n';
 
@@ -173,7 +174,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     {
      write_timestamp();
      write_comment(message);
-     checkpoint();
+     journal.flush();
     }
     Database::error(message);
    }
@@ -473,6 +474,11 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
      });
     }
     schema_checkpoint = schema_journal.get_checkpoint_position();
+   }
+
+   template<typename File> Client(joedb::Local_Connection<File> &connection):
+    Client(connection, connection.get_file())
+   {
    }
 
    const Database &get_database() const

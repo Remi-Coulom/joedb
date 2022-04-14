@@ -58,6 +58,7 @@ namespace joedb
 
    int64_t ahead_of_checkpoint() const;
    void checkpoint(Commit_Level commit_level) override;
+   void flush() {file.flush();}
 
    void create_table(const std::string &name) override;
    void drop_table(Table_Id table_id) override;
