@@ -10,6 +10,7 @@ namespace joedb
  class Connection: public Mutex
  ////////////////////////////////////////////////////////////////////////////
  {
+  friend class Push_Only_Client;
   friend class Client;
 
   private:

@@ -1,31 +1,21 @@
 #ifndef joedb_Client_declared
 #define joedb_Client_declared
 
-#include "joedb/concurrency/Connection.h"
-#include "joedb/Exception.h"
+#include "joedb/concurrency/Push_Only_Client.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Client
+ class Client: public Push_Only_Client
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Connection &connection;
-   Writable_Journal &journal;
    Writable &writable;
-   int64_t server_checkpoint;
 
    void throw_if_pull_when_ahead()
    {
     if (journal.get_position() > server_checkpoint)
      throw Exception("can't pull: client is ahead of server");
-   }
-
-   void push_unlock()
-   {
-    connection.push_unlock(journal, server_checkpoint);
-    server_checkpoint = journal.get_checkpoint_position();
    }
 
   public:
@@ -37,33 +27,10 @@ namespace joedb
     Writable_Journal &journal,
     Writable &writable
    ):
-    connection(connection),
-    journal(journal),
+    Push_Only_Client(connection, journal),
     writable(writable)
    {
-    server_checkpoint = connection.handshake(journal);
-    const int64_t client_checkpoint = journal.get_checkpoint_position();
-
-    if
-    (
-     !connection.check_matching_content
-     (
-      journal,
-      std::min(server_checkpoint, client_checkpoint)
-     )
-    )
-    {
-     throw Exception("Client data does not match the server");
-    }
-
     journal.play_until_checkpoint(writable);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   int64_t get_checkpoint_difference() const
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return journal.get_checkpoint_position() - server_checkpoint;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -74,14 +41,6 @@ namespace joedb
     server_checkpoint = connection.pull(journal);
     journal.play_until_checkpoint(writable);
     return server_checkpoint;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void push()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (get_checkpoint_difference() > 0)
-     push_unlock();
    }
 
    //////////////////////////////////////////////////////////////////////////
