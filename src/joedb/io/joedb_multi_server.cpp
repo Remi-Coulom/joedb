@@ -1,5 +1,5 @@
 #include "joedb/io/main_exception_catcher.h"
-#include "db/multi_server_readonly.h"
+#include "joedb/db/multi_server.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/journal/Interpreted_File.h"
 
@@ -44,7 +44,8 @@ namespace joedb
    return 1;
   }
 
-  multi_server::Readonly_Database db((Interpreted_File(argv[1])));
+  Interpreted_File config_file(argv[1]);
+  multi_server::Generic_File_Database db(config_file);
 
   net::io_context io_context;
 
