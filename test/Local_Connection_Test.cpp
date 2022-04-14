@@ -35,9 +35,9 @@ TEST(Local_Connection, simple_operation)
  std::remove(file_name);
 
  Local_Connection<File> connection1(file_name);
- Local_Connection<File> connection2(file_name);
-
  Interpreted_Client client1(connection1, connection1.get_file());
+
+ Local_Connection<File> connection2(file_name);
  Interpreted_Client client2(connection2, connection2.get_file());
 
  client1.transaction

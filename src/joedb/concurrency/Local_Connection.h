@@ -83,11 +83,14 @@ namespace joedb
    Local_Connection(const char *file_name):
     file(file_name, Open_Mode::shared_write)
    {
-    Lock_Guard lock(file);
-    Writable_Journal journal(file);
-    const bool ignore_errors = false;
-    const bool ignore_trailing = false;
-    journal.check_size(ignore_errors, ignore_trailing);
+    if (file.get_mode() != Open_Mode::create_new)
+    {
+     Lock_Guard lock(file);
+     Readonly_Journal journal(file);
+     const bool ignore_errors = false;
+     const bool ignore_trailing = false;
+     journal.check_size(ignore_errors, ignore_trailing);
+    }
    }
 
    Local_Connection(const std::string &file_name):
