@@ -27,10 +27,12 @@ namespace joedb
    const char * const file_name = argv[1];
 
    std::unique_ptr<Generic_File> file;
+   std::unique_ptr<Writable_Journal> writable_journal;
 
    try
    {
     file.reset(new File(file_name, Open_Mode::write_existing_or_create_new));
+    writable_journal.reset(new Writable_Journal(*file));
    }
    catch (const Exception &e)
    {
@@ -48,9 +50,8 @@ namespace joedb
    }
    else
    {
-    Writable_Journal writable_journal(*file);
-    writable_journal.replay_log(db);
-    Multiplexer multiplexer{db, writable_journal};
+    writable_journal->replay_log(db);
+    Multiplexer multiplexer{db, *writable_journal};
     Interpreter interpreter(db, multiplexer);
     interpreter.main_loop(std::cin, std::cout);
    }
