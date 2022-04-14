@@ -99,6 +99,7 @@ namespace joedb
     }
     catch (...)
     {
+     journal.flush();
      connection.unlock();
      throw;
     }
