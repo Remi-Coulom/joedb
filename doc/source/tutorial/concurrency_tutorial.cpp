@@ -27,6 +27,8 @@ int main()
  // operation is performed after the lambda, if no exception was thrown.
  // If any exception was thrown during the lambda, then the changes
  // are not pushed to the server, and the server is unlocked.
+ // Writes that occured in a transaction before an exception are not sent to
+ // the server, but they are written locally.
  //
  client1.transaction([](tutorial::Generic_File_Database &db)
  {
