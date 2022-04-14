@@ -113,6 +113,8 @@ Concurrency
   directly. run_interpreted_client should offer the possibility to start a
   server. Exclusive_Local_Connection to get same behaviour as before for
   joedb_server.
+- backup connection is push only. no need to lock/unlock at each transaction.
+  needs push without unlock in the protocol.
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
