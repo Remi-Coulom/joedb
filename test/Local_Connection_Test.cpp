@@ -1,3 +1,6 @@
+#include <joedb/Writable.h>
+#include <joedb/journal/Generic_File.h>
+#include <joedb/journal/Writable_Journal.h>
 #ifndef JOEDB_PORTABLE
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/journal/File.h"
@@ -63,5 +66,28 @@ TEST(Local_Connection, simple_operation)
  EXPECT_EQ(1, int(client1.get_database().get_tables().size()));
  client1.pull();
  EXPECT_EQ(2, int(client1.get_database().get_tables().size()));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Local_Connection, size_check)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove(file_name);
+
+ {
+  joedb::File file(file_name, joedb::Open_Mode::create_new);
+  joedb::Writable_Journal journal(file);
+  journal.timestamp(0);
+  journal.flush();
+ }
+
+ try
+ {
+  Local_Connection<File> connection(file_name);
+  FAIL() << "Expected an exception\n";
+ }
+ catch(...)
+ {
+ }
 }
 #endif
