@@ -67,12 +67,11 @@ either with a shared remote database or a local file that is not shared.
 ``Local_Connection`` allows serverless concurrent connection to a file. It is a
 template that takes a file class as parameter. It works only with file classes
 that support locking, such as ``Posix_File`` and ``Windows_File`` (or ``File``,
-when it is typedefed to one of those). The file parameter of the client
-constructor must be the value returned by the ``get_file()`` method.
+when it is typedefed to one of those).
 
-The source code of :ref:`joedb_local_client` shows an example of use:
+Here is an example of use:
 
-.. literalinclude:: ../../src/joedb/io/joedb_local_client.cpp
+.. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
 
 ``Server_Connection``
