@@ -60,19 +60,37 @@ joedb::Readonly_Journal::Readonly_Journal
    //
    // Compare to file size (if available)
    //
-   int64_t file_size = file.get_size();
+   check_size(ignore_errors, file.is_shared());
+  }
+ }
+}
 
-   if (file_size > 0)
-   {
-    if (ignore_errors)
-     checkpoint_position = file_size;
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::check_size
+/////////////////////////////////////////////////////////////////////////////
+(
+ bool ignore_errors,
+ bool ignore_trailing
+)
+{
+ int64_t file_size = file.get_size();
 
-    if (!file.is_shared() && file_size > checkpoint_position)
-     format_exception("Checkpoint is smaller than file size");
+ if (file_size > 0)
+ {
+  if (ignore_errors)
+   checkpoint_position = file_size;
+  else
+  {
+   if (!ignore_trailing && file_size > checkpoint_position)
+    throw Exception
+    (
+     "Checkpoint is smaller than file size. "
+     "This file may contain an aborted transaction. "
+     "joedb_convert can be used to fix it."
+    );
 
-    if (file_size < checkpoint_position)
-     format_exception("Checkpoint is bigger than file size");
-   }
+   if (file_size < checkpoint_position)
+    throw Exception("Checkpoint is bigger than file size");
   }
  }
 }

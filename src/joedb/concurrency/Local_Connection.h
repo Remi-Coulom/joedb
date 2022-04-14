@@ -62,10 +62,32 @@ namespace joedb
     return true;
    }
 
+   class Lock_Guard
+   {
+    private:
+     File_Type &file;
+
+    public:
+     Lock_Guard(File_Type &file): file(file)
+     {
+      file.lock();
+     }
+
+     ~Lock_Guard()
+     {
+      file.unlock();
+     }
+   };
+
   public:
    Local_Connection(const char *file_name):
     file(file_name, Open_Mode::shared_write)
    {
+    Lock_Guard lock(file);
+    Writable_Journal journal(file);
+    const bool ignore_errors = false;
+    const bool ignore_trailing = false;
+    journal.check_size(ignore_errors, ignore_trailing);
    }
 
    Local_Connection(const std::string &file_name):
