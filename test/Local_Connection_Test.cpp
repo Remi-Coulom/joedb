@@ -1,6 +1,3 @@
-#include <joedb/Writable.h>
-#include <joedb/journal/Generic_File.h>
-#include <joedb/journal/Writable_Journal.h>
 #ifndef JOEDB_PORTABLE
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/journal/File.h"
