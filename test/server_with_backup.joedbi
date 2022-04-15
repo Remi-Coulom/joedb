@@ -14,5 +14,4 @@ add_field server ssh_backup references ssh_connection
 custom set_default_ssh_backup
 
 insert_into ssh_connection 1 "" "localhost" 2001 22 0
-insert_into server 1 "backup.joedb" 2001 0 0
-insert_into server 2 "server.joedb" 2002 0 1
+insert_into server 1 "server.joedb" 2002 0 1

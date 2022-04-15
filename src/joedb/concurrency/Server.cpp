@@ -736,6 +736,9 @@ namespace joedb
   log_pointer(log_pointer),
   backup_client(backup_client)
  {
+  if (backup_client)
+   backup_client->push();
+
   write_status();
 
   std::signal(SIGINT, signal_handler);
