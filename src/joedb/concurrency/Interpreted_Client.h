@@ -11,50 +11,64 @@ namespace joedb
  class Interpreted_Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
-  protected:
+  friend class Interpreted_Client;
+
+  private:
    Writable_Journal journal;
    Database database;
+   Multiplexer multiplexer;
 
+  public:
    Interpreted_Client_Data
    (
-    Generic_File &local_file,
-    joedb::Connection &connection
+    joedb::Connection &connection,
+    Generic_File &file
    ):
-    journal((connection.lock(), local_file))
+    journal(file),
+    multiplexer{database, journal}
    {
-    connection.unlock();
+   }
+
+   Writable_Journal &get_journal()
+   {
+    return journal;
+   }
+
+   const Writable_Journal &get_journal() const
+   {
+    return journal;
+   }
+
+   void update()
+   {
+    journal.play_until_checkpoint(database);
    }
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Client: public Interpreted_Client_Data, public Client
+ class Interpreted_Client: public Client<Interpreted_Client_Data>
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   Multiplexer multiplexer;
-
   public:
    Interpreted_Client
    (
     Connection &connection,
     Generic_File &local_file
    ):
-    Interpreted_Client_Data(local_file, connection),
-    Client(connection, Interpreted_Client_Data::journal, database),
-    multiplexer{database, Interpreted_Client_Data::journal}
+    Client(connection, local_file)
    {
    }
 
    const Readable &get_database() const
    {
-    return database;
+    return data.database;
    }
 
    template<typename F> void transaction(F transaction)
    {
     Client::transaction([&]()
     {
-     transaction(database, multiplexer);
+     transaction(data.database, data.multiplexer);
     });
    }
  };

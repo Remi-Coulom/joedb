@@ -165,6 +165,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR( class Generic_File_Database: public Database
  {
+  friend class Client_Data;
   friend class Client;
 
   protected:
@@ -213,8 +214,8 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
    Generic_File_Database
    (
-    joedb::Generic_File &file,
-    joedb::Connection &connection
+    joedb::Connection &connection,
+    joedb::Generic_File &file
    );
 
   public:
@@ -445,7 +446,37 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR(
  ////////////////////////////////////////////////////////////////////////////
- class Client: private Generic_File_Database, public joedb::Client
+ class Client_Data: public Generic_File_Database
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   Client_Data
+   (
+    joedb::Connection &connection,
+    joedb::Generic_File &file
+   ):
+    Generic_File_Database(connection, file)
+   {
+   }
+
+   joedb::Writable_Journal &get_journal()
+   {
+    return journal;
+   }
+
+   const joedb::Writable_Journal &get_journal() const
+   {
+    return journal;
+   }
+
+   void update()
+   {
+    journal.play_until_checkpoint(*this);
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Client: public joedb::Client<Client_Data>
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -453,7 +484,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    void throw_if_schema_changed()
    {
-    if (schema_journal.get_checkpoint_position() > schema_checkpoint)
+    if (data.schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
    }
 
@@ -463,17 +494,16 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Connection &connection,
     joedb::Generic_File &local_file
    ):
-    Generic_File_Database(local_file, connection),
-    joedb::Client(connection, Generic_File_Database::journal, *this)
+    joedb::Client<Client_Data>(connection, local_file)
    {
-    if (requires_schema_upgrade())
+    if (data.requires_schema_upgrade())
     {
      push();
-     joedb::Client::transaction([this](){
-      auto_upgrade();
+     joedb::Client<Client_Data>::transaction([this](){
+      data.auto_upgrade();
      });
     }
-    schema_checkpoint = schema_journal.get_checkpoint_position();
+    schema_checkpoint = data.schema_journal.get_checkpoint_position();
    }
 
    template<typename File> Client(joedb::Local_Connection<File> &connection):
@@ -483,22 +513,22 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    const Database &get_database() const
    {
-    return *this;
+    return data;
    }
 
    int64_t pull()
    {
-    const int64_t result = joedb::Client::pull();
+    const int64_t result = joedb::Client<Client_Data>::pull();
     throw_if_schema_changed();
     return result;
    }
 
    template<typename F> void transaction(F transaction)
    {
-    joedb::Client::transaction([&]()
+    joedb::Client<Client_Data>::transaction([&]()
     {
      throw_if_schema_changed();
-     transaction(*(Generic_File_Database *)this);
+     transaction(data);
     });
    }
  };
@@ -1820,12 +1850,11 @@ static void generate_cpp
  Generic_File_Database::Generic_File_Database
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Generic_File &file,
-  joedb::Connection &connection
+  joedb::Connection &connection,
+  joedb::Generic_File &file
  ):
-  journal((connection.lock(), file))
+  journal(file)
  {
-  connection.unlock();
   initialize();
  }
 

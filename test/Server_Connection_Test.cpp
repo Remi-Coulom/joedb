@@ -20,7 +20,7 @@ class Debug_Channel: public joedb::Channel, public joedb::Memory_File
 };
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Server_Connection, basic)
+TEST(Server_Connection, handshake)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::ostream * const log = nullptr;
@@ -41,31 +41,15 @@ TEST(Server_Connection, basic)
  {
   EXPECT_STREQ(e.what(), "Did not receive \"joedb\" from server");
  }
+}
 
- channel.set_position(0);
- channel.write<char>('j');
- channel.write<char>('o');
- channel.write<char>('e');
- channel.write<char>('d');
- channel.write<char>('b');
- channel.write<int64_t>(0);
- channel.write<int64_t>(1);
- channel.set_position(0);
+/////////////////////////////////////////////////////////////////////////////
+TEST(Server_Connection, session)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::ostream * const log = nullptr;
+ Debug_Channel channel;
 
- try
- {
-  joedb::Server_Connection connection(channel, log);
-  joedb::Memory_File client_file;
-  joedb::Interpreted_Client client(connection, client_file);
-
-  ADD_FAILURE() << "Should have thrown";
- }
- catch (const joedb::Exception &e)
- {
-  EXPECT_STREQ(e.what(), "Client version rejected by server");
- }
-
- channel.set_position(0);
  channel.write<char>('j');
  channel.write<char>('o');
  channel.write<char>('e');
@@ -74,6 +58,8 @@ TEST(Server_Connection, basic)
  channel.write<int64_t>(5);
  channel.write<int64_t>(1234);
  channel.write<int64_t>(41);
+ channel.write<char>('l');
+ channel.write<char>('u');
  channel.write<char>('H');
  channel.write<char>('l');
  channel.write<char>('u');
