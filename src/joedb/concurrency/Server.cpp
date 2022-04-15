@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/network_integers.h"
+#include "joedb/concurrency/Backup_Client.h"
 #include "joedb/io/get_time_string.h"
 
 #include <iostream>
@@ -245,6 +246,8 @@ namespace joedb
    else
    {
     journal.append_raw_tail(push_buffer.data(), offset);
+    if (backup_client)
+     backup_client->push();
     session->buffer[0] = 'U';
    }
 
@@ -717,7 +720,8 @@ namespace joedb
   net::io_context &io_context,
   uint16_t port,
   uint32_t lock_timeout_seconds,
-  std::ostream *log_pointer
+  std::ostream *log_pointer,
+  Backup_Client *backup_client
  ):
   journal(journal),
   io_context(io_context),
@@ -729,7 +733,8 @@ namespace joedb
   lock_timeout_seconds(lock_timeout_seconds),
   lock_timeout_timer(io_context),
   locked(false),
-  log_pointer(log_pointer)
+  log_pointer(log_pointer),
+  backup_client(backup_client)
  {
   write_status();
 
