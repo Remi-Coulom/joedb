@@ -83,6 +83,7 @@ Compiler
 
 - C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
+- db.is_valid(x)
 
 Better Freedom_Keeper
 ---------------------
@@ -107,14 +108,7 @@ Concurrency
   - perform hash calculations asynchronously (don't block whole server)
 
 - performance: merge socket writes.
-- joedb_server should use a connection instead of opening a file directly. This
-  would allow chaining two servers for real-time backups. This would also allow
-  processes running on the same machine as the server to open the file
-  directly. run_interpreted_client should offer the possibility to start a
-  server. Exclusive_Local_Connection to get same behaviour as before for
-  joedb_server.
-- backup connection is push only. no need to lock/unlock at each transaction.
-  needs push without unlock in the protocol.
+- Needs push without unlock in the protocol (to keep backup server locked).
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push

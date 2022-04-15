@@ -118,6 +118,8 @@ namespace joedb
   {
    auto ssh_backup = db.get_ssh_backup(server);
 
+   // TODO: check valid id of ssh_backup
+
    if (ssh_backup)
    {
     servers.emplace_back

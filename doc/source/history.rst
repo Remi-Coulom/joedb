@@ -1,5 +1,8 @@
 History
 =======
+- 2022-??-??: 6.1
+
+  - Support for real-time incremental database backup.
 
 - 2021-09-15: 6.0
 
