@@ -71,7 +71,12 @@ namespace joedb
    void push()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (get_checkpoint_difference() > 0)
+    const int64_t difference = get_checkpoint_difference();
+
+    if (difference < 0)
+     throw Exception("can't push: server is ahead of client");
+
+    if (difference > 0)
      push_unlock();
    }
 
