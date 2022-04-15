@@ -25,10 +25,8 @@ Checkpoints and Transactions
 
 A checkpoint does not necessarily indicate that data is in a valid and coherent
 state. The purpose of the checkpoint is only to prevent data loss or corruption
-in case of a crash. In particular, the error-management code will checkpoint
-the log file before throwing an exception, which may occur in the middle of a
-transaction. If needed, a separate ``valid_data`` event can be used to indicate
-that data is valid.
+in case of a crash. If needed, a separate ``valid_data`` event can be used to
+indicate that data is valid.
 
 Checkpoint Types
 ----------------
