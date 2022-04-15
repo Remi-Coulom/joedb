@@ -14,7 +14,7 @@ namespace joedb
 
    int64_t handshake() override
    {
-    int64_t result;
+    int64_t result = 0;
 
     run_while_locked([&]()
     {
