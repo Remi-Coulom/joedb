@@ -368,11 +368,13 @@ endif()
 if (HAS_NETWORKING)
  joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
 
- joedb_add_executable(joedb_multi_server
-  ../src/joedb/io/joedb_multi_server.cpp
-  ../src/joedb/db/multi_server.cpp
-  ../src/joedb/db/multi_server_custom_functions.cpp
- )
+ if (libssh_FOUND)
+  joedb_add_executable(joedb_multi_server
+   ../src/joedb/io/joedb_multi_server.cpp
+   ../src/joedb/db/multi_server.cpp
+   ../src/joedb/db/multi_server_custom_functions.cpp
+  )
+ endif()
 
  joedb_add_executable(joedb_network_client
   ../src/joedb/io/joedb_network_client.cpp
