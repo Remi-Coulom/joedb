@@ -48,13 +48,15 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   void push_unlock
+   void push
    (
     Readonly_Journal &client_journal,
-    int64_t server_position
+    int64_t server_position,
+    bool unlock_after
    ) override
    {
-    unlock();
+    if (unlock_after)
+     unlock();
    }
 
    bool check_matching_content

@@ -247,7 +247,7 @@ namespace joedb
    {
     journal.append_raw_tail(push_buffer.data(), offset);
     if (backup_client)
-     backup_client->push();
+     backup_client->locked_push();
     session->buffer[0] = 'U';
    }
 
@@ -255,7 +255,8 @@ namespace joedb
 
    write_buffer_and_next_command(session, 1);
 
-   unlock(*session);
+   if (session->unlock_after_push)
+    unlock(*session);
   }
  }
 
@@ -482,7 +483,8 @@ namespace joedb
      lock(session, Session::State::waiting_for_lock_pull);
     break;
 
-    case 'U':
+    case 'U': case 'p':
+     session->unlock_after_push = (session->buffer[0] == 'U');
      net::async_read
      (
       session->socket,
@@ -614,7 +616,7 @@ namespace joedb
      to_network(0, session->buffer + 5);
     else
     {
-     const int64_t server_version = 5;
+     const int64_t server_version = 6;
      to_network(server_version, session->buffer + 5);
     }
 
@@ -737,7 +739,7 @@ namespace joedb
   backup_client(backup_client)
  {
   if (backup_client)
-   backup_client->push();
+   backup_client->locked_push();
 
   write_status();
 

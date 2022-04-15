@@ -41,10 +41,11 @@ namespace joedb
 
    int64_t lock_pull(Writable_Journal &client_journal) override;
 
-   void push_unlock
+   void push
    (
     Readonly_Journal &client_journal,
-    int64_t server_position
+    int64_t server_position,
+    bool unlock_after
    ) override;
 
    bool check_matching_content

@@ -55,7 +55,7 @@ TEST(Server_Connection, session)
  channel.write<char>('e');
  channel.write<char>('d');
  channel.write<char>('b');
- channel.write<int64_t>(5);
+ channel.write<int64_t>(6);
  channel.write<int64_t>(1234);
  channel.write<int64_t>(41);
  channel.write<char>('l');

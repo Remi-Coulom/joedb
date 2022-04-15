@@ -61,11 +61,12 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push_unlock
+   void push
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &client_journal,
-    const int64_t server_checkpoint
+    const int64_t server_checkpoint,
+    bool unlock_after
    ) override
    {
     if (server_checkpoint != server_journal.get_checkpoint_position())

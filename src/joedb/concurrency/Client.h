@@ -9,15 +9,24 @@ namespace joedb
  template<typename Client_Data> class Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  protected:
-   Connection &connection;
-   int64_t server_checkpoint;
-   Client_Data data;
-
-   void push_unlock()
+  private:
+   void do_push(bool unlock_after)
    {
-    connection.push_unlock(data.get_journal(), server_checkpoint);
+    connection.push(data.get_journal(), server_checkpoint, unlock_after);
     server_checkpoint = data.get_journal().get_checkpoint_position();
+   }
+
+   void push(bool unlock_after)
+   {
+    const int64_t difference = get_checkpoint_difference();
+
+    if (difference < 0)
+     throw Exception("can't push: server is ahead of client");
+
+    if (difference > 0)
+     do_push(unlock_after);
+    else if (!unlock_after)
+     connection.lock();
    }
 
    void throw_if_pull_when_ahead()
@@ -25,6 +34,11 @@ namespace joedb
     if (data.get_journal().get_position() > server_checkpoint)
      throw Exception("can't pull: client is ahead of server");
    }
+
+  protected:
+   Connection &connection;
+   int64_t server_checkpoint;
+   Client_Data data;
 
   public:
    //////////////////////////////////////////////////////////////////////////
@@ -68,16 +82,17 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push()
+   void locked_push()
    //////////////////////////////////////////////////////////////////////////
    {
-    const int64_t difference = get_checkpoint_difference();
+    push(false);
+   }
 
-    if (difference < 0)
-     throw Exception("can't push: server is ahead of client");
-
-    if (difference > 0)
-     push_unlock();
+   //////////////////////////////////////////////////////////////////////////
+   void push_unlock()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    push(true);
    }
 
    //////////////////////////////////////////////////////////////////////////

@@ -496,13 +496,14 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    ):
     joedb::Client<Client_Data>(connection, local_file)
    {
-    if (data.requires_schema_upgrade())
-    {
-     push();
-     joedb::Client<Client_Data>::transaction([this](){
-      data.auto_upgrade();
-     });
-    }
+    if (get_checkpoint_difference() > 0)
+     push_unlock();
+
+    joedb::Client<Client_Data>::transaction([this](){
+     data.check_schema();
+     data.auto_upgrade();
+    });
+
     schema_checkpoint = data.schema_journal.get_checkpoint_position();
    }
 
@@ -1816,8 +1817,6 @@ static void generate_cpp
   journal.replay_log(*this);
   ready_to_write = true;
   max_record_id = 0;
-
-  check_schema();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -1867,6 +1866,7 @@ static void generate_cpp
   journal(file)
  {
   initialize();
+  check_schema();
   auto_upgrade();
  }
 )RRR";

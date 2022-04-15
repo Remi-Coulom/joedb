@@ -43,6 +43,7 @@ namespace joedb
     enum {buffer_size = (1 << 13)};
     char buffer[buffer_size];
     enum State {not_locking, waiting_for_lock, waiting_for_lock_pull, locking};
+    bool unlock_after_push;
     State state;
 
     std::ostream &write_id(std::ostream &out) const;

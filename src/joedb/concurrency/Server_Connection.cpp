@@ -111,18 +111,19 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::push_unlock
+ void Server_Connection::push
  ////////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
-  int64_t server_position
+  int64_t server_position,
+  bool unlock_after
  )
  {
   Channel_Lock lock(channel);
 
   Async_Reader reader = client_journal.get_tail_reader(server_position);
 
-  buffer[0] = 'U';
+  buffer[0] = unlock_after ? 'U' : 'p';
   to_network(server_position, buffer.data() + 1);
   to_network(reader.get_remaining(), buffer.data() + 9);
 
@@ -220,7 +221,7 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 5;
+  const int64_t client_version = 6;
   to_network(client_version, buffer.data() + 5);
 
   {

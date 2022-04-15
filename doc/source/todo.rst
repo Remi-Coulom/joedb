@@ -83,7 +83,7 @@ Compiler
 
 - C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
-- db.is_valid(x)
+- db.is_valid(x) (->joedb_multi_server.cpp)
 
 Better Freedom_Keeper
 ---------------------
@@ -108,7 +108,6 @@ Concurrency
   - perform hash calculations asynchronously (don't block whole server)
 
 - performance: merge socket writes.
-- Needs push without unlock in the protocol (to keep backup server locked).
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push

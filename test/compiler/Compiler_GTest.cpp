@@ -623,8 +623,6 @@ TEST(Compiler, client_push)
   joedb::Embedded_Connection connection(server_file);
   client_file.set_mode(joedb::Open_Mode::write_existing);
   testdb::Client client(connection, client_file);
-  EXPECT_TRUE(client.get_checkpoint_difference() > 0);
-  client.push();
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
@@ -664,43 +662,6 @@ TEST(Compiler, client_hash_error)
  catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "Client data does not match the server");
- }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-TEST(Compiler, client_conflict)
-/////////////////////////////////////////////////////////////////////////////
-{
- joedb::Memory_File client_file;
-
- {
-  testdb::Generic_File_Database db(client_file);
-  db.new_person("Rémi", db.null_city());
-  db.checkpoint();
-  client_file.set_mode(joedb::Open_Mode::write_existing);
- }
-
- joedb::Memory_File server_file;
- joedb::Embedded_Connection connection(server_file);
- testdb::Client client(connection, client_file);
-
- {
-  joedb::Memory_File client2_file;
-  testdb::Client client2(connection, client2_file);
-  client2.transaction([](testdb::Generic_File_Database &db)
-  {
-   db.new_person("Va", db.null_city());
-  });
- }
-
- try
- {
-  client.push();
-  ADD_FAILURE() << "Should have thrown\n";
- }
- catch (const joedb::Exception &e)
- {
-  EXPECT_STREQ(e.what(), "pushing from bad checkpoint");
  }
 }
 

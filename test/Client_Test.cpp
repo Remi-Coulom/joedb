@@ -216,7 +216,7 @@ TEST(Client, push)
   {
    Interpreted_Client client(connection, client_file);
    EXPECT_TRUE(client.get_checkpoint_difference() > 0);
-   client.push();
+   client.push_unlock();
   }
  }
 

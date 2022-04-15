@@ -52,7 +52,7 @@ namespace joedb
    else if (input == "P")
     client.pull();
    else if (input == "S")
-    client.push();
+    client.push_unlock();
    else if (input == "R")
     Readonly_Interpreter(client.get_database()).main_loop(std::cin, std::cout);
    else if (input == "Q")

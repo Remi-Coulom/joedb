@@ -30,10 +30,11 @@ namespace joedb
     return pull(client_journal);
    }
 
-   virtual void push_unlock
+   virtual void push
    (
     Readonly_Journal &client_journal,
-    int64_t server_checkpoint
+    int64_t server_checkpoint,
+    bool unlock_after
    ) = 0;
 
    virtual ~Connection() = default;
