@@ -3,14 +3,4 @@ add_field server file_name string
 add_field server port int32
 add_field server timeout int32
 
-create_table ssh_connection
-add_field ssh_connection user string
-add_field ssh_connection host string
-add_field ssh_connection joedb_port int32
-add_field ssh_connection ssh_port int32
-add_field ssh_connection ssh_log_level int32
-
-add_field server ssh_backup references ssh_connection
-custom set_default_ssh_backup
-
-insert_into server 1 "backup.joedb" 2001 0 0
+insert_into server 0 "backup.joedb" 2001 0
