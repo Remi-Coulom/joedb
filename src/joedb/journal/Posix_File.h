@@ -28,7 +28,7 @@ namespace joedb
 
   public:
    Posix_File(int fd, Open_Mode mode):
-    Generic_File(Open_Mode::read_existing, true),
+    Generic_File(Open_Mode::read_existing),
     fd(fd)
    {
    }

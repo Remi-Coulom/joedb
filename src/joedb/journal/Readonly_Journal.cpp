@@ -94,9 +94,8 @@ void joedb::Readonly_Journal::read_checkpoint()
  for (int i = 0; i < 4; i++)
   pos[i] = file.read<int64_t>();
 
- if (!file.is_shared())
-  if (pos[0] != pos[1] || pos[2] != pos[3])
-   throw Exception("Checkpoint mismatch");
+ if (pos[0] != pos[1] || pos[2] != pos[3])
+  throw Exception("Checkpoint mismatch");
 
  for (unsigned i = 0; i < 2; i++)
   if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)

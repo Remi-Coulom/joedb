@@ -8,10 +8,9 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  (
   std::streambuf &streambuf,
-  Open_Mode mode,
-  bool shared
+  Open_Mode mode
  ):
-  Generic_File(mode, shared),
+  Generic_File(mode),
   streambuf(streambuf)
  {
  }

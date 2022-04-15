@@ -373,7 +373,6 @@ namespace joedb
    };
 
    Open_Mode mode;
-   const bool shared;
 
   protected:
    virtual size_t raw_read(char *buffer, size_t size) = 0;
@@ -391,7 +390,7 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Generic_File(Open_Mode mode, bool shared): mode(mode), shared(shared)
+   Generic_File(Open_Mode mode): mode(mode)
    //////////////////////////////////////////////////////////////////////////
    {
     write_buffer_index = 0;
@@ -399,17 +398,6 @@ namespace joedb
     position = 0;
     slice_start = 0;
     slice_length = 0;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   Generic_File(Open_Mode mode):
-   //////////////////////////////////////////////////////////////////////////
-    Generic_File
-    (
-     mode,
-     mode == Open_Mode::read_existing || mode == Open_Mode::shared_write
-    )
-   {
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -440,7 +428,6 @@ namespace joedb
    }
 
    Open_Mode get_mode() const {return mode;}
-   bool is_shared() const {return shared;}
 
    bool is_end_of_file() const {return end_of_file;}
 
