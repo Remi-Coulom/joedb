@@ -118,12 +118,11 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
 # libssh
+# not compatible with asio in cygwin (because asio insists on using winsock)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if(TRUE)
- if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-  if(NOT ${CMAKE_SYSTEM_NAME} EQUAL Darwin)
-   find_package(libssh QUIET)
-  endif()
+if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+ if(NOT ${CMAKE_SYSTEM_NAME} EQUAL Darwin)
+  find_package(libssh QUIET)
  endif()
 
  if(NOT libssh_FOUND)
@@ -384,7 +383,6 @@ if (HAS_NETWORKING)
   foreach(target
    joedb
    joedb_server
-   joedb_multi_server
    joedb_test
    joedb_network_client
   )
