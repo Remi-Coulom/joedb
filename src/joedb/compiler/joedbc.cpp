@@ -1823,8 +1823,9 @@ static void generate_cpp
   joedb::Generic_File &file,
   joedb::Connection &connection
  ):
-  journal(file)
+  journal((connection.lock(), file))
  {
+  connection.unlock();
   initialize();
  }
 

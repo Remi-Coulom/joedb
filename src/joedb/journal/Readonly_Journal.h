@@ -72,7 +72,6 @@ namespace joedb
    {
     return &file == &other_file;
    }
-   void check_size(bool ignore_errors, bool ignore_trailing);
 
    void refresh_checkpoint();
    void replay_log(Writable &writable);

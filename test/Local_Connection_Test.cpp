@@ -81,6 +81,7 @@ TEST(Local_Connection, size_check)
  try
  {
   Local_Connection<File> connection(file_name);
+  Interpreted_Client client(connection, connection.get_file());
   FAIL() << "Expected an exception\n";
  }
  catch(...)

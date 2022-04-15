@@ -125,7 +125,7 @@ namespace joedb
   if (fd < 0)
    throw_last_error("Opening", file_name);
 
-  if (mode != Open_Mode::read_existing && !Generic_File::is_shared())
+  if (mode != Open_Mode::read_existing && mode != Open_Mode::shared_write)
   {
    if (!try_lock())
     throw_last_error("Locking", file_name);

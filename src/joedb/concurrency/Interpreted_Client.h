@@ -15,8 +15,14 @@ namespace joedb
    Writable_Journal journal;
    Database database;
 
-   Interpreted_Client_Data(Generic_File &local_file): journal(local_file)
+   Interpreted_Client_Data
+   (
+    Generic_File &local_file,
+    joedb::Connection &connection
+   ):
+    journal((connection.lock(), local_file))
    {
+    connection.unlock();
    }
  };
 
@@ -33,7 +39,7 @@ namespace joedb
     Connection &connection,
     Generic_File &local_file
    ):
-    Interpreted_Client_Data(local_file),
+    Interpreted_Client_Data(local_file, connection),
     Client(connection, Interpreted_Client_Data::journal, database),
     multiplexer{database, Interpreted_Client_Data::journal}
    {

@@ -10,10 +10,7 @@ namespace joedb
  class Connection: public Mutex
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Push_Only_Client;
-  friend class Client;
-
-  private:
+  public:
    virtual int64_t handshake(Readonly_Journal &client_journal) = 0;
 
    virtual bool check_matching_content
@@ -39,7 +36,6 @@ namespace joedb
     int64_t server_checkpoint
    ) = 0;
 
-  public:
    virtual ~Connection() = default;
  };
 }

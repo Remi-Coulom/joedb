@@ -68,29 +68,6 @@ namespace joedb
    Local_Connection(const char *file_name):
     file(file_name, Open_Mode::shared_write)
    {
-    if (file.get_mode() != Open_Mode::create_new)
-    {
-     std::exception_ptr exception;
-
-     file.lock();
-
-     try
-     {
-      Readonly_Journal journal(file);
-      const bool ignore_errors = false;
-      const bool ignore_trailing = false;
-      journal.check_size(ignore_errors, ignore_trailing);
-     }
-     catch (...)
-     {
-      exception = std::current_exception();
-     }
-
-     file.unlock();
-
-     if (exception)
-      std::rethrow_exception(exception);
-    }
    }
 
    Local_Connection(const std::string &file_name):
