@@ -163,7 +163,11 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  // Database
  //
- out << R"RRR( class Generic_File_Database: public Database
+ out << R"RRR(
+ class Client_Data;
+ class Client;
+
+ class Generic_File_Database: public Database
  {
   friend class Client_Data;
   friend class Client;
