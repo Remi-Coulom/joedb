@@ -32,7 +32,7 @@ namespace joedb
     connection(connection),
     journal(journal)
    {
-    server_checkpoint = connection.handshake(journal);
+    server_checkpoint = connection.handshake();
     const int64_t client_checkpoint = journal.get_checkpoint_position();
 
     if

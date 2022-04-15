@@ -13,7 +13,7 @@ namespace joedb
    Writable_Journal server_journal;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t handshake(Readonly_Journal &client_journal) override
+   int64_t handshake() override
    //////////////////////////////////////////////////////////////////////////
    {
     return server_journal.get_checkpoint_position();
