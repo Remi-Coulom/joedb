@@ -142,6 +142,8 @@ namespace joedb
    lock_queue.push(session);
    lock_dequeue();
   }
+  else
+   LOG("Warning: locking an already locked session");
  }
 
  ////////////////////////////////////////////////////////////////////////////
