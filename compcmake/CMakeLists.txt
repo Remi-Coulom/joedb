@@ -320,6 +320,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
+  ../src/joedb/String_Logger.cpp
  )
  target_link_libraries(joedb_test joedb)
 

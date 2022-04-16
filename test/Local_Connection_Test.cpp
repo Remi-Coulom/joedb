@@ -3,6 +3,8 @@
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/Destructor_Logger.h"
+#include "joedb/String_Logger.h"
 
 #include "gtest/gtest.h"
 
@@ -69,6 +71,9 @@ TEST(Local_Connection, simple_operation)
 TEST(Local_Connection, size_check)
 /////////////////////////////////////////////////////////////////////////////
 {
+ ::Destructor_Logger::write("Toto");
+ EXPECT_EQ(::String_Logger::the_logger.get_message(), "Toto");
+
  std::remove(file_name);
 
  {
@@ -78,14 +83,21 @@ TEST(Local_Connection, size_check)
   journal.flush();
  }
 
+ EXPECT_EQ
+ (
+  ::String_Logger::the_logger.get_message(),
+  "Ahead_of_checkpoint in Writable_Journal destructor"
+ );
+
  try
  {
   Local_Connection<File> connection(file_name);
   Interpreted_Client client(connection, connection.get_file());
   FAIL() << "Expected an exception\n";
  }
- catch(...)
+ catch(const joedb::Exception &e)
  {
+  EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. joedb_convert can be used to fix it.");
  }
 }
 #endif

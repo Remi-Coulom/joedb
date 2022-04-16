@@ -103,11 +103,7 @@ TEST(Client, Transaction_Failure)
 
   client2.pull();
   EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
-
-  joedb::Destructor_Logger::remove_logger();
  }
-
- joedb::Destructor_Logger::set_logger();
 }
 
 /////////////////////////////////////////////////////////////////////////////
