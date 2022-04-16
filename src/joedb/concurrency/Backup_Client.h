@@ -51,6 +51,7 @@ namespace joedb
    ):
     Client(connection, local_file)
    {
+    connection.lock();
    }
 
   Writable_Journal &get_journal()

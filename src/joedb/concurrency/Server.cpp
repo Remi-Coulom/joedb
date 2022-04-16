@@ -739,10 +739,7 @@ namespace joedb
   backup_client(backup_client)
  {
   if (backup_client)
-  {
-   backup_client->lock();
    backup_client->locked_push();
-  }
 
   write_status();
 
