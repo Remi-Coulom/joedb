@@ -40,7 +40,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Backup_Client: public Client<Backup_Client_Data>
+ class Backup_Client: private Client<Backup_Client_Data>
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
@@ -54,10 +54,15 @@ namespace joedb
     connection.lock();
    }
 
-  Writable_Journal &get_journal()
-  {
-   return data.journal;
-  }
+   Writable_Journal &get_journal()
+   {
+    return data.journal;
+   }
+
+   void locked_push()
+   {
+    Client<Backup_Client_Data>::locked_push();
+   }
  };
 }
 
