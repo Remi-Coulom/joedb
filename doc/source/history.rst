@@ -2,8 +2,10 @@ History
 =======
 - 2022-??-??: 6.1
 
-  - Support for real-time incremental database backup.
-  - Stricter safety checks for concurrency.
+  - Server support for real-time remote backup.
+  - Stricter safety checks for concurrency: a client that is constructed with
+    a local file that has shared_write access locks the connection during the
+    construction of the local journal to better test for checkpoint integrity.
 
 - 2021-09-15: 6.0
 
