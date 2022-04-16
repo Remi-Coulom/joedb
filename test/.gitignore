@@ -3,3 +3,5 @@ html
 *.tmp
 multi_server.joedb
 local_connection.joedb
+backup.joedb
+server.joedb
