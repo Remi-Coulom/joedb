@@ -69,7 +69,7 @@ TEST(Server_Connection, session)
  channel.write<char>('L');
  channel.write<int64_t>(41);
  channel.write<int64_t>(0);
- channel.write<char>('U');
+ channel.write<char>('u');
  channel.set_position(0);
 
  {

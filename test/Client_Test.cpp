@@ -290,3 +290,15 @@ TEST(Client, synchronization_error_at_handshake)
   EXPECT_STREQ(e.what(), "Client data does not match the server");
  }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Client, empty_transaction)
+/////////////////////////////////////////////////////////////////////////////
+{
+ Memory_File server_file;
+ Embedded_Connection connection(server_file);
+ Memory_File client_file;
+ Interpreted_Client client(connection, client_file);
+ client.transaction([](Readable &readable, Writable &writable){});
+ client.transaction([](Readable &readable, Writable &writable){});
+}

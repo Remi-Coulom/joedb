@@ -25,8 +25,8 @@ namespace joedb
 
     if (difference > 0)
      do_push(unlock_after);
-    else if (!unlock_after)
-     connection.lock();
+    else if (unlock_after)
+     connection.unlock();
    }
 
    void throw_if_pull_when_ahead()
@@ -79,6 +79,13 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     return data.get_journal().get_checkpoint_position() - server_checkpoint;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void lock()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    connection.lock();
    }
 
    //////////////////////////////////////////////////////////////////////////
