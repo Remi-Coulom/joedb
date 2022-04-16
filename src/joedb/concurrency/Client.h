@@ -50,9 +50,10 @@ namespace joedb
    ):
     connection(connection),
     server_checkpoint(connection.handshake()),
-    data((connection.lock(), connection), file)
+    data(connection.locked(file.is_shared()), file)
    {
-    connection.unlock();
+    if (file.is_shared())
+     connection.unlock();
 
     {
      const int64_t client_checkpoint =

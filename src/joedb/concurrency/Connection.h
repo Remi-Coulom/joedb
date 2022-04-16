@@ -38,6 +38,13 @@ namespace joedb
    ) = 0;
 
    virtual ~Connection() = default;
+
+   Connection &locked(bool lock_me)
+   {
+    if (lock_me)
+     lock();
+    return *this;
+   }
  };
 }
 

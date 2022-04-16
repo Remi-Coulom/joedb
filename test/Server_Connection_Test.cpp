@@ -58,8 +58,6 @@ TEST(Server_Connection, session)
  channel.write<int64_t>(6);
  channel.write<int64_t>(1234);
  channel.write<int64_t>(41);
- channel.write<char>('l');
- channel.write<char>('u');
  channel.write<char>('H');
  channel.write<char>('l');
  channel.write<char>('u');

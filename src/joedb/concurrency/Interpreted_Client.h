@@ -53,9 +53,9 @@ namespace joedb
    Interpreted_Client
    (
     Connection &connection,
-    Generic_File &local_file
+    Generic_File &file
    ):
-    Client(connection, local_file)
+    Client(connection, file)
    {
    }
 
