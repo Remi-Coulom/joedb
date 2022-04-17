@@ -101,7 +101,12 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     throw_if_pull_when_ahead();
-    server_checkpoint = connection.pull(data.get_journal());
+
+    if (data.get_journal().is_shared())
+     server_checkpoint = connection.lock_pull_unlock(data.get_journal());
+    else
+     server_checkpoint = connection.pull(data.get_journal());
+
     data.update();
     return server_checkpoint;
    }
