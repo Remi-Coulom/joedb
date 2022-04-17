@@ -22,6 +22,7 @@ int main()
  //
  // The databases are empty. client1 will add a few cities.
  //
+ // All write operations are performed via the transaction function.
  // The transaction function takes a lambda as parameter.
  // The lock_pull operation is performed before the lambda, and the push_unlock
  // operation is performed after the lambda, if no exception was thrown.

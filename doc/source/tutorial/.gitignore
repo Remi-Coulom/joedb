@@ -27,4 +27,7 @@ joedb_multi_server.out
 joedb_network_client.out
 joedb_ssh_client.out
 joedb_local_client.out
+local_concurrency_?.txt
+local_concurrency.joedb
+local_concurrency.joedbi
 tutorial

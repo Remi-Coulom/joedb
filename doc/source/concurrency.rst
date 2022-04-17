@@ -30,8 +30,8 @@ that the contents of the local and remote copies match. Offline modifications
 to the local copy can be made, and then pushed to the server when connecting
 later.
 
-Example C++ Code
-----------------
+Example
+-------
 
 The compiler produces code that ensures that locks and unlocks are correctly
 paired, and modifications to the local database can only occur during a lock.
@@ -58,8 +58,8 @@ available connections.
 
 ``Embedded_Connection`` creates a connection to a file opened in the same
 program. It does not allow concurrent access to the same file from another
-process. This class is convenient to allow the same polymorphic code to work
-either with a shared remote database or a local file that is not shared.
+process. It is not very useful, except for unit testing, and illustrating
+concurrency for this tutorial.
 
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
@@ -74,12 +74,35 @@ Here is an example of use:
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
 
+Running this program multiple times illustrates some aspects of error
+management in joedb. The first run will create the database with the the 3
+cities, and complete without errors. Because of the unique index, the second
+run will fail:
+
+.. literalinclude:: ./tutorial/local_concurrency_2.txt
+
+This leaves the database with an incomplete transaction, which will prevent
+opening the file in the third run:
+
+.. literalinclude:: ./tutorial/local_concurrency_3.txt
+
+You can observe the content of the aborted transaction using ``joedb_logdump --ignore-errors``:
+
+.. literalinclude:: ./tutorial/local_concurrency.joedbi
+   :language: joedbi
+
+The situation can be resolved by using :ref:`joedb_convert` to produce a fixed
+file. The ``--ignore-errors`` flag can be used to include the aborted
+transaction into the output.
+
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
 
-``Server_Connection`` allows connecting to a running :ref:`joedb_server` using the joedb :doc:`network protocol <network_protocol>`.
+``Server_Connection`` allows connecting to a running :ref:`joedb_server` using
+the joedb :doc:`network protocol <network_protocol>`.
 
-The constructor of ``Server_Connection`` takes a ``Channel`` parameter. Two channel classes are provided:
+The constructor of ``Server_Connection`` takes a ``Channel`` parameter. Two
+channel classes are provided:
 
  * ``Network_Channel`` opens a network socket to the server directly.
  * ``ssh::Forward_Channel`` connects to the server with ssh encryption and authentication.

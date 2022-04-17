@@ -4,7 +4,7 @@ set -e
 dir=../../../compcmake/gcc_debug
 cmake --build $dir
 
-rm -f tutorial.joedb index_tutorial.joedb
+rm -f tutorial.joedb index_tutorial.joedb local_concurrency.joedb local_concurrency_?.txt
 
 $dir/index_tutorial >index_tutorial.out
 $dir/tutorial >tutorial.out
@@ -23,6 +23,11 @@ $dir/joedb_merge merge_1.joedb merge_2.joedb merged.joedb
 $dir/joedb_to_json merge_1.joedb >merge_1.json
 $dir/joedb_to_json merge_2.joedb >merge_2.json
 $dir/joedb_to_json merged.joedb >merged.json
+
+! $dir/local_concurrency
+! $dir/local_concurrency 2>local_concurrency_2.txt
+! $dir/local_concurrency 2>local_concurrency_3.txt
+joedb_logdump --ignore-errors local_concurrency.joedb >local_concurrency.joedbi
 
 set +e
 ( cd $dir && PATH="." && joedb_merge ) 2>joedb_merge.out

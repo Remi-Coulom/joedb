@@ -57,7 +57,8 @@ In order to support schema recognition (see :doc:`schema_upgrade`),
 data-definition commands are not packed. They are left as-is, at the beginning
 of the log, in the same order as in the original file.
 
-.. _joedb_merge:
+
+.. _joedb_convert:
 
 ``joedb_convert``
 -----------------

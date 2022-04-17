@@ -79,7 +79,7 @@ History
 
 - 2018-04-02: 2.1
 
-  - new :ref:`joedb_merge` tool to concatenate joedb files
+  - new ``joedb_merge`` tool to concatenate joedb files
   - dense table storage is more memory-efficient in the interpreter
   - Minor fixes and improvements
 
