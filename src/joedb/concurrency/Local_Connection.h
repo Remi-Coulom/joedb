@@ -37,14 +37,22 @@ namespace joedb
 
    int64_t pull(Writable_Journal &client_journal) override
    {
-    run_while_locked([&](){client_journal.refresh_checkpoint();});
-    return client_journal.get_checkpoint_position();
+    throw Exception("Pulling into a shared file without locking");
    }
 
    int64_t lock_pull(Writable_Journal &client_journal) override
    {
     lock();
     client_journal.refresh_checkpoint();
+    return client_journal.get_checkpoint_position();
+   }
+
+   int64_t lock_pull_unlock(Writable_Journal &client_journal) override
+   {
+    run_while_locked([&]()
+    {
+     client_journal.refresh_checkpoint();
+    });
     return client_journal.get_checkpoint_position();
    }
 

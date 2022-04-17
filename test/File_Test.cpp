@@ -269,6 +269,7 @@ TEST_F(File_Test, flush)
 {
  std::remove("new.tmp");
  File file1("new.tmp", Open_Mode::shared_write);
+ EXPECT_TRUE(file1.is_shared());
  file1.write<int32_t>(1234);
  file1.flush();
 

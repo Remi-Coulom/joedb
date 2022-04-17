@@ -83,7 +83,8 @@ Compiler
 
 - C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
-- db.is_valid(x) (->joedb_multi_server.cpp)
+- db.is_valid(x) (->validity of ssh_connection in joedb_multi_server.cpp)
+- compiled Interpreted_File (no schema in joedbi for joedb_multi_server)
 
 Better Freedom_Keeper
 ---------------------
@@ -106,6 +107,7 @@ Concurrency
   - indicate commit level for a push
   - cache SHA-256 calculations + efficient incremental update.
   - perform hash calculations asynchronously (don't block whole server)
+  - fused lock_pull_unlock operation in the protocol
 
 - performance: merge socket writes.
 - Notifications from server to client, in a second channel:

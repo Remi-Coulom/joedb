@@ -3,9 +3,9 @@ History
 - 2022-??-??: 6.1
 
   - Server support for real-time remote backup.
-  - Stricter safety checks for concurrency: a client that is constructed with
-    a local file that has shared_write access locks the connection during the
-    construction of the local journal to better test for checkpoint integrity.
+  - Support for multiple clients sharing the same local journal. Previous
+    version allowed it, but was missing some necessary synchronization for this
+    to work safely.
 
 - 2021-09-15: 6.0
 

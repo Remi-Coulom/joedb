@@ -30,6 +30,13 @@ namespace joedb
     return pull(client_journal);
    }
 
+   virtual int64_t lock_pull_unlock(Writable_Journal &client_journal)
+   {
+    int64_t result = lock_pull(client_journal);
+    unlock();
+    return result;
+   }
+
    virtual void push
    (
     Readonly_Journal &client_journal,
