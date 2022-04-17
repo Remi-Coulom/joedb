@@ -58,8 +58,8 @@ available connections.
 
 ``Embedded_Connection`` creates a connection to a file opened in the same
 program. It does not allow concurrent access to the same file from another
-process. It is not very useful, except for unit testing, and illustrating
-concurrency for this tutorial.
+process. It is not very useful in practice, except for unit testing, and this
+tutorial.
 
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
