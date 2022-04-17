@@ -29,8 +29,9 @@ namespace joedb
   public:
    Portable_File(const char *file_name, Open_Mode mode):
     Portable_File_Buffer(file_name, mode),
-    Stream_File(filebuf, actual_mode)
+    Stream_File(filebuf, mode)
    {
+    set_mode(actual_mode);
    }
 
    Portable_File(const std::string &file_name, Open_Mode mode):
