@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-#include <sstream>
 
 namespace joedb
 {
@@ -19,9 +18,10 @@ namespace joedb
   const char *file_name
  ) const
  {
-  std::ostringstream message;
-  message << action << ' ' << file_name << ": " << strerror(errno) << '.';
-  throw Exception(message.str());
+  throw Exception
+  (
+   std::string(action) + ' ' + file_name + ": " + strerror(errno)
+  );
  }
 
  /////////////////////////////////////////////////////////////////////////////
