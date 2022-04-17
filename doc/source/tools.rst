@@ -76,6 +76,8 @@ new format is first implemented in write functions. At this moment,
 format. This happened in the early days of joedb, but is not likely to happen
 again in the future.
 
+.. _joedb_merge:
+
 ``joedb_merge``
 ---------------
 
@@ -115,9 +117,25 @@ Run a server to share a single database. See :doc:`concurrency` for more informa
 .. literalinclude:: ./tutorial/joedb_multi_server.out
    :language: none
 
-Run a server to share multiple databases. The config file lists all databases like this:
+Run a server to share multiple databases. The config file contains joedbi commands to set server parameters. For instance:
 
 .. literalinclude:: ../../test/multi_server.joedbi
+   :language: joedbi
+
+The schema of the config file is this:
+
+.. literalinclude:: ../../src/joedb/db/multi_server.joedbi
+   :language: joedbi
+
+So, you can use this command to setup online backup for a server. The backup
+server could be configured like this:
+
+.. literalinclude:: ../../test/server_for_backup.joedbi
+   :language: joedbi
+
+And the main server would be like this:
+
+.. literalinclude:: ../../test/server_with_backup.joedbi
    :language: joedbi
 
 .. _joedb_local_client:

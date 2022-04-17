@@ -608,6 +608,8 @@ static void generate_readonly_h
  using joedb::Table_Id;
  using joedb::Field_Id;
 
+ extern const char * schema_string;
+ extern const size_t schema_string_size;
 )RRR";
 
  for (auto &table: tables)
@@ -1256,8 +1258,6 @@ static void generate_readonly_h
  //
  out << R"RRR(
   protected:
-   static const char * schema_string;
-   static const size_t schema_string_size;
    bool upgrading_schema = false;
    joedb::Memory_File schema_file;
    joedb::Writable_Journal schema_journal;
@@ -1716,17 +1716,49 @@ static void generate_readonly_h
    out << " }\n";
   }
 
+out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ class Interpreted_File: public joedb::Memory_File
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   Interpreted_File(std::istream &file);
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Interpreted_Database: public Readonly_Database
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   Interpreted_Database(std::istream &file):
+    Readonly_Database(Interpreted_File(file))
+   {
+   }
+
+   Interpreted_Database(std::istream &&file): Interpreted_Database(file) {}
+
+   Interpreted_Database(const char *file_name);
+ };
+
+)RRR";
 
  //
  // Types class
  //
- out << "\n class Readonly_Types\n";
- out << " {\n";
- out << "  public:\n";
+out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ class Readonly_Types
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+)RRR";
 
  std::vector<std::string> type_names;
  type_names.emplace_back("Database");
  type_names.emplace_back("Readonly_Database");
+ type_names.emplace_back("Interpreted_File");
+ type_names.emplace_back("Interpreted_Database");
+
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
@@ -1760,14 +1792,37 @@ static void generate_readonly_cpp
 )
 {
  const std::vector<std::string> &ns = options.get_name_space();
- out << "#include \"" << ns.back() << "_readonly.h\"\n\n";
- out << "const char * " << namespace_string(ns);
- out << "::Database::schema_string = ";
+ out << "#include \"" << ns.back() << "_readonly.h\"\n";
+ out << "#include \"joedb/journal/Interpreted_File.h\"\n\n";
+ out << "#include <fstream>\n";
+
+ namespace_open(out, options.get_name_space());
+
+ out << " const char * schema_string = ";
  write_string(out, std::string(schema.data(), schema.size()));
  out << ";\n";
- out << "const size_t " << namespace_string(ns);
- out << "::Database::schema_string_size = " << schema.size();
+ out << " const size_t schema_string_size = " << schema.size();
  out << ";\n";
+
+out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_File::Interpreted_File(std::istream &file)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  write_data(schema_string, schema_string_size);
+  set_mode(joedb::Open_Mode::write_existing);
+  append_interpreted_commands(*this, file);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_Database::Interpreted_Database(const char *file_name):
+ ////////////////////////////////////////////////////////////////////////////
+  Interpreted_Database(std::ifstream(file_name))
+ {
+ }
+)RRR";
+
+ namespace_close(out, options.get_name_space());
 }
 
 /////////////////////////////////////////////////////////////////////////////

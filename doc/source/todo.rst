@@ -83,7 +83,6 @@ Compiler
 
 - C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
-- compiled Interpreted_File (no schema in joedbi for joedb_multi_server)
 
 Better Freedom_Keeper
 ---------------------

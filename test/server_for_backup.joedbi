@@ -1,6 +1,5 @@
-create_table server
-add_field server file_name string
-add_field server port int32
-add_field server timeout int32
-
-insert_into server 0 "backup.joedb" 2001 0
+insert_into server 1
+update server 1 file_name "backup.joedb"
+update server 1 port 2001
+update server 1 timeout 0
+update server 1 ssh_backup 0

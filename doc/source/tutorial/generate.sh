@@ -19,12 +19,12 @@ help" | $dir/joedbi >joedbi_help.out
 rm -f merge_1.joedb merge_2.joedb merged.joedb
 $dir/joedbi merge_1.joedb <merge_1.joedbi >/dev/null
 $dir/joedbi merge_2.joedb <merge_2.joedbi >/dev/null
-$dir/joedb_merge merge_1.joedb merge_2.joedb merged.joedb
+$dir/joedb_merge merge_1.joedb merge_2.joedb merged.joedb >/dev/null 2>/dev/null
 $dir/joedb_to_json merge_1.joedb >merge_1.json
 $dir/joedb_to_json merge_2.joedb >merge_2.json
 $dir/joedb_to_json merged.joedb >merged.json
 
-! $dir/local_concurrency
+$dir/local_concurrency
 ! $dir/local_concurrency 2>local_concurrency_2.txt
 ! $dir/local_concurrency 2>local_concurrency_3.txt
 joedb_logdump --ignore-errors local_concurrency.joedb >local_concurrency.joedbi

@@ -7,6 +7,7 @@
 #include "joedb/journal/Interpreted_File.h"
 
 #include <iostream>
+#include <joedb/db/multi_server_readonly.h>
 #include <joedb/ssh/Thread_Safe_Session.h>
 #include <list>
 #include <memory>
@@ -108,8 +109,8 @@ namespace joedb
    return 1;
   }
 
-  Interpreted_File config_file(argv[1]);
-  multi_server::Generic_File_Database db(config_file);
+  const char * const config_file_name = argv[1];
+  multi_server::Interpreted_Database db(config_file_name);
 
   net::io_context io_context;
 

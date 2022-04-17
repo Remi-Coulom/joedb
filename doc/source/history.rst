@@ -1,11 +1,10 @@
 History
 =======
-- 2022-??-??: 6.1
+- 2022-??-??: 7.0
 
-  - Server support for real-time remote backup.
+  - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
   - Support for multiple clients sharing the same local journal. Previous
-    version allowed it, but was missing some necessary synchronization for this
-    to work safely.
+    version allowed it, but was missing some necessary synchronization.
 
 - 2021-09-15: 6.0
 
@@ -79,7 +78,7 @@ History
 
 - 2018-04-02: 2.1
 
-  - new ``joedb_merge`` tool to concatenate joedb files
+  - new :ref:`joedb_merge` tool to concatenate joedb files
   - dense table storage is more memory-efficient in the interpreter
   - Minor fixes and improvements
 

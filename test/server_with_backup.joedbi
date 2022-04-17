@@ -1,17 +1,12 @@
-create_table server
-add_field server file_name string
-add_field server port int32
-add_field server timeout int32
+insert_into ssh_connection 1
+update ssh_connection 1 user ""
+update ssh_connection 1 host "localhost"
+update ssh_connection 1 joedb_port 2001
+update ssh_connection 1 ssh_port 22
+update ssh_connection 1 ssh_log_level 0
 
-create_table ssh_connection
-add_field ssh_connection user string
-add_field ssh_connection host string
-add_field ssh_connection joedb_port int32
-add_field ssh_connection ssh_port int32
-add_field ssh_connection ssh_log_level int32
-
-add_field server ssh_backup references ssh_connection
-custom set_default_ssh_backup
-
-insert_into ssh_connection 1 "" "localhost" 2001 22 0
-insert_into server 1 "server.joedb" 2002 0 1
+insert_into server 1
+update server 1 file_name "server.joedb"
+update server 1 port 2002
+update server 1 timeout 0
+update server 1 ssh_backup 1
