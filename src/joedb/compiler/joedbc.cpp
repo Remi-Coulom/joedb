@@ -621,7 +621,7 @@ static void generate_readonly_h
   const std::string &tname = table.second;
   out << '\n';
   out << " class id_of_" << tname << "\n {\n";
-  out << "\n  private:\n";
+  out << "  private:\n";
   out << "   Record_Id id;\n";
   out << "\n  public:\n";
   out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
@@ -718,12 +718,20 @@ static void generate_readonly_h
     max_record_id = record_id;
    }
 
-  protected:
 )RRR";
 
  //
- // Vectors, and freedom keepers
+ // Validity checks
  //
+ for (auto &table: tables)
+ {
+  const std::string &tname = table.second;
+
+  out << "   bool is_valid(id_of_" << tname << " id) const {return is_valid_record_id_for_" << tname << "(id.get_id());}\n";
+ }
+
+ out << "\n  protected:\n";
+
  for (auto &table: tables)
  {
   const std::string &tname = table.second;

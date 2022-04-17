@@ -11,6 +11,7 @@
 #include <list>
 #include <memory>
 #include <fstream>
+#include <stdexcept>
 
 namespace joedb
 {
@@ -118,10 +119,11 @@ namespace joedb
   {
    auto ssh_backup = db.get_ssh_backup(server);
 
-   // TODO: check valid id of ssh_backup
-
    if (ssh_backup)
    {
+    if (!db.is_valid(ssh_backup))
+     throw std::runtime_error("invlid ssh_backup id");
+
     servers.emplace_back
     (
      new Server_Data_With_Backup

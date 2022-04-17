@@ -83,7 +83,6 @@ Compiler
 
 - C wrapper. Catch all exceptions? Error codes?
 - jni wrapper
-- db.is_valid(x) (->validity of ssh_connection in joedb_multi_server.cpp)
 - compiled Interpreted_File (no schema in joedbi for joedb_multi_server)
 
 Better Freedom_Keeper
