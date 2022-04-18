@@ -9,6 +9,10 @@ Journal File
 - joedb_fix
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also
   test if 64-bit overflows).
+- When opening a journal: ignore-error and set-checkpoint-to-file-size should
+  be two independent options. Must have a "robust" option that will silently
+  erase interrupted transaction (or the whole file?) for automatic fail-safe
+  operation.
 
 New Operations and Types
 ------------------------
@@ -105,7 +109,8 @@ Concurrency
   - indicate commit level for a push
   - cache SHA-256 calculations + efficient incremental update.
   - perform hash calculations asynchronously (don't block whole server)
-  - fused lock_pull_unlock operation in the protocol
+  - backup should be asynchronous as well. Allow multiple backups.
+  - fused lock_pull_unlock operation in the protocol? (maybe best to lock locally)
 
 - performance: merge socket writes.
 - Notifications from server to client, in a second channel:
@@ -114,6 +119,18 @@ Concurrency
   - when the lock times out
   - when the server is interrupted
   - ping
+
+- When the client journal is shared and lockable, lock the local file instead
+  of the connection when appropriate (in constructor and pull + whenever the
+  connection is locked). Must not lock both in case of Local_Connection ->
+  journal locking should be a virtual function of the connection:
+
+   - lock() locks the connection
+   - lock_journal(journal) locks the local journal (for pull and construction)
+   - lock_both(journal) locks both for a write transaction
+
+  If the journal is shared but not lockable (Portable_File), then lock the
+connection like we are doing now.
 
 C++ language questions
 ----------------------
