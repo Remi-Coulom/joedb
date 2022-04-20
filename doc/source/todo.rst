@@ -11,8 +11,10 @@ Journal File
   test if 64-bit overflows).
 - When opening a journal: ignore-error and set-checkpoint-to-file-size should
   be two independent options. Must have a "robust" option that will silently
-  erase interrupted transaction (or the whole file?) for automatic fail-safe
-  operation.
+  ignore incomplete transactions (or the whole file?) for automatic fail-safe
+  operation. Must not ignore test for checkpoint integrity when opening
+  read-only. Create a "shared_read" opening mode that disables writing (but
+  re-enables it after reading the checkpoint).
 
 New Operations and Types
 ------------------------
@@ -103,16 +105,18 @@ Concurrency
   Buffer_File class, and use write<int64_t>
 - joedb_server:
 
-  - fuzzer + unit testing
   - use coroutines
+  - fuzzer + unit testing
   - option to serve readonly
   - indicate commit level for a push
   - cache SHA-256 calculations + efficient incremental update.
   - perform hash calculations asynchronously (don't block whole server)
   - backup should be asynchronous as well. Allow multiple backups.
-  - fused lock_pull_unlock operation in the protocol? (maybe best to lock locally)
 
-- performance: merge socket writes.
+- performance: fuse socket writes. Fused operations can be produced by fusing
+  writes. Lock-pull and push-unlock could have be done this way. Do it for
+  lock-pull-unlock.
+- Asynchronous client (necessary for backup client). Do it with coroutines.
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
