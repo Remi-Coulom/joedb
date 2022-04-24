@@ -1575,8 +1575,7 @@ static void generate_readonly_h
   out << "   container_of_" << tname << "(const Database &db): db(db) {}\n";
   out << '\n';
   out << "  public:\n";
-  out << "   class iterator: public std::iterator<std::forward_iterator_tag,";
-  out << " id_of_" << tname << ">\n";
+  out << "   class iterator\n";
   out << "   {\n";
   out << "    friend class container_of_" << tname << ";\n";
   out << "    private:\n";
@@ -1586,6 +1585,12 @@ static void generate_readonly_h
   out << "     size_t index;\n";
   out << "     iterator(const data_of_" << tname << " &data): fk(&data.freedom_keeper), index(0) {}\n";
   out << "    public:\n";
+  out << "     typedef std::forward_iterator_tag iterator_category;\n";
+  out << "     typedef id_of_" << tname << " value_type;\n";
+  out << "     typedef std::ptrdiff_t difference_type;\n";
+  out << "     typedef value_type* pointer;\n";
+  out << "     typedef value_type& reference;\n";
+  out << '\n';
   out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
   out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
   out << "     iterator &operator++() {index = fk->get_next(index); return *this;}\n";
