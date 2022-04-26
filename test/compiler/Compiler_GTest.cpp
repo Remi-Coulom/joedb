@@ -11,6 +11,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Embedded_Connection.h"
+#include <joedb/concurrency/Local_Connection.h>
 
 using namespace my_namespace::is_nested;
 
@@ -900,4 +901,19 @@ TEST(Compiler, index_iteration)
  EXPECT_EQ(db.next(tokyo), lille);
  EXPECT_EQ(db.previous(lille), tokyo);
  EXPECT_EQ(db.next(paris), db.get_city_table().get_end());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, shared_local_file)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const char * const file_name = "compiler_test.joedb";
+ std::remove(file_name);
+
+ joedb::Local_Connection<joedb::File> connection(file_name);
+ testdb::Client client(connection);
+
+ EXPECT_EQ(client.get_database().get_city_table().get_size(), 0ULL);
+
+ std::remove(file_name);
 }
