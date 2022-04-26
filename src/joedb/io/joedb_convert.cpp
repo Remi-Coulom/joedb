@@ -4,12 +4,20 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static void process(Readonly_Journal &input, Writable_Journal &output)
+ static void process
  /////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &input,
+  Writable_Journal &output,
+  int64_t checkpoint
+ )
  {
   try
   {
-   input.replay_log(output);
+   if (checkpoint <= 0)
+    checkpoint = input.get_checkpoint_position();
+   input.play_until(output, checkpoint);
+   output.checkpoint(Commit_Level::no_commit);
   }
   catch (const Exception &e)
   {

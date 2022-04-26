@@ -12,13 +12,28 @@
 #include <memory>
 
 /////////////////////////////////////////////////////////////////////////////
+static void dump
+/////////////////////////////////////////////////////////////////////////////
+(
+ joedb::Readonly_Journal &journal,
+ joedb::Writable &writable,
+ bool print_checkpoint
+)
+{
+ if (print_checkpoint)
+  journal.replay_with_checkpoint_comments(writable);
+ else
+  journal.replay_log(writable);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 static int joedb_logdump_main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (argc <= 1)
  {
   std::cerr << "usage: " << argv[0];
-  std::cerr << " [--sql] [--sqlite] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] <file.joedb>\n";
+  std::cerr << " [--sql] [--sqlite] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] [--print-checkpoint] <file.joedb>\n";
   return 1;
  }
  else
@@ -30,6 +45,7 @@ static int joedb_logdump_main(int argc, char **argv)
   bool schema_only = false;
   bool ignore_errors = false;
   bool load = false;
+  bool print_checkpoint = false;
 
   int arg_index = 1;
 
@@ -72,6 +88,12 @@ static int joedb_logdump_main(int argc, char **argv)
   if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--load")
   {
    load = true;
+   arg_index++;
+  }
+
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--print-checkpoint")
+  {
+   print_checkpoint = true;
    arg_index++;
   }
 
@@ -128,10 +150,10 @@ static int joedb_logdump_main(int argc, char **argv)
    {
     joedb::Database db;
     joedb::Multiplexer multiplexer{db, *writable};
-    journal->replay_log(multiplexer);
+    dump(*journal, multiplexer, print_checkpoint);
    }
    else
-    journal->replay_log(*writable);
+    dump(*journal, *writable, print_checkpoint);
   }
  }
 

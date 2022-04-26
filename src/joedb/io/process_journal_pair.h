@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <sstream>
 
 namespace joedb
 {
@@ -16,16 +17,10 @@ namespace joedb
  (
   int argc,
   char **argv,
-  void (*process)(Readonly_Journal &, Writable_Journal &)
+  void (*process)(Readonly_Journal &, Writable_Journal &, int64_t checkpoint)
  )
  {
-  if (argc != 3 && argc != 4)
-  {
-   std::cerr << "usage: " << argv[0];
-   std::cerr << " [--ignore-errors] <input.joedb> <output.joedb> \n";
-   return 1;
-  }
-
+  int64_t checkpoint = 0;
   bool ignore_errors = false;
   int arg_index = 1;
 
@@ -33,6 +28,19 @@ namespace joedb
   {
    ignore_errors = true;
    arg_index++;
+  }
+
+  if (arg_index + 3 < argc && std::string(argv[arg_index]) == "--checkpoint")
+  {
+   std::istringstream(argv[arg_index + 1]) >> checkpoint;
+   arg_index += 2;
+  }
+
+  if (arg_index + 2 != argc)
+  {
+   std::cerr << "usage: " << argv[0];
+   std::cerr << " [--ignore-errors] [--checkpoint N] <input.joedb> <output.joedb> \n";
+   return 1;
   }
 
   const char *input_file_name = argv[arg_index];
@@ -44,7 +52,7 @@ namespace joedb
   File output_file(output_file_name, Open_Mode::create_new);
   Writable_Journal output_journal(output_file);
 
-  process(input_journal, output_journal);
+  process(input_journal, output_journal, checkpoint);
 
   return 0;
  }

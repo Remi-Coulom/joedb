@@ -4,8 +4,13 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- static void process(Readonly_Journal &input, Writable_Journal &output)
+ static void process
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &input,
+  Writable_Journal &output,
+  int64_t checkpoint
+ )
  {
   pack(input, output);
  }
