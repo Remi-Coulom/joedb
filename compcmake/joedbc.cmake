@@ -1,10 +1,23 @@
 find_program(JOEDBC joedbc
  HINTS
+  ~/repos/joedb/compcmake/gcc_release
+  ~/repos/joedb/compcmake/out/build/x64-Release
   ../../../../../usr/local/bin
   ../../../../../../usr/local/bin
   ../../../../../../../usr/local/bin
 )
-message("== joedbc: ${JOEDBC}")
+
+find_library(JOEDB_LIB joedb
+ HINTS
+  ~/repos/joedb/compcmake/gcc_release
+  ~/repos/joedb/compcmake/out/build/x64-Release
+  ../../../../../usr/local/lib
+  ../../../../../../usr/local/lib
+  ../../../../../../../usr/local/lib
+)
+
+message("== JOEDBC = ${JOEDBC}")
+message("== JOEDB_LIB = ${JOEDB_LIB}")
 
 add_custom_target(all_joedbc)
 
@@ -34,3 +47,10 @@ function(joedbc_build dir namespace)
  endif()
  add_dependencies(all_joedbc compile_${namespace}_with_joedbc)
 endfunction(joedbc_build)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function(target_uses_joedb)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ add_dependencies(${ARGV0} all_joedbc)
+ target_link_libraries(${ARGV0} ${JOEDB_LIB})
+endfunction(target_uses_joedb)
