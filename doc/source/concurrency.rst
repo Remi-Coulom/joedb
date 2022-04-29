@@ -74,27 +74,6 @@ joedbc produces a convenient ``Local_Client`` class that creates the connection 
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
 
-Running this program multiple times illustrates some aspects of error
-management in joedb. The first run will create the database with the the 3
-cities, and complete without errors. Because of the unique index, the second
-run will fail:
-
-.. literalinclude:: ./tutorial/local_concurrency_2.txt
-
-This leaves the database with an incomplete transaction, which will prevent
-opening the file in the third run:
-
-.. literalinclude:: ./tutorial/local_concurrency_3.txt
-
-You can observe the content of the aborted transaction using ``joedb_logdump --ignore-errors``:
-
-.. literalinclude:: ./tutorial/local_concurrency.joedbi
-   :language: joedbi
-
-The situation can be resolved by using :ref:`joedb_convert` to produce a fixed
-file. The ``--ignore-errors`` flag can be used to include the aborted
-transaction into the output.
-
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
 
