@@ -1,7 +1,12 @@
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+ set(JOEDB_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/out/build/x64-Release)
+else()
+ set(JOEDB_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/gcc_release)
+endif()
+
 find_program(JOEDBC joedbc
  HINTS
-  ~/repos/joedb/compcmake/gcc_release
-  ~/repos/joedb/compcmake/out/build/x64-Release
+  ${JOEDB_HINTS}
   ../../../../../usr/local/bin
   ../../../../../../usr/local/bin
   ../../../../../../../usr/local/bin
@@ -9,8 +14,7 @@ find_program(JOEDBC joedbc
 
 find_library(JOEDB_LIB joedb
  HINTS
-  ~/repos/joedb/compcmake/gcc_release
-  ~/repos/joedb/compcmake/out/build/x64-Release
+  ${JOEDB_HINTS}
   ../../../../../usr/local/lib
   ../../../../../../usr/local/lib
   ../../../../../../../usr/local/lib
