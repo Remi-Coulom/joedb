@@ -1,4 +1,4 @@
-namespace my_namespace::is_nested::testdb
+namespace my_namespace::is_nested::test
 create_unique_index city_by_name city name
 create_index person_by_name person name
 create_unique_index translation_by_ids translation string_id,language

@@ -27,7 +27,9 @@ message("== JOEDB_LIB = ${JOEDB_LIB}")
 
 add_custom_target(all_joedbc)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function(joedbc_build dir namespace)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  if(JOEDBC)
   add_custom_command(
    OUTPUT

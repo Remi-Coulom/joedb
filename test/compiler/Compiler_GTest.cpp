@@ -1,8 +1,8 @@
-#include "db/testdb.h"
+#include "db/test.h"
 #include "db/multi_index.h"
 #include "db/schema_v1.h"
 #include "db/schema_v2.h"
-#include "db/testdb_readonly.h"
+#include "db/test_readonly.h"
 #include "db/vector_test.h"
 #include "translation.h"
 #include "joedb/Exception.h"
@@ -21,14 +21,14 @@ using namespace my_namespace::is_nested;
 static const std::string &get_translation
 /////////////////////////////////////////////////////////////////////////////
 (
- const testdb::Database &db,
+ const test::Database &db,
  joedb::Record_Id string_id_id,
  joedb::Record_Id language_id
 )
 {
- const testdb::id_of_string_id string_id(string_id_id);
- const testdb::id_of_language language(language_id);
- const testdb::id_of_language english(translation::language::en);
+ const test::id_of_string_id string_id(string_id_id);
+ const test::id_of_language language(language_id);
+ const test::id_of_language english(translation::language::en);
 
  auto translation = db.find_translation_by_ids(string_id, language);
 
@@ -50,7 +50,7 @@ TEST(Compiler, file_test)
  // First, try to open the database
  //
  joedb::Interpreted_File file ("compiler/db/test.joedbi");
- testdb::Generic_File_Database db(file);
+ test::Generic_File_Database db(file);
 
  //
  // Check table sizes
@@ -117,8 +117,8 @@ TEST(Compiler, file_test)
  EXPECT_FALSE(db.get_city_table().is_valid_at(5));
  EXPECT_FALSE(db.get_city_table().is_valid_at(6));
 
- EXPECT_EQ(db.get_name(testdb::container_of_city::get_at(1)), "Barcelona");
- EXPECT_EQ(db.get_name(testdb::container_of_city::get_at(4)), "Tokyo");
+ EXPECT_EQ(db.get_name(test::container_of_city::get_at(1)), "Barcelona");
+ EXPECT_EQ(db.get_name(test::container_of_city::get_at(4)), "Tokyo");
 
  //
  // Loop over not-unique index
@@ -157,7 +157,7 @@ TEST(Compiler, file_test)
   (
    db.get_person_table().begin(),
    db.get_person_table().end(),
-   [&](testdb::id_of_person person)
+   [&](test::id_of_person person)
    {
     return db.get_name(person) == "Catherine";
    }
@@ -199,7 +199,7 @@ TEST(Compiler, file_test)
  {
   db.new_person("Zoé", db.null_city());
   db.new_person("Albert", db.null_city());
-  auto by_name = [&](testdb::id_of_person p_1, testdb::id_of_person p_2)
+  auto by_name = [&](test::id_of_person p_1, test::id_of_person p_2)
   {
    return db.get_name(p_1) < db.get_name(p_2);
   };
@@ -287,7 +287,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   db.new_city("Paris");
   db.new_city("Lille");
   db.new_city("Paris");
@@ -320,7 +320,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   auto translation = db.new_translation();
   ((joedb::Writable *)&db)->delete_from(5, translation.get_id());
   db.checkpoint();
@@ -333,7 +333,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   ((joedb::Writable *)&db)->insert_into(1, 1);
   ((joedb::Writable *)&db)->insert_into(1, 1);
   db.checkpoint();
@@ -347,7 +347,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   ((joedb::Writable *)&db)->insert_into(5, 1);
   ((joedb::Writable *)&db)->insert_into(5, 3);
   db.checkpoint();
@@ -360,7 +360,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_into(1, 2000);
   db.checkpoint();
@@ -374,7 +374,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_vector(1, 1, 2000);
   db.checkpoint();
@@ -389,7 +389,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   auto city = db.new_city("Paris");
   EXPECT_STREQ(db.get_name(city).c_str(), "Paris");
   db.delete_city(city);
@@ -406,7 +406,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
   db.checkpoint();
@@ -422,7 +422,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  testdb::Generic_File_Database db(file);
+  test::Generic_File_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
   db.checkpoint();
@@ -439,7 +439,7 @@ TEST(Compiler, exceptions)
 TEST(Compiler, iterators)
 /////////////////////////////////////////////////////////////////////////////
 {
- testdb::Readonly_Database db
+ test::Readonly_Database db
  (
   joedb::Interpreted_File("compiler/db/test.joedbi")
  );
@@ -468,7 +468,7 @@ TEST(Compiler, checkpoints)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- testdb::Generic_File_Database db(file);
+ test::Generic_File_Database db(file);
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
  db.checkpoint_full_commit();
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
@@ -613,7 +613,7 @@ TEST(Compiler, client_push)
  joedb::Memory_File client_file;
 
  {
-  testdb::Generic_File_Database db(client_file);
+  test::Generic_File_Database db(client_file);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
@@ -623,12 +623,12 @@ TEST(Compiler, client_push)
  {
   joedb::Embedded_Connection connection(server_file);
   client_file.set_mode(joedb::Open_Mode::write_existing);
-  testdb::Client client(connection, client_file);
+  test::Client client(connection, client_file);
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
  server_file.set_mode(joedb::Open_Mode::read_existing);
- testdb::Readonly_Database db(server_file);
+ test::Readonly_Database db(server_file);
  EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
 }
 
@@ -639,7 +639,7 @@ TEST(Compiler, client_hash_error)
  joedb::Memory_File client_file;
 
  {
-  testdb::Generic_File_Database db(client_file);
+  test::Generic_File_Database db(client_file);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
   client_file.set_mode(joedb::Open_Mode::write_existing);
@@ -648,7 +648,7 @@ TEST(Compiler, client_hash_error)
  joedb::Memory_File server_file;
 
  {
-  testdb::Generic_File_Database db(server_file);
+  test::Generic_File_Database db(server_file);
   db.new_person("X", db.null_city());
   db.checkpoint();
   server_file.set_mode(joedb::Open_Mode::write_existing);
@@ -657,7 +657,7 @@ TEST(Compiler, client_hash_error)
  try
  {
   joedb::Embedded_Connection connection(server_file);
-  testdb::Client client(connection, client_file);
+  test::Client client(connection, client_file);
   ADD_FAILURE() << "Should have thrown\n";
  }
  catch (const joedb::Exception &e)
@@ -677,10 +677,10 @@ TEST(Compiler, vector)
   joedb::Memory_File file;
 
   const size_t n = 5;
-  testdb::id_of_float v;
+  test::id_of_float v;
 
   {
-   testdb::Generic_File_Database db(file);
+   test::Generic_File_Database db(file);
    v = db.new_vector_of_float(n);
    for (size_t i = 0; i < n; i++)
     db.set_value(v[i], 0.1f * float(i));
@@ -690,7 +690,7 @@ TEST(Compiler, vector)
   file.set_mode(joedb::Open_Mode::read_existing);
 
   {
-   testdb::Readonly_Database db(file);
+   test::Readonly_Database db(file);
    for (size_t i = 0; i < n; i++)
     EXPECT_EQ(db.get_value(v[i]), 0.1f * float(i));
   }
@@ -884,7 +884,7 @@ TEST(Compiler, index_iteration)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- testdb::Generic_File_Database db(file);
+ test::Generic_File_Database db(file);
 
  const auto tokyo = db.new_city("Tokyo");
  const auto lille = db.new_city("Lille");
@@ -911,7 +911,7 @@ TEST(Compiler, shared_local_file)
  std::remove(file_name);
 
  joedb::Local_Connection<joedb::File> connection(file_name);
- testdb::Client client(connection);
+ test::Client client(connection);
 
  EXPECT_EQ(client.get_database().get_city_table().get_size(), 0ULL);
 

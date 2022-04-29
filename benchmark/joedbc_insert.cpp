@@ -1,4 +1,4 @@
-#include "benchmark.h"
+#include "benchmarkdb.h"
 #include <cstdio>
 
 int main(int argc, char **argv)
@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   std::sscanf(argv[1], "%zu", &N);
   std::printf("N = %zu\n", N);
 
-  benchmark::File_Database db("insert.joedb");
+  benchmarkdb::File_Database db("insert.joedb");
 
 #if 0
   for (size_t i = 1; i <= N; i++)

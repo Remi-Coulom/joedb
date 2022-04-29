@@ -1,6 +1,6 @@
-benchmark.h
-benchmark.cpp
-benchmark_readonly.h
-benchmark_readonly.cpp
+benchmarkdb.h
+benchmarkdb.cpp
+benchmarkdb_readonly.h
+benchmarkdb_readonly.cpp
 *.joedb
 *.sqlite3

@@ -1,11 +1,11 @@
-#include "db/testdb_test_base64.h"
-#include "db/testdb_test_escape.h"
-#include "db/testdb.h"
+#include "db/test_dbname_base64.h"
+#include "db/test_dbname_escape.h"
+#include "db/test.h"
 
 #include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////
-static void test(const my_namespace::is_nested::testdb::Database &db)
+static void test(const my_namespace::is_nested::test::Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
  EXPECT_EQ(db.get_name(db.get_person_table().get_at(1)), "Rémi");
@@ -17,13 +17,13 @@ static void test(const my_namespace::is_nested::testdb::Database &db)
 TEST(joedb_embed, base64)
 /////////////////////////////////////////////////////////////////////////////
 {
- test(my_namespace::is_nested::testdb::get_embedded_test_base64());
+ test(my_namespace::is_nested::test::get_embedded_dbname_base64());
 }
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(joedb_embed, escape)
 /////////////////////////////////////////////////////////////////////////////
 {
- test(my_namespace::is_nested::testdb::get_embedded_test_escape());
+ test(my_namespace::is_nested::test::get_embedded_dbname_escape());
 }
 
