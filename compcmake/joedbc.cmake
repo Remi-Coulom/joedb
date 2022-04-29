@@ -1,12 +1,13 @@
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
- set(JOEDB_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/out/build/x64-Release)
+ set(JOEDB_BUILD_PATH "out/build/x64-Release")
 else()
- set(JOEDB_HINTS ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/gcc_release)
+ set(JOEDB_BUILD_PATH "gcc_release")
 endif()
 
 find_program(JOEDBC joedbc
  HINTS
-  ${JOEDB_HINTS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../compcmake/${JOEDB_BUILD_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/${JOEDB_BUILD_PATH}
   ../../../../../usr/local/bin
   ../../../../../../usr/local/bin
   ../../../../../../../usr/local/bin
@@ -14,7 +15,8 @@ find_program(JOEDBC joedbc
 
 find_library(JOEDB_LIB joedb
  HINTS
-  ${JOEDB_HINTS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../compcmake/${JOEDB_BUILD_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/${JOEDB_BUILD_PATH}
   ../../../../../usr/local/lib
   ../../../../../../usr/local/lib
   ../../../../../../../usr/local/lib

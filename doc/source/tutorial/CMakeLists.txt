@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.1)
+
+project(tutorial)
+
+include("../../../compcmake/joedbc.cmake")
+
+#
+# Including "joedbc.cmake" defines two functions
+#
+#  * joedbc_build(<dir> <name>): add rules to compile a database with joedbc
+#     <dir> is relative to ${CMAKE_CURRENT_SOURCE_DIR}
+#     Assumes that <dir>/<name>.joedbi and <dir>/<name>.joedbc contain compiler
+#     instructions to generate <dir>/<name>.cpp
+#     You can invoke this function multiple times if you have more than one
+#     database in your code.
+#
+#  * target_uses_joedb(target): indicate that a target uses joedb. Two effects:
+#     1: it adds a dependency, so that joedbc is invoked whenever necessary
+#     2: it links the executable to the joedb library
+#
+# You may have to modify joedbc.cmake to add the path to joedbc and libjoedb
+# if they are not stored in standard locations.
+#
+
+joedbc_build("." tutorial)
+
+add_executable(tutorial tutorial_main.cpp tutorial.cpp)
+target_uses_joedb(tutorial)
+
+add_executable(local_concurrency local_concurrency.cpp tutorial.cpp)
+target_uses_joedb(local_concurrency)

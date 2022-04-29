@@ -41,3 +41,9 @@ set +e
 ( cd $dir && PATH="." && joedb_network_client ) 2>joedb_network_client.out
 ( cd $dir && PATH="." && joedb_ssh_client ) 2>joedb_ssh_client.out
 ( cd $dir && PATH="." && joedb_local_client ) 2>joedb_local_client.out
+
+rm -rf build
+mkdir -p build
+cd build
+cmake ..
+make -j 4
