@@ -3,12 +3,7 @@
 
 namespace joedb
 {
- const char *get_version()
- {
-  return
-#include "joedb/../../VERSION"
-  ;
- }
+ const char *get_version();
 }
 
 #endif

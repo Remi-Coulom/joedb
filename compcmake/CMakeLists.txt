@@ -203,6 +203,7 @@ set(JOEDB_SOURCES
  ../src/joedb/Multiplexer.cpp
  ../src/joedb/is_identifier.cpp
  ../src/joedb/Destructor_Logger.cpp
+ ../src/joedb/get_version.cpp
  ../src/joedb/interpreter/Database.cpp
  ../src/joedb/interpreter/Database_Schema.cpp
  ../src/joedb/interpreter/Table.cpp
