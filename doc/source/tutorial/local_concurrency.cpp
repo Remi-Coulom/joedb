@@ -5,8 +5,7 @@
 static int local_concurrency(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
- tutorial::Client client(connection);
+ tutorial::Local_Client client("local_concurrency.joedb");
 
  client.transaction([](tutorial::Generic_File_Database &db)
  {

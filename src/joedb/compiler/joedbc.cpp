@@ -540,6 +540,27 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     });
    }
  };
+
+#ifndef JOEDB_FILE_IS_PORTABLE_FILE
+ ////////////////////////////////////////////////////////////////////////////
+ class Local_Client:
+ ////////////////////////////////////////////////////////////////////////////
+  private joedb::Local_Connection<joedb::File>,
+  public Client
+ {
+  public:
+   Local_Client(const char *file_name):
+    joedb::Local_Connection<joedb::File>(file_name),
+    Client(*static_cast<joedb::Local_Connection<joedb::File>*>(this))
+   {
+   }
+
+   Local_Client(const std::string &file_name):
+    Local_Client(file_name.c_str())
+   {
+   }
+ };
+#endif
 )RRR";
 
  //

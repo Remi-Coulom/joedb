@@ -1,4 +1,4 @@
-#ifndef JOEDB_PORTABLE
+#ifndef JOEDB_FILE_IS_PORTABLE_FILE
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Interpreted_Client.h"

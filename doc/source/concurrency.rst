@@ -69,7 +69,7 @@ template that takes a file class as parameter. It works only with file classes
 that support locking, such as ``Posix_File`` and ``Windows_File`` (or ``File``,
 when it is typedefed to one of those).
 
-Here is an example of use:
+joedbc produces a convenient ``Local_Client`` class that creates the connection and the client in one single line of code. Here is an example of use:
 
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
