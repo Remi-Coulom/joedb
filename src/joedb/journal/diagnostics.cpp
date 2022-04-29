@@ -3,6 +3,7 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
 #include "joedb/io/type_io.h"
+#include "joedb/get_version.h"
 
 #include <istream>
 #include <ostream>
@@ -54,9 +55,7 @@ namespace joedb
   out << Writable_Journal::compatible_version << '\n';
   out << "Writable_Journal::version_number: ";
   out << Writable_Journal::version_number << '\n';
-  out << "version: " <<
-  #include "../../../VERSION"
-  ;
+  out << "version: " << get_version() << '\n';
   out << "\ncompiled: " << __DATE__ << ' ' << __TIME__ << '\n';
   out << "sizeof(size_t) = " << sizeof(size_t) << '\n';
   out << "sizeof(long) = " << sizeof(long) << '\n';
