@@ -1968,9 +1968,9 @@ static void write_initial_comment
  out << "//\n";
  out << "// Path to compiler: " << exe_path << '\n';
  out << "// Version: " << joedb::get_version() << '\n';
- out << "// joedbc compilation time: " << __DATE__ << ", " << __TIME__ << '\n';
+ out << "// joedbc compilation time: " << __DATE__ << ' ' << __TIME__ << '\n';
  out << "// Generation of this file: ";
- out << std::put_time(tm, "%b %d %Y, %H:%M:%S") << '\n';
+ out << std::put_time(tm, "%b %d %Y %H:%M:%S") << '\n';
  out << "//\n";
  out << "///////////////////////////////////////////////////////////////////////////*/\n";
 }
