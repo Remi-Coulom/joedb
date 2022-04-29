@@ -134,7 +134,7 @@ Concurrency
    - lock_both(journal) locks both for a write transaction
 
   If the journal is shared but not lockable (Portable_File), then lock the
-connection like we are doing now.
+  connection like we are doing now.
 
 C++ language questions
 ----------------------
