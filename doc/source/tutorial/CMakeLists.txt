@@ -11,15 +11,15 @@ include("../../../compcmake/joedbc.cmake")
 #     <dir> is relative to ${CMAKE_CURRENT_SOURCE_DIR}
 #     Assumes that <dir>/<name>.joedbi and <dir>/<name>.joedbc contain compiler
 #     instructions to generate <dir>/<name>.cpp
-#     You can invoke this function multiple times if you have more than one
-#     database in your code.
+#     This function may be invoked multiple times, once for each database
+#     contained in the code.
 #
 #  * target_uses_joedb(target): indicate that a target uses joedb. Two effects:
 #     1: it adds a dependency, so that joedbc is invoked whenever necessary
 #     2: it links the executable to the joedb library
 #
-# You may have to modify joedbc.cmake to add the path to joedbc and libjoedb
-# if they are not stored in standard locations.
+#  joedbc.cmake searches for joedbc and libjoedb in standard locations. If
+#  necessary, you can edit joedbc.cmake so that it finds them elsewhere.
 #
 
 joedbc_build("." tutorial)

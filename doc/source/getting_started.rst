@@ -103,9 +103,10 @@ features of joedb in more details than the Introduction.
 Using joedb with cmake
 ----------------------
 
-If you are using cmake to develop your own project using joedb, you can handle
-dependencies automatically by including joedb/compcmake/joedbc.cmake in your
-CMakeLists.txt. The tutorial source contains an example
+If you are using `cmake <https://cmake.org/>`_ to develop your own project
+using joedb, you can handle dependencies automatically by including
+joedb/compcmake/joedbc.cmake in your CMakeLists.txt. The tutorial source
+contains an example:
 
 .. literalinclude:: ./tutorial/CMakeLists.txt
    :language: cmake
