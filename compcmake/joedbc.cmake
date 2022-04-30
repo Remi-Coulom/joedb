@@ -25,6 +25,8 @@ find_library(JOEDB_LIB joedb
 message("== JOEDBC = ${JOEDBC}")
 message("== JOEDB_LIB = ${JOEDB_LIB}")
 
+include("${CMAKE_CURRENT_LIST_DIR}/libssh.cmake")
+
 add_custom_target(all_joedbc)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -61,4 +63,7 @@ function(target_uses_joedb)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  add_dependencies(${ARGV0} all_joedbc)
  target_link_libraries(${ARGV0} ${JOEDB_LIB})
+ if (libssh_FOUND)
+  target_link_libraries(${ARGV0} ${LIBSSH_LIBRARIES})
+ endif()
 endfunction(target_uses_joedb)
