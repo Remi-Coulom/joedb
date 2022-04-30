@@ -12,7 +12,7 @@
 #
 # -O1 instead of -O3 works well
 #
-# In bug.cpp, not catching exceptions in main makes the bug disappear (but not the strange warning).
+# In bug.cpp, not catching exceptions in main makes the bug disappear.
 #
 # Without -fsanitize=undefined, the program either runs an infinite loop, or crashes.
 #
@@ -25,12 +25,13 @@
 
 set -e
 g++ --version
-set -o xtrace
 
 OPTIONS="-O3 -Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations"
 if [ "$OSTYPE" != "cygwin" ]; then
  OPTIONS="${OPTIONS} -fsanitize=undefined"
 fi
+
+set -o xtrace
 
 # Generate .ii file for bug report
 g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -o bug bug.cpp
