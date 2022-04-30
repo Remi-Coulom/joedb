@@ -389,7 +389,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 joedb::Type joedb::Readonly_Journal::read_type()
 /////////////////////////////////////////////////////////////////////////////
 {
- Type::Type_Id type_id = Type::Type_Id(file.read<Type_Id_Storage>());
+ const Type::Type_Id type_id = Type::Type_Id(file.read<Type_Id_Storage>());
  if (type_id == Type::Type_Id::reference)
   return Type::reference(file.compact_read<Table_Id>());
  else

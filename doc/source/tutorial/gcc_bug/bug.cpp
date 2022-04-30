@@ -3,6 +3,7 @@
 #include "joedb/journal/Readonly_Journal.cpp"
 #include "joedb/journal/Writable_Journal.cpp"
 #include "joedb/journal/Posix_File.cpp"
+#include "joedb/journal/SHA_256.cpp"
 #include "joedb/Writable.cpp"
 #include "joedb/journal/Memory_File.cpp"
 #include "joedb/io/type_io.cpp"
