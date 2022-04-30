@@ -21,6 +21,7 @@ build()
   ../../src/joedb/interpreter/Database.cpp\
   ../../src/joedb/interpreter/Database_Schema.cpp\
   ../../src/joedb/is_identifier.cpp\
+  ../../src/joedb/get_version.cpp\
   ../../src/joedb/Readable.cpp\
   ../../src/joedb/Writable.cpp\
   ../../src/joedb/Multiplexer.cpp\
@@ -35,6 +36,8 @@ build()
   ../../src/joedb/io/Interpreter_Dump_Writable.cpp\
   ../../src/joedb/io/get_time_string.cpp\
   ../../src/joedb/journal/diagnostics.cpp\
+  ../../src/joedb/journal/Interpreted_File.cpp\
+  ../../src/joedb/journal/Memory_File.cpp\
   ../../src/joedb/journal/File.cpp\
   ../../src/joedb/journal/Generic_File.cpp\
   ../../src/joedb/journal/Writable_Journal.cpp\
