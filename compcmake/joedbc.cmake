@@ -6,8 +6,7 @@ endif()
 
 find_program(JOEDBC joedbc
  HINTS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../compcmake/${JOEDB_BUILD_PATH}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/${JOEDB_BUILD_PATH}
+  ${CMAKE_CURRENT_LIST_DIR}/${JOEDB_BUILD_PATH}
   ../../../../../usr/local/bin
   ../../../../../../usr/local/bin
   ../../../../../../../usr/local/bin
@@ -15,8 +14,7 @@ find_program(JOEDBC joedbc
 
 find_library(JOEDB_LIB joedb
  HINTS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../compcmake/${JOEDB_BUILD_PATH}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../../repos/joedb/compcmake/${JOEDB_BUILD_PATH}
+  ${CMAKE_CURRENT_LIST_DIR}/${JOEDB_BUILD_PATH}
   ../../../../../usr/local/lib
   ../../../../../../usr/local/lib
   ../../../../../../../usr/local/lib
