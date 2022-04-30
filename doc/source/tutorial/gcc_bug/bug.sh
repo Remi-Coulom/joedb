@@ -3,17 +3,14 @@ set -e
 set -o xtrace
 
 # Generate .ii file for bug report
-g++ -save-temps -I ../../../../src -o local_concurrency local_concurrency_unity_build.cpp
-mv local_concurrency-local_concurrency_unity_build.ii bug.ii
+g++ -save-temps -DNDEBUG -I ../../../../src -o bug bug.cpp
 
 # Compiling without LTO works OK
-g++ -O3 -o local_concurrency bug.ii
-rm -f local_concurrency.joedb
-./local_concurrency
+g++ -O3 -o bug bug.ii
+./bug
 
 # LTO produces an infinite loop
-g++ -O3 -flto -o local_concurrency bug.ii
-rm -f local_concurrency.joedb
+g++ -O3 -flto -o bug bug.ii
 echo This is likely to hang in an infinite loop...
-./local_concurrency
+./bug
 echo Yeah, no bug!
