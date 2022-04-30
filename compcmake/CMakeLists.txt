@@ -373,6 +373,7 @@ if (HAS_NETWORKING)
   joedb_add_executable(joedb_multi_server
    ../src/joedb/io/joedb_multi_server.cpp
    ../src/joedb/db/multi_server.cpp
+   ../src/joedb/db/multi_server_interpreted.cpp
    ../src/joedb/db/multi_server_custom_functions.cpp
   )
  endif()

@@ -1,5 +1,7 @@
 tutorial.h
 tutorial.cpp
+tutorial_interpreted.h
+tutorial_interpreted.cpp
 tutorial_readonly.h
 tutorial_readonly.cpp
 tutorial_wrapper.h

@@ -2,5 +2,7 @@ benchmarkdb.h
 benchmarkdb.cpp
 benchmarkdb_readonly.h
 benchmarkdb_readonly.cpp
+benchmarkdb_interpreted.h
+benchmarkdb_interpreted.cpp
 *.joedb
 *.sqlite3

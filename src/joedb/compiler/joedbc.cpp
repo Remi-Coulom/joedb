@@ -1745,36 +1745,13 @@ static void generate_readonly_h
    out << " }\n";
   }
 
-out << R"RRR(
- ////////////////////////////////////////////////////////////////////////////
- class Interpreted_File: public joedb::Memory_File
- ////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   Interpreted_File(std::istream &file);
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Database: public Readonly_Database
- ////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   Interpreted_Database(std::istream &file):
-    Readonly_Database(Interpreted_File(file))
-   {
-   }
-
-   Interpreted_Database(std::istream &&file): Interpreted_Database(file) {}
-
-   Interpreted_Database(const char *file_name);
- };
-
-)RRR";
-
  //
  // Types class
  //
 out << R"RRR(
+ class Interpreted_File;
+ class Interpreted_Database;
+
  ////////////////////////////////////////////////////////////////////////////
  class Readonly_Types
  ////////////////////////////////////////////////////////////////////////////
@@ -1822,8 +1799,6 @@ static void generate_readonly_cpp
 {
  const std::vector<std::string> &ns = options.get_name_space();
  out << "#include \"" << ns.back() << "_readonly.h\"\n";
- out << "#include \"joedb/journal/Interpreted_File.h\"\n\n";
- out << "#include <fstream>\n";
 
  namespace_open(out, options.get_name_space());
 
@@ -1832,24 +1807,6 @@ static void generate_readonly_cpp
  out << ";\n";
  out << " const size_t schema_string_size = " << schema.size();
  out << ";\n";
-
-out << R"RRR(
- ////////////////////////////////////////////////////////////////////////////
- Interpreted_File::Interpreted_File(std::istream &file)
- ////////////////////////////////////////////////////////////////////////////
- {
-  write_data(schema_string, schema_string_size);
-  set_mode(joedb::Open_Mode::write_existing);
-  append_interpreted_commands(*this, file);
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Interpreted_Database::Interpreted_Database(const char *file_name):
- ////////////////////////////////////////////////////////////////////////////
-  Interpreted_Database(std::ifstream(file_name))
- {
- }
-)RRR";
 
  namespace_close(out, options.get_name_space());
 }
@@ -1968,6 +1925,92 @@ static void generate_cpp
 )RRR";
 
  namespace_close(out, options.get_name_space());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+static void generate_interpreted_h
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Compiler_Options &options
+)
+{
+ const std::vector<std::string> &ns = options.get_name_space();
+
+ namespace_include_guard(out, "Interpreted_File", options.get_name_space());
+
+ out << '\n';
+ out << "#include \"" << ns.back() << "_readonly.h\"\n";
+ out << '\n';
+
+ namespace_open(out, options.get_name_space());
+
+ out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ class Interpreted_File: public joedb::Memory_File
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   Interpreted_File(std::istream &file);
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Interpreted_Database: public Readonly_Database
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   Interpreted_Database(std::istream &file):
+    Readonly_Database(Interpreted_File(file))
+   {
+   }
+
+   Interpreted_Database(std::istream &&file): Interpreted_Database(file) {}
+
+   Interpreted_Database(const char *file_name);
+ };
+
+)RRR";
+
+ namespace_close(out, options.get_name_space());
+
+ out << "\n#endif\n";
+}
+
+/////////////////////////////////////////////////////////////////////////////
+static void generate_interpreted_cpp
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const Compiler_Options &options
+)
+{
+ const std::vector<std::string> &ns = options.get_name_space();
+
+ out << "#include \"" << ns.back() << "_interpreted.h\"\n";
+ out << "#include \"joedb/journal/Interpreted_File.h\"\n\n";
+ out << "#include <fstream>\n";
+
+ namespace_open(out, ns);
+
+ out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_File::Interpreted_File(std::istream &file)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  write_data(schema_string, schema_string_size);
+  set_mode(joedb::Open_Mode::write_existing);
+  append_interpreted_commands(*this, file);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_Database::Interpreted_Database(const char *file_name):
+ ////////////////////////////////////////////////////////////////////////////
+  Interpreted_Database(std::ifstream(file_name))
+ {
+ }
+)RRR";
+
+ namespace_close(out, ns);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2116,6 +2159,24 @@ static int joedbc_main(int argc, char **argv)
   );
   write_initial_comment(cpp_file, compiler_options, exe_path);
   generate_cpp(cpp_file, compiler_options);
+ }
+ {
+  std::ofstream h_file
+  (
+   compiler_options.get_name_space().back() + "_interpreted.h",
+   std::ios::trunc
+  );
+  write_initial_comment(h_file, compiler_options, exe_path);
+  generate_interpreted_h(h_file, compiler_options);
+ }
+ {
+  std::ofstream cpp_file
+  (
+   compiler_options.get_name_space().back() + "_interpreted.cpp",
+   std::ios::trunc
+  );
+  write_initial_comment(cpp_file, compiler_options, exe_path);
+  generate_interpreted_cpp(cpp_file, compiler_options);
  }
 
  if (compiler_options.get_generate_c_wrapper())
