@@ -1,4 +1,4 @@
-#include "../tutorial.cpp"
+#include "../../../../test/compiler/db/empty.cpp"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/journal/Readonly_Journal.cpp"
 #include "joedb/journal/Writable_Journal.cpp"
@@ -15,12 +15,12 @@
 class Buggy_Client:
 /////////////////////////////////////////////////////////////////////////////
  private joedb::Local_Connection<joedb::Posix_File>,
- public tutorial::Client
+ public empty::Client
 {
  public:
   Buggy_Client(const char *file_name):
    joedb::Local_Connection<joedb::Posix_File>(file_name),
-   tutorial::Client
+   empty::Client
    (
     *static_cast<joedb::Local_Connection<joedb::Posix_File>*>(this)
    )
@@ -37,7 +37,7 @@ static int local_concurrency(int argc, char **argv)
 #else
  // This does not produce the bug
  joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
- tutorial::Client client(connection);
+ empty::Client client(connection);
 #endif
 
  std::cerr << "Yeah, no bug!\n";

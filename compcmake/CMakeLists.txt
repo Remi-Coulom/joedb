@@ -290,6 +290,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v1.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v2.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/vector_test.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/empty.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_base64.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_escape.cpp
@@ -404,6 +405,7 @@ joedbc_build(../test/compiler/db schema_v1)
 joedbc_build(../test/compiler/db schema_v2)
 joedbc_build(../test/compiler/db vector_test)
 joedbc_build(../test/compiler/db multi_index)
+joedbc_build(../test/compiler/db empty)
 joedbc_build(../benchmark benchmarkdb)
 joedbc_build(../src/joedb/db multi_server)
 

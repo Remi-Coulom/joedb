@@ -25,6 +25,7 @@
 
 set -e
 g++ --version
+rm -f local_concurrency.joedb
 
 OPTIONS="-O3 -Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations"
 if [ "$OSTYPE" != "cygwin" ]; then
