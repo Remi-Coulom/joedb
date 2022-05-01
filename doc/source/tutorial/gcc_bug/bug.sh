@@ -42,6 +42,4 @@ g++ ${OPTIONS} -o bug bug.ii
 
 # LTO usually does not work well
 g++ ${OPTIONS} -flto -o bug bug.ii
-echo This is likely to crash or hang in an infinite loop...
 ./bug
-echo Yeah, no bug!

@@ -23,6 +23,8 @@ static int local_concurrency(int argc, char **argv)
  tutorial::Client client(connection);
 #endif
 
+ std::cerr << "Yeah, no bug!\n";
+
  return 0;
 }
 
