@@ -1310,6 +1310,7 @@ static void generate_readonly_h
 
     if
     (
+     schema_file_size < pos ||
      schema_file_size > schema_string_size ||
      std::memcmp
      (
