@@ -384,6 +384,8 @@ endif()
 function(joedbc_build source_dir namespace)
  add_custom_command(
   OUTPUT
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_interpreted.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_interpreted.h
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_readonly.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_readonly.h
    ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.cpp

@@ -33,6 +33,8 @@ function(joedbc_build dir namespace)
  if(JOEDBC)
   add_custom_command(
    OUTPUT
+    ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/${namespace}_interpreted.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/${namespace}_interpreted.h
     ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/${namespace}_readonly.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/${namespace}_readonly.h
     ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/${namespace}.cpp
