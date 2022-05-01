@@ -34,9 +34,9 @@ set -e
 g++ --version
 rm -f local_concurrency.joedb
 
-OPTIONS="-Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations -ggdb"
+OPTIONS="-Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations -g"
 if [ "$OSTYPE" != "cygwin" ]; then
- OPTIONS="${OPTIONS} -fsanitize=undefined"
+ OPTIONS="${OPTIONS} -fsanitize=unreachable"
 fi
 
 set -o xtrace
