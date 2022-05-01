@@ -12,11 +12,28 @@
 #include "external/wide_char_display_width.cpp"
 
 /////////////////////////////////////////////////////////////////////////////
+class Buggy_Client:
+/////////////////////////////////////////////////////////////////////////////
+ private joedb::Local_Connection<joedb::Posix_File>,
+ public tutorial::Client
+{
+ public:
+  Buggy_Client(const char *file_name):
+   joedb::Local_Connection<joedb::Posix_File>(file_name),
+   tutorial::Client
+   (
+    *static_cast<joedb::Local_Connection<joedb::Posix_File>*>(this)
+   )
+  {
+  }
+};
+
+/////////////////////////////////////////////////////////////////////////////
 static int local_concurrency(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
 #if 1
- tutorial::Local_Client client("local_concurrency.joedb");
+ Buggy_Client client("local_concurrency.joedb");
 #else
  // This does not produce the bug
  joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
