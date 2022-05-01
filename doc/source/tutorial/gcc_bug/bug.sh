@@ -27,7 +27,7 @@ set -e
 g++ --version
 rm -f local_concurrency.joedb
 
-OPTIONS="-O3 -Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations"
+OPTIONS="-Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations"
 if [ "$OSTYPE" != "cygwin" ]; then
  OPTIONS="${OPTIONS} -fsanitize=undefined"
 fi
@@ -35,12 +35,12 @@ fi
 set -o xtrace
 
 # Generate .ii file for bug report
-g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -o bug bug.cpp
+g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -O0 -o bug bug.cpp
 
 # Compiling without LTO works OK
-g++ ${OPTIONS} -o bug bug.ii
+g++ ${OPTIONS} -O3 -o bug bug.ii
 ./bug
 
 # LTO usually does not work well
-g++ ${OPTIONS} -flto -o bug bug.ii
+g++ ${OPTIONS} -O3 -flto -o bug bug.ii
 ./bug

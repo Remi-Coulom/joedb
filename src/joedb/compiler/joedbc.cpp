@@ -586,10 +586,12 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   public:
 )RRR";
 
- std::vector<std::string> type_names;
- type_names.emplace_back("File_Database");
- type_names.emplace_back("Generic_File_Database");
- type_names.emplace_back("Client");
+ const std::vector<std::string> type_names
+ {
+  "File_Database",
+  "Generic_File_Database",
+  "Client"
+ };
 
  for (const std::string &type_name: type_names)
  {
@@ -617,11 +619,9 @@ static void generate_readonly_h
 
  namespace_include_guard(out, "readonly_Database", options.get_name_space());
 
- out << '\n';
-
- out << "#include \"joedb/Freedom_Keeper.h\"\n";
-
- out << R"RRR(#include "joedb/journal/File.h"
+ out << R"RRR(
+#include "joedb/Freedom_Keeper.h"
+#include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Exception.h"
@@ -1262,11 +1262,11 @@ static void generate_readonly_h
       const Type &type = db.get_field_type(table.first, field.first);
       if (int(type.get_type_id()) == type_id)
       {
-       out << "     if (field_id == " << field.first << ")\n";
-       out << "     {\n";
-       out << "      return storage_of_" << table.second;
-       out << ".field_value_of_" << field.second << ".data() + record_id - 1;\n";
-       out << "     }\n";
+       out << "     if (field_id == " << field.first << ")\n"
+           << "     {\n"
+           << "      return storage_of_" << table.second
+           << ".field_value_of_" << field.second << ".data() + record_id - 1;\n"
+           << "     }\n";
       }
      }
 
@@ -1718,21 +1718,21 @@ static void generate_readonly_h
    out << "::const_iterator map_iterator;\n";
    out << "     iterator(";
    write_index_type(out, db, index);
-   out << "::const_iterator map_iterator): map_iterator(map_iterator) {}\n";
-   out << "    public:\n";
-   out << "     bool operator !=(const iterator &i) const\n";
-   out << "     {\n";
-   out << "      return map_iterator != i.map_iterator;\n";
-   out << "     }\n";
-   out << "     iterator &operator++() {map_iterator++; return *this;}\n";
-   out << "     id_of_" << db.get_table_name(index.table_id);
-   out << " operator*() const {return map_iterator->second;}\n";
-   out << "   };\n";
-   out << "   iterator begin() const {return range.first;}\n";
-   out << "   iterator end() const {return range.second;}\n";
-   out << "   bool empty() const {return range.first == range.second;}\n";
-   out << "   size_t size() const {return size_t(std::distance(range.first, range.second));}\n";
-   out << " };\n\n";
+   out << "::const_iterator map_iterator): map_iterator(map_iterator) {}\n"
+       << "    public:\n"
+       << "     bool operator !=(const iterator &i) const\n"
+       << "     {\n"
+       << "      return map_iterator != i.map_iterator;\n"
+       << "     }\n"
+       << "     iterator &operator++() {map_iterator++; return *this;}\n"
+       << "     id_of_" << db.get_table_name(index.table_id)
+       << " operator*() const {return map_iterator->second;}\n"
+       << "   };\n"
+       << "   iterator begin() const {return range.first;}\n"
+       << "   iterator end() const {return range.second;}\n"
+       << "   bool empty() const {return range.first == range.second;}\n"
+       << "   size_t size() const {return size_t(std::distance(range.first, range.second));}\n"
+       << " };\n\n";
 
    out << " inline range_of_" << index.name << " Database::find_" << index.name << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
@@ -1771,11 +1771,13 @@ out << R"RRR(
   public:
 )RRR";
 
- std::vector<std::string> type_names;
- type_names.emplace_back("Database");
- type_names.emplace_back("Readonly_Database");
- type_names.emplace_back("Interpreted_File");
- type_names.emplace_back("Interpreted_Database");
+ std::vector<std::string> type_names
+ {
+  "Database",
+  "Readonly_Database",
+  "Interpreted_File",
+  "Interpreted_Database"
+ };
 
  for (auto &table: tables)
  {
