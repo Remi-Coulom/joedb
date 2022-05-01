@@ -16,18 +16,25 @@
 #
 # Without -fsanitize=undefined, the program either runs an infinite loop, or crashes.
 #
-# Compiling without -flto does not produce any warning, but -flto has one with g++ version < 11:
+# Compiling with -flto produces one strange warning with g++ version < 11:
 # ../../../../src/joedb/journal/Readonly_Journal.cpp:396:22: warning:  may be used uninitialized in this function [-Wmaybe-uninitialized]
 #  396 |   return Type(type_id);
 # It is strange, because it seems that the unused variable name is empty.
 # This strange warning disappeared with 11.1.0, so it may be an unrelated bug that has been fixed already.
+#
+# This bug may be unrelated to -flto: in some other (confidential) code I wrote, an infinite loop occurred without -flto.
+#
+# The crash or infinite loop occurs in the constructor of joedb::Client.
+#
+# Bug with vaguely similar symptoms, but may be unrelated:
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87525
 #
 
 set -e
 g++ --version
 rm -f local_concurrency.joedb
 
-OPTIONS="-Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations"
+OPTIONS="-Wall -Wextra -Wno-unused-parameter -fno-strict-aliasing -fwrapv -fno-aggressive-loop-optimizations -ggdb"
 if [ "$OSTYPE" != "cygwin" ]; then
  OPTIONS="${OPTIONS} -fsanitize=undefined"
 fi
@@ -36,11 +43,12 @@ set -o xtrace
 
 # Generate .ii file for bug report
 g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -O0 -o bug bug.cpp
+./bug
 
 # Compiling without LTO works OK
 g++ ${OPTIONS} -O3 -o bug bug.ii
 ./bug
 
 # LTO usually does not work well
-g++ ${OPTIONS} -O3 -flto -o bug bug.ii
+g++ ${OPTIONS} -O3 -flto=auto -o bug bug.ii
 ./bug
