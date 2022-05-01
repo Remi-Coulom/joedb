@@ -1,15 +1,12 @@
 #include "../../../../test/compiler/db/empty.cpp"
+#include "joedb/Destructor_Logger.cpp"
+#include "joedb/Writable.cpp"
 #include "joedb/io/main_exception_catcher.h"
+#include "joedb/journal/Generic_File.cpp"
+#include "joedb/journal/Memory_File.cpp"
+#include "joedb/journal/Posix_File.cpp"
 #include "joedb/journal/Readonly_Journal.cpp"
 #include "joedb/journal/Writable_Journal.cpp"
-#include "joedb/journal/Posix_File.cpp"
-#include "joedb/journal/SHA_256.cpp"
-#include "joedb/Writable.cpp"
-#include "joedb/journal/Memory_File.cpp"
-#include "joedb/io/type_io.cpp"
-#include "joedb/journal/Generic_File.cpp"
-#include "joedb/Destructor_Logger.cpp"
-#include "external/wide_char_display_width.cpp"
 
 /////////////////////////////////////////////////////////////////////////////
 class Buggy_Client:
