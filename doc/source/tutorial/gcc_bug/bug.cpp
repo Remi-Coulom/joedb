@@ -15,7 +15,13 @@
 static int local_concurrency(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
+#if 1
  tutorial::Local_Client client("local_concurrency.joedb");
+#else
+ // This does not produce the bug
+ joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
+ tutorial::Client client(connection);
+#endif
 
  return 0;
 }
