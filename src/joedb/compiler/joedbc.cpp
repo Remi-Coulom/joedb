@@ -543,15 +543,27 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
 #ifndef JOEDB_FILE_IS_PORTABLE_FILE
  ////////////////////////////////////////////////////////////////////////////
- class Local_Client:
+ class Local_Client_Parent
  ////////////////////////////////////////////////////////////////////////////
-  private joedb::Local_Connection<joedb::File>,
-  public Client
+ {
+  protected:
+   joedb::Local_Connection<joedb::File> local_connection;
+
+  public:
+   Local_Client_Parent(const char *file_name):
+    local_connection(file_name)
+   {
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Local_Client: public Local_Client_Parent, public Client
+ ////////////////////////////////////////////////////////////////////////////
  {
   public:
    Local_Client(const char *file_name):
-    joedb::Local_Connection<joedb::File>(file_name),
-    Client(*static_cast<joedb::Local_Connection<joedb::File>*>(this))
+    Local_Client_Parent(file_name),
+    Client(local_connection)
    {
    }
 
