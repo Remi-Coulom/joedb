@@ -1,4 +1,3 @@
-#include "../../../../test/compiler/db/empty.cpp"
 #include "joedb/Destructor_Logger.cpp"
 #include "joedb/Writable.cpp"
 #include "joedb/io/main_exception_catcher.h"
@@ -8,6 +7,8 @@
 #include "joedb/journal/Readonly_Journal.cpp"
 #include "joedb/journal/SHA_256.cpp"
 #include "joedb/journal/Writable_Journal.cpp"
+#include "joedb/concurrency/Client.h"
+#include "../../../../test/compiler/db/empty.cpp"
 
 /////////////////////////////////////////////////////////////////////////////
 class Buggy_Client:
