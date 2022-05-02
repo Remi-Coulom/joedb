@@ -3,3 +3,5 @@ bug.o
 bug.s
 bug
 local_concurrency.joedb
+system-headers
+repro
