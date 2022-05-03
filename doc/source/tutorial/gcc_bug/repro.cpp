@@ -178,7 +178,7 @@ namespace joedb
  inline void print_exception(const std::exception &e)
 
  {
-  std::cerr << "Error: " << e.what() << '\n';
+  std::cout << "Error: " << e.what() << '\n';
  }
 
 
@@ -1339,13 +1339,10 @@ update_int16, update_last_int16, update_next_int16, update_vector_int16,
    void play_until(Writable &writable, int64_t end);
    void play_until_checkpoint(Writable &writable)
    {
-    //
     std::cerr << "A\n";
     play_until(writable, checkpoint_position);
-    //
     std::cerr << "B\n";
     writable.checkpoint(Commit_Level::no_commit);
-    //
     std::cerr << "C\n";
    }
 
@@ -1624,9 +1621,6 @@ namespace joedb
   public Readonly_Journal,
   public Writable
  {
-  private:
-   Commit_Level current_commit_level;
-
   public:
    Writable_Journal(Generic_File &file);
 
@@ -1728,8 +1722,7 @@ namespace joedb
 
 joedb::Writable_Journal::Writable_Journal(Generic_File &file):
 
- Readonly_Journal(file),
- current_commit_level(Commit_Level::no_commit)
+ Readonly_Journal(file)
 {
  if (file.get_mode() == Open_Mode::create_new)
  {
@@ -1774,33 +1767,7 @@ int64_t joedb::Writable_Journal::ahead_of_checkpoint() const
 void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
 
 {
- //
  std::cerr << "Writable_Journal::checkpoint\n";
- if
- (
-  ahead_of_checkpoint() > 0 ||
-  (ahead_of_checkpoint() == 0 && commit_level > current_commit_level)
- )
- {
-  checkpoint_index ^= 1;
-  checkpoint_position = file.get_position();
-  current_commit_level = commit_level;
-
-  file.set_position(9 + 16 * checkpoint_index);
-  file.write<uint64_t>(uint64_t(checkpoint_position));
-
-  file.flush();
-  if (commit_level > Commit_Level::no_commit)
-   file.commit();
-
-  file.write<uint64_t>(uint64_t(checkpoint_position));
-
-  file.flush();
-  if (commit_level > Commit_Level::half_commit)
-   file.commit();
-
-  file.set_position(checkpoint_position);
- }
 }
 
 
@@ -2124,7 +2091,6 @@ namespace joedb
     server_checkpoint(connection.handshake()),
     data(connection, file)
    {
-    //
     std::cerr << "data.update(), &data = " << &data << '\n';
     data.update();
    }
@@ -2626,7 +2592,6 @@ namespace empty {
    ):
     Generic_File_Database(connection, file)
    {
-    //
     std::cerr << "\nClient_Data::Client_Data, this = " << this << '\n';
     update();
     std::cerr << '\n';
@@ -2894,7 +2859,13 @@ class Buggy_Client:
 
 static int local_concurrency(int argc, char **argv)
 {
+#if 1
  Buggy_Client client("local_concurrency.joedb");
+#else
+ joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
+ empty::Client client(connection);
+#endif
+
  std::cerr << "Yeah, no bug!\n";
  return 0;
 }
