@@ -12,7 +12,7 @@
 #
 # -O2 instead of -O3 works well
 #
-# In bug.cpp, not catching exceptions in main makes the bug disappear.
+# In repro.cpp, not catching exceptions in main makes the bug disappear.
 #
 # Without -fsanitize=undefined, the program either runs an infinite loop, or crashes.
 #
@@ -42,13 +42,13 @@ fi
 set -o xtrace
 
 # Generate .ii file for bug report
-g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -O0 -o bug repro.cpp
-./bug
+g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -O0 -o repro repro.cpp
+./repro
 
 # Compiling without LTO works OK
-g++ ${OPTIONS} -O3 -o bug repro.ii
-./bug
+g++ ${OPTIONS} -O3 -o repro repro.ii
+./repro
 
 # LTO usually does not work well
-g++ ${OPTIONS} -O3 -flto=auto -o bug repro.ii
-./bug
+g++ ${OPTIONS} -O3 -flto=auto -o repro repro.ii
+./repro
