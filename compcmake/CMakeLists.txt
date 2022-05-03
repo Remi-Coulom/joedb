@@ -58,7 +58,7 @@ if (UNIX AND NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
 #############################################################################
 #  "-fsanitize=memory" unfortunately triggers many errors in the standard lib
 #  set(JOEDB_ASAN_FLAGS "-fno-omit-frame-pointer -fsanitize=memory")
- set(JOEDB_ASAN_FLAGS "-fno-omit-frame-pointer -fsanitize=address")
+ set(JOEDB_ASAN_FLAGS "-O3 --param=max-vartrack-size=1000000000 -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=address,undefined")
 endif()
 
 set(CMAKE_CXX_FLAGS_ASAN "${CMAKE_CXX_FLAGS_DEBUG} ${JOEDB_ASAN_FLAGS}")

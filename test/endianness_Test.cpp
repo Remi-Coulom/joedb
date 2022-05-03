@@ -30,7 +30,7 @@ TEST(endianness, network_integers)
   char buffer[8];
   for (int shift = 0; shift < 56; shift++)
   {
-   const int64_t n = i << shift;
+   const int64_t n = int64_t(uint64_t(i) << shift);
    joedb::to_network(n, buffer);
    EXPECT_EQ(n, joedb::from_network(buffer));
   }
