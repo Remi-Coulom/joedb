@@ -1,4 +1,11 @@
-#include <bits/stdc++.h>
+#include <stdint.h>
+#include <string>
+#include <string.h>
+#include <stdexcept>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <ctime>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>

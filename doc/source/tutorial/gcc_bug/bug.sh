@@ -10,7 +10,7 @@
 #  - Cgywin (32 bits)
 #    * 11.2.0 -> infinite loop (but no ubsan)
 #
-# -O1 instead of -O3 works well
+# -O2 instead of -O3 works well
 #
 # In bug.cpp, not catching exceptions in main makes the bug disappear.
 #
@@ -42,13 +42,13 @@ fi
 set -o xtrace
 
 # Generate .ii file for bug report
-g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -O0 -o bug bug.cpp
+g++ -save-temps -DNDEBUG -I ../../../../src ${OPTIONS} -O0 -o bug repro.cpp
 ./bug
 
 # Compiling without LTO works OK
-g++ ${OPTIONS} -O3 -o bug bug.ii
+g++ ${OPTIONS} -O3 -o bug repro.ii
 ./bug
 
 # LTO usually does not work well
-g++ ${OPTIONS} -O3 -flto=auto -o bug bug.ii
+g++ ${OPTIONS} -O3 -flto=auto -o bug repro.ii
 ./bug
