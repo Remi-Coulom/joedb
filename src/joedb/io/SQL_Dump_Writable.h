@@ -55,6 +55,8 @@ namespace joedb
                          Field_Id field_id,\
                          return_type value) final override;
    #include "joedb/TYPE_MACRO.h"
+
+   ~SQL_Dump_Writable();
  };
 }
 

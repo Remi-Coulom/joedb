@@ -63,6 +63,8 @@ namespace joedb
     const type *value\
    ) final override;
    #include "joedb/TYPE_MACRO.h"
+
+   ~Interpreter_Dump_Writable();
  };
 }
 
