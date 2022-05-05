@@ -476,6 +476,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     return journal;
    }
 
+#ifdef __GNUC__
+// Workaround for gcc bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105469
+   __attribute__ ((noinline))
+#endif
    void update()
    {
     journal.play_until_checkpoint(*this);
