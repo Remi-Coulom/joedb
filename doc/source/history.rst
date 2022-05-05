@@ -3,8 +3,11 @@ History
 - 2022-??-??: 7.0
 
   - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
-  - Support for multiple clients sharing the same local journal. Previous
-    version allowed it, but was missing some necessary synchronization.
+  - Stricter checks when sharing the same local journal for multiple clients:
+    the connection is locked during client construction to check for file
+    integrity. Previous version would silently open a file containing an
+    incomplete transaction, and could overwrite it.
+  - Minor fixes and improvements
 
 - 2021-09-15: 6.0
 
