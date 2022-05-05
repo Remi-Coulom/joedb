@@ -2068,7 +2068,7 @@ namespace joedb
    {
    }
 
-   void custom(const std::string &name) final override
+   void custom(const std::string &name) final
    {
     if (!is_identifier(name))
      throw Exception("custom: invalid identifier");
