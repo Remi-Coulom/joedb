@@ -162,7 +162,6 @@ include_directories(BEFORE SYSTEM
 )
 
 include_directories(
- ../src
  ../test/compiler
  ${GOOGLE_TEST}
  ${GOOGLE_TEST}/include

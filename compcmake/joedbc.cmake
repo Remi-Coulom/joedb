@@ -20,6 +20,10 @@ find_library(JOEDB_LIB joedb
   ../../../../../../../usr/local/lib
 )
 
+include_directories(BEFORE SYSTEM
+ ${CMAKE_CURRENT_LIST_DIR}/../src
+)
+
 message("== JOEDBC = ${JOEDBC}")
 message("== JOEDB_LIB = ${JOEDB_LIB}")
 
