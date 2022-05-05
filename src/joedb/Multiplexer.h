@@ -17,7 +17,10 @@ namespace joedb
    std::vector<std::reference_wrapper<Writable>> writables;
 
   public:
-   Multiplexer(std::initializer_list<std::reference_wrapper<Writable>>);
+   Multiplexer
+   (
+    std::initializer_list<std::reference_wrapper<Writable>> initializer_list
+   );
    void add_writable(Writable &writable);
 
    void create_table(const std::string &name) final;
@@ -74,7 +77,7 @@ namespace joedb
    ) final;
    #include "joedb/TYPE_MACRO.h"
 
-   ~Multiplexer();
+   ~Multiplexer() override;
  };
 }
 

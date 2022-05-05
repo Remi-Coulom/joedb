@@ -5,16 +5,25 @@
 
 namespace joedb
 {
- ///////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  class Posix_File: public Generic_File
- ///////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   template<typename File_Type> friend class Local_Connection;
 
   private:
    int fd;
 
-   void throw_last_error(const char *action, const char *file_name) const;
+   static void throw_last_error(const char *action, const char *file_name);
+
+   //
+   // Function invoked to silence clang-tidy's warning inside lock functions:
+   // readability-make-member-function-const
+   //
+   void has_effect_on_file_state()
+   {
+    fd += 0;
+   }
 
    bool try_lock();
    void lock();

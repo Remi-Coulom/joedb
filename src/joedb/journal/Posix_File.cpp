@@ -17,7 +17,7 @@ namespace joedb
  (
   const char *action,
   const char *file_name
- ) const
+ )
  {
   throw Exception
   (
@@ -29,6 +29,7 @@ namespace joedb
  bool Posix_File::try_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
+  has_effect_on_file_state();
   return flock(fd, LOCK_EX | LOCK_NB) == 0;
  }
 
@@ -36,6 +37,7 @@ namespace joedb
  void Posix_File::lock()
  /////////////////////////////////////////////////////////////////////////////
  {
+  has_effect_on_file_state();
   if (flock(fd, LOCK_EX) == -1)
    throw_last_error("Locking", "file");
  }
@@ -44,6 +46,7 @@ namespace joedb
  void Posix_File::unlock()
  /////////////////////////////////////////////////////////////////////////////
  {
+  has_effect_on_file_state();
   if (flock(fd, LOCK_UN) == -1)
    throw_last_error("Unlocking", "file");
  }

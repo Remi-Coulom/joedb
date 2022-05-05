@@ -1297,7 +1297,6 @@ static void generate_readonly_h
  // Schema changes are forwarded to the schema string
  //
  out << R"RRR(
-  protected:
    bool upgrading_schema = false;
    joedb::Memory_File schema_file;
    joedb::Writable_Journal schema_journal;
@@ -1638,7 +1637,7 @@ static void generate_readonly_h
   out << "     iterator operator++(int) {auto copy = *this; index = fk->get_next(index); return copy;}\n";
   out << "     iterator &operator--() {index = fk->get_previous(index); return *this;}\n";
   out << "     iterator operator--(int) {auto copy = *this; index = fk->get_previous(index); return copy;}\n";
-  out << "     id_of_" << tname << " operator*() {return id_of_";
+  out << "     id_of_" << tname << " operator*() const {return id_of_";
   out << tname << "(index - 1);}\n";
   out << "   };\n";
   out << '\n';

@@ -53,7 +53,6 @@ namespace joedb
 
    virtual ~Readable() = default;
 
-  public:
    Table_Id find_table(const std::string &name) const
    {
     for (const auto &table: get_tables())
