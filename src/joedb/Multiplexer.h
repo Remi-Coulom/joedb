@@ -17,7 +17,6 @@ namespace joedb
    std::vector<std::reference_wrapper<Writable>> writables;
 
   public:
-   Multiplexer() {}
    Multiplexer(std::initializer_list<std::reference_wrapper<Writable>>);
    void add_writable(Writable &writable);
 
