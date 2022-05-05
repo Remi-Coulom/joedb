@@ -15,7 +15,7 @@ namespace joedb
    std::string message_memory;
 
   public:
-   void write(const char *message) noexcept override
+   void write(const char *message) noexcept final override
    {
     if (message)
      message_memory = message;

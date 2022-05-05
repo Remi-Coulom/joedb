@@ -194,7 +194,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    void initialize();
    void auto_upgrade();
 
-   void custom(const std::string &name) override
+   void custom(const std::string &name) final override
    {
     Database::custom(name);
 )RRR";
@@ -253,7 +253,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     checkpoint_no_commit();
    }
 
-   void checkpoint(joedb::Commit_Level commit_level) override
+   void checkpoint(joedb::Commit_Level commit_level) final override
    {
     journal.checkpoint(commit_level);
    }
@@ -992,7 +992,7 @@ static void generate_readonly_h
  // delete_from writable function
  //
  out << '\n';
- out << "   void delete_from(Table_Id table_id, Record_Id record_id) override\n";
+ out << "   void delete_from(Table_Id table_id, Record_Id record_id) final override\n";
  out << "   {\n";
  {
   bool first = true;
@@ -1016,7 +1016,7 @@ static void generate_readonly_h
  // insert_into
  //
  out << '\n';
- out << "   void insert_into(Table_Id table_id, Record_Id record_id) override\n";
+ out << "   void insert_into(Table_Id table_id, Record_Id record_id) final override\n";
  out << "   {\n";
  out << "    if (record_id <= 0 || (max_record_id && record_id > max_record_id))\n";
  out << "     error(\"insert_into: too big\");\n";
@@ -1048,7 +1048,7 @@ static void generate_readonly_h
  // insert_vector
  //
  out << '\n';
- out << "   void insert_vector(Table_Id table_id, Record_Id record_id, Record_Id size) override\n";
+ out << "   void insert_vector(Table_Id table_id, Record_Id record_id, Record_Id size) final override\n";
  out << "   {\n";
  out << "    if (record_id <= 0 || (max_record_id && (record_id > max_record_id || size > max_record_id)))\n";
  out << "     error(\"insert_vector: null record_id, or too big\");\n";
@@ -1100,7 +1100,7 @@ static void generate_readonly_h
    out << "    Field_Id field_id,\n";
    out << "    " << cpp_types[type_id] << "value\n";
    out << "   )\n";
-   out << "   override\n";
+   out << "   final override\n";
    out << "   {\n";
 
    for (auto &table: tables)
@@ -1171,7 +1171,7 @@ static void generate_readonly_h
    out << "    Record_Id size,\n";
    out << "    const " << storage_types[type_id] << " *value\n";
    out << "   )\n";
-   out << "   override\n";
+   out << "   final override\n";
    out << "   {\n";
 
    for (auto &table: tables)
@@ -1234,7 +1234,7 @@ static void generate_readonly_h
    out << "    Field_Id field_id,\n";
    out << "    Record_Id &capacity\n";
    out << "   )\n";
-   out << "   override\n";
+   out << "   final override\n";
    out << "   {\n";
 
    for (auto &table: tables)
@@ -1286,7 +1286,7 @@ static void generate_readonly_h
  out << R"RRR(
    void comment(const std::string &comment) override {};
    void timestamp(int64_t timestamp) override {};
-   void valid_data() override {};
+   void valid_data() final override {};
 )RRR";
 
  //
@@ -1322,13 +1322,13 @@ static void generate_readonly_h
      throw joedb::Exception("Trying to open a file with incompatible schema");
    }
 
-   void create_table(const std::string &name) override
+   void create_table(const std::string &name) final override
    {
     schema_journal.create_table(name);
     schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
-   void drop_table(Table_Id table_id) override
+   void drop_table(Table_Id table_id) final override
    {
     schema_journal.drop_table(table_id);
     schema_journal.checkpoint(joedb::Commit_Level::no_commit);
@@ -1338,7 +1338,7 @@ static void generate_readonly_h
    (
     Table_Id table_id,
     const std::string &name
-   ) override
+   ) final override
    {
     schema_journal.rename_table(table_id, name);
     schema_journal.checkpoint(joedb::Commit_Level::no_commit);
@@ -1349,13 +1349,13 @@ static void generate_readonly_h
     Table_Id table_id,
     const std::string &name,
     joedb::Type type
-   ) override
+   ) final override
    {
     schema_journal.add_field(table_id, name, type);
     schema_journal.checkpoint(joedb::Commit_Level::no_commit);
    }
 
-   void drop_field(Table_Id table_id, Field_Id field_id) override
+   void drop_field(Table_Id table_id, Field_Id field_id) final override
    {
     schema_journal.drop_field(table_id, field_id);
     schema_journal.checkpoint(joedb::Commit_Level::no_commit);
@@ -1366,7 +1366,7 @@ static void generate_readonly_h
     Table_Id table_id,
     Field_Id field_id,
     const std::string &name
-   ) override
+   ) final override
    {
     schema_journal.rename_field(table_id, field_id, name);
     schema_journal.checkpoint(joedb::Commit_Level::no_commit);
@@ -2068,7 +2068,7 @@ namespace joedb
    {
    }
 
-   void custom(const std::string &name) override
+   void custom(const std::string &name) final override
    {
     if (!is_identifier(name))
      throw Exception("custom: invalid identifier");

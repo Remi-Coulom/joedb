@@ -12,7 +12,7 @@ namespace joedb
   private:
    File_Type file;
 
-   int64_t handshake() override
+   int64_t handshake() final override
    {
     int64_t result = 0;
 
@@ -35,19 +35,19 @@ namespace joedb
     file.unlock();
    }
 
-   int64_t pull(Writable_Journal &client_journal) override
+   int64_t pull(Writable_Journal &client_journal) final override
    {
     throw Exception("Pulling into a shared file without locking");
    }
 
-   int64_t lock_pull(Writable_Journal &client_journal) override
+   int64_t lock_pull(Writable_Journal &client_journal) final override
    {
     lock();
     client_journal.refresh_checkpoint();
     return client_journal.get_checkpoint_position();
    }
 
-   int64_t lock_pull_unlock(Writable_Journal &client_journal) override
+   int64_t lock_pull_unlock(Writable_Journal &client_journal) final override
    {
     run_while_locked([&]()
     {
@@ -61,7 +61,7 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t server_position,
     bool unlock_after
-   ) override
+   ) final override
    {
     if (unlock_after)
      unlock();
@@ -71,7 +71,7 @@ namespace joedb
    (
     Readonly_Journal &client_journal,
     int64_t checkpoint
-   ) override
+   ) final override
    {
     return client_journal.is_same_file(file);
    }
