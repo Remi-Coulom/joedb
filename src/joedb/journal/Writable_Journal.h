@@ -57,52 +57,52 @@ namespace joedb
    void append_raw_tail(const std::vector<char> &data);
 
    int64_t ahead_of_checkpoint() const;
-   void checkpoint(Commit_Level commit_level) final override;
+   void checkpoint(Commit_Level commit_level) final;
    void flush() {file.flush();}
 
-   void create_table(const std::string &name) final override;
-   void drop_table(Table_Id table_id) final override;
+   void create_table(const std::string &name) final;
+   void drop_table(Table_Id table_id) final;
 
    void rename_table
    (
     Table_Id table_id,
     const std::string &name
-   ) final override;
+   ) final;
 
    void add_field
    (
     Table_Id table_id,
     const std::string &name,
     Type type
-   ) final override;
+   ) final;
 
    void drop_field
    (
     Table_Id table_id,
     Field_Id field_id
-   ) final override;
+   ) final;
 
    void rename_field
    (
     Table_Id table_id,
     Field_Id field_id,
     const std::string &name
-   ) final override;
+   ) final;
 
-   void custom(const std::string &name) final override;
-   void comment(const std::string &comment) final override;
-   void timestamp(int64_t timestamp) final override;
-   void valid_data() final override;
-   void insert_into(Table_Id table_id, Record_Id record_id) final override;
+   void custom(const std::string &name) final;
+   void comment(const std::string &comment) final;
+   void timestamp(int64_t timestamp) final;
+   void valid_data() final;
+   void insert_into(Table_Id table_id, Record_Id record_id) final;
 
    void insert_vector
    (
     Table_Id table_id,
     Record_Id record_id,
     Record_Id size
-   ) final override;
+   ) final;
 
-   void delete_from(Table_Id table_id, Record_Id record_id) final override;
+   void delete_from(Table_Id table_id, Record_Id record_id) final;
 
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    void update_##type_id\
@@ -111,7 +111,7 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   ) final override;\
+   ) final;\
    void update_vector_##type_id\
    (\
     Table_Id table_id,\
@@ -119,7 +119,7 @@ namespace joedb
     Field_Id field_id,\
     Record_Id size,\
     const type *value\
-   ) final override;
+   ) final;
    #include "joedb/TYPE_MACRO.h"
 
    ~Writable_Journal() override;

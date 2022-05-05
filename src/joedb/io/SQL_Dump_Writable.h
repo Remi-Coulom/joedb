@@ -23,37 +23,37 @@ namespace joedb
     drop_column(drop_column)
    {}
 
-   void create_table(const std::string &name) final override;
-   void drop_table(Table_Id table_id) final override;
-   void rename_table(Table_Id table_id, const std::string &name) final override;
+   void create_table(const std::string &name) final;
+   void drop_table(Table_Id table_id) final;
+   void rename_table(Table_Id table_id, const std::string &name) final;
    void add_field
    (
     Table_Id table_id,
     const std::string &name,
     Type type
-   ) final override;
-   void drop_field(Table_Id table_id, Field_Id field_id) final override;
+   ) final;
+   void drop_field(Table_Id table_id, Field_Id field_id) final;
    void rename_field
    (
     Table_Id table_id,
     Field_Id field_id,
     const std::string &name
-   ) final override;
-   void custom(const std::string &name) final override;
-   void comment(const std::string &comment) final override;
-   void timestamp(int64_t timestamp) final override;
-   void valid_data() final override;
-   void insert_into(Table_Id table_id, Record_Id record_id) final override;
+   ) final;
+   void custom(const std::string &name) final;
+   void comment(const std::string &comment) final;
+   void timestamp(int64_t timestamp) final;
+   void valid_data() final;
+   void insert_into(Table_Id table_id, Record_Id record_id) final;
    void insert_vector(Table_Id table_id,
                       Record_Id record_id,
-                      Record_Id size) final override;
-   void delete_from(Table_Id table_id, Record_Id record_id) final override;
+                      Record_Id size) final;
+   void delete_from(Table_Id table_id, Record_Id record_id) final;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id(Table_Id table_id,\
                          Record_Id record_id,\
                          Field_Id field_id,\
-                         return_type value) final override;
+                         return_type value) final;
    #include "joedb/TYPE_MACRO.h"
 
    ~SQL_Dump_Writable();

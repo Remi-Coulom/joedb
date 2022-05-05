@@ -16,10 +16,10 @@ namespace joedb
     std::mutex &mutex;
     ssh_channel channel;
 
-    std::mutex &get_mutex() final override {return mutex;}
+    std::mutex &get_mutex() final {return mutex;}
 
-    size_t write_some(const char *data, size_t size) final override;
-    size_t read_some(char *data, size_t size) final override;
+    size_t write_some(const char *data, size_t size) final;
+    size_t read_some(char *data, size_t size) final;
 
    public:
     Forward_Channel

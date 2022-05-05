@@ -29,30 +29,30 @@ namespace joedb
    std::thread keep_alive_thread;
    enum {keep_alive_interval = 240};
 
-   int64_t handshake() final override;
+   int64_t handshake() final;
 
-   void lock() final override;
+   void lock() final;
 
-   void unlock() final override;
+   void unlock() final;
 
    int64_t pull(Writable_Journal &client_journal, char pull_type);
 
-   int64_t pull(Writable_Journal &client_journal) final override;
+   int64_t pull(Writable_Journal &client_journal) final;
 
-   int64_t lock_pull(Writable_Journal &client_journal) final override;
+   int64_t lock_pull(Writable_Journal &client_journal) final;
 
    void push
    (
     Readonly_Journal &client_journal,
     int64_t server_position,
     bool unlock_after
-   ) final override;
+   ) final;
 
    bool check_matching_content
    (
     Readonly_Journal &client_journal,
     int64_t checkpoint
-   ) final override;
+   ) final;
 
    void keep_alive();
 

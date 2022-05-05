@@ -21,10 +21,10 @@ namespace joedb
    void unlock();
 
   protected:
-   size_t raw_read(char *buffer, size_t size) final override;
-   void raw_write(const char *buffer, size_t size) final override;
-   int raw_seek(int64_t offset) final override;
-   void sync() final override;
+   size_t raw_read(char *buffer, size_t size) final;
+   void raw_write(const char *buffer, size_t size) final;
+   int raw_seek(int64_t offset) final;
+   void sync() final;
 
   public:
    Posix_File(int fd, Open_Mode mode):
@@ -40,7 +40,7 @@ namespace joedb
    {
    }
 
-   int64_t raw_get_size() const final override;
+   int64_t raw_get_size() const final;
 
    ~Posix_File() override;
  };

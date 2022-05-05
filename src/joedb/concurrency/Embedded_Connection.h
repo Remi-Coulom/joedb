@@ -14,7 +14,7 @@ namespace joedb
    bool locked;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t handshake() final override
+   int64_t handshake() final
    //////////////////////////////////////////////////////////////////////////
    {
     return server_journal.get_checkpoint_position();
@@ -26,7 +26,7 @@ namespace joedb
    (
     Readonly_Journal &client_journal,
     int64_t checkpoint
-   ) final override
+   ) final
    {
     return
      client_journal.get_hash(checkpoint) ==
@@ -34,7 +34,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void lock() final override
+   void lock() final
    //////////////////////////////////////////////////////////////////////////
    {
     if (locked)
@@ -43,14 +43,14 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void unlock() final override
+   void unlock() final
    //////////////////////////////////////////////////////////////////////////
    {
     locked = false;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t pull(Writable_Journal &client_journal) final override
+   int64_t pull(Writable_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
     const int64_t client_checkpoint=client_journal.get_checkpoint_position();
@@ -72,7 +72,7 @@ namespace joedb
     Readonly_Journal &client_journal,
     const int64_t server_checkpoint,
     bool unlock_after
-   ) final override
+   ) final
    {
     if (server_checkpoint != server_journal.get_checkpoint_position())
      throw Exception("pushing from bad checkpoint");
