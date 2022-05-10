@@ -17,7 +17,7 @@ static int local_concurrency(int argc, char **argv)
    db.new_person();
   });
 
-  std::cout << "persons: ";
+  std::cout << "I have just added one person. Total number of persons: ";
   std::cout << client.get_database().get_person_table().get_size() << '\n';
   std::this_thread::sleep_for(std::chrono::seconds(1));
  }

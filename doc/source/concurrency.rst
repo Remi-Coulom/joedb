@@ -74,6 +74,9 @@ joedbc produces a convenient ``Local_Client`` class that creates the connection 
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
 
+Multiple instances of this program can safely share the same database and run
+concurrently.
+
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
 
