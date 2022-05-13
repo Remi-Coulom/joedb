@@ -69,6 +69,10 @@ template that takes a file class as parameter. It works only with file classes
 that support locking, such as ``Posix_File`` and ``Windows_File`` (or ``File``,
 when it is typedefed to one of those).
 
+.. code-block:: c++
+
+    joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
+
 joedbc produces a convenient ``Local_Client`` class that creates the connection and the client in one single line of code. Here is an example of use:
 
 .. literalinclude:: ./tutorial/local_concurrency.cpp
