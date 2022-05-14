@@ -20,7 +20,7 @@ database. Each process can keep data synchronized with 3 operations:
   and release the lock.
 
 So it works a bit like `git <https://git-scm.com/>`_, with the significant
-exception that merging branches is not possible. History must be linear, and a
+difference that merging branches is not possible. History must be linear, and a
 global mutex is used to prevent branches from diverging.
 
 When using a remote network connection, a local copy of the database can be
@@ -73,13 +73,13 @@ when it is typedefed to one of those).
 
     joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
 
-joedbc produces a convenient ``Local_Client`` class that creates the connection and the client in one single line of code. Here is an example of use:
+:ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that creates the connection and the client in a single line of code. Here is an example:
 
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
 
 Multiple instances of this program can safely share the same database and run
-concurrently.
+concurrently on the same machine.
 
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
