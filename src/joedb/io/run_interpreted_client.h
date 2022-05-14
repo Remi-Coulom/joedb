@@ -26,7 +26,12 @@ namespace joedb
    else if (diff < 0)
     std::cout << "You can pull " << -diff << " bytes. ";
 
-   std::cout << "R(read), P(pull), S(push), T(transaction), or Q(quit)? ";
+   std::cout << "R(read)";
+   if (diff > 0)
+    std::cout << ", P(push)";
+   else
+    std::cout << ", P(pull), T(transaction)";
+   std::cout << ", or Q(quit)? ";
    std::cout.flush();
    std::string input;
 
@@ -38,7 +43,7 @@ namespace joedb
 
    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-   if (input == "T")
+   if (input == "T" && diff <= 0)
    {
     std::cout << "Waiting for lock... ";
     std::cout.flush();
@@ -49,14 +54,16 @@ namespace joedb
      Interpreter(readable, writable).main_loop(std::cin, std::cout);
     });
    }
-   else if (input == "P")
+   else if (input == "P" && diff <= 0)
     client.pull();
-   else if (input == "S")
+   else if (input == "P" && diff > 0)
     client.push_unlock();
    else if (input == "R")
     Readonly_Interpreter(client.get_database()).main_loop(std::cin, std::cout);
    else if (input == "Q")
     break;
+   else
+    std::cout << "Error: unknown command\n";
   }
  }
 
