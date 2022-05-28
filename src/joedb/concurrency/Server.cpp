@@ -293,7 +293,7 @@ namespace joedb
    }
 
    if (session->state == Session::State::locking)
-    lock_timeout_timer.cancel();
+    lock_timeout_timer.cancel(); // TODO: allow timeout during push
 
    if (!conflict && size > int64_t(push_buffer.size()))
     push_buffer.resize(size_t(size));
