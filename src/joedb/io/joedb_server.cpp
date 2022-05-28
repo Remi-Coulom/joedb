@@ -17,7 +17,8 @@ namespace joedb
   if (argc != 2 && argc != 4 && argc != 6)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--port p] [--timeout t] <filename.joedb>\n";
+   std::cerr << " [--port p] [--timeout t] <filename.joedb>\n\n";
+   std::cerr << "The timeout is the time (in seconds) during which a client lock is kept. 0 (the default) means there is no timeout, and the lock is kept until the client unlocks or is disconnected. A client that timed out is not disconnected, and can still push data. But the push will succeed only if there is no conflict.\n";
    return 1;
   }
 
