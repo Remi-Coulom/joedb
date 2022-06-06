@@ -1,7 +1,7 @@
 Network Protocol
 ================
 
-checkpoint, size, version, and session_id are sent as 64-bit small-endian numbers.
+checkpoint, size, version, and session_id are sent as 64-bit little-endian numbers.
 
 Client to Server
 ----------------
