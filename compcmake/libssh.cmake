@@ -8,6 +8,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
 
  if(NOT libssh_FOUND)
   unset(libssh_FOUND)
+  include(CheckIncludeFileCXX)
   check_include_file_cxx("libssh/libssh.h" libssh_FOUND)
  endif()
 
