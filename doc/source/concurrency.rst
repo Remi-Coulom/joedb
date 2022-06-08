@@ -78,8 +78,8 @@ when it is typedefed to one of those).
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
 
-Multiple instances of this program can safely share the same database and run
-concurrently on the same machine.
+Multiple instances of this program can safely write to the same database
+concurrently.
 
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
