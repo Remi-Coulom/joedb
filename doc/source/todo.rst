@@ -114,6 +114,7 @@ Concurrency
   - backup should be asynchronous as well. Allow multiple backups.
   - allow timeout in the middle of a push.
   - don't use a big push buffer. Push to the file directly?
+  - pull into a local_client should not lock
 
 - performance: fuse socket writes. Fused operations can be produced by fusing
   writes. Lock-pull and push-unlock could have be done this way. Do it for
