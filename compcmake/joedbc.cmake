@@ -14,10 +14,6 @@ find_library(JOEDB_LIB joedb
   ${CMAKE_CURRENT_LIST_DIR}/${JOEDB_BUILD_PATH}
 )
 
-include_directories(BEFORE SYSTEM
- ${CMAKE_CURRENT_LIST_DIR}/../src
-)
-
 message("== JOEDBC = ${JOEDBC}")
 message("== JOEDB_LIB = ${JOEDB_LIB}")
 
@@ -57,11 +53,12 @@ function(joedbc_build dir namespace)
 endfunction(joedbc_build)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function(target_uses_joedb)
+function(target_uses_joedb target)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- add_dependencies(${ARGV0} all_joedbc)
- target_link_libraries(${ARGV0} ${JOEDB_LIB})
+ add_dependencies(${target} all_joedbc)
+ target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../src)
+ target_link_libraries(${target} ${JOEDB_LIB})
  if (libssh_FOUND)
-  target_link_libraries(${ARGV0} ${LIBSSH_LIBRARIES})
+  target_link_libraries(${target} ${LIBSSH_LIBRARIES})
  endif()
 endfunction(target_uses_joedb)
