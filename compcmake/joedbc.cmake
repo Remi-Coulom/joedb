@@ -4,20 +4,22 @@ else()
  set(JOEDB_BUILD_PATH "gcc_release")
 endif()
 
+set(JOEDB_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 find_program(JOEDBC joedbc
  HINTS
-  ${CMAKE_CURRENT_LIST_DIR}/${JOEDB_BUILD_PATH}
+  ${JOEDB_DIR}/${JOEDB_BUILD_PATH}
 )
 
 find_library(JOEDB_LIB joedb
  HINTS
-  ${CMAKE_CURRENT_LIST_DIR}/${JOEDB_BUILD_PATH}
+  ${JOEDB_DIR}/${JOEDB_BUILD_PATH}
 )
 
 message("== JOEDBC = ${JOEDBC}")
 message("== JOEDB_LIB = ${JOEDB_LIB}")
 
-include("${CMAKE_CURRENT_LIST_DIR}/libssh.cmake")
+include("${JOEDB_DIR}/libssh.cmake")
 
 add_custom_target(all_joedbc)
 
@@ -56,7 +58,7 @@ endfunction(joedbc_build)
 function(target_uses_joedb target)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  add_dependencies(${target} all_joedbc)
- target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../src)
+ target_include_directories(${target} PUBLIC ${JOEDB_DIR}/../src)
  target_link_libraries(${target} ${JOEDB_LIB})
  if (libssh_FOUND)
   target_link_libraries(${target} ${LIBSSH_LIBRARIES})
