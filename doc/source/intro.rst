@@ -33,9 +33,9 @@ or `JSON <https://www.json.org/json-en.html>`_:
   faster. Joedb also comes with a text format that can be easily read or
   modified by humans, if necessary.
 - Unlike Protocol Buffers or FlatBuffers, joedb works like a database: it can
-  incrementally update data stored on disk in a crash-safe way, and has a
-  network protocol to handle :doc:`concurrent connections <concurrency>` of
-  multiple clients to a database server.
+  incrementally update data stored on disk in a crash-safe way, and can handle
+  :doc:`concurrent connections <concurrency>` of multiple clients to a single
+  database.
 - Since a joedb file is append-only, its crash-safe operation does not require
   flushing data to disk as frequently as typical relational databases, which
   can make it an order of magnitude faster (see :doc:`checkpoints` for details
