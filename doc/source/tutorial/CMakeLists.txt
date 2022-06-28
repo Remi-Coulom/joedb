@@ -5,7 +5,7 @@ project(tutorial)
 include("../../../compcmake/joedbc.cmake")
 
 #
-# Including "joedbc.cmake" defines two functions
+# Including "joedbc.cmake" defines three functions
 #
 #  * joedbc_build(<dir> <name>): add rules to compile a database with joedbc
 #     <dir> is relative to ${CMAKE_CURRENT_SOURCE_DIR}
@@ -14,12 +14,15 @@ include("../../../compcmake/joedbc.cmake")
 #     This function may be invoked multiple times, once for each database
 #     contained in the code.
 #
+# * joedbc_build_absolute(<dir> <name>): same as above, but <dir> is absolute
+#
 #  * target_uses_joedb(target): indicate that a target uses joedb. Two effects:
 #     1: it adds a dependency, so that joedbc is invoked whenever necessary
 #     2: it links the executable to the joedb library
 #
-#  joedbc.cmake searches for joedbc and libjoedb in standard locations. If
-#  necessary, you can edit joedbc.cmake so that it finds them elsewhere.
+#  joedbc.cmake searches for joedbc and libjoedb in standard locations, giving
+#  a priority to the local release build. If necessary, you can edit
+#  joedbc.cmake so that it finds them elsewhere.
 #
 
 joedbc_build("." tutorial)
