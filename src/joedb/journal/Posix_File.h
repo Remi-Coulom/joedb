@@ -37,7 +37,7 @@ namespace joedb
 
   public:
    Posix_File(int fd, Open_Mode mode):
-    Generic_File(Open_Mode::read_existing),
+    Generic_File(mode),
     fd(fd)
    {
    }
@@ -47,6 +47,12 @@ namespace joedb
    Posix_File(const std::string &file_name, Open_Mode mode):
     Posix_File(file_name.c_str(), mode)
    {
+   }
+
+   Posix_File(int fd, size_t start, size_t length):
+    Posix_File(fd, Open_Mode::read_existing)
+   {
+    set_slice(start, length);
    }
 
    int64_t raw_get_size() const final;
