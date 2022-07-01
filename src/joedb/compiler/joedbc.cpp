@@ -629,6 +629,7 @@ static void generate_readonly_h
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Exception.h"
+#include "joedb/exception/Out_Of_Date.h"
 #include "joedb/assert.h"
 #include "joedb/io/type_io.h"
 
@@ -1560,10 +1561,7 @@ static void generate_readonly_h
     check_schema();
 
     if (requires_schema_upgrade())
-     throw joedb::Exception
-     (
-      "Schema is out of date. Can't upgrade a read-only database."
-     );
+     throw joedb::exception::Out_Of_Date();
    }
 
    Readonly_Database(joedb::Readonly_Journal &&journal):
