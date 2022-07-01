@@ -166,6 +166,7 @@ joedb_admin
 
 Other Ideas
 -----------
+- One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
 - apply schema upgrade to readonly databases (custom functions)
