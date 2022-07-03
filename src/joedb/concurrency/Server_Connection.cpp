@@ -187,10 +187,10 @@ namespace joedb
  void Server_Connection::keep_alive()
  ////////////////////////////////////////////////////////////////////////////
  {
-  Channel_Lock lock(channel);
-
   try
   {
+   Channel_Lock lock(channel);
+
    while (!keep_alive_thread_must_stop)
    {
     condition.wait_for(lock, std::chrono::seconds(keep_alive_interval));
