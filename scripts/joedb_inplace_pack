@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]]; then
+ echo "usage: $0 <file_name>+" >&2
+ exit 1
+fi
+
+for file_name in "$@"; do
+
+ packed_name="$file_name".joedb_packed
+ unpacked_name="$file_name".joedb_unpacked
+
+ if [[ -e "$packed_name" ]]; then
+  echo "error: \"$packed_name\" already exists"
+ elif [[ -e "$unpacked_name" ]]; then
+  echo "error: \"$unpacked_name\" already exists"
+ else
+  joedb_pack "$file_name" "$packed_name"
+  mv "$file_name" "$unpacked_name"
+  mv "$packed_name" "$file_name"
+  echo "packed $file_name"
+ fi
+
+done
+
