@@ -481,7 +481,7 @@ if (HAS_NETWORKING)
   install(TARGETS joedb_multi_server RUNTIME DESTINATION bin)
  endif()
 endif()
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../src/joedb/io/joedb_browser DESTINATION bin)
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin)
 install(TARGETS joedb
  ARCHIVE DESTINATION lib
  LIBRARY DESTINATION lib
