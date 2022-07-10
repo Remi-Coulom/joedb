@@ -1,5 +1,6 @@
 #include "joedb/io/dump.h"
 #include "joedb/io/process_journal_pair.h"
+#include "joedb/io/main_exception_catcher.h"
 
 namespace joedb
 {
@@ -14,11 +15,18 @@ namespace joedb
  {
   pack(input, output);
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ static int main(int argc, char **argv)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return process_journal_pair(argc, argv, joedb::process);
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return process_journal_pair(argc, argv, joedb::process);
+ return joedb::main_exception_catcher(joedb::main, argc, argv);
 }
