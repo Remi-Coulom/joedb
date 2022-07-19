@@ -47,7 +47,8 @@ Compiler
 --------
 - allow reading dropped fields in custom functions that are invoked before the
   drop. Store data in a column vector, and clear the vector at the time of the
-  drop. Make sure field id is not reused.
+  drop. Make sure field id is not reused. (make access function private, and
+  custom functions are friends)
 - joedb::Span<joedb::Record_Id> when updating vectors of references is bad.
   Should use strong typing (id_of_X). (joedb::Record_Id itself should also be
   strongly typed) (look at BOOST_STRONG_TYPEDEF).
