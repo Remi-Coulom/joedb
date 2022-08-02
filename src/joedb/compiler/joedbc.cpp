@@ -215,8 +215,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  if (!options.get_custom_names().empty())
  {
   out << '\n';
+  out << "  public:\n";
   for (const auto &name: options.get_custom_names())
    out << "   static void " << name << "(Generic_File_Database &db);\n";
+  out << "\n  private:";
  }
  out << R"RRR(
    Generic_File_Database
