@@ -47,7 +47,8 @@ Compiler
 --------
 - allow reading dropped fields in custom functions that are invoked before the
   drop. Store data in a column vector, and clear the vector at the time of the
-  drop. Make sure field id is not reused.
+  drop. Make sure field id is not reused. (make access function private, and
+  custom functions are friends)
 - joedb::Span<joedb::Record_Id> when updating vectors of references is bad.
   Should use strong typing (id_of_X). (joedb::Record_Id itself should also be
   strongly typed) (look at BOOST_STRONG_TYPEDEF).
@@ -103,6 +104,7 @@ Concurrency
 -----------
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
+- Readonly_Client
 - joedb_server:
 
   - use coroutines
@@ -114,7 +116,6 @@ Concurrency
   - backup should be asynchronous as well. Allow multiple backups.
   - allow timeout in the middle of a push.
   - don't use a big push buffer. Push to the file directly?
-  - pull into a local_client should not lock
 
 - performance: fuse socket writes. Fused operations can be produced by fusing
   writes. Lock-pull and push-unlock could have be done this way. Do it for
@@ -138,6 +139,8 @@ Concurrency
 
   If the journal is shared but not lockable (Portable_File), then lock the
   connection like we are doing now.
+
+- pull into a local_client should not lock
 
 C++ language questions
 ----------------------
