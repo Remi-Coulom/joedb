@@ -907,6 +907,7 @@ TEST(Compiler, index_iteration)
 TEST(Compiler, shared_local_file)
 /////////////////////////////////////////////////////////////////////////////
 {
+#ifdef JOEDB_FILE_IS_LOCKABLE
  const char * const file_name = "compiler_test.joedb";
  std::remove(file_name);
 
@@ -916,4 +917,5 @@ TEST(Compiler, shared_local_file)
  EXPECT_EQ(client.get_database().get_city_table().get_size(), 0ULL);
 
  std::remove(file_name);
+#endif
 }
