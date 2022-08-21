@@ -1,6 +1,7 @@
-#ifndef JOEDB_FILE_IS_PORTABLE_FILE
-#include "joedb/concurrency/Local_Connection.h"
 #include "joedb/journal/File.h"
+
+#ifdef JOEDB_FILE_IS_LOCKABLE
+#include "joedb/concurrency/Local_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Destructor_Logger.h"
