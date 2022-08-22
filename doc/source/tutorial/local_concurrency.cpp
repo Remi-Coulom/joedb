@@ -8,7 +8,6 @@
 static int local_concurrency(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
-#ifdef JOEDB_FILE_IS_LOCKABLE
  tutorial::Local_Client client("local_concurrency.joedb");
 
  while (true)
@@ -22,9 +21,6 @@ static int local_concurrency(int argc, char **argv)
   std::cout << client.get_database().get_person_table().get_size() << '\n';
   std::this_thread::sleep_for(std::chrono::seconds(1));
  }
-#else
- std::cout << "File locking is not supported on this platform.\n";
-#endif
 
  return 0;
 }
