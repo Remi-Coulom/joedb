@@ -64,7 +64,7 @@ endfunction()
 function(target_uses_joedb target)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  add_dependencies(${target} all_joedbc)
- target_include_directories(${target} PUBLIC ${JOEDB_DIR}/../src)
+ target_include_directories(${target} BEFORE PUBLIC ${JOEDB_DIR}/../src)
  target_link_libraries(${target} ${JOEDB_LIB})
  if (libssh_FOUND)
   target_link_libraries(${target} ${LIBSSH_LIBRARIES})
