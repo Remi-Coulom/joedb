@@ -128,6 +128,7 @@ set(JOEDB_SOURCES
  ../src/joedb/io/base64.cpp
  ../src/joedb/io/get_time_string.cpp
  ../src/joedb/io/dump.cpp
+ ../src/joedb/io/inplace_pack.cpp
  ../src/joedb/io/Interpreter.cpp
  ../src/joedb/io/Interpreter_Dump_Writable.cpp
  ../src/joedb/io/json.cpp
