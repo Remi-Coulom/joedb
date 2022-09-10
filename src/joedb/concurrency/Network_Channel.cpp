@@ -15,7 +15,13 @@ namespace joedb
   net::connect
   (
    socket,
-   resolver.resolve(host_name, port_name)
+   resolver.resolve
+   (
+    net::ip::tcp::v4(),
+    host_name,
+    port_name,
+    net::ip::tcp::resolver::flags()
+   )
   );
  }
 

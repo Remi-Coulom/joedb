@@ -102,6 +102,7 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- ipv6 server
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
 - Readonly_Client
