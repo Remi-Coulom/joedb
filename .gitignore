@@ -1,6 +1,7 @@
 *.swp
 *.log
 *.exe
+*.exe.stackdump
 *.pyc
 oprofile_data
 .cache
