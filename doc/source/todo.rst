@@ -102,7 +102,6 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- option to lock server at handshake
 - ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>

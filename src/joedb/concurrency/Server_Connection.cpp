@@ -210,18 +210,20 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::handshake()
+ int64_t Server_Connection::handshake(bool keep_locked)
  ////////////////////////////////////////////////////////////////////////////
  {
   LOG("Connecting... ");
 
-  buffer[0] = 'j';
+  const char J = keep_locked ? 'J' : 'j';
+
+  buffer[0] = J;
   buffer[1] = 'o';
   buffer[2] = 'e';
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 6;
+  const int64_t client_version = 7;
   to_network(client_version, buffer.data() + 5);
 
   {
@@ -233,7 +235,7 @@ namespace joedb
 
   if
   (
-   buffer[0] != 'j' ||
+   buffer[0] != J ||
    buffer[1] != 'o' ||
    buffer[2] != 'e' ||
    buffer[3] != 'd' ||
