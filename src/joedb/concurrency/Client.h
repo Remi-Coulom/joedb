@@ -50,6 +50,8 @@ namespace joedb
    ):
     connection(connection),
     server_checkpoint(connection.handshake()),
+    // Attention: server checkpoint (and local data) can advance here
+    // TODO: option to lock server at handshake (no more connection.locked)
     data(connection.locked(file.is_shared()), file)
    {
     if (file.is_shared())
