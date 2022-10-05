@@ -78,12 +78,13 @@ set(GOOGLE_TEST
 
 # SQLite 3
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_library(SQLITE3_LIBRARY sqlite3)
-if (SQLITE3_LIBRARY)
+find_package(SQLite3)
+if (SQLite3_FOUND)
  ipo_add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
- target_link_libraries(sqlite3_insert ${SQLITE3_LIBRARY})
+ target_link_libraries(sqlite3_insert ${SQLite3_LIBRARIES})
+ target_include_directories(sqlite3_insert PRIVATE ${SQLite3_INCLUDE_DIRS})
 else()
- message("== WARNING: install sqlite3 for sqlite3 benchmarks")
+ message("== WARNING: no sqlite3: Try sudo apt install libsqlite3-dev or vcpkg install sqlite3:x64-windows")
 endif()
 
 # Networking
