@@ -2,7 +2,6 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
-#include <joedb/journal/Generic_File.h>
 
 /////////////////////////////////////////////////////////////////////////////
 class Debug_Channel: public joedb::Channel, public joedb::Memory_File
