@@ -35,18 +35,16 @@ namespace joedb
   Forward_Channel::Forward_Channel
   ///////////////////////////////////////////////////////////////////////////
   (
-   Thread_Safe_Session &session,
+   Session &session,
    const char *remote_host,
    uint16_t remote_port
-  ):
-   mutex(session.get_mutex())
+  )
   {
-   Session_Lock lock(session);
-   channel = ssh_channel_new(lock.get_ssh_session());
+   channel = ssh_channel_new(session.get());
    check_not_null(channel);
    check_ssh_session_result
    (
-    lock.get_ssh_session(),
+    session.get(),
     ssh_channel_open_forward
     (
      channel,
@@ -62,14 +60,7 @@ namespace joedb
   Forward_Channel::~Forward_Channel()
   ///////////////////////////////////////////////////////////////////////////
   {
-   try
-   {
-    std::lock_guard<std::mutex> lock(mutex);
-    ssh_channel_free(channel);
-   }
-   catch(...)
-   {
-   }
+   ssh_channel_free(channel);
   }
  }
 }

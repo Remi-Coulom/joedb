@@ -2,7 +2,7 @@
 #define joedb_Server_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
-#include "joedb/concurrency/Channel.h"
+#include "joedb/concurrency/Thread_Safe_Channel.h"
 #include "joedb/Posthumous_Thrower.h"
 
 #include <mutex>
@@ -17,7 +17,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Channel &channel;
+   Thread_Safe_Channel channel;
    std::ostream *log;
 
    enum {buffer_size = (1 << 13)};

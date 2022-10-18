@@ -2,7 +2,7 @@
 #define joedb_ssh_Forward_Channel_declared
 
 #include "joedb/concurrency/Channel.h"
-#include "joedb/ssh/Thread_Safe_Session.h"
+#include "joedb/ssh/Session.h"
 
 namespace joedb
 {
@@ -13,10 +13,7 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    private:
-    std::mutex &mutex;
     ssh_channel channel;
-
-    std::mutex &get_mutex() final {return mutex;}
 
     size_t write_some(const char *data, size_t size) final;
     size_t read_some(char *data, size_t size) final;
@@ -24,7 +21,7 @@ namespace joedb
    public:
     Forward_Channel
     (
-     Thread_Safe_Session &session,
+     Session &session,
      const char *remote_host,
      uint16_t remote_port
     );

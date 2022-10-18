@@ -60,7 +60,7 @@ namespace joedb
  {
   private:
    File file;
-   ssh::Thread_Safe_Session session;
+   ssh::Session session;
    ssh::Forward_Channel channel;
    Server_Connection backup_connection;
    Backup_Client backup_client;

@@ -2,21 +2,19 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
+#include <joedb/journal/Generic_File.h>
 
 /////////////////////////////////////////////////////////////////////////////
 class Debug_Channel: public joedb::Channel, public joedb::Memory_File
 /////////////////////////////////////////////////////////////////////////////
 {
  private:
-  std::mutex mutex;
-
   size_t write_some(const char *data, size_t size) override {return size;}
   size_t read_some(char *data, size_t size) override
   {
    read_data(data, 1);
    return 1;
   }
-  std::mutex &get_mutex() override {return mutex;}
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -26,7 +24,7 @@ TEST(Server_Connection, handshake)
  std::ostream * const log = nullptr;
  Debug_Channel channel;
 
- channel.write<char>('x');
+ channel.joedb::Memory_File::write<char>('x');
  channel.set_position(0);
 
  try
@@ -50,25 +48,27 @@ TEST(Server_Connection, session)
  std::ostream * const log = nullptr;
  Debug_Channel channel;
 
- channel.write<char>('j');
- channel.write<char>('o');
- channel.write<char>('e');
- channel.write<char>('d');
- channel.write<char>('b');
- channel.write<int64_t>(7);
- channel.write<int64_t>(1234);
- channel.write<int64_t>(41);
- channel.write<char>('H');
- channel.write<char>('l');
- channel.write<char>('u');
- channel.write<char>('P');
- channel.write<int64_t>(41);
- channel.write<int64_t>(0);
- channel.write<char>('L');
- channel.write<int64_t>(41);
- channel.write<int64_t>(0);
- channel.write<char>('u');
- channel.set_position(0);
+ joedb::Generic_File &file = channel;
+
+ file.write<char>('j');
+ file.write<char>('o');
+ file.write<char>('e');
+ file.write<char>('d');
+ file.write<char>('b');
+ file.write<int64_t>(7);
+ file.write<int64_t>(1234);
+ file.write<int64_t>(41);
+ file.write<char>('H');
+ file.write<char>('l');
+ file.write<char>('u');
+ file.write<char>('P');
+ file.write<int64_t>(41);
+ file.write<int64_t>(0);
+ file.write<char>('L');
+ file.write<int64_t>(41);
+ file.write<int64_t>(0);
+ file.write<char>('u');
+ file.set_position(0);
 
  {
   joedb::Server_Connection connection(channel, log);
