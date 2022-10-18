@@ -25,7 +25,6 @@ namespace joedb
     operator std::unique_lock<std::mutex> &() {return lock;}
 
     ssh_session get_ssh_session() const;
-    sftp_session get_sftp_session() const;
   };
 
   ///////////////////////////////////////////////////////////////////////////
@@ -37,7 +36,6 @@ namespace joedb
    private:
     std::mutex mutex;
     ssh::Session session;
-    ssh::SFTP sftp;
 
    public:
     Thread_Safe_Session
@@ -47,8 +45,7 @@ namespace joedb
      int port,
      int ssh_log_level
     ):
-     session(user, host, port, ssh_log_level),
-     sftp(session)
+     session(user, host, port, ssh_log_level)
     {
     }
 
@@ -79,13 +76,6 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    return thread_safe_session.session.get();
-  }
-
-  ///////////////////////////////////////////////////////////////////////////
-  inline sftp_session Session_Lock::get_sftp_session() const
-  ///////////////////////////////////////////////////////////////////////////
-  {
-   return thread_safe_session.sftp.get();
   }
  }
 }
