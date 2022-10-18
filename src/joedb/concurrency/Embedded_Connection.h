@@ -14,9 +14,11 @@ namespace joedb
    bool locked;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t handshake() final
+   int64_t handshake(bool keep_locked) final
    //////////////////////////////////////////////////////////////////////////
    {
+    if (keep_locked)
+     lock();
     return server_journal.get_checkpoint_position();
    }
 

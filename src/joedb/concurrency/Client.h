@@ -49,8 +49,8 @@ namespace joedb
     Generic_File &file
    ):
     connection(connection),
-    server_checkpoint(connection.handshake()),
-    data(connection.locked(file.is_shared()), file)
+    server_checkpoint(connection.handshake(file.is_shared())),
+    data(connection, file)
    {
     if (file.is_shared())
      connection.unlock();

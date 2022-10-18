@@ -127,6 +127,8 @@ namespace joedb
     write_buffer_and_next_command(session, 1);
    else if (session->state == Session::State::waiting_for_lock_pull)
     pull(session);
+   else if (session->state == Session::State::waiting_for_handshake)
+    handshake(session);
 
    session->state = Session::State::locking;
   }
@@ -591,6 +593,25 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
+ void Server::handshake(std::shared_ptr<Session> session)
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  const int64_t client_version = from_network(session->buffer + 5);
+
+  LOGID("client_version = " << client_version << '\n');
+
+  {
+   const int64_t server_version = client_version < 5 ? 0 : 7;
+   to_network(server_version, session->buffer + 5);
+  }
+
+  to_network(session->id, session->buffer + 5 + 8);
+  to_network(journal.get_checkpoint_position(), session->buffer + 5 + 8 + 8);
+
+  write_buffer_and_next_command(session, 5 + 8 + 8 + 8);
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
  void Server::handshake_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -603,32 +624,26 @@ namespace joedb
   {
    if
    (
-    session->buffer[0] == 'j' &&
     session->buffer[1] == 'o' &&
     session->buffer[2] == 'e' &&
     session->buffer[3] == 'd' &&
     session->buffer[4] == 'b'
    )
    {
-    const int64_t client_version = from_network(session->buffer + 5);
-
-    LOGID("client_version = " << client_version << '\n');
-
-    if (client_version < 5)
-     to_network(0, session->buffer + 5);
-    else
+    if (session->buffer[0] == 'j')
     {
-     const int64_t server_version = 6;
-     to_network(server_version, session->buffer + 5);
+     handshake(session);
+     return;
     }
 
-    to_network(session->id, session->buffer + 5 + 8);
-    to_network(journal.get_checkpoint_position(), session->buffer + 5 + 8 + 8);
-
-    write_buffer_and_next_command(session, 5 + 8 + 8 + 8);
+    if (session->buffer[0] == 'J')
+    {
+     lock(session, Session::State::waiting_for_handshake);
+     return;
+    }
    }
-   else
-    LOGID("bad handshake\n");
+
+   LOGID("bad handshake\n");
   }
  }
 

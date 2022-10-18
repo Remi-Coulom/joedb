@@ -11,7 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual int64_t handshake() = 0;
+   virtual int64_t handshake(bool keep_locked) = 0;
 
    virtual bool check_matching_content
    (
@@ -45,13 +45,6 @@ namespace joedb
    ) = 0;
 
    virtual ~Connection() = default;
-
-   Connection &locked(bool lock_me)
-   {
-    if (lock_me)
-     lock();
-    return *this;
-   }
  };
 }
 

@@ -42,7 +42,14 @@ namespace joedb
     net::ip::tcp::socket socket;
     enum {buffer_size = (1 << 13)};
     char buffer[buffer_size];
-    enum State {not_locking, waiting_for_lock, waiting_for_lock_pull, locking};
+    enum State
+    {
+     not_locking,
+     waiting_for_lock,
+     waiting_for_lock_pull,
+     waiting_for_handshake,
+     locking
+    };
     bool unlock_after_push;
     State state;
 
@@ -140,6 +147,8 @@ namespace joedb
     std::shared_ptr<Session> session,
     size_t size
    );
+
+   void handshake(std::shared_ptr<Session> session);
 
    void handshake_handler
    (

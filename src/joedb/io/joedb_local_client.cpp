@@ -18,8 +18,12 @@ namespace joedb
   {
    const char * const file_name = argv[1];
 
+   std::cout << "Connection... ";
+   std::cout.flush();
    Local_Connection<File> connection(file_name);
    Interpreted_Client client(connection, connection.get_file());
+   std::cout << "OK\n";
+
    run_interpreted_client(client);
   }
 
