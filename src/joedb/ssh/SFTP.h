@@ -28,13 +28,18 @@ namespace joedb
      return sftp;
     }
 
+    void throw_error() const
+    {
+     throw joedb::Exception
+     (
+      "SFTP error code: " + std::to_string(sftp_get_error(sftp))
+     );
+    }
+
     void check_result(int result) const
     {
      if (result != SSH_OK)
-      throw joedb::Exception
-      (
-       "SFTP error code: " + std::to_string(sftp_get_error(sftp))
-      );
+      throw_error();
     }
 
     ~SFTP()
