@@ -28,6 +28,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << server.port << '(' << id << "): ";
+
   return out;
  }
 
@@ -526,7 +527,6 @@ namespace joedb
 
     case 'i':
      write_buffer_and_next_command(session, 1);
-     write_status();
     break;
 
     case 'Q':
@@ -725,9 +725,12 @@ namespace joedb
  {
   if (!error)
   {
+   if (signal != no_signal)
+    LOG(port);
+
    if (signal == SIGINT)
    {
-    LOG("Received SIGINT, interrupting.\n");
+    LOG(": Received SIGINT, interrupting.\n");
     for (Session *session: sessions)
      session->socket.close();
     acceptor.cancel();
@@ -736,31 +739,59 @@ namespace joedb
    {
     if (signal == SIGUSR1)
     {
-     write_status();
      log([this](std::ostream &out)
      {
-      out << "Received SIGUSR1, listing sessions. Count = ";
+      out << ": Received SIGUSR1, listing sessions. Count = ";
       out << session_count << ".\n";
 
       for (const Session *session: sessions)
       {
-       out << session->id;
+       out << ' ' << session->id;
        out << ": state = " << session->state;
        out << "; remote_endpoint = " << session->socket.remote_endpoint();
        out << '\n';
       }
-
-      out << '\n';
      });
     }
     else if (signal == SIGUSR2)
     {
-     LOG("Received SIGUSR2\n");
+     LOG("; Received SIGUSR2\n");
+     write_status();
     }
 
-    signal = no_signal;
-    start_interrupt_timer();
+    if (signal == no_signal)
+    {
+     start_interrupt_timer();
+    }
+    else
+    {
+     interrupt_timer.expires_after
+     (
+      std::chrono::seconds(clear_signal_seconds)
+     );
+
+     interrupt_timer.async_wait
+     (
+      std::bind
+      (
+       &Server::handle_clear_signal_timer,
+       this,
+       std::placeholders::_1
+      )
+     );
+    }
    }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::handle_clear_signal_timer(std::error_code error)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (!error)
+  {
+   signal = no_signal;
+   start_interrupt_timer();
   }
  }
 
@@ -809,7 +840,7 @@ namespace joedb
   {
    if (this->session_count > 0)
    {
-    LOG("Problem: destroying server before sessions. This is a bug.\n");
+    LOG("Bug: destroying server before sessions.\n");
    }
   }
   catch (...)

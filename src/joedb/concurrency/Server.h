@@ -24,9 +24,11 @@ namespace joedb
  {
   private:
    static constexpr int no_signal = 0;
+
    static std::atomic<int> signal;
    static void CDECL signal_handler(int sig);
    enum {interrupt_check_seconds = 2};
+   enum {clear_signal_seconds = 3};
 
    joedb::Writable_Journal &journal;
    net::io_context &io_context;
@@ -171,6 +173,7 @@ namespace joedb
 
    void start_interrupt_timer();
    void handle_interrupt_timer(std::error_code error);
+   void handle_clear_signal_timer(std::error_code error);
 
    std::ostream *log_pointer;
 
