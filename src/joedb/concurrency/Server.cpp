@@ -746,6 +746,7 @@ namespace joedb
       {
        out << session->id;
        out << ": state = " << session->state;
+       out << "; remote_endpoint = " << session->socket.remote_endpoint();
        out << '\n';
       }
 
