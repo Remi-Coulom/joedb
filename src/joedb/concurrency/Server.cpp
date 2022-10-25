@@ -809,8 +809,7 @@ namespace joedb
   {
    if (this->session_count > 0)
    {
-    std::cerr << "Problem: destroying server before sessions.\n";
-    std::cerr << "This is a bug.\n";
+    LOG("Problem: destroying server before sessions. This is a bug.\n");
    }
   }
   catch (...)
