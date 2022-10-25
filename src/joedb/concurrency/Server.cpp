@@ -52,33 +52,33 @@ namespace joedb
  Server::Session::~Session()
  ////////////////////////////////////////////////////////////////////////////
  {
-  --server.session_count;
-  server.sessions.erase(this);
-
-  if (state == locking)
+  try
   {
-   server.log([this](std::ostream &out)
-   {
-    write_id(out) << "removing lock held by dying session.\n";
-   });
+   --server.session_count;
+   server.sessions.erase(this);
 
-   try
+   if (state == locking)
    {
+    server.log([this](std::ostream &out)
+    {
+     write_id(out) << "removing lock held by dying session.\n";
+    });
+
     server.unlock(*this);
    }
-   catch (...)
+
+   server.log([this](std::ostream &out)
    {
-    // What should we do? maybe post the exception?
-    // This may not be a problem any more with coroutines.
-   }
+    write_id(out) << "deleted\n";
+   });
+
+   server.write_status();
   }
-
-  server.log([this](std::ostream &out)
+  catch (...)
   {
-   write_id(out) << "deleted\n";
-  });
-
-  server.write_status();
+   // What should we do? maybe post the exception?
+   // This may not be a problem any more with coroutines.
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
