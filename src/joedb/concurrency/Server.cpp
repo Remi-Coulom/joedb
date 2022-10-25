@@ -1,6 +1,7 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/network_integers.h"
 #include "joedb/concurrency/Backup_Client.h"
+#include "joedb/concurrency/get_pid.h"
 #include "joedb/io/get_time_string.h"
 
 #include <iostream>
@@ -13,13 +14,13 @@
 
 namespace joedb
 {
- std::atomic<bool> Server::interrupted(false);
+ std::atomic<int> Server::signal(Server::no_signal);
 
  ////////////////////////////////////////////////////////////////////////////
  void CDECL Server::signal_handler(int sig)
  ////////////////////////////////////////////////////////////////////////////
  {
-  interrupted = true;
+  signal = sig;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -43,6 +44,7 @@ namespace joedb
    write_id(out) << "created\n";
   });
   ++server.session_count;
+  server.set_of_sessions.insert(this);
   server.write_status();
  }
 
@@ -51,6 +53,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   --server.session_count;
+  server.set_of_sessions.erase(this);
 
   if (state == locking)
   {
@@ -85,8 +88,9 @@ namespace joedb
   log([this](std::ostream &out)
   {
    out << '\n';
-   out << port << ": ";
-   out << get_time_string(std::time(nullptr));
+   out << "port = " << port;
+   out << "; pid = " << joedb::get_pid();
+   out << ": " << get_time_string(std::time(nullptr));
    out << "; session_count = " << session_count << '\n';
    out << '\n';
   });
@@ -699,6 +703,8 @@ namespace joedb
  void Server::start_interrupt_timer()
  ////////////////////////////////////////////////////////////////////////////
  {
+  signal = no_signal;
+
   interrupt_timer.expires_after
   (
    std::chrono::seconds(interrupt_check_seconds)
@@ -721,10 +727,31 @@ namespace joedb
  {
   if (!error)
   {
-   if (interrupted)
+   if (signal == SIGINT)
    {
-    LOG("Interruption detected\n");
+    LOG("Received SIGINT, interrupting.\n");
     io_context.stop();
+   }
+   else if (signal == SIGUSR1)
+   {
+    write_status();
+    log([this](std::ostream &out)
+    {
+     out << "Received SIGUSR1\n";
+
+     for (const Session *session: set_of_sessions)
+     {
+      out << session->id;
+      out << ": state = " << session->state;
+      out << '\n';
+     }
+
+     out << '\n';
+    });
+   }
+   else if (signal == SIGUSR2)
+   {
+    LOG("Received SIGUSR2\n");
    }
 
    start_interrupt_timer();
@@ -761,14 +788,23 @@ namespace joedb
   write_status();
 
   std::signal(SIGINT, signal_handler);
+  std::signal(SIGUSR1, signal_handler);
+  std::signal(SIGUSR2, signal_handler);
 
   start_interrupt_timer();
   start_accept();
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server::~Server() = default;
+ Server::~Server()
  ////////////////////////////////////////////////////////////////////////////
+ {
+  if (this->session_count > 0)
+  {
+   std::cerr << "Problem: destroying server before sessions.\n";
+   std::cerr << "This is a bug.\n";
+  }
+ }
 }
 
 #undef LOGID

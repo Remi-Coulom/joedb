@@ -8,6 +8,7 @@
 #include <atomic>
 #include <memory>
 #include <iosfwd>
+#include <set>
 
 #ifndef CDECL
 #define CDECL
@@ -22,7 +23,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   static std::atomic<bool> interrupted;
+   static constexpr int no_signal = 0;
+   static std::atomic<int> signal;
    static void CDECL signal_handler(int sig);
    enum {interrupt_check_seconds = 2};
 
@@ -58,6 +60,8 @@ namespace joedb
     Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();
    };
+
+   std::set<const Session *> set_of_sessions;
 
    void write_status();
 
@@ -199,7 +203,7 @@ namespace joedb
    );
 
    uint16_t get_port() const {return port;}
-   void interrupt() {interrupted = true;}
+   void interrupt() {signal = SIGINT;}
 
    ~Server();
  };
