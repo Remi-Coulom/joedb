@@ -61,7 +61,7 @@ namespace joedb
     ~Session();
    };
 
-   std::set<const Session *> set_of_sessions;
+   std::set<Session *> sessions;
 
    void write_status();
 

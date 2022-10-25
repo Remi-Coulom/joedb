@@ -44,7 +44,7 @@ namespace joedb
    write_id(out) << "created\n";
   });
   ++server.session_count;
-  server.set_of_sessions.insert(this);
+  server.sessions.insert(this);
   server.write_status();
  }
 
@@ -53,7 +53,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   --server.session_count;
-  server.set_of_sessions.erase(this);
+  server.sessions.erase(this);
 
   if (state == locking)
   {
@@ -703,8 +703,6 @@ namespace joedb
  void Server::start_interrupt_timer()
  ////////////////////////////////////////////////////////////////////////////
  {
-  signal = no_signal;
-
   interrupt_timer.expires_after
   (
    std::chrono::seconds(interrupt_check_seconds)
@@ -730,31 +728,38 @@ namespace joedb
    if (signal == SIGINT)
    {
     LOG("Received SIGINT, interrupting.\n");
-    io_context.stop();
+    for (Session *session: sessions)
+     session->socket.close();
+    acceptor.cancel();
    }
-   else if (signal == SIGUSR1)
+   else
    {
-    write_status();
-    log([this](std::ostream &out)
+    if (signal == SIGUSR1)
     {
-     out << "Received SIGUSR1\n";
-
-     for (const Session *session: set_of_sessions)
+     write_status();
+     log([this](std::ostream &out)
      {
-      out << session->id;
-      out << ": state = " << session->state;
+      out << "Received SIGUSR1, listing sessions. Count = ";
+      out << session_count << ".\n";
+
+      for (const Session *session: sessions)
+      {
+       out << session->id;
+       out << ": state = " << session->state;
+       out << '\n';
+      }
+
       out << '\n';
-     }
+     });
+    }
+    else if (signal == SIGUSR2)
+    {
+     LOG("Received SIGUSR2\n");
+    }
 
-     out << '\n';
-    });
+    signal = no_signal;
+    start_interrupt_timer();
    }
-   else if (signal == SIGUSR2)
-   {
-    LOG("Received SIGUSR2\n");
-   }
-
-   start_interrupt_timer();
   }
  }
 
@@ -799,10 +804,16 @@ namespace joedb
  Server::~Server()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (this->session_count > 0)
+  try
   {
-   std::cerr << "Problem: destroying server before sessions.\n";
-   std::cerr << "This is a bug.\n";
+   if (this->session_count > 0)
+   {
+    std::cerr << "Problem: destroying server before sessions.\n";
+    std::cerr << "This is a bug.\n";
+   }
+  }
+  catch (...)
+  {
   }
  }
 }
