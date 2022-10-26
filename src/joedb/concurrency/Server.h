@@ -9,9 +9,18 @@
 #include <memory>
 #include <iosfwd>
 #include <set>
+#include <csignal>
 
 #ifndef CDECL
 #define CDECL
+#endif
+
+#ifndef SIGUSR1
+#define SIGUSR1 10
+#endif
+
+#ifndef SIGUSR2
+#define SIGUSR2 12
 #endif
 
 namespace joedb
