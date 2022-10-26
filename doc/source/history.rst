@@ -3,10 +3,15 @@ History
 - 2022-??-??: 7.0
 
   - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
+  - Removed some useless ssh code that was left over from the old serverless
+    sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
+    ``ssh::Session``, and its constructor is slightly faster than before
+    because there is no sftp any more.
   - Stricter checks when sharing the same local journal for multiple clients:
     the connection is locked during client construction to check for file
     integrity. Previous version would silently open a file containing an
-    incomplete transaction, and could overwrite it.
+    incomplete transaction, and could overwrite it. This required an upgrade
+    to the network protocol, so new clients cannot connect to the old server.
   - Minor fixes and improvements
 
 - 2021-09-15: 6.0
