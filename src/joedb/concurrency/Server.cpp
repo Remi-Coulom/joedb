@@ -741,7 +741,8 @@ namespace joedb
     {
      log([this](std::ostream &out)
      {
-      out << ": Received SIGUSR1, listing sessions. Count = ";
+      out << ": timeout = " << lock_timeout_seconds;
+      out << "s. Received SIGUSR1, listing sessions. Count = ";
       out << session_count << ".\n";
 
       for (const Session *session: sessions)
