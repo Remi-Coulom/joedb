@@ -42,7 +42,8 @@ Available modes are:
    write_existing,
    create_new,
    write_existing_or_create_new, // mode of File_Database
-   shared_write
+   shared_write,
+   write_lock
   };
 
 So ``write_existing``, ``create_new``, and ``shared_write`` are available only
@@ -53,7 +54,8 @@ library should not directly open files with this mode, and instead use
 :doc:`transactions <concurrency>` if they wish to write to a file that may be
 opened simultaneously by multiple processes. Other write modes will use file
 locking to prevent more than one process from writing to the same file
-simultaneously.
+simultaneously. ``write_lock`` is like ``write_existing_or_create_new``, but
+waits instead of failing if anybody else is already write-locking.
 
 Using a ``joedb::Generic_File``
 -------------------------------

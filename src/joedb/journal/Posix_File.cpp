@@ -99,10 +99,17 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
   Generic_File(mode)
  {
-  if
+  if (mode == Open_Mode::read_existing)
+   fd = open(file_name, O_RDONLY);
+  else if (mode == Open_Mode::write_existing)
+   fd = open(file_name, O_RDWR);
+  else if (mode == Open_Mode::create_new)
+   fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
+  else if
   (
    mode == Open_Mode::write_existing_or_create_new ||
-   mode == Open_Mode::shared_write
+   mode == Open_Mode::shared_write ||
+   mode == Open_Mode::write_lock
   )
   {
    fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
@@ -119,19 +126,15 @@ namespace joedb
 
    Generic_File::set_mode(new_mode);
   }
-  else if (mode == Open_Mode::create_new)
-   fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
-  else if (mode == Open_Mode::write_existing)
-   fd = open(file_name, O_RDWR);
-  else
-   fd = open(file_name, O_RDONLY);
 
   if (fd < 0)
    throw_last_error("Opening", file_name);
 
   if (mode != Open_Mode::read_existing && mode != Open_Mode::shared_write)
   {
-   if (!try_lock())
+   if (mode == Open_Mode::write_lock)
+    lock();
+   else if (!try_lock())
     throw_last_error("Locking", file_name);
   }
  }

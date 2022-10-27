@@ -3,7 +3,8 @@
 
 namespace joedb
 {
- static const std::ios_base::openmode openmode[3] =
+ static constexpr int supported_open_modes = 3;
+ static const std::ios_base::openmode openmode[supported_open_modes] =
  {
   std::ios_base::binary | std::ios_base::in,
   std::ios_base::binary | std::ios_base::in | std::ios_base::out,
@@ -15,7 +16,12 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   actual_mode = mode;
-  return filebuf.open(file_name, openmode[static_cast<size_t>(mode)]);
+
+  const size_t index = static_cast<size_t>(mode);
+  if (index >= supported_open_modes)
+   throw joedb::Exception("Portable_File_Buffer: unsupported open mode");
+
+  return filebuf.open(file_name, openmode[index]);
  }
 
  /////////////////////////////////////////////////////////////////////////////

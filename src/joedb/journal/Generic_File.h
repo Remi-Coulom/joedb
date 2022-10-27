@@ -20,7 +20,8 @@ namespace joedb
   write_existing,
   create_new,
   write_existing_or_create_new,
-  shared_write
+  shared_write,
+  write_lock
  };
 
  ////////////////////////////////////////////////////////////////////////////

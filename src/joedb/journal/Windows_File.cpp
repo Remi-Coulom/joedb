@@ -12,6 +12,7 @@ namespace joedb
   GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE,
+  GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE
  };
 
@@ -21,6 +22,7 @@ namespace joedb
   FILE_SHARE_READ,
   FILE_SHARE_READ,
   FILE_SHARE_READ,
+  FILE_SHARE_READ | FILE_SHARE_WRITE,
   FILE_SHARE_READ | FILE_SHARE_WRITE
  };
 
@@ -29,6 +31,7 @@ namespace joedb
   OPEN_EXISTING,
   OPEN_EXISTING,
   CREATE_NEW,
+  OPEN_ALWAYS,
   OPEN_ALWAYS,
   OPEN_ALWAYS
  };
@@ -179,17 +182,16 @@ namespace joedb
   if (file == INVALID_HANDLE_VALUE)
    throw_last_error("Opening", file_name);
 
-  if
-  (
-   mode == Open_Mode::write_existing_or_create_new ||
-   mode == Open_Mode::shared_write
-  )
+  if (creation_disposition[static_cast<size_t>(mode)] == OPEN_ALWAYS)
   {
    if (GetLastError() == 0)
     set_mode(Open_Mode::create_new);
    else
     set_mode(Open_Mode::write_existing);
   }
+
+  if (mode == Open_Mode::write_lock)
+   lock();
  }
 
  /////////////////////////////////////////////////////////////////////////////

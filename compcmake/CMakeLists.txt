@@ -186,6 +186,7 @@ joedb_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
 joedb_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
 joedb_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
 joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
+joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
