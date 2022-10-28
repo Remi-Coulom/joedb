@@ -60,6 +60,7 @@ namespace joedb
    Server_Connection(Channel &channel, std::ostream *log);
 
    int64_t get_session_id() const {return session_id;}
+   Thread_Safe_Channel &get_channel() {return channel;}
 
    ~Server_Connection() override;
  };
