@@ -46,13 +46,9 @@ Available modes are:
    write_lock
   };
 
-So ``write_existing``, ``create_new``, and ``shared_write`` are available only
-with this method.
-
 ``shared_write`` is dangerous, and requires synchronization. Users of the
 library should not directly open files with this mode, and instead use
-:doc:`transactions <concurrency>` if they wish to write to a file that may be
-opened simultaneously by multiple processes. Other write modes will use file
+:doc:`transactions <concurrency>`. Other write modes will use file
 locking to prevent more than one process from writing to the same file
 simultaneously. ``write_lock`` is like ``write_existing_or_create_new``, but
 waits instead of failing if anybody else is already write-locking.
