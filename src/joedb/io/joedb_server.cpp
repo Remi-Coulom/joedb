@@ -11,7 +11,7 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ static int server(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (argc != 2 && argc != 4 && argc != 6)
@@ -64,5 +64,5 @@ and can still push data: the push will succeed only if there is no conflict.
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb::main, argc, argv);
+ return joedb::exception_catcher(joedb::server, argc, argv);
 }
