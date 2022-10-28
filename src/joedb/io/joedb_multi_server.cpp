@@ -1,4 +1,4 @@
-#include "joedb/io/main_exception_catcher.h"
+#include "joedb/io/exception_catcher.h"
 #include "joedb/db/multi_server_interpreted.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Backup_Client.h"
@@ -164,5 +164,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::main, argc, argv);
+ return joedb::exception_catcher(joedb::main, argc, argv);
 }

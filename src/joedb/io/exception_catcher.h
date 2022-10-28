@@ -1,5 +1,5 @@
-#ifndef joedb_main_exception_catcher_declared
-#define joedb_main_exception_catcher_declared
+#ifndef joedb_exception_catcher_declared
+#define joedb_exception_catcher_declared
 
 #include "joedb/Exception.h"
 
@@ -15,7 +15,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- inline int main_exception_catcher
+ inline int exception_catcher
  ////////////////////////////////////////////////////////////////////////////
  (
   int (*main)(int, char**), int argc, char **argv
