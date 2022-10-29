@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Network_Channel.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
 
 namespace joedb
@@ -35,5 +35,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb::main, argc, argv);
+ return joedb::main_exception_catcher(joedb::main, argc, argv);
 }

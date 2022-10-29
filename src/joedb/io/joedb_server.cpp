@@ -1,7 +1,7 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
 #include <cstring>
@@ -64,5 +64,5 @@ and can still push data: the push will succeed only if there is no conflict.
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb::server, argc, argv);
+ return joedb::main_exception_catcher(joedb::server, argc, argv);
 }

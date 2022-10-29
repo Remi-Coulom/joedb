@@ -6,7 +6,7 @@
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/io/SQL_Dump_Writable.h"
 #include "joedb/io/Raw_Dump_Writable.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
 #include <memory>
@@ -164,5 +164,5 @@ static int joedb_logdump_main(int argc, char **argv)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb_logdump_main, argc, argv);
+ return joedb::main_exception_catcher(joedb_logdump_main, argc, argv);
 }

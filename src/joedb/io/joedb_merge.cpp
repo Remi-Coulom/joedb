@@ -6,7 +6,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/io/dump.h"
 #include "joedb/io/merge.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
 #include <memory>
@@ -146,5 +146,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb::merge_main, argc, argv);
+ return joedb::main_exception_catcher(joedb::merge_main, argc, argv);
 }

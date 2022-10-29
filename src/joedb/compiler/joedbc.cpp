@@ -10,7 +10,7 @@
 #include "joedb/io/type_io.h"
 #include "joedb/compiler/c_wrapper.h"
 #include "joedb/is_identifier.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/get_version.h"
 
@@ -2223,5 +2223,5 @@ static int joedbc_main(int argc, char **argv)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedbc_main, argc, argv);
+ return joedb::main_exception_catcher(joedbc_main, argc, argv);
 }

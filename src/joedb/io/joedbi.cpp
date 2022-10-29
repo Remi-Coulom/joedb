@@ -1,6 +1,6 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
@@ -65,5 +65,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb::main, argc, argv);
+ return joedb::main_exception_catcher(joedb::main, argc, argv);
 }

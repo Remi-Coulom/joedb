@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/ssh/Forward_Channel.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
 
 #include <cstdlib>
@@ -8,7 +8,7 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static int ssh_client(int argc, char **argv)
+ static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (argc < 4)
@@ -42,5 +42,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb::ssh_client, argc, argv);
+ return joedb::main_exception_catcher(joedb::main, argc, argv);
 }

@@ -3,7 +3,7 @@
 
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
 #include <cstring>

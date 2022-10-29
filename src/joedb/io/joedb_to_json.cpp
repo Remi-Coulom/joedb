@@ -1,5 +1,5 @@
 #include "joedb/io/json.h"
-#include "joedb/io/exception_catcher.h"
+#include "joedb/io/main_exception_catcher.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Readonly_Journal.h"
@@ -44,5 +44,5 @@ static int joedb_to_json_main(int argc, char **argv)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::exception_catcher(joedb_to_json_main, argc, argv);
+ return joedb::main_exception_catcher(joedb_to_json_main, argc, argv);
 }
