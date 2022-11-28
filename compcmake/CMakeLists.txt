@@ -178,6 +178,7 @@ endif()
 target_link_libraries(joedb Threads::Threads)
 if(libssh_FOUND)
  target_link_libraries(joedb ${LIBSSH_LIBRARIES})
+ add_definitions(-DJOEDB_HAS_LIBSSH)
 endif()
 
 joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
