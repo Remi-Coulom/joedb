@@ -5,7 +5,7 @@
 #include "joedb/io/type_io.h"
 #include "joedb/get_version.h"
 
-#ifdef JOEDB_HAS_LIBSSH
+#ifdef JOEDB_HAS_SSH
 #include <libssh/libssh.h>
 #endif
 
@@ -65,7 +65,7 @@ namespace joedb
   out << Writable_Journal::version_number << '\n';
   out << "joedb version: " << get_version() << '\n';
 
-#ifdef JOEDB_HAS_LIBSSH
+#ifdef JOEDB_HAS_SSH
   out << "libssh version: " << ssh_version(0) << " https://www.libssh.org/\n";
 #endif
 
@@ -77,7 +77,7 @@ namespace joedb
   out << " https://think-async.com/Asio/\n";
 #endif
 
-  out << "\ncompiled: " << __DATE__ << ' ' << __TIME__ << '\n';
+  out << "compiled: " << __DATE__ << ' ' << __TIME__ << '\n';
   out << "sizeof(size_t) = " << sizeof(size_t) << '\n';
   out << "sizeof(long) = " << sizeof(long) << '\n';
   out << "sizeof(std::streamoff) = " << sizeof(std::streamoff) << '\n';
@@ -85,9 +85,6 @@ namespace joedb
   out << "sizeof(off_t) = " << sizeof(off_t) << '\n';
 #endif
   out << "File = " << JOEDB_INCLUDE(JOEDB_FILE, h) << '\n';
-
-  out << '\n';
-
   out << "web site: https://www.remi-coulom.fr/joedb/\n";
  }
 }
