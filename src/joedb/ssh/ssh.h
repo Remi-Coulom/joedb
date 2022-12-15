@@ -4,19 +4,6 @@
 #include "joedb/Exception.h"
 
 #include <libssh/libssh.h>
-#include <libssh/sftp.h>
-
-//
-// Windows does not define those
-//
-#include <fcntl.h>
-#ifndef S_IRUSR
-#define S_IRUSR 0000400
-#endif
-
-#ifndef S_IWUSR
-#define S_IWUSR 0000200
-#endif
 
 namespace joedb
 {
