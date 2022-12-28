@@ -4,3 +4,4 @@ build
 out
 clang_*
 gcc_*
+arm_*

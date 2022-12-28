@@ -21,6 +21,7 @@ function generate {
  mkdir -p $1
  cd $1
  shift
+ echo "$@"
  "$@" ..
  cd ..
 }
@@ -52,4 +53,17 @@ echo clang_path=$clang_path
 
 if [ "$clang_path" != "" ]; then
  generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="$clangpp_path" -DCMAKE_C_COMPILER="$clang_path"
+fi
+
+arm_gpp_path=`which arm-linux-gnueabihf-g++`
+arm_gcc_path=`which arm-linux-gnueabihf-gcc`
+arm_flags="-march=armv7-a -mfloat-abi=hard -mfpu=neon"
+
+echo
+echo =======================================================================
+echo arm_gpp_path=$arm_gpp_path
+echo arm_gcc_path=$arm_gcc_path
+
+if [ "$arm_gcc_path" != "" ]; then
+ generate arm_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="$arm_gpp_path" -DCMAKE_C_COMPILER="$arm_gcc_path" -DCMAKE_C_FLAGS="$arm_flags" -DCMAKE_CXX_FLAGS="$arm_flags"  -DCMAKE_CROSSCOMPILING="TRUE" -DCMAKE_CROSSCOMPILING_EMULATOR="/usr/bin/qemu-arm;-L;/usr/arm-linux-gnueabihf"
 fi
