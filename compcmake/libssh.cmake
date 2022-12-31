@@ -7,7 +7,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
  endif()
 
  if(NOT libssh_FOUND)
-  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Generic")
    message("-- find_package did not find libssh, trying check_include_file_cxx ${CMAKE_SYSTEM_NAME}")
    unset(libssh_FOUND)
    include(CheckIncludeFileCXX)

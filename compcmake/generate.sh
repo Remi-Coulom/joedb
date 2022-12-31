@@ -26,11 +26,12 @@ function generate {
  cd ..
 }
 
+echo
+echo =======================================================================
+
 gpp_path=`which g++`
 gcc_path=`which gcc`
 
-echo
-echo =======================================================================
 echo gpp_path=$gpp_path
 echo gcc_path=$gcc_path
 
@@ -43,11 +44,12 @@ if [ "$gcc_path" != "" ]; then
  generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
 fi
 
+echo
+echo =======================================================================
+
 clangpp_path=`which clang++`
 clang_path=`which clang`
 
-echo
-echo =======================================================================
 echo clangpp_path=$clangpp_path
 echo clang_path=$clang_path
 
@@ -55,15 +57,15 @@ if [ "$clang_path" != "" ]; then
  generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="$clangpp_path" -DCMAKE_C_COMPILER="$clang_path"
 fi
 
-arm_gpp_path=`which arm-linux-gnueabihf-g++`
-arm_gcc_path=`which arm-linux-gnueabihf-gcc`
-arm_flags="-march=armv7-a -mfloat-abi=hard -mfpu=neon"
-
 echo
 echo =======================================================================
+
+arm_gpp_path=`which arm-linux-gnueabihf-g++`
+arm_gcc_path=`which arm-linux-gnueabihf-gcc`
+
 echo arm_gpp_path=$arm_gpp_path
 echo arm_gcc_path=$arm_gcc_path
 
 if [ "$arm_gcc_path" != "" ]; then
- generate arm_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="$arm_gpp_path" -DCMAKE_C_COMPILER="$arm_gcc_path" -DCMAKE_C_FLAGS="$arm_flags" -DCMAKE_CXX_FLAGS="$arm_flags"  -DCMAKE_CROSSCOMPILING="TRUE" -DCMAKE_CROSSCOMPILING_EMULATOR="/usr/bin/qemu-arm;-L;/usr/arm-linux-gnueabihf"
+ generate arm_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=`pwd`/arm.toolchain.cmake
 fi
