@@ -11,10 +11,17 @@ find_program(JOEDBC joedbc
  NO_DEFAULT_PATH
 )
 
-find_library(JOEDB_LIB joedb
- HINTS ${JOEDB_DIR}/${JOEDB_BUILD_PATH}
- NO_DEFAULT_PATH
-)
+if (CMAKE_CROSSCOMPILING)
+ find_library(JOEDB_LIB joedb
+  HINTS ${JOEDB_DIR}/arm_release
+  NO_DEFAULT_PATH
+ )
+else()
+ find_library(JOEDB_LIB joedb
+  HINTS ${JOEDB_DIR}/${JOEDB_BUILD_PATH}
+  NO_DEFAULT_PATH
+ )
+endif()
 
 message("== JOEDBC = ${JOEDBC}")
 message("== JOEDB_LIB = ${JOEDB_LIB}")
