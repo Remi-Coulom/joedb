@@ -59,13 +59,9 @@ fi
 
 echo
 echo =======================================================================
-
-arm_gpp_path=`which arm-linux-gnueabihf-g++`
 arm_gcc_path=`which arm-linux-gnueabihf-gcc`
-
-echo arm_gpp_path=$arm_gpp_path
 echo arm_gcc_path=$arm_gcc_path
 
 if [ "$arm_gcc_path" != "" ]; then
- generate arm_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=`pwd`/arm.toolchain.cmake
+ generate arm_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=`dirname "$0"`/arm.toolchain.cmake
 fi
