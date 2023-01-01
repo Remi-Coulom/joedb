@@ -1,5 +1,6 @@
 #!/bin/bash
 echo Generating cmake build directories...
+config="$1"
 
 git submodule update --init --recursive
 
@@ -16,14 +17,16 @@ echo build_system_prefix=$build_system_prefix
 echo build_system=$build_system
 
 function generate {
- echo
- echo "====> Generating $1 ..."
- mkdir -p $1
- cd $1
- shift
- echo "$@"
- "$@" ..
- cd ..
+ if [[ "$config" == "" ]] || [[ "$config" == "$1" ]]; then
+  echo
+  echo "====> Generating $1 ..."
+  mkdir -p $1
+  cd $1
+  shift
+  echo "$@"
+  "$@" ..
+  cd ..
+ fi
 }
 
 echo
