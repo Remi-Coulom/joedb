@@ -17,11 +17,15 @@ jobs:
         submodules: recursive
 
     - name: Install dependencies
-      run: sudo apt-get -y install cmake ninja-build libssh-dev clang-tidy
+      run: sudo apt-get -y install cmake ninja-build libssh-dev clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
       run: ./generate.sh
+
+    - name: Test cross-compiled ARM version
+      working-directory: ${{github.workspace}}/compcmake/arm_release
+      run: ctest -V
 
     - name: Test with gcc in asan mode
       working-directory: ${{github.workspace}}/compcmake/gcc_asan
