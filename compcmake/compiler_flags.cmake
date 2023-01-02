@@ -8,9 +8,16 @@ if(CMAKE_COMPILER_IS_GNUCXX)
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wduplicated-cond -Wshadow=local -Wc++17-compat")
  endif()
+
  set(CMAKE_CXX_FLAGS_COVERAGE
   "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
  )
+
+ set(CMAKE_CXX_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address")
+ set(CMAKE_LINKER_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address")
+
+ set(CMAKE_CXX_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread")
+ set(CMAKE_LINKER_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread")
 endif()
 
 #############################################################################
