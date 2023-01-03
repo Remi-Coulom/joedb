@@ -13,11 +13,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
  )
 
- set(CMAKE_CXX_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address")
- set(CMAKE_LINKER_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address")
+ set(CMAKE_CXX_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address -O2")
+ set(CMAKE_LINKER_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address -O2")
 
- set(CMAKE_CXX_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread")
- set(CMAKE_LINKER_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread")
+ set(CMAKE_CXX_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread -O2")
+ set(CMAKE_LINKER_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread -O2")
 endif()
 
 #############################################################################
