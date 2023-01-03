@@ -39,6 +39,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  endif()
 
  set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+
+ set(CMAKE_CXX_FLAGS_MSAN "-g -fno-omit-frame-pointer -fsanitize=memory -fsanitize-memory-track-origins -O2")
+ set(CMAKE_LINKER_FLAGS_MSAN "-g -fno-omit-frame-pointer -fsanitize=memory -fsanitize-memory-track-origins -O2")
 endif()
 
 #############################################################################

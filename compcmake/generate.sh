@@ -58,7 +58,9 @@ echo clangpp_path=$clangpp_path
 echo clang_path=$clang_path
 
 if [ "$clang_path" != "" ]; then
- generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="$clangpp_path" -DCMAKE_C_COMPILER="$clang_path"
+ compiler="-DCMAKE_CXX_COMPILER=$clangpp_path -DCMAKE_C_COMPILER=$clang_path"
+ generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
+ generate clang_msan cmake $build_system -DCMAKE_BUILD_TYPE=MSAN $compiler
 fi
 
 echo
