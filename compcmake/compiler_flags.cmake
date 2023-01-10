@@ -13,11 +13,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
  )
 
- set(CMAKE_CXX_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address -O2")
- set(CMAKE_LINKER_FLAGS_ASAN "-fno-omit-frame-pointer -fsanitize=address -O2")
+ set(CMAKE_CXX_FLAGS_ASAN "-fsanitize=address -O2")
+ set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN}")
 
- set(CMAKE_CXX_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread -O2")
- set(CMAKE_LINKER_FLAGS_TSAN "-fno-omit-frame-pointer -fsanitize=thread -O2")
+ set(CMAKE_CXX_FLAGS_TSAN "-fsanitize=thread -O2")
+ set(CMAKE_LINKER_FLAGS_TSAN ${CMAKE_CXX_FLAGS_TSAN})
 endif()
 
 #############################################################################
@@ -40,8 +40,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
  set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
 
- set(CMAKE_CXX_FLAGS_MSAN "-g -fno-omit-frame-pointer -fsanitize=memory -fsanitize-memory-track-origins -O2")
- set(CMAKE_LINKER_FLAGS_MSAN "-g -fno-omit-frame-pointer -fsanitize=memory -fsanitize-memory-track-origins -O2")
+ # See doc/source/memsan.rst to build libc++ with memsan
+ find_path(LLVM_PROJECT_DIR HINTS ${CMAKE_CURRENT_LIST_DIR}/../.. ${CMAKE_CURRENT_LIST_DIR}/../../../repos NAMES ${CMAKE_CURRENT_LIST_DIR}/../../../../repos llvm-project NO_CACHE)
+ message("-- LLVM_PROJECT_DIR: ${LLVM_PROJECT_DIR}")
+ set(LLVM_PROJECT_BUILD ${LLVM_PROJECT_DIR}/llvm-project/build)
+
+ set(CMAKE_CXX_FLAGS_MSAN "-g -fsanitize=memory -fsanitize-memory-track-origins -O2 -stdlib=libc++ -isystem ${LLVM_PROJECT_BUILD}/include/c++/v1 -L${LLVM_PROJECT_BUILD}/lib -Qunused-arguments -Wl,-rpath,${LLVM_PROJECT_BUILD}/lib")
+ set(CMAKE_LINKER_FLAGS_MSAN "${CMAKE_CXX_FLAGS_MSAN} -lc++abi")
 endif()
 
 #############################################################################
