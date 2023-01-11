@@ -27,7 +27,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
  find_program(HAS_CLANG_TIDY clang-tidy)
  if (HAS_CLANG_TIDY)
-  set(CMAKE_CXX_CLANG_TIDY clang-tidy --header-filter=* -checks=-*,readability-*,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,-readability-static-accessed-through-instance,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,concurrency-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list,-modernize-use-default-member-init,-modernize-use-using)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy --header-filter=* -checks=-*,readability-*,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,-readability-static-accessed-through-instance,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,concurrency-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list,-modernize-use-default-member-init,-modernize-use-using,-modernize-concat-nested-namespaces)
  else()
   message("-- no clang-tidy")
  endif()
@@ -48,6 +48,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
  set(CMAKE_CXX_FLAGS_MSAN "-g -fsanitize=memory -fsanitize-memory-track-origins -O2 -stdlib=libc++ -isystem ${LLVM_PROJECT_BUILD}/include/c++/v1 -L${LLVM_PROJECT_BUILD}/lib -Qunused-arguments -Wl,-rpath,${LLVM_PROJECT_BUILD}/lib")
  set(CMAKE_LINKER_FLAGS_MSAN "${CMAKE_CXX_FLAGS_MSAN} -lc++abi")
+endif()
+
+#############################################################################
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+#############################################################################
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w34265") # C4265 virtual destructor
 endif()
 
 #############################################################################
