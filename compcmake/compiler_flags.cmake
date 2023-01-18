@@ -38,7 +38,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")
  endif()
 
- set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG -fsave-optimization-record")
 
  # See doc/source/memsan.rst to build libc++ with memsan
  find_path(LLVM_PROJECT_DIR HINTS ${CMAKE_CURRENT_LIST_DIR}/../.. ${CMAKE_CURRENT_LIST_DIR}/../../../../../repos NAMES llvm-project NO_CACHE)
