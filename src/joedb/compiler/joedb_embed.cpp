@@ -86,9 +86,14 @@ int main(int argc, char **argv)
    cpp << ")" << delimiter << '\"';
   }
   else if (mode == escape)
+  {
+   cpp << "u8";
    joedb::write_string(cpp, file_content.str());
+  }
   else if (mode == base64)
+  {
    cpp << '"' << joedb::base64_encode(file_content.str()) << '"';
+  }
 
   cpp << ";\n\n";
 
