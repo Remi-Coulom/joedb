@@ -1,5 +1,5 @@
 #include "db/test_dbname_base64.h"
-#include "db/test_dbname_escape.h"
+#include "db/test_dbname_ascii.h"
 #include "db/test.h"
 
 #include "gtest/gtest.h"
@@ -24,6 +24,6 @@ TEST(joedb_embed, base64)
 TEST(joedb_embed, escape)
 /////////////////////////////////////////////////////////////////////////////
 {
- test(my_namespace::is_nested::test::get_embedded_dbname_escape());
+ test(my_namespace::is_nested::test::get_embedded_dbname_ascii());
 }
 

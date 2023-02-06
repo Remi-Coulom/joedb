@@ -242,7 +242,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/empty.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_base64.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_escape.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
@@ -400,7 +400,7 @@ add_custom_command(
 #############################################################################
 # joedb_embed test
 #############################################################################
-foreach(mode base64 escape)
+foreach(mode base64 ascii)
  add_custom_command(
   OUTPUT
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_${mode}.h
