@@ -33,6 +33,9 @@ void joedb::write_string(std::ostream &out, const std::string &s, bool json)
  {
   const uint8_t c = uint8_t(s[i]);
 
+#if 0
+  write_octal_character(out, c);
+#else
   if (c < 0x20 || c == 0x7f)
   {
    if (json)
@@ -55,17 +58,17 @@ void joedb::write_string(std::ostream &out, const std::string &s, bool json)
            i + 1 < s.size() &&
            (s[i + 1] & 0xc0) == 0x80)
   {
-   out.put(s[i++]);
-   out.put(s[i]);
+   out.put(c);
+   out.put(s[++i]);
   }
   else if ((c & 0xf0) == 0xe0 &&
            i + 2 < s.size() &&
            (s[i + 1] & 0xc0) == 0x80 &&
            (s[i + 2] & 0xc0) == 0x80)
   {
-   out.put(s[i++]);
-   out.put(s[i++]);
-   out.put(s[i]);
+   out.put(c);
+   out.put(s[++i]);
+   out.put(s[++i]);
   }
   else if ((c & 0xf8) == 0xf0 &&
            i + 3 < s.size() &&
@@ -73,10 +76,10 @@ void joedb::write_string(std::ostream &out, const std::string &s, bool json)
            (s[i + 2] & 0xc0) == 0x80 &&
            (s[i + 3] & 0xc0) == 0x80)
   {
-   out.put(s[i++]);
-   out.put(s[i++]);
-   out.put(s[i++]);
-   out.put(s[i]);
+   out.put(char(c));
+   out.put(s[++i]);
+   out.put(s[++i]);
+   out.put(s[++i]);
   }
   else if (c & 0x80)
   {
@@ -87,6 +90,7 @@ void joedb::write_string(std::ostream &out, const std::string &s, bool json)
   }
   else
    out.put(char(c));
+#endif
  }
 
  out.put('"');
