@@ -1820,7 +1820,7 @@ static void generate_readonly_cpp
 
  namespace_open(out, options.get_name_space());
 
- out << " const char * schema_string = ";
+ out << " const char * schema_string = u8";
  write_string(out, std::string(schema.data(), schema.size()));
  out << ";\n";
  out << " const size_t schema_string_size = " << schema.size();

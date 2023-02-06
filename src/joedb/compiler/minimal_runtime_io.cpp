@@ -23,6 +23,19 @@ void joedb::write_octal_character(std::ostream &out, uint8_t c)
  out.put(char('0' + ((c >> 0) & 7)));
 }
 
+namespace joedb
+{
+ ////////////////////////////////////////////////////////////////////////////
+ static void write_octal_character(std::ostream &out, uint8_t c, bool json)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (json)
+   throw Exception("json can't handle non-utf8 strings");
+  else
+   write_octal_character(out, c);
+ }
+}
+
 /////////////////////////////////////////////////////////////////////////////
 void joedb::write_string(std::ostream &out, const std::string &s, bool json)
 /////////////////////////////////////////////////////////////////////////////
@@ -61,6 +74,15 @@ void joedb::write_string(std::ostream &out, const std::string &s, bool json)
    out.put(c);
    out.put(s[++i]);
   }
+  else if // UTF-16 surrogate halves
+  (
+   c == 0xed &&
+   i + 1 < s.size() &&
+   (uint8_t(s[i + 1]) & 0xa0) == 0xa0
+  )
+  {
+   write_octal_character(out, c, json);
+  }
   else if ((c & 0xf0) == 0xe0 &&
            i + 2 < s.size() &&
            (s[i + 1] & 0xc0) == 0x80 &&
@@ -83,13 +105,12 @@ void joedb::write_string(std::ostream &out, const std::string &s, bool json)
   }
   else if (c & 0x80)
   {
-   if (json)
-    throw Exception("json can't handle non-utf8 strings");
-   else
-    write_octal_character(out, c);
+   write_octal_character(out, c, json);
   }
   else
+  {
    out.put(char(c));
+  }
 #endif
  }
 
