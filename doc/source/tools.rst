@@ -176,7 +176,7 @@ Connect to a :ref:`joedb_server` via ssh.
 .. literalinclude:: ./tutorial/joedb_embed.out
    :language: none
 
-``joedb_embed`` compiles a joedb database file into a C++ string literal, and a function to open it as a ``Database``. ``embedded_test`` shows an example of use.
+``joedb_embed`` compiles a joedb database file into a C++ string literal, and a function to open it as a ``Database``.
 
 .. _joedb_to_json:
 
