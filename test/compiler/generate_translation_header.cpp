@@ -1,9 +1,10 @@
 #include "db/test_readonly.h"
+#include "joedb/io/main_exception_catcher.h"
 
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-int main()
+int generate_translation_header(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
  my_namespace::is_nested::test::Readonly_Database db("test.joedb");
@@ -46,4 +47,11 @@ int main()
  std::cout << "#endif\n";
 
  return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+int main(int argc, char **argv)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::main_exception_catcher(generate_translation_header, argc, argv);
 }
