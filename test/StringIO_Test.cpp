@@ -14,14 +14,14 @@ struct
 }
 pairs[] =
 {
- {u8"Hello"           , u8"\"Hello\""},
- {u8"Rémi"            , u8"\"Rémi\""},
- {u8"Hello, world!"   , u8"\"Hello, world!\""},
- {u8"\"\\\x1f"        , u8"\"\\\"\\\\\\037\""},
- {u8"これは日本語です", u8"\"これは日本語です\""},
- {u8"𩸽"              , u8"\"𩸽\""}, // 4-byte character
- {u8""                , u8"\"\""},
- {u8"4"               , u8"\"4\""}
+ {"Hello"           , "\"Hello\""},
+ {"Rémi"            , "\"Rémi\""},
+ {"Hello, world!"   , "\"Hello, world!\""},
+ {"\"\\\x1f"        , "\"\\\"\\\\\\037\""},
+ {"これは日本語です", "\"これは日本語です\""},
+ {"𩸽"              , "\"𩸽\""}, // 4-byte character
+ {""                , "\"\""},
+ {"4"               , "\"4\""}
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ TEST(StringIO_Test, wide_char_display_width)
  EXPECT_EQ(1, wide_char_display_width(0x00e9));
  {
   size_t i = 0;
-  std::string s = u8"日";
+  std::string s = "日";
   uint32_t c = joedb::read_utf8_char(i, s);
   EXPECT_EQ(size_t(3), i);
   EXPECT_EQ(size_t(3), s.size());
@@ -61,15 +61,15 @@ TEST(StringIO_Test, read_utf8_char)
 TEST(StringIO_Test, utf8_display_size)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ(size_t(0), joedb::utf8_display_size(u8""));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"Remi"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"Rémi"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"山下"));
- EXPECT_EQ(size_t(2), joedb::utf8_display_size(u8"𩸽"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"바둑"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"圍棋"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"围棋"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size(u8"囲碁"));
+ EXPECT_EQ(size_t(0), joedb::utf8_display_size(""));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("Remi"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("Rémi"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("山下"));
+ EXPECT_EQ(size_t(2), joedb::utf8_display_size("𩸽"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("바둑"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("圍棋"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("围棋"));
+ EXPECT_EQ(size_t(4), joedb::utf8_display_size("囲碁"));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -163,8 +163,8 @@ TEST(StringIO_Test, base64_encode)
  EXPECT_EQ("TWFu", joedb::base64_encode("Man"));
  EXPECT_EQ("TWE=", joedb::base64_encode("Ma"));
  EXPECT_EQ("TQ==", joedb::base64_encode("M"));
- EXPECT_EQ("UsOpbWk=", joedb::base64_encode(u8"Rémi"));
- EXPECT_EQ("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ", joedb::base64_encode(u8"これは日本語です"));
+ EXPECT_EQ("UsOpbWk=", joedb::base64_encode("Rémi"));
+ EXPECT_EQ("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ", joedb::base64_encode("これは日本語です"));
  EXPECT_EQ("", joedb::base64_encode(""));
 }
 
@@ -175,8 +175,8 @@ TEST(StringIO_Test, base64_decode)
  EXPECT_EQ("Man", joedb::base64_decode("TWFu"));
  EXPECT_EQ("Ma", joedb::base64_decode("TWE="));
  EXPECT_EQ("M", joedb::base64_decode("TQ=="));
- EXPECT_EQ(u8"Rémi", joedb::base64_decode("UsOpbWk="));
- EXPECT_EQ(u8"これは日本語です", joedb::base64_decode("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ"));
+ EXPECT_EQ("Rémi", joedb::base64_decode("UsOpbWk="));
+ EXPECT_EQ("これは日本語です", joedb::base64_decode("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ"));
  EXPECT_EQ("", joedb::base64_decode(""));
 }
 
