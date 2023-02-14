@@ -98,7 +98,6 @@ int main(int argc, char **argv)
   }
   else if (mode == utf8)
   {
-   cpp << "u8";
    joedb::write_string(cpp, file_content.str());
   }
   else if (mode == ascii)
