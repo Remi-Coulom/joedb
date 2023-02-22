@@ -53,5 +53,5 @@ static int generate_translation_header(int argc, char **argv)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(generate_translation_header, argc, argv);
+ return joedb::main_exception_catcher(generate_translation_header, argc, argv);
 }
