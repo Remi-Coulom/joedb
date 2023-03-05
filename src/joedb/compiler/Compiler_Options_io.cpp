@@ -49,9 +49,14 @@ bool joedb::parse_compiler_options
     std::string s;
     iss >> s;
     std::istringstream column_ss(s);
-    std::string column;
-    while (std::getline(column_ss, column, ','))
-     index_columns.emplace_back(std::move(column));
+    while (true)
+    {
+     std::string column;
+     if (std::getline(column_ss, column, ','))
+      index_columns.emplace_back(std::move(column));
+     else
+      break;
+    }
    }
 
    if (!joedb::is_identifier(index.name))
@@ -98,7 +103,7 @@ bool joedb::parse_compiler_options
    std::string null_initialization;
    iss >> table_name >> null_initialization;
 
-   Table_Id table_id = db.find_table(table_name);
+   const Table_Id table_id = db.find_table(table_name);
    if (!table_id)
    {
     out << "Error: no such table: " << table_name << '\n';

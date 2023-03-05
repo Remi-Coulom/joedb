@@ -89,7 +89,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    size_t allocate()
    {
-    size_t result = get_free_record();
+    const size_t result = get_free_record();
     use(result);
     return result;
    }
@@ -339,7 +339,7 @@ namespace joedb
      if (index == 1)
       return get_first_free();
 
-     size_t result = index + 1;
+     const size_t result = index + 1;
 
      if (result == compact_used_size + 2)
       return 0;
@@ -373,7 +373,7 @@ namespace joedb
        return compact_free_size + 1;
      }
 
-     size_t result = index - 1;
+     const size_t result = index - 1;
 
      if (result == 1)
       return 0;

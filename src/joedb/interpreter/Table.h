@@ -46,7 +46,7 @@ namespace joedb
                          Field_Id field_id,\
                          return_type value)\
    {\
-    auto it = fields.find(field_id);\
+    const auto it = fields.find(field_id);\
     if (it == fields.end())\
      throw Exception("update: invalid field_id");\
     if (!freedom.is_used(record_id + 1))\
@@ -58,7 +58,7 @@ namespace joedb
                                 Record_Id size,\
                                 const type *value)\
    {\
-    auto it = fields.find(field_id);\
+    const auto it = fields.find(field_id);\
     if (it == fields.end())\
      throw Exception("update_vector: invalid field_id");\
     if (!freedom.is_used(record_id + 1) ||\
@@ -68,7 +68,7 @@ namespace joedb
    }\
    type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id)\
    {\
-    auto it = fields.find(field_id);\
+    const auto it = fields.find(field_id);\
     if (it == fields.end())\
      throw Exception("get_own_storage: invalid field_id");\
     if (!freedom.is_used(record_id + 1))\
@@ -77,7 +77,7 @@ namespace joedb
    }\
    const type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id) const\
    {\
-    auto it = fields.find(field_id);\
+    const auto it = fields.find(field_id);\
     if (it == fields.end())\
      throw Exception("get_own_storage: invalid field_id");\
     if (!freedom.is_used(record_id + 1))\

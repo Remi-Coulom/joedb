@@ -15,7 +15,7 @@ namespace joedb
  void Database::insert_into(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  auto it = tables.find(table_id);
+  const auto it = tables.find(table_id);
   if (it == tables.end())
    throw Exception("insert_into: invalid table_id");
 
@@ -34,7 +34,7 @@ namespace joedb
   Record_Id size
  )
  {
-  auto it = tables.find(table_id);
+  const auto it = tables.find(table_id);
   if (it == tables.end())
    throw Exception("insert_vector: invalid table_id");
   if (record_id <= 0 ||
@@ -59,7 +59,7 @@ namespace joedb
   Record_Id record_id
  )
  {
-  auto it = tables.find(table_id);
+  const auto it = tables.find(table_id);
   if (it == tables.end())
    throw Exception("delete_from: invalid table_id");
 
@@ -76,7 +76,7 @@ namespace joedb
   return_type value\
  )\
  {\
-  auto it = tables.find(table_id);\
+  const auto it = tables.find(table_id);\
   if (it == tables.end())\
    throw Exception("update: invalid table_id");\
   it->second.update_##type_id(record_id, field_id, value);\
@@ -91,7 +91,7 @@ namespace joedb
   const type *value\
  )\
  {\
-  auto it = tables.find(table_id);\
+  const auto it = tables.find(table_id);\
   if (it == tables.end())\
    throw Exception("update_vector: invalid table_id");\
   it->second.update_vector_##type_id(record_id, field_id, size, value);\
@@ -105,7 +105,7 @@ namespace joedb
   Record_Id &capacity\
  )\
  {\
-  auto it = tables.find(table_id);\
+  const auto it = tables.find(table_id);\
   if (it == tables.end())\
    throw Exception("get_own_storage: invalid table_id");\
   capacity = it->second.get_storage_capacity();\

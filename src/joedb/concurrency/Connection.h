@@ -32,7 +32,7 @@ namespace joedb
 
    virtual int64_t lock_pull_unlock(Writable_Journal &client_journal)
    {
-    int64_t result = lock_pull(client_journal);
+    const int64_t result = lock_pull(client_journal);
     unlock();
     return result;
    }

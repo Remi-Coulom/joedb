@@ -112,7 +112,7 @@ void joedb::Readonly_Journal::refresh_checkpoint()
 /////////////////////////////////////////////////////////////////////////////
 {
  const int64_t old_position = file.get_position();
- const int64_t checkpoint_offset = 5 + 4;
+ constexpr int64_t checkpoint_offset = 5 + 4;
  file.set_position(checkpoint_offset);
  read_checkpoint();
  file.set_position(old_position);
@@ -212,14 +212,14 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::drop_table:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
    writable.drop_table(table_id);
   }
   break;
 
   case operation_t::rename_table:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
    std::string name = safe_read_string();
    writable.rename_table(table_id, name);
   }
@@ -227,25 +227,25 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::add_field:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
    std::string name = safe_read_string();
-   Type type = read_type();
+   const Type type = read_type();
    writable.add_field(table_id, name, type);
   }
   break;
 
   case operation_t::drop_field:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
-   Field_Id field_id = file.compact_read<Field_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
+   const Field_Id field_id = file.compact_read<Field_Id>();
    writable.drop_field(table_id, field_id);
   }
   break;
 
   case operation_t::rename_field:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
-   Field_Id field_id = file.compact_read<Field_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
+   const Field_Id field_id = file.compact_read<Field_Id>();
    std::string name = safe_read_string();
    writable.rename_field(table_id, field_id, name);
   }
@@ -253,8 +253,8 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::insert_into:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
-   Record_Id record_id = file.compact_read<Record_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
+   const Record_Id record_id = file.compact_read<Record_Id>();
    writable.insert_into(table_id, record_id);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
@@ -263,9 +263,9 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::insert_vector:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
-   Record_Id record_id = file.compact_read<Record_Id>();
-   Record_Id size = file.compact_read<Record_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
+   const Record_Id record_id = file.compact_read<Record_Id>();
+   const Record_Id size = file.compact_read<Record_Id>();
    writable.insert_vector(table_id, record_id, size);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
@@ -279,8 +279,8 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::delete_from:
   {
-   Table_Id table_id = file.compact_read<Table_Id>();
-   Record_Id record_id = file.compact_read<Record_Id>();
+   const Table_Id table_id = file.compact_read<Table_Id>();
+   const Record_Id record_id = file.compact_read<Record_Id>();
    writable.delete_from(table_id, record_id);
   }
   break;
@@ -302,7 +302,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 \
   lbl_perform_update_##type_id:\
   {\
-   cpp_type value = read_method();\
+   const cpp_type value = read_method();\
    writable.update_##type_id\
    (\
     table_of_last_operation,\
@@ -318,7 +318,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    table_of_last_operation = file.compact_read<Table_Id>();\
    record_of_last_operation = file.compact_read<Record_Id>();\
    field_of_last_update = file.compact_read<Field_Id>();\
-   Record_Id size = file.compact_read<Record_Id>();\
+   const Record_Id size = file.compact_read<Record_Id>();\
    if (int64_t(size) > checkpoint_position)\
     throw Exception("update_vector too big");\
    Record_Id capacity;\
@@ -352,21 +352,21 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::custom:
   {
-   std::string name = safe_read_string();
+   const std::string name = safe_read_string();
    writable.custom(name);
   }
   break;
 
   case operation_t::comment:
   {
-   std::string comment = safe_read_string();
+   const std::string comment = safe_read_string();
    writable.comment(comment);
   }
   break;
 
   case operation_t::timestamp:
   {
-   int64_t timestamp = file.read<int64_t>();
+   const int64_t timestamp = file.read<int64_t>();
    writable.timestamp(timestamp);
   }
   break;

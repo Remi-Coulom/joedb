@@ -107,7 +107,7 @@ namespace joedb
  size_t Windows_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const size_t max_size = 1ULL << 31;
+  constexpr size_t max_size = 1ULL << 31;
 
   if (size > max_size)
    size = max_size;
@@ -126,7 +126,7 @@ namespace joedb
  void Windows_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const size_t max_size = 1ULL << 31;
+  constexpr size_t max_size = 1ULL << 31;
   size_t written = 0;
 
   while (written < size)

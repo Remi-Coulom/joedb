@@ -40,7 +40,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   compact_write<size_t>(s.size());
-  for (char c: s)
+  for (const char c: s)
    write<char>(c);
  }
 
@@ -49,7 +49,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   std::string s;
-  size_t size = compact_read<size_t>();
+  const size_t size = compact_read<size_t>();
   s.resize(size);
   read_data(&s[0], size);
   return s;
@@ -60,7 +60,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   std::string s;
-  size_t size = compact_read<size_t>();
+  const size_t size = compact_read<size_t>();
   if (size < max_size)
   {
    s.resize(size);
@@ -116,8 +116,8 @@ namespace joedb
   const int64_t original_position = get_position();
   set_position(start);
 
-  const uint32_t chunk_size = 64;
-  const uint32_t chunks = 2048;
+  constexpr uint32_t chunk_size = 64;
+  constexpr uint32_t chunks = 2048;
   std::vector<char> hashing_buffer(chunk_size * chunks);
 
   int64_t current_size = 0;

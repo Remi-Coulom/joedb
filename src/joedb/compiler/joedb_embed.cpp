@@ -103,7 +103,7 @@ int main(int argc, char **argv)
   else if (mode == ascii)
   {
    cpp << '"';
-   for (uint8_t c: file_content.str())
+   for (const uint8_t c: file_content.str())
    {
     joedb::write_octal_character(cpp, c);
    }

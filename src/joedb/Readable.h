@@ -78,7 +78,7 @@ namespace joedb
    const std::string &get_table_name(Table_Id table_id) const
    {
     const std::map<Table_Id, std::string> &tables = get_tables();
-    auto it = tables.find(table_id);
+    const auto it = tables.find(table_id);
     if (it == tables.end())
     {
      return default_table_name;
@@ -96,7 +96,7 @@ namespace joedb
     try
     {
      const std::map<Field_Id, std::string> &fields = get_fields(table_id);
-     auto it = fields.find(field_id);
+     const auto it = fields.find(field_id);
      if (it != fields.end())
       return it->second;
     }

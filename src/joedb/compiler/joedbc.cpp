@@ -1311,7 +1311,7 @@ static void generate_readonly_h
 
    void check_schema()
    {
-    const size_t pos = size_t(joedb::Writable_Journal::header_size);
+    constexpr size_t pos = size_t(joedb::Writable_Journal::header_size);
     const size_t schema_file_size = schema_file.get_data().size();
 
     if
@@ -1513,7 +1513,7 @@ static void generate_readonly_h
    }
    out << ") const\n";
    out << "   {\n";
-   out << "    auto i = index_of_" << index.name << ".find(";
+   out << "    const auto i = index_of_" << index.name << ".find(";
    write_tuple_type(out, db, index);
    out << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
@@ -2040,7 +2040,7 @@ static void write_initial_comment
  const char *exe_path
 )
 {
- std::time_t t = std::time(nullptr);
+ const std::time_t t = std::time(nullptr);
  const std::tm *tm = std::localtime(&t);
 
  out << "/*///////////////////////////////////////////////////////////////////////////\n";

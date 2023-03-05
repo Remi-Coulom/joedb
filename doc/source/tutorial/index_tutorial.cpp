@@ -34,8 +34,8 @@ int main()
  //
  // Finding a city by name
  //
- auto Paris = db.find_city_by_name("Paris");
- auto Tokyo = db.find_city_by_name("Tokyo");
+ const auto Paris = db.find_city_by_name("Paris");
+ const auto Tokyo = db.find_city_by_name("Tokyo");
  if (db.find_city_by_name("Monte Carlo").is_null())
   std::cout << "\nMonte Carlo is not in the database\n";
 
@@ -55,7 +55,7 @@ int main()
  // Finding persons with the index
  //
  std::cout << "\nFinding all the John Smiths:\n";
- for (auto person: db.find_person_by_name("Smith", "John"))
+ for (const auto person: db.find_person_by_name("Smith", "John"))
  {
   std::cout << db.get_first_name(person) << ' ';
   std::cout << db.get_last_name(person) << ", ";

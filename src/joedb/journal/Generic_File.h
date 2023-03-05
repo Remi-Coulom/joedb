@@ -287,8 +287,8 @@ namespace joedb
    {
     static void write(Generic_File &file, T x)
     {
-     uint8_t b1 = uint8_t(x >> 8);
-     uint8_t b0 = uint8_t(x);
+     const uint8_t b1 = uint8_t(x >> 8);
+     const uint8_t b0 = uint8_t(x);
 
      if (b1)
      {
@@ -319,8 +319,8 @@ namespace joedb
       file.compact_write<uint16_t>(uint16_t(x));
      else
      {
-      uint8_t b1 = uint8_t(x >> 24);
-      uint8_t b0 = uint8_t(x >> 16);
+      const uint8_t b1 = uint8_t(x >> 24);
+      const uint8_t b0 = uint8_t(x >> 16);
 
       if (b1)
       {
@@ -438,7 +438,7 @@ namespace joedb
 
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
-   int64_t get_position() const {return position;}
+   int64_t get_position() const noexcept {return position;}
    void copy(Generic_File &source);
 
    //////////////////////////////////////////////////////////////////////////
@@ -473,7 +473,7 @@ namespace joedb
    template<typename T> T compact_read()
    //////////////////////////////////////////////////////////////////////////
    {
-    uint8_t first_byte = uint8_t(getc());
+    const uint8_t first_byte = uint8_t(getc());
     int extra_bytes = first_byte >> 5;
     T result = first_byte & 0x1f;
     while (extra_bytes--)
@@ -548,7 +548,7 @@ namespace joedb
    SHA_256::Hash get_hash(int64_t start, int64_t size);
    SHA_256::Hash get_hash();
 
-   virtual ~Generic_File() {}
+   virtual ~Generic_File() = default;
  };
 }
 

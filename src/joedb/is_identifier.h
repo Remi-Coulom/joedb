@@ -14,8 +14,8 @@
 
 namespace joedb
 {
- bool is_letter(char c);
- bool is_number(char c);
+ constexpr bool is_letter(char c);
+ constexpr bool is_number(char c);
  bool is_identifier(const std::string &s);
 }
 

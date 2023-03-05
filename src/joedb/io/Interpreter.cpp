@@ -32,7 +32,7 @@ namespace joedb
   {
    std::string table_name;
    in >> table_name;
-   Table_Id table_id = readable.find_table(table_name);
+   const Table_Id table_id = readable.find_table(table_name);
    if (table_id)
     return Type::reference(table_id);
   }
@@ -56,7 +56,7 @@ namespace joedb
  {
   std::string table_name;
   in >> table_name;
-  Table_Id table_id = readable.find_table(table_name);
+  const Table_Id table_id = readable.find_table(table_name);
   if (!table_id)
   {
    std::ostringstream error;
@@ -109,7 +109,7 @@ namespace joedb
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    case Type::Type_Id::type_id:\
    {\
-    type value = joedb::read_##type_id(in);\
+    const type value = joedb::read_##type_id(in);\
     writable.update_##type_id(table_id, record_id, field_id, value);\
    }\
    break;
@@ -389,7 +389,7 @@ namespace joedb
    const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
-   Type type = parse_type(iss, out);
+   const Type type = parse_type(iss, out);
    if (type.get_type_id() != Type::Type_Id::null)
     writable.add_field(table_id, field_name, type);
   }
@@ -398,7 +398,7 @@ namespace joedb
    const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
-   Field_Id field_id = readable.find_field(table_id, field_name);
+   const Field_Id field_id = readable.find_field(table_id, field_name);
    writable.drop_field(table_id, field_id);
   }
   else if (command == "rename_field") //////////////////////////////////////
@@ -406,7 +406,7 @@ namespace joedb
    const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
-   Field_Id field_id = readable.find_field(table_id, field_name);
+   const Field_Id field_id = readable.find_field(table_id, field_name);
    std::string new_field_name;
    iss >> new_field_name;
    writable.rename_field(table_id, field_id, new_field_name);
@@ -471,7 +471,7 @@ namespace joedb
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
-   Field_Id field_id = readable.find_field(table_id, field_name);
+   const Field_Id field_id = readable.find_field(table_id, field_name);
    update_value(iss, table_id, record_id, field_id);
   }
   else if (command == "update_vector") /////////////////////////////////////
@@ -481,7 +481,7 @@ namespace joedb
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
-   Field_Id field_id = readable.find_field(table_id, field_name);
+   const Field_Id field_id = readable.find_field(table_id, field_name);
    Record_Id size = 0;
    iss >> size;
 

@@ -18,13 +18,13 @@ int main()
  db.new_city("New York");
  db.new_city("Paris");
 
- auto Lille = db.new_city("Lille");
- auto Amsterdam = db.new_city("Amsterdam");
+ const auto Lille = db.new_city("Lille");
+ const auto Amsterdam = db.new_city("Amsterdam");
 
  db.new_person("Rémi", "Coulom", Lille);
  db.new_person("Bertrand", "Picard", db.null_city());
 
- auto Aristide = db.new_person("Aristide", "Martines", Amsterdam);
+ const auto Aristide = db.new_person("Aristide", "Martines", Amsterdam);
 
  db.set_last_name(Aristide, "Martinez");
 
@@ -39,11 +39,11 @@ int main()
  // Referring to another table
  //
  std::cout << "\nList of persons with their cities:\n";
- for (auto person: db.get_person_table())
+ for (const auto person: db.get_person_table())
  {
   std::cout << "  " << db.get_first_name(person) << ' ';
   std::cout << db.get_last_name(person) << ' ';
-  auto city = db.get_home(person);
+  const auto city = db.get_home(person);
   if (city)
    std::cout << "lives in " << db.get_name(city) << '\n';
   else

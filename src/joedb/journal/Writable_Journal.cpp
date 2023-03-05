@@ -43,7 +43,7 @@ void joedb::Writable_Journal::append_raw_tail(const std::vector<char> &data)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int64_t joedb::Writable_Journal::ahead_of_checkpoint() const
+int64_t joedb::Writable_Journal::ahead_of_checkpoint() const noexcept
 /////////////////////////////////////////////////////////////////////////////
 {
  return file.get_position() - checkpoint_position;

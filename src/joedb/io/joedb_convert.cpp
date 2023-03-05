@@ -19,7 +19,7 @@ namespace joedb
    input.play_until(output, checkpoint);
    output.checkpoint(Commit_Level::no_commit);
   }
-  catch (const Exception &e)
+  catch (const Exception &)
   {
    output.checkpoint(Commit_Level::no_commit);
    throw;

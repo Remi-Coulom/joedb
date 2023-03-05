@@ -692,7 +692,7 @@ TEST(Compiler, vector)
   {
    test::Readonly_Database db(file);
    for (size_t i = 0; i < n; i++)
-    EXPECT_EQ(db.get_value(v[i]), 0.1f * float(i));
+    EXPECT_FLOAT_EQ(db.get_value(v[i]), 0.1f * float(i));
   }
  }
 
@@ -761,13 +761,13 @@ TEST(Compiler, vector)
    auto v = db.get_point_table().first();
    for (size_t i = 0; i < n; i++)
    {
-    EXPECT_EQ(db.get_x(v[i]), 0.1f * float(i));
-    EXPECT_EQ(db.get_y(v[i]), 1.234f);
+    EXPECT_FLOAT_EQ(db.get_x(v[i]), 0.1f * float(i));
+    EXPECT_FLOAT_EQ(db.get_y(v[i]), 1.234f);
    }
    for (size_t i = n; i < 2 * n; i++)
    {
-    EXPECT_EQ(db.get_x(v[i]), 0.2f * float(i - n));
-    EXPECT_EQ(db.get_y(v[i]), 5.678f);
+    EXPECT_FLOAT_EQ(db.get_x(v[i]), 0.2f * float(i - n));
+    EXPECT_FLOAT_EQ(db.get_y(v[i]), 5.678f);
    }
   }
  }

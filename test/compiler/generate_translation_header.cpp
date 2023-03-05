@@ -18,7 +18,7 @@ static int generate_translation_header(int argc, char **argv)
  std::cout << " enum\n";
  std::cout << " {\n";
 
- for (auto string_id: db.get_string_id_table())
+ for (const auto string_id: db.get_string_id_table())
  {
   std::cout << "  " << db.get_name(string_id) << " = " << string_id.get_id();
   std::cout << ",\n";
@@ -32,7 +32,7 @@ static int generate_translation_header(int argc, char **argv)
  std::cout << "  enum\n";
  std::cout << "  {\n";
 
- for (auto language: db.get_language_table())
+ for (const auto language: db.get_language_table())
  {
   std::cout << "   " << db.get_id(language) << " = " << language.get_id();
   std::cout << ",\n";

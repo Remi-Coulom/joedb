@@ -31,7 +31,7 @@ static int file_tutorial_main()
  //
  {
   tutorial::Readonly_Database db(file_name);
-  for (auto city: db.get_city_table())
+  for (const auto city: db.get_city_table())
    std::cout << db.get_name(city) << '\n';
  }
 

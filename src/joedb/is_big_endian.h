@@ -1,14 +1,19 @@
 #ifndef joedb_is_big_endian_declared
 #define joedb_is_big_endian_declared
 
-#include <stdint.h>
-
 namespace joedb
 {
- inline uint8_t is_big_endian()
+ constexpr bool is_big_endian()
  {
-  const uint16_t n = 0x0100;
-  return *(const uint8_t *)&n;
+#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+  return true;
+#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+  return false;
+#elif defined(_WIN32)
+  return false;
+#else
+#error unknow endianness
+#endif
  }
 }
 

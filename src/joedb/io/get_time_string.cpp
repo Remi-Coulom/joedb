@@ -8,9 +8,9 @@ namespace joedb
  std::string get_time_string(int64_t timestamp)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const size_t buffer_size = 24;
+  constexpr size_t buffer_size = 24;
   char buffer[buffer_size];
-  time_t stamp = time_t(timestamp);
+  const time_t stamp = time_t(timestamp);
 
   std::strftime
   (

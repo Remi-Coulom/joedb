@@ -29,7 +29,7 @@ namespace joedb
   Table_Id table_id
  ) const
  {
-  auto table_it = tables.find(table_id);
+  const auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    throw Exception("get_fields: invalid table_id");
   return table_it->second.field_names;
@@ -44,7 +44,7 @@ namespace joedb
  ) const
  {
   static Type null_type;
-  auto table_it = tables.find(table_id);
+  const auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    return null_type;
   const auto &fields = table_it->second.get_fields();
@@ -58,7 +58,7 @@ namespace joedb
  Record_Id Database_Schema::get_last_record_id(Table_Id table_id) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  auto table_it = tables.find(table_id);
+  const auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    return 0;
   return table_it->second.freedom.size();
@@ -72,7 +72,7 @@ namespace joedb
   Record_Id record_id
  ) const
  {
-  auto table_it = tables.find(table_id);
+  const auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    return false;
   return table_it->second.freedom.is_used(record_id + 1);
@@ -85,7 +85,7 @@ namespace joedb
   Table_Id table_id
  ) const
  {
-  auto table_it = tables.find(table_id);
+  const auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    throw Exception("bad table id");
   else
@@ -100,7 +100,7 @@ namespace joedb
   Field_Id field_id\
  ) const\
  {\
-  auto table_it = tables.find(table_id);\
+  const auto table_it = tables.find(table_id);\
   if (table_it == tables.end())\
    throw Exception("get: invalid table_id");\
   return table_it->second.get_##type_id(record_id, field_id);\
@@ -112,7 +112,7 @@ namespace joedb
   Field_Id field_id\
  ) const\
  {\
-  auto table_it = tables.find(table_id);\
+  const auto table_it = tables.find(table_id);\
   if (table_it == tables.end())\
    throw Exception("get_storage: invalid table_id");\
   return *table_it->second.get_own_##type_id##_storage(record_id, field_id);\
@@ -137,7 +137,7 @@ namespace joedb
  void Database_Schema::drop_table(Table_Id table_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  auto it = tables.find(table_id);
+  const auto it = tables.find(table_id);
   if (it == tables.end())
    throw Exception("drop_table: invalid table_id");
   table_names.erase(table_id);
@@ -154,7 +154,7 @@ namespace joedb
  {
   check_identifier("rename_table", name);
 
-  auto table_it = tables.find(table_id);
+  const auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    throw Exception("rename_table: invalid table_id");
 
@@ -175,7 +175,7 @@ namespace joedb
  {
   check_identifier("add_field", name);
 
-  auto it = tables.find(table_id);
+  const auto it = tables.find(table_id);
   if (it == tables.end())
    throw Exception("add_field: invalid table_id");
 
@@ -186,7 +186,7 @@ namespace joedb
  void Database_Schema::drop_field(Table_Id table_id, Field_Id field_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  auto it = tables.find(table_id);
+  const auto it = tables.find(table_id);
   if (it == tables.end())
    throw Exception("drop_field: invalid table_id");
 
@@ -204,12 +204,12 @@ namespace joedb
  {
   check_identifier("rename_field", name);
 
-  auto table_it = tables.find(table_id);
+  const auto table_it = tables.find(table_id);
   if (table_it == tables.end())
    throw Exception("rename_field: invalid table_id");
 
   auto &field_names = table_it->second.field_names;
-  auto field_it = field_names.find(field_id);
+  const auto field_it = field_names.find(field_id);
   if (field_it == field_names.end())
    throw Exception("rename_field: invalid field_id");
 

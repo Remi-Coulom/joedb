@@ -32,7 +32,7 @@ namespace joedb
  void Table::drop_field(Field_Id field_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  auto it = fields.find(field_id);
+  const auto it = fields.find(field_id);
   if (it == fields.end())
    throw Exception("drop_field: invalid field_id");
   field_names.erase(field_id);

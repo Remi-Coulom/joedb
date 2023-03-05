@@ -86,7 +86,7 @@ void joedb::write_sql_string(std::ostream &out, const std::string &s)
 {
  out.put('X');
  out.put('\'');
- for (char c: s)
+ for (const char c: s)
  {
   out.put(get_hex_char_from_digit(uint8_t(c >> 4)));
   out.put(get_hex_char_from_digit(uint8_t(c & 0x0f)));
@@ -102,7 +102,7 @@ size_t joedb::utf8_display_size(const std::string &s)
 
  for (size_t i = 0; i < s.size();)
  {
-  uint32_t wide_char = read_utf8_char(i, s);
+  const uint32_t wide_char = read_utf8_char(i, s);
   const int width = wide_char_display_width(uint32_t(wide_char));
   if (width > 0)
    result += size_t(wide_char_display_width(uint32_t(wide_char)));
