@@ -57,7 +57,13 @@ namespace joedb
    ~Async_Reader()
    //////////////////////////////////////////////////////////////////////////
    {
-    file.seek(initial_position);
+    try
+    {
+     file.seek(initial_position);
+    }
+    catch (...)
+    {
+    }
    }
  };
 }
