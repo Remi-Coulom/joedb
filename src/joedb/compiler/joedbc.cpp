@@ -1494,9 +1494,8 @@ static void generate_readonly_h
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_id()));\n";
    out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id() - 1];\n";
-   out << "    --iterator;\n";
-   out << "    if (iterator != index_of_" << index.name << ".end())\n";
-   out << "     return iterator->second;\n";
+   out << "    if (iterator != index_of_" << index.name << ".begin())\n";
+   out << "     return (--iterator)->second;\n";
    out << "    else\n";
    out << "     return id_of_" << tname << "();\n";
    out << "   }\n";
