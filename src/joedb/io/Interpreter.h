@@ -49,6 +49,8 @@ namespace joedb
    void set_rethrow(bool new_rethrow) {rethrow = new_rethrow;}
 
    void main_loop(std::istream &in, std::ostream &out);
+
+   virtual ~Readonly_Interpreter() = default;
  };
 
  ////////////////////////////////////////////////////////////////////////////
