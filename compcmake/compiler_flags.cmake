@@ -13,6 +13,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   "-g -O0 -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
  )
 
+ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
+
  set(CMAKE_CXX_FLAGS_ASAN "-fsanitize=address -O2")
  set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN}")
 
