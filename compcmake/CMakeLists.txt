@@ -24,51 +24,11 @@ add_test(NAME build_all
 )
 
 include("${CMAKE_CURRENT_LIST_DIR}/compiler_flags.cmake")
-
-#############################################################################
-# Custom add_executable
-#############################################################################
-if (CMAKE_VERSION VERSION_GREATER 3.9)
- cmake_policy(SET CMP0069 NEW)
- include(CheckIPOSupported)
- check_ipo_supported(RESULT ipo_supported)
-endif()
-
-if (ipo_supported)
- message("-- IPO supported")
-else()
- message("-- IPO not supported")
-endif()
-
-function(ipo_add_executable)
- add_executable(${ARGV})
- if (ipo_supported)
-  set_property(TARGET ${ARGV0} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
- endif()
-endfunction(ipo_add_executable)
-
-function(joedb_add_executable)
- ipo_add_executable(${ARGV})
- target_link_libraries(${ARGV0} joedb)
-endfunction(joedb_add_executable)
+include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 
 #############################################################################
 # Dependencies
 #############################################################################
-if (DEFINED JOEDB_PORTABLE)
- message("-- JOEDB_PORTABLE")
- add_definitions(-DJOEDB_PORTABLE)
-endif()
-
-# Threads
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-find_package(Threads REQUIRED)
-
-# libssh
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include("libssh.cmake")
 
 # Google Test
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -87,28 +47,9 @@ else()
  message("== WARNING: no sqlite3: Try sudo apt install libsqlite3-dev or vcpkg install sqlite3:x64-windows")
 endif()
 
-# Networking
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set(ASIO_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/asio/asio/include)
-if (TRUE)
- if (EXISTS "${ASIO_DIRECTORY}/asio/ts/net.hpp")
-  message("-- Found asio in submodules")
-  include_directories(${ASIO_DIRECTORY})
-  add_definitions(-DJOEDB_HAS_ASIO_NET)
-  set(HAS_NETWORKING TRUE)
-  message("== networking OK")
- else()
-  message("== no networking. Try git submodule update --init --recursive")
- endif()
-endif()
-
 #############################################################################
 # Includes
 #############################################################################
-include_directories(BEFORE SYSTEM
- ../src
-)
-
 include_directories(
  ../test/compiler
  ${GOOGLE_TEST}
@@ -118,68 +59,6 @@ include_directories(
 #############################################################################
 # Build Targets
 #############################################################################
-set(JOEDB_SOURCES
- ../src/external/wide_char_display_width.cpp
- ../src/joedb/Readable.cpp
- ../src/joedb/Writable.cpp
- ../src/joedb/Multiplexer.cpp
- ../src/joedb/is_identifier.cpp
- ../src/joedb/Destructor_Logger.cpp
- ../src/joedb/get_version.cpp
- ../src/joedb/interpreter/Database.cpp
- ../src/joedb/interpreter/Database_Schema.cpp
- ../src/joedb/interpreter/Table.cpp
- ../src/joedb/io/base64.cpp
- ../src/joedb/io/get_time_string.cpp
- ../src/joedb/io/dump.cpp
- ../src/joedb/io/inplace_pack.cpp
- ../src/joedb/io/Interpreter.cpp
- ../src/joedb/io/Interpreter_Dump_Writable.cpp
- ../src/joedb/io/json.cpp
- ../src/joedb/io/merge.cpp
- ../src/joedb/io/Raw_Dump_Writable.cpp
- ../src/joedb/io/SQL_Dump_Writable.cpp
- ../src/joedb/io/type_io.cpp
- ../src/joedb/journal/File.cpp
- ../src/joedb/journal/Generic_File.cpp
- ../src/joedb/journal/Memory_File.cpp
- ../src/joedb/journal/Writable_Journal.cpp
- ../src/joedb/journal/Readonly_Journal.cpp
- ../src/joedb/journal/diagnostics.cpp
- ../src/joedb/journal/Stream_File.cpp
- ../src/joedb/journal/SHA_256.cpp
- ../src/joedb/journal/Interpreted_File.cpp
- ../src/joedb/concurrency/Server_Connection.cpp
-)
-
-if (HAS_NETWORKING)
- set(JOEDB_SOURCES ${JOEDB_SOURCES}
-  ../src/joedb/concurrency/Server.cpp
-  ../src/joedb/concurrency/Network_Channel.cpp
- )
-endif()
-
-if(libssh_FOUND)
- set(JOEDB_SOURCES ${JOEDB_SOURCES}
-  ../src/joedb/ssh/Forward_Channel.cpp
- )
-endif()
-
-# The shared library does not work with Visual Studio: link statically
-if (UNIX)
- add_library(joedb SHARED ${JOEDB_SOURCES})
- set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
- if(HAS_NETWORKING AND ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-  target_link_libraries(joedb wsock32 ws2_32)
- endif()
-else()
- add_library(joedb STATIC ${JOEDB_SOURCES})
-endif()
-target_link_libraries(joedb Threads::Threads)
-if(libssh_FOUND)
- target_link_libraries(joedb ${LIBSSH_LIBRARIES})
-endif()
-
 joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
 joedb_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
 joedb_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
@@ -268,12 +147,6 @@ else()
 endif()
 
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
-joedb_add_executable(joedbc
- ../src/joedb/compiler/joedbc.cpp
- ../src/joedb/compiler/Compiler_Options_io.cpp
- ../src/joedb/compiler/c_wrapper.cpp
- ../src/joedb/compiler/nested_namespace.cpp
-)
 
 joedb_add_executable(joedb_embed
  ../src/joedb/compiler/joedb_embed.cpp
@@ -328,27 +201,6 @@ if (libssh_FOUND)
  )
 endif()
 
-#############################################################################
-# Custom commands
-#############################################################################
-function(joedbc_build source_dir namespace)
- add_custom_command(
-  OUTPUT
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_interpreted.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_interpreted.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_readonly.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_readonly.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.h
-  COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc
-  DEPENDS
-   joedbc
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.joedbi
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.joedbc
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}
- )
-endfunction(joedbc_build)
-
 joedbc_build(../test/compiler/db test)
 joedbc_build(../test/compiler/db schema_v1)
 joedbc_build(../test/compiler/db schema_v2)
@@ -357,24 +209,7 @@ joedbc_build(../test/compiler/db multi_index)
 joedbc_build(../test/compiler/db empty)
 joedbc_build(../benchmark benchmarkdb)
 joedbc_build(../src/joedb/db multi_server)
-
-function(joedbc_build_wrapper source_dir namespace)
- add_custom_command(
-  OUTPUT
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_wrapper.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}_wrapper.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.h
-  COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc
-  DEPENDS
-   joedbc
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.joedbi
-   ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}/${namespace}.joedbc
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}
- )
-endfunction(joedbc_build_wrapper)
-
-joedbc_build_wrapper(../doc/source/tutorial tutorial)
+joedbc_build(../doc/source/tutorial tutorial)
 
 add_custom_command(
  OUTPUT

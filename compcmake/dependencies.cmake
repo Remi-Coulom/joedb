@@ -1,3 +1,24 @@
+# Threads
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+
+# Networking
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set(ASIO_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../submodules/asio/asio/include)
+if (TRUE)
+ if (EXISTS "${ASIO_DIRECTORY}/asio/ts/net.hpp")
+  message("-- Found asio in submodules")
+  include_directories(${ASIO_DIRECTORY})
+  add_definitions(-DJOEDB_HAS_ASIO_NET)
+  set(HAS_NETWORKING TRUE)
+  message("== networking OK")
+ else()
+  message("== no networking. Try git submodule update --init --recursive")
+ endif()
+endif()
+
 # libssh
 # not compatible with asio in cygwin (because asio insists on using winsock)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
