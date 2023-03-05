@@ -9,7 +9,9 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
-      "ctestCommandArgs": ""
+      "ctestCommandArgs": "",
+      "enableMicrosoftCodeAnalysis": false,
+      "codeAnalysisRuleset": "code_analysis.ruleset"
     },
     {
       "name": "x64-Release",
@@ -21,7 +23,8 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "intelliSenseMode": "windows-msvc-x86"
+      "intelliSenseMode": "windows-msvc-x86",
+      "codeAnalysisRuleset": "code_analysis.ruleset"
     },
     {
       "name": "x86-Debug",
@@ -33,7 +36,8 @@
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x86" ],
-      "variables": []
+      "variables": [],
+      "codeAnalysisRuleset": "code_analysis.ruleset"
     }
   ]
 }
