@@ -51,8 +51,6 @@ function(joedbc_build_absolute dir namespace)
    ${dir}/${namespace}_interpreted.h
    ${dir}/${namespace}_readonly.cpp
    ${dir}/${namespace}_readonly.h
-   ${dir}/${namespace}_wrapper.cpp
-   ${dir}/${namespace}_wrapper.h
    ${dir}/${namespace}.cpp
    ${dir}/${namespace}.h
   COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc

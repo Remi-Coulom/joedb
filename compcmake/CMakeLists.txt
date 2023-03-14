@@ -283,11 +283,11 @@ joedb_add_executable(index_tutorial
  ../doc/source/tutorial/index_tutorial.cpp
 )
 
-joedb_add_executable(wrapper_tutorial
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
- ../doc/source/tutorial/tutorial_main.c
-)
+#joedb_add_executable(wrapper_tutorial
+# ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+# ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
+# ../doc/source/tutorial/tutorial_main.c
+#)
 
 joedb_add_executable(generate_translation_header
  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.cpp
