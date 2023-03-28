@@ -22,9 +22,8 @@ include("../../../compcmake/joedbc.cmake")
 #
 #  * joedb_add_executable(target source...): add an executable that uses joedb
 #
-#  joedbc.cmake searches for joedbc and libjoedb in standard locations, giving
-#  a priority to the local release build. If necessary, you can edit
-#  joedbc.cmake so that it finds them elsewhere.
+#  joedbc.cmake will compile joedbc and the joedb library for your project,
+#  with the same compiler and compilation options as the rest of your code.
 #
 
 joedbc_build("." tutorial)
