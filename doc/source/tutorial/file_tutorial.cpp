@@ -14,6 +14,7 @@ static int file_tutorial_main()
   joedb::File file(file_name, joedb::Open_Mode::create_new);
   tutorial::Generic_File_Database db(file);
   db.new_city("Villeneuve d'Ascq");
+  db.checkpoint();
  }
 
  //
@@ -24,6 +25,7 @@ static int file_tutorial_main()
   joedb::File file(file_name, joedb::Open_Mode::write_existing);
   tutorial::Generic_File_Database db(file);
   db.new_city("Tombouctou");
+  db.checkpoint();
  }
 
  //
