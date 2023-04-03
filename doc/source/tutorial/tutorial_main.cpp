@@ -44,10 +44,10 @@ int main()
   std::cout << "  " << db.get_first_name(person) << ' ';
   std::cout << db.get_last_name(person) << ' ';
   const auto city = db.get_home(person);
-  if (!city.is_null())
-   std::cout << "lives in " << db.get_name(city) << '\n';
-  else
+  if (city.is_null())
    std::cout << "is homeless\n";
+  else
+   std::cout << "lives in " << db.get_name(city) << '\n';
  }
 
  //
