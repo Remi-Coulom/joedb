@@ -37,7 +37,6 @@ set +e
 ( cd $dir && PATH="." && joedb_ssh_client ) 2>joedb_ssh_client.out
 ( cd $dir && PATH="." && joedb_local_client ) 2>joedb_local_client.out
 
-cmake --build ../../../compcmake/gcc_release
 rm -rf build
 mkdir -p build
 cd build
