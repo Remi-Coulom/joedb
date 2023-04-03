@@ -837,7 +837,7 @@ TEST(Compiler, vector)
 
   {
    auto remi = db.find_person_by_name("Rémi");
-   if (remi)
+   if (!remi.is_null())
     EXPECT_EQ(db.get_name(remi), "Rémi");
    else
     ADD_FAILURE() << "Rémi not found";
@@ -854,11 +854,11 @@ TEST(Compiler, vector)
    });
   }
 
-  EXPECT_FALSE(db.find_person_by_name("Rémi"));
+  EXPECT_TRUE(db.find_person_by_name("Rémi").is_null());
 
   {
    auto joe = db.find_person_by_name("Joe");
-   if (joe)
+   if (!joe.is_null())
     EXPECT_EQ(db.get_name(joe), "Joe");
    else
     ADD_FAILURE() << "Joe not found";

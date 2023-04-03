@@ -118,7 +118,7 @@ namespace joedb
   {
    auto ssh_backup = db.get_ssh_backup(server);
 
-   if (ssh_backup)
+   if (!ssh_backup.is_null())
    {
     if (!db.is_valid(ssh_backup))
      throw std::runtime_error("invlid ssh_backup id");

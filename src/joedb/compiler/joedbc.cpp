@@ -397,8 +397,8 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
    out << "    try {f(span);}\n";
    out << "    catch (...) {exception = std::current_exception();}\n";
-   out << "    internal_update_vector_" << tname << "__" << fname << "(record, size, span.begin());\n";
-   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record, " << field.first << ", size, span.begin());\n";
+   out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_id(), size, span.begin());\n";
+   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, span.begin());\n";
    out << "    if (exception)\n";
    out << "     std::rethrow_exception(exception);\n";
    out << "   }\n\n";
@@ -671,7 +671,6 @@ static void generate_readonly_h
   out << "\n  public:\n";
   out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
   out << "   id_of_" << tname << "(): id(0) {}\n";
-  out << "   operator Record_Id() const {return id;}\n";
   out << "   bool is_null() const {return id == 0;}\n";
   out << "   Record_Id get_id() const {return id;}\n";
   out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
@@ -696,12 +695,13 @@ static void generate_readonly_h
 
   for (const auto &field: db.get_fields(table.first))
   {
-   out << "  std::vector<";
-   out << storage_types
-   [
-    int(db.get_field_type(table.first, field.first).get_type_id())
-   ];
    fields.emplace_back("field_value_of_" + field.second);
+
+   const joedb::Type &type = db.get_field_type(table.first, field.first);
+   const auto type_id = type.get_type_id();
+
+   out << "  std::vector<";
+   out << storage_types[int(type_id)];
    out << "> " << fields.back() << ";\n";
   }
 
@@ -909,8 +909,6 @@ static void generate_readonly_h
     out << fname << "[record_id - 1]";
     if (type.get_type_id() == Type::Type_Id::string)
      out << ".clear()";
-    else if (type.get_type_id() == Type::Type_Id::reference)
-     out << " = id_of_" << db.get_table_name(type.get_table_id()) << "(0)";
     else
      out << " = 0";
     out << ";\n";
@@ -953,7 +951,10 @@ static void generate_readonly_h
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
    out << "    storage_of_" << tname << ".field_value_of_" << fname;
-   out << "[record_id - 1] = field_value_of_" << fname << ";\n";
+   out << "[record_id - 1] = field_value_of_" << fname;
+   if (type.get_type_id() == Type::Type_Id::reference)
+    out << ".get_id()";
+   out << ";\n";
 
    for (const auto &index: options.get_indices())
     if (index.table_id == table.first &&
@@ -1521,6 +1522,8 @@ static void generate_readonly_h
      out << ", ";
     out << "field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
+    if (db.get_field_type(index.table_id, index.field_ids[i]).get_type_id() == Type::Type_Id::reference)
+    out << ".get_id()";
    }
    out << "));\n";
    out << "    if (i == index_of_" << index.name << ".end())\n";
