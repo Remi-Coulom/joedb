@@ -43,6 +43,21 @@ static const std::string &get_translation
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, id_test)
+/////////////////////////////////////////////////////////////////////////////
+{
+ test::id_of_person null_person(0);
+ test::id_of_person non_null_person(1234);
+
+ EXPECT_TRUE(null_person.is_null());
+ EXPECT_FALSE(null_person.is_not_null());
+ EXPECT_FALSE(non_null_person.is_null());
+ EXPECT_TRUE(non_null_person.is_not_null());
+ EXPECT_EQ(null_person.get_id(), 0UL);
+ EXPECT_EQ(non_null_person.get_id(), 1234UL);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, file_test)
 /////////////////////////////////////////////////////////////////////////////
 {
