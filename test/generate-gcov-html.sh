@@ -12,7 +12,7 @@ lcov --directory ../compcmake/gcc_coverage\
      --rc lcov_branch_coverage=1\
      --output-file all.info || exit 1
 
-lcov --remove all.info '/opt/local/*' '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/googletest/*' '*/repos/asio/*' '*/repos/joedb/test*'\
+lcov --remove all.info '/opt/local/*' '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/submodules/*' '*/repos/joedb/test*'\
      --rc lcov_branch_coverage=1\
      --output app.info || exit 1
 
