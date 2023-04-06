@@ -3,9 +3,10 @@ History
 - 2023-??-??: 7.0
 
   - No more implicit conversion from row id to integer or boolean. With this
-    new version, explicit methods must be used: ``is_null()`` to test if
-    a referece is null, and ``get_id()`` to convert to an integer. This ensures
-    stronger typing, and prevents bug-prone implicit conversions.
+    new version, explicit methods must be used: ``is_null()`` or
+    ``is_not_null`` to test if a referece is null or not, and ``get_id()`` to
+    convert to an integer. This ensures stronger typing, and prevents bug-prone
+    implicit conversions.
   - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
   - Removed some useless ssh code that was left over from the old serverless
     sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to

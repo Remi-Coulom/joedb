@@ -35,7 +35,7 @@ static const std::string &get_translation
  if (translation.is_null())
   translation = db.find_translation_by_ids(string_id, english);
 
- if (!translation.is_null())
+ if (translation.is_not_null())
   return db.get_translation(translation);
 
  const static std::string error("Translation error!");
@@ -837,7 +837,7 @@ TEST(Compiler, vector)
 
   {
    auto remi = db.find_person_by_name("Rémi");
-   if (!remi.is_null())
+   if (remi.is_not_null())
     EXPECT_EQ(db.get_name(remi), "Rémi");
    else
     ADD_FAILURE() << "Rémi not found";
@@ -858,7 +858,7 @@ TEST(Compiler, vector)
 
   {
    auto joe = db.find_person_by_name("Joe");
-   if (!joe.is_null())
+   if (joe.is_not_null())
     EXPECT_EQ(db.get_name(joe), "Joe");
    else
     ADD_FAILURE() << "Joe not found";

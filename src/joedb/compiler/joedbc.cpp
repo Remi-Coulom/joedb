@@ -672,6 +672,7 @@ static void generate_readonly_h
   out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
   out << "   id_of_" << tname << "(): id(0) {}\n";
   out << "   bool is_null() const {return id == 0;}\n";
+  out << "   bool is_not_null() const {return id != 0;}\n";
   out << "   Record_Id get_id() const {return id;}\n";
   out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
   out << "   bool operator!=(id_of_" << tname << " x) const {return id != x.id;}\n";
