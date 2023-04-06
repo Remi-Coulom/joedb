@@ -91,6 +91,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/File_Test.cpp
   ../test/Generic_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
+  ../test/Interpreted_Test.cpp
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
   ../test/Writable_Journal_Test.cpp
