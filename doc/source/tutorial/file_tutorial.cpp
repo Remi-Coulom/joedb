@@ -1,7 +1,8 @@
 #include "tutorial.h"
+#include "joedb/io/main_exception_catcher.h"
 
 /////////////////////////////////////////////////////////////////////////////
-static int file_tutorial_main()
+static int file_tutorial_main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * const file_name = "file_tutorial.joedb";
@@ -41,16 +42,8 @@ static int file_tutorial_main()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int main()
+int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- try
- {
-  return file_tutorial_main();
- }
- catch (const joedb::Exception &e)
- {
-  std::cerr << "Error: " << e.what() << '\n';
-  return 1;
- }
+ return joedb::main_exception_catcher(file_tutorial_main, argc, argv);
 }
