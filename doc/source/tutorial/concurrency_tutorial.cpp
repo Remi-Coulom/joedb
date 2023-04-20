@@ -1,7 +1,7 @@
 #include "tutorial.h"
 
-#include <joedb/concurrency/Embedded_Connection.h>
-#include <joedb/journal/Memory_File.h>
+#include "joedb/concurrency/Embedded_Connection.h"
+#include "joedb/journal/Memory_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
