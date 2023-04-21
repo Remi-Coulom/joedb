@@ -13,7 +13,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   "-g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
  )
 
- set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -D_GLIBCXX_DEBUG")
+ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
 
  set(CMAKE_CXX_FLAGS_ASAN "-fsanitize=address -O2")
  set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN}")

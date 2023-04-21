@@ -13,7 +13,14 @@ if (TRUE)
   include_directories(${ASIO_DIRECTORY})
   add_definitions(-DJOEDB_HAS_ASIO_NET)
   set(HAS_NETWORKING TRUE)
+
+  if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+   add_definitions(-D_WIN32_WINNT=0x0601)
+   add_definitions(-D__USE_W32_SOCKETS)
+  endif()
+
   message("== networking OK")
+
  else()
   message("== no networking. Try git submodule update --init --recursive")
  endif()

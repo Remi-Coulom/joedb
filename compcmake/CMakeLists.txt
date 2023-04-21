@@ -180,20 +180,6 @@ if (HAS_NETWORKING)
  joedb_add_executable(joedb_network_client
   ../src/joedb/io/joedb_network_client.cpp
  )
-
- if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-  foreach(target
-   joedb
-   joedb_server
-   joedb_test
-   joedb_network_client
-  )
-   target_compile_definitions(${target} PRIVATE
-    -D_WIN32_WINNT=0x0601 -D__USE_W32_SOCKETS
-   )
-  endforeach()
- endif()
-
 endif()
 
 if (libssh_FOUND)
