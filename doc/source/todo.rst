@@ -36,6 +36,13 @@ New Operations and Types
 
 On-disk Storage
 ----------------
+- Simplest idea in practice: storage of strings by reference:
+  - keep only size and index of joedb file in memory
+  - Read data from joedb file directly on request
+  - joedbi uses strings by reference by default
+  - storage option for joedbc
+  - will allow joedb to handle large training sets
+  - must get web UI to work to browse training set
 - In a directory
 - A checkpoint file (2 copies, valid if identical)
 - A subdirectory for each table
