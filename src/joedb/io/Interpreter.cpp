@@ -196,13 +196,11 @@ namespace joedb
         case Type::Type_Id::blob:
         {
          const Blob blob = readable.get_blob(table_id, record_id, field.first);
-         write_blob(ss, blob);
 
-         if (!blob.is_null() && readable.get_blob_storage())
-         {
-          ss << " = ";
+         if (readable.get_blob_storage())
           write_string(ss, readable.get_blob_storage()->read_blob(blob));
-         }
+         else
+          write_blob(ss, blob);
         }
         break;
 
@@ -250,14 +248,18 @@ namespace joedb
     out << std::string(id_width, ' ');
     for (auto field: fields)
     {
-     const auto type = readable.get_field_type(table_id, field.first).get_type_id();
+     const Type::Type_Id type_id = readable.get_field_type
+     (
+      table_id,
+      field.first
+     ).get_type_id();
      out << ' ';
      write_justified
      (
       out,
       field.second,
       column_width[field.first],
-      type == Type::Type_Id::string
+      type_id == Type::Type_Id::string || type_id == Type::Type_Id::blob
      );
     }
     out << '\n';
@@ -272,14 +274,19 @@ namespace joedb
 
      for (auto field: fields)
      {
-      const auto type = readable.get_field_type(table_id, field.first).get_type_id();
+      const Type::Type_Id type_id = readable.get_field_type
+      (
+       table_id,
+       field.first
+      ).get_type_id();
+
       out << ' ';
       write_justified
       (
        out,
        columns[field.first][i],
        column_width[field.first],
-       type == Type::Type_Id::string
+       type_id == Type::Type_Id::string || type_id == Type::Type_Id::blob
       );
      }
      out << '\n';

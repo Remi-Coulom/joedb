@@ -1,11 +1,14 @@
 create_table person
 add_field person name blob
+add_field person city string
 schema
 insert_into person 1
 table person
 update person 1 name "Rémi"
+update person 1 city "Villeneuve d'Ascq"
 insert_into person 2
-update person 2 name "Laurent"
+update person 2 name "Albert"
+update person 2 city "Issirac"
 table person
 sql
 json
