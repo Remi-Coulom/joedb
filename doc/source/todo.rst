@@ -38,9 +38,7 @@ On-disk Storage
 ----------------
 - Simplest idea in practice: blob
 
-   - Define a new "blob" type: checkpoint + size of data in file
    - blob cannot be indexed
-   - It is the job of the user code to go and read the string into the joedb file (make convenient method in File class)
 
 - To make everything work well with very large databases:
 
