@@ -1,5 +1,6 @@
 create_table person
 add_field person name blob
+schema
 insert_into person 1
 table person
 update person 1 name "Rémi"
