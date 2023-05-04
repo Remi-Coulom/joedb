@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "joedb/assert.h"
+#include "joedb/Blob.h"
 #include "joedb/is_big_endian.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/SHA_256.h"
@@ -481,8 +482,9 @@ namespace joedb
     return result;
    }
 
-   void write_string(const std::string &s);
+   int64_t write_string(const std::string &s);
    std::string read_string();
+   Blob read_blob();
    std::string safe_read_string(size_t max_size);
 
    //////////////////////////////////////////////////////////////////////////

@@ -54,6 +54,7 @@ namespace joedb
                          Record_Id record_id,\
                          Field_Id field_id,\
                          return_type value) final;
+   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
 
    ~SQL_Dump_Writable();

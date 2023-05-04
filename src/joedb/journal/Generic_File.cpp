@@ -1,6 +1,7 @@
 #include "joedb/journal/Generic_File.h"
 
 #include <algorithm>
+#include <joedb/Exception.h>
 
 namespace joedb
 {
@@ -36,23 +37,36 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File::write_string(const std::string &s)
+ int64_t Generic_File::write_string(const std::string &s)
  ////////////////////////////////////////////////////////////////////////////
  {
   compact_write<size_t>(s.size());
+  const int64_t blob_position = get_position();
   for (const char c: s)
    write<char>(c);
+  return blob_position;
  }
 
  ////////////////////////////////////////////////////////////////////////////
  std::string Generic_File::read_string()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::string s;
   const size_t size = compact_read<size_t>();
+  std::string s;
   s.resize(size);
   read_data(&s[0], size);
   return s;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Blob Generic_File::read_blob()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const size_t size = compact_read<size_t>();
+  Blob result(get_position(), size);
+  set_position(get_position() + int64_t(size));
+
+  return result;
  }
 
  ////////////////////////////////////////////////////////////////////////////

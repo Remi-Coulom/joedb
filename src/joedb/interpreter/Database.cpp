@@ -6,23 +6,13 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Database::Database(Record_Id max_record_id): max_record_id(max_record_id)
- ////////////////////////////////////////////////////////////////////////////
- {
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Database::insert_into(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const auto it = tables.find(table_id);
-  if (it == tables.end())
-   throw Exception("insert_into: invalid table_id");
-
   if (record_id <= 0 || (max_record_id && record_id > max_record_id))
    throw Exception("insert_into: too big");
 
-  it->second.insert_record(record_id);
+  get_table(table_id).insert_record(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -34,9 +24,6 @@ namespace joedb
   Record_Id size
  )
  {
-  const auto it = tables.find(table_id);
-  if (it == tables.end())
-   throw Exception("insert_vector: invalid table_id");
   if (record_id <= 0 ||
       (max_record_id && (record_id > max_record_id || size > max_record_id)))
   {
@@ -48,7 +35,7 @@ namespace joedb
    throw Exception(error_message.str());
   }
 
-  it->second.insert_vector(record_id, size);
+  get_table(table_id).insert_vector(record_id, size);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -59,11 +46,7 @@ namespace joedb
   Record_Id record_id
  )
  {
-  const auto it = tables.find(table_id);
-  if (it == tables.end())
-   throw Exception("delete_from: invalid table_id");
-
-  it->second.delete_record(record_id);
+  get_table(table_id).delete_record(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -76,10 +59,7 @@ namespace joedb
   return_type value\
  )\
  {\
-  const auto it = tables.find(table_id);\
-  if (it == tables.end())\
-   throw Exception("update: invalid table_id");\
-  it->second.update_##type_id(record_id, field_id, value);\
+  get_table(table_id).update_##type_id(record_id, field_id, value);\
  }\
  \
  void Database::update_vector_##type_id\
@@ -91,10 +71,7 @@ namespace joedb
   const type *value\
  )\
  {\
-  const auto it = tables.find(table_id);\
-  if (it == tables.end())\
-   throw Exception("update_vector: invalid table_id");\
-  it->second.update_vector_##type_id(record_id, field_id, size, value);\
+  get_table(table_id).update_vector_##type_id(record_id, field_id, size, value);\
  }\
  \
  type *Database::get_own_##type_id##_storage\
@@ -105,13 +82,24 @@ namespace joedb
   Record_Id &capacity\
  )\
  {\
-  const auto it = tables.find(table_id);\
-  if (it == tables.end())\
-   throw Exception("get_own_storage: invalid table_id");\
-  capacity = it->second.get_storage_capacity();\
-  return it->second.get_own_##type_id##_storage(record_id, field_id);\
+  Table &table = get_table(table_id);\
+  capacity = table.get_storage_capacity();\
+  return table.get_own_##type_id##_storage(record_id, field_id);\
  }
  #include "joedb/TYPE_MACRO.h"
+
+ ////////////////////////////////////////////////////////////////////////////
+ Blob Database::update_blob_value
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  Field_Id field_id,
+  const std::string &value
+ )
+ {
+  return Blob();
+ }
 
  ////////////////////////////////////////////////////////////////////////////
  Database::~Database() = default;

@@ -23,16 +23,36 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ const Table& Database_Schema::get_table
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id
+ ) const
+ {
+  return (const_cast<Database_Schema *>(this))->get_table(table_id);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Table& Database_Schema::get_table
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id
+ )
+ {
+  const auto it = tables.find(table_id);
+  if (it == tables.end())
+   throw Exception("invalid table_id");
+  return it->second;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  const std::map<Field_Id, std::string> &Database_Schema::get_fields
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id
  ) const
  {
-  const auto table_it = tables.find(table_id);
-  if (table_it == tables.end())
-   throw Exception("get_fields: invalid table_id");
-  return table_it->second.field_names;
+  return get_table(table_id).field_names;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -58,10 +78,7 @@ namespace joedb
  Record_Id Database_Schema::get_last_record_id(Table_Id table_id) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  const auto table_it = tables.find(table_id);
-  if (table_it == tables.end())
-   return 0;
-  return table_it->second.freedom.size();
+  return get_table(table_id).freedom.size();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -72,10 +89,7 @@ namespace joedb
   Record_Id record_id
  ) const
  {
-  const auto table_it = tables.find(table_id);
-  if (table_it == tables.end())
-   return false;
-  return table_it->second.freedom.is_used(record_id + 1);
+  return get_table(table_id).freedom.is_used(record_id + 1);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -85,11 +99,7 @@ namespace joedb
   Table_Id table_id
  ) const
  {
-  const auto table_it = tables.find(table_id);
-  if (table_it == tables.end())
-   throw Exception("bad table id");
-  else
-   return table_it->second.freedom;
+  return get_table(table_id).freedom;
  }
 
  #define TYPE_MACRO(type, return_type, type_id, R, W)\

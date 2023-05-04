@@ -1,5 +1,5 @@
 #ifndef TYPE_MACRO
-#define TYPE_MACRO(type, return_type, type_id, read_method, write_method)
+#define TYPE_MACRO(storage_type, return_type, type_id, read_method, write_method)
 #endif
 
 #ifndef TYPE_MACRO_NO_STRING
@@ -23,6 +23,9 @@ TYPE_MACRO(double, double, float64, file.read<double>, write<double>)
 TYPE_MACRO(int8_t, int8_t, int8, file.read<int8_t>, write<int8_t>)
 TYPE_MACRO(int16_t, int16_t, int16, file.read<int16_t>, write<int16_t>)
 #endif
+#ifndef TYPE_MACRO_NO_BLOB
+TYPE_MACRO(joedb::Blob, joedb::Blob, blob, file.read_blob, write_blob)
+#endif
 
 // Warning: only add at the bottom to keep compatibility with previous versions
 // Don't forget to add case in SQL_Dump_Writable
@@ -32,3 +35,4 @@ TYPE_MACRO(int16_t, int16_t, int16, file.read<int16_t>, write<int16_t>)
 #undef TYPE_MACRO_NO_REFERENCE
 #undef TYPE_MACRO_NO_INT
 #undef TYPE_MACRO_NO_FLOAT
+#undef TYPE_MACRO_NO_BLOB

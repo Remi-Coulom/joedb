@@ -2,6 +2,7 @@
 #define joedb_type_io_declared
 
 #include "joedb/index_types.h"
+#include "joedb/Blob.h"
 
 #include <iostream>
 #include <cstdint>
@@ -29,6 +30,9 @@ namespace joedb
 
  int8_t read_int8(std::istream &in);
  void write_int8(std::ostream &out, int8_t value);
+
+ void write_blob(std::ostream &out, const Blob &blob);
+ joedb::Blob read_blob(std::istream &istream);
 
  #define PRIMITIVE_IO(type, type_id)\
  inline type read_##type_id(std::istream &in)\

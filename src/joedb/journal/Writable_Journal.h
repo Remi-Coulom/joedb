@@ -18,6 +18,14 @@ namespace joedb
   private:
    Commit_Level current_commit_level;
 
+   void generic_update
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id,
+    operation_t operation
+   );
+
   public:
    Writable_Journal(Generic_File &file);
 
@@ -120,7 +128,18 @@ namespace joedb
     Record_Id size,\
     const type *value\
    ) final;
+   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
+
+   bool wants_blob_by_value() override {return true;}
+
+   Blob update_blob_value
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id,
+    const std::string &value
+   ) override;
 
    ~Writable_Journal() override;
  };

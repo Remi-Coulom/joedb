@@ -241,6 +241,55 @@ void joedb::Writable_Journal::delete_from
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Writable_Journal::generic_update
+/////////////////////////////////////////////////////////////////////////////
+(
+ Table_Id table_id,
+ Record_Id record_id,
+ Field_Id field_id,
+ operation_t operation
+)
+{
+ if
+ (
+  table_id == table_of_last_operation &&
+  record_id == record_of_last_operation
+ )
+ {
+  constexpr int last =
+   int(operation_t::update_last_int8) -
+   int(operation_t::update_int8);
+
+  file.write<operation_t>(operation_t(int(operation) + last));
+  file.compact_write<Field_Id>(field_id);
+  field_of_last_update = field_id;
+ }
+ else if
+ (
+  table_id == table_of_last_operation &&
+  record_id == record_of_last_operation + 1 &&
+  field_id == field_of_last_update
+ )
+ {
+  constexpr int next =
+   int(operation_t::update_next_int8) -
+   int(operation_t::update_int8);
+  file.write<operation_t>(operation_t(int(operation) + next));
+  record_of_last_operation++;
+ }
+ else
+ {
+  file.write<operation_t>(operation);
+  file.compact_write<Table_Id>(table_id);
+  file.compact_write<Record_Id>(record_id);
+  file.compact_write<Field_Id>(field_id);
+  table_of_last_operation = table_id;
+  record_of_last_operation = record_id;
+  field_of_last_update = field_id;
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(type, return_type, type_id, R, write_method)\
 void joedb::Writable_Journal::update_##type_id\
 (\
@@ -250,30 +299,7 @@ void joedb::Writable_Journal::update_##type_id\
  return_type value\
 )\
 {\
- if (table_id == table_of_last_operation &&\
-     record_id == record_of_last_operation)\
- {\
-  file.write<operation_t>(operation_t::update_last_##type_id);\
-  file.compact_write<Field_Id>(field_id);\
-  field_of_last_update = field_id;\
- }\
- else if (table_id == table_of_last_operation &&\
-          record_id == record_of_last_operation + 1 &&\
-          field_id == field_of_last_update)\
- {\
-  file.write<operation_t>(operation_t::update_next_##type_id);\
-  record_of_last_operation++;\
- }\
- else\
- {\
-  file.write<operation_t>(operation_t::update_##type_id);\
-  file.compact_write<Table_Id>(table_id);\
-  file.compact_write<Record_Id>(record_id);\
-  file.compact_write<Field_Id>(field_id);\
-  table_of_last_operation = table_id;\
-  record_of_last_operation = record_id;\
-  field_of_last_update = field_id;\
- }\
+ generic_update(table_id, record_id, field_id, operation_t::update_##type_id);\
  file.write_method(value);\
 }\
 void joedb::Writable_Journal::update_vector_##type_id\
@@ -307,7 +333,22 @@ void joedb::Writable_Journal::update_vector_##type_id\
  else\
   file.write_data((const char *)value, size * sizeof(type));\
 }
+#define TYPE_MACRO_NO_BLOB
 #include "joedb/TYPE_MACRO.h"
+
+/////////////////////////////////////////////////////////////////////////////
+joedb::Blob joedb::Writable_Journal::update_blob_value
+/////////////////////////////////////////////////////////////////////////////
+(
+ Table_Id table_id,
+ Record_Id record_id,
+ Field_Id field_id,
+ const std::string &value
+)
+{
+ generic_update(table_id, record_id, field_id, operation_t::update_blob);
+ return joedb::Blob(file.write_string(value), value.size());
+}
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Writable_Journal::~Writable_Journal()

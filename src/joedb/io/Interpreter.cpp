@@ -352,6 +352,7 @@ namespace joedb
    out << '\n';
    out << " <type> may be:\n";
    out << "  string,\n";
+   out << "  blob,\n";
    out << "  int8, int16, int32, int64,\n";
    out << "  float32, float64,\n";
    out << "  boolean,\n";

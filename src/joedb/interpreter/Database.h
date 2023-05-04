@@ -11,9 +11,14 @@ namespace joedb
  {
   private:
    const Record_Id max_record_id;
+   const bool blob_by_value;
 
   public:
-   Database(Record_Id max_record_id = 0);
+   Database(Record_Id max_record_id = 0, bool blob_by_value = true):
+    max_record_id(max_record_id),
+    blob_by_value(blob_by_value)
+   {
+   }
 
    void insert_into(Table_Id table_id, Record_Id record_id) final;
    void insert_vector
@@ -48,6 +53,16 @@ namespace joedb
     Record_Id &capacity\
    ) final;
    #include "joedb/TYPE_MACRO.h"
+
+   bool wants_blob_by_value() override {return blob_by_value;}
+
+   Blob update_blob_value
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id,
+    const std::string &value
+   ) override;
 
    ~Database();
  };

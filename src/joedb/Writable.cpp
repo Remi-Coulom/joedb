@@ -1,4 +1,5 @@
 #include "joedb/Writable.h"
+#include "joedb/Exception.h"
 
 namespace joedb
 {
@@ -16,4 +17,27 @@ namespace joedb
    update_##type_id(table_id, record_id + i, field_id, value[i]);\
  }
  #include "joedb/TYPE_MACRO.h"
+
+ #define TYPE_MACRO(type, return_type, type_id, R, W)\
+ void Writable::update_##type_id\
+ (\
+  Table_Id table_id,\
+  Record_Id record_id,\
+  Field_Id field_id,\
+  return_type value\
+ )\
+ {\
+ }
+ #include "joedb/TYPE_MACRO.h"
+
+ Blob Writable::update_blob_value
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  Field_Id field_id,
+  const std::string &value
+ )
+ {
+  throw joedb::Runtime_Error("Writable::update_blob_value unimplemented");
+ }
 }

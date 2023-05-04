@@ -61,7 +61,7 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   ) {}\
+   );\
    virtual void update_vector_##type_id\
    (\
     Table_Id table_id,\
@@ -92,6 +92,16 @@ namespace joedb
     return (const_cast<Writable *>(this))->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
    }
    #include "joedb/TYPE_MACRO.h"
+
+   virtual bool wants_blob_by_value() {return false;}
+
+   virtual Blob update_blob_value
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id,
+    const std::string &value
+   );
 
    virtual ~Writable() = default;
  };

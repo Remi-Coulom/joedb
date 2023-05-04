@@ -54,6 +54,10 @@ namespace joedb
    case Type::Type_Id::int16:
     out << "SMALLINT";
    break;
+
+   case Type::Type_Id::blob:
+    out << "BLOB";
+   break;
   }
  }
 
@@ -200,6 +204,7 @@ namespace joedb
   out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
  }
  #define TYPE_MACRO_NO_STRING
+ #define TYPE_MACRO_NO_BLOB
  #define TYPE_MACRO_NO_REFERENCE
  #include "joedb/TYPE_MACRO.h"
 

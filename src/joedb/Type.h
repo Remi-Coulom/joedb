@@ -1,7 +1,8 @@
 #ifndef joedb_Type_declared
 #define joedb_Type_declared
 
-#include "index_types.h"
+#include "joedb/index_types.h"
+#include "joedb/Blob.h"
 
 namespace joedb
 {

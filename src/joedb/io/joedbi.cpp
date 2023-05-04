@@ -15,10 +15,9 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Database db;
-
   if (argc <= 1)
   {
+   Database db(0, true);
    Interpreter interpreter(db, db);
    interpreter.main_loop(std::cin, std::cout);
   }
@@ -40,6 +39,8 @@ namespace joedb
     std::cout << "Opening file read-only.\n";
     file.reset(new File(file_name, Open_Mode::read_existing));
    }
+
+   Database db;
 
    if (file->get_mode() == Open_Mode::read_existing)
    {

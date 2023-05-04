@@ -138,6 +138,7 @@ int joedb::write_json
       break;
       #define TYPE_MACRO_NO_REFERENCE
       #define TYPE_MACRO_NO_STRING
+      #define TYPE_MACRO_NO_BLOB
       #define TYPE_MACRO_NO_INT
       #include "joedb/TYPE_MACRO.h"
 
@@ -150,6 +151,7 @@ int joedb::write_json
       break;
       #define TYPE_MACRO_NO_REFERENCE
       #define TYPE_MACRO_NO_STRING
+      #define TYPE_MACRO_NO_BLOB
       #define TYPE_MACRO_NO_FLOAT
       #include "joedb/TYPE_MACRO.h"
      }

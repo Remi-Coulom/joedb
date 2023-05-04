@@ -24,6 +24,9 @@ namespace joedb
     const std::string &name
    );
 
+   const Table& get_table(Table_Id table_id) const;
+   Table& get_table(Table_Id table_id);
+
   public:
    //
    // Readable override

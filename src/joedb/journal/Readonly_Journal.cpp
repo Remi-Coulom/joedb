@@ -422,5 +422,6 @@ void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t si
    Generic_File::change_endianness(data[i]);\
 }
 #define TYPE_MACRO_NO_STRING
+#define TYPE_MACRO_NO_BLOB
 #define TYPE_MACRO_NO_REFERENCE
 #include "joedb/TYPE_MACRO.h"
