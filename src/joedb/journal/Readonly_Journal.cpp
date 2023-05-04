@@ -348,7 +348,45 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    );\
   }\
   break;
+  #define TYPE_MACRO_NO_BLOB
   #include "joedb/TYPE_MACRO.h"
+
+  case operation_t::update_blob:
+   table_of_last_operation = file.compact_read<Table_Id>();
+   record_of_last_operation = file.compact_read<Record_Id>();
+   field_of_last_update = file.compact_read<Field_Id>();
+  goto lbl_perform_update_blob;
+
+  case operation_t::update_last_blob:
+   field_of_last_update = file.compact_read<Field_Id>();
+  goto lbl_perform_update_blob;
+
+  case operation_t::update_next_blob:
+   record_of_last_operation++;
+  goto lbl_perform_update_blob;
+
+  lbl_perform_update_blob:
+  {
+   if (writable.wants_blob_by_value())
+   {
+    writable.update_blob_value
+    (
+     table_of_last_operation,
+     record_of_last_operation,
+     field_of_last_update,
+     safe_read_string()
+    );
+   }
+   else
+    writable.update_blob
+    (
+     table_of_last_operation,
+     record_of_last_operation,
+     field_of_last_update,
+     file.read_blob()
+    );
+  }
+  break;
 
   case operation_t::custom:
   {
