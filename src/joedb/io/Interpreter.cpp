@@ -198,10 +198,10 @@ namespace joedb
          const Blob blob = readable.get_blob(table_id, record_id, field.first);
          write_blob(ss, blob);
 
-         if (!blob.is_null() && readable.get_blob_file())
+         if (!blob.is_null() && readable.get_blob_storage())
          {
           ss << " = ";
-          write_string(ss, readable.get_blob_file()->read_blob(blob));
+          write_string(ss, readable.get_blob_storage()->read_blob(blob));
          }
         }
         break;

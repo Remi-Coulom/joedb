@@ -110,10 +110,10 @@ int joedb::write_json
       {
        const Blob blob = db.get_blob(table_id, record_id, field_id);
 
-       if (!db.get_blob_file())
-        throw joedb::Exception("no blob file");
+       if (!db.get_blob_storage())
+        throw joedb::Exception("no blob storage");
 
-       const std::string s = db.get_blob_file()->read_blob(blob);
+       const std::string s = db.get_blob_storage()->read_blob(blob);
        result |= write_json_string(out, s, base64);
       }
       break;

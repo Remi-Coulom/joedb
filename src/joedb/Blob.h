@@ -30,6 +30,15 @@ namespace joedb
    int64_t get_position() const noexcept {return position;}
    size_t get_size() const noexcept {return size;}
  };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Blob_Storage
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   virtual std::string read_blob(Blob blob) = 0;
+   virtual ~Blob_Storage() = default;
+ };
 }
 
 #endif

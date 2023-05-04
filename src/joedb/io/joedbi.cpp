@@ -41,7 +41,7 @@ namespace joedb
     file.reset(new File(file_name, Open_Mode::read_existing));
    }
 
-   db.set_blob_file(file.get());
+   db.set_blob_storage(file.get());
 
    if (file->get_mode() == Open_Mode::read_existing)
    {

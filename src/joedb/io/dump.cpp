@@ -99,12 +99,12 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
 
        if (writable.wants_blob_by_value())
        {
-        if (!db.get_blob_file())
-         throw joedb::Exception("no blob file");
+        if (!db.get_blob_storage())
+         throw joedb::Exception("no blob storage");
 
         writable.update_blob_value
         (
-         t_id, record_id, f_id, db.get_blob_file()->read_blob(blob)
+         t_id, record_id, f_id, db.get_blob_storage()->read_blob(blob)
         );
        }
        else
@@ -152,7 +152,9 @@ void joedb::dump_data(const Readable &db, Writable &writable)
     record_id <= last_record_id &&
     !freedom_keeper.is_used(record_id + 1)
    )
+   {
     record_id++;
+   }
 
    Record_Id size = 0;
 
@@ -161,7 +163,9 @@ void joedb::dump_data(const Readable &db, Writable &writable)
     record_id + size <= last_record_id &&
     freedom_keeper.is_used(record_id + size + 1)
    )
+   {
     size++;
+   }
 
    if (size)
    {
@@ -181,15 +185,15 @@ void joedb::dump_data(const Readable &db, Writable &writable)
        {
         if (writable.wants_blob_by_value())
         {
-         if (!db.get_blob_file())
-          throw joedb::Exception("missing blob file");
+         if (!db.get_blob_storage())
+          throw joedb::Exception("missing blob storage");
 
          writable.update_blob_value
          (
           table_id,
           id,
           field_id,
-          db.get_blob_file()->read_blob(db.get_blob(table_id, id, field_id))
+          db.get_blob_storage()->read_blob(db.get_blob(table_id, id, field_id))
          );
         }
         else
@@ -240,7 +244,7 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
- db.set_blob_file(&input_journal.get_file());
+ db.set_blob_storage(&input_journal);
 
  Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
  Multiplexer multiplexer{db, schema_filter};

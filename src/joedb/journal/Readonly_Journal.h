@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Journal
+ class Readonly_Journal: public Blob_Storage
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -81,7 +81,7 @@ namespace joedb
    {
     return &file == &other_file;
    }
-   Generic_File &get_file() const {return file;} // not nice.
+   std::string read_blob(Blob blob) final {return file.read_blob(blob);}
 
    void refresh_checkpoint();
    void replay_log(Writable &writable);
