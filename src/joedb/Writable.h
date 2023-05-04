@@ -61,7 +61,10 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   );\
+   );
+   #include "joedb/TYPE_MACRO.h"
+
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual void update_vector_##type_id\
    (\
     Table_Id table_id,\
@@ -91,6 +94,7 @@ namespace joedb
    {\
     return (const_cast<Writable *>(this))->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
    }
+   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
 
    virtual bool wants_blob_by_value() {return false;}

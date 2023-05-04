@@ -4,6 +4,8 @@ schema
 insert_into person 1
 table person
 update person 1 name "Rémi"
+insert_into person 2
+update person 2 name "Laurent"
 table person
 sql
 json

@@ -62,7 +62,11 @@ namespace joedb
     update_last_##type_id,\
     update_next_##type_id,\
     update_vector_##type_id,
+    #define TYPE_MACRO_NO_BLOB
     #include "joedb/TYPE_MACRO.h"
+    update_blob,
+    update_last_blob,
+    update_next_blob
    };
 
   public:
@@ -77,6 +81,7 @@ namespace joedb
    {
     return &file == &other_file;
    }
+   Generic_File &get_file() const {return file;} // not nice.
 
    void refresh_checkpoint();
    void replay_log(Writable &writable);

@@ -52,6 +52,7 @@ namespace joedb
     Record_Id size
    ) final;
    void delete_from(Table_Id table_id, Record_Id record_id) final;
+
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id\
    (\
@@ -59,7 +60,10 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   ) final;\
+   ) final;
+   #include "joedb/TYPE_MACRO.h"
+
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_vector_##type_id\
    (\
     Table_Id table_id,\
@@ -75,6 +79,7 @@ namespace joedb
     Field_Id field_id,\
     Record_Id &capacity\
    ) final;
+   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
 
    bool wants_blob_by_value() override;

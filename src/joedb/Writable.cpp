@@ -16,6 +16,7 @@ namespace joedb
   for (Record_Id i = 0; i < size; i++)\
    update_##type_id(table_id, record_id + i, field_id, value[i]);\
  }
+ #define TYPE_MACRO_NO_BLOB
  #include "joedb/TYPE_MACRO.h"
 
  #define TYPE_MACRO(type, return_type, type_id, R, W)\

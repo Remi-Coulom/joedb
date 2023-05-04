@@ -60,8 +60,10 @@ namespace joedb
  )\
  {\
   get_table(table_id).update_##type_id(record_id, field_id, value);\
- }\
- \
+ }
+ #include "joedb/TYPE_MACRO.h"
+
+ #define TYPE_MACRO(type, return_type, type_id, R, W)\
  void Database::update_vector_##type_id\
  (\
   Table_Id table_id,\
@@ -86,6 +88,7 @@ namespace joedb
   capacity = table.get_storage_capacity();\
   return table.get_own_##type_id##_storage(record_id, field_id);\
  }
+ #define TYPE_MACRO_NO_BLOB
  #include "joedb/TYPE_MACRO.h"
 
  ////////////////////////////////////////////////////////////////////////////

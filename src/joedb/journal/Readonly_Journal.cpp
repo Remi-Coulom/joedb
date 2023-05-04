@@ -343,8 +343,10 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::update_next_##type_id:\
    record_of_last_operation++;\
    perform_update_##type_id(writable);\
-  break;\
-\
+  break;
+  #include "joedb/TYPE_MACRO.h"
+
+  #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
   case operation_t::update_vector_##type_id:\
   {\
    table_of_last_operation = file.compact_read<Table_Id>();\
@@ -380,6 +382,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    );\
   }\
   break;
+  #define TYPE_MACRO_NO_BLOB
   #include "joedb/TYPE_MACRO.h"
 
   case operation_t::custom:

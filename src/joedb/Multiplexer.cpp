@@ -161,8 +161,10 @@ namespace joedb
  )\
  {\
   MULTIPLEX(update_##type_id(table_id, record_id, field_id, value));\
- }\
- \
+ }
+ #include "joedb/TYPE_MACRO.h"
+
+ #define TYPE_MACRO(type, return_type, type_id, R, W)\
  void Multiplexer::update_vector_##type_id\
  (\
   Table_Id table_id,\
@@ -195,6 +197,7 @@ namespace joedb
   }\
   return result;\
  }
+ #define TYPE_MACRO_NO_BLOB
  #include "joedb/TYPE_MACRO.h"
 
  #undef MULTIPLEX
