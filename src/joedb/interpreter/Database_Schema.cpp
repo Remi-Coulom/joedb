@@ -110,10 +110,7 @@ namespace joedb
   Field_Id field_id\
  ) const\
  {\
-  const auto table_it = tables.find(table_id);\
-  if (table_it == tables.end())\
-   throw Exception("get: invalid table_id");\
-  return table_it->second.get_##type_id(record_id, field_id);\
+  return get_table(table_id).get_##type_id(record_id, field_id);\
  }\
  const type &Database_Schema::get_##type_id##_storage\
  (\
@@ -122,10 +119,7 @@ namespace joedb
   Field_Id field_id\
  ) const\
  {\
-  const auto table_it = tables.find(table_id);\
-  if (table_it == tables.end())\
-   throw Exception("get_storage: invalid table_id");\
-  return *table_it->second.get_own_##type_id##_storage(record_id, field_id);\
+  return *get_table(table_id).get_own_##type_id##_storage(record_id, field_id);\
  }
  #include "joedb/TYPE_MACRO.h"
 
@@ -164,12 +158,10 @@ namespace joedb
  {
   check_identifier("rename_table", name);
 
-  const auto table_it = tables.find(table_id);
-  if (table_it == tables.end())
-   throw Exception("rename_table: invalid table_id");
-
   if (find_table(name) != 0)
    throw Exception("rename_table: name already used: " + name);
+
+  get_table(table_id); // make sure the table exists
 
   table_names[table_id] = name;
  }
@@ -185,22 +177,14 @@ namespace joedb
  {
   check_identifier("add_field", name);
 
-  const auto it = tables.find(table_id);
-  if (it == tables.end())
-   throw Exception("add_field: invalid table_id");
-
-  it->second.add_field(name, type);
+  get_table(table_id).add_field(name, type);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Database_Schema::drop_field(Table_Id table_id, Field_Id field_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const auto it = tables.find(table_id);
-  if (it == tables.end())
-   throw Exception("drop_field: invalid table_id");
-
-  it->second.drop_field(field_id);
+  get_table(table_id).drop_field(field_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -214,16 +198,14 @@ namespace joedb
  {
   check_identifier("rename_field", name);
 
-  const auto table_it = tables.find(table_id);
-  if (table_it == tables.end())
-   throw Exception("rename_field: invalid table_id");
+  Table &table = get_table(table_id);
 
-  auto &field_names = table_it->second.field_names;
+  auto &field_names = table.field_names;
   const auto field_it = field_names.find(field_id);
   if (field_it == field_names.end())
    throw Exception("rename_field: invalid field_id");
 
-  if (table_it->second.find_field(name))
+  if (table.find_field(name))
    throw Exception("rename_field: name already used: " + name);
 
   field_it->second = name;
