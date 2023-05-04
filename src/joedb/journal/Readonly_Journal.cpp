@@ -9,6 +9,48 @@ constexpr uint32_t joedb::Readonly_Journal::compatible_version;
 constexpr int64_t joedb::Readonly_Journal::header_size;
 
 /////////////////////////////////////////////////////////////////////////////
+#define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
+{\
+ const cpp_type value = read_method();\
+ writable.update_##type_id\
+ (\
+  table_of_last_operation,\
+  record_of_last_operation,\
+  field_of_last_update,\
+  value\
+ );\
+}
+#define TYPE_MACRO_NO_BLOB
+#include "joedb/TYPE_MACRO.h"
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::perform_update_blob(Writable &writable)
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (writable.wants_blob_by_value())
+ {
+  writable.update_blob_value
+  (
+   table_of_last_operation,
+   record_of_last_operation,
+   field_of_last_update,
+   safe_read_string()
+  );
+ }
+ else
+ {
+  writable.update_blob
+  (
+   table_of_last_operation,
+   record_of_last_operation,
+   field_of_last_update,
+   file.read_blob()
+  );
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 joedb::Readonly_Journal::Readonly_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -290,27 +332,17 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    table_of_last_operation = file.compact_read<Table_Id>();\
    record_of_last_operation = file.compact_read<Record_Id>();\
    field_of_last_update = file.compact_read<Field_Id>();\
-  goto lbl_perform_update_##type_id;\
+   perform_update_##type_id(writable);\
+  break;\
 \
   case operation_t::update_last_##type_id:\
    field_of_last_update = file.compact_read<Field_Id>();\
-  goto lbl_perform_update_##type_id;\
+   perform_update_##type_id(writable);\
+  break;\
 \
   case operation_t::update_next_##type_id:\
    record_of_last_operation++;\
-  goto lbl_perform_update_##type_id;\
-\
-  lbl_perform_update_##type_id:\
-  {\
-   const cpp_type value = read_method();\
-   writable.update_##type_id\
-   (\
-    table_of_last_operation,\
-    record_of_last_operation,\
-    field_of_last_update,\
-    value\
-   );\
-  }\
+   perform_update_##type_id(writable);\
   break;\
 \
   case operation_t::update_vector_##type_id:\
@@ -348,45 +380,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    );\
   }\
   break;
-  #define TYPE_MACRO_NO_BLOB
   #include "joedb/TYPE_MACRO.h"
-
-  case operation_t::update_blob:
-   table_of_last_operation = file.compact_read<Table_Id>();
-   record_of_last_operation = file.compact_read<Record_Id>();
-   field_of_last_update = file.compact_read<Field_Id>();
-  goto lbl_perform_update_blob;
-
-  case operation_t::update_last_blob:
-   field_of_last_update = file.compact_read<Field_Id>();
-  goto lbl_perform_update_blob;
-
-  case operation_t::update_next_blob:
-   record_of_last_operation++;
-  goto lbl_perform_update_blob;
-
-  lbl_perform_update_blob:
-  {
-   if (writable.wants_blob_by_value())
-   {
-    writable.update_blob_value
-    (
-     table_of_last_operation,
-     record_of_last_operation,
-     field_of_last_update,
-     safe_read_string()
-    );
-   }
-   else
-    writable.update_blob
-    (
-     table_of_last_operation,
-     record_of_last_operation,
-     field_of_last_update,
-     file.read_blob()
-    );
-  }
-  break;
 
   case operation_t::custom:
   {

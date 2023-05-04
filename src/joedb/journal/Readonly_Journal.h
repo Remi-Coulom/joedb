@@ -15,6 +15,10 @@ namespace joedb
   private:
    void read_checkpoint();
 
+   #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
+   void perform_update_##type_id(Writable &writable);
+   #include "joedb/TYPE_MACRO.h"
+
   protected:
    Generic_File &file;
    unsigned checkpoint_index;
