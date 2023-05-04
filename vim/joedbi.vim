@@ -43,7 +43,7 @@ syn match joedbi_field '[a-zA-Z_]\w*' contained
 syn keyword joedbi_keyword custom nextgroup=joedbi_function skipwhite
 syn match joedbi_function '[a-zA-Z_]\w*' contained
 
-syn keyword joedbi_type string int8 int16 int32 int64 float32 float64 boolean contained
+syn keyword joedbi_type string int8 int16 int32 int64 float32 float64 boolean blob contained
 syn match joedbi_type 'references\s\+[a-zA-Z_]\w*' contained
 
 syn match joedbi_comment "#.*$"
