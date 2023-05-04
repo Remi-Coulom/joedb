@@ -64,7 +64,18 @@ namespace joedb
     Record_Id size,\
     const type *value\
    ) final;
+   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
+
+   bool wants_blob_by_value() override {return true;}
+
+   Blob update_blob_value
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id,
+    const std::string &value
+   ) override;
 
    ~Raw_Dump_Writable();
  };
