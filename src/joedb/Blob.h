@@ -27,7 +27,7 @@ namespace joedb
    }
 
    bool is_null() const noexcept {return position == 0;}
-   int64_t get_checkpoin() const noexcept {return position;}
+   int64_t get_position() const noexcept {return position;}
    size_t get_size() const noexcept {return size;}
  };
 }

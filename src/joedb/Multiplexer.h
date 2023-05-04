@@ -77,6 +77,16 @@ namespace joedb
    ) final;
    #include "joedb/TYPE_MACRO.h"
 
+   bool wants_blob_by_value() override;
+
+   Blob update_blob_value
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id,
+    const std::string &value
+   ) override;
+
    ~Multiplexer() override;
  };
 }

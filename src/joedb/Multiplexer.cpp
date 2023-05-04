@@ -200,6 +200,46 @@ namespace joedb
  #undef MULTIPLEX
 
  ////////////////////////////////////////////////////////////////////////////
+ bool Multiplexer::wants_blob_by_value()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (auto w: writables)
+  {
+   if (w.get().wants_blob_by_value())
+    return true;
+  }
+
+  return false;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Blob Multiplexer::update_blob_value
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  Field_Id field_id,
+  const std::string &value
+ )
+ {
+  Blob result;
+
+  for (auto w: writables)
+  {
+   if (w.get().wants_blob_by_value())
+    result = w.get().update_blob_value(table_id, record_id, field_id, value);
+  }
+
+  for (auto w: writables)
+  {
+   if (!w.get().wants_blob_by_value())
+    w.get().update_blob(table_id, record_id, field_id, result);
+  }
+
+  return result;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Multiplexer::~Multiplexer() = default;
  ////////////////////////////////////////////////////////////////////////////
 }
