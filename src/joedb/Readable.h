@@ -10,6 +10,7 @@
 namespace joedb
 {
  class Compact_Freedom_Keeper;
+ class Generic_File;
 
  ////////////////////////////////////////////////////////////////////////////
  class Readable
@@ -18,6 +19,8 @@ namespace joedb
   private:
    static const std::string default_table_name;
    static const std::string default_field_name;
+
+   Generic_File *blob_file = nullptr;
 
   public:
    virtual const std::map<Table_Id, std::string> &get_tables() const = 0;
@@ -30,6 +33,9 @@ namespace joedb
     Table_Id table_id,
     Field_Id field_id
    ) const = 0;
+
+   void set_blob_file(Generic_File *file) {blob_file = file;}
+   Generic_File *get_blob_file() const {return blob_file;}
 
    virtual Record_Id get_last_record_id(Table_Id table_id) const = 0;
    virtual bool is_used(Table_Id table_id, Record_Id record_id) const = 0;

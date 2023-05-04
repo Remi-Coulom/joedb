@@ -85,15 +85,46 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
    for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
     if (db.is_used(table_id, record_id))
     {
+     Table_Id t_id = table_map[table_id];
+     Field_Id f_id = field_maps[table_id][field_id];
+
      switch (db.get_field_type(table_id, field_id).get_type_id())
      {
       case Type::Type_Id::null:
       break;
 
+      case Type::Type_Id::blob:
+      {
+       const Blob blob = db.get_blob(table_id, record_id, field_id);
+
+       if (writable.wants_blob_by_value())
+       {
+        if (!db.get_blob_file())
+         throw joedb::Exception("no blob file");
+
+        writable.update_blob_value
+        (
+         t_id, record_id, f_id, db.get_blob_file()->read_blob(blob)
+        );
+       }
+       else
+       {
+        writable.update_blob
+        (
+         t_id, record_id, f_id, blob
+        );
+       }
+      }
+      break;
+
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
-       writable.update_##type_id(table_map[table_id], record_id, field_maps[table_id][field_id], db.get_##type_id(table_id, record_id, field_id));\
+       writable.update_##type_id\
+       (\
+        t_id, record_id, f_id, db.get_##type_id(table_id, record_id, field_id)\
+       );\
       break;
+      #define TYPE_MACRO_NO_BLOB
       #include "joedb/TYPE_MACRO.h"
      }
     }

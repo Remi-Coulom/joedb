@@ -6,3 +6,4 @@ table person
 update person 1 name "Rémi"
 table person
 sql
+json

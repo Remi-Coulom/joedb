@@ -171,4 +171,21 @@ namespace joedb
   flush();
   return get_hash(0, get_size());
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ std::string Generic_File::read_blob(Blob blob)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::string result;
+
+  const int64_t current_position = get_position();
+
+  set_position(blob.get_position());
+  result.resize(blob.get_size());
+  read_data(&result[0], blob.get_size());
+
+  set_position(current_position);
+
+  return result;
+ }
 }

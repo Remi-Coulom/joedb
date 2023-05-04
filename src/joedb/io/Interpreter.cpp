@@ -8,6 +8,7 @@
 #include "joedb/io/SQL_Dump_Writable.h"
 #include "joedb/io/type_io.h"
 #include "joedb/journal/diagnostics.h"
+#include "joedb/journal/Generic_File.h"
 #include "type_io.h"
 
 #include <iostream>
@@ -191,10 +192,25 @@ namespace joedb
        {
         case Type::Type_Id::null:
         break;
+
+        case Type::Type_Id::blob:
+        {
+         const Blob blob = readable.get_blob(table_id, record_id, field.first);
+         write_blob(ss, blob);
+
+         if (!blob.is_null() && readable.get_blob_file())
+         {
+          ss << " = ";
+          write_string(ss, readable.get_blob_file()->read_blob(blob));
+         }
+        }
+        break;
+
         #define TYPE_MACRO(type, return_type, type_id, R, W)\
         case Type::Type_Id::type_id:\
          write_##type_id(ss, readable.get_##type_id(table_id, record_id, field.first));\
         break;
+        #define TYPE_MACRO_NO_BLOB
         #include "joedb/TYPE_MACRO.h"
        }
 
@@ -507,6 +523,10 @@ namespace joedb
       throw Exception("bad field");
      break;
 
+     case Type::Type_Id::blob:
+      throw "TODO: support vector of blob";
+     break;
+
      #define TYPE_MACRO(type, return_type, type_id, R, W)\
      case Type::Type_Id::type_id:\
      {\
@@ -516,6 +536,7 @@ namespace joedb
       writable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
      }\
      break;
+     #define TYPE_MACRO_NO_BLOB
      #include "joedb/TYPE_MACRO.h"
     }
    }

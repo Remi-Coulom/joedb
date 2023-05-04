@@ -2,6 +2,7 @@
 #include "joedb/io/type_io.h"
 #include "joedb/io/base64.h"
 #include "joedb/interpreter/Database.h"
+#include "joedb/journal/Generic_File.h"
 
 #include <iostream>
 #include <cmath>
@@ -101,27 +102,21 @@ int joedb::write_json
       case Type::Type_Id::string:
       {
        const std::string &s = db.get_string(table_id, record_id, field_id);
-       if (base64)
-       {
-        out << '"';
-        out << base64_encode(s);
-        out << '"';
-       }
-       else
-       {
-        try
-        {
-         joedb::write_string(out, s, true);
-        }
-        catch (const joedb::Exception &)
-        {
-         out << "!!! This string is not utf8 !!!\"";
-         result |= JSON_Error::utf8;
-        }
-       }
+       result |= write_json_string(out, s, base64);
       }
       break;
 
+      case Type::Type_Id::blob:
+      {
+       const Blob blob = db.get_blob(table_id, record_id, field_id);
+
+       if (!db.get_blob_file())
+        throw joedb::Exception("no blob file");
+
+       const std::string s = db.get_blob_file()->read_blob(blob);
+       result |= write_json_string(out, s, base64);
+      }
+      break;
 
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
@@ -166,4 +161,35 @@ int joedb::write_json
  out << "\n}\n";
 
  return result;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+int joedb::write_json_string
+/////////////////////////////////////////////////////////////////////////////
+(
+ std::ostream &out,
+ const std::string &s,
+ bool base64
+)
+{
+ if (base64)
+ {
+  out << '"';
+  out << base64_encode(s);
+  out << '"';
+ }
+ else
+ {
+  try
+  {
+   joedb::write_string(out, s, true);
+  }
+  catch (const joedb::Exception &)
+  {
+   out << "!!! This string is not utf8 !!!\"";
+   return JSON_Error::utf8;
+  }
+ }
+
+ return 0;
 }

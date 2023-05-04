@@ -206,15 +206,11 @@ int8_t joedb::read_int8(std::istream &in)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::write_blob(std::ostream &out, const Blob &blob)
+void joedb::write_blob(std::ostream &out, Blob blob)
 /////////////////////////////////////////////////////////////////////////////
 {
- out << "Blob(" << blob.get_position() << ", " << blob.get_size() << ')';
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Blob joedb::read_blob(std::istream &istream)
-/////////////////////////////////////////////////////////////////////////////
-{
- return Blob();
+ if (blob.is_null())
+  out << "null";
+ else
+  out << "Blob(" << blob.get_position() << ", " << blob.get_size() << ')';
 }

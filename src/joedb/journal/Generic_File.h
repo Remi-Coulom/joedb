@@ -550,6 +550,8 @@ namespace joedb
    SHA_256::Hash get_hash(int64_t start, int64_t size);
    SHA_256::Hash get_hash();
 
+   std::string read_blob(Blob blob);
+
    virtual ~Generic_File() = default;
  };
 }

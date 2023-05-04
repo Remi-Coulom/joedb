@@ -41,6 +41,8 @@ namespace joedb
     file.reset(new File(file_name, Open_Mode::read_existing));
    }
 
+   db.set_blob_file(file.get());
+
    if (file->get_mode() == Open_Mode::read_existing)
    {
     Readonly_Journal journal(*file);
