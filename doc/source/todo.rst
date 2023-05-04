@@ -36,16 +36,14 @@ New Operations and Types
 
 On-disk Storage
 ----------------
-- Simplest idea in practice: storage of strings by reference:
+- Simplest idea in practice: blob
 
-   - Define a class for storage of string reference (uint64_t checkpoint + size_t size).
-   - storage option for joedbc
-   - string by reference cannot be indexed
+   - Define a new "blob" type: checkpoint + size of data in file
+   - blob cannot be indexed
    - It is the job of the user code to go and read the string into the joedb file (make convenient method in File class)
 
 - To make everything work well with very large databases:
 
-   - joedb::Database: use strings by reference there as well
    - optimize SHA 256 calculations (store hash in file + allow self-check of integrity + incrementally update + cache a set of hashes at different offsets + perform calculation asynchronously in server)
    - show progress bars for slow operations
    - interactive database browser (with labels + filters)

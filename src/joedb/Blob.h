@@ -1,0 +1,20 @@
+#ifndef joedb_Blob_declared
+#define joedb_Blob_declared
+
+#include <stdint.h>
+#include <stddef.h>
+#include <string>
+
+namespace joedb
+{
+ ////////////////////////////////////////////////////////////////////////////
+ class Blob
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   int64_t checkpoint;
+   size_t size;
+ };
+}
+
+#endif
