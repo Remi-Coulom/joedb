@@ -1,0 +1,3 @@
+create_table person
+add_field person name blob
+add_field person city string

@@ -112,8 +112,10 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Mutex_Test.cpp
   ../test/Span_Test.cpp
   ../test/Local_Connection_Test.cpp
+  ../test/compiler/Blob.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/blob.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/multi_index.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v1.cpp
@@ -194,6 +196,7 @@ joedbc_build(../test/compiler/db schema_v2)
 joedbc_build(../test/compiler/db vector_test)
 joedbc_build(../test/compiler/db multi_index)
 joedbc_build(../test/compiler/db empty)
+joedbc_build(../test/compiler/db blob)
 joedbc_build(../benchmark benchmarkdb)
 joedbc_build(../src/joedb/db multi_server)
 joedbc_build(../doc/source/tutorial tutorial)

@@ -389,19 +389,22 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    //
    // Vector update
    //
-   out << "   template<typename F> void update_vector_of_" << fname;
-   out << "(id_of_" << tname << " record, size_t size, F f)\n";
-   out << "   {\n";
-   out << "    std::exception_ptr exception;\n";
-   out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
-   out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
-   out << "    try {f(span);}\n";
-   out << "    catch (...) {exception = std::current_exception();}\n";
-   out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_id(), size, span.begin());\n";
-   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, span.begin());\n";
-   out << "    if (exception)\n";
-   out << "     std::rethrow_exception(exception);\n";
-   out << "   }\n\n";
+   if (type.get_type_id() != Type::Type_Id::blob)
+   {
+    out << "   template<typename F> void update_vector_of_" << fname;
+    out << "(id_of_" << tname << " record, size_t size, F f)\n";
+    out << "   {\n";
+    out << "    std::exception_ptr exception;\n";
+    out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
+    out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
+    out << "    try {f(span);}\n";
+    out << "    catch (...) {exception = std::current_exception();}\n";
+    out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_id(), size, span.begin());\n";
+    out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, span.begin());\n";
+    out << "    if (exception)\n";
+    out << "     std::rethrow_exception(exception);\n";
+    out << "   }\n\n";
+   }
   }
  }
 
@@ -1168,6 +1171,9 @@ static void generate_readonly_h
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
+   if (Type::Type_Id(type_id) == Type::Type_Id::blob)
+    continue;
+
    if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
     continue;
 
@@ -1231,6 +1237,9 @@ static void generate_readonly_h
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
+   if (Type::Type_Id(type_id) == Type::Type_Id::blob)
+    continue;
+
    if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
     continue;
 

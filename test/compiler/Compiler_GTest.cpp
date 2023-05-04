@@ -11,7 +11,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Embedded_Connection.h"
-#include <joedb/concurrency/Local_Connection.h>
+#include "joedb/concurrency/Local_Connection.h"
 
 using namespace my_namespace::is_nested;
 
