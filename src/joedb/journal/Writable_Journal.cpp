@@ -29,7 +29,7 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
   file_version = version_number;
   file.set_position(5);
   file.write<uint32_t>(file_version);
-  rewind();
+  file.set_position(header_size);
  }
 }
 
