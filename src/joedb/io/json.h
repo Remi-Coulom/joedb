@@ -2,6 +2,7 @@
 #define joedb_json_declared
 
 #include <iosfwd>
+#include <string>
 
 namespace joedb
 {
