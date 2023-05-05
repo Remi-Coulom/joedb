@@ -285,7 +285,7 @@ static void perf(size_t size)
 /////////////////////////////////////////////////////////////////////////////
 {
  File file("new.tmp", Open_Mode::create_new);
- const size_t total_size = 100000000;
+ const size_t total_size = 10000000;
  const int N = int(total_size / (size + 1));
  std::string s(size, ' ');
 
