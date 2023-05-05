@@ -17,7 +17,9 @@ jobs:
         submodules: recursive
 
     - name: Install dependencies
-      run: sudo apt-get -y install cmake ninja-build libssh-dev clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user
+      run:
+       sudo apt-get update
+       sudo apt-get -y install cmake ninja-build libssh-dev clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
