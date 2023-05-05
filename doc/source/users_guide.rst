@@ -11,3 +11,4 @@ User's Guide
    schema_upgrade
    indexes
    concurrency
+   blobs

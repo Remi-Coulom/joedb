@@ -2,9 +2,18 @@ History
 =======
 - 2023-??-??: 7.0
 
+  - Support for data storage in :ref:`blobs <blobs>`. Blobs allow storing large
+    pieces of data that are not automatically loaded into memory. With blobs,
+    joedb can manipulate databases that are much bigger than available RAM.
+  - new ``.sha256()`` journal event stores the current SHA-256 hash into the
+    joedb file. This allows checking for data integrity, and can considerably
+    accelerate synchronization of very large distributed databases.
   - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
   - Incompatibilities with previous version:
 
+    - Files created by the previous version of joedb can be opened by this
+      new version, but files created by this version cannot be opened by the
+      previous version.
     - No more implicit conversion from compiled row id to integer or boolean.
       With this new version, explicit methods must be used: ``is_null()`` or
       ``is_not_null()`` to test if a referece is null or not, and ``get_id()``
