@@ -5,9 +5,6 @@ History
   - Support for data storage in :ref:`blobs <blobs>`. Blobs allow storing large
     pieces of data that are not automatically loaded into memory. With blobs,
     joedb can manipulate databases that are much bigger than available RAM.
-  - new ``.sha256()`` journal event stores the current SHA-256 hash into the
-    joedb file. This allows checking for data integrity, and can considerably
-    accelerate synchronization of very large distributed databases.
   - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
   - Incompatibilities with previous version:
 
