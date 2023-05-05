@@ -58,6 +58,7 @@ joedb::Readonly_Journal::Readonly_Journal
  bool ignore_errors
 ):
  file(file),
+ file_version(0),
  checkpoint_index(0),
  checkpoint_position(0),
  table_of_last_operation(0),
@@ -93,8 +94,8 @@ joedb::Readonly_Journal::Readonly_Journal
    //
    // Check version number
    //
-   const uint32_t version = file.read<uint32_t>();
-   if (version < compatible_version || version > version_number)
+   file_version = file.read<uint32_t>();
+   if (file_version < compatible_version || file_version > version_number)
     format_exception("Unsupported format version");
 
    read_checkpoint();

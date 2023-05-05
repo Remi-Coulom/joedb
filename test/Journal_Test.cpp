@@ -1,4 +1,5 @@
 #include "joedb/journal/Readonly_Journal.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/interpreter/Database.h"
@@ -21,18 +22,31 @@ TEST(Journal, seek)
  file.write<uint64_t>(41);
  file.set_position(0);
 
- joedb::Readonly_Journal journal(file);
- EXPECT_TRUE(journal.at_end_of_file());
+ {
+  joedb::Readonly_Journal journal(file);
+  EXPECT_TRUE(journal.at_end_of_file());
+  EXPECT_EQ(4UL, journal.get_file_version());
+  EXPECT_EQ(41, journal.get_position());
 
- journal.set_position(0);
- EXPECT_FALSE(journal.at_end_of_file());
+  journal.set_position(0);
+  EXPECT_FALSE(journal.at_end_of_file());
+ }
 
- joedb::Readonly_Memory_File readonly_file
- (
-  file.get_data().data(),
-  file.get_data().size()
- );
- joedb::Readonly_Journal journal2(readonly_file);
+ {
+  joedb::Readonly_Memory_File readonly_file
+  (
+   file.get_data().data(),
+   file.get_data().size()
+  );
+  joedb::Readonly_Journal journal2(readonly_file);
+ }
+
+ file.set_mode(joedb::Open_Mode::write_existing);
+ {
+  joedb::Writable_Journal journal(file);
+  EXPECT_EQ(5UL, journal.get_file_version());
+  EXPECT_EQ(41, journal.get_position());
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

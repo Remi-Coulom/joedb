@@ -21,6 +21,7 @@ namespace joedb
 
   protected:
    Generic_File &file;
+   uint32_t file_version;
    unsigned checkpoint_index;
    int64_t checkpoint_position;
 
@@ -72,6 +73,7 @@ namespace joedb
   public:
    Readonly_Journal(Generic_File &file, bool ignore_errors = false);
 
+   uint32_t get_file_version() const {return file_version;}
    bool at_end_of_file() const;
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint_position() const {return checkpoint_position;}

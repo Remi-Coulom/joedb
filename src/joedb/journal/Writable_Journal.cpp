@@ -24,6 +24,13 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
   file.write<int64_t>(0);
   checkpoint(Commit_Level::no_commit);
  }
+ else if (version_number > file_version)
+ {
+  file_version = version_number;
+  file.set_position(5);
+  file.write<uint32_t>(file_version);
+  rewind();
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,8 +66,6 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
   (ahead_of_checkpoint() == 0 && commit_level > current_commit_level)
  )
  {
-  // TODO: upgrade version number if necessary
-  // maybe too complicated: upgrade to version 5 only if blob or sha256 are used?
   checkpoint_index ^= 1;
   checkpoint_position = file.get_position();
   current_commit_level = commit_level;

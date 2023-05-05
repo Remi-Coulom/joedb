@@ -358,7 +358,7 @@ namespace joedb
     {
      if (!(uint64_t(x) >> 32))
       file.compact_write<uint32_t>(uint32_t(x));
-     else // TODO: should be optimized?
+     else
      {
       JOEDB_ASSERT(!(char(x >> 56) & 0xe0));
       file.putc(char(0xe0) | char(x >> 56));
