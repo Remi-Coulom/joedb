@@ -42,8 +42,7 @@ namespace joedb
  {
   compact_write<size_t>(s.size());
   const int64_t blob_position = get_position();
-  for (const char c: s)
-   write<char>(c);
+  write_data(&s[0], s.size());
   return blob_position;
  }
 

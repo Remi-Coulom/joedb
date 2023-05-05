@@ -491,9 +491,32 @@ namespace joedb
    void write_data(const char *data, size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
-    flush();
-    raw_write(data, n);
-    position += n;
+    JOEDB_ASSERT(read_buffer_size == 0 && !end_of_file);
+
+    if (n <= buffer_extra)
+    {
+     for (size_t i = 0; i < n; i++)
+      buffer[write_buffer_index++] = data[i];
+     position += n;
+     check_write_buffer();
+    }
+    else
+    {
+     const size_t remaining = buffer_size - write_buffer_index;
+
+     if (n < remaining)
+     {
+      std::copy_n(data, n, buffer + write_buffer_index);
+      write_buffer_index += n;
+      position += n;
+     }
+     else
+     {
+      flush();
+      raw_write(data, n);
+      position += n;
+     }
+    }
    }
 
    //////////////////////////////////////////////////////////////////////////

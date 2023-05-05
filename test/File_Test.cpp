@@ -1,9 +1,11 @@
 #include "joedb/journal/File.h"
+#include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"
 
 #include <random>
 #include <cstdio>
+#include <cstring>
 
 using namespace joedb;
 
@@ -276,4 +278,54 @@ TEST_F(File_Test, flush)
  File file2("new.tmp", Open_Mode::shared_write);
  file2.set_position(0);
  EXPECT_EQ(1234, file2.read<int32_t>());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+static void perf(size_t size)
+/////////////////////////////////////////////////////////////////////////////
+{
+ File file("new.tmp", Open_Mode::create_new);
+ const size_t total_size = 100000000;
+ const int N = int(total_size / (size + 1));
+ std::string s(size, ' ');
+
+ for (int i = N; --i >= 0;)
+  file.write_string(s);
+}
+
+TEST_F(File_Test, write_data_perf100000) {perf(100000);}
+TEST_F(File_Test, write_data_perf10000) {perf(10000);}
+TEST_F(File_Test, write_data_perf1000) {perf(1000);}
+TEST_F(File_Test, write_data_perf100) {perf(100);}
+TEST_F(File_Test, write_data_perf10) {perf(10);}
+TEST_F(File_Test, write_data_perf5) {perf(5);}
+TEST_F(File_Test, write_data_perf4) {perf(4);}
+TEST_F(File_Test, write_data_perf3) {perf(3);}
+TEST_F(File_Test, write_data_perf2) {perf(2);}
+TEST_F(File_Test, write_data_perf1) {perf(1);}
+TEST_F(File_Test, write_data_perf0) {perf(0);}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(File, write_data)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::string input;
+ input.resize(10000);
+ std::mt19937_64 gen(0);
+
+ for (size_t i = 0; i < input.size(); i++)
+  input[i] = char(gen());
+
+ for (size_t n = 1; n <= input.size(); n++)
+ {
+  Memory_File file;
+
+  size_t offset = size_t(gen()) & 0x7fffULL;
+  file.write_data(&input[1], offset);
+  file.write_data(&input[0], n);
+  file.set_position(offset);
+  std::string output(n, 0);
+  file.read_data(&output[0], n);
+  ASSERT_EQ(0, std::memcmp(&input[0], &output[0], n)) << "n = " << n;
+ }
 }
