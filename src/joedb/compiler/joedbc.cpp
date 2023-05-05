@@ -2086,7 +2086,7 @@ static void write_initial_comment
  out << "// Version: " << joedb::get_version() << '\n';
  out << "// joedbc compilation time: " << __DATE__ << ' ' << __TIME__ << '\n';
  out << "// Generation of this file: ";
- out << std::put_time(tm, "%b %d %Y %H:%M:%S") << '\n';
+ out << std::put_time(tm, "%b %e %Y %H:%M:%S") << '\n';
  out << "//\n";
  out << "///////////////////////////////////////////////////////////////////////////*/\n";
 }
