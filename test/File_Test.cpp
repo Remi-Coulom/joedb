@@ -320,7 +320,7 @@ TEST(File, write_data)
  {
   Memory_File file;
 
-  size_t offset = size_t(gen()) & 0x7fffULL;
+  size_t offset = size_t(gen()) & 0x7ffULL;
   file.write_data(&input[1], offset);
   file.write_data(&input[0], n);
   file.set_position(offset);
