@@ -36,10 +36,6 @@ New Operations and Types
 
 On-disk Storage
 ----------------
-- Simplest idea in practice: blob
-
-   - blob cannot be indexed
-
 - To make everything work well with very large databases:
 
    - optimize SHA 256 calculations (store hash in file + allow self-check of integrity + incrementally update + cache a set of hashes at different offsets + perform calculation asynchronously in server)

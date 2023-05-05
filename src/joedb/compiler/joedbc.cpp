@@ -60,7 +60,8 @@ static void write_type
  std::ostream &out,
  const Database &db,
  Type type,
- bool return_type
+ bool return_type,
+ bool setter_type
 )
 {
  switch (type.get_type_id())
@@ -70,10 +71,17 @@ static void write_type
   break;
 
   case Type::Type_Id::string:
-   if (return_type)
+   if (return_type || setter_type)
     out << "const std::string &";
    else
     out << "std::string ";
+  break;
+
+  case Type::Type_Id::blob:
+   if (setter_type)
+    out << "const std::string &";
+   else
+    out << "joedb::Blob ";
   break;
 
   case Type::Type_Id::reference:
@@ -84,6 +92,7 @@ static void write_type
   case Type::Type_Id::type_id:\
    out << #type << ' ';\
   break;
+  #define TYPE_MACRO_NO_BLOB
   #define TYPE_MACRO_NO_STRING
   #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
@@ -327,7 +336,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
       out << ",\n    ";
 
      const Type &type = db.get_field_type(table.first, field.first);
-     write_type(out, db, type, true);
+     write_type(out, db, type, false, true);
      out << "field_value_of_" << fname;
     }
 
@@ -354,7 +363,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   {\n";
   out << "    internal_delete_" << tname << "(record.get_id());\n";
   out << "    journal.delete_from(" << table.first << ", record.get_id());\n";
-  out << "   }\n";
+  out << "   }\n\n";
 
   //
   // Loop over fields
@@ -365,25 +374,38 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    const Type &type = db.get_field_type(table.first, field.first);
    const char *storage_type = storage_types[int(type.get_type_id())];
 
-   out << '\n';
-
    //
    // Setter
    //
    out << "   void set_" << fname;
    out << "(id_of_" << tname << " record, ";
-   write_type(out, db, type, true);
+   write_type(out, db, type, false, true);
    out << "field_value_of_" << fname << ")\n";
    out << "   {\n";
-   out << "    internal_update_" << tname << "__" << fname << "(record.get_id(), ";
-   out << "field_value_of_" << fname << ");\n";
-   out << "    journal.update_";
-   out << types[int(type.get_type_id())];
-   out << '(' << table.first << ", record.get_id(), " << field.first << ", ";
-   out << "field_value_of_" << fname;
-   if (type.get_type_id() == Type::Type_Id::reference)
-    out << ".get_id()";
-   out << ");\n";
+   out << "    internal_update_" << tname << "__" << fname;
+
+   if (type.get_type_id() == Type::Type_Id::blob)
+   {
+    out << "\n    (\n";
+    out << "     record.get_id(),\n";
+    out << "     journal.update_blob_value(" << table.first;
+    out << ", record.get_id(), " << field.first << ", field_value_of_";
+    out << fname << ")\n";
+    out << "    );\n";
+   }
+   else
+   {
+    out <<  "(record.get_id(), ";
+    out << "field_value_of_" << fname << ");\n";
+    out << "    journal.update_";
+    out << types[int(type.get_type_id())];
+    out << '(' << table.first << ", record.get_id(), " << field.first << ", ";
+    out << "field_value_of_" << fname;
+    if (type.get_type_id() == Type::Type_Id::reference)
+     out << ".get_id()";
+    out << ");\n";
+   }
+
    out << "   }\n\n";
 
    //
@@ -950,7 +972,7 @@ static void generate_readonly_h
 
    out << "   void internal_update_" << tname << "__" << fname;
    out << "\n   (\n    Record_Id record_id,\n    ";
-   write_type(out, db, type, true);
+   write_type(out, db, type, true, false);
    out << "field_value_of_" << fname << "\n   )\n";
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
@@ -1453,12 +1475,12 @@ static void generate_readonly_h
    // Getter
    //
    out << "   ";
-   write_type(out, db, type, true);
+   write_type(out, db, type, true, false);
    out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.get_id()));\n";
    out << "    return (";
-   write_type(out, db, type, true);
+   write_type(out, db, type, true, false);
    out << ")(storage_of_" << tname;
    out << ".field_value_of_" << fname << "[record.get_id() - 1]);\n";
    out << "   }\n";
@@ -1517,7 +1539,7 @@ static void generate_readonly_h
     if (i > 0)
      out << ", ";
     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-    write_type(out, db, type, true);
+    write_type(out, db, type, true, false);
     out << "field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
@@ -1550,7 +1572,7 @@ static void generate_readonly_h
     if (i > 0)
      out << ", ";
     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-    write_type(out, db, type, true);
+    write_type(out, db, type, true, false);
     out << "field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
@@ -1707,7 +1729,7 @@ static void generate_readonly_h
    {
     out << ", ";
     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-    write_type(out, db, type, true);
+    write_type(out, db, type, true, false);
     out << db.get_field_name(index.table_id, index.field_ids[i]);
    }
    out << ")\n";
@@ -1756,7 +1778,7 @@ static void generate_readonly_h
     if (i > 0)
      out << ", ";
     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-    write_type(out, db, type, true);
+    write_type(out, db, type, true, false);
     out << "field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
    }

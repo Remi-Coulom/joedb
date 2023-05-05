@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Compiled_Blob, basic)
+TEST(Compiler, blob)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
@@ -13,7 +13,7 @@ TEST(Compiled_Blob, basic)
   blob::Generic_File_Database db(file);
   const auto person = db.new_person();
   db.set_city(person, "Paris");
-//  db.set_name(person, "Jacques");
+  db.set_name(person, "Jacques");
   db.checkpoint();
  }
 
