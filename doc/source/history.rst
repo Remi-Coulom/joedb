@@ -11,6 +11,8 @@ History
   - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
   - Incompatibilities with previous version:
 
+    - No more endianness conversions: on big-endian machines joedb reads and
+      write data in big-endian format.
     - Files created by the previous version of joedb can be opened by this
       new version, but files created by this version cannot be opened by the
       previous version.

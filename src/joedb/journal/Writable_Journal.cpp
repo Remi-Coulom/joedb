@@ -329,7 +329,6 @@ void joedb::Writable_Journal::update_vector_##type_id\
 \
  if\
  (\
-  is_big_endian() ||\
   Type::Type_Id::type_id == Type::Type_Id::string ||\
   Type::Type_Id::type_id == Type::Type_Id::reference\
  )\

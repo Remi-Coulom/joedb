@@ -1,8 +1,6 @@
 #ifndef joedb_SHA_256_declared
 #define joedb_SHA_256_declared
 
-#include "joedb/is_big_endian.h"
-
 #include <array>
 #include <stdint.h>
 #include <algorithm>
@@ -73,9 +71,6 @@ namespace joedb
 
     std::array<uint32_t, 64> w;
 
-    if (is_big_endian())
-     std::copy_n(data, 64, reinterpret_cast<uint8_t *>(&w[0]));
-    else
     {
      const uint8_t *u8_data = reinterpret_cast<const uint8_t *>(data);
 

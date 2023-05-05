@@ -7,7 +7,6 @@
 
 #include "joedb/assert.h"
 #include "joedb/Blob.h"
-#include "joedb/is_big_endian.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/SHA_256.h"
 
@@ -114,10 +113,6 @@ namespace joedb
    template<typename T> struct R<T, 1>
    //////////////////////////////////////////////////////////////////////////
    {
-    static void change_endianness(T &x)
-    {
-    }
-
     static T read(Generic_File &file)
     {
      return T(file.getc());
@@ -128,18 +123,10 @@ namespace joedb
    template<typename T> struct R<T, 2>
    //////////////////////////////////////////////////////////////////////////
    {
-    static void change_endianness(T &x)
-    {
-     char *p = reinterpret_cast<char *>(&x);
-     std::swap(p[0], p[1]);
-    }
-
     static T read(Generic_File &file)
     {
      T result;
      file.read_data(reinterpret_cast<char *>(&result), 2);
-     if (is_big_endian())
-      change_endianness(result);
      return result;
     }
    };
@@ -148,19 +135,10 @@ namespace joedb
    template<typename T> struct R<T, 4>
    //////////////////////////////////////////////////////////////////////////
    {
-    static void change_endianness(T &x)
-    {
-     char *p = reinterpret_cast<char *>(&x);
-     std::swap(p[0], p[3]);
-     std::swap(p[1], p[2]);
-    }
-
     static T read(Generic_File &file)
     {
      T result;
      file.read_data(reinterpret_cast<char *>(&result), 4);
-     if (is_big_endian())
-      change_endianness(result);
      return result;
     }
    };
@@ -169,21 +147,10 @@ namespace joedb
    template<typename T> struct R<T, 8>
    //////////////////////////////////////////////////////////////////////////
    {
-    static void change_endianness(T &x)
-    {
-     char *p = reinterpret_cast<char *>(&x);
-     std::swap(p[0], p[7]);
-     std::swap(p[1], p[6]);
-     std::swap(p[2], p[5]);
-     std::swap(p[3], p[4]);
-    }
-
     static T read(Generic_File &file)
     {
      T result;
      file.read_data(reinterpret_cast<char *>(&result), 8);
-     if (is_big_endian())
-      change_endianness(result);
      return result;
     }
    };
@@ -208,16 +175,8 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     if (is_big_endian())
-     {
-      file.putc(p[1]);
-      file.putc(p[0]);
-     }
-     else
-     {
-      file.putc(p[0]);
-      file.putc(p[1]);
-     }
+     file.putc(p[0]);
+     file.putc(p[1]);
      file.check_write_buffer();
     }
    };
@@ -229,20 +188,10 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     if (is_big_endian())
-     {
-      file.putc(p[3]);
-      file.putc(p[2]);
-      file.putc(p[1]);
-      file.putc(p[0]);
-     }
-     else
-     {
-      file.putc(p[0]);
-      file.putc(p[1]);
-      file.putc(p[2]);
-      file.putc(p[3]);
-     }
+     file.putc(p[0]);
+     file.putc(p[1]);
+     file.putc(p[2]);
+     file.putc(p[3]);
      file.check_write_buffer();
     }
    };
@@ -254,28 +203,14 @@ namespace joedb
     static void write(Generic_File &file, T x)
     {
      const char *p = reinterpret_cast<char *>(&x);
-     if (is_big_endian())
-     {
-      file.putc(p[7]);
-      file.putc(p[6]);
-      file.putc(p[5]);
-      file.putc(p[4]);
-      file.putc(p[3]);
-      file.putc(p[2]);
-      file.putc(p[1]);
-      file.putc(p[0]);
-     }
-     else
-     {
-      file.putc(p[0]);
-      file.putc(p[1]);
-      file.putc(p[2]);
-      file.putc(p[3]);
-      file.putc(p[4]);
-      file.putc(p[5]);
-      file.putc(p[6]);
-      file.putc(p[7]);
-     }
+     file.putc(p[0]);
+     file.putc(p[1]);
+     file.putc(p[2]);
+     file.putc(p[3]);
+     file.putc(p[4]);
+     file.putc(p[5]);
+     file.putc(p[6]);
+     file.putc(p[7]);
      file.check_write_buffer();
     }
    };
@@ -454,13 +389,6 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     return R<T, sizeof(T)>::read(*this);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> static void change_endianness(T &x)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    R<T, sizeof(T)>::change_endianness(x);
    }
 
    //////////////////////////////////////////////////////////////////////////
