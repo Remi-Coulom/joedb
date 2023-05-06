@@ -231,6 +231,11 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   public:
    Generic_File_Database(joedb::Generic_File &file);
 
+   joedb::Blob write_blob_data(const std::string &data) final
+   {
+    return journal.write_blob_data(data);
+   }
+
    int64_t ahead_of_checkpoint() const
    {
     return journal.ahead_of_checkpoint();

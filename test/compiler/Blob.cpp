@@ -8,16 +8,17 @@ TEST(Compiler, blob)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Memory_File blob_file;
 
  //
- // Blobs are set in a way that is completely identical to strings
+ // Blobs can be written into the database itself, but could also be
+ // stored into another file or another joedb database.
  //
  {
   blob::Generic_File_Database db(file);
   const auto person = db.new_person();
   db.set_city(person, "Paris");
-  db.set_name(person, blob_file.write_blob_data("Jacques"));
+  const joedb::Blob name_blob = db.write_blob_data("Jacques");
+  db.set_name(person, name_blob);
   db.checkpoint();
  }
 
@@ -33,6 +34,6 @@ TEST(Compiler, blob)
   const auto person = db.get_person_table().first();
   EXPECT_EQ("Paris", db.get_city(person));
   const joedb::Blob name_blob = db.get_name(person);
-  EXPECT_EQ("Jacques", blob_file.read_blob_data(name_blob));
+  EXPECT_EQ("Jacques", file.read_blob_data(name_blob));
  }
 }

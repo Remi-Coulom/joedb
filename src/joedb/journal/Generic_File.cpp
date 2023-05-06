@@ -196,8 +196,7 @@ namespace joedb
  Blob Generic_File::write_blob_data(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const int64_t blob_position = get_size();
-  set_position(blob_position);
+  const int64_t blob_position = get_position();
   write_data(&data[0], data.size());
   return Blob(blob_position, data.size());
  }
