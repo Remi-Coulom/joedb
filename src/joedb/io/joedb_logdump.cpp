@@ -46,6 +46,7 @@ static int joedb_logdump_main(int argc, char **argv)
   bool ignore_errors = false;
   bool load = false;
   bool print_checkpoint = false;
+  bool blob = false;
 
   int arg_index = 1;
 
@@ -97,6 +98,12 @@ static int joedb_logdump_main(int argc, char **argv)
    arg_index++;
   }
 
+  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--blob")
+  {
+   blob = true;
+   arg_index++;
+  }
+
   if (arg_index != argc - 1)
    return joedb_logdump_main(1, argv);
 
@@ -135,7 +142,7 @@ static int joedb_logdump_main(int argc, char **argv)
    else if (raw)
     writable.reset(new joedb::Raw_Dump_Writable(std::cout));
    else
-    writable.reset(new joedb::Interpreter_Dump_Writable(std::cout));
+    writable.reset(new joedb::Interpreter_Dump_Writable(std::cout, blob));
 
    if (schema_only)
    {

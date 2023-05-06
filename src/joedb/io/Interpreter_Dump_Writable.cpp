@@ -181,7 +181,10 @@ namespace joedb
   out << schema.get_field_name(table_id, field_id) << ' ';\
   joedb::write_##type_id(out, value);\
   out << '\n';\
- }\
+ }
+ #include "joedb/TYPE_MACRO.h"
+
+ #define TYPE_MACRO(type, return_type, type_id, R, W)\
  void Interpreter_Dump_Writable::update_vector_##type_id\
  (\
   Table_Id table_id,\

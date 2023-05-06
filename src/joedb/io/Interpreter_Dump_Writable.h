@@ -11,12 +11,17 @@ namespace joedb
  {
   private:
    std::ostream &out;
+   const bool blob;
    Database_Schema schema;
 
    void write_type(Type type);
 
   public:
-   Interpreter_Dump_Writable(std::ostream &out): out(out) {}
+   Interpreter_Dump_Writable(std::ostream &out, bool blob = false):
+    out(out),
+    blob(blob)
+   {
+   }
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;
@@ -46,6 +51,7 @@ namespace joedb
     Record_Id size
    ) final;
    void delete_from(Table_Id table_id, Record_Id record_id) final;
+
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id\
    (\
@@ -53,7 +59,10 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   ) final;\
+   ) final;
+   #include "joedb/TYPE_MACRO.h"
+
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_vector_##type_id\
    (\
     Table_Id table_id,\
@@ -65,7 +74,7 @@ namespace joedb
    #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
 
-   bool wants_blob_by_value() override {return true;}
+   bool wants_blob_by_value() override {return blob;}
 
    Blob update_blob_value
    (
