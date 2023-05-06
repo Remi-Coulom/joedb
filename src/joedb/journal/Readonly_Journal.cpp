@@ -21,34 +21,7 @@ void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
   value\
  );\
 }
-#define TYPE_MACRO_NO_BLOB
 #include "joedb/TYPE_MACRO.h"
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::perform_update_blob(Writable &writable)
-/////////////////////////////////////////////////////////////////////////////
-{
- if (writable.wants_blob_by_value())
- {
-  writable.update_blob_value
-  (
-   table_of_last_operation,
-   record_of_last_operation,
-   field_of_last_update,
-   safe_read_string()
-  );
- }
- else
- {
-  writable.update_blob
-  (
-   table_of_last_operation,
-   record_of_last_operation,
-   field_of_last_update,
-   file.read_blob()
-  );
- }
-}
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Readonly_Journal::Readonly_Journal
@@ -409,6 +382,20 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::valid_data:
    writable.valid_data();
+  break;
+
+  case operation_t::blob:
+  {
+   if (writable.wants_blobs())
+   {
+    writable.write_blob_data(safe_read_string());
+   }
+   else
+   {
+    const size_t size = file.compact_read<size_t>();
+    file.set_position(file.get_position() + int64_t(size));
+   }
+  }
   break;
 
   default:

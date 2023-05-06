@@ -224,16 +224,15 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Blob SQL_Dump_Writable::update_blob_value
+ void SQL_Dump_Writable::update_blob
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
   Record_Id record_id,
   Field_Id field_id,
-  const std::string &value)
+  Blob value)
  {
-  update_string(table_id, record_id, field_id, value);
-  return Blob();
+  out << "-- TODO: blob update\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////

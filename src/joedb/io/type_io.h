@@ -32,6 +32,7 @@ namespace joedb
  void write_int8(std::ostream &out, int8_t value);
 
  void write_blob(std::ostream &out, const Blob blob);
+ Blob read_blob(std::istream &in);
 
  #define PRIMITIVE_IO(type, type_id)\
  inline type read_##type_id(std::istream &in)\

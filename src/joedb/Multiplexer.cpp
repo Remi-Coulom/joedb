@@ -161,10 +161,7 @@ namespace joedb
  )\
  {\
   MULTIPLEX(update_##type_id(table_id, record_id, field_id, value));\
- }
- #include "joedb/TYPE_MACRO.h"
-
- #define TYPE_MACRO(type, return_type, type_id, R, W)\
+ }\
  void Multiplexer::update_vector_##type_id\
  (\
   Table_Id table_id,\
@@ -197,18 +194,17 @@ namespace joedb
   }\
   return result;\
  }
- #define TYPE_MACRO_NO_BLOB
  #include "joedb/TYPE_MACRO.h"
 
  #undef MULTIPLEX
 
  ////////////////////////////////////////////////////////////////////////////
- bool Multiplexer::wants_blob_by_value()
+ bool Multiplexer::wants_blobs() const
  ////////////////////////////////////////////////////////////////////////////
  {
   for (auto w: writables)
   {
-   if (w.get().wants_blob_by_value())
+   if (w.get().wants_blobs())
     return true;
   }
 
@@ -216,27 +212,15 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Blob Multiplexer::update_blob_value
+ Blob Multiplexer::write_blob_data(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
- (
-  Table_Id table_id,
-  Record_Id record_id,
-  Field_Id field_id,
-  const std::string &value
- )
  {
   Blob result;
 
   for (auto w: writables)
   {
-   if (w.get().wants_blob_by_value())
-    result = w.get().update_blob_value(table_id, record_id, field_id, value);
-  }
-
-  for (auto w: writables)
-  {
-   if (!w.get().wants_blob_by_value())
-    w.get().update_blob(table_id, record_id, field_id, result);
+   if (w.get().wants_blobs())
+    result = w.get().write_blob_data(data);
   }
 
   return result;

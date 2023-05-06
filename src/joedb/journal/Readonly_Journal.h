@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Journal: public Blob_Storage
+ class Readonly_Journal: public Blob_Reader
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -57,17 +57,14 @@ namespace joedb
     custom        = 0x10,
     update_vector = 0x11, // deprecated
     update_next   = 0x12, // deprecated
+    blob          = 0x13,
     updates       = 0x80,
     #define TYPE_MACRO(t, rt, type_id, r, w)\
     update_##type_id,\
     update_last_##type_id,\
     update_next_##type_id,\
     update_vector_##type_id,
-    #define TYPE_MACRO_NO_BLOB
     #include "joedb/TYPE_MACRO.h"
-    update_blob,
-    update_last_blob,
-    update_next_blob
    };
 
   public:
@@ -79,11 +76,16 @@ namespace joedb
    int64_t get_checkpoint_position() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == header_size;}
    bool is_shared() const {return file.is_shared();}
+
    bool is_same_file(const Generic_File &other_file) const
    {
     return &file == &other_file;
    }
-   std::string read_blob(Blob blob) final {return file.read_blob(blob);}
+
+   std::string read_blob_data(Blob blob) final
+   {
+    return file.read_blob_data(blob);
+   }
 
    void refresh_checkpoint();
    void replay_log(Writable &writable);

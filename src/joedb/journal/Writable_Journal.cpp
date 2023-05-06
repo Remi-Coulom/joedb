@@ -339,21 +339,20 @@ void joedb::Writable_Journal::update_vector_##type_id\
  else\
   file.write_data((const char *)value, size * sizeof(type));\
 }
-#define TYPE_MACRO_NO_BLOB
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Blob joedb::Writable_Journal::update_blob_value
+joedb::Blob joedb::Writable_Journal::write_blob_data
 /////////////////////////////////////////////////////////////////////////////
 (
- Table_Id table_id,
- Record_Id record_id,
- Field_Id field_id,
- const std::string &value
+ const std::string &data
 )
 {
- generic_update(table_id, record_id, field_id, operation_t::update_blob);
- return joedb::Blob(file.write_string(value), value.size());
+ file.write<operation_t>(operation_t::blob);
+ file.compact_write<size_t>(data.size());
+ const int64_t blob_position = get_position();
+ file.write_data(&data[0], data.size());
+ return Blob(blob_position, data.size());
 }
 
 /////////////////////////////////////////////////////////////////////////////

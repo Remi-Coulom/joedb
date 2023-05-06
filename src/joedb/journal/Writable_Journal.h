@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Writable_Journal:
+ class Writable_Journal: 
  ////////////////////////////////////////////////////////////////////////////
   public Readonly_Journal,
   public Writable,
@@ -128,18 +128,10 @@ namespace joedb
     Record_Id size,\
     const type *value\
    ) final;
-   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
 
-   bool wants_blob_by_value() override {return true;}
-
-   Blob update_blob_value
-   (
-    Table_Id table_id,
-    Record_Id record_id,
-    Field_Id field_id,
-    const std::string &value
-   ) override;
+   bool wants_blobs() const final {return true;}
+   Blob write_blob_data(const std::string &data) final;
 
    ~Writable_Journal() override;
  };

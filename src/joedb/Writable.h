@@ -17,7 +17,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Writable
+ class Writable: public Blob_Writer
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
@@ -94,18 +94,9 @@ namespace joedb
    {\
     return (const_cast<Writable *>(this))->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\
    }
-   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
 
-   virtual bool wants_blob_by_value() {return false;}
-
-   virtual Blob update_blob_value
-   (
-    Table_Id table_id,
-    Record_Id record_id,
-    Field_Id field_id,
-    const std::string &value
-   );
+   virtual bool wants_blobs() const {return false;}
 
    virtual ~Writable() = default;
  };

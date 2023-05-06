@@ -93,30 +93,6 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
       case Type::Type_Id::null:
       break;
 
-      case Type::Type_Id::blob:
-      {
-       const Blob blob = db.get_blob(table_id, record_id, field_id);
-
-       if (writable.wants_blob_by_value())
-       {
-        if (!db.get_blob_storage())
-         throw joedb::Exception("no blob storage");
-
-        writable.update_blob_value
-        (
-         t_id, record_id, f_id, db.get_blob_storage()->read_blob(blob)
-        );
-       }
-       else
-       {
-        writable.update_blob
-        (
-         t_id, record_id, f_id, blob
-        );
-       }
-      }
-      break;
-
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
        writable.update_##type_id\
@@ -124,7 +100,6 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
         t_id, record_id, f_id, db.get_##type_id(table_id, record_id, field_id)\
        );\
       break;
-      #define TYPE_MACRO_NO_BLOB
       #include "joedb/TYPE_MACRO.h"
      }
     }
@@ -180,35 +155,6 @@ void joedb::dump_data(const Readable &db, Writable &writable)
       case Type::Type_Id::null:
       break;
 
-      case Type::Type_Id::blob:
-       for (Record_Id id = record_id; id < record_id + size; id++)
-       {
-        if (writable.wants_blob_by_value())
-        {
-         if (!db.get_blob_storage())
-          throw joedb::Exception("missing blob storage");
-
-         writable.update_blob_value
-         (
-          table_id,
-          id,
-          field_id,
-          db.get_blob_storage()->read_blob(db.get_blob(table_id, id, field_id))
-         );
-        }
-        else
-        {
-         writable.update_blob
-         (
-          table_id,
-          id,
-          field_id,
-          db.get_blob(table_id, id, field_id)
-         );
-        }
-       }
-      break;
-
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
       {\
@@ -227,7 +173,6 @@ void joedb::dump_data(const Readable &db, Writable &writable)
        );\
       }\
       break;
-      #define TYPE_MACRO_NO_BLOB
       #include "joedb/TYPE_MACRO.h"
      }
     }
@@ -244,7 +189,7 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
- db.set_blob_storage(&input_journal);
+ db.set_blob_reader(&input_journal);
 
  Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
  Multiplexer multiplexer{db, schema_filter};

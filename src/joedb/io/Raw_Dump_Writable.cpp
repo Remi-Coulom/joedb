@@ -184,19 +184,15 @@ namespace joedb
   }\
   out << '\n';\
  }
- #define TYPE_MACRO_NO_BLOB
  #include "joedb/TYPE_MACRO.h"
 
  ////////////////////////////////////////////////////////////////////////////
- Blob Raw_Dump_Writable::update_blob_value
+ Blob Raw_Dump_Writable::write_blob_data(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
- (
-  Table_Id table_id,
-  Record_Id record_id,
-  Field_Id field_id,
-  const std::string &value)
  {
-  update_string(table_id, record_id, field_id, value);
+  out << "blob ";
+  joedb::write_string(out, data);
+  out << '\n';
   return Blob();
  }
 

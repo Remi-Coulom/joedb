@@ -181,10 +181,7 @@ namespace joedb
   out << schema.get_field_name(table_id, field_id) << ' ';\
   joedb::write_##type_id(out, value);\
   out << '\n';\
- }
- #include "joedb/TYPE_MACRO.h"
-
- #define TYPE_MACRO(type, return_type, type_id, R, W)\
+ }\
  void Interpreter_Dump_Writable::update_vector_##type_id\
  (\
   Table_Id table_id,\
@@ -205,19 +202,13 @@ namespace joedb
   }\
   out << '\n';\
  }
- #define TYPE_MACRO_NO_BLOB
  #include "joedb/TYPE_MACRO.h"
 
  ////////////////////////////////////////////////////////////////////////////
- Blob Interpreter_Dump_Writable::update_blob_value
+ Blob Interpreter_Dump_Writable::write_blob_data(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
- (
-  Table_Id table_id,
-  Record_Id record_id,
-  Field_Id field_id,
-  const std::string &value)
  {
-  update_string(table_id, record_id, field_id, value);
+  out << "blob \"TODO\"\n";
   return Blob();
  }
 

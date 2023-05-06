@@ -107,16 +107,6 @@ namespace joedb
    case Type::Type_Id::null:
     throw Exception("bad field");
 
-   case Type::Type_Id::blob:
-    if (writable.wants_blob_by_value())
-    {
-     const std::string value = joedb::read_string(in);
-     writable.update_blob_value(table_id, record_id, field_id, value);
-    }
-    else
-     throw Exception("cannot update blob value");
-   break;
-
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    case Type::Type_Id::type_id:\
    {\
@@ -124,7 +114,6 @@ namespace joedb
     writable.update_##type_id(table_id, record_id, field_id, value);\
    }\
    break;
-   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
   }
  }
@@ -195,10 +184,21 @@ namespace joedb
 
         case Type::Type_Id::blob:
         {
-         const Blob blob = readable.get_blob(table_id, record_id, field.first);
+         const Blob blob = readable.get_blob
+         (
+          table_id,
+          record_id,
+          field.first
+         );
 
-         if (readable.get_blob_storage())
-          write_string(ss, readable.get_blob_storage()->read_blob(blob));
+         if (readable.get_blob_reader())
+         {
+          write_string
+          (
+           ss,
+           readable.get_blob_reader()->read_blob_data(blob)
+          );
+         }
          else
           write_blob(ss, blob);
         }
@@ -399,6 +399,7 @@ namespace joedb
    out << " update <table_name> <record_id> <field_name> <value>\n";
    out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
    out << " delete_from <table_name> <record_id>\n";
+   out << " blob <data_string>\n";
    out << '\n';
   }
   else if (command == "create_table") ///////////////////////////////////////
@@ -554,6 +555,13 @@ namespace joedb
    Record_Id record_id = 0;
    iss >> record_id;
    writable.delete_from(table_id, record_id);
+  }
+  else if (command == "blob") ///////////////////////////////////////////////
+  {
+   const std::string value = joedb::read_string(iss);
+   const Blob blob = writable.write_blob_data(value);
+   joedb::write_blob(out, blob);
+   out << '\n';
   }
   else
    return Readonly_Interpreter::process_command(command, iss, out);

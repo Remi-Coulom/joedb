@@ -25,7 +25,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Generic_File: public Posthumous_Thrower, public Blob_Storage
+ class Generic_File: public Posthumous_Thrower, public Blob_Reader
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Async_Reader;
@@ -410,8 +410,9 @@ namespace joedb
     return result;
    }
 
-   int64_t write_string(const std::string &s);
+   void write_string(const std::string &s);
    std::string read_string();
+   void write_blob(Blob blob);
    Blob read_blob();
    std::string safe_read_string(size_t max_size);
 
@@ -501,7 +502,7 @@ namespace joedb
    SHA_256::Hash get_hash(int64_t start, int64_t size);
    SHA_256::Hash get_hash();
 
-   std::string read_blob(Blob blob) final;
+   std::string read_blob_data(Blob blob) final;
 
    virtual ~Generic_File() = default;
  };

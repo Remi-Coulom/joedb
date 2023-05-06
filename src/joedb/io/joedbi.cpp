@@ -35,11 +35,8 @@ namespace joedb
   else
    file.reset(new Memory_File());
 
-  std::unique_ptr<Writable_Journal> writable_journal;
-  writable_journal.reset(new Writable_Journal(*file));
-
   Database db;
-  db.set_blob_storage(file.get());
+  db.set_blob_reader(file.get());
 
   if (file->get_mode() == Open_Mode::read_existing)
   {
@@ -50,8 +47,9 @@ namespace joedb
   }
   else
   {
-   writable_journal->replay_log(db);
-   Multiplexer multiplexer{db, *writable_journal};
+   Writable_Journal journal(*file);
+   journal.replay_log(db);
+   Multiplexer multiplexer{db, journal};
    Interpreter interpreter(db, multiplexer);
    interpreter.main_loop(std::cin, std::cout);
   }
