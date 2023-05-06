@@ -96,7 +96,16 @@ namespace joedb
    }
    #include "joedb/TYPE_MACRO.h"
 
+#if 0
+   // TODO: not all Writables should be Blob_Writer (only Generic_File + Writable_Journal + compiled db)
+   // TODO: pass a Blob_Reader to SQL_Dump, ...
+   // These are the notifications produced by the replay_log function
+   virtual bool wants_blob_data() const {return false;}
+   virtual void on_blob_data(Blob blob, const std::string &data) {}
+   virtual void on_blob(Blob blob) {}
+#else
    virtual bool wants_blobs() const {return false;}
+#endif
 
    virtual ~Writable() = default;
  };

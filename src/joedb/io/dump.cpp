@@ -198,7 +198,9 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
   input_journal.replay_log(multiplexer);
  }
 
- // TODO: fail if the file contains blobs
+ // TODO: concatenate all blobs into one huge blob
+ // Transforming blobs is going to be a bit complicated
+ // For the moment, just fail if any blob is found
 
  dump_data(db, writable);
 }
