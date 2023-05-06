@@ -11,7 +11,7 @@ TEST(Compiler, blob)
 
  //
  // Blobs can be written into the database itself, but could also be
- // stored into another file or another joedb database.
+ // stored into a separate joedb database.
  //
  {
   blob::Generic_File_Database db(file);
@@ -25,7 +25,7 @@ TEST(Compiler, blob)
  file.set_mode(joedb::Open_Mode::read_existing);
 
  //
- // The content of a blob is not stored in RAM. In order to access it,
+ // The content of a blob is not kept in RAM. In order to access it,
  // it must be explicitly read from the file.
  //
  {
