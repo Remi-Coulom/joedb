@@ -329,6 +329,7 @@ void joedb::Writable_Journal::update_vector_##type_id\
 \
  if\
  (\
+  Type::Type_Id::type_id == Type::Type_Id::blob ||\
   Type::Type_Id::type_id == Type::Type_Id::string ||\
   Type::Type_Id::type_id == Type::Type_Id::reference\
  )\

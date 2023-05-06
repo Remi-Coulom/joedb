@@ -12,7 +12,7 @@ namespace joedb
  {
   private:
    int64_t position;
-   int64_t size;
+   size_t size;
 
   public:
    Blob(int64_t position, int64_t size):
@@ -26,7 +26,7 @@ namespace joedb
    }
 
    int64_t get_position() const noexcept {return position;}
-   int64_t get_size() const noexcept {return size;}
+   size_t get_size() const noexcept {return size;}
  };
 
  static_assert(sizeof(Blob) == 2 * sizeof(int64_t), "Bad Blob size");

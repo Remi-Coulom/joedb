@@ -77,13 +77,6 @@ static void write_type
     out << "std::string ";
   break;
 
-  case Type::Type_Id::blob:
-   if (setter_type)
-    out << "const std::string &";
-   else
-    out << "joedb::Blob ";
-  break;
-
   case Type::Type_Id::reference:
    out << "id_of_" << db.get_table_name(type.get_table_id()) << ' ';
   break;
@@ -92,7 +85,6 @@ static void write_type
   case Type::Type_Id::type_id:\
    out << #type << ' ';\
   break;
-  #define TYPE_MACRO_NO_BLOB
   #define TYPE_MACRO_NO_STRING
   #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
@@ -384,49 +376,34 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   {\n";
    out << "    internal_update_" << tname << "__" << fname;
 
-   if (type.get_type_id() == Type::Type_Id::blob)
-   {
-    out << "\n    (\n";
-    out << "     record.get_id(),\n";
-    out << "     journal.update_blob_value(" << table.first;
-    out << ", record.get_id(), " << field.first << ", field_value_of_";
-    out << fname << ")\n";
-    out << "    );\n";
-   }
-   else
-   {
-    out <<  "(record.get_id(), ";
-    out << "field_value_of_" << fname << ");\n";
-    out << "    journal.update_";
-    out << types[int(type.get_type_id())];
-    out << '(' << table.first << ", record.get_id(), " << field.first << ", ";
-    out << "field_value_of_" << fname;
-    if (type.get_type_id() == Type::Type_Id::reference)
-     out << ".get_id()";
-    out << ");\n";
-   }
+   out <<  "(record.get_id(), ";
+   out << "field_value_of_" << fname << ");\n";
+   out << "    journal.update_";
+   out << types[int(type.get_type_id())];
+   out << '(' << table.first << ", record.get_id(), " << field.first << ", ";
+   out << "field_value_of_" << fname;
+   if (type.get_type_id() == Type::Type_Id::reference)
+    out << ".get_id()";
+   out << ");\n";
 
    out << "   }\n\n";
 
    //
    // Vector update
    //
-   if (type.get_type_id() != Type::Type_Id::blob)
-   {
-    out << "   template<typename F> void update_vector_of_" << fname;
-    out << "(id_of_" << tname << " record, size_t size, F f)\n";
-    out << "   {\n";
-    out << "    std::exception_ptr exception;\n";
-    out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
-    out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
-    out << "    try {f(span);}\n";
-    out << "    catch (...) {exception = std::current_exception();}\n";
-    out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_id(), size, span.begin());\n";
-    out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, span.begin());\n";
-    out << "    if (exception)\n";
-    out << "     std::rethrow_exception(exception);\n";
-    out << "   }\n\n";
-   }
+   out << "   template<typename F> void update_vector_of_" << fname;
+   out << "(id_of_" << tname << " record, size_t size, F f)\n";
+   out << "   {\n";
+   out << "    std::exception_ptr exception;\n";
+   out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
+   out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
+   out << "    try {f(span);}\n";
+   out << "    catch (...) {exception = std::current_exception();}\n";
+   out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_id(), size, span.begin());\n";
+   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, span.begin());\n";
+   out << "    if (exception)\n";
+   out << "     std::rethrow_exception(exception);\n";
+   out << "   }\n\n";
   }
  }
 
@@ -1193,9 +1170,6 @@ static void generate_readonly_h
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
-   if (Type::Type_Id(type_id) == Type::Type_Id::blob)
-    continue;
-
    if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
     continue;
 
@@ -1259,9 +1233,6 @@ static void generate_readonly_h
  {
   for (int type_id = 1; type_id < int(Type::type_ids); type_id++)
   {
-   if (Type::Type_Id(type_id) == Type::Type_Id::blob)
-    continue;
-
    if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
     continue;
 

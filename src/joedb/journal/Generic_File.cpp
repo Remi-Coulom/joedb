@@ -59,16 +59,16 @@ namespace joedb
  void Generic_File::write_blob(Blob blob)
  ////////////////////////////////////////////////////////////////////////////
  {
-  write<int64_t>(blob.get_position());
-  write<int64_t>(blob.get_size());
+  compact_write<int64_t>(blob.get_position());
+  compact_write<size_t>(blob.get_size());
  }
 
  ////////////////////////////////////////////////////////////////////////////
  Blob Generic_File::read_blob()
  ////////////////////////////////////////////////////////////////////////////
  {
-  int64_t blob_position = read<int64_t>();
-  int64_t blob_size = read<int64_t>();
+  int64_t blob_position = compact_read<int64_t>();
+  size_t blob_size = compact_read<size_t>();
   return Blob(blob_position, blob_size);
  }
 
@@ -190,5 +190,15 @@ namespace joedb
   set_position(current_position);
 
   return result;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Blob Generic_File::write_blob_data(const std::string &data)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const int64_t blob_position = get_size();
+  set_position(blob_position);
+  write_data(&data[0], data.size());
+  return Blob(blob_position, data.size());
  }
 }

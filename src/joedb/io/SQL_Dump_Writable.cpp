@@ -232,7 +232,10 @@ namespace joedb
   Field_Id field_id,
   Blob value)
  {
-  out << "-- TODO: blob update\n";
+  out << "UPDATE \"" << schema.get_table_name(table_id);
+  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
+  joedb::write_sql_string(out, "TODO");
+  out << " WHERE " << id_field_name << " = " << record_id << ";\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
