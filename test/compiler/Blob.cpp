@@ -10,7 +10,7 @@ TEST(Compiler, blob)
  joedb::Memory_File file;
 
  //
- // Blobs are set like strings
+ // Blobs are set in a way that is completely identical to strings
  //
  {
   blob::Generic_File_Database db(file);
@@ -24,7 +24,7 @@ TEST(Compiler, blob)
 
  //
  // The content of a blob is not stored in RAM. In order to access it,
- // it must be explicitly read from the file when it is needed.
+ // it must be explicitly read from the file.
  //
  {
   blob::Readonly_Database db(file);

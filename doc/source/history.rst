@@ -2,32 +2,26 @@ History
 =======
 - 2023-??-??: 7.0
 
-  - Support for data storage in :ref:`blobs <blobs>`. Blobs allow storing large
-    pieces of data that are not automatically loaded into memory. With blobs,
-    joedb can manipulate databases that are much bigger than available RAM.
-  - Server support for :ref:`real-time remote backup <joedb_multi_server>`.
-  - Incompatibilities with previous version:
-
-    - No more endianness conversions: on big-endian machines joedb reads and
-      write data in big-endian format.
-    - Files created by the previous version of joedb can be opened by this
-      new version, but files created by this version cannot be opened by the
-      previous version.
-    - No more implicit conversion from compiled row id to integer or boolean.
-      With this new version, explicit methods must be used: ``is_null()`` or
-      ``is_not_null()`` to test if a referece is null or not, and ``get_id()``
-      to convert to an integer. This ensures stronger typing, and prevents
-      bug-prone implicit conversions.
-    - Removed some useless ssh code that was left over from the old serverless
-      sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
-      ``ssh::Session``, and its constructor is slightly faster than before
-      because there is no sftp any more.
-    - Stricter checks when sharing the same local journal for multiple clients:
-      the connection is locked during client construction to check for file
-      integrity. Previous version would silently open a file containing an
-      incomplete transaction, and could overwrite it. This required an upgrade
-      to the network protocol, so new clients cannot connect to the old server.
-
+  - :ref:`Blobs <blobs>`
+  - :ref:`Real-time remote backup <joedb_multi_server>` from one server to
+    another server.
+  - No more implicit conversion from compiled row id to integer or boolean.
+    With this new version, explicit methods must be used: ``is_null()`` or
+    ``is_not_null()`` to test if a reference is null or not, and ``get_id()``
+    to convert to an integer. This ensures stronger typing, and prevents
+    bug-prone implicit conversions.
+  - Removed some useless ssh code that was left over from the old serverless
+    sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
+    ``ssh::Session``, and its constructor is slightly faster than before
+    because there is no sftp any more.
+  - Stricter checks when sharing the same local journal for multiple clients:
+    the connection is locked during client construction to check for file
+    integrity. Previous version would silently open a file containing an
+    incomplete transaction, and could overwrite it. This required an upgrade to
+    the network protocol, so new clients cannot connect to the old server.
+  - Files written by this version cannot be opened by the previous version.
+  - No more endianness conversions: on big-endian machines joedb reads and
+    writes data in big-endian format.
   - Minor fixes and improvements
 
 - 2021-09-15: 6.0
