@@ -191,10 +191,14 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
  Database db;
  db.set_blob_reader(&input_journal);
 
- Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
- Multiplexer multiplexer{db, schema_filter};
+ {
+  Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
+  Multiplexer multiplexer{db, schema_filter};
 
- input_journal.replay_log(multiplexer);
+  input_journal.replay_log(multiplexer);
+ }
+
+ // TODO: fail if the file contains blobs
 
  dump_data(db, writable);
 }
