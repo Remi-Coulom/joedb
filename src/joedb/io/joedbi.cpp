@@ -37,6 +37,8 @@ namespace joedb
 
   Database db;
 
+  // TODO: test if journal contains blob. If it does, set as blob_reader
+
   if (file->get_mode() == Open_Mode::read_existing)
   {
    Readonly_Journal journal(*file);
