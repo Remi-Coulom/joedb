@@ -70,22 +70,17 @@ static void write_type
    out << "void ";
   break;
 
-  case Type::Type_Id::string:
-   if (return_type || setter_type)
-    out << "const std::string &";
-   else
-    out << "std::string ";
-  break;
-
   case Type::Type_Id::reference:
    out << "id_of_" << db.get_table_name(type.get_table_id()) << ' ';
   break;
 
-  #define TYPE_MACRO(type, return_type, type_id, read, write)\
+  #define TYPE_MACRO(storage_tt, return_tt, type_id, read, write)\
   case Type::Type_Id::type_id:\
-   out << #type << ' ';\
+   if (return_type || setter_type)\
+    out << #return_tt << ' ';\
+   else\
+    out << #storage_tt << ' ';\
   break;
-  #define TYPE_MACRO_NO_STRING
   #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
  }
@@ -369,7 +364,6 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   {
    const std::string &fname = field.second;
    const Type &type = db.get_field_type(table.first, field.first);
-   const char *storage_type = storage_types[int(type.get_type_id())];
 
    //
    // Setter
@@ -400,12 +394,19 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "(id_of_" << tname << " record, size_t size, F f)\n";
    out << "   {\n";
    out << "    std::exception_ptr exception;\n";
-   out << "    joedb::Span<" << storage_type << "> span(&storage_of_" << tname;
+   out << "    joedb::Span<";
+   write_type(out, db, type, false, false);
+   out << "> span(&storage_of_" << tname;
    out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
    out << "    try {f(span);}\n";
    out << "    catch (...) {exception = std::current_exception();}\n";
    out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_id(), size, span.begin());\n";
-   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, span.begin());\n";
+   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, ";
+
+   if (type.get_type_id() == Type::Type_Id::reference)
+    out << "reinterpret_cast<Record_Id *>";
+
+   out << "(span.begin()));\n";
    out << "    if (exception)\n";
    out << "     std::rethrow_exception(exception);\n";
    out << "   }\n\n";
@@ -706,10 +707,9 @@ static void generate_readonly_h
    fields.emplace_back("field_value_of_" + field.second);
 
    const joedb::Type &type = db.get_field_type(table.first, field.first);
-   const auto type_id = type.get_type_id();
 
    out << "  std::vector<";
-   out << storage_types[int(type_id)];
+   write_type(out, db, type, false, false);
    out << "> " << fields.back() << ";\n";
   }
 
@@ -854,6 +854,8 @@ static void generate_readonly_h
     out << "storage_of_" << tname << ".field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
     out << "[record_id - 1]";
+    if (type.get_type_id() == joedb::Type::Type_Id::reference)
+     out << ".get_id()";
     out << ");\n";
    }
    out << "     out << \") at id = \" << record_id << ' ';\n";
@@ -915,10 +917,22 @@ static void generate_readonly_h
 
     out << "    storage_of_" << tname << ".field_value_of_";
     out << fname << "[record_id - 1]";
+
     if (type.get_type_id() == Type::Type_Id::string)
+    {
      out << ".clear()";
+    }
+    else if (type.get_type_id() == Type::Type_Id::reference)
+    {
+     out << " = ";
+     write_type(out, db, type, false, false);
+     out << "(0)";
+    }
     else
+    {
      out << " = 0";
+    }
+
     out << ";\n";
    }
 
@@ -950,7 +964,6 @@ static void generate_readonly_h
   {
    const std::string &fname = field.second;
    const Type &type = db.get_field_type(table.first, field.first);
-   const char *storage_type = storage_types[int(type.get_type_id())];
 
    out << "   void internal_update_" << tname << "__" << fname;
    out << "\n   (\n    Record_Id record_id,\n    ";
@@ -960,8 +973,6 @@ static void generate_readonly_h
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
    out << "    storage_of_" << tname << ".field_value_of_" << fname;
    out << "[record_id - 1] = field_value_of_" << fname;
-   if (type.get_type_id() == Type::Type_Id::reference)
-    out << ".get_id()";
    out << ";\n";
 
    for (const auto &index: options.get_indices())
@@ -979,12 +990,16 @@ static void generate_readonly_h
    out << "   (\n";
    out << "    Record_Id record_id,\n";
    out << "    size_t size,\n";
-   out << "    const " << storage_type << " *value\n";
+   out << "    const ";
+   write_type(out, db, type, false, false);
+   out << " *value\n";
    out << "   )\n";
    out << "   {\n";
    out << "    for (size_t i = 0; i < size; i++)\n";
    out << "     JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id + i));\n";
-   out << "    " << storage_type << " *target = &storage_of_" << tname;
+   out << "    ";
+   write_type(out, db, type, false, false);
+   out << " *target = &storage_of_" << tname;
    out << ".field_value_of_" << fname << "[record_id - 1];\n";
    out << "    if (target != value)\n";
    out << "     std::copy_n(value, size, target);\n";
@@ -1217,7 +1232,18 @@ static void generate_readonly_h
        out << "     if (field_id == " << field.first << ")\n";
        out << "     {\n";
        out << "      internal_update_vector_" << table.second;
-       out << "__" << field.second << "(record_id, size, value);\n";
+       out << "__" << field.second << "(record_id, size, ";
+
+       if (type_id != int(joedb::Type::Type_Id::reference))
+        out << "value";
+       else
+       {
+        out << "reinterpret_cast<const ";
+        write_type(out, db, type, false, false);
+        out << "*>(value)";
+       }
+
+       out << ");\n";
        out << "      return;\n";
        out << "     }\n";
       }
@@ -1280,8 +1306,13 @@ static void generate_readonly_h
       {
        out << "     if (field_id == " << field.first << ")\n"
            << "     {\n"
-           << "      return storage_of_" << table.second
-           << ".field_value_of_" << field.second << ".data() + record_id - 1;\n"
+           << "      return ";
+
+       if (type_id == int(Type::Type_Id::reference))
+        out << "reinterpret_cast<Record_Id *>";
+
+       out << "(storage_of_" << table.second;
+       out << ".field_value_of_" << field.second << ".data() + record_id - 1);\n"
            << "     }\n";
       }
      }
