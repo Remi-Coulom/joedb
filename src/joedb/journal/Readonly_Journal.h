@@ -58,6 +58,7 @@ namespace joedb
     update_vector = 0x11, // deprecated
     update_next   = 0x12, // deprecated
     blob          = 0x13,
+    sha256        = 0x14,
     updates       = 0x80,
     #define TYPE_MACRO(t, rt, type_id, r, w)\
     update_##type_id,\
