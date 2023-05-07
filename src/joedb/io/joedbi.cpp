@@ -36,7 +36,6 @@ namespace joedb
    file.reset(new Memory_File());
 
   Database db;
-  db.set_blob_reader(file.get());
 
   if (file->get_mode() == Open_Mode::read_existing)
   {
