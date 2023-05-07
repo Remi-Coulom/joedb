@@ -232,9 +232,17 @@ namespace joedb
   Field_Id field_id,
   Blob value)
  {
+  if (!blob_reader)
+   out << "-- ";
+
   out << "UPDATE \"" << schema.get_table_name(table_id);
   out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
-  joedb::write_sql_string(out, "TODO");
+
+  if (blob_reader)
+   joedb::write_sql_string(out, blob_reader->read_blob_data(value));
+  else
+   out << "\"BLOB\"";
+
   out << " WHERE " << id_field_name << " = " << record_id << ";\n";
  }
 

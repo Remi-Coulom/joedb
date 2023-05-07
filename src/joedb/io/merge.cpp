@@ -45,10 +45,6 @@ void joedb::merge(Database &merged, const Database &db)
      case Type::Type_Id::null:
      break;
 
-     case Type::Type_Id::blob:
-      throw joedb::Exception("blob merging not supported (TODO?)");
-     break;
-
      #define TYPE_MACRO(type, return_type, type_id, R, W)\
      case Type::Type_Id::type_id:\
      {\
@@ -62,7 +58,6 @@ void joedb::merge(Database &merged, const Database &db)
       );\
      }\
      break;
-     #define TYPE_MACRO_NO_BLOB
      #include "joedb/TYPE_MACRO.h"
     }
 
@@ -116,10 +111,6 @@ void joedb::merge(Database &merged, const Database &db)
        }
        break;
 
-       case Type::Type_Id::blob:
-        throw joedb::Exception("blob merging not supported (TODO?)");
-       break;
-
        #define TYPE_MACRO(type, return_type, type_id, R, W)\
        case Type::Type_Id::type_id:\
        {\
@@ -133,7 +124,6 @@ void joedb::merge(Database &merged, const Database &db)
        }\
        break;
        #define TYPE_MACRO_NO_REFERENCE
-       #define TYPE_MACRO_NO_BLOB
        #include "joedb/TYPE_MACRO.h"
       }
      }

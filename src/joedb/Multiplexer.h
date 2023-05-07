@@ -79,6 +79,7 @@ namespace joedb
    #include "joedb/TYPE_MACRO.h"
 
    bool wants_blobs() const final;
+   void on_blob(Blob blob, Blob_Reader &reader) final;
    Blob write_blob_data(const std::string &data) final;
 
    ~Multiplexer() override;

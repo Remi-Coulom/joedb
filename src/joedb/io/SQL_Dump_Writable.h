@@ -10,12 +10,16 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
+   static constexpr const char *id_field_name = "\"__id\"";
+   static constexpr const char *key_type = "INTEGER";
+
    std::ostream &out;
    Database_Schema schema;
    const bool drop_column;
+
+   Blob_Reader *blob_reader = nullptr;
+
    void write_type(Type type);
-   std::string id_field_name = "\"__id\"";
-   std::string key_type = "INTEGER";
 
   public:
    SQL_Dump_Writable(std::ostream &out, bool drop_column = true):
@@ -55,6 +59,11 @@ namespace joedb
                          Field_Id field_id,\
                          return_type value) final;
    #include "joedb/TYPE_MACRO.h"
+
+   void on_blob(Blob blob, Blob_Reader &reader) final
+   {
+    blob_reader = &reader;
+   }
 
    ~SQL_Dump_Writable();
  };

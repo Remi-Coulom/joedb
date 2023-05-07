@@ -531,10 +531,6 @@ namespace joedb
       throw Exception("bad field");
      break;
 
-     case Type::Type_Id::blob:
-      throw "TODO: support vector of blob";
-     break;
-
      #define TYPE_MACRO(type, return_type, type_id, R, W)\
      case Type::Type_Id::type_id:\
      {\
@@ -544,7 +540,6 @@ namespace joedb
       writable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
      }\
      break;
-     #define TYPE_MACRO_NO_BLOB
      #include "joedb/TYPE_MACRO.h"
     }
    }

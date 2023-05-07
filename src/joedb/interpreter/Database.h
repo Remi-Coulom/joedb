@@ -34,10 +34,7 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   ) final;
-   #include "joedb/TYPE_MACRO.h"
-
-   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   ) final;\
    void update_vector_##type_id\
    (\
     Table_Id table_id,\
@@ -53,8 +50,9 @@ namespace joedb
     Field_Id field_id,\
     Record_Id &capacity\
    ) final;
-   #define TYPE_MACRO_NO_BLOB
    #include "joedb/TYPE_MACRO.h"
+
+   void on_blob(Blob blob, Blob_Reader &reader) final;
 
    ~Database();
  };

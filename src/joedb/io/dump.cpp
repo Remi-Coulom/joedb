@@ -5,6 +5,7 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/journal/Readonly_Journal.h"
+#include <joedb/Exception.h>
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
@@ -189,7 +190,6 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
- db.set_blob_reader(&input_journal);
 
  {
   Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
@@ -198,9 +198,8 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
   input_journal.replay_log(multiplexer);
  }
 
- // TODO: concatenate all blobs into one huge blob
- // Transforming blobs is going to be a bit complicated
- // For the moment, just fail if any blob is found
+ if (db.get_blob_reader())
+  throw joedb::Runtime_Error("can't pack blobs");
 
  dump_data(db, writable);
 }

@@ -73,16 +73,16 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- std::string Generic_File::safe_read_string(size_t max_size)
+ std::string Generic_File::safe_read_string(int64_t max_size)
  ////////////////////////////////////////////////////////////////////////////
  {
   std::string s;
-  const size_t size = compact_read<size_t>();
-  if (size < max_size)
+  const size_t size = compact_read<size_t>(); // size_t overflow if 32-bit?
+  if (int64_t(size) < max_size)
   {
    s.resize(size);
    for (size_t i = 0; i < size; i++)
-    s[i] = char(getc());
+    s[i] = char(getc()); // TODO: optimize for large strings
   }
   return s;
  }

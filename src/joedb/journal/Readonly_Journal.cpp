@@ -385,13 +385,19 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::blob:
   {
-   if (writable.wants_blobs())
+   const size_t size = file.compact_read<size_t>();
+   const int64_t blob_position = get_position();
+   writable.on_blob(Blob(blob_position, size), file);
+
+   if (writable.wants_blobs() && int64_t(size) < checkpoint_position)
    {
-    writable.write_blob_data(safe_read_string());
+    std::string data;
+    data.resize(size);
+    file.read_data(&data[0], size);
+    writable.write_blob_data(data);
    }
    else
    {
-    const size_t size = file.compact_read<size_t>();
     file.set_position(file.get_position() + int64_t(size));
    }
   }
@@ -422,7 +428,7 @@ joedb::Type joedb::Readonly_Journal::read_type()
 std::string joedb::Readonly_Journal::safe_read_string()
 /////////////////////////////////////////////////////////////////////////////
 {
- return file.safe_read_string(size_t(checkpoint_position));
+ return file.safe_read_string(checkpoint_position);
 }
 
 #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\

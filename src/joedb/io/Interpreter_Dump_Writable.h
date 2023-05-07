@@ -11,15 +11,15 @@ namespace joedb
  {
   private:
    std::ostream &out;
-   const bool blob;
+   const bool blob_wanted;
    Database_Schema schema;
 
    void write_type(Type type);
 
   public:
-   Interpreter_Dump_Writable(std::ostream &out, bool blob = false):
+   Interpreter_Dump_Writable(std::ostream &out, bool blob_wanted = false):
     out(out),
-    blob(blob)
+    blob_wanted(blob_wanted)
    {
    }
 
@@ -70,7 +70,8 @@ namespace joedb
    ) final;
    #include "joedb/TYPE_MACRO.h"
 
-   bool wants_blobs() const final {return blob;}
+   bool wants_blobs() const final {return blob_wanted;}
+   void on_blob(Blob blob, Blob_Reader &reader) final;
    Blob write_blob_data(const std::string &data) final;
 
    ~Interpreter_Dump_Writable();
