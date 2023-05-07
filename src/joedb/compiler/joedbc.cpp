@@ -120,7 +120,7 @@ static void write_tuple_type
   if (i > 0)
    out << ", ";
   const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-  out << storage_types[int(type.get_type_id())];
+  write_type(out, db, type, false, false);
  }
  out << ">";
 }

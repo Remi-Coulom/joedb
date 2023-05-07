@@ -318,12 +318,12 @@ TEST(Compiler, exceptions)
  {
   joedb::Memory_File file;
   multi_index::Generic_File_Database db(file);
-  db.new_person("Chantal", "Dupont");
-  db.new_person("Rémi", "Coulom");
-  db.new_person("Rémi", "Munos");
-  db.new_person("Marcel", "Coulom");
-  db.new_person("Albert", "Premier");
-  db.new_person("Rémi", "Coulom");
+  db.new_person("Chantal", "Dupont", db.null_city());
+  db.new_person("Rémi", "Coulom", db.null_city());
+  db.new_person("Rémi", "Munos", db.null_city());
+  db.new_person("Marcel", "Coulom", db.null_city());
+  db.new_person("Albert", "Premier", db.null_city());
+  db.new_person("Rémi", "Coulom", db.null_city());
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
