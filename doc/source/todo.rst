@@ -34,14 +34,21 @@ New Operations and Types
   - custom usage label: ip address(int32), URL(string), PNG file(string),
     UTF8(string) (use base64 instead for json output), ...?
 
+Blobs
+-----
+- Cheaper than SHA 256: sample 256*4kb pages from the file
+- Optimized full SHA 256:
+
+  - sha256 log entry
+  - store "incrementable" SHA 256
+  - linked list: store position of previous sha256 log entry + NSA shortcuts
+
+- show progress bars for slow operations
+- interactive database browser (with labels + filters)
+- network protocol extension to handle local blob cache without downloading everything
+
 On-disk Storage
-----------------
-- To make everything work well with very large databases:
-
-   - optimize SHA 256 calculations (store hash in file + allow self-check of integrity + incrementally update + cache a set of hashes at different offsets + perform calculation asynchronously in server)
-   - show progress bars for slow operations
-   - interactive database browser (with labels + filters)
-
+---------------
 - In a directory
 - A checkpoint file (2 copies, valid if identical)
 - A subdirectory for each table
@@ -105,6 +112,7 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- A Write_Lock object is needed (for interactive UI, for instance)
 - server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
 - ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
 - reading and writing buffers: don't use network_integers.h, but create a
