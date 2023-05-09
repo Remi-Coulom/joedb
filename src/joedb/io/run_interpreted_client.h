@@ -51,7 +51,11 @@ namespace joedb
     client.transaction([](Readable &readable, Writable &writable)
     {
      std::cout << "OK\n";
-     Interpreter(readable, writable).main_loop(std::cin, std::cout);
+     Interpreter(readable, writable, nullptr, nullptr, 0).main_loop
+     (
+      std::cin,
+      std::cout
+     );
     });
    }
    else if (input == "P" && diff <= 0)
@@ -59,7 +63,13 @@ namespace joedb
    else if (input == "P" && diff > 0)
     client.push_unlock();
    else if (input == "R")
-    Readonly_Interpreter(client.get_database()).main_loop(std::cin, std::cout);
+   {
+    Readonly_Interpreter(client.get_database(), nullptr).main_loop
+    (
+     std::cin,
+     std::cout
+    );
+   }
    else if (input == "Q")
     break;
    else

@@ -109,12 +109,7 @@ int joedb::write_json
       case Type::Type_Id::blob:
       {
        const Blob blob = db.get_blob(table_id, record_id, field_id);
-
-       if (!db.get_blob_reader())
-        throw joedb::Exception("no blob reader");
-
-       const std::string s = db.get_blob_reader()->read_blob_data(blob);
-       result |= write_json_string(out, s, base64);
+       out << blob.get_position();
       }
       break;
 

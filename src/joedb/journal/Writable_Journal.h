@@ -61,6 +61,7 @@ namespace joedb
      }
    };
 
+   void append() {file.set_position(checkpoint_position);}
    void append_raw_tail(const char *data, size_t size);
    void append_raw_tail(const std::vector<char> &data);
 

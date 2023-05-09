@@ -47,7 +47,7 @@ TEST(Selective_Writable_Test, basic)
 
   Database db;
   Multiplexer multiplexer{db, select_schema, select_information, select_data};
-  Interpreter interpreter(db, multiplexer);
+  Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;

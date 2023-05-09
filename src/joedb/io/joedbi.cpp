@@ -16,6 +16,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   std::unique_ptr<Generic_File> file;
+  std::unique_ptr<Writable_Journal> writable_journal;
 
   if (argc > 1)
   {
@@ -37,11 +38,30 @@ namespace joedb
 
   Database db;
 
+  std::unique_ptr<Generic_File> blob_file;
+  std::unique_ptr<Writable_Journal> blob_journal;
+
+  if (argc > 2)
+  {
+   const char * const blob_file_name = argv[2];
+   blob_file.reset(new File(blob_file_name, file->get_mode()));
+
+   if (file->get_mode() != Open_Mode::read_existing)
+   {
+    blob_journal.reset(new Writable_Journal(*blob_file));
+    blob_journal->append();
+   }
+  }
+
   if (file->get_mode() == Open_Mode::read_existing)
   {
    Readonly_Journal journal(*file);
    journal.replay_log(db);
-   Readonly_Interpreter interpreter(db);
+   Readonly_Interpreter interpreter
+   (
+    db,
+    blob_file ? blob_file.get() : file.get()
+   );
    interpreter.main_loop(std::cin, std::cout);
   }
   else
@@ -49,7 +69,14 @@ namespace joedb
    Writable_Journal journal(*file);
    journal.replay_log(db);
    Multiplexer multiplexer{db, journal};
-   Interpreter interpreter(db, multiplexer);
+   Interpreter interpreter
+   (
+    db,
+    multiplexer,
+    blob_file ? blob_file.get() : file.get(),
+    blob_file ? blob_journal.get() : &journal,
+    0
+   );
    interpreter.main_loop(std::cin, std::cout);
   }
 

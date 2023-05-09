@@ -191,12 +191,12 @@ namespace joedb
           field.first
          );
 
-         if (readable.get_blob_reader())
+         if (blob.get_position() && blob_reader)
          {
           write_string
           (
            ss,
-           readable.get_blob_reader()->read_blob_data(blob)
+           blob_reader->read_blob_data(blob)
           );
          }
          else
@@ -554,7 +554,11 @@ namespace joedb
   else if (command == "blob") ///////////////////////////////////////////////
   {
    const std::string value = joedb::read_string(iss);
-   const Blob blob = writable.write_blob_data(value);
+
+   const Blob blob = blob_writer ?
+    blob_writer->write_blob_data(value) :
+    writable.write_blob_data(value);
+
    joedb::write_blob(out, blob);
    out << '\n';
   }
@@ -607,5 +611,7 @@ namespace joedb
  {
   Readonly_Interpreter::main_loop(in, out);
   writable.checkpoint(Commit_Level::no_commit);
+  if (blob_writer && blob_writer != &writable)
+   blob_writer->checkpoint(Commit_Level::no_commit);
  }
 }

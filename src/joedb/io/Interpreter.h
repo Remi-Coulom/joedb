@@ -15,6 +15,7 @@ namespace joedb
  {
   protected:
    const Readable &readable;
+   Blob_Reader * const blob_reader;
 
    Type parse_type(std::istream &in, std::ostream &out) const;
    Table_Id parse_table(std::istream &in, std::ostream &out) const;
@@ -38,8 +39,13 @@ namespace joedb
    );
 
   public:
-   Readonly_Interpreter(const Readable &readable):
+   Readonly_Interpreter
+   (
+    const Readable &readable,
+    Blob_Reader *blob_reader
+   ):
     readable(readable),
+    blob_reader(blob_reader),
     echo(true),
     rethrow(false)
    {
@@ -59,6 +65,7 @@ namespace joedb
  {
   private:
    Writable &writable;
+   Writable * const blob_writer;
 
    void update_value
    (
@@ -82,10 +89,13 @@ namespace joedb
    (
     Readable &readable,
     Writable &writable,
-    Record_Id max_record_id = 0
+    Blob_Reader *blob_reader,
+    Writable *blob_writer,
+    Record_Id max_record_id
    ):
-    Readonly_Interpreter(readable),
+    Readonly_Interpreter(readable, blob_reader),
     writable(writable),
+    blob_writer(blob_writer),
     max_record_id(max_record_id)
    {}
 

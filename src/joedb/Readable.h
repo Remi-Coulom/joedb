@@ -19,8 +19,6 @@ namespace joedb
    static const std::string default_table_name;
    static const std::string default_field_name;
 
-   Blob_Reader *blob_reader = nullptr;
-
   public:
    virtual const std::map<Table_Id, std::string> &get_tables() const = 0;
    virtual const std::map<Field_Id, std::string> &get_fields
@@ -32,12 +30,6 @@ namespace joedb
     Table_Id table_id,
     Field_Id field_id
    ) const = 0;
-
-   void set_blob_reader(Blob_Reader *new_blob_reader)
-   {
-    blob_reader = new_blob_reader;
-   }
-   Blob_Reader *get_blob_reader() const {return blob_reader;}
 
    virtual Record_Id get_last_record_id(Table_Id table_id) const = 0;
    virtual bool is_used(Table_Id table_id, Record_Id record_id) const = 0;

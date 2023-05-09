@@ -24,7 +24,7 @@ class Interpreter_Test: public::testing::Test
 
   Interpreter_Test():
    multiplexer{db},
-   interpreter(db, multiplexer)
+   interpreter(db, multiplexer, nullptr, nullptr, 0)
   {
   }
 };

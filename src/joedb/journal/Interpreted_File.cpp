@@ -22,7 +22,7 @@ namespace joedb
    Database db;
    journal.replay_log(db);
    Multiplexer multiplexer{db, journal};
-   Interpreter interpreter(db, multiplexer);
+   Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
    interpreter.set_echo(false);
    interpreter.set_rethrow(true);
    {

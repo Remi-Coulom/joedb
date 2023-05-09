@@ -33,7 +33,7 @@ static int joedb_logdump_main(int argc, char **argv)
  if (argc <= 1)
  {
   std::cerr << "usage: " << argv[0];
-  std::cerr << " [--sql] [--sqlite] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] [--print-checkpoint] <file.joedb>\n";
+  std::cerr << " [--sql] [--sqlite] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] [--print-checkpoint] [--blob] <file.joedb>\n";
   return 1;
  }
  else
