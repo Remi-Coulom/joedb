@@ -5,7 +5,9 @@
 
 namespace joedb
 {
+ ////////////////////////////////////////////////////////////////////////////
  class Selective_Writable: public Writable
+ ////////////////////////////////////////////////////////////////////////////
  {
   public:
    enum Mode
@@ -21,14 +23,18 @@ namespace joedb
   private:
    Writable &writable;
    const Mode mode;
+   bool blob_found;
 
   public:
 
    Selective_Writable(Writable &writable, Mode mode):
     writable(writable),
-    mode(mode)
+    mode(mode),
+    blob_found(false)
    {
    }
+
+   bool has_blobs() const {return blob_found;}
 
    //
    // schema events
@@ -140,6 +146,11 @@ namespace joedb
      writable.update_##type_id(table_id, record_id, field_id, value);\
    }
    #include "joedb/TYPE_MACRO.h"
+
+   void on_blob(Blob blob, Blob_Reader &reader) final
+   {
+    blob_found = true;
+   }
  };
 }
 
