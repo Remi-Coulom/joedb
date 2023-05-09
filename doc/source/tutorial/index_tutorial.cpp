@@ -6,13 +6,8 @@
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- tutorial::File_Database db("index_tutorial.joedb");
-
- //
- // Erase all data
- //
- db.clear_city_table();
- db.clear_person_table();
+ joedb::Memory_File file;
+ tutorial::Generic_File_Database db(file);
 
  //
  // Insert some cities
