@@ -12,24 +12,19 @@ namespace joedb
  {
   private:
    int64_t position;
-   size_t size;
 
   public:
-   Blob(int64_t position, int64_t size):
-    position(position),
-    size(size)
+   explicit Blob(int64_t position):
+    position(position)
    {
    }
 
-   Blob(): Blob(0, 0)
+   Blob(): Blob(0)
    {
    }
 
    int64_t get_position() const noexcept {return position;}
-   size_t get_size() const noexcept {return size;}
  };
-
- static_assert(sizeof(Blob) == 2 * sizeof(int64_t), "Bad Blob size");
 
  ////////////////////////////////////////////////////////////////////////////
  class Blob_Reader

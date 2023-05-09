@@ -415,8 +415,8 @@ namespace joedb
 
    void write_string(const std::string &s);
    std::string read_string();
-   void write_blob(Blob blob);
-   Blob read_blob();
+   void write_blob(Blob blob) {compact_write<int64_t>(blob.get_position());}
+   Blob read_blob() {return Blob(compact_read<int64_t>());}
    std::string safe_read_string(int64_t max_size);
 
    //////////////////////////////////////////////////////////////////////////
