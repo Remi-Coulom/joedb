@@ -17,6 +17,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
  ${JOEDB_SRC_DIR}/joedb/Destructor_Logger.cpp
  ${JOEDB_SRC_DIR}/joedb/get_version.cpp
+ ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreter/Database.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreter/Database_Schema.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreter/Table.cpp
