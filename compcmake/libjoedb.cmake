@@ -32,6 +32,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/Raw_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/run_interpreted_client.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp

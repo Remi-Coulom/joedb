@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Local_Connection.h"
+#include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/File.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
