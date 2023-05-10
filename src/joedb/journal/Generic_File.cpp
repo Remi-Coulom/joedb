@@ -1,7 +1,6 @@
 #include "joedb/journal/Generic_File.h"
 
 #include <algorithm>
-#include <joedb/Exception.h>
 
 namespace joedb
 {
