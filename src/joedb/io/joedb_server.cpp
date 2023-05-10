@@ -6,7 +6,6 @@
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
-#include <joedb/journal/Generic_File.h>
 
 namespace joedb
 {
