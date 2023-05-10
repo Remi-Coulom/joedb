@@ -7,6 +7,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
  )
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wduplicated-cond -Wshadow=local -Wc++17-compat")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overread") # produces false warnings
  endif()
 
  set(CMAKE_CXX_FLAGS_COVERAGE
