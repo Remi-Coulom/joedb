@@ -43,6 +43,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/journal/SHA_256.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Interpreted_File.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
 )
 
 if (HAS_NETWORKING)

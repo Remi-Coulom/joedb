@@ -1,8 +1,4 @@
-#include "joedb/journal/SHA_256.h"
-#include "joedb/journal/Generic_File.cpp"
-#include "joedb/journal/File.cpp"
-#include "joedb/journal/Stream_File.cpp"
-#include "joedb/Destructor_Logger.cpp"
+#include "joedb/journal/File.h"
 
 #include <iostream>
 #include <iomanip>

@@ -66,6 +66,8 @@ joedb_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
 joedb_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
 joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
 joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
+joedb_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
+joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
@@ -77,11 +79,6 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/journal/Writable_Journal.cpp
-)
-
-ipo_add_executable(joedb_sha256sum
- ../src/joedb/io/joedb_sha256sum.cpp
- ../src/joedb/journal/SHA_256.cpp
 )
 
 if(EXISTS "${GOOGLE_TEST}/include")
@@ -126,7 +123,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_base64.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/io/base64_decode.cpp
-  ../src/joedb/compiler/nested_namespace.cpp
   ../src/joedb/journal/Portable_File.cpp
   ../src/joedb/String_Logger.cpp
  )
@@ -150,12 +146,6 @@ else()
 endif()
 
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
-
-joedb_add_executable(joedb_embed
- ../src/joedb/compiler/joedb_embed.cpp
- ../src/joedb/io/base64.cpp
- ../src/joedb/compiler/nested_namespace.cpp
-)
 
 joedb_add_executable(joedb_embedded_client
  ../src/joedb/io/joedb_embedded_client.cpp
