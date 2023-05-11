@@ -2,7 +2,10 @@
 echo Generating cmake build directories...
 config="$1"
 
+# For some old versions of git, this must be executed at the root
+cd ..
 git submodule update --init --recursive
+cd -
 
 build_system=""
 ninja_path=`which ninja`
