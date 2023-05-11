@@ -1561,8 +1561,6 @@ static void generate_readonly_h
      out << ", ";
     out << "field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
-    if (db.get_field_type(index.table_id, index.field_ids[i]).get_type_id() == Type::Type_Id::reference)
-    out << ".get_id()";
    }
    out << "));\n";
    out << "    if (i == index_of_" << index.name << ".end())\n";
