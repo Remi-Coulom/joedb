@@ -3,8 +3,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 #############################################################################
  message("== gcc")
  set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wc++14-compat -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls"
+  "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls"
  )
+ if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wc++14-compat")
+ endif()
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wduplicated-cond -Wshadow=local -Wc++17-compat")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overread") # produces false warnings

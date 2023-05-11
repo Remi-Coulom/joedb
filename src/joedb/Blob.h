@@ -32,7 +32,7 @@ namespace joedb
  {
   public:
    virtual std::string read_blob_data(Blob blob) = 0;
-   virtual ~Blob_Reader() = default;
+   virtual ~Blob_Reader();
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ namespace joedb
  {
   public:
    virtual Blob write_blob_data(const std::string &data) {return Blob();}
-   virtual ~Blob_Writer() = default;
+   virtual ~Blob_Writer();
  };
 }
 

@@ -43,8 +43,6 @@ namespace joedb
     int64_t server_checkpoint,
     bool unlock_after
    ) = 0;
-
-   virtual ~Connection() = default;
  };
 }
 

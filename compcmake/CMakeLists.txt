@@ -1,5 +1,5 @@
 if (UNIX)
- cmake_minimum_required(VERSION 3.3)
+ cmake_minimum_required(VERSION 3.2)
 else()
  #For some reasons requiring 3.9 is necessary in MSVC
  cmake_minimum_required(VERSION 3.9)
@@ -72,6 +72,7 @@ joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
  ../src/joedb/Destructor_Logger.cpp
+ ../src/joedb/Blob.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Stream_File.cpp

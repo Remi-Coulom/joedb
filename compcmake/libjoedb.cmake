@@ -11,6 +11,7 @@ endif()
 
 set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/external/wide_char_display_width.cpp
+ ${JOEDB_SRC_DIR}/joedb/Blob.cpp
  ${JOEDB_SRC_DIR}/joedb/Readable.cpp
  ${JOEDB_SRC_DIR}/joedb/Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
@@ -42,6 +43,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/SHA_256.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Interpreted_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/concurrency/Mutex.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
 )

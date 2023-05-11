@@ -18,7 +18,7 @@ namespace joedb
 
   public:
    Mutex() {}
-   virtual ~Mutex() = default;
+   virtual ~Mutex();
 
    /////////////////////////////////////////////////////////////////////////
    template<typename F> void run_while_locked(F f)

@@ -51,8 +51,6 @@ namespace joedb
 
    // TODO: iterators to iterate over table rows?
 
-   virtual ~Readable() = default;
-
    Table_Id find_table(const std::string &name) const
    {
     for (const auto &table: get_tables())
@@ -106,6 +104,8 @@ namespace joedb
 
     return default_field_name;
    }
+
+   virtual ~Readable();
  };
 }
 
