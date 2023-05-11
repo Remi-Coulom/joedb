@@ -38,7 +38,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("-- no clang-tidy")
  endif()
 
- set(CMAKE_CXX_FLAGS "-pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")

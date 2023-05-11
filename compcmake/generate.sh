@@ -49,6 +49,8 @@ if [ "$gcc_path" != "" ]; then
  generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler
  generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
  generate gcc_tsan cmake $build_system -DCMAKE_BUILD_TYPE=TSAN $compiler
+ #note: fore 32-compilation, apt install gcc-multilib
+ generate gcc_debug32 cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 $compiler
 fi
 
 echo
