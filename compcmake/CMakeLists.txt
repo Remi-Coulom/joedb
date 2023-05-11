@@ -83,7 +83,7 @@ ipo_add_executable(joedb_convert
 )
 
 if(EXISTS "${GOOGLE_TEST}/include")
- add_executable(joedb_test
+ joedb_add_executable(joedb_test
   ../test/endianness_Test.cpp
   ../test/diagnostics_Test.cpp
   ../test/File_Test.cpp
@@ -113,21 +113,20 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/compiler/Blob.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/blob.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/multi_index.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v1.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/schema_v2.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/vector_test.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/empty.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_base64.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_ascii.cpp
+  ../test/compiler/db/blob.cpp
+  ../test/compiler/db/test.cpp
+  ../test/compiler/db/multi_index.cpp
+  ../test/compiler/db/schema_v1.cpp
+  ../test/compiler/db/schema_v2.cpp
+  ../test/compiler/db/vector_test.cpp
+  ../test/compiler/db/empty.cpp
+  ../test/compiler/translation.h
+  ../test/compiler/db/test_dbname_base64.cpp
+  ../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
   ../src/joedb/String_Logger.cpp
  )
- target_link_libraries(joedb_test joedb)
 
  if (HAS_NETWORKING)
   target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
