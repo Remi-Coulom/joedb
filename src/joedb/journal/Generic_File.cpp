@@ -115,36 +115,80 @@ namespace joedb
   const int64_t original_position = get_position();
   set_position(start);
 
-  constexpr uint32_t chunk_size = 64;
   constexpr uint32_t chunks = 2048;
-  std::vector<char> hashing_buffer(chunk_size * chunks);
+  std::vector<char> hashing_buffer(SHA_256::chunk_size * chunks);
 
   int64_t current_size = 0;
 
   while (true)
   {
-   size_t requested_size = chunk_size * chunks;
+   size_t requested_size = SHA_256::chunk_size * chunks;
    if (current_size + int64_t(requested_size) > size)
     requested_size = size_t(size - current_size);
 
    const size_t read_count = raw_read(&hashing_buffer[0], requested_size);
    current_size += read_count;
-   const uint32_t full_chunks = uint32_t(read_count / chunk_size);
+   const uint32_t full_chunks = uint32_t(read_count / SHA_256::chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
-    sha_256.process_chunk(&hashing_buffer[i * chunk_size]);
+    sha_256.process_chunk(&hashing_buffer[i * SHA_256::chunk_size]);
 
-   const uint32_t remainder = uint32_t(read_count % chunk_size);
+   const uint32_t remainder = uint32_t(read_count % SHA_256::chunk_size);
    if (remainder || current_size >= size || read_count == 0)
    {
     sha_256.process_final_chunk
     (
-     &hashing_buffer[full_chunks * chunk_size],
+     &hashing_buffer[full_chunks * SHA_256::chunk_size],
      uint64_t(current_size)
     );
     break;
    }
   }
 
+  set_position(original_position);
+  return sha_256.get_hash();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ SHA_256::Hash Generic_File::get_fast_hash
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const int64_t start,
+  const int64_t size
+ )
+ {
+  constexpr int buffer_count = 256;
+
+  if (size < 4 * buffer_size * buffer_count)
+   return get_hash(start, size);
+
+  SHA_256 sha_256;
+  const int64_t original_position = get_position();
+
+  for (int i = 0; i < buffer_count; i++)
+  {
+   int64_t buffer_position;
+
+   if (i == 0)
+    buffer_position = start;
+   else if (i == buffer_count - 1)
+    buffer_position = start + size - buffer_size;
+   else
+   {
+    buffer_position = buffer_size *
+    (
+     (start + i * size) / (buffer_size * (buffer_count - 1))
+    );
+   }
+
+   set_position(buffer_position);
+
+   raw_read(buffer, buffer_size);
+
+   for (int j = 0; j < buffer_size; j += SHA_256::chunk_size)
+    sha_256.process_chunk(buffer + j);
+  }
+
+  reset_read_buffer();
   set_position(original_position);
   return sha_256.get_hash();
  }

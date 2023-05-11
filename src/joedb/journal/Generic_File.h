@@ -504,6 +504,7 @@ namespace joedb
 
    SHA_256::Hash get_hash(int64_t start, int64_t size);
    SHA_256::Hash get_hash();
+   SHA_256::Hash get_fast_hash(int64_t start, int64_t size);
 
    std::string read_blob_data(Blob blob) final;
    Blob write_blob_data(const std::string &data) final;

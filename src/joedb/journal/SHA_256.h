@@ -62,6 +62,7 @@ namespace joedb
   public:
    SHA_256(): hash(hash_init) {}
    const Hash &get_hash() const {return hash;}
+   static constexpr int chunk_size = 64;
 
    /////////////////////////////////////////////////////////////////////////
    void process_chunk(const char *data)

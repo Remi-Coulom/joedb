@@ -17,7 +17,8 @@ int main(int argc, char **argv)
   try
   {
    joedb::File file(file_name, joedb::Open_Mode::read_existing);
-   joedb::SHA_256::Hash hash = file.get_hash();
+//   joedb::SHA_256::Hash hash = file.get_hash();
+   joedb::SHA_256::Hash hash = file.get_fast_hash(41, file.get_size());
    for (uint32_t i = 0; i < 8; i++)
     std::cout << std::setw(8) << hash[i];
    std::cout << "  " << file_name << '\n';
