@@ -14,8 +14,11 @@ Here is an example database schema:
 .. literalinclude:: ../../test/compiler/db/blob.joedbi
    :language: joedbi
 
-And the unit test that demonstrate how to use a blob:
+And the unit test that demonstrates how to use a blob:
 
 .. literalinclude:: ../../test/compiler/Blob.cpp
    :language: c++
 
+In order to get better performance when manipulating a large amount of blob
+data, blobs can be stored in a separate file. This can make loading non-blob
+data much faster, because it will be stored contiguously.
