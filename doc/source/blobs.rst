@@ -20,5 +20,5 @@ And the unit test that demonstrates how to use a blob:
    :language: c++
 
 In order to get better performance when manipulating a large amount of blob
-data, blobs can be stored in a separate file. This can make loading non-blob
-data much faster, because it will be stored contiguously.
+data, blobs can be stored in a separate file. This way, non-blob data will be
+stored contiguously, and can be read much faster.

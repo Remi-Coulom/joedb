@@ -16,9 +16,10 @@ TEST(Compiler, blob)
  {
   blob::Generic_File_Database db(file);
   const auto person = db.new_person();
-  db.set_city(person, "Paris");
   const joedb::Blob name_blob = db.write_blob_data("Jacques");
   db.set_name(person, name_blob);
+  db.set_city(person, "Paris");
+  EXPECT_EQ("Jacques", db.read_blob_data(name_blob));
   db.checkpoint();
  }
 

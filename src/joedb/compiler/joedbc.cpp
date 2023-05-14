@@ -166,7 +166,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  class Client_Data;
  class Client;
 
- class Generic_File_Database: public Database
+ class Generic_File_Database: public Database, public joedb::Blob_Reader
  {
   friend class Client_Data;
   friend class Client;
@@ -225,6 +225,11 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
   public:
    Generic_File_Database(joedb::Generic_File &file);
+
+   std::string read_blob_data(joedb::Blob blob) final
+   {
+    return journal.read_blob_data(blob);
+   }
 
    joedb::Blob write_blob_data(const std::string &data) final
    {
