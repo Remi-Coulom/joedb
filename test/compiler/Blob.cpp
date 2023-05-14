@@ -10,16 +10,15 @@ TEST(Compiler, blob)
  joedb::Memory_File file;
 
  //
- // Blobs can be written into the database itself, but could also be
- // stored into a separate joedb database.
+ // A blob is created with the write_blob_data function
  //
  {
   blob::Generic_File_Database db(file);
   const auto person = db.new_person();
   const joedb::Blob name_blob = db.write_blob_data("Jacques");
   db.set_name(person, name_blob);
-  db.set_city(person, "Paris");
   EXPECT_EQ("Jacques", db.read_blob_data(name_blob));
+  db.set_city(person, "Paris");
   db.checkpoint();
  }
 
