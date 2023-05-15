@@ -34,7 +34,7 @@ namespace joedb
     return journal;
    }
 
-   const Writable_Journal &get_journal() const
+   const Readonly_Journal &get_journal() const
    {
     return journal;
    }
