@@ -112,28 +112,37 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- A Write_Lock object is needed (for interactive UI, for instance)
-- server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
-- ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
-- reading and writing buffers: don't use network_integers.h, but create a
-  Buffer_File class, and use write<int64_t>
-- Readonly_Client
+- Backup client:
+
+  - Journal_Client: like Interpreted_Client, without the Interpreted_Database
+  - A superclass common with Interpreted_Client (virtual function returns pointer to readable, null for journal-only)
+  - run_interpreted_client uses the superclass
+  - A new "polling_backup" command that pulls in a loop with a delay until interrupted
+  - joedb_*_client takes an optional "--journal" option -> no interpreted database
+  - note: some functions of the interpreter don't require a readable (comment, timestamp, blob, ...): Readonly_Interpreter, Writeonly_Interpreter, Full_Interpreter
+
+- A Write_Lock object is needed (for interactive UI, for instance. Maybe for Server)
+- Test many concurrent read and write requests. Performance benchmarks.
+
 - joedb_server:
 
   - use coroutines
-  - fuzzer + unit testing
-  - option to serve readonly
+  - support running on multiple threads (requires mutex?)
+
+    - OK to keep one thread busy when waiting for a lock, or computing SHA 256, ...
+    - thread_count = max(core_count, 2 * server_count)
+    - Requires synchronization. One strand per session + mutex for global stuff (connection, disconnection, interrupt, ...)
+
+  - use a journal-only client instead of directly manipulating a journal
   - indicate commit level for a push
-  - cache SHA-256 calculations + efficient incremental update.
-  - perform hash calculations asynchronously (don't block whole server)
-  - backup should be asynchronous as well. Allow multiple backups.
   - allow timeout in the middle of a push.
   - don't use a big push buffer. Push to the file directly?
+  - replace get_hash by get_fast_hash
+  - fuzzer + unit testing
 
 - performance: fuse socket writes. Fused operations can be produced by fusing
   writes. Lock-pull and push-unlock could have be done this way. Do it for
   lock-pull-unlock.
-- Asynchronous client (necessary for backup client). Do it with coroutines.
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
@@ -152,8 +161,13 @@ Concurrency
 
   If the journal is shared but not lockable (Portable_File), then lock the
   connection like we are doing now.
-
 - pull into a local_client should not lock
+- Readonly_Client, Readonly_Server
+- server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
+- ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
+- reading and writing buffers: don't use network_integers.h, but create a
+  Buffer_File class, and use write<int64_t>
+- Connection_Multiplexer for multiple parallel backup servers?
 
 C++ language questions
 ----------------------
