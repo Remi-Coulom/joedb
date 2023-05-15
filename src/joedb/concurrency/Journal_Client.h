@@ -1,21 +1,22 @@
-#ifndef joedb_Backup_Client_declared
-#define joedb_Backup_Client_declared
+#ifndef joedb_Journal_Client_declared
+#define joedb_Journal_Client_declared
 
 #include "joedb/concurrency/Client.h"
+#include "joedb/Multiplexer.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Backup_Client_Data
+ class Journal_Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Backup_Client;
+  friend class Journal_Client;
 
   private:
    Writable_Journal journal;
 
   public:
-   Backup_Client_Data
+   Journal_Client_Data
    (
     joedb::Connection &connection,
     Generic_File &file
@@ -29,39 +30,37 @@ namespace joedb
     return journal;
    }
 
-   const Writable_Journal &get_journal() const
+   const Readonly_Journal &get_journal() const
    {
     return journal;
    }
 
    void update()
    {
+    journal.seek_to_checkpoint();
    }
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Backup_Client: private Client<Backup_Client_Data>
+ class Journal_Client: public Client<Journal_Client_Data>
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   Backup_Client
+   Journal_Client
    (
     Connection &connection,
-    Generic_File &local_file
+    Generic_File &file
    ):
-    Client(connection, local_file)
+    Client(connection, file)
    {
-    connection.lock();
    }
 
-   Writable_Journal &get_journal()
+   template<typename F> void transaction(F transaction)
    {
-    return data.journal;
-   }
-
-   void locked_push()
-   {
-    Client<Backup_Client_Data>::locked_push();
+    Client::transaction([&]()
+    {
+     transaction(data.journal);
+    });
    }
  };
 }

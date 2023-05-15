@@ -373,6 +373,7 @@ namespace joedb
    out << " comment \"<comment_string>\"\n";
    out << " valid_data\n";
    out << " checkpoint\n";
+   out << " blob <data_string>\n";
    out << '\n';
    out << "Data definition\n";
    out << "~~~~~~~~~~~~~~~\n";
@@ -399,7 +400,6 @@ namespace joedb
    out << " update <table_name> <record_id> <field_name> <value>\n";
    out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
    out << " delete_from <table_name> <record_id>\n";
-   out << " blob <data_string>\n";
    out << '\n';
   }
   else if (command == "create_table") ///////////////////////////////////////
