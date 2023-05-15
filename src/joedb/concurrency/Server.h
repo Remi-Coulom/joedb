@@ -186,8 +186,6 @@ namespace joedb
 
    std::ostream *log_pointer;
 
-   Backup_Client *backup_client;
-
    template<typename F> void log(F f) noexcept
    {
     if (log_pointer)
@@ -210,8 +208,7 @@ namespace joedb
     net::io_context &io_context,
     uint16_t port,
     uint32_t lock_timeout_seconds,
-    std::ostream *log_pointer,
-    Backup_Client *backup_client
+    std::ostream *log_pointer
    );
 
    uint16_t get_port() const {return port;}

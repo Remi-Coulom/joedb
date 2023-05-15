@@ -1,11 +1,3 @@
-create_table server
-add_field server file_name string
-add_field server port int32
-add_field server timeout int32
-
-#
-# Schema upgrade: add support for backup
-#
 create_table ssh_connection
 add_field ssh_connection user string
 add_field ssh_connection host string
@@ -13,5 +5,10 @@ add_field ssh_connection joedb_port int32
 add_field ssh_connection ssh_port int32
 add_field ssh_connection ssh_log_level int32
 
-add_field server ssh_backup references ssh_connection
-custom set_default_ssh_backup
+create_table server
+add_field server port int32
+add_field server timeout int32
+add_field server file_name string
+add_field server ssh_connection references ssh_connection
+
+# The server will use a local connection if ssh_connection is null

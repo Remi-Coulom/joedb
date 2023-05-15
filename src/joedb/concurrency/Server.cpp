@@ -255,8 +255,6 @@ namespace joedb
    else
    {
     journal.append_raw_tail(push_buffer.data(), offset);
-    if (backup_client)
-     backup_client->locked_push();
     session->buffer[0] = 'U';
    }
 
@@ -804,8 +802,7 @@ namespace joedb
   net::io_context &io_context,
   uint16_t port,
   uint32_t lock_timeout_seconds,
-  std::ostream *log_pointer,
-  Backup_Client *backup_client
+  std::ostream *log_pointer
  ):
   journal(journal),
   io_context(io_context),
@@ -817,12 +814,8 @@ namespace joedb
   lock_timeout_seconds(lock_timeout_seconds),
   lock_timeout_timer(io_context),
   locked(false),
-  log_pointer(log_pointer),
-  backup_client(backup_client)
+  log_pointer(log_pointer)
  {
-  if (backup_client)
-   backup_client->locked_push();
-
   write_status();
 
   std::signal(SIGINT, signal_handler);

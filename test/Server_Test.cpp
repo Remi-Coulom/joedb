@@ -18,7 +18,7 @@ TEST(Server, basic)
  joedb::Memory_File server_file;
  joedb::Writable_Journal server_journal(server_file);
  net::io_context io_context;
- joedb::Server server(server_journal, io_context, 0, 0, log_stream, nullptr);
+ joedb::Server server(server_journal, io_context, 0, 0, log_stream);
  std::thread server_thread([&io_context](){io_context.run();});
 
  std::ostringstream port_stream;
