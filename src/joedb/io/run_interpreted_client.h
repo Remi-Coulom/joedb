@@ -3,10 +3,10 @@
 
 namespace joedb
 {
- class Interpreted_Client;
+ class Client;
  class Connection;
 
- void run_interpreted_client(Interpreted_Client &client);
+ void run_interpreted_client(Client &client);
  void run_interpreted_client(Connection &connection, const char *file_name);
 }
 

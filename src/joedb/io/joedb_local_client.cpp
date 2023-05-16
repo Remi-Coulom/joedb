@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Journal_Client.h"
 #include "joedb/journal/File.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/run_interpreted_client.h"
@@ -31,10 +32,18 @@ namespace joedb
    std::cout << "Connection... ";
    std::cout.flush();
    Local_Connection<File> connection(file_name);
-   Interpreted_Client client(connection, connection.get_file());
    std::cout << "OK\n";
 
-   run_interpreted_client(client);
+   if (journal)
+   {
+    Journal_Client client(connection, connection.get_file());
+    run_interpreted_client(client);
+   }
+   else
+   {
+    Interpreted_Client client(connection, connection.get_file());
+    run_interpreted_client(client);
+   }
   }
 
   return 0;

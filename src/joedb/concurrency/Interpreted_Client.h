@@ -67,6 +67,11 @@ namespace joedb
     return database;
    }
 
+   const Readable *get_readable() const final
+   {
+    return &database;
+   }
+
    template<typename F> void transaction(F transaction)
    {
     Client::transaction([&]()
