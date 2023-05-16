@@ -10,9 +10,18 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
+  bool journal = false;
+
+  if (argc >= 2 && argv[1] == std::string("--journal"))
+  {
+   journal = true;
+   argc--;
+   argv++;
+  }
+
   if (argc != 2)
   {
-   std::cerr << "usage: " << argv[0] << " <file_name>\n";
+   std::cerr << "usage: " << argv[0] << " [--journal] <file_name>\n";
    return 1;
   }
   else
