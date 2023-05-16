@@ -1,17 +1,9 @@
 #include "joedb/io/run_interpreted_client.h"
-
-#include "joedb/concurrency/Connection.h"
-#include "joedb/concurrency/Client.h"
+#include "joedb/io/Interpreter.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Journal_Client.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/journal/File.h"
-#include "joedb/journal/Memory_File.h"
-
-#include "joedb/concurrency/Interpreted_Client.h"
 
 #include <iostream>
-#include <memory>
 #include <limits>
 
 namespace joedb
