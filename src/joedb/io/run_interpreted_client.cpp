@@ -12,6 +12,20 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ static void run_transaction(Command_Interpreter &interpreter)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::cout << "OK\n";
+  interpreter.set_prompt(true);
+  interpreter.set_prompt_string("joedb_client/transaction> ");
+  interpreter.main_loop
+  (
+   std::cin,
+   std::cout
+  );
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  class Client_Command_Processor: public Command_Processor
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -36,7 +50,7 @@ namespace joedb
      out << " pull\n";
      out << " pull_every <seconds>\n";
      out << " push\n";
-     out << " read\n";
+     out << " db\n";
      out << " transaction\n";
      out << '\n';
      return Status::ok;
@@ -62,16 +76,19 @@ namespace joedb
     {
      client.push_unlock();
     }
-    else if (command == "read") /////////////////////////////////////////////
+    else if (command == "db") ///////////////////////////////////////////////
     {
      if (interpreted_client)
      {
-      Readable_Interpreter
+      Readable_Interpreter interpreter
       (
        interpreted_client->get_database(),
        nullptr
-      )
-      .main_loop(std::cin, std::cout);
+      );
+
+      interpreter.set_prompt(true);
+      interpreter.set_prompt_string("joedb_client/db> ");
+      interpreter.main_loop(std::cin, std::cout);
      }
      else
       out << "Cannot read: no table data\n";
@@ -88,24 +105,16 @@ namespace joedb
        [](Readable &readable, Writable &writable
       )
       {
-       std::cout << "OK\n";
-       Interpreter(readable, writable, nullptr, nullptr, 0).main_loop
-       (
-        std::cin,
-        std::cout
-       );
+       Interpreter interpreter(readable, writable, nullptr, nullptr, 0);
+       run_transaction(interpreter);
       });
      }
      else if (journal_client)
      {
       journal_client->transaction([](Writable &writable)
       {
-       std::cout << "OK\n";
-       Writable_Interpreter(writable).main_loop
-       (
-        std::cin,
-        std::cout
-       );
+       Writable_Interpreter interpreter(writable);
+       run_transaction(interpreter);
       });
      }
     }
@@ -137,6 +146,8 @@ namespace joedb
 
   Client_Command_Processor processor(client);
   Command_Interpreter interpreter{processor};
+  interpreter.set_prompt(true);
+  interpreter.set_prompt_string("joedb_client> ");
   interpreter.main_loop(std::cin, std::cout);
  }
 }

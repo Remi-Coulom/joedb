@@ -50,11 +50,21 @@ namespace joedb
   {
    std::string parameter;
    iss >> parameter;
-   
+
    if (parameter == "on")
     set_echo(true);
    else if (parameter == "off")
     set_echo(false);
+  }
+  else if (command == "prompt") /////////////////////////////////////////////
+  {
+   std::string parameter;
+   iss >> parameter;
+
+   if (parameter == "on")
+    set_prompt(true);
+   else if (parameter == "off")
+    set_prompt(false);
   }
   else if (command == "help") ///////////////////////////////////////////////
   {
@@ -65,6 +75,7 @@ namespace joedb
    out << " help\n";
    out << " quit\n";
    out << " echo on|off\n";
+   out << " prompt on|off\n";
    out << '\n';
 
    return Status::ok;
@@ -83,10 +94,18 @@ namespace joedb
  {
   int64_t line_number = 0;
 
-  std::string line;
-
-  while(std::getline(in, line))
+  while(true)
   {
+   if (prompt)
+   {
+    out << prompt_string;
+    out.flush();
+   }
+
+   std::string line;
+   if (!std::getline(in, line))
+    break;
+
    line_number++;
    std::istringstream iss(line);
    std::string command;

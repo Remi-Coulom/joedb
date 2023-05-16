@@ -20,6 +20,8 @@ namespace joedb
 
    bool echo = true;
    bool rethrow = false;
+   bool prompt = false;
+   std::string prompt_string = "joedb> ";
 
    void after_command
    (
@@ -49,6 +51,11 @@ namespace joedb
 
    void set_echo(bool new_echo) {echo = new_echo;}
    void set_rethrow(bool new_rethrow) {rethrow = new_rethrow;}
+   void set_prompt(bool new_prompt) {prompt = new_prompt;}
+   void set_prompt_string(std::string new_prompt_string)
+   {
+    prompt_string = std::move(new_prompt_string);
+   }
 
    void main_loop(std::istream &in, std::ostream &out);
  };

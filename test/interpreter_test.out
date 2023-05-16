@@ -79,6 +79,7 @@ General commands
  help
  quit
  echo on|off
+ prompt on|off
 
 Displaying data
 ~~~~~~~~~~~~~~~
