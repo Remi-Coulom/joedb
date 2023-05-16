@@ -17,7 +17,7 @@ namespace joedb
   Field_Id field_id
  )
  {
-  switch(readable.get_field_type(table_id, field_id).get_type_id())
+  switch(get_readable().get_field_type(table_id, field_id).get_type_id())
   {
    case Type::Type_Id::null:
     throw Exception("bad field");
@@ -26,7 +26,7 @@ namespace joedb
    case Type::Type_Id::type_id:\
    {\
     const type value = joedb::read_##type_id(in);\
-    writable.update_##type_id(table_id, record_id, field_id, value);\
+    get_writable().update_##type_id(table_id, record_id, field_id, value);\
    }\
    break;
    #include "joedb/TYPE_MACRO.h"
@@ -77,19 +77,19 @@ namespace joedb
   {
    std::string table_name;
    iss >> table_name;
-   writable.create_table(table_name);
+   get_writable().create_table(table_name);
   }
   else if (command == "drop_table") /////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
-   writable.drop_table(table_id);
+   get_writable().drop_table(table_id);
   }
   else if (command == "rename_table") ///////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
    std::string new_name;
    iss >> new_name;
-   writable.rename_table(table_id, new_name);
+   get_writable().rename_table(table_id, new_name);
   }
   else if (command == "add_field") //////////////////////////////////////////
   {
@@ -98,31 +98,31 @@ namespace joedb
    iss >> field_name;
    const Type type = parse_type(iss, out);
    if (type.get_type_id() != Type::Type_Id::null)
-    writable.add_field(table_id, field_name, type);
+    get_writable().add_field(table_id, field_name, type);
   }
   else if (command == "drop_field") ////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
-   const Field_Id field_id = readable.find_field(table_id, field_name);
-   writable.drop_field(table_id, field_id);
+   const Field_Id field_id = get_readable().find_field(table_id, field_name);
+   get_writable().drop_field(table_id, field_id);
   }
   else if (command == "rename_field") //////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
    std::string field_name;
    iss >> field_name;
-   const Field_Id field_id = readable.find_field(table_id, field_name);
+   const Field_Id field_id = get_readable().find_field(table_id, field_name);
    std::string new_field_name;
    iss >> new_field_name;
-   writable.rename_field(table_id, field_id, new_field_name);
+   get_writable().rename_field(table_id, field_id, new_field_name);
   }
   else if (command == "custom") ////////////////////////////////////////////
   {
    std::string name;
    iss >> name;
-   writable.custom(name);
+   get_writable().custom(name);
   }
   else if (command == "insert_into") ///////////////////////////////////////
   {
@@ -131,11 +131,11 @@ namespace joedb
    Record_Id record_id = 0;
    iss >> record_id;
    if (record_id == 0)
-    record_id = readable.get_last_record_id(table_id) + 1;
+    record_id = get_readable().get_last_record_id(table_id) + 1;
 
-   writable.insert_into(table_id, record_id);
+   get_writable().insert_into(table_id, record_id);
    if (iss.good())
-    for (const auto &field: readable.get_fields(table_id))
+    for (const auto &field: get_readable().get_fields(table_id))
     {
      update_value(iss, table_id, record_id, field.first);
      if (iss.fail())
@@ -148,7 +148,7 @@ namespace joedb
    Record_Id record_id = 0;
    Record_Id size = 0;
    iss >> record_id >> size;
-   writable.insert_vector(table_id, record_id, size);
+   get_writable().insert_vector(table_id, record_id, size);
   }
   else if (command == "update") ////////////////////////////////////////////
   {
@@ -157,7 +157,7 @@ namespace joedb
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
-   const Field_Id field_id = readable.find_field(table_id, field_name);
+   const Field_Id field_id = get_readable().find_field(table_id, field_name);
    update_value(iss, table_id, record_id, field_id);
   }
   else if (command == "update_vector") /////////////////////////////////////
@@ -167,7 +167,7 @@ namespace joedb
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
-   const Field_Id field_id = readable.find_field(table_id, field_name);
+   const Field_Id field_id = get_readable().find_field(table_id, field_name);
    Record_Id size = 0;
    iss >> size;
 
@@ -175,7 +175,7 @@ namespace joedb
     throw Exception("vector is too big");
    else
    {
-    switch(readable.get_field_type(table_id, field_id).get_type_id())
+    switch(get_readable().get_field_type(table_id, field_id).get_type_id())
     {
      case Type::Type_Id::null:
       throw Exception("bad field");
@@ -187,7 +187,7 @@ namespace joedb
       std::vector<type> v(size);\
       for (size_t i = 0; i < size; i++)\
        v[i] = joedb::read_##type_id(iss);\
-      writable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
+      get_writable().update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
      }\
      break;
      #include "joedb/TYPE_MACRO.h"
@@ -199,7 +199,7 @@ namespace joedb
    const Table_Id table_id = parse_table(iss, out);
    Record_Id record_id = 0;
    iss >> record_id;
-   writable.delete_from(table_id, record_id);
+   get_writable().delete_from(table_id, record_id);
   }
   else
    return Status::not_found;

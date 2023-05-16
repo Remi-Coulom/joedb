@@ -12,6 +12,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
   public Command_Processor
  {
+  friend class Readable_Writable_Command_Processor;
+
   private:
    Writable &writable;
    Writable * const blob_writer;

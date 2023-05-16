@@ -50,9 +50,8 @@ namespace joedb
     writable_command_processor(writable, blob_writer),
     readable_writable_command_processor
     (
-     readable,
-     writable,
-     blob_reader,
+     readable_command_processor,
+     writable_command_processor,
      max_record_id
     )
    {
