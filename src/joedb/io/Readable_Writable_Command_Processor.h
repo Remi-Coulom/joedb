@@ -16,7 +16,6 @@ namespace joedb
  {
   private:
    Writable &writable;
-   Writable * const blob_writer;
 
    void update_value
    (
@@ -41,16 +40,12 @@ namespace joedb
     Readable &readable,
     Writable &writable,
     Blob_Reader *blob_reader,
-    Writable *blob_writer,
     Record_Id max_record_id
    ):
-    Readable_Parser(readable, blob_reader),
+    Readable_Parser(readable),
     writable(writable),
-    blob_writer(blob_writer),
     max_record_id(max_record_id)
    {}
-
-   ~Readable_Writable_Command_Processor();
  };
 }
 

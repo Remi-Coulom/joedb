@@ -3,6 +3,7 @@
 
 #include "joedb/io/Command_Interpreter.h"
 #include "joedb/io/Readable_Command_Processor.h"
+#include "joedb/io/Writable_Command_Processor.h"
 #include "joedb/io/Readable_Writable_Command_Processor.h"
 #include "joedb/index_types.h"
 
@@ -33,6 +34,7 @@ namespace joedb
  {
   private:
    Readable_Command_Processor readable_command_processor;
+   Writable_Command_Processor writable_command_processor;
    Readable_Writable_Command_Processor readable_writable_command_processor;
 
   public:
@@ -45,16 +47,17 @@ namespace joedb
     Record_Id max_record_id
    ):
     readable_command_processor(readable, blob_reader),
+    writable_command_processor(writable, blob_writer),
     readable_writable_command_processor
     (
      readable,
      writable,
      blob_reader,
-     blob_writer,
      max_record_id
     )
    {
     add_processor(readable_command_processor);
+    add_processor(writable_command_processor);
     add_processor(readable_writable_command_processor);
    }
  };

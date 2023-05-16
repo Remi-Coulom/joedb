@@ -13,6 +13,8 @@ namespace joedb
   public Readable_Parser
  {
   private:
+   Blob_Reader *blob_reader;
+
    Status process_command
    (
     const std::string &command,
@@ -26,7 +28,8 @@ namespace joedb
     const Readable &readable,
     Blob_Reader *blob_reader
    ):
-    Readable_Parser(readable, blob_reader)
+    Readable_Parser(readable),
+    blob_reader(blob_reader)
    {
    }
  };
