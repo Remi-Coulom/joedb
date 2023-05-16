@@ -5,94 +5,137 @@
 
 #include <iostream>
 #include <limits>
+#include <thread>
+#include <chrono>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ class Client_Command_Processor: public Command_Processor
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   Client &client;
+   Interpreted_Client * const interpreted_client;
+   Journal_Client * const journal_client;
+
+   //////////////////////////////////////////////////////////////////////////
+   Status process_command
+   //////////////////////////////////////////////////////////////////////////
+   (
+    const std::string &command,
+    std::istream &iss,
+    std::ostream &out
+   ) override
+   {
+    if (command == "help") //////////////////////////////////////////////////
+    {
+     out << "Client\n";
+     out << "~~~~~~\n";
+     out << " pull\n";
+     out << " pull_every <seconds>\n";
+     out << " push\n";
+     out << " read\n";
+     out << " transaction\n";
+     out << '\n';
+     return Status::ok;
+    }
+    else if (command == "pull") /////////////////////////////////////////////
+    {
+     client.pull();
+    }
+    else if (command == "pull_every") ///////////////////////////////////////
+    {
+     int seconds = 1;
+     iss >> seconds;
+
+
+     while (true)
+     {
+      client.pull();
+      out << "Sleeping for " << seconds << " seconds...\n";
+      std::this_thread::sleep_for(std::chrono::seconds(seconds));
+     }
+    }
+    else if (command == "push") /////////////////////////////////////////////
+    {
+     client.push_unlock();
+    }
+    else if (command == "read") /////////////////////////////////////////////
+    {
+     if (interpreted_client)
+     {
+      Readable_Interpreter
+      (
+       interpreted_client->get_database(),
+       nullptr
+      )
+      .main_loop(std::cin, std::cout);
+     }
+     else
+      out << "Cannot read: no table data\n";
+    }
+    else if (command == "transaction") //////////////////////////////////////
+    {
+     std::cout << "Waiting for lock... ";
+     std::cout.flush();
+
+     if (interpreted_client)
+     {
+      interpreted_client->transaction
+      (
+       [](Readable &readable, Writable &writable
+      )
+      {
+       std::cout << "OK\n";
+       Interpreter(readable, writable, nullptr, nullptr, 0).main_loop
+       (
+        std::cin,
+        std::cout
+       );
+      });
+     }
+     else if (journal_client)
+     {
+      journal_client->transaction([](Writable &writable)
+      {
+       std::cout << "OK\n";
+       Writable_Interpreter(writable).main_loop
+       (
+        std::cin,
+        std::cout
+       );
+      });
+     }
+    }
+    else ////////////////////////////////////////////////////////////////////
+     return Status::not_found;
+
+    return Status::done;
+   }
+
+  public:
+   Client_Command_Processor(Client &client):
+    client(client),
+    interpreted_client(dynamic_cast<Interpreted_Client *>(&client)),
+    journal_client(dynamic_cast<Journal_Client *>(&client))
+   {
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
  void run_interpreted_client(Client &client)
  ////////////////////////////////////////////////////////////////////////////
  {
-  auto *interpreted_client = dynamic_cast<Interpreted_Client *>(&client);
-  auto *journal_client = dynamic_cast<Journal_Client *>(&client);
+  const int64_t diff = client.get_checkpoint_difference();
 
-  while (std::cin)
-  {
-   const int64_t diff = client.get_checkpoint_difference();
+  if (diff > 0)
+   std::cout << "You can push " << diff << " bytes.\n";
+  else if (diff < 0)
+   std::cout << "You can pull " << -diff << " bytes.\n";
 
-   if (diff > 0)
-    std::cout << "You can push " << diff << " bytes. ";
-   else if (diff < 0)
-    std::cout << "You can pull " << -diff << " bytes. ";
-
-   if (interpreted_client)
-    std::cout << "R(read), ";
-
-   if (diff > 0)
-    std::cout << "P(push), ";
-   else
-    std::cout << "P(pull), T(transaction), ";
-
-   std::cout << "or Q(quit)? ";
-   std::cout.flush();
-   std::string input;
-
-   if (!(std::cin >> input))
-   {
-    std::cout << '\n';
-    break;
-   }
-
-   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-   if (input == "T" && diff <= 0)
-   {
-    std::cout << "Waiting for lock... ";
-    std::cout.flush();
-
-    if (interpreted_client)
-    {
-     interpreted_client->transaction([](Readable &readable, Writable &writable)
-     {
-      std::cout << "OK\n";
-      std::cout.flush();
-      Interpreter(readable, writable, nullptr, nullptr, 0).main_loop
-      (
-       std::cin,
-       std::cout
-      );
-     });
-    }
-    else if (journal_client)
-    {
-     journal_client->transaction([](Writable &writable)
-     {
-      std::cout << "OK\n";
-      std::cout.flush();
-      Writable_Interpreter(writable).main_loop
-      (
-       std::cin,
-       std::cout
-      );
-     });
-    }
-   }
-   else if (input == "P" && diff <= 0)
-    client.pull();
-   else if (input == "P" && diff > 0)
-    client.push_unlock();
-   else if (interpreted_client && input == "R")
-   {
-    Readable_Interpreter
-    (
-     interpreted_client->get_database(),
-     nullptr
-    )
-    .main_loop(std::cin, std::cout);
-   }
-   else if (input == "Q")
-    break;
-   else
-    std::cout << "Error: unknown command\n";
-  }
+  Client_Command_Processor processor(client);
+  Command_Interpreter interpreter{processor};
+  interpreter.main_loop(std::cin, std::cout);
  }
 }
