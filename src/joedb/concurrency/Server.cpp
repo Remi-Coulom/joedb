@@ -1,6 +1,5 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/network_integers.h"
-#include "joedb/concurrency/Backup_Client.h"
 #include "joedb/concurrency/get_pid.h"
 #include "joedb/io/get_time_string.h"
 
