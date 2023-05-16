@@ -21,7 +21,6 @@ namespace joedb
    (
     std::initializer_list<std::reference_wrapper<Writable>> initializer_list
    );
-   void add_writable(Writable &writable);
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;

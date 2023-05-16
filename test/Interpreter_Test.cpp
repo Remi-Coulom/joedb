@@ -14,25 +14,12 @@
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
-class Interpreter_Test: public::testing::Test
+TEST(Interpreter_Test, main_test)
 /////////////////////////////////////////////////////////////////////////////
 {
- protected:
-  Database db;
-  Multiplexer multiplexer;
-  Interpreter interpreter;
+ Database db;
+ Interpreter interpreter(db, db, nullptr, nullptr, 0);
 
-  Interpreter_Test():
-   multiplexer{db},
-   interpreter(db, multiplexer, nullptr, nullptr, 0)
-  {
-  }
-};
-
-/////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, main_test)
-/////////////////////////////////////////////////////////////////////////////
-{
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
@@ -48,12 +35,14 @@ TEST_F(Interpreter_Test, main_test)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, Interpreter_Dump_Writable)
+TEST(Interpreter_Test, Interpreter_Dump_Writable)
 /////////////////////////////////////////////////////////////////////////////
 {
+ Database db;
  std::ostringstream dump_string;
  joedb::Interpreter_Dump_Writable writable(dump_string);
- multiplexer.add_writable(writable);
+ Multiplexer multiplexer{db, writable};
+ Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -70,12 +59,14 @@ TEST_F(Interpreter_Test, Interpreter_Dump_Writable)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, SQL_Dump_Writable)
+TEST(Interpreter_Test, SQL_Dump_Writable)
 /////////////////////////////////////////////////////////////////////////////
 {
+ Database db;
  std::ostringstream dump_string;
  joedb::SQL_Dump_Writable writable(dump_string);
- multiplexer.add_writable(writable);
+ Multiplexer multiplexer{db, writable};
+ Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -92,12 +83,14 @@ TEST_F(Interpreter_Test, SQL_Dump_Writable)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Interpreter_Test, Raw_Dump_Writable)
+TEST(Interpreter_Test, Raw_Dump_Writable)
 /////////////////////////////////////////////////////////////////////////////
 {
+ Database db;
  std::ostringstream dump_string;
  joedb::Raw_Dump_Writable writable(dump_string);
- multiplexer.add_writable(writable);
+ Multiplexer multiplexer{db, writable};
+ Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
