@@ -21,7 +21,7 @@ namespace joedb
     Blob_Reader *blob_reader
    ):
     Readable_Command_Processor(readable, blob_reader),
-    Command_Interpreter{*this}
+    Command_Interpreter{*static_cast<Readable_Command_Processor *>(this)}
    {
    }
  };
@@ -35,7 +35,7 @@ namespace joedb
   public:
    Writable_Interpreter(Writable &writable):
     Writable_Command_Processor(writable, nullptr),
-    Command_Interpreter{*this}
+    Command_Interpreter{*static_cast<Writable_Command_Processor *>(this)}
    {
    }
  };
