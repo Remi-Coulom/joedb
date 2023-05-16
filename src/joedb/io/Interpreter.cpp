@@ -119,7 +119,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Readonly_Interpreter::process_command
+ Command_Processor::Status Readonly_Interpreter::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::string &command,
@@ -128,7 +128,8 @@ namespace joedb
  )
  {
   if (command.empty() || command[0] == '#') /////////////////////////////////
-   return true;
+  {
+  }
   else if (command == "table") //////////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
@@ -332,6 +333,8 @@ namespace joedb
    out << " sql\n";
    out << " json [<base64>]\n";
    out << '\n';
+
+   return Status::ok;
   }
   else if (command == "about") //////////////////////////////////////////////
   {
@@ -348,15 +351,15 @@ namespace joedb
     set_echo(false);
   }
   else if (command == "quit") ///////////////////////////////////////////////
-   return false;
+   return Status::quit;
   else
-   throw Exception("Unknown command. For a list of available commands, try \"help\".");
+   return Status::not_found;
 
-  return true;
+  return Status::done;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Interpreter::process_command
+ Command_Processor::Status Interpreter::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::string &command,
@@ -401,6 +404,8 @@ namespace joedb
    out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
    out << " delete_from <table_name> <record_id>\n";
    out << '\n';
+
+   return Status::ok;
   }
   else if (command == "create_table") ///////////////////////////////////////
   {
@@ -563,9 +568,13 @@ namespace joedb
    out << '\n';
   }
   else
+#if 0
+   return Status::not_found;
+#else
    return Readonly_Interpreter::process_command(command, iss, out);
+#endif
 
-  return true;
+  return Status::done;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -589,9 +598,19 @@ namespace joedb
 
    try
    {
-    const bool again = process_command(command, iss, out);
+    const Status status = process_command(command, iss, out);
+
+    if (status == Status::not_found)
+    {
+     throw Exception
+     (
+      "Unknown command. For a list of available commands, try \"help\"."
+     );
+    }
+
     after_command(out, line_number, line, nullptr);
-    if (!again)
+
+    if (status == Status::quit)
      break;
    }
    catch (const Exception &e)

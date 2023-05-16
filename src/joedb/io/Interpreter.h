@@ -4,13 +4,14 @@
 #include "joedb/Type.h"
 #include "joedb/Readable.h"
 #include "joedb/Writable.h"
+#include "joedb/io/Command_Processor.h"
 
 #include <iosfwd>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Interpreter
+ class Readonly_Interpreter: public Command_Processor
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
@@ -31,12 +32,12 @@ namespace joedb
     const Exception *exception
    ) const;
 
-   virtual bool process_command
+   Status process_command
    (
     const std::string &command,
     std::istream &iss,
     std::ostream &out
-   );
+   ) override;
 
   public:
    Readonly_Interpreter
@@ -75,7 +76,7 @@ namespace joedb
     Field_Id field_id
    );
 
-   bool process_command
+   Status process_command
    (
     const std::string &command,
     std::istream &iss,
