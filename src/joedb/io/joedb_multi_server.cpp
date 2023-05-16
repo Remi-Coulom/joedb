@@ -1,7 +1,6 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/db/multi_server_interpreted.h"
 #include "joedb/concurrency/Server.h"
-#include "joedb/concurrency/Backup_Client.h"
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/ssh/Forward_Channel.h"
 #include "joedb/journal/Interpreted_File.h"
