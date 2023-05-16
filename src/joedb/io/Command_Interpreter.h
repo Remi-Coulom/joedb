@@ -12,7 +12,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Command_Interpreter: public Command_Processor
+ class Command_Interpreter: private Command_Processor
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -42,7 +42,7 @@ namespace joedb
     std::initializer_list<std::reference_wrapper<Command_Processor>> list
    )
    {
-    processors.emplace_back(*this);
+    processors.emplace_back(*static_cast<Command_Processor *>(this));
     for (auto &processor: list)
      processors.emplace_back(processor);
    }
