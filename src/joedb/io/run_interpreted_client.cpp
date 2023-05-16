@@ -63,7 +63,7 @@ namespace joedb
     client.push_unlock();
    else if (input == "R")
    {
-    Readonly_Interpreter(client.get_database(), nullptr).main_loop
+    Readable_Interpreter(client.get_database(), nullptr).main_loop
     (
      std::cin,
      std::cout

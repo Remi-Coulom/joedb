@@ -57,7 +57,7 @@ namespace joedb
   {
    Readonly_Journal journal(*file);
    journal.replay_log(db);
-   Readonly_Interpreter interpreter
+   Readable_Interpreter interpreter
    (
     db,
     blob_file ? blob_file.get() : file.get()

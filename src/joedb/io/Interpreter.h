@@ -5,23 +5,36 @@
 #include "joedb/io/Readable_Command_Processor.h"
 #include "joedb/io/Writable_Command_Processor.h"
 #include "joedb/io/Readable_Writable_Command_Processor.h"
-#include "joedb/index_types.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Interpreter:
+ class Readable_Interpreter:
  ////////////////////////////////////////////////////////////////////////////
   private Readable_Command_Processor,
   public Command_Interpreter
  {
   public:
-   Readonly_Interpreter
+   Readable_Interpreter
    (
     const Readable &readable,
     Blob_Reader *blob_reader
    ):
     Readable_Command_Processor(readable, blob_reader),
+    Command_Interpreter{*this}
+   {
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Writable_Interpreter:
+ ////////////////////////////////////////////////////////////////////////////
+  private Writable_Command_Processor,
+  public Command_Interpreter
+ {
+  public:
+   Writable_Interpreter(Writable &writable):
+    Writable_Command_Processor(writable, nullptr),
     Command_Interpreter{*this}
    {
    }
@@ -49,9 +62,9 @@ namespace joedb
     Readable_Writable_Command_Processor(*this, *this, max_record_id),
     Command_Interpreter
     {
-     *(Readable_Command_Processor *)(this),
-     *(Writable_Command_Processor *)(this),
-     *(Readable_Writable_Command_Processor *)(this)
+     *static_cast<Readable_Command_Processor *>(this),
+     *static_cast<Writable_Command_Processor *>(this),
+     *static_cast<Readable_Writable_Command_Processor *>(this)
     }
    {
    }

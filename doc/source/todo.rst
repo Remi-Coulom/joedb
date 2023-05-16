@@ -114,12 +114,10 @@ Concurrency
 -----------
 - Backup client:
 
-  - Journal_Client: like Interpreted_Client, without the Interpreted_Database
   - A superclass common with Interpreted_Client (virtual function returns pointer to readable, null for journal-only)
   - run_interpreted_client uses the superclass
   - A new "polling_backup" command that pulls in a loop with a delay until interrupted
   - joedb_*_client takes an optional "--journal" option -> no interpreted database
-  - note: some functions of the interpreter don't require a readable (comment, timestamp, blob, ...): Readonly_Interpreter, Writeonly_Interpreter, Full_Interpreter
 
 - A Write_Lock object is needed (for interactive UI, for instance. Maybe for Server)
 - Test many concurrent read and write requests. Performance benchmarks.
