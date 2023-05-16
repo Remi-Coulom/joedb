@@ -2103,6 +2103,7 @@ static void write_initial_comment
   constexpr size_t buffer_size = 32;
   char buffer[buffer_size];
   std::strftime(buffer, buffer_size, "%b %e %Y %H:%M:%S", tm);
+  out << buffer << '\n';
  }
 
  out << "//\n";
