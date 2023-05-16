@@ -1,13 +1,13 @@
 #ifndef joedb_Journal_Client_declared
 #define joedb_Journal_Client_declared
 
+#include "joedb/concurrency/Client_Data.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/Multiplexer.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Journal_Client_Data
+ class Journal_Client_Data: public Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Journal_Client;
@@ -25,17 +25,17 @@ namespace joedb
    {
    }
 
-   Writable_Journal &get_journal()
+   Writable_Journal &get_journal() final
    {
     return journal;
    }
 
-   const Readonly_Journal &get_journal() const
+   const Readonly_Journal &get_journal() const final
    {
     return journal;
    }
 
-   void update()
+   void update() final
    {
     journal.seek_to_checkpoint();
    }

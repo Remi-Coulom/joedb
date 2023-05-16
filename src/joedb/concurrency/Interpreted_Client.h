@@ -1,6 +1,7 @@
 #ifndef joedb_Interpreted_Client_declared
 #define joedb_Interpreted_Client_declared
 
+#include "joedb/concurrency/Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/Multiplexer.h"
@@ -8,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Client_Data
+ class Interpreted_Client_Data: public Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Interpreted_Client;
@@ -29,12 +30,12 @@ namespace joedb
    {
    }
 
-   Writable_Journal &get_journal()
+   Writable_Journal &get_journal() final
    {
     return journal;
    }
 
-   const Readonly_Journal &get_journal() const
+   const Readonly_Journal &get_journal() const final
    {
     return journal;
    }

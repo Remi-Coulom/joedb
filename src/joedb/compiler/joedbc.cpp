@@ -153,6 +153,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << "#include \"joedb/concurrency/Client.h\"\n";
+ out << "#include \"joedb/concurrency/Client_Data.h\"\n";
  out << "#include \"joedb/concurrency/Local_Connection.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
  out << '\n';
@@ -468,8 +469,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR(
  ////////////////////////////////////////////////////////////////////////////
- class Client_Data: public Generic_File_Database
+ class Client_Data:
  ////////////////////////////////////////////////////////////////////////////
+  public Generic_File_Database,
+  public joedb::Client_Data
  {
   public:
    Client_Data
@@ -481,12 +484,12 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    {
    }
 
-   joedb::Writable_Journal &get_journal()
+   joedb::Writable_Journal &get_journal() final
    {
     return journal;
    }
 
-   const joedb::Writable_Journal &get_journal() const
+   const joedb::Writable_Journal &get_journal() const final
    {
     return journal;
    }
@@ -495,7 +498,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 // Workaround for gcc bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105469
    __attribute__ ((noinline))
 #endif
-   void update()
+   void update() final
    {
     journal.play_until_checkpoint(*this);
    }
