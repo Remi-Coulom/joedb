@@ -1,26 +1,20 @@
-#include "joedb/interpreter/Database.h"
-#include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/print_date.h"
+#include "joedb/io/type_io.h"
+#include "joedb/io/main_exception_catcher.h"
 #include "joedb/compiler/Compiler_Options.h"
 #include "joedb/compiler/Compiler_Options_io.h"
-#include "joedb/io/type_io.h"
 #include "joedb/compiler/c_wrapper.h"
-#include "joedb/is_identifier.h"
-#include "joedb/io/main_exception_catcher.h"
 #include "joedb/compiler/nested_namespace.h"
+#include "joedb/is_identifier.h"
 #include "joedb/get_version.h"
 
-#include <iostream>
 #include <fstream>
-#include <algorithm>
 #include <set>
-#include <ctime>
-#include <iomanip>
 
 using namespace joedb;
 
