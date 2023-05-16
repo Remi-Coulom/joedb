@@ -5,6 +5,7 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
+#include "joedb/io/print_date.h"
 #include "joedb/compiler/Compiler_Options.h"
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/io/type_io.h"
@@ -2097,14 +2098,7 @@ static void write_initial_comment
  out << "// joedbc compilation time: " << __DATE__ << ' ' << __TIME__ << '\n';
  out << "// Generation of this file: ";
 
- {
-  const std::time_t t = std::time(nullptr);
-  const std::tm *tm = std::localtime(&t);
-  constexpr size_t buffer_size = 32;
-  char buffer[buffer_size];
-  std::strftime(buffer, buffer_size, "%b %e %Y %H:%M:%S", tm);
-  out << buffer << '\n';
- }
+ print_date(out);
 
  out << "//\n";
  out << "///////////////////////////////////////////////////////////////////////////*/\n";

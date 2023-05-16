@@ -112,10 +112,6 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- Backup client:
-
-  - A new "polling_backup" command that pulls in a loop with a delay until interrupted
-
 - A Write_Lock object is needed (for interactive UI, for instance. Maybe for Server)
 - Test many concurrent read and write requests. Performance benchmarks.
 

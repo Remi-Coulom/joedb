@@ -1,5 +1,6 @@
 #include "joedb/io/run_interpreted_client.h"
 #include "joedb/io/Interpreter.h"
+#include "joedb/io/print_date.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Journal_Client.h"
 
@@ -49,10 +50,10 @@ namespace joedb
      int seconds = 1;
      iss >> seconds;
 
-
      while (true)
      {
       client.pull();
+      print_date(out);
       out << "Sleeping for " << seconds << " seconds...\n";
       std::this_thread::sleep_for(std::chrono::seconds(seconds));
      }
