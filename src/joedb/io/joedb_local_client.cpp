@@ -1,52 +1,40 @@
-#include "joedb/concurrency/Local_Connection.h"
-#include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/concurrency/Journal_Client.h"
-#include "joedb/journal/File.h"
+#include "joedb/io/Connection_Builder.h"
 #include "joedb/io/main_exception_catcher.h"
-#include "joedb/io/run_interpreted_client.h"
+#include "joedb/concurrency/Local_Connection.h"
+#include "joedb/journal/File.h"
 
 namespace joedb
 {
- /////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
+ class Local_Connection_Builder: public Connection_Builder
+ ////////////////////////////////////////////////////////////////////////////
  {
-  bool journal = false;
+  private:
+   std::unique_ptr<Local_Connection<File>> connection;
 
-  if (argc >= 2 && argv[1] == std::string("--journal"))
-  {
-   journal = true;
-   argc--;
-   argv++;
-  }
-
-  if (argc != 2)
-  {
-   std::cerr << "usage: " << argv[0] << " [--journal] <file_name>\n";
-   return 1;
-  }
-  else
-  {
-   const char * const file_name = argv[1];
-
-   std::cout << "Connection... ";
-   std::cout.flush();
-   Local_Connection<File> connection(file_name);
-   std::cout << "OK\n";
-
-   if (journal)
+  public:
+   int get_min_parameters() const override {return 1;}
+   int get_max_parameters() const override {return 1;}
+   const char *get_parameters_description() const override
    {
-    Journal_Client client(connection, connection.get_file());
-    run_interpreted_client(client);
+    return "<file_name>";
    }
-   else
-   {
-    Interpreted_Client client(connection, connection.get_file());
-    run_interpreted_client(client);
-   }
-  }
 
-  return 0;
+   void build(int argc, const char * const *argv) override
+   {
+    const char *file_name = argv[0];
+    connection.reset(new Local_Connection<File>(file_name));
+   }
+
+   Connection &get_connection() override {return *connection;}
+   File &get_file() override {return connection->get_file();}
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ static int main(int argc, char **argv)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return Local_Connection_Builder().main(argc, argv);
  }
 }
 

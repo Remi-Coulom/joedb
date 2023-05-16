@@ -103,23 +103,4 @@ namespace joedb
     std::cout << "Error: unknown command\n";
   }
  }
-
- ////////////////////////////////////////////////////////////////////////////
- void run_interpreted_client
- ////////////////////////////////////////////////////////////////////////////
- (
-  Connection &connection,
-  const char *file_name
- )
- {
-  std::unique_ptr<Generic_File> local_file;
-
-  if (file_name && *file_name)
-   local_file.reset(new File(file_name, Open_Mode::shared_write));
-  else
-   local_file.reset(new Memory_File());
-
-  Interpreted_Client client(connection, *local_file);
-  run_interpreted_client(client);
- }
 }

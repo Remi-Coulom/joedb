@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <memory>
+#include <cstring>
 
 /////////////////////////////////////////////////////////////////////////////
 static void dump
@@ -38,71 +39,25 @@ static int joedb_logdump_main(int argc, char **argv)
  }
  else
  {
-  bool sql = false;
-  bool sqlite = false;
-  bool raw = false;
-  bool header = false;
-  bool schema_only = false;
-  bool ignore_errors = false;
-  bool load = false;
-  bool print_checkpoint = false;
-  bool blob = false;
-
   int arg_index = 1;
 
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sql")
-  {
-   sql = true;
-   arg_index++;
-  }
+#define OPTION(b, s)\
+ bool b = false;\
+ if (arg_index + 1 < argc && std::strcmp(argv[arg_index], s) == 0)\
+ {\
+  b = true;\
+  arg_index++;\
+ }
 
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--sqlite")
-  {
-   sqlite = true;
-   arg_index++;
-  }
-
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--raw")
-  {
-   raw = true;
-   arg_index++;
-  }
-
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--header")
-  {
-   header = true;
-   arg_index++;
-  }
-
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--schema-only")
-  {
-   schema_only = true;
-   arg_index++;
-  }
-
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--ignore-errors")
-  {
-   ignore_errors = true;
-   arg_index++;
-  }
-
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--load")
-  {
-   load = true;
-   arg_index++;
-  }
-
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--print-checkpoint")
-  {
-   print_checkpoint = true;
-   arg_index++;
-  }
-
-  if (arg_index + 1 < argc && std::string(argv[arg_index]) == "--blob")
-  {
-   blob = true;
-   arg_index++;
-  }
+  OPTION(sql, "--sql");
+  OPTION(sqlite, "--sqlite");
+  OPTION(raw, "--raw");
+  OPTION(header, "--header");
+  OPTION(schema_only, "--schema-only");
+  OPTION(ignore_errors, "--ignore-errors");
+  OPTION(load, "--load");
+  OPTION(print_checkpoint, "--print-checkpoint");
+  OPTION(blob, "--blob");
 
   if (arg_index != argc - 1)
    return joedb_logdump_main(1, argv);
