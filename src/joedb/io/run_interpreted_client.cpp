@@ -2,6 +2,8 @@
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Journal_Client.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
@@ -18,6 +20,9 @@ namespace joedb
  void run_interpreted_client(Client &client)
  ////////////////////////////////////////////////////////////////////////////
  {
+  auto *interpreted_client = dynamic_cast<Interpreted_Client *>(&client);
+  auto *journal_client = dynamic_cast<Journal_Client *>(&client);
+
   while (std::cin)
   {
    const int64_t diff = client.get_checkpoint_difference();
@@ -27,7 +32,7 @@ namespace joedb
    else if (diff < 0)
     std::cout << "You can pull " << -diff << " bytes. ";
 
-   if (client.get_readable())
+   if (interpreted_client)
     std::cout << "R(read), ";
 
    if (diff > 0)
@@ -49,33 +54,48 @@ namespace joedb
 
    if (input == "T" && diff <= 0)
    {
-#if 0
     std::cout << "Waiting for lock... ";
     std::cout.flush();
 
-    client.transaction([](Readable &readable, Writable &writable)
+    if (interpreted_client)
     {
-     std::cout << "OK\n";
-     std::cout.flush();
-     Interpreter(readable, writable, nullptr, nullptr, 0).main_loop
-     (
-      std::cin,
-      std::cout
-     );
-    });
-#endif
+     interpreted_client->transaction([](Readable &readable, Writable &writable)
+     {
+      std::cout << "OK\n";
+      std::cout.flush();
+      Interpreter(readable, writable, nullptr, nullptr, 0).main_loop
+      (
+       std::cin,
+       std::cout
+      );
+     });
+    }
+    else if (journal_client)
+    {
+     journal_client->transaction([](Writable &writable)
+     {
+      std::cout << "OK\n";
+      std::cout.flush();
+      Writable_Interpreter(writable).main_loop
+      (
+       std::cin,
+       std::cout
+      );
+     });
+    }
    }
    else if (input == "P" && diff <= 0)
     client.pull();
    else if (input == "P" && diff > 0)
     client.push_unlock();
-   else if (client.get_readable() && input == "R")
+   else if (interpreted_client && input == "R")
    {
-    Readable_Interpreter(*client.get_readable(), nullptr).main_loop
+    Readable_Interpreter
     (
-     std::cin,
-     std::cout
-    );
+     interpreted_client->get_database(),
+     nullptr
+    )
+    .main_loop(std::cin, std::cout);
    }
    else if (input == "Q")
     break;

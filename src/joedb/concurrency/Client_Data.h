@@ -15,7 +15,6 @@ namespace joedb
    virtual Writable_Journal &get_journal() = 0;
    virtual const Readonly_Journal &get_journal() const = 0;
    virtual void update() = 0;
-   virtual const Readable *get_readable() const {return nullptr;}
    virtual ~Client_Data();
  };
 }
