@@ -4,6 +4,7 @@
 #include "joedb/io/Command_Processor.h"
 #include "joedb/Exception.h"
 
+#include <initializer_list>
 #include <vector>
 #include <memory>
 #include <functional>
@@ -36,18 +37,18 @@ namespace joedb
    ) final;
 
   public:
-   Command_Interpreter()
+   Command_Interpreter
+   (
+    std::initializer_list<std::reference_wrapper<Command_Processor>> list
+   )
    {
-    add_processor(*this);
+    processors.emplace_back(*this);
+    for (auto &processor: list)
+     processors.emplace_back(processor);
    }
 
    void set_echo(bool new_echo) {echo = new_echo;}
    void set_rethrow(bool new_rethrow) {rethrow = new_rethrow;}
-
-   void add_processor(Command_Processor &processor)
-   {
-    processors.emplace_back(processor);
-   }
 
    void main_loop(std::istream &in, std::ostream &out);
  };
