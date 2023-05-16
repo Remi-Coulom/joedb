@@ -3,6 +3,7 @@
 #include "joedb/io/print_date.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Journal_Client.h"
+#include "joedb/Signal.h"
 
 #include <iostream>
 #include <limits>
@@ -64,12 +65,16 @@ namespace joedb
      int seconds = 1;
      iss >> seconds;
 
-     while (true)
+     Signal::signal = Signal::no_signal;
+
+     while (Signal::signal != SIGINT)
      {
       client.pull();
       print_date(out);
       out << "Sleeping for " << seconds << " seconds...\n";
-      std::this_thread::sleep_for(std::chrono::seconds(seconds));
+
+      for (int i = seconds; Signal::signal != SIGINT && --i >= 0;)
+       std::this_thread::sleep_for(std::chrono::seconds(1));
      }
     }
     else if (command == "push") /////////////////////////////////////////////

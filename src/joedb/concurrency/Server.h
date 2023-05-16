@@ -5,23 +5,9 @@
 #include "joedb/concurrency/net.h"
 
 #include <queue>
-#include <atomic>
 #include <memory>
 #include <iosfwd>
 #include <set>
-#include <csignal>
-
-#ifndef CDECL
-#define CDECL
-#endif
-
-#ifndef SIGUSR1
-#define SIGUSR1 10
-#endif
-
-#ifndef SIGUSR2
-#define SIGUSR2 12
-#endif
 
 namespace joedb
 {
@@ -32,10 +18,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   static constexpr int no_signal = 0;
-
-   static std::atomic<int> signal;
-   static void CDECL signal_handler(int sig);
    enum {interrupt_check_seconds = 2};
    enum {clear_signal_seconds = 3};
 
@@ -212,7 +194,7 @@ namespace joedb
    );
 
    uint16_t get_port() const {return port;}
-   void interrupt() {signal = SIGINT;}
+   void interrupt();
 
    ~Server();
  };

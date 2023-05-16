@@ -2,10 +2,10 @@
 #include "joedb/concurrency/network_integers.h"
 #include "joedb/concurrency/get_pid.h"
 #include "joedb/io/get_time_string.h"
+#include "joedb/Signal.h"
 
 #include <iostream>
 #include <iomanip>
-#include <csignal>
 #include <sstream>
 
 #define LOG(x) log([&](std::ostream &out){out << x;})
@@ -13,15 +13,6 @@
 
 namespace joedb
 {
- std::atomic<int> Server::signal(Server::no_signal);
-
- ////////////////////////////////////////////////////////////////////////////
- void CDECL Server::signal_handler(int sig)
- ////////////////////////////////////////////////////////////////////////////
- {
-  signal = sig;
- }
-
  ////////////////////////////////////////////////////////////////////////////
  std::ostream &Server::Session::write_id(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
@@ -722,10 +713,10 @@ namespace joedb
  {
   if (!error)
   {
-   if (signal != no_signal)
+   if (Signal::signal != Signal::no_signal)
     LOG(port);
 
-   if (signal == SIGINT)
+   if (Signal::signal == SIGINT)
    {
     LOG(": Received SIGINT, interrupting.\n");
     for (Session *session: sessions)
@@ -734,7 +725,7 @@ namespace joedb
    }
    else
    {
-    if (signal == SIGUSR1)
+    if (Signal::signal == SIGUSR1)
     {
      log([this](std::ostream &out)
      {
@@ -751,13 +742,13 @@ namespace joedb
       }
      });
     }
-    else if (signal == SIGUSR2)
+    else if (Signal::signal == SIGUSR2)
     {
      LOG("; Received SIGUSR2\n");
      write_status();
     }
 
-    if (signal == no_signal)
+    if (Signal::signal == Signal::no_signal)
     {
      start_interrupt_timer();
     }
@@ -788,7 +779,7 @@ namespace joedb
  {
   if (!error)
   {
-   signal = no_signal;
+   Signal::signal = Signal::no_signal;
    start_interrupt_timer();
   }
  }
@@ -817,12 +808,15 @@ namespace joedb
  {
   write_status();
 
-  std::signal(SIGINT, signal_handler);
-  std::signal(SIGUSR1, signal_handler);
-  std::signal(SIGUSR2, signal_handler);
-
   start_interrupt_timer();
   start_accept();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::interrupt()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Signal::signal = SIGINT;
  }
 
  ////////////////////////////////////////////////////////////////////////////
