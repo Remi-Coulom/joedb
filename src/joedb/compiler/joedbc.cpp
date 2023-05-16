@@ -15,6 +15,7 @@
 
 #include <fstream>
 #include <set>
+#include <algorithm>
 
 using namespace joedb;
 
