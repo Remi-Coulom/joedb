@@ -26,7 +26,10 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/get_time_string.cpp
  ${JOEDB_SRC_DIR}/joedb/io/dump.cpp
  ${JOEDB_SRC_DIR}/joedb/io/inplace_pack.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Interpreter.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Command_Interpreter.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Readable_Parser.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Readable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Readable_Writable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Interpreter_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/json.cpp
  ${JOEDB_SRC_DIR}/joedb/io/merge.cpp
