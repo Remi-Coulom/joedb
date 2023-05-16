@@ -79,23 +79,37 @@ namespace joedb
 
     Memory_File schema_file(Open_Mode::create_new);
     Writable_Journal schema_journal(schema_file);
-    Selective_Writable schema_filter
-    (
-     schema_journal,
-     Selective_Writable::Mode::schema
-    );
 
-    Selective_Writable output_schema
-    (
-     output_journal,
-     Selective_Writable::Mode::schema
-    );
+    {
+     Selective_Writable schema_filter
+     (
+      schema_journal,
+      Selective_Writable::Mode::schema
+     );
 
-    Multiplexer multiplexer{*db, schema_filter};
-    if (!merged_db)
-     multiplexer.add_writable(output_schema);
+     std::unique_ptr<Selective_Writable> output_schema;
+     std::unique_ptr<Multiplexer> multiplexer;
 
-    input_journal.replay_log(multiplexer);
+     if (merged_db)
+     {
+      multiplexer.reset(new Multiplexer{*db, schema_filter});
+     }
+     else
+     {
+      output_schema.reset
+      (
+       new Selective_Writable
+       (
+        output_journal,
+        Selective_Writable::Mode::schema
+       )
+      );
+
+      multiplexer.reset(new Multiplexer{*db, schema_filter, *output_schema});
+     }
+
+     input_journal.replay_log(*multiplexer);
+    }
 
     //
     // Check that all databases have the same schema
