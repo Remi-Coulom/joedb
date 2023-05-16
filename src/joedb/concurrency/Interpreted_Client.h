@@ -1,7 +1,6 @@
 #ifndef joedb_Interpreted_Client_declared
 #define joedb_Interpreted_Client_declared
 
-#include "joedb/concurrency/Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/Multiplexer.h"
@@ -47,8 +46,10 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Client: public Client<Interpreted_Client_Data>
+ class Interpreted_Client:
  ////////////////////////////////////////////////////////////////////////////
+  private Interpreted_Client_Data,
+  public Client
  {
   public:
    Interpreted_Client
@@ -56,20 +57,21 @@ namespace joedb
     Connection &connection,
     Generic_File &file
    ):
-    Client(connection, file)
+    Interpreted_Client_Data(connection, file),
+    Client(connection, *this)
    {
    }
 
    const Readable &get_database() const
    {
-    return data.database;
+    return database;
    }
 
    template<typename F> void transaction(F transaction)
    {
     Client::transaction([&]()
     {
-     transaction(data.database, data.multiplexer);
+     transaction(database, multiplexer);
     });
    }
  };

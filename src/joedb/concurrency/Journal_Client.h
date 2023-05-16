@@ -1,7 +1,6 @@
 #ifndef joedb_Journal_Client_declared
 #define joedb_Journal_Client_declared
 
-#include "joedb/concurrency/Client_Data.h"
 #include "joedb/concurrency/Client.h"
 
 namespace joedb
@@ -42,7 +41,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Journal_Client: public Client<Journal_Client_Data>
+ class Journal_Client: private Journal_Client_Data, public Client
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
@@ -51,7 +50,8 @@ namespace joedb
     Connection &connection,
     Generic_File &file
    ):
-    Client(connection, file)
+    Journal_Client_Data(connection, file),
+    Client(connection, *this)
    {
    }
 
@@ -59,7 +59,7 @@ namespace joedb
    {
     Client::transaction([&]()
     {
-     transaction(data.journal);
+     transaction(journal);
     });
    }
  };

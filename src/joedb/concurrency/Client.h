@@ -2,11 +2,12 @@
 #define joedb_Client_declared
 
 #include "joedb/concurrency/Connection.h"
+#include "joedb/concurrency/Client_Data.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- template<typename Client_Data> class Client
+ class Client
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -37,8 +38,8 @@ namespace joedb
 
   protected:
    Connection &connection;
+   Client_Data &data;
    int64_t server_checkpoint;
-   Client_Data data;
 
   public:
    //////////////////////////////////////////////////////////////////////////
@@ -46,13 +47,13 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Connection &connection,
-    Generic_File &file
+    Client_Data &data
    ):
     connection(connection),
-    server_checkpoint(connection.handshake(file.is_shared())),
-    data(connection, file)
+    data(data),
+    server_checkpoint(connection.handshake(data.get_journal().is_shared()))
    {
-    if (file.is_shared())
+    if (data.get_journal().is_shared())
      connection.unlock();
 
     {

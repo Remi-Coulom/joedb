@@ -153,7 +153,6 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << "#include \"joedb/concurrency/Client.h\"\n";
- out << "#include \"joedb/concurrency/Client_Data.h\"\n";
  out << "#include \"joedb/concurrency/Local_Connection.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
  out << '\n';
@@ -505,7 +504,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Client: public joedb::Client<Client_Data>
+ class Client: private Client_Data, public joedb::Client
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -513,7 +512,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    void throw_if_schema_changed()
    {
-    if (data.schema_journal.get_checkpoint_position() > schema_checkpoint)
+    if (schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
    }
 
@@ -523,17 +522,18 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Connection &connection,
     joedb::Generic_File &local_file
    ):
-    joedb::Client<Client_Data>(connection, local_file)
+    Client_Data(connection, local_file),
+    joedb::Client(connection, *this)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
-    joedb::Client<Client_Data>::transaction([this](){
-     data.check_schema();
-     data.auto_upgrade();
+    joedb::Client::transaction([this](){
+     check_schema();
+     auto_upgrade();
     });
 
-    schema_checkpoint = data.schema_journal.get_checkpoint_position();
+    schema_checkpoint = schema_journal.get_checkpoint_position();
    }
 
    template<typename File> Client(joedb::Local_Connection<File> &connection):
@@ -543,22 +543,22 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    const Database &get_database() const
    {
-    return data;
+    return *this;
    }
 
    int64_t pull()
    {
-    const int64_t result = joedb::Client<Client_Data>::pull();
+    const int64_t result = joedb::Client::pull();
     throw_if_schema_changed();
     return result;
    }
 
    template<typename F> void transaction(F transaction)
    {
-    joedb::Client<Client_Data>::transaction([&]()
+    joedb::Client::transaction([&]()
     {
      throw_if_schema_changed();
-     transaction(data);
+     transaction(*static_cast<Generic_File_Database *>(this));
     });
    }
  };
