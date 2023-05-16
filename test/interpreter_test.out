@@ -94,6 +94,7 @@ Logging
  comment "<comment_string>"
  valid_data
  checkpoint
+ blob <data_string>
 
 Data definition
 ~~~~~~~~~~~~~~~
@@ -120,7 +121,6 @@ Data manipulation
  update <table_name> <record_id> <field_name> <value>
  update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
  delete_from <table_name> <record_id>
- blob <data_string>
 
 OK: help
 OK: 
