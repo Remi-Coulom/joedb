@@ -191,7 +191,7 @@ namespace joedb
   }
 
   if (mode == Open_Mode::write_lock)
-   lock();
+   exclusive_lock();
  }
 
  /////////////////////////////////////////////////////////////////////////////
