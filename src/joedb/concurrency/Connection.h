@@ -27,6 +27,8 @@ namespace joedb
    virtual int64_t lock_pull(Writable_Journal &client_journal)
    {
     lock();
+    if (client_journal.is_shared())
+     client_journal.refresh_checkpoint();
     return pull(client_journal);
    }
 
