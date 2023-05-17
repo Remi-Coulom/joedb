@@ -112,7 +112,7 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- A Write_Lock object is needed (for interactive UI, for instance. Maybe for Server)
+- A Lock object is needed (for interactive UI, for instance. Maybe for Server)
 - Test many concurrent read and write requests. Performance benchmarks.
 
 - joedb_server:
@@ -152,7 +152,6 @@ Concurrency
 
   If the journal is shared but not lockable (Portable_File), then lock the
   connection like we are doing now.
-- pull into a local_client should not lock (???)
 - Readonly_Client, Readonly_Server
 - server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
 - ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
