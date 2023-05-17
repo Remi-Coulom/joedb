@@ -141,17 +141,13 @@ Concurrency
   - when the server is interrupted
   - ping
 
-- When the client journal is shared and lockable, lock the local file instead
-  of the connection when appropriate (in constructor and pull + whenever the
-  connection is locked). Must not lock both in case of Local_Connection ->
-  journal locking should be a virtual function of the connection:
+- class Lockable_File: public Generic_File:
 
-   - lock() locks the connection
-   - lock_journal(journal) locks the local journal (for pull and construction)
-   - lock_both(journal) locks both for a write transaction
+  - shared_lock()
+  - exclusive_lock()
+  - unlock()
 
-  If the journal is shared but not lockable (Portable_File), then lock the
-  connection like we are doing now.
+- All concurrency journals must be lockable.
 - Readonly_Client, Readonly_Server
 - server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
 - ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
