@@ -80,6 +80,7 @@ endif()
 # IPO
 #############################################################################
 include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
 
 if (ipo_supported)
  message("-- IPO supported")
