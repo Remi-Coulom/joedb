@@ -15,7 +15,16 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   if (file_name && *file_name)
-   local_file.reset(new File(file_name, Open_Mode::shared_write));
+   local_file.reset
+   (
+    new File
+    (
+     file_name,
+     shared ?
+     Open_Mode::shared_write :
+     Open_Mode::write_existing_or_create_new
+    )
+   );
   else
    local_file.reset(new Memory_File());
  }
@@ -24,12 +33,17 @@ namespace joedb
  int Connection_Builder::main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  bool nodb = false;
   int arg_index = 1;
 
-  if (argc >= 2 && std::strcmp(argv[1], "--nodb") == 0)
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
   {
    nodb = true;
+   arg_index++;
+  }
+
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--shared") == 0)
+  {
+   shared = true;
    arg_index++;
   }
 
@@ -41,7 +55,7 @@ namespace joedb
    parameters > get_max_parameters()
   )
   {
-   std::cerr << "usage: " << argv[0] << " [--nodb] ";
+   std::cerr << "usage: " << argv[0] << " [--nodb] [--shared] ";
    std::cerr << get_parameters_description() << '\n';
    return 1;
   }

@@ -13,6 +13,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
+   bool nodb = false;
+   bool shared = false;
+
    std::unique_ptr<Generic_File> local_file;
    void open_local_file(const char *file_name);
 

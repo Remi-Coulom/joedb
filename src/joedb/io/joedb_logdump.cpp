@@ -43,7 +43,7 @@ static int joedb_logdump_main(int argc, char **argv)
 
 #define OPTION(b, s)\
  bool b = false;\
- if (arg_index + 1 < argc && std::strcmp(argv[arg_index], s) == 0)\
+ if (arg_index < argc && std::strcmp(argv[arg_index], s) == 0)\
  {\
   b = true;\
   arg_index++;\
