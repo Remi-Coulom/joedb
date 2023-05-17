@@ -24,12 +24,12 @@ namespace joedb
  int Connection_Builder::main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  bool journal = false;
+  bool nodb = false;
   int arg_index = 1;
 
-  if (argc >= 2 && std::strcmp(argv[1], "--journal") == 0)
+  if (argc >= 2 && std::strcmp(argv[1], "--nodb") == 0)
   {
-   journal = true;
+   nodb = true;
    arg_index++;
   }
 
@@ -41,7 +41,7 @@ namespace joedb
    parameters > get_max_parameters()
   )
   {
-   std::cerr << "usage: " << argv[0] << " [--journal] ";
+   std::cerr << "usage: " << argv[0] << " [--nodb] ";
    std::cerr << get_parameters_description() << '\n';
    return 1;
   }
@@ -52,7 +52,7 @@ namespace joedb
    build(argc - arg_index, argv + arg_index);
    std::cout << "OK\n";
 
-   if (journal)
+   if (nodb)
    {
     Journal_Client client(get_connection(), get_file());
     run_interpreted_client(client);

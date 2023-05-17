@@ -98,7 +98,7 @@ namespace joedb
   {
    if (prompt)
    {
-    out << prompt_string;
+    out << prompt_string << "> ";
     out.flush();
    }
 

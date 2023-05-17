@@ -57,6 +57,8 @@ namespace joedb
     prompt_string = std::move(new_prompt_string);
    }
 
+   const std::string &get_prompt_string() const {return prompt_string;}
+
    void main_loop(std::istream &in, std::ostream &out);
  };
 }

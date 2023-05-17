@@ -18,7 +18,7 @@ namespace joedb
  {
   std::cout << "OK\n";
   interpreter.set_prompt(true);
-  interpreter.set_prompt_string("joedb_client/transaction> ");
+  interpreter.set_prompt_string("joedb_client/transaction");
   interpreter.main_loop
   (
    std::cin,
@@ -92,7 +92,7 @@ namespace joedb
       );
 
       interpreter.set_prompt(true);
-      interpreter.set_prompt_string("joedb_client/db> ");
+      interpreter.set_prompt_string("joedb_client/db");
       interpreter.main_loop(std::cin, std::cout);
      }
      else
@@ -136,6 +136,8 @@ namespace joedb
     journal_client(dynamic_cast<Journal_Client *>(&client))
    {
    }
+
+   bool has_db() const {return interpreted_client != nullptr;}
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -152,7 +154,12 @@ namespace joedb
   Client_Command_Processor processor(client);
   Command_Interpreter interpreter{processor};
   interpreter.set_prompt(true);
-  interpreter.set_prompt_string("joedb_client> ");
+
+  if (processor.has_db())
+   interpreter.set_prompt_string("joedb_client");
+  else
+   interpreter.set_prompt_string("joedb_client(nodb)");
+
   interpreter.main_loop(std::cin, std::cout);
  }
 }
