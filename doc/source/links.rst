@@ -58,6 +58,12 @@ Fast IO:
 
 - http://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
 
+File Locking:
+
+- https://gavv.net/articles/file-locks/
+- https://man7.org/linux/man-pages/man2/flock.2.html
+- https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex
+
 Berkeley DB:
 
 - http://en.wikipedia.org/wiki/Berkeley_DB

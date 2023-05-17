@@ -43,7 +43,7 @@ namespace joedb
 
    void lock() final
    {
-    file.lock();
+    file.exclusive_lock();
    }
 
    void unlock() final

@@ -27,7 +27,7 @@ namespace joedb
     const char *file_name
    ) const;
 
-   void lock();
+   void exclusive_lock();
    void unlock();
 
   protected:

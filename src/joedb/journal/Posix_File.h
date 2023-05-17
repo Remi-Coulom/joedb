@@ -25,8 +25,8 @@ namespace joedb
     fd += 0;
    }
 
-   bool try_lock();
-   void lock();
+   bool try_exclusive_lock();
+   void exclusive_lock();
    void unlock();
 
   protected:

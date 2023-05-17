@@ -26,7 +26,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- bool Posix_File::try_lock()
+ bool Posix_File::try_exclusive_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
   has_effect_on_file_state();
@@ -34,7 +34,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_File::lock()
+ void Posix_File::exclusive_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
   has_effect_on_file_state();
@@ -133,8 +133,8 @@ namespace joedb
   if (mode != Open_Mode::read_existing && mode != Open_Mode::shared_write)
   {
    if (mode == Open_Mode::write_lock)
-    lock();
-   else if (!try_lock())
+    exclusive_lock();
+   else if (!try_exclusive_lock())
     throw_last_error("Locking", file_name);
   }
  }
