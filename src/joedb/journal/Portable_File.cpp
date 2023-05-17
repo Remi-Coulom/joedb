@@ -29,19 +29,19 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  (
   const char *file_name,
-  Open_Mode new_mode
+  Open_Mode mode
  )
  {
   if
   (
-   new_mode == Open_Mode::write_existing_or_create_new ||
-   new_mode == Open_Mode::shared_write
+   mode == Open_Mode::write_existing_or_create_new ||
+   mode == Open_Mode::shared_write
   )
   {
    try_open(file_name, Open_Mode::write_existing) ||
    try_open(file_name, Open_Mode::create_new);
   }
-  else if (new_mode == Open_Mode::create_new)
+  else if (mode == Open_Mode::create_new)
   {
    if (try_open(file_name, Open_Mode::read_existing))
    {
@@ -51,7 +51,7 @@ namespace joedb
     try_open(file_name, Open_Mode::create_new);
   }
   else
-   try_open(file_name, new_mode);
+   try_open(file_name, mode);
 
   if (!filebuf.is_open())
    throw Exception("Cannot open file: " + std::string(file_name));

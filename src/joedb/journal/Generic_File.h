@@ -313,7 +313,7 @@ namespace joedb
    };
 
    Open_Mode mode;
-   const bool shared;
+   bool shared;
 
   protected:
    virtual size_t raw_read(char *buffer, size_t size) = 0;
@@ -328,6 +328,8 @@ namespace joedb
    }
 
    void destructor_flush() noexcept;
+
+   void set_shared() {shared = true;}
 
   public:
    //////////////////////////////////////////////////////////////////////////
