@@ -14,11 +14,6 @@ History
     sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
     ``ssh::Session``, and its constructor is slightly faster than before
     because there is no sftp any more.
-  - Stricter checks when sharing the same local journal for multiple clients:
-    the connection is locked during client construction to check for file
-    integrity. Previous version would silently open a file containing an
-    incomplete transaction, and could overwrite it. This required an upgrade to
-    the network protocol, so new clients cannot connect to the old server.
   - Files written by this version cannot be opened by the previous version.
   - No more endianness conversions: on big-endian machines joedb reads and
     writes data in big-endian format.

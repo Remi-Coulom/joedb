@@ -593,7 +593,7 @@ namespace joedb
   LOGID("client_version = " << client_version << '\n');
 
   {
-   const int64_t server_version = client_version < 5 ? 0 : 7;
+   const int64_t server_version = client_version < 5 ? 0 : 6;
    to_network(server_version, session->buffer + 5);
   }
 
@@ -616,23 +616,15 @@ namespace joedb
   {
    if
    (
+    session->buffer[0] == 'j' &&
     session->buffer[1] == 'o' &&
     session->buffer[2] == 'e' &&
     session->buffer[3] == 'd' &&
     session->buffer[4] == 'b'
    )
    {
-    if (session->buffer[0] == 'j')
-    {
-     handshake(session);
-     return;
-    }
-
-    if (session->buffer[0] == 'J')
-    {
-     lock(session, Session::State::waiting_for_handshake);
-     return;
-    }
+    handshake(session);
+    return;
    }
 
    LOGID("bad handshake\n");

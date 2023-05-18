@@ -10,7 +10,6 @@ Client to Server
 Prefix Data              Description
 ====== ================= ======================================================
 joedb  client_version    first message, sent at connection time
-Joedb  client_version    same as joedb, but locks the database
 P      checkpoint        pull
 L      checkpoint        lock-pull
 p      checkpoint        locked-push
@@ -37,7 +36,6 @@ Prefix Data             Description
 joedb  server_version   | reply to joedb.
        session_id       | server_version = 0 means client_version is rejected.
        checkpoint
-Joedb  *idem*           *idem*
 P      checkpoint       reply to P
        size
        data

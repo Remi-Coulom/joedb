@@ -230,7 +230,7 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 7;
+  const int64_t client_version = 6;
   to_network(client_version, buffer.data() + 5);
 
   {

@@ -42,7 +42,6 @@ namespace joedb
      not_locking,
      waiting_for_lock,
      waiting_for_lock_pull,
-     waiting_for_handshake,
      locking
     };
     bool unlock_after_push;
