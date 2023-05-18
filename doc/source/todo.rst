@@ -114,6 +114,7 @@ Concurrency
 -----------
 - A Lock object is needed (for interactive UI, for instance. Maybe for Server)
 - Test many concurrent read and write requests. Performance benchmarks.
+- File-locking benchmarks
 
 - joedb_server:
 
@@ -122,7 +123,7 @@ Concurrency
 
     - OK to keep one thread busy when waiting for a lock, or computing SHA 256, ...
     - thread_count = max(core_count, 2 * server_count)
-    - Requires synchronization. One strand per session + mutex for global stuff (connection, disconnection, interrupt, ...)
+    - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
   - use a journal-only client instead of directly manipulating a journal
   - indicate commit level for a push
@@ -141,13 +142,6 @@ Concurrency
   - when the server is interrupted
   - ping
 
-- class Lockable_File: public Generic_File:
-
-  - shared_lock()
-  - exclusive_lock()
-  - unlock()
-
-- All concurrency journals must be lockable.
 - Readonly_Client, Readonly_Server
 - server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
 - ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
