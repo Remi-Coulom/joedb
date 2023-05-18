@@ -25,10 +25,6 @@ namespace joedb
     const char *file_name
    ) const;
 
-   void shared_lock() final;
-   void exclusive_lock() final;
-   void unlock() final;
-
   protected:
    size_t raw_read(char *buffer, size_t size) final;
    void raw_write(const char *buffer, size_t size) final;
@@ -43,6 +39,10 @@ namespace joedb
     Windows_File(file_name.c_str(), mode)
    {
    }
+
+   void shared_lock() final;
+   void exclusive_lock() final;
+   void unlock() final;
 
    ~Windows_File() override;
  };
