@@ -118,8 +118,11 @@ namespace joedb
     try
     {
      data.update();
-     transaction();
-     data.get_journal().checkpoint(Commit_Level::no_commit);
+     data.get_journal().exclusive_transaction([this, &transaction]()
+     {
+      transaction();
+      data.get_journal().checkpoint(Commit_Level::no_commit);
+     });
     }
     catch (...)
     {
