@@ -11,7 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual int64_t handshake(bool keep_locked) = 0;
+   virtual int64_t handshake(Readonly_Journal &client_journal) = 0;
 
    virtual bool check_matching_content
    (

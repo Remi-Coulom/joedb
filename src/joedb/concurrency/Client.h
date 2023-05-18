@@ -51,26 +51,22 @@ namespace joedb
    ):
     connection(connection),
     data(data),
-    server_checkpoint(connection.handshake(data.get_journal().is_shared()))
+    server_checkpoint(connection.handshake(data.get_journal()))
    {
-    if (data.get_journal().is_shared())
-     connection.unlock();
-
-    {
-     const int64_t client_checkpoint =
-      data.get_journal().get_checkpoint_position();
-
-     if
+    if
+    (
+     !connection.check_matching_content
      (
-      !connection.check_matching_content
+      data.get_journal(),
+      std::min
       (
-       data.get_journal(),
-       std::min(server_checkpoint, client_checkpoint)
+       server_checkpoint,
+       data.get_journal().get_checkpoint_position()
       )
      )
-     {
-      throw Exception("Client data does not match the server");
-     }
+    )
+    {
+     throw Exception("Client data does not match the server");
     }
 
     data.update();

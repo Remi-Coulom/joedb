@@ -217,14 +217,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::handshake(bool keep_locked)
+ int64_t Server_Connection::handshake(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
   LOG("Connecting... ");
 
-  const char J = keep_locked ? 'J' : 'j';
-
-  buffer[0] = J;
+  buffer[0] = 'j';
   buffer[1] = 'o';
   buffer[2] = 'e';
   buffer[3] = 'd';
@@ -242,7 +240,7 @@ namespace joedb
 
   if
   (
-   buffer[0] != J ||
+   buffer[0] != 'j' ||
    buffer[1] != 'o' ||
    buffer[2] != 'e' ||
    buffer[3] != 'd' ||

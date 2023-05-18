@@ -9,6 +9,9 @@ create_table server
 add_field server port int32
 add_field server timeout int32
 add_field server file_name string
+add_field server dummy boolean
 add_field server ssh_connection references ssh_connection
 
-# The server will use a local connection if ssh_connection is null
+# dummy is true -> Dummy_Connection
+# ssh_connection is null -> Local_Connection
+# ssh_connection is not null -> Server_Connection

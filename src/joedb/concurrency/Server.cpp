@@ -122,8 +122,6 @@ namespace joedb
     write_buffer_and_next_command(session, 1);
    else if (session->state == Session::State::waiting_for_lock_pull)
     pull(session);
-   else if (session->state == Session::State::waiting_for_handshake)
-    handshake(session);
 
    session->state = Session::State::locking;
   }

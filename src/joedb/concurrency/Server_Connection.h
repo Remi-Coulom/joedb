@@ -29,7 +29,7 @@ namespace joedb
    std::thread keep_alive_thread;
    enum {keep_alive_interval = 240};
 
-   int64_t handshake(bool keep_locked) final;
+   int64_t handshake(Readonly_Journal &client_journal) final;
 
    void lock() final;
 

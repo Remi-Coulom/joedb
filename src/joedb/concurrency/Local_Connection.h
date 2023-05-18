@@ -12,33 +12,9 @@ namespace joedb
   private:
    File_Type file;
 
-   int64_t handshake(bool keep_locked) final
+   int64_t handshake(Readonly_Journal &client_journal) final
    {
-    int64_t result = 0;
-
-    std::exception_ptr exception;
-
-    lock();
-
-    try
-    {
-     Writable_Journal journal(file);
-     result = journal.get_checkpoint_position();
-    }
-    catch (...)
-    {
-     exception = std::current_exception();
-    }
-
-    if (!keep_locked || exception)
-    {
-     unlock();
-
-     if (exception)
-      std::rethrow_exception(exception);
-    }
-
-    return result;
+    return client_journal.get_checkpoint_position();
    }
 
    void lock() final
