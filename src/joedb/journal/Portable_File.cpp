@@ -19,7 +19,7 @@ namespace joedb
 
   const size_t index = static_cast<size_t>(mode);
   if (index >= supported_open_modes)
-   throw joedb::Exception("Portable_File_Buffer: unsupported open mode");
+   throw joedb::Exception("Portable_File_Buffer: file locking not supported");
 
   return filebuf.open(file_name, openmode[index]);
  }
@@ -32,11 +32,7 @@ namespace joedb
   Open_Mode mode
  )
  {
-  if
-  (
-   mode == Open_Mode::write_existing_or_create_new ||
-   mode == Open_Mode::shared_write
-  )
+  if (mode == Open_Mode::write_existing_or_create_new)
   {
    try_open(file_name, Open_Mode::write_existing) ||
    try_open(file_name, Open_Mode::create_new);
