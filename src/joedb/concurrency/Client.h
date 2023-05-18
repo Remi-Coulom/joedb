@@ -110,22 +110,22 @@ namespace joedb
     throw_if_pull_when_ahead();
     server_checkpoint = connection.lock_pull(data.get_journal());
 
-    try
+    data.get_journal().exclusive_transaction([this, &transaction]()
     {
-     data.update();
-     data.get_journal().exclusive_transaction([this, &transaction]()
+     try
      {
+      data.update();
       transaction();
       data.get_journal().checkpoint(Commit_Level::no_commit);
-     });
-    }
-    catch (...)
-    {
-     connection.unlock();
-     throw;
-    }
+     }
+     catch (...)
+     {
+      connection.unlock();
+      throw;
+     }
 
-    push_unlock();
+     push_unlock();
+    });
    }
 
    virtual ~Client() = default;
