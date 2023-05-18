@@ -1,5 +1,5 @@
 #include "joedb/io/Connection_Builder.h"
-#include "joedb/io/run_interpreted_client.h"
+#include "joedb/io/run_client_interpreter.h"
 #include "joedb/concurrency/Journal_Client.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/File.h"
@@ -77,7 +77,7 @@ namespace joedb
    );
 
    std::cout << "OK\n";
-   run_interpreted_client(*client);
+   run_client_interpreter(*client);
   }
 
   return 0;

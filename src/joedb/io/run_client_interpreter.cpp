@@ -1,4 +1,4 @@
-#include "joedb/io/run_interpreted_client.h"
+#include "joedb/io/run_client_interpreter.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/print_date.h"
 #include "joedb/concurrency/Interpreted_Client.h"
@@ -144,7 +144,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- void run_interpreted_client(Client &client)
+ void run_client_interpreter(Client &client)
  ////////////////////////////////////////////////////////////////////////////
  {
   const int64_t diff = client.get_checkpoint_difference();
