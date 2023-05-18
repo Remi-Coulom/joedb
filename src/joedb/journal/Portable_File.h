@@ -32,8 +32,6 @@ namespace joedb
     Stream_File(filebuf, mode)
    {
     set_mode(actual_mode);
-    if (actual_mode != Open_Mode::read_existing)
-     set_shared();
    }
 
    Portable_File(const std::string &file_name, Open_Mode mode):

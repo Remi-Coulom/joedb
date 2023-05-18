@@ -18,10 +18,11 @@ namespace joedb
   actual_mode = mode;
 
   const size_t index = static_cast<size_t>(mode);
-  if (index >= supported_open_modes)
-   throw joedb::Exception("Portable_File_Buffer: file locking not supported");
 
-  return filebuf.open(file_name, openmode[index]);
+  if (index < supported_open_modes)
+   return filebuf.open(file_name, openmode[index]);
+  else
+   return false;
  }
 
  /////////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,8 @@ namespace joedb
   Generic_File(mode),
   streambuf(streambuf)
  {
+  if (is_shared())
+   locking_unsupported();
  }
 
  /////////////////////////////////////////////////////////////////////////////

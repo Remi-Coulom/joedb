@@ -313,7 +313,7 @@ namespace joedb
    };
 
    Open_Mode mode;
-   bool shared;
+   const bool shared;
 
   protected:
    virtual size_t raw_read(char *buffer, size_t size) = 0;
@@ -322,6 +322,11 @@ namespace joedb
    virtual int64_t raw_get_size() const = 0; // -1 means no known size
    virtual void sync() = 0;
 
+   void locking_unsupported();
+   virtual void shared_lock();
+   virtual void exclusive_lock();
+   virtual void unlock();
+
    int seek(int64_t offset)
    {
     return raw_seek(offset + slice_start);
@@ -329,14 +334,12 @@ namespace joedb
 
    void destructor_flush() noexcept;
 
-   void set_shared() {shared = true;}
-
   public:
    //////////////////////////////////////////////////////////////////////////
    Generic_File(Open_Mode mode):
    //////////////////////////////////////////////////////////////////////////
     mode(mode),
-    shared(mode == Open_Mode::shared_write)
+    shared(mode >= Open_Mode::shared_write)
    {
     write_buffer_index = 0;
     reset_read_buffer();
@@ -360,6 +363,55 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     mode = new_mode;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename F> void shared_transaction(F transaction)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (!shared)
+     transaction();
+    else
+    {
+     shared_lock();
+
+     try
+     {
+      transaction();
+     }
+     catch (...)
+     {
+      unlock();
+      throw;
+     }
+
+     unlock();
+    }
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   template<typename F> void exclusive_transaction(F transaction)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (!shared)
+     transaction();
+    else
+    {
+     exclusive_lock();
+
+     try
+     {
+      transaction();
+     }
+     catch (...)
+     {
+      flush();
+      unlock();
+      throw;
+     }
+
+     unlock();
+    }
    }
 
    //////////////////////////////////////////////////////////////////////////

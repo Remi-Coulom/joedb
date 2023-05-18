@@ -66,16 +66,18 @@ namespace joedb
    build(argc - arg_index, argv + arg_index);
    std::cout << "OK\n";
 
-   if (nodb)
-   {
-    Journal_Client client(get_connection(), get_file());
-    run_interpreted_client(client);
-   }
-   else
-   {
-    Interpreted_Client client(get_connection(), get_file());
-    run_interpreted_client(client);
-   }
+   std::cout << "Creating client... ";
+   std::cout.flush();
+
+   std::unique_ptr<Client> client
+   (
+    nodb ?
+    (Client *)new Journal_Client(get_connection(), get_file()):
+    (Client *)new Interpreted_Client(get_connection(), get_file())
+   );
+
+   std::cout << "OK\n";
+   run_interpreted_client(*client);
   }
 
   return 0;

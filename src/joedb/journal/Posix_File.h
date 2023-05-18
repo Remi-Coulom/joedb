@@ -26,8 +26,9 @@ namespace joedb
    }
 
    bool try_exclusive_lock();
-   void exclusive_lock();
-   void unlock();
+   void shared_lock() final;
+   void exclusive_lock() final;
+   void unlock() final;
 
   protected:
    size_t raw_read(char *buffer, size_t size) final;
