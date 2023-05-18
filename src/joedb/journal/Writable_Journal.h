@@ -65,6 +65,11 @@ namespace joedb
    void append_raw_tail(const char *data, size_t size);
    void append_raw_tail(const std::vector<char> &data);
 
+   template<typename F> void exclusive_transaction(F transaction)
+   {
+    file.exclusive_transaction(transaction);
+   }
+
    int64_t ahead_of_checkpoint() const noexcept;
    void checkpoint(Commit_Level commit_level) final;
    void flush() {file.flush();}

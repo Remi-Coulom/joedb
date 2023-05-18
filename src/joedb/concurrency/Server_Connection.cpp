@@ -107,14 +107,7 @@ namespace joedb
  int64_t Server_Connection::lock_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (client_journal.is_shared())
-  {
-   lock();
-   client_journal.refresh_checkpoint();
-   return pull(client_journal);
-  }
-  else
-   return pull(client_journal, 'L');
+  return pull(client_journal, 'L');
  }
 
  ////////////////////////////////////////////////////////////////////////////

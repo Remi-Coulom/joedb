@@ -99,10 +99,10 @@ namespace joedb
    {
     throw_if_pull_when_ahead();
 
-    if (data.get_journal().is_shared())
-     server_checkpoint = connection.lock_pull_unlock(data.get_journal());
-    else
+    data.get_journal().exclusive_transaction([this]()
+    {
      server_checkpoint = connection.pull(data.get_journal());
+    });
 
     data.update();
     return server_checkpoint;
