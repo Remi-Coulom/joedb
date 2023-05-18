@@ -27,7 +27,7 @@ namespace joedb
    );
 
   public:
-   Writable_Journal(Generic_File &file);
+   explicit Writable_Journal(Generic_File &file);
 
    //////////////////////////////////////////////////////////////////////////
    class Tail_Writer

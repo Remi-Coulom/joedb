@@ -68,7 +68,7 @@ namespace joedb
    };
 
   public:
-   Readonly_Journal(Generic_File &file, bool ignore_errors = false);
+   explicit Readonly_Journal(Generic_File &file, bool ignore_errors = false);
 
    uint32_t get_file_version() const {return file_version;}
    bool at_end_of_file() const;
