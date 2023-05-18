@@ -66,6 +66,7 @@ namespace joedb
      iss >> seconds;
 
      Signal::signal = Signal::no_signal;
+     Signal::start();
 
      while (Signal::signal != SIGINT)
      {
@@ -76,6 +77,8 @@ namespace joedb
       for (int i = seconds; Signal::signal != SIGINT && --i >= 0;)
        std::this_thread::sleep_for(std::chrono::seconds(1));
      }
+
+     Signal::stop();
     }
     else if (command == "push") /////////////////////////////////////////////
     {

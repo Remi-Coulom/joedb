@@ -800,6 +800,8 @@ namespace joedb
 
   start_interrupt_timer();
   start_accept();
+
+  Signal::start();
  }
 
  ////////////////////////////////////////////////////////////////////////////

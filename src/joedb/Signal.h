@@ -21,13 +21,13 @@ namespace joedb
  class Signal
  {
   private:
-   Signal();
-   static Signal the_signal;
    static void CDECL signal_handler(int sig);
 
   public:
    static constexpr int no_signal = 0;
    static std::atomic<int> signal;
+   static void start();
+   static void stop();
  };
 }
 
