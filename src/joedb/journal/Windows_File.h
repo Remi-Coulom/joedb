@@ -11,8 +11,6 @@ namespace joedb
  class Windows_File: public Generic_File
  ///////////////////////////////////////////////////////////////////////////
  {
-  template<typename File_Type> friend class Local_Connection;
-
   private:
    static const DWORD desired_access[];
    static const DWORD share_mode[];

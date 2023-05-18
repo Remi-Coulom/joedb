@@ -519,7 +519,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Generic_File &local_file
    ):
     Client_Data(connection, local_file),
-    joedb::Client(connection, *this)
+    joedb::Client(connection, *static_cast<Client_Data *>(this))
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
@@ -530,11 +530,6 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     });
 
     schema_checkpoint = schema_journal.get_checkpoint_position();
-   }
-
-   template<typename File> Client(joedb::Local_Connection<File> &connection):
-    Client(connection, connection.get_file())
-   {
    }
 
    const Database &get_database() const
@@ -561,27 +556,15 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////
- class Local_Client_Parent
+ class Local_Client:
  ////////////////////////////////////////////////////////////////////////////
- {
-  protected:
-   joedb::Local_Connection<joedb::File> local_connection;
-
-  public:
-   Local_Client_Parent(const char *file_name):
-    local_connection(file_name)
-   {
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Local_Client: public Local_Client_Parent, public Client
- ////////////////////////////////////////////////////////////////////////////
+  private joedb::Local_Connection,
+  public Client
  {
   public:
    Local_Client(const char *file_name):
-    Local_Client_Parent(file_name),
-    Client(local_connection)
+    joedb::Local_Connection(file_name),
+    Client(*static_cast<joedb::Local_Connection *>(this), get_file())
    {
    }
 

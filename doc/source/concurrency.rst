@@ -64,14 +64,7 @@ tutorial.
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
-``Local_Connection`` allows serverless concurrent connection to a file. It is a
-template that takes a file class as parameter. It works only with file classes
-that support locking, such as ``Posix_File`` and ``Windows_File`` (or ``File``,
-when it is typedefed to one of those).
-
-.. code-block:: c++
-
-    joedb::Local_Connection<joedb::File> connection("local_concurrency.joedb");
+``Local_Connection`` allows serverless concurrent connection to a file, using file-locking for synchronization.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that creates the connection and the client in a single line of code. Here is an example:
 

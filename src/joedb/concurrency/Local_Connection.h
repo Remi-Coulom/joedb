@@ -2,15 +2,16 @@
 #define joedb_Local_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
+#include "joedb/journal/File.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- template<typename File_Type> class Local_Connection: public Connection
+ class Local_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   File_Type file;
+   File file;
 
    int64_t handshake(Readonly_Journal &client_journal) final
    {
@@ -79,7 +80,7 @@ namespace joedb
    {
    }
 
-   File_Type &get_file() {return file;}
+   File &get_file() {return file;}
  };
 }
 

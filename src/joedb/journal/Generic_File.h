@@ -323,9 +323,6 @@ namespace joedb
    virtual void sync() = 0;
 
    static void locking_unsupported();
-   virtual void shared_lock();
-   virtual void exclusive_lock();
-   virtual void unlock();
 
    int seek(int64_t offset)
    {
@@ -364,6 +361,10 @@ namespace joedb
    {
     mode = new_mode;
    }
+
+   virtual void shared_lock();
+   virtual void exclusive_lock();
+   virtual void unlock();
 
    //////////////////////////////////////////////////////////////////////////
    template<typename F> void shared_transaction(F transaction)

@@ -9,8 +9,6 @@ namespace joedb
  class Posix_File: public Generic_File
  ////////////////////////////////////////////////////////////////////////////
  {
-  template<typename File_Type> friend class Local_Connection;
-
   private:
    int fd;
 
@@ -26,9 +24,6 @@ namespace joedb
    }
 
    bool try_exclusive_lock();
-   void shared_lock() final;
-   void exclusive_lock() final;
-   void unlock() final;
 
   protected:
    size_t raw_read(char *buffer, size_t size) final;
@@ -57,6 +52,9 @@ namespace joedb
    }
 
    int64_t raw_get_size() const final;
+   void shared_lock() final;
+   void exclusive_lock() final;
+   void unlock() final;
 
    ~Posix_File() override;
  };

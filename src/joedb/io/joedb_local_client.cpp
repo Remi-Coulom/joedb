@@ -1,7 +1,6 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/concurrency/Local_Connection.h"
-#include "joedb/journal/File.h"
 
 namespace joedb
 {
@@ -10,7 +9,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::unique_ptr<Local_Connection<File>> connection;
+   std::unique_ptr<Local_Connection> connection;
 
   public:
    int get_min_parameters() const override {return 1;}
@@ -23,7 +22,7 @@ namespace joedb
    void build(int argc, const char * const *argv) override
    {
     const char *file_name = argv[0];
-    connection.reset(new Local_Connection<File>(file_name));
+    connection.reset(new Local_Connection(file_name));
    }
 
    Connection &get_connection() override {return *connection;}

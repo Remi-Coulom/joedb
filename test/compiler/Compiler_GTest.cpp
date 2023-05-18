@@ -926,8 +926,7 @@ TEST(Compiler, shared_local_file)
  const char * const file_name = "compiler_test.joedb";
  std::remove(file_name);
 
- joedb::Local_Connection<joedb::File> connection(file_name);
- test::Client client(connection);
+ test::Local_Client client(file_name);
 
  EXPECT_EQ(client.get_database().get_city_table().get_size(), 0ULL);
 
