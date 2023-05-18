@@ -97,17 +97,44 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_Connection::shared_pull
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  char pull_type
+ )
+ {
+  if (client_journal.is_shared())
+  {
+   int64_t result;
+
+   client_journal.exclusive_transaction
+   (
+    [this, &client_journal, pull_type, &result]()
+    {
+     client_journal.refresh_checkpoint();
+     result = pull(client_journal, pull_type);
+    }
+   );
+
+   return result;
+  }
+  else
+   return pull(client_journal, pull_type);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  int64_t Server_Connection::pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return pull(client_journal, 'P');
+  return shared_pull(client_journal, 'P');
  }
 
  ////////////////////////////////////////////////////////////////////////////
  int64_t Server_Connection::lock_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return pull(client_journal, 'L');
+  return shared_pull(client_journal, 'L');
  }
 
  ////////////////////////////////////////////////////////////////////////////

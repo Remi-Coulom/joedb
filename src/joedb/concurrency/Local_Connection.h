@@ -30,7 +30,11 @@ namespace joedb
 
    int64_t pull(Writable_Journal &client_journal) final
    {
-    client_journal.refresh_checkpoint();
+    file.shared_transaction([&client_journal]()
+    {
+     client_journal.refresh_checkpoint();
+    });
+
     return client_journal.get_checkpoint_position();
    }
 

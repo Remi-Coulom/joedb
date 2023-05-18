@@ -37,6 +37,8 @@ namespace joedb
 
    int64_t pull(Writable_Journal &client_journal, char pull_type);
 
+   int64_t shared_pull(Writable_Journal &client_journal, char pull_type);
+
    int64_t pull(Writable_Journal &client_journal) final;
 
    int64_t lock_pull(Writable_Journal &client_journal) final;

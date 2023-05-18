@@ -98,12 +98,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     throw_if_pull_when_ahead();
-
-    data.get_journal().exclusive_transaction([this]()
-    {
-     server_checkpoint = connection.pull(data.get_journal());
-    });
-
+    server_checkpoint = connection.pull(data.get_journal());
     data.update();
     return server_checkpoint;
    }
