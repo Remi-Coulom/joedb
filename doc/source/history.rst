@@ -3,18 +3,17 @@ History
 - 2023-??-??: 7.0
 
   - :ref:`Blobs <blobs>`
-  - :ref:`Real-time remote backup <joedb_multi_server>` from one server to
-    another server.
+  - Ability to safely share a single local replica of a remote server among
+    multiple local clients.
+  - Removed some useless ssh code that was left over from the old serverless
+    sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
+    ``ssh::Session``, and its constructor is slightly faster than before
+    because there is no sftp any more.
   - No more implicit conversion from compiled row id to integer or boolean.
     With this new version, explicit methods must be used: ``is_null()`` or
     ``is_not_null()`` to test if a reference is null or not, and ``get_id()``
     to convert to an integer. This ensures stronger typing, and prevents
     bug-prone implicit conversions.
-  - Removed some useless ssh code that was left over from the old serverless
-    sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
-    ``ssh::Session``, and its constructor is slightly faster than before
-    because there is no sftp any more.
-  - Files written by this version cannot be opened by the previous version.
   - No more endianness conversions: on big-endian machines joedb reads and
     writes data in big-endian format.
   - Minor fixes and improvements

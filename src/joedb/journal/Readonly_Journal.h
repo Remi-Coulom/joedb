@@ -113,7 +113,7 @@ namespace joedb
     return file.get_hash(header_size, checkpoint - header_size);
    }
 
-   static constexpr uint32_t version_number = 0x00000005;
+   static constexpr uint32_t version_number = 0x00000004;
    static constexpr uint32_t compatible_version = 0x00000004;
    static constexpr int64_t header_size = 41;
  };
