@@ -322,7 +322,7 @@ namespace joedb
    virtual int64_t raw_get_size() const = 0; // -1 means no known size
    virtual void sync() = 0;
 
-   void locking_unsupported();
+   static void locking_unsupported();
    virtual void shared_lock();
    virtual void exclusive_lock();
    virtual void unlock();
