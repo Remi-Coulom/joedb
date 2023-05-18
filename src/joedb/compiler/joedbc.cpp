@@ -727,20 +727,21 @@ static void generate_readonly_h
     out << fields.back() << ";\n";
    }
 
-  out << '\n';
-  out << "  joedb::Compact_Freedom_Keeper freedom_keeper;\n";
-  out << '\n';
-  out << "  size_t size() const {return freedom_keeper.size();}\n";
-  out << '\n';
-  out << "  void resize(size_t new_size)\n";
-  out << "  {\n";
+ out << R"RRR(
+
+  joedb::Compact_Freedom_Keeper freedom_keeper;
+
+  size_t size() const {return freedom_keeper.size();}
+
+  void resize(size_t new_size)
+  {
+)RRR";
 
   fields.emplace_back("freedom_keeper");
   for (const std::string &field: fields)
    out << "   " << field << ".resize(new_size);\n";
 
-  out << "  }\n";
-  out << " };\n\n";
+  out << "  }\n };\n\n";
  }
 
  for (const auto &index: options.get_indices())
@@ -1082,11 +1083,25 @@ static void generate_readonly_h
  //
  // insert_vector
  //
- out << '\n';
- out << "   void insert_vector(Table_Id table_id, Record_Id record_id, Record_Id size) final\n";
- out << "   {\n";
- out << "    if (record_id <= 0 || (max_record_id && (record_id > max_record_id || size > max_record_id)))\n";
- out << "     error(\"insert_vector: null record_id, or too big\");\n";
+ out << R"RRR(
+
+   void insert_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    Record_Id size
+   ) final
+   {
+    if
+    (
+     record_id <= 0 ||
+     (max_record_id && (record_id > max_record_id || size > max_record_id))
+    )
+    {
+     error("insert_vector: null record_id, or too big");
+    }
+)RRR";
+
  {
   bool first = true;
   for (auto &table: tables)
