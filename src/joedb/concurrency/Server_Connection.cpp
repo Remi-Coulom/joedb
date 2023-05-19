@@ -2,6 +2,8 @@
 #include "joedb/concurrency/network_integers.h"
 #include "joedb/Exception.h"
 
+#include <iostream>
+
 #define LOG(x) do {if (log) *log << x;} while (false)
 
 namespace joedb
@@ -10,6 +12,9 @@ namespace joedb
  void Server_Connection::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (client_journal.is_shared())
+   client_journal.exclusive_lock();
+
   Channel_Lock lock(channel);
 
   LOG(get_session_id() << ": obtaining lock... ");
@@ -27,6 +32,9 @@ namespace joedb
  void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (client_journal.is_shared())
+   client_journal.unlock();
+
   Channel_Lock lock(channel);
 
   LOG(get_session_id() << ": releasing lock... ");
