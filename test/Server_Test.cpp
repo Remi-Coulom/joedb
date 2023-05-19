@@ -59,7 +59,7 @@ TEST(Server, basic)
 
   EXPECT_EQ(client_2.get_database().get_tables().size(), 1ULL);
 
-  client_1.transaction([](const joedb::Readable &, joedb::Writable &){});
+  client_1.transaction([](const joedb::Readable &readable, joedb::Writable &writable){});
  }
 
  //
