@@ -14,6 +14,7 @@ namespace joedb
    std::unique_ptr<ssh::Forward_Channel> channel;
 
   public:
+   bool has_sharing_option() const final {return true;}
    int get_min_parameters() const override {return 3;}
    int get_max_parameters() const override {return 5;}
 

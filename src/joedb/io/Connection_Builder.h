@@ -13,6 +13,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
+   virtual bool has_sharing_option() const {return false;}
+   virtual bool get_default_sharing() const {return false;}
    virtual int get_min_parameters() const {return 0;}
    virtual int get_max_parameters() const {return 0;}
    virtual const char *get_parameters_description() const {return "";}

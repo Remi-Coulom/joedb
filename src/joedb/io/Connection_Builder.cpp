@@ -17,7 +17,7 @@ namespace joedb
  {
   int arg_index = 1;
   bool nodb = false;
-  bool shared = false;
+  bool shared = get_default_sharing();
 
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
   {
@@ -25,10 +25,13 @@ namespace joedb
    arg_index++;
   }
 
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--shared") == 0)
+  if (has_sharing_option())
   {
-   shared = true;
-   arg_index++;
+   if (arg_index < argc && std::strcmp(argv[arg_index], "--shared") == 0)
+   {
+    shared = true;
+    arg_index++;
+   }
   }
 
   const int parameters = argc - arg_index - 1;
@@ -39,7 +42,10 @@ namespace joedb
    parameters > get_max_parameters()
   )
   {
-   std::cerr << "usage: " << argv[0] << " [--nodb] [--shared] <client_file_name> ";
+   std::cerr << "usage: " << argv[0];
+   if (has_sharing_option())
+    std::cerr << " [--shared]";
+   std::cerr << " [--nodb] <client_file_name> ";
    std::cerr << get_parameters_description() << '\n';
    return 1;
   }

@@ -9,6 +9,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
+   bool get_default_sharing() const final
+   {
+    return true;
+   }
+
    std::unique_ptr<Connection> build
    (
     Writable_Journal &client_journal,
