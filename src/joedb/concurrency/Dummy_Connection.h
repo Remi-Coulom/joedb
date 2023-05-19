@@ -13,6 +13,8 @@ namespace joedb
    Dummy_Connection(Writable_Journal &client_journal):
     Connection(client_journal)
    {
+    if (client_journal.is_shared())
+     throw Exception("Dummy_Connection does not work with shared files");
    }
 
    int64_t handshake() final
