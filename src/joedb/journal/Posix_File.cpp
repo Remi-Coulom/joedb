@@ -40,6 +40,13 @@ namespace joedb
   has_effect_on_file_state();
   if (flock(fd, LOCK_SH) == -1)
    throw_last_error("Locking", "file");
+
+#ifndef NDEBUG
+  if (!locked)
+   locked = true;
+  else
+   throw Exception("locking a locked file\n");
+#endif
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -49,6 +56,13 @@ namespace joedb
   has_effect_on_file_state();
   if (flock(fd, LOCK_EX) == -1)
    throw_last_error("Locking", "file");
+
+#ifndef NDEBUG
+  if (!locked)
+   locked = true;
+  else
+   throw Exception("locking a locked file\n");
+#endif
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -58,6 +72,13 @@ namespace joedb
   has_effect_on_file_state();
   if (flock(fd, LOCK_UN) == -1)
    throw_last_error("Unlocking", "file");
+
+#ifndef NDEBUG
+  if (locked)
+   locked = false;
+  else
+   throw Exception("unlocking an unlocked file\n");
+#endif
  }
 
  /////////////////////////////////////////////////////////////////////////////

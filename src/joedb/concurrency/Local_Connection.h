@@ -53,6 +53,13 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
+   int64_t lock_pull() final
+   {
+    client_journal.exclusive_lock();
+    client_journal.refresh_checkpoint();
+    return client_journal.get_checkpoint_position();
+   }
+
    void push
    (
     int64_t server_position,

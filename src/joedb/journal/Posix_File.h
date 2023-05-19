@@ -23,6 +23,10 @@ namespace joedb
     fd += 0;
    }
 
+#ifndef NDEBUG
+   bool locked;
+#endif
+
    bool try_exclusive_lock();
 
   protected:
