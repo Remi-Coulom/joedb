@@ -539,14 +539,9 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    }
 
   public:
-   template<class Connection_Type, class... Arguments>
-   Client
-   (
-    joedb::Generic_File &file,
-    joedb::T<Connection_Type> t,
-    Arguments&&... arguments
-   ):
-    Client_Parent(file, t, arguments...),
+   template<class... Arguments>
+   Client(joedb::Generic_File &file, Arguments&&... arguments):
+    Client_Parent(file, arguments...),
     joedb::Client(data, *connection)
    {
     if (get_checkpoint_difference() > 0)
