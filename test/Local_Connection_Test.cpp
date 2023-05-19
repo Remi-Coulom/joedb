@@ -2,7 +2,7 @@
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
 #include "joedb/concurrency/Local_Connection.h"
-#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Destructor_Logger.h"
 #include "joedb/String_Logger.h"

@@ -495,10 +495,10 @@ TEST(Compiler, checkpoints)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void schema_v2::Journal_Database::set_default_preferred_language_to_english
+void schema_v2::Generic_File_Database::set_default_preferred_language_to_english
 /////////////////////////////////////////////////////////////////////////////
 (
- Journal_Database &db
+ Generic_File_Database &db
 )
 {
  auto english = db.new_language("English", "en");
@@ -587,7 +587,7 @@ TEST(Compiler, client)
  joedb::Embedded_Connection connection_v1bis(client_v1bis_journal, server_journal);
  schema_v1::Client client_v1bis(connection_v1bis);
 
- client_v1.transaction([](schema_v1::Journal_Database &db)
+ client_v1.transaction([](schema_v1::Generic_File_Database &db)
  {
   db.new_person("Toto");
  });
@@ -596,7 +596,7 @@ TEST(Compiler, client)
  joedb::Embedded_Connection connection_v2(client_v2_journal, server_journal);
  schema_v2::Client client_v2(connection_v2);
 
- client_v2.transaction([](schema_v2::Journal_Database &db)
+ client_v2.transaction([](schema_v2::Generic_File_Database &db)
  {
   db.new_language("French", "fr");
  });
@@ -613,7 +613,7 @@ TEST(Compiler, client)
 
  try
  {
-  client_v1bis.transaction([](schema_v1::Journal_Database &db)
+  client_v1bis.transaction([](schema_v1::Generic_File_Database &db)
   {
   });
   ADD_FAILURE() <<  "client_v1 should not be able to pull new schema\n";
@@ -631,7 +631,7 @@ TEST(Compiler, client_push)
  joedb::Memory_Journal client_journal;
 
  {
-  test::Journal_Database db(client_journal);
+  test::Generic_File_Database db(client_journal);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
@@ -644,7 +644,7 @@ TEST(Compiler, client_push)
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
- test::Journal_Database db(server_journal);
+ test::Generic_File_Database db(server_journal);
  EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
 }
 
@@ -655,7 +655,7 @@ TEST(Compiler, client_hash_error)
  joedb::Memory_Journal client_journal;
 
  {
-  test::Journal_Database db(client_journal);
+  test::Generic_File_Database db(client_journal);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
@@ -663,7 +663,7 @@ TEST(Compiler, client_hash_error)
  joedb::Memory_Journal server_journal;
 
  {
-  test::Journal_Database db(server_journal);
+  test::Generic_File_Database db(server_journal);
   db.new_person("X", db.null_city());
   db.checkpoint();
  }

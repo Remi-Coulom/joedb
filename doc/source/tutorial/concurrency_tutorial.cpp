@@ -1,7 +1,8 @@
 #include "tutorial.h"
 
 #include "joedb/concurrency/Embedded_Connection.h"
-#include "joedb/journal/Memory_Journal.h"
+#include "joedb/journal/Memory_File.h"
+#include <joedb/journal/Writable_Journal.h>
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
@@ -10,15 +11,20 @@ int main()
  //
  // This sets up a configuration with a server and 2 clients.
  //
- joedb::Memory_Journal server_journal;
- joedb::Memory_Journal client1_journal;
- joedb::Memory_Journal client2_journal;
+ joedb::Memory_File server_file;
+ joedb::Writable_Journal server_journal(server_file);
 
- joedb::Embedded_Connection connection1(client1_journal, server_journal);
- joedb::Embedded_Connection connection2(client2_journal, server_journal);
+ joedb::Memory_File client1_file;
+ joedb::Memory_File client2_file;
 
- tutorial::Client client1(connection1);
- tutorial::Client client2(connection2);
+ tutorial::Client_Data client1_data(client1_file);
+ tutorial::Client_Data client2_data(client2_file);
+
+ joedb::Embedded_Connection connection1(client1_data.get_journal(), server_journal);
+ joedb::Embedded_Connection connection2(client2_data.get_journal(), server_journal);
+
+ tutorial::Client client1(client1_data, connection1);
+ tutorial::Client client2(client2_data, connection2);
 
  //
  // The databases are empty. client1 will add a few cities.
@@ -32,7 +38,7 @@ int main()
  // Writes that occured in a transaction before an exception are not sent to
  // the server, but they are written locally.
  //
- client1.transaction([](tutorial::Journal_Database &db)
+ client1.transaction([](tutorial::Generic_File_Database &db)
  {
   db.new_city("Paris");
   db.new_city("New York");

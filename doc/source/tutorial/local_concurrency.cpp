@@ -13,7 +13,7 @@ static int local_concurrency(int argc, char **argv)
 
  while (true)
  {
-  client.transaction([](tutorial::Journal_Database &db)
+  client.transaction([](tutorial::Generic_File_Database &db)
   {
    db.new_person();
   });
