@@ -113,6 +113,10 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
+- Allow connections to be built without data. Pass client_journal as reference
+  parameter to all functions like before, not to constructor.
+- Same connection can be used in more than one client.
+- Restore Embedded connection like before (pass server file, no need of journal).
 - Proper testing and fine-tuning of shared local files:
 
    - Never unlock files that are not shared
