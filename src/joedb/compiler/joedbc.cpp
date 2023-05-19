@@ -162,8 +162,9 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  class Client_Data;
  class Client;
 
- class Journal_Database: public Database, public joedb::Blob_Reader
+ class Generic_File_Database: public Database, public joedb::Blob_Reader
  {
+  friend class Client_Data;
   friend class Client;
 
   protected:
@@ -179,7 +180,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    }
 
   private:
-   joedb::Writable_Journal &journal;
+   joedb::Writable_Journal journal;
    bool ready_to_write;
 
    void initialize();
@@ -208,18 +209,18 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   out << '\n';
   out << "  public:\n";
   for (const auto &name: options.get_custom_names())
-   out << "   static void " << name << "(Journal_Database &db);\n";
+   out << "   static void " << name << "(Generic_File_Database &db);\n";
   out << "\n  private:";
  }
  out << R"RRR(
-   Journal_Database
+   Generic_File_Database
    (
-    joedb::Writable_Journal &journal,
+    joedb::Generic_File &file,
     bool upgrade
    );
 
   public:
-   Journal_Database(joedb::Writable_Journal &journal);
+   Generic_File_Database(joedb::Generic_File &file);
 
    std::string read_blob_data(joedb::Blob blob) final
    {
@@ -416,29 +417,6 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << " };\n";
 
  out << R"RRR(
- class Generic_File_Database_Parent
- {
-  public:
-   joedb::Writable_Journal journal;
-
-   Generic_File_Database_Parent(joedb::Generic_File &file):
-    journal(file)
-   {
-   }
- };
-
- class Generic_File_Database: private Generic_File_Database_Parent, public Journal_Database
- {
-  using Generic_File_Database_Parent::journal;
-
-  public:
-   Generic_File_Database(joedb::Generic_File &file):
-    Generic_File_Database_Parent(file),
-    Journal_Database(journal)
-   {
-   }
- };
-
  class File_Database_Parent
  {
   public:
@@ -481,7 +459,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   const std::string &tname = table.second;
 
-  out << " inline void Journal_Database::clear_" << tname << "_table()\n";
+  out << " inline void Generic_File_Database::clear_" << tname << "_table()\n";
   out << " {\n";
   out << "  while (!get_" << tname << "_table().is_empty())\n";
   out << "   delete_" << tname << "(get_" << tname << "_table().last());\n";
@@ -494,80 +472,118 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  //
  out << R"RRR(
  ////////////////////////////////////////////////////////////////////////////
- class Client:
+ class Client_Data: public joedb::Client_Data
  ////////////////////////////////////////////////////////////////////////////
-  private Journal_Database,
-  private joedb::Client_Data,
-  public joedb::Client
+ {
+  friend class Client;
+
+  private:
+   Generic_File_Database db;
+
+  public:
+   Client_Data(joedb::Generic_File &file):
+    db(file, false)
+   {
+   }
+
+   joedb::Writable_Journal &get_journal() final
+   {
+    return db.journal;
+   }
+
+   void update() final
+   {
+    db.ready_to_write = false;
+    db.journal.play_until_checkpoint(db);
+    db.ready_to_write = true;
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Client
+ ////////////////////////////////////////////////////////////////////////////
  {
   private:
+   Client_Data &data;
+   joedb::Client client;
+
    int64_t schema_checkpoint;
 
    void throw_if_schema_changed()
    {
-    if (schema_journal.get_checkpoint_position() > schema_checkpoint)
+    if (data.db.schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
    }
 
   public:
-   Client(joedb::Connection &connection):
-    Journal_Database(connection.client_journal, false),
-    joedb::Client(connection, *static_cast<Client_Data *>(this))
+   Client
+   (
+    Client_Data &data,
+    joedb::Connection &connection
+   ):
+    data(data),
+    client(data, connection)
    {
-    if (get_checkpoint_difference() > 0)
-     push_unlock();
+    if (client.get_checkpoint_difference() > 0)
+     client.push_unlock();
 
-    joedb::Client::transaction([this](){
-     check_schema();
-     auto_upgrade();
+    client.transaction([&data](){
+     data.db.check_schema();
+     data.db.auto_upgrade();
     });
 
-    schema_checkpoint = schema_journal.get_checkpoint_position();
-   }
-
-   void update(joedb::Readonly_Journal &journal) final
-   {
-    ready_to_write = false;
-    journal.play_until_checkpoint
-    (
-     *static_cast<Journal_Database *>(this)
-    );
-    ready_to_write = true;
+    schema_checkpoint = data.db.schema_journal.get_checkpoint_position();
    }
 
    const Database &get_database() const
    {
-    return *this;
+    return data.db;
    }
 
    int64_t pull()
    {
-    const int64_t result = joedb::Client::pull();
+    const int64_t result = client.pull();
     throw_if_schema_changed();
     return result;
    }
 
    template<typename F> void transaction(F transaction)
    {
-    joedb::Client::transaction([&]()
+    client.transaction([&]()
     {
      throw_if_schema_changed();
-     transaction(*static_cast<Journal_Database *>(this));
+     transaction(data.db);
     });
    }
  };
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////
- class Local_Client:
+ class Local_Client_Data
  ////////////////////////////////////////////////////////////////////////////
-  private joedb::Local_Connection,
-  public Client
+ {
+  protected:
+   joedb::File file;
+   Client_Data data;
+   joedb::Local_Connection connection;
+
+  public:
+   Local_Client_Data(const char *file_name):
+    file(file_name, joedb::Open_Mode::shared_write),
+    data(file),
+    connection(data.get_journal())
+   {
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Local_Client: private Local_Client_Data, public Client
+ ////////////////////////////////////////////////////////////////////////////
  {
   public:
    Local_Client(const char *file_name):
-    joedb::Local_Connection(file_name),
-    Client(*static_cast<joedb::Local_Connection *>(this))
+    Local_Client_Data(file_name),
+    Client(Local_Client_Data::data, connection)
    {
    }
 
@@ -593,7 +609,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  const std::vector<std::string> type_names
  {
   "File_Database",
-  "Journal_Database",
+  "Generic_File_Database",
   "Client"
  };
 
@@ -1896,35 +1912,35 @@ static void generate_cpp
 
  out << R"RRR(
  ////////////////////////////////////////////////////////////////////////////
- void Journal_Database::write_comment(const std::string &comment)
+ void Generic_File_Database::write_comment(const std::string &comment)
  ////////////////////////////////////////////////////////////////////////////
  {
   journal.comment(comment);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Journal_Database::write_timestamp()
+ void Generic_File_Database::write_timestamp()
  ////////////////////////////////////////////////////////////////////////////
  {
   journal.timestamp(std::time(nullptr));
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Journal_Database::write_timestamp(int64_t timestamp)
+ void Generic_File_Database::write_timestamp(int64_t timestamp)
  ////////////////////////////////////////////////////////////////////////////
  {
   journal.timestamp(timestamp);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Journal_Database::write_valid_data()
+ void Generic_File_Database::write_valid_data()
  ////////////////////////////////////////////////////////////////////////////
  {
   journal.valid_data();
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Journal_Database::initialize()
+ void Generic_File_Database::initialize()
  ////////////////////////////////////////////////////////////////////////////
  {
   max_record_id = Record_Id(journal.get_checkpoint_position());
@@ -1935,7 +1951,7 @@ static void generate_cpp
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Journal_Database::auto_upgrade()
+ void Generic_File_Database::auto_upgrade()
  ////////////////////////////////////////////////////////////////////////////
  {
   const size_t file_schema_size = schema_file.get_data().size();
@@ -1961,13 +1977,13 @@ static void generate_cpp
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Journal_Database::Journal_Database
+ Generic_File_Database::Generic_File_Database
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Writable_Journal &journal,
+  joedb::Generic_File &file,
   bool upgrade
  ):
-  journal(journal)
+  journal(file)
  {
   initialize();
   if (upgrade)
@@ -1978,12 +1994,12 @@ static void generate_cpp
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Journal_Database::Journal_Database
+ Generic_File_Database::Generic_File_Database
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Writable_Journal &journal
+  joedb::Generic_File &file
  ):
-  Journal_Database(journal, true)
+  Generic_File_Database(file, true)
  {
  }
 )RRR";
