@@ -113,11 +113,11 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
-- Re-organize code:
+- Proper testing and fine-tuning of shared local files:
 
-   - Fuse handshake and check_matching_content
    - Never unlock files that are not shared
    - Use lock objects to properly ensure unlocking in case of exception (both for file and connection)
+   - Unit testing and fuzzing of shared locking
 
 - Test many concurrent read and write requests. Performance benchmarks.
 - File-locking benchmarks
