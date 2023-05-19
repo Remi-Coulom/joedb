@@ -53,11 +53,6 @@ namespace joedb
      unlock();
    }
 
-   bool check_matching_content(int64_t server_checkpoint) final
-   {
-    return true;
-   }
-
   public:
    Local_Connection(Writable_Journal &client_journal):
     Connection(client_journal)

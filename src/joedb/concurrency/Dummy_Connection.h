@@ -22,11 +22,6 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   bool check_matching_content(int64_t server_checkpoint) final
-   {
-    return true;
-   }
-
    void lock() final
    {
    }

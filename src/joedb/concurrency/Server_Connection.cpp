@@ -285,6 +285,9 @@ namespace joedb
   keep_alive_thread_must_stop = false;
   keep_alive_thread = std::thread([this](){keep_alive();});
 
+  if (!check_matching_content(server_checkpoint))
+   content_mismatch();
+
   return server_checkpoint;
  }
 

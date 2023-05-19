@@ -10,6 +10,12 @@ namespace joedb
  class Connection: public Mutex
  ////////////////////////////////////////////////////////////////////////////
  {
+  protected:
+   void content_mismatch()
+   {
+    throw Exception("Client data does not match the server");
+   }
+
   public:
    Writable_Journal &client_journal;
 
@@ -19,8 +25,6 @@ namespace joedb
    {}
 
    virtual int64_t handshake() = 0;
-
-   virtual bool check_matching_content(int64_t server_checkpoint) = 0;
 
    void lock() override = 0;
    void unlock() override = 0;

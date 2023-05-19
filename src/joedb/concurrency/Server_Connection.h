@@ -37,7 +37,7 @@ namespace joedb
    int64_t pull() final;
    int64_t lock_pull() final;
    void push (int64_t server_position, bool unlock_after) final;
-   bool check_matching_content(int64_t server_checkpoint) final;
+   bool check_matching_content(int64_t server_checkpoint);
    void keep_alive();
 
   public:

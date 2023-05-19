@@ -50,9 +50,6 @@ namespace joedb
     connection(connection),
     server_checkpoint(connection.handshake())
    {
-    if (!connection.check_matching_content(server_checkpoint))
-     throw Exception("Client data does not match the server");
-
     data.update();
    }
 

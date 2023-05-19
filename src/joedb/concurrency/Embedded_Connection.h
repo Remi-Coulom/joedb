@@ -17,22 +17,15 @@ namespace joedb
    int64_t handshake() final
    //////////////////////////////////////////////////////////////////////////
    {
-    return server_journal.get_checkpoint_position();
-   }
+    const int64_t server_position = server_journal.get_checkpoint_position();
+    const int64_t client_position = client_journal.get_checkpoint_position();
 
-   //////////////////////////////////////////////////////////////////////////
-   bool check_matching_content(int64_t server_checkpoint) final
-   //////////////////////////////////////////////////////////////////////////
-   {
-    const int checkpoint = std::min
-    (
-     server_checkpoint,
-     client_journal.get_checkpoint_position()
-    );
+    const int64_t min = std::min(server_position, client_position);
 
-    return
-     client_journal.get_hash(checkpoint) ==
-     server_journal.get_hash(checkpoint);
+    if (client_journal.get_hash(min) != server_journal.get_hash(min))
+     content_mismatch();
+
+    return server_position;
    }
 
    //////////////////////////////////////////////////////////////////////////
