@@ -27,13 +27,12 @@ namespace joedb
     const char * const port = argv[1];
     const char * const file_name = argc > 2 ? argv[2] : nullptr;
 
-    open_local_file(file_name);
+    open_client_file(file_name);
     channel.reset(new Network_Channel(host, port));
-    connection.reset(new Server_Connection(*channel, &std::cerr));
+    connection.reset(new Server_Connection(*client_journal, *channel, &std::cerr));
    }
 
    Connection &get_connection() override {return *connection;}
-   Generic_File &get_file() override {return *local_file;}
  };
 
  /////////////////////////////////////////////////////////////////////////////

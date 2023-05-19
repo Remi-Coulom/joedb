@@ -11,31 +11,29 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual int64_t handshake(Readonly_Journal &client_journal) = 0;
+   Writable_Journal &client_journal;
 
-   virtual bool check_matching_content
-   (
-    Readonly_Journal &client_journal,
-    int64_t checkpoint
-   ) = 0;
+  public:
+   Connection(Writable_Journal &client_journal):
+    client_journal(client_journal)
+   {}
+
+   virtual int64_t handshake() = 0;
+
+   virtual bool check_matching_content(int64_t server_checkpoint) = 0;
 
    void lock() override = 0;
    void unlock() override = 0;
 
-   virtual int64_t pull(Writable_Journal &client_journal) = 0;
+   virtual int64_t pull() = 0;
 
-   virtual int64_t lock_pull(Writable_Journal &client_journal)
+   virtual int64_t lock_pull()
    {
     lock();
-    return pull(client_journal);
+    return pull();
    }
 
-   virtual void push
-   (
-    Readonly_Journal &client_journal,
-    int64_t server_checkpoint,
-    bool unlock_after
-   ) = 0;
+   virtual void push(int64_t server_checkpoint, bool unlock_after) = 0;
  };
 }
 

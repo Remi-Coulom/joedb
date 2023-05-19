@@ -76,6 +76,8 @@ namespace joedb
    int64_t get_checkpoint_position() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == header_size;}
    bool is_shared() const {return file.is_shared();}
+   void exclusive_lock() {file.exclusive_lock();}
+   void unlock() {file.unlock();}
 
    bool is_same_file(const Generic_File &other_file) const
    {

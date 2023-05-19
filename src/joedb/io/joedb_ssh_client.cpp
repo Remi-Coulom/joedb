@@ -32,14 +32,13 @@ namespace joedb
     const int ssh_port = argc > 4 ? std::atoi(argv[4]) : 22;
     const int ssh_log_level = argc > 5 ? std::atoi(argv[5]) : 0;
 
-    open_local_file(local_file_name);
+    open_client_file(local_file_name);
     session.reset(new ssh::Session(user, host, ssh_port, ssh_log_level));
     channel.reset(new ssh::Forward_Channel(*session, "localhost", joedb_port));
-    connection.reset(new Server_Connection(*channel, &std::cerr));
+    connection.reset(new Server_Connection(*client_journal, *channel, &std::cerr));
    }
 
    Connection &get_connection() override {return *connection;}
-   Generic_File &get_file() override {return *local_file;}
  };
 
  /////////////////////////////////////////////////////////////////////////////

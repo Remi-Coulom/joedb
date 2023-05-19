@@ -13,8 +13,7 @@ static int file_tutorial_main(int argc, char **argv)
  // (If a file already exists, it will fail)
  //
  {
-  joedb::File file(file_name, joedb::Open_Mode::create_new);
-  tutorial::Generic_File_Database db(file);
+  tutorial::File_Database db(file_name, joedb::Open_Mode::create_new);
   db.new_city("Villeneuve d'Ascq");
   db.checkpoint();
  }
@@ -24,8 +23,7 @@ static int file_tutorial_main(int argc, char **argv)
  // (If the file does not exist, it will fail)
  //
  {
-  joedb::File file(file_name, joedb::Open_Mode::write_existing);
-  tutorial::Generic_File_Database db(file);
+  tutorial::File_Database db(file_name, joedb::Open_Mode::write_existing);
   db.new_city("Tombouctou");
   db.checkpoint();
  }

@@ -2,7 +2,7 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Network_Channel.h"
 #include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Memory_Journal.h"
 #include "gtest/gtest.h"
 
 #include <thread>
@@ -26,20 +26,20 @@ TEST(Server, basic)
  std::string port_string = port_stream.str();
  const char * const port = port_string.c_str();
 
- joedb::Memory_File client_file_1;
- joedb::Memory_File client_file_2;
+ joedb::Memory_Journal client_journal_1;
+ joedb::Memory_Journal client_journal_2;
 
  //
  // Basic operation
  //
  {
   joedb::Network_Channel channel_1("localhost", port);
-  joedb::Server_Connection connection_1(channel_1, log_stream);
-  joedb::Interpreted_Client client_1(connection_1, client_file_1);
+  joedb::Server_Connection connection_1(client_journal_1, channel_1, log_stream);
+  joedb::Interpreted_Client client_1(connection_1);
 
   joedb::Network_Channel channel_2("localhost", port);
-  joedb::Server_Connection connection_2(channel_2, log_stream);
-  joedb::Interpreted_Client client_2(connection_2, client_file_2);
+  joedb::Server_Connection connection_2(client_journal_2, channel_2, log_stream);
+  joedb::Interpreted_Client client_2(connection_2);
 
   client_1.pull();
 
@@ -64,33 +64,25 @@ TEST(Server, basic)
  //
  // Reconnect after disconnection, with a good non-empty database
  //
- client_file_1.set_mode(joedb::Open_Mode::write_existing);
-
  {
   joedb::Network_Channel channel_1("localhost", port);
-  joedb::Server_Connection connection_1(channel_1, log_stream);
-  joedb::Interpreted_Client client_1(connection_1, client_file_1);
+  joedb::Server_Connection connection_1(client_journal_1, channel_1, log_stream);
+  joedb::Interpreted_Client client_1(connection_1);
  }
 
  //
  // Try reconnecting with a mismatched database
  //
  {
-  joedb::Memory_File file;
-
-  {
-   joedb::Writable_Journal journal(file);
-   journal.create_table("city");
-   journal.checkpoint(joedb::Commit_Level::no_commit);
-  }
-
-  file.set_mode(joedb::Open_Mode::write_existing);
+  joedb::Memory_Journal journal;
+  journal.create_table("city");
+  journal.checkpoint(joedb::Commit_Level::no_commit);
 
   joedb::Network_Channel channel("localhost", port);
-  joedb::Server_Connection connection(channel, log_stream);
+  joedb::Server_Connection connection(journal, channel, log_stream);
   try
   {
-   joedb::Interpreted_Client client(connection, file);
+   joedb::Interpreted_Client client(connection);
    FAIL() << "This should not work";
   }
   catch (const joedb::Exception &e)

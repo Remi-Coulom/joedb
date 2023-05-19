@@ -11,6 +11,7 @@ namespace joedb
  {
   private:
    std::unique_ptr<File> server_file;
+   std::unique_ptr<Writable_Journal> server_journal;
    std::unique_ptr<Embedded_Connection> connection;
 
   public:
@@ -27,16 +28,22 @@ namespace joedb
     const char * const server_file_name = argv[0];
     const char * const client_file_name = argc > 1 ? argv[1] : nullptr;
 
-    open_local_file(client_file_name);
+    open_client_file(client_file_name);
+
     server_file.reset
     (
      new File(server_file_name, Open_Mode::write_existing_or_create_new)
     );
-    connection.reset(new Embedded_Connection(*server_file));
+
+    server_journal.reset(new Writable_Journal(*server_file));
+
+    connection.reset
+    (
+     new Embedded_Connection(*client_journal, *server_journal)
+    );
    }
 
    Connection &get_connection() override {return *connection;}
-   Generic_File &get_file() override {return *local_file;}
  };
 
  /////////////////////////////////////////////////////////////////////////////

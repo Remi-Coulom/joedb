@@ -11,12 +11,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   void do_push(bool unlock_after)
-   {
-    connection.push(data.get_journal(), server_checkpoint, unlock_after);
-    server_checkpoint = data.get_journal().get_checkpoint_position();
-   }
-
    void push(bool unlock_after)
    {
     const int64_t difference = get_checkpoint_difference();
@@ -25,14 +19,17 @@ namespace joedb
      throw Exception("can't push: server is ahead of client");
 
     if (difference > 0)
-     do_push(unlock_after);
+    {
+     connection.push(server_checkpoint, unlock_after);
+     server_checkpoint = connection.client_journal.get_checkpoint_position();
+    }
     else if (unlock_after)
      connection.unlock();
    }
 
    void throw_if_pull_when_ahead()
    {
-    if (data.get_journal().get_position() > server_checkpoint)
+    if (connection.client_journal.get_position() > server_checkpoint)
      throw Exception("can't pull: client is ahead of server");
    }
 
@@ -51,32 +48,19 @@ namespace joedb
    ):
     connection(connection),
     data(data),
-    server_checkpoint(connection.handshake(data.get_journal()))
+    server_checkpoint(connection.handshake())
    {
-    if
-    (
-     !connection.check_matching_content
-     (
-      data.get_journal(),
-      std::min
-      (
-       server_checkpoint,
-       data.get_journal().get_checkpoint_position()
-      )
-     )
-    )
-    {
+    if (!connection.check_matching_content(server_checkpoint))
      throw Exception("Client data does not match the server");
-    }
 
-    data.update();
+    data.update(connection.client_journal);
    }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint_difference() const
    //////////////////////////////////////////////////////////////////////////
    {
-    return data.get_journal().get_checkpoint_position() - server_checkpoint;
+    return connection.client_journal.get_checkpoint_position() - server_checkpoint;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -98,8 +82,8 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     throw_if_pull_when_ahead();
-    server_checkpoint = connection.pull(data.get_journal());
-    data.update();
+    server_checkpoint = connection.pull();
+    data.update(connection.client_journal);
     return server_checkpoint;
    }
 
@@ -108,24 +92,21 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     throw_if_pull_when_ahead();
-    server_checkpoint = connection.lock_pull(data.get_journal());
+    server_checkpoint = connection.lock_pull();
 
-    data.get_journal().exclusive_transaction([this, &transaction]()
+    try
     {
-     try
-     {
-      data.update();
-      transaction();
-      data.get_journal().checkpoint(Commit_Level::no_commit);
-     }
-     catch (...)
-     {
-      connection.unlock();
-      throw;
-     }
+     data.update(connection.client_journal);
+     transaction();
+     connection.client_journal.checkpoint(Commit_Level::no_commit);
+    }
+    catch (...)
+    {
+     connection.unlock();
+     throw;
+    }
 
-     push_unlock();
-    });
+    push_unlock();
    }
 
    virtual ~Client() = default;

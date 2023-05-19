@@ -44,7 +44,7 @@ TEST(Journal, seek)
  file.set_mode(joedb::Open_Mode::write_existing);
  {
   joedb::Writable_Journal journal(file);
-  EXPECT_EQ(5UL, journal.get_file_version());
+  EXPECT_EQ(4UL, journal.get_file_version());
   EXPECT_EQ(41, journal.get_position());
  }
 }

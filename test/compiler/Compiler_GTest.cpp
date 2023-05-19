@@ -8,10 +8,11 @@
 #include "joedb/Exception.h"
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Generic_File.h"
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Memory_Journal.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Embedded_Connection.h"
 #include "joedb/concurrency/Local_Connection.h"
+#include <joedb/Writable.h>
 
 using namespace my_namespace::is_nested;
 
@@ -494,10 +495,10 @@ TEST(Compiler, checkpoints)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void schema_v2::Generic_File_Database::set_default_preferred_language_to_english
+void schema_v2::Journal_Database::set_default_preferred_language_to_english
 /////////////////////////////////////////////////////////////////////////////
 (
- Generic_File_Database &db
+ Journal_Database &db
 )
 {
  auto english = db.new_language("English", "en");
@@ -576,24 +577,26 @@ TEST(Compiler, schema_upgrade)
 TEST(Compiler, client)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File server_file;
- joedb::Embedded_Connection connection(server_file);
+ joedb::Memory_Journal server_journal;
 
- joedb::Memory_File client_v1_file;
- schema_v1::Client client_v1(connection, client_v1_file);
+ joedb::Memory_Journal client_v1_journal;
+ joedb::Embedded_Connection connection_v1(client_v1_journal, server_journal);
+ schema_v1::Client client_v1(connection_v1);
 
- joedb::Memory_File client_v1bis_file;
- schema_v1::Client client_v1bis(connection, client_v1bis_file);
+ joedb::Memory_Journal client_v1bis_journal;
+ joedb::Embedded_Connection connection_v1bis(client_v1bis_journal, server_journal);
+ schema_v1::Client client_v1bis(connection_v1bis);
 
- client_v1.transaction([](schema_v1::Generic_File_Database &db)
+ client_v1.transaction([](schema_v1::Journal_Database &db)
  {
   db.new_person("Toto");
  });
 
- joedb::Memory_File client_v2_file;
- schema_v2::Client client_v2(connection, client_v2_file);
+ joedb::Memory_Journal client_v2_journal;
+ joedb::Embedded_Connection connection_v2(client_v2_journal, server_journal);
+ schema_v2::Client client_v2(connection_v2);
 
- client_v2.transaction([](schema_v2::Generic_File_Database &db)
+ client_v2.transaction([](schema_v2::Journal_Database &db)
  {
   db.new_language("French", "fr");
  });
@@ -610,7 +613,7 @@ TEST(Compiler, client)
 
  try
  {
-  client_v1bis.transaction([](schema_v1::Generic_File_Database &db)
+  client_v1bis.transaction([](schema_v1::Journal_Database &db)
   {
   });
   ADD_FAILURE() <<  "client_v1 should not be able to pull new schema\n";
@@ -625,25 +628,23 @@ TEST(Compiler, client)
 TEST(Compiler, client_push)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File client_file;
+ joedb::Memory_Journal client_journal;
 
  {
-  test::Generic_File_Database db(client_file);
+  test::Journal_Database db(client_journal);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
 
- joedb::Memory_File server_file;
+ joedb::Memory_Journal server_journal;
 
  {
-  joedb::Embedded_Connection connection(server_file);
-  client_file.set_mode(joedb::Open_Mode::write_existing);
-  test::Client client(connection, client_file);
+  joedb::Embedded_Connection connection(client_journal, server_journal);
+  test::Client client(connection);
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
- server_file.set_mode(joedb::Open_Mode::read_existing);
- test::Readonly_Database db(server_file);
+ test::Journal_Database db(server_journal);
  EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
 }
 
@@ -651,28 +652,26 @@ TEST(Compiler, client_push)
 TEST(Compiler, client_hash_error)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File client_file;
+ joedb::Memory_Journal client_journal;
 
  {
-  test::Generic_File_Database db(client_file);
+  test::Journal_Database db(client_journal);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
-  client_file.set_mode(joedb::Open_Mode::write_existing);
  }
 
- joedb::Memory_File server_file;
+ joedb::Memory_Journal server_journal;
 
  {
-  test::Generic_File_Database db(server_file);
+  test::Journal_Database db(server_journal);
   db.new_person("X", db.null_city());
   db.checkpoint();
-  server_file.set_mode(joedb::Open_Mode::write_existing);
  }
 
  try
  {
-  joedb::Embedded_Connection connection(server_file);
-  test::Client client(connection, client_file);
+  joedb::Embedded_Connection connection(client_journal, server_journal);
+  test::Client client(connection);
   ADD_FAILURE() << "Should have thrown\n";
  }
  catch (const joedb::Exception &e)

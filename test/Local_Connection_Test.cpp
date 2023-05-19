@@ -14,34 +14,16 @@ using namespace joedb;
 static const char * const file_name = "local_connection.joedb";
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Local_Connection, bad_journal)
-/////////////////////////////////////////////////////////////////////////////
-{
- std::remove(file_name);
- Local_Connection connection(file_name);
-
- {
-  Memory_File client_file;
-  EXPECT_ANY_THROW
-  (
-   Interpreted_Client client(connection, client_file)
-  );
- }
-
- Interpreted_Client client(connection, connection.get_file());
-}
-
-/////////////////////////////////////////////////////////////////////////////
 TEST(Local_Connection, simple_operation)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::remove(file_name);
 
  Local_Connection connection1(file_name);
- Interpreted_Client client1(connection1, connection1.get_file());
+ Interpreted_Client client1(connection1);
 
  Local_Connection connection2(file_name);
- Interpreted_Client client2(connection2, connection2.get_file());
+ Interpreted_Client client2(connection2);
 
  client1.transaction
  (
@@ -93,7 +75,7 @@ TEST(Local_Connection, size_check)
  try
  {
   Local_Connection connection(file_name);
-  Interpreted_Client client(connection, connection.get_file());
+  Interpreted_Client client(connection);
   FAIL() << "Expected an exception\n";
  }
  catch(const joedb::Exception &e)

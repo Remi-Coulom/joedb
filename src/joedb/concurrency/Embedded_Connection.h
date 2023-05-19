@@ -10,24 +10,26 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Writable_Journal server_journal;
+   Writable_Journal &server_journal;
    bool locked;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t handshake(Readonly_Journal &client_journal) final
+   int64_t handshake() final
    //////////////////////////////////////////////////////////////////////////
    {
     return server_journal.get_checkpoint_position();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool check_matching_content
+   bool check_matching_content(int64_t server_checkpoint) final
    //////////////////////////////////////////////////////////////////////////
-   (
-    Readonly_Journal &client_journal,
-    int64_t checkpoint
-   ) final
    {
+    const int checkpoint = std::min
+    (
+     server_checkpoint,
+     client_journal.get_checkpoint_position()
+    );
+
     return
      client_journal.get_hash(checkpoint) ==
      server_journal.get_hash(checkpoint);
@@ -50,7 +52,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t pull(Writable_Journal &client_journal) final
+   int64_t pull() final
    //////////////////////////////////////////////////////////////////////////
    {
     const int64_t client_checkpoint=client_journal.get_checkpoint_position();
@@ -66,13 +68,8 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push
+   void push(const int64_t server_checkpoint, bool unlock_after) final
    //////////////////////////////////////////////////////////////////////////
-   (
-    Readonly_Journal &client_journal,
-    const int64_t server_checkpoint,
-    bool unlock_after
-   ) final
    {
     if (server_checkpoint != server_journal.get_checkpoint_position())
      throw Exception("pushing from bad checkpoint");
@@ -91,9 +88,14 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Embedded_Connection(Generic_File &file):
+   Embedded_Connection
    //////////////////////////////////////////////////////////////////////////
-    server_journal(file),
+   (
+    Writable_Journal &client_journal,
+    Writable_Journal &server_journal
+   ):
+    Connection(client_journal),
+    server_journal(server_journal),
     locked(false)
    {
    }

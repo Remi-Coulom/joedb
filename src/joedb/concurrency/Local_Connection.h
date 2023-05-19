@@ -7,30 +7,45 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Local_Connection: public Connection
+ class Local_Connection_Parent
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   File file;
+  public:
+   File client_file;
+   Writable_Journal client_journal;
 
-   int64_t handshake(Readonly_Journal &client_journal) final
+   Local_Connection_Parent(const char *file_name):
+    client_file(file_name, Open_Mode::shared_write),
+    client_journal(client_file)
+   {
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Local_Connection: public Local_Connection_Parent, public Connection
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  using Local_Connection_Parent::client_journal;
+
+  private:
+   int64_t handshake() final
    {
     return client_journal.get_checkpoint_position();
    }
 
    void lock() final
    {
-    file.exclusive_lock();
+    client_journal.exclusive_lock();
    }
 
    void unlock() final
    {
-    file.unlock();
+    client_journal.unlock();
    }
 
-   int64_t pull(Writable_Journal &client_journal) final
+   int64_t pull() final
    {
-    file.shared_transaction([&client_journal]()
+    client_journal.shared_transaction([this]()
     {
      client_journal.refresh_checkpoint();
     });
@@ -40,7 +55,6 @@ namespace joedb
 
    void push
    (
-    Readonly_Journal &client_journal,
     int64_t server_position,
     bool unlock_after
    ) final
@@ -49,18 +63,15 @@ namespace joedb
      unlock();
    }
 
-   bool check_matching_content
-   (
-    Readonly_Journal &client_journal,
-    int64_t checkpoint
-   ) final
+   bool check_matching_content(int64_t server_checkpoint) final
    {
-    return client_journal.is_same_file(file);
+    return true;
    }
 
   public:
    Local_Connection(const char *file_name):
-    file(file_name, Open_Mode::shared_write)
+    Local_Connection_Parent(file_name),
+    Connection(client_journal)
    {
    }
 
@@ -68,8 +79,6 @@ namespace joedb
     Local_Connection(file_name.c_str())
    {
    }
-
-   File &get_file() {return file;}
  };
 }
 

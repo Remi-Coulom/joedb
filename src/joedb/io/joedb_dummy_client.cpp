@@ -10,7 +10,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::unique_ptr<File> file;
    std::unique_ptr<Dummy_Connection> connection;
 
   public:
@@ -24,12 +23,11 @@ namespace joedb
    void build(int argc, const char * const *argv) override
    {
     const char *file_name = argv[0];
-    file.reset(new File(file_name, Open_Mode::write_existing_or_create_new));
-    connection.reset(new Dummy_Connection());
+    open_client_file(file_name);
+    connection.reset(new Dummy_Connection(*client_journal));
    }
 
    Connection &get_connection() override {return *connection;}
-   File &get_file() override {return *file;}
  };
 
  ////////////////////////////////////////////////////////////////////////////

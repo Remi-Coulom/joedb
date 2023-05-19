@@ -4,7 +4,6 @@
 #include "joedb/io/get_time_string.h"
 #include "joedb/Signal.h"
 
-#include <iostream>
 #include <iomanip>
 #include <sstream>
 

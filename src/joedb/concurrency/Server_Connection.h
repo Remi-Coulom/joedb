@@ -29,37 +29,24 @@ namespace joedb
    std::thread keep_alive_thread;
    enum {keep_alive_interval = 240};
 
-   int64_t handshake(Readonly_Journal &client_journal) final;
-
+   int64_t handshake() final;
    void lock() final;
-
    void unlock() final;
-
-   int64_t pull(Writable_Journal &client_journal, char pull_type);
-
-   int64_t shared_pull(Writable_Journal &client_journal, char pull_type);
-
-   int64_t pull(Writable_Journal &client_journal) final;
-
-   int64_t lock_pull(Writable_Journal &client_journal) final;
-
-   void push
-   (
-    Readonly_Journal &client_journal,
-    int64_t server_position,
-    bool unlock_after
-   ) final;
-
-   bool check_matching_content
-   (
-    Readonly_Journal &client_journal,
-    int64_t checkpoint
-   ) final;
-
+   int64_t pull(char pull_type);
+   int64_t shared_pull(char pull_type);
+   int64_t pull() final;
+   int64_t lock_pull() final;
+   void push (int64_t server_position, bool unlock_after) final;
+   bool check_matching_content(int64_t server_checkpoint) final;
    void keep_alive();
 
   public:
-   Server_Connection(Channel &channel, std::ostream *log);
+   Server_Connection
+   (
+    Writable_Journal &client_journal,
+    Channel &channel,
+    std::ostream *log
+   );
 
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}

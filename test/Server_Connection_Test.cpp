@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Memory_Journal.h"
 #include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -28,9 +28,9 @@ TEST(Server_Connection, handshake)
 
  try
  {
-  joedb::Server_Connection connection(channel, log);
-  joedb::Memory_File client_file;
-  joedb::Interpreted_Client client(connection, client_file);
+  joedb::Memory_Journal client_journal;
+  joedb::Server_Connection connection(client_journal, channel, log);
+  joedb::Interpreted_Client client(connection);
 
   ADD_FAILURE() << "Should have thrown";
  }
@@ -70,9 +70,9 @@ TEST(Server_Connection, session)
  file.set_position(0);
 
  {
-  joedb::Server_Connection connection(channel, log);
-  joedb::Memory_File client_file;
-  joedb::Interpreted_Client client(connection, client_file);
+  joedb::Memory_Journal client_journal;
+  joedb::Server_Connection connection(client_journal, channel, log);
+  joedb::Interpreted_Client client(connection);
 
   EXPECT_EQ(connection.get_session_id(), 1234);
 

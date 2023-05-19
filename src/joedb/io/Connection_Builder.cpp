@@ -4,6 +4,7 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Writable_Journal.h"
 
 #include <iostream>
 #include <cstring>
@@ -11,11 +12,11 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Connection_Builder::open_local_file(const char *file_name)
+ void Connection_Builder::open_client_file(const char *file_name)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (file_name && *file_name)
-   local_file.reset
+   client_file.reset
    (
     new File
     (
@@ -26,7 +27,9 @@ namespace joedb
     )
    );
   else
-   local_file.reset(new Memory_File());
+   client_file.reset(new Memory_File());
+
+  client_journal.reset(new Writable_Journal(*client_file));
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -72,8 +75,8 @@ namespace joedb
    std::unique_ptr<Client> client
    (
     nodb ?
-    (Client *)new Journal_Client(get_connection(), get_file()):
-    (Client *)new Interpreted_Client(get_connection(), get_file())
+    (Client *)new Journal_Client(get_connection()):
+    (Client *)new Interpreted_Client(get_connection())
    );
 
    std::cout << "OK\n";

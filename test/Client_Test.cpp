@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Embedded_Connection.h"
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Memory_Journal.h"
 #include "joedb/Destructor_Logger.h"
 
 #include "gtest/gtest.h"
@@ -11,21 +11,22 @@ using namespace joedb;
 TEST(Client, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
- Memory_File server_file;
- Embedded_Connection connection(server_file);
+ Memory_Journal server_journal;
 
- Memory_File client1_file;
- Interpreted_Client client1(connection, client1_file);
+ Memory_Journal client1_journal;
+ Embedded_Connection connection1(client1_journal, server_journal);
+ Interpreted_Client client1(connection1);
 
- Memory_File client2_file;
- Interpreted_Client client2(connection, client2_file);
+ Memory_Journal client2_journal;
+ Embedded_Connection connection2(client2_journal, server_journal);
+ Interpreted_Client client2(connection2);
 
  client1.transaction([](Readable &readable, Writable &writable)
  {
   writable.create_table("person");
  });
 
- connection.run_while_locked([](){});
+ connection1.run_while_locked([](){});
 
  EXPECT_EQ(0, int(client2.get_database().get_tables().size()));
  client2.pull();
@@ -46,14 +47,15 @@ TEST(Client, Transaction_Failure)
 /////////////////////////////////////////////////////////////////////////////
 {
  {
-  Memory_File server_file;
-  Embedded_Connection connection(server_file);
+  Memory_Journal server_journal;
 
-  Memory_File client1_file;
-  Interpreted_Client client1(connection, client1_file);
+  Memory_Journal client1_journal;
+  Embedded_Connection connection1(client1_journal, server_journal);
+  Interpreted_Client client1(connection1);
 
-  Memory_File client2_file;
-  Interpreted_Client client2(connection, client2_file);
+  Memory_Journal client2_journal;
+  Embedded_Connection connection2(client2_journal, server_journal);
+  Interpreted_Client client2(connection2);
 
   client1.transaction([](Readable &readable, Writable &writable)
   {
@@ -110,14 +112,14 @@ TEST(Client, Transaction_Failure)
 TEST(Client, hash)
 /////////////////////////////////////////////////////////////////////////////
 {
- Memory_File server_file;
- Embedded_Connection connection(server_file);
+ Memory_Journal server_journal;
 
  {
-  Memory_File client_file;
+  Memory_Journal client_journal;
 
   {
-   Interpreted_Client client(connection, client_file);
+   Embedded_Connection connection(client_journal, server_journal);
+   Interpreted_Client client(connection);
    client.transaction([](Readable &readable, Writable &writable)
    {
     writable.create_table("person");
@@ -126,20 +128,17 @@ TEST(Client, hash)
   }
  }
 
- {
-  Memory_File client_file;
 
-  {
-   Writable_Journal journal(client_file);
-   journal.create_table("country");
-   journal.checkpoint(Commit_Level::no_commit);
-  }
+ {
+  Memory_Journal client_journal;
+  client_journal.create_table("country");
+  client_journal.checkpoint(Commit_Level::no_commit);
+  client_journal.rewind();
 
   try
   {
-   client_file.set_position(0);
-   client_file.set_mode(Open_Mode::write_existing);
-   Interpreted_Client client(connection, client_file);
+   Embedded_Connection connection(client_journal, server_journal);
+   Interpreted_Client client(connection);
    ADD_FAILURE() << "Connection with incompatible file should have failed";
   }
   catch (const joedb::Exception &e)
@@ -149,19 +148,15 @@ TEST(Client, hash)
  }
 
  {
-  Memory_File client_file;
-
-  {
-   Writable_Journal client_journal(client_file);
-   client_journal.create_table("person");
-   client_journal.checkpoint(Commit_Level::no_commit);
-  }
+  Memory_Journal client_journal;
+  client_journal.create_table("person");
+  client_journal.checkpoint(Commit_Level::no_commit);
+  client_journal.rewind();
 
   try
   {
-   client_file.set_position(0);
-   client_file.set_mode(Open_Mode::write_existing);
-   Interpreted_Client client(connection, client_file);
+   Embedded_Connection connection(client_journal, server_journal);
+   Interpreted_Client client(connection);
    EXPECT_EQ(client.get_database().get_tables().size(), 1ULL);
    client.pull();
    EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
@@ -177,17 +172,17 @@ TEST(Client, hash)
 TEST(Client, push)
 /////////////////////////////////////////////////////////////////////////////
 {
- Memory_File server_file;
- Embedded_Connection connection(server_file);
+ Memory_Journal server_journal;
 
  {
-  Memory_File client_file;
+  Memory_Journal client_journal;
 
   //
   // Push something to the server via a connection
   //
   {
-   Interpreted_Client client(connection, client_file);
+   Embedded_Connection connection(client_journal, server_journal);
+   Interpreted_Client client(connection);
 
    client.transaction([](Readable &readable, Writable &writable)
    {
@@ -198,19 +193,18 @@ TEST(Client, push)
   //
   // Make offline modifications
   //
-  client_file.set_mode(Open_Mode::write_existing);
   {
-   Writable_Journal journal(client_file);
-   journal.set_position(journal.get_checkpoint_position());
-   journal.create_table("city");
-   journal.checkpoint(Commit_Level::no_commit);
+   client_journal.append();
+   client_journal.create_table("city");
+   client_journal.checkpoint(Commit_Level::no_commit);
   }
 
   //
   // Connect again, and update the server
   //
   {
-   Interpreted_Client client(connection, client_file);
+   Embedded_Connection connection(client_journal, server_journal);
+   Interpreted_Client client(connection);
    EXPECT_TRUE(client.get_checkpoint_difference() > 0);
    client.push_unlock();
   }
@@ -220,8 +214,9 @@ TEST(Client, push)
  // Another client connects to check the server got everything
  //
  {
-  Memory_File client_file;
-  Interpreted_Client client(connection, client_file);
+  Memory_Journal client_journal;
+  Embedded_Connection connection(client_journal, server_journal);
+  Interpreted_Client client(connection);
   EXPECT_TRUE(client.get_checkpoint_difference() < 0);
   client.pull();
   EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
@@ -232,16 +227,15 @@ TEST(Client, push)
 TEST(Client, synchronization_error_at_handshake)
 /////////////////////////////////////////////////////////////////////////////
 {
- Memory_File server_file;
- Embedded_Connection connection(server_file);
-
- Memory_File client_file;
+ Memory_Journal server_journal;
+ Memory_Journal client_journal;
 
  //
  // Push something to the server via a connection
  //
  {
-  Interpreted_Client client(connection, client_file);
+  Embedded_Connection connection(client_journal, server_journal);
+  Interpreted_Client client(connection);
 
   client.transaction([](Readable &readable, Writable &writable)
   {
@@ -252,20 +246,17 @@ TEST(Client, synchronization_error_at_handshake)
  //
  // Make offline modifications
  //
- client_file.set_mode(Open_Mode::write_existing);
- {
-  Writable_Journal journal(client_file);
-  journal.set_position(journal.get_checkpoint_position());
-  journal.create_table("city");
-  journal.checkpoint(Commit_Level::no_commit);
- }
+ client_journal.append();
+ client_journal.create_table("city");
+ client_journal.checkpoint(Commit_Level::no_commit);
 
  //
  // Someone else makes incompatible changes
  //
  {
-  Memory_File client2_file;
-  Interpreted_Client client(connection, client2_file);
+  Memory_Journal client2_journal;
+  Embedded_Connection connection(client2_journal, server_journal);
+  Interpreted_Client client(connection);
 
   client.transaction([](Readable &readable, Writable &writable)
   {
@@ -278,7 +269,8 @@ TEST(Client, synchronization_error_at_handshake)
  //
  try
  {
-  Interpreted_Client client(connection, client_file);
+  Embedded_Connection connection(client_journal, server_journal);
+  Interpreted_Client client(connection);
   ADD_FAILURE() << "connecting should have failed\n";
  }
  catch (const Exception &e)
@@ -291,10 +283,10 @@ TEST(Client, synchronization_error_at_handshake)
 TEST(Client, empty_transaction)
 /////////////////////////////////////////////////////////////////////////////
 {
- Memory_File server_file;
- Embedded_Connection connection(server_file);
- Memory_File client_file;
- Interpreted_Client client(connection, client_file);
+ Memory_Journal server_journal;
+ Memory_Journal client_journal;
+ Embedded_Connection connection(client_journal, server_journal);
+ Interpreted_Client client(connection);
  client.transaction([](Readable &readable, Writable &writable){});
  client.transaction([](Readable &readable, Writable &writable){});
 }

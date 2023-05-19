@@ -6,52 +6,16 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Journal_Client_Data: public Client_Data
+ class Journal_Client: private Client_Data, public Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Journal_Client;
-
   private:
-   Writable_Journal journal;
+   Writable_Journal &client_journal;
 
   public:
-   Journal_Client_Data
-   (
-    joedb::Connection &connection,
-    Generic_File &file
-   ):
-    journal(file)
-   {
-   }
-
-   Writable_Journal &get_journal() final
-   {
-    return journal;
-   }
-
-   const Readonly_Journal &get_journal() const final
-   {
-    return journal;
-   }
-
-   void update() final
-   {
-    journal.seek_to_checkpoint();
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Journal_Client: private Journal_Client_Data, public Client
- ////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   Journal_Client
-   (
-    Connection &connection,
-    Generic_File &file
-   ):
-    Journal_Client_Data(connection, file),
-    Client(connection, *this)
+   Journal_Client(Connection &connection):
+    Client(connection, *this),
+    client_journal(connection.client_journal)
    {
    }
 
@@ -59,7 +23,7 @@ namespace joedb
    {
     Client::transaction([&]()
     {
-     transaction(journal);
+     transaction(client_journal);
     });
    }
  };

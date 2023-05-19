@@ -26,7 +26,6 @@ namespace joedb
    }
 
    Connection &get_connection() override {return *connection;}
-   File &get_file() override {return connection->get_file();}
  };
 
  ////////////////////////////////////////////////////////////////////////////

@@ -1,8 +1,9 @@
 #ifndef joedb_Interpreted_Client_declared
 #define joedb_Interpreted_Client_declared
 
-#include "joedb/concurrency/Client.h"
 #include "joedb/interpreter/Database.h"
+#include "joedb/journal/Readonly_Journal.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/Multiplexer.h"
 
 namespace joedb
@@ -11,35 +12,16 @@ namespace joedb
  class Interpreted_Client_Data: public Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Interpreted_Client;
-
-  private:
-   Writable_Journal journal;
+  protected:
    Database database;
-   Multiplexer multiplexer;
 
   public:
-   Interpreted_Client_Data
-   (
-    joedb::Connection &connection,
-    Generic_File &file
-   ):
-    journal(file),
-    multiplexer{database, journal}
+   const Readable &get_database() const
    {
+    return database;
    }
 
-   Writable_Journal &get_journal() final
-   {
-    return journal;
-   }
-
-   const Readonly_Journal &get_journal() const final
-   {
-    return journal;
-   }
-
-   void update()
+   void update(Readonly_Journal &journal)
    {
     journal.play_until_checkpoint(database);
    }
@@ -48,23 +30,20 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  class Interpreted_Client:
  ////////////////////////////////////////////////////////////////////////////
-  private Interpreted_Client_Data,
+  public Interpreted_Client_Data,
   public Client
  {
+  private:
+   Multiplexer multiplexer;
+
   public:
    Interpreted_Client
    (
-    Connection &connection,
-    Generic_File &file
+    Connection &connection
    ):
-    Interpreted_Client_Data(connection, file),
-    Client(connection, *this)
+    Client(connection, *static_cast<Interpreted_Client_Data *>(this)),
+    multiplexer{database, connection.client_journal}
    {
-   }
-
-   const Readable &get_database() const
-   {
-    return database;
    }
 
    template<typename F> void transaction(F transaction)
