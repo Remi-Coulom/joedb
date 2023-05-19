@@ -588,7 +588,7 @@ TEST(Compiler, client)
  schema_v1::Client client_v1(client_v1_file, Connection{}, server_journal);
 
  joedb::Memory_File client_v1bis_file;
- schema_v1::Client client_v1bis(client_v1_file, Connection{}, server_journal);
+ schema_v1::Client client_v1bis(client_v1bis_file, Connection{}, server_journal);
 
  client_v1.transaction([](schema_v1::Generic_File_Database &db)
  {
@@ -638,6 +638,8 @@ TEST(Compiler, client_push)
   db.checkpoint();
  }
 
+ client_file.set_mode(joedb::Open_Mode::write_existing);
+
  joedb::Memory_File server_file;
 
  {
@@ -645,6 +647,8 @@ TEST(Compiler, client_push)
   test::Client client(client_file, joedb::T<joedb::Embedded_Connection>{}, server_journal);
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
+
+ server_file.set_mode(joedb::Open_Mode::write_existing);
 
  test::Generic_File_Database db(server_file);
  EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
@@ -662,6 +666,8 @@ TEST(Compiler, client_hash_error)
   db.checkpoint();
  }
 
+ client_file.set_mode(joedb::Open_Mode::write_existing);
+
  joedb::Memory_File server_file;
 
  {
@@ -669,6 +675,8 @@ TEST(Compiler, client_hash_error)
   db.new_person("X", db.null_city());
   db.checkpoint();
  }
+
+ server_file.set_mode(joedb::Open_Mode::write_existing);
 
  joedb::Writable_Journal server_journal(server_file);
 

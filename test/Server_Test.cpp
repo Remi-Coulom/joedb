@@ -6,7 +6,6 @@
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
-#include <joedb/journal/Writable_Journal.h>
 #include <thread>
 #include <fstream>
 
@@ -76,11 +75,14 @@ TEST(Server, basic)
  //
  {
   joedb::Memory_File file;
+
   {
    joedb::Writable_Journal journal(file);
    journal.create_table("city");
    journal.checkpoint(joedb::Commit_Level::no_commit);
   }
+
+  file.set_mode(joedb::Open_Mode::write_existing);
 
   joedb::Network_Channel channel("localhost", port);
   try
