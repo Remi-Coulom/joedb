@@ -112,7 +112,22 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- A Lock object is needed (for interactive UI, for instance. Maybe for Server)
+
+- Re-organize code:
+
+   - back to Generic_File_Database: journal is stored with file + db in data
+   - order of construction: data, connection, client
+   - connection takes journal from data
+   - virtual function of data is get_journal + update_tables(), called after journal receives more entries
+   - Connection_Builder must be redesigned (it's ugly anyway)
+     - Data_Builder: takes --nodb, --shared, local_file_name as input
+     - always first params of joedb_*_client, same Data_Builder for everyone
+     - empty file name -> memory file
+     - Connection_Builder: takes Data journal + rest of parameters, returns unique ptr to connection
+   - Fuse handshake and check_matching_content
+   - Never unlock files that are not shared
+   - Use lock objects to properly ensure unlocking in case of exception (both for file and connection)
+
 - Test many concurrent read and write requests. Performance benchmarks.
 - File-locking benchmarks
 

@@ -34,8 +34,8 @@ namespace joedb
    }
 
   protected:
-   Connection &connection;
    Client_Data &data;
+   Connection &connection;
    int64_t server_checkpoint;
 
   public:
@@ -43,18 +43,20 @@ namespace joedb
    Client
    //////////////////////////////////////////////////////////////////////////
    (
-    Connection &connection,
-    Client_Data &data
+    Client_Data &data,
+    Connection &connection
    ):
-    connection(connection),
     data(data),
+    connection(connection),
     server_checkpoint(connection.handshake())
    {
     if (!connection.check_matching_content(server_checkpoint))
      throw Exception("Client data does not match the server");
 
-    data.update(connection.client_journal);
+    data.update();
    }
+
+   Client_Data &get_data() {return data;}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint_difference() const
@@ -83,7 +85,7 @@ namespace joedb
    {
     throw_if_pull_when_ahead();
     server_checkpoint = connection.pull();
-    data.update(connection.client_journal);
+    data.update();
     return server_checkpoint;
    }
 
@@ -96,7 +98,7 @@ namespace joedb
 
     try
     {
-     data.update(connection.client_journal);
+     data.update();
      transaction();
      connection.client_journal.checkpoint(Commit_Level::no_commit);
     }

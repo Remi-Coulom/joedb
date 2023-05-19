@@ -1,10 +1,9 @@
 #include "joedb/io/Connection_Builder.h"
-#include "joedb/io/run_client_interpreter.h"
-#include "joedb/concurrency/Journal_Client.h"
-#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/Writable_Journal.h"
+#include "joedb/io/run_client_interpreter.h"
 
 #include <iostream>
 #include <cstring>
@@ -12,31 +11,12 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Connection_Builder::open_client_file(const char *file_name)
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (file_name && *file_name)
-   client_file.reset
-   (
-    new File
-    (
-     file_name,
-     shared ?
-     Open_Mode::shared_write :
-     Open_Mode::write_existing_or_create_new
-    )
-   );
-  else
-   client_file.reset(new Memory_File());
-
-  client_journal.reset(new Writable_Journal(*client_file));
- }
-
- ////////////////////////////////////////////////////////////////////////////
  int Connection_Builder::main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 1;
+  bool nodb = false;
+  bool shared = false;
 
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
   {
@@ -50,7 +30,7 @@ namespace joedb
    arg_index++;
   }
 
-  const int parameters = argc - arg_index;
+  const int parameters = argc - arg_index - 1;
 
   if
   (
@@ -58,29 +38,61 @@ namespace joedb
    parameters > get_max_parameters()
   )
   {
-   std::cerr << "usage: " << argv[0] << " [--nodb] [--shared] ";
+   std::cerr << "usage: " << argv[0] << " [--nodb] [--shared] <client_file_name> ";
    std::cerr << get_parameters_description() << '\n';
    return 1;
   }
   else
   {
-   std::cout << "Connection... ";
-   std::cout.flush();
-   build(argc - arg_index, argv + arg_index);
-   std::cout << "OK\n";
-
-   std::cout << "Creating client... ";
+   std::cout << "Creating client data... ";
    std::cout.flush();
 
-   std::unique_ptr<Client> client
+   std::unique_ptr<Generic_File> client_file;
+
+   {
+    const char *client_file_name = argv[arg_index++];
+
+    if (*client_file_name)
+    {
+     client_file.reset
+     (
+      new File
+      (
+       client_file_name,
+       shared ?
+       Open_Mode::shared_write :
+       Open_Mode::write_existing_or_create_new
+      )
+     );
+    }
+    else
+     client_file.reset(new Memory_File());
+   }
+
+   std::unique_ptr<Client_Data> client_data
    (
     nodb ?
-    (Client *)new Journal_Client(get_connection()):
-    (Client *)new Interpreted_Client(get_connection())
+    new Journal_Client_Data(*client_file) :
+    new Journal_Client_Data(*client_file)
    );
 
    std::cout << "OK\n";
-   run_client_interpreter(*client);
+
+   std::cout << "Creating connection... ";
+   std::cout.flush();
+
+   std::unique_ptr<Connection> connection = build
+   (
+    client_data->get_journal(),
+    argc - arg_index,
+    argv + arg_index
+   );
+
+   std::cout << "OK\n";
+
+   Client client(*client_data, *connection);
+
+   run_client_interpreter(client);
   }
 
   return 0;

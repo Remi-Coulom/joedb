@@ -3,14 +3,15 @@
 
 namespace joedb
 {
- class Readonly_Journal;
+ class Writable_Journal;
 
  ////////////////////////////////////////////////////////////////////////////
  class Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual void update(Readonly_Journal &journal);
+   virtual Writable_Journal &get_journal() = 0;
+   virtual void update() = 0;
    virtual ~Client_Data();
  };
 }

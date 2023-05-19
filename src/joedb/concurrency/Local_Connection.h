@@ -7,26 +7,9 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Local_Connection_Parent
+ class Local_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
-  public:
-   File client_file;
-   Writable_Journal client_journal;
-
-   Local_Connection_Parent(const char *file_name):
-    client_file(file_name, Open_Mode::shared_write),
-    client_journal(client_file)
-   {
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Local_Connection: public Local_Connection_Parent, public Connection
- ////////////////////////////////////////////////////////////////////////////
- {
-  using Local_Connection_Parent::client_journal;
-
   private:
    int64_t handshake() final
    {
@@ -76,14 +59,8 @@ namespace joedb
    }
 
   public:
-   Local_Connection(const char *file_name):
-    Local_Connection_Parent(file_name),
+   Local_Connection(Writable_Journal &client_journal):
     Connection(client_journal)
-   {
-   }
-
-   Local_Connection(const std::string &file_name):
-    Local_Connection(file_name.c_str())
    {
    }
  };

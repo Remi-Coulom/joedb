@@ -12,23 +12,23 @@ namespace joedb
   private:
    std::unique_ptr<File> server_file;
    std::unique_ptr<Writable_Journal> server_journal;
-   std::unique_ptr<Embedded_Connection> connection;
 
   public:
-   int get_min_parameters() const override {return 1;}
-   int get_max_parameters() const override {return 2;}
-
-   const char *get_parameters_description() const override
+   int get_min_parameters() const final {return 1;}
+   int get_max_parameters() const final {return 1;}
+   const char *get_parameters_description() const final
    {
-    return "<server.joedb> [<client.joedb>]";
+    return "<server_file_name>";
    }
 
-   void build(int argc, const char * const *argv) override
+   std::unique_ptr<Connection> build
+   (
+    Writable_Journal &client_journal,
+    int argc,
+    const char * const *argv
+   ) final
    {
     const char * const server_file_name = argv[0];
-    const char * const client_file_name = argc > 1 ? argv[1] : nullptr;
-
-    open_client_file(client_file_name);
 
     server_file.reset
     (
@@ -37,13 +37,11 @@ namespace joedb
 
     server_journal.reset(new Writable_Journal(*server_file));
 
-    connection.reset
+    return std::unique_ptr<Connection>
     (
-     new Embedded_Connection(*client_journal, *server_journal)
+     new Embedded_Connection(client_journal, *server_journal)
     );
    }
-
-   Connection &get_connection() override {return *connection;}
  };
 
  /////////////////////////////////////////////////////////////////////////////

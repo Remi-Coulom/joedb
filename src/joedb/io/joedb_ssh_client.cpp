@@ -12,33 +12,44 @@ namespace joedb
   private:
    std::unique_ptr<ssh::Session> session;
    std::unique_ptr<ssh::Forward_Channel> channel;
-   std::unique_ptr<Server_Connection> connection;
 
   public:
    int get_min_parameters() const override {return 3;}
-   int get_max_parameters() const override {return 6;}
+   int get_max_parameters() const override {return 5;}
 
    const char *get_parameters_description() const override
    {
-    return "<user> <host> <joedb_port> [<local_file_name> [<ssh_port> [<ssh_log_level>]]]";
+    return "<user> <host> <joedb_port> [<ssh_port> [<ssh_log_level>]]";
    }
 
-   void build(int argc, const char * const *argv) override
+   std::unique_ptr<Connection> build
+   (
+    Writable_Journal &client_journal,
+    int argc,
+    const char * const *argv
+   ) final
    {
     const char * const user = argv[0];
     const char * const host = argv[1];
     const uint16_t joedb_port = uint16_t(std::atoi(argv[2]));
-    const char * const local_file_name = argc > 3 ? argv[3] : nullptr;
-    const int ssh_port = argc > 4 ? std::atoi(argv[4]) : 22;
-    const int ssh_log_level = argc > 5 ? std::atoi(argv[5]) : 0;
+    const int ssh_port = argc > 3 ? std::atoi(argv[3]) : 22;
+    const int ssh_log_level = argc > 4 ? std::atoi(argv[4]) : 0;
 
-    open_client_file(local_file_name);
-    session.reset(new ssh::Session(user, host, ssh_port, ssh_log_level));
-    channel.reset(new ssh::Forward_Channel(*session, "localhost", joedb_port));
-    connection.reset(new Server_Connection(*client_journal, *channel, &std::cerr));
+    session.reset
+    (
+     new ssh::Session(user, host, ssh_port, ssh_log_level)
+    );
+
+    channel.reset
+    (
+     new ssh::Forward_Channel(*session, "localhost", joedb_port)
+    );
+
+    return std::unique_ptr<Connection>
+    (
+     new Server_Connection(client_journal, *channel, &std::cerr)
+    );
    }
-
-   Connection &get_connection() override {return *connection;}
  };
 
  /////////////////////////////////////////////////////////////////////////////

@@ -8,24 +8,16 @@ namespace joedb
  class Local_Connection_Builder: public Connection_Builder
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   std::unique_ptr<Local_Connection> connection;
-
   public:
-   int get_min_parameters() const override {return 1;}
-   int get_max_parameters() const override {return 1;}
-   const char *get_parameters_description() const override
+   std::unique_ptr<Connection> build
+   (
+    Writable_Journal &client_journal,
+    int argc,
+    const char * const *argv
+   ) final
    {
-    return "<file_name>";
+    return std::unique_ptr<Connection>(new Local_Connection(client_journal));
    }
-
-   void build(int argc, const char * const *argv) override
-   {
-    const char *file_name = argv[0];
-    connection.reset(new Local_Connection(file_name));
-   }
-
-   Connection &get_connection() override {return *connection;}
  };
 
  ////////////////////////////////////////////////////////////////////////////

@@ -11,28 +11,31 @@ namespace joedb
  {
   private:
    std::unique_ptr<Network_Channel> channel;
-   std::unique_ptr<Server_Connection> connection;
 
   public:
    int get_min_parameters() const override {return 2;}
-   int get_max_parameters() const override {return 3;}
+   int get_max_parameters() const override {return 2;}
    const char *get_parameters_description() const override
    {
-    return "<host> <port> [<local_file_name>]";
+    return "<host> <port>";
    }
 
-   void build(int argc, const char * const *argv) override
+   std::unique_ptr<Connection> build
+   (
+    Writable_Journal &client_journal,
+    int argc,
+    const char * const *argv
+   ) final
    {
     const char * const host = argv[0];
     const char * const port = argv[1];
-    const char * const file_name = argc > 2 ? argv[2] : nullptr;
 
-    open_client_file(file_name);
     channel.reset(new Network_Channel(host, port));
-    connection.reset(new Server_Connection(*client_journal, *channel, &std::cerr));
+    return std::unique_ptr<Connection>
+    (
+     new Server_Connection(client_journal, *channel, &std::cerr)
+    );
    }
-
-   Connection &get_connection() override {return *connection;}
  };
 
  /////////////////////////////////////////////////////////////////////////////
