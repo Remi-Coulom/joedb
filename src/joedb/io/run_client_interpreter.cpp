@@ -1,8 +1,8 @@
 #include "joedb/io/run_client_interpreter.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/print_date.h"
-#include "joedb/concurrency/Journal_Client.h"
-#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/Signal.h"
 
@@ -33,8 +33,8 @@ namespace joedb
  {
   private:
    Client &client;
-   Interpreted_Client * const interpreted_client;
-   Journal_Client * const journal_client;
+   Interpreted_Client_Data * const interpreted_client_data;
+   Journal_Client_Data * const journal_client_data;
 
    //////////////////////////////////////////////////////////////////////////
    Status process_command
@@ -87,11 +87,11 @@ namespace joedb
     }
     else if (command == "db") ///////////////////////////////////////////////
     {
-     if (interpreted_client)
+     if (interpreted_client_data)
      {
       Readable_Interpreter interpreter
       (
-       interpreted_client->get_database(),
+       interpreted_client_data->get_database(),
        nullptr
       );
 
@@ -107,14 +107,14 @@ namespace joedb
      std::cout << "Waiting for lock... ";
      std::cout.flush();
 
-     if (interpreted_client)
+     if (interpreted_client_data)
      {
-      interpreted_client->transaction([](const Readable &readable, Writable &writable)
+      client.transaction([this]()
       {
        Interpreter interpreter
        (
-        readable,
-        writable,
+        interpreted_client_data->get_database(),
+        interpreted_client_data->get_multiplexer(),
         nullptr, 
         nullptr,
         0
@@ -122,11 +122,11 @@ namespace joedb
        run_transaction(interpreter);
       });
      }
-     else if (journal_client)
+     else if (journal_client_data)
      {
-      journal_client->transaction([](Writable &writable)
+      client.transaction([this]()
       {
-       Writable_Interpreter interpreter(writable);
+       Writable_Interpreter interpreter(journal_client_data->get_journal());
        run_transaction(interpreter);
       });
      }
@@ -140,12 +140,12 @@ namespace joedb
   public:
    Client_Command_Processor(Client &client):
     client(client),
-    interpreted_client(dynamic_cast<Interpreted_Client *>(&client)),
-    journal_client(dynamic_cast<Journal_Client *>(&client))
+    interpreted_client_data(dynamic_cast<Interpreted_Client_Data *>(&client.get_data())),
+    journal_client_data(dynamic_cast<Journal_Client_Data *>(&client.get_data()))
    {
    }
 
-   bool has_db() const {return interpreted_client != nullptr;}
+   bool has_db() const {return interpreted_client_data != nullptr;}
  };
 
  ////////////////////////////////////////////////////////////////////////////
