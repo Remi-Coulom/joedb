@@ -8,11 +8,13 @@
 #include "joedb/Exception.h"
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Generic_File.h"
-#include "joedb/journal/Memory_Journal.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Embedded_Connection.h"
 #include "joedb/concurrency/Local_Connection.h"
+#include <joedb/Freedom_Keeper.h>
 #include <joedb/Writable.h>
+#include <joedb/journal/Writable_Journal.h>
 
 using namespace my_namespace::is_nested;
 
@@ -577,24 +579,24 @@ TEST(Compiler, schema_upgrade)
 TEST(Compiler, client)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_Journal server_journal;
+ joedb::Memory_File server_file;
+ joedb::Writable_Journal server_journal(server_file);
 
- joedb::Memory_Journal client_v1_journal;
- joedb::Embedded_Connection connection_v1(client_v1_journal, server_journal);
- schema_v1::Client client_v1(connection_v1);
+ using Connection = joedb::T<joedb::Embedded_Connection>;
 
- joedb::Memory_Journal client_v1bis_journal;
- joedb::Embedded_Connection connection_v1bis(client_v1bis_journal, server_journal);
- schema_v1::Client client_v1bis(connection_v1bis);
+ joedb::Memory_File client_v1_file;
+ schema_v1::Client client_v1(client_v1_file, Connection{}, server_journal);
+
+ joedb::Memory_File client_v1bis_file;
+ schema_v1::Client client_v1bis(client_v1_file, Connection{}, server_journal);
 
  client_v1.transaction([](schema_v1::Generic_File_Database &db)
  {
   db.new_person("Toto");
  });
 
- joedb::Memory_Journal client_v2_journal;
- joedb::Embedded_Connection connection_v2(client_v2_journal, server_journal);
- schema_v2::Client client_v2(connection_v2);
+ joedb::Memory_File client_v2_file;
+ schema_v2::Client client_v2(client_v2_file, Connection{}, server_journal);
 
  client_v2.transaction([](schema_v2::Generic_File_Database &db)
  {
@@ -628,23 +630,23 @@ TEST(Compiler, client)
 TEST(Compiler, client_push)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_Journal client_journal;
+ joedb::Memory_File client_file;
 
  {
-  test::Generic_File_Database db(client_journal);
+  test::Generic_File_Database db(client_file);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
 
- joedb::Memory_Journal server_journal;
+ joedb::Memory_File server_file;
 
  {
-  joedb::Embedded_Connection connection(client_journal, server_journal);
-  test::Client client(connection);
+  joedb::Writable_Journal server_journal(server_file);
+  test::Client client(client_file, joedb::T<joedb::Embedded_Connection>{}, server_journal);
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
- test::Generic_File_Database db(server_journal);
+ test::Generic_File_Database db(server_file);
  EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
 }
 
@@ -652,26 +654,33 @@ TEST(Compiler, client_push)
 TEST(Compiler, client_hash_error)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_Journal client_journal;
+ joedb::Memory_File client_file;
 
  {
-  test::Generic_File_Database db(client_journal);
+  test::Generic_File_Database db(client_file);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
 
- joedb::Memory_Journal server_journal;
+ joedb::Memory_File server_file;
 
  {
-  test::Generic_File_Database db(server_journal);
+  test::Generic_File_Database db(server_file);
   db.new_person("X", db.null_city());
   db.checkpoint();
  }
 
+ joedb::Writable_Journal server_journal(server_file);
+
  try
  {
-  joedb::Embedded_Connection connection(client_journal, server_journal);
-  test::Client client(connection);
+  test::Client client
+  (
+   client_file,
+   joedb::T<joedb::Embedded_Connection>{},
+   server_journal
+  );
+
   ADD_FAILURE() << "Should have thrown\n";
  }
  catch (const joedb::Exception &e)

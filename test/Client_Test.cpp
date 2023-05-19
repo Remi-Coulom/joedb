@@ -1,4 +1,4 @@
-#include "joedb/concurrency/Interpreted_Client_Data.h"
+#include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Embedded_Connection.h"
 #include "joedb/journal/Memory_File.h"
@@ -13,37 +13,35 @@ TEST(Client, Interpreted_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
  Memory_File server_file;
+ Memory_File client1_file;
+ Memory_File client2_file;
+
  Writable_Journal server_journal(server_file);
 
- Memory_File client1_file;
- Interpreted_Client_Data data1(client1_file);
- Embedded_Connection connection1(data1.get_journal(), server_journal);
- Client client1(data1, connection1);
+ using Connection = T<Embedded_Connection>;
 
- Memory_File client2_file;
- Interpreted_Client_Data data2(client2_file);
- Embedded_Connection connection2(data2.get_journal(), server_journal);
- Client client2(data1, connection1);
+ Interpreted_Client client1(client1_file, Connection{}, server_journal);
+ Interpreted_Client client2(client2_file, Connection{}, server_journal);
 
- client1.transaction([&data1]()
+ client1.transaction([](const Readable &readable, Writable &writable)
  {
-  data1.get_multiplexer().create_table("person");
+  writable.create_table("person");
  });
 
- connection1.run_while_locked([](){});
+ client1.transaction([](const Readable &readable, Writable &writable){});
 
- EXPECT_EQ(0, int(data2.get_database().get_tables().size()));
+ EXPECT_EQ(0, int(client2.get_database().get_tables().size()));
  client2.pull();
- EXPECT_EQ(1, int(data2.get_database().get_tables().size()));
+ EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
 
- client2.transaction([](Readable &readable, Writable &writable)
+ client2.transaction([](const Readable &readable, Writable &writable)
  {
   writable.create_table("city");
  });
 
- EXPECT_EQ(1, int(data1.get_database().get_tables().size()));
+ EXPECT_EQ(1, int(client1.get_database().get_tables().size()));
  client1.pull();
- EXPECT_EQ(2, int(data1.get_database().get_tables().size()));
+ EXPECT_EQ(2, int(client1.get_database().get_tables().size()));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,29 +50,27 @@ TEST(Client, Transaction_Failure)
 {
  {
   Memory_File server_file;
+  Memory_File client1_file;
+  Memory_File client2_file;
+
   Writable_Journal server_journal(server_file);
 
-  Memory_File client1_file;
-  Interpreted_Client_Data data1(client1_file);
-  Embedded_Connection connection1(data1.get_journal(), server_journal);
-  Client client1(data1, connection1);
- 
-  Memory_File client2_file;
-  Interpreted_Client_Data data2(client2_file);
-  Embedded_Connection connection2(data2.get_journal(), server_journal);
-  Client client2(data1, connection1);
+  using Connection = T<Embedded_Connection>;
 
-  client1.transaction([&data1]()
+  Interpreted_Client client1(client1_file, Connection{}, server_journal);
+  Interpreted_Client client2(client2_file, Connection{}, server_journal);
+
+  client1.transaction([](const Readable &readable, Writable &writable)
   {
-   data1.get_multiplexer().create_table("person");
+   writable.create_table("person");
   });
 
   client2.pull();
-  EXPECT_EQ(1, int(data2.get_database().get_tables().size()));
+  EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
 
   try
   {
-   client1.transaction([](Readable &readable, Writable &writable)
+   client1.transaction([](const Readable &readable, Writable &writable)
    {
     writable.create_table("city");
     throw joedb::Exception("cancelled");
@@ -90,7 +86,7 @@ TEST(Client, Transaction_Failure)
   // A cancelled transaction was not pushed to the server.
   //
   client2.pull();
-  EXPECT_EQ(1, int(data2.get_database().get_tables().size()));
+  EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
 
   //
   // The cancelled transaction was written locally, which prevents further
@@ -99,7 +95,7 @@ TEST(Client, Transaction_Failure)
 
   try
   {
-   client1.transaction([](Readable &readable, Writable &writable)
+   client1.transaction([](const Readable &readable, Writable &writable)
    {
     writable.create_table("country");
    });
@@ -111,7 +107,7 @@ TEST(Client, Transaction_Failure)
   }
 
   client2.pull();
-  EXPECT_EQ(1, int(data2.get_database().get_tables().size()));
+  EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
  }
 }
 
@@ -123,20 +119,10 @@ TEST(Client, hash)
  Writable_Journal server_journal(server_file);
 
  {
-  Memory_File client_file;
-  Interpreted_Client_Data data(client_file);
-
-  {
-   Embedded_Connection connection(data.get_journal(), server_journal);
-   Client client(data, connection);
-   client.transaction([&data]()
-   {
-    data.get_multiplexer().create_table("person");
-    data.get_multiplexer().create_table("city");
-   });
-  }
+  server_journal.create_table("person");
+  server_journal.create_table("city");
+  server_journal.checkpoint(Commit_Level::no_commit);
  }
-
 
  {
   Memory_File client_file;
@@ -149,9 +135,7 @@ TEST(Client, hash)
 
   try
   {
-   Interpreted_Client_Data data(client_file);
-   Embedded_Connection connection(data.get_journal(), server_journal);
-   Client client(data, connection);
+   Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
    ADD_FAILURE() << "Connection with incompatible file should have failed";
   }
   catch (const joedb::Exception &e)
@@ -171,12 +155,10 @@ TEST(Client, hash)
 
   try
   {
-   Interpreted_Client_Data data(client_file);
-   Embedded_Connection connection(data.get_journal(), server_journal);
-   Client client(data, connection);
-   EXPECT_EQ(data.get_database().get_tables().size(), 1ULL);
+   Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
+   EXPECT_EQ(client.get_database().get_tables().size(), 1ULL);
    client.pull();
-   EXPECT_EQ(data.get_database().get_tables().size(), 2ULL);
+   EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
   }
   catch (const joedb::Exception &e)
   {
@@ -194,18 +176,16 @@ TEST(Client, push)
 
  {
   Memory_File client_file;
-  Interpreted_Client_Data data(client_file);
 
   //
   // Push something to the server via a connection
   //
   {
-   Embedded_Connection connection(data.get_journal(), server_journal);
-   Client client(data, connection);
+   Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
 
-   client.transaction([&data]()
+   client.transaction([](const Readable &readable, Writable &writable)
    {
-    data.get_multiplexer().create_table("person");
+    writable.create_table("person");
    });
   }
 
@@ -213,17 +193,17 @@ TEST(Client, push)
   // Make offline modifications
   //
   {
-   data.get_journal().append();
-   data.get_journal().create_table("city");
-   data.get_journal().checkpoint(Commit_Level::no_commit);
+   Writable_Journal journal(client_file);
+   journal.append();
+   journal.create_table("city");
+   journal.checkpoint(Commit_Level::no_commit);
   }
 
   //
   // Connect again, and update the server
   //
   {
-   Embedded_Connection connection(data.get_journal(), server_journal);
-   Client client(data, connection);
+   Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
    EXPECT_TRUE(client.get_checkpoint_difference() > 0);
    client.push_unlock();
   }
@@ -234,12 +214,10 @@ TEST(Client, push)
  //
  {
   Memory_File client_file;
-  Interpreted_Client_Data data(client_file);
-  Embedded_Connection connection(data.get_journal(), server_journal);
-  Client client(data, connection);
+  Interpreted_Client client(client_file, T<Embedded_Connection>(), server_journal);
   EXPECT_TRUE(client.get_checkpoint_difference() < 0);
   client.pull();
-  EXPECT_EQ(data.get_database().get_tables().size(), 2ULL);
+  EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
  }
 }
 
@@ -251,16 +229,13 @@ TEST(Client, synchronization_error_at_handshake)
  Writable_Journal server_journal(server_file);
 
  Memory_File client_file;
- Interpreted_Client_Data data(client_file);
 
  //
  // Push something to the server via a connection
  //
  {
-  Embedded_Connection connection(data.get_journal(), server_journal);
-  Client client(data, connection);
-
-  client.transaction([](Readable &readable, Writable &writable)
+  Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
+  client.transaction([](const Readable &readable, Writable &writable)
   {
    writable.create_table("person");
   });
@@ -269,22 +244,23 @@ TEST(Client, synchronization_error_at_handshake)
  //
  // Make offline modifications
  //
- data.get_journal().append();
- data.get_journal().create_table("city");
- data.get_journal().checkpoint(Commit_Level::no_commit);
+ {
+  Writable_Journal journal(client_file);
+  journal.append();
+  journal.create_table("city");
+  journal.checkpoint(Commit_Level::no_commit);
+ }
 
  //
  // Someone else makes incompatible changes
  //
  {
   Memory_File client2_file;
-  Interpreted_Client_Data data2(client2_file);
-  Embedded_Connection connection(data2.get_journal(), server_journal);
-  Client client(data2, connection);
+  Interpreted_Client client2(client2_file, T<Embedded_Connection>{}, server_journal);
 
-  client.transaction([&data]()
+  client2.transaction([](const Readable &readable, Writable &writable)
   {
-   data.get_multiplexer().create_table("company");
+   writable.create_table("company");
   });
  }
 
@@ -293,8 +269,7 @@ TEST(Client, synchronization_error_at_handshake)
  //
  try
  {
-  Embedded_Connection connection(data.get_journal(), server_journal);
-  Client client(data, connection);
+  Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
   ADD_FAILURE() << "connecting should have failed\n";
  }
  catch (const Exception &e)
@@ -308,13 +283,12 @@ TEST(Client, empty_transaction)
 /////////////////////////////////////////////////////////////////////////////
 {
  Memory_File server_file;
+ Memory_File client_file;
+
  Writable_Journal server_journal(server_file);
 
- Memory_File client_journal;
- Interpreted_Client_Data data(client_journal);
+ Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
 
- Embedded_Connection connection(data.get_journal(), server_journal);
- Client client(data, connection);
- client.transaction([](){});
- client.transaction([](){});
+ client.transaction([](const Readable &readable, Writable &writable){});
+ client.transaction([](const Readable &readable, Writable &writable){});
 }

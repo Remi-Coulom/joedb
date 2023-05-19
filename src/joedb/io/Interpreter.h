@@ -51,7 +51,7 @@ namespace joedb
   public:
    Interpreter
    (
-    Readable &readable,
+    const Readable &readable,
     Writable &writable,
     Blob_Reader *blob_reader,
     Writable *blob_writer,

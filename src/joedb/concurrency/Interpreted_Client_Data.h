@@ -24,7 +24,7 @@ namespace joedb
    {
    }
 
-   Database &get_database()
+   const Database &get_database() const
    {
     return database;
    }

@@ -1,7 +1,11 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/journal/Memory_Journal.h"
+#include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
+#include <joedb/concurrency/Interpreted_Client_Data.h>
+#include <joedb/journal/Writable_Journal.h>
+
+static constexpr joedb::T<joedb::Server_Connection> conn{};
 
 /////////////////////////////////////////////////////////////////////////////
 class Debug_Channel: public joedb::Channel, public joedb::Memory_File
@@ -28,9 +32,8 @@ TEST(Server_Connection, handshake)
 
  try
  {
-  joedb::Memory_Journal client_journal;
-  joedb::Server_Connection connection(client_journal, channel, log);
-  joedb::Interpreted_Client client(connection);
+  joedb::Memory_File client_file;
+  joedb::Interpreted_Client client(client_file, conn, channel, log);
 
   ADD_FAILURE() << "Should have thrown";
  }
@@ -70,9 +73,10 @@ TEST(Server_Connection, session)
  file.set_position(0);
 
  {
-  joedb::Memory_Journal client_journal;
-  joedb::Server_Connection connection(client_journal, channel, log);
-  joedb::Interpreted_Client client(connection);
+  joedb::Memory_File client_file;
+  joedb::Interpreted_Client_Data data(client_file);
+  joedb::Server_Connection connection(data.get_journal(), channel, log);
+  joedb::Client client(data, connection);
 
   EXPECT_EQ(connection.get_session_id(), 1234);
 
@@ -80,9 +84,6 @@ TEST(Server_Connection, session)
 
   client.pull();
 
-  client.transaction
-  (
-   [](joedb::Readable &readable, joedb::Writable &writable){}
-  );
+  client.transaction([](){});
  }
 }

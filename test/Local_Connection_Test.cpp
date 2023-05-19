@@ -2,7 +2,7 @@
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
 #include "joedb/concurrency/Local_Connection.h"
-#include "joedb/concurrency/Interpreted_Client_Data.h"
+#include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Destructor_Logger.h"
 #include "joedb/String_Logger.h"
@@ -19,15 +19,15 @@ TEST(Local_Connection, simple_operation)
 {
  std::remove(file_name);
 
- Local_Connection connection1(file_name);
- Interpreted_Client client1(connection1);
+ File file_1(file_name, Open_Mode::shared_write);
+ File file_2(file_name, Open_Mode::shared_write);
 
- Local_Connection connection2(file_name);
- Interpreted_Client client2(connection2);
+ Interpreted_Client client1(file_1, T<Local_Connection>{});
+ Interpreted_Client client2(file_2, T<Local_Connection>{});
 
  client1.transaction
  (
-  [](Readable &readable, Writable &writable)
+  [](const Readable &readable, Writable &writable)
   {
    writable.create_table("person");
   }
@@ -39,7 +39,7 @@ TEST(Local_Connection, simple_operation)
 
  client2.transaction
  (
-  [](Readable &readable, Writable &writable)
+  [](const Readable &readable, Writable &writable)
   {
    writable.create_table("city");
   }
@@ -74,8 +74,8 @@ TEST(Local_Connection, size_check)
 
  try
  {
-  Local_Connection connection(file_name);
-  Interpreted_Client client(connection);
+  File file(file_name, Open_Mode::shared_write);
+  Interpreted_Client client(file, T<Local_Connection>{});
   FAIL() << "Expected an exception\n";
  }
  catch(const joedb::Exception &e)

@@ -12,19 +12,15 @@ int main()
  // This sets up a configuration with a server and 2 clients.
  //
  joedb::Memory_File server_file;
- joedb::Writable_Journal server_journal(server_file);
-
  joedb::Memory_File client1_file;
  joedb::Memory_File client2_file;
 
- tutorial::Client_Data client1_data(client1_file);
- tutorial::Client_Data client2_data(client2_file);
+ joedb::Writable_Journal server_journal(server_file);
 
- joedb::Embedded_Connection connection1(client1_data.get_journal(), server_journal);
- joedb::Embedded_Connection connection2(client2_data.get_journal(), server_journal);
+ using Connection = joedb::T<joedb::Embedded_Connection>;
 
- tutorial::Client client1(client1_data, connection1);
- tutorial::Client client2(client2_data, connection2);
+ tutorial::Client client1(client1_file, Connection{}, server_journal);
+ tutorial::Client client2(client2_file, Connection{}, server_journal);
 
  //
  // The databases are empty. client1 will add a few cities.
