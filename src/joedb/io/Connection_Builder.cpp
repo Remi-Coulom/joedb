@@ -1,5 +1,6 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
@@ -72,8 +73,8 @@ namespace joedb
    std::unique_ptr<Client_Data> client_data
    (
     nodb ?
-    new Journal_Client_Data(*client_file) :
-    new Journal_Client_Data(*client_file)
+    (Client_Data *)new Journal_Client_Data(*client_file) :
+    (Client_Data *)new Interpreted_Client_Data(*client_file)
    );
 
    std::cout << "OK\n";
