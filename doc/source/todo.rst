@@ -116,8 +116,10 @@ Concurrency
 - Proper testing and fine-tuning of shared local files:
 
    - Never unlock files that are not shared
+   - Use shared lock when reading files
    - Use lock objects to properly ensure unlocking in case of exception (both for file and connection)
-   - Unit testing and fuzzing of shared locking
+   - make unlocking nothrow? That would simplify a lot.
+   - Unit testing and fuzzing of all of this
 
 - Test many concurrent read and write requests. Performance benchmarks.
 - File-locking benchmarks

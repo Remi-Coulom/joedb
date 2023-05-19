@@ -58,15 +58,14 @@ available connections.
 
 ``Embedded_Connection`` creates a connection to a file opened in the same
 program. It does not allow concurrent access to the same file from another
-process. It is not very useful in practice, except for unit testing, and this
-tutorial.
+process. It is not very useful in practice, except for unit testing.
 
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
 ``Local_Connection`` allows serverless concurrent connection to a file, using file-locking for synchronization.
 
-:ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that creates the connection and the client in a single line of code. Here is an example:
+:ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that creates the file and the client in a single line of code. Here is an example:
 
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
