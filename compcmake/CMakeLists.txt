@@ -228,12 +228,12 @@ endforeach(mode)
 # Targets below require databases to be compiled
 #############################################################################
 joedb_add_executable(tutorial
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/tutorial_main.cpp
 )
 
 add_executable(minimal_tutorial
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/tutorial_main.cpp
  ../src/joedb/compiler/minimal_runtime.cpp
 )
@@ -241,44 +241,44 @@ add_executable(minimal_tutorial
 
 if (NOT JOEDB_PORTABLE)
  joedb_add_executable(local_concurrency
-  ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+  ../doc/source/tutorial/tutorial.cpp
   ../doc/source/tutorial/local_concurrency.cpp
  )
 endif()
 
 joedb_add_executable(concurrency_tutorial
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/concurrency_tutorial.cpp
 )
 
 joedb_add_executable(step_by_step_replay
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/step_by_step_replay.cpp
 )
 
 joedb_add_executable(file_tutorial
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/file_tutorial.cpp
 )
 
 joedb_add_executable(index_tutorial
- ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/index_tutorial.cpp
 )
 
 #joedb_add_executable(wrapper_tutorial
-# ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
-# ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial_wrapper.cpp
+# ../doc/source/tutorial/tutorial.cpp
+# ../doc/source/tutorial/tutorial_wrapper.cpp
 # ../doc/source/tutorial/tutorial_main.c
 #)
 
 joedb_add_executable(generate_translation_header
- ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.cpp
+ ../test/compiler/db/test.cpp
  ../test/compiler/generate_translation_header.cpp
 )
 
 joedb_add_executable(joedbc_insert
- ${CMAKE_CURRENT_SOURCE_DIR}/../benchmark/benchmarkdb.cpp
+ ../benchmark/benchmarkdb.cpp
  ../benchmark/joedbc_insert.cpp
 )
 
