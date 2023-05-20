@@ -1,4 +1,6 @@
 #include "tutorial.h"
+#include "joedb/journal/Memory_File.h"
+#include "joedb/concurrency/Embedded_Connection.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
@@ -7,10 +9,14 @@ int main()
  //
  // This sets up a configuration with 2 client accessing the same file
  //
- const char * const file_name = "concurrency.joedb";
- std::remove(file_name);
- tutorial::Local_Client client1(file_name);
- tutorial::Local_Client client2(file_name);
+ joedb::Memory_File server_file;
+ joedb::Memory_File client1_file;
+ joedb::Memory_File client2_file;
+
+ joedb::Embedded_Connection connection(server_file);
+
+ tutorial::Client client1(connection, client1_file);
+ tutorial::Client client2(connection, client2_file);
 
  //
  // The databases are empty. client1 will add a few cities.
