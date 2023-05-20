@@ -1,19 +1,12 @@
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/Logger.h"
 #include "joedb/String_Logger.h"
+#include "joedb/Stream_Logger.h"
 
 #include "gtest/gtest.h"
 
 namespace joedb
 {
- /////////////////////////////////////////////////////////////////////////////
- class Test_Logger: public Logger
- /////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   void write(const char *message) noexcept final {}
- };
-
  /////////////////////////////////////////////////////////////////////////////
  class Test_Catcher: public Posthumous_Catcher
  /////////////////////////////////////////////////////////////////////////////
@@ -27,7 +20,7 @@ namespace joedb
   public:
    ~Test_Thrower()
    {
-    postpone_exception("exception");
+    postpone_exception("posthumous exception");
    }
  };
 
@@ -35,7 +28,8 @@ namespace joedb
  TEST(Posthumous_Thrower, basic)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Logger logger;
+  std::ostringstream out;
+  Stream_Logger logger(out);
   Destructor_Logger::set_logger(&logger);
 
   Test_Catcher catcher;
@@ -45,6 +39,8 @@ namespace joedb
    Test_Thrower thrower;
    thrower.set_catcher(catcher);
   }
+
+  EXPECT_EQ(out.str(), "joedb: posthumous exception\n");
 
   EXPECT_ANY_THROW(catcher.rethrow());
 
