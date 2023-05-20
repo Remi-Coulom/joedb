@@ -59,8 +59,6 @@ TEST(Server_Connection, session)
  file.write<int64_t>(1234);
  file.write<int64_t>(41);
  file.write<char>('H');
- file.write<char>('l');
- file.write<char>('u');
  file.write<char>('P');
  file.write<int64_t>(41);
  file.write<int64_t>(0);
@@ -77,9 +75,6 @@ TEST(Server_Connection, session)
   joedb::Client client(data, connection);
 
   EXPECT_EQ(connection.get_session_id(), 1234);
-
-  ((joedb::Connection *)&connection)->lock(data.get_journal());
-  ((joedb::Connection *)&connection)->unlock(data.get_journal());
 
   client.pull();
 

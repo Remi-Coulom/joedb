@@ -1,4 +1,5 @@
 #include "joedb/journal/File.h"
+#include "joedb/concurrency/Journal_Client_Data.h"
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
 #include "joedb/concurrency/Local_Connection.h"
@@ -85,5 +86,25 @@ TEST(Local_Connection, size_check)
  {
   EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. joedb_convert can be used to fix it.");
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Local_Connection, dummy_connection)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+
+ {
+  joedb::Journal_Client_Data data(file);
+  joedb::Connection connection;
+  joedb::Client client(data, connection);
+
+  client.transaction([&data]()
+  {
+   data.get_journal().create_table("person");
+  });
+ }
+
+ EXPECT_TRUE(file.get_size() > 0);
 }
 #endif

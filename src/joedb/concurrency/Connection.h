@@ -5,18 +5,21 @@
 
 namespace joedb
 {
+ class Client;
 
  ////////////////////////////////////////////////////////////////////////////
  class Connection
  ////////////////////////////////////////////////////////////////////////////
  {
+  friend class Client;
+
   protected:
    void content_mismatch()
    {
     throw Exception("Client data does not match the server");
    }
 
-  public:
+  private:
    virtual int64_t handshake(Readonly_Journal &client_journal)
    {
     return client_journal.get_checkpoint_position();
@@ -45,6 +48,7 @@ namespace joedb
    {
    }
 
+  public:
    virtual ~Connection() = default;
  };
 }
