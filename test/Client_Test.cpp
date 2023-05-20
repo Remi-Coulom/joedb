@@ -133,8 +133,6 @@ TEST(Client, hash)
    client_journal.checkpoint(Commit_Level::no_commit);
   }
 
-  client_file.set_mode(Open_Mode::write_existing);
-
   try
   {
    Interpreted_Client client(client_file, T<Embedded_Connection>{}, server_journal);
@@ -154,8 +152,6 @@ TEST(Client, hash)
    client_journal.create_table("person");
    client_journal.checkpoint(Commit_Level::no_commit);
   }
-
-  client_file.set_mode(Open_Mode::write_existing);
 
   try
   {
@@ -192,8 +188,6 @@ TEST(Client, push)
     writable.create_table("person");
    });
   }
-
-  client_file.set_mode(Open_Mode::write_existing);
 
   //
   // Make offline modifications
@@ -246,8 +240,6 @@ TEST(Client, synchronization_error_at_handshake)
    writable.create_table("person");
   });
  }
-
- client_file.set_mode(Open_Mode::write_existing);
 
  //
  // Make offline modifications

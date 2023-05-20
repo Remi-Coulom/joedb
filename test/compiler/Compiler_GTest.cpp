@@ -524,8 +524,6 @@ TEST(Compiler, schema_upgrade)
   db.checkpoint();
  }
 
- file.set_mode(joedb::Open_Mode::write_existing);
-
  try
  {
   schema_v2::Readonly_Database db(file);
@@ -638,8 +636,6 @@ TEST(Compiler, client_push)
   db.checkpoint();
  }
 
- client_file.set_mode(joedb::Open_Mode::write_existing);
-
  joedb::Memory_File server_file;
 
  {
@@ -647,8 +643,6 @@ TEST(Compiler, client_push)
   test::Client client(client_file, joedb::T<joedb::Embedded_Connection>{}, server_journal);
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
-
- server_file.set_mode(joedb::Open_Mode::write_existing);
 
  test::Generic_File_Database db(server_file);
  EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
@@ -666,8 +660,6 @@ TEST(Compiler, client_hash_error)
   db.checkpoint();
  }
 
- client_file.set_mode(joedb::Open_Mode::write_existing);
-
  joedb::Memory_File server_file;
 
  {
@@ -675,8 +667,6 @@ TEST(Compiler, client_hash_error)
   db.new_person("X", db.null_city());
   db.checkpoint();
  }
-
- server_file.set_mode(joedb::Open_Mode::write_existing);
 
  joedb::Writable_Journal server_journal(server_file);
 
@@ -718,8 +708,6 @@ TEST(Compiler, vector)
    db.checkpoint();
   }
 
-  file.set_mode(joedb::Open_Mode::read_existing);
-
   {
    test::Readonly_Database db(file);
    for (size_t i = 0; i < n; i++)
@@ -739,7 +727,6 @@ TEST(Compiler, vector)
    db.checkpoint();
   }
   {
-   file.set_mode(joedb::Open_Mode::read_existing);
    vector_test::Readonly_Database db(file);
    EXPECT_EQ(db.get_point_table().get_size(), 0ULL);
   }
@@ -765,8 +752,6 @@ TEST(Compiler, vector)
    EXPECT_EQ(db.get_point_table().first().get_id(), 1ULL);
    EXPECT_EQ(db.get_point_table().last().get_id(), 5ULL);
   }
-
-  file.set_mode(joedb::Open_Mode::write_existing);
 
   {
    vector_test::Generic_File_Database db(file);
@@ -823,7 +808,6 @@ TEST(Compiler, vector)
    db.checkpoint();
   }
   {
-   file.set_mode(joedb::Open_Mode::read_existing);
    joedb::Readonly_Journal journal(file);
    joedb::Database database;
    journal.replay_log(database);

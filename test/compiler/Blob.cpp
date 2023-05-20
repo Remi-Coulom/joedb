@@ -22,8 +22,6 @@ TEST(Compiler, blob)
   db.checkpoint();
  }
 
- file.set_mode(joedb::Open_Mode::read_existing);
-
  //
  // The content of a blob is not kept in RAM. In order to access it,
  // it must be explicitly read from the file.

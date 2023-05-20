@@ -82,8 +82,6 @@ TEST(Server, basic)
    journal.checkpoint(joedb::Commit_Level::no_commit);
   }
 
-  file.set_mode(joedb::Open_Mode::write_existing);
-
   joedb::Network_Channel channel("localhost", port);
   try
   {
