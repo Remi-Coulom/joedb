@@ -80,7 +80,7 @@ ipo_add_executable(joedb_convert
 )
 
 if(EXISTS "${GOOGLE_TEST}/include")
- joedb_add_executable(joedb_test
+ add_executable(joedb_test
   ../test/endianness_Test.cpp
   ../test/diagnostics_Test.cpp
   ../test/File_Test.cpp
@@ -132,6 +132,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
  # This definition is necessary for cygwin
  # https://github.com/google/googletest/pull/2839
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
+ target_uses_joedb(joedb_test)
 
  add_test(NAME joedb_test
   COMMAND joedb_test
