@@ -4,30 +4,22 @@ Opening Files
 =============
 
 The simplest way to open a file is to pass a file name to the constructor of
-either ``File_Database`` or ``Readonly_Database``. But subclasses of the
-``joedb::Generic_File`` class allows using various sources of data.
-
-Database Constructors
----------------------
-
-Opening a file for reading and writing (creates the file if it does not exist):
+either ``File_Database`` or ``Readonly_Database``.
 
 .. code-block:: c++
 
   tutorial::File_Database db("file.joedb");
 
-Opening a file for reading only (throws an exception if it does not exist):
-
 .. code-block:: c++
 
   tutorial::Readonly_Database db("file.joedb");
 
-Using a ``joedb::File``
------------------------
+``joedb::Open_Mode``
+--------------------
 
-Opening the database with a ``joedb::File`` gives better control of the way the file is opened.
+You can change the way the file is opened by passing an extra parameter to the constructor.
 
-This is an example:
+For example:
 
 .. literalinclude:: ./tutorial/file_tutorial.cpp
    :language: c++
@@ -41,7 +33,7 @@ Available modes are:
    read_existing, // mode of Readonly_Database
    write_existing,
    create_new,
-   write_existing_or_create_new, // mode of File_Database
+   write_existing_or_create_new, // default mode of File_Database
    shared_write,
    write_lock
   };

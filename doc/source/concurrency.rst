@@ -86,7 +86,7 @@ channel classes are provided:
  * ``Network_Channel`` opens a network socket to the server directly.
  * ``ssh::Forward_Channel`` connects to the server with ssh encryption and authentication.
 
-The source code of :ref:`joedb_ssh_client` shows an example of use:
+The example code below shows how to connect to a server via ssh:
 
-.. literalinclude:: ../../src/joedb/io/joedb_ssh_client.cpp
+.. literalinclude:: ../../src/joedb/concurrency/SSH_Server_Connection.h
    :language: c++
