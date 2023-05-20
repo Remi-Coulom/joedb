@@ -27,7 +27,12 @@ build()
   ../../src/joedb/Multiplexer.cpp\
   ../../src/joedb/interpreter/Table.cpp\
   ../../src/joedb/Destructor_Logger.cpp\
-  ../../src/joedb/io/Interpreter.cpp\
+  ../../src/joedb/Blob.cpp\
+  ../../src/joedb/Selective_Writable.cpp\
+  ../../src/joedb/io/Command_Interpreter.cpp\
+  ../../src/joedb/io/Readable_Command_Processor.cpp\
+  ../../src/joedb/io/Writable_Command_Processor.cpp\
+  ../../src/joedb/io/Readable_Writable_Command_Processor.cpp\
   ../../src/joedb/io/type_io.cpp\
   ../../src/joedb/io/dump.cpp\
   ../../src/joedb/io/json.cpp\
