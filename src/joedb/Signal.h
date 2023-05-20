@@ -20,10 +20,8 @@ namespace joedb
 {
  class Signal
  {
-  private:
-   static void CDECL signal_handler(int sig);
-
   public:
+   static void CDECL signal_handler(int sig);
    static constexpr int no_signal = 0;
    static std::atomic<int> signal;
    static void start();

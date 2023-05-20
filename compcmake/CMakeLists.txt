@@ -97,6 +97,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Polymorphic_File_Test.cpp
   ../test/Posthumous_Thrower_Test.cpp
   ../test/Selective_Writable_Test.cpp
+  ../test/Signal_Test.cpp
   ../test/Client_Test.cpp
   ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp

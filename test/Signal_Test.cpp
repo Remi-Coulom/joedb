@@ -1,0 +1,16 @@
+#include "joedb/Signal.h"
+
+#include "gtest/gtest.h"
+
+namespace joedb
+{
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Signal, basic)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Signal::start();
+  Signal::stop();
+  Signal::signal_handler(1234);
+  EXPECT_EQ(Signal::signal, 1234);
+ }
+}
