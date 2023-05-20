@@ -23,7 +23,7 @@ namespace joedb
     (
      std::string user_parameter,
      std::string host_parameter,
-     int port,
+     unsigned port,
      int verbosity
     ):
      user(std::move(user_parameter)),

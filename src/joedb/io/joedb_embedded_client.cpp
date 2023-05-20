@@ -6,12 +6,21 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
+ class File_Embedded_Connection: private File, public Embedded_Connection
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   File_Embedded_Connection(const char *server_file_name):
+    File(server_file_name, Open_Mode::write_existing_or_create_new),
+    Embedded_Connection(*static_cast<File *>(this))
+   {
+   }
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
  class Embedded_Connection_Builder: public Connection_Builder
  /////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   std::unique_ptr<File> server_file;
-
   public:
    int get_min_parameters() const final {return 1;}
    int get_max_parameters() const final {return 1;}
@@ -25,12 +34,10 @@ namespace joedb
    {
     const char * const server_file_name = argv[0];
 
-    server_file.reset
+    return std::unique_ptr<Connection>
     (
-     new File(server_file_name, Open_Mode::write_existing_or_create_new)
+     new File_Embedded_Connection(server_file_name)
     );
-
-    return std::unique_ptr<Connection>(new Embedded_Connection(*server_file));
    }
  };
 

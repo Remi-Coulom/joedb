@@ -6,12 +6,23 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
+ class Network_Channel_Connection:
+ /////////////////////////////////////////////////////////////////////////////
+  public Network_Channel,
+  public Server_Connection
+ {
+  public:
+   Network_Channel_Connection(const char *host, const char *port):
+    Network_Channel(host, port),
+    Server_Connection(*this, &std::cerr)
+   {
+   }
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
  class Network_Connection_Builder: public Connection_Builder
  /////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   std::unique_ptr<Network_Channel> channel;
-
   public:
    bool has_sharing_option() const final {return true;}
    int get_min_parameters() const final {return 2;}
@@ -26,10 +37,9 @@ namespace joedb
     const char * const host = argv[0];
     const char * const port = argv[1];
 
-    channel.reset(new Network_Channel(host, port));
     return std::unique_ptr<Connection>
     (
-     new Server_Connection(*channel, &std::cerr)
+     new Network_Channel_Connection(host, port)
     );
    }
  };
