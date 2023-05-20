@@ -1,13 +1,13 @@
 #include "tutorial.h"
-#include "joedb/journal/Memory_File.h"
 #include "joedb/concurrency/Embedded_Connection.h"
+#include "joedb/journal/Memory_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  //
- // This sets up a configuration with 2 client accessing the same file
+ // This sets up a configuration with a server and 2 clients.
  //
  joedb::Memory_File server_file;
  joedb::Memory_File client1_file;

@@ -63,7 +63,6 @@ Compiler
   drop. Make sure field id is not reused. (make access function private, and
   custom functions are friends)
 - check that vector range is OK in constructor of vector update
-- Open_Mode parameter for File_Database constructor
 - modularize code generation
 
   - Each module should have:

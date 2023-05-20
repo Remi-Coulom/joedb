@@ -32,6 +32,5 @@ joedb_local_client.out
 local_concurrency_?.txt
 local_concurrency.joedb
 local_concurrency.joedbi
-concurrency.joedb
 tutorial
 build
