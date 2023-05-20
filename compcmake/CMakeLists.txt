@@ -286,39 +286,39 @@ joedb_add_executable(joedbc_insert
 #############################################################################
 # Packaging
 #############################################################################
-install(TARGETS joedbc RUNTIME DESTINATION bin)
-install(TARGETS joedbi RUNTIME DESTINATION bin)
-install(TARGETS joedb_convert RUNTIME DESTINATION bin)
-install(TARGETS joedb_logdump RUNTIME DESTINATION bin)
-install(TARGETS joedb_pack RUNTIME DESTINATION bin)
-install(TARGETS joedb_to_json RUNTIME DESTINATION bin)
-install(TARGETS joedb_merge RUNTIME DESTINATION bin)
-install(TARGETS joedb_embed RUNTIME DESTINATION bin)
+install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT Runtime)
+install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT Runtime)
+install(TARGETS joedb_convert RUNTIME DESTINATION bin COMPONENT Runtime)
+install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT Runtime)
+install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT Runtime)
+install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT Runtime)
+install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT Runtime)
+install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT Runtime)
 if (NOT JOEDB_PORTABLE)
- install(TARGETS joedb_local_client RUNTIME DESTINATION bin)
+ install(TARGETS joedb_local_client RUNTIME DESTINATION bin COMPONENT Runtime)
 endif()
 if(libssh_FOUND)
- install(TARGETS joedb_ssh_client RUNTIME DESTINATION bin)
+ install(TARGETS joedb_ssh_client RUNTIME DESTINATION bin COMPONENT Runtime)
 endif()
 if (HAS_NETWORKING)
- install(TARGETS joedb_network_client RUNTIME DESTINATION bin)
- install(TARGETS joedb_server RUNTIME DESTINATION bin)
+ install(TARGETS joedb_network_client RUNTIME DESTINATION bin COMPONENT Runtime)
+ install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT Runtime)
  if (libssh_FOUND)
-  install(TARGETS joedb_multi_server RUNTIME DESTINATION bin)
+  install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT Runtime)
  endif()
 endif()
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin)
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin)
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT Runtime)
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT Runtime)
 install(TARGETS joedb
- ARCHIVE DESTINATION lib
- LIBRARY DESTINATION lib
- RUNTIME DESTINATION bin
+ ARCHIVE DESTINATION lib COMPONENT Runtime
+ LIBRARY DESTINATION lib COMPONENT Runtime
+ RUNTIME DESTINATION bin COMPONENT Runtime
 )
 
 file(GLOB_RECURSE all_includes RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/../src/ ../src/joedb/*.h)
 foreach(file ${all_includes})
  get_filename_component(dir ${file} PATH)
- install(FILES ../src/${file} DESTINATION include/${dir})
+ install(FILES ../src/${file} DESTINATION include/${dir} COMPONENT Development)
 endforeach()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -350,6 +350,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Journal-Only Embedded Database")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.remi-coulom.fr/joedb/")
 set(CPACK_PACKAGE_CONTACT "Rémi Coulom")
 set(CPACK_STRIP_FILES TRUE)
+set(CPACK_DEB_COMPONENT_INSTALL ON)
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.remi-coulom.fr/joedb/")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
