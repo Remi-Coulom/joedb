@@ -232,6 +232,13 @@ joedb_add_executable(tutorial
  ../doc/source/tutorial/tutorial_main.cpp
 )
 
+add_executable(minimal_tutorial
+ ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial_main.cpp
+ ../src/joedb/compiler/minimal_runtime.cpp
+)
+
+
 if (NOT JOEDB_PORTABLE)
  joedb_add_executable(local_concurrency
   ${CMAKE_CURRENT_SOURCE_DIR}/../doc/source/tutorial/tutorial.cpp

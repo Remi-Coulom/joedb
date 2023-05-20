@@ -8,3 +8,4 @@
 #include "joedb/journal/Readonly_Journal.cpp"
 #include "joedb/journal/Writable_Journal.cpp"
 #include "joedb/journal/SHA_256.cpp"
+#include "joedb/Blob.cpp"
