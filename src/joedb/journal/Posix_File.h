@@ -24,7 +24,7 @@ namespace joedb
    }
 
 #ifndef NDEBUG
-   bool locked;
+   bool locked = false;
 #endif
 
    bool try_exclusive_lock();
