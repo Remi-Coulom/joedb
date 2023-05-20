@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::lock()
+ void Server_Connection::lock(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (client_journal.is_shared())
@@ -29,7 +29,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::unlock()
+ void Server_Connection::unlock(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (client_journal.is_shared())
@@ -52,8 +52,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::pull(char pull_type)
+ int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  char pull_type
+ )
  {
   Channel_Lock lock(channel);
 
@@ -99,39 +103,48 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::shared_pull(char pull_type)
+ int64_t Server_Connection::shared_pull
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  char pull_type
+ )
  {
   if (client_journal.is_shared())
   {
    client_journal.exclusive_lock();
    client_journal.refresh_checkpoint();
-   int64_t result = pull(pull_type);
+   int64_t result = pull(client_journal, pull_type);
    if (pull_type == 'P')
     client_journal.unlock();
    return result;
   }
   else
-   return pull(pull_type);
+   return pull(client_journal, pull_type);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::pull()
+ int64_t Server_Connection::pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return shared_pull('P');
+  return shared_pull(client_journal, 'P');
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::lock_pull()
+ int64_t Server_Connection::lock_pull(Writable_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return shared_pull('L');
+  return shared_pull(client_journal, 'L');
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::push(int64_t server_position, bool unlock_after)
+ void Server_Connection::push
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal,
+  int64_t server_position,
+  bool unlock_after
+ )
  {
   Channel_Lock lock(channel);
 
@@ -168,8 +181,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Server_Connection::check_matching_content(int64_t server_checkpoint)
+ bool Server_Connection::check_matching_content
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal, 
+  int64_t server_checkpoint
+ )
  {
   Channel_Lock lock(channel);
 
@@ -229,7 +246,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::handshake()
+ int64_t Server_Connection::handshake(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
   LOG("Connecting... ");
@@ -285,21 +302,15 @@ namespace joedb
   keep_alive_thread_must_stop = false;
   keep_alive_thread = std::thread([this](){keep_alive();});
 
-  if (!check_matching_content(server_checkpoint))
+  if (!check_matching_content(client_journal, server_checkpoint))
    content_mismatch();
 
   return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Connection::Server_Connection
+ Server_Connection::Server_Connection(Channel &channel, std::ostream *log):
  ////////////////////////////////////////////////////////////////////////////
- (
-  Writable_Journal &client_journal,
-  Channel &channel,
-  std::ostream *log
- ):
-  Connection(client_journal),
   channel(channel),
   log(log),
   buffer(buffer_size),

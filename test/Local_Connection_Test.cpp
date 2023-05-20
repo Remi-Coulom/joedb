@@ -22,8 +22,10 @@ TEST(Local_Connection, simple_operation)
  File file_1(file_name, Open_Mode::shared_write);
  File file_2(file_name, Open_Mode::shared_write);
 
- Interpreted_Client client1(file_1, T<Local_Connection>{});
- Interpreted_Client client2(file_2, T<Local_Connection>{});
+ Local_Connection connection;
+
+ Interpreted_Client client1(connection, file_1);
+ Interpreted_Client client2(connection, file_2);
 
  client1.transaction
  (
@@ -75,7 +77,8 @@ TEST(Local_Connection, size_check)
  try
  {
   File file(file_name, Open_Mode::shared_write);
-  Interpreted_Client client(file, T<Local_Connection>{});
+  Local_Connection connection;
+  Interpreted_Client client(connection, file);
   FAIL() << "Expected an exception\n";
  }
  catch(const joedb::Exception &e)

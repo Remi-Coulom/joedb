@@ -2,10 +2,6 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
-#include <joedb/concurrency/Interpreted_Client_Data.h>
-#include <joedb/journal/Writable_Journal.h>
-
-static constexpr joedb::T<joedb::Server_Connection> conn{};
 
 /////////////////////////////////////////////////////////////////////////////
 class Debug_Channel: public joedb::Channel, public joedb::Memory_File
@@ -30,10 +26,12 @@ TEST(Server_Connection, handshake)
  channel.joedb::Memory_File::write<char>('x');
  channel.set_position(0);
 
+ joedb::Server_Connection connection(channel, log);
+
  try
  {
   joedb::Memory_File client_file;
-  joedb::Interpreted_Client client(client_file, conn, channel, log);
+  joedb::Interpreted_Client client(connection, client_file);
 
   ADD_FAILURE() << "Should have thrown";
  }
@@ -75,12 +73,13 @@ TEST(Server_Connection, session)
  {
   joedb::Memory_File client_file;
   joedb::Interpreted_Client_Data data(client_file);
-  joedb::Server_Connection connection(data.get_journal(), channel, log);
+  joedb::Server_Connection connection(channel, log);
   joedb::Client client(data, connection);
 
   EXPECT_EQ(connection.get_session_id(), 1234);
 
-  connection.run_while_locked([](){});
+  ((joedb::Connection *)&connection)->lock(data.get_journal());
+  ((joedb::Connection *)&connection)->unlock(data.get_journal());
 
   client.pull();
 

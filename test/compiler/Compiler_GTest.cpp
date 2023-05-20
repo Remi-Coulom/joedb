@@ -578,15 +578,14 @@ TEST(Compiler, client)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File server_file;
- joedb::Writable_Journal server_journal(server_file);
 
- using Connection = joedb::T<joedb::Embedded_Connection>;
+ joedb::Embedded_Connection connection(server_file);
 
  joedb::Memory_File client_v1_file;
- schema_v1::Client client_v1(client_v1_file, Connection{}, server_journal);
+ schema_v1::Client client_v1(connection, client_v1_file);
 
  joedb::Memory_File client_v1bis_file;
- schema_v1::Client client_v1bis(client_v1bis_file, Connection{}, server_journal);
+ schema_v1::Client client_v1bis(connection, client_v1bis_file);
 
  client_v1.transaction([](schema_v1::Generic_File_Database &db)
  {
@@ -594,7 +593,7 @@ TEST(Compiler, client)
  });
 
  joedb::Memory_File client_v2_file;
- schema_v2::Client client_v2(client_v2_file, Connection{}, server_journal);
+ schema_v2::Client client_v2(connection, client_v2_file);
 
  client_v2.transaction([](schema_v2::Generic_File_Database &db)
  {
@@ -637,10 +636,10 @@ TEST(Compiler, client_push)
  }
 
  joedb::Memory_File server_file;
+ joedb::Embedded_Connection connection(server_file);
 
  {
-  joedb::Writable_Journal server_journal(server_file);
-  test::Client client(client_file, joedb::T<joedb::Embedded_Connection>{}, server_journal);
+  test::Client client(connection, client_file);
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
@@ -668,17 +667,11 @@ TEST(Compiler, client_hash_error)
   db.checkpoint();
  }
 
- joedb::Writable_Journal server_journal(server_file);
+ joedb::Embedded_Connection connection(server_file);
 
  try
  {
-  test::Client client
-  (
-   client_file,
-   joedb::T<joedb::Embedded_Connection>{},
-   server_journal
-  );
-
+  test::Client client(connection, client_file);
   ADD_FAILURE() << "Should have thrown\n";
  }
  catch (const joedb::Exception &e)
@@ -926,9 +919,10 @@ TEST(Compiler, shared_local_file)
  const char * const file_name = "compiler_test.joedb";
  std::remove(file_name);
 
- test::Local_Client client(file_name);
-
- EXPECT_EQ(client.get_database().get_city_table().get_size(), 0ULL);
+ {
+  test::Local_Client client(file_name);
+  EXPECT_EQ(client.get_database().get_city_table().get_size(), 0ULL);
+ }
 
  std::remove(file_name);
 #endif

@@ -18,12 +18,7 @@ namespace joedb
    virtual int get_min_parameters() const {return 0;}
    virtual int get_max_parameters() const {return 0;}
    virtual const char *get_parameters_description() const {return "";}
-   virtual std::unique_ptr<Connection> build
-   (
-    Writable_Journal &client_journal,
-    int argc,
-    const char * const *argv
-   ) = 0;
+   virtual std::unique_ptr<Connection> build(int argc, char **argv) = 0;
 
    virtual ~Connection_Builder() = default;
 

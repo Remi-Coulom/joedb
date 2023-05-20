@@ -23,12 +23,7 @@ namespace joedb
     return "<user> <host> <joedb_port> [<ssh_port> [<ssh_log_level>]]";
    }
 
-   std::unique_ptr<Connection> build
-   (
-    Writable_Journal &client_journal,
-    int argc,
-    const char * const *argv
-   ) final
+   std::unique_ptr<Connection> build(int argc, char **argv) final
    {
     const char * const user = argv[0];
     const char * const host = argv[1];
@@ -48,7 +43,7 @@ namespace joedb
 
     return std::unique_ptr<Connection>
     (
-     new Server_Connection(client_journal, *channel, &std::cerr)
+     new Server_Connection(*channel, &std::cerr)
     );
    }
  };

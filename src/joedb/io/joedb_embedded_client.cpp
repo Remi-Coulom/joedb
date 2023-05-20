@@ -11,22 +11,17 @@ namespace joedb
  {
   private:
    std::unique_ptr<File> server_file;
-   std::unique_ptr<Writable_Journal> server_journal;
 
   public:
    int get_min_parameters() const final {return 1;}
    int get_max_parameters() const final {return 1;}
+
    const char *get_parameters_description() const final
    {
     return "<server_file_name>";
    }
 
-   std::unique_ptr<Connection> build
-   (
-    Writable_Journal &client_journal,
-    int argc,
-    const char * const *argv
-   ) final
+   std::unique_ptr<Connection> build(int argc, char **argv) final
    {
     const char * const server_file_name = argv[0];
 
@@ -35,12 +30,7 @@ namespace joedb
      new File(server_file_name, Open_Mode::write_existing_or_create_new)
     );
 
-    server_journal.reset(new Writable_Journal(*server_file));
-
-    return std::unique_ptr<Connection>
-    (
-     new Embedded_Connection(client_journal, *server_journal)
-    );
+    return std::unique_ptr<Connection>(new Embedded_Connection(*server_file));
    }
  };
 

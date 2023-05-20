@@ -10,11 +10,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Writable_Journal &server_journal;
+   Writable_Journal server_journal;
    bool locked;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t handshake() final
+   int64_t handshake(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
     const int64_t server_position = server_journal.get_checkpoint_position();
@@ -29,7 +29,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void lock() final
+   void lock(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
     if (locked)
@@ -38,14 +38,14 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void unlock() final
+   void unlock(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
     locked = false;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t pull() final
+   int64_t pull(Writable_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
     const int64_t client_checkpoint=client_journal.get_checkpoint_position();
@@ -61,8 +61,13 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push(const int64_t server_checkpoint, bool unlock_after) final
+   void push
    //////////////////////////////////////////////////////////////////////////
+   (
+    Readonly_Journal &client_journal,
+    const int64_t server_checkpoint,
+    bool unlock_after
+   ) final
    {
     if (server_checkpoint != server_journal.get_checkpoint_position())
      throw Exception("pushing from bad checkpoint");
@@ -76,19 +81,14 @@ namespace joedb
      );
 
     if (unlock_after)
-     unlock();
+     unlock(client_journal);
    }
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Embedded_Connection
+   Embedded_Connection(Generic_File &server_file):
    //////////////////////////////////////////////////////////////////////////
-   (
-    Writable_Journal &client_journal,
-    Writable_Journal &server_journal
-   ):
-    Connection(client_journal),
-    server_journal(server_journal),
+    server_journal(server_file),
     locked(false)
    {
    }

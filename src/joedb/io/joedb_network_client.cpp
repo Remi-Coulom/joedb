@@ -21,12 +21,7 @@ namespace joedb
     return "<host> <port>";
    }
 
-   std::unique_ptr<Connection> build
-   (
-    Writable_Journal &client_journal,
-    int argc,
-    const char * const *argv
-   ) final
+   std::unique_ptr<Connection> build(int argc, char **argv) final
    {
     const char * const host = argv[0];
     const char * const port = argv[1];
@@ -34,7 +29,7 @@ namespace joedb
     channel.reset(new Network_Channel(host, port));
     return std::unique_ptr<Connection>
     (
-     new Server_Connection(client_journal, *channel, &std::cerr)
+     new Server_Connection(*channel, &std::cerr)
     );
    }
  };

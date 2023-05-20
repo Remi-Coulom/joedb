@@ -30,17 +30,17 @@ TEST(Server, basic)
  joedb::Memory_File client_file_1;
  joedb::Memory_File client_file_2;
 
- constexpr joedb::T<joedb::Server_Connection> conn{};
-
  //
  // Basic operation
  //
  {
   joedb::Network_Channel channel_1("localhost", port);
-  joedb::Interpreted_Client client_1(client_file_1, conn, channel_1, log_stream);
+  joedb::Server_Connection connection_1(channel_1, log_stream);
+  joedb::Interpreted_Client client_1(connection_1, client_file_1);
 
   joedb::Network_Channel channel_2("localhost", port);
-  joedb::Interpreted_Client client_2(client_file_2, conn, channel_2, log_stream);
+  joedb::Server_Connection connection_2(channel_2, log_stream);
+  joedb::Interpreted_Client client_2(connection_2, client_file_2);
 
   client_1.pull();
 
@@ -67,7 +67,8 @@ TEST(Server, basic)
  //
  {
   joedb::Network_Channel channel_1("localhost", port);
-  joedb::Interpreted_Client client_1(client_file_1, conn, channel_1, log_stream);
+  joedb::Server_Connection connection_1(channel_1, log_stream);
+  joedb::Interpreted_Client client_1(connection_1, client_file_1);
  }
 
  //
@@ -83,9 +84,10 @@ TEST(Server, basic)
   }
 
   joedb::Network_Channel channel("localhost", port);
+  joedb::Server_Connection connection(channel, log_stream);
   try
   {
-   joedb::Interpreted_Client client(file, conn, channel, log_stream);
+   joedb::Interpreted_Client client(connection, file);
    FAIL() << "This should not work";
   }
   catch (const joedb::Exception &e)

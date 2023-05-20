@@ -14,14 +14,9 @@ namespace joedb
     return true;
    }
 
-   std::unique_ptr<Connection> build
-   (
-    Writable_Journal &client_journal,
-    int argc,
-    const char * const *argv
-   ) final
+   std::unique_ptr<Connection> build(int argc, char **argv) final
    {
-    return std::unique_ptr<Connection>(new Local_Connection(client_journal));
+    return std::unique_ptr<Connection>(new Local_Connection());
    }
  };
 

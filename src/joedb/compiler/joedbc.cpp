@@ -151,9 +151,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << "#include \"joedb/concurrency/Client.h\"\n";
  out << "#include \"joedb/concurrency/Local_Connection.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
- out << "#include \"joedb/T.h\"\n";
  out << '\n';
- out << "#include <memory>\n";
 
  namespace_open(out, options.get_name_space());
 
@@ -502,62 +500,37 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Client_Parent
+ class Client: private Client_Data, public joedb::Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  public:
-   Client_Data data;
-   std::unique_ptr<joedb::Connection> connection;
-
-   template<class Connection_Type, class... Arguments>
-   Client_Parent
-   (
-    joedb::Generic_File &file,
-    joedb::T<Connection_Type> t,
-    Arguments&&... arguments
-   ):
-    data(file),
-    connection(new Connection_Type(data.get_journal(), arguments...))
-   {
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Client: private Client_Parent, public joedb::Client
- ////////////////////////////////////////////////////////////////////////////
- {
-  using Client_Parent::data;
-  using Client_Parent::connection;
-
   private:
    int64_t schema_checkpoint;
 
    void throw_if_schema_changed()
    {
-    if (data.db.schema_journal.get_checkpoint_position() > schema_checkpoint)
+    if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
    }
 
   public:
-   template<class... Arguments>
-   Client(joedb::Generic_File &file, Arguments&&... arguments):
-    Client_Parent(file, arguments...),
-    joedb::Client(data, *connection)
+   Client(joedb::Connection &connection, joedb::Generic_File &file):
+    Client_Data(file),
+    joedb::Client(*this, connection)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
     joedb::Client::transaction([this](){
-     data.db.check_schema();
-     data.db.auto_upgrade();
+     db.check_schema();
+     db.auto_upgrade();
     });
 
-    schema_checkpoint = data.db.schema_journal.get_checkpoint_position();
+    schema_checkpoint = db.schema_journal.get_checkpoint_position();
    }
 
    const Database &get_database() const
    {
-    return data.db;
+    return db;
    }
 
    int64_t pull()
@@ -572,23 +545,26 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     joedb::Client::transaction([&]()
     {
      throw_if_schema_changed();
-     transaction(data.db);
+     transaction(db);
     });
    }
  };
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////
- class Local_Client: private joedb::File, public Client
+ class Local_Client:
  ////////////////////////////////////////////////////////////////////////////
+  private joedb::File,
+  private joedb::Local_Connection,
+  public Client
  {
   public:
    Local_Client(const char *file_name):
     joedb::File(file_name, joedb::Open_Mode::shared_write),
     Client
     (
-     *static_cast<joedb::File *>(this),
-     joedb::T<joedb::Local_Connection>{}
+     *static_cast<joedb::Local_Connection *>(this),
+     *static_cast<joedb::File *>(this)
     )
    {
    }

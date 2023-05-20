@@ -90,7 +90,6 @@ namespace joedb
 
    std::unique_ptr<Connection> connection = build
    (
-    client_data->get_journal(),
     argc - arg_index,
     argv + arg_index
    );

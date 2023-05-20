@@ -1,6 +1,6 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/main_exception_catcher.h"
-#include "joedb/concurrency/Dummy_Connection.h"
+#include "joedb/concurrency/Connection.h"
 
 namespace joedb
 {
@@ -9,14 +9,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   std::unique_ptr<Connection> build
-   (
-    Writable_Journal &client_journal,
-    int argc,
-    const char * const *argv
-   ) final
+   std::unique_ptr<Connection> build(int argc, char **argv) final
    {
-    return std::unique_ptr<Connection>(new Dummy_Connection(client_journal));
+    return std::unique_ptr<Connection>(new Connection());
    }
  };
 

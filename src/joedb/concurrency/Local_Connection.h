@@ -11,24 +11,24 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   int64_t handshake() final
+   int64_t handshake(Readonly_Journal &client_journal) final
    {
     return client_journal.get_checkpoint_position();
    }
 
-   void lock() final
+   void lock(Readonly_Journal &client_journal) final
    {
     client_journal.exclusive_lock();
    }
 
-   void unlock() final
+   void unlock(Readonly_Journal &client_journal) final
    {
     client_journal.unlock();
    }
 
-   int64_t pull() final
+   int64_t pull(Writable_Journal &client_journal) final
    {
-    client_journal.shared_transaction([this]()
+    client_journal.shared_transaction([&client_journal]()
     {
      client_journal.refresh_checkpoint();
     });
@@ -36,7 +36,7 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   int64_t lock_pull() final
+   int64_t lock_pull(Writable_Journal &client_journal) final
    {
     client_journal.exclusive_lock();
     client_journal.refresh_checkpoint();
@@ -45,18 +45,13 @@ namespace joedb
 
    void push
    (
+    Readonly_Journal &client_journal,
     int64_t server_position,
     bool unlock_after
    ) final
    {
     if (unlock_after)
-     unlock();
-   }
-
-  public:
-   Local_Connection(Writable_Journal &client_journal):
-    Connection(client_journal)
-   {
+     unlock(client_journal);
    }
  };
 }
