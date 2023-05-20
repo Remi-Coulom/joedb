@@ -1,0 +1,55 @@
+#include "joedb/Posthumous_Thrower.h"
+#include "joedb/Logger.h"
+#include "joedb/String_Logger.h"
+
+#include "gtest/gtest.h"
+
+namespace joedb
+{
+ /////////////////////////////////////////////////////////////////////////////
+ class Test_Logger: public Logger
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   void write(const char *message) noexcept final {}
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
+ class Test_Catcher: public Posthumous_Catcher
+ /////////////////////////////////////////////////////////////////////////////
+ {
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
+ class Test_Thrower: public Posthumous_Thrower
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   ~Test_Thrower()
+   {
+    postpone_exception("exception");
+   }
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Posthumous_Thrower, basic)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Logger logger;
+  Destructor_Logger::set_logger(&logger);
+
+  Test_Catcher catcher;
+  catcher.rethrow();
+
+  {
+   Test_Thrower thrower;
+   thrower.set_catcher(catcher);
+  }
+
+  EXPECT_ANY_THROW(catcher.rethrow());
+
+  Destructor_Logger::remove_logger();
+  Destructor_Logger::set_logger();
+  Destructor_Logger::set_logger(&joedb::String_Logger::the_logger);
+ }
+}

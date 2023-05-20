@@ -95,6 +95,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/nested_namespace_Test.cpp
   ../test/pack_Test.cpp
   ../test/Polymorphic_File_Test.cpp
+  ../test/Posthumous_Thrower_Test.cpp
   ../test/Selective_Writable_Test.cpp
   ../test/Client_Test.cpp
   ../test/Stream_File_Test.cpp
