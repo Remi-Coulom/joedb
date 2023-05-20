@@ -552,20 +552,27 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////
- class Local_Client:
+ class Local_Client_Data
  ////////////////////////////////////////////////////////////////////////////
-  private joedb::File,
-  private joedb::Local_Connection,
-  public Client
+ {
+  protected:
+   joedb::File file;
+   joedb::Local_Connection connection;
+
+   Local_Client_Data(const char *file_name):
+    file(file_name, joedb::Open_Mode::shared_write)
+   {
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Local_Client: private Local_Client_Data, public Client
+ ////////////////////////////////////////////////////////////////////////////
  {
   public:
    Local_Client(const char *file_name):
-    joedb::File(file_name, joedb::Open_Mode::shared_write),
-    Client
-    (
-     *static_cast<joedb::Local_Connection *>(this),
-     *static_cast<joedb::File *>(this)
-    )
+    Local_Client_Data(file_name),
+    Client(Local_Client_Data::connection, Local_Client_Data::file)
    {
    }
 

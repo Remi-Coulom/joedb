@@ -922,6 +922,7 @@ TEST(Compiler, shared_local_file)
  {
   test::Local_Client client(file_name);
   EXPECT_EQ(client.get_database().get_city_table().get_size(), 0ULL);
+  client.pull();
  }
 
  std::remove(file_name);
