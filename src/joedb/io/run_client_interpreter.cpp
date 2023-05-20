@@ -158,6 +158,8 @@ namespace joedb
    std::cout << "You can push " << diff << " bytes.\n";
   else if (diff < 0)
    std::cout << "You can pull " << -diff << " bytes.\n";
+  else
+   std::cout << "You are in sync with the server.\n";
 
   Client_Command_Processor processor(client);
   Command_Interpreter interpreter{processor};
