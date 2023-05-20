@@ -9,3 +9,6 @@
 #include "joedb/journal/Writable_Journal.cpp"
 #include "joedb/journal/SHA_256.cpp"
 #include "joedb/Blob.cpp"
+#ifdef JOEDB_FILE_IS_PORTABLE_FILE
+#include "joedb/journal/Stream_File.cpp"
+#endif
