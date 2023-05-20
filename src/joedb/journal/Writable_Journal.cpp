@@ -351,9 +351,7 @@ joedb::Blob joedb::Writable_Journal::write_blob_data
 )
 {
  file.write<operation_t>(operation_t::blob);
- const int64_t blob_position = get_position();
- file.write_string(data);
- return Blob(blob_position);
+ return file.write_blob_data(data);
 }
 
 /////////////////////////////////////////////////////////////////////////////
