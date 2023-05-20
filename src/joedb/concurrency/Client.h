@@ -106,6 +106,7 @@ namespace joedb
     catch (...)
     {
      connection.unlock(data.get_journal());
+     data.get_journal().flush();
      throw;
     }
 
