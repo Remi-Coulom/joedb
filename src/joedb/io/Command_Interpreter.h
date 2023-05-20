@@ -21,7 +21,7 @@ namespace joedb
    bool echo = true;
    bool rethrow = false;
    bool prompt = false;
-   std::string prompt_string = "joedb> ";
+   std::string prompt_string = "joedb";
 
    void after_command
    (
