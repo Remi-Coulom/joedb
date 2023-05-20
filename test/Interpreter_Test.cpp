@@ -5,6 +5,7 @@
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 #include "gtest/gtest.h"
 
@@ -18,7 +19,10 @@ TEST(Interpreter_Test, main_test)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
- Interpreter interpreter(db, db, nullptr, nullptr, 0);
+ Memory_File file;
+ Writable_Journal journal(file);
+ Multiplexer multiplexer{db, journal};
+ Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -39,10 +43,12 @@ TEST(Interpreter_Test, Interpreter_Dump_Writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
+ Memory_File file;
+ Writable_Journal journal(file);
  std::ostringstream dump_string;
  joedb::Interpreter_Dump_Writable writable(dump_string);
- Multiplexer multiplexer{db, writable};
- Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
+ Multiplexer multiplexer{db, journal, writable};
+ Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -63,10 +69,13 @@ TEST(Interpreter_Test, SQL_Dump_Writable)
 /////////////////////////////////////////////////////////////////////////////
 {
  Database db;
+ Memory_File file;
+ Writable_Journal journal(file);
  std::ostringstream dump_string;
  joedb::SQL_Dump_Writable writable(dump_string);
- Multiplexer multiplexer{db, writable};
- Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
+ writable.on_blob(Blob(), file);
+ Multiplexer multiplexer{db, journal, writable};
+ Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());

@@ -1,22 +1,26 @@
 OK: ###############################################################################
 OK: # Testing basic interpreter commands
 OK: ###############################################################################
+42
+OK: blob "This is my life"
 OK: create_table city
 OK: create_table person
 OK: add_field city name string
 OK: add_field person name string
 OK: add_field person city references city
+OK: add_field person bio blob
 OK: insert_into city 1 "Paris"
 OK: insert_into city 2 "Lille"
 OK: insert_into city 15 "Pétaouchnok"
-OK: insert_into person 1 "Rémi" 2
-OK: insert_into person 2 "Norbert" 2
-OK: insert_into person 3 "Alexandre" 15
+OK: insert_into person 1 "Rémi" 2 42
+OK: insert_into person 2 "Norbert" 2 42
+OK: insert_into person 3 "Alexandre" 15 42
 create_table city
 create_table person
 add_field city name string
 add_field person name string
 add_field person city references city
+add_field person bio blob
 insert_vector city 1 2
 insert_vector city 15 1
 update city 1 name "Paris"
@@ -29,12 +33,16 @@ update person 3 name "Alexandre"
 update person 1 city 2
 update person 2 city 2
 update person 3 city 15
+update person 1 bio 42
+update person 2 bio 42
+update person 3 bio 42
 OK: dump
 CREATE TABLE "city"("__id" INTEGER PRIMARY KEY);
 CREATE TABLE "person"("__id" INTEGER PRIMARY KEY);
 ALTER TABLE "city" ADD "name" TEXT;
 ALTER TABLE "person" ADD "name" TEXT;
 ALTER TABLE "person" ADD "city" INTEGER REFERENCES "city";
+ALTER TABLE "person" ADD "bio" BLOB;
 INSERT INTO "city"("__id") VALUES(1);
 INSERT INTO "city"("__id") VALUES(2);
 INSERT INTO "city"("__id") VALUES(15);
@@ -50,6 +58,9 @@ UPDATE "person" SET "name" = X'416c6578616e647265' WHERE "__id" = 3;
 UPDATE "person" SET "city" = 2 WHERE "__id" = 1;
 UPDATE "person" SET "city" = 2 WHERE "__id" = 2;
 UPDATE "person" SET "city" = 15 WHERE "__id" = 3;
+-- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 1;
+-- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 2;
+-- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 3;
 OK: sql
 {
  "city":
@@ -61,16 +72,17 @@ OK: sql
  {
   "__size": 3,
   "name": ["UsOpbWk=", "Tm9yYmVydA==", "QWxleGFuZHJl"],
-  "city": [1, 1, 2]
+  "city": [1, 1, 2],
+  "bio": [42, 42, 42]
  }
 }
 OK: json 1
-------------------
-  name        city
-------------------
-1 "Rémi"         2
-2 "Norbert"      2
-3 "Alexandre"   15
+------------------------------------
+  name        city bio              
+------------------------------------
+1 "Rémi"         2 "This is my life"
+2 "Norbert"      2 "This is my life"
+3 "Alexandre"   15 "This is my life"
 OK: table person
 
 General commands
@@ -126,13 +138,13 @@ Data manipulation
 OK: help
 OK: 
 Error: create_table: name already used: city
-Line 21: create_table city
+Line 23: create_table city
 Error: create_table: invalid identifier: 123456
-Line 22: create_table 123456
+Line 24: create_table 123456
 Error: rename_table: name already used: city
-Line 23: rename_table person city
+Line 25: rename_table person city
 Error: rename_field: name already used: name
-Line 24: rename_field person city name
+Line 26: rename_field person city name
 OK: 
 OK: drop_table city
 OK: drop_table person
@@ -141,17 +153,17 @@ OK:
 OK: create_table test
 OK: add_field test a int32
 Error: add_field: name already used
-Line 32: add_field test a int32
+Line 34: add_field test a int32
 OK: add_field test b int64
 Error: unknown type
-Line 34: add_field test c qsdfqsdf
+Line 36: add_field test c qsdfqsdf
 Error: No such table: qsdfqsdf
-Line 35: drop_table qsdfqsdf
+Line 37: drop_table qsdfqsdf
 Error: Unknown command. For a list of available commands, try "help".
-Line 36: qsdfqsdf
+Line 38: qsdfqsdf
 OK: insert_into test 1 1234 5678
 Error: insert: record_id already in use
-Line 38: insert_into test 1 1234 5678
+Line 40: insert_into test 1 1234 5678
 OK: add_field test d string
 OK: add_field test e boolean
 create_table test
@@ -167,17 +179,17 @@ update test 1 e 0
 OK: dump
 OK: 
 Error: drop_field: invalid field_id
-Line 43: drop_field test qsdfqsdf
+Line 45: drop_field test qsdfqsdf
 OK: drop_field test a
 Error: failed parsing value
-Line 45: insert_into test 2 3 "4"
+Line 47: insert_into test 2 3 "4"
 OK: delete_from test 2
 Error: delete_record: bad record_id
-Line 47: delete_from test 123
+Line 49: delete_from test 123
 Error: bad field
-Line 48: update test 1 a 56789
+Line 50: update test 1 a 56789
 Error: update: invalid record_id
-Line 49: update test 2 b 56789
+Line 51: update test 2 b 56789
 OK: update test 1 b 56789
 create_table test
 add_field test b int64
@@ -222,7 +234,7 @@ OK: add_field float value float32
 OK: insert_vector float 1 5
 OK: update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
 Error: bad field
-Line 83: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
+Line 85: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
 OK: 
 OK: create_table toto
 OK: add_field toto value string
@@ -230,30 +242,30 @@ OK: insert_vector toto 3 1
 OK: insert_vector toto 5 1
 OK: update toto 3 value "toto"
 Error: update_vector: invalid record_id range
-Line 90: update_vector toto 5 value 2 "kiki" "kuku"
+Line 92: update_vector toto 5 value 2 "kiki" "kuku"
 OK: 
 Error: rename_table: invalid identifier: __toto__
-Line 92: rename_table toto __toto__
+Line 94: rename_table toto __toto__
 Error: No such table: azersdf
-Line 93: rename_table azersdf toto
+Line 95: rename_table azersdf toto
 Error: add_field: invalid identifier: __field__
-Line 94: add_field toto __field__ string
+Line 96: add_field toto __field__ string
 Error: No such table: azersdf
-Line 95: add_field azersdf field string
+Line 97: add_field azersdf field string
 Error: No such table: azersdf
-Line 96: drop_field azersdf field
+Line 98: drop_field azersdf field
 Error: rename_field: invalid identifier: __value__
-Line 97: rename_field toto value __value__
+Line 99: rename_field toto value __value__
 Error: No such table: azersdf
-Line 98: rename_field azersdf value valux
+Line 100: rename_field azersdf value valux
 Error: rename_field: invalid field_id
-Line 99: rename_field toto valux valux
+Line 101: rename_field toto valux valux
 Error: No such table: azersdf
-Line 100: insert_into azersdf 1
+Line 102: insert_into azersdf 1
 Error: No such table: azersdf
-Line 101: insert_vector azersdf 1 1
+Line 103: insert_vector azersdf 1 1
 Error: No such table: azersdf
-Line 102: delete_from azersdf 1
+Line 104: delete_from azersdf 1
 OK: 
 create_table all_types
 create_table float

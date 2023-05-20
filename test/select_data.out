@@ -3,6 +3,7 @@ create_table person
 add_field city name string
 add_field person name string
 add_field person city references city
+add_field person bio blob
 insert_into city 1
 update city 1 name "Paris"
 insert_into city 2
@@ -12,12 +13,15 @@ update city 15 name "Pétaouchnok"
 insert_into person 1
 update person 1 name "Rémi"
 update person 1 city 2
+update person 1 bio 42
 insert_into person 2
 update person 2 name "Norbert"
 update person 2 city 2
+update person 2 bio 42
 insert_into person 3
 update person 3 name "Alexandre"
 update person 3 city 15
+update person 3 bio 42
 drop_table city
 drop_table person
 create_table test

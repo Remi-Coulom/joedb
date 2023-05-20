@@ -23,6 +23,8 @@ namespace joedb
    {
    }
 
+   bool is_null() const {return position == 0;}
+
    int64_t get_position() const noexcept {return position;}
  };
 
