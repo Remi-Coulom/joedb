@@ -336,7 +336,7 @@ namespace joedb
    Generic_File(Open_Mode mode):
    //////////////////////////////////////////////////////////////////////////
     mode(mode),
-    shared(mode >= Open_Mode::shared_write)
+    shared(mode == Open_Mode::shared_write)
    {
     write_buffer_index = 0;
     reset_read_buffer();
