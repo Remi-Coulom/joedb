@@ -1,5 +1,6 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Portable_File.h"
 
 #include "gtest/gtest.h"
 
@@ -330,4 +331,50 @@ TEST(File, write_data)
   file.read_data(&output[0], n);
   ASSERT_EQ(0, std::memcmp(&input[0], &output[0], n)) << "n = " << n;
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(File, portable)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ EXPECT_ANY_THROW
+ (
+  joedb::Portable_File("test.joedb", joedb::Open_Mode::read_existing)
+ );
+
+ {
+  joedb::Portable_File
+  (
+   "test.joedb",
+   joedb::Open_Mode::write_existing_or_create_new
+  );
+ }
+
+ EXPECT_ANY_THROW
+ (
+  joedb::Portable_File("test.joedb", joedb::Open_Mode::create_new)
+ );
+
+ {
+  joedb::Portable_File("test.joedb", joedb::Open_Mode::read_existing);
+ }
+
+ {
+  joedb::Portable_File("test.joedb", joedb::Open_Mode::write_existing);
+ }
+
+ EXPECT_ANY_THROW
+ (
+  joedb::Portable_File("test.joedb", joedb::Open_Mode::shared_write)
+ );
+
+ EXPECT_ANY_THROW
+ (
+  joedb::Portable_File("test.joedb", joedb::Open_Mode::write_lock)
+ );
+
+ std::remove("test.joedb");
+
 }

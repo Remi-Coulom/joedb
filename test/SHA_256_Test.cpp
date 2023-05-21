@@ -59,4 +59,16 @@ TEST(SHA_256, file_slice)
  file.write<char>('e');
 
  EXPECT_EQ(file.get_hash(2, 3), abc_hash);
+ EXPECT_EQ(file.get_fast_hash(2, 3), abc_hash);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(SHA_256, fast_hash_coverage)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ const size_t size = 1 << 20;
+ for (size_t i = 0; i < size; i++)
+  file.write<uint32_t>(uint32_t(i));
+ file.get_fast_hash(0, file.get_size());
 }

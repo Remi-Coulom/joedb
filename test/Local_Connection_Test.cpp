@@ -98,6 +98,8 @@ TEST(Local_Connection, must_be_shared)
  joedb::Journal_Client_Data data(file);
  joedb::Client client(data, connection);
  EXPECT_ANY_THROW(client.pull());
+ EXPECT_ANY_THROW(client.transaction([](){}));
+ EXPECT_ANY_THROW(client.push_unlock());
 }
 
 /////////////////////////////////////////////////////////////////////////////
