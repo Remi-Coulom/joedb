@@ -112,13 +112,7 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
-- Proper testing and fine-tuning of shared local files:
-
-   - Never unlock files that are not shared
-   - Use lock objects to properly ensure unlocking in case of exception (both for file and connection)
-   - make unlocking nothrow? That would simplify a lot.
-   - Unit testing and fuzzing of all of this
-
+- Lock objects (file + connection). Make file unlocking nothrow? That would simplify a lot.
 - Test many concurrent read and write requests. Performance benchmarks.
 - File-locking benchmarks
 
@@ -139,8 +133,7 @@ Concurrency
   - fuzzer + unit testing
 
 - performance: fuse socket writes. Fused operations can be produced by fusing
-  writes. Lock-pull and push-unlock could have be done this way. Do it for
-  lock-pull-unlock.
+  writes. Lock-pull and push-unlock could have be done this way.
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
