@@ -32,9 +32,6 @@ namespace joedb
  void Server_Connection::unlock(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (client_journal.is_shared())
-   client_journal.unlock();
-
   Channel_Lock lock(channel);
 
   LOG(get_session_id() << ": releasing lock... ");
@@ -49,6 +46,9 @@ namespace joedb
    LOG("The lock had timed out\n");
   else
    throw Exception("Unexpected server reply");
+
+  if (client_journal.is_shared())
+   client_journal.unlock();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -169,15 +169,15 @@ namespace joedb
 
   lock.read(buffer.data(), 1);
 
-  if (unlock_after && client_journal.is_shared())
-   client_journal.unlock();
-
   if (buffer[0] == 'U')
    LOG("OK\n");
   else if (buffer[0] == 'C')
    throw Exception("Conflict: push failed");
   else
    throw Exception("Unexpected server reply");
+
+  if (unlock_after && client_journal.is_shared())
+   client_journal.unlock();
  }
 
  ////////////////////////////////////////////////////////////////////////////
