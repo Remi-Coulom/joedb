@@ -114,7 +114,7 @@ namespace joedb
 
    SHA_256::Hash get_hash(int64_t checkpoint)
    {
-    return file.get_hash(header_size, checkpoint - header_size);
+    return file.get_fast_hash(header_size, checkpoint - header_size);
    }
 
    static constexpr uint32_t version_number = 0x00000004;

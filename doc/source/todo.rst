@@ -129,7 +129,6 @@ Concurrency
   - indicate commit level for a push
   - allow timeout in the middle of a push.
   - don't use a big push buffer. Push to the file directly?
-  - replace get_hash by get_fast_hash
   - fuzzer + unit testing
 
 - performance: fuse socket writes. Fused operations can be produced by fusing
