@@ -370,49 +370,39 @@ namespace joedb
    template<typename F> void shared_transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    if (!shared)
-     transaction();
-    else
+    shared_lock();
+
+    try
     {
-     shared_lock();
-
-     try
-     {
-      transaction();
-     }
-     catch (...)
-     {
-      unlock();
-      throw;
-     }
-
-     unlock();
+     transaction();
     }
+    catch (...)
+    {
+     unlock();
+     throw;
+    }
+
+    unlock();
    }
 
    //////////////////////////////////////////////////////////////////////////
    template<typename F> void exclusive_transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    if (!shared)
-     transaction();
-    else
+    exclusive_lock();
+
+    try
     {
-     exclusive_lock();
-
-     try
-     {
-      transaction();
-     }
-     catch (...)
-     {
-      flush();
-      unlock();
-      throw;
-     }
-
-     unlock();
+     transaction();
     }
+    catch (...)
+    {
+     flush();
+     unlock();
+     throw;
+    }
+
+    unlock();
    }
 
    //////////////////////////////////////////////////////////////////////////

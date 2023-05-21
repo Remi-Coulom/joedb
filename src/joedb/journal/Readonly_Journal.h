@@ -19,6 +19,8 @@ namespace joedb
    void perform_update_##type_id(Writable &writable);
    #include "joedb/TYPE_MACRO.h"
 
+   void construct(bool ignore_errors);
+
   protected:
    Generic_File &file;
    uint32_t file_version;

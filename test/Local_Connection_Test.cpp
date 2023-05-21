@@ -1,7 +1,6 @@
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Journal_Client_Data.h"
 
-#ifdef JOEDB_FILE_IS_LOCKABLE
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
@@ -14,6 +13,7 @@ using namespace joedb;
 
 static const char * const file_name = "local_connection.joedb";
 
+#ifdef JOEDB_FILE_IS_LOCKABLE
 /////////////////////////////////////////////////////////////////////////////
 TEST(Local_Connection, simple_operation)
 /////////////////////////////////////////////////////////////////////////////
@@ -87,6 +87,18 @@ TEST(Local_Connection, size_check)
   EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. joedb_convert can be used to fix it.");
  }
 }
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Local_Connection, must_be_shared)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ joedb::Local_Connection connection;
+ joedb::Journal_Client_Data data(file);
+ joedb::Client client(data, connection);
+ EXPECT_ANY_THROW(client.pull());
+}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Local_Connection, dummy_connection)
@@ -107,4 +119,3 @@ TEST(Local_Connection, dummy_connection)
 
  EXPECT_TRUE(file.get_size() > 0);
 }
-#endif

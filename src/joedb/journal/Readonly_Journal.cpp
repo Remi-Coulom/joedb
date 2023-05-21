@@ -24,6 +24,72 @@ void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::construct(bool ignore_errors)
+/////////////////////////////////////////////////////////////////////////////
+{
+ auto format_exception = [ignore_errors](const char *message)
+ {
+  if (!ignore_errors)
+   throw Exception(message);
+ };
+
+ file.set_position(0);
+
+ //
+ // Check the format of an existing joedb file
+ //
+ if (file.get_mode() != Open_Mode::create_new)
+ {
+  //
+  // First, check for initial "joedb"
+  //
+  if (file.read<uint8_t>() != 'j' ||
+      file.read<uint8_t>() != 'o' ||
+      file.read<uint8_t>() != 'e' ||
+      file.read<uint8_t>() != 'd' ||
+      file.read<uint8_t>() != 'b')
+  {
+   format_exception("File does not start by 'joedb'");
+  }
+  else
+  {
+   //
+   // Check version number
+   //
+   file_version = file.read<uint32_t>();
+   if (file_version < compatible_version || file_version > version_number)
+    format_exception("Unsupported format version");
+
+   read_checkpoint();
+
+   //
+   // Compare to file size (if available)
+   //
+   const int64_t file_size = file.get_size();
+
+   if (file_size > 0)
+   {
+    if (ignore_errors)
+     checkpoint_position = file_size;
+    else
+    {
+     if (file_size > checkpoint_position)
+      throw Exception
+      (
+       "Checkpoint is smaller than file size. "
+       "This file may contain an aborted transaction. "
+       "joedb_convert can be used to fix it."
+      );
+
+     if (file_size < checkpoint_position)
+      throw Exception("Checkpoint is bigger than file size");
+    }
+   }
+  }
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 joedb::Readonly_Journal::Readonly_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -38,69 +104,13 @@ joedb::Readonly_Journal::Readonly_Journal
  record_of_last_operation(0),
  field_of_last_update(0)
 {
- file.shared_transaction([&file, ignore_errors, this]()
- {
-  auto format_exception = [ignore_errors](const char *message)
+ if (file.is_shared())
+  file.shared_transaction([ignore_errors, this]()
   {
-   if (!ignore_errors)
-    throw Exception(message);
-  };
-
-  file.set_position(0);
-
-  //
-  // Check the format of an existing joedb file
-  //
-  if (file.get_mode() != Open_Mode::create_new)
-  {
-   //
-   // First, check for initial "joedb"
-   //
-   if (file.read<uint8_t>() != 'j' ||
-       file.read<uint8_t>() != 'o' ||
-       file.read<uint8_t>() != 'e' ||
-       file.read<uint8_t>() != 'd' ||
-       file.read<uint8_t>() != 'b')
-   {
-    format_exception("File does not start by 'joedb'");
-   }
-   else
-   {
-    //
-    // Check version number
-    //
-    file_version = file.read<uint32_t>();
-    if (file_version < compatible_version || file_version > version_number)
-     format_exception("Unsupported format version");
-
-    read_checkpoint();
-
-    //
-    // Compare to file size (if available)
-    //
-    const int64_t file_size = file.get_size();
-
-    if (file_size > 0)
-    {
-     if (ignore_errors)
-      checkpoint_position = file_size;
-     else
-     {
-      if (file_size > checkpoint_position)
-       throw Exception
-       (
-        "Checkpoint is smaller than file size. "
-        "This file may contain an aborted transaction. "
-        "joedb_convert can be used to fix it."
-       );
-
-      if (file_size < checkpoint_position)
-       throw Exception("Checkpoint is bigger than file size");
-     }
-    }
-   }
-  }
- });
+   construct(ignore_errors);
+  });
+ else
+  construct(ignore_errors);
 }
 
 /////////////////////////////////////////////////////////////////////////////
