@@ -13,6 +13,7 @@ namespace joedb
   private:
    int64_t handshake(Readonly_Journal &client_journal) final
    {
+    check_shared(client_journal);
     return client_journal.get_checkpoint_position();
    }
 

@@ -2,6 +2,7 @@
 #include "joedb/concurrency/Journal_Client_Data.h"
 
 #include "joedb/concurrency/Local_Connection.h"
+#include "joedb/concurrency/Embedded_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Destructor_Logger.h"
@@ -87,6 +88,26 @@ TEST(Local_Connection, size_check)
   EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. joedb_convert can be used to fix it.");
  }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Local_Connection, must_not_be_shared)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+ joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
+ joedb::Journal_Client_Data data(file);
+
+ {
+  joedb::Connection connection;
+  EXPECT_ANY_THROW(joedb::Client(data, connection));
+ }
+
+ {
+  joedb::Memory_File server_file;
+  joedb::Embedded_Connection connection(server_file);
+  EXPECT_ANY_THROW(joedb::Client(data, connection));
+ }
+}
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -96,10 +117,7 @@ TEST(Local_Connection, must_be_shared)
  joedb::Memory_File file;
  joedb::Local_Connection connection;
  joedb::Journal_Client_Data data(file);
- joedb::Client client(data, connection);
- EXPECT_ANY_THROW(client.pull());
- EXPECT_ANY_THROW(client.transaction([](){}));
- EXPECT_ANY_THROW(client.push_unlock());
+ EXPECT_ANY_THROW(joedb::Client client(data, connection));
 }
 
 /////////////////////////////////////////////////////////////////////////////

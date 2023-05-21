@@ -19,9 +19,22 @@ namespace joedb
     throw Exception("Client data does not match the server");
    }
 
+   void check_shared(Readonly_Journal &client_journal)
+   {
+    if (!client_journal.is_shared())
+     throw Exception("File must be shared");
+   }
+
+   void check_not_shared(Readonly_Journal &client_journal)
+   {
+    if (client_journal.is_shared())
+     throw Exception("File cannot be shared");
+   }
+
   private:
    virtual int64_t handshake(Readonly_Journal &client_journal)
    {
+    check_not_shared(client_journal);
     return client_journal.get_checkpoint_position();
    }
 

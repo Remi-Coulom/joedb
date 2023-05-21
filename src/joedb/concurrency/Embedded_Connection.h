@@ -17,6 +17,8 @@ namespace joedb
    int64_t handshake(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
+    check_not_shared(client_journal);
+
     const int64_t server_position = server_journal.get_checkpoint_position();
     const int64_t client_position = client_journal.get_checkpoint_position();
 
@@ -91,6 +93,7 @@ namespace joedb
     server_journal(server_file),
     locked(false)
    {
+    check_not_shared(server_journal);
    }
  };
 }

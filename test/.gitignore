@@ -6,3 +6,4 @@ local_connection.joedb
 backup.joedb
 server.joedb
 compiler_test.joedb
+test.joedb
