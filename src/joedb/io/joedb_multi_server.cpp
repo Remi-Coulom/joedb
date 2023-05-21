@@ -65,10 +65,10 @@ namespace joedb
   {
    auto ssh_connection = db.get_ssh_connection(server);
 
-   if (ssh_connection.is_null())
+   if (ssh_connection.is_not_null())
    {
     if (!db.is_valid(ssh_connection))
-     throw std::runtime_error("invlid ssh_connection id");
+     throw std::runtime_error("invalid ssh_connection id");
    }
 
    servers.emplace_back
