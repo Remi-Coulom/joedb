@@ -45,22 +45,23 @@ locking to prevent more than one process from writing to the same file
 simultaneously. ``write_lock`` is like ``write_existing_or_create_new``, but
 waits instead of failing if anybody else is already write-locking.
 
-Using a ``joedb::Generic_File``
--------------------------------
+``Generic_File_Database``
+-------------------------
 
-``joedb::File`` is in fact a specialization of a more general
-``joedb::Generic_File`` class that offers more flexibility. By subclassing
-``joedb::Generic_File`` it is possible to let joedb use various ways to read
-and store data.
-
-Available subclasses:
+``Generic_File_Database`` is a superclass of ``File_Database`` that takes a
+reference to a ``joedb::Generic_File`` as parameter to its constructor, instead
+of a file name. Subclasses of ``joedb::Generic_File`` allows accessing data in
+various ways:
 
  - ``joedb::Stream_File`` uses a ``std::streambuf``.
  - ``joedb::Memory_File`` writes to a ``std::vector<char>`` in memory.
  - ``joedb::Readonly_Memory_File`` reads from ``const char *``.
    :ref:`joedb_embed` can be used to embed a joedb database into a C++ string
    literal.
- - ``joedb::File`` is a typedef to either ``joedb::Windows_File``, ``joedb::Posix_File``, or ``joedb::Portable_File``.
+ - ``joedb::File`` is a typedef to either ``joedb::Windows_File``,
+   ``joedb::Posix_File``, or ``joedb::Portable_File``. System-specific version
+   of ``joedb::File`` offer extra features, such as locking, which is necessary
+   to handle :doc:`concurrent <concurrency>` access to a file.
  - ``joedb::Interpreted_File`` can read joedbi commands directly.
 
 .. _file_slices:

@@ -53,20 +53,32 @@ connection, and a file for local storage. The connection is an object of the
 (pull, lock_pull, push_unlock). This section presents the different kinds of
 available connections.
 
+Plain ``Connection``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``Connection`` superclass has empty functions for the synchronization
+operations, so it does not connect to anything. It can be useful to create a
+client with such a connection, because it allows generic code that takes a
+client as parameter to work the same way with either a remote connection or a
+local file.
+
 ``Embedded_Connection``
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-``Embedded_Connection`` creates a connection to a file opened in the same
-program. It does not allow concurrent access to the same file from another
-process. It is not very useful in practice, except for unit testing, and this
-tutorial.
+``Embedded_Connection`` creates a connection to a server file opened in the
+same program. It does not allow concurrent access to the server file from
+another process. It is not very useful in practice, except for unit testing,
+and this tutorial.
 
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
-``Local_Connection`` allows serverless concurrent connection to a file, using file-locking for synchronization.
+``Local_Connection`` allows serverless concurrent manipulation of a local file,
+using file-locking for synchronization.
 
-:ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that creates the file and the client in a single line of code. Here is an example:
+:ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
+creates the connection and the client in a single line of code. Here is an
+example:
 
 .. literalinclude:: ./tutorial/local_concurrency.cpp
    :language: c++
@@ -86,7 +98,7 @@ channel classes are provided:
  * ``Network_Channel`` opens a network socket to the server directly.
  * ``ssh::Forward_Channel`` connects to the server with ssh encryption and authentication.
 
-The example code below shows how to connect to a server via ssh:
+The code below shows how to connect to a server via ssh:
 
 .. literalinclude:: ../../src/joedb/concurrency/SSH_Server_Connection.h
    :language: c++

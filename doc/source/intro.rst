@@ -56,11 +56,10 @@ improvements:
 
 - The database is stored in memory. So it must be small enough to fit in RAM,
   and the full journal has to be replayed from scratch when opening a file.
-  This may change with support of on-disk data storage. Also, since version 7,
-  :ref:`blobs <blobs>` allow manipulating databases that are much bigger than
-  available RAM.
-- C++ is the only supported programming language. A rudimentary C wrapper is
-  available.
+  This may change with support of on-disk data storage. Also, :ref:`blobs
+  <blobs>` allow manipulating databases that are much bigger than available
+  RAM.
+- C++ is the only supported programming language.
 
 Compared to history-less databases, joedb has one fundamental drawback:
 frequently-updated values may make the joedb journal file grow very large.
