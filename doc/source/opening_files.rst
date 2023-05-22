@@ -19,8 +19,6 @@ either ``File_Database`` or ``Readonly_Database``.
 
 You can change the way the file is opened by passing an extra parameter to the constructor.
 
-For example:
-
 .. literalinclude:: ./tutorial/file_tutorial.cpp
    :language: c++
 
@@ -39,11 +37,11 @@ Available modes are:
   };
 
 ``shared_write`` is dangerous, and requires synchronization. Users of the
-library should not directly open files with this mode, and instead use
-:doc:`transactions <concurrency>`. Other write modes will use file
-locking to prevent more than one process from writing to the same file
-simultaneously. ``write_lock`` is like ``write_existing_or_create_new``, but
-waits instead of failing if anybody else is already write-locking.
+library should not directly manipulate files with this mode, and instead use
+:doc:`transactions <concurrency>`. Other write modes will use file locking to
+prevent more than one process from writing to the same file simultaneously.
+``write_lock`` is like ``write_existing_or_create_new``, but waits instead of
+failing if anybody else is already write-locking.
 
 ``Generic_File_Database``
 -------------------------

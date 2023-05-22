@@ -3,8 +3,9 @@ History
 - 2023-??-??: 7.0
 
   - :ref:`Blobs <blobs>`
-  - Ability to safely share a single local replica of a remote server among
-    multiple local clients.
+  - Ability to :ref:`safely share <local_and_remote_concurrency>` a single local
+    replica of a remote server among multiple local clients.
+  - Tools for :ref:`efficient remote periodic backup <backup_client>`.
   - Removed some useless ssh code that was left over from the old serverless
     sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
     ``ssh::Session``, and its constructor is faster than before because there

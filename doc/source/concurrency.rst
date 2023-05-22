@@ -102,3 +102,47 @@ The code below shows how to connect to a server via ssh:
 
 .. literalinclude:: ../../src/joedb/concurrency/SSH_Server_Connection.h
    :language: c++
+
+
+.. _local_and_remote_concurrency:
+
+Combining Local and Remote Concurrency
+--------------------------------------
+
+A client is made of two parts: the local part (stored in a file), and the
+remote part (managed by the connection). A client can handle concurrency for
+both parts simultaneously. That is to say, it is possible for two different
+clients to share a connection to the same remote server, and also share the
+same local file.
+
+The table below summarizes all available connections.
+
+  +-------------------------+--------------+-----------------+-------------+
+  | Connection Class        | Shared Local | Exclusive Local | Replication |
+  +=========================+==============+=================+=============+
+  | ``Connection``          |              | ✔               |             |
+  +-------------------------+--------------+-----------------+-------------+
+  | ``Embedded_Connection`` |              | ✔               | ✔           |
+  +-------------------------+--------------+-----------------+-------------+
+  | ``Local_Connection``    | ✔            |                 |             |
+  +-------------------------+--------------+-----------------+-------------+
+  | ``Server_Connection``   | ✔            | ✔               | ✔           |
+  +-------------------------+--------------+-----------------+-------------+
+
+An exception will be thrown when creating a client if the mode of the file does
+not match the mode that the connection supports. Shared local files are
+:ref:`opened <opening_files>` with the ``Open_Mode::shared_write`` mode. All
+other modes are exclusive.
+
+.. _backup_client:
+
+Backup Client
+-------------
+
+When opening a database with joedb, the journal is read to load table data into
+memory. This is an expensive operation that is not necessary when creating a
+client whose only purpose is to store a backup replica of a remote server. In
+order to avoid this cost, all the ``joedb_*_client`` command line :doc:`tools
+<tools>` support a ``--nodb`` option that will not load table data. These tools
+provide a ``pull_every`` command that can be used for efficient periodic
+backups.
