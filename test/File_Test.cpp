@@ -337,8 +337,6 @@ TEST(File, write_data)
 TEST(File, portable)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::remove("test.joedb");
-
  EXPECT_ANY_THROW
  (
   joedb::Portable_File("test.joedb", joedb::Open_Mode::read_existing)
@@ -376,5 +374,4 @@ TEST(File, portable)
  );
 
  std::remove("test.joedb");
-
 }

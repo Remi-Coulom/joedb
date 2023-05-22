@@ -93,7 +93,6 @@ TEST(Local_Connection, size_check)
 TEST(Local_Connection, must_not_be_shared)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::remove("test.joedb");
  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
  joedb::Journal_Client_Data data(file);
 
@@ -107,6 +106,8 @@ TEST(Local_Connection, must_not_be_shared)
   joedb::Embedded_Connection connection(server_file);
   EXPECT_ANY_THROW(joedb::Client(data, connection));
  }
+
+ std::remove("test.joedb");
 }
 #endif
 
