@@ -6,6 +6,8 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 
+#include <memory>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -15,13 +17,20 @@ namespace joedb
   private:
    Writable_Journal journal;
    Database database;
-   Multiplexer multiplexer;
+   Multiplexer transaction_multiplexer;
+   std::unique_ptr<Multiplexer> update_multiplexer;
 
   public:
-   Interpreted_Client_Data(Generic_File &file):
+   Interpreted_Client_Data
+   (
+    Generic_File &file,
+    Writable *update_writable = nullptr
+   ):
     journal(file),
-    multiplexer{database, journal}
+    transaction_multiplexer{database, journal}
    {
+    if (update_writable)
+     update_multiplexer.reset(new Multiplexer{database, *update_writable});
    }
 
    const Database &get_database() const
@@ -31,7 +40,7 @@ namespace joedb
 
    Multiplexer &get_multiplexer()
    {
-    return multiplexer;
+    return transaction_multiplexer;
    }
 
    Writable_Journal &get_journal() final
@@ -41,7 +50,10 @@ namespace joedb
 
    void update() final
    {
-    journal.play_until_checkpoint(database);
+    if (update_multiplexer)
+     journal.play_until_checkpoint(*update_multiplexer);
+    else
+     journal.play_until_checkpoint(database);
    }
  };
 }

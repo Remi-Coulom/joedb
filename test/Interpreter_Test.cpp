@@ -18,24 +18,35 @@ using namespace joedb;
 TEST(Interpreter_Test, main_test)
 /////////////////////////////////////////////////////////////////////////////
 {
- Database db;
  Memory_File file;
- Writable_Journal journal(file);
- Multiplexer multiplexer{db, journal};
- Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
 
- std::ifstream in_file("interpreter_test.joedbi");
- ASSERT_TRUE(in_file.good());
- std::ostringstream out_string;
- interpreter.main_loop(in_file, out_string);
- std::ofstream("interpreter_test.out.tmp") << out_string.str();
+ {
+  Writable_Journal journal(file);
+  Database db;
+  Multiplexer multiplexer{db, journal};
+  Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
 
- std::ifstream reference_file("interpreter_test.out");
- ASSERT_TRUE(reference_file.good());
- std::ostringstream reference_string;
- reference_string << reference_file.rdbuf();
+  std::ifstream in_file("interpreter_test.joedbi");
+  ASSERT_TRUE(in_file.good());
+  std::ostringstream out_string;
+  interpreter.main_loop(in_file, out_string);
+  std::ofstream("interpreter_test.out.tmp") << out_string.str();
 
- EXPECT_EQ(reference_string.str(), out_string.str());
+  std::ifstream reference_file("interpreter_test.out");
+  ASSERT_TRUE(reference_file.good());
+  std::ostringstream reference_string;
+  reference_string << reference_file.rdbuf();
+
+  EXPECT_EQ(reference_string.str(), out_string.str());
+ }
+
+ {
+  std::ostringstream dump_string;
+  joedb::Interpreter_Dump_Writable dump(dump_string);
+  dump.set_muted(true);
+  joedb::Readonly_Journal(file).replay_log(dump);
+  EXPECT_EQ("", dump_string.str());
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

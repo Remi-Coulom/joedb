@@ -172,6 +172,16 @@ Connect to a :ref:`joedb_server` via ssh.
 
 .. _joedb_embed:
 
+.. _joedb_follow:
+
+``joedb_follow``
+----------------------
+
+.. literalinclude:: ./tutorial/joedb_follow.out
+   :language: none
+
+Monitor changes to a local shared file.
+
 ``joedb_embed``
 ---------------
 

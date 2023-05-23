@@ -115,7 +115,7 @@ namespace joedb
        (
         interpreted_client_data->get_database(),
         interpreted_client_data->get_multiplexer(),
-        nullptr, 
+        nullptr,
         nullptr,
         0
        );

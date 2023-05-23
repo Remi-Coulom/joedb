@@ -33,7 +33,11 @@ namespace joedb
  void Interpreter_Dump_Writable::create_table(const std::string &name)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "create_table " << name << '\n';
+  if (!muted)
+  {
+   out << "create_table " << name << '\n';
+  }
+
   schema.create_table(name);
  }
 
@@ -41,7 +45,11 @@ namespace joedb
  void Interpreter_Dump_Writable::drop_table(Table_Id table_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "drop_table " << schema.get_table_name(table_id) << '\n';
+  if (!muted)
+  {
+   out << "drop_table " << schema.get_table_name(table_id) << '\n';
+  }
+
   schema.drop_table(table_id);
  }
 
@@ -53,7 +61,12 @@ namespace joedb
   const std::string &name
  )
  {
-  out << "rename_table " << schema.get_table_name(table_id) << ' ' << name << '\n';
+  if (!muted)
+  {
+   out << "rename_table " << schema.get_table_name(table_id);
+   out << ' ' << name << '\n';
+  }
+
   schema.rename_table(table_id, name);
  }
 
@@ -66,9 +79,14 @@ namespace joedb
   Type type
  )
  {
-  out << "add_field " << schema.get_table_name(table_id) << ' ' << name << ' ';
-  write_type(type);
-  out << '\n';
+  if (!muted)
+  {
+   out << "add_field " << schema.get_table_name(table_id);
+   out << ' ' << name << ' ';
+   write_type(type);
+   out << '\n';
+  }
+
   schema.add_field(table_id, name, type);
  }
 
@@ -80,8 +98,12 @@ namespace joedb
   Field_Id field_id
  )
  {
-  out << "drop_field " << schema.get_table_name(table_id) << ' ';
-  out << schema.get_field_name(table_id, field_id) << '\n';
+  if (!muted)
+  {
+   out << "drop_field " << schema.get_table_name(table_id) << ' ';
+   out << schema.get_field_name(table_id, field_id) << '\n';
+  }
+
   schema.drop_field(table_id, field_id);
  }
 
@@ -94,8 +116,12 @@ namespace joedb
   const std::string &name
  )
  {
-  out << "rename_field " << schema.get_table_name(table_id) << ' ';
-  out << schema.get_field_name(table_id, field_id) << ' ' << name << '\n';
+  if (!muted)
+  {
+   out << "rename_field " << schema.get_table_name(table_id) << ' ';
+   out << schema.get_field_name(table_id, field_id) << ' ' << name << '\n';
+  }
+
   schema.rename_field(table_id, field_id, name);
  }
 
@@ -103,6 +129,9 @@ namespace joedb
  void Interpreter_Dump_Writable::custom(const std::string &name)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (muted)
+   return;
+
   out << "custom " << name << '\n';
  }
 
@@ -110,6 +139,9 @@ namespace joedb
  void Interpreter_Dump_Writable::comment(const std::string &comment)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (muted)
+   return;
+
   out << "comment ";
   write_string(out, comment);
   out << '\n';
@@ -119,6 +151,9 @@ namespace joedb
  void Interpreter_Dump_Writable::timestamp(int64_t timestamp)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (muted)
+   return;
+
   out << "timestamp " << timestamp << ' ';
   out << get_time_string(timestamp) << '\n';
  }
@@ -127,6 +162,9 @@ namespace joedb
  void Interpreter_Dump_Writable::valid_data()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (muted)
+   return;
+
   out << "valid_data\n";
  }
 
@@ -138,6 +176,9 @@ namespace joedb
   Record_Id record_id
  )
  {
+  if (muted)
+   return;
+
   out << "insert_into " << schema.get_table_name(table_id) << ' ';
   out << record_id << '\n';
  }
@@ -151,6 +192,9 @@ namespace joedb
   Record_Id size
  )
  {
+  if (muted)
+   return;
+
   out << "insert_vector " << schema.get_table_name(table_id) << ' ';
   out << record_id << ' ' << size << '\n';
  }
@@ -163,6 +207,9 @@ namespace joedb
   Record_Id record_id
  )
  {
+  if (muted)
+   return;
+
   out << "delete_from " << schema.get_table_name(table_id) << ' ';
   out << record_id << '\n';
  }
@@ -176,6 +223,9 @@ namespace joedb
   return_type value\
  )\
  {\
+  if (muted)\
+   return;\
+\
   out << "update " << schema.get_table_name(table_id) << ' ';\
   out << record_id << ' ';\
   out << schema.get_field_name(table_id, field_id) << ' ';\
@@ -191,6 +241,9 @@ namespace joedb
   const type *value\
  )\
  {\
+  if (muted)\
+   return;\
+\
   out << "update_vector " << schema.get_table_name(table_id) << ' ';\
   out << record_id << ' ';\
   out << schema.get_field_name(table_id, field_id) << ' ';\
@@ -208,6 +261,9 @@ namespace joedb
  void Interpreter_Dump_Writable::on_blob(Blob blob, Blob_Reader &reader)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (muted)
+   return;
+
   out << "# Blob: ";
   joedb::write_blob(out, blob);
   out << '\n';
@@ -217,9 +273,13 @@ namespace joedb
  Blob Interpreter_Dump_Writable::write_blob_data(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "blob ";
-  joedb::write_string(out, data);
-  out << '\n';
+  if (!muted)
+  {
+   out << "blob ";
+   joedb::write_string(out, data);
+   out << '\n';
+  }
+
   return Blob();
  }
 

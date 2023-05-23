@@ -65,6 +65,7 @@ joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
 joedb_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
 joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
 joedb_add_executable(joedb_dummy_client ../src/joedb/io/joedb_dummy_client.cpp)
+joedb_add_executable(joedb_follow ../src/joedb/io/joedb_follow.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp

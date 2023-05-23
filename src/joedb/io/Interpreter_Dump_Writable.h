@@ -13,14 +13,21 @@ namespace joedb
    std::ostream &out;
    const bool blob_wanted;
    Database_Schema schema;
+   bool muted;
 
    void write_type(Type type);
 
   public:
    Interpreter_Dump_Writable(std::ostream &out, bool blob_wanted = false):
     out(out),
-    blob_wanted(blob_wanted)
+    blob_wanted(blob_wanted),
+    muted(false)
    {
+   }
+
+   void set_muted(bool new_muted)
+   {
+    muted = new_muted;
    }
 
    void create_table(const std::string &name) final;
