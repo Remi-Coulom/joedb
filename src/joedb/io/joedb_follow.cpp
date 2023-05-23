@@ -1,9 +1,7 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/journal/File.h"
-#include "joedb/concurrency/Interpreted_Client_Data.h"
-#include "joedb/concurrency/Local_Connection.h"
-#include "joedb/concurrency/Client.h"
+#include "joedb/journal/Readonly_Journal.h"
 
 #include <thread>
 #include <chrono>
@@ -22,17 +20,18 @@ namespace joedb
   else
   {
    const char * const file_name = argv[1];
-   File file(file_name, Open_Mode::shared_write);
+   File file(file_name, Open_Mode::read_existing);
+   Readonly_Journal journal(file);
+
    Interpreter_Dump_Writable dump(std::cout);
-   Interpreted_Client_Data data(file, &dump);
-   Local_Connection connection;
    dump.set_muted(true);
-   joedb::Client client(data, connection);
+   journal.replay_log(dump);
    dump.set_muted(false);
 
    while (true)
    {
-    client.pull();
+    journal.refresh_checkpoint();
+    journal.play_until_checkpoint(dump);
     std::this_thread::sleep_for(std::chrono::seconds(1));
    }
   }
