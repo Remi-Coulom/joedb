@@ -60,7 +60,8 @@ void joedb::Readonly_Journal::construct(bool ignore_errors)
    if (file_version < compatible_version || file_version > version_number)
     format_exception("Unsupported format version");
 
-   read_checkpoint();
+   checkpoint_position = header_size;
+   read_checkpoint(true);
 
    //
    // Compare to file size (if available)
@@ -105,35 +106,38 @@ joedb::Readonly_Journal::Readonly_Journal
  field_of_last_update(0)
 {
  if (file.is_shared())
+ {
   file.shared_transaction([ignore_errors, this]()
   {
    construct(ignore_errors);
   });
+ }
  else
   construct(ignore_errors);
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::read_checkpoint()
+void joedb::Readonly_Journal::read_checkpoint(bool strict)
 /////////////////////////////////////////////////////////////////////////////
 {
- checkpoint_position = header_size;
-
  int64_t pos[4];
  for (int i = 0; i < 4; i++)
   pos[i] = file.read<int64_t>();
 
- if (pos[0] != pos[1] || pos[2] != pos[3])
-  throw Exception("Checkpoint mismatch");
+ if (strict)
+ {
+  if (pos[0] != pos[1] || pos[2] != pos[3])
+   throw Exception("Checkpoint mismatch");
+ }
 
- for (unsigned i = 0; i < 2; i++)
-  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] > checkpoint_position)
+ for (unsigned i = 0; i < 4; i += 2)
+ {
+  if (pos[i] == pos[i + 1] && pos[i] > checkpoint_position)
   {
-   if (int64_t(size_t(pos[2 * i])) != pos[2 * i])
-    throw Exception("size_t is too small for this file");
-   checkpoint_position = pos[2 * i];
+   checkpoint_position = pos[i];
    checkpoint_index = i;
   }
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -143,7 +147,7 @@ void joedb::Readonly_Journal::refresh_checkpoint()
  const int64_t old_position = file.get_position();
  constexpr int64_t checkpoint_offset = 5 + 4;
  file.set_position(checkpoint_offset);
- read_checkpoint();
+ read_checkpoint(false);
  file.set_position(old_position);
 }
 

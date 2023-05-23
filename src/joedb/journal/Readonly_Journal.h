@@ -13,7 +13,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   void read_checkpoint();
+   void read_checkpoint(bool strict);
 
    #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
    void perform_update_##type_id(Writable &writable);

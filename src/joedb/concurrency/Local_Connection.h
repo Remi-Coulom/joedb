@@ -29,19 +29,14 @@ namespace joedb
 
    int64_t pull(Writable_Journal &client_journal) final
    {
-    client_journal.shared_transaction([&client_journal]()
-    {
-     client_journal.refresh_checkpoint();
-    });
-
+    client_journal.refresh_checkpoint();
     return client_journal.get_checkpoint_position();
    }
 
    int64_t lock_pull(Writable_Journal &client_journal) final
    {
     client_journal.exclusive_lock();
-    client_journal.refresh_checkpoint();
-    return client_journal.get_checkpoint_position();
+    return pull(client_journal);
    }
 
    void push
