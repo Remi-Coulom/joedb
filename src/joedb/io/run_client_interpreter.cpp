@@ -14,8 +14,12 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- static void run_transaction(Command_Interpreter &interpreter)
+ static void run_transaction
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Command_Interpreter &interpreter,
+  Writable_Command_Processor &command_processor
+ )
  {
   std::cout << "OK\n";
   interpreter.set_prompt(true);
@@ -25,6 +29,9 @@ namespace joedb
    std::cin,
    std::cout
   );
+
+  if (command_processor.was_aborted())
+   throw Exception("aborted");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -119,7 +126,7 @@ namespace joedb
         nullptr,
         0
        );
-       run_transaction(interpreter);
+       run_transaction(interpreter, interpreter);
       });
      }
      else if (journal_client_data)
@@ -127,7 +134,7 @@ namespace joedb
       client.transaction([this]()
       {
        Writable_Interpreter interpreter(journal_client_data->get_journal());
-       run_transaction(interpreter);
+       run_transaction(interpreter, interpreter);
       });
      }
     }

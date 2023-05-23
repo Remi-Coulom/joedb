@@ -23,6 +23,7 @@ namespace joedb
    out << " comment \"<comment_string>\"\n";
    out << " valid_data\n";
    out << " checkpoint\n";
+   out << " abort\n";
    out << " blob <data_string>\n";
    out << '\n';
 
@@ -49,6 +50,11 @@ namespace joedb
   {
    writable.checkpoint(Commit_Level::no_commit);
   }
+  else if (command == "abort") //////////////////////////////////////////////
+  {
+   aborted = true;
+   return Status::quit;
+  }
   else if (command == "blob") ///////////////////////////////////////////////
   {
    const std::string value = joedb::read_string(iss);
@@ -70,8 +76,11 @@ namespace joedb
  Writable_Command_Processor::~Writable_Command_Processor()
  ////////////////////////////////////////////////////////////////////////////
  {
-  writable.checkpoint(Commit_Level::no_commit);
-  if (blob_writer && blob_writer != &writable)
-   blob_writer->checkpoint(Commit_Level::no_commit);
+  if (!aborted)
+  {
+   writable.checkpoint(Commit_Level::no_commit);
+   if (blob_writer && blob_writer != &writable)
+    blob_writer->checkpoint(Commit_Level::no_commit);
+  }
  }
 }

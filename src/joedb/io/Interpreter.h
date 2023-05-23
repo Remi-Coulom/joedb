@@ -29,7 +29,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  class Writable_Interpreter:
  ////////////////////////////////////////////////////////////////////////////
-  private Writable_Command_Processor,
+  public Writable_Command_Processor,
   public Command_Interpreter
  {
   public:
@@ -43,9 +43,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  class Interpreter:
  ////////////////////////////////////////////////////////////////////////////
-  private Readable_Command_Processor,
-  private Writable_Command_Processor,
-  private Readable_Writable_Command_Processor,
+  public Readable_Command_Processor,
+  public Writable_Command_Processor,
+  public Readable_Writable_Command_Processor,
   public Command_Interpreter
  {
   public:
