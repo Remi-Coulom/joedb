@@ -14,7 +14,7 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
  {
   throw Exception("Cannot create Writable_Journal with read-only file");
  }
- if (file.get_mode() == Open_Mode::create_new)
+ else if (file.get_mode() == Open_Mode::create_new)
  {
   file.write<uint8_t>('j');
   file.write<uint8_t>('o');

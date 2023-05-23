@@ -62,6 +62,10 @@ TEST(Journal, seek)
   joedb::Readonly_Journal journal2(readonly_file);
  }
 
+ EXPECT_ANY_THROW(joedb::Writable_Journal journal(file));
+
+ file.set_mode(joedb::Open_Mode::write_existing);
+
  {
   joedb::Writable_Journal journal(file);
   EXPECT_EQ(4UL, journal.get_file_version());
