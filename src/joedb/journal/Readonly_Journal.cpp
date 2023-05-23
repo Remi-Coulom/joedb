@@ -130,11 +130,11 @@ void joedb::Readonly_Journal::read_checkpoint(bool strict)
    throw Exception("Checkpoint mismatch");
  }
 
- for (unsigned i = 0; i < 4; i += 2)
+ for (unsigned i = 0; i < 2; i++)
  {
-  if (pos[i] == pos[i + 1] && pos[i] > checkpoint_position)
+  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] >= checkpoint_position)
   {
-   checkpoint_position = pos[i];
+   checkpoint_position = pos[2 * i];
    checkpoint_index = i;
   }
  }
