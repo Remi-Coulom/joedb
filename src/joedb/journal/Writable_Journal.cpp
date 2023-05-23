@@ -10,6 +10,10 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
  Readonly_Journal(file),
  current_commit_level(Commit_Level::no_commit)
 {
+ if (file.get_mode() == Open_Mode::read_existing)
+ {
+  throw Exception("Cannot create Writable_Journal with read-only file");
+ }
  if (file.get_mode() == Open_Mode::create_new)
  {
   file.write<uint8_t>('j');
