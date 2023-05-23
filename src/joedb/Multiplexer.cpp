@@ -7,10 +7,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::initializer_list<std::reference_wrapper<Writable>> initializer_list
- )
+ ):
+  writables(initializer_list)
  {
-  for (auto writable: initializer_list)
-   writables.emplace_back(writable);
  }
 
  #define MULTIPLEX(x) do {for (auto w: writables) w.get().x;} while(0)

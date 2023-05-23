@@ -14,7 +14,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::vector<std::reference_wrapper<Writable>> writables;
+   const std::vector<std::reference_wrapper<Writable>> writables;
 
   public:
    Multiplexer
