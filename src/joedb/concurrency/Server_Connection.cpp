@@ -313,7 +313,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
   channel(channel),
   log(log),
-  buffer(buffer_size),
   session_id(-1)
  {
  }

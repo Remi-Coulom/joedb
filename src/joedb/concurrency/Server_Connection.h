@@ -21,7 +21,7 @@ namespace joedb
    std::ostream *log;
 
    enum {buffer_size = (1 << 13)};
-   std::vector<char> buffer;
+   std::array<char, buffer_size> buffer;
 
    int64_t session_id;
    std::condition_variable condition;
