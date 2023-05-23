@@ -45,8 +45,7 @@ namespace joedb
    )
    {
     processors.emplace_back(*static_cast<Command_Processor *>(this));
-    for (auto &processor: list)
-     processors.emplace_back(processor);
+    processors.insert(processors.end(), list.begin(), list.end());
    }
 
    void set_echo(bool new_echo) {echo = new_echo;}
