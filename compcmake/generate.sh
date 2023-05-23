@@ -76,3 +76,12 @@ echo arm_gcc_path=$arm_gcc_path
 if [ "$arm_gcc_path" != "" ]; then
  generate arm_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=`dirname "$0"`/arm.toolchain.cmake
 fi
+
+echo
+echo =======================================================================
+mingw32_path=`which x86_64-w64-mingw32-c++`
+echo mingw32_path=$mingw32_path
+
+if [ "$mingw32_path" != "" ]; then
+ generate mingw32_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=`dirname "$0"`/mingw32.toolchain.cmake
+fi
