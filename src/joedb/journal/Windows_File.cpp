@@ -61,11 +61,8 @@ namespace joedb
 
   std::string error((const char *)buffer);
   LocalFree(buffer);
-  error.erase
-  (
-   std::find_if_not(error.rbegin(), error.rend(), std::isspace).base(),
-   error.end()
-  );
+  while (!error.empty() && std::isspace(error.back()))
+   error.pop_back();
 
   throw Exception
   (

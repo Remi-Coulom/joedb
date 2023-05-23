@@ -6,23 +6,25 @@ find_package(Threads REQUIRED)
 
 # Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set(ASIO_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../submodules/asio/asio/include)
-if (TRUE)
- if (EXISTS "${ASIO_DIRECTORY}/asio/ts/net.hpp")
-  message("-- Found asio in submodules")
-  include_directories(${ASIO_DIRECTORY})
-  add_definitions(-DJOEDB_HAS_ASIO_NET)
-  set(HAS_NETWORKING TRUE)
+if(NOT ${CMAKE_CROSSCOMPILING})
+ set(ASIO_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../submodules/asio/asio/include)
+ if (TRUE)
+  if (EXISTS "${ASIO_DIRECTORY}/asio/ts/net.hpp")
+   message("-- Found asio in submodules")
+   include_directories(${ASIO_DIRECTORY})
+   add_definitions(-DJOEDB_HAS_ASIO_NET)
+   set(HAS_NETWORKING TRUE)
 
-  if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-   add_definitions(-D_WIN32_WINNT=0x0601)
-   add_definitions(-D__USE_W32_SOCKETS)
+   if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+    add_definitions(-D_WIN32_WINNT=0x0601)
+    add_definitions(-D__USE_W32_SOCKETS)
+   endif()
+
+   message("== networking OK")
+
+  else()
+   message("== no networking. Try git submodule update --init --recursive")
   endif()
-
-  message("== networking OK")
-
- else()
-  message("== no networking. Try git submodule update --init --recursive")
  endif()
 endif()
 

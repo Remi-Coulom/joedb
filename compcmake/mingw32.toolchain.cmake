@@ -1,4 +1,5 @@
 #sudo apt install mingw-w64 mingw-w64-tools binutils-mingw-w64
+#export WINEPATH="/usr/x86_64-w64-mingw32/lib;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
 
 set(CMAKE_SYSTEM_NAME Windows)
 set(TOOLCHAIN_PREFIX x86_64-w64-mingw32)
