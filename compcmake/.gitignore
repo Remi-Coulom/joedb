@@ -5,3 +5,4 @@ out
 clang_*
 gcc_*
 arm_*
+mingw32_*
