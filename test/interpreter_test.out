@@ -107,6 +107,7 @@ Journal
  comment "<comment_string>"
  valid_data
  checkpoint
+ abort
  blob <data_string>
 
 Data definition
