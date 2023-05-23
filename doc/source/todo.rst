@@ -120,6 +120,7 @@ Concurrency
 
   - use coroutines
   - support running on multiple threads (requires mutex?)
+  - write log to a joedb file?
 
     - OK to keep one thread busy when waiting for a lock, or computing SHA 256, ...
     - thread_count = max(core_count, 2 * server_count)
