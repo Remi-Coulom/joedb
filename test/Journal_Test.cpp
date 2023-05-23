@@ -18,6 +18,7 @@ TEST(Journal, checkpoint)
  {
   joedb::Writable_Journal journal(file);
 
+  journal.append();
   journal.create_table("person");
   journal.checkpoint(joedb::Commit_Level::no_commit);
  }

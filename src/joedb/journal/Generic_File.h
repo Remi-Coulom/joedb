@@ -67,7 +67,9 @@ namespace joedb
    void putc(char c)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(read_buffer_size == 0 && !end_of_file);
+    JOEDB_ASSERT(read_buffer_size == 0);
+    JOEDB_ASSERT(!end_of_file);
+
     buffer[write_buffer_index++] = c;
     position++;
    }
@@ -362,6 +364,7 @@ namespace joedb
     mode = new_mode;
    }
 
+   virtual bool supports_locking() const noexcept;
    virtual void shared_lock();
    virtual void exclusive_lock();
    virtual void unlock();

@@ -105,7 +105,14 @@ joedb::Readonly_Journal::Readonly_Journal
  record_of_last_operation(0),
  field_of_last_update(0)
 {
- if (file.is_shared())
+ if
+ (
+  file.is_shared() ||
+  (
+   file.get_mode() == Open_Mode::read_existing &&
+   file.supports_locking()
+  )
+ )
  {
   file.shared_transaction([ignore_errors, this]()
   {

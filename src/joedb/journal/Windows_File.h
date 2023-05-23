@@ -40,6 +40,7 @@ namespace joedb
    {
    }
 
+   bool supports_locking() const noexcept final;
    void shared_lock() final;
    void exclusive_lock() final;
    void unlock() final;
