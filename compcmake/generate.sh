@@ -79,7 +79,7 @@ fi
 
 echo
 echo =======================================================================
-mingw32_path=`which x86_64-w64-mingw32-c++`
+mingw32_path=`which x86_64-w64-mingw32-g++-posix`
 echo mingw32_path=$mingw32_path
 
 if [ "$mingw32_path" != "" ]; then
