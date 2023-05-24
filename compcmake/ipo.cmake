@@ -1,8 +1,10 @@
 #############################################################################
 # IPO
 #############################################################################
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ipo_supported)
+if (POLICY CMP0069)
+ include(CheckIPOSupported)
+ check_ipo_supported(RESULT ipo_supported)
+endif()
 
 if (ipo_supported)
  message("-- IPO supported")

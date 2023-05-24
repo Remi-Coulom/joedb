@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0069 NEW)
+if (POLICY CMP0069)
+ cmake_policy(SET CMP0069 NEW)
+endif()
 
 file(STRINGS "../VERSION" QUOTED_JOEDB_VERSION)
 string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
