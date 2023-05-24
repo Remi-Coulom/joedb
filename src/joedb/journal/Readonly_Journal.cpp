@@ -104,7 +104,15 @@ joedb::Readonly_Journal::Readonly_Journal
  record_of_last_operation(0),
  field_of_last_update(0)
 {
- construct(check);
+ if (file.is_shared())
+ {
+  file.shared_transaction([this, check]()
+  {
+   construct(check);
+  });
+ }
+ else
+  construct(check);
 }
 
 /////////////////////////////////////////////////////////////////////////////
