@@ -1,2 +1,2 @@
 #!/bin/bash
-cmake --install . --component Runtime
+cmake --install . --component bin
