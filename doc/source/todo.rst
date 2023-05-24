@@ -112,24 +112,21 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
-- Lock objects (file + connection). Make file unlocking nothrow? That would simplify a lot.
-- Test many concurrent read and write requests. Performance benchmarks.
-
 - joedb_server:
 
+  - Ability to serve a readonly journal
+  - Test many concurrent read and write requests. Performance benchmarks.
+  - fuzzer + unit testing
   - use coroutines
   - support running on multiple threads (requires mutex?)
-  - write log to a joedb file?
 
     - OK to keep one thread busy when waiting for a lock, or computing SHA 256, ...
     - thread_count = max(core_count, 2 * server_count)
     - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
-  - use a journal-only client instead of directly manipulating a journal
   - indicate commit level for a push
   - allow timeout in the middle of a push.
-  - don't use a big push buffer. Push to the file directly?
-  - fuzzer + unit testing
+  - don't use a big push buffer? There is not way to truncate a file. Will leave garbage in case of error. Splitting pushes on the client side to limit size seems like the best option.
 
 - performance: fuse socket writes. Fused operations can be produced by fusing
   writes. Lock-pull and push-unlock could have be done this way.
@@ -140,7 +137,7 @@ Concurrency
   - when the server is interrupted
   - ping
 
-- Readonly_Client, Readonly_Server
+- Lock objects (file + connection) necessary for joedb_admin? Make file unlocking nothrow? That would simplify a lot.
 - server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
 - ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
 - reading and writing buffers: don't use network_integers.h, but create a
