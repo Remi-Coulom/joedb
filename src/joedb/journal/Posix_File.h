@@ -56,7 +56,6 @@ namespace joedb
    }
 
    int64_t raw_get_size() const final;
-   bool supports_locking() const noexcept final;
    void shared_lock() final;
    void exclusive_lock() final;
    void unlock() final;

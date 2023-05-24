@@ -364,7 +364,6 @@ namespace joedb
     mode = new_mode;
    }
 
-   virtual bool supports_locking() const noexcept;
    virtual void shared_lock();
    virtual void exclusive_lock();
    virtual void unlock();
