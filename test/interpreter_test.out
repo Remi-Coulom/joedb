@@ -106,6 +106,7 @@ Journal
  timestamp [<stamp>] (if no value is given, use current time)
  comment "<comment_string>"
  valid_data
+ flush
  checkpoint
  abort
  blob <data_string>
