@@ -43,6 +43,7 @@ namespace joedb
    virtual void comment(const std::string &comment) {}
    virtual void timestamp(int64_t timestamp) {}
    virtual void valid_data() {}
+   virtual void flush() {}
    virtual void checkpoint(Commit_Level commit_level) {}
 
    virtual void insert_into(Table_Id table_id, Record_Id record_id) {}

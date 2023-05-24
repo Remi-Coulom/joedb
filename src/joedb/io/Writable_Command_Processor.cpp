@@ -22,6 +22,7 @@ namespace joedb
    out << " timestamp [<stamp>] (if no value is given, use current time)\n";
    out << " comment \"<comment_string>\"\n";
    out << " valid_data\n";
+   out << " flush\n";
    out << " checkpoint\n";
    out << " abort\n";
    out << " blob <data_string>\n";
@@ -45,6 +46,10 @@ namespace joedb
   else if (command == "valid_data") ////////////////////////////////////////
   {
    writable.valid_data();
+  }
+  else if (command == "flush") /////////////////////////////////////////////
+  {
+   writable.flush();
   }
   else if (command == "checkpoint") ////////////////////////////////////////
   {

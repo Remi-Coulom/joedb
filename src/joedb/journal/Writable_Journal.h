@@ -71,8 +71,9 @@ namespace joedb
    }
 
    int64_t ahead_of_checkpoint() const noexcept;
+
+   void flush() final {file.flush();}
    void checkpoint(Commit_Level commit_level) final;
-   void flush() {file.flush();}
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;
