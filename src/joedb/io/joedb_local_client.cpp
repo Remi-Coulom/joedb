@@ -1,5 +1,6 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/main_exception_catcher.h"
+#include "joedb/io/client_main.h"
 #include "joedb/concurrency/Local_Connection.h"
 
 namespace joedb
@@ -24,7 +25,7 @@ namespace joedb
  static int main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return Local_Connection_Builder().main(argc, argv);
+  return client_main(argc, argv, Local_Connection_Builder());
  }
 }
 

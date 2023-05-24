@@ -1,5 +1,6 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/main_exception_catcher.h"
+#include "joedb/io/client_main.h"
 #include "joedb/concurrency/Embedded_Connection.h"
 #include "joedb/journal/File.h"
 
@@ -45,7 +46,7 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  return Embedded_Connection_Builder().main(argc, argv);
+  return client_main(argc, argv, Embedded_Connection_Builder());
  }
 }
 

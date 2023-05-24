@@ -1,25 +1,26 @@
+#include "joedb/io/client_main.h"
 #include "joedb/io/Connection_Builder.h"
+#include "joedb/io/Client_Command_Processor.h"
+#include "joedb/journal/File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/concurrency/Journal_Client_Data.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/journal/File.h"
-#include "joedb/journal/Memory_File.h"
-#include "joedb/io/run_client_interpreter.h"
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- int Connection_Builder::main(int argc, char **argv)
+ int client_main(int argc, char **argv, Connection_Builder &&builder)
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 1;
   bool nodb = false;
-  bool shared = get_default_sharing();
+  bool shared = builder.get_default_sharing();
 
-  if (has_sharing_option())
+  if (builder.has_sharing_option())
   {
    if (arg_index < argc && std::strcmp(argv[arg_index], "--shared") == 0)
    {
@@ -38,15 +39,15 @@ namespace joedb
 
   if
   (
-   parameters < get_min_parameters() ||
-   parameters > get_max_parameters()
+   parameters < builder.get_min_parameters() ||
+   parameters > builder.get_max_parameters()
   )
   {
    std::cerr << "usage: " << argv[0];
-   if (has_sharing_option())
+   if (builder.has_sharing_option())
     std::cerr << " [--shared]";
    std::cerr << " [--nodb] <client_file_name> ";
-   std::cerr << get_parameters_description() << '\n';
+   std::cerr << builder.get_parameters_description() << '\n';
    return 1;
   }
   else
@@ -88,7 +89,7 @@ namespace joedb
    std::cout << "Creating connection... ";
    std::cout.flush();
 
-   std::unique_ptr<Connection> connection = build
+   std::unique_ptr<Connection> connection = builder.build
    (
     argc - arg_index,
     argv + arg_index
@@ -98,7 +99,25 @@ namespace joedb
 
    Client client(*client_data, *connection);
 
-   run_client_interpreter(client);
+   const int64_t diff = client.get_checkpoint_difference();
+ 
+   if (diff > 0)
+    std::cout << "You can push " << diff << " bytes.\n";
+   else if (diff < 0)
+    std::cout << "You can pull " << -diff << " bytes.\n";
+   else
+    std::cout << "Client data is in sync with the connection.\n";
+ 
+   Client_Command_Processor processor(client);
+   Command_Interpreter interpreter{processor};
+   interpreter.set_prompt(true);
+ 
+   if (nodb)
+    interpreter.set_prompt_string("joedb_client(nodb)");
+   else
+    interpreter.set_prompt_string("joedb_client");
+ 
+   interpreter.main_loop(std::cin, std::cout);
   }
 
   return 0;

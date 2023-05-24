@@ -1,5 +1,6 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/main_exception_catcher.h"
+#include "joedb/io/client_main.h"
 #include "joedb/concurrency/SSH_Server_Connection.h"
 
 namespace joedb
@@ -45,7 +46,7 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  return SSH_Connection_Builder().main(argc, argv);
+  return client_main(argc, argv, SSH_Connection_Builder());
  }
 }
 

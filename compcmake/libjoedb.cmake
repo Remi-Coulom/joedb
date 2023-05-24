@@ -30,7 +30,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/dump.cpp
  ${JOEDB_SRC_DIR}/joedb/io/inplace_pack.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Command_Interpreter.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Connection_Builder.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Client_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Readable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Writable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Readable_Writable_Command_Processor.cpp
@@ -41,7 +41,8 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
  ${JOEDB_SRC_DIR}/joedb/io/print_date.cpp
- ${JOEDB_SRC_DIR}/joedb/io/run_client_interpreter.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/client_main.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp
