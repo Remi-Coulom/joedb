@@ -5,14 +5,10 @@
 
 namespace joedb
 {
- class Client;
-
  ////////////////////////////////////////////////////////////////////////////
  class Connection
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Client;
-
   protected:
    void content_mismatch()
    {
@@ -31,7 +27,7 @@ namespace joedb
      throw Exception("File cannot be shared");
    }
 
-  private:
+  public:
    virtual int64_t handshake(Readonly_Journal &client_journal)
    {
     check_not_shared(client_journal);
@@ -61,7 +57,6 @@ namespace joedb
    {
    }
 
-  public:
    virtual ~Connection() = default;
  };
 }

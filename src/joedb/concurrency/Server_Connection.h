@@ -16,7 +16,7 @@ namespace joedb
  class Server_Connection: public Connection, public Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
+  public:
    Thread_Safe_Channel channel;
    std::ostream *log;
 
