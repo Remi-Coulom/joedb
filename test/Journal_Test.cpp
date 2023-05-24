@@ -2,6 +2,7 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
+#include "joedb/journal/File.h"
 #include "joedb/interpreter/Database.h"
 #include "gtest/gtest.h"
 
@@ -233,4 +234,78 @@ TEST(Journal, unexpected_operation)
  {
   EXPECT_STREQ(e.what(), "Unexpected operation: file.get_position() = 42");
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, refresh_checkpoint)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file_1("test.joedb", joedb::Open_Mode::shared_write);
+  joedb::File file_2("test.joedb", joedb::Open_Mode::shared_write);
+
+  joedb::Writable_Journal journal_1(file_1);
+  joedb::Writable_Journal journal_2(file_2);
+
+  journal_1.valid_data();
+  journal_1.checkpoint(joedb::Commit_Level::no_commit);
+
+  EXPECT_TRUE
+  (
+   journal_1.get_checkpoint_position() > journal_2.get_checkpoint_position()
+  );
+
+  journal_2.refresh_checkpoint();
+
+  EXPECT_TRUE
+  (
+   journal_1.get_checkpoint_position() == journal_2.get_checkpoint_position()
+  );
+ }
+
+ std::remove("test.joedb");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, checkpoint_performance)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+  joedb::Writable_Journal journal(file);
+
+  for (int i = 10000; --i >= 0;)
+  {
+   journal.valid_data();
+   journal.checkpoint(joedb::Commit_Level::no_commit);
+  }
+ }
+
+ std::remove("test.joedb");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, refresh_performance)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+  joedb::Writable_Journal journal(file);
+
+  for (int i = 10000; --i >= 0;)
+   journal.valid_data();
+
+  journal.checkpoint(joedb::Commit_Level::no_commit);
+
+  for (int i = 10000; --i >= 0;)
+   journal.refresh_checkpoint();
+ }
+
+ std::remove("test.joedb");
 }
