@@ -45,7 +45,14 @@ namespace joedb
   const char *output_file_name = argv[arg_index + 1];
 
   File input_file(input_file_name, Open_Mode::read_existing);
-  Readonly_Journal input_journal(input_file, ignore_errors);
+
+  Readonly_Journal input_journal
+  (
+   input_file,
+   ignore_errors ?
+    Readonly_Journal::Check::none :
+    Readonly_Journal::Check::all
+  );
 
   File output_file(output_file_name, Open_Mode::create_new);
   Writable_Journal output_journal(output_file);

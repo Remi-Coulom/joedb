@@ -204,7 +204,7 @@ TEST(Polymorphic_File, File_Slice)
 
  {
   joedb::File file(file_name, joedb::Open_Mode::write_existing);
-  EXPECT_ANY_THROW(joedb::Readonly_Journal journal(file));
+  EXPECT_ANY_THROW(joedb::Writable_Journal journal(file));
   file.set_slice(0, 60);
   polymorphic_journal_readonly_test(file);
  }

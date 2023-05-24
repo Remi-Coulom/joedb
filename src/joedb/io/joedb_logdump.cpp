@@ -76,7 +76,16 @@ static int joedb_logdump_main(int argc, char **argv)
 
    try
    {
-    journal.reset(new joedb::Readonly_Journal(file, ignore_errors));
+    journal.reset
+    (
+     new joedb::Readonly_Journal
+     (
+      file,
+      ignore_errors ?
+       joedb::Readonly_Journal::Check::none :
+       joedb::Readonly_Journal::Check::all
+     )
+    );
    }
    catch (const joedb::Exception &e)
    {

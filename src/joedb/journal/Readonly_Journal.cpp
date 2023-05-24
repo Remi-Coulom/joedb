@@ -24,15 +24,9 @@ void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::construct(bool ignore_errors)
+void joedb::Readonly_Journal::construct(Check check)
 /////////////////////////////////////////////////////////////////////////////
 {
- auto format_exception = [ignore_errors](const char *message)
- {
-  if (!ignore_errors)
-   throw Exception(message);
- };
-
  file.set_position(0);
 
  //
@@ -49,7 +43,8 @@ void joedb::Readonly_Journal::construct(bool ignore_errors)
       file.read<uint8_t>() != 'd' ||
       file.read<uint8_t>() != 'b')
   {
-   format_exception("File does not start by 'joedb'");
+   if (check_flag(check, Check::joedb))
+    throw Exception("File does not start by 'joedb'");
   }
   else
   {
@@ -57,8 +52,12 @@ void joedb::Readonly_Journal::construct(bool ignore_errors)
    // Check version number
    //
    file_version = file.read<uint32_t>();
-   if (file_version < compatible_version || file_version > version_number)
-    format_exception("Unsupported format version");
+
+   if (check_flag(check, Check::version))
+   {
+    if (file_version < compatible_version || file_version > version_number)
+     throw Exception("Unsupported format version");
+   }
 
    checkpoint_position = header_size;
    read_checkpoint(true);
@@ -70,11 +69,11 @@ void joedb::Readonly_Journal::construct(bool ignore_errors)
 
    if (file_size > 0)
    {
-    if (ignore_errors)
+    if (check_flag(check, Check::set_checkpoint))
      checkpoint_position = file_size;
     else
     {
-     if (file_size > checkpoint_position)
+     if (check_flag(check, Check::big_size) && file_size > checkpoint_position)
       throw Exception
       (
        "Checkpoint is smaller than file size. "
@@ -82,7 +81,7 @@ void joedb::Readonly_Journal::construct(bool ignore_errors)
        "joedb_convert can be used to fix it."
       );
 
-     if (file_size < checkpoint_position)
+     if (check_flag(check, Check::small_size) && file_size < checkpoint_position)
       throw Exception("Checkpoint is bigger than file size");
     }
    }
@@ -95,7 +94,7 @@ joedb::Readonly_Journal::Readonly_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
  Generic_File &file,
- bool ignore_errors
+ Check check
 ):
  file(file),
  file_version(0),
@@ -105,22 +104,7 @@ joedb::Readonly_Journal::Readonly_Journal
  record_of_last_operation(0),
  field_of_last_update(0)
 {
- if
- (
-  file.is_shared() ||
-  (
-   file.get_mode() == Open_Mode::read_existing &&
-   file.supports_locking()
-  )
- )
- {
-  file.shared_transaction([ignore_errors, this]()
-  {
-   construct(ignore_errors);
-  });
- }
- else
-  construct(ignore_errors);
+ construct(check);
 }
 
 /////////////////////////////////////////////////////////////////////////////

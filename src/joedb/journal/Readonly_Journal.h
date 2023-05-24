@@ -12,6 +12,24 @@ namespace joedb
  class Readonly_Journal: public Blob_Reader
  ////////////////////////////////////////////////////////////////////////////
  {
+  public:
+   enum class Check
+   {
+    joedb = 1,
+    version = 2,
+    big_size = 4,
+    small_size = 8,
+    set_checkpoint = 16,
+    all = joedb | version | big_size | small_size,
+    readonly = joedb | version | small_size,
+    none = set_checkpoint
+   };
+
+   static bool check_flag(Check check, Check flag)
+   {
+    return static_cast<int>(check) & static_cast<int>(flag);
+   }
+
   private:
    void read_checkpoint(bool strict);
 
@@ -19,7 +37,7 @@ namespace joedb
    void perform_update_##type_id(Writable &writable);
    #include "joedb/TYPE_MACRO.h"
 
-   void construct(bool ignore_errors);
+   void construct(Check check);
 
   protected:
    Generic_File &file;
@@ -70,7 +88,8 @@ namespace joedb
    };
 
   public:
-   explicit Readonly_Journal(Generic_File &file, bool ignore_errors = false);
+
+   explicit Readonly_Journal(Generic_File &file, Check check = Check::readonly);
 
    uint32_t get_file_version() const {return file_version;}
    bool at_end_of_file() const;

@@ -92,7 +92,7 @@ TEST(Journal, does_not_start_by_joedb)
  }
 
  file.set_position(0);
- joedb::Readonly_Journal journal(file, true);
+ joedb::Readonly_Journal journal(file, joedb::Readonly_Journal::Check::none);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -188,9 +188,13 @@ TEST(Journal, checkpoint_different_from_file_size)
  file.write<uint64_t>(0);
  file.set_position(0);
 
- try
  {
   joedb::Readonly_Journal journal(file);
+ }
+
+ try
+ {
+  joedb::Writable_Journal journal(file);
   FAIL() << "Should have thrown an exception";
  }
  catch (const joedb::Exception &e)

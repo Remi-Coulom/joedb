@@ -20,16 +20,13 @@ namespace joedb
   else
   {
    const char * const file_name = argv[1];
-
    File file(file_name, Open_Mode::read_existing);
-
-   std::cerr << "Opening " << file_name << "... ";
    Readonly_Journal journal(file);
    Interpreter_Dump_Writable dump(std::cout);
+
    dump.set_muted(true);
    journal.replay_log(dump);
    dump.set_muted(false);
-   std::cerr << "OK\n";
 
    while (true)
    {

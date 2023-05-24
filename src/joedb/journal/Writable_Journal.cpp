@@ -7,7 +7,7 @@
 /////////////////////////////////////////////////////////////////////////////
 joedb::Writable_Journal::Writable_Journal(Generic_File &file):
 /////////////////////////////////////////////////////////////////////////////
- Readonly_Journal(file),
+ Readonly_Journal(file, Check::all),
  current_commit_level(Commit_Level::no_commit)
 {
  if (file.get_mode() == Open_Mode::read_existing)
