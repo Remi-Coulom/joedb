@@ -114,7 +114,6 @@ Concurrency
 
 - Lock objects (file + connection). Make file unlocking nothrow? That would simplify a lot.
 - Test many concurrent read and write requests. Performance benchmarks.
-- File-locking benchmarks
 
 - joedb_server:
 

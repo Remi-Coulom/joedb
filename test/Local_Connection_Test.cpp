@@ -143,3 +143,18 @@ TEST(Local_Connection, dummy_connection)
 
  EXPECT_TRUE(file.get_size() > 0);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Local_Connection, transaction_frequency)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
+  for (int i = 10000; --i >= 0;)
+   file.exclusive_transaction([](){});
+ }
+
+ std::remove("test.joedb");
+}
