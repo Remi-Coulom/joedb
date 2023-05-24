@@ -166,7 +166,7 @@ namespace joedb
   else if (diff < 0)
    std::cout << "You can pull " << -diff << " bytes.\n";
   else
-   std::cout << "You are in sync with the server.\n";
+   std::cout << "Client data is in sync with the connection.\n";
 
   Client_Command_Processor processor(client);
   Command_Interpreter interpreter{processor};
