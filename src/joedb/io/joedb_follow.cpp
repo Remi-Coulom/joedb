@@ -55,7 +55,7 @@ namespace joedb
      builder.reset(new Network_Connection_Builder());
     }
 
-    if (builder == 0)
+    if (builder == nullptr)
     {
      std::cerr << "Error: Unknown connection type: " << type << '\n';
      return 1;
