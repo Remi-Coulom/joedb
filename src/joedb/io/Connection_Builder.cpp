@@ -19,12 +19,6 @@ namespace joedb
   bool nodb = false;
   bool shared = get_default_sharing();
 
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
-  {
-   nodb = true;
-   arg_index++;
-  }
-
   if (has_sharing_option())
   {
    if (arg_index < argc && std::strcmp(argv[arg_index], "--shared") == 0)
@@ -32,6 +26,12 @@ namespace joedb
     shared = true;
     arg_index++;
    }
+  }
+
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
+  {
+   nodb = true;
+   arg_index++;
   }
 
   const int parameters = argc - arg_index - 1;
