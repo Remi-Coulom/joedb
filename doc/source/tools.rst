@@ -140,37 +140,13 @@ And the main server would be like this:
 .. literalinclude:: ../../test/server_with_backup.joedbi
    :language: joedbi
 
-.. _joedb_local_client:
+.. _joedb_client:
 
-``joedb_local_client``
-----------------------
+``joedb_client``
+----------------
 
-.. literalinclude:: ./tutorial/joedb_local_client.out
+.. literalinclude:: ./tutorial/joedb_client.out
    :language: none
-
-Serverless concurrent connection to a local file.
-
-.. _joedb_network_client:
-
-``joedb_network_client``
-------------------------
-
-.. literalinclude:: ./tutorial/joedb_network_client.out
-   :language: none
-
-Connect to a :ref:`joedb_server`.
-
-.. _joedb_ssh_client:
-
-``joedb_ssh_client``
---------------------
-
-.. literalinclude:: ./tutorial/joedb_ssh_client.out
-   :language: none
-
-Connect to a :ref:`joedb_server` via ssh.
-
-.. _joedb_embed:
 
 .. _joedb_follow:
 
@@ -181,6 +157,8 @@ Connect to a :ref:`joedb_server` via ssh.
    :language: none
 
 Monitor changes to a local shared file.
+
+.. _joedb_embed:
 
 ``joedb_embed``
 ---------------

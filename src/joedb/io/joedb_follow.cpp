@@ -3,6 +3,7 @@
 #include "joedb/io/Connection_Parser.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Readonly_Journal.h"
+#include "joedb/concurrency/Connection.h"
 
 #include <thread>
 #include <chrono>

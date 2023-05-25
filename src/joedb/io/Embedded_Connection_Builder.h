@@ -1,6 +1,7 @@
+#ifndef joedb_Embedded_Connection_Builder_declared
+#define joedb_Embedded_Connection_Builder_declared
+
 #include "joedb/io/Connection_Builder.h"
-#include "joedb/io/main_exception_catcher.h"
-#include "joedb/io/client_main.h"
 #include "joedb/concurrency/Embedded_Connection.h"
 #include "joedb/journal/File.h"
 
@@ -23,6 +24,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   public:
+   const char *get_name() const final {return "embedded";}
    int get_min_parameters() const final {return 1;}
    int get_max_parameters() const final {return 1;}
 
@@ -41,18 +43,6 @@ namespace joedb
     );
    }
  };
-
- /////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
- /////////////////////////////////////////////////////////////////////////////
- {
-  return client_main(argc, argv, Embedded_Connection_Builder());
- }
 }
 
-/////////////////////////////////////////////////////////////////////////////
-int main(int argc, char **argv)
-/////////////////////////////////////////////////////////////////////////////
-{
- return joedb::main_exception_catcher(joedb::main, argc, argv);
-}
+#endif

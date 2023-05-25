@@ -66,7 +66,7 @@ joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
 joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
 joedb_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
 joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
-joedb_add_executable(joedb_dummy_client ../src/joedb/io/joedb_dummy_client.cpp)
+joedb_add_executable(joedb_client ../src/joedb/io/joedb_client.cpp)
 joedb_add_executable(joedb_follow ../src/joedb/io/joedb_follow.cpp)
 
 ipo_add_executable(joedb_convert
@@ -150,16 +150,6 @@ endif()
 
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
-joedb_add_executable(joedb_embedded_client
- ../src/joedb/io/joedb_embedded_client.cpp
-)
-
-if (NOT DEFINED JOEDB_PORTABLE)
- joedb_add_executable(joedb_local_client
-  ../src/joedb/io/joedb_local_client.cpp
- )
-endif()
-
 if (HAS_NETWORKING)
  joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
 
@@ -170,16 +160,6 @@ if (HAS_NETWORKING)
    ../src/joedb/db/multi_server_interpreted.cpp
   )
  endif()
-
- joedb_add_executable(joedb_network_client
-  ../src/joedb/io/joedb_network_client.cpp
- )
-endif()
-
-if (libssh_FOUND)
- joedb_add_executable(joedb_ssh_client
-  ../src/joedb/io/joedb_ssh_client.cpp
- )
 endif()
 
 joedbc_build(../test/compiler/db test)
@@ -299,15 +279,9 @@ install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT bin)
+install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_follow RUNTIME DESTINATION bin COMPONENT bin)
-if (NOT JOEDB_PORTABLE)
- install(TARGETS joedb_local_client RUNTIME DESTINATION bin COMPONENT bin)
-endif()
-if(libssh_FOUND)
- install(TARGETS joedb_ssh_client RUNTIME DESTINATION bin COMPONENT bin)
-endif()
 if (HAS_NETWORKING)
- install(TARGETS joedb_network_client RUNTIME DESTINATION bin COMPONENT bin)
  install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
  if (libssh_FOUND)
   install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)

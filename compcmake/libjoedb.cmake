@@ -41,7 +41,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
  ${JOEDB_SRC_DIR}/joedb/io/print_date.cpp
- ${JOEDB_SRC_DIR}/joedb/io/client_main.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Connection_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp

@@ -47,6 +47,13 @@ namespace joedb
    else
     try_open(file_name, Open_Mode::create_new);
   }
+  else if (mode == Open_Mode::shared_write)
+  {
+   throw Exception
+   (
+    std::string(file_name) + ": Portable_File does not support shared_write"
+   );
+  }
   else
    try_open(file_name, mode);
 
