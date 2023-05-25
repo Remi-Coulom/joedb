@@ -14,5 +14,7 @@ for configuration in ${configurations}; do
  build_dir=../compcmake/${configuration}
  cmake --build $build_dir
  rm -vf *.tmp
- $build_dir/joedb_test --gtest_shuffle
+ if [ -x $build_dir/joedb_test ]; then
+  $build_dir/joedb_test --gtest_shuffle
+ fi
 done

@@ -22,16 +22,21 @@
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Connection_Parser::Connection_Parser()
+ Connection_Parser::Connection_Parser(bool local)
  //////////////////////////////////////////////////////////////////////////
  {
   builders.emplace_back(new Dump_Connection_Builder());
-  builders.emplace_back(new Dummy_Connection_Builder());
-  builders.emplace_back(new Embedded_Connection_Builder());
+  builders.emplace_back(new Tail_Connection_Builder());
 
+  if (local)
+  {
+   builders.emplace_back(new Dummy_Connection_Builder());
 #ifdef JOEDB_FILE_IS_LOCKABLE
-  builders.emplace_back(new Local_Connection_Builder());
+   builders.emplace_back(new Local_Connection_Builder());
 #endif
+  }
+
+  builders.emplace_back(new Embedded_Connection_Builder());
 
 #ifdef JOEDB_HAS_ASIO_NET
   builders.emplace_back(new Network_Connection_Builder());
@@ -109,22 +114,16 @@ namespace joedb
   char **argv
  ) const
  {
-  const char *name;
-
-  if (argc == 0)
-   name = "dump";
-  else
+  if (argc > 0)
   {
-   name = argv[0];
-   argc--;
-   argv++;
+   const char *name = argv[0];
+
+   Connection_Builder *builder = get_builder(name);
+
+   if (builder)
+    return build(*builder, argc - 1, argv + 1);
   }
 
-  Connection_Builder *builder = get_builder(name);
-
-  if (builder == nullptr)
-   return nullptr;
-  else
-   return build(*builder, argc, argv);
+  return nullptr;
  }
 }

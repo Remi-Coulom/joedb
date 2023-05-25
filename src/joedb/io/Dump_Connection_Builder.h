@@ -14,7 +14,19 @@ namespace joedb
    const char *get_name() const final {return "dump";}
    std::unique_ptr<Connection> build(int argc, char **argv) final
    {
-    return std::unique_ptr<Connection>(new Dump_Connection());
+    return std::unique_ptr<Connection>(new Dump_Connection(false));
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Tail_Connection_Builder: public Connection_Builder
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   const char *get_name() const final {return "tail";}
+   std::unique_ptr<Connection> build(int argc, char **argv) final
+   {
+    return std::unique_ptr<Connection>(new Dump_Connection(true));
    }
  };
 }

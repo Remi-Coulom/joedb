@@ -148,15 +148,35 @@ And the main server would be like this:
 .. literalinclude:: ./tutorial/joedb_client.out
    :language: none
 
-.. _joedb_follow:
+.. _joedb_push:
 
-``joedb_follow``
+``joedb_push``
 ----------------------
 
-.. literalinclude:: ./tutorial/joedb_follow.out
+.. literalinclude:: ./tutorial/joedb_push.out
    :language: none
 
-Monitor changes to a local shared file.
+Pushes a local file to a connection. For example:
+
+.. code-block:: bash
+
+    # Dump content of a file
+    joedb_push file.joedb dump
+
+.. code-block:: bash
+
+    # Truncate a file containing an aborted transaction
+    joedb_push broken.joedb embedded fixed.joedb
+
+.. code-block:: bash
+
+    # Follow additions to the end of a file
+    joedb_push --follow file.joedb tail
+
+.. code-block:: bash
+
+    # Keep a backup server updated
+    joedb_push --follow database.joedb network backup_server 1234
 
 .. _joedb_embed:
 

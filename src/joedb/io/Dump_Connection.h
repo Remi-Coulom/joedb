@@ -14,11 +14,14 @@ namespace joedb
  {
   private:
    Interpreter_Dump_Writable dump{std::cout};
+   bool muted;
 
   public:
+   Dump_Connection(bool muted): muted(muted) {}
+
    int64_t handshake(Readonly_Journal &client_journal) final
    {
-    dump.set_muted(true);
+    dump.set_muted(muted);
     client_journal.replay_log(dump);
     dump.set_muted(false);
 

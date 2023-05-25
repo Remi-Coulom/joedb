@@ -34,7 +34,7 @@ set +e
 ( cd $dir && PATH="." && joedb_server ) 2>joedb_server.out
 ( cd $dir && PATH="." && joedb_multi_server ) 2>joedb_multi_server.out
 ( cd $dir && PATH="." && joedb_client ) 2>joedb_client.out
-( cd $dir && PATH="." && joedb_follow ) 2>joedb_follow.out
+( cd $dir && PATH="." && joedb_push ) 2>joedb_push.out
 
 mkdir -p build
 cd build

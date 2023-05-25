@@ -78,7 +78,7 @@ void joedb::Readonly_Journal::construct(Check check)
       (
        "Checkpoint is smaller than file size. "
        "This file may contain an aborted transaction. "
-       "joedb_convert can be used to fix it."
+       "joedb_push can be used to fix it."
       );
 
      if (check_flag(check, Check::small_size) && file_size < checkpoint_position)

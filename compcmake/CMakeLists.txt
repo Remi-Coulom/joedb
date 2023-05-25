@@ -67,7 +67,7 @@ joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
 joedb_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
 joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
 joedb_add_executable(joedb_client ../src/joedb/io/joedb_client.cpp)
-joedb_add_executable(joedb_follow ../src/joedb/io/joedb_follow.cpp)
+joedb_add_executable(joedb_push ../src/joedb/io/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
@@ -273,14 +273,13 @@ joedb_add_executable(joedbc_insert
 #############################################################################
 install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_convert RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_follow RUNTIME DESTINATION bin COMPONENT bin)
+install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
 if (HAS_NETWORKING)
  install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
  if (libssh_FOUND)

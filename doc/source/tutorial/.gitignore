@@ -27,7 +27,7 @@ joedb_pack.out
 joedb_server.out
 joedb_multi_server.out
 joedb_client.out
-joedb_follow.out
+joedb_push.out
 local_concurrency_?.txt
 local_concurrency.joedb
 local_concurrency.joedbi
