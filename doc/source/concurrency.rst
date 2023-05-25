@@ -141,7 +141,6 @@ Backup Client
 When opening a database with joedb, the journal is read to load table data into
 memory. This is an expensive operation that is not necessary when creating a
 client whose only purpose is to store a backup replica of a remote server. In
-order to avoid this cost, all the ``joedb_*_client`` command line :doc:`tools
-<tools>` support a ``--nodb`` option that will not load table data. These tools
-provide a ``pull_every`` command that can be used for efficient periodic
-backups.
+order to avoid this cost, :ref:`joedb_client <joedb_client>` supports a
+``--nodb`` option that will not load table data. The ``pull_every`` command can
+then be used for efficient periodic backups.
