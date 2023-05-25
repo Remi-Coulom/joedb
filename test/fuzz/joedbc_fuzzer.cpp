@@ -14,7 +14,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
 #endif
   joedb::Readonly_Memory_File file(Data, Size);
-  joedb::Readonly_Journal journal(file, true);
+  joedb::Readonly_Journal journal(file, joedb::Readonly_Journal::Check::none);
   my_namespace::is_nested::test::Database db;
   db.set_max_record_id(joedb::Record_Id(journal.get_checkpoint_position()));
   journal.replay_log(db);
