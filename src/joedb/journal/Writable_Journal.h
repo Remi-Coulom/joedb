@@ -35,7 +35,7 @@ namespace joedb
    {
     private:
      Writable_Journal &journal;
-     const int64_t old_checkpoint;
+     const int64_t old_position;
      Async_Writer writer;
 
      Tail_Writer(const Tail_Writer &) = delete;
@@ -43,8 +43,8 @@ namespace joedb
     public:
      Tail_Writer(Writable_Journal &journal):
       journal(journal),
-      old_checkpoint(journal.get_checkpoint_position()),
-      writer(journal.file, old_checkpoint)
+      old_position(journal.get_position()),
+      writer(journal.file, journal.get_checkpoint_position())
      {
      }
 
@@ -57,7 +57,7 @@ namespace joedb
      {
       writer.seek();
       journal.checkpoint(Commit_Level::no_commit);
-      journal.file.set_position(old_checkpoint);
+      journal.file.set_position(old_position);
      }
    };
 
