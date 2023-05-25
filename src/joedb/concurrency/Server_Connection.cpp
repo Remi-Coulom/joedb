@@ -173,6 +173,8 @@ namespace joedb
    LOG("OK\n");
   else if (buffer[0] == 'C')
    throw Exception("Conflict: push failed");
+  else if (buffer[0] == 'R')
+   throw Exception("Server is read-only: push failed");
   else
    throw Exception("Unexpected server reply");
 

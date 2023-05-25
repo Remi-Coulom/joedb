@@ -44,6 +44,7 @@ L      checkpoint       reply to L
        data
 U                       reply to U or p when the push succeeded
 C                       reply to U or p when the push failed (conflict)
+R                       reply to U or p when the push failed (read-only)
 l                       reply to l
 u                       reply to u (no timeout)
 t                       reply to u (timeout)

@@ -239,9 +239,11 @@ namespace joedb
   {
    if (conflict)
     session->buffer[0] = 'C';
+   if (!writable_journal)
+    session->buffer[0] = 'R';
    else
    {
-    journal.append_raw_tail(push_buffer.data(), offset);
+    writable_journal->append_raw_tail(push_buffer.data(), offset);
     session->buffer[0] = 'U';
    }
 
@@ -270,7 +272,7 @@ namespace joedb
 
    const bool conflict = (size != 0) &&
    (
-    start != journal.get_checkpoint_position() ||
+    start != readonly_journal.get_checkpoint_position() ||
     (locked && session->state != Session::State::locking)
    );
 
@@ -360,7 +362,10 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
 
-   Async_Reader reader = journal.get_tail_reader(checkpoint);
+   if (!writable_journal)
+    readonly_journal.refresh_checkpoint();
+
+   Async_Reader reader = readonly_journal.get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
@@ -421,8 +426,8 @@ namespace joedb
 
    if
    (
-    checkpoint > journal.get_checkpoint_position() ||
-    journal.get_hash(checkpoint) != hash
+    checkpoint > readonly_journal.get_checkpoint_position() ||
+    readonly_journal.get_hash(checkpoint) != hash
    )
    {
     session->buffer[0] = 'h';
@@ -595,7 +600,11 @@ namespace joedb
   }
 
   to_network(session->id, session->buffer + 5 + 8);
-  to_network(journal.get_checkpoint_position(), session->buffer + 5 + 8 + 8);
+  to_network
+  (
+   readonly_journal.get_checkpoint_position(),
+   session->buffer + 5 + 8 + 8
+  );
 
   write_buffer_and_next_command(session, 5 + 8 + 8 + 8);
  }
@@ -777,13 +786,14 @@ namespace joedb
  Server::Server
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Writable_Journal &journal,
+  joedb::Readonly_Journal &journal,
   net::io_context &io_context,
   uint16_t port,
   uint32_t lock_timeout_seconds,
   std::ostream *log_pointer
  ):
-  journal(journal),
+  readonly_journal(journal),
+  writable_journal(dynamic_cast<Writable_Journal *>(&journal)),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
