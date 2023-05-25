@@ -3,8 +3,9 @@
 #include "joedb/io/Dump_Connection_Builder.h"
 #include "joedb/io/Dummy_Connection_Builder.h"
 #include "joedb/io/Embedded_Connection_Builder.h"
+#include "joedb/journal/File.h"
 
-#ifndef JOEDB_FILE_IS_PORTABLE_FILE
+#ifdef JOEDB_FILE_IS_LOCKABLE
 #include "joedb/io/Local_Connection_Builder.h"
 #endif
 
@@ -16,6 +17,8 @@
 #include "joedb/io/SSH_Connection_Builder.h"
 #endif
 
+#include <cstring>
+
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
@@ -26,7 +29,7 @@ namespace joedb
   builders.emplace_back(new Dummy_Connection_Builder());
   builders.emplace_back(new Embedded_Connection_Builder());
 
-#ifndef JOEDB_FILE_IS_PORTABLE_FILE
+#ifdef JOEDB_FILE_IS_LOCKABLE
   builders.emplace_back(new Local_Connection_Builder());
 #endif
 

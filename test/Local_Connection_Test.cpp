@@ -144,6 +144,7 @@ TEST(Local_Connection, dummy_connection)
  EXPECT_TRUE(file.get_size() > 0);
 }
 
+#ifdef JOEDB_FILE_IS_LOCKABLE
 /////////////////////////////////////////////////////////////////////////////
 TEST(Local_Connection, transaction_frequency)
 /////////////////////////////////////////////////////////////////////////////
@@ -158,3 +159,4 @@ TEST(Local_Connection, transaction_frequency)
 
  std::remove("test.joedb");
 }
+#endif
