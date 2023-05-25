@@ -21,9 +21,13 @@ namespace joedb
 
    int64_t handshake(Readonly_Journal &client_journal) final
    {
+    const int64_t client_position = client_journal.get_position();
+
     dump.set_muted(muted);
     client_journal.replay_log(dump);
     dump.set_muted(false);
+
+    client_journal.set_position(client_position);
 
     return client_journal.get_checkpoint_position();
    }
@@ -35,7 +39,10 @@ namespace joedb
     bool unlock_after
    ) final
    {
+    const int64_t client_position = client_journal.get_position();
+    client_journal.set_position(server_position);
     client_journal.play_until_checkpoint(dump);
+    client_journal.set_position(client_position);
    }
  };
 }
