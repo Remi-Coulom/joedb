@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Embedded_Connection.h"
+#include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Destructor_Logger.h"
 
@@ -16,7 +16,7 @@ TEST(Client, Interpreted_Client)
  Memory_File client1_file;
  Memory_File client2_file;
 
- Embedded_Connection connection(server_file);
+ File_Connection connection(server_file);
 
  Interpreted_Client client1(connection, client1_file);
  Interpreted_Client client2(connection, client2_file);
@@ -51,7 +51,7 @@ TEST(Client, Transaction_Failure)
   Memory_File client1_file;
   Memory_File client2_file;
 
-  Embedded_Connection connection(server_file);
+  File_Connection connection(server_file);
  
   Interpreted_Client client1(connection, client1_file);
   Interpreted_Client client2(connection, client2_file);
@@ -120,7 +120,7 @@ TEST(Client, hash)
   server_journal.checkpoint(Commit_Level::no_commit);
  }
 
- Embedded_Connection connection(server_file);
+ File_Connection connection(server_file);
 
  {
   Memory_File client_file;
@@ -170,7 +170,7 @@ TEST(Client, push)
 /////////////////////////////////////////////////////////////////////////////
 {
  Memory_File server_file;
- Embedded_Connection connection(server_file);
+ File_Connection connection(server_file);
 
  {
   Memory_File client_file;
@@ -224,7 +224,7 @@ TEST(Client, synchronization_error_at_handshake)
 /////////////////////////////////////////////////////////////////////////////
 {
  Memory_File server_file;
- Embedded_Connection connection(server_file);
+ File_Connection connection(server_file);
 
  Memory_File client_file;
 
@@ -283,7 +283,7 @@ TEST(Client, empty_transaction)
  Memory_File server_file;
  Memory_File client_file;
 
- Embedded_Connection connection(server_file);
+ File_Connection connection(server_file);
 
  Interpreted_Client client(connection, client_file);
 

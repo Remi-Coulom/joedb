@@ -2,7 +2,7 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/Dump_Connection_Builder.h"
 #include "joedb/io/Dummy_Connection_Builder.h"
-#include "joedb/io/Embedded_Connection_Builder.h"
+#include "joedb/io/File_Connection_Builder.h"
 #include "joedb/journal/File.h"
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
@@ -36,7 +36,7 @@ namespace joedb
 #endif
   }
 
-  builders.emplace_back(new Embedded_Connection_Builder());
+  builders.emplace_back(new File_Connection_Builder());
 
 #ifdef JOEDB_HAS_ASIO_NET
   builders.emplace_back(new Network_Connection_Builder());

@@ -1,5 +1,5 @@
 #include "tutorial.h"
-#include "joedb/concurrency/Embedded_Connection.h"
+#include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ int main()
  joedb::Memory_File client1_file;
  joedb::Memory_File client2_file;
 
- joedb::Embedded_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  tutorial::Client client1(connection, client1_file);
  tutorial::Client client2(connection, client2_file);

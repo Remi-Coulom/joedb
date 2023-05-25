@@ -166,7 +166,7 @@ Pushes a local file to a connection. For example:
 .. code-block:: bash
 
     # Truncate a file containing an aborted transaction
-    joedb_push broken.joedb embedded fixed.joedb
+    joedb_push broken.joedb file fixed.joedb
 
 .. code-block:: bash
 

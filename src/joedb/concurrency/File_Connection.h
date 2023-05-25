@@ -1,12 +1,12 @@
-#ifndef joedb_Embedded_Connection_declared
-#define joedb_Embedded_Connection_declared
+#ifndef joedb_File_Connection_declared
+#define joedb_File_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Embedded_Connection: public Connection
+ class File_Connection: public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -88,7 +88,7 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Embedded_Connection(Generic_File &server_file):
+   File_Connection(Generic_File &server_file):
    //////////////////////////////////////////////////////////////////////////
     server_journal(server_file),
     locked(false)

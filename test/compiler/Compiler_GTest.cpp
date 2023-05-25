@@ -10,7 +10,7 @@
 #include "joedb/journal/Generic_File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
-#include "joedb/concurrency/Embedded_Connection.h"
+#include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Local_Connection.h"
 #include <joedb/Freedom_Keeper.h>
 #include <joedb/Writable.h>
@@ -579,7 +579,7 @@ TEST(Compiler, client)
 {
  joedb::Memory_File server_file;
 
- joedb::Embedded_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  joedb::Memory_File client_v1_file;
  schema_v1::Client client_v1(connection, client_v1_file);
@@ -636,7 +636,7 @@ TEST(Compiler, client_push)
  }
 
  joedb::Memory_File server_file;
- joedb::Embedded_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  {
   test::Client client(connection, client_file);
@@ -667,7 +667,7 @@ TEST(Compiler, client_hash_error)
   db.checkpoint();
  }
 
- joedb::Embedded_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  try
  {

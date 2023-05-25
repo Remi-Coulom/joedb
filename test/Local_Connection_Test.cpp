@@ -2,7 +2,7 @@
 #include "joedb/concurrency/Journal_Client_Data.h"
 
 #include "joedb/concurrency/Local_Connection.h"
-#include "joedb/concurrency/Embedded_Connection.h"
+#include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Destructor_Logger.h"
@@ -85,7 +85,7 @@ TEST(Local_Connection, size_check)
  }
  catch(const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. joedb_convert can be used to fix it.");
+  EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
  }
 }
 
@@ -105,7 +105,7 @@ TEST(Local_Connection, must_not_be_shared)
 
   {
    joedb::Memory_File server_file;
-   joedb::Embedded_Connection connection(server_file);
+   joedb::File_Connection connection(server_file);
    EXPECT_ANY_THROW(joedb::Client(data, connection));
   }
  }

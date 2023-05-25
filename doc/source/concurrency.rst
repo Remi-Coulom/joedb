@@ -62,13 +62,12 @@ client with such a connection, because it allows generic code that takes a
 client as parameter to work the same way with either a remote connection or a
 local file.
 
-``Embedded_Connection``
-^^^^^^^^^^^^^^^^^^^^^^^
+``File_Connection``
+^^^^^^^^^^^^^^^^^^^
 
-``Embedded_Connection`` creates a connection to a server file opened in the
+``File_Connection`` creates a connection to a server file opened in the
 same program. It does not allow concurrent access to the server file from
-another process. It is not very useful in practice, except for unit testing,
-and this tutorial.
+another process.
 
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
@@ -122,7 +121,7 @@ The table below summarizes all available connections.
   +=========================+==============+=================+=============+
   | ``Connection``          |              | ✔               |             |
   +-------------------------+--------------+-----------------+-------------+
-  | ``Embedded_Connection`` |              | ✔               | ✔           |
+  | ``File_Connection``     |              | ✔               | ✔           |
   +-------------------------+--------------+-----------------+-------------+
   | ``Local_Connection``    | ✔            |                 |             |
   +-------------------------+--------------+-----------------+-------------+
