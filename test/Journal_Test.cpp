@@ -264,6 +264,23 @@ TEST(Journal, refresh_checkpoint)
   (
    journal_1.get_checkpoint_position() == journal_2.get_checkpoint_position()
   );
+
+  EXPECT_TRUE
+  (
+   journal_2.get_position() < journal_1.get_position()
+  );
+
+  EXPECT_TRUE
+  (
+   journal_2.get_checkpoint_position() == journal_1.get_position()
+  );
+
+  {
+   joedb::Writable_Journal::Tail_Writer tail_writer(journal_2);
+   tail_writer.finish();
+  }
+
+  EXPECT_TRUE(journal_2.get_position() < journal_1.get_position());
  }
 
  std::remove("test.joedb");
