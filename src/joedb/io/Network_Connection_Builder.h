@@ -28,6 +28,7 @@ namespace joedb
    bool has_sharing_option() const final {return true;}
    int get_min_parameters() const final {return 2;}
    int get_max_parameters() const final {return 2;}
+   const char *get_name() const final {return "network";}
    const char *get_parameters_description() const final
    {
     return "<host> <port>";
