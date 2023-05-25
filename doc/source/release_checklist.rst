@@ -5,29 +5,18 @@ Code Tests
 ----------
 
 - add tests to improve coverage if necessary
-- run tests in
+- run tests:
 
-  - Windows (Visual C++)
-  - Cygwin
-  - Linux (gcc and clang), at least Ubuntu 16, 18, and 20.
-  - PowerPC virtual machine
-  - MacOS
-  - Release and Debug modes
+  - all github actions,
+  - cygwin
 
 - run the 3 fuzzers for a while
-- check that compilation works without networking, without ssh
 
 Documentation
 -------------
 
 - update VERSION with the new version number
 - update doc/source/history.rst
-
-Packaging
----------
-
-- Linux: cpack -G DEB
-- test deb package installation (on newly installed machine)
 
 New release on github
 ---------------------
