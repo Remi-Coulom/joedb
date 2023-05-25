@@ -115,7 +115,6 @@ Concurrency
 - replace joedb_logdump and joedb_convert by joedb_push (must add options)
 - joedb_server:
 
-  - Ability to serve a readonly journal
   - Test many concurrent read and write requests. Performance benchmarks.
   - fuzzer + unit testing
   - use coroutines
@@ -127,10 +126,13 @@ Concurrency
 
   - indicate commit level for a push
   - allow timeout in the middle of a push.
-  - don't use a big push buffer? There is not way to truncate a file. Will leave garbage in case of error. Splitting pushes on the client side to limit size seems like the best option.
+  - serve from a client (to allow synchronous backup)
+  - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
+  - get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
 
-- performance: fuse socket writes. Fused operations can be produced by fusing
-  writes. Lock-pull and push-unlock could have be done this way.
+- performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
+  can be produced by fusing writes. Lock-pull and push-unlock could have been
+  done this way. https://www.extrahop.com/company/blog/2016/tcp-nodelay-nagle-quickack-best-practices/
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
@@ -139,8 +141,6 @@ Concurrency
   - ping
 
 - Lock objects (file + connection) necessary for joedb_admin? Make file unlocking nothrow? That would simplify a lot.
-- server: get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
-- ipv6 server: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
 - Connection_Multiplexer for multiple parallel backup servers?

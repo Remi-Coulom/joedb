@@ -1,11 +1,19 @@
 History
 =======
-- 2023-??-??: 7.0
+
+- 2023-05-25: 7.0
 
   - :ref:`Blobs <blobs>`
-  - Ability to :ref:`safely share <local_and_remote_concurrency>` a single local
-    replica of a remote server among multiple local clients.
-  - Tools for :ref:`efficient remote periodic backup <backup_client>`.
+  - Deep reorganization of :doc:`concurrency <concurrency>`.
+
+    - Ability to :ref:`safely share <local_and_remote_concurrency>` a single
+      local replica of a remote server among multiple local clients.
+    - Tools for :ref:`efficient remote asynchronous backup <backup_client>`.
+    - Ability to :ref:`serve <joedb_server>` a file read-only.
+    - New :ref:`joedb_push <joedb_push>` tool: replaces the old joedb_logdump,
+      with new interesting features such as the ability to follow a file or
+      push to a remote backup server.
+
   - Removed some useless ssh code that was left over from the old serverless
     sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to
     ``ssh::Session``, and its constructor is faster than before because there
