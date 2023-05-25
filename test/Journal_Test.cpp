@@ -200,7 +200,7 @@ TEST(Journal, checkpoint_different_from_file_size)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. joedb_convert can be used to fix it.");
+  EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
  }
 }
 
