@@ -73,7 +73,6 @@ int main(int argc, char **argv)
   if (mode == base64)
    cpp << "#include \"joedb/io/base64.h\"\n";
   cpp << '\n';
-  cpp << "#include <memory>\n\n";
 
   joedb::namespace_open(cpp, name_space);
 
@@ -114,29 +113,29 @@ int main(int argc, char **argv)
 
   cpp << " struct struct_for_" << identifier << '\n';
   cpp << " {\n";
-  cpp << "  std::unique_ptr<Database> db;\n";
+  cpp << "  Readonly_Database db;\n";
   cpp << '\n';
-  cpp << "  struct_for_" << identifier << "()\n";
-  cpp << "  {\n";
+  cpp << "  struct_for_" << identifier << "():\n";
+  cpp << "   db(joedb::Readonly_Memory_File(";
 
   if (mode == base64)
   {
-   cpp << "   const std::string decoded(joedb::base64_decode(" << identifier << "_data));\n";
-   cpp << "   joedb::Readonly_Memory_File file(&decoded[0], decoded.size());\n";
+   cpp << "joedb::base64_decode(" << identifier << "_data)";
   }
   else
   {
-   cpp << "   joedb::Readonly_Memory_File file(" << identifier << "_data, " << identifier << "_size);\n";
+   cpp << identifier << "_data, " << identifier << "_size";
   }
 
-  cpp << "   db.reset(new Readonly_Database(file));\n";
+  cpp << "))\n";
+  cpp << "  {\n";
   cpp << "  }\n";
   cpp << " };\n";
   cpp << '\n';
   cpp << " const Database &get_embedded_" << identifier << "()\n";
   cpp << " {\n";
   cpp << "  static struct_for_" << identifier << " s;\n";
-  cpp << "  return *s.db;\n";
+  cpp << "  return s.db;\n";
   cpp << " }\n";
 
   if (mode != base64)
