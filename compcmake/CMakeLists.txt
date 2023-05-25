@@ -138,6 +138,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
  # https://github.com/google/googletest/pull/2839
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
  target_uses_joedb(joedb_test)
+ set_property(TARGET joedb_test PROPERTY CXX_STANDARD 14)
 
  add_test(NAME joedb_test
   COMMAND joedb_test
