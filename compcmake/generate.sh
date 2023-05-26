@@ -79,6 +79,15 @@ fi
 
 echo
 echo =======================================================================
+mips_gcc_path=`which mips-linux-gnu-gcc`
+echo mips_gcc_path=$mips_gcc_path
+
+if [ "$mips_gcc_path" != "" ]; then
+ generate mips_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=`dirname "$0"`/mips.toolchain.cmake
+fi
+
+echo
+echo =======================================================================
 mingw32_path=`which x86_64-w64-mingw32-g++-posix`
 echo mingw32_path=$mingw32_path
 

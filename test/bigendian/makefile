@@ -21,6 +21,8 @@ joedb_test:\
  ../../test/Journal_Test.cpp\
  ../../test/Server_Connection_Test.cpp\
  ../../src/external/wide_char_display_width.cpp\
+ ../../src/joedb/Selective_Writable.cpp\
+ ../../src/joedb/Blob.cpp\
  ../../src/joedb/journal/SHA_256.cpp\
  ../../src/joedb/Destructor_Logger.cpp\
  ../../src/joedb/io/base64_decode.cpp\
@@ -30,25 +32,32 @@ joedb_test:\
  ../../src/joedb/Writable.cpp\
  ../../src/joedb/Multiplexer.cpp\
  ../../src/joedb/is_identifier.cpp\
+ ../../src/joedb/String_Logger.cpp\
+ ../../src/joedb/get_version.cpp\
  ../../src/joedb/interpreter/Database.cpp\
  ../../src/joedb/interpreter/Table.cpp\
  ../../src/joedb/interpreter/Database_Schema.cpp\
  ../../src/joedb/io/base64.cpp\
  ../../src/joedb/io/get_time_string.cpp\
  ../../src/joedb/io/dump.cpp\
- ../../src/joedb/io/Interpreter.cpp\
  ../../src/joedb/io/Interpreter_Dump_Writable.cpp\
  ../../src/joedb/io/json.cpp\
  ../../src/joedb/io/merge.cpp\
  ../../src/joedb/io/Raw_Dump_Writable.cpp\
  ../../src/joedb/io/SQL_Dump_Writable.cpp\
  ../../src/joedb/io/type_io.cpp\
+ ../../src/joedb/io/Command_Interpreter.cpp\
+ ../../src/joedb/io/Readable_Command_Processor.cpp\
+ ../../src/joedb/io/Writable_Command_Processor.cpp\
+ ../../src/joedb/io/Readable_Writable_Command_Processor.cpp\
  ../../src/joedb/journal/File.cpp\
  ../../src/joedb/journal/Generic_File.cpp\
  ../../src/joedb/journal/Interpreted_File.cpp\
+ ../../src/joedb/journal/Memory_File.cpp\
  ../../src/joedb/journal/Writable_Journal.cpp\
  ../../src/joedb/journal/Readonly_Journal.cpp\
  ../../src/joedb/journal/diagnostics.cpp\
  ../../src/joedb/journal/Stream_File.cpp\
+ ../../src/joedb/concurrency/Client_Data.cpp\
  ../../src/joedb/concurrency/Server_Connection.cpp
 	mips-linux-gnu-g++ -pthread -o $@ $^ -I../../src -I ../../submodules/googletest/googletest/include -I ../../submodules/googletest/googletest

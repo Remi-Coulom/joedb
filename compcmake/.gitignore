@@ -6,3 +6,4 @@ clang_*
 gcc_*
 arm_*
 mingw32_*
+mips_*
