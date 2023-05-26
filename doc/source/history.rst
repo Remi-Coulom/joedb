@@ -10,9 +10,8 @@ History
       local replica of a remote server among multiple local clients.
     - Tools for :ref:`efficient remote asynchronous backup <backup_client>`.
     - Ability to :ref:`serve <joedb_server>` a file read-only.
-    - New :ref:`joedb_push <joedb_push>` tool: replaces the old joedb_logdump,
-      with new interesting features such as the ability to follow a file or
-      push to a remote backup server.
+    - New :ref:`joedb_push <joedb_push>` tool, with new interesting features
+      such as the ability to follow a file or push to a remote backup server.
 
   - Removed some useless ssh code that was left over from the old serverless
     sftp connection. ``ssh::Thread_Safe_Sesion`` is renamed to

@@ -112,7 +112,6 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
-- replace joedb_logdump and joedb_convert by joedb_push (must add options)
 - joedb_server:
 
   - Test many concurrent read and write requests. Performance benchmarks.
