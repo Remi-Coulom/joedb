@@ -8,6 +8,4 @@ set(CMAKE_C_COMPILER mips-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER mips-linux-gnu-g++)
 
 set(CMAKE_CROSSCOMPILING TRUE)
-set(CMAKE_CROSSCOMPILING_EMULATOR
- "/usr/bin/qemu-mips;-L;/usr/mips-linux-gnu"
-)
+set(CMAKE_CROSSCOMPILING_EMULATOR "/usr/bin/qemu-mips;-L;/usr/mips-linux-gnu")

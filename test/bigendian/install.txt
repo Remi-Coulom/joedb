@@ -1,2 +1,0 @@
-sudo apt-get install gcc-multilib-mips-linux-gnu g++-multilib-mips-linux-gnu gcc-mips-linux-gnu qemu-user
-qemu-mips -L /usr/mips-linux-gnu ./bigendian/joedb_test
