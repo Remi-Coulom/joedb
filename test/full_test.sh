@@ -12,9 +12,7 @@ for configuration in ${configurations}; do
  echo ${configuration}
  echo =======================================================================
  build_dir=../compcmake/${configuration}
- cmake --build $build_dir
- rm -vf *.tmp
- if [ -x $build_dir/joedb_test ]; then
-  $build_dir/joedb_test --gtest_shuffle
- fi
+ cd $build_dir
+ ctest -V
+ cd -
 done
