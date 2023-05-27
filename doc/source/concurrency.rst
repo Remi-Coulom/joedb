@@ -73,7 +73,7 @@ another process.
 ^^^^^^^^^^^^^^^^^^^^
 
 ``Local_Connection`` allows serverless concurrent manipulation of a local file,
-using file-locking for synchronization.
+using file locking for synchronization.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
 creates the connection and the client in a single line of code. Here is an
@@ -109,23 +109,22 @@ Combining Local and Remote Concurrency
 --------------------------------------
 
 A client is made of two parts: the local part (stored in a file), and the
-remote part (managed by the connection). A client can handle concurrency for
-both parts simultaneously. That is to say, it is possible for two different
-clients to share a connection to the same remote server, and also share the
-same local file.
+connection part. A client can handle concurrency for both parts simultaneously.
+That is to say, it is possible for two different clients to share a connection
+to the same remote server, and also share the same local file.
 
 The table below summarizes all available connections.
 
   +-------------------------+--------------+-----------------+-------------+
-  | Connection Class        | Shared Local | Exclusive Local | Replication |
+  | Connection Class        | Shared Local | Exclusive Local | Connects to |
   +=========================+==============+=================+=============+
-  | ``Connection``          |              | ✔               |             |
+  | ``Connection``          |              | ✔               | nothing     |
   +-------------------------+--------------+-----------------+-------------+
-  | ``Local_Connection``    | ✔            |                 |             |
+  | ``Local_Connection``    | ✔            |                 | nothing     |
   +-------------------------+--------------+-----------------+-------------+
-  | ``File_Connection``     |              | ✔               | ✔           |
+  | ``File_Connection``     |              | ✔               | a file      |
   +-------------------------+--------------+-----------------+-------------+
-  | ``Server_Connection``   | ✔            | ✔               | ✔           |
+  | ``Server_Connection``   | ✔            | ✔               | a server    |
   +-------------------------+--------------+-----------------+-------------+
 
 An exception will be thrown when creating a client if the mode of the file does

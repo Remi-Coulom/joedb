@@ -17,12 +17,8 @@ either ``File_Database`` or ``Readonly_Database``.
 ``joedb::Open_Mode``
 --------------------
 
-You can change the way the file is opened by passing an extra parameter to the constructor.
-
-.. literalinclude:: ./tutorial/file_tutorial.cpp
-   :language: c++
-
-Available modes are:
+You can change the way the file is opened by passing an extra parameter to the
+constructor.  Available modes are:
 
 .. code-block:: c++
 
@@ -42,6 +38,11 @@ library should not directly manipulate files with this mode, and instead use
 prevent more than one process from writing to the same file simultaneously.
 ``write_lock`` is like ``write_existing_or_create_new``, but waits instead of
 failing if anybody else is already write-locking.
+
+For example:
+
+.. literalinclude:: ./tutorial/file_tutorial.cpp
+   :language: c++
 
 ``Generic_File_Database``
 -------------------------

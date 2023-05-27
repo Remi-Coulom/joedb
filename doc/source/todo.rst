@@ -3,21 +3,15 @@ TODO
 
 Journal File
 ------------
-- joedb_truncate <file> <position> (+optionally show position in logdump)
-- Add an ``undo`` operation to the log. This way, it is possible to keep all
-  branches of history.
-- joedb_fix
-- Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also
-  test if 64-bit overflows).
-- When opening a journal: ignore-error and set-checkpoint-to-file-size should
-  be two independent options. Must have a "robust" option that will silently
-  ignore incomplete transactions (or the whole file?) for automatic fail-safe
-  operation. Must not ignore test for checkpoint integrity when opening
-  read-only. Create a "shared_read" opening mode that disables writing (but
-  re-enables it after reading the checkpoint).
+- ``Open_Mode::overwrite_aborted``.
+- Specialization of read/write checkpoint -> use memory map.
+- FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetech: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
+- Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
 
 New Operations and Types
 ------------------------
+- Add an ``undo`` operation to the log. This way, it is possible to keep all
+  branches of history.
 - Needs a way to modify multiple columns atomically (allows unique_index to
   work + better trigger invocations). New operations:
 
@@ -36,15 +30,7 @@ New Operations and Types
 
 Blobs
 -----
-- Cheaper than SHA 256: sample 256*4kb pages from the file
-- Optimized full SHA 256:
 
-  - sha256 log entry
-  - store "incrementable" SHA 256
-  - linked list: store position of previous sha256 log entry + NSA shortcuts
-
-- show progress bars for slow operations
-- interactive database browser (with labels + filters)
 - network protocol extension to handle local blob cache without downloading everything
 
 On-disk Storage
@@ -58,6 +44,7 @@ On-disk Storage
 
 Compiler
 --------
+- Pass strings by value for new and update, and std::move them.
 - allow reading dropped fields in custom functions that are invoked before the
   drop. Store data in a column vector, and clear the vector at the time of the
   drop. Make sure field id is not reused. (make access function private, and
@@ -123,38 +110,26 @@ Concurrency
     - thread_count = max(core_count, 2 * server_count)
     - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
-  - indicate commit level for a push
+  - add commit operation to the protocol (half or full), and to the ``Connection`` class.
   - allow timeout in the middle of a push.
   - serve from a client (to allow synchronous backup)
   - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
-  - get rid of signal completely. It is really ugly. Make an interactive command-line interface to control the server.
+  - get rid of signal. Make an interactive command-line interface to control the server.
 
+- SHA-256: option for either fast or full.
 - performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
   can be produced by fusing writes. Lock-pull and push-unlock could have been
   done this way. https://www.extrahop.com/company/blog/2016/tcp-nodelay-nagle-quickack-best-practices/
+- Lock objects (file + connection) necessary for joedb_admin? Make file unlocking nothrow? That would simplify a lot.
+- reading and writing buffers: don't use network_integers.h, but create a
+  Buffer_File class, and use write<int64_t>
+- Connection_Multiplexer for multiple parallel backup servers?
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
   - when the lock times out
   - when the server is interrupted
   - ping
-
-- Lock objects (file + connection) necessary for joedb_admin? Make file unlocking nothrow? That would simplify a lot.
-- reading and writing buffers: don't use network_integers.h, but create a
-  Buffer_File class, and use write<int64_t>
-- Connection_Multiplexer for multiple parallel backup servers?
-
-C++ language questions
-----------------------
-
-- Pass strings by value for new and update
-
-  - fix useless copies
-  - need to fix Writable + joedbc (it is a bit complicated)
-  - start by testing copy elision on a very simple toy simulation
-  - necessary to std::move or not?
-  - is the compiler allowed to perform the optimization by itself, even if
-    the function is passed a const reference?
 
 Performance
 -----------
