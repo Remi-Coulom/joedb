@@ -1961,7 +1961,7 @@ static void generate_cpp
    upgrading_schema = false;
 
    journal.comment("End of automatic schema upgrade");
-   journal.checkpoint(joedb::Commit_Level::no_commit);
+   journal.checkpoint(joedb::Commit_Level::full_commit);
   }
  }
 

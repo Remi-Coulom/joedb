@@ -12,18 +12,10 @@ namespace joedb
   int64_t checkpoint
  )
  {
-  try
-  {
-   if (checkpoint <= 0)
-    checkpoint = input.get_checkpoint_position();
-   input.play_until(output, checkpoint);
-   output.checkpoint(Commit_Level::no_commit);
-  }
-  catch (const Exception &)
-  {
-   output.checkpoint(Commit_Level::no_commit);
-   throw;
-  }
+  if (checkpoint <= 0)
+   checkpoint = input.get_checkpoint_position();
+  input.play_until(output, checkpoint);
+  output.checkpoint(Commit_Level::full_commit);
  }
 
  /////////////////////////////////////////////////////////////////////////////

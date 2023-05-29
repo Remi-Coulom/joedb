@@ -110,11 +110,11 @@ Concurrency
     - thread_count = max(core_count, 2 * server_count)
     - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
-  - add commit operation to the protocol (half or full), and to the ``Connection`` class.
   - allow timeout in the middle of a push.
   - serve from a client (to allow synchronous backup)
   - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
   - get rid of signal. Make an interactive command-line interface to control the server.
+  - possibility to checkpoint multiple concurrent transactions simultaneously
 
 - SHA-256: option for either fast or full.
 - performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
