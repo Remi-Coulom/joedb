@@ -35,14 +35,16 @@ namespace joedb
    {
     private:
      Writable_Journal &journal;
+     Commit_Level commit_level;
      const int64_t old_position;
      Async_Writer writer;
 
      Tail_Writer(const Tail_Writer &) = delete;
 
     public:
-     Tail_Writer(Writable_Journal &journal):
+     Tail_Writer(Writable_Journal &journal, Commit_Level commit_level):
       journal(journal),
+      commit_level(commit_level),
       old_position(journal.get_position()),
       writer(journal.file, journal.get_checkpoint_position())
      {
@@ -56,14 +58,28 @@ namespace joedb
      void finish()
      {
       writer.seek();
-      journal.checkpoint(Commit_Level::no_commit);
+      journal.checkpoint(commit_level);
       journal.file.set_position(old_position);
      }
    };
 
-   void append() {file.set_position(checkpoint_position);}
-   void append_raw_tail(const char *data, size_t size);
-   void append_raw_tail(const std::vector<char> &data);
+   void append()
+   {
+    file.set_position(checkpoint_position);
+   }
+
+   void append_raw_tail
+   (
+    const char *data,
+    size_t size,
+    Commit_Level commit_level
+   );
+
+   void append_raw_tail
+   (
+    const std::vector<char> &data,
+    Commit_Level commit_level
+   );
 
    template<typename F> void exclusive_transaction(F transaction)
    {

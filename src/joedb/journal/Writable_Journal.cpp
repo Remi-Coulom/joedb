@@ -39,19 +39,28 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::append_raw_tail(const char *data, size_t size)
+void joedb::Writable_Journal::append_raw_tail
 /////////////////////////////////////////////////////////////////////////////
+(
+ const char *data,
+ size_t size,
+ Commit_Level commit_level
+)
 {
- Tail_Writer tail_writer(*this);
+ Tail_Writer tail_writer(*this, commit_level);
  tail_writer.append(data, size);
  tail_writer.finish();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::append_raw_tail(const std::vector<char> &data)
+void joedb::Writable_Journal::append_raw_tail
 /////////////////////////////////////////////////////////////////////////////
+(
+ const std::vector<char> &data,
+ Commit_Level commit_level
+)
 {
- append_raw_tail(data.data(), data.size());
+ append_raw_tail(data.data(), data.size(), commit_level);
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -54,10 +54,13 @@ namespace joedb
     const int64_t server_checkpoint=server_journal.get_checkpoint_position();
 
     if (client_checkpoint < server_checkpoint)
+    {
      client_journal.append_raw_tail
      (
-      server_journal.get_raw_tail(client_checkpoint)
+      server_journal.get_raw_tail(client_checkpoint),
+      Commit_Level::full_commit
      );
+    }
 
     return server_checkpoint;
    }
@@ -77,10 +80,13 @@ namespace joedb
     const int64_t client_checkpoint=client_journal.get_checkpoint_position();
 
     if (server_checkpoint < client_checkpoint)
+    {
      server_journal.append_raw_tail
      (
-      client_journal.get_raw_tail(server_checkpoint)
+      client_journal.get_raw_tail(server_checkpoint),
+      Commit_Level::full_commit
      );
+    }
 
     if (unlock_after)
      unlock(client_journal);

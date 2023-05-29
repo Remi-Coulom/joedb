@@ -243,7 +243,12 @@ namespace joedb
     session->buffer[0] = 'R';
    else
    {
-    writable_journal->append_raw_tail(push_buffer.data(), offset);
+    writable_journal->append_raw_tail
+    (
+     push_buffer.data(),
+     offset,
+     Commit_Level::full_commit
+    );
     session->buffer[0] = 'U';
    }
 

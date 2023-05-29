@@ -276,7 +276,11 @@ TEST(Journal, refresh_checkpoint)
   );
 
   {
-   joedb::Writable_Journal::Tail_Writer tail_writer(journal_2);
+   joedb::Writable_Journal::Tail_Writer tail_writer
+   (
+    journal_2,
+    joedb::Commit_Level::no_commit
+   );
    tail_writer.finish();
   }
 
