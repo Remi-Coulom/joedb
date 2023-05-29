@@ -26,6 +26,7 @@ joedb::Writable_Journal::Writable_Journal(Generic_File &file):
   file.write<int64_t>(0);
   file.write<int64_t>(header_size);
   file.write<int64_t>(header_size);
+  checkpoint(Commit_Level::no_commit);
   file.set_mode(Open_Mode::write_existing);
  }
  else if (version_number > file_version)
