@@ -29,6 +29,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
  set(CMAKE_CXX_FLAGS_TSAN "-fsanitize=thread -O2")
  set(CMAKE_LINKER_FLAGS_TSAN ${CMAKE_CXX_FLAGS_TSAN})
+
+ set(CMAKE_CXX_FLAGS_DEV "-O1 -DNDEBUG")
 endif()
 
 #############################################################################

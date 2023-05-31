@@ -2,9 +2,11 @@
 # IPO
 #############################################################################
 if (POLICY CMP0069)
- if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-  include(CheckIPOSupported)
-  check_ipo_supported(RESULT ipo_supported)
+ if (CMAKE_BUILD_TYPE MATCHES "Release")
+  if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+   include(CheckIPOSupported)
+   check_ipo_supported(RESULT ipo_supported)
+  endif()
  endif()
 endif()
 

@@ -139,6 +139,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
  target_uses_joedb(joedb_test)
  set_property(TARGET joedb_test PROPERTY CXX_STANDARD 14)
+ target_precompile_headers(joedb_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
 
  add_test(NAME joedb_test
   COMMAND joedb_test
