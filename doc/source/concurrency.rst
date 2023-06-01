@@ -72,8 +72,10 @@ another process.
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
-``Local_Connection`` allows serverless concurrent manipulation of a local file,
-using file locking for synchronization.
+Like plain ``Connection``, ``Local_Connection`` does not connect to anything.
+But, unlike ``Connection``, it can handle a shared local file, using file
+locking for synchronization of multiple processes that may be writing to the
+same file.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
 creates the connection and the client in a single line of code. Here is an
