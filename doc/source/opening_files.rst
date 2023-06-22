@@ -18,7 +18,7 @@ either ``File_Database`` or ``Readonly_Database``.
 --------------------
 
 You can change the way the file is opened by passing an extra parameter to the
-constructor.  Available modes are:
+constructor of ``File_Database``.  Available modes are:
 
 .. code-block:: c++
 
