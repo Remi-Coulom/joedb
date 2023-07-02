@@ -66,7 +66,7 @@ endif()
 #############################################################################
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 #############################################################################
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w34265") # C4265 virtual destructor
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /w34265") # C4265 virtual destructor
 endif()
 
 #############################################################################
