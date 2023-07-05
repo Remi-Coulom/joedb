@@ -17,7 +17,7 @@ namespace joedb
    std::vector<std::unique_ptr<Connection_Builder>> builders;
 
   public:
-   Connection_Parser(bool local);
+   Connection_Parser(bool local, bool readonly);
    void list_builders() const;
    Connection_Builder *get_builder(const char *name) const;
    static std::unique_ptr<Connection> build

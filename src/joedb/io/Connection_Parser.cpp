@@ -23,7 +23,7 @@
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Connection_Parser::Connection_Parser(bool local)
+ Connection_Parser::Connection_Parser(bool local, bool readonly)
  //////////////////////////////////////////////////////////////////////////
  {
   builders.emplace_back(new Dump_Connection_Builder());
@@ -45,7 +45,8 @@ namespace joedb
 
 #ifdef JOEDB_HAS_SSH
   builders.emplace_back(new SSH_Connection_Builder());
-  builders.emplace_back(new SFTP_Connection_Builder());
+  if (readonly)
+   builders.emplace_back(new SFTP_Connection_Builder());
 #endif
  }
 

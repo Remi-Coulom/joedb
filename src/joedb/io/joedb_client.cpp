@@ -17,7 +17,7 @@ namespace joedb
  static int client_main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Connection_Parser connection_parser(true);
+  Connection_Parser connection_parser(true, true);
 
   int arg_index = 1;
   bool nodb = false;
