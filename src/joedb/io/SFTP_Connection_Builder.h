@@ -2,7 +2,7 @@
 #define joedb_SFTP_Connection_Builder_declared
 
 #include "joedb/io/Connection_Builder.h"
-#include "joedb/concurrency/File_Connection.h"
+#include "joedb/concurrency/Readonly_File_Connection.h"
 #include "joedb/journal/SFTP_File.h"
 
 namespace joedb
@@ -13,7 +13,7 @@ namespace joedb
   private ssh::Session,
   private ssh::SFTP,
   private SFTP_File,
-  public File_Connection
+  public Readonly_File_Connection
  {
   public:
    SFTP_Connection_Data
@@ -27,7 +27,7 @@ namespace joedb
     ssh::Session(user, host, 22, 0),
     ssh::SFTP(*static_cast<ssh::Session *>(this)),
     SFTP_File(*static_cast<ssh::SFTP *>(this), file_name),
-    File_Connection(*static_cast<SFTP_File *>(this))
+    Readonly_File_Connection(*static_cast<SFTP_File *>(this))
    {
    }
  };
