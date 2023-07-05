@@ -55,7 +55,6 @@ namespace joedb
     bool unlock_after
    )
    {
-    throw Exception("Push not supported");
    }
 
    virtual ~Connection() = default;
