@@ -4,7 +4,6 @@
 #include "joedb/ssh/Session.h"
 
 #include <libssh/sftp.h>
-#include <string>
 
 //
 // Windows does not define those
@@ -33,6 +32,8 @@ namespace joedb
    private:
     const sftp_session sftp;
 
+    static char const * const error_message[];
+
    public:
     SFTP(const Session &session): sftp(sftp_new(session.get()))
     {
@@ -45,13 +46,7 @@ namespace joedb
      return sftp;
     }
 
-    void throw_error() const
-    {
-     throw joedb::Exception
-     (
-      "SFTP error code: " + std::to_string(sftp_get_error(sftp))
-     );
-    }
+    void throw_error(const char *message = "sftp error: ") const;
 
     void check_result(int result) const
     {
@@ -63,41 +58,6 @@ namespace joedb
     {
      if (sftp)
       sftp_free(sftp);
-    }
-  };
-
-  ////////////////////////////////////////////////////////////////////////////
-  class SFTP_File
-  ////////////////////////////////////////////////////////////////////////////
-  {
-   private:
-    const sftp_file file;
-
-   public:
-    SFTP_File(SFTP &sftp, const char *name, int access_type, mode_t mode):
-     file
-     (
-      sftp_open
-      (
-       sftp.get(),
-       name,
-       access_type,
-       mode
-      )
-     )
-    {
-     if (file == nullptr)
-      sftp.throw_error();
-    }
-
-    sftp_file get() const
-    {
-     return file;
-    }
-
-    ~SFTP_File()
-    {
-     sftp_close(file);
     }
   };
  }
