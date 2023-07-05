@@ -50,6 +50,18 @@ namespace joedb
     return server_checkpoint;
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   void push
+   //////////////////////////////////////////////////////////////////////////
+   (
+    Readonly_Journal &client_journal,
+    int64_t server_checkpoint,
+    bool unlock_after
+   ) final
+   {
+    throw Exception("Push not supported");
+   }
+
   public:
    //////////////////////////////////////////////////////////////////////////
    Readonly_File_Connection(Generic_File &server_file):
