@@ -59,7 +59,14 @@ namespace joedb
     bool unlock_after
    ) final
    {
-    throw Exception("Push not supported");
+    throw Exception("Readonly connection, push not supported");
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void lock(Readonly_Journal &client_journal) final
+   //////////////////////////////////////////////////////////////////////////
+   {
+    throw Exception("Readonly connection, lock not supported");
    }
 
   public:

@@ -60,8 +60,8 @@ namespace joedb
    out << "~~~~~~\n";
    out << " pull\n";
    out << " pull_every <seconds>\n";
-   out << " push\n";
    out << " db\n";
+   out << " push\n";
    out << " transaction\n";
    out << '\n';
    return Status::ok;
@@ -90,10 +90,6 @@ namespace joedb
 
    Signal::stop();
   }
-  else if (command == "push") ///////////////////////////////////////////////
-  {
-   client.push_unlock();
-  }
   else if (command == "db") /////////////////////////////////////////////////
   {
    if (interpreted_client_data)
@@ -110,6 +106,10 @@ namespace joedb
    }
    else
     out << "Cannot read: no table data\n";
+  }
+  else if (command == "push") ///////////////////////////////////////////////
+  {
+   client.push_unlock();
   }
   else if (command == "transaction") ////////////////////////////////////////
   {
