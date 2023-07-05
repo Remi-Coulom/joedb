@@ -23,6 +23,8 @@ namespace joedb
     Writable_Command_Processor &command_processor
    );
 
+   void pull(std::ostream &out);
+
    Status process_command
    (
     const std::string &command,

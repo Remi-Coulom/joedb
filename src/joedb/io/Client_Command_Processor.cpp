@@ -36,6 +36,16 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Client_Command_Processor::pull(std::ostream &out)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const int64_t client_checkpoint = client.get_checkpoint();
+  const int64_t server_checkpoint = client.pull();
+  if (server_checkpoint > client_checkpoint)
+   out << "pulled " << server_checkpoint - client_checkpoint << " bytes\n";
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Client_Command_Processor::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -58,7 +68,7 @@ namespace joedb
   }
   else if (command == "pull") ///////////////////////////////////////////////
   {
-   client.pull();
+   pull(out);
   }
   else if (command == "pull_every") /////////////////////////////////////////
   {
@@ -70,7 +80,7 @@ namespace joedb
 
    while (Signal::signal != SIGINT)
    {
-    client.pull();
+    pull(out);
     print_date(out);
     out << "Sleeping for " << seconds << " seconds...\n";
 
