@@ -61,6 +61,7 @@ various ways:
    ``joedb::Posix_File``, or ``joedb::Portable_File``. System-specific version
    of ``joedb::File`` offer extra features, such as locking, which is necessary
    to handle :doc:`concurrent <concurrency>` access to a file.
+ - ``joedb::SFTP_File`` read-only access to a file via sftp.
  - ``joedb::Interpreted_File`` can read joedbi commands directly.
 
 .. _file_slices:

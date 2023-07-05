@@ -69,6 +69,13 @@ local file.
 same program. It does not allow concurrent access to the server file from
 another process.
 
+``Readonly_File_Connection``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``Readonly_File_Connection`` creates a connection to a read-only file. It
+allows concurrent writes to the file it is connecting to, but cannot push to
+it.
+
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -117,17 +124,19 @@ to the same remote server, and also share the same local file.
 
 The table below summarizes all available connections.
 
-  +-------------------------+--------------+-----------------+-------------+
-  | Connection Class        | Shared Local | Exclusive Local | Connects to |
-  +=========================+==============+=================+=============+
-  | ``Connection``          |              | ✔               | nothing     |
-  +-------------------------+--------------+-----------------+-------------+
-  | ``Local_Connection``    | ✔            |                 | nothing     |
-  +-------------------------+--------------+-----------------+-------------+
-  | ``File_Connection``     |              | ✔               | a file      |
-  +-------------------------+--------------+-----------------+-------------+
-  | ``Server_Connection``   | ✔            | ✔               | a server    |
-  +-------------------------+--------------+-----------------+-------------+
+  +------------------------------+--------------+-----------------+-------------------+
+  | Connection Class             | Shared Local | Exclusive Local | Connects to       |
+  +==============================+==============+=================+===================+
+  | ``Connection``               |              | ✔               | nothing           |
+  +------------------------------+--------------+-----------------+-------------------+
+  | ``Local_Connection``         | ✔            |                 | nothing           |
+  +------------------------------+--------------+-----------------+-------------------+
+  | ``File_Connection``          |              | ✔               | an exclusive file |
+  +------------------------------+--------------+-----------------+-------------------+
+  | ``Readonly_File_Connection`` |              | ✔               | a read-only file  |
+  +------------------------------+--------------+-----------------+-------------------+
+  | ``Server_Connection``        | ✔            | ✔               | a server          |
+  +------------------------------+--------------+-----------------+-------------------+
 
 An exception will be thrown when creating a client if the mode of the file does
 not match the mode that the connection supports. Shared local files are

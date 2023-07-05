@@ -1,6 +1,14 @@
 History
 =======
 
+- 2023-??-??: 7.1
+
+  - New ``SFTP_File``, and ``Readonly_File_Connection``. Combining these
+    classes allows read-only connection to a remote file without running a
+    joedb server on the remote machine. This is convenient for periodic
+    backups. SFTP does not support file locking in practice, so writing via
+    SFTP is not implemented.
+
 - 2023-05-25: 7.0
 
   - :ref:`Blobs <blobs>`
