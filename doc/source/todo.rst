@@ -99,6 +99,7 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
+- read-only sftp connection
 - joedb_server:
 
   - Test many concurrent read and write requests. Performance benchmarks.
