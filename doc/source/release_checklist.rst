@@ -7,6 +7,7 @@ Code Tests
 - add tests to improve coverage if necessary
 - run tests:
 
+  - full_test.sh
   - all github actions,
   - cygwin
 
