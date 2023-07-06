@@ -18,10 +18,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overread") # produces false warnings
  endif()
 
- if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0)
-  set(CMAKE_PCH_INSTANTIATE_TEMPLATES OFF)
- endif()
-
  set(CMAKE_CXX_FLAGS_COVERAGE
   "-g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
  )
@@ -47,6 +43,14 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_CLANG_TIDY clang-tidy --header-filter=* -checks=-*,readability-*,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,-readability-static-accessed-through-instance,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,concurrency-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list,-modernize-use-default-member-init,-modernize-use-using,-modernize-concat-nested-namespaces)
  else()
   message("-- no clang-tidy")
+ endif()
+
+ if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0)
+  set(CMAKE_PCH_INSTANTIATE_TEMPLATES OFF)
+  message("-- old clang, don't instantiate templates")
+ else()
+  set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
+  message("-- new clang, instantiate templates")
  endif()
 
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
