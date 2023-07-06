@@ -56,7 +56,6 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client_Data.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
- ${JOEDB_SRC_DIR}/joedb/ssh/SFTP.cpp
 )
 
 if (HAS_NETWORKING)
@@ -69,6 +68,7 @@ endif()
 if(libssh_FOUND)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/ssh/Forward_Channel.cpp
+  ${JOEDB_SRC_DIR}/joedb/ssh/SFTP.cpp
  )
 endif()
 

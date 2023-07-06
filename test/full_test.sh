@@ -2,6 +2,7 @@
 set -e
 
 cd ../compcmake
+./generate.sh
 configurations=`find . -maxdepth 1 -mindepth 1 -type d -printf ' %f'`
 cd -
 
