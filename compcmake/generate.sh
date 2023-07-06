@@ -1,5 +1,6 @@
 #!/bin/bash
 echo Generating cmake build directories...
+cmake --version
 config="$1"
 
 # For some old versions of git, this must be executed at the root

@@ -18,6 +18,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overread") # produces false warnings
  endif()
 
+ if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0)
+  set(PCH_INSTANTIATE_TEMPLATES OFF)
+ endif()
+
  set(CMAKE_CXX_FLAGS_COVERAGE
   "-g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
  )
