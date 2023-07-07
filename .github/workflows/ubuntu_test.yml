@@ -31,6 +31,10 @@ jobs:
       #      working-directory: ${{github.workspace}}/compcmake/clang_release
       #      run: ctest -V
 
+    - name: Test gcc_release
+      working-directory: ${{github.workspace}}/compcmake/gcc_release
+      run: ctest -V
+
     - name: Test cross-compiled ARM version
       working-directory: ${{github.workspace}}/compcmake/arm_release
       run: ctest -V
