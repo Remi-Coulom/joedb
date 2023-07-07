@@ -19,15 +19,17 @@ jobs:
     - name: Install dependencies
       run: |
        sudo apt-get update
-       sudo apt-get -y install cmake ninja-build libssh-dev clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user
+       sudo apt-get -y install cmake ninja-build libssh-dev clang clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
       run: ./generate.sh
 
-    - name: Test with clang in release mode
-      working-directory: ${{github.workspace}}/compcmake/clang_release
-      run: ctest -V
+      # This does not work because somehow clang-11 is the default at github for Ubuntu 20,
+      # and it does not match with clang-tidy's default version (still 10)
+      #    - name: Test with clang in release mode
+      #      working-directory: ${{github.workspace}}/compcmake/clang_release
+      #      run: ctest -V
 
     - name: Test cross-compiled ARM version
       working-directory: ${{github.workspace}}/compcmake/arm_release

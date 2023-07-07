@@ -45,14 +45,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("-- no clang-tidy")
  endif()
 
- if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0)
-  set(CMAKE_PCH_INSTANTIATE_TEMPLATES OFF)
-  message("-- old clang, don't instantiate templates")
- else()
-  set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
-  message("-- new clang, instantiate templates")
- endif()
-
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations")
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
