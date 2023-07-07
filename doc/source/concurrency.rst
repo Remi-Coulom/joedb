@@ -108,7 +108,7 @@ channel classes are provided:
 
 The code below shows how to connect to a server via ssh:
 
-.. literalinclude:: ../../src/joedb/concurrency/SSH_Server_Connection.h
+.. literalinclude:: ../../src/joedb/ssh/SSH_Server_Connection.h
    :language: c++
 
 

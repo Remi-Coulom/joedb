@@ -112,6 +112,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Mutex_Test.cpp
   ../test/Span_Test.cpp
   ../test/Local_Connection_Test.cpp
+  ../test/Readonly_File_Connection_Test.cpp
   ../test/compiler/Blob.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp

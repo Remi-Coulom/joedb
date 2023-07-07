@@ -2,7 +2,7 @@
 #define joedb_SSH_Connection_Builder
 
 #include "joedb/io/Connection_Builder.h"
-#include "joedb/concurrency/SSH_Server_Connection.h"
+#include "joedb/ssh/SSH_Server_Connection.h"
 
 #include <iostream>
 
