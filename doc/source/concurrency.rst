@@ -73,8 +73,8 @@ another process.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``Readonly_File_Connection`` creates a connection to a read-only file. It
-allows concurrent writes to the file it is connecting to, but cannot push to
-it.
+allows concurrent writes to the file it is connecting to, but cannot lock or
+push to it.
 
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
@@ -141,7 +141,7 @@ The table below summarizes all available connections.
 An exception will be thrown when creating a client if the mode of the file does
 not match the mode that the connection supports. Shared local files are
 :ref:`opened <opening_files>` with the ``Open_Mode::shared_write`` mode. All
-other modes are exclusive.
+other write modes are exclusive.
 
 .. _backup_client:
 
