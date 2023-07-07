@@ -18,6 +18,7 @@ Documentation
 
 - update VERSION with the new version number
 - update doc/source/history.rst
+- build and upload documentation
 
 New release on github
 ---------------------

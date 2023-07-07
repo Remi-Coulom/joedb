@@ -1,7 +1,7 @@
 History
 =======
 
-- 2023-??-??: 7.1
+- 2023-07-07: 7.1
 
   - New ``SFTP_File``, and ``Readonly_File_Connection``. Combining these
     classes allows read-only connection to a remote file without running a
