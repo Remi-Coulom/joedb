@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# sudo apt-get install libfuzzer-8-dev
+# sudo apt install libfuzzer-10-dev
 
 #############################################################################
 build()
@@ -12,8 +12,7 @@ build()
 
  clang++\
   -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
-  -fsanitize-coverage=trace-pc-guard\
-  -fsanitize=address\
+  -fsanitize=address,fuzzer\
   -std=c++11\
   -I ../../src\
   "$1"_fuzzer.cpp\
@@ -49,7 +48,7 @@ build()
   ../../src/joedb/journal/SHA_256.cpp\
   ../../src/joedb/journal/Stream_File.cpp\
   ../../src/joedb/journal/Readonly_Journal.cpp\
-  /usr/lib/clang/8/lib/linux/libclang_rt.fuzzer-x86_64.a\
+  /usr/lib/clang/10/lib/linux/libclang_rt.fuzzer-x86_64.a\
   -o "$1"_fuzzer
 }
 
