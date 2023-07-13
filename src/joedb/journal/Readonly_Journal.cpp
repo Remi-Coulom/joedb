@@ -60,7 +60,7 @@ void joedb::Readonly_Journal::construct(Check check)
    }
 
    checkpoint_position = header_size;
-   read_checkpoint(true);
+   read_checkpoint(check_flag(check, Check::checkpoint_mismatch));
 
    //
    // Compare to file size (if available)

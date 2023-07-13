@@ -20,7 +20,8 @@ namespace joedb
     big_size = 4,
     small_size = 8,
     set_checkpoint = 16,
-    all = joedb | version | big_size | small_size,
+    checkpoint_mismatch = 32,
+    all = joedb | version | big_size | small_size | checkpoint_mismatch,
     readonly = joedb | version | small_size,
     none = set_checkpoint
    };
