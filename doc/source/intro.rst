@@ -4,11 +4,8 @@ Introduction
 Joedb is the Journal-Only Embedded Database. Joedb keeps tabular data in
 memory, and writes a journal of all modifications to a file. The whole data
 history is remembered, and it is possible to re-create any past state of the
-database.
-
-Storing data history allows efficient incremental updates in distributed
-applications. Joedb has a network protocol that lets multiple processes access
-a shared journal :doc:`concurrently <concurrency>`.
+database. It has a network protocol, and can operate in a distributed fashion,
+a bit like :doc:`git for structured data <concurrency>`.
 
 Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
