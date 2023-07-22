@@ -1,5 +1,4 @@
-Joedb
-=====
+# Joedb
 
 Joedb is the Journal-Only Embedded Database. Joedb keeps tabular data in
 memory, and writes a journal of all modifications to a file. The whole data
