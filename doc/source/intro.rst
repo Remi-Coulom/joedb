@@ -1,11 +1,11 @@
 Introduction
 ============
 
-Joedb is the Journal-Only Embedded Database. Joedb keeps tabular data in
-memory, and writes a journal of all modifications to a file. The whole data
-history is remembered, and it is possible to re-create any past state of the
-database. It has a network protocol, and can operate in a distributed fashion,
-a bit like :doc:`git for structured data <concurrency>`.
+Joedb is a light-weight C++ library to safely save and share structured data.
+Joedb keeps tabular data in memory, and writes a journal of all modifications
+to a file. The whole data history is stored, so it is possible to re-create any
+past state of the database. Joedb has a network protocol, and can operate in a
+distributed fashion, a bit like :doc:`git for structured data <concurrency>`.
 
 Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
@@ -36,7 +36,7 @@ or `JSON <https://www.json.org/json-en.html>`_:
   flushing data to disk as frequently as typical relational databases, which
   can make it an order of magnitude faster (see :doc:`checkpoints` for details
   and benchmarks).
-- The whole data history is remembered. So, no old data can ever be lost. It is
+- The whole data history is stored. So, no old data can ever be lost. It is
   also possible to add time stamps and comments to the journal, and use it as a
   log of the application (if the history has to be forgotten for privacy or
   disk-space reasons, it is also possible to :ref:`pack <joedb_pack>` it).

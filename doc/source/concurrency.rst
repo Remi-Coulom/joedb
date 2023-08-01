@@ -73,8 +73,8 @@ another process.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``Readonly_File_Connection`` creates a connection to a read-only file. It
-allows concurrent writes to the file it is connecting to, but cannot lock or
-push to it.
+allows concurrent writes to the file it is connecting to. It can pull to get
+updated with new writes, but cannot lock or push.
 
 ``Local_Connection``
 ^^^^^^^^^^^^^^^^^^^^
