@@ -29,7 +29,7 @@ namespace joedb
      n += read_some(data + n, size - n);
    }
 
-   virtual ~Channel() = default;
+   virtual ~Channel();
  };
 }
 

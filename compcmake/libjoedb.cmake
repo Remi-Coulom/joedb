@@ -52,6 +52,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/SHA_256.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Interpreted_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/concurrency/Channel.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client_Data.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Connection.cpp
