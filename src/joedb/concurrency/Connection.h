@@ -57,7 +57,7 @@ namespace joedb
    {
    }
 
-   virtual ~Connection() = default;
+   virtual ~Connection();
  };
 }
 

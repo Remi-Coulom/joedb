@@ -120,7 +120,7 @@ namespace joedb
     push_unlock();
    }
 
-   virtual ~Client() = default;
+   virtual ~Client();
  };
 }
 
