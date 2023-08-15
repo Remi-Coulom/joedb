@@ -158,7 +158,7 @@ std::vector<char> joedb::Readonly_Journal::get_raw_tail
 ) const
 {
  Async_Reader reader = get_tail_reader(starting_position);
- std::vector<char> result(reader.get_remaining());
+ std::vector<char> result(size_t(reader.get_remaining()));
  reader.read(result.data(), result.size());
 
  // TODO:

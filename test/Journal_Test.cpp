@@ -142,7 +142,7 @@ TEST(Journal, checkpoint_mismatch)
   joedb::Readonly_Journal journal(file);
   EXPECT_EQ(journal.get_checkpoint_position(), 41);
  }
- catch (const joedb::Exception &e)
+ catch (const joedb::Exception &)
  {
   FAIL() << "Mismatched checkpoint is OK for read-only";
  }
