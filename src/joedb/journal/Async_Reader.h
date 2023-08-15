@@ -38,12 +38,13 @@ namespace joedb
       size = capacity;
 
      file.seek(current);
-     file.raw_read(buffer, size);
+     const size_t actually_read = file.raw_read(buffer, size);
 
-     current += size;
+     current += actually_read;
+     return actually_read;
     }
 
-    return size;
+    return 0;
    }
 
    //////////////////////////////////////////////////////////////////////////

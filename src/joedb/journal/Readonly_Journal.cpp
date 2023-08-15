@@ -157,14 +157,27 @@ std::vector<char> joedb::Readonly_Journal::get_raw_tail
  int64_t starting_position
 ) const
 {
- std::vector<char> result;
- const int64_t size = get_checkpoint_position() - starting_position;
+ Async_Reader reader = get_tail_reader(starting_position);
+ std::vector<char> result(reader.get_remaining());
+ size_t offset = 0;
 
- if (size > 0)
+ while (reader.get_remaining() > 0)
  {
-  result.resize(size_t(size));
-  get_tail_reader(starting_position).read(result.data(), result.size());
+  const size_t actually_read = reader.read
+  (
+   result.data() + offset,
+   reader.get_remaining()
+  );
+
+  if (actually_read == 0) // Should be an error?
+   break;
+
+  offset += actually_read;
  }
+
+ // TODO:
+ // This function must not exist: step-by-step copy instead in File Connections
+ // Must add tests for files that read little by little
 
  return result;
 }
