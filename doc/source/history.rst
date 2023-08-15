@@ -1,6 +1,11 @@
 History
 =======
 
+- 2023-08-15: 7.1.1
+
+  - Bug fix of previous version: large pulls (>256kb) from a
+    ``Readonly_File_Connection`` to an ``SFTP_File`` could fail.
+
 - 2023-07-07: 7.1
 
   - New ``SFTP_File``, and ``Readonly_File_Connection``. Combining these
