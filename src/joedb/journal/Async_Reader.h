@@ -31,20 +31,12 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     size_t size = size_t(end - current);
-
-    if (size > 0)
-    {
-     if (size > capacity)
-      size = capacity;
-
-     file.seek(current);
-     const size_t actually_read = file.raw_read(buffer, size);
-
-     current += actually_read;
-     return actually_read;
-    }
-
-    return 0;
+    if (size > capacity)
+     size = capacity;
+    file.seek(current);
+    const size_t actually_read = file.read_all(buffer, size);
+    current += actually_read;
+    return actually_read;
    }
 
    //////////////////////////////////////////////////////////////////////////

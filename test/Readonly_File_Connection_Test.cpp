@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Readonly_File_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Test_File.h"
 
 #include "gtest/gtest.h"
 
@@ -10,11 +10,11 @@ namespace joedb
  TEST(Readonly_Connection, pull)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Memory_File server_file;
+  Test_File server_file;
   Writable_Journal server_journal(server_file);
   Readonly_File_Connection connection(server_file);
 
-  Memory_File client_file;
+  Test_File client_file;
   Interpreted_Client client(connection, client_file);
 
   EXPECT_EQ(0, int(client.get_database().get_tables().size()));
@@ -39,11 +39,11 @@ namespace joedb
  TEST(Readonly_Connection, no_write)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Memory_File server_file;
+  Test_File server_file;
   Writable_Journal server_journal(server_file);
   Readonly_File_Connection connection(server_file);
 
-  Memory_File client_file;
+  Test_File client_file;
 
   Interpreted_Client client(connection, client_file);
 
@@ -57,7 +57,7 @@ namespace joedb
  TEST(Readonly_Connection, mismatch)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Memory_File server_file;
+  Test_File server_file;
 
   {
    Writable_Journal server_journal(server_file);
@@ -65,7 +65,7 @@ namespace joedb
    server_journal.checkpoint(Commit_Level::no_commit);
   }
 
-  Memory_File client_file;
+  Test_File client_file;
 
   {
    Writable_Journal client_journal(client_file);
@@ -85,10 +85,10 @@ namespace joedb
  TEST(Readonly_Connection, push)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Memory_File server_file;
+  Test_File server_file;
   Writable_Journal server_journal(server_file);
 
-  Memory_File client_file;
+  Test_File client_file;
   {
    Writable_Journal client_journal(client_file);
    client_journal.create_table("city");

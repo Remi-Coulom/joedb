@@ -9,11 +9,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   flush();
+  reset_read_buffer();
   if (!seek(new_position))
-  {
    position = new_position;
-   reset_read_buffer();
-  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -112,8 +110,9 @@ namespace joedb
  )
  {
   SHA_256 sha_256;
+  flush();
   const int64_t original_position = get_position();
-  set_position(start);
+  seek(start);
 
   constexpr uint32_t chunks = 2048;
   std::vector<char> hashing_buffer(SHA_256::chunk_size * chunks);
@@ -126,7 +125,7 @@ namespace joedb
    if (current_size + int64_t(requested_size) > size)
     requested_size = size_t(size - current_size);
 
-   const size_t read_count = raw_read(&hashing_buffer[0], requested_size);
+   const size_t read_count = read_all(&hashing_buffer[0], requested_size);
    current_size += read_count;
    const uint32_t full_chunks = uint32_t(read_count / SHA_256::chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
@@ -162,6 +161,7 @@ namespace joedb
    return get_hash(start, size);
 
   SHA_256 sha_256;
+  flush();
   const int64_t original_position = get_position();
 
   for (int i = 0; i < buffer_count; i++)
@@ -180,9 +180,8 @@ namespace joedb
     );
    }
 
-   set_position(buffer_position);
-
-   raw_read(buffer, buffer_size);
+   seek(buffer_position);
+   read_all(buffer, buffer_size);
 
    for (int j = 0; j < buffer_size; j += SHA_256::chunk_size)
     sha_256.process_chunk(buffer + j);

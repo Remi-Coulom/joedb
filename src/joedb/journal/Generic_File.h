@@ -331,6 +331,19 @@ namespace joedb
     return raw_seek(offset + slice_start);
    }
 
+   size_t read_all(char *p, size_t capacity)
+   {
+    size_t done = 0;
+    while (done < capacity)
+    {
+     const size_t actually_read = raw_read(p + done, capacity - done);
+     if (actually_read == 0)
+      break;
+     done += actually_read;
+    }
+    return done;
+   };
+
    void destructor_flush() noexcept;
 
   public:
@@ -499,7 +512,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void read_data(char *data, size_t n)
+   void read_data(char *data, const size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(write_buffer_index == 0);
@@ -527,18 +540,16 @@ namespace joedb
        position++;
       }
      }
-     else
+
+     while (n0 < n)
      {
-      while (true)
-      {
-       const size_t actually_read = raw_read(data + n0, n - n0);
+      const size_t actually_read = raw_read(data + n0, n - n0);
 
-       position += actually_read;
-       n0 += actually_read;
+      position += actually_read;
+      n0 += actually_read;
 
-       if (n0 == n || actually_read == 0)
-        break;
-      }
+      if (actually_read == 0)
+       break;
      }
 
      if (n0 < n)
