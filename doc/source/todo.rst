@@ -146,6 +146,12 @@ joedb_admin
 
 Other Ideas
 -----------
+- Journal construction must be reworked to avoid race conditions:
+  - There is a race condition in write_existing_or_create_new (except for Windows_File). Also a race with journal construction.
+  - A shared file must be:
+    - shared-locked during whole Readable_Journal construction (if not already exclusive-locked by Writable_Journal construction).
+    - exclusive-locked during whole Writable_Journal construction
+  - Decide if create_new in Journal constructor, based on file size
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
