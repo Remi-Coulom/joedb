@@ -324,8 +324,6 @@ namespace joedb
    virtual int64_t raw_get_size() const = 0; // -1 means no known size
    virtual void sync() = 0;
 
-   static void locking_unsupported();
-
    int seek(int64_t offset)
    {
     return raw_seek(offset + slice_start);

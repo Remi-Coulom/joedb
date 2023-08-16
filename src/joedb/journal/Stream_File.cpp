@@ -14,7 +14,7 @@ namespace joedb
   streambuf(streambuf)
  {
   if (is_shared())
-   locking_unsupported();
+   throw Exception("Stream_File does not support shared_write");
  }
 
  /////////////////////////////////////////////////////////////////////////////

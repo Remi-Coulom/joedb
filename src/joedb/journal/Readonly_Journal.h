@@ -3,6 +3,7 @@
 
 #include "joedb/Writable.h"
 #include "joedb/journal/Async_Reader.h"
+#include "joedb/journal/Journal_Construction_Lock.h"
 
 #include <vector>
 
@@ -37,8 +38,6 @@ namespace joedb
    #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
    void perform_update_##type_id(Writable &writable);
    #include "joedb/TYPE_MACRO.h"
-
-   void construct(Check check);
 
   protected:
    Generic_File &file;
@@ -90,7 +89,20 @@ namespace joedb
 
   public:
 
-   explicit Readonly_Journal(Generic_File &file, Check check = Check::readonly);
+   explicit Readonly_Journal(Journal_Construction_Lock &lock, Check check);
+   explicit Readonly_Journal(Journal_Construction_Lock &&lock, Check check):
+    Readonly_Journal(lock, check)
+   {
+   }
+
+   explicit Readonly_Journal
+   (
+    Generic_File &file,
+    Check check = Check::readonly
+   ):
+    Readonly_Journal(Journal_Construction_Lock(file), check)
+   {
+   }
 
    uint32_t get_file_version() const {return file_version;}
    bool at_end_of_file() const;

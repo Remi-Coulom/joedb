@@ -5,16 +5,16 @@
 #include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::Writable_Journal(Generic_File &file):
+joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
 /////////////////////////////////////////////////////////////////////////////
- Readonly_Journal(file, Check::all),
+ Readonly_Journal(lock, Check::all),
  current_commit_level(Commit_Level::no_commit)
 {
  if (file.get_mode() == Open_Mode::read_existing)
  {
   throw Exception("Cannot create Writable_Journal with read-only file");
  }
- else if (file.get_mode() == Open_Mode::create_new)
+ else if (lock.is_creating_new())
  {
   file.write<uint8_t>('j');
   file.write<uint8_t>('o');

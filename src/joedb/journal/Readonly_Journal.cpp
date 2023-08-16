@@ -24,15 +24,26 @@ void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::construct(Check check)
+joedb::Readonly_Journal::Readonly_Journal
 /////////////////////////////////////////////////////////////////////////////
+(
+ Journal_Construction_Lock &lock,
+ Check check
+):
+ file(lock.get_file()),
+ file_version(0),
+ checkpoint_index(0),
+ checkpoint_position(0),
+ table_of_last_operation(0),
+ record_of_last_operation(0),
+ field_of_last_update(0)
 {
  file.set_position(0);
 
  //
  // Check the format of an existing joedb file
  //
- if (file.get_mode() != Open_Mode::create_new)
+ if (!lock.is_creating_new())
  {
   //
   // First, check for initial "joedb"
@@ -87,32 +98,6 @@ void joedb::Readonly_Journal::construct(Check check)
    }
   }
  }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Readonly_Journal::Readonly_Journal
-/////////////////////////////////////////////////////////////////////////////
-(
- Generic_File &file,
- Check check
-):
- file(file),
- file_version(0),
- checkpoint_index(0),
- checkpoint_position(0),
- table_of_last_operation(0),
- record_of_last_operation(0),
- field_of_last_update(0)
-{
- if (file.is_shared())
- {
-  file.shared_transaction([this, check]()
-  {
-   construct(check);
-  });
- }
- else
-  construct(check);
 }
 
 /////////////////////////////////////////////////////////////////////////////
