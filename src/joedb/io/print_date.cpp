@@ -13,7 +13,8 @@ namespace joedb
   const std::tm *tm = std::localtime(&t);
   constexpr size_t buffer_size = 32;
   char buffer[buffer_size];
-  std::strftime(buffer, buffer_size, "%b %e %Y %H:%M:%S", tm);
+  // note: msvcrt.dll does not support %e (instead of %d) in the format
+  std::strftime(buffer, buffer_size, "%b %d %Y %H:%M:%S", tm);
   out << buffer << '\n';
  }
 }
