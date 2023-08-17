@@ -3,7 +3,7 @@ TODO
 
 Journal File
 ------------
-- ``Open_Mode::overwrite_aborted``.
+- Allow opening compiled database with Check::all & ~Check::big_size
 - Specialization of read/write checkpoint -> use memory map.
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetech: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
@@ -44,7 +44,9 @@ On-disk Storage
 
 Compiler
 --------
-- Pass strings by value for new and update, and std::move them.
+- Pass strings by value for new and update, and std::move them:
+  - need for rvalue reference overload of Writable::update_string
+  - plain reference version must be kept as well
 - allow reading dropped fields in custom functions that are invoked before the
   drop. Store data in a column vector, and clear the vector at the time of the
   drop. Make sure field id is not reused. (make access function private, and
