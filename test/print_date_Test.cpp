@@ -1,0 +1,14 @@
+#include "joedb/io/print_date.h"
+
+#include "gtest/gtest.h"
+
+#include <sstream>
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(print_date, length)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::ostringstream oss;
+ joedb::print_date(oss);
+ EXPECT_TRUE(oss.str().size() > 10);
+}
