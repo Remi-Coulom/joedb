@@ -272,6 +272,11 @@ joedb_add_executable(joedbc_insert
  ../benchmark/joedbc_insert.cpp
 )
 
+joedb_add_executable(update_large_string
+ ../test/compiler/db/schema_v1.cpp
+ ../test/compiler/update_large_string.cpp
+)
+
 #############################################################################
 # Packaging
 #############################################################################
