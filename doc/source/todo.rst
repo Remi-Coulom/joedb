@@ -45,8 +45,12 @@ On-disk Storage
 Compiler
 --------
 - Pass strings by value for new and update, and std::move them:
+
   - need for rvalue reference overload of Writable::update_string
   - plain reference version must be kept as well
+  - using blobs or vectors of int8 can be a high-performance alternative
+  - so for the moment, it is not worth the added complexity
+
 - allow reading dropped fields in custom functions that are invoked before the
   drop. Store data in a column vector, and clear the vector at the time of the
   drop. Make sure field id is not reused. (make access function private, and
