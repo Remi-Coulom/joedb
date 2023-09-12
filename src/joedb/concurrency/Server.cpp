@@ -247,7 +247,7 @@ namespace joedb
     (
      push_buffer.data(),
      offset,
-     Commit_Level::full_commit
+     Commit_Level::no_commit
     );
     session->buffer[0] = 'U';
    }

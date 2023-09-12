@@ -1444,6 +1444,18 @@ static void generate_readonly_h
     max_record_id(0),
     schema_journal(schema_file)
    {}
+
+   void initialize_with_readonly_journal(joedb::Readonly_Journal &journal)
+   {
+    max_record_id = Record_Id(journal.get_checkpoint_position());
+    journal.replay_log(*this);
+    max_record_id = 0;
+
+    check_schema();
+
+    if (requires_schema_upgrade())
+     throw joedb::exception::Out_Of_Date();
+   }
 )RRR";
 
  for (auto &table: tables)
@@ -1605,14 +1617,7 @@ static void generate_readonly_h
   public:
    Readonly_Database(joedb::Readonly_Journal &journal)
    {
-    max_record_id = Record_Id(journal.get_checkpoint_position());
-    journal.replay_log(*this);
-    max_record_id = 0;
-
-    check_schema();
-
-    if (requires_schema_upgrade())
-     throw joedb::exception::Out_Of_Date();
+    initialize_with_readonly_journal(journal);
    }
 
    Readonly_Database(joedb::Readonly_Journal &&journal):
@@ -1641,6 +1646,30 @@ static void generate_readonly_h
    Readonly_Database(const std::string &file_name):
     Readonly_Database(file_name.c_str())
    {
+   }
+ };
+
+ class Pullable_Database: public Database
+ {
+  private:
+   joedb::Readonly_Journal journal;
+
+  public:
+   Pullable_Database(joedb::File &file): journal(file)
+   {
+    initialize_with_readonly_journal(journal);
+   }
+
+   bool pull()
+   {
+    journal.refresh_checkpoint();
+    if (journal.get_position() < journal.get_checkpoint_position())
+    {
+     journal.play_until_checkpoint(*this);
+     return true;
+    }
+    else
+     return false;
    }
  };
 
@@ -1961,7 +1990,7 @@ static void generate_cpp
    upgrading_schema = false;
 
    journal.comment("End of automatic schema upgrade");
-   journal.checkpoint(joedb::Commit_Level::full_commit);
+   journal.checkpoint(joedb::Commit_Level::no_commit);
   }
  }
 

@@ -80,7 +80,7 @@ namespace joedb
    Writable_Journal::Tail_Writer tail_writer
    (
     client_journal,
-    Commit_Level::full_commit
+    Commit_Level::no_commit
    );
 
    for (int64_t read = 0; read < size;)

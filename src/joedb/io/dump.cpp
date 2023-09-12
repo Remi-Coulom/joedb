@@ -181,7 +181,7 @@ void joedb::dump_data(const Readable &db, Writable &writable)
    }
   }
  }
- writable.checkpoint(Commit_Level::full_commit);
+ writable.checkpoint(Commit_Level::no_commit);
 }
 
 /////////////////////////////////////////////////////////////////////////////

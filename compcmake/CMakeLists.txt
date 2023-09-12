@@ -117,6 +117,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/compiler/Blob.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
+  ../test/compiler/Pullable_Database.cpp
   ../test/compiler/db/blob.cpp
   ../test/compiler/db/test.cpp
   ../test/compiler/db/multi_index.cpp

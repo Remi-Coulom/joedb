@@ -58,7 +58,7 @@ namespace joedb
      client_journal.append_raw_tail
      (
       server_journal.get_raw_tail(client_checkpoint),
-      Commit_Level::full_commit
+      Commit_Level::no_commit
      );
     }
 
@@ -84,7 +84,7 @@ namespace joedb
      server_journal.append_raw_tail
      (
       client_journal.get_raw_tail(server_checkpoint),
-      Commit_Level::full_commit
+      Commit_Level::no_commit
      );
     }
 

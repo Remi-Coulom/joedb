@@ -18,8 +18,6 @@ namespace joedb
    {
     if (file.is_shared())
      file.exclusive_lock();
-    else if (file.get_mode() == Open_Mode::read_existing)
-     file.shared_lock();
 
     creating_new = file.get_mode() != Open_Mode::read_existing &&
      file.get_size() == 0;
@@ -39,7 +37,7 @@ namespace joedb
    {
     try
     {
-     if (file.is_shared() || file.get_mode() == Open_Mode::read_existing)
+     if (file.is_shared())
       file.unlock();
     }
     catch(...)
