@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- const DWORD Windows_File::desired_access[] =
+ const DWORD Windows_File::desired_access[static_cast<size_t>(joedb::Open_Mode::modes)] =
  {
   GENERIC_READ,
   GENERIC_READ | GENERIC_WRITE,
@@ -16,7 +16,7 @@ namespace joedb
   GENERIC_READ | GENERIC_WRITE
  };
 
- const DWORD Windows_File::share_mode[] =
+ const DWORD Windows_File::share_mode[static_cast<size_t>(joedb::Open_Mode::modes)] =
  {
   FILE_SHARE_READ | FILE_SHARE_WRITE,
   FILE_SHARE_READ,
@@ -26,7 +26,7 @@ namespace joedb
   FILE_SHARE_READ | FILE_SHARE_WRITE
  };
 
- const DWORD Windows_File::creation_disposition[] =
+ const DWORD Windows_File::creation_disposition[static_cast<size_t>(joedb::Open_Mode::modes)] =
  {
   OPEN_EXISTING,
   OPEN_EXISTING,

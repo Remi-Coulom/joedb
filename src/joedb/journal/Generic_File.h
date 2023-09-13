@@ -21,7 +21,8 @@ namespace joedb
   create_new,
   write_existing_or_create_new,
   shared_write,
-  write_lock
+  write_lock,
+  modes
  };
 
  ////////////////////////////////////////////////////////////////////////////
