@@ -4,6 +4,7 @@
 #include "joedb/journal/Generic_File.h"
 
 #include <windows.h>
+#include <array>
 
 namespace joedb
 {
@@ -12,9 +13,10 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  {
   private:
-   static const DWORD desired_access[];
-   static const DWORD share_mode[];
-   static const DWORD creation_disposition[];
+   static constexpr size_t modes = static_cast<size_t>(joedb::Open_Mode::modes);
+   static const std::array<DWORD, modes> desired_access;
+   static const std::array<DWORD, modes> share_mode;
+   static const std::array<DWORD, modes> creation_disposition;
 
   private:
    const HANDLE file;
