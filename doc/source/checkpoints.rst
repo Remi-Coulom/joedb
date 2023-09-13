@@ -31,7 +31,7 @@ indicate that data is valid.
 Checkpoint Types
 ----------------
 
-The joedb compiler produces three checkpoint functions:
+The joedb compiler produces four checkpoint functions:
 
 - ``checkpoint_full_commit()``: Performs all 4 steps. Safe and slow.
 - ``checkpoint_half_commit()``: Performs step 1, 2, and 3, but not 4. This is
@@ -39,11 +39,12 @@ The joedb compiler produces three checkpoint functions:
   that data up to the previous checkpoint is safely recoverable. Data of the
   current checkpoint is written to disk, but recovery may require care if the
   second checkpoint copy does not make it to the disk before the crash.
-- ``checkpoint_no_commit()``, or ``checkpoint()``: Performs step 1 and 3 only.
-  This does not flush data to permanent storage, but it flushes it to the
-  operating system. This protects data from an application crash, but not from
-  an operating-system crash. It is tremendously faster than full or half
-  commit.
+- ``checkpoint_no_commit()``: Performs step 1 and 3 only. This does not flush
+  data to permanent storage, but it flushes it to the operating system. This
+  protects data from an application crash, but not from an operating-system
+  crash. It is tremendously faster than full or half commit.
+- ``checkpoint()``: Use the default checkpoint level of the database (set as
+  parameter to the database constructor).
 
 The safety of the half_commit and no_commit versions depends on the operating
 system, file system, and disk hardware. According to the SQLite documentation

@@ -5,9 +5,14 @@
 #include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
+joedb::Writable_Journal::Writable_Journal
 /////////////////////////////////////////////////////////////////////////////
+(
+ Journal_Construction_Lock &lock,
+ Commit_Level commit_level
+):
  Readonly_Journal(lock, Check::all),
+ Writable(commit_level),
  current_commit_level(Commit_Level::no_commit)
 {
  if (file.get_mode() == Open_Mode::read_existing)
@@ -26,7 +31,7 @@ joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
   file.write<int64_t>(0);
   file.write<int64_t>(0);
   file.write<int64_t>(0);
-  checkpoint(Commit_Level::no_commit);
+  default_checkpoint();
   file.set_mode(Open_Mode::write_existing);
  }
  else if (version_number > file_version)
@@ -39,28 +44,19 @@ joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::append_raw_tail
+void joedb::Writable_Journal::append_raw_tail(const char *data, size_t size)
 /////////////////////////////////////////////////////////////////////////////
-(
- const char *data,
- size_t size,
- Commit_Level commit_level
-)
 {
- Tail_Writer tail_writer(*this, commit_level);
+ Tail_Writer tail_writer(*this);
  tail_writer.append(data, size);
  tail_writer.finish();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::append_raw_tail
+void joedb::Writable_Journal::append_raw_tail(const std::vector<char> &data)
 /////////////////////////////////////////////////////////////////////////////
-(
- const std::vector<char> &data,
- Commit_Level commit_level
-)
 {
- append_raw_tail(data.data(), data.size(), commit_level);
+ append_raw_tail(data.data(), data.size());
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,13 @@ TEST(Compiler, Pullable_Database)
  std::remove(file_name);
 
  {
-  my_namespace::is_nested::test::File_Database db(file_name);
+  my_namespace::is_nested::test::File_Database db
+  (
+   file_name,
+   joedb::Open_Mode::create_new,
+   joedb::Commit_Level::no_commit
+  );
+
   db.new_city("Paris");
   db.checkpoint();
 

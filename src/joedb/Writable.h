@@ -20,7 +20,15 @@ namespace joedb
  class Writable: public Blob_Writer
  ////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   const Commit_Level default_commit_level;
+
   public:
+   Writable(Commit_Level default_commit_level = Commit_Level::no_commit):
+    default_commit_level(default_commit_level)
+   {
+   }
+
    virtual void create_table(const std::string &name) {}
    virtual void drop_table(Table_Id table_id) {}
    virtual void rename_table(Table_Id table_id, const std::string &name) {}
@@ -45,6 +53,7 @@ namespace joedb
    virtual void valid_data() {}
    virtual void flush() {}
    virtual void checkpoint(Commit_Level commit_level) {}
+   void default_checkpoint();
 
    virtual void insert_into(Table_Id table_id, Record_Id record_id) {}
    virtual void insert_vector

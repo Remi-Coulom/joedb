@@ -246,8 +246,7 @@ namespace joedb
     writable_journal->append_raw_tail
     (
      push_buffer.data(),
-     offset,
-     Commit_Level::no_commit
+     offset
     );
     session->buffer[0] = 'U';
    }

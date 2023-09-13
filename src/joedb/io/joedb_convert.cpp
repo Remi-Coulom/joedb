@@ -15,7 +15,7 @@ namespace joedb
   if (checkpoint <= 0)
    checkpoint = input.get_checkpoint_position();
   input.play_until(output, checkpoint);
-  output.checkpoint(Commit_Level::no_commit);
+  output.default_checkpoint();
  }
 
  /////////////////////////////////////////////////////////////////////////////

@@ -27,15 +27,27 @@ namespace joedb
    );
 
   public:
-   explicit Writable_Journal(Journal_Construction_Lock &lock);
+   explicit Writable_Journal
+   (
+    Journal_Construction_Lock &lock,
+    Commit_Level commit_level = Commit_Level::no_commit
+   );
 
-   explicit Writable_Journal(Journal_Construction_Lock &&lock):
-    Writable_Journal(lock)
+   explicit Writable_Journal
+   (
+    Journal_Construction_Lock &&lock,
+    Commit_Level commit_level = Commit_Level::no_commit
+   ):
+    Writable_Journal(lock, commit_level)
    {
    }
 
-   explicit Writable_Journal(Generic_File &file):
-    Writable_Journal(Journal_Construction_Lock(file))
+   explicit Writable_Journal
+   (
+    Generic_File &file,
+    Commit_Level commit_level = Commit_Level::no_commit
+   ):
+    Writable_Journal(Journal_Construction_Lock(file), commit_level)
    {
    }
 
@@ -45,16 +57,14 @@ namespace joedb
    {
     private:
      Writable_Journal &journal;
-     Commit_Level commit_level;
      const int64_t old_position;
      Async_Writer writer;
 
      Tail_Writer(const Tail_Writer &) = delete;
 
     public:
-     Tail_Writer(Writable_Journal &journal, Commit_Level commit_level):
+     Tail_Writer(Writable_Journal &journal):
       journal(journal),
-      commit_level(commit_level),
       old_position(journal.get_position()),
       writer(journal.file, journal.get_checkpoint_position())
      {
@@ -68,7 +78,7 @@ namespace joedb
      void finish()
      {
       writer.seek();
-      journal.checkpoint(commit_level);
+      journal.default_checkpoint();
       journal.file.set_position(old_position);
      }
    };
@@ -78,18 +88,9 @@ namespace joedb
     file.set_position(checkpoint_position);
    }
 
-   void append_raw_tail
-   (
-    const char *data,
-    size_t size,
-    Commit_Level commit_level
-   );
+   void append_raw_tail(const char *data, size_t size);
 
-   void append_raw_tail
-   (
-    const std::vector<char> &data,
-    Commit_Level commit_level
-   );
+   void append_raw_tail(const std::vector<char> &data);
 
    template<typename F> void exclusive_transaction(F transaction)
    {

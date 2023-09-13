@@ -57,8 +57,7 @@ namespace joedb
     {
      client_journal.append_raw_tail
      (
-      server_journal.get_raw_tail(client_checkpoint),
-      Commit_Level::no_commit
+      server_journal.get_raw_tail(client_checkpoint)
      );
     }
 
@@ -83,8 +82,7 @@ namespace joedb
     {
      server_journal.append_raw_tail
      (
-      client_journal.get_raw_tail(server_checkpoint),
-      Commit_Level::no_commit
+      client_journal.get_raw_tail(server_checkpoint)
      );
     }
 
@@ -94,9 +92,13 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   File_Connection(Generic_File &server_file):
+   File_Connection
    //////////////////////////////////////////////////////////////////////////
-    server_journal(server_file),
+   (
+    Generic_File &server_file,
+    Commit_Level commit_level = Commit_Level::no_commit
+   ):
+    server_journal(server_file, commit_level),
     locked(false)
    {
     check_not_shared(server_journal);

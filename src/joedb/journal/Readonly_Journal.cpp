@@ -173,9 +173,8 @@ void joedb::Readonly_Journal::replay_with_checkpoint_comments
   one_step(writable);
   writable.comment(std::to_string(file.get_position()));
  }
- writable.checkpoint(Commit_Level::no_commit);
+ writable.default_checkpoint();
 }
-
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::rewind()

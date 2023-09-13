@@ -108,7 +108,7 @@ namespace joedb
     {
      data.update();
      transaction();
-     data.get_journal().checkpoint(Commit_Level::no_commit);
+     data.get_journal().default_checkpoint();
     }
     catch (...)
     {

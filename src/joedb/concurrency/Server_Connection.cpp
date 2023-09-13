@@ -77,11 +77,7 @@ namespace joedb
   LOG("size = " << size << "...");
 
   {
-   Writable_Journal::Tail_Writer tail_writer
-   (
-    client_journal,
-    Commit_Level::no_commit
-   );
+   Writable_Journal::Tail_Writer tail_writer(client_journal);
 
    for (int64_t read = 0; read < size;)
    {

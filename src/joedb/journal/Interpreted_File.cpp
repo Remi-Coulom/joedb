@@ -29,7 +29,7 @@ namespace joedb
     std::ofstream null_stream;
     interpreter.main_loop(command_stream, null_stream);
    }
-   journal.checkpoint(Commit_Level::no_commit);
+   journal.default_checkpoint();
   }
 
   joedb_file.set_mode(Open_Mode::write_existing);

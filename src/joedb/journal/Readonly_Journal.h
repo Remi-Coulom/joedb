@@ -133,7 +133,7 @@ namespace joedb
    void play_until_checkpoint(Writable &writable)
    {
     play_until(writable, checkpoint_position);
-    writable.checkpoint(Commit_Level::no_commit);
+    writable.default_checkpoint();
    }
    void seek_to_checkpoint() {set_position(checkpoint_position);}
 

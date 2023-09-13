@@ -1,14 +1,17 @@
 History
 =======
 
-- 2023-09-??: 8.0.0
+- 2023-??-??: 8.0.0
+
+  - Classes that write a journal have an optional ``commit_level`` constructor
+    parameter that indicates the default commit level for checkpoints. Default
+    is ``joedb::Commit_Level::no_commit`` see :doc:`Checkpoints <checkpoints>`
+    for details.
   - new ``Pullable_Database``, similar to ``Readonly_Database``, but the file
     is not closed at the end of the constructor, and it is possible to pull new
-    data in case of concurrent update.
+    data in case of a concurrent update.
   - No more shared lock in the constructor of ``Readonly_Journal`` so that it
     is possible to open a database for reading even when it is locked.
-  - all checkpoints are ``no_commit`` by default. ``full_commit`` is extremely
-    slow, and should be done explicitly.
 
 - 2023-08-15: 7.1.1
 

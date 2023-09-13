@@ -53,7 +53,7 @@ namespace joedb
   }
   else if (command == "checkpoint") ////////////////////////////////////////
   {
-   writable.checkpoint(Commit_Level::no_commit);
+   writable.default_checkpoint();
   }
   else if (command == "abort") //////////////////////////////////////////////
   {
@@ -83,9 +83,9 @@ namespace joedb
  {
   if (!aborted)
   {
-   writable.checkpoint(Commit_Level::no_commit);
+   writable.default_checkpoint();
    if (blob_writer && blob_writer != &writable)
-    blob_writer->checkpoint(Commit_Level::no_commit);
+    blob_writer->default_checkpoint();
   }
  }
 }

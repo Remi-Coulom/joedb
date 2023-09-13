@@ -216,11 +216,16 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    Generic_File_Database
    (
     joedb::Generic_File &file,
-    bool upgrade
+    bool upgrade,
+    joedb::Commit_Level commit_level
    );
 
   public:
-   Generic_File_Database(joedb::Generic_File &file);
+   Generic_File_Database
+   (
+    joedb::Generic_File &file,
+    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
+   );
 
    std::string read_blob_data(joedb::Blob blob) final
    {
@@ -254,7 +259,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    void checkpoint()
    {
-    checkpoint_no_commit();
+    journal.default_checkpoint();
    }
 
    void checkpoint(joedb::Commit_Level commit_level) final
@@ -436,17 +441,19 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    File_Database
    (
     const char *file_name,
-    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new
+    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
+    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     File_Database_Parent(file_name, mode),
-    Generic_File_Database(file)
+    Generic_File_Database(file, commit_level)
    {
    }
 
    File_Database
    (
     const std::string &file_name,
-    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new
+    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
+    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     File_Database(file_name.c_str(), mode)
    {
@@ -481,8 +488,12 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    Generic_File_Database db;
 
   public:
-   Client_Data(joedb::Generic_File &file):
-    db(file, false)
+   Client_Data
+   (
+    joedb::Generic_File &file,
+    joedb::Commit_Level commit_level
+   ):
+    db(file, false, commit_level)
    {
    }
 
@@ -513,8 +524,13 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    }
 
   public:
-   Client(joedb::Connection &connection, joedb::Generic_File &file):
-    Client_Data(file),
+   Client
+   (
+    joedb::Connection &connection,
+    joedb::Generic_File &file,
+    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
+   ):
+    Client_Data(file, commit_level),
     joedb::Client(*this, connection)
    {
     if (get_checkpoint_difference() > 0)
@@ -1381,13 +1397,13 @@ static void generate_readonly_h
    void create_table(const std::string &name) final
    {
     schema_journal.create_table(name);
-    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
+    schema_journal.default_checkpoint();
    }
 
    void drop_table(Table_Id table_id) final
    {
     schema_journal.drop_table(table_id);
-    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
+    schema_journal.default_checkpoint();
    }
 
    void rename_table
@@ -1397,7 +1413,7 @@ static void generate_readonly_h
    ) final
    {
     schema_journal.rename_table(table_id, name);
-    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
+    schema_journal.default_checkpoint();
    }
 
    void add_field
@@ -1408,13 +1424,13 @@ static void generate_readonly_h
    ) final
    {
     schema_journal.add_field(table_id, name, type);
-    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
+    schema_journal.default_checkpoint();
    }
 
    void drop_field(Table_Id table_id, Field_Id field_id) final
    {
     schema_journal.drop_field(table_id, field_id);
-    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
+    schema_journal.default_checkpoint();
    }
 
    void rename_field
@@ -1425,13 +1441,13 @@ static void generate_readonly_h
    ) final
    {
     schema_journal.rename_field(table_id, field_id, name);
-    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
+    schema_journal.default_checkpoint();
    }
 
    void custom(const std::string &name) override
    {
     schema_journal.custom(name);
-    schema_journal.checkpoint(joedb::Commit_Level::no_commit);
+    schema_journal.default_checkpoint();
    }
 )RRR";
 
@@ -1990,7 +2006,7 @@ static void generate_cpp
    upgrading_schema = false;
 
    journal.comment("End of automatic schema upgrade");
-   journal.checkpoint(joedb::Commit_Level::no_commit);
+   journal.default_checkpoint();
   }
  }
 
@@ -1999,9 +2015,10 @@ static void generate_cpp
  ////////////////////////////////////////////////////////////////////////////
  (
   joedb::Generic_File &file,
-  bool upgrade
+  bool upgrade,
+  joedb::Commit_Level commit_level
  ):
-  journal(file)
+  journal(file, commit_level)
  {
   initialize();
   if (upgrade)
@@ -2015,9 +2032,10 @@ static void generate_cpp
  Generic_File_Database::Generic_File_Database
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Generic_File &file
+  joedb::Generic_File &file,
+  joedb::Commit_Level commit_level
  ):
-  Generic_File_Database(file, true)
+  Generic_File_Database(file, true, commit_level)
  {
  }
 )RRR";
