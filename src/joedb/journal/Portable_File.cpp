@@ -4,7 +4,7 @@
 namespace joedb
 {
  static constexpr int supported_open_modes = 3;
- static const std::ios_base::openmode openmode[supported_open_modes] =
+ static const std::array<std::ios_base::openmode, supported_open_modes> openmode
  {
   std::ios_base::binary | std::ios_base::in,
   std::ios_base::binary | std::ios_base::in | std::ios_base::out,
