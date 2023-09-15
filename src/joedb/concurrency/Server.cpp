@@ -107,13 +107,10 @@ namespace joedb
 
     lock_timeout_timer.async_wait
     (
-     std::bind
-     (
-      &Server::lock_timeout_handler,
-      this,
-      session,
-      std::placeholders::_1
-     )
+     [this, session](std::error_code e)
+     {
+      lock_timeout_handler(session, e);
+     }
     );
    }
 
@@ -219,9 +216,9 @@ namespace joedb
     net::buffer(&push_buffer[offset], remaining_size),
     [this, session, offset, remaining_size, conflict]
     (
-     std::error_code error,
-     size_t bytes_transferred
-    ) mutable
+     std::error_code e,
+     size_t s
+    )
     {
      push_transfer_handler
      (
@@ -229,8 +226,8 @@ namespace joedb
       offset,
       remaining_size,
       conflict,
-      error,
-      bytes_transferred
+      e,
+      s
      );
     }
    );
@@ -334,15 +331,10 @@ namespace joedb
     (
      session->socket,
      net::buffer(session->buffer, size_t(size)),
-     std::bind
-     (
-      &Server::pull_transfer_handler,
-      this,
-      session,
-      reader,
-      std::placeholders::_1,
-      std::placeholders::_2
-     )
+     [this, session, reader](std::error_code e, size_t s)
+     {
+      pull_transfer_handler(session, reader, e, s);
+     }
     );
    }
    else
@@ -379,15 +371,10 @@ namespace joedb
    (
     session->socket,
     net::buffer(session->buffer, 17),
-    std::bind
-    (
-     &Server::pull_transfer_handler,
-     this,
-     session,
-     reader,
-     std::placeholders::_1,
-     std::placeholders::_2
-    )
+    [this, session, reader](std::error_code e, size_t s)
+    {
+     pull_transfer_handler(session, reader, e, s);
+    }
    );
   }
  }
@@ -400,14 +387,10 @@ namespace joedb
   (
    session->socket,
    net::buffer(session->buffer + 1, 8),
-   std::bind
-   (
-    &Server::pull_handler,
-    this,
-    session,
-    std::placeholders::_1,
-    std::placeholders::_2
-   )
+   [this, session](std::error_code e, size_t s)
+   {
+    pull_handler(session, e, s);
+   }
   );
  }
 
@@ -420,6 +403,8 @@ namespace joedb
   size_t bytes_transferred
  )
  {
+  // check bytes_transferred == 40 ???
+
   if (!error)
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
@@ -452,14 +437,10 @@ namespace joedb
   (
    session->socket,
    net::buffer(session->buffer + 1, 40),
-   std::bind
-   (
-    &Server::check_hash_handler,
-    this,
-    session,
-    std::placeholders::_1,
-    std::placeholders::_2
-   )
+   [this, session] (std::error_code e, size_t s)
+   {
+    check_hash_handler(session, e, s);
+   }
   );
  }
 
@@ -492,14 +473,10 @@ namespace joedb
      (
       session->socket,
       net::buffer(session->buffer, 16),
-      std::bind
-      (
-       &Server::push_handler,
-       this,
-       session,
-       std::placeholders::_1,
-       std::placeholders::_2
-      )
+      [this, session](std::error_code e, size_t s)
+      {
+       push_handler(session, e, s);
+      }
      );
     break;
 
@@ -543,14 +520,10 @@ namespace joedb
   (
    session->socket,
    net::buffer(session->buffer, 1),
-   std::bind
-   (
-    &Server::read_command_handler,
-    this,
-    session,
-    std::placeholders::_1,
-    std::placeholders::_2
-   )
+   [this, session](std::error_code e, size_t s)
+   {
+    read_command_handler(session, e, s);
+   }
   );
  }
 
@@ -579,14 +552,10 @@ namespace joedb
   (
    session->socket,
    net::buffer(session->buffer, size),
-   std::bind
-   (
-    &Server::write_buffer_and_next_command_handler,
-    this,
-    session,
-    std::placeholders::_1,
-    std::placeholders::_2
-   )
+   [this, session](std::error_code e, size_t s)
+   {
+    write_buffer_and_next_command_handler(session, e, s);
+   }
   );
  }
 
@@ -658,14 +627,10 @@ namespace joedb
    (
     session->socket,
     net::buffer(session->buffer, 13),
-    std::bind
-    (
-     &Server::handshake_handler,
-     this,
-     session,
-     std::placeholders::_1,
-     std::placeholders::_2
-    )
+    [this, session](std::error_code e, size_t s)
+    {
+     handshake_handler(session, e, s);
+    }
    );
 
    start_accept();
@@ -679,13 +644,10 @@ namespace joedb
   acceptor.async_accept
   (
    io_context,
-   std::bind
-   (
-    &Server::handle_accept,
-    this,
-    std::placeholders::_1,
-    std::placeholders::_2
-   )
+   [this](std::error_code error, net::ip::tcp::socket socket)
+   {
+    handle_accept(error, std::move(socket));
+   }
   );
  }
 
@@ -700,12 +662,10 @@ namespace joedb
 
   interrupt_timer.async_wait
   (
-   std::bind
-   (
-    &Server::handle_interrupt_timer,
-    this,
-    std::placeholders::_1
-   )
+   [this](std::error_code e)
+   {
+    handle_interrupt_timer(e);
+   }
   );
  }
 
@@ -763,12 +723,10 @@ namespace joedb
 
      interrupt_timer.async_wait
      (
-      std::bind
-      (
-       &Server::handle_clear_signal_timer,
-       this,
-       std::placeholders::_1
-      )
+      [this](std::error_code e)
+      {
+       handle_clear_signal_timer(e);
+      }
      );
     }
    }
