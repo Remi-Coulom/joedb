@@ -202,6 +202,28 @@ TEST(StringIO_Test, base64_random)
  }
 }
 
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, base64_random_decode)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const size_t max_size = 100;
+ const int count = 10000;
+
+ auto sd = std::uniform_int_distribution<>(0, max_size);
+ auto cd = std::uniform_int_distribution<>(0, 255);
+ auto mt = std::mt19937(0);
+
+ for (int i = count; --i >= 0;)
+ {
+  std::string garbage(size_t(sd(mt)), ' ');
+
+  for (char &c: garbage)
+   c = char(cd(mt));
+
+  joedb::base64_decode(garbage);
+ }
+}
+
 // based on http://www.zedwood.com/article/cpp-is-valid-utf8-string-function
 /////////////////////////////////////////////////////////////////////////////
 static bool check_utf8(const std::string& string)
