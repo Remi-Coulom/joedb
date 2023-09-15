@@ -26,6 +26,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/interpreter/Database_Schema.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreter/Table.cpp
  ${JOEDB_SRC_DIR}/joedb/io/base64.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/get_time_string.cpp
  ${JOEDB_SRC_DIR}/joedb/io/dump.cpp
  ${JOEDB_SRC_DIR}/joedb/io/inplace_pack.cpp

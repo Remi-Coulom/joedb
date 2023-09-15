@@ -19,6 +19,8 @@ namespace joedb
     std::istream &iss,
     std::ostream &out
    ) = 0;
+
+   virtual ~Command_Processor();
  };
 }
 
