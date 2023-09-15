@@ -80,11 +80,11 @@ namespace joedb
 
   for (size_t i = 0; i < N; i++)
   {
-   const int32_t word =
-    (int32_t(base64_decoding[uint32_t(input[4 * i + 0])]) << 18) |
-    (int32_t(base64_decoding[uint32_t(input[4 * i + 1])]) << 12) |
-    (int32_t(base64_decoding[uint32_t(input[4 * i + 2])]) <<  6) |
-    (int32_t(base64_decoding[uint32_t(input[4 * i + 3])])      );
+   const uint32_t word =
+    (uint32_t(base64_decoding[uint8_t(input[4 * i + 0])]) << 18) |
+    (uint32_t(base64_decoding[uint8_t(input[4 * i + 1])]) << 12) |
+    (uint32_t(base64_decoding[uint8_t(input[4 * i + 2])]) <<  6) |
+    (uint32_t(base64_decoding[uint8_t(input[4 * i + 3])])      );
 
    result[3 * i + 0] = char(word >> 16);
    result[3 * i + 1] = char(word >>  8);
@@ -93,19 +93,19 @@ namespace joedb
 
   if (remainder == 2)
   {
-   const int32_t word =
-    (int32_t(base64_decoding[uint32_t(input[4 * N + 0])]) << 12) |
-    (int32_t(base64_decoding[uint32_t(input[4 * N + 1])]) <<  6) |
-    (int32_t(base64_decoding[uint32_t(input[4 * N + 2])])      );
+   const uint32_t word =
+    (uint32_t(base64_decoding[uint8_t(input[4 * N + 0])]) << 12) |
+    (uint32_t(base64_decoding[uint8_t(input[4 * N + 1])]) <<  6) |
+    (uint32_t(base64_decoding[uint8_t(input[4 * N + 2])])      );
 
    result[3 * N + 0] = char(word >> 10);
    result[3 * N + 1] = char(word >>  2);
   }
   else if (remainder == 1)
   {
-   const int32_t word =
-    (int32_t(base64_decoding[uint32_t(input[4 * N + 0])]) <<  6) |
-    (int32_t(base64_decoding[uint32_t(input[4 * N + 1])])      );
+   const uint32_t word =
+    (uint32_t(base64_decoding[uint8_t(input[4 * N + 0])]) <<  6) |
+    (uint32_t(base64_decoding[uint8_t(input[4 * N + 1])])      );
 
    result[3 * N + 0] = char(word >>  4);
   }
