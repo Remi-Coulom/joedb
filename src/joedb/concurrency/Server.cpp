@@ -403,8 +403,6 @@ namespace joedb
   size_t bytes_transferred
  )
  {
-  // check bytes_transferred == 40 ???
-
   if (!error)
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
