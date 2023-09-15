@@ -4,9 +4,11 @@
 
 #include <sstream>
 
+#if __cplusplus < 201703L
 constexpr uint32_t joedb::Readonly_Journal::version_number;
 constexpr uint32_t joedb::Readonly_Journal::compatible_version;
 constexpr int64_t joedb::Readonly_Journal::header_size;
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
