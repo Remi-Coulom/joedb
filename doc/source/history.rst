@@ -12,6 +12,7 @@ History
     data in case of a concurrent update.
   - No more shared lock in the constructor of ``Readonly_Journal`` so that it
     is possible to open a database for reading even when it is locked.
+  - Minor fixes and improvements.
 
 - 2023-08-15: 7.1.1
 
