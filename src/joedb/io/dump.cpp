@@ -30,10 +30,8 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  //
  std::map<Table_Id, std::map<Field_Id, Field_Id>> field_maps;
  {
-  Table_Id table_id = 0;
   for (auto table: db.get_tables())
   {
-   ++table_id;
    Field_Id field_id = 0;
    for (const auto &field: db.get_fields(table.first))
    {
