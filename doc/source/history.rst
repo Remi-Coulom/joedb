@@ -10,8 +10,6 @@ History
   - new ``Pullable_Database``, similar to ``Readonly_Database``, but the file
     is not closed at the end of the constructor, and it is possible to pull new
     data in case of a concurrent update.
-  - No more shared lock in the constructor of ``Readonly_Journal`` so that it
-    is possible to open a database for reading even when it is locked.
   - Minor fixes and improvements.
 
 - 2023-08-15: 7.1.1
