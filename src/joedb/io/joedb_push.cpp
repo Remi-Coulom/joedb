@@ -5,6 +5,7 @@
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/concurrency/Connection.h"
 
+#include <iostream>
 #include <thread>
 #include <chrono>
 #include <cstring>

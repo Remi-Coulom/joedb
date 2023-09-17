@@ -71,6 +71,7 @@ joedb_add_executable(joedb_push ../src/joedb/io/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
+ ../src/joedb/io/main_exception_catcher.cpp
  ../src/joedb/Destructor_Logger.cpp
  ../src/joedb/Blob.cpp
  ../src/joedb/Writable.cpp
@@ -227,6 +228,7 @@ add_executable(minimal_tutorial
  ../doc/source/tutorial/tutorial.cpp
  ../doc/source/tutorial/tutorial_main.cpp
  ../src/joedb/compiler/minimal_runtime.cpp
+ ../src/joedb/io/main_exception_catcher.cpp
 )
 
 
