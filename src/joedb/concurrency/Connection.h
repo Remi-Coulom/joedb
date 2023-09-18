@@ -10,9 +10,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   void content_mismatch();
-   void check_shared(Readonly_Journal &client_journal);
-   void check_not_shared(Readonly_Journal &client_journal);
+   static void content_mismatch();
+   static void check_shared(Readonly_Journal &client_journal);
+   static void check_not_shared(Readonly_Journal &client_journal);
 
   public:
    virtual int64_t handshake(Readonly_Journal &client_journal)
