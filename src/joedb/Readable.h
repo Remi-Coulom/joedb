@@ -51,59 +51,14 @@ namespace joedb
 
    // TODO: iterators to iterate over table rows?
 
-   Table_Id find_table(const std::string &name) const
-   {
-    for (const auto &table: get_tables())
-     if (table.second == name)
-      return table.first;
-    return 0;
-   }
-
-   Field_Id find_field(Table_Id table_id, const std::string &name) const
-   {
-    try
-    {
-     for (const auto &field: get_fields(table_id))
-      if (field.second == name)
-       return field.first;
-    }
-    catch (const Exception &)
-    {
-    }
-    return 0;
-   }
-
-   const std::string &get_table_name(Table_Id table_id) const
-   {
-    const std::map<Table_Id, std::string> &tables = get_tables();
-    const auto it = tables.find(table_id);
-    if (it == tables.end())
-    {
-     return default_table_name;
-    }
-    else
-     return it->second;
-   }
-
+   Table_Id find_table(const std::string &name) const;
+   Field_Id find_field(Table_Id table_id, const std::string &name) const;
+   const std::string &get_table_name(Table_Id table_id) const;
    const std::string &get_field_name
    (
     Table_Id table_id,
     Field_Id field_id
-   ) const
-   {
-    try
-    {
-     const std::map<Field_Id, std::string> &fields = get_fields(table_id);
-     const auto it = fields.find(field_id);
-     if (it != fields.end())
-      return it->second;
-    }
-    catch (const Exception &)
-    {
-    }
-
-    return default_field_name;
-   }
+   ) const;
 
    virtual ~Readable();
  };
