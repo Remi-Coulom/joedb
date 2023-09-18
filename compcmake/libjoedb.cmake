@@ -41,6 +41,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/json.cpp
  ${JOEDB_SRC_DIR}/joedb/io/main_exception_catcher.cpp
  ${JOEDB_SRC_DIR}/joedb/io/merge.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/process_journal_pair.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Raw_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
