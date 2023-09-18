@@ -11,14 +11,14 @@ namespace joedb
   for (const auto &field: field_names)
    if (field.second == name)
     return field.first;
-  return 0;
+  return Field_Id(0);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Table::add_field(const std::string &name, const Type &type)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (find_field(name))
+  if (find_field(name) != Field_Id(0))
    throw Exception("add_field: name already used");
   if (current_field_id == std::numeric_limits<Field_Id>::max())
    throw Exception("add_field: reached maximum field count");
@@ -43,42 +43,42 @@ namespace joedb
  void Table::delete_record(Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!freedom.is_used(record_id + 1))
+  if (!freedom.is_used(to_underlying(record_id) + 1))
    throw Exception("delete_record: bad record_id");
-  freedom.free(record_id + 1);
+  freedom.free(to_underlying(record_id) + 1);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Table::insert_record(Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (record_id > freedom.size())
+  if (to_underlying(record_id) > freedom.size())
   {
    for (auto &field: fields)
-    field.second.resize(record_id);
-   while (freedom.size() < record_id)
+    field.second.resize(to_underlying(record_id));
+   while (freedom.size() < to_underlying(record_id))
     freedom.push_back();
   }
-  else if (!freedom.is_free(record_id + 1))
+  else if (!freedom.is_free(to_underlying(record_id) + 1))
    throw Exception("insert: record_id already in use");
 
-  freedom.use(record_id + 1);
+  freedom.use(to_underlying(record_id) + 1);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Table::insert_vector(Record_Id record_id, Record_Id size)
+ void Table::insert_vector(Record_Id record_id, Size size)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (freedom.is_compact() && record_id == freedom.size() + 1)
+  if (freedom.is_compact() && to_underlying(record_id) == freedom.size() + 1)
   {
    for (auto &field: fields)
-    field.second.resize(record_id + size - 1);
+    field.second.resize(to_underlying(record_id) + size - 1);
 
    freedom.append_vector(size);
   }
   else
   {
-   for (Record_Id i = 0; i < size; i++)
+   for (Size i = 0; i < size; i++)
     insert_record(record_id + i);
   }
  }

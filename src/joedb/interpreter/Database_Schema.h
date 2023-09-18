@@ -16,7 +16,7 @@ namespace joedb
   protected:
    std::map<Table_Id, Table> tables;
    std::map<Table_Id, std::string> table_names;
-   Table_Id current_table_id = 0;
+   Table_Id current_table_id = Table_Id(0);
 
    static void check_identifier
    (

@@ -78,7 +78,7 @@ namespace joedb
  Record_Id Database_Schema::get_last_record_id(Table_Id table_id) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  return get_table(table_id).freedom.size();
+  return Record_Id(get_table(table_id).freedom.size());
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace joedb
   Record_Id record_id
  ) const
  {
-  return get_table(table_id).freedom.is_used(record_id + 1);
+  return get_table(table_id).freedom.is_used(to_underlying(record_id) + 1);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -129,7 +129,7 @@ namespace joedb
  {
   check_identifier("create_table", name);
 
-  if (find_table(name))
+  if (find_table(name) != Table_Id(0))
    throw Exception("create_table: name already used: " + name);
 
   ++current_table_id;
@@ -158,7 +158,7 @@ namespace joedb
  {
   check_identifier("rename_table", name);
 
-  if (find_table(name) != 0)
+  if (find_table(name) != Table_Id(0))
    throw Exception("rename_table: name already used: " + name);
 
   get_table(table_id); // make sure the table exists
@@ -205,7 +205,7 @@ namespace joedb
   if (field_it == field_names.end())
    throw Exception("rename_field: invalid field_id");
 
-  if (table.find_field(name))
+  if (table.find_field(name) != Field_Id(0))
    throw Exception("rename_field: name already used: " + name);
 
   field_it->second = name;

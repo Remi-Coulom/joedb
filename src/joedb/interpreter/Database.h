@@ -10,10 +10,10 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  {
   private:
-   const Record_Id max_record_id;
+   const Size max_record_id;
 
   public:
-   Database(Record_Id max_record_id = 0):
+   Database(Size max_record_id = 0):
     max_record_id(max_record_id)
    {
    }
@@ -23,7 +23,7 @@ namespace joedb
    (
     Table_Id table_id,
     Record_Id record_id,
-    Record_Id size
+    Size size
    ) final;
    void delete_from(Table_Id table_id, Record_Id record_id) final;
 
@@ -40,7 +40,7 @@ namespace joedb
     Table_Id table_id,\
     Record_Id record_id,\
     Field_Id field_id,\
-    Record_Id size,\
+    Size size,\
     const type *value\
    ) final;\
    type *get_own_##type_id##_storage\
@@ -48,7 +48,7 @@ namespace joedb
     Table_Id table_id,\
     Record_Id record_id,\
     Field_Id field_id,\
-    Record_Id &capacity\
+    Size &capacity\
    ) final;
    #include "joedb/TYPE_MACRO.h"
 

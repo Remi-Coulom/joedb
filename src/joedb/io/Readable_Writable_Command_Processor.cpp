@@ -197,7 +197,7 @@ namespace joedb
   else if (command == "delete_from") ////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
+   Record_Id record_id = Record_Id(0);
    iss >> record_id;
    get_writable().delete_from(table_id, record_id);
   }

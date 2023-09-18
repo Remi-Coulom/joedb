@@ -5,7 +5,7 @@
 void joedb::merge(Database &merged, const Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::map<Table_Id, Record_Id> offset;
+ std::map<Table_Id, Size> offset;
 
  //
  // First loop over tables to fill the offset map
@@ -13,7 +13,7 @@ void joedb::merge(Database &merged, const Database &db)
  for (auto table: merged.get_tables())
  {
   const Table_Id table_id = table.first;
-  const Record_Id last_record_id = merged.get_last_record_id(table_id);
+  const Size last_record_id = merged.get_last_record_id(table_id);
   offset[table_id] = last_record_id;
  }
 
@@ -26,7 +26,7 @@ void joedb::merge(Database &merged, const Database &db)
   const Record_Id last_record_id = db.get_last_record_id(table_id);
   const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(table_id);
 
-  if (last_record_id == 0)
+  if (last_record_id == Record_Id(0))
   {
    // do nothing, table is empty
   }

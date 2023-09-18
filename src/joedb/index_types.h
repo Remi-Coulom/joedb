@@ -31,6 +31,14 @@ namespace joedb
   return Record_Id(to_underlying(id) + size);
  }
 
+ inline Table_Id &operator++(Table_Id &id)
+ {
+  return id = Table_Id(to_underlying(id) + 1);
+ }
+ inline Field_Id &operator++(Field_Id &id)
+ {
+  return id = Field_Id(to_underlying(id) + 1);
+ }
  inline Record_Id &operator++(Record_Id &id)
  {
   return id = id + 1;

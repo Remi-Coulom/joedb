@@ -52,14 +52,14 @@ namespace joedb
     std::ostream &out
    ) final;
 
-   Record_Id max_record_id;
+   Size max_record_id;
 
   public:
    Readable_Writable_Command_Processor
    (
     Readable_Command_Processor &readable_command_processor,
     Writable_Command_Processor &writable_command_processor,
-    Record_Id max_record_id
+    Size max_record_id
    ):
     readable_command_processor(readable_command_processor),
     writable_command_processor(writable_command_processor),

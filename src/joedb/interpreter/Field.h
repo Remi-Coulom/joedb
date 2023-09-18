@@ -45,13 +45,13 @@ namespace joedb
    {\
     if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
-    return type_id##_column[record_id - 1];\
+    return type_id##_column[to_underlying(record_id) - 1];\
    }\
    void set_##type_id(Record_Id record_id, return_type value)\
    {\
     if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
-    type_id##_column[record_id - 1] = value;\
+    type_id##_column[to_underlying(record_id) - 1] = value;\
    }\
    const cpp_type *get_vector_##type_id() const\
    {\
@@ -60,12 +60,12 @@ namespace joedb
     return &type_id##_column[0];\
    }\
    void set_vector_##type_id(Record_Id record_id,\
-                             Record_Id size,\
+                             Size size,\
                              const cpp_type *value)\
    {\
     if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
-    cpp_type *target = &type_id##_column[record_id - 1];\
+    cpp_type *target = &type_id##_column[to_underlying(record_id) - 1];\
     if (target != value)\
      std::copy_n(value, size, target);\
    }\
@@ -73,13 +73,13 @@ namespace joedb
    {\
     if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
-    return &type_id##_column[record_id - 1];\
+    return &type_id##_column[to_underlying(record_id) - 1];\
    }\
    const cpp_type *get_own_##type_id##_storage(Record_Id record_id) const\
    {\
     if (type.get_type_id() != Type::Type_Id::type_id)\
      throw Exception("type error");\
-    return &type_id##_column[record_id - 1];\
+    return &type_id##_column[to_underlying(record_id) - 1];\
    }
    #include "joedb/TYPE_MACRO.h"
  };
