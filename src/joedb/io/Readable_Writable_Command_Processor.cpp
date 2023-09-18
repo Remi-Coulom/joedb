@@ -128,9 +128,9 @@ namespace joedb
   {
    const Table_Id table_id = parse_table(iss, out);
 
-   Record_Id record_id = 0;
+   Record_Id record_id = Record_Id(0);
    iss >> record_id;
-   if (record_id == 0)
+   if (record_id == Record_Id(0))
     record_id = get_readable().get_last_record_id(table_id) + 1;
 
    get_writable().insert_into(table_id, record_id);
@@ -145,15 +145,15 @@ namespace joedb
   else if (command == "insert_vector") /////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
-   Record_Id size = 0;
+   Record_Id record_id = Record_Id(0);
+   Size size = 0;
    iss >> record_id >> size;
    get_writable().insert_vector(table_id, record_id, size);
   }
   else if (command == "update") ////////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
+   Record_Id record_id = Record_Id(0);
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
@@ -163,12 +163,12 @@ namespace joedb
   else if (command == "update_vector") /////////////////////////////////////
   {
    const Table_Id table_id = parse_table(iss, out);
-   Record_Id record_id = 0;
+   Record_Id record_id = Record_Id(0);
    iss >> record_id;
    std::string field_name;
    iss >> field_name;
    const Field_Id field_id = get_readable().find_field(table_id, field_name);
-   Record_Id size = 0;
+   Size size = 0;
    iss >> size;
 
    if (max_record_id != 0 && size >= max_record_id)

@@ -60,6 +60,19 @@ namespace joedb
  {
   return out << to_underlying(record_id);
  }
+
+ inline std::istream &operator>>(std::istream &in, Table_Id &table_id)
+ {
+  return in >> *(std::underlying_type<Table_Id>::type *)(&table_id);
+ }
+ inline std::istream &operator>>(std::istream &in, Field_Id &field_id)
+ {
+  return in >> *(std::underlying_type<Field_Id>::type *)(&field_id);
+ }
+ inline std::istream &operator>>(std::istream &in, Record_Id &record_id)
+ {
+  return in >> *(std::underlying_type<Record_Id>::type *)(&record_id);
+ }
 }
 
 #endif

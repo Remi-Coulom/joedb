@@ -31,7 +31,7 @@ namespace joedb
   return Record_Id(to_underlying(id) + size);
  }
 
- inline Record_Id operator++(Record_Id &id)
+ inline Record_Id &operator++(Record_Id &id)
  {
   return id = id + 1;
  }

@@ -329,7 +329,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    const Size size = file.compact_read<Size>();\
    if (int64_t(size) > checkpoint_position)\
     throw Exception("update_vector too big");\
-   Record_Id capacity;\
+   Size capacity;\
    cpp_type *data = writable.get_own_##type_id##_storage\
    (\
     table_of_last_operation,\
@@ -343,7 +343,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
     buffer.resize(size);\
     data = &buffer[0];\
    }\
-   else if (record_of_last_operation <= 0 || record_of_last_operation + size - 1 > capacity)\
+   else if (to_underlying(record_of_last_operation) <= 0 || to_underlying(record_of_last_operation) + size - 1 > capacity)\
     throw Exception("update_vector out of range");\
    read_vector_of_##type_id(data, size);\
    writable.update_vector_##type_id\
