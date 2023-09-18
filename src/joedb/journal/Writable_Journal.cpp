@@ -232,7 +232,7 @@ void joedb::Writable_Journal::insert_vector
 (
  Table_Id table_id,
  Record_Id record_id,
- Size size
+ size_t size
 )
 {
  file.write<operation_t>(operation_t::insert_vector);
@@ -324,7 +324,7 @@ void joedb::Writable_Journal::update_vector_##type_id\
  Table_Id table_id,\
  Record_Id record_id,\
  Field_Id field_id,\
- Size size,\
+ size_t size,\
  const type *value\
 )\
 {\

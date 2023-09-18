@@ -28,15 +28,15 @@ int joedb::write_json
   const Table_Id table_id = table.first;
   const Record_Id last_record_id = db.get_last_record_id(table_id);
   std::vector<int64_t> &v = reference_translation[table_id];
-  v.resize(Size(db.get_last_record_id(table_id)) + 1);
+  v.resize(size_t(db.get_last_record_id(table_id)) + 1);
   v[0] = -1;
   int64_t position = 0;
   for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
   {
    if (!db.is_used(table_id, record_id))
-    v[Size(record_id)] = -1;
+    v[size_t(record_id)] = -1;
    else
-    v[Size(record_id)] = position++;
+    v[size_t(record_id)] = position++;
   }
   table_size[table_id] = position;
  }
@@ -91,9 +91,9 @@ int joedb::write_json
        if (it != reference_translation.end())
        {
         const std::vector<int64_t> &v = it->second;
-        if (Size(i) >= v.size())
+        if (size_t(i) >= v.size())
          i = Record_Id(0);
-        out << v[Size(i)];
+        out << v[size_t(i)];
        }
        else
         out << i; // reference to a missing table

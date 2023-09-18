@@ -146,7 +146,7 @@ namespace joedb
   {
    const Table_Id table_id = parse_table(iss, out);
    Record_Id record_id = Record_Id(0);
-   Size size = 0;
+   size_t size = 0;
    iss >> record_id >> size;
    get_writable().insert_vector(table_id, record_id, size);
   }
@@ -168,7 +168,7 @@ namespace joedb
    std::string field_name;
    iss >> field_name;
    const Field_Id field_id = get_readable().find_field(table_id, field_name);
-   Size size = 0;
+   size_t size = 0;
    iss >> size;
 
    if (max_record_id != 0 && size >= max_record_id)

@@ -9,11 +9,11 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Size size,\
+  size_t size,\
   const type *value\
  )\
  {\
-  for (Size i = 0; i < size; i++)\
+  for (size_t i = 0; i < size; i++)\
    update_##type_id(table_id, record_id + i, field_id, value[i]);\
  }
  #include "joedb/TYPE_MACRO.h"

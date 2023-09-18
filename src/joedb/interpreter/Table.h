@@ -33,9 +33,9 @@ namespace joedb
 
    void delete_record(Record_Id record_id);
    void insert_record(Record_Id record_id);
-   void insert_vector(Record_Id record_id, Size size);
+   void insert_vector(Record_Id record_id, size_t size);
 
-   Size get_storage_capacity() const {return Size(freedom.size());}
+   size_t get_storage_capacity() const {return freedom.size();}
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id(Record_Id rid, Field_Id fid) const\
@@ -55,7 +55,7 @@ namespace joedb
    }\
    void update_vector_##type_id(Record_Id record_id,\
                                 Field_Id field_id,\
-                                Size size,\
+                                size_t size,\
                                 const type *value)\
    {\
     const auto it = fields.find(field_id);\

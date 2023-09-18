@@ -281,7 +281,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
    const Record_Id record_id = file.read_strong_type<Record_Id>();
-   const Size size = file.compact_read<Size>();
+   const size_t size = file.compact_read<size_t>();
    writable.insert_vector(table_id, record_id, size);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
@@ -326,10 +326,10 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    table_of_last_operation = file.read_strong_type<Table_Id>();\
    record_of_last_operation = file.read_strong_type<Record_Id>();\
    field_of_last_update = file.read_strong_type<Field_Id>();\
-   const Size size = file.compact_read<Size>();\
+   const size_t size = file.compact_read<size_t>();\
    if (int64_t(size) > checkpoint_position)\
     throw Exception("update_vector too big");\
-   Size capacity;\
+   size_t capacity;\
    cpp_type *data = writable.get_own_##type_id##_storage\
    (\
     table_of_last_operation,\

@@ -44,7 +44,7 @@ namespace joedb
    (
     Table_Id table_id,
     Record_Id record_id,
-    Size size
+    size_t size
    ) final;
    void delete_from(Table_Id table_id, Record_Id record_id) final;
 
@@ -61,7 +61,7 @@ namespace joedb
     Table_Id table_id,\
     Record_Id record_id,\
     Field_Id field_id,\
-    Size size,\
+    size_t size,\
     const type *value\
    ) final;
    #include "joedb/TYPE_MACRO.h"

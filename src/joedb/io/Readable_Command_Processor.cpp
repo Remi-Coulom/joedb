@@ -82,7 +82,7 @@ namespace joedb
    }
 
    Record_Id start = Record_Id(0);
-   Size length = 0;
+   size_t length = 0;
 
    iss >> start >> length;
 
@@ -103,7 +103,7 @@ namespace joedb
     std::map<Field_Id, std::vector<std::string>> columns;
     std::vector<Record_Id> id_column;
 
-    Size rows = 0;
+    size_t rows = 0;
     const Record_Id last_record_id = readable.get_last_record_id(table_id);
     for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
     {
@@ -211,7 +211,7 @@ namespace joedb
     //
     // Table data
     //
-    for (Size i = 0; i < rows; i++)
+    for (size_t i = 0; i < rows; i++)
     {
      out << std::setw(int(id_width)) << id_column[i];
 

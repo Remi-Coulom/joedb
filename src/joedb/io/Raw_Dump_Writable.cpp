@@ -134,7 +134,7 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Size size
+  size_t size
  )
  {
   out << "insert_vector " << table_id << ' ';
@@ -169,7 +169,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Size size,\
+  size_t size,\
   const type *value\
  )\
  {\
@@ -177,7 +177,7 @@ namespace joedb
   out << record_id << ' ';\
   out << field_id << ' ';\
   out << size;\
-  for (Size i = 0; i < size; i++)\
+  for (size_t i = 0; i < size; i++)\
   {\
    out << ' ';\
    joedb::write_##type_id(out, value[i]);\

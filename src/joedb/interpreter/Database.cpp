@@ -27,7 +27,7 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Size size
+  size_t size
  )
  {
   if
@@ -81,7 +81,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Size size,\
+  size_t size,\
   const type *value\
  )\
  {\
@@ -93,7 +93,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Size &capacity\
+  size_t &capacity\
  )\
  {\
   Table &table = get_table(table_id);\

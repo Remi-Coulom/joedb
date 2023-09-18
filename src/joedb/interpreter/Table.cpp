@@ -66,7 +66,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Table::insert_vector(Record_Id record_id, Size size)
+ void Table::insert_vector(Record_Id record_id, size_t size)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (freedom.is_compact() && to_underlying(record_id) == freedom.size() + 1)
@@ -78,7 +78,7 @@ namespace joedb
   }
   else
   {
-   for (Size i = 0; i < size; i++)
+   for (size_t i = 0; i < size; i++)
     insert_record(record_id + i);
   }
  }

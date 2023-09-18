@@ -16,9 +16,9 @@ TEST(Interpreted_Test, database_errors)
  EXPECT_ANY_THROW(db.insert_into(Table_Id(1), Record_Id(0)));
  EXPECT_NO_THROW(db.insert_into(Table_Id(1), Record_Id(1)));
  EXPECT_ANY_THROW(db.insert_into(Table_Id(2), Record_Id(1)));
- EXPECT_ANY_THROW(db.insert_vector(Table_Id(2), Record_Id(1), Size(1)));
- EXPECT_NO_THROW(db.insert_vector(Table_Id(1), Record_Id(2), Size(10)));
- EXPECT_ANY_THROW(db.insert_vector(Table_Id(1), Record_Id(0), Size(10)));
+ EXPECT_ANY_THROW(db.insert_vector(Table_Id(2), Record_Id(1), size_t(1)));
+ EXPECT_NO_THROW(db.insert_vector(Table_Id(1), Record_Id(2), size_t(10)));
+ EXPECT_ANY_THROW(db.insert_vector(Table_Id(1), Record_Id(0), size_t(10)));
  EXPECT_ANY_THROW(db.delete_from(Table_Id(0), Record_Id(0)));
 }
 

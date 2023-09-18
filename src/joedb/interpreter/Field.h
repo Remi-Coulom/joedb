@@ -60,7 +60,7 @@ namespace joedb
     return &type_id##_column[0];\
    }\
    void set_vector_##type_id(Record_Id record_id,\
-                             Size size,\
+                             size_t size,\
                              const cpp_type *value)\
    {\
     if (type.get_type_id() != Type::Type_Id::type_id)\

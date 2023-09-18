@@ -11,8 +11,6 @@ namespace joedb
  enum class Field_Id: uint16_t {};
  enum class Record_Id: size_t {};
 
- typedef std::underlying_type<Record_Id>::type Size;
-
  inline std::underlying_type<Table_Id>::type to_underlying(Table_Id id)
  {
   return std::underlying_type<Table_Id>::type(id);
@@ -26,7 +24,7 @@ namespace joedb
   return std::underlying_type<Record_Id>::type(id);
  }
 
- inline Record_Id operator+(Record_Id id, Size size)
+ inline Record_Id operator+(Record_Id id, size_t size)
  {
   return Record_Id(to_underlying(id) + size);
  }

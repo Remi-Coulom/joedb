@@ -174,10 +174,10 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Size size
+  size_t size
  )
  {
-  for (Size i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++)
    insert_into(table_id, record_id + i);
  }
 

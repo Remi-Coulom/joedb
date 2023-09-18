@@ -189,7 +189,7 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Size size
+  size_t size
  )
  {
   if (muted)
@@ -237,7 +237,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Size size,\
+  size_t size,\
   const type *value\
  )\
  {\
@@ -248,7 +248,7 @@ namespace joedb
   out << to_underlying(record_id) << ' ';\
   out << schema.get_field_name(table_id, field_id) << ' ';\
   out << size;\
-  for (Size i = 0; i < size; i++)\
+  for (size_t i = 0; i < size; i++)\
   {\
    out << ' ';\
    joedb::write_##type_id(out, value[i]);\

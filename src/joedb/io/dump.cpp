@@ -55,24 +55,24 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  for (auto table: db.get_tables())
  {
   const Table_Id table_id = table.first;
-  const Size last_record_id = Size(db.get_last_record_id(table_id));
+  const size_t last_record_id = size_t(db.get_last_record_id(table_id));
 
-  for (Record_Id record_id = Record_Id(1); Size(record_id) <= last_record_id;)
+  for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id;)
   {
    while
    (
-    Size(record_id) <= last_record_id &&
+    size_t(record_id) <= last_record_id &&
     !db.is_used(table_id, record_id)
    )
    {
     ++record_id;
    }
 
-   Size size = 0;
+   size_t size = 0;
 
    while
    (
-    Size(record_id) + size <= last_record_id &&
+    size_t(record_id) + size <= last_record_id &&
     db.is_used(table_id, record_id + size)
    )
    {
@@ -90,7 +90,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
   {
    const Field_Id field_id = field.first;
 
-   for (Record_Id record_id = Record_Id(1); Size(record_id) <= last_record_id; ++record_id)
+   for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id; ++record_id)
    {
     if (db.is_used(table_id, record_id))
     {
@@ -124,29 +124,29 @@ void joedb::dump_data(const Readable &db, Writable &writable)
  for (auto table: db.get_tables())
  {
   const Table_Id table_id = table.first;
-  const Size last_record_id = Size(db.get_last_record_id(table_id));
+  const size_t last_record_id = size_t(db.get_last_record_id(table_id));
 
   Record_Id record_id = Record_Id(1);
 
   const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(table_id);
 
-  while (Size(record_id) <= last_record_id)
+  while (size_t(record_id) <= last_record_id)
   {
    while
    (
-    Size(record_id) <= last_record_id &&
-    !freedom_keeper.is_used(Size(record_id) + 1)
+    size_t(record_id) <= last_record_id &&
+    !freedom_keeper.is_used(size_t(record_id) + 1)
    )
    {
     ++record_id;
    }
 
-   Size size = 0;
+   size_t size = 0;
 
    while
    (
-    Size(record_id) + size <= last_record_id &&
-    freedom_keeper.is_used(Size(record_id) + size + 1)
+    size_t(record_id) + size <= last_record_id &&
+    freedom_keeper.is_used(size_t(record_id) + size + 1)
    )
    {
     size++;
