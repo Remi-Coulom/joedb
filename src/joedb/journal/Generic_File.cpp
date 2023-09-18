@@ -1,4 +1,5 @@
 #include "joedb/journal/Generic_File.h"
+#include "joedb/Destructor_Logger.h"
 
 #include <algorithm>
 

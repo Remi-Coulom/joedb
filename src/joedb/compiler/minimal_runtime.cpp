@@ -1,5 +1,7 @@
 // minimal set of files to be linked with a compiled database
 #include "joedb/Destructor_Logger.cpp"
+#include "joedb/Posthumous_Catcher.cpp"
+#include "joedb/Posthumous_Thrower.cpp"
 #include "joedb/Writable.cpp"
 #include "joedb/compiler/minimal_runtime_io.cpp"
 #include "joedb/journal/File.cpp"

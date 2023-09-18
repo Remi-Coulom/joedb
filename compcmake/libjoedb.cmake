@@ -14,14 +14,16 @@ endif()
 set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/external/wide_char_display_width.cpp
  ${JOEDB_SRC_DIR}/joedb/Blob.cpp
- ${JOEDB_SRC_DIR}/joedb/Readable.cpp
- ${JOEDB_SRC_DIR}/joedb/Writable.cpp
- ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
- ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
  ${JOEDB_SRC_DIR}/joedb/Destructor_Logger.cpp
  ${JOEDB_SRC_DIR}/joedb/get_version.cpp
+ ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
+ ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
+ ${JOEDB_SRC_DIR}/joedb/Posthumous_Catcher.cpp
+ ${JOEDB_SRC_DIR}/joedb/Posthumous_Thrower.cpp
+ ${JOEDB_SRC_DIR}/joedb/Readable.cpp
  ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/Signal.cpp
+ ${JOEDB_SRC_DIR}/joedb/Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreter/Database.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreter/Database_Schema.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreter/Table.cpp

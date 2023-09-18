@@ -1,4 +1,6 @@
+#include "joedb/Posthumous_Catcher.h"
 #include "joedb/Posthumous_Thrower.h"
+#include "joedb/Destructor_Logger.h"
 #include "joedb/Logger.h"
 #include "joedb/String_Logger.h"
 #include "joedb/Stream_Logger.h"

@@ -75,6 +75,8 @@ ipo_add_executable(joedb_convert
  ../src/joedb/Destructor_Logger.cpp
  ../src/joedb/Blob.cpp
  ../src/joedb/Writable.cpp
+ ../src/joedb/Posthumous_Catcher.cpp
+ ../src/joedb/Posthumous_Thrower.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Stream_File.cpp
  ../src/joedb/journal/Generic_File.cpp
