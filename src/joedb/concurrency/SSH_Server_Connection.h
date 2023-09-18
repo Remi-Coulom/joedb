@@ -24,8 +24,13 @@ namespace joedb
     std::ostream *log
    ):
     ssh::Session(user, host, ssh_port, ssh_log_level),
-    ssh::Forward_Channel(*this, "localhost", joedb_port),
-    Server_Connection(*this, log)
+    ssh::Forward_Channel
+    (
+     *static_cast<ssh::Session *>(this),
+     "localhost",
+     joedb_port
+    ),
+    Server_Connection(*static_cast<ssh::Forward_Channel *>(this), log)
    {
    }
  };
