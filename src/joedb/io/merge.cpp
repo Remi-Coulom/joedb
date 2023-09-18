@@ -5,7 +5,7 @@
 void joedb::merge(Database &merged, const Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::map<Table_Id, Size> offset;
+ std::map<Table_Id, Record_Id> offset;
 
  //
  // First loop over tables to fill the offset map
@@ -13,8 +13,7 @@ void joedb::merge(Database &merged, const Database &db)
  for (auto table: merged.get_tables())
  {
   const Table_Id table_id = table.first;
-  const Size last_record_id = merged.get_last_record_id(table_id);
-  offset[table_id] = last_record_id;
+  offset[table_id] = merged.get_last_record_id(table_id);
  }
 
  //
@@ -32,13 +31,13 @@ void joedb::merge(Database &merged, const Database &db)
   }
   else if (freedom_keeper.is_compact())
   {
-   merged.insert_vector(table_id, offset[table_id] + 1, last_record_id);
+   merged.insert_vector(table_id, offset[table_id] + 1, Size(last_record_id));
 
    for (const auto &field: db.get_fields(table_id))
    {
     const Field_Id field_id = field.first;
     const Type &type = db.get_field_type(table_id, field_id);
-    Record_Id capacity;
+    Size capacity;
 
     switch (type.get_type_id())
     {
@@ -53,8 +52,8 @@ void joedb::merge(Database &merged, const Database &db)
        table_id,\
        offset[table_id] + 1,\
        field_id,\
-       last_record_id,\
-       db.get_own_##type_id##_const_storage(table_id, 1, field_id, capacity)\
+       Size(last_record_id),\
+       db.get_own_##type_id##_const_storage(table_id, Record_Id(1), field_id, capacity)\
       );\
      }\
      break;
@@ -63,7 +62,7 @@ void joedb::merge(Database &merged, const Database &db)
 
     if (type.get_type_id() == Type::Type_Id::reference)
     {
-     const Record_Id reference_offset = offset[type.get_table_id()];
+     const Size reference_offset = Size(offset[type.get_table_id()]);
 
      Record_Id *reference = merged.get_own_reference_storage
      (
@@ -73,17 +72,19 @@ void joedb::merge(Database &merged, const Database &db)
       capacity
      );
 
-     for (Record_Id i = 0; i < last_record_id; i++)
-      if (reference[i] > 0)
-       reference[i] += reference_offset;
+     for (Size i = 0; i < Size(last_record_id); i++)
+      if (reference[i] != Record_Id(0))
+       reference[i] = reference[i] + reference_offset;
     }
    }
   }
   else
-   for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
-    if (freedom_keeper.is_used(record_id + 1))
+  {
+   for (Record_Id record_id = Record_Id(1); Size(record_id) <= Size(last_record_id); ++record_id)
+   {
+    if (freedom_keeper.is_used(Size(record_id) + 1))
     {
-     const Record_Id merged_record_id = record_id + offset[table_id];
+     const Record_Id merged_record_id = offset[table_id] + Size(record_id);
      merged.insert_into(table_id, merged_record_id);
 
      for (const auto &field: db.get_fields(table_id))
@@ -99,8 +100,8 @@ void joedb::merge(Database &merged, const Database &db)
        case Type::Type_Id::reference:
        {
         Record_Id referenced = db.get_reference(table_id, record_id, field_id);
-        if (referenced > 0)
-         referenced += offset[type.get_table_id()];
+        if (referenced != Record_Id(0))
+         referenced = referenced + Size(offset[type.get_table_id()]);
         merged.update_reference
         (
          table_id,
@@ -128,5 +129,7 @@ void joedb::merge(Database &merged, const Database &db)
       }
      }
     }
+   }
+  }
  }
 }

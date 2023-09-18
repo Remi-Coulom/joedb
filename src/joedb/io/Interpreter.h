@@ -55,7 +55,7 @@ namespace joedb
     Writable &writable,
     Blob_Reader *blob_reader,
     Writable *blob_writer,
-    Record_Id max_record_id
+    Size max_record_id
    ):
     Readable_Command_Processor(readable, blob_reader),
     Writable_Command_Processor(writable, blob_writer),

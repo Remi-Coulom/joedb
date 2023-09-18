@@ -189,7 +189,7 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Record_Id size
+  Size size
  )
  {
   if (muted)
@@ -237,7 +237,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Record_Id size,\
+  Size size,\
   const type *value\
  )\
  {\
@@ -245,10 +245,10 @@ namespace joedb
    return;\
 \
   out << "update_vector " << schema.get_table_name(table_id) << ' ';\
-  out << record_id << ' ';\
+  out << to_underlying(record_id) << ' ';\
   out << schema.get_field_name(table_id, field_id) << ' ';\
   out << size;\
-  for (Record_Id i = 0; i < size; i++)\
+  for (Size i = 0; i < size; i++)\
   {\
    out << ' ';\
    joedb::write_##type_id(out, value[i]);\

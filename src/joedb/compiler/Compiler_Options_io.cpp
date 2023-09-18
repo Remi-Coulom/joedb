@@ -66,7 +66,7 @@ bool joedb::parse_compiler_options
    }
 
    index.table_id = db.find_table(index_table);
-   if (!index.table_id)
+   if (index.table_id == Table_Id(0))
    {
     out << "Error: no such table: " << index_table << '\n';
     return false;
@@ -75,7 +75,7 @@ bool joedb::parse_compiler_options
    for (auto field_name: index_columns)
    {
     Field_Id field_id = db.find_field(index.table_id, field_name);
-    if (!field_id)
+    if (field_id == Field_Id(0))
     {
      out << "Error: no such field: " << field_name << '\n';
      return false;
@@ -104,7 +104,7 @@ bool joedb::parse_compiler_options
    iss >> table_name >> null_initialization;
 
    const Table_Id table_id = db.find_table(table_name);
-   if (!table_id)
+   if (table_id == Table_Id(0))
    {
     out << "Error: no such table: " << table_name << '\n';
     return false;

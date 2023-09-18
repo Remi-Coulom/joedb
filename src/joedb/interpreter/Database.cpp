@@ -9,8 +9,14 @@ namespace joedb
  void Database::insert_into(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (record_id <= 0 || (max_record_id && record_id > max_record_id))
+  if
+  (
+   to_underlying(record_id) <= 0 ||
+   (max_record_id && to_underlying(record_id) > max_record_id)
+  )
+  {
    throw Exception("insert_into: too big");
+  }
 
   get_table(table_id).insert_record(record_id);
  }
@@ -21,15 +27,24 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Record_Id size
+  Size size
  )
  {
-  if (record_id <= 0 ||
-      (max_record_id && (record_id > max_record_id || size > max_record_id)))
+  if
+  (
+   to_underlying(record_id) <= 0 ||
+   (
+    max_record_id &&
+    (
+     to_underlying(record_id) > max_record_id ||
+     size > max_record_id
+    )
+   )
+  )
   {
    std::ostringstream error_message;
    error_message << "insert_vector: ";
-   error_message << "record_id = " << record_id << "; ";
+   error_message << "record_id = " << to_underlying(record_id) << "; ";
    error_message << "size = " << size << "; ";
    error_message << "max = " << max_record_id;
    throw Exception(error_message.str());
@@ -66,7 +81,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Record_Id size,\
+  Size size,\
   const type *value\
  )\
  {\
@@ -78,7 +93,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Record_Id &capacity\
+  Size &capacity\
  )\
  {\
   Table &table = get_table(table_id);\

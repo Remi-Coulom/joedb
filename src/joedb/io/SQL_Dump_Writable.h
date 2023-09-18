@@ -50,7 +50,7 @@ namespace joedb
    void insert_into(Table_Id table_id, Record_Id record_id) final;
    void insert_vector(Table_Id table_id,
                       Record_Id record_id,
-                      Record_Id size) final;
+                      Size size) final;
    void delete_from(Table_Id table_id, Record_Id record_id) final;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\

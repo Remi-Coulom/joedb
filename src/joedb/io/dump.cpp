@@ -15,7 +15,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  //
  std::map<Table_Id, Table_Id> table_map;
  {
-  Table_Id table_id = 0;
+  Table_Id table_id = Table_Id(0);
   for (auto table: db.get_tables())
   {
    ++table_id;
@@ -32,7 +32,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  {
   for (auto table: db.get_tables())
   {
-   Field_Id field_id = 0;
+   Field_Id field_id = Field_Id(0);
    for (const auto &field: db.get_fields(table.first))
    {
     ++field_id;
@@ -55,24 +55,34 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  for (auto table: db.get_tables())
  {
   const Table_Id table_id = table.first;
-  const Record_Id last_record_id = db.get_last_record_id(table_id);
+  const Size last_record_id = Size(db.get_last_record_id(table_id));
 
-  for (Record_Id record_id = 1; record_id <= last_record_id;)
+  for (Record_Id record_id = Record_Id(1); Size(record_id) <= last_record_id;)
   {
-   while (record_id <= last_record_id &&
-          !db.is_used(table_id, record_id))
-    record_id++;
+   while
+   (
+    Size(record_id) <= last_record_id &&
+    !db.is_used(table_id, record_id)
+   )
+   {
+    ++record_id;
+   }
 
-   Record_Id size = 0;
+   Size size = 0;
 
-   while (record_id + size <= last_record_id &&
-          db.is_used(table_id, record_id + size))
+   while
+   (
+    Size(record_id) + size <= last_record_id &&
+    db.is_used(table_id, record_id + size)
+   )
+   {
     size++;
+   }
 
    if (size)
    {
     writable.insert_vector(table_map[table_id], record_id, size);
-    record_id += size;
+    record_id = record_id + size;
    }
   }
 
@@ -80,7 +90,8 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
   {
    const Field_Id field_id = field.first;
 
-   for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
+   for (Record_Id record_id = Record_Id(1); Size(record_id) <= last_record_id; ++record_id)
+   {
     if (db.is_used(table_id, record_id))
     {
      Table_Id t_id = table_map[table_id];
@@ -101,6 +112,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
       #include "joedb/TYPE_MACRO.h"
      }
     }
+   }
   }
  }
 }
@@ -112,29 +124,29 @@ void joedb::dump_data(const Readable &db, Writable &writable)
  for (auto table: db.get_tables())
  {
   const Table_Id table_id = table.first;
-  const Record_Id last_record_id = db.get_last_record_id(table_id);
+  const Size last_record_id = Size(db.get_last_record_id(table_id));
 
-  Record_Id record_id = 1;
+  Record_Id record_id = Record_Id(1);
 
   const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(table_id);
 
-  while (record_id <= last_record_id)
+  while (Size(record_id) <= last_record_id)
   {
    while
    (
-    record_id <= last_record_id &&
-    !freedom_keeper.is_used(record_id + 1)
+    Size(record_id) <= last_record_id &&
+    !freedom_keeper.is_used(Size(record_id) + 1)
    )
    {
-    record_id++;
+    ++record_id;
    }
 
-   Record_Id size = 0;
+   Size size = 0;
 
    while
    (
-    record_id + size <= last_record_id &&
-    freedom_keeper.is_used(record_id + size + 1)
+    Size(record_id) + size <= last_record_id &&
+    freedom_keeper.is_used(Size(record_id) + size + 1)
    )
    {
     size++;
@@ -175,7 +187,7 @@ void joedb::dump_data(const Readable &db, Writable &writable)
      }
     }
 
-    record_id += size;
+    record_id = record_id + size;
    }
   }
  }

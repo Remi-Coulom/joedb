@@ -28,7 +28,7 @@ namespace joedb
    std::string table_name;
    in >> table_name;
    const Table_Id table_id = readable.find_table(table_name);
-   if (table_id)
+   if (table_id != Table_Id(0))
     return Type::reference(table_id);
   }
 
@@ -52,7 +52,7 @@ namespace joedb
   std::string table_name;
   in >> table_name;
   const Table_Id table_id = readable.find_table(table_name);
-  if (!table_id)
+  if (table_id != Table_Id(0))
   {
    std::ostringstream error;
    error << "No such table: " << table_name;
@@ -81,12 +81,12 @@ namespace joedb
      max_column_width = w;
    }
 
-   size_t start = 0;
-   size_t length = 0;
+   Record_Id start = Record_Id(0);
+   Size length = 0;
 
    iss >> start >> length;
 
-   if (table_id)
+   if (table_id != Table_Id(0))
    {
     const auto &fields = readable.get_fields(table_id);
     std::map<Field_Id, size_t> column_width;
@@ -103,9 +103,10 @@ namespace joedb
     std::map<Field_Id, std::vector<std::string>> columns;
     std::vector<Record_Id> id_column;
 
-    size_t rows = 0;
+    Size rows = 0;
     const Record_Id last_record_id = readable.get_last_record_id(table_id);
-    for (Record_Id record_id = 1; record_id <= last_record_id; record_id++)
+    for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
+    {
      if
      (
       readable.is_used(table_id, record_id) &&
@@ -163,6 +164,7 @@ namespace joedb
        }
       }
      }
+    }
 
     //
     // Determine table width
@@ -209,7 +211,7 @@ namespace joedb
     //
     // Table data
     //
-    for (size_t i = 0; i < rows; i++)
+    for (Size i = 0; i < rows; i++)
     {
      out << std::setw(int(id_width)) << id_column[i];
 

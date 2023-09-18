@@ -174,10 +174,10 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Record_Id size
+  Size size
  )
  {
-  for (Record_Id i = 0; i < size; i++)
+  for (Size i = 0; i < size; i++)
    insert_into(table_id, record_id + i);
  }
 
@@ -259,7 +259,7 @@ namespace joedb
   out << "UPDATE \"" << schema.get_table_name(table_id);
   out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
 
-  if (value == 0)
+  if (value == Record_Id(0))
    out << "NULL";
   else
    out << value;
