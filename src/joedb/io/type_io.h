@@ -35,10 +35,9 @@ namespace joedb
  Blob read_blob(std::istream &in);
 
  #define PRIMITIVE_IO(type, type_id)\
- inline type read_##type_id(std::istream &in)\
- {type value = type(); in >> value; return value;}\
- inline void write_##type_id(std::ostream &out, type value)\
- {out << value;}
+ type read_##type_id(std::istream &in);\
+ void write_##type_id(std::ostream &out, type value);
+
  PRIMITIVE_IO(int32_t, int32)
  PRIMITIVE_IO(int64_t, int64)
  PRIMITIVE_IO(bool, boolean)
@@ -46,7 +45,21 @@ namespace joedb
  PRIMITIVE_IO(float, float32)
  PRIMITIVE_IO(double, float64)
  PRIMITIVE_IO(int16_t, int16)
+
  #undef PRIMITIVE_IO
+
+ inline std::ostream &operator<<(std::ostream &out, Table_Id table_id)
+ {
+  return out << to_underlying(table_id);
+ }
+ inline std::ostream &operator<<(std::ostream &out, Field_Id field_id)
+ {
+  return out << to_underlying(field_id);
+ }
+ inline std::ostream &operator<<(std::ostream &out, Record_Id record_id)
+ {
+  return out << to_underlying(record_id);
+ }
 }
 
 #endif

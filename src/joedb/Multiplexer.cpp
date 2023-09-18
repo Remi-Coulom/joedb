@@ -126,7 +126,7 @@ namespace joedb
  (
   Table_Id table_id,
   Record_Id record_id,
-  Record_Id size
+  Size size
  )
  {
   MULTIPLEX(insert_vector(table_id, record_id, size));
@@ -159,7 +159,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Record_Id size,\
+  Size size,\
   const type *value\
  )\
  {\
@@ -173,7 +173,7 @@ namespace joedb
   Table_Id table_id,\
   Record_Id record_id,\
   Field_Id field_id,\
-  Record_Id &capacity\
+  Size &capacity\
  )\
  {\
   capacity = 0;\

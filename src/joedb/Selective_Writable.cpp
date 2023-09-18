@@ -99,7 +99,7 @@ namespace joedb
 
  void Selective_Writable::insert_vector(Table_Id table_id,
                     Record_Id record_id,
-                    Record_Id size)
+                    Size size)
  {
   if (mode & data)
    writable.insert_vector(table_id, record_id, size);

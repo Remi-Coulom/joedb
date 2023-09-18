@@ -36,9 +36,9 @@ joedb::Readonly_Journal::Readonly_Journal
  file_version(0),
  checkpoint_index(0),
  checkpoint_position(0),
- table_of_last_operation(0),
- record_of_last_operation(0),
- field_of_last_update(0)
+ table_of_last_operation(Table_Id(0)),
+ record_of_last_operation(Record_Id(0)),
+ field_of_last_update(Field_Id(0))
 {
  file.set_position(0);
 
@@ -281,7 +281,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   {
    const Table_Id table_id = file.compact_read<Table_Id>();
    const Record_Id record_id = file.compact_read<Record_Id>();
-   const Record_Id size = file.compact_read<Record_Id>();
+   const Size size = file.compact_read<Size>();
    writable.insert_vector(table_id, record_id, size);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
@@ -315,7 +315,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   break;\
 \
   case operation_t::update_next_##type_id:\
-   record_of_last_operation++;\
+   ++record_of_last_operation;\
    perform_update_##type_id(writable);\
   break;
   #include "joedb/TYPE_MACRO.h"
@@ -326,7 +326,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    table_of_last_operation = file.compact_read<Table_Id>();\
    record_of_last_operation = file.compact_read<Record_Id>();\
    field_of_last_update = file.compact_read<Field_Id>();\
-   const Record_Id size = file.compact_read<Record_Id>();\
+   const Size size = file.compact_read<Size>();\
    if (int64_t(size) > checkpoint_position)\
     throw Exception("update_vector too big");\
    Record_Id capacity;\

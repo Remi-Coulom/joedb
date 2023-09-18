@@ -9,6 +9,7 @@
 #include "joedb/Blob.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/SHA_256.h"
+#include "joedb/index_types.h"
 
 namespace joedb
 {
@@ -470,6 +471,16 @@ namespace joedb
     while (extra_bytes--)
      result = T((result << 8) | uint8_t(getc()));
     return result;
+   }
+
+   void write_reference(Record_Id id)
+   {
+    compact_write<>(to_underlying(id));
+   }
+
+   Record_Id read_reference()
+   {
+    return Record_Id(compact_read<std::underlying_type<Record_Id>::type>());
    }
 
    void write_string(const std::string &s);

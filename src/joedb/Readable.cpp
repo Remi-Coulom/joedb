@@ -13,7 +13,7 @@ namespace joedb
   for (const auto &table: get_tables())
    if (table.second == name)
     return table.first;
-  return 0;
+  return Table_Id(0);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ namespace joedb
   catch (const Exception &)
   {
   }
-  return 0;
+  return Field_Id(0);
  }
 
  ////////////////////////////////////////////////////////////////////////////

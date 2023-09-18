@@ -60,7 +60,7 @@ namespace joedb
    (
     Table_Id table_id,
     Record_Id record_id,
-    Record_Id size
+    Size size
    ) {}
    virtual void delete_from(Table_Id table_id, Record_Id record_id) {}
 
@@ -80,7 +80,7 @@ namespace joedb
     Table_Id table_id,\
     Record_Id record_id,\
     Field_Id field_id,\
-    Record_Id size,\
+    Size size,\
     const type *value\
    );\
    virtual type *get_own_##type_id##_storage\
@@ -88,7 +88,7 @@ namespace joedb
     Table_Id table_id,\
     Record_Id record_id,\
     Field_Id field_id,\
-    Record_Id &capacity\
+    Size &capacity\
    )\
    {\
     capacity = 0;\
@@ -99,7 +99,7 @@ namespace joedb
     Table_Id table_id,\
     Record_Id record_id,\
     Field_Id field_id,\
-    Record_Id &capacity\
+    Size &capacity\
    ) const\
    {\
     return (const_cast<Writable *>(this))->get_own_##type_id##_storage(table_id, record_id, field_id, capacity);\

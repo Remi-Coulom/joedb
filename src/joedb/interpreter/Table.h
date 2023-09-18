@@ -19,7 +19,7 @@ namespace joedb
   private:
    std::map<Field_Id, Field> fields;
    std::map<Field_Id, std::string> field_names;
-   Field_Id current_field_id = 0;
+   Field_Id current_field_id = Field_Id(0);
 
    Compact_Freedom_Keeper freedom;
 
@@ -33,9 +33,9 @@ namespace joedb
 
    void delete_record(Record_Id record_id);
    void insert_record(Record_Id record_id);
-   void insert_vector(Record_Id record_id, Record_Id size);
+   void insert_vector(Record_Id record_id, Size size);
 
-   Record_Id get_storage_capacity() const {return Record_Id(freedom.size());}
+   Size get_storage_capacity() const {return Size(freedom.size());}
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id(Record_Id rid, Field_Id fid) const\
@@ -55,7 +55,7 @@ namespace joedb
    }\
    void update_vector_##type_id(Record_Id record_id,\
                                 Field_Id field_id,\
-                                Record_Id size,\
+                                Size size,\
                                 const type *value)\
    {\
     const auto it = fields.find(field_id);\
