@@ -40,31 +40,31 @@ TEST_F(Writable_Journal_Test, basic_operations)
 
   {
    const Table_Id table_id = db1.find_table("table_test");
-   multi.insert_into(table_id, 1);
+   multi.insert_into(table_id, Record_Id(1));
    multi.add_field(table_id, "field", Type::int32());
    const Field_Id field_id = db1.find_field(table_id, "field");
-   multi.update_int32(table_id, 1, field_id, 1234);
-   multi.delete_from(table_id, 1);
-   multi.insert_into(table_id, 2);
-   multi.update_int32(table_id, 2, field_id, 4567);
+   multi.update_int32(table_id, Record_Id(1), field_id, 1234);
+   multi.delete_from(table_id, Record_Id(1));
+   multi.insert_into(table_id, Record_Id(2));
+   multi.update_int32(table_id, Record_Id(2), field_id, 4567);
    multi.drop_field(table_id, field_id);
 
    multi.add_field(table_id, "big_field", Type::int64());
    const Field_Id big_field_id = db1.find_field(table_id, "big_field");
-   multi.update_int64(table_id, 2, big_field_id, 1234567ULL);
+   multi.update_int64(table_id, Record_Id(2), big_field_id, 1234567ULL);
 
    multi.add_field(table_id, "new_field", Type::reference(table_id));
    const Field_Id new_field = db1.find_field(table_id, "new_field");
-   multi.update_reference(table_id, 2, new_field, 2);
+   multi.update_reference(table_id, Record_Id(2), new_field, Record_Id(2));
    multi.add_field(table_id, "name", Type::string());
    const Field_Id name_id = db1.find_field(table_id, "name");
-   multi.update_string(table_id, 2, name_id, "Aristide");
+   multi.update_string(table_id, Record_Id(2), name_id, "Aristide");
   }
 
   {
    multi.create_table("type_test");
    const Table_Id table_id = db1.find_table("type_test");
-   multi.insert_into(table_id, 1);
+   multi.insert_into(table_id, Record_Id(1));
 
    multi.add_field(table_id, "string", Type::string());
    multi.add_field(table_id, "int32", Type::int32());
@@ -82,13 +82,13 @@ TEST_F(Writable_Journal_Test, basic_operations)
    const Field_Id float32_field_id = db1.find_field(table_id, "float32");
    const Field_Id float64_field_id = db1.find_field(table_id, "float64");
 
-   multi.update_string(table_id, 1, string_field_id, "SuperString");
-   multi.update_int32(table_id, 1, int32_field_id, 1234);
-   multi.update_int64(table_id, 1, int64_field_id, 123412341234LL);
-   multi.update_reference(table_id, 1, reference_field_id, 1);
-   multi.update_boolean(table_id, 1, bool_field_id, true);
-   multi.update_float32(table_id, 1, float32_field_id, 3.14f);
-   multi.update_float64(table_id, 1, float64_field_id, 3.141592653589);
+   multi.update_string(table_id, Record_Id(1), string_field_id, "SuperString");
+   multi.update_int32(table_id, Record_Id(1), int32_field_id, 1234);
+   multi.update_int64(table_id, Record_Id(1), int64_field_id, 123412341234LL);
+   multi.update_reference(table_id, Record_Id(1), reference_field_id, Record_Id(1));
+   multi.update_boolean(table_id, Record_Id(1), bool_field_id, true);
+   multi.update_float32(table_id, Record_Id(1), float32_field_id, 3.14f);
+   multi.update_float64(table_id, Record_Id(1), float64_field_id, 3.141592653589);
   }
   journal.checkpoint(Commit_Level::full_commit);
  }

@@ -25,8 +25,8 @@ static const std::string &get_translation
 /////////////////////////////////////////////////////////////////////////////
 (
  const test::Database &db,
- joedb::Record_Id string_id_id,
- joedb::Record_Id language_id
+ size_t string_id_id,
+ size_t language_id
 )
 {
  const test::id_of_string_id string_id(string_id_id);
@@ -340,7 +340,7 @@ TEST(Compiler, exceptions)
   joedb::Memory_File file;
   test::Generic_File_Database db(file);
   auto translation = db.new_translation();
-  ((joedb::Writable *)&db)->delete_from(5, translation.get_id());
+  ((joedb::Writable *)&db)->delete_from(joedb::Table_Id(5), translation.get_record_id());
   db.checkpoint();
  }
  catch (const joedb::Exception &e)
@@ -352,8 +352,8 @@ TEST(Compiler, exceptions)
  {
   joedb::Memory_File file;
   test::Generic_File_Database db(file);
-  ((joedb::Writable *)&db)->insert_into(1, 1);
-  ((joedb::Writable *)&db)->insert_into(1, 1);
+  ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(1));
+  ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(1));
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
@@ -366,8 +366,8 @@ TEST(Compiler, exceptions)
  {
   joedb::Memory_File file;
   test::Generic_File_Database db(file);
-  ((joedb::Writable *)&db)->insert_into(5, 1);
-  ((joedb::Writable *)&db)->insert_into(5, 3);
+  ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(5), joedb::Record_Id(1));
+  ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(5), joedb::Record_Id(3));
   db.checkpoint();
  }
  catch (const joedb::Exception &e)
@@ -380,7 +380,7 @@ TEST(Compiler, exceptions)
   joedb::Memory_File file;
   test::Generic_File_Database db(file);
   db.set_max_record_id(1000);
-  ((joedb::Writable *)&db)->insert_into(1, 2000);
+  ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(2000));
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
@@ -394,7 +394,7 @@ TEST(Compiler, exceptions)
   joedb::Memory_File file;
   test::Generic_File_Database db(file);
   db.set_max_record_id(1000);
-  ((joedb::Writable *)&db)->insert_vector(1, 1, 2000);
+  ((joedb::Writable *)&db)->insert_vector(joedb::Table_Id(1), joedb::Record_Id(1), 2000);
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }

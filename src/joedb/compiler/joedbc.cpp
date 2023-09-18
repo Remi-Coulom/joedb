@@ -290,10 +290,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   out << "   id_of_" << tname << " new_" << tname << "()\n";
   out << "   {\n";
 
-  out << "    id_of_" << tname << " result(storage_of_" << tname << ".freedom_keeper.get_free_record() - 1);\n";
+  out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname << ".freedom_keeper.get_free_record() - 1));\n";
   out << "    storage_of_" << tname << ".resize(storage_of_" << tname << ".freedom_keeper.size());\n";
-  out << "    internal_insert_" << tname << "(result.get_id());\n\n";
-  out << "    journal.insert_into(" << table.first << ", result.get_id());\n";
+  out << "    internal_insert_" << tname << "(result.get_record_id());\n\n";
+  out << "    journal.insert_into(Table_Id(" << table.first << "), result.get_record_id());\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -303,13 +303,13 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
   out << "   {\n";
-  out << "    id_of_" << tname << " result(storage_of_" << tname;
-  out << ".size() + 1);\n";
+  out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname;
+  out << ".size() + 1));\n";
   out << "    storage_of_" << tname << ".resize(storage_of_";
   out << tname << ".size() + size);\n";
-  out << "    internal_vector_insert_" << tname << "(result.get_id(), size);\n";
-  out << "    journal.insert_vector(" << table.first;
-  out << ", result.get_id(), size);\n";
+  out << "    internal_vector_insert_" << tname << "(result.get_record_id(), size);\n";
+  out << "    journal.insert_vector(Table_Id(" << table.first;
+  out << "), result.get_record_id(), Size(size));\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -359,8 +359,8 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   //
   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
   out << "   {\n";
-  out << "    internal_delete_" << tname << "(record.get_id());\n";
-  out << "    journal.delete_from(" << table.first << ", record.get_id());\n";
+  out << "    internal_delete_" << tname << "(record.get_record_id());\n";
+  out << "    journal.delete_from(Table_Id(" << table.first << "), record.get_record_id());\n";
   out << "   }\n\n";
 
   //
@@ -381,14 +381,14 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    out << "   {\n";
    out << "    internal_update_" << tname << "__" << fname;
 
-   out <<  "(record.get_id(), ";
+   out <<  "(record.get_record_id(), ";
    out << "field_value_of_" << fname << ");\n";
    out << "    journal.update_";
    out << types[int(type.get_type_id())];
-   out << '(' << table.first << ", record.get_id(), " << field.first << ", ";
+   out << "(Table_Id(" << table.first << "), record.get_record_id(), Field_Id(" << field.first << "), ";
    out << "field_value_of_" << fname;
    if (type.get_type_id() == Type::Type_Id::reference)
-    out << ".get_id()";
+    out << ".get_record_id()";
    out << ");\n";
 
    out << "   }\n\n";
@@ -406,8 +406,8 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
    out << "    try {f(span);}\n";
    out << "    catch (...) {exception = std::current_exception();}\n";
-   out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_id(), size, span.begin());\n";
-   out << "    journal.update_vector_" << types[int(type.get_type_id())] << '(' << table.first << ", record.get_id(), " << field.first << ", size, ";
+   out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_record_id(), size, span.begin());\n";
+   out << "    journal.update_vector_" << types[int(type.get_type_id())] << "(Table_Id(" << table.first << "), record.get_record_id(), Field_Id(" << field.first << "), size, ";
 
    if (type.get_type_id() == Type::Type_Id::reference)
     out << "reinterpret_cast<Record_Id *>";
@@ -689,11 +689,13 @@ static void generate_readonly_h
   out << "  private:\n";
   out << "   Record_Id id;\n";
   out << "\n  public:\n";
+  out << "   explicit id_of_" << tname << "(size_t id): id(Record_Id(id)) {}\n";
   out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
   out << "   id_of_" << tname << "(): id(Record_Id(0)) {}\n";
   out << "   bool is_null() const {return id == Record_Id(0);}\n";
   out << "   bool is_not_null() const {return id != Record_Id(0);}\n";
   out << "   Size get_id() const {return Size(id);}\n";
+  out << "   Record_Id get_record_id() const {return id;}\n";
   out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
   out << "   bool operator!=(id_of_" << tname << " x) const {return id != x.id;}\n";
   out << "   bool operator<(id_of_" << tname << " x) const {return id < x.id;}\n";
@@ -793,7 +795,7 @@ static void generate_readonly_h
  {
   const std::string &tname = table.second;
 
-  out << "   bool is_valid(id_of_" << tname << " id) const {return is_valid_record_id_for_" << tname << "(id.get_id());}\n";
+  out << "   bool is_valid(id_of_" << tname << " id) const {return is_valid_record_id_for_" << tname << "(id.get_record_id());}\n";
  }
 
  out << "\n  protected:\n";
@@ -805,8 +807,8 @@ static void generate_readonly_h
   out << "   data_of_" << tname << " storage_of_" << tname << ";\n";
 
   out << "   bool is_valid_record_id_for_" << tname;
-  out << "(Size record_id) const {return storage_of_" << tname;
-  out << ".freedom_keeper.is_used(record_id + 1);}\n";
+  out << "(Record_Id record_id) const {return storage_of_" << tname;
+  out << ".freedom_keeper.is_used(Size(record_id) + 1);}\n";
  }
 
  //
@@ -826,7 +828,7 @@ static void generate_readonly_h
   out << "   void remove_index_of_" << index.name << "(Record_Id record_id)\n";
   out << "   {\n";
   out << "    auto &iterator = storage_of_" << tname;
-  out << ".iterator_over_" << index.name << "[record_id - 1];\n";
+  out << ".iterator_over_" << index.name << "[Size(record_id) - 1];\n";
   out << "    if (iterator != index_of_" << index.name << ".end())\n";
   out << "    {\n";
   out << "     index_of_" << index.name << ".erase(iterator);\n";
@@ -848,7 +850,7 @@ static void generate_readonly_h
     out << ", ";
    out << "storage_of_" << tname << ".field_value_of_";
    out << db.get_field_name(index.table_id, index.field_ids[i]);
-   out << "[record_id - 1]";
+   out << "[Size(record_id) - 1]";
   }
   out << ')';
   out << ",\n      id_of_" << tname << "(record_id)\n     )\n    );\n";
@@ -866,19 +868,19 @@ static void generate_readonly_h
     out << "     joedb::write_" << get_type_name(type) << "(out, ";
     out << "storage_of_" << tname << ".field_value_of_";
     out << db.get_field_name(index.table_id, index.field_ids[i]);
-    out << "[record_id - 1]";
+    out << "[Size(record_id) - 1]";
     if (type.get_type_id() == joedb::Type::Type_Id::reference)
-     out << ".get_id()";
+     out << ".get_record_id()";
     out << ");\n";
    }
    out << "     out << \") at id = \" << record_id << ' ';\n";
    out << "     out << \"was already at id = \" << result.first->second.get_id();\n";
    out << "     error(out.str().c_str());\n";
    out << "    }\n";
-   out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[record_id - 1] = result.first;\n";
+   out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[Size(record_id) - 1] = result.first;\n";
   }
   else
-   out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[record_id - 1] = result;\n";
+   out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[Size(record_id) - 1] = result;\n";
   out << "   }\n";
  }
 
@@ -916,11 +918,11 @@ static void generate_readonly_h
    if (index.table_id == table.first)
    {
     out << "    storage_of_" << tname;
-    out << ".iterator_over_" << index.name << "[record_id - 1] = ";
+    out << ".iterator_over_" << index.name << "[Size(record_id) - 1] = ";
     out << "index_of_" << index.name << ".end();\n";
    }
 
-  out << "    storage_of_" << tname << ".freedom_keeper.use(record_id + 1);\n";
+  out << "    storage_of_" << tname << ".freedom_keeper.use(Size(record_id) + 1);\n";
 
   if (null_initialization)
    for (const auto &field: db.get_fields(table.first))
@@ -929,7 +931,7 @@ static void generate_readonly_h
     const Type &type = db.get_field_type(table.first, field.first);
 
     out << "    storage_of_" << tname << ".field_value_of_";
-    out << fname << "[record_id - 1]";
+    out << fname << "[Size(record_id) - 1]";
 
     if (type.get_type_id() == Type::Type_Id::string)
     {
@@ -939,7 +941,7 @@ static void generate_readonly_h
     {
      out << " = ";
      write_type(out, db, type, false, false);
-     out << "(0)";
+     out << "(Record_Id(0))";
     }
     else
     {
@@ -951,16 +953,16 @@ static void generate_readonly_h
 
   out << "   }\n\n";
 
-  out << "   void internal_vector_insert_" << tname << "(Record_Id record_id, Record_Id size)\n";
+  out << "   void internal_vector_insert_" << tname << "(Record_Id record_id, Size size)\n";
   out << "   {\n";
-  out << "    storage_of_" << tname << ".freedom_keeper.use_vector(record_id + 1, size);\n";
+  out << "    storage_of_" << tname << ".freedom_keeper.use_vector(Size(record_id) + 1, size);\n";
 
   for (const auto &index: options.get_indices())
    if (index.table_id == table.first)
    {
     out << "    std::fill_n\n";
     out << "    (\n";
-    out << "     &storage_of_" << tname << ".iterator_over_" << index.name << "[record_id - 1],\n";
+    out << "     &storage_of_" << tname << ".iterator_over_" << index.name << "[Size(record_id) - 1],\n";
     out << "     size,\n";
     out << "     index_of_" << index.name << ".end()\n";
     out << "    );\n";
@@ -985,7 +987,7 @@ static void generate_readonly_h
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
    out << "    storage_of_" << tname << ".field_value_of_" << fname;
-   out << "[record_id - 1] = field_value_of_" << fname;
+   out << "[Size(record_id) - 1] = field_value_of_" << fname;
    out << ";\n";
 
    for (const auto &index: options.get_indices())
@@ -1013,7 +1015,7 @@ static void generate_readonly_h
    out << "    ";
    write_type(out, db, type, false, false);
    out << " *target = &storage_of_" << tname;
-   out << ".field_value_of_" << fname << "[record_id - 1];\n";
+   out << ".field_value_of_" << fname << "[Size(record_id) - 1];\n";
    out << "    if (target != value)\n";
    out << "     std::copy_n(value, size, target);\n";
 
@@ -1050,7 +1052,7 @@ static void generate_readonly_h
    else
     out << "else ";
 
-   out << "if (table_id == " << table.first << ")\n";
+   out << "if (table_id == Table_Id(" << table.first << "))\n";
    out << "     internal_delete_" << tname << "(record_id);\n";
   }
  }
@@ -1062,7 +1064,7 @@ static void generate_readonly_h
  out << '\n';
  out << "   void insert_into(Table_Id table_id, Record_Id record_id) final\n";
  out << "   {\n";
- out << "    if (record_id <= 0 || (max_record_id && record_id > max_record_id))\n";
+ out << "    if (Size(record_id) <= 0 || (max_record_id && Size(record_id) > max_record_id))\n";
  out << "     error(\"insert_into: too big\");\n";
  {
   bool first = true;
@@ -1076,12 +1078,12 @@ static void generate_readonly_h
    else
     out << "else ";
 
-   out << "if (table_id == " << table.first << ")\n";
+   out << "if (table_id == Table_Id(" << table.first << "))\n";
    out << "    {\n";
    out << "     if (is_valid_record_id_for_" << name << "(record_id))\n";
    out << "      error(\"Duplicate insert into table " << name << "\");\n";
-   out << "     if (storage_of_" << name << ".size() < record_id)\n";
-   out << "      storage_of_" << name << ".resize(record_id);\n";
+   out << "     if (storage_of_" << name << ".size() < Size(record_id))\n";
+   out << "      storage_of_" << name << ".resize(Size(record_id));\n";
    out << "     internal_insert_" << name << "(record_id);\n";
    out << "    }\n";
   }
@@ -1103,7 +1105,7 @@ static void generate_readonly_h
     if
     (
      Size(record_id) <= 0 ||
-     (max_record_id && (record_id > max_record_id || size > max_record_id))
+     (max_record_id && (Size(record_id) > max_record_id || size > max_record_id))
     )
     {
      error("insert_vector: null record_id, or too big");
@@ -1122,10 +1124,10 @@ static void generate_readonly_h
    else
     out << "else ";
 
-   out << "if (table_id == " << table.first << ")\n";
+   out << "if (table_id == Table_Id(" << table.first << "))\n";
    out << "    {\n";
-   out << "     if (storage_of_" << name << ".size() < record_id + size - 1)\n";
-   out << "      storage_of_" << name << ".resize(record_id + size - 1);\n";
+   out << "     if (storage_of_" << name << ".size() < Size(record_id) + size - 1)\n";
+   out << "      storage_of_" << name << ".resize(Size(record_id) + size - 1);\n";
    out << "     internal_vector_insert_" << name << "(record_id, size);\n";
    out << "    }\n";
   }
@@ -1177,7 +1179,7 @@ static void generate_readonly_h
 
     if (has_typed_field)
     {
-     out << "    if (table_id == " << table.first << ")\n";
+     out << "    if (table_id == Table_Id(" << table.first << "))\n";
      out << "    {\n";
 
      for (const auto &field: db.get_fields(table.first))
@@ -1185,7 +1187,7 @@ static void generate_readonly_h
       const Type &type = db.get_field_type(table.first, field.first);
       if (int(type.get_type_id()) == type_id)
       {
-       out << "     if (field_id == " << field.first << ")\n";
+       out << "     if (field_id == Field_Id(" << field.first << "))\n";
        out << "     {\n";
        out << "      internal_update_" << table.second;
        out << "__" << field.second << "(record_id, ";
@@ -1248,7 +1250,7 @@ static void generate_readonly_h
 
     if (has_typed_field)
     {
-     out << "    if (table_id == " << table.first << ")\n";
+     out << "    if (table_id == Table_Id(" << table.first << "))\n";
      out << "    {\n";
 
      for (const auto &field: db.get_fields(table.first))
@@ -1256,7 +1258,7 @@ static void generate_readonly_h
       const Type &type = db.get_field_type(table.first, field.first);
       if (int(type.get_type_id()) == type_id)
       {
-       out << "     if (field_id == " << field.first << ")\n";
+       out << "     if (field_id == Field_Id(" << field.first << "))\n";
        out << "     {\n";
        out << "      internal_update_vector_" << table.second;
        out << "__" << field.second << "(record_id, size, ";
@@ -1322,16 +1324,16 @@ static void generate_readonly_h
 
     if (has_typed_field)
     {
-     out << "    if (table_id == " << table.first << ")\n";
+     out << "    if (table_id == Table_Id(" << table.first << "))\n";
      out << "    {\n";
-     out << "     capacity = Record_Id(storage_of_" << table.second << ".freedom_keeper.size());\n";
+     out << "     capacity = Size(storage_of_" << table.second << ".freedom_keeper.size());\n";
 
      for (const auto &field: db.get_fields(table.first))
      {
       const Type &type = db.get_field_type(table.first, field.first);
       if (int(type.get_type_id()) == type_id)
       {
-       out << "     if (field_id == " << field.first << ")\n"
+       out << "     if (field_id == Field_Id(" << field.first << "))\n"
            << "     {\n"
            << "      return ";
 
@@ -1339,7 +1341,7 @@ static void generate_readonly_h
         out << "reinterpret_cast<Record_Id *>";
 
        out << "(storage_of_" << table.second;
-       out << ".field_value_of_" << field.second << ".data() + record_id - 1);\n"
+       out << ".field_value_of_" << field.second << ".data() + Size(record_id) - 1);\n"
            << "     }\n";
       }
      }
@@ -1464,7 +1466,7 @@ static void generate_readonly_h
 
    void initialize_with_readonly_journal(joedb::Readonly_Journal &journal)
    {
-    max_record_id = Record_Id(journal.get_checkpoint_position());
+    max_record_id = Size(journal.get_checkpoint_position());
     journal.replay_log(*this);
     max_record_id = 0;
 
@@ -1487,12 +1489,12 @@ static void generate_readonly_h
 
   out << "   id_of_" << tname << " next(id_of_" << tname << " id) const\n";
   out << "   {\n";
-  out << "    return id_of_" << tname << "\n    (\n     storage_of_" << tname << ".freedom_keeper.get_next(id.get_id() + 1) - 1\n    );\n";
+  out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_next(id.get_id() + 1) - 1)\n    );\n";
   out << "   }\n\n";
 
   out << "   id_of_" << tname << " previous(id_of_" << tname << " id) const\n";
   out << "   {\n";
-  out << "    return id_of_" << tname << "\n    (\n     storage_of_" << tname << ".freedom_keeper.get_previous(id.get_id() + 1) - 1\n    );\n";
+  out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_previous(id.get_id() + 1) - 1)\n    );\n";
   out << "   }\n\n";
 
   out << "   template<class Comparator>\n";
@@ -1524,7 +1526,7 @@ static void generate_readonly_h
    write_type(out, db, type, true, false);
    out << "get_" << fname << "(id_of_" << tname << " record) const\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.get_id()));\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.get_record_id()));\n";
    out << "    return (";
    write_type(out, db, type, true, false);
    out << ")(storage_of_" << tname;
@@ -1559,7 +1561,7 @@ static void generate_readonly_h
    out << "   id_of_" << tname << " next_" << index.name << '(';
    out << "id_of_" << tname << " id)\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_id()));\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
    out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id() - 1];\n";
    out << "    ++iterator;\n";
    out << "    if (iterator != index_of_" << index.name << ".end())\n";
@@ -1571,7 +1573,7 @@ static void generate_readonly_h
    out << "   id_of_" << tname << " previous_" << index.name << '(';
    out << "id_of_" << tname << " id)\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_id()));\n";
+   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
    out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id() - 1];\n";
    out << "    if (iterator != index_of_" << index.name << ".begin())\n";
    out << "     return (--iterator)->second;\n";
@@ -1733,7 +1735,7 @@ static void generate_readonly_h
   out << "     iterator &operator--() {index = fk->get_previous(index); return *this;}\n";
   out << "     iterator operator--(int) {auto copy = *this; index = fk->get_previous(index); return copy;}\n";
   out << "     id_of_" << tname << " operator*() const {return id_of_";
-  out << tname << "(index - 1);}\n";
+  out << tname << "(Record_Id(index - 1));}\n";
   out << "   };\n";
   out << '\n';
   out << "   iterator begin() const {return ++iterator(db.storage_of_" << tname << ");}\n";
@@ -1741,8 +1743,8 @@ static void generate_readonly_h
   out << "   bool is_empty() const {return db.storage_of_" << tname
       << ".freedom_keeper.is_empty();}\n";
   out << "   size_t get_size() const {return db.storage_of_" << tname << ".freedom_keeper.get_used_count();}\n";
-  out << "   static id_of_" << tname << " get_at(size_t i) {return id_of_"
-      << tname << "(i);}\n";
+  out << "   static id_of_" << tname << " get_at(Size i) {return id_of_"
+      << tname << "(Record_Id(i));}\n";
   out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".freedom_keeper.is_used(i + 1);}\n";
 
   out << "   id_of_" << tname << " first() const {return *begin();}\n";
@@ -1978,7 +1980,7 @@ static void generate_cpp
  void Generic_File_Database::initialize()
  ////////////////////////////////////////////////////////////////////////////
  {
-  max_record_id = Record_Id(journal.get_checkpoint_position());
+  max_record_id = Size(journal.get_checkpoint_position());
   ready_to_write = false;
   journal.replay_log(*this);
   ready_to_write = true;

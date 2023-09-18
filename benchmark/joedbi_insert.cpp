@@ -37,9 +37,9 @@ int main(int argc, char **argv)
 #if 1
   for (size_t i = 1; i <= N; i++)
   {
-   multiplexer.insert_into(table_id, i);
-   multiplexer.update_string(table_id, i, name_id, name_string);
-   multiplexer.update_int64(table_id, i, value_id, int64_t(i));
+   multiplexer.insert_into(table_id, joedb::Record_Id(i));
+   multiplexer.update_string(table_id, joedb::Record_Id(i), name_id, name_string);
+   multiplexer.update_int64(table_id, joedb::Record_Id(i), value_id, int64_t(i));
   }
 #else
   multiplexer.insert_vector(table_id, 1, N);
