@@ -52,7 +52,7 @@ namespace joedb
   std::string table_name;
   in >> table_name;
   const Table_Id table_id = readable.find_table(table_name);
-  if (table_id != Table_Id(0))
+  if (table_id == Table_Id(0))
   {
    std::ostringstream error;
    error << "No such table: " << table_name;

@@ -669,6 +669,7 @@ static void generate_readonly_h
  out << R"RRR( using joedb::Record_Id;
  using joedb::Table_Id;
  using joedb::Field_Id;
+ using joedb::Size;
 
  extern const char * schema_string;
  extern const size_t schema_string_size;
@@ -689,17 +690,17 @@ static void generate_readonly_h
   out << "   Record_Id id;\n";
   out << "\n  public:\n";
   out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
-  out << "   id_of_" << tname << "(): id(0) {}\n";
-  out << "   bool is_null() const {return id == 0;}\n";
-  out << "   bool is_not_null() const {return id != 0;}\n";
-  out << "   Record_Id get_id() const {return id;}\n";
+  out << "   id_of_" << tname << "(): id(Record_Id(0)) {}\n";
+  out << "   bool is_null() const {return id == Record_Id(0);}\n";
+  out << "   bool is_not_null() const {return id != Record_Id(0);}\n";
+  out << "   Size get_id() const {return Size(id);}\n";
   out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
   out << "   bool operator!=(id_of_" << tname << " x) const {return id != x.id;}\n";
   out << "   bool operator<(id_of_" << tname << " x) const {return id < x.id;}\n";
   out << "   bool operator>(id_of_" << tname << " x) const {return id > x.id;}\n";
   out << "   bool operator<=(id_of_" << tname << " x) const {return id <= x.id;}\n";
   out << "   bool operator>=(id_of_" << tname << " x) const {return id >= x.id;}\n";
-  out << "   id_of_" << tname << " operator[](Record_Id i) const {return id_of_" << tname << "(id + i);}\n";
+  out << "   id_of_" << tname << " operator[](Size i) const {return id_of_" << tname << "(id + i);}\n";
   out << " };\n";
  }
 
@@ -775,10 +776,10 @@ static void generate_readonly_h
     throw joedb::Exception(message);
    }
 
-   Record_Id max_record_id;
+   Size max_record_id;
 
   public:
-   void set_max_record_id(Record_Id record_id)
+   void set_max_record_id(Size record_id)
    {
     max_record_id = record_id;
    }
@@ -804,7 +805,7 @@ static void generate_readonly_h
   out << "   data_of_" << tname << " storage_of_" << tname << ";\n";
 
   out << "   bool is_valid_record_id_for_" << tname;
-  out << "(Record_Id record_id) const {return storage_of_" << tname;
+  out << "(Size record_id) const {return storage_of_" << tname;
   out << ".freedom_keeper.is_used(record_id + 1);}\n";
  }
 
@@ -897,7 +898,7 @@ static void generate_readonly_h
    if (index.table_id == table.first)
     out << "    remove_index_of_" << index.name << "(record_id);\n";
 
-  out << "    storage_of_" << tname << ".freedom_keeper.free(record_id + 1);\n";
+  out << "    storage_of_" << tname << ".freedom_keeper.free(Size(record_id) + 1);\n";
   out << "   }\n";
  }
 
@@ -1096,12 +1097,12 @@ static void generate_readonly_h
    (
     Table_Id table_id,
     Record_Id record_id,
-    Record_Id size
+    Size size
    ) final
    {
     if
     (
-     record_id <= 0 ||
+     Size(record_id) <= 0 ||
      (max_record_id && (record_id > max_record_id || size > max_record_id))
     )
     {
@@ -1225,7 +1226,7 @@ static void generate_readonly_h
    out << "    Table_Id table_id,\n";
    out << "    Record_Id record_id,\n";
    out << "    Field_Id field_id,\n";
-   out << "    Record_Id size,\n";
+   out << "    Size size,\n";
    out << "    const " << storage_types[type_id] << " *value\n";
    out << "   )\n";
    out << "   final\n";
@@ -1300,7 +1301,7 @@ static void generate_readonly_h
    out << "    Table_Id table_id,\n";
    out << "    Record_Id record_id,\n";
    out << "    Field_Id field_id,\n";
-   out << "    Record_Id &capacity\n";
+   out << "    Size &capacity\n";
    out << "   )\n";
    out << "   final\n";
    out << "   {\n";

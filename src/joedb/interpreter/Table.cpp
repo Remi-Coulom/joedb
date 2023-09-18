@@ -20,7 +20,7 @@ namespace joedb
  {
   if (find_field(name) != Field_Id(0))
    throw Exception("add_field: name already used");
-  if (current_field_id == std::numeric_limits<Field_Id>::max())
+  if (current_field_id == Field_Id(std::numeric_limits<std::underlying_type<Field_Id>::type>::max()))
    throw Exception("add_field: reached maximum field count");
 
   ++current_field_id;
