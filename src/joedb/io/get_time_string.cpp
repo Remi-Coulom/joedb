@@ -11,14 +11,13 @@ namespace joedb
   constexpr size_t buffer_size = 24;
   char buffer[buffer_size];
   const time_t stamp = time_t(timestamp);
-
-  std::strftime
-  (
-   buffer,
-   buffer_size,
-   "%Y-%m-%d %H:%M:%S GMT",
-   std::gmtime(&stamp)
-  );
+  struct tm tm;
+#if defined(__unix__)
+  localtime_r(&stamp, &tm);
+#else
+  tm = *std::gmtime(&stamp);
+#endif
+  std::strftime(buffer, buffer_size, "%Y-%m-%d %H:%M:%S GMT", &tm);
 
   return std::string(buffer);
  }
