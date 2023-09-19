@@ -8,7 +8,7 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::stringstream in(std::string(reinterpret_cast<const char *>(Data), Size));
+ std::istringstream in(std::string(reinterpret_cast<const char *>(Data), Size));
  std::ostringstream out;
 
  joedb::Database db(10000);
