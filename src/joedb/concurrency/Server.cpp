@@ -98,13 +98,9 @@ namespace joedb
 
    LOGID("locking\n");
 
-   if (lock_timeout_seconds > 0)
+   if (lock_timeout.count() > 0)
    {
-    lock_timeout_timer.expires_after
-    (
-     std::chrono::seconds(lock_timeout_seconds)
-    );
-
+    lock_timeout_timer.expires_after(lock_timeout);
     lock_timeout_timer.async_wait
     (
      [this, session](std::error_code e)
@@ -689,7 +685,7 @@ namespace joedb
     {
      log([this](std::ostream &out)
      {
-      out << ": timeout = " << lock_timeout_seconds;
+      out << ": timeout = " << lock_timeout.count();
       out << "s. Received SIGUSR1, listing sessions. Count = ";
       out << session_count << ".\n";
 
@@ -749,7 +745,7 @@ namespace joedb
   joedb::Readonly_Journal &journal,
   net::io_context &io_context,
   uint16_t port,
-  uint32_t lock_timeout_seconds,
+  std::chrono::seconds lock_timeout,
   std::ostream *log_pointer
  ):
   readonly_journal(journal),
@@ -760,7 +756,7 @@ namespace joedb
   interrupt_timer(io_context),
   session_count(0),
   session_id(0),
-  lock_timeout_seconds(lock_timeout_seconds),
+  lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),
   locked(false),
   log_pointer(log_pointer)

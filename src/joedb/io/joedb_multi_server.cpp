@@ -27,8 +27,8 @@ namespace joedb
    (
     net::io_context &io_context,
     const std::string &file_name,
-    int32_t port,
-    int32_t timeout
+    uint16_t port,
+    std::chrono::seconds timeout
    ):
     file(file_name, Open_Mode::write_existing_or_create_new),
     journal(file),
@@ -36,8 +36,8 @@ namespace joedb
     (
      journal,
      io_context,
-     uint16_t(port),
-     uint32_t(timeout),
+     port,
+     timeout,
      &std::cerr
     )
    {
@@ -77,8 +77,8 @@ namespace joedb
     (
      io_context,
      db.get_file_name(server),
-     db.get_port(server),
-     db.get_timeout(server)
+     uint16_t(db.get_port(server)),
+     std::chrono::seconds(db.get_timeout(server))
     )
    );
   }

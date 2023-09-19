@@ -73,7 +73,14 @@ and can still push data: the push will succeed only if there is no conflict.
    journal.reset(new Writable_Journal(file));
 
   net::io_context io_context;
-  Server server(*journal, io_context, port, timeout, &std::cerr);
+  Server server
+  (
+   *journal,
+   io_context,
+   port,
+   std::chrono::seconds(timeout),
+   &std::cerr
+  );
   io_context.run();
 
   return 0;

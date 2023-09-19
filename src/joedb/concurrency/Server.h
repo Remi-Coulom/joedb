@@ -8,6 +8,7 @@
 #include <memory>
 #include <iosfwd>
 #include <set>
+#include <chrono>
 
 namespace joedb
 {
@@ -58,7 +59,7 @@ namespace joedb
 
    void write_status();
 
-   const uint32_t lock_timeout_seconds;
+   const std::chrono::seconds lock_timeout;
    net::steady_timer lock_timeout_timer;
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
@@ -189,7 +190,7 @@ namespace joedb
     joedb::Readonly_Journal &journal,
     net::io_context &io_context,
     uint16_t port,
-    uint32_t lock_timeout_seconds,
+    std::chrono::seconds lock_timeout,
     std::ostream *log_pointer
    );
 
