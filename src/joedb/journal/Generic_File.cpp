@@ -184,7 +184,7 @@ namespace joedb
    seek(buffer_position);
    read_all(buffer, buffer_size);
 
-   for (int j = 0; j < buffer_size; j += SHA_256::chunk_size)
+   for (int j = 0; j < buffer_size; j += int(SHA_256::chunk_size))
     sha_256.process_chunk(buffer + j);
   }
 
