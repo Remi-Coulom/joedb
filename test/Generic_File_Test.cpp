@@ -83,22 +83,22 @@ TEST(Generic_File, read_data)
  std::vector<int32_t> data(file_size);
 
  file.set_position(0);
- file.read_data((char *)&data[0], sizeof(int32_t) * file_size);
- check_data(&data[0], 0, file_size);
+ file.read_data((char *)data.data(), sizeof(int32_t) * file_size);
+ check_data(data.data(), 0, file_size);
  EXPECT_FALSE(file.is_end_of_file());
  file.read<int32_t>();
  EXPECT_TRUE(file.is_end_of_file());
 
  file.set_position(4);
- file.read_data((char *)&data[0], sizeof(int32_t) * buffer_size / 2);
- check_data(&data[0], 1, buffer_size / 2);
+ file.read_data((char *)data.data(), sizeof(int32_t) * buffer_size / 2);
+ check_data(data.data(), 1, buffer_size / 2);
  EXPECT_FALSE(file.is_end_of_file());
 
- file.read_data((char *)&data[0], sizeof(int32_t) * buffer_size);
- check_data(&data[0], 1 + buffer_size / 2, buffer_size);
+ file.read_data((char *)data.data(), sizeof(int32_t) * buffer_size);
+ check_data(data.data(), 1 + buffer_size / 2, buffer_size);
  EXPECT_FALSE(file.is_end_of_file());
 
- file.read_data((char *)&data[0], sizeof(int32_t) * file_size);
+ file.read_data((char *)data.data(), sizeof(int32_t) * file_size);
  EXPECT_TRUE(file.is_end_of_file());
 }
 
