@@ -25,12 +25,10 @@ static const std::string &get_translation
 /////////////////////////////////////////////////////////////////////////////
 (
  const test::Database &db,
- size_t string_id_id,
- size_t language_id
+ test::id_of_string_id string_id,
+ test::id_of_language language
 )
 {
- const test::id_of_string_id string_id(string_id_id);
- const test::id_of_language language(language_id);
  const test::id_of_language english(translation::language::en);
 
  auto translation = db.find_translation_by_ids(string_id, language);
@@ -205,8 +203,8 @@ TEST(Compiler, file_test)
   get_translation
   (
    db,
-   translation::how_are_you,
-   translation::language::fr
+   test::id_of_string_id(translation::how_are_you),
+   test::id_of_language(translation::language::fr)
   ),
   "Comment allez-vous?"
  );
