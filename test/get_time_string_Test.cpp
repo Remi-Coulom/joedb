@@ -1,4 +1,4 @@
-#include "joedb/io/print_date.h"
+#include "joedb/io/get_time_string.h"
 
 #include "gtest/gtest.h"
 
@@ -8,7 +8,5 @@
 TEST(print_date, length)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::ostringstream oss;
- joedb::print_date(oss);
- EXPECT_TRUE(oss.str().size() > 10);
+ EXPECT_TRUE(joedb::get_time_string_of_now().size() > 10);
 }

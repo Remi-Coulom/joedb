@@ -87,7 +87,7 @@ namespace joedb
      read_size = buffer_size;
     const size_t n = lock.read_some(buffer.data(), read_size);
     tail_writer.append(buffer.data(), n);
-    read += n;
+    read += int64_t(n);
     LOG('.');
    }
 

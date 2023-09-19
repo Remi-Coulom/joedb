@@ -30,7 +30,7 @@ namespace joedb
    std::copy_n(source.buffer, source.read_buffer_size, buffer);
    write_buffer_index = source.read_buffer_size;
    write_buffer();
-   position += source.read_buffer_size;
+   position += int64_t(source.read_buffer_size);
   }
  }
 
@@ -127,7 +127,7 @@ namespace joedb
     requested_size = size_t(size - current_size);
 
    const size_t read_count = read_all(&hashing_buffer[0], requested_size);
-   current_size += read_count;
+   current_size += int64_t(read_count);
    const uint32_t full_chunks = uint32_t(read_count / SHA_256::chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
     sha_256.process_chunk(&hashing_buffer[i * SHA_256::chunk_size]);

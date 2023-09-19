@@ -80,7 +80,7 @@ namespace joedb
    out << '\n';
    out << "port = " << port;
    out << "; pid = " << joedb::get_pid();
-   out << ": " << get_time_string(std::time(nullptr));
+   out << ": " << get_time_string_of_now();
    out << "; session_count = " << session_count << '\n';
    out << '\n';
   });

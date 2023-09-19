@@ -3,7 +3,7 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
-#include "joedb/io/print_date.h"
+#include "joedb/io/get_time_string.h"
 #include "joedb/io/type_io.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/compiler/Compiler_Options.h"
@@ -2148,10 +2148,7 @@ static void write_initial_comment
  out << "// Path to compiler: " << exe_path << '\n';
  out << "// Version: " << joedb::get_version() << '\n';
  out << "// joedbc compilation time: " << __DATE__ << ' ' << __TIME__ << '\n';
- out << "// Generation of this file: ";
-
- print_date(out);
-
+ out << "// Generation of this file: " << get_time_string_of_now() << '\n';
  out << "//\n";
  out << "///////////////////////////////////////////////////////////////////////////*/\n";
 }

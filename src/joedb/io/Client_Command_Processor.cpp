@@ -2,7 +2,7 @@
 #include "joedb/io/Command_Processor.h"
 #include "joedb/io/Command_Interpreter.h"
 #include "joedb/io/Writable_Command_Processor.h"
-#include "joedb/io/print_date.h"
+#include "joedb/io/get_time_string.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
@@ -81,7 +81,7 @@ namespace joedb
    while (Signal::signal != SIGINT)
    {
     pull(out);
-    print_date(out);
+    out << get_time_string_of_now() << '\n';
     out << "Sleeping for " << seconds << " seconds...\n";
 
     for (int i = seconds; Signal::signal != SIGINT && --i >= 0;)

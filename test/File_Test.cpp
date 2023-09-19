@@ -326,7 +326,7 @@ TEST(File, write_data)
   size_t offset = size_t(gen()) & 0x7ffULL;
   file.write_data(&input[1], offset);
   file.write_data(&input[0], n);
-  file.set_position(offset);
+  file.set_position(int64_t(offset));
   std::string output(n, 0);
   file.read_data(&output[0], n);
   ASSERT_EQ(0, std::memcmp(&input[0], &output[0], n)) << "n = " << n;

@@ -7,6 +7,7 @@
 namespace joedb
 {
  std::string get_time_string(int64_t timestamp);
+ std::string get_time_string_of_now();
 }
 
 #endif
