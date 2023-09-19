@@ -259,14 +259,15 @@ namespace joedb
   }
   else if (command == "help") ///////////////////////////////////////////////
   {
-   out << "Displaying data\n";
-   out << "~~~~~~~~~~~~~~~\n";
-   out << " table <table_name> [<max_column_width>] [start] [length]\n";
-   out << " schema\n";
-   out << " dump\n";
-   out << " sql\n";
-   out << " json [<base64>]\n";
-   out << '\n';
+   out << R"RRR(Displaying data
+~~~~~~~~~~~~~~~
+ table <table_name> [<max_column_width>] [start] [length]
+ schema
+ dump
+ sql
+ json [<base64>]
+
+)RRR";
 
    return Status::ok;
   }

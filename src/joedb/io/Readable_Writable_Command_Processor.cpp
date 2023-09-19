@@ -44,32 +44,33 @@ namespace joedb
  {
   if (command == "help") ////////////////////////////////////////////////////
   {
-   out << "Data definition\n";
-   out << "~~~~~~~~~~~~~~~\n";
-   out << " create_table <table_name>\n";
-   out << " drop_table <table_name>\n";
-   out << " rename_table <old_table_name> <new_table_name>\n";
-   out << " add_field <table_name> <field_name> <type>\n";
-   out << " drop_field <table_name> <field_name>\n";
-   out << " rename_field <table_name> <old_field_name> <new_field_name>\n";
-   out << " custom <custom_name>\n";
-   out << '\n';
-   out << " <type> may be:\n";
-   out << "  string,\n";
-   out << "  blob,\n";
-   out << "  int8, int16, int32, int64,\n";
-   out << "  float32, float64,\n";
-   out << "  boolean,\n";
-   out << "  references <table_name>\n";
-   out << '\n';
-   out << "Data manipulation\n";
-   out << "~~~~~~~~~~~~~~~~~\n";
-   out << " insert_into <table_name> <record_id>\n";
-   out << " insert_vector <table_name> <record_id> <size>\n";
-   out << " update <table_name> <record_id> <field_name> <value>\n";
-   out << " update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>\n";
-   out << " delete_from <table_name> <record_id>\n";
-   out << '\n';
+   out << R"RRR(Data definition
+~~~~~~~~~~~~~~~
+ create_table <table_name>
+ drop_table <table_name>
+ rename_table <old_table_name> <new_table_name>
+ add_field <table_name> <field_name> <type>
+ drop_field <table_name> <field_name>
+ rename_field <table_name> <old_field_name> <new_field_name>
+ custom <custom_name>
+
+ <type> may be:
+  string,
+  blob,
+  int8, int16, int32, int64,
+  float32, float64,
+  boolean,
+  references <table_name>
+
+Data manipulation
+~~~~~~~~~~~~~~~~~
+ insert_into <table_name> <record_id>
+ insert_vector <table_name> <record_id> <size>
+ update <table_name> <record_id> <field_name> <value>
+ update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
+ delete_from <table_name> <record_id>
+
+)RRR";
 
    return Status::ok;
   }
