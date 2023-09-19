@@ -13,7 +13,7 @@ namespace joedb
   const time_t stamp = time_t(timestamp);
   struct tm tm;
 #if defined(__unix__)
-  localtime_r(&stamp, &tm);
+  gmtime_r(&stamp, &tm);
 #else
   tm = *std::gmtime(&stamp);
 #endif
