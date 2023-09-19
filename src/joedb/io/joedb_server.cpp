@@ -47,8 +47,8 @@ namespace joedb
   if (file_name == nullptr || index != argc)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--port p] [--timeout t] [--readonly] <filename.joedb>\n";
-   std::cerr << R"RRR(
+   std::cerr << R"RRR( [--port p] [--timeout t] [--readonly] <filename.joedb>
+
 The timeout is the time (in seconds) during which a client lock is kept.
 0 (the default) means there is no timeout, and the lock is kept until the
 client unlocks or is disconnected. A client that timed out is not disconnected,
