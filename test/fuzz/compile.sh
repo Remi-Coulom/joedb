@@ -17,18 +17,21 @@ build()
   -I ../../src\
   "$1"_fuzzer.cpp\
   ../../src/external/wide_char_display_width.cpp\
+  ../../src/joedb/Blob.cpp\
+  ../../src/joedb/Destructor_Logger.cpp\
+  ../../src/joedb/get_version.cpp\
   ../../src/joedb/interpreter/Database.cpp\
   ../../src/joedb/interpreter/Database_Schema.cpp\
   ../../src/joedb/is_identifier.cpp\
-  ../../src/joedb/get_version.cpp\
-  ../../src/joedb/Readable.cpp\
-  ../../src/joedb/Writable.cpp\
   ../../src/joedb/Multiplexer.cpp\
-  ../../src/joedb/interpreter/Table.cpp\
-  ../../src/joedb/Destructor_Logger.cpp\
-  ../../src/joedb/Blob.cpp\
+  ../../src/joedb/Posthumous_Catcher.cpp\
+  ../../src/joedb/Posthumous_Thrower.cpp\
+  ../../src/joedb/Readable.cpp\
   ../../src/joedb/Selective_Writable.cpp\
+  ../../src/joedb/Writable.cpp\
+  ../../src/joedb/interpreter/Table.cpp\
   ../../src/joedb/io/Command_Interpreter.cpp\
+  ../../src/joedb/io/Command_Processor.cpp\
   ../../src/joedb/io/Readable_Command_Processor.cpp\
   ../../src/joedb/io/Writable_Command_Processor.cpp\
   ../../src/joedb/io/Readable_Writable_Command_Processor.cpp\
