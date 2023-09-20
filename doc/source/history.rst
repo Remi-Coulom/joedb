@@ -3,10 +3,11 @@ History
 
 - 2023-??-??: 8.0.0
 
-  - Classes that write a journal have an optional ``commit_level`` constructor
-    parameter that indicates the default commit level for checkpoints. Default
-    is ``joedb::Commit_Level::no_commit``. See :doc:`Checkpoints <checkpoints>`
-    for details.
+  - Classes that write a journal (``joedb::Writable_Journal``,
+    ``Generic_File_Database``, ``File_Database``, ``Client``) now have a
+    ``commit_level`` constructor parameter that indicates the default commit
+    level for checkpoints. Default is ``joedb::Commit_Level::no_commit``. See
+    :doc:`Checkpoints <checkpoints>` for details.
   - new ``Pullable_Database``, similar to ``Readonly_Database``, but the file
     is not closed at the end of the constructor, and it is possible to pull new
     data in case of a concurrent update.
