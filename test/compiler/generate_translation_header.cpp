@@ -12,36 +12,38 @@ static int generate_translation_header(int argc, char **argv)
  std::cout << "#ifndef translation_declared\n";
  std::cout << "#define translation_declared\n\n";
 
- std::cout << "namespace translation\n";
- std::cout << "{\n";
+ std::cout << "#include \"db/test.h\"\n\n";
 
- std::cout << " enum\n";
+ std::cout << "namespace my_namespace\n";
+ std::cout << "{\n";
+ std::cout << " namespace is_nested\n";
  std::cout << " {\n";
+ std::cout << "  namespace test\n";
+ std::cout << "  {\n";
+
+ std::cout << "   namespace string_id\n";
+ std::cout << "   {\n";
 
  for (const auto string_id: db.get_string_id_table())
  {
-  std::cout << "  " << db.get_name(string_id) << " = " << string_id.get_id();
-  std::cout << ",\n";
+  std::cout << "    constexpr id_of_string_id " << db.get_name(string_id);
+  std::cout << '{' << string_id.get_id() << "};\n";
  }
 
- std::cout << "  string_ids\n";
- std::cout << " };\n\n";
+ std::cout << "   }\n";
 
- std::cout << " namespace language\n";
- std::cout << " {\n";
- std::cout << "  enum\n";
- std::cout << "  {\n";
+ std::cout << "   namespace language\n";
+ std::cout << "   {\n";
 
  for (const auto language: db.get_language_table())
  {
-  std::cout << "   " << db.get_id(language) << " = " << language.get_id();
-  std::cout << ",\n";
+  std::cout << "    constexpr id_of_language " << db.get_id(language);
+  std::cout << '{' << language.get_id() << "};\n";
  }
 
- std::cout << "   languages\n";
- std::cout << "  };\n";
+ std::cout << "   }\n";
+ std::cout << "  }\n";
  std::cout << " }\n";
-
  std::cout << "}\n\n";
 
  std::cout << "#endif\n";

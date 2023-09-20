@@ -688,20 +688,20 @@ static void generate_readonly_h
   out << "  private:\n";
   out << "   Record_Id id;\n";
   out << "\n  public:\n";
-  out << "   explicit id_of_" << tname << "(size_t id): id(Record_Id(id)) {}\n";
-  out << "   explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
-  out << "   id_of_" << tname << "(): id(Record_Id(0)) {}\n";
-  out << "   bool is_null() const {return id == Record_Id(0);}\n";
-  out << "   bool is_not_null() const {return id != Record_Id(0);}\n";
-  out << "   size_t get_id() const {return size_t(id);}\n";
-  out << "   Record_Id get_record_id() const {return id;}\n";
-  out << "   bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
-  out << "   bool operator!=(id_of_" << tname << " x) const {return id != x.id;}\n";
-  out << "   bool operator<(id_of_" << tname << " x) const {return id < x.id;}\n";
-  out << "   bool operator>(id_of_" << tname << " x) const {return id > x.id;}\n";
-  out << "   bool operator<=(id_of_" << tname << " x) const {return id <= x.id;}\n";
-  out << "   bool operator>=(id_of_" << tname << " x) const {return id >= x.id;}\n";
-  out << "   id_of_" << tname << " operator[](size_t i) const {return id_of_" << tname << "(id + i);}\n";
+  out << "   constexpr explicit id_of_" << tname << "(size_t id): id(Record_Id(id)) {}\n";
+  out << "   constexpr explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
+  out << "   constexpr id_of_" << tname << "(): id(Record_Id(0)) {}\n";
+  out << "   constexpr bool is_null() const {return id == Record_Id(0);}\n";
+  out << "   constexpr bool is_not_null() const {return id != Record_Id(0);}\n";
+  out << "   constexpr size_t get_id() const {return size_t(id);}\n";
+  out << "   constexpr Record_Id get_record_id() const {return id;}\n";
+  out << "   constexpr bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
+  out << "   constexpr bool operator!=(id_of_" << tname << " x) const {return id != x.id;}\n";
+  out << "   constexpr bool operator<(id_of_" << tname << " x) const {return id < x.id;}\n";
+  out << "   constexpr bool operator>(id_of_" << tname << " x) const {return id > x.id;}\n";
+  out << "   constexpr bool operator<=(id_of_" << tname << " x) const {return id <= x.id;}\n";
+  out << "   constexpr bool operator>=(id_of_" << tname << " x) const {return id >= x.id;}\n";
+  out << "   constexpr id_of_" << tname << " operator[](size_t i) const {return id_of_" << tname << "(id + i);}\n";
   out << " };\n";
  }
 

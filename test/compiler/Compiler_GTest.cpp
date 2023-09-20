@@ -5,16 +5,9 @@
 #include "db/test_readonly.h"
 #include "db/vector_test.h"
 #include "translation.h"
-#include "joedb/Exception.h"
 #include "joedb/journal/Interpreted_File.h"
-#include "joedb/journal/Generic_File.h"
-#include "joedb/journal/Memory_File.h"
-#include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/File_Connection.h"
-#include "joedb/concurrency/Local_Connection.h"
-#include <joedb/Freedom_Keeper.h>
-#include <joedb/Writable.h>
-#include <joedb/journal/Writable_Journal.h>
+#include "joedb/interpreter/Database.h"
 
 using namespace my_namespace::is_nested;
 
@@ -29,12 +22,10 @@ static const std::string &get_translation
  test::id_of_language language
 )
 {
- const test::id_of_language english(translation::language::en);
-
  auto translation = db.find_translation_by_ids(string_id, language);
 
  if (translation.is_null())
-  translation = db.find_translation_by_ids(string_id, english);
+  translation = db.find_translation_by_ids(string_id, test::language::en);
 
  if (translation.is_not_null())
   return db.get_translation(translation);
@@ -203,8 +194,8 @@ TEST(Compiler, file_test)
   get_translation
   (
    db,
-   test::id_of_string_id(translation::how_are_you),
-   test::id_of_language(translation::language::fr)
+   test::string_id::how_are_you,
+   test::language::fr
   ),
   "Comment allez-vous?"
  );
