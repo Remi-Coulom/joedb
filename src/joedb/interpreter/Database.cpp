@@ -43,10 +43,10 @@ namespace joedb
   )
   {
    std::ostringstream error_message;
-   error_message << "insert_vector: ";
-   error_message << "record_id = " << to_underlying(record_id) << "; ";
-   error_message << "size = " << size << "; ";
-   error_message << "max = " << max_record_id;
+   error_message << "insert_vector: record_id = ";
+   error_message << to_underlying(record_id);
+   error_message << "; size = " << size;
+   error_message << "; max = " << max_record_id;
    throw Exception(error_message.str());
   }
 
