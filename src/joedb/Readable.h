@@ -1,8 +1,8 @@
 #ifndef joedb_Readable_declared
 #define joedb_Readable_declared
 
-#include "Type.h"
-#include "Exception.h"
+#include "joedb/Type.h"
+#include "joedb/Exception.h"
 
 #include <map>
 #include <string>
