@@ -1,7 +1,7 @@
 #ifndef joedb_Writable_declared
 #define joedb_Writable_declared
 
-#include "Type.h"
+#include "joedb/Type.h"
 
 #include <string>
 

@@ -1,4 +1,4 @@
-#include "nested_namespace.h"
+#include "joedb/compiler/nested_namespace.h"
 
 #include <sstream>
 

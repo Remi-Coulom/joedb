@@ -5,7 +5,7 @@
 #include <initializer_list>
 #include <functional>
 
-#include "Writable.h"
+#include "joedb/Writable.h"
 
 namespace joedb
 {

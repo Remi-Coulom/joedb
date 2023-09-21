@@ -1,4 +1,4 @@
-#include "process_journal_pair.h"
+#include "joedb/io/process_journal_pair.h"
 #include "joedb/journal/File.h"
 
 #include <iostream>

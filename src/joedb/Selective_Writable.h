@@ -1,7 +1,7 @@
 #ifndef joedb_Selective_Writable_declared
 #define joedb_Selective_Writable_declared
 
-#include "Writable.h"
+#include "joedb/Writable.h"
 
 namespace joedb
 {

@@ -1,6 +1,6 @@
 #ifndef JOEDB_ASSERT
 
-#include "Exception.h"
+#include "joedb/Exception.h"
 
 #ifdef NDEBUG
 #define JOEDB_ASSERT(x)

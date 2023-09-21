@@ -1,4 +1,4 @@
-#include "SFTP.h"
+#include "joedb/ssh/SFTP.h"
 
 namespace joedb
 {
