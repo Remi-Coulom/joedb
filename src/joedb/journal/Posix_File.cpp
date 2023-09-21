@@ -26,18 +26,18 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ // NOLINTNEXTLINE(readability-make-member-function-const)
  bool Posix_File::try_exclusive_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  has_effect_on_file_state();
   return flock(fd, LOCK_EX | LOCK_NB) == 0;
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ // NOLINTNEXTLINE(readability-make-member-function-const)
  void Posix_File::shared_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  has_effect_on_file_state();
   if (flock(fd, LOCK_SH) == -1)
    throw_last_error("Locking", "file");
 
@@ -50,10 +50,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ // NOLINTNEXTLINE(readability-make-member-function-const)
  void Posix_File::exclusive_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  has_effect_on_file_state();
   if (flock(fd, LOCK_EX) == -1)
    throw_last_error("Locking", "file");
 
@@ -66,10 +66,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ // NOLINTNEXTLINE(readability-make-member-function-const)
  void Posix_File::unlock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  has_effect_on_file_state();
   if (flock(fd, LOCK_UN) == -1)
    throw_last_error("Unlocking", "file");
 

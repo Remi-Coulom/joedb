@@ -14,15 +14,6 @@ namespace joedb
 
    static void throw_last_error(const char *action, const char *file_name);
 
-   //
-   // Function invoked to silence clang-tidy's warning inside lock functions:
-   // readability-make-member-function-const
-   //
-   void has_effect_on_file_state()
-   {
-    fd += 0;
-   }
-
 #ifndef NDEBUG
    bool locked = false;
 #endif
