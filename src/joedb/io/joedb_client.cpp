@@ -52,7 +52,7 @@ namespace joedb
   if (connection_name == nullptr)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--shared] [--nodb] <client_file_name> <connection>\n";
+   std::cerr << " [--shared] [--nodb] <local_file_name> <connection>\n";
    connection_parser.list_builders();
    return 1;
   }
@@ -66,7 +66,15 @@ namespace joedb
    return 1;
 
   if (!builder->has_sharing_option())
-   shared = builder->get_default_sharing();
+  {
+   if (builder->get_default_sharing() != shared)
+   {
+    if (shared)
+     throw Exception("local file must not be shared (fix: remove --shared)");
+    else
+     throw Exception("local file must be shared (fix: add --shared)");
+   }
+  }
 
   std::cout << "Creating client data... ";
   std::cout.flush();
