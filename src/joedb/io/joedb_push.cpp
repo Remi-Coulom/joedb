@@ -38,7 +38,7 @@ namespace joedb
   {
    std::cerr << "usage: " << argv[0];
    std::cerr << " [--follow] <file_name> <connection>\n";
-   connection_parser.list_builders(std::cerr);
+   connection_parser.print_help(std::cerr);
    return 1;
   }
 

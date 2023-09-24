@@ -104,6 +104,16 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
+- no more Readonly_File_Connection. Do a Readonly_Journal_Client_Data, and a
+  Readonly_Interpreted_Client_Data. is_readonly comes from client_data, not
+  connection.
+- No need to chain pulling/locking if server is assumed to be exclusive client.
+  Note: must push/pull at the beginning, then.
+- If not assumed exclusive, then must keep the connection locked through
+  callbacks. Not really possible with the current transaction lambda.
+- Server option: "--exclusive" = allow only one client. Client should be
+  informed at connection time whether connection is exclusive or readonly.
+
 - joedb_server:
 
   - Test many concurrent read and write requests. Performance benchmarks.

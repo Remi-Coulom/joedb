@@ -52,10 +52,10 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Connection_Parser::list_builders(std::ostream &out) const
+ void Connection_Parser::print_help(std::ostream &out) const
  //////////////////////////////////////////////////////////////////////////
  {
-  out << "available connections:\n";
+  out << "\n<connection> is one of:\n";
   for (const auto &builder: builders)
   {
    out << ' ' << builder->get_name() << ' ';
@@ -75,7 +75,7 @@ namespace joedb
 
   std::ostringstream message;
   message << "Unknown connection type: " << name << '\n';
-  list_builders(message);
+  print_help(message);
   throw Exception(message.str());
  }
 

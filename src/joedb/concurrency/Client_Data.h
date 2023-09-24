@@ -13,11 +13,6 @@ namespace joedb
    virtual Writable_Journal &get_journal() = 0;
    virtual void update() = 0;
    virtual ~Client_Data();
-
-   Readonly_Journal &get_journal() const
-   {
-    return const_cast<Client_Data *>(this)->get_journal();
-   }
  };
 }
 

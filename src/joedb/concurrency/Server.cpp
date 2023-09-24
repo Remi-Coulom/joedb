@@ -410,7 +410,7 @@ namespace joedb
    for (uint32_t i = 0; i < 8; i++)
     hash[i] = uint32_from_network(session->buffer + 9 + 4 * i);
 
-   Readonly_Journal &readonly_journal = client.get_data().get_journal();
+   Readonly_Journal &readonly_journal = client.get_journal();
 
    if
    (
