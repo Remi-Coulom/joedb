@@ -22,19 +22,12 @@ namespace joedb
   if (argc <= 1)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--nodb] [--shared|--readonly] <local_file_name> <connection>\n";
+   std::cerr << " [--shared|--readonly] [--nodb] <client_file_name> <connection>\n";
    connection_parser.list_builders(std::cerr);
    return 1;
   }
 
   int arg_index = 1;
-
-  bool nodb = false;
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
-  {
-   nodb = true;
-   arg_index++;
-  }
 
   joedb::Open_Mode open_mode = Open_Mode::write_existing_or_create_new;
   if (arg_index < argc)
@@ -49,6 +42,13 @@ namespace joedb
     open_mode = Open_Mode::read_existing;
     arg_index++;
    }
+  }
+
+  bool nodb = false;
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
+  {
+   nodb = true;
+   arg_index++;
   }
 
   const char *file_name = nullptr;
