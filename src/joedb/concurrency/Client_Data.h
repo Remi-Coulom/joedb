@@ -1,10 +1,10 @@
 #ifndef joedb_Client_Data_declared
 #define joedb_Client_Data_declared
 
+#include "joedb/journal/Writable_Journal.h"
+
 namespace joedb
 {
- class Writable_Journal;
-
  ////////////////////////////////////////////////////////////////////////////
  class Client_Data
  ////////////////////////////////////////////////////////////////////////////
@@ -13,6 +13,11 @@ namespace joedb
    virtual Writable_Journal &get_journal() = 0;
    virtual void update() = 0;
    virtual ~Client_Data();
+
+   Readonly_Journal &get_journal() const
+   {
+    return const_cast<Client_Data *>(this)->get_journal();
+   }
  };
 }
 

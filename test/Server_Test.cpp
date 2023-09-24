@@ -3,6 +3,7 @@
 #include "joedb/concurrency/Network_Channel.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Journal_Client_Data.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -17,11 +18,13 @@ TEST(Server, basic)
  std::ostream * const log_stream = &dummy_log;
 
  joedb::Memory_File server_file;
- joedb::Writable_Journal server_journal(server_file);
+ joedb::Journal_Client_Data client_data(server_file);
+ joedb::Connection connection;
+ joedb::Client client(client_data, connection);
  net::io_context io_context;
  joedb::Server server
  (
-  server_journal,
+  client,
   io_context,
   uint16_t(0),
   std::chrono::seconds(0),
@@ -91,10 +94,10 @@ TEST(Server, basic)
   }
 
   joedb::Network_Channel channel("localhost", port);
-  joedb::Server_Connection connection(channel, log_stream);
+  joedb::Server_Connection server_connection(channel, log_stream);
   try
   {
-   joedb::Interpreted_Client client(connection, file);
+   joedb::Interpreted_Client interpreted_client(connection, file);
    FAIL() << "This should not work";
   }
   catch (const joedb::Exception &e)

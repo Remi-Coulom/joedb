@@ -57,7 +57,9 @@ namespace joedb
     data.update();
    }
 
-   const Client_Data &get_data() {return data;}
+   const Client_Data &get_data() const {return data;}
+   Readonly_Journal &get_journal() const {return data.get_journal();}
+   bool is_readonly() const {return connection.is_readonly();}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint() const

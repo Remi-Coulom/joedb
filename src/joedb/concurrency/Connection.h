@@ -21,7 +21,7 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   virtual void lock(Readonly_Journal &client_journal) {}
+   virtual void lock(Readonly_Journal &client_journal);
    virtual void unlock(Readonly_Journal &client_journal) {}
 
    virtual int64_t pull(Writable_Journal &client_journal)
@@ -40,9 +40,9 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t server_checkpoint,
     bool unlock_after
-   )
-   {
-   }
+   );
+
+   virtual bool is_readonly() const {return false;}
 
    virtual ~Connection();
  };

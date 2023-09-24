@@ -19,6 +19,7 @@
 #endif
 
 #include <cstring>
+#include <sstream>
 
 namespace joedb
 {
@@ -51,39 +52,31 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Connection_Parser::list_builders() const
+ void Connection_Parser::list_builders(std::ostream &out) const
  //////////////////////////////////////////////////////////////////////////
  {
-  std::cerr << "available connections:\n";
+  out << "available connections:\n";
   for (const auto &builder: builders)
   {
-   std::cerr << ' ' << builder->get_name() << ' ';
-   std::cerr << builder->get_parameters_description() << '\n';
+   out << ' ' << builder->get_name() << ' ';
+   out << builder->get_parameters_description() << '\n';
   }
  }
 
  //////////////////////////////////////////////////////////////////////////
- Connection_Builder *Connection_Parser::get_builder(const char *name) const
+ Connection_Builder &Connection_Parser::get_builder(const char *name) const
  //////////////////////////////////////////////////////////////////////////
  {
-  Connection_Builder *builder = nullptr;
-
   for (const auto &b: builders)
   {
    if (std::strcmp(b->get_name(), name) == 0)
-   {
-    builder = b.get();
-    break;
-   }
+    return *b;
   }
 
-  if (builder == nullptr)
-  {
-   std::cerr << "Unknown connection type: " << name << '\n';
-   list_builders();
-  }
-
-  return builder;
+  std::ostringstream message;
+  message << "Unknown connection type: " << name << '\n';
+  list_builders(message);
+  throw Exception(message.str());
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -101,12 +94,17 @@ namespace joedb
    argc > builder.get_max_parameters()
   )
   {
-   std::cerr << "Wrong number of parameters. Expected: ";
-   std::cerr << builder.get_parameters_description() << '\n';
-   return nullptr;
+   const char * description = builder.get_parameters_description();
+   if (!*description)
+    description = "no parameters";
+   throw Exception
+   (
+    std::string("Wrong number of connection arguments. Expected: ") +
+    std::string(description)
+   );
   }
-  else
-   return builder.build(argc, argv);
+
+  return builder.build(argc, argv);
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -117,16 +115,9 @@ namespace joedb
   char **argv
  ) const
  {
-  if (argc > 0)
-  {
-   const char *name = argv[0];
+  if (argc <= 0)
+   throw Exception("Missing connection argument");
 
-   Connection_Builder *builder = get_builder(name);
-
-   if (builder)
-    return build(*builder, argc - 1, argv + 1);
-  }
-
-  return nullptr;
+  return build(get_builder(argv[0]), argc - 1, argv + 1);
  }
 }

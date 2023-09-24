@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Server.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/network_integers.h"
 #include "joedb/concurrency/get_pid.h"
 #include "joedb/io/get_time_string.h"
@@ -232,15 +233,18 @@ namespace joedb
   {
    if (conflict)
     session->buffer[0] = 'C';
-   if (!writable_journal)
+   if (client.is_readonly())
     session->buffer[0] = 'R';
    else
    {
-    writable_journal->append_raw_tail
-    (
-     push_buffer.data(),
-     offset
-    );
+    client.transaction([offset, this](Client_Data &data)
+    {
+     data.get_journal().append_raw_tail
+     (
+      push_buffer.data(),
+      offset
+     );
+    });
     session->buffer[0] = 'U';
    }
 
@@ -269,7 +273,7 @@ namespace joedb
 
    const bool conflict = (size != 0) &&
    (
-    start != readonly_journal.get_checkpoint_position() ||
+    start != client.get_journal().get_checkpoint_position() ||
     (locked && session->state != Session::State::locking)
    );
 
@@ -354,10 +358,9 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
 
-   if (!writable_journal)
-    readonly_journal.refresh_checkpoint();
+   client.pull();
 
-   Async_Reader reader = readonly_journal.get_tail_reader(checkpoint);
+   Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
@@ -406,6 +409,8 @@ namespace joedb
 
    for (uint32_t i = 0; i < 8; i++)
     hash[i] = uint32_from_network(session->buffer + 9 + 4 * i);
+
+   Readonly_Journal &readonly_journal = client.get_data().get_journal();
 
    if
    (
@@ -569,7 +574,7 @@ namespace joedb
   to_network(session->id, session->buffer + 5 + 8);
   to_network
   (
-   readonly_journal.get_checkpoint_position(),
+   client.get_journal().get_checkpoint_position(),
    session->buffer + 5 + 8 + 8
   );
 
@@ -742,14 +747,13 @@ namespace joedb
  Server::Server
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Readonly_Journal &journal,
+  Client &client,
   net::io_context &io_context,
   uint16_t port,
   std::chrono::seconds lock_timeout,
   std::ostream *log_pointer
  ):
-  readonly_journal(journal),
-  writable_journal(dynamic_cast<Writable_Journal *>(&journal)),
+  client(client),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),

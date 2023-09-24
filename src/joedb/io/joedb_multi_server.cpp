@@ -2,6 +2,8 @@
 #include "joedb/db/multi_server_interpreted.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/ssh/Forward_Channel.h"
 #include "joedb/journal/Interpreted_File.h"
 
@@ -19,7 +21,9 @@ namespace joedb
  {
   private:
    File file;
-   Writable_Journal journal;
+   Journal_Client_Data client_data;
+   Connection connection;
+   Client client;
    Server server;
 
   public:
@@ -31,10 +35,11 @@ namespace joedb
     std::chrono::seconds timeout
    ):
     file(file_name, Open_Mode::write_existing_or_create_new),
-    journal(file),
+    client_data(file),
+    client(client_data, connection),
     server
     (
-     journal,
+     client,
      io_context,
      port,
      timeout,

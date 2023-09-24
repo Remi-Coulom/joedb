@@ -19,5 +19,22 @@ namespace joedb
    throw Exception("File cannot be shared");
  }
 
+ void Connection::lock(Readonly_Journal &client_journal)
+ {
+  if (is_readonly())
+   throw Exception("Readonly connection, lock not supported");
+ }
+
+ void Connection::push
+ (
+  Readonly_Journal &client_journal,
+  int64_t server_checkpoint,
+  bool unlock_after
+ )
+ {
+  if (is_readonly())
+   throw Exception("Readonly connection, push not supported");
+ }
+
  Connection::~Connection() = default;
 }

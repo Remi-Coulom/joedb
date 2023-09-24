@@ -19,61 +19,43 @@ namespace joedb
  {
   Connection_Parser connection_parser(true, true);
 
+  if (argc <= 1)
+  {
+   std::cerr << "usage: " << argv[0];
+   std::cerr << " [--db] [--shared|--readonly] <local_file_name> <connection>\n";
+   connection_parser.list_builders(std::cerr);
+   return 1;
+  }
+
   int arg_index = 1;
-  bool nodb = false;
-  bool shared = false;
+
+  bool db = false;
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--db") == 0)
+  {
+   db = true;
+   arg_index++;
+  }
+
+  joedb::Open_Mode open_mode = Open_Mode::write_existing_or_create_new;
+  if (arg_index < argc)
+  {
+   if (std::strcmp(argv[arg_index], "--shared") == 0)
+   {
+    open_mode = Open_Mode::shared_write;
+    arg_index++;
+   }
+   else if (std::strcmp(argv[arg_index], "--readonly") == 0)
+   {
+    open_mode = Open_Mode::read_existing;
+    arg_index++;
+   }
+  }
+
   const char *file_name = nullptr;
-  const char *connection_name = nullptr;
-
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--shared") == 0)
-  {
-   shared = true;
-   arg_index++;
-  }
-
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
-  {
-   nodb = true;
-   arg_index++;
-  }
-
   if (arg_index < argc)
   {
    file_name = argv[arg_index];
    arg_index++;
-  }
-
-  if (arg_index < argc)
-  {
-   connection_name = argv[arg_index];
-   arg_index++;
-  }
-
-  if (connection_name == nullptr)
-  {
-   std::cerr << "usage: " << argv[0];
-   std::cerr << " [--shared] [--nodb] <local_file_name> <connection>\n";
-   connection_parser.list_builders();
-   return 1;
-  }
-
-  Connection_Builder *builder = connection_parser.get_builder
-  (
-   connection_name
-  );
-
-  if (builder == nullptr)
-   return 1;
-
-  if (!builder->has_sharing_option())
-  {
-   if (builder->get_default_sharing() != shared)
-   {
-    if (shared)
-     throw Exception("local file must not be shared (fix: remove --shared)");
-    else
-     throw Exception("local file must be shared (fix: add --shared)");
-   }
   }
 
   std::cout << "Creating client data... ";
@@ -81,27 +63,16 @@ namespace joedb
 
   std::unique_ptr<Generic_File> client_file;
 
-  if (*file_name)
-  {
-   client_file.reset
-   (
-    new File
-    (
-     file_name,
-     shared ?
-     Open_Mode::shared_write :
-     Open_Mode::write_existing_or_create_new
-    )
-   );
-  }
+  if (file_name && *file_name)
+   client_file.reset(new File(file_name, open_mode));
   else
    client_file.reset(new Memory_File());
 
   std::unique_ptr<Client_Data> client_data
   (
-   nodb ?
-   (Client_Data *)new Journal_Client_Data(*client_file) :
-   (Client_Data *)new Interpreted_Client_Data(*client_file)
+   db ?
+   (Client_Data *)new Interpreted_Client_Data(*client_file) :
+   (Client_Data *)new Journal_Client_Data(*client_file)
   );
 
   std::cout << "OK\n";
@@ -111,39 +82,33 @@ namespace joedb
 
   std::unique_ptr<Connection> connection = connection_parser.build
   (
-   *builder,
    argc - arg_index,
    argv + arg_index
   );
 
   std::cout << "OK\n";
 
-  if (!connection)
-   return 1;
+  Client client(*client_data, *connection);
+
+  const int64_t diff = client.get_checkpoint_difference();
+
+  if (diff > 0)
+   std::cout << "You can push " << diff << " bytes.\n";
+  else if (diff < 0)
+   std::cout << "You can pull " << -diff << " bytes.\n";
   else
-  {
-   Client client(*client_data, *connection);
+   std::cout << "Client data is in sync with the connection.\n";
 
-   const int64_t diff = client.get_checkpoint_difference();
+  Client_Command_Processor processor(client);
+  Command_Interpreter interpreter{processor};
+  interpreter.set_prompt(true);
 
-   if (diff > 0)
-    std::cout << "You can push " << diff << " bytes.\n";
-   else if (diff < 0)
-    std::cout << "You can pull " << -diff << " bytes.\n";
-   else
-    std::cout << "Client data is in sync with the connection.\n";
+  if (db)
+   interpreter.set_prompt_string("joedb_client(db)");
+  else
+   interpreter.set_prompt_string("joedb_client(nodb)");
 
-   Client_Command_Processor processor(client);
-   Command_Interpreter interpreter{processor};
-   interpreter.set_prompt(true);
-
-   if (nodb)
-    interpreter.set_prompt_string("joedb_client(nodb)");
-   else
-    interpreter.set_prompt_string("joedb_client");
-
-   interpreter.main_loop(std::cin, std::cout);
-  }
+  interpreter.main_loop(std::cin, std::cout);
 
   return 0;
  }

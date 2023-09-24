@@ -116,9 +116,9 @@ Concurrency
     - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
   - allow timeout in the middle of a push.
-  - serve from a client (to allow synchronous backup)
   - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
-  - get rid of signal. Make an interactive command-line interface to control the server.
+  - get rid of signal. Make an interactive command-line interface to control
+    the server. Maybe better: use asio's (non-std::net) support for signal.
   - possibility to checkpoint multiple concurrent transactions simultaneously
 
 - SHA-256: option for either fast or full.

@@ -12,7 +12,7 @@
 
 namespace joedb
 {
- class Backup_Client;
+ class Client;
 
  ////////////////////////////////////////////////////////////////////////////
  class Server
@@ -22,8 +22,7 @@ namespace joedb
    enum {interrupt_check_seconds = 2};
    enum {clear_signal_seconds = 3};
 
-   joedb::Readonly_Journal &readonly_journal;
-   joedb::Writable_Journal *writable_journal;
+   joedb::Client &client;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
    const uint16_t port;
@@ -187,7 +186,7 @@ namespace joedb
   public:
    Server
    (
-    joedb::Readonly_Journal &journal,
+    joedb::Client &client,
     net::io_context &io_context,
     uint16_t port,
     std::chrono::seconds lock_timeout,

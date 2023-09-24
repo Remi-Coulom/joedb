@@ -144,7 +144,7 @@ namespace joedb
 
    std::vector<char> get_raw_tail(int64_t starting_position) const;
 
-   SHA_256::Hash get_hash(int64_t checkpoint)
+   SHA_256::Hash get_hash(int64_t checkpoint) const
    {
     return file.get_fast_hash(header_size, checkpoint - header_size);
    }
