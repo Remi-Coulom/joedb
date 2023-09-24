@@ -22,17 +22,17 @@ namespace joedb
   if (argc <= 1)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--db] [--shared|--readonly] <local_file_name> <connection>\n";
+   std::cerr << " [--nodb] [--shared|--readonly] <local_file_name> <connection>\n";
    connection_parser.list_builders(std::cerr);
    return 1;
   }
 
   int arg_index = 1;
 
-  bool db = false;
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--db") == 0)
+  bool nodb = false;
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
   {
-   db = true;
+   nodb = true;
    arg_index++;
   }
 
@@ -70,9 +70,9 @@ namespace joedb
 
   std::unique_ptr<Client_Data> client_data
   (
-   db ?
-   (Client_Data *)new Interpreted_Client_Data(*client_file) :
-   (Client_Data *)new Journal_Client_Data(*client_file)
+   nodb ?
+   (Client_Data *)new Journal_Client_Data(*client_file) :
+   (Client_Data *)new Interpreted_Client_Data(*client_file)
   );
 
   std::cout << "OK\n";
@@ -103,10 +103,10 @@ namespace joedb
   Command_Interpreter interpreter{processor};
   interpreter.set_prompt(true);
 
-  if (db)
-   interpreter.set_prompt_string("joedb_client(db)");
-  else
+  if (nodb)
    interpreter.set_prompt_string("joedb_client(nodb)");
+  else
+   interpreter.set_prompt_string("joedb_client(db)");
 
   interpreter.main_loop(std::cin, std::cout);
 
