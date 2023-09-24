@@ -129,17 +129,6 @@ The schema of the config file is this:
 .. literalinclude:: ../../src/joedb/db/multi_server.joedbi
    :language: joedbi
 
-So, you can use this command to setup online backup for a server. The backup
-server could be configured like this:
-
-.. literalinclude:: ../../test/server_for_backup.joedbi
-   :language: joedbi
-
-And the main server would be like this:
-
-.. literalinclude:: ../../test/server_with_backup.joedbi
-   :language: joedbi
-
 .. _joedb_client:
 
 ``joedb_client``

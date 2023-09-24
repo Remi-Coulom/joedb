@@ -1,16 +1,4 @@
-create_table ssh_connection
-add_field ssh_connection user string
-add_field ssh_connection host string
-add_field ssh_connection joedb_port int32
-add_field ssh_connection ssh_port int32
-add_field ssh_connection ssh_log_level int32
-
 create_table server
 add_field server file_name string
 add_field server port int32
 add_field server timeout int32
-add_field server ssh_connection references ssh_connection
-
-# dummy is true -> Dummy_Connection
-# ssh_connection is null -> Local_Connection
-# ssh_connection is not null -> Server_Connection

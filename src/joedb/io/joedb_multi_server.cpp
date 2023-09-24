@@ -5,7 +5,6 @@
 #include "joedb/concurrency/Journal_Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/ssh/Forward_Channel.h"
-#include "joedb/journal/Interpreted_File.h"
 
 #include <iostream>
 #include <list>
@@ -68,14 +67,6 @@ namespace joedb
 
   for (auto server: db.get_server_table())
   {
-   auto ssh_connection = db.get_ssh_connection(server);
-
-   if (ssh_connection.is_not_null())
-   {
-    if (!db.is_valid(ssh_connection))
-     throw std::runtime_error("invalid ssh_connection id");
-   }
-
    servers.emplace_back
    (
     new Server_Data

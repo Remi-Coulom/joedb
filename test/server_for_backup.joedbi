@@ -1,5 +1,0 @@
-insert_into server 1
-update server 1 file_name "backup.joedb"
-update server 1 port 2001
-update server 1 timeout 0
-update server 1 ssh_connection 0

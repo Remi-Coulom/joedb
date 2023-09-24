@@ -1,11 +1,2 @@
-insert_into server 1
-update server 1 file_name "test_1.joedb"
-update server 1 port 2001
-update server 1 timeout 0
-update server 1 ssh_connection 0
-
-insert_into server 2
-update server 2 file_name "test_2.joedb"
-update server 2 port 2002
-update server 2 timeout 0
-update server 2 ssh_connection 0
+insert_into server 1 "test_1.joedb" 2001 0
+insert_into server 2 "test_2.joedb" 2002 0
