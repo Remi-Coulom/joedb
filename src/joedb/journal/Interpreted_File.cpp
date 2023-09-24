@@ -18,6 +18,7 @@ namespace joedb
    throw Exception("bad command stream");
 
   {
+   joedb_file.flush();
    Writable_Journal journal(joedb_file);
    Database db;
    journal.replay_log(db);
