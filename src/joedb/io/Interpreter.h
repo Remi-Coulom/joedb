@@ -33,8 +33,8 @@ namespace joedb
   public Command_Interpreter
  {
   public:
-   Writable_Interpreter(Writable &writable):
-    Writable_Command_Processor(writable, nullptr),
+   Writable_Interpreter(Writable &writable, Writable *blob_writer = nullptr):
+    Writable_Command_Processor(writable, blob_writer),
     Command_Interpreter{*static_cast<Writable_Command_Processor *>(this)}
    {
    }
@@ -43,10 +43,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  class Interpreter:
  ////////////////////////////////////////////////////////////////////////////
+  public Writable_Interpreter,
   public Readable_Command_Processor,
-  public Writable_Command_Processor,
-  public Readable_Writable_Command_Processor,
-  public Command_Interpreter
+  public Readable_Writable_Command_Processor
  {
   public:
    Interpreter
@@ -57,16 +56,17 @@ namespace joedb
     Writable *blob_writer,
     size_t max_record_id
    ):
+    Writable_Interpreter(writable, blob_writer),
     Readable_Command_Processor(readable, blob_reader),
-    Writable_Command_Processor(writable, blob_writer),
-    Readable_Writable_Command_Processor(*this, *this, max_record_id),
-    Command_Interpreter
-    {
+    Readable_Writable_Command_Processor
+    (
      *static_cast<Readable_Command_Processor *>(this),
      *static_cast<Writable_Command_Processor *>(this),
-     *static_cast<Readable_Writable_Command_Processor *>(this)
-    }
+     max_record_id
+    )
    {
+    add_processor(*static_cast<Readable_Writable_Command_Processor *>(this));
+    add_processor(*static_cast<Readable_Command_Processor *>(this));
    }
  };
 }

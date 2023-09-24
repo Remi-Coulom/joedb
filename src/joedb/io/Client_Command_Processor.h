@@ -6,7 +6,7 @@ namespace joedb
  class Client;
  class Interpreted_Client_Data;
  class Journal_Client_Data;
- class Writable_Command_Processor;
+ class Writable_Interpreter;
 
  ////////////////////////////////////////////////////////////////////////////
  class Client_Command_Processor: public Command_Processor
@@ -14,14 +14,8 @@ namespace joedb
  {
   private:
    Client &client;
-   Interpreted_Client_Data * const interpreted_client_data;
-   Journal_Client_Data * const journal_client_data;
 
-   static void run_transaction
-   (
-    Command_Interpreter &interpreter,
-    Writable_Command_Processor &command_processor
-   );
+   static void run_transaction(Writable_Interpreter &interpreter);
 
    void pull(std::ostream &out);
 

@@ -93,14 +93,6 @@ General commands
  echo on|off
  prompt on|off
 
-Displaying data
-~~~~~~~~~~~~~~~
- table <table_name> [<max_column_width>] [start] [length]
- schema
- dump
- sql
- json [<base64>]
-
 Journal
 ~~~~~~~
  timestamp [<stamp>] (if no value is given, use current time)
@@ -136,6 +128,14 @@ Data manipulation
  update <table_name> <record_id> <field_name> <value>
  update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
  delete_from <table_name> <record_id>
+
+Displaying data
+~~~~~~~~~~~~~~~
+ table <table_name> [<max_column_width>] [start] [length]
+ schema
+ dump
+ sql
+ json [<base64>]
 
 OK: help
 OK: 

@@ -18,8 +18,7 @@ namespace joedb
  void Client_Command_Processor::run_transaction
  ////////////////////////////////////////////////////////////////////////////
  (
-  Command_Interpreter &interpreter,
-  Writable_Command_Processor &command_processor
+  Writable_Interpreter &interpreter
  )
  {
   std::cout << "OK\n";
@@ -31,7 +30,7 @@ namespace joedb
    std::cout
   );
 
-  if (command_processor.was_aborted())
+  if (interpreter.was_aborted())
    throw Exception("aborted");
  }
 
@@ -92,6 +91,11 @@ namespace joedb
   }
   else if (command == "db") /////////////////////////////////////////////////
   {
+   const Interpreted_Client_Data *interpreted_client_data
+   (
+    dynamic_cast<const Interpreted_Client_Data *>(&client.get_data())
+   );
+
    if (interpreted_client_data)
    {
     Readable_Interpreter interpreter
@@ -116,9 +120,14 @@ namespace joedb
    std::cout << "Waiting for lock... ";
    std::cout.flush();
 
-   if (interpreted_client_data)
+   client.transaction([](Client_Data &data)
    {
-    client.transaction([this]()
+    Interpreted_Client_Data *interpreted_client_data
+    (
+     dynamic_cast<Interpreted_Client_Data *>(&data)
+    );
+
+    if (interpreted_client_data)
     {
      Interpreter interpreter
      (
@@ -128,17 +137,14 @@ namespace joedb
       nullptr,
       0
      );
-     run_transaction(interpreter, interpreter);
-    });
-   }
-   else if (journal_client_data)
-   {
-    client.transaction([this]()
+     run_transaction(interpreter);
+    }
+    else
     {
-     Writable_Interpreter interpreter(journal_client_data->get_journal());
-     run_transaction(interpreter, interpreter);
-    });
-   }
+     Writable_Interpreter interpreter(data.get_journal());
+     run_transaction(interpreter);
+    }
+   });
   }
   else //////////////////////////////////////////////////////////////////////
    return Status::not_found;
@@ -149,15 +155,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  Client_Command_Processor::Client_Command_Processor(Client &client):
  ////////////////////////////////////////////////////////////////////////////
-  client(client),
-  interpreted_client_data
-  (
-   dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
-  ),
-  journal_client_data
-  (
-   dynamic_cast<Journal_Client_Data *>(&client.get_data())
-  )
+  client(client)
  {
  }
 }

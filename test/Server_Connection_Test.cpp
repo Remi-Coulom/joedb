@@ -78,6 +78,6 @@ TEST(Server_Connection, session)
 
   client.pull();
 
-  client.transaction([](){});
+  client.transaction([](joedb::Client_Data &){});
  }
 }

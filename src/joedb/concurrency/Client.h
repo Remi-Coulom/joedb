@@ -57,7 +57,7 @@ namespace joedb
     data.update();
    }
 
-   Client_Data &get_data() {return data;}
+   const Client_Data &get_data() {return data;}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint() const
@@ -107,7 +107,7 @@ namespace joedb
     try
     {
      data.update();
-     transaction();
+     transaction(data);
      data.get_journal().default_checkpoint();
     }
     catch (...)

@@ -48,6 +48,11 @@ namespace joedb
     processors.insert(processors.end(), list.begin(), list.end());
    }
 
+   void add_processor(Command_Processor &processor)
+   {
+    processors.emplace_back(processor);
+   }
+
    void set_echo(bool new_echo) {echo = new_echo;}
    void set_rethrow(bool new_rethrow) {rethrow = new_rethrow;}
    void set_prompt(bool new_prompt) {prompt = new_prompt;}

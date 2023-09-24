@@ -131,11 +131,11 @@ TEST(Local_Connection, dummy_connection)
  joedb::Memory_File file;
 
  {
-  joedb::Journal_Client_Data data(file);
+  joedb::Journal_Client_Data client_data(file);
   joedb::Connection connection;
-  joedb::Client client(data, connection);
+  joedb::Client client(client_data, connection);
 
-  client.transaction([&data]()
+  client.transaction([](joedb::Client_Data &data)
   {
    data.get_journal().create_table("person");
   });

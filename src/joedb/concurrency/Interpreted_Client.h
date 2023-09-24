@@ -19,7 +19,7 @@ namespace joedb
 
    template<typename F> void transaction(F transaction)
    {
-    Client::transaction([this, &transaction]()
+    Client::transaction([this, &transaction](Client_Data &data)
     {
      transaction(get_database(), get_multiplexer());
     });

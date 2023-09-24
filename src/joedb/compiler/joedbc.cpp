@@ -536,7 +536,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
-    joedb::Client::transaction([this](){
+    joedb::Client::transaction([this](joedb::Client_Data &data){
      db.check_schema();
      db.auto_upgrade();
     });
@@ -558,7 +558,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    template<typename F> void transaction(F transaction)
    {
-    joedb::Client::transaction([&]()
+    joedb::Client::transaction([&](joedb::Client_Data &data)
     {
      throw_if_schema_changed();
      transaction(db);
