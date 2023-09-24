@@ -97,7 +97,7 @@ TEST(Server, basic)
   joedb::Server_Connection server_connection(channel, log_stream);
   try
   {
-   joedb::Interpreted_Client interpreted_client(connection, file);
+   joedb::Interpreted_Client interpreted_client(server_connection, file);
    FAIL() << "This should not work";
   }
   catch (const joedb::Exception &e)

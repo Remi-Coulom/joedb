@@ -78,6 +78,7 @@ TEST(Server_Connection, session)
 
   client.pull();
 
+  // NOLINTNEXTLINE(readability-named-parameter)
   client.transaction([](joedb::Client_Data &){});
  }
 }
