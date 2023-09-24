@@ -121,6 +121,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/compiler/Blob.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
+  ../test/compiler/Interpreted_Database.cpp
   ../test/compiler/Pullable_Database.cpp
   ../test/compiler/db/blob.cpp
   ../test/compiler/db/test.cpp
@@ -132,6 +133,8 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/compiler/translation.h
   ../test/compiler/db/test_dbname_base64.cpp
   ../test/compiler/db/test_dbname_ascii.cpp
+  ../src/joedb/db/multi_server_readonly.cpp
+  ../src/joedb/db/multi_server_interpreted.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
   ../src/joedb/String_Logger.cpp

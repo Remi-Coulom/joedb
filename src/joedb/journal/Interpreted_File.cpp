@@ -23,11 +23,11 @@ namespace joedb
    journal.replay_log(db);
    Multiplexer multiplexer{db, journal};
    Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
-   interpreter.set_echo(false);
+   interpreter.set_echo(true);
    interpreter.set_rethrow(true);
    {
     std::ofstream null_stream;
-    interpreter.main_loop(command_stream, null_stream);
+    interpreter.main_loop(command_stream, std::cerr);
    }
    journal.default_checkpoint();
   }
