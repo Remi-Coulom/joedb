@@ -4,6 +4,8 @@
 #include "joedb/io/Connection_Parser.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Client_Data.h"
+#include "joedb/ssh/Session.h"
+#include "joedb/ssh/SFTP.h"
 
 namespace joedb
 {
@@ -14,6 +16,8 @@ namespace joedb
   private:
    Connection_Parser connection_parser;
 
+   std::unique_ptr<ssh::Session> ssh_session;
+   std::unique_ptr<ssh::SFTP> sftp;
    std::unique_ptr<Generic_File> client_file;
    std::unique_ptr<Client_Data> client_data;
    std::unique_ptr<Connection> connection;
