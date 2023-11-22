@@ -15,7 +15,6 @@
 
 #ifdef JOEDB_HAS_SSH
 #include "joedb/io/SSH_Connection_Builder.h"
-#include "joedb/io/SFTP_Connection_Builder.h"
 #endif
 
 #include <cstring>
@@ -46,8 +45,6 @@ namespace joedb
 
 #ifdef JOEDB_HAS_SSH
   builders.emplace_back(new SSH_Connection_Builder());
-  if (readonly)
-   builders.emplace_back(new SFTP_Connection_Builder());
 #endif
  }
 
