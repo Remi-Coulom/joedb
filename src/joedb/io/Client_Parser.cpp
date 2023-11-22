@@ -27,8 +27,9 @@ namespace joedb
  {
   out << " [--nodb] <file> <connection>\n\n";
   out << "<file> is one of:\n";
-  out << "  [--shared|--exclusive] <client_file_name>\n";
-  out << "  sftp <user> <host> <file_name>\n";
+  out << "  [file] [--shared|--exclusive] <client_file_name>\n";
+  out << "  sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
+  out << "  memory\n";
   connection_parser.print_help(out);
  }
 
