@@ -58,6 +58,16 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Client_Command_Processor::sleep(int seconds, std::ostream &out) const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << get_time_string_of_now();
+  out << ". Sleeping for " << seconds << " seconds...\n";
+  for (int i = seconds; Signal::signal != SIGINT && --i >= 0;)
+   std::this_thread::sleep_for(std::chrono::seconds(1));
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  bool Client_Command_Processor::is_readonly_data() const
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -101,6 +111,7 @@ namespace joedb
    }
 
    out << " push\n";
+   out << " push_every <seconds>\n";
 
    out << '\n';
    return Status::ok;
@@ -129,14 +140,8 @@ namespace joedb
    while (Signal::signal != SIGINT)
    {
     pull(out);
-    out << get_time_string_of_now() << '\n';
-    out << "Sleeping for " << seconds << " seconds...\n";
-
-    for (int i = seconds; Signal::signal != SIGINT && --i >= 0;)
-     std::this_thread::sleep_for(std::chrono::seconds(1));
+    sleep(seconds, out);
    }
-
-   Signal::stop();
   }
   else if (command == "db" && has_db()) /////////////////////////////////////
   {
@@ -158,6 +163,22 @@ namespace joedb
   else if (command == "push") ///////////////////////////////////////////////
   {
    client.push_unlock();
+  }
+  else if (command == "push_every") /////////////////////////////////////////
+  {
+   int seconds = 1;
+   iss >> seconds;
+
+   Signal::signal = Signal::no_signal;
+   Signal::start();
+
+   while (Signal::signal != SIGINT)
+   {
+    client.refresh_data();
+    print_status(out);
+    client.push_unlock();
+    sleep(seconds, out);
+   }
   }
   else if (command == "transaction" && !is_readonly_data()) /////////////////
   {
