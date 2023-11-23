@@ -27,7 +27,7 @@ namespace joedb
  {
   out << " [--nodb] <file> <connection>\n\n";
   out << "<file> is one of:\n";
-  out << "  [file] [--shared|--exclusive] <client_file_name>\n";
+  out << "  [--shared|--exclusive] <client_file_name>\n";
   out << "  sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
   out << "  memory\n";
   connection_parser.print_help(out);
@@ -77,6 +77,11 @@ namespace joedb
 
    arg_index += 4;
   }
+  else if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
+  {
+   client_file.reset(new Memory_File());
+   arg_index++;
+  }
   else
   {
    joedb::Open_Mode open_mode = Open_Mode::read_existing;
@@ -105,11 +110,12 @@ namespace joedb
    std::cout.flush();
 
    if (file_name && *file_name)
+   {
     client_file.reset(new File(file_name, open_mode));
+    std::cout << "OK\n";
+   }
    else
-    client_file.reset(new Memory_File());
-
-   std::cout << "OK\n";
+    std::cout << "Error: missing file name\n";
   }
 
   std::cout << "Creating client data... ";
