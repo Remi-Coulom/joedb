@@ -10,7 +10,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual Writable_Journal &get_journal() = 0;
+   virtual bool is_readonly() const = 0;
+   virtual Writable_Journal &get_writable_journal();
+   virtual Readonly_Journal &get_readonly_journal();
    virtual void update() = 0;
    virtual ~Client_Data();
  };

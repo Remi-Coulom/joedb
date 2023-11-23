@@ -10,13 +10,13 @@ namespace joedb
  void Connection::check_shared(Readonly_Journal &client_journal)
  {
   if (!client_journal.is_shared())
-   throw Exception("File must be shared");
+   throw Exception("File must be shared for this connection type");
  }
 
  void Connection::check_not_shared(Readonly_Journal &client_journal)
  {
   if (client_journal.is_shared())
-   throw Exception("File cannot be shared");
+   throw Exception("File cannot be shared for this connection type");
  }
 
  void Connection::lock(Readonly_Journal &client_journal)

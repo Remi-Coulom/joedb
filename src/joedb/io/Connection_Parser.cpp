@@ -113,7 +113,7 @@ namespace joedb
  ) const
  {
   if (argc <= 0)
-   throw Exception("Missing connection argument");
+   return build(get_builder("dummy"), 0, nullptr);
 
   return build(get_builder(argv[0]), argc - 1, argv + 1);
  }

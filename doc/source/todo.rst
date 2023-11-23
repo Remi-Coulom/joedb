@@ -104,8 +104,6 @@ Better Freedom_Keeper
 Concurrency
 -----------
 
-- Do a Readonly_Journal_Client_Data, and a Readonly_Interpreted_Client_Data.
-  is_readonly comes from client_data, not connection.
 - No need to chain pulling/locking if server is assumed to be exclusive client.
   Note: must push/pull at the beginning, then.
 - If not assumed exclusive, then must keep the connection locked through

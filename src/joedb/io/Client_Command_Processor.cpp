@@ -6,7 +6,6 @@
 #include "joedb/io/Interpreter.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
-#include "joedb/concurrency/Journal_Client_Data.h"
 #include "joedb/Signal.h"
 
 #include <thread>
@@ -45,6 +44,20 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ bool Client_Command_Processor::is_readonly_data() const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return client.get_data().is_readonly();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ bool Client_Command_Processor::has_db() const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return dynamic_cast<const Interpreted_Client_Data *>(&client.get_data());
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Client_Command_Processor::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -57,19 +70,29 @@ namespace joedb
   {
    out << "Client\n";
    out << "~~~~~~\n";
-   out << " pull\n";
-   out << " pull_every <seconds>\n";
-   out << " db\n";
+
+   if (has_db())
+   {
+    out << " db\n";
+   }
+
+   if (!is_readonly_data())
+   {
+    out << " pull\n";
+    out << " pull_every <seconds>\n";
+    out << " transaction\n";
+   }
+
    out << " push\n";
-   out << " transaction\n";
+
    out << '\n';
    return Status::ok;
   }
-  else if (command == "pull") ///////////////////////////////////////////////
+  else if (command == "pull" && !is_readonly_data()) ////////////////////////
   {
    pull(out);
   }
-  else if (command == "pull_every") /////////////////////////////////////////
+  else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
    int seconds = 1;
    iss >> seconds;
@@ -89,42 +112,37 @@ namespace joedb
 
    Signal::stop();
   }
-  else if (command == "db") /////////////////////////////////////////////////
+  else if (command == "db" && has_db()) /////////////////////////////////////
   {
    const Interpreted_Client_Data *interpreted_client_data
    (
     dynamic_cast<const Interpreted_Client_Data *>(&client.get_data())
    );
 
-   if (interpreted_client_data)
-   {
-    Readable_Interpreter interpreter
-    (
-     interpreted_client_data->get_database(),
-     nullptr
-    );
+   Readable_Interpreter interpreter
+   (
+    interpreted_client_data->get_database(),
+    nullptr
+   );
 
-    interpreter.set_prompt(true);
-    interpreter.set_prompt_string("joedb_client/db");
-    interpreter.main_loop(std::cin, std::cout);
-   }
-   else
-    out << "Cannot read: no table data\n";
+   interpreter.set_prompt(true);
+   interpreter.set_prompt_string("joedb_client/db");
+   interpreter.main_loop(std::cin, std::cout);
   }
   else if (command == "push") ///////////////////////////////////////////////
   {
    client.push_unlock();
   }
-  else if (command == "transaction") ////////////////////////////////////////
+  else if (command == "transaction" && !is_readonly_data()) /////////////////
   {
    std::cout << "Waiting for lock... ";
    std::cout.flush();
 
    client.transaction([](Client_Data &data)
    {
-    Interpreted_Client_Data *interpreted_client_data
+    Writable_Interpreted_Client_Data *interpreted_client_data
     (
-     dynamic_cast<Interpreted_Client_Data *>(&data)
+     dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
     );
 
     if (interpreted_client_data)
@@ -141,7 +159,7 @@ namespace joedb
     }
     else
     {
-     Writable_Interpreter interpreter(data.get_journal());
+     Writable_Interpreter interpreter(data.get_writable_journal());
      run_transaction(interpreter);
     }
    });

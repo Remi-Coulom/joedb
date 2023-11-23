@@ -3,7 +3,8 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/SFTP_File.h"
-#include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Writable_Journal_Client_Data.h"
+#include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/ssh/Session.h"
@@ -122,9 +123,19 @@ namespace joedb
   std::cout.flush();
 
   if (nodb)
-   client_data.reset(new Journal_Client_Data(*client_file));
+  {
+   if (client_file->get_mode() == Open_Mode::read_existing)
+    client_data.reset(new Readonly_Journal_Client_Data(*client_file));
+   else
+    client_data.reset(new Writable_Journal_Client_Data(*client_file));
+  }
   else
-   client_data.reset(new Interpreted_Client_Data(*client_file));
+  {
+   if (client_file->get_mode() == Open_Mode::read_existing)
+    client_data.reset(new Readonly_Interpreted_Client_Data(*client_file));
+   else
+    client_data.reset(new Writable_Interpreted_Client_Data(*client_file));
+  }
 
   std::cout << "OK\n";
 

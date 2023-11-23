@@ -239,7 +239,7 @@ namespace joedb
    {
     client.transaction([offset, this](Client_Data &data)
     {
-     data.get_journal().append_raw_tail
+     data.get_writable_journal().append_raw_tail
      (
       push_buffer.data(),
       offset

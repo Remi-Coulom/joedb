@@ -22,18 +22,25 @@ namespace joedb
 
     if (difference > 0)
     {
-     connection.push(data.get_journal(), server_checkpoint, unlock_after);
-     server_checkpoint = data.get_journal().get_checkpoint_position();
+     connection.push
+     (
+      data.get_readonly_journal(),
+      server_checkpoint,
+      unlock_after
+     );
+
+     server_checkpoint =
+      data.get_readonly_journal().get_checkpoint_position();
     }
     else if (unlock_after)
-     connection.unlock(data.get_journal());
+     connection.unlock(data.get_readonly_journal());
    }
 
    //////////////////////////////////////////////////////////////////////////
    void throw_if_pull_when_ahead()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (data.get_journal().get_position() > server_checkpoint)
+    if (data.get_readonly_journal().get_position() > server_checkpoint)
      throw Exception("can't pull: client is ahead of server");
    }
 
@@ -52,27 +59,29 @@ namespace joedb
    ):
     data(data),
     connection(connection),
-    server_checkpoint(connection.handshake(data.get_journal()))
+    server_checkpoint(connection.handshake(data.get_readonly_journal()))
    {
     data.update();
    }
 
    const Client_Data &get_data() const {return data;}
-   Readonly_Journal &get_journal() {return data.get_journal();}
+   Readonly_Journal &get_journal() {return data.get_readonly_journal();}
    bool is_readonly() const {return connection.is_readonly();}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint() const
    //////////////////////////////////////////////////////////////////////////
    {
-    return data.get_journal().get_checkpoint_position();
+    return data.get_readonly_journal().get_checkpoint_position();
    }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint_difference() const
    //////////////////////////////////////////////////////////////////////////
    {
-    return data.get_journal().get_checkpoint_position() - server_checkpoint;
+    return
+     data.get_readonly_journal().get_checkpoint_position() -
+     server_checkpoint;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -94,7 +103,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     throw_if_pull_when_ahead();
-    server_checkpoint = connection.pull(data.get_journal());
+    server_checkpoint = connection.pull(data.get_writable_journal());
     data.update();
     return server_checkpoint;
    }
@@ -104,18 +113,18 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     throw_if_pull_when_ahead();
-    server_checkpoint = connection.lock_pull(data.get_journal());
+    server_checkpoint = connection.lock_pull(data.get_writable_journal());
 
     try
     {
      data.update();
      transaction(data);
-     data.get_journal().default_checkpoint();
+     data.get_writable_journal().default_checkpoint();
     }
     catch (...)
     {
-     connection.unlock(data.get_journal());
-     data.get_journal().flush();
+     connection.unlock(data.get_writable_journal());
+     data.get_writable_journal().flush();
      throw;
     }
 

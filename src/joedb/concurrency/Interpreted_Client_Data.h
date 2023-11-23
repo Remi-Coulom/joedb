@@ -12,21 +12,29 @@ namespace joedb
  class Interpreted_Client_Data: public Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   Writable_Journal journal;
+  protected:
    Database database;
-   Multiplexer multiplexer;
 
   public:
-   Interpreted_Client_Data(Generic_File &file):
-    journal(file),
-    multiplexer{database, journal}
-   {
-   }
-
    const Database &get_database() const
    {
     return database;
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Writable_Interpreted_Client_Data: public Interpreted_Client_Data
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   Writable_Journal journal;
+   Multiplexer multiplexer;
+
+  public:
+   Writable_Interpreted_Client_Data(Generic_File &file):
+    journal(file),
+    multiplexer{database, journal}
+   {
    }
 
    Multiplexer &get_multiplexer()
@@ -34,7 +42,35 @@ namespace joedb
     return multiplexer;
    }
 
-   Writable_Journal &get_journal() final
+   bool is_readonly() const final {return false;}
+
+   Writable_Journal &get_writable_journal() final
+   {
+    return journal;
+   }
+
+   void update() final
+   {
+    journal.play_until_checkpoint(database);
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Readonly_Interpreted_Client_Data: public Interpreted_Client_Data
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   Readonly_Journal journal;
+
+  public:
+   Readonly_Interpreted_Client_Data(Generic_File &file):
+    journal(file)
+   {
+   }
+
+   bool is_readonly() const final {return true;}
+
+   Readonly_Journal &get_readonly_journal() final
    {
     return journal;
    }
