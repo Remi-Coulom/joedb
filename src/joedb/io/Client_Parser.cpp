@@ -43,16 +43,30 @@ namespace joedb
   bool nodb = false;
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
   {
-   nodb = true;
    arg_index++;
+   nodb = true;
   }
 
   if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)
   {
-   const char * const user = argv[arg_index + 1];
-   const char * const host = argv[arg_index + 2];
-   const unsigned port = 22;
-   const int verbosity = 0;
+   arg_index++;
+
+   unsigned port = 22;
+   if (arg_index + 4 < argc && std::strcmp(argv[arg_index], "--port") == 0)
+   {
+    arg_index++;
+    port = uint16_t(std::atoi(argv[arg_index++]));
+   }
+
+   int verbosity = 0;
+   if (arg_index + 4 < argc && std::strcmp(argv[arg_index], "--verbosity") == 0)
+   {
+    arg_index++;
+    verbosity = std::atoi(argv[arg_index++]);
+   }
+
+   const char * const user = argv[arg_index++];
+   const char * const host = argv[arg_index++];
 
    std::cout << "Creating ssh Session... ";
    std::cout.flush();
@@ -68,15 +82,13 @@ namespace joedb
 
    std::cout << "OK\n";
 
-   const char * const file_name = argv[arg_index + 3];
+   const char * const file_name = argv[arg_index++];
 
    std::cout << "Opening file... ";
 
    client_file.reset(new SFTP_File(*sftp, file_name));
 
    std::cout << "OK\n";
-
-   arg_index += 4;
   }
   else if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
   {
