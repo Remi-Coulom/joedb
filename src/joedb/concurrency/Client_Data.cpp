@@ -12,5 +12,11 @@ namespace joedb
   return get_writable_journal();
  }
 
+ void Client_Data::refresh()
+ {
+  get_readonly_journal().refresh_checkpoint();
+  update();
+ }
+
  Client_Data::~Client_Data() = default;
 }

@@ -107,7 +107,7 @@ namespace joedb
     arg_index++;
    }
 
-   std::cout << "Creating local file... ";
+   std::cout << "Opening local file... ";
    std::cout.flush();
 
    if (file_name && *file_name)

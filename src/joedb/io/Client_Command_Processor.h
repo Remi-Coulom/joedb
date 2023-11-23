@@ -18,6 +18,7 @@ namespace joedb
    static void run_transaction(Writable_Interpreter &interpreter);
 
    void pull(std::ostream &out);
+   void print_status(std::ostream &out);
 
    bool is_readonly_data() const;
    bool has_db() const;

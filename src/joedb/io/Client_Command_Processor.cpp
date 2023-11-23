@@ -44,6 +44,20 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Client_Command_Processor::print_status(std::ostream &out)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const int64_t diff = client.get_checkpoint_difference();
+
+  if (diff > 0)
+   std::cout << "You can push " << diff << " bytes.\n";
+  else if (diff < 0)
+   std::cout << "You can pull " << -diff << " bytes.\n";
+  else
+   std::cout << "Client data is in sync with the connection.\n";
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  bool Client_Command_Processor::is_readonly_data() const
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -76,6 +90,9 @@ namespace joedb
     out << " db\n";
    }
 
+   out << " status\n";
+   out << " refresh\n";
+
    if (!is_readonly_data())
    {
     out << " pull\n";
@@ -87,6 +104,15 @@ namespace joedb
 
    out << '\n';
    return Status::ok;
+  }
+  else if (command == "status") /////////////////////////////////////////////
+  {
+   print_status(out);
+  }
+  else if (command == "refresh") ////////////////////////////////////////////
+  {
+   client.refresh_data();
+   print_status(out);
   }
   else if (command == "pull" && !is_readonly_data()) ////////////////////////
   {
