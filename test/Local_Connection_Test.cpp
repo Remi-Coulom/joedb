@@ -1,5 +1,5 @@
 #include "joedb/journal/File.h"
-#include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Writable_Journal_Client_Data.h"
 
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/concurrency/File_Connection.h"
@@ -96,7 +96,7 @@ TEST(Local_Connection, must_not_be_shared)
  {
   joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
 
-  joedb::Journal_Client_Data data(file);
+  joedb::Writable_Journal_Client_Data data(file);
 
   {
    joedb::Connection connection;
@@ -120,7 +120,7 @@ TEST(Local_Connection, must_be_shared)
 {
  joedb::Memory_File file;
  joedb::Local_Connection connection;
- joedb::Journal_Client_Data data(file);
+ joedb::Writable_Journal_Client_Data data(file);
  EXPECT_ANY_THROW(joedb::Client client(data, connection));
 }
 
@@ -131,13 +131,13 @@ TEST(Local_Connection, dummy_connection)
  joedb::Memory_File file;
 
  {
-  joedb::Journal_Client_Data client_data(file);
+  joedb::Writable_Journal_Client_Data client_data(file);
   joedb::Connection connection;
   joedb::Client client(client_data, connection);
 
   client.transaction([](joedb::Client_Data &data)
   {
-   data.get_journal().create_table("person");
+   data.get_writable_journal().create_table("person");
   });
  }
 

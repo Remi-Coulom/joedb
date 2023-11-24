@@ -70,7 +70,7 @@ TEST(Server_Connection, session)
 
  {
   joedb::Memory_File client_file;
-  joedb::Interpreted_Client_Data data(client_file);
+  joedb::Writable_Interpreted_Client_Data data(client_file);
   joedb::Server_Connection connection(channel, log);
   joedb::Client client(data, connection);
 

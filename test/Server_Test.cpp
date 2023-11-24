@@ -3,7 +3,7 @@
 #include "joedb/concurrency/Network_Channel.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -18,7 +18,7 @@ TEST(Server, basic)
  std::ostream * const log_stream = &dummy_log;
 
  joedb::Memory_File server_file;
- joedb::Journal_Client_Data client_data(server_file);
+ joedb::Writable_Journal_Client_Data client_data(server_file);
  joedb::Connection connection;
  joedb::Client client(client_data, connection);
  net::io_context io_context;

@@ -2,7 +2,7 @@
 #include "joedb/db/multi_server_interpreted.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/concurrency/Journal_Client_Data.h"
+#include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/ssh/Forward_Channel.h"
 
@@ -20,7 +20,7 @@ namespace joedb
  {
   private:
    File file;
-   Journal_Client_Data client_data;
+   Writable_Journal_Client_Data client_data;
    Connection connection;
    Client client;
    Server server;

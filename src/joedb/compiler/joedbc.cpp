@@ -497,7 +497,12 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    {
    }
 
-   joedb::Writable_Journal &get_journal() final
+   bool is_readonly() const final
+   {
+    return false;
+   }
+
+   joedb::Writable_Journal &get_writable_journal() final
    {
     return db.journal;
    }

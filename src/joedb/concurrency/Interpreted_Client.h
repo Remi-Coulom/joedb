@@ -7,12 +7,14 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Client: public Interpreted_Client_Data, public Client
+ class Interpreted_Client:
  ////////////////////////////////////////////////////////////////////////////
+  public Writable_Interpreted_Client_Data,
+  public Client
  {
   public:
    Interpreted_Client(Connection &connection, Generic_File &file):
-    Interpreted_Client_Data(file),
+    Writable_Interpreted_Client_Data(file),
     Client(*this, connection)
    {
    }
