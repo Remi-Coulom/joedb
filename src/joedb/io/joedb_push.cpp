@@ -46,7 +46,7 @@ namespace joedb
   File file(file_name, Open_Mode::read_existing);
   Readonly_Journal journal(file);
 
-  auto connection = connection_parser.build
+  std::unique_ptr<Connection> connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index
