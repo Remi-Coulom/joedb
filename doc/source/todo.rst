@@ -1,6 +1,29 @@
 TODO
 ====
 
+Short-term fixes for next release
+---------------------------------
+
+- Improve command-line options
+  - Unify command-line syntax for sftp file and ssh connection
+  - File option of joedb_client: also for joedbi and joedb_push
+  - "--nodb": true by default. Use "--db" instead for all clients
+
+- Handle client in server properly
+  - "--exclusive" option for server: lock-pull at the beginning (+push if
+    necessary), unlock at the end. No need to ever lock or pull the client
+    after this. Unlock in destructor. Only operation = push (without unlock).
+    Useful for backup server.
+  - If not exclusive, must also lock and pull the client when necessary.
+  - Client must provide a lock object to handle this (transaction with lambda
+    won't work through function calls). Handle error in destructor with
+    posthumous catcher. Server in exclusive mode holds a global unique_ptr to a
+    lock object. When not in exclusive mode, create a new lock object in each
+    session that obtains the lock.
+  - Simplest short-term solution: run server inside transaction, and do not
+    handle non-exclusive client. Must still have a lock object that allows
+    pushing without unlocking.
+
 Journal File
 ------------
 - Allow opening compiled database with Check::all & ~Check::big_size
@@ -103,18 +126,6 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- Unify command-line syntax for sftp file and ssh connection
-- Joedbi also uses file command-line syntax (+ joedb_push)
-- joedb_push from sftp file. Unify file parsing. (joedb_push: read-only)
-
-- No need to chain pulling/locking if server is assumed to be exclusive client.
-  Note: must push/pull at the beginning, then.
-- If not assumed exclusive, then must keep the connection locked through
-  callbacks. Not really possible with the current transaction lambda. Should
-  be able to lock asynchronously for asio?
-- Server option: "--exclusive" = allow only one client. Client should be
-  informed at connection time whether connection is exclusive or readonly.
-
 - joedb_server:
 
   - Test many concurrent read and write requests. Performance benchmarks.
