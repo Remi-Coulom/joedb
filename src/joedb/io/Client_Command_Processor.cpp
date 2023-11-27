@@ -95,13 +95,10 @@ namespace joedb
    out << "Client\n";
    out << "~~~~~~\n";
 
-   if (has_db())
-   {
-    out << " db\n";
-   }
-
    out << " status\n";
    out << " refresh\n";
+   out << " push\n";
+   out << " push_every <seconds>\n";
 
    if (!is_readonly_data())
    {
@@ -110,8 +107,10 @@ namespace joedb
     out << " transaction\n";
    }
 
-   out << " push\n";
-   out << " push_every <seconds>\n";
+   if (has_db())
+   {
+    out << " db\n";
+   }
 
    out << '\n';
    return Status::ok;
@@ -175,7 +174,8 @@ namespace joedb
    while (Signal::signal != SIGINT)
    {
     client.refresh_data();
-    print_status(out);
+    if (client.get_checkpoint_difference())
+     print_status(out);
     client.push_unlock();
     sleep(seconds, out);
    }
