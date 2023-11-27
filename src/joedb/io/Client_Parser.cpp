@@ -128,7 +128,7 @@ namespace joedb
     std::cout << "OK\n";
    }
    else
-    std::cout << "Error: missing file name\n";
+    throw Runtime_Error("missing file name");
   }
 
   std::cout << "Creating client data... ";
