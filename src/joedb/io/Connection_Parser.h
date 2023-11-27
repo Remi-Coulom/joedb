@@ -26,7 +26,7 @@ namespace joedb
    );
 
   public:
-   Connection_Parser(bool local, bool readonly);
+   Connection_Parser(bool local);
 
    void print_help(std::ostream &out) const;
 

@@ -13,7 +13,8 @@ namespace joedb
  static int server(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Client_Parser client_parser(true, true);
+  const bool local = true;
+  Client_Parser client_parser(local);
 
   if (argc <= 1)
   {

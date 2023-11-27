@@ -16,7 +16,8 @@ namespace joedb
  static int main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Connection_Parser connection_parser(false, false);
+  const bool local = false;
+  Connection_Parser connection_parser(local);
 
   int arg_index = 1;
   bool follow = false;

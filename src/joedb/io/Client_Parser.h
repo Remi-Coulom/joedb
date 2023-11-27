@@ -24,7 +24,7 @@ namespace joedb
    std::unique_ptr<Client> client;
 
   public:
-   Client_Parser(bool local, bool readonly);
+   Client_Parser(bool local);
 
    Client &parse(int argc, char **argv);
 

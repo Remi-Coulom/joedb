@@ -23,7 +23,7 @@
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Connection_Parser::Connection_Parser(bool local, bool readonly)
+ Connection_Parser::Connection_Parser(bool local)
  //////////////////////////////////////////////////////////////////////////
  {
   builders.emplace_back(new Dump_Connection_Builder());
