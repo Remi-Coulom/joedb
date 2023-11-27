@@ -356,6 +356,9 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
 
+   if (client.is_readonly())
+    client.refresh_data();
+
    Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
 
