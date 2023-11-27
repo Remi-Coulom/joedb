@@ -21,8 +21,7 @@ Short-term fixes for next release
     lock object. When not in exclusive mode, create a new lock object in each
     session that obtains the lock.
   - Simplest short-term solution: run server inside transaction, and do not
-    handle non-exclusive client. Must still have a lock object that allows
-    pushing without unlocking.
+    handle non-exclusive client.
 
 Journal File
 ------------
