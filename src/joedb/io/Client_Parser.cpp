@@ -38,7 +38,7 @@ namespace joedb
  Client &Client_Parser::parse(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  int arg_index = 1;
+  int arg_index = 0;
 
   bool nodb = false;
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
@@ -131,7 +131,7 @@ namespace joedb
     throw Runtime_Error("missing file name");
   }
 
-  std::cout << "Creating client data... ";
+  std::cout << "Creating client data (nodb = " << nodb << ") ... ";
   std::cout.flush();
 
   if (nodb)

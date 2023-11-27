@@ -21,7 +21,7 @@ namespace joedb
    return 1;
   }
 
-  Client &client = client_parser.parse(argc, argv);
+  Client &client = client_parser.parse(argc - 1, argv + 1);
 
   Client_Command_Processor processor(client);
   Command_Interpreter interpreter{processor};
