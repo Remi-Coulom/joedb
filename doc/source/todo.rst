@@ -106,6 +106,7 @@ Concurrency
 - Unify command-line syntax for sftp file and ssh connection
 - Joedbi also uses file command-line syntax (+ joedb_push)
 - joedb_push from sftp file. Unify file parsing. (joedb_push: read-only)
+
 - No need to chain pulling/locking if server is assumed to be exclusive client.
   Note: must push/pull at the beginning, then.
 - If not assumed exclusive, then must keep the connection locked through
