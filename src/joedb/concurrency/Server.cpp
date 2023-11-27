@@ -237,14 +237,12 @@ namespace joedb
     session->buffer[0] = 'R';
    else
    {
-    client.transaction([offset, this](Client_Data &data)
-    {
-     data.get_writable_journal().append_raw_tail
-     (
-      push_buffer.data(),
-      offset
-     );
-    });
+    client_lock->get_journal().append_raw_tail
+    (
+     push_buffer.data(),
+     offset
+    );
+    client_lock->push();
     session->buffer[0] = 'U';
    }
 
@@ -357,8 +355,6 @@ namespace joedb
   if (!error)
   {
    const int64_t checkpoint = from_network(session->buffer + 1);
-
-   client.pull();
 
    Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer + 9);
@@ -754,6 +750,7 @@ namespace joedb
   std::ostream *log_pointer
  ):
   client(client),
+  client_lock(client.is_readonly() ? nullptr : new Client_Lock(client)),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),

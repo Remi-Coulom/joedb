@@ -3,6 +3,7 @@
 
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/concurrency/net.h"
+#include "joedb/concurrency/Client.h"
 
 #include <queue>
 #include <memory>
@@ -12,8 +13,6 @@
 
 namespace joedb
 {
- class Client;
-
  ////////////////////////////////////////////////////////////////////////////
  class Server
  ////////////////////////////////////////////////////////////////////////////
@@ -23,6 +22,7 @@ namespace joedb
    enum {clear_signal_seconds = 3};
 
    joedb::Client &client;
+   std::unique_ptr<Client_Lock> client_lock;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
    const uint16_t port;
