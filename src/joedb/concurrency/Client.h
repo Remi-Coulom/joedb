@@ -3,6 +3,7 @@
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Client_Data.h"
+#include "joedb/Posthumous_Thrower.h"
 
 namespace joedb
 {
@@ -10,6 +11,8 @@ namespace joedb
  class Client
  ////////////////////////////////////////////////////////////////////////////
  {
+  friend class Client_Lock;
+
   private:
    //////////////////////////////////////////////////////////////////////////
    void push(bool unlock_after)
@@ -65,7 +68,7 @@ namespace joedb
    }
 
    const Client_Data &get_data() const {return data;}
-   Readonly_Journal &get_journal() {return data.get_readonly_journal();}
+   const Readonly_Journal &get_journal() {return data.get_readonly_journal();}
    bool is_readonly() const {return data.is_readonly();}
 
    //////////////////////////////////////////////////////////////////////////
@@ -89,13 +92,6 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     data.refresh();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void locked_push()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    push(false);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -139,6 +135,47 @@ namespace joedb
    }
 
    virtual ~Client();
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Client_Lock: public Posthumous_Thrower
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   Client &client;
+
+  public:
+   Client_Lock(Client &client): client(client)
+   {
+    client.throw_if_pull_when_ahead();
+    client.server_checkpoint = client.connection.lock_pull
+    (
+     client.data.get_writable_journal()
+    );
+    client.data.update();
+   }
+
+   Writable_Journal &get_journal()
+   {
+    return client.data.get_writable_journal();
+   }
+
+   void push()
+   {
+    client.push(false);
+   }
+
+   ~Client_Lock()
+   {
+    try
+    {
+     client.push_unlock();
+    }
+    catch (...)
+    {
+     postpone_exception();
+    }
+   }
  };
 }
 
