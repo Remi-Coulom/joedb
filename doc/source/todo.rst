@@ -7,21 +7,9 @@ Short-term fixes for next release
 - Improve command-line options
   - Unify command-line syntax for sftp file and ssh connection
   - File option of joedb_client: also for joedbi and joedb_push
+  - Different default open_mode + available (joedb_push is readonly)
   - "--nodb": true by default. Use "--db" instead for all clients
-
-- Handle client in server properly
-  - "--exclusive" option for server: lock-pull at the beginning (+push if
-    necessary), unlock at the end. No need to ever lock or pull the client
-    after this. Unlock in destructor. Only operation = push (without unlock).
-    Useful for backup server.
-  - If not exclusive, must also lock and pull the client when necessary.
-  - Client must provide a lock object to handle this (transaction with lambda
-    won't work through function calls). Handle error in destructor with
-    posthumous catcher. Server in exclusive mode holds a global unique_ptr to a
-    lock object. When not in exclusive mode, create a new lock object in each
-    session that obtains the lock.
-  - Simplest short-term solution: run server inside transaction, and do not
-    handle non-exclusive client.
+- Don't allow locking with a read-only server
 
 Journal File
 ------------
@@ -141,6 +129,7 @@ Concurrency
   - get rid of signal. Make an interactive command-line interface to control
     the server. Maybe better: use asio's (non-std::net) support for signal.
   - possibility to checkpoint multiple concurrent transactions simultaneously
+  - Option for non-exclusive client in joedb_server
 
 - SHA-256: option for either fast or full.
 - performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
