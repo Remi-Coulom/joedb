@@ -35,7 +35,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::string &command,
-  std::istream &iss,
+  std::istream &parameters,
+  std::istream &in,
   std::ostream &out
  )
  {
@@ -49,7 +50,7 @@ namespace joedb
   else if (command == "echo") ///////////////////////////////////////////////
   {
    std::string parameter;
-   iss >> parameter;
+   parameters >> parameter;
 
    if (parameter == "on")
     set_echo(true);
@@ -59,7 +60,7 @@ namespace joedb
   else if (command == "prompt") /////////////////////////////////////////////
   {
    std::string parameter;
-   iss >> parameter;
+   parameters >> parameter;
 
    if (parameter == "on")
     set_prompt(true);
@@ -118,7 +119,8 @@ namespace joedb
 
     for (const auto &processor: processors)
     {
-     const auto status = processor.get().process_command(command, iss, out);
+     const Command_Processor::Status status =
+      processor.get().process_command(command, iss, in, out);
 
      if (status != Command_Processor::Status::not_found)
       found = true;

@@ -11,7 +11,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::string &command,
-  std::istream &iss,
+  std::istream &parameters,
+  std::istream &in,
   std::ostream &out
  )
  {
@@ -32,14 +33,14 @@ namespace joedb
   }
   else if (command == "comment") ///////////////////////////////////////////
   {
-   const std::string comment = joedb::read_string(iss);
+   const std::string comment = joedb::read_string(parameters);
    writable.comment(comment);
   }
   else if (command == "timestamp") /////////////////////////////////////////
   {
    int64_t timestamp = 0;
-   iss >> timestamp;
-   if (iss.fail())
+   parameters >> timestamp;
+   if (parameters.fail())
     timestamp = std::time(nullptr);
    writable.timestamp(timestamp);
   }
@@ -62,7 +63,7 @@ namespace joedb
   }
   else if (command == "blob") ///////////////////////////////////////////////
   {
-   const std::string value = joedb::read_string(iss);
+   const std::string value = joedb::read_string(parameters);
 
    const Blob blob = blob_writer ?
     blob_writer->write_blob_data(value) :

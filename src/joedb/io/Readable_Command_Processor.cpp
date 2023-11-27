@@ -66,25 +66,26 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::string &command,
-  std::istream &iss,
+  std::istream &parameters,
+  std::istream &in,
   std::ostream &out
  )
  {
   if (command == "table") ///////////////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(iss, out);
+   const Table_Id table_id = parse_table(parameters, out);
 
    size_t max_column_width = 25;
    {
     size_t w;
-    if (iss >> w)
+    if (parameters >> w)
      max_column_width = w;
    }
 
    Record_Id start = Record_Id(0);
    size_t length = 0;
 
-   iss >> start >> length;
+   parameters >> start >> length;
 
    if (table_id != Table_Id(0))
    {
@@ -254,7 +255,7 @@ namespace joedb
   else if (command == "json") ///////////////////////////////////////////////
   {
    bool use_base64 = false;
-   iss >> use_base64;
+   parameters >> use_base64;
    write_json(out, readable, use_base64);
   }
   else if (command == "help") ///////////////////////////////////////////////

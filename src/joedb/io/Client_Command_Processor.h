@@ -15,7 +15,12 @@ namespace joedb
   private:
    Client &client;
 
-   static void run_transaction(Writable_Interpreter &interpreter);
+   static void run_transaction
+   (
+    Writable_Interpreter &interpreter,
+    std::istream &in,
+    std::ostream &out
+   );
 
    void pull(std::ostream &out);
    void print_status(std::ostream &out);
@@ -27,7 +32,8 @@ namespace joedb
    Status process_command
    (
     const std::string &command,
-    std::istream &iss,
+    std::istream &parameters,
+    std::istream &in,
     std::ostream &out
    ) override;
 

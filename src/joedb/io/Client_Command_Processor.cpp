@@ -17,17 +17,15 @@ namespace joedb
  void Client_Command_Processor::run_transaction
  ////////////////////////////////////////////////////////////////////////////
  (
-  Writable_Interpreter &interpreter
+  Writable_Interpreter &interpreter,
+  std::istream &in,
+  std::ostream &out
  )
  {
-  std::cout << "OK\n";
+  out << "OK\n";
   interpreter.set_prompt(true);
   interpreter.set_prompt_string("joedb_client/transaction");
-  interpreter.main_loop
-  (
-   std::cin,
-   std::cout
-  );
+  interpreter.main_loop(in, out);
 
   if (interpreter.was_aborted())
    throw Exception("aborted");
@@ -50,11 +48,11 @@ namespace joedb
   const int64_t diff = client.get_checkpoint_difference();
 
   if (diff > 0)
-   std::cout << "You can push " << diff << " bytes.\n";
+   out << "You can push " << diff << " bytes.\n";
   else if (diff < 0)
-   std::cout << "You can pull " << -diff << " bytes.\n";
+   out << "You can pull " << -diff << " bytes.\n";
   else
-   std::cout << "Client data is in sync with the connection.\n";
+   out << "Client data is in sync with the connection.\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -86,7 +84,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::string &command,
-  std::istream &iss,
+  std::istream &parameters,
+  std::istream &in,
   std::ostream &out
  )
  {
@@ -131,7 +130,7 @@ namespace joedb
   else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
    int seconds = 1;
-   iss >> seconds;
+   parameters >> seconds;
 
    Signal::signal = Signal::no_signal;
    Signal::start();
@@ -157,7 +156,7 @@ namespace joedb
 
    interpreter.set_prompt(true);
    interpreter.set_prompt_string("joedb_client/db");
-   interpreter.main_loop(std::cin, std::cout);
+   interpreter.main_loop(in, out);
   }
   else if (command == "push") ///////////////////////////////////////////////
   {
@@ -166,7 +165,7 @@ namespace joedb
   else if (command == "push_every") /////////////////////////////////////////
   {
    int seconds = 1;
-   iss >> seconds;
+   parameters >> seconds;
 
    Signal::signal = Signal::no_signal;
    Signal::start();
@@ -182,10 +181,10 @@ namespace joedb
   }
   else if (command == "transaction" && !is_readonly_data()) /////////////////
   {
-   std::cout << "Waiting for lock... ";
-   std::cout.flush();
+   out << "Waiting for lock... ";
+   out.flush();
 
-   client.transaction([](Client_Data &data)
+   client.transaction([&in, &out](Client_Data &data)
    {
     Writable_Interpreted_Client_Data *interpreted_client_data
     (
@@ -202,12 +201,12 @@ namespace joedb
       nullptr,
       0
      );
-     run_transaction(interpreter);
+     run_transaction(interpreter, in, out);
     }
     else
     {
      Writable_Interpreter interpreter(data.get_writable_journal());
-     run_transaction(interpreter);
+     run_transaction(interpreter, in, out);
     }
    });
   }
