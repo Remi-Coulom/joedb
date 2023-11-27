@@ -66,7 +66,7 @@ namespace joedb
 
    const Client_Data &get_data() const {return data;}
    Readonly_Journal &get_journal() {return data.get_readonly_journal();}
-   bool is_readonly() const {return connection.is_readonly();}
+   bool is_readonly() const {return data.is_readonly();}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint() const

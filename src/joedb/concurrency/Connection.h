@@ -42,8 +42,6 @@ namespace joedb
     bool unlock_after
    );
 
-   virtual bool is_readonly() const {return false;}
-
    virtual ~Connection();
  };
 }
