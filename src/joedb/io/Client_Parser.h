@@ -4,9 +4,9 @@
 #include "joedb/io/Connection_Parser.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Client_Data.h"
-#include "joedb/ssh/Session.h"
 
 #ifdef JOEDB_HAS_SSH
+#include "joedb/ssh/Session.h"
 #include "joedb/ssh/SFTP.h"
 #endif
 

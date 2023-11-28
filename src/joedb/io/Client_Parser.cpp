@@ -6,9 +6,9 @@
 #include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/ssh/Session.h"
 
 #ifdef JOEDB_HAS_SSH
+#include "joedb/ssh/Session.h"
 #include "joedb/journal/SFTP_File.h"
 #endif
 
