@@ -2,13 +2,15 @@
 #include "joedb/io/Connection_Parser.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/SFTP_File.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/ssh/Session.h"
-#include "joedb/ssh/SFTP.h"
+
+#ifdef JOEDB_HAS_SSH
+#include "joedb/journal/SFTP_File.h"
+#endif
 
 #include <iostream>
 #include <cstring>
@@ -29,7 +31,9 @@ namespace joedb
   out << " [--nodb] <file> <connection>\n\n";
   out << "<file> is one of:\n";
   out << "  [--shared|--exclusive] <client_file_name>\n";
+#ifdef JOEDB8_HAS_SSH
   out << "  sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
+#endif
   out << "  memory\n";
   connection_parser.print_help(out);
  }
@@ -47,6 +51,7 @@ namespace joedb
    nodb = true;
   }
 
+#ifdef JOEDB_HAS_SSH
   if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)
   {
    arg_index++;
@@ -90,7 +95,11 @@ namespace joedb
 
    std::cout << "OK\n";
   }
-  else if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
+  else if
+#else
+  if
+#endif
+   (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
   {
    client_file.reset(new Memory_File());
    arg_index++;
