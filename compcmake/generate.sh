@@ -80,6 +80,15 @@ fi
 
 echo
 echo =======================================================================
+aarch64_gcc_path=`which aarch64-linux-gnu-gcc`
+echo aarch64_gcc_path=$aarch64_gcc_path
+
+if [ "$aarch64_gcc_path" != "" ]; then
+ generate aarch64_release cmake $build_system -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=`dirname "$0"`/aarch64.toolchain.cmake
+fi
+
+echo
+echo =======================================================================
 mips_gcc_path=`which mips-linux-gnu-gcc`
 echo mips_gcc_path=$mips_gcc_path
 
