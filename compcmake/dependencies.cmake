@@ -6,6 +6,7 @@ find_package(Threads REQUIRED)
 
 # Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+message("-- CMAKE_CROSSCOMPILING = ${CMAKE_CROSSCOMPILING}")
 if(NOT ${CMAKE_CROSSCOMPILING})
  set(ASIO_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../submodules/asio/asio/include)
  if (TRUE)

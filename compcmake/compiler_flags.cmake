@@ -1,7 +1,9 @@
+message("-- CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
+
 #############################################################################
 if(CMAKE_COMPILER_IS_GNUCXX)
 #############################################################################
- message("== gcc")
+ message("== gcc:")
  set(CMAKE_CXX_FLAGS
   "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls"
  )
