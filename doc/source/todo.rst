@@ -5,10 +5,12 @@ Short-term fixes for next release
 ---------------------------------
 
 - Improve command-line options
+
   - Unify command-line syntax for sftp file and ssh connection
   - File option of joedb_client: also for joedbi and joedb_push
   - Different default open_mode + available (joedb_push is readonly)
   - "--nodb": true by default. Use "--db" instead for all clients
+
 - Don't allow locking with a read-only server
 
 Journal File
