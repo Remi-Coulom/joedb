@@ -24,7 +24,7 @@ namespace joedb
 
    void pull(std::ostream &out);
    void print_status(std::ostream &out);
-   void sleep(int seconds, std::ostream &out) const;
+   static void sleep(int seconds, std::ostream &out);
 
    bool is_readonly_data() const;
    bool has_db() const;

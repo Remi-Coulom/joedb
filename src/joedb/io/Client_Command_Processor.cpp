@@ -56,7 +56,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::sleep(int seconds, std::ostream &out) const
+ void Client_Command_Processor::sleep(int seconds, std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << get_time_string_of_now();
