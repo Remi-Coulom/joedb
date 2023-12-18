@@ -6,4 +6,5 @@ cmake \
     -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
     -DANDROID_ABI=$ABI \
     -DANDROID_PLATFORM=android-$MINSDKVERSION \
+    -DCMAKE_BUILD_TYPE=Release \
     -G Ninja $*
