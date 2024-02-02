@@ -66,6 +66,7 @@ echo clang_path=$clang_path
 if [ "$clang_path" != "" ]; then
  compiler="-DCMAKE_CXX_COMPILER=$clangpp_path -DCMAKE_C_COMPILER=$clang_path"
  generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
+ generate clang_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
  generate clang_msan cmake $build_system -DCMAKE_BUILD_TYPE=MSAN $compiler
 fi
 
