@@ -24,14 +24,14 @@ TEST(Compiler, Pullable_Database)
   my_namespace::is_nested::test::Pullable_Database pullable_db(file);
 
   EXPECT_FALSE(pullable_db.pull());
-  EXPECT_EQ(pullable_db.get_city_table().get_size(), 1);
+  EXPECT_EQ(pullable_db.get_city_table().get_size(), 1UL);
 
   db.new_city("Tokyo");
   db.checkpoint();
 
-  EXPECT_EQ(pullable_db.get_city_table().get_size(), 1);
+  EXPECT_EQ(pullable_db.get_city_table().get_size(), 1UL);
   EXPECT_TRUE(pullable_db.pull());
-  EXPECT_EQ(pullable_db.get_city_table().get_size(), 2);
+  EXPECT_EQ(pullable_db.get_city_table().get_size(), 2UL);
  }
 
  std::remove(file_name);

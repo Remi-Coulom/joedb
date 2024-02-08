@@ -13,5 +13,5 @@ TEST(Compiler, Interpreted_Database)
   std::ifstream("multi_server.joedbi")
  );
 
- EXPECT_EQ(db.get_server_table().get_size(), 2);
+ EXPECT_EQ(db.get_server_table().get_size(), 2UL);
 }

@@ -160,5 +160,5 @@ TEST(Generic_File, async_more_capacity)
  const size_t buffer_size = 16;
  char buffer[buffer_size];
 
- EXPECT_EQ(4, reader.read(buffer, buffer_size));
+ EXPECT_EQ(4UL, reader.read(buffer, buffer_size));
 }
