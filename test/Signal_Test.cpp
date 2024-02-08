@@ -10,7 +10,7 @@ namespace joedb
  {
   Signal::start();
   Signal::stop();
-  Signal::signal_handler(1234);
-  EXPECT_EQ(Signal::signal, 1234);
+  Signal::set_signal(1234);
+  EXPECT_EQ(Signal::get_signal(), 1234);
  }
 }

@@ -1,23 +1,39 @@
 #include "joedb/Signal.h"
 
+extern "C"
+{
+ static sig_atomic_t signal_status;
+
+ // Note: in C++11 signal handlers must have C linkage
+ void CDECL joedb_signal_handler(int status)
+ {
+  signal_status = status;
+ }
+}
+
 namespace joedb
 {
- std::atomic<int> Signal::signal(Signal::no_signal);
-
  ////////////////////////////////////////////////////////////////////////////
- void CDECL Signal::signal_handler(int sig)
+ void Signal::set_signal(int status)
  ////////////////////////////////////////////////////////////////////////////
  {
-  signal = sig;
+  signal_status = status;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int Signal::get_signal()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return signal_status;
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Signal::start()
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::signal(SIGINT, signal_handler);
-  std::signal(SIGUSR1, signal_handler);
-  std::signal(SIGUSR2, signal_handler);
+  std::signal(SIGINT, joedb_signal_handler);
+  std::signal(SIGUSR1, joedb_signal_handler);
+  std::signal(SIGUSR2, joedb_signal_handler);
  }
 
  ////////////////////////////////////////////////////////////////////////////

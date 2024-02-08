@@ -61,7 +61,7 @@ namespace joedb
  {
   out << get_time_string_of_now();
   out << ". Sleeping for " << seconds << " seconds...\n";
-  for (int i = seconds; Signal::signal != SIGINT && --i >= 0;)
+  for (int i = seconds; Signal::get_signal() != SIGINT && --i >= 0;)
    std::this_thread::sleep_for(std::chrono::seconds(1));
  }
 
@@ -132,10 +132,10 @@ namespace joedb
    int seconds = 1;
    parameters >> seconds;
 
-   Signal::signal = Signal::no_signal;
+   Signal::set_signal(Signal::no_signal);
    Signal::start();
 
-   while (Signal::signal != SIGINT)
+   while (Signal::get_signal() != SIGINT)
    {
     pull(out);
     sleep(seconds, out);
@@ -167,10 +167,10 @@ namespace joedb
    int seconds = 1;
    parameters >> seconds;
 
-   Signal::signal = Signal::no_signal;
+   Signal::set_signal(Signal::no_signal);
    Signal::start();
 
-   while (Signal::signal != SIGINT)
+   while (Signal::get_signal() != SIGINT)
    {
     client.refresh_data();
     if (client.get_checkpoint_difference())
