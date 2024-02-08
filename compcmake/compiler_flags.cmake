@@ -43,7 +43,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  find_program(CLANG_TIDY clang-tidy)
  message("-- CLANG_TIDY = ${CLANG_TIDY}")
 
- if (HAS_CLANG_TIDY)
+ if (CLANG_TIDY)
   set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY} --header-filter=* -checks=-*,readability-*,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,-readability-static-accessed-through-instance,-readability-identifier-length,-readability-function-cognitive-complexity,-readability-container-data-pointer,-readability-use-anyofallof,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,-bugprone-string-constructor,-bugprone-suspicious-include,-bugprone-easily-swappable-parameters,-bugprone-implicit-widening-of-multiplication-result,concurrency-*,modernize-*,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list,-modernize-use-default-member-init,-modernize-use-using,-modernize-concat-nested-namespaces)
  endif()
 
