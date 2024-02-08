@@ -148,7 +148,10 @@ if(EXISTS "${GOOGLE_TEST}/include")
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
  target_uses_joedb(joedb_test)
  set_property(TARGET joedb_test PROPERTY CXX_STANDARD 14)
- target_precompile_headers(joedb_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
+
+ if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+  target_precompile_headers(joedb_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
+ endif()
 
  add_test(NAME joedb_test
   COMMAND joedb_test
@@ -187,9 +190,9 @@ joedbc_build(../doc/source/tutorial tutorial)
 add_custom_command(
  OUTPUT
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
- COMMAND generate_translation_header > translation.h
+ COMMAND joedb_generate_translation_header > translation.h
  DEPENDS
-  generate_translation_header
+  joedb_generate_translation_header
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
 )
@@ -270,7 +273,7 @@ joedb_add_executable(index_tutorial
 # ../doc/source/tutorial/tutorial_main.c
 #)
 
-joedb_add_executable(generate_translation_header
+joedb_add_executable(joedb_generate_translation_header
  ../test/compiler/db/test.cpp
  ../test/compiler/generate_translation_header.cpp
 )
@@ -288,6 +291,7 @@ joedb_add_executable(update_large_string
 #############################################################################
 # Packaging
 #############################################################################
+install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
