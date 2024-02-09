@@ -5,6 +5,9 @@ extern "C"
  static sig_atomic_t signal_status;
 
  // Note: in C++11 signal handlers must have C linkage
+ // making the function static triggers clang-tidy bugprone-signal-handler
+ // not declaring the function before triggers -Wmissing-declarations
+ void CDECL joedb_signal_handler(int status);
  void CDECL joedb_signal_handler(int status)
  {
   signal_status = status;
