@@ -673,10 +673,10 @@ namespace joedb
  {
   if (!error)
   {
-   if (Signal::signal != Signal::no_signal)
+   if (Signal::get_signal() != Signal::no_signal)
     LOG(port);
 
-   if (Signal::signal == SIGINT)
+   if (Signal::get_signal() == SIGINT)
    {
     LOG(": Received SIGINT, interrupting.\n");
     for (Session *session: sessions)
@@ -685,7 +685,7 @@ namespace joedb
    }
    else
    {
-    if (Signal::signal == SIGUSR1)
+    if (Signal::get_signal() == SIGUSR1)
     {
      log([this](std::ostream &out)
      {
@@ -702,13 +702,13 @@ namespace joedb
       }
      });
     }
-    else if (Signal::signal == SIGUSR2)
+    else if (Signal::get_signal() == SIGUSR2)
     {
      LOG("; Received SIGUSR2\n");
      write_status();
     }
 
-    if (Signal::signal == Signal::no_signal)
+    if (Signal::get_signal() == Signal::no_signal)
     {
      start_interrupt_timer();
     }
@@ -737,7 +737,7 @@ namespace joedb
  {
   if (!error)
   {
-   Signal::signal = Signal::no_signal;
+   Signal::set_signal(Signal::no_signal);
    start_interrupt_timer();
   }
  }
@@ -777,7 +777,7 @@ namespace joedb
  void Server::interrupt()
  ////////////////////////////////////////////////////////////////////////////
  {
-  Signal::signal = SIGINT;
+  Signal::set_signal(SIGINT);
  }
 
  ////////////////////////////////////////////////////////////////////////////
