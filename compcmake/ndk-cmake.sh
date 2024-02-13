@@ -1,7 +1,7 @@
 #!/bin/bash
 NDK=~/android-ndk-r26b
 ABI=arm64-v8a
-MINSDKVERSION=30
+MINSDKVERSION=29
 cmake \
     -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
     -DANDROID_ABI=$ABI \
