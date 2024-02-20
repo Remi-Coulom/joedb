@@ -61,8 +61,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  message("-- LLVM_PROJECT_DIR: ${LLVM_PROJECT_DIR}")
  set(LLVM_PROJECT_BUILD ${LLVM_PROJECT_DIR}/llvm-project/build)
 
- set(CMAKE_CXX_FLAGS_MSAN "-g -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer -fsanitize-memory-track-origins -O2 -stdlib=libc++ -isystem ${LLVM_PROJECT_BUILD}/include/c++/v1 -L${LLVM_PROJECT_BUILD}/lib -Qunused-arguments -Wl,-rpath,${LLVM_PROJECT_BUILD}/lib")
- set(CMAKE_LINKER_FLAGS_MSAN "${CMAKE_CXX_FLAGS_MSAN} -lc++abi")
+ set(MSAN_FLAGS "-g -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer -fsanitize-memory-track-origins -O2 -stdlib=libc++ -isystem ${LLVM_PROJECT_BUILD}/include/c++/v1 -L${LLVM_PROJECT_BUILD}/lib -Qunused-arguments -Wl,-rpath,${LLVM_PROJECT_BUILD}/lib")
+ set(CMAKE_C_FLAGS_MSAN ${MSAN_FLAGS})
+ set(CMAKE_CXX_FLAGS_MSAN ${MSAN_FLAGS})
+ set(CMAKE_LINKER_FLAGS_MSAN "${MSAN_FLAGS} -lc++abi")
 endif()
 
 #############################################################################
