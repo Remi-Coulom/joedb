@@ -1,6 +1,6 @@
 # Joedb, the Journal-Only Embedded Database
 
-SQL databases are the traditional approach to storing structured data with
+SQL databases are the traditional approach to manipulating structured data with
 [ACID](https://en.wikipedia.org/wiki/ACID) transactions, but using SQL from C++
 is not convenient. Raw SQL APIs such as
 [SQLite](https://www.sqlite.org/cintro.html) are very complicated to use, and
@@ -12,9 +12,9 @@ can result in sub-optimal performance. SQL is meant to be a high-level user
 interface to data, and does not match the low-level nature of C++ programming.
 
 Joedb aims to offer an alternative to using SQL from C++, by providing a direct
-low-level access to data. As shown in the diagram below, the database schema is
-compiled into C++ code. Applications using this code can then manipulate a file
-like a C++ container.
+low-level access to data. As shown in the diagram below, joedb compiles the
+database schema into C++ code. Applications using this code can then manipulate
+a file like a C++ container.
 
 ![Diagram](doc/source/images/joedb.svg)
 
