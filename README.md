@@ -1,7 +1,7 @@
 # Joedb, the Journal-Only Embedded Database
 
 The traditional approach to [ACID](https://en.wikipedia.org/wiki/ACID) storage
-of structured data consists in using a SQL database, but using SQL from <nobr>C++</nobr> is
+of structured data consists in using a SQL database, but using SQL from <span style="white-space: nowrap">C++</span> is
 not very convenient. Raw SQL APIs such as
 [SQLite](https://www.sqlite.org/cintro.html) are very complex to use, and do
 not match the C++ programming paradigm well: queries are strings parsed at run
