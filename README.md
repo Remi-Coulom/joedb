@@ -1,11 +1,11 @@
 # Joedb, the Journal-Only Embedded Database
 
-The traditional approach to [ACID](https://en.wikipedia.org/wiki/ACID) storage
-of structured data consists in using a SQL database, but using SQL from C++ is
-not very convenient. Raw SQL APIs such as
-[SQLite](https://www.sqlite.org/cintro.html) are very complex to use, and do
-not match the C++ programming paradigm well: queries are strings parsed at run
-time, and the API is not type-safe. An
+SQL databases are the traditional approach to storing structured data with
+[ACID](https://en.wikipedia.org/wiki/ACID) transactions, but using SQL from C++
+is not convenient. Raw SQL APIs such as
+[SQLite](https://www.sqlite.org/cintro.html) are very complicated to use, and
+do not match the C++ programming paradigm well: queries are strings parsed at
+run time, and the API is not type-safe. An
 [ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) can hide
 SQL from the C++ code, and improve type safety, but it adds to complexity, and
 can result in sub-optimal performance. SQL is meant to be a high-level user
@@ -18,13 +18,13 @@ like a C++ container.
 
 ![Diagram](doc/source/images/joedb.svg)
 
-Other systems such as [protocol buffers](https://protobuf.dev/) offer similar
+Other systems such as [protocol buffers](https://protobuf.dev/) provide similar
 type-safe mechanisms for serializing structured data, but are missing key
 properties of a SQL database, such as concurrency, transactions, and
 incremental crash-safe update of data. Joedb can offer all these features by
 storing data as a journal of transactions. The whole data history is stored, so
-it is possible to re-create any past state of the database. Joedb has a network
-protocol, and can operate in a distributed fashion, a bit like [git for
+it is possible to re-create any past state of the database. Joedb also has a
+network protocol, and can operate in a distributed fashion, a bit like [git for
 structured data](https://www.remi-coulom.fr/joedb/concurrency.html).
 
 For more information, please take at a look at the
