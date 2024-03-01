@@ -9,9 +9,12 @@ Short-term fixes for next release
   - Unify command-line syntax for sftp file and ssh connection
   - File option of joedb_client: also for joedbi and joedb_push
   - Different default open_mode + available (joedb_push is readonly)
-  - "--nodb": true by default. Use "--db" instead for all clients
+  - default db option. "--nodb" if default is db, "--db" otherwise
 
 - Don't allow locking with a read-only server
+- Don't store whole push in a large push buffer: write to file directly instead.
+- Write to file asynchronously
+- Send data to backup server asynchronously too?
 
 Journal File
 ------------
