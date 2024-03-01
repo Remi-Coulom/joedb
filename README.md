@@ -1,20 +1,20 @@
 # Joedb, the Journal-Only Embedded Database
 
 The traditional approach to [ACID](https://en.wikipedia.org/wiki/ACID) storage
-of structured data consists in using a SQL database, but using SQL from <span style="white-space: nowrap">C++</span> is
+of structured data consists in using a SQL database, but using SQL from C++ is
 not very convenient. Raw SQL APIs such as
 [SQLite](https://www.sqlite.org/cintro.html) are very complex to use, and do
 not match the C++ programming paradigm well: queries are strings parsed at run
 time, and the API is not type-safe. An
-[ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) can help
-to hide SQL from the C++ code, and improve type safety, but it adds to
-complexity, and can result in sub-optimal performance. SQL is meant to be a
-high-level user interface to data, and does not match the low-level nature of
-C++ programming.
+[ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) can hide
+SQL from the C++ code, and improve type safety, but it adds to complexity, and
+can result in sub-optimal performance. SQL is meant to be a high-level user
+interface to data, and does not match the low-level nature of C++ programming.
 
 Joedb aims to offer an alternative to using SQL from C++, by providing a direct
 low-level access to data. As shown in the diagram below, the database schema is
-compiled into C++ code, and can be manipulated like a C++ container.
+compiled into C++ code. Applications using this code can then manipulate a file
+like a C++ container.
 
 ![Diagram](doc/source/images/joedb.svg)
 
