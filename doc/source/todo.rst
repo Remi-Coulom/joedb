@@ -46,6 +46,7 @@ Blobs
 -----
 
 - network protocol extension to handle local blob cache without downloading everything
+- zero-copy access to blob data using memory-mapped file
 
 On-disk Storage
 ---------------
