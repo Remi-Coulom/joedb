@@ -31,7 +31,7 @@ namespace joedb
   out << " [--nodb] <file> <connection>\n\n";
   out << "<file> is one of:\n";
   out << "  [--shared|--exclusive] <client_file_name>\n";
-#ifdef JOEDB8_HAS_SSH
+#ifdef JOEDB_HAS_SSH
   out << "  sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
 #endif
   out << "  memory\n";
