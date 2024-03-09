@@ -42,6 +42,7 @@ namespace joedb
    void comment(const std::string &comment) final;
    void timestamp(int64_t timestamp) final;
    void valid_data() final;
+   void flush() final;
    void checkpoint(Commit_Level commit_level) final;
    void insert_into(Table_Id table_id, Record_Id record_id) final;
    void insert_vector
