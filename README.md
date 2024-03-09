@@ -1,6 +1,6 @@
 # Joedb, the Journal-Only Embedded Database
 
-SQL Databases are the standard tool for manipulating structured data with
+SQL Databases are the standard tool for manipulating relational data with
 [ACID](https://en.wikipedia.org/wiki/ACID) transactions, but they are not
 convenient to use from C++. Raw SQL APIs such as
 [SQLite](https://www.sqlite.org/cintro.html) do not match the C++ programming

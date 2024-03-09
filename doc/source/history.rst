@@ -1,9 +1,9 @@
 History
 =======
 
-- 2023-??-??: 8.0.0
+- 2024-??-??: 8.0.0
 
-  - The joedb server takes a client as parameter, instead of file. This allows
+  - The joedb server takes a client as parameter, instead of a file. This allows
     synchronous remote backup by chaining servers.
   - new ``Pullable_Database``, similar to ``Readonly_Database``, but the file
     is not closed at the end of the constructor, and it is possible to pull new

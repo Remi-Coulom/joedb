@@ -4,16 +4,9 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- Improve command-line options
-
-  - File option of joedb_client: also for joedbi and joedb_push
-  - Different default open_mode + available (joedb_push is readonly)
-  - default db option. "--nodb" if default is db, "--db" otherwise
-
 - Don't allow locking with a read-only server
 - Don't store whole push in a large push buffer: write to file directly instead.
-- Write to file asynchronously
-- Send data to backup server asynchronously too?
+- Check::all & ~Check::big_size
 
 Journal File
 ------------
