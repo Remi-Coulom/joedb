@@ -30,7 +30,7 @@ namespace joedb
  {
   out << " [--nodb] <file> <connection>\n\n";
   out << "<file> is one of:\n";
-  out << "  [--shared|--exclusive] <client_file_name>\n";
+  out << "  [file] [--shared|--exclusive|--readonly*] <file_name>\n";
 #ifdef JOEDB_HAS_SSH
   out << "  sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
 #endif
@@ -51,8 +51,13 @@ namespace joedb
    nodb = true;
   }
 
+  if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
+  {
+   client_file.reset(new Memory_File());
+   arg_index++;
+  }
 #ifdef JOEDB_HAS_SSH
-  if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)
+  else if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)
   {
    arg_index++;
 
@@ -95,17 +100,12 @@ namespace joedb
 
    std::cout << "OK\n";
   }
-  else if
-#else
-  if
 #endif
-   (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
-  {
-   client_file.reset(new Memory_File());
-   arg_index++;
-  }
   else
   {
+   if (arg_index < argc && std::strcmp(argv[arg_index], "file") == 0)
+    arg_index++;
+
    joedb::Open_Mode open_mode = Open_Mode::read_existing;
    if (arg_index < argc)
    {
@@ -116,7 +116,11 @@ namespace joedb
     }
     else if (std::strcmp(argv[arg_index], "--exclusive") == 0)
     {
-     open_mode = Open_Mode::write_existing_or_create_new;
+     open_mode = Open_Mode::write_lock;
+     arg_index++;
+    }
+    else if (std::strcmp(argv[arg_index], "--readonly") == 0)
+    {
      arg_index++;
     }
    }

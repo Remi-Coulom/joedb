@@ -26,9 +26,6 @@ namespace joedb
  Connection_Parser::Connection_Parser(bool local)
  //////////////////////////////////////////////////////////////////////////
  {
-  builders.emplace_back(new Dump_Connection_Builder());
-  builders.emplace_back(new Tail_Connection_Builder());
-
   if (local)
   {
    builders.emplace_back(new Dummy_Connection_Builder());
@@ -37,6 +34,8 @@ namespace joedb
 #endif
   }
 
+  builders.emplace_back(new Dump_Connection_Builder());
+  builders.emplace_back(new Tail_Connection_Builder());
   builders.emplace_back(new File_Connection_Builder());
 
 #ifdef JOEDB_HAS_ASIO_NET
