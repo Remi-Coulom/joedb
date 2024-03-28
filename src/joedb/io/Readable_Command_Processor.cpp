@@ -237,6 +237,12 @@ namespace joedb
     }
    }
   }
+  else if (command == "table_size") /////////////////////////////////////////
+  {
+   const Table_Id table_id = parse_table(parameters, out);
+   const auto &freedom = readable.get_freedom(table_id);
+   out << freedom.get_used_count() << '\n';
+  }
   else if (command == "schema") /////////////////////////////////////////////
   {
    Interpreter_Dump_Writable dump_writable(out);
@@ -263,6 +269,7 @@ namespace joedb
    out << R"RRR(Displaying data
 ~~~~~~~~~~~~~~~
  table <table_name> [<max_column_width>] [start] [length]
+ table_size <table_name>
  schema
  dump
  sql

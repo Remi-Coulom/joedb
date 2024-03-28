@@ -132,6 +132,7 @@ Data manipulation
 Displaying data
 ~~~~~~~~~~~~~~~
  table <table_name> [<max_column_width>] [start] [length]
+ table_size <table_name>
  schema
  dump
  sql
