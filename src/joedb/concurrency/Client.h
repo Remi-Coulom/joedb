@@ -47,6 +47,14 @@ namespace joedb
      throw Exception("can't pull: client is ahead of server");
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   void unlock_without_pushing()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    connection.unlock(data.get_writable_journal());
+    data.get_writable_journal().flush();
+   }
+
   protected:
    Client_Data &data;
    Connection &connection;
@@ -126,8 +134,7 @@ namespace joedb
     }
     catch (...)
     {
-     connection.unlock(data.get_writable_journal());
-     data.get_writable_journal().flush();
+     unlock_without_pushing();
      throw;
     }
 
@@ -169,7 +176,10 @@ namespace joedb
    {
     try
     {
-     client.push_unlock();
+     if (std::uncaught_exception())
+      client.unlock_without_pushing();
+     else
+      client.push_unlock();
     }
     catch (...)
     {
