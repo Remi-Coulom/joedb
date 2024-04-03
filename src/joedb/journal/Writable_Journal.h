@@ -60,8 +60,6 @@ namespace joedb
      const int64_t old_position;
      Async_Writer writer;
 
-     Tail_Writer(const Tail_Writer &) = delete;
-
     public:
      Tail_Writer(Writable_Journal &journal):
       journal(journal),
@@ -82,6 +80,11 @@ namespace joedb
       journal.file.set_position(old_position);
      }
    };
+
+   Async_Writer get_tail_writer()
+   {
+    return Async_Writer(file, get_checkpoint_position());
+   }
 
    void append()
    {

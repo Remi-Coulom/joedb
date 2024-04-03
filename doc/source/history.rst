@@ -3,8 +3,19 @@ History
 
 - 2024-??-??: 8.0.0
 
-  - The joedb server takes a client as parameter, instead of a file. This allows
-    synchronous remote backup by chaining servers.
+  - ``joedb_server`` now takes a client as parameter, instead of a file. This
+    gives much more flexibility, and allows:
+
+    - chaining servers for synchronous remote backup;
+    - sharing the file used by the server with another application running on
+      the same machine;
+    - a diskless in-memory server;
+    - serving a file read-only.
+
+  - The server does not buffer a whole push before writing it to disk any more.
+    This saves memory and time in case of a large push. In case of connection
+    failure in the middle of a push, the written data is not erased. But it is
+    not checkpointed, and may be overwritten by a subsequent push.
   - new ``Pullable_Database``, similar to ``Readonly_Database``, but the file
     is not closed at the end of the constructor, and it is possible to pull new
     data in case of a concurrent update.

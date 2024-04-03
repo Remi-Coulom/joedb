@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <set>
 #include <chrono>
+#include <array>
 
 namespace joedb
 {
@@ -36,8 +37,7 @@ namespace joedb
     const int64_t id;
     Server &server;
     net::ip::tcp::socket socket;
-    enum {buffer_size = (1 << 13)};
-    char buffer[buffer_size];
+    std::array<char, 1 << 13> buffer;
     enum State
     {
      not_locking,
@@ -70,14 +70,18 @@ namespace joedb
     std::shared_ptr<Session> session,
     std::error_code error
    );
-   std::vector<char> push_buffer;
+
+   void finish_push
+   (
+    std::shared_ptr<Session> session,
+    const char c
+   );
 
    void push_transfer_handler
    (
     std::shared_ptr<Session> session,
-    size_t offset,
+    Async_Writer writer,
     size_t remaining_size,
-    bool conflict,
     std::error_code error,
     size_t bytes_transferred
    );
@@ -85,9 +89,8 @@ namespace joedb
    void push_transfer
    (
     std::shared_ptr<Session> session,
-    size_t offset,
-    size_t remaining_size,
-    bool conflict
+    Async_Writer writer,
+    size_t remaining_size
    );
 
    void push_handler

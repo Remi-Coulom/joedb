@@ -4,9 +4,24 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
+- joedb_server should be --nodb always (do not offer option)
+- file of joedb_server should be --exclusive by default
+- file of joedb_client also
+- syntax for connection should have [dummy] as the default
+- Server option, either:
+
+  - Lock the connection during the whole life of the server, shallow pulls
+  - Lock the connection only when locking the server, deep pulls
+
 - Don't allow locking with a read-only server
-- Don't store whole push in a large push buffer: write to file directly instead.
+- Allow timeout during push
 - Check::all & ~Check::big_size
+- Readonly_Journal::get_raw_tail also has a big buffer, and should be removed:
+  always copy via small buffers.
+- Thoroughly test server (timeout during push, interrupted push, ...). Must be
+  automated unit tests.
+- Connection_Multiplexer for multiple parallel backup servers
+- Witty joedb_admin + joedb for kifusnap training set before release
 
 Journal File
 ------------
@@ -136,7 +151,6 @@ Concurrency
 - Lock objects (file + connection) necessary for joedb_admin? Make file unlocking nothrow? That would simplify a lot.
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
-- Connection_Multiplexer for multiple parallel backup servers?
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push

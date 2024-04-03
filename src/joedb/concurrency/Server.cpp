@@ -168,13 +168,30 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server::finish_push
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  const char c
+ )
+ {
+  session->buffer[0] = c;
+
+  LOG(" done. Returning '" << c << "'\n");
+
+  write_buffer_and_next_command(session, 1);
+
+  if (session->unlock_after_push)
+   unlock(*session);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Server::push_transfer_handler
  ////////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  size_t offset,
+  Async_Writer writer,
   size_t remaining_size,
-  bool conflict,
   std::error_code error,
   size_t bytes_transferred
  )
@@ -183,12 +200,13 @@ namespace joedb
   {
    LOG('.');
 
+   writer.write(session->buffer.data(), bytes_transferred);
+
    push_transfer
    (
     session,
-    offset + bytes_transferred,
-    remaining_size - bytes_transferred,
-    conflict
+    writer,
+    remaining_size - bytes_transferred
    );
   }
  }
@@ -198,9 +216,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  size_t offset,
-  size_t remaining_size,
-  bool conflict
+  Async_Writer writer,
+  size_t remaining_size
  )
  {
   if (remaining_size > 0)
@@ -210,48 +227,33 @@ namespace joedb
    net::async_read
    (
     session->socket,
-    net::buffer(&push_buffer[offset], remaining_size),
-    [this, session, offset, remaining_size, conflict]
+    net::buffer
     (
-     std::error_code e,
-     size_t s
+     session->buffer,
+     std::min(remaining_size, session->buffer.size())
+    ),
+    [this, session, writer, remaining_size]
+    (
+     std::error_code error,
+     size_t bytes_transferred
     )
     {
      push_transfer_handler
      (
       session,
-      offset,
+      writer,
       remaining_size,
-      conflict,
-      e,
-      s
+      error,
+      bytes_transferred
      );
     }
    );
   }
   else
   {
-   if (conflict)
-    session->buffer[0] = 'C';
-   if (client.is_readonly())
-    session->buffer[0] = 'R';
-   else
-   {
-    client_lock->get_journal().append_raw_tail
-    (
-     push_buffer.data(),
-     offset
-    );
-    client_lock->push();
-    session->buffer[0] = 'U';
-   }
-
-   LOG(" done. Returning '" << session->buffer[0] << "'\n");
-
-   write_buffer_and_next_command(session, 1);
-
-   if (session->unlock_after_push)
-    unlock(*session);
+   client_lock->get_journal().default_checkpoint();
+   client_lock->push();
+   finish_push(session, 'U');
   }
  }
 
@@ -266,8 +268,8 @@ namespace joedb
  {
   if (!error)
   {
-   const int64_t start = from_network(session->buffer);
-   const int64_t size = from_network(session->buffer + 8);
+   const int64_t start = from_network(session->buffer.data());
+   const int64_t size = from_network(session->buffer.data() + 8);
 
    const bool conflict = (size != 0) &&
    (
@@ -288,18 +290,21 @@ namespace joedb
    if (session->state == Session::State::locking)
     lock_timeout_timer.cancel(); // TODO: allow timeout during push
 
-   if (!conflict && size > int64_t(push_buffer.size()))
-    push_buffer.resize(size_t(size));
-
    LOGID("pushing, start = " << start << ", size = " << size << ':');
 
-   push_transfer
-   (
-    session,
-    0,
-    size_t(size),
-    conflict
-   );
+   if (conflict)
+    finish_push(session, 'C');
+   if (client.is_readonly())
+    finish_push(session, 'R');
+   else
+   {
+    push_transfer
+    (
+     session,
+     client_lock->get_journal().get_tail_writer(),
+     size_t(size)
+    );
+   }
   }
  }
 
@@ -321,8 +326,8 @@ namespace joedb
 
     const size_t size = reader.read
     (
-     session->buffer,
-     Session::buffer_size
+     session->buffer.data(),
+     session->buffer.size()
     );
 
     net::async_write
@@ -354,13 +359,13 @@ namespace joedb
  {
   if (!error)
   {
-   const int64_t checkpoint = from_network(session->buffer + 1);
+   const int64_t checkpoint = from_network(session->buffer.data() + 1);
 
    if (client.is_readonly())
     client.refresh_data();
 
    Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
-   to_network(reader.get_remaining(), session->buffer + 9);
+   to_network(reader.get_remaining(), session->buffer.data() + 9);
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
     << reader.get_remaining() << ':');
@@ -384,7 +389,7 @@ namespace joedb
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer + 1, 8),
+   net::buffer(session->buffer.data() + 1, 8),
    [this, session](std::error_code e, size_t s)
    {
     pull_handler(session, e, s);
@@ -403,11 +408,11 @@ namespace joedb
  {
   if (!error)
   {
-   const int64_t checkpoint = from_network(session->buffer + 1);
+   const int64_t checkpoint = from_network(session->buffer.data() + 1);
    SHA_256::Hash hash;
 
    for (uint32_t i = 0; i < 8; i++)
-    hash[i] = uint32_from_network(session->buffer + 9 + 4 * i);
+    hash[i] = uint32_from_network(session->buffer.data() + 9 + 4 * i);
 
    const Readonly_Journal &readonly_journal = client.get_journal();
 
@@ -434,7 +439,7 @@ namespace joedb
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer + 1, 40),
+   net::buffer(session->buffer.data() + 1, 40),
    [this, session] (std::error_code e, size_t s)
    {
     check_hash_handler(session, e, s);
@@ -470,7 +475,7 @@ namespace joedb
      net::async_read
      (
       session->socket,
-      net::buffer(session->buffer, 16),
+      net::buffer(session->buffer.data(), 16),
       [this, session](std::error_code e, size_t s)
       {
        push_handler(session, e, s);
@@ -561,20 +566,20 @@ namespace joedb
  void Server::handshake(std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  const int64_t client_version = from_network(session->buffer + 5);
+  const int64_t client_version = from_network(session->buffer.data() + 5);
 
   LOGID("client_version = " << client_version << '\n');
 
   {
    const int64_t server_version = client_version < 5 ? 0 : 6;
-   to_network(server_version, session->buffer + 5);
+   to_network(server_version, session->buffer.data() + 5);
   }
 
-  to_network(session->id, session->buffer + 5 + 8);
+  to_network(session->id, session->buffer.data() + 5 + 8);
   to_network
   (
    client.get_journal().get_checkpoint_position(),
-   session->buffer + 5 + 8 + 8
+   session->buffer.data() + 5 + 8 + 8
   );
 
   write_buffer_and_next_command(session, 5 + 8 + 8 + 8);
