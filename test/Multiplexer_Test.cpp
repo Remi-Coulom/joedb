@@ -5,6 +5,7 @@
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/io/dump.h"
+#include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"
 
@@ -61,4 +62,38 @@ TEST(Multiplexer_Test, interpreter_test)
 
   EXPECT_EQ(reference.str(), multiplexed.str());
  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Multiplexer_Test, flush)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File f1;
+ joedb::Memory_File f2;
+
+ joedb::Writable_Journal j1(f1);
+ joedb::Writable_Journal j2(f2);
+
+ joedb::Multiplexer multiplexer{j1, j2};
+
+ EXPECT_EQ(f1.get_size(), 41);
+ EXPECT_EQ(f2.get_size(), 41);
+
+ multiplexer.comment("Hello");
+
+ EXPECT_EQ(f1.get_size(), 41);
+ EXPECT_EQ(f2.get_size(), 41);
+
+ multiplexer.flush();
+
+ EXPECT_EQ(f1.get_size(), 48);
+ EXPECT_EQ(f2.get_size(), 48);
+
+ EXPECT_EQ(j1.get_checkpoint_position(), 41);
+ EXPECT_EQ(j2.get_checkpoint_position(), 41);
+
+ multiplexer.default_checkpoint();
+
+ EXPECT_EQ(j1.get_checkpoint_position(), 48);
+ EXPECT_EQ(j2.get_checkpoint_position(), 48);
 }
