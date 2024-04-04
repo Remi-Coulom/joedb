@@ -12,8 +12,6 @@ Short-term fixes for next release
 - Don't allow locking with a read-only server
 - Allow timeout during push
 - Check::all & ~Check::big_size
-- Readonly_Journal::get_raw_tail also has a big buffer, and should be removed:
-  always copy via small buffers.
 - Thoroughly test server (timeout during push, interrupted push, ...). Must be
   automated unit tests.
 - Connection_Multiplexer for multiple parallel backup servers

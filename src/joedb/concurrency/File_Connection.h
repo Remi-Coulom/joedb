@@ -50,18 +50,7 @@ namespace joedb
    int64_t pull(Writable_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
-    const int64_t client_checkpoint=client_journal.get_checkpoint_position();
-    const int64_t server_checkpoint=server_journal.get_checkpoint_position();
-
-    if (client_checkpoint < server_checkpoint)
-    {
-     client_journal.append_raw_tail
-     (
-      server_journal.get_raw_tail(client_checkpoint)
-     );
-    }
-
-    return server_checkpoint;
+    return client_journal.pull(server_journal);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -76,15 +65,7 @@ namespace joedb
     if (server_checkpoint != server_journal.get_checkpoint_position())
      throw Exception("pushing from bad checkpoint");
 
-    const int64_t client_checkpoint=client_journal.get_checkpoint_position();
-
-    if (server_checkpoint < client_checkpoint)
-    {
-     server_journal.append_raw_tail
-     (
-      client_journal.get_raw_tail(server_checkpoint)
-     );
-    }
+    server_journal.pull(client_journal);
 
     if (unlock_after)
      unlock(client_journal);

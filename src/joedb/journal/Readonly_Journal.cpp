@@ -138,23 +138,6 @@ void joedb::Readonly_Journal::refresh_checkpoint()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-std::vector<char> joedb::Readonly_Journal::get_raw_tail
-/////////////////////////////////////////////////////////////////////////////
-(
- int64_t starting_position
-) const
-{
- Async_Reader reader = get_tail_reader(starting_position);
- std::vector<char> result(size_t(reader.get_remaining()));
- reader.read(result.data(), result.size());
-
- // TODO:
- // This function must not exist: step-by-step copy instead in File Connections
-
- return result;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::replay_log(Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {

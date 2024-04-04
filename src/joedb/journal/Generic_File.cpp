@@ -16,21 +16,22 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File::copy(Generic_File &source)
+ void Generic_File::copy(Generic_File &source, int64_t start, size_t size)
  ////////////////////////////////////////////////////////////////////////////
  {
-  flush();
-  source.set_position(0);
+  set_position(start);
+  source.set_position(start);
 
-  while (true)
+  while (size > 0)
   {
    source.read_buffer();
    if (source.read_buffer_size == 0)
     break;
-   std::copy_n(source.buffer, source.read_buffer_size, buffer);
-   write_buffer_index = source.read_buffer_size;
-   write_buffer();
-   position += int64_t(source.read_buffer_size);
+
+   const size_t copy_size = std::min(size, source.read_buffer_size);
+   raw_write(source.buffer, copy_size);
+   position += int64_t(copy_size);
+   size -= copy_size;
   }
  }
 

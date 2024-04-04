@@ -44,19 +44,30 @@ joedb::Writable_Journal::Writable_Journal
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::append_raw_tail(const char *data, size_t size)
+int64_t joedb::Writable_Journal::pull(Readonly_Journal &journal)
 /////////////////////////////////////////////////////////////////////////////
 {
- Tail_Writer tail_writer(*this);
- tail_writer.append(data, size);
- tail_writer.finish();
-}
+ const int64_t source_checkpoint = journal.get_checkpoint_position();
 
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::append_raw_tail(const std::vector<char> &data)
-/////////////////////////////////////////////////////////////////////////////
-{
- append_raw_tail(data.data(), data.size());
+ if (checkpoint_position < source_checkpoint)
+ {
+  const int64_t initial_position = get_position();
+  const int64_t initial_source_position = journal.get_position();
+
+  file.copy
+  (
+   journal.file,
+   checkpoint_position,
+   source_checkpoint - checkpoint_position
+  );
+
+  default_checkpoint();
+
+  set_position(initial_position);
+  journal.set_position(initial_source_position);
+ }
+
+ return checkpoint_position;
 }
 
 /////////////////////////////////////////////////////////////////////////////

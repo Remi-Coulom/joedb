@@ -15,10 +15,31 @@ TEST(Generic_File, copy)
  file.write<uint64_t>(magic);
 
  joedb::Test_File copy;
- copy.copy(file);
+ copy.copy(file, 0, std::numeric_limits<size_t>::max());
  copy.set_position(0);
 
  EXPECT_EQ(copy.read<uint64_t>(), magic);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Generic_File, large_copy)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const uint64_t magic = 1234567;
+ const size_t count = 100000;
+
+ joedb::Memory_File file;
+ for (size_t i = 0; i < 1 + 2 * count; i++)
+  file.write<uint64_t>(magic);
+
+ joedb::Memory_File copy;
+ copy.write<uint64_t>(~magic);
+ copy.copy(file, sizeof(uint64_t), sizeof(uint64_t) * count);
+ copy.set_position(0);
+ EXPECT_EQ(copy.read<uint64_t>(), ~magic);
+
+ for (size_t i = 0; i < count; i++)
+  EXPECT_EQ(copy.read<uint64_t>(), magic);
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -426,7 +426,7 @@ namespace joedb
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
    int64_t get_position() const noexcept {return position;}
-   void copy(Generic_File &source);
+   void copy(Generic_File &source, int64_t start, size_t size);
 
    //////////////////////////////////////////////////////////////////////////
    template<typename T> void write(T x)

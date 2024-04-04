@@ -64,7 +64,7 @@ namespace joedb
      Tail_Writer(Writable_Journal &journal):
       journal(journal),
       old_position(journal.get_position()),
-      writer(journal.file, journal.get_checkpoint_position())
+      writer(journal.get_tail_writer())
      {
      }
 
@@ -91,9 +91,7 @@ namespace joedb
     file.set_position(checkpoint_position);
    }
 
-   void append_raw_tail(const char *data, size_t size);
-
-   void append_raw_tail(const std::vector<char> &data);
+   int64_t pull(Readonly_Journal &journal);
 
    template<typename F> void exclusive_transaction(F transaction)
    {

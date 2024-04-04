@@ -13,6 +13,8 @@ namespace joedb
  class Readonly_Journal: public Blob_Reader
  ////////////////////////////////////////////////////////////////////////////
  {
+  friend class Writable_Journal;
+
   public:
    enum class Check
    {
@@ -141,8 +143,6 @@ namespace joedb
    {
     return Async_Reader(file, start_position, get_checkpoint_position());
    }
-
-   std::vector<char> get_raw_tail(int64_t starting_position) const;
 
    SHA_256::Hash get_hash(int64_t checkpoint) const
    {
