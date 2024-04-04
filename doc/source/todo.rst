@@ -7,7 +7,6 @@ Short-term fixes for next release
 - Check::all & ~Check::big_size
 - Thoroughly test server (timeout during push, interrupted push, ...). Must be
   automated unit tests.
-- Connection_Multiplexer for multiple parallel backup servers
 - Witty joedb_admin + joedb for kifusnap training set before release
 
 Journal File
@@ -139,6 +138,7 @@ Concurrency
 - Lock objects (file + connection) necessary for joedb_admin? Make file unlocking nothrow? That would simplify a lot.
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
+- Connection_Multiplexer for multiple parallel backup servers
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push

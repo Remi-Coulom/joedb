@@ -10,13 +10,21 @@ History
     - sharing a direct access to the file used by the server with another
       application running on the same machine.
 
-  - The server does not buffer a whole push before writing it to disk any more.
-    This saves memory and time in case of a large push. In case of connection
-    failure in the middle of a push, the written data is not erased. But it is
-    not checkpointed, and may be overwritten by a subsequent push.
-  - new ``Pullable_Database``, similar to ``Readonly_Database``, but the file
-    is not closed at the end of the constructor, and it is possible to pull new
-    data in case of a concurrent update.
+  - Some changes to better handle very large databases:
+
+    - The server does not buffer a whole push before writing it to disk any
+      more.  This saves memory and time in case of a large push. If a
+      connection fails in the middle of a push, the written data is not erased.
+      But it is not checkpointed, and may be overwritten by a subsequent push.
+    - Better handling of server timeouts: if buffers are filled frequently
+      enough, a very large pull during lock_pull does not trigger a lock
+      timeout any more. Also, previous versions did not check for timeouts in
+      the middle of a push. This is now fixed.
+
+  - ``joedbc`` produces a new ``Pullable_Database``, similar to
+    ``Readonly_Database``, but the file is not closed at the end of the
+    constructor, and it is possible to pull new data in case of a concurrent
+    update.
   - Classes that write a journal (``joedb::Writable_Journal``,
     ``Generic_File_Database``, ``File_Database``, ``Client``) now have a
     ``commit_level`` constructor parameter that indicates the default commit
