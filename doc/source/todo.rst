@@ -4,7 +4,6 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- Allow timeout during push
 - Check::all & ~Check::big_size
 - Thoroughly test server (timeout during push, interrupted push, ...). Must be
   automated unit tests.
@@ -129,7 +128,6 @@ Concurrency
     - thread_count = max(core_count, 2 * server_count)
     - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
-  - allow timeout in the middle of a push.
   - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
   - get rid of signal. Make an interactive command-line interface to control
     the server. Maybe better: use asio's (non-std::net) support for signal.

@@ -48,16 +48,16 @@ namespace joedb
     };
     State state;
 
+    size_t push_remaining_size;
+    char push_status;
+    std::unique_ptr<Journal_Tail_Writer> push_writer;
+    bool unlock_after_push;
+
     std::ostream &write_id(std::ostream &out) const;
 
     Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();
    };
-
-   size_t push_remaining_size;
-   char push_status;
-   std::unique_ptr<Journal_Tail_Writer> push_writer;
-   bool unlock_after_push;
 
    std::set<Session *> sessions;
 
@@ -70,11 +70,14 @@ namespace joedb
    void lock_dequeue();
    void lock(std::shared_ptr<Session> session, Session::State state);
    void unlock(Session &session);
+
    void lock_timeout_handler
    (
     std::shared_ptr<Session> session,
     std::error_code error
    );
+
+   void refresh_lock_timeout(std::shared_ptr<Session> session);
 
    void push_transfer_handler
    (

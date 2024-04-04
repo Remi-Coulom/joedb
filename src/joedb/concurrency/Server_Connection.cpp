@@ -175,6 +175,8 @@ namespace joedb
    throw Exception("Conflict: push failed");
   else if (buffer[0] == 'R')
    throw Exception("Server is read-only: push failed");
+  else if (buffer[0] == 't')
+   throw Exception("Timeout: push failed");
   else
    throw Exception("Unexpected server reply");
 

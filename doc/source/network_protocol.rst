@@ -47,7 +47,7 @@ C                       reply to U or p when the push failed (conflict)
 R                       reply to U or p when the push failed (read-only)
 l                       reply to l
 u                       reply to u (no timeout)
-t                       reply to u (timeout)
+t                       reply to u, U, or p in case of timeout
 H                       reply to H, hash is matching
 h                       reply to H, hash mismatch
 i                       reply to i

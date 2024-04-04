@@ -104,24 +104,13 @@ namespace joedb
 
    LOGID("locking\n");
 
-   if (lock_timeout.count() > 0)
-   {
-    lock_timeout_timer.expires_after(lock_timeout);
-    lock_timeout_timer.async_wait
-    (
-     [this, session](std::error_code e)
-     {
-      lock_timeout_handler(session, e);
-     }
-    );
-   }
-
    if (session->state == Session::State::waiting_for_lock)
     write_buffer_and_next_command(session, 1);
    else if (session->state == Session::State::waiting_for_lock_pull)
     pull(session);
 
    session->state = Session::State::locking;
+   refresh_lock_timeout(session);
   }
  }
 
@@ -171,7 +160,31 @@ namespace joedb
   if (!error)
   {
    LOGID("timeout\n");
+
+   if (session->push_writer)
+   {
+    session->push_writer.reset();
+    session->push_status = 't';
+   }
+
    unlock(*session);
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::refresh_lock_timeout(std::shared_ptr<Session> session)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (lock_timeout.count() > 0 && session->state == Session::locking)
+  {
+   lock_timeout_timer.expires_after(lock_timeout);
+   lock_timeout_timer.async_wait
+   (
+    [this, session](std::error_code e)
+    {
+     lock_timeout_handler(session, e);
+    }
+   );
   }
  }
 
@@ -186,12 +199,10 @@ namespace joedb
  {
   if (!error)
   {
-   LOG('.');
+   if (session->push_writer)
+    session->push_writer->write(session->buffer.data(), bytes_transferred);
 
-   if (push_writer)
-    push_writer->write(session->buffer.data(), bytes_transferred);
-
-   push_remaining_size -= bytes_transferred;
+   session->push_remaining_size -= bytes_transferred;
 
    push_transfer(session);
   }
@@ -201,9 +212,11 @@ namespace joedb
  void Server::push_transfer(std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (push_remaining_size > 0)
+  if (session->push_remaining_size > 0)
   {
-   LOG('.');
+   LOG(session->push_status);
+
+   refresh_lock_timeout(session);
 
    net::async_read
    (
@@ -211,7 +224,7 @@ namespace joedb
     net::buffer
     (
      session->buffer,
-     std::min(push_remaining_size, session->buffer.size())
+     std::min(session->push_remaining_size, session->buffer.size())
     ),
     [this, session]
     (
@@ -230,20 +243,20 @@ namespace joedb
   }
   else
   {
-   if (push_writer)
+   if (session->push_writer)
    {
-    push_writer.reset();
+    session->push_writer.reset();
     client_lock->get_journal().default_checkpoint();
     client_lock->push();
    }
 
-   session->buffer[0] = push_status;
+   session->buffer[0] = session->push_status;
 
-   LOG(" done. Returning '" << push_status << "'\n");
+   LOG(" done. Returning '" << session->push_status << "'\n");
 
    write_buffer_and_next_command(session, 1);
 
-   if (unlock_after_push)
+   if (session->unlock_after_push)
     unlock(*session);
   }
  }
@@ -278,22 +291,22 @@ namespace joedb
     start != client.get_journal().get_checkpoint_position()
    );
 
-   if (session->state == Session::State::locking)
-    lock_timeout_timer.cancel(); // TODO: allow timeout during push
-
    LOGID("pushing, start = " << start << ", size = " << size << ':');
 
    if (conflict)
-    push_status = 'C';
+    session->push_status = 'C';
    else if (client.is_readonly())
-    push_status = 'R';
+    session->push_status = 'R';
    else
    {
-    push_status = 'U';
-    push_writer.reset(new Journal_Tail_Writer(client_lock->get_journal()));
+    session->push_status = 'U';
+    session->push_writer.reset
+    (
+     new Journal_Tail_Writer(client_lock->get_journal())
+    );
    }
 
-   push_remaining_size = size;
+   session->push_remaining_size = size;
 
    push_transfer(session);
   }
@@ -320,6 +333,8 @@ namespace joedb
      session->buffer.data(),
      session->buffer.size()
     );
+
+    refresh_lock_timeout(session);
 
     net::async_write
     (
@@ -462,7 +477,7 @@ namespace joedb
     break;
 
     case 'U': case 'p':
-     unlock_after_push = (session->buffer[0] == 'U');
+     session->unlock_after_push = (session->buffer[0] == 'U');
      net::async_read
      (
       session->socket,
@@ -562,7 +577,7 @@ namespace joedb
   LOGID("client_version = " << client_version << '\n');
 
   {
-   const int64_t server_version = client_version < 5 ? 0 : 6;
+   const int64_t server_version = client_version < 5 ? 0 : 7;
    to_network(server_version, session->buffer.data() + 5);
   }
 
@@ -782,8 +797,15 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Signal::set_signal(SIGINT);
-  io_context.post([this](){handle_interrupt_timer(std::error_code());});
-  interrupt_timer.cancel();
+
+  io_context.post
+  (
+   [this]()
+   {
+    interrupt_timer.cancel();
+    handle_interrupt_timer(std::error_code());
+   }
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
