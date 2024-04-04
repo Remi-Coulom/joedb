@@ -58,24 +58,22 @@ namespace joedb
     private:
      Writable_Journal &journal;
      const int64_t old_position;
-     Async_Writer writer;
 
     public:
      Tail_Writer(Writable_Journal &journal):
       journal(journal),
-      old_position(journal.get_position()),
-      writer(journal.get_tail_writer())
+      old_position(journal.get_position())
      {
+      journal.file.set_position(journal.get_checkpoint_position());
      }
 
      void append(const char *buffer, size_t size)
      {
-      writer.write(buffer, size);
+      journal.file.write_data(buffer, size);
      }
 
      void finish()
      {
-      writer.seek();
       journal.default_checkpoint();
       journal.file.set_position(old_position);
      }
