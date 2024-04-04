@@ -28,7 +28,11 @@ TEST(Server, basic)
   io_context,
   uint16_t(0),
   std::chrono::seconds(0),
+#if 0
+  &std::cerr
+#else
   log_stream
+#endif
  );
  std::thread server_thread([&io_context](){io_context.run();});
 
