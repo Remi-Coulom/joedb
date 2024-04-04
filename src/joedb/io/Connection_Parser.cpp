@@ -52,10 +52,20 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  {
   out << "\n<connection> is one of:\n";
-  for (const auto &builder: builders)
+  for (size_t i = 0; i < builders.size(); i++)
   {
-   out << ' ' << builder->get_name() << ' ';
-   out << builder->get_parameters_description() << '\n';
+   out << ' ';
+
+   if (i == 0)
+    out << '[';
+
+   out<< builders[i]->get_name();
+
+   if (i == 0)
+    out << "] (default)";
+
+   out << ' ' << builders[i]->get_parameters_description();
+   out << '\n';
   }
  }
 
@@ -111,9 +121,27 @@ namespace joedb
   char **argv
  ) const
  {
+  const char * connection_name;
   if (argc <= 0)
-   return build(get_builder("dummy"), 0, nullptr);
+  {
+   argc = 1;
+   connection_name = builders[0]->get_name();
+  }
+  else
+   connection_name = argv[0];
 
-  return build(get_builder(argv[0]), argc - 1, argv + 1);
+  std::cout << "Creating connection (" << connection_name << ") ... ";
+  std::cout.flush();
+
+  std::unique_ptr<Connection> result = build
+  (
+   get_builder(connection_name),
+   argc - 1,
+   argv + 1
+  );
+
+  std::cout << "OK\n";
+
+  return result;
  }
 }

@@ -4,10 +4,6 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- joedb_server should be --nodb always (do not offer option)
-- file of joedb_server should be --exclusive by default
-- file of joedb_client also
-- syntax for connection should have [dummy] as the default
 - Server option, either:
 
   - Lock the connection during the whole life of the server, shallow pulls

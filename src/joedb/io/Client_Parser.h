@@ -18,6 +18,8 @@ namespace joedb
  {
   private:
    Connection_Parser connection_parser;
+   const bool default_has_db;
+   const Open_Mode default_open_mode;
 
 #ifdef JOEDB_HAS_SSH
    std::unique_ptr<ssh::Session> ssh_session;
@@ -30,7 +32,12 @@ namespace joedb
    std::unique_ptr<Client> client;
 
   public:
-   Client_Parser(bool local);
+   Client_Parser
+   (
+    bool local,
+    bool default_has_db,
+    Open_Mode default_open_mode
+   );
 
    Client &parse(int argc, char **argv);
 

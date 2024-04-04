@@ -1,5 +1,6 @@
 #include "joedb/io/Client_Parser.h"
 #include "joedb/io/Connection_Parser.h"
+#include "joedb/io/open_mode_strings.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
@@ -18,9 +19,16 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Client_Parser::Client_Parser(bool local):
+ Client_Parser::Client_Parser
  ////////////////////////////////////////////////////////////////////////////
-  connection_parser(local)
+ (
+  bool local,
+  bool default_has_db,
+  Open_Mode default_open_mode
+ ):
+  connection_parser(local),
+  default_has_db(default_has_db),
+  default_open_mode(default_open_mode)
  {
  }
 
@@ -28,13 +36,29 @@ namespace joedb
  void Client_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << " [--nodb] <file> <connection>\n\n";
+  if (default_has_db)
+   out << " [--nodb]";
+  else
+   out << " [--db]";
+
+  out << " <file> <connection>\n\n";
   out << "<file> is one of:\n";
-  out << "  [file] [--shared|--exclusive|--readonly*] <file_name>\n";
+
+  out << " [file] [--<open_mode>] <file_name>\n";
+  out << " <open_mode> is one of:\n";
+
+  for (size_t i = 0; i < open_mode_strings.size(); i++)
+  {
+   out << "  " << open_mode_strings[i];
+   if (Open_Mode(i) == default_open_mode)
+    out << " (default)";
+   out << '\n';
+  }
+
 #ifdef JOEDB_HAS_SSH
-  out << "  sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
+  out << " sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
 #endif
-  out << "  memory\n";
+  out << " memory\n";
   connection_parser.print_help(out);
  }
 
@@ -44,11 +68,18 @@ namespace joedb
  {
   int arg_index = 0;
 
-  bool nodb = false;
+  bool has_db = default_has_db;
+
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
   {
    arg_index++;
-   nodb = true;
+   has_db = false;
+  }
+
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--db") == 0)
+  {
+   arg_index++;
+   has_db = true;
   }
 
   if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
@@ -106,21 +137,14 @@ namespace joedb
    if (arg_index < argc && std::strcmp(argv[arg_index], "file") == 0)
     arg_index++;
 
-   joedb::Open_Mode open_mode = Open_Mode::read_existing;
-   if (arg_index < argc)
+   joedb::Open_Mode open_mode = default_open_mode;
+
+   for (size_t i = 0; i < open_mode_strings.size(); i++)
    {
-    if (std::strcmp(argv[arg_index], "--shared") == 0)
+    const std::string option = std::string("--") + open_mode_strings[i];
+    if (arg_index < argc && option == argv[arg_index])
     {
-     open_mode = Open_Mode::shared_write;
-     arg_index++;
-    }
-    else if (std::strcmp(argv[arg_index], "--exclusive") == 0)
-    {
-     open_mode = Open_Mode::write_lock;
-     arg_index++;
-    }
-    else if (std::strcmp(argv[arg_index], "--readonly") == 0)
-    {
+     open_mode = Open_Mode(i);
      arg_index++;
     }
    }
@@ -132,7 +156,8 @@ namespace joedb
     arg_index++;
    }
 
-   std::cout << "Opening local file... ";
+   std::cout << "Opening local file (open_mode = ";
+   std::cout << open_mode_strings[size_t(open_mode)] << ") ... ";
    std::cout.flush();
 
    if (file_name && *file_name)
@@ -144,32 +169,31 @@ namespace joedb
     throw Runtime_Error("missing file name");
   }
 
-  std::cout << "Creating client data (nodb = " << nodb << ") ... ";
+  std::cout << "Creating client data (has_db = " << has_db << ") ... ";
   std::cout.flush();
 
-  if (nodb)
-  {
-   if (client_file->get_mode() == Open_Mode::read_existing)
-    client_data.reset(new Readonly_Journal_Client_Data(*client_file));
-   else
-    client_data.reset(new Writable_Journal_Client_Data(*client_file));
-  }
-  else
+  if (has_db)
   {
    if (client_file->get_mode() == Open_Mode::read_existing)
     client_data.reset(new Readonly_Interpreted_Client_Data(*client_file));
    else
     client_data.reset(new Writable_Interpreted_Client_Data(*client_file));
   }
+  else
+  {
+   if (client_file->get_mode() == Open_Mode::read_existing)
+    client_data.reset(new Readonly_Journal_Client_Data(*client_file));
+   else
+    client_data.reset(new Writable_Journal_Client_Data(*client_file));
+  }
 
   std::cout << "OK\n";
 
-  std::cout << "Creating connection... ";
-  std::cout.flush();
-
-  connection = connection_parser.build(argc - arg_index, argv + arg_index);
-
-  std::cout << "OK\n";
+  connection = connection_parser.build
+  (
+   argc - arg_index,
+   argv + arg_index
+  );
 
   client.reset(new Client(*client_data, *connection));
 

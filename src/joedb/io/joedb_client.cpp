@@ -12,7 +12,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = true;
-  Client_Parser client_parser(local);
+  const bool default_db = true;
+  const Open_Mode default_open_mode = Open_Mode::write_lock;
+
+  Client_Parser client_parser(local, default_db, default_open_mode);
 
   if (argc <= 1)
   {
