@@ -7,10 +7,8 @@ History
     gives much more flexibility, and allows:
 
     - chaining servers for synchronous remote backup;
-    - sharing the file used by the server with another application running on
-      the same machine;
-    - a diskless in-memory server;
-    - serving a file read-only.
+    - sharing a direct access to the file used by the server with another
+      application running on the same machine.
 
   - The server does not buffer a whole push before writing it to disk any more.
     This saves memory and time in case of a large push. In case of connection

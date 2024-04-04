@@ -4,11 +4,6 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- Server option, either:
-
-  - Lock the connection during the whole life of the server, shallow pulls
-  - Lock the connection only when locking the server, deep pulls
-
 - Allow timeout during push
 - Check::all & ~Check::big_size
 - Thoroughly test server (timeout during push, interrupted push, ...). Must be
