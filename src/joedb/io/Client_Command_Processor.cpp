@@ -160,7 +160,10 @@ namespace joedb
   }
   else if (command == "push") ///////////////////////////////////////////////
   {
-   client.push_unlock();
+   if (client.get_checkpoint_difference() > 0)
+    client.push_unlock();
+   else
+    out << "Nothing to push\n";
   }
   else if (command == "push_every") /////////////////////////////////////////
   {
