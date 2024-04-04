@@ -750,7 +750,6 @@ namespace joedb
  ):
   client(client),
   share_client(share_client),
-  client_lock(share_client ? nullptr : new Client_Lock(client)),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
@@ -762,6 +761,14 @@ namespace joedb
   locked(false),
   log_pointer(log_pointer)
  {
+  if (client.get_checkpoint_difference() > 0)
+   client.push_unlock();
+
+  if (share_client)
+   client.pull();
+  else
+   client_lock.reset(new Client_Lock(client));
+
   write_status();
 
   start_interrupt_timer();
