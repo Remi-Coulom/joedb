@@ -294,7 +294,7 @@ namespace joedb
 
    if (conflict)
     finish_push(session, 'C');
-   if (client.is_readonly())
+   else if (client.is_readonly())
     finish_push(session, 'R');
    else
    {
