@@ -25,6 +25,7 @@ TEST(Server, basic)
  joedb::Server server
  (
   client,
+  false,
   io_context,
   uint16_t(0),
   std::chrono::seconds(0),

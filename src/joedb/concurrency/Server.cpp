@@ -82,7 +82,9 @@ namespace joedb
    out << "port = " << port;
    out << "; pid = " << joedb::get_pid();
    out << ": " << get_time_string_of_now();
-   out << "; session_count = " << session_count << '\n';
+   out << "; sessions = " << session_count;
+   out << "; cp = ";
+   out << client.get_journal().get_checkpoint_position() << '\n';
    out << '\n';
   });
  }
@@ -93,6 +95,9 @@ namespace joedb
  {
   if (!locked && !lock_queue.empty())
   {
+   if (!client_lock)
+    client_lock.reset(new Client_Lock(client));
+
    locked = true;
    std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
@@ -148,6 +153,9 @@ namespace joedb
    locked = false;
    lock_timeout_timer.cancel();
 
+   if (share_client && lock_queue.empty())
+    client_lock.reset();
+
    lock_dequeue();
   }
  }
@@ -168,30 +176,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::finish_push
- ////////////////////////////////////////////////////////////////////////////
- (
-  std::shared_ptr<Session> session,
-  const char c
- )
- {
-  session->buffer[0] = c;
-
-  LOG(" done. Returning '" << c << "'\n");
-
-  write_buffer_and_next_command(session, 1);
-
-  if (session->unlock_after_push)
-   unlock(*session);
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Server::push_transfer_handler
  ////////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
-  Async_Writer writer,
-  size_t remaining_size,
   std::error_code error,
   size_t bytes_transferred
  )
@@ -200,27 +188,20 @@ namespace joedb
   {
    LOG('.');
 
-   writer.write(session->buffer.data(), bytes_transferred);
+   if (push_writer)
+    push_writer->write(session->buffer.data(), bytes_transferred);
 
-   push_transfer
-   (
-    session,
-    writer,
-    remaining_size - bytes_transferred
-   );
+   push_remaining_size -= bytes_transferred;
+
+   push_transfer(session);
   }
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::push_transfer
+ void Server::push_transfer(std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
- (
-  std::shared_ptr<Session> session,
-  Async_Writer writer,
-  size_t remaining_size
- )
  {
-  if (remaining_size > 0)
+  if (push_remaining_size > 0)
   {
    LOG('.');
 
@@ -230,9 +211,9 @@ namespace joedb
     net::buffer
     (
      session->buffer,
-     std::min(remaining_size, session->buffer.size())
+     std::min(push_remaining_size, session->buffer.size())
     ),
-    [this, session, writer, remaining_size]
+    [this, session]
     (
      std::error_code error,
      size_t bytes_transferred
@@ -241,8 +222,6 @@ namespace joedb
      push_transfer_handler
      (
       session,
-      writer,
-      remaining_size,
       error,
       bytes_transferred
      );
@@ -251,9 +230,21 @@ namespace joedb
   }
   else
   {
-   client_lock->get_journal().default_checkpoint();
-   client_lock->push();
-   finish_push(session, 'U');
+   if (push_writer)
+   {
+    push_writer.reset();
+    client_lock->get_journal().default_checkpoint();
+    client_lock->push();
+   }
+
+   session->buffer[0] = push_status;
+
+   LOG(" done. Returning '" << push_status << "'\n");
+
+   write_buffer_and_next_command(session, 1);
+
+   if (unlock_after_push)
+    unlock(*session);
   }
  }
 
@@ -271,21 +262,21 @@ namespace joedb
    const int64_t start = from_network(session->buffer.data());
    const int64_t size = from_network(session->buffer.data() + 8);
 
+   if (locked && session->state != Session::State::locking)
+   {
+    LOGID("trying to push while someone else is locking\n");
+   }
+   else if (!locked)
+   {
+    LOGID("Taking the lock for push attempt.\n");
+    lock(session, Session::State::locking);
+   }
+
    const bool conflict = (size != 0) &&
    (
-    start != client.get_journal().get_checkpoint_position() ||
-    (locked && session->state != Session::State::locking)
+    session->state != Session::State::locking ||
+    start != client.get_journal().get_checkpoint_position()
    );
-
-   if (session->state != Session::State::locking)
-   {
-    LOGID("trying to push while not locking.\n");
-    if (!conflict && !locked)
-    {
-     LOGID("OK, this session can take the lock.\n");
-     lock(session, Session::State::locking);
-    }
-   }
 
    if (session->state == Session::State::locking)
     lock_timeout_timer.cancel(); // TODO: allow timeout during push
@@ -293,18 +284,18 @@ namespace joedb
    LOGID("pushing, start = " << start << ", size = " << size << ':');
 
    if (conflict)
-    finish_push(session, 'C');
+    push_status = 'C';
    else if (client.is_readonly())
-    finish_push(session, 'R');
+    push_status = 'R';
    else
    {
-    push_transfer
-    (
-     session,
-     client_lock->get_journal().get_tail_writer(),
-     size_t(size)
-    );
+    push_status = 'U';
+    push_writer.reset(new Journal_Tail_Writer(client_lock->get_journal()));
    }
+
+   push_remaining_size = size;
+
+   push_transfer(session);
   }
  }
 
@@ -361,8 +352,8 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer.data() + 1);
 
-   if (client.is_readonly())
-    client.refresh_data();
+   if (!client_lock)
+    client.pull();
 
    Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer.data() + 9);
@@ -471,7 +462,7 @@ namespace joedb
     break;
 
     case 'U': case 'p':
-     session->unlock_after_push = (session->buffer[0] == 'U');
+     unlock_after_push = (session->buffer[0] == 'U');
      net::async_read
      (
       session->socket,
@@ -751,13 +742,15 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Client &client,
+  bool share_client,
   net::io_context &io_context,
   uint16_t port,
   std::chrono::seconds lock_timeout,
   std::ostream *log_pointer
  ):
   client(client),
-  client_lock(client.is_readonly() ? nullptr : new Client_Lock(client)),
+  share_client(share_client),
+  client_lock(share_client ? nullptr : new Client_Lock(client)),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),

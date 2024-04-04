@@ -23,6 +23,7 @@ namespace joedb
    enum {clear_signal_seconds = 3};
 
    joedb::Client &client;
+   const bool share_client;
    std::unique_ptr<Client_Lock> client_lock;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
@@ -45,7 +46,6 @@ namespace joedb
      waiting_for_lock_pull,
      locking
     };
-    bool unlock_after_push;
     State state;
 
     std::ostream &write_id(std::ostream &out) const;
@@ -53,6 +53,11 @@ namespace joedb
     Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();
    };
+
+   size_t push_remaining_size;
+   char push_status;
+   std::unique_ptr<Journal_Tail_Writer> push_writer;
+   bool unlock_after_push;
 
    std::set<Session *> sessions;
 
@@ -71,26 +76,16 @@ namespace joedb
     std::error_code error
    );
 
-   void finish_push
-   (
-    std::shared_ptr<Session> session,
-    const char c
-   );
-
    void push_transfer_handler
    (
     std::shared_ptr<Session> session,
-    Async_Writer writer,
-    size_t remaining_size,
     std::error_code error,
     size_t bytes_transferred
    );
 
    void push_transfer
    (
-    std::shared_ptr<Session> session,
-    Async_Writer writer,
-    size_t remaining_size
+    std::shared_ptr<Session> session
    );
 
    void push_handler
@@ -190,6 +185,7 @@ namespace joedb
    Server
    (
     joedb::Client &client,
+    bool share_client,
     net::io_context &io_context,
     uint16_t port,
     std::chrono::seconds lock_timeout,

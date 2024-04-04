@@ -15,6 +15,8 @@ namespace joedb
   public Writable,
   public Posthumous_Thrower
  {
+  friend class Journal_Tail_Writer;
+
   private:
    Commit_Level current_commit_level;
 
@@ -78,11 +80,6 @@ namespace joedb
       journal.file.set_position(old_position);
      }
    };
-
-   Async_Writer get_tail_writer()
-   {
-    return Async_Writer(file, get_checkpoint_position());
-   }
 
    void append()
    {
@@ -167,6 +164,15 @@ namespace joedb
    Blob write_blob_data(const std::string &data) final;
 
    ~Writable_Journal() override;
+ };
+
+ class Journal_Tail_Writer: public Async_Writer
+ {
+  public:
+   Journal_Tail_Writer(Writable_Journal &journal):
+    Async_Writer(journal.file, journal.get_checkpoint_position())
+   {
+   }
  };
 }
 

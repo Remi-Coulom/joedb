@@ -9,7 +9,6 @@ Short-term fixes for next release
   - Lock the connection during the whole life of the server, shallow pulls
   - Lock the connection only when locking the server, deep pulls
 
-- Don't allow locking with a read-only server
 - Allow timeout during push
 - Check::all & ~Check::big_size
 - Thoroughly test server (timeout during push, interrupted push, ...). Must be
@@ -120,6 +119,10 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- Pull-only connection (eg when serving a read-only file):
+  -> joedb_client does not offer transaction and push
+  -> reply with readonly flag during server handshake
+  -> bool is_pullonly() const in connection (and client)
 - joedb_server:
 
   - Test many concurrent read and write requests. Performance benchmarks.
@@ -135,8 +138,6 @@ Concurrency
   - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
   - get rid of signal. Make an interactive command-line interface to control
     the server. Maybe better: use asio's (non-std::net) support for signal.
-  - possibility to checkpoint multiple concurrent transactions simultaneously
-  - Option for non-exclusive client in joedb_server
 
 - SHA-256: option for either fast or full.
 - performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
