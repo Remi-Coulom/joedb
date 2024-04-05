@@ -96,10 +96,10 @@ namespace joedb
   if (!locked && !lock_queue.empty())
   {
    if (!client_lock)
-    client_lock.reset(new Client_Lock(client));
+    client_lock.reset(new Client_Lock(client)); // ??? async
 
    locked = true;
-   std::shared_ptr<Session> session = lock_queue.front();
+   const std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
 
    LOGID("locking\n");
@@ -115,8 +115,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::lock(std::shared_ptr<Session> session, Session::State state)
+ void Server::lock
  ////////////////////////////////////////////////////////////////////////////
+ (
+  const std::shared_ptr<Session> session,
+  const Session::State state
+ )
  {
   if (session->state == Session::State::not_locking)
   {
@@ -143,7 +147,7 @@ namespace joedb
    lock_timeout_timer.cancel();
 
    if (share_client && lock_queue.empty())
-    client_lock.reset();
+    client_lock.reset(); // ??? async
 
    lock_dequeue();
   }
@@ -153,8 +157,8 @@ namespace joedb
  void Server::lock_timeout_handler
  ////////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error
+  const std::shared_ptr<Session> session,
+  const std::error_code error
  )
  {
   if (!error)
@@ -172,7 +176,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::refresh_lock_timeout(std::shared_ptr<Session> session)
+ void Server::refresh_lock_timeout(const std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (lock_timeout.count() > 0 && session->state == Session::locking)
@@ -192,15 +196,15 @@ namespace joedb
  void Server::push_transfer_handler
  ////////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::shared_ptr<Session> session,
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
   {
    if (session->push_writer)
-    session->push_writer->write(session->buffer.data(), bytes_transferred);
+    session->push_writer->write(session->buffer.data(), bytes_transferred); // ??? async
 
    session->push_remaining_size -= bytes_transferred;
 
@@ -209,7 +213,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::push_transfer(std::shared_ptr<Session> session)
+ void Server::push_transfer(const std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (session->push_remaining_size > 0)
@@ -247,7 +251,7 @@ namespace joedb
    {
     session->push_writer.reset();
     client_lock->get_journal().default_checkpoint();
-    client_lock->push();
+    client_lock->push(); // ??? async
    }
 
    session->buffer[0] = session->push_status;
@@ -265,9 +269,9 @@ namespace joedb
  void Server::push_handler
  ////////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::shared_ptr<Session> session,
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
@@ -316,10 +320,10 @@ namespace joedb
  void Server::pull_transfer_handler
  ////////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
+  const std::shared_ptr<Session> session,
   Async_Reader reader,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
@@ -328,7 +332,7 @@ namespace joedb
    {
     LOG('.');
 
-    const size_t size = reader.read
+    const size_t size = reader.read // ??? async
     (
      session->buffer.data(),
      session->buffer.size()
@@ -358,19 +362,19 @@ namespace joedb
  void Server::pull_handler
  ///////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::shared_ptr<Session> session,
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
   {
    const int64_t checkpoint = from_network(session->buffer.data() + 1);
 
-   if (!client_lock)
-    client.pull();
+   if (!client_lock) // todo: deep-share option
+    client.pull(); // ??? async
 
-   Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
+   const Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
    to_network(reader.get_remaining(), session->buffer.data() + 9);
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
@@ -389,7 +393,7 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::pull(std::shared_ptr<Session> session)
+ void Server::pull(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
   net::async_read
@@ -407,9 +411,9 @@ namespace joedb
  void Server::check_hash_handler
  ///////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::shared_ptr<Session> session,
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
@@ -425,7 +429,7 @@ namespace joedb
    if
    (
     checkpoint > readonly_journal.get_checkpoint_position() ||
-    readonly_journal.get_hash(checkpoint) != hash
+    readonly_journal.get_hash(checkpoint) != hash // ??? async
    )
    {
     session->buffer[0] = 'h';
@@ -439,7 +443,7 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::check_hash(std::shared_ptr<Session> session)
+ void Server::check_hash(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
   net::async_read
@@ -457,9 +461,9 @@ namespace joedb
  void Server::read_command_handler
  ///////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::shared_ptr<Session> session,
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
@@ -522,7 +526,7 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::read_command(std::shared_ptr<Session> session)
+ void Server::read_command(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
   net::async_read
@@ -540,9 +544,9 @@ namespace joedb
  void Server::write_buffer_and_next_command_handler
  ///////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::shared_ptr<Session> session,
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
@@ -553,8 +557,8 @@ namespace joedb
  void Server::write_buffer_and_next_command
  ////////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  size_t size
+  const std::shared_ptr<Session> session,
+  const size_t size
  )
  {
   net::async_write
@@ -569,7 +573,7 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::handshake(std::shared_ptr<Session> session)
+ void Server::handshake(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
   const int64_t client_version = from_network(session->buffer.data() + 5);
@@ -595,9 +599,9 @@ namespace joedb
  void Server::handshake_handler
  ///////////////////////////////////////////////////////////////////////////
  (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
+  const std::shared_ptr<Session> session,
+  const std::error_code error,
+  const size_t bytes_transferred
  )
  {
   if (!error)
@@ -623,7 +627,7 @@ namespace joedb
  void Server::handle_accept
  ////////////////////////////////////////////////////////////////////////////
  (
-  std::error_code error,
+  const std::error_code error,
   net::ip::tcp::socket socket
  )
  {
@@ -678,7 +682,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::handle_interrupt_timer(std::error_code error)
+ void Server::handle_interrupt_timer(const std::error_code error)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (!error)
@@ -742,7 +746,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::handle_clear_signal_timer(std::error_code error)
+ void Server::handle_clear_signal_timer(const std::error_code error)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (!error)
@@ -757,11 +761,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Client &client,
-  bool share_client,
+  const bool share_client,
   net::io_context &io_context,
-  uint16_t port,
-  std::chrono::seconds lock_timeout,
-  std::ostream *log_pointer
+  const uint16_t port,
+  const std::chrono::seconds lock_timeout,
+  std::ostream * const log_pointer
  ):
   client(client),
   share_client(share_client),
