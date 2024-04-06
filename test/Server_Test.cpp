@@ -1,10 +1,12 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/concurrency/Network_Channel.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/journal/Memory_File.h"
+
+#include "Test_Network_Channel.h"
+
 #include "gtest/gtest.h"
 
 #include <thread>
@@ -12,20 +14,23 @@
 
 namespace joedb
 {
+ static constexpr bool log_to_stderr = false;
+
  /////////////////////////////////////////////////////////////////////////////
  class Test_Server
  /////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   Memory_File server_file;
-   Writable_Journal_Client_Data client_data{server_file};
+  public:
+   Memory_File file;
+   Writable_Journal_Client_Data client_data{file};
    Connection connection;
    Client client{client_data, connection};
    net::io_context io_context;
 
    Server server;
-   std::thread server_thread;
+   std::thread thread;
    std::string port_string;
+   bool paused = true;
 
   public:
    Test_Server
@@ -41,18 +46,12 @@ namespace joedb
      uint16_t(0),
      lock_timeout,
      nullptr
-    },
-    server_thread
-    {
-     [&io_context = io_context]()
-     {
-      io_context.run();
-     }
     }
    {
     std::ostringstream port_stream;
     port_stream << server.get_port();
     port_string = port_stream.str();
+    start();
    }
 
    const char *get_port() const
@@ -65,10 +64,40 @@ namespace joedb
     server.set_log(out);
    }
 
+   void pause()
+   {
+    if (!paused)
+    {
+     server.pause();
+     thread.join();
+     paused = true;
+    }
+   }
+
+   void start()
+   {
+    if (paused)
+    {
+     server.restart();
+     thread = std::thread(
+      [&io_context = io_context]()
+      {
+       io_context.run();
+      }
+     );
+     paused = false;
+    }
+   }
+
    ~Test_Server()
    {
-    server.interrupt();
-    server_thread.join();
+    try
+    {
+     pause();
+    }
+    catch(...)
+    {
+    }
    }
  };
 
@@ -77,7 +106,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   public:
-   Network_Channel channel;
+   Test_Network_Channel channel;
    Server_Connection connection;
    Interpreted_Client client;
 
@@ -95,12 +124,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server(false, std::chrono::seconds(0));
-
-#if 0
-  server.set_log(&std::cerr);
-#else
-  server.set_log(nullptr);
-#endif
+  if (log_to_stderr)
+   server.set_log(&std::cerr);
 
   //
   // Basic operation
@@ -173,10 +198,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server(false, std::chrono::seconds(0));
-
-#if 0
-  server.set_log(&std::cerr);
-#endif
+  if (log_to_stderr)
+   server.set_log(&std::cerr);
 
   const size_t comment_size = 1 << 21;
   const size_t client_count = 64;
@@ -233,5 +256,62 @@ namespace joedb
   //
   for (size_t i = 0; i < client_count; i++)
    EXPECT_EQ(files[i].get_data(), reference_file.get_data());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, failed_push)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+  if (log_to_stderr)
+   server.set_log(&std::cerr);
+
+  Memory_File client_file;
+
+  //
+  // Fail during push
+  //
+  {
+   Test_Client client(server, client_file);
+
+   client.channel.set_fail_after_writing(1 << 16);
+
+   bool caught_exception = false;
+
+   try
+   {
+    client.client.transaction
+    (
+     [](const Readable &readable, Writable &writable)
+     {
+      writable.comment(std::string(1 << 18, 'x'));
+     }
+    );
+   }
+   catch (...)
+   {
+    caught_exception = true;
+   }
+
+   EXPECT_TRUE(caught_exception);
+   EXPECT_EQ(client.client.get_journal().get_checkpoint_position(), 262189);
+  }
+
+  server.pause();
+
+  EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 41);
+
+  EXPECT_TRUE(server.file.get_size() > 1000);
+  EXPECT_TRUE(server.file.get_size() < 262189);
+
+  //
+  // Connect again to complete the push
+  //
+  server.start();
+  {
+   Test_Client client(server, client_file);
+   client.client.push_unlock();
+   EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
+  }
  }
 }

@@ -29,6 +29,7 @@ namespace joedb
    net::ip::tcp::acceptor acceptor;
    const uint16_t port;
    net::steady_timer interrupt_timer;
+   bool paused;
 
    int64_t session_count;
    int64_t session_id;
@@ -198,7 +199,9 @@ namespace joedb
    void set_log(std::ostream *new_log);
 
    uint16_t get_port() const {return port;}
-   void interrupt();
+
+   void pause();
+   void restart();
 
    ~Server();
  };
