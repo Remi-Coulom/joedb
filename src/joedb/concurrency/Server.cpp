@@ -812,14 +812,17 @@ namespace joedb
  void Server::pause()
  ////////////////////////////////////////////////////////////////////////////
  {
-  io_context.post
-  (
-   [this]()
-   {
-    acceptor.cancel();
-    interrupt_timer.cancel();
-   }
-  );
+  if (!io_context.stopped())
+  {
+   io_context.post
+   (
+    [this]()
+    {
+     acceptor.cancel();
+     interrupt_timer.cancel();
+    }
+   );
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
