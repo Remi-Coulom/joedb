@@ -10,12 +10,12 @@ namespace joedb
  class Network_Channel: public Channel
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
+  protected:
    net::io_context io_context;
    net::ip::tcp::socket socket;
 
-   size_t write_some(const char *data, size_t size) final;
-   size_t read_some(char *data, size_t size) final;
+   size_t write_some(const char *data, size_t size) override;
+   size_t read_some(char *data, size_t size) override;
 
   public:
    Network_Channel(const char *host_name, const char *port_name);

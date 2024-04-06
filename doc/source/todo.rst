@@ -7,7 +7,7 @@ Short-term fixes for next release
 - Check::all & ~Check::big_size
 - Thoroughly test server (timeout during push, interrupted push, ...). Must be
   automated unit tests.
-- Witty joedb_admin + joedb for kifusnap training set before release
+- joedb for kifusnap training set before release
 
 Journal File
 ------------

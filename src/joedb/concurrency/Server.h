@@ -195,6 +195,8 @@ namespace joedb
     std::ostream *log_pointer
    );
 
+   void set_log(std::ostream *new_log);
+
    uint16_t get_port() const {return port;}
    void interrupt();
 
