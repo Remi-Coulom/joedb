@@ -51,7 +51,7 @@ namespace joedb
     std::ostringstream port_stream;
     port_stream << server.get_port();
     port_string = port_stream.str();
-    start();
+    restart();
    }
 
    const char *get_port() const
@@ -74,7 +74,7 @@ namespace joedb
     }
    }
 
-   void start()
+   void restart()
    {
     if (paused)
     {
@@ -307,7 +307,7 @@ namespace joedb
   //
   // Connect again to complete the push
   //
-  server.start();
+  server.restart();
   {
    Test_Client client(server, client_file);
    client.client.push_unlock();
