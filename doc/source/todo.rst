@@ -4,10 +4,13 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- Check::all & ~Check::big_size
-- Thoroughly test server (timeout during push, interrupted push, ...). Must be
-  automated unit tests.
-- joedb for kifusnap training set before release
+- Check::all & ~Check::big_size: make it the default?
+- Thorough unit tests of server:
+
+  - Test_Network_Channel takes a Test_Server as parameter, keeps a reference
+  - Test_Network_Channel: simulate timeout by posting the timeout event
+  - queue of multiple clients waiting for lock
+  - fuzzer
 
 Journal File
 ------------
@@ -135,7 +138,6 @@ Concurrency
 - performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
   can be produced by fusing writes. Lock-pull and push-unlock could have been
   done this way. https://www.extrahop.com/company/blog/2016/tcp-nodelay-nagle-quickack-best-practices/
-- Lock objects (file + connection) necessary for joedb_admin? Make file unlocking nothrow? That would simplify a lot.
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
 - Connection_Multiplexer for multiple parallel backup servers

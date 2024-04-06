@@ -7,8 +7,9 @@ History
     gives much more flexibility, and allows:
 
     - chaining servers for synchronous remote backup;
-    - sharing a direct access to the file used by the server with another
-      application running on the same machine.
+    - more generally, creating a tree of multiple database replicas;
+    - local programs running on the same machine as the server can access the
+      database file directly, without having to use a network connection.
 
   - Some changes to better handle very large databases:
 
