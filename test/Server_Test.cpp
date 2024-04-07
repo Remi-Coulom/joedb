@@ -3,6 +3,7 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
+#include "joedb/concurrency/Local_Connection.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "Test_Network_Channel.h"
@@ -14,7 +15,7 @@
 
 namespace joedb
 {
- static constexpr bool log_to_cerr = true;
+ static constexpr bool log_to_cerr = false;
  static std::ostringstream log_stream;
 
  /////////////////////////////////////////////////////////////////////////////
@@ -24,8 +25,8 @@ namespace joedb
   public:
    Memory_File file;
    Writable_Journal_Client_Data client_data{file};
-   Connection connection;
-   Client client{client_data, connection};
+   std::unique_ptr<Connection> connection;
+   Client client{client_data, *connection};
    net::io_context io_context;
 
    Server server;
@@ -38,8 +39,10 @@ namespace joedb
    (
     bool share_client,
     std::chrono::seconds lock_timeout
-   )
-   :server
+   ):
+    file(share_client ? Open_Mode::shared_write : Open_Mode::create_new),
+    connection(share_client ? new Local_Connection() : new Connection()),
+    server
     {
      client,
      share_client,
@@ -486,6 +489,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server(false, std::chrono::seconds(1));
+  server.set_log(nullptr);
   Memory_File client_file;
   {
    Test_Client client(server, client_file);
@@ -495,5 +499,58 @@ namespace joedb
    Test_Client client(server, client_file);
    client.connection.lock(client.client.get_readonly_journal());
   }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, conflict)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+
+  Memory_File client_file_0;
+  Memory_File client_file_1;
+
+  Test_Client client_0(server, client_file_0);
+  Test_Client client_1(server, client_file_1);
+
+  client_0.client.get_writable_journal().create_table("person");
+  client_0.client.get_writable_journal().default_checkpoint();
+
+  client_1.client.get_writable_journal().create_table("person");
+  client_1.client.get_writable_journal().default_checkpoint();
+
+  client_0.client.push_unlock();
+  EXPECT_ANY_THROW(client_1.client.push_unlock());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, shared)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(true, std::chrono::seconds(0));
+
+  Memory_File client_file;
+  Test_Client client(server, client_file);
+
+  client.client.transaction
+  (
+   [](const Readable &readable, Writable &writable)
+   {
+    writable.create_table("person");
+   }
+  );
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, double_lock)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+
+  Memory_File client_file;
+  Test_Client client(server, client_file);
+
+  client.connection.lock(client.client.get_readonly_journal());
+  client.connection.lock(client.client.get_readonly_journal());
  }
 }

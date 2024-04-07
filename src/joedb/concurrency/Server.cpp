@@ -129,7 +129,10 @@ namespace joedb
    lock_dequeue();
   }
   else
-   LOG("Warning: locking an already locked session");
+  {
+   LOGID("Warning: locking an already locked session\n");
+   write_buffer_and_next_command(session, 1);
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
