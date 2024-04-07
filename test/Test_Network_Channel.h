@@ -5,6 +5,7 @@
 
 #include <limits>
 #include <iostream>
+#include <thread>
 
 namespace joedb
 {
@@ -16,6 +17,7 @@ namespace joedb
    size_t total_written = 0;
    size_t total_read = 0;
 
+   bool failure_is_timeout = false;
    size_t max_write_size = std::numeric_limits<size_t>::max();
    size_t fail_after_writing = std::numeric_limits<size_t>::max();
    size_t fail_after_reading = std::numeric_limits<size_t>::max();
@@ -29,10 +31,20 @@ namespace joedb
     if (total_written + size >= fail_after_writing)
     {
      const size_t write_size = fail_after_writing - total_written;
+
+     size_t written = 0;
      if (write_size > 0)
-      Network_Channel::write_some(data, write_size);
-     Network_Channel::socket.close();
-     return write_size;
+      written = Network_Channel::write_some(data, write_size);
+
+     if (failure_is_timeout)
+     {
+      std::this_thread::sleep_for(std::chrono::seconds(2));
+      fail_after_writing = std::numeric_limits<size_t>::max();
+     }
+     else
+      Network_Channel::socket.close();
+
+     return written;
     }
     else
     {
@@ -55,6 +67,11 @@ namespace joedb
    Test_Network_Channel( const char *host_name, const char * port_name):
     Network_Channel(host_name, port_name)
    {
+   }
+
+   void set_failure_is_timeout(bool b)
+   {
+    failure_is_timeout = b;
    }
 
    void set_max_write_size(size_t size)

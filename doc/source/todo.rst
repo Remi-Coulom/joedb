@@ -4,12 +4,14 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- Check::all & ~Check::big_size: make it the default?
+- Check::all & ~Check::big_size as default for writable files
+- explicit bool has_uncheckpointed_data() method
 - Thorough unit tests of server:
 
-  - Test_Network_Channel takes a Test_Server as parameter, keeps a reference
-  - Test_Network_Channel: simulate timeout by posting the timeout event
-  - queue of multiple clients waiting for lock
+  - test multiple clients waiting for lock
+  - test synchronous backup, and shared connection
+  - measure and improve coverage
+  - stress test (many clients, random concurrent read and writes, ...)
   - fuzzer
 
 Journal File

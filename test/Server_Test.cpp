@@ -15,6 +15,7 @@
 namespace joedb
 {
  static constexpr bool log_to_stderr = false;
+ static std::ostringstream log_stream;
 
  /////////////////////////////////////////////////////////////////////////////
  class Test_Server
@@ -45,7 +46,7 @@ namespace joedb
      io_context,
      uint16_t(0),
      lock_timeout,
-     nullptr
+     log_to_stderr ? &std::cerr : &log_stream
     }
    {
     std::ostringstream port_stream;
@@ -124,8 +125,6 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server(false, std::chrono::seconds(0));
-  if (log_to_stderr)
-   server.set_log(&std::cerr);
 
   //
   // Basic operation
@@ -198,8 +197,6 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server(false, std::chrono::seconds(0));
-  if (log_to_stderr)
-   server.set_log(&std::cerr);
 
   const size_t comment_size = 1 << 21;
   const size_t client_count = 64;
@@ -263,8 +260,6 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server(false, std::chrono::seconds(0));
-  if (log_to_stderr)
-   server.set_log(&std::cerr);
 
   Memory_File client_file;
 
@@ -313,5 +308,47 @@ namespace joedb
    client.client.push_unlock();
    EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
   }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, push_timeout)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(1));
+
+  Memory_File client_file;
+  Test_Client client(server, client_file);
+
+  client.channel.set_fail_after_writing(1 << 16);
+  client.channel.set_failure_is_timeout(true);
+
+  bool caught_exception = false;
+
+  try
+  {
+   client.client.transaction
+   (
+    [](const Readable &readable, Writable &writable)
+    {
+     writable.comment(std::string(1 << 18, 'x'));
+    }
+   );
+  }
+  catch (...)
+  {
+   caught_exception = true;
+  }
+
+  EXPECT_TRUE(caught_exception);
+
+  EXPECT_EQ(client.client.get_journal().get_checkpoint_position(), 262189);
+  EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 41);
+  EXPECT_TRUE(server.file.get_size() > 1000);
+  EXPECT_TRUE(server.file.get_size() < 262189);
+
+  server.restart();
+
+  client.client.push_unlock();
+  EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
  }
 }
