@@ -131,8 +131,7 @@ namespace joedb
 
    void log()
    {
-    if (log_to_cerr)
-     std::cerr << "n = " << n << '\n';
+    // std::cerr << "n = " << n << '\n';
    }
 
   public:
@@ -318,9 +317,9 @@ namespace joedb
     sequence.wait_for(3);
     client.connection.lock(client.client.get_readonly_journal());
     sequence.send(4);
-    sequence.wait_for(6);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     client.connection.unlock(client.client.get_readonly_journal());
-    sequence.send(7);
+    sequence.send(5);
    }
   );
 
@@ -333,11 +332,9 @@ namespace joedb
     sequence.increment();
 
     sequence.wait_for(4);
-    sequence.send(5);
     client.connection.lock(client.client.get_readonly_journal());
-    sequence.wait_for(7);
+    sequence.wait_for(5);
     client.connection.unlock(client.client.get_readonly_journal());
-    sequence.send(8);
    }
   );
 
@@ -349,12 +346,10 @@ namespace joedb
     Test_Client client(server, client_file);
     sequence.increment();
 
-    sequence.wait_for(5);
-    sequence.send(6);
+    sequence.wait_for(4);
     client.connection.lock(client.client.get_readonly_journal());
-    sequence.wait_for(8);
+    sequence.wait_for(5);
     client.connection.unlock(client.client.get_readonly_journal());
-    sequence.send(9);
    }
   );
 
