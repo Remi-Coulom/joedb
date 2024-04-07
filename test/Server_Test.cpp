@@ -14,7 +14,7 @@
 
 namespace joedb
 {
- static constexpr bool log_to_stderr = false;
+ static constexpr bool log_to_cerr = false;
  static std::ostringstream log_stream;
 
  /////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ namespace joedb
      io_context,
      uint16_t(0),
      lock_timeout,
-     log_to_stderr ? &std::cerr : &log_stream
+     log_to_cerr ? &std::cerr : &log_stream
     }
    {
     std::ostringstream port_stream;
@@ -117,6 +117,50 @@ namespace joedb
     connection(channel, nullptr),
     client(connection, file)
    {
+   }
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
+ class Test_Sequence
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   std::mutex mutex;
+   std::condition_variable condition;
+   int n = 0;
+
+   void log()
+   {
+    if (log_to_cerr)
+     std::cerr << "n = " << n << '\n';
+   }
+
+  public:
+   void send(int new_n)
+   {
+    {
+     std::unique_lock<std::mutex> lock(mutex);
+     n = new_n;
+     log();
+    }
+    condition.notify_all();
+   }
+
+   void increment()
+   {
+    {
+     std::unique_lock<std::mutex> lock(mutex);
+     n++;
+     log();
+    }
+    condition.notify_all();
+   }
+
+   void wait_for(int awaited_n)
+   {
+    std::unique_lock<std::mutex> lock(mutex);
+    while (awaited_n > n)
+     condition.wait(lock);
    }
  };
 
@@ -253,6 +297,70 @@ namespace joedb
   //
   for (size_t i = 0; i < client_count; i++)
    EXPECT_EQ(files[i].get_data(), reference_file.get_data());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, multi_lock)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+
+  Test_Sequence sequence;
+
+  std::thread thread_0
+  (
+   [&server, &sequence]()
+   {
+    Memory_File client_file;
+    Test_Client client(server, client_file);
+    sequence.increment();
+
+    sequence.wait_for(3);
+    client.connection.lock(client.client.get_readonly_journal());
+    sequence.send(4);
+    sequence.wait_for(6);
+    client.connection.unlock(client.client.get_readonly_journal());
+    sequence.send(7);
+   }
+  );
+
+  std::thread thread_1
+  (
+   [&server, &sequence]()
+   {
+    Memory_File client_file;
+    Test_Client client(server, client_file);
+    sequence.increment();
+
+    sequence.wait_for(4);
+    sequence.send(5);
+    client.connection.lock(client.client.get_readonly_journal());
+    sequence.wait_for(7);
+    client.connection.unlock(client.client.get_readonly_journal());
+    sequence.send(8);
+   }
+  );
+
+  std::thread thread_2
+  (
+   [&server, &sequence]()
+   {
+    Memory_File client_file;
+    Test_Client client(server, client_file);
+    sequence.increment();
+
+    sequence.wait_for(5);
+    sequence.send(6);
+    client.connection.lock(client.client.get_readonly_journal());
+    sequence.wait_for(8);
+    client.connection.unlock(client.client.get_readonly_journal());
+    sequence.send(9);
+   }
+  );
+
+  thread_0.join();
+  thread_1.join();
+  thread_2.join();
  }
 
  /////////////////////////////////////////////////////////////////////////////

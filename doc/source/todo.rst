@@ -8,7 +8,6 @@ Short-term fixes for next release
 - explicit bool has_uncheckpointed_data() method
 - Thorough unit tests of server:
 
-  - test multiple clients waiting for lock
   - test synchronous backup, and shared connection
   - measure and improve coverage
   - stress test (many clients, random concurrent read and writes, ...)
