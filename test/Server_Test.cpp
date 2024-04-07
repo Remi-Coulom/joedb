@@ -377,8 +377,6 @@ namespace joedb
 
    client.channel.set_fail_after_writing(1 << 16);
 
-   bool caught_exception = false;
-
    try
    {
     client.client.transaction
@@ -388,13 +386,13 @@ namespace joedb
       writable.comment(std::string(1 << 18, 'x'));
      }
     );
+
+    FAIL() << "no exception thrown";
    }
    catch (...)
    {
-    caught_exception = true;
    }
 
-   EXPECT_TRUE(caught_exception);
    EXPECT_EQ(client.client.get_journal().get_checkpoint_position(), 262189);
   }
 
@@ -428,8 +426,6 @@ namespace joedb
   client.channel.set_fail_after_writing(1 << 16);
   client.channel.set_failure_is_timeout(true);
 
-  bool caught_exception = false;
-
   try
   {
    client.client.transaction
@@ -439,13 +435,12 @@ namespace joedb
      writable.comment(std::string(1 << 18, 'x'));
     }
    );
+
+   FAIL() << "no exception thrown";
   }
   catch (...)
   {
-   caught_exception = true;
   }
-
-  EXPECT_TRUE(caught_exception);
 
   EXPECT_EQ(client.client.get_journal().get_checkpoint_position(), 262189);
   EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 41);
