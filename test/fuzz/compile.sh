@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-clang_version=`clang --version | head -n 1 | grep -o -E " [[:digit:]]." | sed -e "s/ //g"`
-echo "clang_version=\"$clang_version\""
-
-# sudo apt install libfuzzer-$clang_version-dev
-
 #############################################################################
 build()
 #############################################################################
@@ -54,7 +49,6 @@ build()
   ../../src/joedb/journal/SHA_256.cpp\
   ../../src/joedb/journal/Stream_File.cpp\
   ../../src/joedb/journal/Readonly_Journal.cpp\
-  /usr/lib/clang/$clang_version/lib/linux/libclang_rt.fuzzer-x86_64.a\
   -o "$1"_fuzzer
 }
 
