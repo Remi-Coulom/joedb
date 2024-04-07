@@ -224,6 +224,15 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server_Connection::ping(Channel_Lock &lock)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  buffer[0] = 'i';
+  lock.write(buffer.data(), 1);
+  lock.read(buffer.data(), 1);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Server_Connection::keep_alive()
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -238,10 +247,7 @@ namespace joedb
     if (keep_alive_thread_must_stop)
      break;
 
-    buffer[0] = 'i';
-
-    lock.write(buffer.data(), 1);
-    lock.read(buffer.data(), 1);
+    ping(lock);
    }
   }
   catch(...)

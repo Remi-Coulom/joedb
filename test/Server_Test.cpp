@@ -14,7 +14,7 @@
 
 namespace joedb
 {
- static constexpr bool log_to_cerr = false;
+ static constexpr bool log_to_cerr = true;
  static std::ostringstream log_stream;
 
  /////////////////////////////////////////////////////////////////////////////
@@ -453,5 +453,47 @@ namespace joedb
 
   client.client.push_unlock();
   EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, lock_timeout)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(1));
+  Memory_File client_file;
+  Test_Client client(server, client_file);
+  client.connection.lock(client.client.get_readonly_journal());
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+  client.connection.unlock(client.client.get_readonly_journal());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, ping)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+  Memory_File client_file;
+  Test_Client client(server, client_file);
+
+  {
+   Channel_Lock lock(client.connection.channel);
+   client.connection.ping(lock);
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, unlock_at_disconnection)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(1));
+  Memory_File client_file;
+  {
+   Test_Client client(server, client_file);
+   client.connection.lock(client.client.get_readonly_journal());
+  }
+  {
+   Test_Client client(server, client_file);
+   client.connection.lock(client.client.get_readonly_journal());
+  }
  }
 }

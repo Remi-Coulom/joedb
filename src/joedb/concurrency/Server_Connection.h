@@ -25,6 +25,7 @@ namespace joedb
 
    int64_t session_id;
    std::condition_variable condition;
+   void ping(Channel_Lock &lock);
    bool keep_alive_thread_must_stop;
    std::thread keep_alive_thread;
    enum {keep_alive_interval = 240};
