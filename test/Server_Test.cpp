@@ -529,7 +529,7 @@ namespace joedb
  {
   Test_Server server(true, std::chrono::seconds(0));
 
-  Memory_File client_file;
+  Memory_File client_file(Open_Mode::shared_write);
   Test_Client client(server, client_file);
 
   client.client.transaction
@@ -539,6 +539,9 @@ namespace joedb
     writable.create_table("person");
    }
   );
+
+  client.connection.lock(client.client.get_readonly_journal());
+  client.connection.unlock(client.client.get_readonly_journal());
  }
 
  /////////////////////////////////////////////////////////////////////////////
