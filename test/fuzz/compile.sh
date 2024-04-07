@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-clang_version=`clang --version | head -n 1 | grep -o -E " [[:digit:]]." | colrm 1 1`
+clang_version=`clang --version | head -n 1 | grep -o -E " [[:digit:]]." | sed -e "s/ //g"`
 echo "clang_version=\"$clang_version\""
 
 # sudo apt install libfuzzer-$clang_version-dev
