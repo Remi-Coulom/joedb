@@ -23,10 +23,10 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   public:
-   Memory_File file;
+   Memory_File file{Open_Mode::shared_write};
    Writable_Journal_Client_Data client_data{file};
-   std::unique_ptr<Connection> connection;
-   Client client{client_data, *connection};
+   Local_Connection connection;
+   Client client{client_data, connection};
    net::io_context io_context;
 
    Server server;
@@ -40,8 +40,6 @@ namespace joedb
     bool share_client,
     std::chrono::seconds lock_timeout
    ):
-    file(share_client ? Open_Mode::shared_write : Open_Mode::create_new),
-    connection(share_client ? new Local_Connection() : new Connection()),
     server
     {
      client,
