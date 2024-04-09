@@ -524,7 +524,7 @@ namespace joedb
  {
   Test_Server server(true, std::chrono::seconds(0));
 
-  Memory_File client_file(Open_Mode::shared_write);
+  Memory_File client_file;
   Test_Client client(server, client_file);
 
   Local_Connection connection;

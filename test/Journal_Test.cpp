@@ -31,7 +31,7 @@ TEST(Journal, checkpoint)
 TEST(Journal, seek)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File file(joedb::Open_Mode::read_existing);
+ joedb::Memory_File file;
  file.write<char>('j');
  file.write<char>('o');
  file.write<char>('e');
@@ -43,6 +43,7 @@ TEST(Journal, seek)
  file.write<uint64_t>(41);
  file.write<uint64_t>(41);
  file.set_position(0);
+ file.set_mode(joedb::Open_Mode::read_existing);
 
  {
   joedb::Readonly_Journal journal(file);
@@ -78,9 +79,10 @@ TEST(Journal, seek)
 TEST(Journal, does_not_start_by_joedb)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File file(joedb::Open_Mode::read_existing);
+ joedb::Memory_File file;
  file.write<int>(1234);
  file.set_position(0);
+ file.set_mode(joedb::Open_Mode::read_existing);
 
  try
  {
@@ -100,7 +102,7 @@ TEST(Journal, does_not_start_by_joedb)
 TEST(Journal, unsupported_format_version)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File file(joedb::Open_Mode::read_existing);
+ joedb::Memory_File file;
  file.write<char>('j');
  file.write<char>('o');
  file.write<char>('e');
@@ -108,6 +110,7 @@ TEST(Journal, unsupported_format_version)
  file.write<char>('b');
  file.write<uint32_t>(0);
  file.set_position(0);
+ file.set_mode(joedb::Open_Mode::read_existing);
 
  try
  {
@@ -124,7 +127,7 @@ TEST(Journal, unsupported_format_version)
 TEST(Journal, checkpoint_mismatch)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File file(joedb::Open_Mode::read_existing);
+ joedb::Memory_File file;
  file.write<char>('j');
  file.write<char>('o');
  file.write<char>('e');
@@ -136,6 +139,7 @@ TEST(Journal, checkpoint_mismatch)
  file.write<uint64_t>(3);
  file.write<uint64_t>(4);
  file.set_position(0);
+ file.set_mode(joedb::Open_Mode::read_existing);
 
  try
  {
@@ -162,7 +166,7 @@ TEST(Journal, checkpoint_mismatch)
 TEST(Journal, checkpoint_different_from_file_size)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File file(joedb::Open_Mode::read_existing);
+ joedb::Memory_File file;
  file.write<char>('j');
  file.write<char>('o');
  file.write<char>('e');
@@ -174,6 +178,7 @@ TEST(Journal, checkpoint_different_from_file_size)
  file.write<uint64_t>(42);
  file.write<uint64_t>(42);
  file.set_position(0);
+ file.set_mode(joedb::Open_Mode::read_existing);
 
  try
  {
@@ -218,7 +223,7 @@ TEST(Journal, checkpoint_different_from_file_size)
 TEST(Journal, unexpected_operation)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File file(joedb::Open_Mode::read_existing);
+ joedb::Memory_File file;
  file.write<char>('j');
  file.write<char>('o');
  file.write<char>('e');
@@ -231,6 +236,7 @@ TEST(Journal, unexpected_operation)
  file.write<uint64_t>(42);
  file.write<uint8_t>(255);
  file.set_position(0);
+ file.set_mode(joedb::Open_Mode::read_existing);
 
  joedb::Readonly_Journal journal(file);
  joedb::Database db;

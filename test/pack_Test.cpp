@@ -40,7 +40,7 @@ insert_vector float 7 2\n\
 update_vector float 7 value 2 0.8 9\n\
 ";
 
- Memory_File file(Open_Mode::create_new);
+ Memory_File file;
 
  {
   Writable_Journal journal(file);

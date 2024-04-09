@@ -154,7 +154,10 @@ TEST(Local_Connection, transaction_frequency)
  {
   joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
   for (int i = 10000; --i >= 0;)
-   file.exclusive_transaction([](){});
+  {
+   file.exclusive_lock();
+   file.unlock();
+  }
  }
 
  std::remove("test.joedb");

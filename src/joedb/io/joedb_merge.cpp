@@ -77,7 +77,7 @@ namespace joedb
     File input_file(file_names[i], Open_Mode::read_existing);
     Readonly_Journal input_journal(input_file);
 
-    Memory_File schema_file(Open_Mode::create_new);
+    Memory_File schema_file;
     Writable_Journal schema_journal(schema_file);
 
     {

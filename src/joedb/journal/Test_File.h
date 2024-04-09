@@ -22,12 +22,6 @@ namespace joedb
     current += n;
     return n;
    }
-
-  public:
-   Test_File(Open_Mode mode = Open_Mode::create_new):
-    Memory_File(mode)
-   {
-   }
  };
 }
 

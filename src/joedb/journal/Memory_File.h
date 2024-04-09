@@ -73,9 +73,9 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Memory_File_Template(Open_Mode mode = Open_Mode::create_new):
+   Memory_File_Template():
    //////////////////////////////////////////////////////////////////////////
-    Generic_File(mode),
+    Generic_File(Open_Mode::create_new),
     current(0)
    {
    }

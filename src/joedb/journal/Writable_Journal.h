@@ -88,11 +88,6 @@ namespace joedb
 
    int64_t pull(Readonly_Journal &journal);
 
-   template<typename F> void exclusive_transaction(F transaction)
-   {
-    file.exclusive_transaction(transaction);
-   }
-
    int64_t ahead_of_checkpoint() const noexcept;
 
    void flush() final {file.flush();}
