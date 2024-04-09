@@ -6,7 +6,6 @@
 #include "joedb/compiler/minimal_runtime_io.cpp"
 #include "joedb/journal/File.cpp"
 #include "joedb/journal/Generic_File.cpp"
-#include "joedb/journal/Memory_File.cpp"
 #include "joedb/journal/Readonly_Journal.cpp"
 #include "joedb/journal/Writable_Journal.cpp"
 #include "joedb/journal/SHA_256.cpp"
