@@ -5,6 +5,7 @@
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Shared_Memory_File.h"
 
 #include "Test_Network_Channel.h"
 
@@ -23,7 +24,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   public:
-   Memory_File file{Open_Mode::shared_write};
+   std::vector<char> data;
+   Shared_Memory_File file{data};
    Writable_Journal_Client_Data client_data{file};
    Local_Connection connection;
    Client client{client_data, connection};
@@ -525,6 +527,10 @@ namespace joedb
   Memory_File client_file(Open_Mode::shared_write);
   Test_Client client(server, client_file);
 
+  Local_Connection connection;
+  Shared_Memory_File file{server.data};
+  Interpreted_Client shared_client{connection, file};
+
   client.client.transaction
   (
    [](const Readable &readable, Writable &writable)
@@ -535,6 +541,22 @@ namespace joedb
 
   client.connection.lock(client.client.get_readonly_journal());
   client.connection.unlock(client.client.get_readonly_journal());
+
+  EXPECT_EQ(shared_client.get_database().get_tables().size(), 0);
+  shared_client.pull();
+  EXPECT_EQ(shared_client.get_database().get_tables().size(), 1);
+
+  shared_client.transaction
+  (
+   [](const Readable &readable, Writable &writable)
+   {
+    writable.create_table("city");
+   }
+  );
+
+  EXPECT_EQ(client.client.get_database().get_tables().size(), 1);
+  client.client.pull();
+  EXPECT_EQ(client.client.get_database().get_tables().size(), 2);
  }
 
  /////////////////////////////////////////////////////////////////////////////
