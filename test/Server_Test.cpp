@@ -4,6 +4,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/Local_Connection.h"
+#include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Shared_Memory_File.h"
 
@@ -570,5 +571,84 @@ namespace joedb
 
   client.connection.lock(client.client.get_readonly_journal());
   client.connection.lock(client.client.get_readonly_journal());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, unexpected_command)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+  Memory_File client_file;
+  Test_Client client(server, client_file);
+  client.channel.write("!", 1);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, bad_handshake)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+  {
+   Test_Network_Channel channel("localhost", server.get_port());
+   channel.write("abcdefghijklm", 13);
+  }
+  {
+   Test_Network_Channel channel("localhost", server.get_port());
+   channel.write("jbcdefghijklm", 13);
+  }
+  {
+   Test_Network_Channel channel("localhost", server.get_port());
+   channel.write("jocdefghijklm", 13);
+  }
+  {
+   Test_Network_Channel channel("localhost", server.get_port());
+   channel.write("joexefghijklm", 13);
+  }
+  {
+   Test_Network_Channel channel("localhost", server.get_port());
+   channel.write("joedefghijklm", 13);
+  }
+  {
+   Test_Network_Channel channel("localhost", server.get_port());
+   channel.write("joedbfghijklm", 13);
+  }
+  {
+   Test_Network_Channel channel("localhost", server.get_port());
+   channel.write("joedb", 5);
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, push_if_ahead)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  Memory_File connection_file;
+
+  {
+   Writable_Journal journal(file);
+   journal.comment("Hello");
+   journal.default_checkpoint();
+  }
+
+  Writable_Journal_Client_Data client_data{file};
+  File_Connection connection(connection_file);
+  Client client{client_data, connection};
+  net::io_context io_context;
+  const bool share_client = false;
+
+  EXPECT_TRUE(file.get_size() > connection_file.get_size());
+
+  Server server
+  {
+   client,
+   share_client,
+   io_context,
+   uint16_t(0),
+   std::chrono::seconds(0),
+   log_to_cerr ? &std::cerr : &log_stream
+  };
+
+  EXPECT_EQ(file.get_size(), connection_file.get_size());
  }
 }
