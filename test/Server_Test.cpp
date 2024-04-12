@@ -299,9 +299,12 @@ namespace joedb
   std::thread thread([&io_context](){io_context.run();});
 
   {
+   Test_Network_Channel channel("localhost", Port_String(server).get());
+   Server_Connection server_connection(channel, nullptr);
    Memory_File client_file;
-   Test_Client client(server, client_file);
-   client.client.pull();
+   Writable_Journal_Client_Data data(client_file);
+   Client client(data, connection);
+   client.pull();
   }
 
   server.pause();
