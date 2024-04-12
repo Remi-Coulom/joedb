@@ -148,7 +148,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  Async_Reader reader = client_journal.get_tail_reader(server_position);
+  Async_Reader reader = client_journal.get_async_tail_reader(server_position);
 
   buffer[0] = unlock_after ? 'U' : 'p';
   to_network(server_position, buffer.data() + 1);

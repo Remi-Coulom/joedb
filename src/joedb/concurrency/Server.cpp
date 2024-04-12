@@ -313,7 +313,7 @@ namespace joedb
     session->push_status = 'U';
     session->push_writer.emplace
     (
-     client_lock->get_journal().get_tail_writer()
+     client_lock->get_journal().get_async_tail_writer()
     );
    }
 
@@ -383,7 +383,11 @@ namespace joedb
    else if (!client_lock) // todo: deep-share option
     client.pull(); // ??? async
 
-   const Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
+   const Async_Reader reader = client.get_journal().get_async_tail_reader
+   (
+    checkpoint
+   );
+
    to_network(reader.get_remaining(), session->buffer.data() + 9);
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "

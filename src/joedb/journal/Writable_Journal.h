@@ -158,7 +158,7 @@ namespace joedb
    bool wants_blobs() const final {return true;}
    Blob write_blob_data(const std::string &data) final;
 
-   Async_Writer get_tail_writer()
+   Async_Writer get_async_tail_writer()
    {
     return Async_Writer(file, get_checkpoint_position());
    }

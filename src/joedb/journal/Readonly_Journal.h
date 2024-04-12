@@ -139,7 +139,7 @@ namespace joedb
    }
    void seek_to_checkpoint() {set_position(checkpoint_position);}
 
-   Async_Reader get_tail_reader(int64_t start_position) const
+   Async_Reader get_async_tail_reader(int64_t start_position) const
    {
     return Async_Reader(file, start_position, get_checkpoint_position());
    }
