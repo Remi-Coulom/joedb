@@ -63,8 +63,7 @@ namespace joedb
   if (int64_t(size) < max_size)
   {
    s.resize(size);
-   for (size_t i = 0; i < size; i++)
-    s[i] = char(getc()); // TODO: optimize for large strings
+   read_data(&s[0], size);
   }
   return s;
  }
