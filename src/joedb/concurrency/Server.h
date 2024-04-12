@@ -51,7 +51,7 @@ namespace joedb
 
     size_t push_remaining_size;
     char push_status;
-    std::unique_ptr<Journal_Tail_Writer> push_writer;
+    std::unique_ptr<Async_Tail_Writer> push_writer;
     bool unlock_after_push;
 
     std::ostream &write_id(std::ostream &out) const;

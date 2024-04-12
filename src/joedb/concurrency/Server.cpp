@@ -313,7 +313,7 @@ namespace joedb
     session->push_status = 'U';
     session->push_writer.reset
     (
-     new Journal_Tail_Writer(client_lock->get_journal())
+     new Async_Tail_Writer(client_lock->get_journal())
     );
    }
 
