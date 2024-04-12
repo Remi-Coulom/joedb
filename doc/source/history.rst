@@ -19,10 +19,11 @@ History
       But it is not checkpointed, and may be overwritten by a subsequent push.
     - Better timeouts: the timeout is not for the whole transaction, but for
       any network activity during the transaction. So, a very long transaction
-      because of a very large pull will not time out if there is continuous
-      network activity. Also, previous versions did not check for timeouts in
-      the middle of a push. This is now fixed.
+      because of a very large push or pull will not time out if there is
+      continuous network activity. Also, previous versions did not check for
+      timeouts in the middle of a push. This is now fixed.
     - `File_Connection` is now about 10 times faster.
+    - Large string reads are also much faster.
 
   - ``joedbc`` produces a new ``Pullable_Database``, similar to
     ``Readonly_Database``, but the file is not closed at the end of the
