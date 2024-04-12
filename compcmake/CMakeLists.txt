@@ -88,6 +88,7 @@ ipo_add_executable(joedb_convert
 
 if(EXISTS "${GOOGLE_TEST}/include")
  add_executable(joedb_test
+  ../test/Async_Test.cpp
   ../test/endianness_Test.cpp
   ../test/diagnostics_Test.cpp
   ../test/File_Test.cpp

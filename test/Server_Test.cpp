@@ -267,7 +267,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   const size_t read_size = 200000000UL;
-  const char *file_name = "server.joedb";
+  const char * const file_name = "server.joedb";
   std::remove(file_name);
 
   {
