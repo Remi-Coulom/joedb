@@ -5,3 +5,4 @@
 *.pyc
 oprofile_data
 .cache
+perf.data

@@ -2,6 +2,7 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/Local_Connection.h"
 #include "joedb/concurrency/File_Connection.h"
@@ -14,6 +15,7 @@
 
 #include <thread>
 #include <fstream>
+#include <cstdio>
 
 namespace joedb
 {
@@ -34,7 +36,6 @@ namespace joedb
 
    Server server;
    std::thread thread;
-   std::string port_string;
    bool paused = true;
 
   public:
@@ -53,15 +54,7 @@ namespace joedb
      log_to_cerr ? &std::cerr : &log_stream
     }
    {
-    std::ostringstream port_stream;
-    port_stream << server.get_port();
-    port_string = port_stream.str();
     restart();
-   }
-
-   const char *get_port() const
-   {
-    return port_string.c_str();
    }
 
    void set_log(std::ostream *out)
@@ -107,6 +100,31 @@ namespace joedb
  };
 
  /////////////////////////////////////////////////////////////////////////////
+ class Port_String
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   std::string port_string;
+
+  public:
+   Port_String(Server &server)
+   {
+    std::ostringstream port_stream;
+    port_stream << server.get_port();
+    port_string = port_stream.str();
+   }
+
+   Port_String(Test_Server &server): Port_String(server.server)
+   {
+   }
+
+   const char *get() const
+   {
+    return port_string.c_str();
+   }
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
  class Test_Client
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -116,10 +134,15 @@ namespace joedb
    Interpreted_Client client;
 
   public:
-   Test_Client(Test_Server &server, Generic_File &file):
-    channel("localhost", server.get_port()),
+   Test_Client(Server &server, Generic_File &file):
+    channel("localhost", Port_String(server).get()),
     connection(channel, nullptr),
     client(connection, file)
+   {
+   }
+
+   Test_Client(Test_Server &server, Generic_File &file):
+    Test_Client(server.server, file)
    {
    }
  };
@@ -237,6 +260,53 @@ namespace joedb
     EXPECT_STREQ(e.what(), "Client data does not match the server");
    }
   }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, big_read)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  const size_t read_size = 200000000UL;
+  const char *file_name = "server.joedb";
+  std::remove(file_name);
+
+  {
+   joedb::File file(file_name, Open_Mode::create_new);
+   joedb::Writable_Journal journal(file);
+   journal.comment(std::string(read_size, 'x'));
+   journal.default_checkpoint();
+  }
+
+  joedb::File server_file(file_name, Open_Mode::read_existing);
+  Readonly_Journal_Client_Data client_data{server_file};
+  Connection connection;
+  Client server_client{client_data, connection};
+  net::io_context io_context;
+
+  const bool share_client = false;
+  const uint16_t port = 0;
+
+  Server server
+  (
+   server_client,
+   share_client,
+   io_context,
+   port,
+   std::chrono::seconds(0),
+   log_to_cerr ? &std::cerr : &log_stream
+  );
+
+  std::thread thread([&io_context](){io_context.run();});
+
+  {
+   Memory_File client_file;
+   Test_Client client(server, client_file);
+   client.client.pull();
+  }
+
+  server.pause();
+  thread.join();
+  std::remove(file_name);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -588,32 +658,33 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server(false, std::chrono::seconds(0));
+  Port_String port_string(server);
   {
-   Test_Network_Channel channel("localhost", server.get_port());
+   Test_Network_Channel channel("localhost", port_string.get());
    channel.write("abcdefghijklm", 13);
   }
   {
-   Test_Network_Channel channel("localhost", server.get_port());
+   Test_Network_Channel channel("localhost", port_string.get());
    channel.write("jbcdefghijklm", 13);
   }
   {
-   Test_Network_Channel channel("localhost", server.get_port());
+   Test_Network_Channel channel("localhost", port_string.get());
    channel.write("jocdefghijklm", 13);
   }
   {
-   Test_Network_Channel channel("localhost", server.get_port());
+   Test_Network_Channel channel("localhost", port_string.get());
    channel.write("joexefghijklm", 13);
   }
   {
-   Test_Network_Channel channel("localhost", server.get_port());
+   Test_Network_Channel channel("localhost", port_string.get());
    channel.write("joedefghijklm", 13);
   }
   {
-   Test_Network_Channel channel("localhost", server.get_port());
+   Test_Network_Channel channel("localhost", port_string.get());
    channel.write("joedbfghijklm", 13);
   }
   {
-   Test_Network_Channel channel("localhost", server.get_port());
+   Test_Network_Channel channel("localhost", port_string.get());
    channel.write("joedb", 5);
   }
  }

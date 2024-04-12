@@ -378,7 +378,9 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer.data() + 1);
 
-   if (!client_lock) // todo: deep-share option
+   if (client.is_readonly())
+    client.refresh_data();
+   else if (!client_lock) // todo: deep-share option
     client.pull(); // ??? async
 
    const Async_Reader reader = client.get_journal().get_tail_reader(checkpoint);
@@ -787,13 +789,21 @@ namespace joedb
   locked(false),
   log_pointer(log_pointer)
  {
-  if (client.get_checkpoint_difference() > 0)
-   client.push_unlock();
+  LOG("Server::Server\n");
 
-  if (share_client)
-   client.pull();
-  else
-   client_lock.reset(new Client_Lock(client));
+  if (client.get_checkpoint_difference() > 0)
+  {
+   LOG("Server::Server: pushing to connection\n");
+   client.push_unlock();
+  }
+
+  if (!client.is_readonly())
+  {
+   if (share_client)
+    client.pull();
+   else
+    client_lock.reset(new Client_Lock(client));
+  }
 
   write_status();
 
