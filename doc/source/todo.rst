@@ -152,6 +152,7 @@ Concurrency
 Performance
 -----------
 
+- in-memory files should not use any buffering
 - vector of size 1: write ordinary insert and update to the journal instead
 - joedb::Database: use vector instead of map for tables and fields (with a bool
   indicating if deleted)

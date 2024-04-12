@@ -17,10 +17,12 @@ History
       more.  This saves memory and time in case of a large push. If a
       connection fails in the middle of a push, the written data is not erased.
       But it is not checkpointed, and may be overwritten by a subsequent push.
-    - Better handling of server timeouts: if buffers are filled frequently
-      enough, a very large pull during lock_pull does not trigger a lock
-      timeout any more. Also, previous versions did not check for timeouts in
+    - Better timeouts: the timeout is not for the whole transaction, but for
+      any network activity during the transaction. So, a very long transaction
+      because of a very large pull will not time out if there is continuous
+      network activity. Also, previous versions did not check for timeouts in
       the middle of a push. This is now fixed.
+    - `File_Connection` is now about 10 times faster.
 
   - ``joedbc`` produces a new ``Pullable_Database``, similar to
     ``Readonly_Database``, but the file is not closed at the end of the
