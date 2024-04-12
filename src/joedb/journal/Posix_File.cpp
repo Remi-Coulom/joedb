@@ -94,6 +94,18 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ size_t Posix_File::raw_pread(char *buffer, size_t size, int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  const ssize_t result = ::pread(fd, buffer, size, offset);
+
+  if (result < 0)
+   throw_last_error("Reading", "file");
+
+  return size_t(result);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  void Posix_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -102,6 +114,29 @@ namespace joedb
   while (written < size)
   {
    const ssize_t result = ::write(fd, buffer + written, size - written);
+
+   if (result < 0)
+    throw_last_error("Writing", "file");
+   else
+    written += size_t(result);
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Posix_File::raw_pwrite(const char *buffer, size_t size, int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  size_t written = 0;
+
+  while (written < size)
+  {
+   const ssize_t result = ::pwrite
+   (
+    fd,
+    buffer + written,
+    size - written,
+    offset + written
+   );
 
    if (result < 0)
     throw_last_error("Writing", "file");

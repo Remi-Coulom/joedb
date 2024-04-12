@@ -11,7 +11,6 @@ namespace joedb
  {
   private:
    Generic_File &file;
-   const int64_t initial_position;
    const int64_t end;
    int64_t current;
 
@@ -20,10 +19,11 @@ namespace joedb
    Async_Reader(Generic_File &file, int64_t start, int64_t end):
    //////////////////////////////////////////////////////////////////////////
     file(file),
-    initial_position(file.get_position()),
     end(end),
     current(start)
    {
+    file.flush();
+    file.reset_read_buffer();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -33,8 +33,7 @@ namespace joedb
     size_t size = size_t(end - current);
     if (size > capacity)
      size = capacity;
-    file.seek(current);
-    const size_t actually_read = file.read_all(buffer, size);
+    const size_t actually_read = file.raw_pread(buffer, size, current);
     current += actually_read;
     return actually_read;
    }
@@ -44,19 +43,6 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     return end - current;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   ~Async_Reader()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    try
-    {
-     file.seek(initial_position);
-    }
-    catch (...)
-    {
-    }
    }
  };
 }

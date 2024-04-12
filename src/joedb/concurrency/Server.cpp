@@ -252,8 +252,12 @@ namespace joedb
   {
    if (session->push_writer)
    {
-    session->push_writer.reset();
+    client_lock->get_journal().set_position
+    (
+     session->push_writer->get_position()
+    );
     client_lock->get_journal().default_checkpoint();
+    session->push_writer.reset();
     client_lock->push(); // ??? async
    }
 

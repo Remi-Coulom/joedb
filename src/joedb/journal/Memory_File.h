@@ -42,6 +42,16 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
+   size_t raw_pread(char *buffer, size_t size, int64_t offset) override
+   //////////////////////////////////////////////////////////////////////////
+   {
+    const size_t max_size = Parent::data.size() - offset;
+    const size_t n = std::min(size, max_size);
+    std::copy_n(Parent::data.data() + offset, n, buffer);
+    return n;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    void raw_write(const char *buffer, size_t size) override
    //////////////////////////////////////////////////////////////////////////
    {
@@ -50,6 +60,16 @@ namespace joedb
      Parent::data.resize(end);
     std::copy_n(buffer, size, &Parent::data[current]);
     current += size;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void raw_pwrite(const char *buffer, size_t size, int64_t offset) override
+   //////////////////////////////////////////////////////////////////////////
+   {
+    const size_t end = offset + size;
+    if (end > Parent::data.size())
+     Parent::data.resize(end);
+    std::copy_n(buffer, size, &Parent::data[offset]);
    }
 
    //////////////////////////////////////////////////////////////////////////

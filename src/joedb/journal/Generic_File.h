@@ -308,8 +308,20 @@ namespace joedb
    const bool shared;
 
   protected:
-   virtual size_t raw_read(char *buffer, size_t size) = 0;
-   virtual void raw_write(const char *buffer, size_t size) = 0;
+   virtual size_t raw_read(char *data, size_t size) = 0;
+   virtual size_t raw_pread(char *data, size_t size, int64_t offset)
+   {
+    raw_seek(offset);
+    return raw_read(data, size);
+   }
+
+   virtual void raw_write(const char *data, size_t size) = 0;
+   virtual void raw_pwrite(const char *data, size_t size, int64_t offset)
+   {
+    raw_seek(offset);
+    raw_write(data, size);
+   }
+
    virtual int raw_seek(int64_t offset) = 0; // 0 = OK, 1 = error
    virtual int64_t raw_get_size() const = 0; // -1 means no known size
    virtual void sync() = 0;
