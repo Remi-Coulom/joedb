@@ -6,7 +6,6 @@
 #include "joedb/concurrency/Client.h"
 
 #include <queue>
-#include <memory>
 #include <iosfwd>
 #include <set>
 #include <chrono>
@@ -25,7 +24,7 @@ namespace joedb
 
    joedb::Client &client;
    const bool share_client;
-   std::unique_ptr<Client_Lock> client_lock;
+   std::optional<Client_Lock> client_lock;
    net::io_context &io_context;
    net::ip::tcp::acceptor acceptor;
    const uint16_t port;

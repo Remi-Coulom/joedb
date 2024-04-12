@@ -96,7 +96,7 @@ namespace joedb
   if (!locked && !lock_queue.empty())
   {
    if (!client_lock)
-    client_lock.reset(new Client_Lock(client)); // ??? async
+    client_lock.emplace(client); // ??? async
 
    locked = true;
    const std::shared_ptr<Session> session = lock_queue.front();
@@ -802,7 +802,7 @@ namespace joedb
    if (share_client)
     client.pull();
    else
-    client_lock.reset(new Client_Lock(client));
+    client_lock.emplace(client);
   }
 
   write_status();
