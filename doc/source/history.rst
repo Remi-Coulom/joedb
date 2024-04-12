@@ -22,7 +22,7 @@ History
       because of a very large push or pull will not time out if there is
       continuous network activity. Also, previous versions did not check for
       timeouts in the middle of a push. This is now fixed.
-    - `File_Connection` is now about 10 times faster.
+    - ``File_Connection`` is now about 10 times faster.
     - Large string reads are also much faster.
 
   - ``joedbc`` produces a new ``Pullable_Database``, similar to
