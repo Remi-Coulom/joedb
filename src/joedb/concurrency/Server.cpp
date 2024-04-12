@@ -311,9 +311,9 @@ namespace joedb
    else
    {
     session->push_status = 'U';
-    session->push_writer.reset
+    session->push_writer.emplace
     (
-     new Async_Tail_Writer(client_lock->get_journal())
+     client_lock->get_journal().get_tail_writer()
     );
    }
 

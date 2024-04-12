@@ -3,6 +3,9 @@ History
 
 - 2024-??-??: 8.0.0
 
+  - joedb now uses C++17, and is not compatible with C++11 any more. This
+    allows replacing some std::unique_ptr by std::optional to avoid dynamic
+    memory allocations.
   - ``joedb_server`` now takes a client as parameter, instead of a file. This
     gives much more flexibility, and allows:
 

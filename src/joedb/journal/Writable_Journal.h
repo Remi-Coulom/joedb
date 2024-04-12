@@ -158,16 +158,12 @@ namespace joedb
    bool wants_blobs() const final {return true;}
    Blob write_blob_data(const std::string &data) final;
 
-   ~Writable_Journal() override;
- };
-
- class Async_Tail_Writer: public Async_Writer
- {
-  public:
-   Async_Tail_Writer(Writable_Journal &journal):
-    Async_Writer(journal.file, journal.get_checkpoint_position())
+   Async_Writer get_tail_writer()
    {
+    return Async_Writer(file, get_checkpoint_position());
    }
+
+   ~Writable_Journal() override;
  };
 }
 

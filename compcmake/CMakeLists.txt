@@ -12,7 +12,7 @@ message("== JOEDB_VERSION = ${JOEDB_VERSION}; CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 
@@ -148,7 +148,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
  # https://github.com/google/googletest/pull/2839
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
  target_uses_joedb(joedb_test)
- set_property(TARGET joedb_test PROPERTY CXX_STANDARD 14)
 
  if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
   target_precompile_headers(joedb_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
