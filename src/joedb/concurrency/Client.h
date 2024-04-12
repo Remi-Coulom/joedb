@@ -176,7 +176,7 @@ namespace joedb
    {
     try
     {
-     if (std::uncaught_exception())
+     if (std::uncaught_exceptions())
       client.unlock_without_pushing();
      else
       client.push_unlock();
