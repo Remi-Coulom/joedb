@@ -4,8 +4,7 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- Check::all & ~Check::big_size as default for writable files
-- explicit bool has_uncheckpointed_data() method
+- Check::all & ~Check::big_size as option for writable files
 - Thorough tests of server:
 
   - test synchronous backup, and shared connection

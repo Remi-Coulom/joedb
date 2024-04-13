@@ -3,6 +3,8 @@ cmake_policy(SET CMP0069 NEW)
 
 project(tutorial)
 
+set(CMAKE_CXX_STANDARD 17)
+
 include("../../../compcmake/joedbc.cmake")
 
 #
