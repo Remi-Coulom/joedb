@@ -135,6 +135,29 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ size_t Windows_File::raw_pread(char* buffer, size_t size, int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  constexpr size_t max_size = 1ULL << 31;
+
+  if (size > max_size)
+   size = max_size;
+
+  OVERLAPPED overlapped;
+  overlapped.hEvent = 0;
+  overlapped.Pointer = PVOID(offset);
+
+  DWORD result;
+
+  if (ReadFile(file, buffer, DWORD(size), &result, &overlapped))
+   return size_t(result);
+  else
+   throw_last_error("Reading", "file");
+
+  return 0;
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  void Windows_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -146,10 +169,61 @@ namespace joedb
    const size_t remaining = size - written;
    const size_t block_size = std::min(max_size, remaining);
 
-   if (!WriteFile(file, buffer + written, DWORD(block_size), NULL, NULL))
-    throw_last_error("Writing", "file");
+   DWORD actually_written;
 
-   written += block_size;
+   if
+   (
+    !WriteFile
+    (
+     file,
+     buffer + written,
+     DWORD(block_size),
+     &actually_written,
+     NULL
+    )
+   )
+   {
+    throw_last_error("Writing", "file");
+   }
+
+   written += actually_written;
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_File::raw_pwrite(const char* buffer, size_t size, int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  constexpr size_t max_size = 1ULL << 31;
+  size_t written = 0;
+
+  while (written < size)
+  {
+   const size_t remaining = size - written;
+   const size_t block_size = std::min(max_size, remaining);
+
+   OVERLAPPED overlapped;
+   overlapped.hEvent = 0;
+   overlapped.Pointer = PVOID(offset + written);
+
+   DWORD actually_written;
+
+   if
+   (
+    !WriteFile
+    (
+     file,
+     buffer + written,
+     DWORD(block_size),
+     &actually_written,
+     &overlapped
+    )
+   )
+   {
+    throw_last_error("Writing", "file");
+   }
+
+   written += actually_written;
   }
  }
 
