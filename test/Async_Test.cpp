@@ -1,4 +1,5 @@
 #include "joedb/journal/Async_Reader.h"
+#include "joedb/journal/Async_Writer.h"
 #include "joedb/journal/File.h"
 
 #include "gtest/gtest.h"
@@ -21,7 +22,28 @@ namespace joedb
 
   File file(file_name, Open_Mode::create_new);
 
-  Async_Writer writer(file);
+  Async_Writer writer(file, 0);
+
+  writer.write("xxxxyyyyzzzz", 12);
+
+  Async_Reader reader(file, 0, 12);
+
+  std::string buffer(4, ' ');
+
+  reader.raw_pread(&buffer[0], 4, 8);
+  EXPECT_EQ(buffer, "zzzz");
+  reader.raw_pread(&buffer[0], 4, 4);
+  EXPECT_EQ(buffer, "yyyy");
+  reader.raw_pread(&buffer[0], 4, 0);
+  EXPECT_EQ(buffer, "xxxx");
+
+  writer.write("aaaabbbbcccc", 12);
+
+  reader.raw_pread(&buffer[0], 4, 16);
+  EXPECT_EQ(buffer, "bbbb");
+
+  reader.read(&buffer[0], 4);
+  EXPECT_EQ(buffer, "xxxx");
 
   std::remove(file_name);
  }

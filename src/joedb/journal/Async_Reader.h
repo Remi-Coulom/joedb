@@ -42,14 +42,14 @@ namespace joedb
    size_t raw_pread(char *buffer, size_t capacity, int64_t offset)
    //////////////////////////////////////////////////////////////////////////
    {
-    return file.raw_pread(buffer, capacity, current);
+    return file.raw_pread(buffer, capacity, offset);
    }
 
    //////////////////////////////////////////////////////////////////////////
    size_t seek_and_read(char *buffer, size_t capacity, int64_t offset)
    //////////////////////////////////////////////////////////////////////////
    {
-    file.raw_seek(current);
+    file.raw_seek(offset);
     return file.raw_read(buffer, capacity);
    }
 
