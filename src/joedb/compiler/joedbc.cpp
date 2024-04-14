@@ -1813,8 +1813,7 @@ static void generate_readonly_h
    out << "));\n";
    out << "   }\n";
    out << "  public:\n";
-   out << "   class iterator: public std::iterator<std::forward_iterator_tag, ";
-   out << "id_of_" << db.get_table_name(index.table_id) << ">\n";
+   out << "   class iterator\n";
    out << "   {\n";
    out << "    friend class range_of_" << index.name << ";\n";
    out << "    private:\n";
