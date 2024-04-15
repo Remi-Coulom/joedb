@@ -666,6 +666,9 @@ namespace joedb
  void Server::start_accept()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (paused)
+   return;
+
   acceptor.async_accept
   (
    io_context,
@@ -680,6 +683,9 @@ namespace joedb
  void Server::start_interrupt_timer()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (paused)
+   return;
+
   interrupt_timer.expires_after
   (
    std::chrono::seconds(interrupt_check_seconds)
@@ -786,6 +792,7 @@ namespace joedb
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
   interrupt_timer(io_context),
+  paused(false),
   session_count(0),
   session_id(0),
   lock_timeout(lock_timeout),
@@ -839,6 +846,7 @@ namespace joedb
    (
     [this]()
     {
+     paused = true;
      acceptor.cancel();
      interrupt_timer.cancel();
     }
@@ -853,6 +861,7 @@ namespace joedb
   if (io_context.stopped())
   {
    io_context.restart();
+   paused = false;
    start_interrupt_timer();
    start_accept();
   }
