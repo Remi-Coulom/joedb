@@ -644,7 +644,7 @@ namespace joedb
   net::ip::tcp::socket socket
  )
  {
-  if (!error)
+  if (!error && !paused)
   {
    std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
 
@@ -666,51 +666,52 @@ namespace joedb
  void Server::start_accept()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (paused)
-   return;
-
-  acceptor.async_accept
-  (
-   io_context,
-   [this](std::error_code error, net::ip::tcp::socket socket)
-   {
-    handle_accept(error, std::move(socket));
-   }
-  );
+  if (!paused)
+  {
+   acceptor.async_accept
+   (
+    io_context,
+    [this](std::error_code error, net::ip::tcp::socket socket)
+    {
+     handle_accept(error, std::move(socket));
+    }
+   );
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::start_interrupt_timer()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (paused)
-   return;
+  if (!paused)
+  {
+   interrupt_timer.expires_after
+   (
+    std::chrono::seconds(interrupt_check_seconds)
+   );
 
-  interrupt_timer.expires_after
-  (
-   std::chrono::seconds(interrupt_check_seconds)
-  );
-
-  interrupt_timer.async_wait
-  (
-   [this](std::error_code e)
-   {
-    handle_interrupt_timer(e);
-   }
-  );
+   interrupt_timer.async_wait
+   (
+    [this](std::error_code e)
+    {
+     handle_interrupt_timer(e);
+    }
+   );
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::handle_interrupt_timer(const std::error_code error)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!error)
+  if (!error && !paused)
   {
    if (Signal::get_signal() != Signal::no_signal)
     LOG(port);
 
    if (Signal::get_signal() == SIGINT)
    {
+    paused = true;
     LOG(": Received SIGINT, interrupting.\n");
     for (Session *session: sessions)
      session->socket.close();
