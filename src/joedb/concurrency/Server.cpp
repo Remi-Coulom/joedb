@@ -4,6 +4,7 @@
 #include "joedb/concurrency/get_pid.h"
 #include "joedb/io/get_time_string.h"
 #include "joedb/Signal.h"
+#include "joedb/Posthumous_Catcher.h"
 
 #include <iomanip>
 #include <sstream>
@@ -96,7 +97,7 @@ namespace joedb
   if (!locked && !lock_queue.empty())
   {
    if (!client_lock)
-    client_lock.emplace(client); // ??? async
+    client_lock.emplace(client); // ??? takes_time
 
    locked = true;
    const std::shared_ptr<Session> session = lock_queue.front();
@@ -150,7 +151,12 @@ namespace joedb
    lock_timeout_timer.cancel();
 
    if (share_client && lock_queue.empty())
-    client_lock.reset(); // ??? async
+   {
+    Posthumous_Catcher catcher;
+    client_lock->set_catcher(catcher);
+    client_lock.reset(); // ??? takes_time
+    catcher.rethrow();
+   }
 
    lock_dequeue();
   }
@@ -207,7 +213,7 @@ namespace joedb
   if (!error)
   {
    if (session->push_writer)
-    session->push_writer->write(session->buffer.data(), bytes_transferred); // ??? async
+    session->push_writer->write(session->buffer.data(), bytes_transferred); // ??? takes_time
 
    session->push_remaining_size -= bytes_transferred;
 
@@ -258,7 +264,7 @@ namespace joedb
     );
     client_lock->get_journal().default_checkpoint();
     session->push_writer.reset();
-    client_lock->push(); // ??? async
+    client_lock->push(); // ??? takes_time
    }
 
    session->buffer[0] = session->push_status;
@@ -339,7 +345,7 @@ namespace joedb
    {
     LOG('.');
 
-    const size_t size = reader.read // ??? async
+    const size_t size = reader.read // ??? takes_time
     (
      session->buffer.data(),
      session->buffer.size()
@@ -381,7 +387,7 @@ namespace joedb
    if (client.is_readonly())
     client.refresh_data();
    else if (!client_lock) // todo: deep-share option
-    client.pull(); // ??? async
+    client.pull(); // ??? takes_time
 
    const Async_Reader reader = client.get_journal().get_async_tail_reader
    (
@@ -442,7 +448,7 @@ namespace joedb
    if
    (
     checkpoint > readonly_journal.get_checkpoint_position() ||
-    readonly_journal.get_hash(checkpoint) != hash // ??? async
+    readonly_journal.get_hash(checkpoint) != hash // ??? takes_time
    )
    {
     session->buffer[0] = 'h';
