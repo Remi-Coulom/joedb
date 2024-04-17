@@ -150,9 +150,12 @@ namespace joedb
  {
   private:
    Client &client;
+   const int initial_uncaught_exceptions;
 
   public:
-   Client_Lock(Client &client): client(client)
+   Client_Lock(Client &client):
+    client(client),
+    initial_uncaught_exceptions(std::uncaught_exceptions())
    {
     client.throw_if_pull_when_ahead();
     client.server_checkpoint = client.connection.lock_pull
@@ -176,7 +179,7 @@ namespace joedb
    {
     try
     {
-     if (std::uncaught_exceptions())
+     if (std::uncaught_exceptions() > initial_uncaught_exceptions)
       client.unlock_without_pushing();
      else
       client.push_unlock();
