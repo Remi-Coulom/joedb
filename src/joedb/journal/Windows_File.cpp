@@ -37,6 +37,13 @@ namespace joedb
  };
 
  /////////////////////////////////////////////////////////////////////////////
+ static DWORD size_to_dword(size_t size)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  return DWORD(std::min(size, size_t(1ULL << 31)));
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  void Windows_File::throw_last_error
  /////////////////////////////////////////////////////////////////////////////
  (
@@ -119,14 +126,9 @@ namespace joedb
  size_t Windows_File::raw_read(char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  constexpr size_t max_size = 1ULL << 31;
-
-  if (size > max_size)
-   size = max_size;
-
   DWORD result;
 
-  if (ReadFile(file, buffer, DWORD(size), &result, NULL))
+  if (ReadFile(file, buffer, size_to_dword(size), &result, NULL))
    return size_t(result);
   else
    throw_last_error("Reading", "file");
@@ -138,18 +140,13 @@ namespace joedb
  size_t Windows_File::raw_pread(char* buffer, size_t size, int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
-  constexpr size_t max_size = 1ULL << 31;
-
-  if (size > max_size)
-   size = max_size;
-
   OVERLAPPED overlapped;
   overlapped.hEvent = 0;
   overlapped.Pointer = PVOID(offset);
 
   DWORD result;
 
-  if (ReadFile(file, buffer, DWORD(size), &result, &overlapped))
+  if (ReadFile(file, buffer, size_to_dword(size), &result, &overlapped))
    return size_t(result);
   else
    throw_last_error("Reading", "file");
@@ -161,14 +158,10 @@ namespace joedb
  void Windows_File::raw_write(const char *buffer, size_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  constexpr size_t max_size = 1ULL << 31;
   size_t written = 0;
 
   while (written < size)
   {
-   const size_t remaining = size - written;
-   const size_t block_size = std::min(max_size, remaining);
-
    DWORD actually_written;
 
    if
@@ -177,7 +170,7 @@ namespace joedb
     (
      file,
      buffer + written,
-     DWORD(block_size),
+     size_to_dword(size - written),
      &actually_written,
      NULL
     )
@@ -194,14 +187,10 @@ namespace joedb
  void Windows_File::raw_pwrite(const char* buffer, size_t size, int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
-  constexpr size_t max_size = 1ULL << 31;
   size_t written = 0;
 
   while (written < size)
   {
-   const size_t remaining = size - written;
-   const size_t block_size = std::min(max_size, remaining);
-
    OVERLAPPED overlapped;
    overlapped.hEvent = 0;
    overlapped.Pointer = PVOID(offset + written);
@@ -214,7 +203,7 @@ namespace joedb
     (
      file,
      buffer + written,
-     DWORD(block_size),
+     size_to_dword(size - written),
      &actually_written,
      &overlapped
     )
