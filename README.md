@@ -10,10 +10,18 @@ type-safe. An
 Object Model can hide SQL from the C++ code, and improve type safety, but it
 can result in sub-optimal performance, and adds to complexity.
 
-Joedb aims to offer an alternative to using SQL from C++, by providing a direct
-low-level access to data. As shown in the diagram below, joedb compiles the
-database schema into C++ code. Applications using this code can then manipulate
-data like a C++ container.
+In many applications, the immense complexity of a SQL database is not at all
+necessary. Joedb is a minimalist low-level alternative that offers the
+possibility to:
+
+ - incrementally add data to a file in a crash-safe way,
+ - synchronize data access between multiple processes, on the same machine or
+   over a network connection,
+ - check field names and types at compile time.
+
+As shown in the diagram below, joedb compiles the database schema into C++
+code. Applications using this code can then manipulate data like a C++
+container.
 
 ![Diagram](doc/source/images/joedb.svg)
 
