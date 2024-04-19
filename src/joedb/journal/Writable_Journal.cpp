@@ -9,9 +9,10 @@ joedb::Writable_Journal::Writable_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
  Journal_Construction_Lock &lock,
+ Check check,
  Commit_Level commit_level
 ):
- Readonly_Journal(lock, Check::all),
+ Readonly_Journal(lock, check),
  Writable(commit_level),
  current_commit_level(Commit_Level::no_commit)
 {

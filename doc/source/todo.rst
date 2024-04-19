@@ -4,16 +4,13 @@ TODO
 Short-term fixes for next release
 ---------------------------------
 
-- Check::all & ~Check::big_size as option for writable files
 - Thorough tests of server:
 
-  - test shared connection
   - stress test (many clients, random concurrent read and writes, ...)
   - fuzzer
 
 Journal File
 ------------
-- Allow opening compiled database with Check::all & ~Check::big_size
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetech: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
 

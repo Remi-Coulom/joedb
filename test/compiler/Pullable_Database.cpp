@@ -14,6 +14,7 @@ TEST(Compiler, Pullable_Database)
   (
    file_name,
    joedb::Open_Mode::create_new,
+   joedb::Readonly_Journal::Check::all,
    joedb::Commit_Level::no_commit
   );
 

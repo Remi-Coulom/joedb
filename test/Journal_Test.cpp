@@ -4,6 +4,7 @@
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/File.h"
 #include "joedb/interpreter/Database.h"
+
 #include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -343,4 +344,47 @@ TEST(Journal, refresh_performance)
  }
 
  std::remove("test.joedb");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, check)
+/////////////////////////////////////////////////////////////////////////////
+{
+#if 1
+ joedb::Memory_File file;
+#else
+ joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+#endif
+
+ {
+  joedb::Writable_Journal journal(file);
+  journal.comment("properly checkpointed comment");
+  journal.default_checkpoint();
+ }
+
+ {
+  joedb::Writable_Journal journal(file);
+  journal.set_position(journal.get_checkpoint_position());
+  journal.comment("uncheckpointed comment");
+ }
+
+ try
+ {
+  joedb::Writable_Journal journal(file);
+  ADD_FAILURE();
+ }
+ catch(...)
+ {
+ }
+
+ {
+  joedb::Writable_Journal journal
+  (
+   file,
+   joedb::Readonly_Journal::Check::overwrite
+  );
+  journal.set_position(journal.get_checkpoint_position());
+  journal.comment("Overwriting the uncheckpointed comment");
+  journal.default_checkpoint();
+ }
 }

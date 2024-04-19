@@ -3,9 +3,7 @@ History
 
 - 2024-??-??: 8.0.0
 
-  - joedb now uses C++17, and is not compatible with C++11 any more. This
-    allows replacing some std::unique_ptr by std::optional to avoid dynamic
-    memory allocations.
+  - joedb now uses C++17, and is not compatible with C++11 any more.
   - ``joedb_server`` now takes a client as parameter, instead of a file. This
     gives much more flexibility, and allows:
 
@@ -17,9 +15,9 @@ History
   - Some changes to better handle very large databases:
 
     - The server does not buffer a whole push before writing it to disk any
-      more.  This saves memory and time in case of a large push. If a
-      connection fails in the middle of a push, the written data is not erased.
-      But it is not checkpointed, and may be overwritten by a subsequent push.
+      more. This saves memory and time in case of a large push. If a connection
+      fails in the middle of a push, the written data is not erased. But it is
+      not checkpointed, and may be overwritten by a subsequent push.
     - Better timeouts: the timeout is not for the whole transaction, but for
       any network activity during the transaction. So, a very long transaction
       because of a very large push or pull will not time out if there is
@@ -33,10 +31,18 @@ History
     constructor, and it is possible to pull new data in case of a concurrent
     update.
   - Classes that write a journal (``joedb::Writable_Journal``,
-    ``Generic_File_Database``, ``File_Database``, ``Client``) now have a
-    ``commit_level`` constructor parameter that indicates the default commit
-    level for checkpoints. Default is ``joedb::Commit_Level::no_commit``. See
-    :doc:`Checkpoints <checkpoints>` for details.
+    ``Generic_File_Database``, ``File_Database``, ``Client``) now have two
+    extra parameters:
+
+    - ``check`` indicates the behaviour in case the file contains an incomplete transaction. It should be equal to either:
+
+      - ``joedb::Readable_Journal::check::all`` (the default) fails if the file contains data after the checkpoint.
+      - ``joedb::Readable_Journal::check::overwrite`` silently overwrite uncheckpointed data.
+
+    - ``commit_level`` indicates the default commit level for checkpoints.
+      Default is ``joedb::Commit_Level::no_commit``. See :doc:`Checkpoints
+      <checkpoints>` for details.
+
   - ``id_of_x`` is now a literal type. All its member functions are
     ``constexpr``.
   - Minor fixes and improvements.

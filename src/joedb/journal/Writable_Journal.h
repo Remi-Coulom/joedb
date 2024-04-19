@@ -32,24 +32,27 @@ namespace joedb
    explicit Writable_Journal
    (
     Journal_Construction_Lock &lock,
-    Commit_Level commit_level = Commit_Level::no_commit
+    Check check,
+    Commit_Level commit_level
    );
 
    explicit Writable_Journal
    (
     Journal_Construction_Lock &&lock,
-    Commit_Level commit_level = Commit_Level::no_commit
+    Check check,
+    Commit_Level commit_level
    ):
-    Writable_Journal(lock, commit_level)
+    Writable_Journal(lock, check, commit_level)
    {
    }
 
    explicit Writable_Journal
    (
     Generic_File &file,
+    Check check = Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
    ):
-    Writable_Journal(Journal_Construction_Lock(file), commit_level)
+    Writable_Journal(Journal_Construction_Lock(file), check, commit_level)
    {
    }
 

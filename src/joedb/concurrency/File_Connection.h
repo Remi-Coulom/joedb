@@ -77,9 +77,10 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Generic_File &server_file,
+    Readonly_Journal::Check check = Readonly_Journal::Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
    ):
-    server_journal(server_file, commit_level),
+    server_journal(server_file, check, commit_level),
     locked(false)
    {
     check_not_shared(server_journal);

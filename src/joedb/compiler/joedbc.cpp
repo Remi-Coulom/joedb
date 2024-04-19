@@ -217,6 +217,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    (
     joedb::Generic_File &file,
     bool upgrade,
+    joedb::Readonly_Journal::Check check,
     joedb::Commit_Level commit_level
    );
 
@@ -224,6 +225,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    Generic_File_Database
    (
     joedb::Generic_File &file,
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    );
 
@@ -442,10 +444,11 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    (
     const char *file_name,
     joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     File_Database_Parent(file_name, mode),
-    Generic_File_Database(file, commit_level)
+    Generic_File_Database(file, check, commit_level)
    {
    }
 
@@ -453,9 +456,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    (
     const std::string &file_name,
     joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
-    File_Database(file_name.c_str(), mode)
+    File_Database(file_name.c_str(), mode, check, commit_level)
    {
    }
  };
@@ -491,9 +495,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    Client_Data
    (
     joedb::Generic_File &file,
+    joedb::Readonly_Journal::Check check,
     joedb::Commit_Level commit_level
    ):
-    db(file, false, commit_level)
+    db(file, false, check, commit_level)
    {
    }
 
@@ -533,9 +538,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    (
     joedb::Connection &connection,
     joedb::Generic_File &file,
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
-    Client_Data(file, commit_level),
+    Client_Data(file, check, commit_level),
     joedb::Client(*this, connection)
    {
     if (get_checkpoint_difference() > 0)
@@ -2022,9 +2028,10 @@ static void generate_cpp
  (
   joedb::Generic_File &file,
   bool upgrade,
+  joedb::Readonly_Journal::Check check,
   joedb::Commit_Level commit_level
  ):
-  journal(file, commit_level)
+  journal(file, check, commit_level)
  {
   initialize();
   if (upgrade)
@@ -2039,9 +2046,10 @@ static void generate_cpp
  ////////////////////////////////////////////////////////////////////////////
  (
   joedb::Generic_File &file,
+  joedb::Readonly_Journal::Check check,
   joedb::Commit_Level commit_level
  ):
-  Generic_File_Database(file, true, commit_level)
+  Generic_File_Database(file, true, check, commit_level)
  {
  }
 )RRR";
