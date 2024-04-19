@@ -24,7 +24,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server::Session::Session(Server &server, net::ip::tcp::socket && socket):
+ Server::Session::Session(Server &server, net::ip::tcp::socket &&socket):
  ////////////////////////////////////////////////////////////////////////////
   id(++server.session_id),
   server(server),
@@ -35,7 +35,6 @@ namespace joedb
   {
    write_id(out) << "created\n";
   });
-  ++server.session_count;
   server.sessions.insert(this);
   server.write_status();
  }
@@ -46,7 +45,6 @@ namespace joedb
  {
   try
   {
-   --server.session_count;
    server.sessions.erase(this);
 
    if (state == locking)
@@ -79,14 +77,12 @@ namespace joedb
  {
   log([this](std::ostream &out)
   {
-   out << '\n';
-   out << "port = " << port;
+   out << port;
    out << "; pid = " << joedb::get_pid();
    out << ": " << get_time_string_of_now();
-   out << "; sessions = " << session_count;
-   out << "; cp = ";
+   out << "; sessions = " << sessions.size();
+   out << "; checkpoint = ";
    out << client.get_journal().get_checkpoint_position() << '\n';
-   out << '\n';
   });
  }
 
@@ -731,7 +727,7 @@ namespace joedb
      {
       out << ": timeout = " << lock_timeout.count();
       out << "s. Received SIGUSR1, listing sessions. Count = ";
-      out << session_count << ".\n";
+      out << sessions.size() << ".\n";
 
       for (const Session *session: sessions)
       {
@@ -800,14 +796,13 @@ namespace joedb
   port(acceptor.local_endpoint().port()),
   interrupt_timer(io_context),
   paused(false),
-  session_count(0),
   session_id(0),
   lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),
   locked(false),
   log_pointer(log_pointer)
  {
-  LOG("Server::Server\n");
+  LOG(port << ": constructor\n");
 
   if (client.get_checkpoint_difference() > 0)
   {
@@ -853,6 +848,7 @@ namespace joedb
    (
     [this]()
     {
+     LOG(port << ": pause. sessions.size() = " << sessions.size() << '\n');
      paused = true;
      acceptor.cancel();
      interrupt_timer.cancel();
@@ -880,7 +876,7 @@ namespace joedb
  {
   try
   {
-   if (this->session_count > 0)
+   if (!this->sessions.empty())
    {
     LOG("Bug: destroying server before sessions.\n");
    }

@@ -31,7 +31,6 @@ namespace joedb
    net::steady_timer interrupt_timer;
    bool paused;
 
-   int64_t session_count;
    int64_t session_id;
 
    struct Session
