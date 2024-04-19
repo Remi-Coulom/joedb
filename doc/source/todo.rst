@@ -7,8 +7,7 @@ Short-term fixes for next release
 - Check::all & ~Check::big_size as option for writable files
 - Thorough tests of server:
 
-  - test synchronous backup, and shared connection
-  - measure and improve coverage
+  - test shared connection
   - stress test (many clients, random concurrent read and writes, ...)
   - fuzzer
 

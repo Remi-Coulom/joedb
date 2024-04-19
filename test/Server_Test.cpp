@@ -725,4 +725,54 @@ namespace joedb
 
   EXPECT_EQ(file.get_size(), connection_file.get_size());
  }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, synchronous_backup)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server backup_server(false, std::chrono::seconds(0));
+
+  Memory_File file;
+  Test_Client backup_client(backup_server, file);
+
+  net::io_context io_context;
+
+  Server server
+  {
+   backup_client.client,
+   false,
+   io_context,
+   uint16_t(0),
+   std::chrono::seconds(0),
+   log_to_cerr ? &std::cerr : &log_stream
+  };
+
+  std::thread thread([&io_context](){io_context.run();});
+
+  {
+   Memory_File client_file;
+   Test_Client test_client(server, client_file);
+
+   test_client.client.pull();
+   test_client.client.pull();
+   test_client.client.pull();
+
+   test_client.client.transaction
+   (
+    [](const Readable &readable, Writable &writable)
+    {
+     writable.create_table("person");
+    }
+   );
+
+   Readonly_Journal journal(backup_server.file);
+   Database db;
+   journal.replay_log(db);
+   EXPECT_EQ(db.get_tables().size(), 1);
+   EXPECT_EQ(db.get_tables().begin()->second, "person");
+  }
+
+  server.pause();
+  thread.join();
+ }
 }
