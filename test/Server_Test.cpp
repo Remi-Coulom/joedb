@@ -765,11 +765,27 @@ namespace joedb
     }
    );
 
-   Readonly_Journal journal(backup_server.file);
-   Database db;
-   journal.replay_log(db);
-   EXPECT_EQ(db.get_tables().size(), 1);
-   EXPECT_EQ(db.get_tables().begin()->second, "person");
+   {
+    Readonly_Journal journal(backup_server.file);
+    Database db;
+    journal.replay_log(db);
+    EXPECT_EQ(db.get_tables().size(), 1);
+    EXPECT_EQ(db.get_tables().begin()->second, "person");
+   }
+   {
+    Readonly_Journal journal(file);
+    Database db;
+    journal.replay_log(db);
+    EXPECT_EQ(db.get_tables().size(), 1);
+    EXPECT_EQ(db.get_tables().begin()->second, "person");
+   }
+   {
+    Readonly_Journal journal(client_file);
+    Database db;
+    journal.replay_log(db);
+    EXPECT_EQ(db.get_tables().size(), 1);
+    EXPECT_EQ(db.get_tables().begin()->second, "person");
+   }
   }
 
   server.pause();
