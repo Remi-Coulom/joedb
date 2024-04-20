@@ -6,10 +6,7 @@ Short-term fixes for next release
 
 - experience more with tcp::no_delay and efficient transfer of large push
   or pull over a high-latency connection.
-- Thorough tests of server:
 
-  - stress test (many clients, random concurrent read and writes, ...)
-  - fuzzer
 
 Journal File
 ------------
