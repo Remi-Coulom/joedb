@@ -376,6 +376,48 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, concurrent_writes)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+
+  const size_t client_count = 64;
+
+  {
+   std::vector<std::thread> threads;
+   threads.reserve(client_count);
+
+   for (size_t i = 0; i < client_count; i++)
+   {
+    threads.emplace_back
+    (
+     [&server, i]()
+     {
+      Memory_File file;
+      Test_Client client(server, file);
+      client.client.transaction
+      (
+       [i](const Readable &readable, Writable &writable)
+       {
+        const std::string table_name = "table_" + std::to_string(i);
+        writable.create_table(table_name);
+       }
+      );
+     }
+    );
+   }
+
+   for (auto &thread: threads)
+    thread.join();
+  }
+
+  Readonly_Journal journal(server.file);
+  Database db;
+  journal.replay_log(db);
+  EXPECT_EQ(db.get_tables().size(), client_count);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  TEST(Server, multi_lock)
  /////////////////////////////////////////////////////////////////////////////
  {
