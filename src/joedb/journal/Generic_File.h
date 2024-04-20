@@ -169,7 +169,7 @@ namespace joedb
    {
     static void write(Generic_File &file, T x)
     {
-     const char *p = reinterpret_cast<char *>(&x);
+     const char *p = reinterpret_cast<const char *>(&x);
      file.putc(p[0]);
      file.putc(p[1]);
      file.check_write_buffer();
@@ -182,7 +182,7 @@ namespace joedb
    {
     static void write(Generic_File &file, T x)
     {
-     const char *p = reinterpret_cast<char *>(&x);
+     const char *p = reinterpret_cast<const char *>(&x);
      file.putc(p[0]);
      file.putc(p[1]);
      file.putc(p[2]);
@@ -197,7 +197,7 @@ namespace joedb
    {
     static void write(Generic_File &file, T x)
     {
-     const char *p = reinterpret_cast<char *>(&x);
+     const char *p = reinterpret_cast<const char *>(&x);
      file.putc(p[0]);
      file.putc(p[1]);
      file.putc(p[2]);
