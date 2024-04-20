@@ -395,6 +395,7 @@ namespace joedb
      {
       Memory_File file;
       Test_Client client(server, file);
+
       client.client.transaction
       (
        [i](const Readable &readable, Writable &writable)

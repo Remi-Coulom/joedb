@@ -22,6 +22,7 @@ namespace joedb
    enum {interrupt_check_seconds = 2};
    enum {clear_signal_seconds = 3};
 
+   const std::chrono::time_point<std::chrono::steady_clock> start_time;
    joedb::Client &client;
    const bool share_client;
    std::optional<Client_Lock> client_lock;
@@ -200,6 +201,7 @@ namespace joedb
    void set_log(std::ostream *new_log);
    void pause();
    void restart();
+   int64_t get_milliseconds() const;
 
    ~Server();
  };

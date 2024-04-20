@@ -15,9 +15,23 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ int64_t Server::get_milliseconds() const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return std::chrono::duration_cast<std::chrono::milliseconds>
+  (
+   std::chrono::steady_clock::now() - start_time
+  ).count();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  std::ostream &Server::Session::write_id(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
+#if 0
+  out << server.get_milliseconds() << ' ';
+#endif
+
   out << server.port << '(' << id << "): ";
 
   return out;
@@ -648,6 +662,7 @@ namespace joedb
  {
   if (!error && !paused)
   {
+   socket.set_option(asio::ip::tcp::no_delay(true));
    std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
 
    net::async_read
@@ -789,6 +804,7 @@ namespace joedb
   const std::chrono::seconds lock_timeout,
   std::ostream * const log_pointer
  ):
+  start_time(std::chrono::steady_clock::now()),
   client(client),
   share_client(share_client),
   io_context(io_context),
@@ -796,6 +812,7 @@ namespace joedb
   port(acceptor.local_endpoint().port()),
   interrupt_timer(io_context),
   paused(false),
+
   session_id(0),
   lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),
