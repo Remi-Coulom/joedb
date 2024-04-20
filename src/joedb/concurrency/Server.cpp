@@ -346,19 +346,20 @@ namespace joedb
   const std::shared_ptr<Session> session,
   Async_Reader reader,
   const std::error_code error,
-  const size_t bytes_transferred
+  const size_t bytes_transferred,
+  const size_t offset
  )
  {
   if (!error)
   {
-   if (reader.get_remaining() > 0)
+   if (offset + reader.get_remaining() > 0)
    {
     LOG('.');
 
     const size_t size = reader.read // ??? takes_time
     (
-     session->buffer.data(),
-     session->buffer.size()
+     session->buffer.data() + offset,
+     session->buffer.size() - offset
     );
 
     refresh_lock_timeout(session);
@@ -366,10 +367,10 @@ namespace joedb
     net::async_write
     (
      session->socket,
-     net::buffer(session->buffer, size_t(size)),
+     net::buffer(session->buffer, size + offset),
      [this, session, reader](std::error_code e, size_t s)
      {
-      pull_transfer_handler(session, reader, e, s);
+      pull_transfer_handler(session, reader, e, s, 0);
      }
     );
    }
@@ -409,14 +410,13 @@ namespace joedb
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
     << reader.get_remaining() << ':');
 
-   net::async_write
+   pull_transfer_handler
    (
-    session->socket,
-    net::buffer(session->buffer, 17),
-    [this, session, reader](std::error_code e, size_t s)
-    {
-     pull_transfer_handler(session, reader, e, s);
-    }
+    session,
+    reader,
+    error,
+    0,
+    17
    );
   }
  }

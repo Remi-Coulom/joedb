@@ -158,13 +158,16 @@ namespace joedb
 
   LOG(get_session_id() << ": pushing(U)... size = " << push_size << "... ");
 
-  lock.write(buffer.data(), 17);
-
-  while (reader.get_remaining() > 0)
   {
-   const size_t size = reader.read(buffer.data(), buffer_size);
-   lock.write(buffer.data(), size);
-   LOG(size << ' ');
+   size_t offset = 17;
+
+   while (offset + reader.get_remaining() > 0)
+   {
+    const size_t size = reader.read(buffer.data() + offset, buffer_size - offset);
+    lock.write(buffer.data(), size + offset);
+    offset = 0;
+    LOG(size << ' ');
+   }
   }
 
   lock.read(buffer.data(), 1);

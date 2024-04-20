@@ -33,7 +33,9 @@ namespace joedb
     size_t size = size_t(end - current);
     if (size > capacity)
      size = capacity;
-    const size_t actually_read = file.raw_pread(buffer, size, current);
+    const size_t actually_read = size > 0
+     ? file.raw_pread(buffer, size, current)
+     : 0;
     current += actually_read;
     return actually_read;
    }

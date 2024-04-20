@@ -104,7 +104,8 @@ namespace joedb
     std::shared_ptr<Session> session,
     Async_Reader reader,
     std::error_code error,
-    size_t bytes_transferred
+    size_t bytes_transferred,
+    size_t offset
    );
 
    void pull_handler

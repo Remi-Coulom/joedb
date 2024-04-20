@@ -131,9 +131,6 @@ Concurrency
     the server. Maybe better: use asio's (non-std::net) support for signal.
 
 - SHA-256: option for either fast or full.
-- performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
-  can be produced by fusing writes. Lock-pull and push-unlock could have been
-  done this way. https://www.extrahop.com/company/blog/2016/tcp-nodelay-nagle-quickack-best-practices/
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
 - Connection_Multiplexer for multiple parallel backup servers
