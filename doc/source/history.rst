@@ -10,7 +10,8 @@ History
     - chaining servers for synchronous remote backup;
     - more generally, creating a tree of multiple database replicas;
     - local programs running on the same machine as the server can access the
-      database file directly, without having to use a network connection.
+      database file directly, without having to use a network connection to the
+      server.
 
   - Some changes to better handle very large databases:
 
@@ -23,8 +24,14 @@ History
       because of a very large push or pull will not time out if there is
       continuous network activity. Also, previous versions did not check for
       timeouts in the middle of a push. This is now fixed.
+
+  - Performance optimizations:
+
     - ``File_Connection`` is now about 10 times faster.
     - Large string reads are also much faster.
+    - Improved networking performance by fusing small consecutive socket
+      writes. Previous version could be hit hard by Nagle's algorithm and
+      delayed ACKs. This version uses ip::tcp::no_delay.
 
   - ``joedbc`` produces a new ``Pullable_Database``, similar to
     ``Readonly_Database``, but the file is not closed at the end of the
@@ -34,10 +41,13 @@ History
     ``Generic_File_Database``, ``File_Database``, ``Client``) now have two
     extra parameters:
 
-    - ``check`` indicates the behaviour in case the file contains an incomplete transaction. It should be equal to either:
+    - ``check`` indicates the behaviour in case the file contains an incomplete
+      transaction. It should be equal to either:
 
-      - ``joedb::Readable_Journal::check::all`` (the default) fails if the file contains data after the checkpoint.
-      - ``joedb::Readable_Journal::check::overwrite`` silently overwrite uncheckpointed data.
+      - ``joedb::Readable_Journal::check::all`` (the default) fails if the file
+        contains data after the checkpoint.
+      - ``joedb::Readable_Journal::check::overwrite`` silently overwrite
+        uncheckpointed data.
 
     - ``commit_level`` indicates the default commit level for checkpoints.
       Default is ``joedb::Commit_Level::no_commit``. See :doc:`Checkpoints
@@ -97,7 +107,8 @@ History
     later to a remote server.
   - Re-organize file classes:
 
-    - ``File_Slice`` is removed. All file classes can be :ref:`sliced <file_slices>` now.
+    - ``File_Slice`` is removed. All file classes can be :ref:`sliced
+      <file_slices>` now.
     - ``Stream_File`` uses a ``std::streambuf`` instead of ``std::iostream``.
     - new ``Interpreted_File`` can read joedbi commands directly.
 
@@ -143,17 +154,27 @@ History
 
   - More flexibility for opening files:
 
-    - A database can be based on a C++ stream (which allows compression, encryption, or building a database into an executable as a string).
-    - A read-only database can be opened directly from within an Android apk, without having to extract the file first.
+    - A database can be based on a C++ stream (which allows compression,
+      encryption, or building a database into an executable as a string).
+    - A read-only database can be opened directly from within an Android apk,
+      without having to extract the file first.
     - See :ref:`opening_files` for more details.
 
   - Better portability:
 
-    - Defining the ``JOEDB_PORTABLE`` macro builds joedb with portable C++ only (no file locking, no fsync). With this option, joedb can be used on the PlayStation 4 and the Nintendo Switch.
-    - Unlike in Linux, ``fseek`` and ``ftell`` are 32-bit in Windows. So the previous version could not handle files larger than 2^31 bytes. This is now fixed, and very large files can be used in Windows.
-    - Unlike Linux, Windows does no print any information when a program is terminated by an exception. Joedb tools in this version catch all exceptions, and print them before quitting.
+    - Defining the ``JOEDB_PORTABLE`` macro builds joedb with portable C++ only
+      (no file locking, no fsync). With this option, joedb can be used on the
+      PlayStation 4 and the Nintendo Switch.
+    - Unlike in Linux, ``fseek`` and ``ftell`` are 32-bit in Windows. So the
+      previous version could not handle files larger than 2^31 bytes. This is
+      now fixed, and very large files can be used in Windows.
+    - Unlike Linux, Windows does no print any information when a program is
+      terminated by an exception. Joedb tools in this version catch all
+      exceptions, and print them before quitting.
 
-  - Main version number incremented because of one minor change: custom functions are now member of ``Generic_File_Database`` instead of the ``File_Database`` class.
+  - Main version number incremented because of one minor change: custom
+    functions are now member of ``Generic_File_Database`` instead of the
+    ``File_Database`` class.
 
   - Minor fixes and improvements.
 
@@ -165,9 +186,15 @@ History
 
 - 2017-01-18: 2.0
 
-  - Exceptions everywhere: no more error codes, no more bad states, better diagnostics.
-  - Safety: several safety checks were added. This version was thoroughly fuzzed, and should not crash on any input file. Many assertions were added to detect data-manipulation errors (double delete, double insert, reading invalid rows, etc.).
-  - Better handling of read-only files and locking. A file opened for writing can now be opened for reading by other processes. Readers won't be updated by changes made by the writer, but it is still more convenient than before.
+  - Exceptions everywhere: no more error codes, no more bad states, better
+    diagnostics.
+  - Safety: several safety checks were added. This version was thoroughly
+    fuzzed, and should not crash on any input file. Many assertions were added
+    to detect data-manipulation errors (double delete, double insert, reading
+    invalid rows, etc.).
+  - Better handling of read-only files and locking. A file opened for writing
+    can now be opened for reading by other processes. Readers won't be updated
+    by changes made by the writer, but it is still more convenient than before.
   - The compiler can produce a rudimentary C wrapper around the C++ classes.
   - :ref:`joedb_to_json`
   - Tested on big-endian and 32-bit machines
