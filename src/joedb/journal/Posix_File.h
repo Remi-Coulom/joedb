@@ -22,9 +22,13 @@ namespace joedb
 
   protected:
    size_t raw_read(char *buffer, size_t size) final;
+#ifndef __CYGWIN__
    size_t raw_pread(char *buffer, size_t size, int64_t offset) final;
+#endif
    void raw_write(const char *buffer, size_t size) final;
+#ifndef __CYGWIN__
    void raw_pwrite(const char *buffer, size_t size, int64_t offset) final;
+#endif
    int raw_seek(int64_t offset) final;
    void sync() final;
 

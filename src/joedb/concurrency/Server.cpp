@@ -333,7 +333,7 @@ namespace joedb
     );
    }
 
-   session->push_remaining_size = size;
+   session->push_remaining_size = size_t(size);
 
    push_transfer(session);
   }
