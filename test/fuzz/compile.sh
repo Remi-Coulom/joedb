@@ -11,7 +11,8 @@ build()
  clang++\
   -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION\
   -fsanitize=address,fuzzer\
-  -std=c++11\
+  -std=c++17\
+  -O2\
   -I ../../src\
   "$1"_fuzzer.cpp\
   ../../src/external/wide_char_display_width.cpp\
@@ -42,7 +43,6 @@ build()
   ../../src/joedb/io/get_time_string.cpp\
   ../../src/joedb/journal/diagnostics.cpp\
   ../../src/joedb/journal/Interpreted_File.cpp\
-  ../../src/joedb/journal/Memory_File.cpp\
   ../../src/joedb/journal/File.cpp\
   ../../src/joedb/journal/Generic_File.cpp\
   ../../src/joedb/journal/Writable_Journal.cpp\
