@@ -1,13 +1,6 @@
 TODO
 ====
 
-Short-term fixes for next release
----------------------------------
-
-- experience more with tcp::no_delay and efficient transfer of large push
-  or pull over a high-latency connection.
-
-
 Journal File
 ------------
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetech: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
@@ -116,8 +109,7 @@ Concurrency
   -> bool is_pullonly() const in connection (and client)
 - joedb_server:
 
-  - Test many concurrent read and write requests. Performance benchmarks.
-  - fuzzer + unit testing
+  - fuzzer
   - use coroutines
   - support running on multiple threads (requires mutex?)
 
@@ -129,10 +121,7 @@ Concurrency
   - get rid of signal. Make an interactive command-line interface to control
     the server. Maybe better: use asio's (non-std::net) support for signal.
 
-- SHA-256: option for either fast or full.
-- performance: fuse socket writes (TCP_NODELAY, TCP_QUICKACK). Fused operations
-  can be produced by fusing writes. Lock-pull and push-unlock could have been
-  done this way. https://www.extrahop.com/company/blog/2016/tcp-nodelay-nagle-quickack-best-practices/
+- SHA-256: option for either none, fast or full.
 - reading and writing buffers: don't use network_integers.h, but create a
   Buffer_File class, and use write<int64_t>
 - Connection_Multiplexer for multiple parallel backup servers
