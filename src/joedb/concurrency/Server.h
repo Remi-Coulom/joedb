@@ -49,6 +49,8 @@ namespace joedb
     };
     State state;
 
+    int64_t operation_start;
+
     size_t push_remaining_size;
     char push_status;
     std::optional<Async_Writer> push_writer;

@@ -499,6 +499,8 @@ namespace joedb
   {
    LOGID(session->buffer[0] << '\n');
 
+   session->operation_start = get_milliseconds();
+
    switch (session->buffer[0])
    {
     case 'P':
@@ -558,6 +560,9 @@ namespace joedb
  void Server::read_command(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
+  const int64_t elapsed = get_milliseconds() - session->operation_start;
+  LOGID("elpased = " << elapsed << '\n');
+
   net::async_read
   (
    session->socket,
@@ -664,6 +669,7 @@ namespace joedb
   {
    socket.set_option(asio::ip::tcp::no_delay(true));
    std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
+   session->operation_start = get_milliseconds();
 
    net::async_read
    (
