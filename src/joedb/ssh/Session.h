@@ -37,6 +37,11 @@ namespace joedb
      ssh_options_set(session, SSH_OPTIONS_PORT, &port);
      ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
 
+     {
+      const int no_delay = 1;
+      ssh_options_set(session, SSH_OPTIONS_NODELAY, &no_delay);
+     }
+
      check_result(ssh_connect(session));
      check_result(ssh_userauth_publickey_auto(session, nullptr, nullptr));
     }
