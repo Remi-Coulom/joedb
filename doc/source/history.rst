@@ -1,6 +1,10 @@
 History
 =======
 
+- 2024-04-23: 8.0.1
+
+  - Fix missing test for fsync error.
+
 - 2024-04-21: 8.0.0
 
   - joedb now uses C++17, and is not compatible with C++11 any more.
