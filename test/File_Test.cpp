@@ -83,12 +83,28 @@ TEST_F(File_Test, open_lock)
 TEST(File, no_space_left)
 {
  const char * const file_name = "test.small_disk/test.joedb";
- std::remove(file_name);
- File file(file_name, Open_Mode::create_new);
- std::string s(1 << 18, 'x');
- EXPECT_ANY_THROW(file.write_string(s));
- file.flush();
- file.commit();
+ const size_t max_size = 196605;
+
+ using Test_File = joedb::Posix_File;
+// using Test_File = joedb::Portable_File;
+
+ {
+  std::remove(file_name);
+  Test_File file(file_name, Open_Mode::create_new);
+  std::string s(max_size, 'x');
+  file.write_string(s);
+  file.flush();
+ }
+
+ {
+  std::remove(file_name);
+  Test_File file(file_name, Open_Mode::create_new);
+  std::string s(max_size, 'x');
+  file.write_string(s);
+  file.flush();
+  file.write<int32_t>(1234);
+  EXPECT_ANY_THROW(file.flush());
+ }
 }
 #endif
 #endif
