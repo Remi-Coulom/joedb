@@ -289,6 +289,14 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   destructor_flush();
-  CloseHandle(file);
+  try
+  {
+   if (!CloseHandle(file))
+    throw_last_error("Closing", "file");
+  }
+  catch(...)
+  {
+   postpone_exception("Error closing file");
+  }
  }
 }

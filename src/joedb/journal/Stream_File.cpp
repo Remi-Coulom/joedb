@@ -70,7 +70,8 @@ namespace joedb
    written += size_t(result);
   }
 
-  streambuf.pubsync();
+  if (streambuf.pubsync() < 0)
+   throw Exception("sync error");
  }
 
  /////////////////////////////////////////////////////////////////////////////

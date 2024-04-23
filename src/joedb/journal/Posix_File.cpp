@@ -230,7 +230,15 @@ namespace joedb
   if (fd >= 0)
   {
    destructor_flush();
-   close(fd);
+   try
+   {
+    if (close(fd) < 0)
+     throw_last_error("closing", "file");
+   }
+   catch (...)
+   {
+    postpone_exception("Error closing file");
+   }
   }
  }
 }
