@@ -6,3 +6,5 @@ local_connection.joedb
 backup.joedb
 server.joedb
 compiler_test.joedb
+small_disk.fs
+test.small_disk
