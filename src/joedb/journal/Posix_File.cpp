@@ -227,18 +227,15 @@ namespace joedb
  Posix_File::~Posix_File()
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (fd >= 0)
+  destructor_flush();
+  try
   {
-   destructor_flush();
-   try
-   {
-    if (close(fd) < 0)
-     throw_last_error("closing", "file");
-   }
-   catch (...)
-   {
-    postpone_exception("Error closing file");
-   }
+   if (close(fd) < 0)
+    throw_last_error("closing", "file");
+  }
+  catch (...)
+  {
+   postpone_exception("Error closing file");
   }
  }
 }
