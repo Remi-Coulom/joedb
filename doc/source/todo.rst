@@ -3,7 +3,14 @@ TODO
 
 Journal File
 ------------
-- FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetech: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
+- Important: use proper locking for refresh_checkpoint:
+
+  - separate locking of different areas of the file (header + after checkpoint)
+  - use fcntl in linux instead of lockf
+  - use pread and pwrite to read/write checkpoint area
+  - pread and pwrite must restore current position
+
+- FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
 
 New Operations and Types
