@@ -51,10 +51,10 @@ TEST_F(File_Test, open_failure)
  );
 }
 
+#ifndef JOEDB_FILE_IS_PORTABLE_FILE
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
-#ifndef JOEDB_PORTABLE
  std::remove("locked.tmp");
  {
   File locked_file_1("locked.tmp", Open_Mode::create_new);
@@ -74,8 +74,40 @@ TEST_F(File_Test, open_lock)
    File locked_file_2("locked.tmp", Open_Mode::write_existing)
   );
  }
-#endif
 }
+#endif
+
+#if 0
+#ifdef JOEDB_FILE_IS_POSIX_FILE
+/////////////////////////////////////////////////////////////////////////////
+TEST(File, no_space_left)
+{
+ const char * const file_name = "small_disk/test.joedb";
+ const size_t max_size = 196605;
+
+ using Test_File = joedb::Posix_File;
+// using Test_File = joedb::Portable_File;
+
+ {
+  std::remove(file_name);
+  Test_File file(file_name, Open_Mode::create_new);
+  std::string s(max_size, 'x');
+  file.write_string(s);
+  file.flush();
+ }
+
+ {
+  std::remove(file_name);
+  Test_File file(file_name, Open_Mode::create_new);
+  std::string s(max_size, 'x');
+  file.write_string(s);
+  file.flush();
+  file.write<int32_t>(1234);
+  EXPECT_ANY_THROW(file.flush());
+ }
+}
+#endif
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_success)
