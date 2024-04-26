@@ -106,7 +106,8 @@ joedb::Readonly_Journal::Readonly_Journal
 void joedb::Readonly_Journal::read_checkpoint(bool strict)
 /////////////////////////////////////////////////////////////////////////////
 {
- int64_t pos[4];
+ std::array<int64_t, 4> pos;
+
  for (int i = 0; i < 4; i++)
   pos[i] = file.read<int64_t>();
 
