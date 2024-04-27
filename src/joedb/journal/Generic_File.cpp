@@ -188,7 +188,6 @@ namespace joedb
     sha_256.process_chunk(buffer + j);
   }
 
-  reset_read_buffer();
   set_position(original_position);
   return sha_256.get_hash();
  }
