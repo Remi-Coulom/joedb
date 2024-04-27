@@ -17,6 +17,8 @@ class File_Test: public::testing::Test
  protected:
   void SetUp() override
   {
+   TearDown();
+
    File file("existing.tmp", Open_Mode::create_new);
    file.write<uint64_t>(joedb_magic);
    file.write<bool>(false);
@@ -55,7 +57,6 @@ TEST_F(File_Test, open_failure)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
- std::remove("locked.tmp");
  {
   File locked_file_1("locked.tmp", Open_Mode::create_new);
   locked_file_1.write<int>(1234);
@@ -74,6 +75,24 @@ TEST_F(File_Test, open_lock)
    File locked_file_2("locked.tmp", Open_Mode::write_existing)
   );
  }
+}
+
+TEST_F(File_Test, read_locked)
+{
+ File locked_file("locked.tmp", Open_Mode::write_lock);
+ File readonly_file("locked.tmp", Open_Mode::read_existing);
+}
+
+TEST_F(File_Test, write_locked)
+{
+ File locked_file("locked.tmp", Open_Mode::write_lock);
+ EXPECT_ANY_THROW(File("locked.tmp", Open_Mode::write_existing));
+}
+
+TEST_F(File_Test, share_locked)
+{
+ File locked_file("locked.tmp", Open_Mode::write_lock);
+ File shared_file("locked.tmp", Open_Mode::shared_write);
 }
 #endif
 
