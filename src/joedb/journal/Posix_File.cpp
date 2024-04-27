@@ -9,6 +9,18 @@
 #include <errno.h>
 #include <string.h>
 
+#ifdef F_OFD_SETLK
+#define CRAZY_SETLK F_OFD_SETLK
+#else
+#define CRAZY_SETLK F_SETLK
+#endif
+
+#ifdef F_OFD_SETLKW
+#define CRAZY_SETLKW F_OFD_SETLKW
+#else
+#define CRAZY_SETLKW F_SETLKW
+#endif
+
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
@@ -44,14 +56,14 @@ namespace joedb
  bool Posix_File::try_exclusive_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  return lock(F_OFD_SETLK, F_WRLCK, 0, 0) == 0;
+  return lock(CRAZY_SETLK, F_WRLCK, 0, 0) == 0;
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Posix_File::shared_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (lock(F_OFD_SETLKW, F_RDLCK, start, size) < 0)
+  if (lock(CRAZY_SETLKW, F_RDLCK, start, size) < 0)
    throw_last_error("Read-locking", "file");
  }
 
@@ -59,7 +71,7 @@ namespace joedb
  void Posix_File::exclusive_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (lock(F_OFD_SETLKW, F_WRLCK, start, size) < 0)
+  if (lock(CRAZY_SETLKW, F_WRLCK, start, size) < 0)
    throw_last_error("Write-locking", "file");
  }
 
@@ -67,7 +79,7 @@ namespace joedb
  void Posix_File::unlock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (lock(F_OFD_SETLK, F_UNLCK, start, size) < 0)
+  if (lock(CRAZY_SETLK, F_UNLCK, start, size) < 0)
    throw_last_error("Unlocking", "file");
  }
 
