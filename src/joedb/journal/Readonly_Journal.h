@@ -26,7 +26,7 @@ namespace joedb
     checkpoint_mismatch = 32,
     all = joedb | version | big_size | small_size | checkpoint_mismatch,
     readonly = joedb | version | small_size,
-    overwrite = all & ~big_size,
+    overwrite = all & ~big_size & ~checkpoint_mismatch,
     none = set_checkpoint
    };
 
