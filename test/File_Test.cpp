@@ -298,11 +298,11 @@ TEST_F(File_Test, eof)
  EXPECT_TRUE(file.is_end_of_file());
 }
 
+#ifndef JOEDB_PORTABLE
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, flush)
 /////////////////////////////////////////////////////////////////////////////
 {
-#ifndef JOEDB_PORTABLE
  std::remove("new.tmp");
  File file1("new.tmp", Open_Mode::shared_write);
  EXPECT_TRUE(file1.is_shared());
@@ -312,8 +312,8 @@ TEST_F(File_Test, flush)
  File file2("new.tmp", Open_Mode::shared_write);
  file2.set_position(0);
  EXPECT_EQ(1234, file2.read<int32_t>());
-#endif
 }
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 static void perf(size_t size)
