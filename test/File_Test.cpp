@@ -154,7 +154,9 @@ TEST_F(File_Test, partial_shared_lock)
  file_1.exclusive_lock(4, 4);
  file_2.shared_lock(0, 4);
 }
+#endif
 
+#ifdef JOEDB_FILE_IS_POSIX_FILE
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, read_locked_area)
 {
@@ -165,6 +167,10 @@ TEST_F(File_Test, read_locked_area)
 
  File file_2("locked.tmp", Open_Mode::read_existing);
  EXPECT_EQ(file_2.read<int32_t>(), 1234);
+
+ // Note: this works in Wine, but not in Windows
+	// Windows fails with: The process cannot access the file because another
+ // process has locked a portion of the file.
 }
 #endif
 
