@@ -3,12 +3,41 @@ TODO
 
 Journal File
 ------------
-- Important: use proper locking for refresh_checkpoint:
+- Proper locking:
 
-  - separate locking of different areas of the file (header + after checkpoint)
-  - use fcntl in linux instead of lockf
-  - use pread and pwrite to read/write checkpoint area
-  - pread and pwrite must restore current position
+  - files opened for exclusive write
+
+    - write_lock tail of file all the time
+    - invoke locking/unlocking in Writable_Journal instead of File
+
+  - transaction:
+
+    - lock_pull:
+
+      - write_lock tail of file (if shared)
+      - read checkpoint, no need to read_lock head (if shared)
+
+    - write transaction
+
+    - push_unlock:
+
+      - write_lock head
+      - write checkpoint
+      - unlock head
+      - unlock tail (if shared)
+
+  - refresh_checkpoint, renamed to "pull":
+
+    - read_lock head
+    - read checkpoint
+    - unlock head
+
+  - no locking when reading body
+  - lock_pull and push_unlock as members of Writable_Journal:
+
+    - is_shared() test encapsulated inside Writable_Journal
+    - no need of "if is_shared()" in Server_Connection
+    - Local_Connection works with exclusive file
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
