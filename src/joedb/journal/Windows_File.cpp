@@ -78,48 +78,85 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::shared_lock()
+ BOOL Windows_File::lock(Lock_Operation op, int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  OVERLAPPED overlapped;
-  overlapped.Offset = 0;
-  overlapped.OffsetHigh = 0;
-  overlapped.hEvent = 0;
+  if (start < 0 || size < 0)
+   return FALSE;
 
-  if (!LockFileEx(file, 0, 0, 1, 0, &overlapped))
+  ULARGE_INTEGER large_start;
+  ULARGE_INTEGER large_size;
+
+  large_start.QuadPart = uint64_t(start);
+  large_size.QuadPart = size > 0 ? uint64_t(size) : uint64_t(-1);
+
+  OVERLAPPED overlapped{};
+  overlapped.Offset = large_start.u.LowPart;
+  overlapped.OffsetHigh = large_start.u.HighPart;
+
+  switch(op)
   {
-   throw_last_error("Locking", "file");
+   case Lock_Operation::shared_lock:
+    return LockFileEx
+    (
+     file,
+     0,
+     0,
+     large_size.u.LowPart,
+     large_size.u.HighPart,
+     &overlapped
+    );
+   break;
+
+   case Lock_Operation::exclusive_lock:
+    return LockFileEx
+    (
+     file,
+     LOCKFILE_EXCLUSIVE_LOCK,
+     0,
+     large_size.u.LowPart,
+     large_size.u.HighPart,
+     &overlapped
+    );
+   break;
+
+   case Lock_Operation::unlock:
+    return UnlockFileEx
+    (
+     file,
+     0,
+     large_size.u.LowPart,
+     large_size.u.HighPart,
+     &overlapped
+    );
+   break;
   }
+
+  return FALSE;
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::exclusive_lock()
+ void Windows_File::shared_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  OVERLAPPED overlapped;
-  overlapped.Offset = 0;
-  overlapped.OffsetHigh = 0;
-  overlapped.hEvent = 0;
-
-  if (!LockFileEx(file, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &overlapped))
-  {
-   throw_last_error("Locking", "file");
-  }
+  if (!lock(Lock_Operation::shared_lock, start, size))
+   throw_last_error("Read-locking", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::unlock()
+ void Windows_File::exclusive_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  OVERLAPPED overlapped;
-  overlapped.Offset = 0;
-  overlapped.OffsetHigh = 0;
-  overlapped.hEvent = 0;
+  if (!lock(Lock_Operation::exclusive_lock, start, size))
+   throw_last_error("Write-locking", "file");
+ }
 
-  if (!UnlockFileEx(file, 0, 1, 0, &overlapped))
-  {
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_File::unlock(int64_t start, int64_t size)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  if (!lock(Lock_Operation::unlock, start, size))
    throw_last_error("Unlocking", "file");
-  }
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -140,8 +177,7 @@ namespace joedb
  size_t Windows_File::raw_pread(char* buffer, size_t size, int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
-  OVERLAPPED overlapped;
-  overlapped.hEvent = 0;
+  OVERLAPPED overlapped{};
   overlapped.Pointer = PVOID(offset);
 
   DWORD result;
@@ -184,15 +220,19 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::raw_pwrite(const char* buffer, size_t size, int64_t offset)
+ void Windows_File::raw_pwrite
  /////////////////////////////////////////////////////////////////////////////
+ (
+  const char* buffer,
+  size_t size,
+  int64_t offset
+ )
  {
   size_t written = 0;
 
   while (written < size)
   {
-   OVERLAPPED overlapped;
-   overlapped.hEvent = 0;
+   OVERLAPPED overlapped{};
    overlapped.Pointer = PVOID(offset + written);
 
    DWORD actually_written;

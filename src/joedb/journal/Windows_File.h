@@ -27,6 +27,15 @@ namespace joedb
     const char *file_name
    ) const;
 
+   enum class Lock_Operation
+   {
+    shared_lock,
+    exclusive_lock,
+    unlock
+   };
+
+   BOOL lock(Lock_Operation op, int64_t start, int64_t size);
+
   protected:
    size_t raw_read(char *buffer, size_t size) final;
    size_t raw_pread(char* data, size_t size, int64_t offset) final;
@@ -46,9 +55,9 @@ namespace joedb
    {
    }
 
-   void shared_lock() final;
-   void exclusive_lock() final;
-   void unlock() final;
+   void shared_lock(int64_t start = 0, int64_t size = 0) final;
+   void exclusive_lock(int64_t start = 0, int64_t size = 0) final;
+   void unlock(int64_t start = 0, int64_t size = 0) final;
 
    ~Windows_File() override;
  };

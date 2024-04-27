@@ -14,9 +14,7 @@ namespace joedb
 
    static void throw_last_error(const char *action, const char *file_name);
 
-#ifndef NDEBUG
-   bool locked = false;
-#endif
+   int lock(int command, short type, int64_t start, int64_t size);
 
    bool try_exclusive_lock();
 
@@ -53,9 +51,9 @@ namespace joedb
    }
 
    int64_t raw_get_size() const final;
-   void shared_lock() final;
-   void exclusive_lock() final;
-   void unlock() final;
+   void shared_lock(int64_t start = 0, int64_t size = 0) final;
+   void exclusive_lock(int64_t start = 0, int64_t size = 0) final;
+   void unlock(int64_t start = 0, int64_t size = 0) final;
 
    ~Posix_File() override;
  };

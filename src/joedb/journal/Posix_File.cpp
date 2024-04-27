@@ -27,58 +27,48 @@ namespace joedb
 
  /////////////////////////////////////////////////////////////////////////////
  // NOLINTNEXTLINE(readability-make-member-function-const)
+ int Posix_File::lock(int command, short type, int64_t start, int64_t size)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  struct flock lock;
+  lock.l_type = type;
+  lock.l_whence = SEEK_SET;
+  lock.l_start = off_t(start);
+  lock.l_len = off_t(size);
+  lock.l_pid = 0;
+
+  return fcntl(fd, command, &lock);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  bool Posix_File::try_exclusive_lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  return flock(fd, LOCK_EX | LOCK_NB) == 0;
+  return lock(F_OFD_SETLK, F_WRLCK, 0, 0) == 0;
  }
 
  /////////////////////////////////////////////////////////////////////////////
- // NOLINTNEXTLINE(readability-make-member-function-const)
- void Posix_File::shared_lock()
+ void Posix_File::shared_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (flock(fd, LOCK_SH) == -1)
-   throw_last_error("Locking", "file");
-
-#ifndef NDEBUG
-  if (!locked)
-   locked = true;
-  else
-   throw Exception("locking a locked file\n");
-#endif
+  if (lock(F_OFD_SETLKW, F_RDLCK, start, size) < 0)
+   throw_last_error("Read-locking", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
- // NOLINTNEXTLINE(readability-make-member-function-const)
- void Posix_File::exclusive_lock()
+ void Posix_File::exclusive_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (flock(fd, LOCK_EX) == -1)
-   throw_last_error("Locking", "file");
-
-#ifndef NDEBUG
-  if (!locked)
-   locked = true;
-  else
-   throw Exception("locking a locked file\n");
-#endif
+  if (lock(F_OFD_SETLKW, F_WRLCK, start, size) < 0)
+   throw_last_error("Write-locking", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
- // NOLINTNEXTLINE(readability-make-member-function-const)
- void Posix_File::unlock()
+ void Posix_File::unlock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (flock(fd, LOCK_UN) == -1)
+  if (lock(F_OFD_SETLK, F_UNLCK, start, size) < 0)
    throw_last_error("Unlocking", "file");
-
-#ifndef NDEBUG
-  if (locked)
-   locked = false;
-  else
-   throw Exception("unlocking an unlocked file\n");
-#endif
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -203,7 +193,7 @@ namespace joedb
   if (mode != Open_Mode::read_existing && mode != Open_Mode::shared_write)
   {
    if (mode == Open_Mode::write_lock)
-    exclusive_lock();
+    exclusive_lock(0, 0);
    else if (!try_exclusive_lock())
     throw_last_error("Locking", file_name);
   }

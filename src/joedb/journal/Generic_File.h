@@ -377,9 +377,9 @@ namespace joedb
     mode = new_mode;
    }
 
-   virtual void shared_lock();
-   virtual void exclusive_lock();
-   virtual void unlock();
+   virtual void shared_lock(int64_t start = 0, int64_t size = 0);
+   virtual void exclusive_lock(int64_t start = 0, int64_t size = 0);
+   virtual void unlock(int64_t start = 0, int64_t size = 0);
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_size() const
