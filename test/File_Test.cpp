@@ -154,6 +154,18 @@ TEST_F(File_Test, partial_shared_lock)
  file_1.exclusive_lock(4, 4);
  file_2.shared_lock(0, 4);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, read_locked_area)
+{
+ File file_1("locked.tmp", Open_Mode::shared_write);
+ file_1.exclusive_lock(0, 4);
+ file_1.write<int>(1234);
+ file_1.flush();
+
+ File file_2("locked.tmp", Open_Mode::read_existing);
+ EXPECT_EQ(file_2.read<int32_t>(), 1234);
+}
 #endif
 
 #if 0
