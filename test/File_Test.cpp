@@ -398,6 +398,34 @@ TEST_F(File_Test, flush)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, double_raw_pread)
+/////////////////////////////////////////////////////////////////////////////
+{
+ File file1("new.tmp", Open_Mode::create_new);
+ File file2("new.tmp", Open_Mode::read_existing);
+
+ file1.set_position(0);
+ file1.write<int32_t>(1234);
+ file1.flush();
+
+ {
+  int32_t value;
+  file2.Generic_File::raw_pread((char *)&value, sizeof(int32_t), 0);
+  EXPECT_EQ(1234, value);
+ }
+
+ file1.set_position(0);
+ file1.write<int32_t>(5678);
+ file1.flush();
+
+ {
+  int32_t value;
+  file2.Generic_File::raw_pread((char *)&value, sizeof(int32_t), 0);
+  EXPECT_EQ(5678, value);
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 static void perf(size_t size)
 /////////////////////////////////////////////////////////////////////////////
 {

@@ -73,7 +73,19 @@ joedb::Readonly_Journal::Readonly_Journal
    }
 
    checkpoint_position = header_size;
-   read_checkpoint(check_flag(check, Check::checkpoint_mismatch));
+
+   std::array<int64_t, 4> pos;
+
+   for (int i = 0; i < 4; i++)
+    pos[i] = file.read<int64_t>();
+
+   if (check_flag(check, Check::checkpoint_mismatch))
+   {
+    if (pos[0] != pos[1] || pos[2] != pos[3])
+     throw Exception("Checkpoint mismatch");
+   }
+
+   read_checkpoint(pos);
 
    //
    // Compare to file size (if available)
@@ -103,20 +115,12 @@ joedb::Readonly_Journal::Readonly_Journal
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::read_checkpoint(bool strict)
+void joedb::Readonly_Journal::read_checkpoint
 /////////////////////////////////////////////////////////////////////////////
+(
+ const std::array<int64_t, 4> &pos
+)
 {
- std::array<int64_t, 4> pos;
-
- for (int i = 0; i < 4; i++)
-  pos[i] = file.read<int64_t>();
-
- if (strict)
- {
-  if (pos[0] != pos[1] || pos[2] != pos[3])
-   throw Exception("Checkpoint mismatch");
- }
-
  for (unsigned i = 0; i < 2; i++)
  {
   if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] >= checkpoint_position)
@@ -132,9 +136,23 @@ void joedb::Readonly_Journal::refresh_checkpoint()
 /////////////////////////////////////////////////////////////////////////////
 {
  const int64_t old_position = file.get_position();
+
  constexpr int64_t checkpoint_offset = 5 + 4;
- file.set_position(checkpoint_offset);
- read_checkpoint(false);
+
+ for (int retry = 3; --retry;)
+ {
+  std::array<int64_t, 4> pos[2];
+
+  file.raw_pread((char *)&pos[0], sizeof(pos[0]), checkpoint_offset);
+  file.raw_pread((char *)&pos[1], sizeof(pos[1]), checkpoint_offset);
+
+  if (pos[0] == pos[1])
+  {
+   read_checkpoint(pos[0]);
+   break;
+  }
+ }
+
  file.set_position(old_position);
 }
 

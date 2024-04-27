@@ -36,7 +36,7 @@ namespace joedb
    }
 
   private:
-   void read_checkpoint(bool strict);
+   void read_checkpoint(const std::array<int64_t, 4> &pos);
 
    #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
    void perform_update_##type_id(Writable &writable);
