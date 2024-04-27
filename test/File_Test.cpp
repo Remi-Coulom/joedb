@@ -7,6 +7,8 @@
 #include <random>
 #include <cstdio>
 #include <cstring>
+#include <thread>
+#include <chrono>
 
 using namespace joedb;
 
@@ -77,22 +79,73 @@ TEST_F(File_Test, open_lock)
  }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, read_locked)
 {
  File locked_file("locked.tmp", Open_Mode::write_lock);
  File readonly_file("locked.tmp", Open_Mode::read_existing);
 }
 
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, write_locked)
 {
  File locked_file("locked.tmp", Open_Mode::write_lock);
  EXPECT_ANY_THROW(File("locked.tmp", Open_Mode::write_existing));
 }
 
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, share_locked)
 {
  File locked_file("locked.tmp", Open_Mode::write_lock);
  File shared_file("locked.tmp", Open_Mode::shared_write);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, partial_exclusive_lock)
+{
+ File file_1("locked.tmp", Open_Mode::shared_write);
+ File file_2("locked.tmp", Open_Mode::shared_write);
+ file_1.exclusive_lock(0, 4);
+ file_2.exclusive_lock(4, 4);
+
+ std::mutex mutex;
+
+ bool flag;
+
+ {
+  std::unique_lock lock(mutex);
+  flag = false;
+ }
+
+ std::thread thread([&file_2, &mutex, &flag]()
+ {
+  file_2.exclusive_lock(0, 4);
+  {
+   std::unique_lock lock(mutex);
+   flag = true;
+  }
+ });
+
+ std::this_thread::sleep_for(std::chrono::seconds(1));
+
+ {
+  std::unique_lock lock(mutex);
+  EXPECT_FALSE(flag);
+ }
+
+ file_1.unlock(0, 4);
+ thread.join();
+ EXPECT_TRUE(flag);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, partial_shared_lock)
+{
+ File file_1("locked.tmp", Open_Mode::shared_write);
+ File file_2("locked.tmp", Open_Mode::shared_write);
+ file_1.shared_lock(0, 4);
+ file_1.exclusive_lock(4, 4);
+ file_2.shared_lock(0, 4);
 }
 #endif
 
