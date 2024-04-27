@@ -57,6 +57,13 @@ TEST_F(File_Test, open_failure)
 
 #ifndef JOEDB_FILE_IS_PORTABLE_FILE
 /////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, is_shared)
+{
+ File file("new.tmp", Open_Mode::shared_write);
+ EXPECT_TRUE(file.is_shared());
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
  {
@@ -370,22 +377,25 @@ TEST_F(File_Test, eof)
  EXPECT_TRUE(file.is_end_of_file());
 }
 
-#ifndef JOEDB_PORTABLE
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, flush)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::remove("new.tmp");
- File file1("new.tmp", Open_Mode::shared_write);
- EXPECT_TRUE(file1.is_shared());
+ File file1("new.tmp", Open_Mode::create_new);
  file1.write<int32_t>(1234);
  file1.flush();
 
- File file2("new.tmp", Open_Mode::shared_write);
+ File file2("new.tmp", Open_Mode::read_existing);
  file2.set_position(0);
  EXPECT_EQ(1234, file2.read<int32_t>());
+
+ file1.set_position(0);
+ file1.write<int32_t>(5678);
+ file1.flush();
+
+ file2.set_position(0);
+ EXPECT_EQ(5678, file2.read<int32_t>());
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 static void perf(size_t size)
