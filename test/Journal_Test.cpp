@@ -448,3 +448,49 @@ TEST(Journal, check)
   journal.default_checkpoint();
  }
 }
+
+////////////////////////////////////////////////////////////////////////////
+TEST(Journal, reset_position_after_checkpoint)
+////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+  joedb::Writable_Journal journal(file);
+  EXPECT_EQ(journal.get_checkpoint_position(), 41);
+  journal.comment(std::string(5000, 'A'));
+  journal.default_checkpoint();
+  EXPECT_EQ(journal.get_checkpoint_position(), 5044);
+  journal.comment(std::string(5000, 'B'));
+  journal.default_checkpoint();
+  EXPECT_EQ(journal.get_checkpoint_position(), 10047);
+ }
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::read_existing);
+  joedb::Readonly_Journal journal(file);
+
+  joedb::Memory_File copy_file;
+  {
+   joedb::Writable_Journal copy_journal(copy_file);
+
+   journal.one_step(copy_journal);
+   journal.pull();
+   journal.one_step(copy_journal);
+
+   copy_journal.default_checkpoint();
+   EXPECT_EQ(copy_journal.get_checkpoint_position(), 10047);
+  }
+
+  joedb::Memory_File another_file;
+  {
+   joedb::Writable_Journal another_journal(another_file);
+   journal.replay_log(another_journal);
+  }
+
+  EXPECT_EQ(copy_file.get_data(), another_file.get_data());
+ }
+
+ std::remove("test.joedb");
+}
