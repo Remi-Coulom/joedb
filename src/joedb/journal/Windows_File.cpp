@@ -307,7 +307,7 @@ namespace joedb
   }
 
   if (mode == Open_Mode::write_lock)
-   exclusive_lock();
+   exclusive_lock_tail();
  }
 
  /////////////////////////////////////////////////////////////////////////////
