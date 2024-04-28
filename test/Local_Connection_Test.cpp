@@ -1,7 +1,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 
-#include "joedb/concurrency/Local_Connection.h"
+#include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
@@ -24,7 +24,7 @@ TEST(Local_Connection, simple_operation)
  File file_1(file_name, Open_Mode::shared_write);
  File file_2(file_name, Open_Mode::shared_write);
 
- Local_Connection connection;
+ Connection connection;
 
  Interpreted_Client client1(connection, file_1);
  Interpreted_Client client2(connection, file_2);
@@ -79,7 +79,7 @@ TEST(Local_Connection, size_check)
  try
  {
   File file(file_name, Open_Mode::shared_write);
-  Local_Connection connection;
+  Connection connection;
   Interpreted_Client client(connection, file);
   FAIL() << "Expected an exception\n";
  }
@@ -88,41 +88,7 @@ TEST(Local_Connection, size_check)
   EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
  }
 }
-
-/////////////////////////////////////////////////////////////////////////////
-TEST(Local_Connection, must_not_be_shared)
-/////////////////////////////////////////////////////////////////////////////
-{
- {
-  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
-
-  joedb::Writable_Journal_Client_Data data(file);
-
-  {
-   joedb::Connection connection;
-   EXPECT_ANY_THROW(joedb::Client(data, connection));
-  }
-
-  {
-   joedb::Memory_File server_file;
-   joedb::File_Connection connection(server_file);
-   EXPECT_ANY_THROW(joedb::Client(data, connection));
-  }
- }
-
- std::remove("test.joedb");
-}
 #endif
-
-/////////////////////////////////////////////////////////////////////////////
-TEST(Local_Connection, must_be_shared)
-/////////////////////////////////////////////////////////////////////////////
-{
- joedb::Memory_File file;
- joedb::Local_Connection connection;
- joedb::Writable_Journal_Client_Data data(file);
- EXPECT_ANY_THROW(joedb::Client client(data, connection));
-}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Local_Connection, dummy_connection)

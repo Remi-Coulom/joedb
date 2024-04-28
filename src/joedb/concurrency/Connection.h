@@ -11,27 +11,33 @@ namespace joedb
  {
   protected:
    static void content_mismatch();
-   static void check_not_shared(Readonly_Journal &client_journal);
 
   public:
    virtual int64_t handshake(Readonly_Journal &client_journal)
    {
-    check_not_shared(client_journal);
     return client_journal.get_checkpoint_position();
    }
 
-   virtual void lock(Readonly_Journal &client_journal);
-   virtual void unlock(Readonly_Journal &client_journal) {}
+   virtual void lock(Readonly_Journal &client_journal)
+   {
+    client_journal.lock();
+   }
+
+   virtual void unlock(Readonly_Journal &client_journal)
+   {
+    client_journal.unlock();
+   }
 
    virtual int64_t pull(Writable_Journal &client_journal)
    {
+    client_journal.pull();
     return client_journal.get_checkpoint_position();
    }
 
    virtual int64_t lock_pull(Writable_Journal &client_journal)
    {
-    lock(client_journal);
-    return pull(client_journal);
+    client_journal.lock_pull();
+    return client_journal.get_checkpoint_position();
    }
 
    virtual void push
@@ -39,7 +45,11 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t server_checkpoint,
     bool unlock_after
-   );
+   )
+   {
+    if (unlock_after)
+     client_journal.unlock();
+   }
 
    virtual ~Connection();
  };

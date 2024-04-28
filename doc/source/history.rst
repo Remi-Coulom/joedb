@@ -7,9 +7,13 @@ History
     version locks head and tail separately. This allows a much nicer handling
     of concurrent access to files:
 
-    - The construction of a journal in shared_write mode does not have to wait
-      for the file to be unlocked any more.
-    - Concurrent reads properly use a read lock on the head of the file.
+    - The construction of a journal in ``shared_write`` mode does not have to
+      wait for the file to be unlocked any more.
+    - Concurrent reads properly use a read lock on the head of the file to read
+      the checkpoint.
+    - ``Local_Connection`` is removed: the plain ``Connection`` superclass
+      can handle both exclusive and shared files.
+    - ``File_Connection`` can now handle a connection to a shared file.
     - In Posix environments, this changes the locking technique from using
       ``flock`` to using ``fcntl``. Those two locking mechanisms are not
       compatible in Linux, so it is important to avoid mixing joedb versions

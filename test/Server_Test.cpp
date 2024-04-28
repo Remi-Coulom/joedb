@@ -4,10 +4,10 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
-#include "joedb/concurrency/Local_Connection.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Shared_Memory_File.h"
+#include "joedb/journal/File.h"
 
 #include "Test_Network_Channel.h"
 
@@ -30,7 +30,7 @@ namespace joedb
    std::vector<char> data;
    Shared_Memory_File file{data};
    Writable_Journal_Client_Data client_data{file};
-   Local_Connection connection;
+   Connection connection;
    Client client{client_data, connection};
    net::io_context io_context;
 
@@ -644,7 +644,7 @@ namespace joedb
   Memory_File client_file;
   Test_Client client(server, client_file);
 
-  Local_Connection connection;
+  Connection connection;
   Shared_Memory_File file{server.data};
   Interpreted_Client shared_client{connection, file};
 

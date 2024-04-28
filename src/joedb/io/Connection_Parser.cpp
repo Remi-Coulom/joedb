@@ -5,10 +5,6 @@
 #include "joedb/io/File_Connection_Builder.h"
 #include "joedb/journal/File.h"
 
-#ifdef JOEDB_FILE_IS_LOCKABLE
-#include "joedb/io/Local_Connection_Builder.h"
-#endif
-
 #ifdef JOEDB_HAS_ASIO_NET
 #include "joedb/io/Network_Connection_Builder.h"
 #endif
@@ -27,12 +23,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  {
   if (local)
-  {
    builders.emplace_back(new Dummy_Connection_Builder());
-#ifdef JOEDB_FILE_IS_LOCKABLE
-   builders.emplace_back(new Local_Connection_Builder());
-#endif
-  }
 
   builders.emplace_back(new Dump_Connection_Builder());
   builders.emplace_back(new Tail_Connection_Builder());

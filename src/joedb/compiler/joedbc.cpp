@@ -149,7 +149,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << '\n';
  out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
  out << "#include \"joedb/concurrency/Client.h\"\n";
- out << "#include \"joedb/concurrency/Local_Connection.h\"\n";
+ out << "#include \"joedb/concurrency/Connection.h\"\n";
  out << "#include \"joedb/Span.h\"\n";
  out << '\n';
 
@@ -584,7 +584,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  {
   protected:
    joedb::File file;
-   joedb::Local_Connection connection;
+   joedb::Connection connection;
 
    Local_Client_Data(const char *file_name):
     file(file_name, joedb::Open_Mode::shared_write)

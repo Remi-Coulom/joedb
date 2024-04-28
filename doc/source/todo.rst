@@ -7,10 +7,8 @@ Journal File
 - Proper locking:
 
   - Need a separate File_Parser to parse connection file like client file
-  - Connection is Local_Connection, no need of two classes
-  - remove check_shared and check_not_shared completely
-  - all kinds of unit tests required for new available situations
   - use lock objects instead of calling lock and unlock functions
+  - all kinds of unit tests required for new available situations
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).

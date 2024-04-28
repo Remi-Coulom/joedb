@@ -56,26 +56,13 @@ available connections.
 Plain ``Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
-The ``Connection`` superclass has empty functions for the synchronization
-operations, so it does not connect to anything. It can be useful to create a
-client with such a connection, because it allows generic code that takes a
-client as parameter to work the same way with either a remote connection or a
-local file.
+The ``Connection`` superclass  does not connect to anything.
 
-``File_Connection``
-^^^^^^^^^^^^^^^^^^^
+One use of this class is to allows generic code that takes a client as
+parameter to work the same way with either a remote connection or a local file.
 
-``File_Connection`` creates a connection to a server file opened in the
-same program. It does not allow concurrent access to the server file from
-another process.
-
-``Local_Connection``
-^^^^^^^^^^^^^^^^^^^^
-
-Like plain ``Connection``, ``Local_Connection`` does not connect to anything.
-But, unlike ``Connection``, it can handle a shared local file, using file
-locking for synchronization of multiple processes that may be writing to the
-same file.
+Another use of this class is to handle concurrency when opening a local
+file with ``Open_Mode::shared_write``.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
 creates the connection and the client in a single line of code. Here is an
@@ -86,6 +73,11 @@ example:
 
 Multiple instances of this program can safely write to the same database
 concurrently.
+
+``File_Connection``
+^^^^^^^^^^^^^^^^^^^
+
+``File_Connection`` creates a connection to a file.
 
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
@@ -114,25 +106,6 @@ A client is made of two parts: the local part (stored in a file), and the
 connection part. A client can handle concurrency for both parts simultaneously.
 That is to say, it is possible for two different clients to share a connection
 to the same remote server, and also share the same local file.
-
-The table below summarizes all available connections.
-
-  +------------------------------+--------------+-----------------+-------------------+
-  | Connection Class             | Shared Local | Exclusive Local | Connects to       |
-  +==============================+==============+=================+===================+
-  | ``Connection``               |              | ✔               | nothing           |
-  +------------------------------+--------------+-----------------+-------------------+
-  | ``Local_Connection``         | ✔            |                 | nothing           |
-  +------------------------------+--------------+-----------------+-------------------+
-  | ``File_Connection``          |              | ✔               | an exclusive file |
-  +------------------------------+--------------+-----------------+-------------------+
-  | ``Server_Connection``        | ✔            | ✔               | a server          |
-  +------------------------------+--------------+-----------------+-------------------+
-
-An exception will be thrown when creating a client if the mode of the file does
-not match the mode that the connection supports. Shared local files are
-:ref:`opened <opening_files>` with the ``Open_Mode::shared_write`` mode. All
-other write modes are exclusive.
 
 .. _backup_client:
 
