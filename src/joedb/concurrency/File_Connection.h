@@ -11,14 +11,11 @@ namespace joedb
  {
   private:
    Writable_Journal server_journal;
-   bool locked;
 
    //////////////////////////////////////////////////////////////////////////
    int64_t handshake(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
-    check_not_shared(client_journal);
-
     const int64_t server_position = server_journal.get_checkpoint_position();
     const int64_t client_position = client_journal.get_checkpoint_position();
 
@@ -34,22 +31,35 @@ namespace joedb
    void lock(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
-    if (locked)
-     throw Exception("Deadlock detected");
-    locked = true;
+    client_journal.lock();
+    server_journal.lock();
    }
 
    //////////////////////////////////////////////////////////////////////////
    void unlock(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
-    locked = false;
+    server_journal.unlock();
+    client_journal.unlock();
    }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t pull(Writable_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
+    client_journal.lock_pull();
+    server_journal.pull();
+    int64_t result = client_journal.pull_from(server_journal);
+    client_journal.unlock();
+    return result;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   virtual int64_t lock_pull(Writable_Journal &client_journal)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    client_journal.lock_pull();
+    server_journal.lock_pull();
     return client_journal.pull_from(server_journal);
    }
 
@@ -80,10 +90,8 @@ namespace joedb
     Readonly_Journal::Check check = Readonly_Journal::Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
    ):
-    server_journal(server_file, check, commit_level),
-    locked(false)
+    server_journal(server_file, check, commit_level)
    {
-    check_not_shared(server_journal);
    }
  };
 }
