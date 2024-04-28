@@ -12,11 +12,5 @@ namespace joedb
   return get_writable_journal();
  }
 
- void Client_Data::pull_data()
- {
-  get_readonly_journal().pull();
-  update();
- }
-
  Client_Data::~Client_Data() = default;
 }

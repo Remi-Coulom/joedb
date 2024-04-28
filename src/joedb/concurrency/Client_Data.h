@@ -15,8 +15,6 @@ namespace joedb
    virtual Readonly_Journal &get_readonly_journal();
    virtual void update() = 0;
    virtual ~Client_Data();
-
-   void pull_data();
  };
 }
 
