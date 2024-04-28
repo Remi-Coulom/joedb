@@ -117,7 +117,7 @@ namespace joedb
 
    void lock();
    void unlock();
-   void pull(bool shared_lock = true);
+   void pull();
    void lock_pull();
 
    bool is_same_file(const Generic_File &other_file) const

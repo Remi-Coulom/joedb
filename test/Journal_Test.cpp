@@ -383,9 +383,21 @@ TEST(Journal, pull_performance)
   joedb::Writable_Journal journal(file);
 
   for (int i = 10000; --i >= 0;)
-   journal.valid_data();
+   journal.pull();
+ }
 
-  journal.checkpoint(joedb::Commit_Level::no_commit);
+ std::remove("test.joedb");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, shared_pull_performance)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
+  joedb::Writable_Journal journal(file);
 
   for (int i = 10000; --i >= 0;)
    journal.pull();

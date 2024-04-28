@@ -148,7 +148,7 @@ void joedb::Readonly_Journal::unlock()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::pull(bool shared_lock)
+void joedb::Readonly_Journal::pull()
 /////////////////////////////////////////////////////////////////////////////
 {
  const int64_t old_position = file.get_position();
@@ -156,12 +156,12 @@ void joedb::Readonly_Journal::pull(bool shared_lock)
  std::array<int64_t, 4> pos;
 
  {
-  if (shared_lock)
+  if (!file.tail_is_locked())
    file.shared_lock_head();
 
   file.raw_pread((char *)&pos, sizeof(pos), checkpoint_offset);
 
-  if (shared_lock)
+  if (!file.tail_is_locked())
    file.unlock_head();
  }
 
@@ -177,7 +177,7 @@ void joedb::Readonly_Journal::lock_pull()
  if (file.is_shared())
  {
   file.exclusive_lock_tail();
-  pull(false);
+  pull();
  }
 }
 

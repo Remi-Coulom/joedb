@@ -55,7 +55,7 @@ namespace joedb
 
    int64_t raw_get_size() const final;
    void shared_lock(int64_t start, int64_t size) final;
-   bool try_exclusive_lock(int64_t start, int64_t size) final;
+   bool try_exclusive_lock(int64_t start, int64_t size);
    void exclusive_lock(int64_t start, int64_t size) final;
    void unlock(int64_t start, int64_t size) final;
 

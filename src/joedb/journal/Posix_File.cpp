@@ -204,7 +204,7 @@ namespace joedb
   {
    if (mode == Open_Mode::write_lock)
     exclusive_lock_tail();
-   else if (!try_exclusive_lock_tail())
+   else if (!try_exclusive_lock(last_position, 1))
     throw_last_error("Locking", file_name);
   }
  }
