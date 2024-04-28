@@ -55,10 +55,6 @@ namespace joedb
    virtual void checkpoint(Commit_Level commit_level) {}
 
    void default_checkpoint();
-   Commit_Level get_default_commit_level() const
-   {
-    return default_commit_level;
-   }
 
    virtual void insert_into(Table_Id table_id, Record_Id record_id) {}
    virtual void insert_vector

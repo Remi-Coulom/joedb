@@ -33,11 +33,6 @@ joedb::Writable_Journal::Writable_Journal
   file.write<int64_t>(0);
   file.write<int64_t>(0);
 
-  file.flush();
-
-  if (get_default_commit_level() > Commit_Level::no_commit)
-   file.commit();
-
   file.set_mode(Open_Mode::write_existing);
  }
  else if (version_number > file_version)
