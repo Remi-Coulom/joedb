@@ -396,7 +396,7 @@ namespace joedb
    const int64_t checkpoint = from_network(session->buffer.data() + 1);
 
    if (client.is_readonly())
-    client.refresh_data();
+    client.pull_data();
    else if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
 

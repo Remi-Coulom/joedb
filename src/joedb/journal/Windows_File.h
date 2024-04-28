@@ -55,9 +55,9 @@ namespace joedb
    {
    }
 
-   void shared_lock(int64_t start = 0, int64_t size = 0) final;
-   void exclusive_lock(int64_t start = 0, int64_t size = 0) final;
-   void unlock(int64_t start = 0, int64_t size = 0) final;
+   void shared_lock(int64_t start, int64_t size) final;
+   void exclusive_lock(int64_t start, int64_t size) final;
+   void unlock(int64_t start, int64_t size) final;
 
    ~Windows_File() override;
  };

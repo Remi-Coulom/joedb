@@ -337,14 +337,19 @@ namespace joedb
   public:
    virtual size_t raw_pread(char *data, size_t size, int64_t offset)
    {
+    const int64_t old_position = get_position();
     raw_seek(offset);
-    return raw_read(data, size);
+    const size_t result = raw_read(data, size);
+    set_position(old_position);
+    return result;
    }
 
    virtual void raw_pwrite(const char *data, size_t size, int64_t offset)
    {
+    const int64_t old_position = get_position();
     raw_seek(offset);
     raw_write(data, size);
+    set_position(old_position);
    }
 
   public:
@@ -378,9 +383,19 @@ namespace joedb
     mode = new_mode;
    }
 
-   virtual void shared_lock(int64_t start = 0, int64_t size = 0);
-   virtual void exclusive_lock(int64_t start = 0, int64_t size = 0);
-   virtual void unlock(int64_t start = 0, int64_t size = 0);
+   virtual void shared_lock(int64_t start, int64_t size);
+   virtual bool try_exclusive_lock(int64_t start, int64_t size);
+   virtual void exclusive_lock(int64_t start, int64_t size);
+   virtual void unlock(int64_t start, int64_t size);
+
+   static constexpr int64_t last_position = (1ULL << 63) - 1;
+   bool try_exclusive_lock_tail() {return try_exclusive_lock(last_position, 1);}
+   void exclusive_lock_tail() {exclusive_lock(last_position, 1);}
+   void unlock_tail() {unlock(last_position, 1);}
+
+   void shared_lock_head() {shared_lock(0, 1);}
+   void exclusive_lock_head() {exclusive_lock(0, 1);}
+   void unlock_head() {unlock(0, 1);}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_size() const

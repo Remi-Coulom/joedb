@@ -16,7 +16,7 @@ namespace joedb
    virtual void update() = 0;
    virtual ~Client_Data();
 
-   void refresh();
+   void pull_data();
  };
 }
 

@@ -153,10 +153,12 @@ TEST(Local_Connection, transaction_frequency)
 
  {
   joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
+  joedb::Writable_Journal journal(file);
+
   for (int i = 10000; --i >= 0;)
   {
-   file.exclusive_lock();
-   file.unlock();
+   journal.lock();
+   journal.unlock();
   }
  }
 

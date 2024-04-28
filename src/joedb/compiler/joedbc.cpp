@@ -1691,7 +1691,7 @@ static void generate_readonly_h
 
    bool pull()
    {
-    journal.refresh_checkpoint();
+    journal.pull();
     if (journal.get_position() < journal.get_checkpoint_position())
     {
      journal.play_until_checkpoint(*this);

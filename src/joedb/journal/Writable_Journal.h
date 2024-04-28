@@ -89,7 +89,7 @@ namespace joedb
     file.set_position(checkpoint_position);
    }
 
-   int64_t pull(Readonly_Journal &journal);
+   int64_t pull_from(Readonly_Journal &journal);
 
    int64_t ahead_of_checkpoint() const noexcept;
 

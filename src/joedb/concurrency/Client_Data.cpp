@@ -12,9 +12,9 @@ namespace joedb
   return get_writable_journal();
  }
 
- void Client_Data::refresh()
+ void Client_Data::pull_data()
  {
-  get_readonly_journal().refresh_checkpoint();
+  get_readonly_journal().pull();
   update();
  }
 

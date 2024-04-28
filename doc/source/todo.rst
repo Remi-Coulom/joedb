@@ -6,51 +6,14 @@ Journal File
 
 - Proper locking:
 
-  - files opened for exclusive write
-
-    - write_lock tail of file all the time
-    - invoke locking/unlocking in Writable_Journal instead of File
-
-  - transaction:
-
-    - lock_pull:
-
-      - write_lock tail of file (if shared)
-      - read checkpoint, no need to read_lock head (if shared)
-
-    - write transaction
-
-    - push_unlock:
-
-      - write_lock head
-      - write checkpoint
-      - unlock head
-      - unlock tail (if shared)
-
-  - refresh_checkpoint, renamed to "pull":
-
-    - read_lock head
-    - read checkpoint
-    - unlock head
-
-  - no locking when reading body
-  - lock_pull and push_unlock as members of Writable_Journal:
-
-    - is_shared() test encapsulated inside Writable_Journal
-    - no need of "if is_shared()" in Server_Connection
-    - Local_Connection works with exclusive file
-
-  - Notes:
-
-    - Must benchmark: "If an application wishes only to do entire file locking,
-      the flock(2) system call is much more efficient."
-      https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fcntl.2.html
-    - github action is failing lock tests for macos 11 and 12: old Posix
-      fcntl lock do not work when the same file is opened twice in the same
-      process. Disable unit tests in this case.
-    - Windows lock is not advisory: locking all tail (from end of head to end
-      of file), prevents reading from other processes. Lock a byte very very
-      far from the start to make it behave like an advisory lock.
+  - support shared file for File_Connection, and exclusive file for Local_Connection
+  - Connection is Local_Connection, no need of two classes
+  - remove check_shared and check_not_shared completely
+  - all kinds of unit tests required for new available situations
+  - unit test for position invariance after pread and pwrite
+  - use lock objects instead of calling lock and unlock functions
+  - make it work and test in Windows
+  - check compatibility of flock and fcntl in Linux and MacOS
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
@@ -152,6 +115,7 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- better support for readonly connection (and client): separate types?
 - Pull-only connection (eg when serving a read-only file):
   -> joedb_client does not offer transaction and push
   -> reply with readonly flag during server handshake

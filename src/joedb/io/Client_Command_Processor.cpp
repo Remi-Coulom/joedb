@@ -95,7 +95,7 @@ namespace joedb
    out << "~~~~~~\n";
 
    out << " status\n";
-   out << " refresh\n";
+   out << " pull_data\n";
    out << " push\n";
    out << " push_every <seconds>\n";
 
@@ -118,9 +118,9 @@ namespace joedb
   {
    print_status(out);
   }
-  else if (command == "refresh") ////////////////////////////////////////////
+  else if (command == "pull_data") //////////////////////////////////////////
   {
-   client.refresh_data();
+   client.pull_data();
    print_status(out);
   }
   else if (command == "pull" && !is_readonly_data()) ////////////////////////
@@ -175,7 +175,7 @@ namespace joedb
 
    while (Signal::get_signal() != SIGINT)
    {
-    client.refresh_data();
+    client.pull_data();
     if (client.get_checkpoint_difference())
      print_status(out);
     client.push_unlock();

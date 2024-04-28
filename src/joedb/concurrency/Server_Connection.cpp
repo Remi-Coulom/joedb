@@ -12,8 +12,7 @@ namespace joedb
  void Server_Connection::lock(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (client_journal.is_shared())
-   client_journal.exclusive_lock();
+  client_journal.lock();
 
   Channel_Lock lock(channel);
 
@@ -47,8 +46,7 @@ namespace joedb
   else
    throw Exception("Unexpected server reply");
 
-  if (client_journal.is_shared())
-   client_journal.unlock();
+  client_journal.unlock();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -110,17 +108,11 @@ namespace joedb
   char pull_type
  )
  {
-  if (client_journal.is_shared())
-  {
-   client_journal.exclusive_lock();
-   client_journal.refresh_checkpoint();
-   int64_t result = pull(client_journal, pull_type);
-   if (pull_type == 'P')
-    client_journal.unlock();
-   return result;
-  }
-  else
-   return pull(client_journal, pull_type);
+  client_journal.lock_pull();
+  const int64_t result = pull(client_journal, pull_type);
+  if (pull_type == 'P')
+   client_journal.unlock();
+  return result;
  }
 
  ////////////////////////////////////////////////////////////////////////////

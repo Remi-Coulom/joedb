@@ -255,7 +255,7 @@ TEST(Journal, unexpected_operation)
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
 /////////////////////////////////////////////////////////////////////////////
-TEST(Journal, refresh_checkpoint)
+TEST(Journal, pull)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::remove("test.joedb");
@@ -275,7 +275,7 @@ TEST(Journal, refresh_checkpoint)
    journal_1.get_checkpoint_position() > journal_2.get_checkpoint_position()
   );
 
-  journal_2.refresh_checkpoint();
+  journal_2.pull();
 
   EXPECT_TRUE
   (
@@ -340,7 +340,7 @@ TEST(Journal, refresh_performance)
   journal.checkpoint(joedb::Commit_Level::no_commit);
 
   for (int i = 10000; --i >= 0;)
-   journal.refresh_checkpoint();
+   journal.pull();
  }
 
  std::remove("test.joedb");

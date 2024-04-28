@@ -19,6 +19,8 @@
 
 namespace joedb
 {
+ static_assert(sizeof(off_t) >= 8);
+
  /////////////////////////////////////////////////////////////////////////////
  void Posix_File::throw_last_error
  /////////////////////////////////////////////////////////////////////////////
@@ -49,10 +51,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- bool Posix_File::try_exclusive_lock()
+ bool Posix_File::try_exclusive_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
-  return lock(JOEDB_SETLK, F_WRLCK, 0, 0) == 0;
+  return lock(JOEDB_SETLK, F_WRLCK, start, size) == 0;
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -201,8 +203,8 @@ namespace joedb
   if (mode != Open_Mode::read_existing && mode != Open_Mode::shared_write)
   {
    if (mode == Open_Mode::write_lock)
-    exclusive_lock(0, 0);
-   else if (!try_exclusive_lock())
+    exclusive_lock_tail();
+   else if (!try_exclusive_lock_tail())
     throw_last_error("Locking", file_name);
   }
  }
@@ -213,12 +215,10 @@ namespace joedb
  {
   struct stat s;
 
-  if (fstat(fd, &s) == 0)
-   return int64_t(s.st_size);
-  else
+  if (fstat(fd, &s) < 0)
    throw_last_error("Getting size of", "file");
 
-  return -1;
+  return int64_t(s.st_size);
  }
 
  /////////////////////////////////////////////////////////////////////////////

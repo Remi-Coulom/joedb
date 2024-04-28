@@ -45,7 +45,7 @@ joedb::Writable_Journal::Writable_Journal
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int64_t joedb::Writable_Journal::pull(Readonly_Journal &journal)
+int64_t joedb::Writable_Journal::pull_from(Readonly_Journal &journal)
 /////////////////////////////////////////////////////////////////////////////
 {
  const int64_t source_checkpoint = journal.get_checkpoint_position();
@@ -88,24 +88,37 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
   (ahead_of_checkpoint() == 0 && commit_level > current_commit_level)
  )
  {
+  file.flush();
+
   checkpoint_index ^= 1;
   checkpoint_position = file.get_position();
   current_commit_level = commit_level;
 
-  file.set_position(9 + 16 * checkpoint_index);
-  file.write<uint64_t>(uint64_t(checkpoint_position));
+  {
+   file.exclusive_lock_head();
 
-  file.flush();
-  if (commit_level > Commit_Level::no_commit)
-   file.commit();
+   file.raw_pwrite
+   (
+    reinterpret_cast<const char *>(&checkpoint_position),
+    sizeof(checkpoint_position),
+    checkpoint_offset + sizeof(checkpoint_position) * (2 * checkpoint_index)
+   );
 
-  file.write<uint64_t>(uint64_t(checkpoint_position));
+   if (commit_level > Commit_Level::no_commit)
+    file.commit();
 
-  file.flush();
-  if (commit_level > Commit_Level::half_commit)
-   file.commit();
+   file.raw_pwrite
+   (
+    reinterpret_cast<const char *>(&checkpoint_position),
+    sizeof(checkpoint_position),
+    checkpoint_offset + sizeof(checkpoint_position) * (2 * checkpoint_index + 1)
+   );
 
-  file.set_position(checkpoint_position);
+   if (commit_level > Commit_Level::half_commit)
+    file.commit();
+
+   file.unlock_head();
+  }
  }
 }
 

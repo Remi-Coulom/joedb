@@ -62,7 +62,7 @@ namespace joedb
 
    while (true)
    {
-    journal.refresh_checkpoint();
+    journal.pull();
     const int64_t new_checkpoint = journal.get_checkpoint_position();
 
     if (new_checkpoint > server_checkpoint)

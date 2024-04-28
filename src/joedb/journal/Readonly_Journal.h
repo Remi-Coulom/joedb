@@ -36,6 +36,7 @@ namespace joedb
    }
 
   private:
+   static constexpr int64_t checkpoint_offset = 5 + 4;
    void read_checkpoint(const std::array<int64_t, 4> &pos);
 
    #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
@@ -113,8 +114,11 @@ namespace joedb
    int64_t get_checkpoint_position() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == header_size;}
    bool is_shared() const {return file.is_shared();}
-   void exclusive_lock() {file.exclusive_lock();}
-   void unlock() {file.unlock();}
+
+   void lock();
+   void unlock();
+   void pull(bool shared_lock = true);
+   void lock_pull();
 
    bool is_same_file(const Generic_File &other_file) const
    {
@@ -126,7 +130,6 @@ namespace joedb
     return file.read_blob_data(blob);
    }
 
-   void refresh_checkpoint();
    void replay_log(Writable &writable);
    void replay_with_checkpoint_comments(Writable &writable);
    void rewind();

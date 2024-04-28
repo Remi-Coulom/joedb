@@ -50,7 +50,7 @@ namespace joedb
    int64_t pull(Writable_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
-    return client_journal.pull(server_journal);
+    return client_journal.pull_from(server_journal);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ namespace joedb
     if (server_checkpoint != server_journal.get_checkpoint_position())
      throw Exception("pushing from bad checkpoint");
 
-    server_journal.pull(client_journal);
+    server_journal.pull_from(client_journal);
 
     if (unlock_after)
      unlock(client_journal);

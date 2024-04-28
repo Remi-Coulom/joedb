@@ -19,7 +19,7 @@ namespace joedb
 
    void lock(Readonly_Journal &client_journal) final
    {
-    client_journal.exclusive_lock();
+    client_journal.lock();
    }
 
    void unlock(Readonly_Journal &client_journal) final
@@ -29,14 +29,14 @@ namespace joedb
 
    int64_t pull(Writable_Journal &client_journal) final
    {
-    client_journal.refresh_checkpoint();
+    client_journal.pull();
     return client_journal.get_checkpoint_position();
    }
 
    int64_t lock_pull(Writable_Journal &client_journal) final
    {
-    client_journal.exclusive_lock();
-    return pull(client_journal);
+    client_journal.lock_pull();
+    return client_journal.get_checkpoint_position();
    }
 
    void push

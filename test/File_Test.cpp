@@ -55,7 +55,7 @@ TEST_F(File_Test, open_failure)
  );
 }
 
-#ifndef JOEDB_FILE_IS_PORTABLE_FILE
+#ifdef JOEDB_FILE_IS_LOCKABLE
 
 #ifndef JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
 /////////////////////////////////////////////////////////////////////////////

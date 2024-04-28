@@ -132,28 +132,49 @@ void joedb::Readonly_Journal::read_checkpoint
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::refresh_checkpoint()
+void joedb::Readonly_Journal::lock()
 /////////////////////////////////////////////////////////////////////////////
 {
- const int64_t old_position = file.get_position();
+ if (file.is_shared())
+  file.exclusive_lock_tail();
+}
 
- constexpr int64_t checkpoint_offset = 5 + 4;
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::unlock()
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (file.is_shared())
+  file.unlock_tail();
+}
 
- for (int retry = 3; --retry;)
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::pull(bool shared_lock)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::array<int64_t, 4> pos;
+
  {
-  std::array<int64_t, 4> pos[2];
+  if (shared_lock)
+   file.shared_lock_head();
 
-  file.raw_pread((char *)&pos[0], sizeof(pos[0]), checkpoint_offset);
-  file.raw_pread((char *)&pos[1], sizeof(pos[1]), checkpoint_offset);
+  file.raw_pread((char *)&pos, sizeof(pos), checkpoint_offset);
 
-  if (pos[0] == pos[1])
-  {
-   read_checkpoint(pos[0]);
-   break;
-  }
+  if (shared_lock)
+   file.unlock_head();
  }
 
- file.set_position(old_position);
+ read_checkpoint(pos);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::lock_pull()
+/////////////////////////////////////////////////////////////////////////////
+{
+ if (file.is_shared())
+ {
+  file.exclusive_lock_tail();
+  pull(false);
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

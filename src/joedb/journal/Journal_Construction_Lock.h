@@ -16,11 +16,16 @@ namespace joedb
   public:
    explicit Journal_Construction_Lock(Generic_File &file): file(file)
    {
-    if (file.is_shared())
-     file.exclusive_lock();
-
-    creating_new = file.get_mode() != Open_Mode::read_existing &&
-     file.get_size() == 0;
+    if (file.get_mode() == Open_Mode::read_existing)
+    {
+     file.shared_lock_head();
+     creating_new = false;
+    }
+    else
+    {
+     file.exclusive_lock_head();
+     creating_new = file.get_size() == 0;
+    }
    }
 
    Generic_File &get_file()
@@ -37,8 +42,7 @@ namespace joedb
    {
     try
     {
-     if (file.is_shared())
-      file.unlock();
+     file.unlock_head();
     }
     catch(...)
     {
