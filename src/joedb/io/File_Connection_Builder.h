@@ -30,7 +30,7 @@ namespace joedb
 
    const char *get_parameters_description() const final
    {
-    return "<file_name>";
+    return "<file>";
    }
 
    std::unique_ptr<Connection> build(int argc, char **argv) final
