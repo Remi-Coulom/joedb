@@ -89,6 +89,31 @@ TEST_F(File_Test, write_locked)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, lock_head_and_tail)
+{
+ File file("locked.tmp", Open_Mode::shared_write);
+ file.exclusive_lock_head();
+ file.exclusive_lock_tail();
+ file.unlock_tail();
+ file.unlock_head();
+ file.exclusive_lock_tail();
+ file.exclusive_lock_head();
+ file.unlock_head();
+ file.unlock_tail();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, shared_lock_head)
+{
+ File file_1("locked.tmp", Open_Mode::shared_write);
+ File file_2("locked.tmp", Open_Mode::shared_write);
+ file_1.shared_lock_head();
+ file_2.shared_lock_head();
+ file_1.unlock_head();
+ file_2.unlock_head();
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, partial_exclusive_lock)
 {
  File file_1("locked.tmp", Open_Mode::shared_write);
