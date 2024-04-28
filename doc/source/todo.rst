@@ -10,9 +10,7 @@ Journal File
   - Connection is Local_Connection, no need of two classes
   - remove check_shared and check_not_shared completely
   - all kinds of unit tests required for new available situations
-  - unit test for position invariance after pread and pwrite
   - use lock objects instead of calling lock and unlock functions
-  - make it work and test in Windows
   - check compatibility of flock and fcntl in Linux and MacOS
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505

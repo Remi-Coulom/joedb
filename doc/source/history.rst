@@ -1,6 +1,21 @@
 History
 =======
 
+- 2024-??-??: 9.0.0
+
+  - Dual locking: instead of using one global lock for a joedb file, this
+    version locks head and tail separately. This allows a much nicer handling
+    of concurrent access to files:
+
+    - The construction of a journal in shared_write mode does not have to wait
+      for the file to be unlocked any more.
+    - Concurrent reads properly use a read lock on the head of the file.
+    - In Posix environments, this changes the locking technique from using
+      ``flock`` to using ``fcntl``. Those two locking mechanisms are not
+      compatible in Linux, so it is important to avoid mixing joedb versions
+      because they may not understand each-other's locks. Windows and MacOS do
+      not have this problem.
+
 - 2024-04-23: 8.0.1
 
   - Fix missing test for fsync error.
