@@ -84,7 +84,6 @@ namespace joedb
   if (start < 0 || size < 0)
    return FALSE;
 
-#if 0
   ULARGE_INTEGER large_start;
   ULARGE_INTEGER large_size;
 
@@ -134,9 +133,6 @@ namespace joedb
   }
 
   return FALSE;
-#else
-  return true;
-#endif
  }
 
  /////////////////////////////////////////////////////////////////////////////
