@@ -28,11 +28,16 @@ joedb::Writable_Journal::Writable_Journal
   file.write<uint8_t>('d');
   file.write<uint8_t>('b');
   file.write<uint32_t>(version_number);
+  file.write<int64_t>(header_size);
+  file.write<int64_t>(header_size);
   file.write<int64_t>(0);
   file.write<int64_t>(0);
-  file.write<int64_t>(0);
-  file.write<int64_t>(0);
-  default_checkpoint();
+
+  file.flush();
+
+  if (get_default_commit_level() > Commit_Level::no_commit)
+   file.commit();
+
   file.set_mode(Open_Mode::write_existing);
  }
  else if (version_number > file_version)

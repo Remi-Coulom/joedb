@@ -253,6 +253,53 @@ TEST(Journal, unexpected_operation)
  }
 }
 
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, construction_with_create_new)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+  joedb::Writable_Journal journal(file);
+ }
+
+ std::remove("test.joedb");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, construction_with_shared_write)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
+  joedb::Writable_Journal journal(file);
+ }
+
+ std::remove("test.joedb");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, construction_with_read_existing)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+  joedb::Writable_Journal journal(file);
+ }
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::read_existing);
+  joedb::Readonly_Journal journal(file);
+ }
+
+ std::remove("test.joedb");
+}
+
 #ifdef JOEDB_FILE_IS_LOCKABLE
 /////////////////////////////////////////////////////////////////////////////
 TEST(Journal, pull)
