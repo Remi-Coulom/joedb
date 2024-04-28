@@ -102,6 +102,8 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/journal/File.cpp
   ../src/joedb/journal/Portable_File.cpp
 
+  ../test/Generic_File_Test.cpp
+
   ../test/Journal_Test.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
   ../src/joedb/journal/Writable_Journal.cpp
