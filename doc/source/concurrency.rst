@@ -77,7 +77,10 @@ concurrently.
 ``File_Connection``
 ^^^^^^^^^^^^^^^^^^^
 
-``File_Connection`` creates a connection to a file.
+``File_Connection`` creates a connection to a file. It is useful for unit
+testing, and for the connection tutorial. ``File_Connection`` can also be used
+to make a safe and clean copy of a database that is being used or contains a
+dirty uncheckpointed transaction.
 
 ``Server_Connection``
 ^^^^^^^^^^^^^^^^^^^^^
@@ -96,7 +99,6 @@ The code below shows how to connect to a server via ssh:
 .. literalinclude:: ../../src/joedb/concurrency/SSH_Server_Connection.h
    :language: c++
 
-
 .. _local_and_remote_concurrency:
 
 Combining Local and Remote Concurrency
@@ -104,8 +106,9 @@ Combining Local and Remote Concurrency
 
 A client is made of two parts: the local part (stored in a file), and the
 connection part. A client can handle concurrency for both parts simultaneously.
-That is to say, it is possible for two different clients to share a connection
-to the same remote server, and also share the same local file.
+That is to say, it is possible for two different clients running on the same
+machine to share a connection to the same remote server, and also share the
+same local file.
 
 .. _backup_client:
 
