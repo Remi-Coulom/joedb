@@ -89,8 +89,9 @@ ipo_add_executable(joedb_convert
 if(EXISTS "${GOOGLE_TEST}/include")
 
  add_executable(joedb_file_test
-  ../test/File_Test.cpp
   ../test/Test_Main.cpp
+
+  ../test/File_Test.cpp
   ../src/joedb/String_Logger.cpp
   ../src/joedb/Destructor_Logger.cpp
   ../src/joedb/journal/Generic_File.cpp
@@ -100,6 +101,16 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/File.cpp
   ../src/joedb/journal/Portable_File.cpp
+
+  ../test/Journal_Test.cpp
+  ../src/joedb/journal/Readonly_Journal.cpp
+  ../src/joedb/journal/Writable_Journal.cpp
+  ../src/joedb/Readable.cpp
+  ../src/joedb/Writable.cpp
+  ../src/joedb/interpreter/Database.cpp
+  ../src/joedb/interpreter/Database_Schema.cpp
+  ../src/joedb/interpreter/Table.cpp
+  ../src/joedb/is_identifier.cpp
  )
 
  add_executable(joedb_test
