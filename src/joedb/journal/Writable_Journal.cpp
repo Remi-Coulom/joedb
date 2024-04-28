@@ -61,7 +61,7 @@ int64_t joedb::Writable_Journal::pull_from(Readonly_Journal &journal)
   (
    journal.file,
    checkpoint_position,
-   source_checkpoint - checkpoint_position
+   size_t(source_checkpoint - checkpoint_position)
   );
 
   default_checkpoint();
