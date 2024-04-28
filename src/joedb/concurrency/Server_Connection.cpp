@@ -175,7 +175,7 @@ namespace joedb
   else
    throw Exception("Unexpected server reply");
 
-  if (unlock_after && client_journal.is_shared())
+  if (unlock_after)
    client_journal.unlock();
  }
 
