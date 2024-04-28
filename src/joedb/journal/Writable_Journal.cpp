@@ -33,6 +33,8 @@ joedb::Writable_Journal::Writable_Journal
   file.write<int64_t>(0);
   file.write<int64_t>(0);
 
+  file.flush();
+
   file.set_mode(Open_Mode::write_existing);
  }
  else if (version_number > file_version)
