@@ -151,6 +151,8 @@ void joedb::Readonly_Journal::unlock()
 void joedb::Readonly_Journal::pull(bool shared_lock)
 /////////////////////////////////////////////////////////////////////////////
 {
+ const int64_t old_position = file.get_position();
+
  std::array<int64_t, 4> pos;
 
  {
@@ -164,6 +166,8 @@ void joedb::Readonly_Journal::pull(bool shared_lock)
  }
 
  read_checkpoint(pos);
+
+ file.set_position(old_position);
 }
 
 /////////////////////////////////////////////////////////////////////////////

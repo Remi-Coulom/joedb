@@ -119,6 +119,8 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
 
    file.unlock_head();
   }
+
+  file.set_position(checkpoint_position);
  }
 }
 

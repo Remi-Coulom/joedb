@@ -337,19 +337,14 @@ namespace joedb
   public:
    virtual size_t raw_pread(char *data, size_t size, int64_t offset)
    {
-    const int64_t old_position = get_position();
     raw_seek(offset);
-    const size_t result = raw_read(data, size);
-    set_position(old_position);
-    return result;
+    return raw_read(data, size);
    }
 
    virtual void raw_pwrite(const char *data, size_t size, int64_t offset)
    {
-    const int64_t old_position = get_position();
     raw_seek(offset);
     raw_write(data, size);
-    set_position(old_position);
    }
 
   public:
