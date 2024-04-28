@@ -11,7 +11,6 @@ namespace joedb
  {
   protected:
    static void content_mismatch();
-   static void check_shared(Readonly_Journal &client_journal);
    static void check_not_shared(Readonly_Journal &client_journal);
 
   public:
