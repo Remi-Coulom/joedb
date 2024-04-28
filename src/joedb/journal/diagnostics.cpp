@@ -85,6 +85,13 @@ namespace joedb
   out << "sizeof(off_t) = " << sizeof(off_t) << '\n';
 #endif
   out << "File = " << JOEDB_INCLUDE(JOEDB_FILE, h) << '\n';
+  out << "braindead_posix_locking = ";
+#ifdef JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
+  out << 1;
+#else
+  out << 0;
+#endif
+  out << '\n';
   out << "web site: https://www.remi-coulom.fr/joedb/\n";
  }
 }

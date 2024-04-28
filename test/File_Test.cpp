@@ -56,13 +56,8 @@ TEST_F(File_Test, open_failure)
 }
 
 #ifndef JOEDB_FILE_IS_PORTABLE_FILE
-/////////////////////////////////////////////////////////////////////////////
-TEST_F(File_Test, is_shared)
-{
- File file("new.tmp", Open_Mode::shared_write);
- EXPECT_TRUE(file.is_shared());
-}
 
+#ifndef JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
@@ -87,24 +82,10 @@ TEST_F(File_Test, open_lock)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(File_Test, read_locked)
-{
- File locked_file("locked.tmp", Open_Mode::write_lock);
- File readonly_file("locked.tmp", Open_Mode::read_existing);
-}
-
-/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, write_locked)
 {
  File locked_file("locked.tmp", Open_Mode::write_lock);
  EXPECT_ANY_THROW(File("locked.tmp", Open_Mode::write_existing));
-}
-
-/////////////////////////////////////////////////////////////////////////////
-TEST_F(File_Test, share_locked)
-{
- File locked_file("locked.tmp", Open_Mode::write_lock);
- File shared_file("locked.tmp", Open_Mode::shared_write);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -143,6 +124,28 @@ TEST_F(File_Test, partial_exclusive_lock)
  file_1.unlock(0, 4);
  thread.join();
  EXPECT_TRUE(flag);
+}
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, is_shared)
+{
+ File file("new.tmp", Open_Mode::shared_write);
+ EXPECT_TRUE(file.is_shared());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, read_locked)
+{
+ File locked_file("locked.tmp", Open_Mode::write_lock);
+ File readonly_file("locked.tmp", Open_Mode::read_existing);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, share_locked)
+{
+ File locked_file("locked.tmp", Open_Mode::write_lock);
+ File shared_file("locked.tmp", Open_Mode::shared_write);
 }
 
 /////////////////////////////////////////////////////////////////////////////

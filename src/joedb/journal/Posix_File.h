@@ -3,6 +3,12 @@
 
 #include "joedb/journal/Generic_File.h"
 
+#include <fcntl.h>
+
+#ifndef F_OFD_SETLK
+#define JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
+#endif
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
