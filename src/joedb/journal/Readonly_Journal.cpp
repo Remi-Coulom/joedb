@@ -35,7 +35,7 @@ joedb::Readonly_Journal::Readonly_Journal
  file(lock.get_file()),
  file_version(0),
  checkpoint_index(0),
- checkpoint_position(0),
+ checkpoint_position(header_size),
  table_of_last_operation(Table_Id(0)),
  record_of_last_operation(Record_Id(0)),
  field_of_last_update(Field_Id(0))

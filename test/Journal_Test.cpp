@@ -262,6 +262,7 @@ TEST(Journal, construction_with_create_new)
  {
   joedb::File file("test.joedb", joedb::Open_Mode::create_new);
   joedb::Writable_Journal journal(file);
+  EXPECT_EQ(41, journal.get_checkpoint_position());
  }
 
  std::remove("test.joedb");
