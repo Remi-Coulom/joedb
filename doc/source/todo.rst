@@ -3,6 +3,7 @@ TODO
 
 Journal File
 ------------
+
 - Proper locking:
 
   - files opened for exclusive write
@@ -38,6 +39,18 @@ Journal File
     - is_shared() test encapsulated inside Writable_Journal
     - no need of "if is_shared()" in Server_Connection
     - Local_Connection works with exclusive file
+
+  - Notes:
+
+    - Must benchmark: "If an application wishes only to do entire file locking,
+      the flock(2) system call is much more efficient."
+      https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fcntl.2.html
+    - github action is failing lock tests for macos 11 and 12: old Posix
+      fcntl lock do not work when the same file is opened twice in the same
+      process. Disable unit tests in this case.
+    - Windows lock is not advisory: locking all tail (from end of head to end
+      of file), prevents reading from other processes. Lock a byte very very
+      far from the start to make it behave like an advisory lock.
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 - Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
