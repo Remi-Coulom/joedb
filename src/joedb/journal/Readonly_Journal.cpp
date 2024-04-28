@@ -156,13 +156,9 @@ void joedb::Readonly_Journal::pull()
  std::array<int64_t, 4> pos;
 
  {
-  if (!file.tail_is_locked())
-   file.shared_lock_head();
-
+  file.shared_lock_head();
   file.raw_pread((char *)&pos, sizeof(pos), checkpoint_offset);
-
-  if (!file.tail_is_locked())
-   file.unlock_head();
+  file.unlock_head();
  }
 
  read_checkpoint(pos);

@@ -306,7 +306,6 @@ namespace joedb
 
    Open_Mode mode;
    const bool shared;
-   bool locked_tail;
 
   protected:
    virtual size_t raw_read(char *data, size_t size) = 0;
@@ -353,12 +352,7 @@ namespace joedb
    Generic_File(Open_Mode mode):
    //////////////////////////////////////////////////////////////////////////
     mode(mode),
-    shared(mode == Open_Mode::shared_write),
-    locked_tail
-    (
-     mode != Open_Mode::shared_write &&
-     mode != Open_Mode::read_existing
-    )
+    shared(mode == Open_Mode::shared_write)
    {
     write_buffer_index = 0;
     reset_read_buffer();
@@ -391,23 +385,8 @@ namespace joedb
 
    static constexpr int64_t last_position = (1ULL << 63) - 1;
 
-   void exclusive_lock_tail()
-   {
-    exclusive_lock(last_position, 1);
-    locked_tail = true;
-   }
-
-   void unlock_tail()
-   {
-    unlock(last_position, 1);
-    locked_tail = false;
-   }
-
-   bool tail_is_locked() const
-   {
-    return locked_tail;
-   }
-
+   void exclusive_lock_tail() {exclusive_lock(last_position, 1);}
+   void unlock_tail() {unlock(last_position, 1);}
    void shared_lock_head() {shared_lock(0, 1);}
    void exclusive_lock_head() {exclusive_lock(0, 1);}
    void unlock_head() {unlock(0, 1);}
