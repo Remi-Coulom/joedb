@@ -19,7 +19,7 @@ namespace joedb
 
   if (argc <= 1)
   {
-   std::cerr << "usage: " << argv[0] << " <file> [<blob_file>]\n";
+   std::cerr << "usage: " << argv[0] << " <file> [<blob_file>]\n\n";
    file_parser.print_help(std::cerr);
    return 1;
   }
