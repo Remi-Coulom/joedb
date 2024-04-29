@@ -12,8 +12,11 @@
 #define LOG(x) log([&](std::ostream &out){out << x;})
 #define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
 
+//#define JOEDB_SERVER_TIME_LOGGING
+
 namespace joedb
 {
+#ifdef JOEDB_SERVER_TIME_LOGGING
  ////////////////////////////////////////////////////////////////////////////
  int64_t Server::get_milliseconds() const
  ////////////////////////////////////////////////////////////////////////////
@@ -23,12 +26,13 @@ namespace joedb
    std::chrono::steady_clock::now() - start_time
   ).count();
  }
+#endif
 
  ////////////////////////////////////////////////////////////////////////////
  std::ostream &Server::Session::write_id(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-#if 0
+#ifdef JOEDB_SERVER_TIME_LOGGING
   out << server.get_milliseconds() << ' ';
 #endif
 
@@ -876,6 +880,14 @@ namespace joedb
    start_interrupt_timer();
    start_accept();
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::send_signal(int status)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Signal::set_signal(status);
+  io_context.post([this](){handle_interrupt_timer(std::error_code());});
  }
 
  ////////////////////////////////////////////////////////////////////////////

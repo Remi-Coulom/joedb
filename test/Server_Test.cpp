@@ -8,6 +8,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Shared_Memory_File.h"
 #include "joedb/journal/File.h"
+#include "joedb/Signal.h"
 
 #include "Test_Network_Channel.h"
 
@@ -836,5 +837,45 @@ namespace joedb
 
   server.pause();
   thread.join();
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ static void test_signal(Test_Server &server, int signal)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Sequence sequence;
+
+  std::thread thread([&server, &sequence]()
+  {
+   try
+   {
+    Memory_File file;
+    Test_Client client(server, file);
+    sequence.send(1);
+    sequence.wait_for(2);
+   }
+   catch(...)
+   {
+   }
+  });
+
+  server.restart();
+  sequence.wait_for(1);
+  server.server.send_signal(signal);
+  sequence.send(2);
+  server.pause();
+  thread.join();
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, signal)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+
+  test_signal(server, Signal::no_signal);
+  test_signal(server, SIGUSR2);
+  test_signal(server, SIGUSR1);
+  test_signal(server, SIGINT);
  }
 }

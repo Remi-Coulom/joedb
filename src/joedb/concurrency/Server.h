@@ -196,6 +196,7 @@ namespace joedb
    void set_log(std::ostream *new_log);
    void pause();
    void restart();
+   void send_signal(int status);
    int64_t get_milliseconds() const;
 
    ~Server();
