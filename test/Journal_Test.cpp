@@ -269,20 +269,6 @@ TEST(Journal, construction_with_create_new)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Journal, construction_with_shared_write)
-/////////////////////////////////////////////////////////////////////////////
-{
- std::remove("test.joedb");
-
- {
-  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
-  joedb::Writable_Journal journal(file);
- }
-
- std::remove("test.joedb");
-}
-
-/////////////////////////////////////////////////////////////////////////////
 TEST(Journal, construction_with_read_existing)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -350,6 +336,38 @@ TEST(Journal, pull)
 
  std::remove("test.joedb");
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, shared_pull_performance)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
+  joedb::Writable_Journal journal(file);
+
+  for (int i = 10000; --i >= 0;)
+   journal.pull();
+ }
+
+ std::remove("test.joedb");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, construction_with_shared_write)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::remove("test.joedb");
+
+ {
+  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
+  joedb::Writable_Journal journal(file);
+ }
+
+ std::remove("test.joedb");
+}
+
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -380,23 +398,6 @@ TEST(Journal, pull_performance)
 
  {
   joedb::File file("test.joedb", joedb::Open_Mode::create_new);
-  joedb::Writable_Journal journal(file);
-
-  for (int i = 10000; --i >= 0;)
-   journal.pull();
- }
-
- std::remove("test.joedb");
-}
-
-/////////////////////////////////////////////////////////////////////////////
-TEST(Journal, shared_pull_performance)
-/////////////////////////////////////////////////////////////////////////////
-{
- std::remove("test.joedb");
-
- {
-  joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
   joedb::Writable_Journal journal(file);
 
   for (int i = 10000; --i >= 0;)
