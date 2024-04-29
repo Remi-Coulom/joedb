@@ -81,6 +81,14 @@ if(libssh_FOUND)
 endif()
 
 if (UNIX)
+ # -> 64-bit off_t even in 32-bit code
+ add_definitions(-D_FILE_OFFSET_BITS=64)
+
+ if (CMAKE_CROSSCOMPILING_EMULATOR)
+  # This is necessary for qemu to work, although OFD macros are defined
+  add_definitions(-DJOEDB_HAS_BRAINDEAD_POSIX_LOCKING)
+ endif()
+
  add_library(joedb SHARED ${JOEDB_SOURCES})
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
  target_uses_ipo(joedb)
