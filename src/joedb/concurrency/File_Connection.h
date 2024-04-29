@@ -72,8 +72,11 @@ namespace joedb
     bool unlock_after
    ) final
    {
+    if (!server_journal.is_locked())
+     server_journal.lock_pull();
+
     if (server_checkpoint != server_journal.get_checkpoint_position())
-     throw Exception("pushing from bad checkpoint");
+     throw Exception("Conflict: push failed");
 
     server_journal.pull_from(client_journal);
 

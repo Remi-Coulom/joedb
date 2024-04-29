@@ -119,6 +119,10 @@ namespace joedb
    void unlock();
    void pull();
    void lock_pull();
+   bool is_locked() const
+   {
+    return file.tail_is_locked();
+   }
 
    bool is_same_file(const Generic_File &other_file) const
    {
