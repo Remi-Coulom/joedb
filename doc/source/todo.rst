@@ -6,9 +6,6 @@ Journal File
 
 - Proper locking:
 
-  - Need a separate File_Parser to:
-    - parse connection file like client file
-  - content-matching option (full, fast, none)
   - all kinds of unit tests required for new available situations
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
@@ -111,6 +108,7 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
+- content-matching option (full, fast, none)
 - better support for readonly connection (and client): separate types?
 - Pull-only connection (eg when serving a read-only file):
   -> joedb_client does not offer transaction and push

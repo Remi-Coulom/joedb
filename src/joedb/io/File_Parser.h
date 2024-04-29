@@ -40,6 +40,8 @@ namespace joedb
     int &arg_index
    );
 
+   Generic_File &get_file() const {return *file;}
+
    void print_help(std::ostream &out) const;
  };
 }
