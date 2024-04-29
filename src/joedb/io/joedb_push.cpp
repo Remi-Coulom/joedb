@@ -1,7 +1,7 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/Connection_Parser.h"
-#include "joedb/journal/File.h"
+#include "joedb/io/File_Parser.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/concurrency/Connection.h"
 
@@ -17,11 +17,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = false;
+  File_Parser file_parser(Open_Mode::read_existing);
   Connection_Parser connection_parser(local);
 
   int arg_index = 1;
   bool follow = false;
-  const char *file_name = nullptr;
 
   if (arg_index < argc && std::strcmp(argv[arg_index], "--follow") == 0)
   {
@@ -29,21 +29,16 @@ namespace joedb
    arg_index++;
   }
 
-  if (arg_index < argc)
-  {
-   file_name = argv[arg_index];
-   arg_index++;
-  }
-
-  if (!file_name)
+  if (arg_index >= argc)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--follow] <file_name> <connection>\n";
+   std::cerr << " [--follow] <file> <connection>\n\n";
+   file_parser.print_help(std::cerr);
    connection_parser.print_help(std::cerr);
    return 1;
   }
 
-  File file(file_name, Open_Mode::read_existing);
+  Generic_File &file = file_parser.parse(std::cout, argc, argv, arg_index);
   Readonly_Journal journal(file);
 
   std::unique_ptr<Connection> connection = connection_parser.build

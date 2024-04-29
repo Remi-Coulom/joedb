@@ -17,15 +17,25 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "<file> is one of:\n";
-  out << " [file] [--<open_mode>] <file_name>\n";
-  out << " <open_mode> is one of:\n";
 
-  for (size_t i = 0; i < open_mode_strings.size(); i++)
+  if (default_open_mode == Open_Mode::read_existing)
   {
-   out << "  " << open_mode_strings[i];
-   if (Open_Mode(i) == default_open_mode)
-    out << " (default)";
-   out << '\n';
+   out << " [file] <file_name>\n";
+  }
+  else
+  {
+   out << " [file] [--<open_mode>] <file_name>\n";
+   out << " <open_mode> is one of:\n";
+
+   for (size_t i = 0; i < open_mode_strings.size(); i++)
+   {
+    out << "  " << open_mode_strings[i];
+    if (Open_Mode(i) == default_open_mode)
+     out << " (default)";
+    out << '\n';
+   }
+
+   out << " memory\n";
   }
 
 #ifdef JOEDB_HAS_SSH
