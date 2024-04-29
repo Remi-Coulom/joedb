@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <memory>
+#include <sstream>
 
 namespace joedb
 {
@@ -25,7 +26,8 @@ namespace joedb
 
   int arg_index = 1;
 
-  Generic_File &file = file_parser.parse(std::cout, argc, argv, arg_index);
+  std::ostream null_stream(nullptr);
+  Generic_File &file = file_parser.parse(null_stream, argc, argv, arg_index);
 
   std::unique_ptr<File_Parser> blob_file_parser;
   Generic_File *blob_file = nullptr;
@@ -34,7 +36,7 @@ namespace joedb
   if (arg_index < argc)
   {
    blob_file_parser.reset(new File_Parser());
-   blob_file = &blob_file_parser->parse(std::cout, argc, argv, arg_index);
+   blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
 
    if (blob_file->get_mode() != Open_Mode::read_existing)
    {
