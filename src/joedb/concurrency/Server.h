@@ -171,18 +171,12 @@ namespace joedb
 
    std::ostream *log_pointer;
 
-   template<typename F> void log(F f) noexcept
+   template<typename F> void log(F f)
    {
     if (log_pointer)
     {
-     try
-     {
-      f(*log_pointer);
-      log_pointer->flush();
-     }
-     catch (...)
-     {
-     }
+     f(*log_pointer);
+     log_pointer->flush();
     }
    }
 
