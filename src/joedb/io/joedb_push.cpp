@@ -35,7 +35,7 @@ namespace joedb
    arg_index++;
   }
 
-  if (arg_index >= argc)
+  if (!file_name)
   {
    std::cerr << "usage: " << argv[0];
    std::cerr << " [--follow] <file_name> <connection>\n";
