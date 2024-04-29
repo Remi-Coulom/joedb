@@ -6,7 +6,12 @@ Journal File
 
 - Concurrency improvements:
 
-  - must check matching content after pull_data
+  - cleanly handle conflicts that can arise from concurrent modifications on both sides of the connection
+
+    - keep track of the checkpoint up to which contents are known to be identical
+    - when pushing or pulling, always push and pull from this checkpoint
+    - in case both sides advanced since last check, fail as conflict
+
   - all kinds of unit tests required for new available situations
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
