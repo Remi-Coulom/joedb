@@ -57,4 +57,4 @@ jobs:
 
     - name: about
       working-directory: /
-      run: echo "about" | joedbi
+      run: echo "about" | joedbi memory
