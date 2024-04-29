@@ -21,7 +21,8 @@ namespace joedb
    File_Construction(int argc, char **argv)
    {
     int arg_index = 0;
-    file_parser.parse(std::cout, argc, argv, arg_index);
+    std::ostream null_stream(nullptr);
+    file_parser.parse(null_stream, argc, argv, arg_index);
    }
  };
 
