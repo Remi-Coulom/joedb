@@ -182,3 +182,4 @@ Other Ideas
 - Raw commands in interpreter?
 - import from SQL
 - rapidly undo-able history?
+- namespace for each subdir?
