@@ -8,7 +8,6 @@ Journal File
 
   - Need a separate File_Parser to:
     - parse connection file like client file
-    - parse file parameter of joedbi
     - parse file parameter of joedb_push
   - content-matching option (full, fast, none)
   - all kinds of unit tests required for new available situations
