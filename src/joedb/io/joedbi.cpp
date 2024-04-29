@@ -15,7 +15,6 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   File_Parser file_parser;
-  std::unique_ptr<Writable_Journal> writable_journal;
 
   if (argc <= 1)
   {
@@ -60,6 +59,7 @@ namespace joedb
   else
   {
    Writable_Journal journal(file);
+   journal.lock_pull();
    journal.replay_log(db);
    Multiplexer multiplexer{db, journal};
    Interpreter interpreter
