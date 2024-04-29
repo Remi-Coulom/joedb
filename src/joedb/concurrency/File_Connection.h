@@ -41,9 +41,10 @@ namespace joedb
    {
     client_journal.lock_pull();
     server_journal.pull();
-    int64_t result = client_journal.pull_from(server_journal);
+    client_journal.pull_from(server_journal);
     client_journal.unlock();
-    return result;
+
+    return server_journal.get_checkpoint_position();;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -52,7 +53,10 @@ namespace joedb
    {
     client_journal.lock_pull();
     server_journal.lock_pull();
-    return client_journal.pull_from(server_journal);
+
+    client_journal.pull_from(server_journal);
+
+    return server_journal.get_checkpoint_position();
    }
 
    //////////////////////////////////////////////////////////////////////////
