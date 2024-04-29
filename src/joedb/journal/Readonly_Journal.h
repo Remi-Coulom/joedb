@@ -115,7 +115,6 @@ namespace joedb
    bool is_empty() const {return file.get_size() == header_size;}
    bool is_shared() const {return file.is_shared();}
 
-   void lock();
    void unlock();
    void pull();
    void lock_pull();

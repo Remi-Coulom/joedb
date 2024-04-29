@@ -123,7 +123,7 @@ TEST(Local_Connection, transaction_frequency)
 
   for (int i = 10000; --i >= 0;)
   {
-   journal.lock();
+   journal.lock_pull();
    journal.unlock();
   }
  }
