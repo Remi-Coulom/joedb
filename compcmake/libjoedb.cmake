@@ -36,6 +36,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/Command_Interpreter.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Client_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Client_Parser.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/File_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Readable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Writable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Readable_Writable_Command_Processor.cpp

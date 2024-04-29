@@ -26,6 +26,7 @@ namespace joedb
   bool default_has_db,
   Open_Mode default_open_mode
  ):
+  file_parser(default_open_mode),
   connection_parser(local),
   default_has_db(default_has_db),
   default_open_mode(default_open_mode)
@@ -42,23 +43,8 @@ namespace joedb
    out << " [--db]";
 
   out << " <file> <connection>\n\n";
-  out << "<file> is one of:\n";
 
-  out << " [file] [--<open_mode>] <file_name>\n";
-  out << " <open_mode> is one of:\n";
-
-  for (size_t i = 0; i < open_mode_strings.size(); i++)
-  {
-   out << "  " << open_mode_strings[i];
-   if (Open_Mode(i) == default_open_mode)
-    out << " (default)";
-   out << '\n';
-  }
-
-#ifdef JOEDB_HAS_SSH
-  out << " sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
-#endif
-  out << " memory\n";
+  file_parser.print_help(out);
   connection_parser.print_help(out);
  }
 
@@ -82,109 +68,30 @@ namespace joedb
    has_db = true;
   }
 
-  if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
-  {
-   client_file.reset(new Memory_File());
-   arg_index++;
-  }
-#ifdef JOEDB_HAS_SSH
-  else if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)
-  {
-   arg_index++;
-
-   unsigned port = 22;
-   if (arg_index + 4 < argc && std::strcmp(argv[arg_index], "--port") == 0)
-   {
-    arg_index++;
-    port = uint16_t(std::atoi(argv[arg_index++]));
-   }
-
-   int verbosity = 0;
-   if (arg_index + 4 < argc && std::strcmp(argv[arg_index], "--verbosity") == 0)
-   {
-    arg_index++;
-    verbosity = std::atoi(argv[arg_index++]);
-   }
-
-   const char * const user = argv[arg_index++];
-   const char * const host = argv[arg_index++];
-
-   std::cout << "Creating ssh Session... ";
-   std::cout.flush();
-
-   ssh_session.reset(new ssh::Session(user, host, port, verbosity));
-
-   std::cout << "OK\n";
-
-   std::cout << "Initializing sftp... ";
-   std::cout.flush();
-
-   sftp.reset(new ssh::SFTP(*ssh_session));
-
-   std::cout << "OK\n";
-
-   const char * const file_name = argv[arg_index++];
-
-   std::cout << "Opening file... ";
-
-   client_file.reset(new SFTP_File(*sftp, file_name));
-
-   std::cout << "OK\n";
-  }
-#endif
-  else
-  {
-   if (arg_index < argc && std::strcmp(argv[arg_index], "file") == 0)
-    arg_index++;
-
-   joedb::Open_Mode open_mode = default_open_mode;
-
-   for (size_t i = 0; i < open_mode_strings.size(); i++)
-   {
-    const std::string option = std::string("--") + open_mode_strings[i];
-    if (arg_index < argc && option == argv[arg_index])
-    {
-     open_mode = Open_Mode(i);
-     arg_index++;
-    }
-   }
-
-   const char *file_name = nullptr;
-   if (arg_index < argc)
-   {
-    file_name = argv[arg_index];
-    arg_index++;
-   }
-
-   std::cout << "Opening local file (open_mode = ";
-   std::cout << open_mode_strings[size_t(open_mode)] << ") ... ";
-   std::cout.flush();
-
-   if (file_name && *file_name)
-   {
-    client_file.reset(new File(file_name, open_mode));
-    std::cout << "OK\n";
-   }
-   else
-    throw Runtime_Error("missing file name");
-  }
+  Generic_File &client_file = file_parser.parse
+  (
+   std::cout,
+   argc,
+   argv,
+   arg_index
+  );
 
   std::cout << "Creating client data (has_db = " << has_db << ") ... ";
   std::cout.flush();
 
   if (has_db)
   {
-   if (client_file->get_mode() == Open_Mode::read_existing)
-    client_data.reset(new Readonly_Interpreted_Client_Data(*client_file));
+   if (client_file.get_mode() == Open_Mode::read_existing)
+    client_data.reset(new Readonly_Interpreted_Client_Data(client_file));
    else
-    client_data.reset(new Writable_Interpreted_Client_Data(*client_file));
+    client_data.reset(new Writable_Interpreted_Client_Data(client_file));
   }
   else
   {
-   if (client_file->get_mode() == Open_Mode::read_existing)
-    client_data.reset(new Readonly_Journal_Client_Data(*client_file));
+   if (client_file.get_mode() == Open_Mode::read_existing)
+    client_data.reset(new Readonly_Journal_Client_Data(client_file));
    else
-    client_data.reset(new Writable_Journal_Client_Data(*client_file));
+    client_data.reset(new Writable_Journal_Client_Data(client_file));
   }
 
   std::cout << "OK\n";
