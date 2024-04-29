@@ -100,7 +100,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/Posthumous_Catcher.cpp
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/File.cpp
-  ../src/joedb/journal/Portable_File.cpp
 
   ../test/Generic_File_Test.cpp
 
@@ -114,6 +113,10 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/interpreter/Table.cpp
   ../src/joedb/is_identifier.cpp
  )
+
+if (NOT JOEDB_PORTABLE)
+ target_sources(joedb_file_test PRIVATE ../src/joedb/journal/Portable_File.cpp)
+endif()
 
  add_executable(joedb_test
   ../test/Async_Test.cpp

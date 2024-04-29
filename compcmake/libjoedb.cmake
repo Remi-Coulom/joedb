@@ -50,7 +50,6 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Connection_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Writable_Journal.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Journal.cpp
