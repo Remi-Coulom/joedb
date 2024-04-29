@@ -27,7 +27,10 @@ namespace joedb
    std::unique_ptr<Generic_File> file;
 
   public:
-   File_Parser(Open_Mode default_open_mode = Open_Mode::write_lock):
+   File_Parser
+   (
+    Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new
+   ):
     default_open_mode(default_open_mode)
    {
    }
