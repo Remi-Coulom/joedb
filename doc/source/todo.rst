@@ -9,6 +9,7 @@ Journal File
   - Need a separate File_Parser to:
     - parse connection file like client file
     - parse file parameter of joedbi
+    - parse file parameter of joedb_push
   - all kinds of unit tests required for new available situations
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
