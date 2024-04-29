@@ -43,8 +43,8 @@ namespace joedb
     enum State
     {
      not_locking,
-     waiting_for_lock,
      waiting_for_lock_pull,
+     waiting_for_lock_push,
      locking
     };
     State state;

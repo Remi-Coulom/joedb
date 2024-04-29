@@ -9,25 +9,6 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::lock(Readonly_Journal &client_journal)
- ////////////////////////////////////////////////////////////////////////////
- {
-  client_journal.lock();
-
-  Channel_Lock lock(channel);
-
-  LOG(get_session_id() << ": obtaining lock... ");
-
-  buffer[0] = 'l';
-  lock.write(buffer.data(), 1);
-  lock.read(buffer.data(), 1);
-  if (buffer[0] != 'l')
-   throw Exception("Unexpected server reply");
-
-  LOG("OK\n");
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Server_Connection::unlock(Readonly_Journal &client_journal)
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -262,7 +243,7 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 6;
+  const int64_t client_version = 7;
   to_network(client_version, buffer.data() + 5);
 
   {
@@ -291,7 +272,7 @@ namespace joedb
 
   LOG("server_version = " << server_version << ". ");
 
-  if (server_version < client_version)
+  if (server_version < 8)
    throw Exception("Unsupported server version");
 
   session_id = from_network(buffer.data() + 5 + 8);

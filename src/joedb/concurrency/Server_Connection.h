@@ -31,7 +31,6 @@ namespace joedb
    enum {keep_alive_interval = 240};
 
    int64_t handshake(Readonly_Journal &client_journal) final;
-   void lock(Readonly_Journal &client_journal) final;
    void unlock(Readonly_Journal &client_journal) final;
    int64_t pull(Writable_Journal &client_journal, char pull_type);
    int64_t shared_pull(Writable_Journal &client_journal, char pull_type);

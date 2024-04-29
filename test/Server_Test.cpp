@@ -435,7 +435,7 @@ namespace joedb
     sequence.increment();
 
     sequence.wait_for(3);
-    client.connection.lock(client.client.get_readonly_journal());
+    client.connection.lock_pull(client.client.get_writable_journal());
     sequence.send(4);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     client.connection.unlock(client.client.get_readonly_journal());
@@ -452,7 +452,7 @@ namespace joedb
     sequence.increment();
 
     sequence.wait_for(4);
-    client.connection.lock(client.client.get_readonly_journal());
+    client.connection.lock_pull(client.client.get_writable_journal());
     sequence.wait_for(5);
     client.connection.unlock(client.client.get_readonly_journal());
    }
@@ -467,7 +467,7 @@ namespace joedb
     sequence.increment();
 
     sequence.wait_for(4);
-    client.connection.lock(client.client.get_readonly_journal());
+    client.connection.lock_pull(client.client.get_writable_journal());
     sequence.wait_for(5);
     client.connection.unlock(client.client.get_readonly_journal());
    }
@@ -577,7 +577,7 @@ namespace joedb
   Test_Server server(false, std::chrono::seconds(1));
   Memory_File client_file;
   Test_Client client(server, client_file);
-  client.connection.lock(client.client.get_readonly_journal());
+  client.connection.lock_pull(client.client.get_writable_journal());
   std::this_thread::sleep_for(std::chrono::seconds(2));
   client.connection.unlock(client.client.get_readonly_journal());
  }
@@ -605,11 +605,11 @@ namespace joedb
   Memory_File client_file;
   {
    Test_Client client(server, client_file);
-   client.connection.lock(client.client.get_readonly_journal());
+   client.connection.lock_pull(client.client.get_writable_journal());
   }
   {
    Test_Client client(server, client_file);
-   client.connection.lock(client.client.get_readonly_journal());
+   client.connection.lock_pull(client.client.get_writable_journal());
   }
  }
 
@@ -656,7 +656,7 @@ namespace joedb
    }
   );
 
-  client.connection.lock(client.client.get_readonly_journal());
+  client.connection.lock_pull(client.client.get_writable_journal());
   client.connection.unlock(client.client.get_readonly_journal());
 
   EXPECT_EQ(shared_client.get_database().get_tables().size(), 0);
@@ -685,8 +685,11 @@ namespace joedb
   Memory_File client_file;
   Test_Client client(server, client_file);
 
-  client.connection.lock(client.client.get_readonly_journal());
-  client.connection.lock(client.client.get_readonly_journal());
+  client.connection.lock_pull(client.client.get_writable_journal());
+  EXPECT_ANY_THROW
+  (
+   client.connection.lock_pull(client.client.get_writable_journal())
+  );
  }
 
  /////////////////////////////////////////////////////////////////////////////

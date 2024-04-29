@@ -58,8 +58,6 @@ namespace joedb
   {
    int64_t server_checkpoint = connection->handshake(journal);
 
-   connection->lock(journal);
-
    while (true)
    {
     journal.pull();

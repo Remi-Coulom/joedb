@@ -55,7 +55,7 @@ TEST(Server_Connection, session)
  file.write<char>('e');
  file.write<char>('d');
  file.write<char>('b');
- file.write<int64_t>(7);
+ file.write<int64_t>(8);
  file.write<int64_t>(1234);
  file.write<int64_t>(41);
  file.write<char>('H');

@@ -18,7 +18,6 @@ p      checkpoint        locked-push
 U      checkpoint        push-unlock
        size
        data
-l                        lock
 u                        unlock
 H      checkpoint        check SHA-256 hash code
        hash (32 bytes)
@@ -45,7 +44,6 @@ L      checkpoint       reply to L
 U                       reply to U or p when the push succeeded
 C                       reply to U or p when the push failed (conflict)
 R                       reply to U or p when the push failed (read-only)
-l                       reply to l
 u                       reply to u (no timeout)
 t                       reply to u, U, or p in case of timeout
 H                       reply to H, hash is matching

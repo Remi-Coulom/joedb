@@ -18,11 +18,6 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   virtual void lock(Readonly_Journal &client_journal)
-   {
-    client_journal.lock();
-   }
-
    virtual void unlock(Readonly_Journal &client_journal)
    {
     client_journal.unlock();

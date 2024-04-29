@@ -115,9 +115,7 @@ namespace joedb
 
    LOGID("locking\n");
 
-   if (session->state == Session::State::waiting_for_lock)
-    write_buffer_and_next_command(session, 1);
-   else if (session->state == Session::State::waiting_for_lock_pull)
+   if (session->state == Session::State::waiting_for_lock_pull)
     pull(session);
 
    session->state = Session::State::locking;
@@ -140,10 +138,7 @@ namespace joedb
    lock_dequeue();
   }
   else
-  {
-   LOGID("Warning: locking an already locked session\n");
-   write_buffer_and_next_command(session, 1);
-  }
+   LOGID("Error: locking an already locked session\n");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -309,7 +304,7 @@ namespace joedb
    else if (!locked)
    {
     LOGID("Taking the lock for push attempt.\n");
-    lock(session, Session::State::locking);
+    lock(session, Session::State::waiting_for_lock_push);
    }
 
    const bool conflict = (size != 0) &&
@@ -522,10 +517,6 @@ namespace joedb
      );
     break;
 
-    case 'l':
-     lock(session, Session::State::waiting_for_lock);
-    break;
-
     case 'u':
      if (session->state == Session::State::locking)
       unlock(*session);
@@ -610,7 +601,7 @@ namespace joedb
   LOGID("client_version = " << client_version << '\n');
 
   {
-   const int64_t server_version = client_version < 5 ? 0 : 7;
+   const int64_t server_version = client_version < 7 ? 0 : 8;
    to_network(server_version, session->buffer.data() + 5);
   }
 
