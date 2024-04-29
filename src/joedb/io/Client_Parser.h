@@ -4,7 +4,7 @@
 #include "joedb/io/File_Parser.h"
 #include "joedb/io/Connection_Parser.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Client_Data.h"
+#include "joedb/concurrency/Interpreted_Client_Data.h"
 
 namespace joedb
 {
@@ -16,20 +16,14 @@ namespace joedb
    File_Parser file_parser;
    Connection_Parser connection_parser;
 
-   const bool default_has_db;
    const Open_Mode default_open_mode;
 
-   std::unique_ptr<Client_Data> client_data;
+   std::unique_ptr<Interpreted_Client_Data> client_data;
    std::unique_ptr<Connection> connection;
    std::unique_ptr<Client> client;
 
   public:
-   Client_Parser
-   (
-    bool local,
-    bool default_has_db,
-    Open_Mode default_open_mode
-   );
+   Client_Parser(bool local, Open_Mode default_open_mode);
 
    Client &parse(int argc, char **argv);
 

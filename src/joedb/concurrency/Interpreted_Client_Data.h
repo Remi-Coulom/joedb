@@ -16,10 +16,7 @@ namespace joedb
    Database database;
 
   public:
-   const Database &get_database() const
-   {
-    return database;
-   }
+   virtual const Database &get_database() = 0;
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -39,19 +36,24 @@ namespace joedb
 
    Multiplexer &get_multiplexer()
    {
+    journal.play_until_checkpoint(database);
     return multiplexer;
    }
 
-   bool is_readonly() const final {return false;}
+   const Database &get_database() final
+   {
+    journal.play_until_checkpoint(database);
+    return database;
+   }
+
+   bool is_readonly() const final
+   {
+    return false;
+   }
 
    Writable_Journal &get_writable_journal() final
    {
     return journal;
-   }
-
-   void update() final
-   {
-    journal.play_until_checkpoint(database);
    }
  };
 
@@ -68,16 +70,20 @@ namespace joedb
    {
    }
 
-   bool is_readonly() const final {return true;}
+   bool is_readonly() const final
+   {
+    return true;
+   }
 
    Readonly_Journal &get_readonly_journal() final
    {
     return journal;
    }
 
-   void update() final
+   const Database &get_database() final
    {
     journal.play_until_checkpoint(database);
+    return database;
    }
  };
 }

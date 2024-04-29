@@ -512,7 +512,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     return db.journal;
    }
 
-   void update() final
+   void update()
    {
     db.ready_to_write = false;
     db.journal.play_until_checkpoint(db);
@@ -527,8 +527,9 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
   private:
    int64_t schema_checkpoint;
 
-   void throw_if_schema_changed()
+   void update_and_throw_if_schema_changed()
    {
+    update();
     if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
    }
@@ -547,7 +548,10 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
+    update();
+
     joedb::Client::transaction([this](joedb::Client_Data &data){
+     update();
      db.check_schema();
      db.auto_upgrade();
     });
@@ -555,15 +559,16 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     schema_checkpoint = db.schema_journal.get_checkpoint_position();
    }
 
-   const Database &get_database() const
+   const Database &get_database()
    {
+    update();
     return db;
    }
 
    int64_t pull()
    {
     const int64_t result = joedb::Client::pull();
-    throw_if_schema_changed();
+    update_and_throw_if_schema_changed();
     return result;
    }
 
@@ -571,7 +576,7 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    {
     joedb::Client::transaction([&](joedb::Client_Data &data)
     {
-     throw_if_schema_changed();
+     update_and_throw_if_schema_changed();
      transaction(db);
     });
    }

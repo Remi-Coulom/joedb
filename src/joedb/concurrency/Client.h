@@ -72,10 +72,9 @@ namespace joedb
     connection(connection),
     server_checkpoint(connection.handshake(data.get_readonly_journal()))
    {
-    data.update();
    }
 
-   const Client_Data &get_data() const {return data;}
+   Client_Data &get_data() const {return data;}
    const Readonly_Journal &get_journal() {return data.get_readonly_journal();}
    bool is_readonly() const {return data.is_readonly();}
 
@@ -100,7 +99,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     data.get_readonly_journal().pull();
-    data.update();
+    // TODO: check no mismatch with connection
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -116,7 +115,6 @@ namespace joedb
    {
     throw_if_pull_when_ahead();
     server_checkpoint = connection.pull(data.get_writable_journal());
-    data.update();
     return server_checkpoint;
    }
 
@@ -129,7 +127,6 @@ namespace joedb
 
     try
     {
-     data.update();
      transaction(data);
      data.get_writable_journal().default_checkpoint();
     }
@@ -163,7 +160,6 @@ namespace joedb
     (
      client.data.get_writable_journal()
     );
-    client.data.update();
    }
 
    Writable_Journal &get_journal()

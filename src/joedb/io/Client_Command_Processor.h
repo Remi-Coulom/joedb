@@ -27,7 +27,6 @@ namespace joedb
    static void sleep(int seconds, std::ostream &out);
 
    bool is_readonly_data() const;
-   bool has_db() const;
 
    Status process_command
    (

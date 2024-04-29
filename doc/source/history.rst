@@ -112,7 +112,7 @@ History
 
     - Ability to :ref:`safely share <local_and_remote_concurrency>` a single
       local replica of a remote server among multiple local clients.
-    - Tools for :ref:`efficient remote asynchronous backup <backup_client>`.
+    - Tools for efficient remote asynchronous backup.
     - Ability to :ref:`serve <joedb_server>` a file read-only.
     - New :ref:`joedb_push <joedb_push>` tool, with new interesting features
       such as the ability to follow a file or push to a remote backup server.

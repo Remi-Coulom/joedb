@@ -73,13 +73,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Client_Command_Processor::has_db() const
- ////////////////////////////////////////////////////////////////////////////
- {
-  return dynamic_cast<const Interpreted_Client_Data *>(&client.get_data());
- }
-
- ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Client_Command_Processor::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -106,10 +99,7 @@ namespace joedb
     out << " transaction\n";
    }
 
-   if (has_db())
-   {
-    out << " db\n";
-   }
+   out << " db\n";
 
    out << '\n';
    return Status::ok;
@@ -141,11 +131,11 @@ namespace joedb
     sleep(seconds, out);
    }
   }
-  else if (command == "db" && has_db()) /////////////////////////////////////
+  else if (command == "db") /////////////////////////////////////////////////
   {
-   const Interpreted_Client_Data *interpreted_client_data
+   Interpreted_Client_Data *interpreted_client_data
    (
-    dynamic_cast<const Interpreted_Client_Data *>(&client.get_data())
+    dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
    );
 
    Readable_Interpreter interpreter

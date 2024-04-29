@@ -109,15 +109,3 @@ connection part. A client can handle concurrency for both parts simultaneously.
 That is to say, it is possible for two different clients running on the same
 machine to share a connection to the same remote server, and also share the
 same local file.
-
-.. _backup_client:
-
-Backup Client
--------------
-
-When opening a database with joedb, the journal is read to load table data into
-memory. This is an expensive operation that is not necessary when creating a
-client whose only purpose is to store a backup replica of a remote server. In
-order to avoid this cost, :ref:`joedb_client <joedb_client>` supports a
-``--nodb`` option that will not load table data. The ``pull_every`` command can
-then be used for efficient periodic backups.

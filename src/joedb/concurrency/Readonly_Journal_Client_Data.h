@@ -18,15 +18,14 @@ namespace joedb
    {
    }
 
-   bool is_readonly() const {return true;}
+   bool is_readonly() const final
+   {
+    return true;
+   }
 
    Readonly_Journal &get_readonly_journal() final
    {
     return journal;
-   }
-
-   void update() final
-   {
    }
  };
 }

@@ -19,16 +19,10 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Client_Parser::Client_Parser
+ Client_Parser::Client_Parser(bool local, Open_Mode default_open_mode):
  ////////////////////////////////////////////////////////////////////////////
- (
-  bool local,
-  bool default_has_db,
-  Open_Mode default_open_mode
- ):
   file_parser(default_open_mode),
   connection_parser(local),
-  default_has_db(default_has_db),
   default_open_mode(default_open_mode)
  {
  }
@@ -37,11 +31,6 @@ namespace joedb
  void Client_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (default_has_db)
-   out << " [--nodb]";
-  else
-   out << " [--db]";
-
   out << " <file> <connection>\n\n";
 
   file_parser.print_help(out);
@@ -54,20 +43,6 @@ namespace joedb
  {
   int arg_index = 0;
 
-  bool has_db = default_has_db;
-
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
-  {
-   arg_index++;
-   has_db = false;
-  }
-
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--db") == 0)
-  {
-   arg_index++;
-   has_db = true;
-  }
-
   Generic_File &client_file = file_parser.parse
   (
    std::cout,
@@ -76,23 +51,13 @@ namespace joedb
    arg_index
   );
 
-  std::cout << "Creating client data (has_db = " << has_db << ") ... ";
+  std::cout << "Creating client data... ";
   std::cout.flush();
 
-  if (has_db)
-  {
-   if (client_file.get_mode() == Open_Mode::read_existing)
-    client_data.reset(new Readonly_Interpreted_Client_Data(client_file));
-   else
-    client_data.reset(new Writable_Interpreted_Client_Data(client_file));
-  }
+  if (client_file.get_mode() == Open_Mode::read_existing)
+   client_data.reset(new Readonly_Interpreted_Client_Data(client_file));
   else
-  {
-   if (client_file.get_mode() == Open_Mode::read_existing)
-    client_data.reset(new Readonly_Journal_Client_Data(client_file));
-   else
-    client_data.reset(new Writable_Journal_Client_Data(client_file));
-  }
+   client_data.reset(new Writable_Interpreted_Client_Data(client_file));
 
   std::cout << "OK\n";
 

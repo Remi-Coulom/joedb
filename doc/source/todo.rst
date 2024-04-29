@@ -7,8 +7,6 @@ Journal File
 - Concurrency improvements:
 
   - must check matching content after pull_data
-  - No need of --db/--nodb options: Update local data only when get_database()
-    is called.
   - all kinds of unit tests required for new available situations
 
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
