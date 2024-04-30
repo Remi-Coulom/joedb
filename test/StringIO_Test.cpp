@@ -93,6 +93,18 @@ TEST(StringIO_Test, read_string)
  }
 
  {
+  std::istringstream iss("");
+  std::string s = joedb::read_string(iss);
+  EXPECT_EQ("", s);
+ }
+
+ {
+  std::istringstream iss("   qsdf  azer");
+  std::string s = joedb::read_string(iss);
+  EXPECT_EQ("qsdf", s);
+ }
+
+ {
   std::istringstream iss("\"Hello");
   std::string s = joedb::read_string(iss);
   EXPECT_EQ("Hello", s);
