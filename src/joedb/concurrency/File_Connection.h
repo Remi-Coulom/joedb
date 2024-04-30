@@ -22,7 +22,6 @@ namespace joedb
      client_journal.get_checkpoint_position()
     );
 
-    // Note: this is stupid, comparing the actual content would be much faster
     if (client_journal.get_hash(min) != server_journal.get_hash(min))
      content_mismatch();
 
