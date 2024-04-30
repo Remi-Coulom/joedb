@@ -45,7 +45,7 @@ TEST(Server_Connection, handshake)
 TEST(Server_Connection, session)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::ostream * const log = nullptr;
+ std::ostream * const log = &std::cerr;
  Debug_Channel channel;
 
  joedb::Generic_File &file = channel;
@@ -65,7 +65,7 @@ TEST(Server_Connection, session)
  file.write<char>('L');
  file.write<int64_t>(41);
  file.write<int64_t>(0);
- file.write<char>('u');
+ file.write<char>('U');
  file.set_position(0);
 
  {
