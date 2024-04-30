@@ -87,7 +87,9 @@ namespace joedb
    int64_t get_checkpoint_difference() const
    //////////////////////////////////////////////////////////////////////////
    {
-    data.get_readonly_journal().pull();
+    if (data.is_readonly())
+     data.get_readonly_journal().pull();
+
     return
      data.get_readonly_journal().get_checkpoint_position() -
      server_checkpoint;
