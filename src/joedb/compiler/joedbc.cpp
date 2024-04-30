@@ -559,9 +559,8 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
     schema_checkpoint = db.schema_journal.get_checkpoint_position();
    }
 
-   const Database &get_database()
+   const Database &get_database() const
    {
-    update();
     return db;
    }
 
