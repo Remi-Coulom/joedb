@@ -1,12 +1,6 @@
 TODO
 ====
 
-Journal File
-------------
-
-- FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
-- Test (and don't allow) file size > 2Gb in 32-bit code (in theory, should also test if 64-bit overflows).
-
 New Operations and Types
 ------------------------
 - Add an ``undo`` operation to the log. This way, it is possible to keep all
@@ -139,11 +133,11 @@ Performance
 -----------
 
 - use async_write_some and async_read_some during pull and push
-- in-memory files should not use any buffering
-- similarly, Stream_File is already buffered: no need of Generic_File buffer
 - vector of size 1: write ordinary insert and update to the journal instead
 - joedb::Database: use vector instead of map for tables and fields (with a bool
   indicating if deleted)
+- FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
+
 
 joedb_admin
 -----------
