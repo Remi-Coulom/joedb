@@ -11,7 +11,7 @@ Release page <https://github.com/Remi-Coulom/joedb/releases>`_. You can also
 clone the repository to get the most recent development version: ``git clone
 https://github.com/Remi-Coulom/joedb.git``.
 
-Joedb is written in portable C++11, and uses `CMake <https://cmake.org/>`_ for
+Joedb is written in portable C++ 17, and uses `CMake <https://cmake.org/>`_ for
 its build system. So it should be portable to almost any platform. Here are
 some detailed instructions for the most common situations.
 
