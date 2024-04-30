@@ -45,7 +45,7 @@ TEST(Server_Connection, handshake)
 TEST(Server_Connection, session)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::ostream * const log = &std::cerr;
+ std::ostream * const log = nullptr;
  Debug_Channel channel;
 
  joedb::Generic_File &file = channel;
