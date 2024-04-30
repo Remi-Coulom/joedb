@@ -240,7 +240,7 @@ TEST(Client, synchronization_error_at_handshake)
  }
 
  //
- // Make offline modifications
+ // Make offline modifications of the client data
  //
  {
   Writable_Journal journal(client_file);
@@ -250,7 +250,7 @@ TEST(Client, synchronization_error_at_handshake)
  }
 
  //
- // Someone else makes incompatible changes
+ // Someone else makes incompatible changes to the server data
  //
  {
   Memory_File client2_file;
