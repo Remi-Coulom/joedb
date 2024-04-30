@@ -14,6 +14,12 @@ namespace joedb
    virtual Writable_Journal &get_writable_journal();
    virtual Readonly_Journal &get_readonly_journal();
    virtual ~Client_Data();
+
+   bool has_aborted_transaction()
+   {
+    const Readonly_Journal &journal = get_readonly_journal();
+    return journal.get_position() > journal.get_checkpoint_position();
+   }
  };
 }
 

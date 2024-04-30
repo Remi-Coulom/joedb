@@ -34,6 +34,14 @@ namespace joedb
     data.get_writable_journal().flush();
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   void check_no_aborted_transaction()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (data.has_aborted_transaction())
+     throw Exception("data contains an aborted transaction");
+   }
+
   protected:
    Client_Data &data;
    Connection &connection;
@@ -98,6 +106,7 @@ namespace joedb
    template<typename F> void transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
+    check_no_aborted_transaction();
     server_checkpoint = connection.lock_pull(data.get_writable_journal());
 
     try
@@ -130,6 +139,7 @@ namespace joedb
     client(client),
     initial_uncaught_exceptions(std::uncaught_exceptions())
    {
+    client.check_no_aborted_transaction();
     client.server_checkpoint = client.connection.lock_pull
     (
      client.data.get_writable_journal()
