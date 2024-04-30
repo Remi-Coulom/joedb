@@ -900,11 +900,11 @@ TEST(Compiler, index_iteration)
  EXPECT_EQ(db.next(paris), db.get_city_table().get_end());
 }
 
+#ifdef JOEDB_FILE_IS_LOCKABLE
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, shared_local_file)
 /////////////////////////////////////////////////////////////////////////////
 {
-#ifdef JOEDB_FILE_IS_LOCKABLE
  const char * const file_name = "compiler_test.joedb";
  std::remove(file_name);
 
@@ -915,5 +915,5 @@ TEST(Compiler, shared_local_file)
  }
 
  std::remove(file_name);
-#endif
 }
+#endif
