@@ -39,7 +39,6 @@ namespace joedb
    std::thread thread;
    bool paused = true;
 
-  public:
    Test_Server
    (
     bool share_client,
@@ -119,7 +118,7 @@ namespace joedb
    {
    }
 
-   const char *get() const
+   [[nodiscard]] const char *get() const
    {
     return port_string.c_str();
    }
@@ -134,7 +133,6 @@ namespace joedb
    Server_Connection connection;
    Interpreted_Client client;
 
-  public:
    Test_Client(Server &server, Generic_File &file):
     channel("localhost", Port_String(server).get()),
     connection(channel, nullptr),
