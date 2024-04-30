@@ -814,19 +814,13 @@ namespace joedb
  {
   LOG(port << ": constructor\n");
 
-  if (client.get_checkpoint_difference() > 0)
-  {
-   LOG("Server::Server: pushing to connection\n");
-   client.push_unlock();
-  }
+  if (client.push_unlock())
+   LOG("Server::Server: pushed to connection\n");
 
-  if (!client.is_readonly())
-  {
-   if (share_client)
-    client.pull();
-   else
-    client_lock.emplace(client);
-  }
+  if (!share_client && !client.is_readonly())
+   client_lock.emplace(client);
+  else
+   client.pull();
 
   write_status();
 
