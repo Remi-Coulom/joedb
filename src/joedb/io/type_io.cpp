@@ -14,8 +14,13 @@ std::string joedb::read_string(std::istream &in)
  std::string result;
 
  char c;
- while (in.get(c) && c == ' ')
+
+ while (true)
  {
+  if (!in.get(c))
+   return result;
+  if (c != ' ')
+   break;
  }
 
  const bool is_quoted = c == '"';
