@@ -102,6 +102,9 @@ TEST(Client, Transaction_Failure)
    EXPECT_STREQ(e.what(), "data contains an aborted transaction");
   }
 
+  EXPECT_ANY_THROW(client1.pull());
+  EXPECT_ANY_THROW(Client_Lock{client1});
+
   client2.pull();
   EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
  }

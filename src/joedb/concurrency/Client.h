@@ -97,7 +97,10 @@ namespace joedb
     if (data.is_readonly())
      data.get_readonly_journal().pull();
     else
+    {
+     check_no_aborted_transaction();
      server_checkpoint = connection.pull(data.get_writable_journal());
+    }
 
     return server_checkpoint;
    }
