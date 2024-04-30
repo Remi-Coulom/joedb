@@ -11,48 +11,20 @@ namespace joedb
  {
   private:
    Writable_Journal server_journal;
-   int64_t matching_position;
-
-   //////////////////////////////////////////////////////////////////////////
-   void check_for_conflict(Readonly_Journal &client_journal)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if
-    (
-     client_journal.get_checkpoint_position() > matching_position &&
-     server_journal.get_checkpoint_position() > matching_position
-    )
-    {
-     throw Exception("conflict");
-    }
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void update_matching_position(Readonly_Journal &client_journal)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    matching_position = std::min
-    (
-     server_journal.get_checkpoint_position(),
-     client_journal.get_checkpoint_position()
-    );
-   }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t handshake(Readonly_Journal &client_journal) final
    //////////////////////////////////////////////////////////////////////////
    {
-    update_matching_position(client_journal);
+    const int64_t min = std::min
+    (
+     server_journal.get_checkpoint_position(),
+     client_journal.get_checkpoint_position()
+    );
 
     // Note: this is stupid, comparing the actual content would be much faster
-    if
-    (
-     client_journal.get_hash(matching_position) !=
-     server_journal.get_hash(matching_position)
-    )
-    {
+    if (client_journal.get_hash(min) != server_journal.get_hash(min))
      content_mismatch();
-    }
 
     return server_journal.get_checkpoint_position();
    }
@@ -72,12 +44,8 @@ namespace joedb
     client_journal.lock_pull();
     server_journal.pull();
 
-    check_for_conflict(client_journal);
-
     client_journal.pull_from(server_journal);
     client_journal.unlock();
-
-    update_matching_position(client_journal);
 
     return server_journal.get_checkpoint_position();
    }
@@ -89,11 +57,7 @@ namespace joedb
     client_journal.lock_pull();
     server_journal.lock_pull();
 
-    check_for_conflict(client_journal);
-
     client_journal.pull_from(server_journal);
-
-    update_matching_position(client_journal);
 
     return server_journal.get_checkpoint_position();
    }
@@ -111,11 +75,7 @@ namespace joedb
      server_journal.lock_pull();
     client_journal.pull();
 
-    check_for_conflict(client_journal);
-
     server_journal.pull_from(client_journal);
-
-    update_matching_position(client_journal);
 
     if (unlock_after)
      unlock(client_journal);
@@ -132,8 +92,7 @@ namespace joedb
     Readonly_Journal::Check check = Readonly_Journal::Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
    ):
-    server_journal(server_file, check, commit_level),
-    matching_position(0)
+    server_journal(server_file, check, commit_level)
    {
    }
  };
