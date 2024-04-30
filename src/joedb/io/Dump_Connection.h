@@ -32,7 +32,7 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   void push
+   int64_t push
    (
     Readonly_Journal &client_journal,
     int64_t server_position,
@@ -43,6 +43,7 @@ namespace joedb
     client_journal.set_position(server_position);
     client_journal.play_until_checkpoint(dump);
     client_journal.set_position(client_position);
+    return client_position;
    }
  };
 }

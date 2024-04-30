@@ -35,7 +35,7 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   virtual void push
+   virtual int64_t push
    (
     Readonly_Journal &client_journal,
     int64_t server_checkpoint,
@@ -44,6 +44,7 @@ namespace joedb
    {
     if (unlock_after)
      client_journal.unlock();
+    return client_journal.get_checkpoint_position();
    }
 
    virtual ~Connection();

@@ -88,7 +88,6 @@ namespace joedb
    out << "~~~~~~\n";
 
    out << " status\n";
-   out << " pull_data\n";
    out << " push\n";
    out << " push_every <seconds>\n";
 
@@ -106,11 +105,6 @@ namespace joedb
   }
   else if (command == "status") /////////////////////////////////////////////
   {
-   print_status(out);
-  }
-  else if (command == "pull_data") //////////////////////////////////////////
-  {
-   client.pull_data();
    print_status(out);
   }
   else if (command == "pull" && !is_readonly_data()) ////////////////////////
@@ -150,10 +144,7 @@ namespace joedb
   }
   else if (command == "push") ///////////////////////////////////////////////
   {
-   if (client.get_checkpoint_difference() > 0)
-    client.push_unlock();
-   else
-    out << "Nothing to push\n";
+   client.push_unlock();
   }
   else if (command == "push_every") /////////////////////////////////////////
   {
@@ -165,10 +156,12 @@ namespace joedb
 
    while (Signal::get_signal() != SIGINT)
    {
-    client.pull_data();
     if (client.get_checkpoint_difference())
+    {
      print_status(out);
-    client.push_unlock();
+     client.push_unlock();
+    }
+
     sleep(seconds, out);
    }
   }

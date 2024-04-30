@@ -394,9 +394,7 @@ namespace joedb
   {
    const int64_t checkpoint = from_network(session->buffer.data() + 1);
 
-   if (client.is_readonly())
-    client.pull_data();
-   else if (!client_lock) // todo: deep-share option
+   if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
 
    const Async_Reader reader = client.get_journal().get_async_tail_reader

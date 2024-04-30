@@ -37,7 +37,7 @@ namespace joedb
    int64_t pull(Writable_Journal &client_journal) final;
    int64_t lock_pull(Writable_Journal &client_journal) final;
 
-   void push
+   int64_t push
    (
     Readonly_Journal &client_journal,
     int64_t server_position,

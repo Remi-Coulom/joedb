@@ -18,37 +18,16 @@ namespace joedb
    void push(bool unlock_after)
    //////////////////////////////////////////////////////////////////////////
    {
-    const int64_t difference = get_checkpoint_difference();
-
-    if (difference < 0)
-     throw Exception("can't push: server is ahead of client");
-
-    if (difference > 0)
-    {
-     connection.push
-     (
-      data.get_readonly_journal(),
-      server_checkpoint,
-      unlock_after
-     );
-
-     server_checkpoint =
-      data.get_readonly_journal().get_checkpoint_position();
-    }
-    else if (unlock_after)
-     connection.unlock(data.get_readonly_journal());
+    server_checkpoint = connection.push
+    (
+     data.get_readonly_journal(),
+     server_checkpoint,
+     unlock_after
+    );
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void throw_if_pull_when_ahead()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (data.get_readonly_journal().get_position() > server_checkpoint)
-     throw Exception("can't pull: client is ahead of server");
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void unlock_without_pushing()
+   void cancel_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
     connection.unlock(data.get_writable_journal());
@@ -58,6 +37,7 @@ namespace joedb
   protected:
    Client_Data &data;
    Connection &connection;
+
    int64_t server_checkpoint;
 
   public:
@@ -89,17 +69,10 @@ namespace joedb
    int64_t get_checkpoint_difference() const
    //////////////////////////////////////////////////////////////////////////
    {
+    data.get_readonly_journal().pull();
     return
      data.get_readonly_journal().get_checkpoint_position() -
      server_checkpoint;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void pull_data()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    data.get_readonly_journal().pull();
-    // TODO: check no mismatch with connection
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -113,8 +86,11 @@ namespace joedb
    int64_t pull()
    //////////////////////////////////////////////////////////////////////////
    {
-    throw_if_pull_when_ahead();
-    server_checkpoint = connection.pull(data.get_writable_journal());
+    if (data.is_readonly())
+     data.get_readonly_journal().pull();
+    else
+     server_checkpoint = connection.pull(data.get_writable_journal());
+
     return server_checkpoint;
    }
 
@@ -122,7 +98,6 @@ namespace joedb
    template<typename F> void transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    throw_if_pull_when_ahead();
     server_checkpoint = connection.lock_pull(data.get_writable_journal());
 
     try
@@ -132,7 +107,7 @@ namespace joedb
     }
     catch (...)
     {
-     unlock_without_pushing();
+     cancel_transaction();
      throw;
     }
 
@@ -155,7 +130,6 @@ namespace joedb
     client(client),
     initial_uncaught_exceptions(std::uncaught_exceptions())
    {
-    client.throw_if_pull_when_ahead();
     client.server_checkpoint = client.connection.lock_pull
     (
      client.data.get_writable_journal()
@@ -177,7 +151,7 @@ namespace joedb
     try
     {
      if (std::uncaught_exceptions() > initial_uncaught_exceptions)
-      client.unlock_without_pushing();
+      client.cancel_transaction();
      else
       client.push_unlock();
     }
