@@ -45,11 +45,11 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void check_no_aborted_transaction()
+   void throw_if_pull_when_ahead()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (data.has_aborted_transaction())
-     throw Exception("data contains an aborted transaction");
+    if (data.get_readonly_journal().get_position() > server_checkpoint)
+     throw Exception("can't pull: client is ahead of server");
    }
 
   protected:
@@ -117,7 +117,7 @@ namespace joedb
      data.get_readonly_journal().pull();
     else
     {
-     check_no_aborted_transaction();
+     throw_if_pull_when_ahead();
      server_checkpoint = connection.pull(data.get_writable_journal());
     }
 
@@ -128,7 +128,7 @@ namespace joedb
    template<typename F> void transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    check_no_aborted_transaction();
+    throw_if_pull_when_ahead();
     server_checkpoint = connection.lock_pull(data.get_writable_journal());
 
     try
@@ -161,7 +161,7 @@ namespace joedb
     client(client),
     initial_uncaught_exceptions(std::uncaught_exceptions())
    {
-    client.check_no_aborted_transaction();
+    client.throw_if_pull_when_ahead();
     client.server_checkpoint = client.connection.lock_pull
     (
      client.data.get_writable_journal()

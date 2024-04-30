@@ -99,7 +99,7 @@ TEST(Client, Transaction_Failure)
   }
   catch (const joedb::Exception &e)
   {
-   EXPECT_STREQ(e.what(), "data contains an aborted transaction");
+   EXPECT_STREQ(e.what(), "can't pull: client is ahead of server");
   }
 
   EXPECT_ANY_THROW(client1.pull());
