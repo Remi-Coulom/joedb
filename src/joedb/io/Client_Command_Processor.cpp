@@ -156,14 +156,13 @@ namespace joedb
 
    while (Signal::get_signal() != SIGINT)
    {
-    if (client.get_checkpoint_difference())
-    {
+    if (client.push_and_keep_locked())
      print_status(out);
-     client.push_unlock();
-    }
 
     sleep(seconds, out);
    }
+
+   client.push_unlock();
   }
   else if (command == "transaction" && !is_readonly_data()) /////////////////
   {
