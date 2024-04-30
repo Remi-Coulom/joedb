@@ -18,6 +18,9 @@ namespace joedb
    bool push(bool unlock_after)
    //////////////////////////////////////////////////////////////////////////
    {
+    if (data.is_readonly())
+     data.get_readonly_journal().pull();
+
     if (get_checkpoint_difference() > 0)
     {
      server_checkpoint = connection.push
@@ -91,15 +94,10 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t get_checkpoint_difference()
+   int64_t get_checkpoint_difference() const
    //////////////////////////////////////////////////////////////////////////
    {
-    if (data.is_readonly())
-     data.get_readonly_journal().pull();
-
-    return
-     data.get_readonly_journal().get_checkpoint_position() -
-     server_checkpoint;
+    return get_checkpoint() - server_checkpoint;
    }
 
    //////////////////////////////////////////////////////////////////////////
