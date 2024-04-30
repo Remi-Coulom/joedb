@@ -12,16 +12,16 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Command_Interpreter: private Command_Processor
+ class Command_Interpreter: public Command_Processor
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
    std::vector<std::reference_wrapper<Command_Processor>> processors;
+   const Command_Interpreter *parent = nullptr;
 
    bool echo = true;
    bool rethrow = false;
    bool prompt = false;
-   std::string prompt_string = "joedb";
 
    void after_command
    (
@@ -31,22 +31,19 @@ namespace joedb
     const Exception *exception
    ) const;
 
+  protected:
    Status process_command
    (
     const std::string &command,
     std::istream &parameters,
     std::istream &in,
     std::ostream &out
-   ) final;
+   ) override;
 
   public:
-   Command_Interpreter
-   (
-    std::initializer_list<std::reference_wrapper<Command_Processor>> list
-   )
+   Command_Interpreter()
    {
-    processors.emplace_back(*static_cast<Command_Processor *>(this));
-    processors.insert(processors.end(), list.begin(), list.end());
+    add_processor(*static_cast<Command_Processor *>(this));
    }
 
    void add_processor(Command_Processor &processor)
@@ -54,15 +51,39 @@ namespace joedb
     processors.emplace_back(processor);
    }
 
+   void set_parent(const Command_Interpreter *new_parent)
+   {
+    parent = new_parent;
+
+    if (parent)
+    {
+     echo = parent->echo;
+     rethrow = parent->rethrow;
+     prompt = parent->prompt;
+    }
+   }
+
+   virtual void write_prompt(std::ostream &out) const
+   {
+    out << "joedbi";
+   }
+
+   void write_whole_prompt(std::ostream &out) const
+   {
+    if (parent)
+    {
+     parent->write_prompt(out);
+     out << '/';
+    }
+
+    write_prompt(out);
+    out << "> ";
+    out.flush();
+   }
+
    void set_echo(bool new_echo) {echo = new_echo;}
    void set_rethrow(bool new_rethrow) {rethrow = new_rethrow;}
    void set_prompt(bool new_prompt) {prompt = new_prompt;}
-   void set_prompt_string(std::string new_prompt_string)
-   {
-    prompt_string = std::move(new_prompt_string);
-   }
-
-   const std::string &get_prompt_string() const {return prompt_string;}
 
    void main_loop(std::istream &in, std::ostream &out);
  };

@@ -20,9 +20,9 @@ namespace joedb
     const Readable &readable,
     Blob_Reader *blob_reader
    ):
-    Readable_Command_Processor(readable, blob_reader),
-    Command_Interpreter{*static_cast<Readable_Command_Processor *>(this)}
+    Readable_Command_Processor(readable, blob_reader)
    {
+    add_processor(*static_cast<Readable_Command_Processor *>(this));
    }
  };
 
@@ -34,9 +34,9 @@ namespace joedb
  {
   public:
    Writable_Interpreter(Writable &writable, Writable *blob_writer = nullptr):
-    Writable_Command_Processor(writable, blob_writer),
-    Command_Interpreter{*static_cast<Writable_Command_Processor *>(this)}
+    Writable_Command_Processor(writable, blob_writer)
    {
+    add_processor(*static_cast<Writable_Command_Processor *>(this));
    }
  };
 

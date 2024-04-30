@@ -1,21 +1,18 @@
-#include "joedb/io/Command_Processor.h"
 #include "joedb/io/Command_Interpreter.h"
 
 namespace joedb
 {
  class Client;
- class Interpreted_Client_Data;
- class Journal_Client_Data;
  class Writable_Interpreter;
 
  ////////////////////////////////////////////////////////////////////////////
- class Client_Command_Processor: public Command_Processor
+ class Client_Command_Processor: public Command_Interpreter
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Client &client;
 
-   static void run_transaction
+   void run_transaction
    (
     Writable_Interpreter &interpreter,
     std::istream &in,
@@ -27,6 +24,8 @@ namespace joedb
    static void sleep(int seconds, std::ostream &out);
 
    bool is_readonly_data() const;
+
+   void write_prompt(std::ostream &out) const override;
 
    Status process_command
    (

@@ -98,10 +98,7 @@ namespace joedb
   while(true)
   {
    if (prompt)
-   {
-    out << prompt_string << "> ";
-    out.flush();
-   }
+    write_whole_prompt(out);
 
    std::string line;
    if (!std::getline(in, line))

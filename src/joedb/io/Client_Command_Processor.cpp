@@ -14,6 +14,24 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ void Client_Command_Processor::write_prompt(std::ostream &out) const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << "joedb_client(";
+
+  const int64_t client_checkpoint = client.get_checkpoint();
+  const int64_t server_checkpoint = client.get_server_checkpoint();
+
+  out << client_checkpoint;
+  if (client_checkpoint < server_checkpoint)
+   out << '+' << server_checkpoint - client_checkpoint;
+  else if (server_checkpoint < client_checkpoint)
+   out << '-' << client_checkpoint - server_checkpoint;
+
+  out << ')';
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Client_Command_Processor::run_transaction
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -22,9 +40,7 @@ namespace joedb
   std::ostream &out
  )
  {
-  out << "OK\n";
-  interpreter.set_prompt(true);
-  interpreter.set_prompt_string("joedb_client/transaction");
+  interpreter.set_parent(this);
   interpreter.main_loop(in, out);
 
   if (interpreter.was_aborted())
@@ -39,20 +55,6 @@ namespace joedb
   const int64_t server_checkpoint = client.pull();
   if (server_checkpoint > client_checkpoint)
    out << "pulled " << server_checkpoint - client_checkpoint << " bytes\n";
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::print_status(std::ostream &out)
- ////////////////////////////////////////////////////////////////////////////
- {
-  const int64_t diff = client.get_checkpoint_difference();
-
-  if (diff > 0)
-   out << "You can push " << diff << " bytes.\n";
-  else if (diff < 0)
-   out << "You can pull " << -diff << " bytes.\n";
-  else
-   out << "Client data is in sync with the connection.\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -84,10 +86,12 @@ namespace joedb
  {
   if (command == "help") ////////////////////////////////////////////////////
   {
+   Command_Interpreter::process_command(command, parameters, in, out);
+
    out << "Client\n";
    out << "~~~~~~\n";
 
-   out << " status\n";
+   out << " db\n";
    out << " push\n";
    out << " push_every <seconds>\n";
 
@@ -98,14 +102,44 @@ namespace joedb
     out << " transaction\n";
    }
 
-   out << " db\n";
-
    out << '\n';
    return Status::ok;
   }
-  else if (command == "status") /////////////////////////////////////////////
+  else if (command == "db") /////////////////////////////////////////////////
   {
-   print_status(out);
+   Interpreted_Client_Data *interpreted_client_data
+   (
+    dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
+   );
+
+   Readable_Interpreter interpreter
+   (
+    interpreted_client_data->get_database(),
+    nullptr
+   );
+
+   interpreter.set_parent(this);
+   interpreter.main_loop(in, out);
+  }
+  else if (command == "push") ///////////////////////////////////////////////
+  {
+   client.push_unlock();
+  }
+  else if (command == "push_every") /////////////////////////////////////////
+  {
+   int seconds = 1;
+   parameters >> seconds;
+
+   Signal::set_signal(Signal::no_signal);
+   Signal::start();
+
+   while (Signal::get_signal() != SIGINT)
+   {
+    client.push_and_keep_locked();
+    sleep(seconds, out);
+   }
+
+   client.push_unlock();
   }
   else if (command == "pull" && !is_readonly_data()) ////////////////////////
   {
@@ -125,52 +159,15 @@ namespace joedb
     sleep(seconds, out);
    }
   }
-  else if (command == "db") /////////////////////////////////////////////////
-  {
-   Interpreted_Client_Data *interpreted_client_data
-   (
-    dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
-   );
-
-   Readable_Interpreter interpreter
-   (
-    interpreted_client_data->get_database(),
-    nullptr
-   );
-
-   interpreter.set_prompt(true);
-   interpreter.set_prompt_string("joedb_client/db");
-   interpreter.main_loop(in, out);
-  }
-  else if (command == "push") ///////////////////////////////////////////////
-  {
-   client.push_unlock();
-  }
-  else if (command == "push_every") /////////////////////////////////////////
-  {
-   int seconds = 1;
-   parameters >> seconds;
-
-   Signal::set_signal(Signal::no_signal);
-   Signal::start();
-
-   while (Signal::get_signal() != SIGINT)
-   {
-    if (client.push_and_keep_locked())
-     print_status(out);
-
-    sleep(seconds, out);
-   }
-
-   client.push_unlock();
-  }
-  else if (command == "transaction" && !is_readonly_data()) /////////////////
+  else if (command == "transaction" && !is_readonly_data()) //////////////////
   {
    out << "Waiting for lock... ";
    out.flush();
 
-   client.transaction([&in, &out](Client_Data &data)
+   client.transaction([this, &in, &out](Client_Data &data)
    {
+    out << "OK\n";
+
     Writable_Interpreted_Client_Data *interpreted_client_data
     (
      dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
@@ -188,15 +185,10 @@ namespace joedb
      );
      run_transaction(interpreter, in, out);
     }
-    else
-    {
-     Writable_Interpreter interpreter(data.get_writable_journal());
-     run_transaction(interpreter, in, out);
-    }
    });
   }
   else //////////////////////////////////////////////////////////////////////
-   return Status::not_found;
+   return Command_Interpreter::process_command(command, parameters, in, out);
 
   return Status::done;
  }
