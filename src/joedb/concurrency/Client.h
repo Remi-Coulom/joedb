@@ -186,7 +186,7 @@ namespace joedb
    Client &client;
    const int initial_uncaught_exceptions;
 
-   Client_Lock(Client_Lock &) = delete;
+   Client_Lock(const Client_Lock &) = delete;
 
   public:
    Client_Lock(Client &client):
