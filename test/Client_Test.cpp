@@ -131,6 +131,60 @@ TEST(Client, no_pull_when_ahead)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Client, Client_Lock)
+/////////////////////////////////////////////////////////////////////////////
+{
+ Memory_File client_file;
+ Memory_File server_file;
+ File_Connection connection(server_file);
+ Interpreted_Client client(connection, client_file);
+
+ {
+  Client_Lock lock(client);
+ 
+  // None of the commented-out blocks should compile
+
+#if 0
+ Client_Lock lock_copy(lock);
+#endif
+
+#if 0
+ Client_Lock lock_copy = std::move(lock);
+#endif
+
+#if 0
+ Client_Lock lock_copy(client);
+ lock_copy = lock;
+#endif
+
+  lock.get_journal().comment("Hello");
+  lock.get_journal().default_checkpoint();
+  EXPECT_EQ(server_file.get_size(), 41);
+  lock.push();
+  EXPECT_EQ(server_file.get_size(), 48);
+  lock.get_journal().comment("Hi");
+  lock.push();
+  EXPECT_EQ(server_file.get_size(), 48);
+ }
+
+ EXPECT_EQ(server_file.get_size(), 52);
+
+ try
+ {
+  Client_Lock lock(client);
+  lock.get_journal().comment("Bye");
+  throw Exception("exception");
+ }
+ catch (...)
+ {
+ }
+
+ EXPECT_EQ(client_file.get_size(), 57);
+ EXPECT_EQ(client.get_checkpoint(), 52);
+ EXPECT_EQ(server_file.get_size(), 52);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Client, hash)
 /////////////////////////////////////////////////////////////////////////////
 {

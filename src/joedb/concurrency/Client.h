@@ -186,6 +186,8 @@ namespace joedb
    Client &client;
    const int initial_uncaught_exceptions;
 
+   Client_Lock(Client_Lock &) = delete;
+
   public:
    Client_Lock(Client &client):
     client(client),
@@ -215,7 +217,10 @@ namespace joedb
      if (std::uncaught_exceptions() > initial_uncaught_exceptions)
       client.cancel_transaction();
      else
+     {
+      get_journal().default_checkpoint();
       client.push_unlock();
+     }
     }
     catch (...)
     {
