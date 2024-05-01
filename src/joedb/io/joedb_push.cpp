@@ -56,13 +56,9 @@ namespace joedb
    while (true)
    {
     journal.pull();
-    const int64_t new_checkpoint = journal.get_checkpoint_position();
 
-    if (new_checkpoint > server_checkpoint)
-    {
-     connection->push(journal, server_checkpoint, false);
-     server_checkpoint = new_checkpoint;
-    }
+    if (journal.get_checkpoint_position() > server_checkpoint)
+     server_checkpoint = connection->push(journal, server_checkpoint, false);
 
     if (!follow)
      break;

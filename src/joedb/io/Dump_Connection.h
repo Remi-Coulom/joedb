@@ -42,9 +42,8 @@ namespace joedb
     const int64_t client_position = client_journal.get_position();
     client_journal.set_position(server_position);
     client_journal.play_until_checkpoint(dump);
-    int64_t new_server_position = client_journal.get_position();
     client_journal.set_position(client_position);
-    return new_server_position;
+    return client_journal.get_checkpoint_position();
    }
  };
 }
