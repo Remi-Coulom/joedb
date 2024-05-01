@@ -13,17 +13,8 @@ namespace joedb
    static void content_mismatch();
 
   public:
-   virtual int64_t handshake(Readonly_Journal &client_journal)
-   {
-    return client_journal.get_checkpoint_position();
-   }
-
-   virtual int64_t pull(Writable_Journal &client_journal)
-   {
-    client_journal.pull();
-    return client_journal.get_checkpoint_position();
-   }
-
+   virtual int64_t handshake(Readonly_Journal &client_journal);
+   virtual int64_t pull(Writable_Journal &client_journal);
    virtual ~Readonly_Connection();
  };
 
@@ -32,28 +23,16 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual int64_t lock_pull(Writable_Journal &client_journal)
-   {
-    client_journal.lock_pull();
-    return client_journal.get_checkpoint_position();
-   }
+   virtual int64_t lock_pull(Writable_Journal &client_journal);
 
    virtual int64_t push
    (
     Readonly_Journal &client_journal,
     int64_t server_checkpoint,
     bool unlock_after
-   )
-   {
-    if (unlock_after)
-     client_journal.unlock();
-    return client_journal.get_checkpoint_position();
-   }
+   );
 
-   virtual void unlock(Readonly_Journal &client_journal)
-   {
-    client_journal.unlock();
-   }
+   virtual void unlock(Readonly_Journal &client_journal);
  };
 }
 
