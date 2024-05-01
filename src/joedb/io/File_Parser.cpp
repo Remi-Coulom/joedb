@@ -110,13 +110,16 @@ namespace joedb
 
    joedb::Open_Mode open_mode = default_open_mode;
 
-   for (size_t i = 0; i < open_mode_strings.size(); i++)
+   if (arg_index < argc)
    {
-    const std::string option = std::string("--") + open_mode_strings[i];
-    if (arg_index < argc && option == argv[arg_index])
+    for (size_t i = 0; i < open_mode_strings.size(); i++)
     {
-     open_mode = Open_Mode(i);
-     arg_index++;
+     const std::string option = std::string("--") + open_mode_strings[i];
+     if (option == argv[arg_index])
+     {
+      open_mode = Open_Mode(i);
+      arg_index++;
+     }
     }
    }
 
