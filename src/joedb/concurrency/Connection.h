@@ -24,7 +24,6 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-
    virtual ~Readonly_Connection();
  };
 
