@@ -61,6 +61,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client_Data.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Connection.cpp
+ ${JOEDB_SRC_DIR}/joedb/concurrency/IO_Context_Wrapper.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Mutex.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp

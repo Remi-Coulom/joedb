@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/IO_Context_Wrapper.h"
 #include "joedb/io/Client_Parser.h"
 #include "joedb/io/main_exception_catcher.h"
 
@@ -57,7 +58,7 @@ and can still push data: the push will succeed only if there is no conflict.
 
   Client &client = client_parser.parse(argc - index, argv + index);
 
-  net::io_context io_context;
+  IO_Context_Wrapper io_context_wrapper;
 
   std::cout << "Creating server (port = " << port;
   std::cout << "; timeout = " << timeout;
@@ -67,13 +68,13 @@ and can still push data: the push will succeed only if there is no conflict.
   (
    client,
    share,
-   io_context,
+   io_context_wrapper.io_context,
    port,
    std::chrono::seconds(timeout),
    &std::cerr
   );
 
-  io_context.run();
+  io_context_wrapper.run();
 
   return 0;
  }

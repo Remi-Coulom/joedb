@@ -4,6 +4,7 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/IO_Context_Wrapper.h"
 #include "joedb/ssh/Forward_Channel.h"
 
 #include <iostream>
@@ -62,7 +63,7 @@ namespace joedb
   const char * const config_file_name = argv[1];
   multi_server::Interpreted_Database db(config_file_name);
 
-  net::io_context io_context;
+  IO_Context_Wrapper io_context_wrapper;
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
@@ -72,7 +73,7 @@ namespace joedb
    (
     new Server_Data
     (
-     io_context,
+     io_context_wrapper.io_context,
      db.get_file_name(server),
      uint16_t(db.get_port(server)),
      std::chrono::seconds(db.get_timeout(server))
@@ -80,7 +81,7 @@ namespace joedb
    );
   }
 
-  io_context.run();
+  io_context_wrapper.run();
 
   return 0;
  }
