@@ -6,7 +6,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Connection
+ class Readonly_Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
@@ -18,17 +18,21 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   virtual void unlock(Readonly_Journal &client_journal)
-   {
-    client_journal.unlock();
-   }
-
    virtual int64_t pull(Writable_Journal &client_journal)
    {
     client_journal.pull();
     return client_journal.get_checkpoint_position();
    }
 
+
+   virtual ~Readonly_Connection();
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Connection: public Readonly_Connection
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  public:
    virtual int64_t lock_pull(Writable_Journal &client_journal)
    {
     client_journal.lock_pull();
@@ -47,7 +51,10 @@ namespace joedb
     return client_journal.get_checkpoint_position();
    }
 
-   virtual ~Connection();
+   virtual void unlock(Readonly_Journal &client_journal)
+   {
+    client_journal.unlock();
+   }
  };
 }
 

@@ -2,10 +2,10 @@
 
 namespace joedb
 {
- void Connection::content_mismatch()
+ void Readonly_Connection::content_mismatch()
  {
   throw Exception("Client data does not match the server");
  }
 
- Connection::~Connection() = default;
+ Readonly_Connection::~Readonly_Connection() = default;
 }
