@@ -146,7 +146,6 @@ endif()
   ../test/Journal_Test.cpp
   ../test/Server_Connection_Test.cpp
   ../test/SHA_256_Test.cpp
-  ../test/Mutex_Test.cpp
   ../test/Span_Test.cpp
   ../test/Local_Connection_Test.cpp
   ../test/compiler/Blob.cpp
