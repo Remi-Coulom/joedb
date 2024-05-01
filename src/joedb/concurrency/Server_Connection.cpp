@@ -43,17 +43,17 @@ namespace joedb
   LOG(get_session_id() << ": pulling(" << pull_type << ")... ");
 
   buffer[0] = pull_type;
-  const int64_t checkpoint = client_journal.get_checkpoint_position();
-  to_network(checkpoint, buffer.data() + 1);
+  const int64_t client_checkpoint = client_journal.get_checkpoint_position();
+  to_network(client_checkpoint, buffer.data() + 1);
   lock.write(buffer.data(), 9);
 
   lock.read(buffer.data(), 17);
-  if (buffer[0] != pull_type && from_network(buffer.data() + 1) != checkpoint)
-   throw Exception("Could not pull from server");
-
+  if (buffer[0] != pull_type)
+   throw Exception("Unexpected server reply");
+  const int64_t server_checkpoint = from_network(buffer.data() + 1);
   const int64_t size = from_network(buffer.data() + 9);
 
-  LOG("size = " << size << "...");
+  LOG("checkpoint = " << server_checkpoint << "; size = " << size << "...");
 
   {
    Writable_Journal::Tail_Writer tail_writer(client_journal);
@@ -78,7 +78,7 @@ namespace joedb
   if (size < 0)
    throw Exception("Client checkpoint is ahead of server checkpoint");
 
-  return client_journal.get_checkpoint_position();
+  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -245,7 +245,7 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  const int64_t client_version = 7;
+  constexpr int64_t client_version = 9;
   to_network(client_version, buffer.data() + 5);
 
   {
@@ -274,7 +274,7 @@ namespace joedb
 
   LOG("server_version = " << server_version << ". ");
 
-  if (server_version < 8)
+  if (server_version < 9)
    throw Exception("Unsupported server version");
 
   session_id = from_network(buffer.data() + 5 + 8);

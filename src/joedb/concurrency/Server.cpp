@@ -402,6 +402,7 @@ namespace joedb
     checkpoint
    );
 
+   to_network(reader.get_end(), session->buffer.data() + 1);
    to_network(reader.get_remaining(), session->buffer.data() + 9);
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
@@ -603,7 +604,7 @@ namespace joedb
   LOGID("client_version = " << client_version << '\n');
 
   {
-   const int64_t server_version = client_version < 7 ? 0 : 8;
+   const int64_t server_version = client_version < 9 ? 0 : 9;
    to_network(server_version, session->buffer.data() + 5);
   }
 

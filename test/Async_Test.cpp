@@ -1,6 +1,7 @@
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Async_Writer.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"
 
@@ -92,5 +93,17 @@ namespace joedb
   }
 
   std::remove(file_name);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Async, negative_pull)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  Async_Reader reader(file, 10, 0);
+  EXPECT_EQ(reader.get_remaining(), 0);
+  constexpr int64_t capacity = 16;
+  char buffer[capacity];
+  EXPECT_EQ(reader.read(buffer, capacity), 0);
  }
 }

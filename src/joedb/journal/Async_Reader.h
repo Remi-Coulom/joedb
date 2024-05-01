@@ -22,6 +22,8 @@ namespace joedb
     end(end),
     current(start)
    {
+    if (current > end)
+     current = end;
     file.flush();
     file.reset_read_buffer();
    }
@@ -30,8 +32,8 @@ namespace joedb
    size_t read(char *buffer, size_t capacity)
    //////////////////////////////////////////////////////////////////////////
    {
-    size_t size = size_t(end - current);
-    if (size > capacity)
+    int64_t size = end - current;
+    if (size > int64_t(capacity))
      size = capacity;
     const size_t actually_read = size > 0
      ? file.raw_pread(buffer, size, current)
@@ -60,6 +62,13 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     return end - current;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   int64_t get_end() const
+   //////////////////////////////////////////////////////////////////////////
+   {
+    return end;
    }
  };
 }

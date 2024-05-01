@@ -56,11 +56,7 @@ namespace joedb
    void throw_if_pull_when_ahead()
    //////////////////////////////////////////////////////////////////////////
    {
-    if
-    (
-     get_checkpoint() > server_checkpoint ||
-     data.get_readonly_journal().get_position() > server_checkpoint
-    )
+    if (data.get_readonly_journal().get_position() > server_checkpoint)
     {
      throw Exception("can't pull: client is ahead of server");
     }
