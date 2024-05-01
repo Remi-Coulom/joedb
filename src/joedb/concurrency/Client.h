@@ -14,6 +14,11 @@ namespace joedb
   friend class Client_Lock;
 
   private:
+   Client_Data &data;
+   Connection &connection;
+
+   int64_t server_checkpoint;
+
    //////////////////////////////////////////////////////////////////////////
    bool push(bool unlock_after)
    //////////////////////////////////////////////////////////////////////////
@@ -60,12 +65,6 @@ namespace joedb
      throw Exception("can't pull: client is ahead of server");
     }
    }
-
-  protected:
-   Client_Data &data;
-   Connection &connection;
-
-   int64_t server_checkpoint;
 
   public:
    //////////////////////////////////////////////////////////////////////////
