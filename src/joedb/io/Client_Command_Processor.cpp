@@ -94,13 +94,11 @@ namespace joedb
    out << " db\n";
    out << " push\n";
    out << " push_every <seconds>\n";
+   out << " pull\n";
+   out << " pull_every <seconds>\n";
 
    if (!is_readonly_data())
-   {
-    out << " pull\n";
-    out << " pull_every <seconds>\n";
     out << " transaction\n";
-   }
 
    out << '\n';
    return Status::ok;
@@ -141,11 +139,11 @@ namespace joedb
 
    client.push_unlock();
   }
-  else if (command == "pull" && !is_readonly_data()) ////////////////////////
+  else if (command == "pull") ///////////////////////////////////////////////
   {
    pull(out);
   }
-  else if (command == "pull_every" && !is_readonly_data()) //////////////////
+  else if (command == "pull_every") /////////////////////////////////////////
   {
    int seconds = 1;
    parameters >> seconds;
@@ -159,7 +157,7 @@ namespace joedb
     sleep(seconds, out);
    }
   }
-  else if (command == "transaction" && !is_readonly_data()) //////////////////
+  else if (command == "transaction" && !is_readonly_data()) /////////////////
   {
    out << "Waiting for lock... ";
    out.flush();
