@@ -245,7 +245,6 @@ namespace joedb
   buffer[3] = 'd';
   buffer[4] = 'b';
 
-  constexpr int64_t client_version = 9;
   to_network(client_version, buffer.data() + 5);
 
   {

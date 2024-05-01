@@ -17,6 +17,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
+   static constexpr int64_t client_version = 9;
+
    Thread_Safe_Channel channel;
    std::ostream *log;
 
