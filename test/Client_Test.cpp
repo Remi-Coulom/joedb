@@ -111,6 +111,26 @@ TEST(Client, Transaction_Failure)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Client, no_pull_when_ahead)
+/////////////////////////////////////////////////////////////////////////////
+{
+ Memory_File client_file;
+
+ {
+  Writable_Journal journal(client_file);
+  journal.comment("Hello");
+  journal.default_checkpoint();
+ }
+
+ Memory_File server_file;
+ File_Connection connection(server_file);
+ Interpreted_Client client(connection, client_file);
+
+ EXPECT_ANY_THROW(client.pull());
+ client.push_unlock();
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Client, hash)
 /////////////////////////////////////////////////////////////////////////////
 {
