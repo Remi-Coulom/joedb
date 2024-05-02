@@ -44,7 +44,6 @@ namespace joedb
   std::ostringstream range;
   range << seek_offset << '-' << seek_offset + size - 1;
   throw_if_error(curl_easy_setopt(curl, CURLOPT_RANGE, range.str().c_str()));
-  throw_if_error(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback));
   throw_if_error(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &callback_data));
   throw_if_error(curl_easy_perform(curl));
   return callback_data.offset;
@@ -89,6 +88,7 @@ namespace joedb
   throw_if_error(curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose));
   throw_if_error(curl_easy_setopt(curl, CURLOPT_URL, url));
   throw_if_error(curl_easy_setopt(curl, CURLOPT_USERAGENT, "joedb"));
+  throw_if_error(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback));
  }
 
  ////////////////////////////////////////////////////////////////////////////

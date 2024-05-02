@@ -13,6 +13,10 @@
 #include <asio/version.hpp>
 #endif
 
+#ifdef JOEDB_HAS_CURL
+#include <curl/curl.h>
+#endif
+
 #include <istream>
 #include <ostream>
 
@@ -75,6 +79,10 @@ namespace joedb
   out << ASIO_VERSION / 100 % 1000 << '.';
   out << ASIO_VERSION % 100;
   out << " https://think-async.com/Asio/\n";
+#endif
+
+#ifdef JOEDB_HAS_CURL
+  out << "curl version: " << curl_version() << '\n';
 #endif
 
   out << "compiled: " << __DATE__ << ' ' << __TIME__ << '\n';
