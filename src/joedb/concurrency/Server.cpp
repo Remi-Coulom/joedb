@@ -111,7 +111,12 @@ namespace joedb
   if (!locked && !lock_queue.empty())
   {
    if (!client_lock)
-    client_lock.emplace(client); // ??? takes_time
+   {
+    if (push_client)
+     client_lock.emplace(*push_client); // ??? takes_time
+    else
+     throw Exception("trying to lock, but pull-only"); // TODO: Pullonly_Server
+   }
 
    locked = true;
    const std::shared_ptr<Session> session = lock_queue.front();
@@ -791,7 +796,7 @@ namespace joedb
  Server::Server
  ////////////////////////////////////////////////////////////////////////////
  (
-  Client &client,
+  Pullonly_Client &client,
   const bool share_client,
   net::io_context &io_context,
   const uint16_t port,
@@ -800,6 +805,7 @@ namespace joedb
  ):
   start_time(std::chrono::steady_clock::now()),
   client(client),
+  push_client(client.get_push_client()),
   share_client(share_client),
   io_context(io_context),
   acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
@@ -815,10 +821,11 @@ namespace joedb
  {
   LOG(port << ": constructor\n");
 
-  client.push_unlock();
+  if (push_client)
+   push_client->push_unlock();
 
-  if (!share_client && !client.is_readonly())
-   client_lock.emplace(client);
+  if (!share_client && !client.is_readonly() && push_client)
+   client_lock.emplace(*push_client);
   else
    client.pull();
 

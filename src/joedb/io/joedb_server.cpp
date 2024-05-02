@@ -56,7 +56,7 @@ and can still push data: the push will succeed only if there is no conflict.
    index += 1;
   }
 
-  Client &client = client_parser.parse(argc - index, argv + index);
+  Pullonly_Client &client = client_parser.parse(argc - index, argv + index);
 
   IO_Context_Wrapper io_context_wrapper;
 

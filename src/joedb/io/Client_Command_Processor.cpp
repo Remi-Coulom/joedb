@@ -92,16 +92,20 @@ namespace joedb
    out << "~~~~~~\n";
 
    out << " db\n";
-   out << " push\n";
-
-   if (is_readonly_data())
-    out << " push_every <seconds>\n";
 
    out << " pull\n";
-
    if (!is_readonly_data())
    {
     out << " pull_every <seconds>\n";
+   }
+
+   if (push_client)
+   {
+    out << " push\n";
+
+    if (is_readonly_data())
+     out << " push_every <seconds>\n";
+
     out << " transaction\n";
    }
 
@@ -124,11 +128,11 @@ namespace joedb
    interpreter.set_parent(this);
    interpreter.main_loop(in, out);
   }
-  else if (command == "push") ///////////////////////////////////////////////
+  else if (command == "push" && push_client) ////////////////////////////////
   {
-   client.push_unlock();
+   push_client->push_unlock();
   }
-  else if (command == "push_every" && is_readonly_data()) ///////////////////
+  else if (command == "push_every" && is_readonly_data() && push_client) ////
   {
    int seconds = 1;
    parameters >> seconds;
@@ -136,17 +140,17 @@ namespace joedb
    Signal::set_signal(Signal::no_signal);
    Signal::start();
 
-   client.push_and_keep_locked();
+   push_client->push_and_keep_locked();
 
    while (Signal::get_signal() != SIGINT)
    {
     sleep(seconds, out);
     client.pull();
     if (client.get_checkpoint_difference() > 0)
-     client.push_and_keep_locked();
+     push_client->push_and_keep_locked();
    }
 
-   client.push_unlock();
+   push_client->push_unlock();
   }
   else if (command == "pull") ///////////////////////////////////////////////
   {
@@ -166,12 +170,12 @@ namespace joedb
     sleep(seconds, out);
    }
   }
-  else if (command == "transaction" && !is_readonly_data()) /////////////////
+  else if (command == "transaction" && !is_readonly_data() && push_client) //
   {
    out << "Waiting for lock... ";
    out.flush();
 
-   client.transaction([this, &in, &out](Client_Data &data)
+   push_client->transaction([this, &in, &out](Client_Data &data)
    {
     out << "OK\n";
 
@@ -201,9 +205,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Client_Command_Processor::Client_Command_Processor(Client &client):
+ Client_Command_Processor::Client_Command_Processor(Pullonly_Client &client):
  ////////////////////////////////////////////////////////////////////////////
-  client(client)
+  client(client),
+  push_client(client.get_push_client())
  {
  }
 }

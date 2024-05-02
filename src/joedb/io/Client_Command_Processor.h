@@ -3,6 +3,7 @@
 namespace joedb
 {
  class Client;
+ class Pullonly_Client;
  class Writable_Interpreter;
 
  ////////////////////////////////////////////////////////////////////////////
@@ -10,7 +11,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Client &client;
+   Pullonly_Client &client;
+   Client * const push_client;
 
    void run_transaction
    (
@@ -36,6 +38,6 @@ namespace joedb
    ) override;
 
   public:
-   Client_Command_Processor(Client &client);
+   Client_Command_Processor(Pullonly_Client &client);
  };
 }

@@ -7,6 +7,8 @@
 
 namespace joedb
 {
+ class Client;
+
  ////////////////////////////////////////////////////////////////////////////
  class Pullonly_Client
  ////////////////////////////////////////////////////////////////////////////
@@ -47,6 +49,7 @@ namespace joedb
    Client_Data &get_data() const {return data;}
    const Readonly_Journal &get_journal() {return data.get_readonly_journal();}
    bool is_readonly() const {return data.is_readonly();}
+   virtual Client *get_push_client() {return nullptr;}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint() const
@@ -134,6 +137,8 @@ namespace joedb
     connection(connection)
    {
    }
+
+   Client *get_push_client() override {return this;}
 
    //////////////////////////////////////////////////////////////////////////
    void push_unlock()

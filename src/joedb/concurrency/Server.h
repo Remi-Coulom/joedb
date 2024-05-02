@@ -23,7 +23,8 @@ namespace joedb
    enum {clear_signal_seconds = 3};
 
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
-   joedb::Client &client;
+   Pullonly_Client &client;
+   Client * const push_client;
    const bool share_client;
    std::optional<Client_Lock> client_lock;
    net::io_context &io_context;
@@ -183,7 +184,7 @@ namespace joedb
   public:
    Server
    (
-    joedb::Client &client,
+    Pullonly_Client &client,
     bool share_client,
     net::io_context &io_context,
     uint16_t port,
