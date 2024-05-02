@@ -2,23 +2,23 @@
 
 namespace joedb
 {
- void Readonly_Connection::content_mismatch()
+ void Pullonly_Connection::content_mismatch()
  {
   throw Exception("Client data does not match the server");
  }
 
- int64_t Readonly_Connection::handshake(Readonly_Journal &client_journal)
+ int64_t Pullonly_Connection::handshake(Readonly_Journal &client_journal)
  {
   return client_journal.get_checkpoint_position();
  }
 
- int64_t Readonly_Connection::pull(Writable_Journal &client_journal)
+ int64_t Pullonly_Connection::pull(Writable_Journal &client_journal)
  {
   client_journal.pull();
   return client_journal.get_checkpoint_position();
  }
 
- Readonly_Connection::~Readonly_Connection() = default;
+ Pullonly_Connection::~Pullonly_Connection() = default;
 
  int64_t Connection::lock_pull(Writable_Journal &client_journal)
  {
