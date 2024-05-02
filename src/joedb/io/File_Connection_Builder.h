@@ -16,9 +16,7 @@ namespace joedb
  {
   private:
    File_Parser file_parser;
-   std::unique_ptr<Readonly_Journal> readonly_journal;
-   std::unique_ptr<Writable_Journal> writable_journal;
-   std::unique_ptr<Pullonly_Connection> connection;
+   std::unique_ptr<Connection> connection;
 
   public:
    const char *get_name() const final {return "file";}
@@ -30,22 +28,13 @@ namespace joedb
     return "<file>";
    }
 
-   Pullonly_Connection &build(int argc, char **argv) final
+   Connection &build(int argc, char **argv) final
    {
     int arg_index = 0;
     std::ostream null_stream(nullptr);
     file_parser.parse(null_stream, argc, argv, arg_index);
 
-    if (file_parser.get_file().get_mode() == Open_Mode::read_existing)
-    {
-     readonly_journal.reset(new Readonly_Journal(file_parser.get_file()));
-     connection.reset(new Pullonly_Journal_Connection(*readonly_journal));
-    }
-    else
-    {
-     writable_journal.reset(new Writable_Journal(file_parser.get_file()));
-     connection.reset(new Journal_Connection(*writable_journal));
-    }
+    connection.reset(new File_Connection(file_parser.get_file()));
 
     return *connection;
    }

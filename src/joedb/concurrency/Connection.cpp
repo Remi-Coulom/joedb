@@ -2,31 +2,25 @@
 
 namespace joedb
 {
- void Pullonly_Connection::content_mismatch()
- {
-  throw Exception("Client data does not match the server");
- }
-
- int64_t Pullonly_Connection::handshake(Readonly_Journal &client_journal)
- {
-  return client_journal.get_checkpoint_position();
- }
-
- int64_t Pullonly_Connection::pull(Writable_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Connection_Puller::pull(Writable_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
  {
   client_journal.pull();
   return client_journal.get_checkpoint_position();
  }
 
- Pullonly_Connection::~Pullonly_Connection() = default;
-
- int64_t Connection::lock_pull(Writable_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Connection_Pusher::lock_pull(Writable_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
  {
   client_journal.lock_pull();
   return client_journal.get_checkpoint_position();
  }
 
- int64_t Connection::push
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Connection_Pusher::push
+ ////////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
   int64_t server_checkpoint,
@@ -38,8 +32,35 @@ namespace joedb
   return client_journal.get_checkpoint_position();
  }
 
- void Connection::unlock(Readonly_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
+ void Connection_Pusher::unlock(Readonly_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
  {
   client_journal.unlock();
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Connection::content_mismatch()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  throw Exception("Client data does not match the server");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Connection::handshake(Readonly_Journal &client_journal)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return client_journal.get_checkpoint_position();
+ }
+
+ Connection_Puller::~Connection_Puller() = default;
+ Connection_Pusher::~Connection_Pusher() = default;
+ Connection::~Connection() = default;
+
+ Connection_Puller *Connection::get_puller() {return nullptr;}
+ Connection_Pusher *Connection::get_pusher() {return nullptr;}
+ Connection_Puller *Pull_Connection::get_puller() {return this;}
+ Connection_Pusher *Push_Connection::get_pusher() {return this;}
+ Connection_Puller *Full_Connection::get_puller() {return this;}
+ Connection_Pusher *Full_Connection::get_pusher() {return this;}
 }

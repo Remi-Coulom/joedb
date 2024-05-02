@@ -41,31 +41,31 @@ namespace joedb
   Generic_File &file = file_parser.parse(std::cout, argc, argv, arg_index);
   Readonly_Journal journal(file);
 
-  Pullonly_Connection &pullonly_connection = connection_parser.build
+  Connection &connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index
   );
 
-  Connection *connection = pullonly_connection.get_connection();
+  Connection_Pusher *pusher = connection.get_pusher();
 
-  if (!connection)
+  if (!pusher)
   {
-   // TODO: must be prevented by connection_parser
-   std::cerr << "Cannot push to pull-only connection\n";
+   // Should be prevented by connection_parser
+   std::cerr << "Cannot push to this connection\n";
    return 1;
   }
   else
   {
-   int64_t server_checkpoint = connection->handshake(journal);
-   server_checkpoint = connection->push(journal, server_checkpoint, false);
+   int64_t server_checkpoint = connection.handshake(journal);
+   server_checkpoint = pusher->push(journal, server_checkpoint, false);
 
    while (follow)
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     journal.pull();
     if (journal.get_checkpoint_position() > server_checkpoint)
-     server_checkpoint = connection->push(journal, server_checkpoint, false);
+     server_checkpoint = pusher->push(journal, server_checkpoint, false);
    }
   }
 

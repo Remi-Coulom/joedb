@@ -16,7 +16,7 @@ namespace joedb
   public:
    const char *get_name() const final {return "dump";}
 
-   Pullonly_Connection &build(int argc, char **argv) final
+   Connection &build(int argc, char **argv) final
    {
     return connection;
    }
@@ -32,7 +32,7 @@ namespace joedb
   public:
    const char *get_name() const final {return "tail";}
 
-   Pullonly_Connection &build(int argc, char **argv) final
+   Connection &build(int argc, char **argv) final
    {
     return connection;
    }

@@ -27,7 +27,7 @@ namespace joedb
     return "<user> <host> <joedb_port> [<ssh_port> [<ssh_log_level>]]";
    }
 
-   Pullonly_Connection &build(int argc, char **argv) final
+   Connection &build(int argc, char **argv) final
    {
     const char * const user = argv[0];
     const char * const host = argv[1];

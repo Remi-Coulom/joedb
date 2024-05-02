@@ -11,7 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Connection connection;
+   Full_Connection connection;
 
   public:
    const char *get_name() const final
@@ -19,7 +19,7 @@ namespace joedb
     return "dummy";
    }
 
-   Pullonly_Connection &build(int argc, char **argv) final
+   Connection &build(int argc, char **argv) final
    {
     return connection;
    }

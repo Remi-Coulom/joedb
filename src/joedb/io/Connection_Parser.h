@@ -18,7 +18,7 @@ namespace joedb
 
    Connection_Builder &get_builder(const char *name) const;
 
-   static Pullonly_Connection &build
+   static Connection &build
    (
     Connection_Builder &builder,
     int argc,
@@ -30,7 +30,7 @@ namespace joedb
 
    void print_help(std::ostream &out) const;
 
-   Pullonly_Connection &build(int argc, char **argv) const;
+   Connection &build(int argc, char **argv) const;
  };
 }
 
