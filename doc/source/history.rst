@@ -22,6 +22,8 @@ History
     - ``Local_Connection`` is removed since it can be replaced by a plain
       ``Connection``.
 
+  - New ``CURL_File`` allows opening any URL as a read-only file.
+
   - Incompatibilities with previous version:
 
     - In Posix environments, locking changed from using ``flock`` to using

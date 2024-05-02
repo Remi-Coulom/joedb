@@ -63,6 +63,7 @@ various ways:
    to handle :doc:`concurrent <concurrency>` access to a file.
  - ``joedb::SFTP_File`` read-only access to a file via sftp.
  - ``joedb::Interpreted_File`` can read joedbi commands directly.
+ - ``joedb::CURL_File`` uses libcurl to open any URL
 
 .. _file_slices:
 

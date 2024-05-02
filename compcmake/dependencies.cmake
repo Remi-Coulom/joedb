@@ -56,3 +56,16 @@ if(NOT ${CMAKE_CROSSCOMPILING})
   endif()
  endif()
 endif()
+
+# libcurl
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+find_package(CURL QUIET)
+if (CURL_FOUND)
+ message("== CURL found (${CURL_LIBRARIES})")
+ add_definitions(-DJOEDB_HAS_CURL)
+else()
+ message("== CURL not found")
+ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  message("-- Suggestion: sudo apt install libcurl4-openssl-dev")
+ endif()
+endif()

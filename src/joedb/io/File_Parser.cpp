@@ -7,6 +7,10 @@
 #include "joedb/journal/SFTP_File.h"
 #endif
 
+#ifdef JOEDB_HAS_CURL
+#include "joedb/journal/CURL_File.h"
+#endif
+
 #include <cstring>
 #include <iostream>
 
@@ -40,6 +44,10 @@ namespace joedb
 
 #ifdef JOEDB_HAS_SSH
   out << " sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
+#endif
+
+#ifdef JOEDB_HAS_CURL
+  out << " curl [--verbose] <URL>\n";
 #endif
  }
 
@@ -101,6 +109,35 @@ namespace joedb
    file.reset(new SFTP_File(*sftp, file_name));
 
    out << "OK\n";
+  }
+#endif
+#ifdef JOEDB_HAS_CURL
+  else if (arg_index < argc && std::strcmp(argv[arg_index], "curl") == 0)
+  {
+   arg_index++;
+
+   bool verbose = false;
+   if (arg_index < argc && std::strcmp(argv[arg_index], "--verbose") == 0)
+   {
+    verbose = true;
+    arg_index++;
+   }
+
+   const char * url = nullptr;
+
+   if (arg_index < argc)
+   {
+    url = argv[arg_index];
+    arg_index++;
+   }
+
+   if (url && *url)
+   {
+    file.reset(new CURL_File(url, verbose));
+    out << "OK\n";
+   }
+   else
+    throw Runtime_Error("missing URL");
   }
 #endif
   else

@@ -80,6 +80,12 @@ if(libssh_FOUND)
  )
 endif()
 
+if(CURL_FOUND)
+ set(JOEDB_SOURCES ${JOEDB_SOURCES}
+  ${JOEDB_SRC_DIR}/joedb/journal/CURL_File.cpp
+ )
+endif()
+
 if (UNIX)
  # -> 64-bit off_t even in 32-bit code
  add_definitions(-D_FILE_OFFSET_BITS=64)
@@ -100,6 +106,11 @@ else()
 endif()
 
 target_link_libraries(joedb Threads::Threads)
+
 if(libssh_FOUND)
  target_link_libraries(joedb ${LIBSSH_LIBRARIES})
+endif()
+
+if(CURL_FOUND)
+ target_link_libraries(joedb ${CURL_LIBRARIES})
 endif()
