@@ -7,7 +7,12 @@ Joedb comes with a collection of command-line tools.
 
 ``joedbi``
 ----------
-``joedbi`` is the joedb interpreter. When invoked without parameters, it creates a database in memory. When invoked with a parameter, it opens a file.
+
+.. literalinclude:: ./tutorial/joedbi.out
+   :language: none
+
+``joedbi`` is the joedb interpreter. It has commands to let you directly modify
+a file, and visualize the content of tables.
 
 Below is a list of commands the interpreter understands:
 

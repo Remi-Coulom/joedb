@@ -61,9 +61,12 @@ various ways:
    ``joedb::Posix_File``, or ``joedb::Portable_File``. System-specific version
    of ``joedb::File`` offer extra features, such as locking, which is necessary
    to handle :doc:`concurrent <concurrency>` access to a file.
- - ``joedb::SFTP_File`` read-only access to a file via sftp.
+ - ``joedb::SFTP_File`` read-only access to a file via sftp (uses libssh).
+ - ``joedb::CURL_File`` read-only access to a file via any URL (uses libcurl).
  - ``joedb::Interpreted_File`` can read joedbi commands directly.
- - ``joedb::CURL_File`` uses libcurl to open any URL
+
+You can also create your own file class by subclassing ``Generic_File`` and
+implementing its pure virtual functions.
 
 .. _file_slices:
 
