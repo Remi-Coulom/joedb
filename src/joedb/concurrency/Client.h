@@ -95,28 +95,11 @@ namespace joedb
    Connection &connection;
 
    //////////////////////////////////////////////////////////////////////////
-   bool push(bool unlock_after)
+   void start_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (data.is_readonly())
-     data.get_readonly_journal().pull();
-
-    if (get_checkpoint_difference() > 0)
-    {
-     server_checkpoint = connection.push
-     (
-      data.get_readonly_journal(),
-      server_checkpoint,
-      unlock_after
-     );
-
-     return true;
-    }
-
-    if (unlock_after)
-     connection.unlock(data.get_readonly_journal());
-
-    return false;
+    throw_if_pull_when_ahead();
+    server_checkpoint = connection.lock_pull(data.get_writable_journal());
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -141,25 +124,25 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool push_unlock()
+   void push(bool unlock_after)
    //////////////////////////////////////////////////////////////////////////
    {
-    return push(true);
+    server_checkpoint = connection.push
+    (
+     data.get_readonly_journal(),
+     server_checkpoint,
+     unlock_after
+    );
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   bool push_and_keep_locked()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return push(false);
-   }
+   void push_unlock() {push(true);}
+   void push_and_keep_locked() {push(false);}
 
    //////////////////////////////////////////////////////////////////////////
    template<typename F> void transaction(F transaction)
    //////////////////////////////////////////////////////////////////////////
    {
-    throw_if_pull_when_ahead();
-    server_checkpoint = connection.lock_pull(data.get_writable_journal());
+    start_transaction();
 
     try
     {
@@ -193,11 +176,7 @@ namespace joedb
     client(client),
     initial_uncaught_exceptions(std::uncaught_exceptions())
    {
-    client.throw_if_pull_when_ahead();
-    client.server_checkpoint = client.connection.lock_pull
-    (
-     client.data.get_writable_journal()
-    );
+    client.start_transaction();
    }
 
    Writable_Journal &get_journal()
@@ -207,7 +186,7 @@ namespace joedb
 
    void push()
    {
-    client.push(false);
+    client.push_and_keep_locked();
    }
 
    ~Client_Lock()

@@ -93,12 +93,17 @@ namespace joedb
 
    out << " db\n";
    out << " push\n";
-   out << " push_every <seconds>\n";
+
+   if (is_readonly_data())
+    out << " push_every <seconds>\n";
+
    out << " pull\n";
-   out << " pull_every <seconds>\n";
 
    if (!is_readonly_data())
+   {
+    out << " pull_every <seconds>\n";
     out << " transaction\n";
+   }
 
    out << '\n';
    return Status::ok;
@@ -123,7 +128,7 @@ namespace joedb
   {
    client.push_unlock();
   }
-  else if (command == "push_every") /////////////////////////////////////////
+  else if (command == "push_every" && is_readonly_data()) ///////////////////
   {
    int seconds = 1;
    parameters >> seconds;
@@ -131,10 +136,14 @@ namespace joedb
    Signal::set_signal(Signal::no_signal);
    Signal::start();
 
+   client.push_and_keep_locked();
+
    while (Signal::get_signal() != SIGINT)
    {
-    client.push_and_keep_locked();
     sleep(seconds, out);
+    client.pull();
+    if (client.get_checkpoint_difference() > 0)
+     client.push_and_keep_locked();
    }
 
    client.push_unlock();
@@ -143,7 +152,7 @@ namespace joedb
   {
    pull(out);
   }
-  else if (command == "pull_every") /////////////////////////////////////////
+  else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
    int seconds = 1;
    parameters >> seconds;

@@ -815,8 +815,7 @@ namespace joedb
  {
   LOG(port << ": constructor\n");
 
-  if (client.push_unlock())
-   LOG("Server::Server: pushed to connection\n");
+  client.push_unlock();
 
   if (!share_client && !client.is_readonly())
    client_lock.emplace(client);
