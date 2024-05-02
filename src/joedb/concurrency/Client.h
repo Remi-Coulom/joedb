@@ -8,18 +8,13 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Client
+ class Pullonly_Client
  ////////////////////////////////////////////////////////////////////////////
  {
-  friend class Client_Lock;
-
-  private:
+  protected:
    Client_Data &data;
-   Connection &connection;
+   Pullonly_Connection &connection;
    int64_t server_checkpoint;
-
-   Connection_Puller * const puller;
-   Connection_Pusher * const pusher;
 
    //////////////////////////////////////////////////////////////////////////
    void throw_if_pull_when_ahead()
@@ -35,56 +30,23 @@ namespace joedb
     }
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   void push(bool unlock_after)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    server_checkpoint = pusher->push
-    (
-     data.get_readonly_journal(),
-     server_checkpoint,
-     unlock_after
-    );
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void start_transaction()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    throw_if_pull_when_ahead();
-    server_checkpoint = pusher->lock_pull(data.get_writable_journal());
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void cancel_transaction()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    pusher->unlock(data.get_writable_journal());
-    data.get_writable_journal().flush();
-   }
-
   public:
    //////////////////////////////////////////////////////////////////////////
-   Client
+   Pullonly_Client
    //////////////////////////////////////////////////////////////////////////
    (
     Client_Data &data,
-    Connection &connection
+    Pullonly_Connection &connection
    ):
     data(data),
     connection(connection),
-    server_checkpoint(connection.handshake(data.get_readonly_journal())),
-    puller(connection.get_puller()),
-    pusher(connection.get_pusher())
+    server_checkpoint(connection.handshake(data.get_readonly_journal()))
    {
    }
 
    Client_Data &get_data() const {return data;}
    const Readonly_Journal &get_journal() {return data.get_readonly_journal();}
    bool is_readonly() const {return data.is_readonly();}
-
-   bool has_puller() const {return puller;}
-   bool has_pusher() const {return pusher;}
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint() const
@@ -116,10 +78,61 @@ namespace joedb
     else
     {
      throw_if_pull_when_ahead();
-     server_checkpoint = puller->pull(data.get_writable_journal());
+     server_checkpoint = connection.pull(data.get_writable_journal());
     }
 
     return server_checkpoint;
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Client: public Pullonly_Client
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  friend class Client_Lock;
+
+  private:
+   Connection &connection;
+
+   //////////////////////////////////////////////////////////////////////////
+   void push(bool unlock_after)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    server_checkpoint = connection.push
+    (
+     data.get_readonly_journal(),
+     server_checkpoint,
+     unlock_after
+    );
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void start_transaction()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    throw_if_pull_when_ahead();
+    server_checkpoint = connection.lock_pull(data.get_writable_journal());
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void cancel_transaction()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    connection.unlock(data.get_writable_journal());
+    data.get_writable_journal().flush();
+   }
+
+  public:
+   //////////////////////////////////////////////////////////////////////////
+   Client
+   //////////////////////////////////////////////////////////////////////////
+   (
+    Client_Data &data,
+    Connection &connection
+   ):
+    Pullonly_Client(data, connection),
+    connection(connection)
+   {
    }
 
    //////////////////////////////////////////////////////////////////////////

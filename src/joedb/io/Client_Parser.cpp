@@ -38,7 +38,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Client &Client_Parser::parse(int argc, char **argv)
+ Pullonly_Client &Client_Parser::parse(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 0;
@@ -61,13 +61,18 @@ namespace joedb
 
   std::cout << "OK\n";
 
-  Connection &connection = connection_parser.build
+  Pullonly_Connection &pullonly_connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index
   );
 
-  client.reset(new Client(*client_data, connection));
+  Connection *connection = pullonly_connection.get_connection();
+
+  if (connection)
+   client.reset(new Client(*client_data, *connection));
+  else
+   client.reset(new Pullonly_Client(*client_data, pullonly_connection));
 
   return *client;
  }
