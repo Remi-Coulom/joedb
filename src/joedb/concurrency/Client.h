@@ -8,12 +8,12 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Connection_Client
+ class Pullonly_Client
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    Client_Data &data;
-   Readonly_Connection &connection;
+   Pullonly_Connection &connection;
    int64_t server_checkpoint;
 
    //////////////////////////////////////////////////////////////////////////
@@ -32,11 +32,11 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Readonly_Connection_Client
+   Pullonly_Client
    //////////////////////////////////////////////////////////////////////////
    (
     Client_Data &data,
-    Readonly_Connection &connection
+    Pullonly_Connection &connection
    ):
     data(data),
     connection(connection),
@@ -86,7 +86,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Client: public Readonly_Connection_Client
+ class Client: public Pullonly_Client
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Client_Lock;
@@ -130,7 +130,7 @@ namespace joedb
     Client_Data &data,
     Connection &connection
    ):
-    Readonly_Connection_Client(data, connection),
+    Pullonly_Client(data, connection),
     connection(connection)
    {
    }

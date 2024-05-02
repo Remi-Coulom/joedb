@@ -6,7 +6,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Connection
+ class Pullonly_Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
@@ -15,11 +15,11 @@ namespace joedb
   public:
    virtual int64_t handshake(Readonly_Journal &client_journal);
    virtual int64_t pull(Writable_Journal &client_journal);
-   virtual ~Readonly_Connection();
+   virtual ~Pullonly_Connection();
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Connection: public Readonly_Connection
+ class Connection: public Pullonly_Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
