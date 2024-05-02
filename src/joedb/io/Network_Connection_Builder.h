@@ -24,6 +24,9 @@ namespace joedb
  class Network_Connection_Builder: public Connection_Builder
  /////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   std::unique_ptr<Network_Channel_Connection> connection;
+
   public:
    bool has_sharing_option() const final {return true;}
    int get_min_parameters() const final {return 2;}
@@ -34,15 +37,14 @@ namespace joedb
     return "<host> <port>";
    }
 
-   std::unique_ptr<Connection> build(int argc, char **argv) final
+   Pullonly_Connection &build(int argc, char **argv) final
    {
     const char * const host = argv[0];
     const char * const port = argv[1];
 
-    return std::unique_ptr<Connection>
-    (
-     new Network_Channel_Connection(host, port)
-    );
+    connection.reset(new Network_Channel_Connection(host, port));
+
+    return *connection;
    }
  };
 }

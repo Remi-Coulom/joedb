@@ -77,7 +77,7 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- std::unique_ptr<Connection> Connection_Parser::build
+ Pullonly_Connection &Connection_Parser::build
  //////////////////////////////////////////////////////////////////////////
  (
   Connection_Builder &builder,
@@ -105,7 +105,7 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- std::unique_ptr<Connection> Connection_Parser::build
+ Pullonly_Connection &Connection_Parser::build
  //////////////////////////////////////////////////////////////////////////
  (
   int argc,
@@ -124,7 +124,7 @@ namespace joedb
   std::cout << "Creating connection (" << connection_name << ") ... ";
   std::cout.flush();
 
-  std::unique_ptr<Connection> result = build
+  Pullonly_Connection &result = build
   (
    get_builder(connection_name),
    argc - 1,

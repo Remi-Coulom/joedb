@@ -1,12 +1,9 @@
 #ifndef joedb_Connection_Builder_declared
 #define joedb_Connection_Builder_declared
 
-#include <memory>
-
 namespace joedb
 {
- class Connection;
- class Writable_Journal;
+ class Pullonly_Connection;
 
  ////////////////////////////////////////////////////////////////////////////
  class Connection_Builder
@@ -19,7 +16,9 @@ namespace joedb
    virtual int get_max_parameters() const {return 0;}
    virtual const char *get_name() const {return "";}
    virtual const char *get_parameters_description() const {return "";}
-   virtual std::unique_ptr<Connection> build(int argc, char **argv) = 0;
+
+   virtual Pullonly_Connection &build(int argc, char **argv) = 0;
+
    virtual ~Connection_Builder() = default;
  };
 }

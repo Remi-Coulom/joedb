@@ -10,15 +10,18 @@ namespace joedb
  class Dummy_Connection_Builder: public Connection_Builder
  ////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   Connection connection;
+
   public:
    const char *get_name() const final
    {
     return "dummy";
    }
 
-   std::unique_ptr<Connection> build(int argc, char **argv) final
+   Pullonly_Connection &build(int argc, char **argv) final
    {
-    return std::unique_ptr<Connection>(new Connection());
+    return connection;
    }
  };
 }

@@ -10,11 +10,15 @@ namespace joedb
  class Dump_Connection_Builder: public Connection_Builder
  ////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   Dump_Connection connection{false};
+
   public:
    const char *get_name() const final {return "dump";}
-   std::unique_ptr<Connection> build(int argc, char **argv) final
+
+   Pullonly_Connection &build(int argc, char **argv) final
    {
-    return std::unique_ptr<Connection>(new Dump_Connection(false));
+    return connection;
    }
  };
 
@@ -22,11 +26,15 @@ namespace joedb
  class Tail_Connection_Builder: public Connection_Builder
  ////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   Dump_Connection connection{true};
+
   public:
    const char *get_name() const final {return "tail";}
-   std::unique_ptr<Connection> build(int argc, char **argv) final
+
+   Pullonly_Connection &build(int argc, char **argv) final
    {
-    return std::unique_ptr<Connection>(new Dump_Connection(true));
+    return connection;
    }
  };
 }

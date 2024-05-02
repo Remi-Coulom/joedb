@@ -11,37 +11,15 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- class File_Construction
- /////////////////////////////////////////////////////////////////////////////
- {
-  protected:
-   File_Parser file_parser;
-
-  public:
-   File_Construction(int argc, char **argv)
-   {
-    int arg_index = 0;
-    std::ostream null_stream(nullptr);
-    file_parser.parse(null_stream, argc, argv, arg_index);
-   }
- };
-
- /////////////////////////////////////////////////////////////////////////////
- class File_Connection_Data: public File_Construction, public File_Connection
- /////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   File_Connection_Data(int argc, char **argv):
-    File_Construction(argc, argv),
-    File_Connection(file_parser.get_file())
-   {
-   }
- };
-
- /////////////////////////////////////////////////////////////////////////////
  class File_Connection_Builder: public Connection_Builder
  /////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   File_Parser file_parser;
+   std::unique_ptr<Readonly_Journal> readonly_journal;
+   std::unique_ptr<Writable_Journal> writable_journal;
+   std::unique_ptr<Pullonly_Connection> connection;
+
   public:
    const char *get_name() const final {return "file";}
    int get_min_parameters() const final {return 1;}
@@ -52,12 +30,24 @@ namespace joedb
     return "<file>";
    }
 
-   std::unique_ptr<Connection> build(int argc, char **argv) final
+   Pullonly_Connection &build(int argc, char **argv) final
    {
-    return std::unique_ptr<Connection>
-    (
-     new File_Connection_Data(argc, argv)
-    );
+    int arg_index = 0;
+    std::ostream null_stream(nullptr);
+    file_parser.parse(null_stream, argc, argv, arg_index);
+
+    if (file_parser.get_file().get_mode() == Open_Mode::read_existing)
+    {
+     readonly_journal.reset(new Readonly_Journal(file_parser.get_file()));
+     connection.reset(new Pullonly_Journal_Connection(*readonly_journal));
+    }
+    else
+    {
+     writable_journal.reset(new Writable_Journal(file_parser.get_file()));
+     connection.reset(new Journal_Connection(*writable_journal));
+    }
+
+    return *connection;
    }
  };
 }

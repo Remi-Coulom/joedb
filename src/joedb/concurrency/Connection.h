@@ -5,6 +5,8 @@
 
 namespace joedb
 {
+ class Connection;
+
  ////////////////////////////////////////////////////////////////////////////
  class Pullonly_Connection
  ////////////////////////////////////////////////////////////////////////////
@@ -16,10 +18,11 @@ namespace joedb
    virtual int64_t handshake(Readonly_Journal &client_journal);
    virtual int64_t pull(Writable_Journal &client_journal);
    virtual ~Pullonly_Connection();
+   virtual Connection *get_connection() {return nullptr;}
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Connection: public Pullonly_Connection
+ class Connection: public virtual Pullonly_Connection
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
@@ -33,6 +36,8 @@ namespace joedb
    );
 
    virtual void unlock(Readonly_Journal &client_journal);
+
+   virtual Connection *get_connection() final {return this;}
  };
 }
 

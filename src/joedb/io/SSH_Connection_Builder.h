@@ -12,6 +12,9 @@ namespace joedb
  class SSH_Connection_Builder: public Connection_Builder
  /////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   std::unique_ptr<SSH_Server_Connection> connection;
+
   public:
    bool has_sharing_option() const final {return true;}
    int get_min_parameters() const final {return 3;}
@@ -24,7 +27,7 @@ namespace joedb
     return "<user> <host> <joedb_port> [<ssh_port> [<ssh_log_level>]]";
    }
 
-   std::unique_ptr<Connection> build(int argc, char **argv) final
+   Pullonly_Connection &build(int argc, char **argv) final
    {
     const char * const user = argv[0];
     const char * const host = argv[1];
@@ -32,7 +35,7 @@ namespace joedb
     const unsigned ssh_port = argc > 3 ? std::atoi(argv[3]) : 22;
     const int ssh_log_level = argc > 4 ? std::atoi(argv[4]) : 0;
 
-    return std::unique_ptr<Connection>
+    connection.reset
     (
      new SSH_Server_Connection
      (
@@ -44,6 +47,8 @@ namespace joedb
       &std::cerr
      )
     );
+
+    return *connection;
    }
  };
 }
