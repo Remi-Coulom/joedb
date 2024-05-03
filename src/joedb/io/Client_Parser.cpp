@@ -67,10 +67,10 @@ namespace joedb
    argv + arg_index
   );
 
-  Connection *connection = pullonly_connection.get_connection();
+  Connection *push_connection = pullonly_connection.get_push_connection();
 
-  if (connection)
-   client.reset(new Client(*client_data, *connection));
+  if (push_connection)
+   client.reset(new Client(*client_data, *push_connection));
   else
    client.reset(new Pullonly_Client(*client_data, pullonly_connection));
 

@@ -18,7 +18,7 @@ namespace joedb
    virtual int64_t handshake(Readonly_Journal &client_journal);
    virtual int64_t pull(Writable_Journal &client_journal);
    virtual ~Pullonly_Connection();
-   virtual Connection *get_connection() {return nullptr;}
+   virtual Connection *get_push_connection() {return nullptr;}
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace joedb
 
    virtual void unlock(Readonly_Journal &client_journal);
 
-   virtual Connection *get_connection() final {return this;}
+   virtual Connection *get_push_connection() final {return this;}
  };
 }
 
