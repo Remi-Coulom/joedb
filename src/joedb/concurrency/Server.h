@@ -193,6 +193,7 @@ namespace joedb
    );
 
    uint16_t get_port() const {return port;}
+   bool is_readonly() const;
 
    void set_log(std::ostream *new_log);
    void pause();

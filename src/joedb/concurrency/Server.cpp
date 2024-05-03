@@ -110,19 +110,18 @@ namespace joedb
  {
   if (!locked && !lock_queue.empty())
   {
-   if (!client_lock)
-   {
-    if (push_client)
-     client_lock.emplace(*push_client); // ??? takes_time
-    else
-     throw Exception("trying to lock, but pull-only"); // TODO: Pullonly_Server
-   }
-
    locked = true;
    const std::shared_ptr<Session> session = lock_queue.front();
    lock_queue.pop();
-
    LOGID("locking\n");
+
+   if (!client_lock)
+   {
+    if (is_readonly())
+     LOGID("Error: locking readonly server\n");
+    else
+     client_lock.emplace(*push_client); // ??? takes_time
+   }
 
    if (session->state == Session::State::waiting_for_lock_pull)
     pull(session);
@@ -164,7 +163,7 @@ namespace joedb
    locked = false;
    lock_timeout_timer.cancel();
 
-   if (share_client && lock_queue.empty())
+   if (client_lock && share_client && lock_queue.empty())
    {
     Posthumous_Catcher catcher;
     client_lock->set_catcher(catcher);
@@ -324,10 +323,10 @@ namespace joedb
 
    LOGID("pushing, start = " << start << ", size = " << size << ':');
 
-   if (conflict)
-    session->push_status = 'C';
-   else if (client.is_readonly())
+   if (is_readonly())
     session->push_status = 'R';
+   else if (conflict)
+    session->push_status = 'C';
    else
    {
     session->push_status = 'U';
@@ -812,7 +811,6 @@ namespace joedb
   port(acceptor.local_endpoint().port()),
   interrupt_timer(io_context),
   paused(false),
-
   session_id(0),
   lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),
@@ -824,7 +822,7 @@ namespace joedb
   if (push_client)
    push_client->push_unlock();
 
-  if (!share_client && !client.is_readonly() && push_client)
+  if (!share_client && !is_readonly())
    client_lock.emplace(*push_client);
   else
    client.pull();
@@ -834,6 +832,13 @@ namespace joedb
   Signal::start();
   start_interrupt_timer();
   start_accept();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ bool Server::is_readonly() const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return client.is_readonly() || !push_client;
  }
 
  ////////////////////////////////////////////////////////////////////////////

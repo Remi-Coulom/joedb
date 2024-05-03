@@ -18,6 +18,11 @@ namespace joedb
   return client_journal.get_checkpoint_position();
  }
 
+ Connection *Pullonly_Connection::get_push_connection()
+ {
+  return nullptr;
+ }
+
  Pullonly_Connection::~Pullonly_Connection() = default;
 
  int64_t Connection::lock_pull(Writable_Journal &client_journal)
@@ -41,5 +46,10 @@ namespace joedb
  void Connection::unlock(Readonly_Journal &client_journal)
  {
   client_journal.unlock();
+ }
+
+ Connection *Connection::get_push_connection()
+ {
+  return this;
  }
 }
