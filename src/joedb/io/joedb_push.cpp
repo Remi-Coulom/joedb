@@ -47,7 +47,7 @@ namespace joedb
    argv + arg_index
   );
 
-  Connection *connection = pullonly_connection.get_connection();
+  Connection *connection = pullonly_connection.get_push_connection();
 
   if (!connection)
   {
