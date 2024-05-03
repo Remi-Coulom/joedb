@@ -130,12 +130,14 @@ namespace joedb
  {
   public:
    Test_Network_Channel channel;
-   Server_Connection connection;
+   Server_Connection server_connection;
+   Connection &connection;
    Interpreted_Client client;
 
    Test_Client(Server &server, Generic_File &file):
     channel("localhost", Port_String(server).get()),
-    connection(channel, nullptr),
+    server_connection(channel, nullptr),
+    connection(server_connection),
     client(connection, file)
    {
    }
@@ -588,11 +590,7 @@ namespace joedb
   Test_Server server(false, std::chrono::seconds(0));
   Memory_File client_file;
   Test_Client client(server, client_file);
-
-  {
-   Channel_Lock lock(client.connection.channel);
-   client.connection.ping(lock);
-  }
+  client.server_connection.ping();
  }
 
  /////////////////////////////////////////////////////////////////////////////

@@ -16,9 +16,7 @@ namespace joedb
  class Server_Connection: public Connection, public Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
-  public:
-   static constexpr int64_t client_version = 10;
-
+  private:
    Thread_Safe_Channel channel;
    std::ostream *log;
 
@@ -58,9 +56,11 @@ namespace joedb
   public:
    Server_Connection(Channel &channel, std::ostream *log);
 
+   static constexpr int64_t client_version = 10;
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}
    Connection *get_push_connection() override;
+   void ping();
 
    ~Server_Connection() override;
  };

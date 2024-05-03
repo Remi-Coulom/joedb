@@ -58,6 +58,7 @@ TEST(Server_Connection, session)
  file.write<int64_t>(joedb::Server_Connection::client_version);
  file.write<int64_t>(1234);
  file.write<int64_t>(41);
+ file.write<char>('W');
  file.write<char>('H');
  file.write<char>('P');
  file.write<int64_t>(41);
