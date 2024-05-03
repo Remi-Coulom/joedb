@@ -99,7 +99,12 @@ Better Freedom_Keeper
 Concurrency
 -----------
 - content-matching option (full, fast, none)
-- better support for readonly connection (and client): separate types?
+- Pullonly_Client:
+  - Pullonly_Server_connection
+  - Pullonly_Server (never throw if try to lock pull-only)
+  - Protocol must tell if pull-only server
+  - cannot write if either readonly_data or pull-only connection
+
 - Pull-only connection (eg when serving a read-only file):
   -> joedb_client does not offer transaction and push
   -> reply with readonly flag during server handshake
