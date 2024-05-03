@@ -34,7 +34,8 @@ Prefix Data             Description
 ====== ================ ======================================================
 joedb  server_version   | reply to joedb.
        session_id       | server_version = 0 means client_version is rejected.
-       checkpoint
+       checkpoint       | 'R' is pull-only
+       'R' or 'W'
 P      checkpoint       reply to P
        size
        data
@@ -43,7 +44,7 @@ L      checkpoint       reply to L
        data
 U                       reply to U or p when the push succeeded
 C                       reply to U or p when the push failed (conflict)
-R                       reply to U or p when the push failed (read-only)
+R                       reply to L, p, U or u when the server is read-only
 u                       reply to u (no timeout)
 t                       reply to u, U, or p in case of timeout
 H                       reply to H, hash is matching

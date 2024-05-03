@@ -608,8 +608,8 @@ namespace joedb
   LOGID("client_version = " << client_version << '\n');
 
   {
-   const int64_t server_version = client_version < 9 ? 0 : 9;
-   to_network(server_version, session->buffer.data() + 5);
+   const int64_t reply_version = client_version < 10 ? 0 : server_version;
+   to_network(reply_version, session->buffer.data() + 5);
   }
 
   to_network(session->id, session->buffer.data() + 5 + 8);
@@ -619,7 +619,9 @@ namespace joedb
    session->buffer.data() + 5 + 8 + 8
   );
 
-  write_buffer_and_next_command(session, 5 + 8 + 8 + 8);
+  session->buffer.data()[5 + 8 + 8 + 8] = is_readonly() ? 'R' : 'W';
+
+  write_buffer_and_next_command(session, 5 + 8 + 8 + 8 + 1);
  }
 
  ///////////////////////////////////////////////////////////////////////////

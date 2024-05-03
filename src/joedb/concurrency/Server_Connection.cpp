@@ -251,7 +251,7 @@ namespace joedb
    Channel_Lock lock(channel);
    lock.write(buffer.data(), 5 + 8);
    LOG("Waiting for \"joedb\"... ");
-   lock.read(buffer.data(), 5 + 8 + 8 + 8);
+   lock.read(buffer.data(), 5 + 8 + 8 + 8 + 1);
   }
 
   if
@@ -278,11 +278,20 @@ namespace joedb
 
   session_id = from_network(buffer.data() + 5 + 8);
   const int64_t server_checkpoint = from_network(buffer.data() + 5 + 8 + 8);
+  const char mode = buffer.data()[5 + 8 + 8 + 8];
+
+  if (mode == 'R')
+   pullonly_server = true;
+  else if (mode == 'W')
+   pullonly_server = false;
+  else
+   throw Exception("Unexpected server mode");
 
   LOG
   (
    "session_id = " << session_id <<
    "; server_checkpoint = " << server_checkpoint <<
+   "; mode = " << mode <<
    ". OK.\n"
   );
 
@@ -300,8 +309,19 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
   channel(channel),
   log(log),
-  session_id(-1)
+  session_id(-1),
+  pullonly_server(true)
  {
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Connection *Server_Connection::get_push_connection()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (pullonly_server)
+   return nullptr;
+  else
+   return this;
  }
 
  ////////////////////////////////////////////////////////////////////////////

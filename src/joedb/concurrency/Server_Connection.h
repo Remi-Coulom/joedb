@@ -17,7 +17,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   static constexpr int64_t client_version = 9;
+   static constexpr int64_t client_version = 10;
 
    Thread_Safe_Channel channel;
    std::ostream *log;
@@ -26,6 +26,7 @@ namespace joedb
    std::array<char, buffer_size> buffer;
 
    int64_t session_id;
+   bool pullonly_server;
    std::condition_variable condition;
    void ping(Channel_Lock &lock);
    bool keep_alive_thread_must_stop;
@@ -59,6 +60,7 @@ namespace joedb
 
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}
+   Connection *get_push_connection() override;
 
    ~Server_Connection() override;
  };

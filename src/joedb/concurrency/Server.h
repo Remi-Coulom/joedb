@@ -192,6 +192,8 @@ namespace joedb
     std::ostream *log_pointer
    );
 
+   static constexpr int64_t server_version = 10;
+
    uint16_t get_port() const {return port;}
    bool is_readonly() const;
 

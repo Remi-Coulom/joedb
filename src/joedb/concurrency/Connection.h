@@ -37,7 +37,7 @@ namespace joedb
 
    virtual void unlock(Readonly_Journal &client_journal);
 
-   virtual Connection *get_push_connection() final;
+   virtual Connection *get_push_connection();
  };
 }
 

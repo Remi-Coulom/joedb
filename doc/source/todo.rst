@@ -98,21 +98,11 @@ Better Freedom_Keeper
 
 Concurrency
 -----------
-- content-matching option (full, fast, none)
-- Pullonly_Client:
-  - Pullonly_Server_connection
-  - Pullonly_Server (never throw if try to lock pull-only)
-  - Protocol must tell if pull-only server
-  - cannot write if either readonly_data or pull-only connection
-
-- Pull-only connection (eg when serving a read-only file):
-  -> joedb_client does not offer transaction and push
-  -> reply with readonly flag during server handshake
-  -> bool is_pullonly() const in connection (and client)
 - joedb_server:
 
   - fuzzer
   - use coroutines
+  - stress-test tool
   - support running on multiple threads (requires mutex?)
 
     - OK to keep one thread busy when waiting for a lock, or computing SHA 256, ...
@@ -125,8 +115,9 @@ Concurrency
 
 - SHA-256: option for either none, fast or full.
 - reading and writing buffers: don't use network_integers.h, but create a
-  Buffer_File class, and use write<int64_t>
-- Connection_Multiplexer for multiple parallel backup servers
+  Buffer_File class, and use write<int64_t>, write<char>, ...
+- Connection_Multiplexer for multiple parallel backup servers? Complicated.
+  requires asynchronous client code.
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
@@ -137,6 +128,8 @@ Concurrency
 Performance
 -----------
 
+- CURL_File is very inefficient for large push or pull. Could be improved with
+  virtual function to perform large copy. Same for SFT_File, probably.
 - use async_write_some and async_read_some during pull and push
 - vector of size 1: write ordinary insert and update to the journal instead
 - joedb::Database: use vector instead of map for tables and fields (with a bool
