@@ -10,13 +10,13 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   flush();
-  reset_read_buffer();
-  if (!seek(new_position))
-   position = new_position;
+  end_of_file = false;
+  if (!seek(new_position)) // throw if seek error ???
+   file_position = new_position;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File::copy(Generic_File &source, int64_t start, size_t size)
+ void Generic_File::copy(Generic_File &source, int64_t start, int64_t size)
  ////////////////////////////////////////////////////////////////////////////
  {
   set_position(start);
@@ -25,12 +25,12 @@ namespace joedb
   while (size > 0)
   {
    source.read_buffer();
-   if (source.read_buffer_size == 0)
+   if (source.end_of_file)
     break;
 
-   const size_t copy_size = std::min(size, source.read_buffer_size);
-   raw_write(source.buffer, copy_size);
-   position += int64_t(copy_size);
+   const int64_t copy_size = std::min(size, int64_t(source.read_buffer_size));
+   raw_write(source.buffer.data, copy_size); // ??? conversion to size_t ???
+   file_position += copy_size;
    size -= copy_size;
   }
  }
@@ -59,8 +59,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   std::string s;
-  const size_t size = compact_read<size_t>(); // size_t overflow if 32-bit?
-  if (int64_t(size) < max_size)
+  const int64_t size = compact_read<int64_t>();
+  if (size < max_size)
   {
    s.resize(size);
    read_data(&s[0], size);
@@ -69,37 +69,21 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File::flush()
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (write_buffer_index)
-   write_buffer();
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Generic_File::destructor_flush() noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (write_buffer_index)
+  if (buffer_has_write_data())
   {
    Destructor_Logger::write("warning: an unflushed file is being destroyed");
    try
    {
-    flush();
+    write_buffer();
    }
    catch (...)
    {
     postpone_exception("failed to flush in Generic_File destructor");
    }
   }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Generic_File::commit()
- ////////////////////////////////////////////////////////////////////////////
- {
-  flush();
-  sync();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -112,7 +96,6 @@ namespace joedb
  {
   SHA_256 sha_256;
   flush();
-  const int64_t original_position = get_position();
   seek(start);
 
   constexpr uint32_t chunks = 2048;
@@ -144,7 +127,7 @@ namespace joedb
    }
   }
 
-  set_position(original_position);
+  seek(file_position);
   return sha_256.get_hash();
  }
 
@@ -158,12 +141,11 @@ namespace joedb
  {
   constexpr int buffer_count = 256;
 
-  if (size < 4 * buffer_size * buffer_count)
+  if (size < 4 * int64_t(buffer.size) * buffer_count)
    return get_hash(start, size);
 
   SHA_256 sha_256;
   flush();
-  const int64_t original_position = get_position();
 
   for (int i = 0; i < buffer_count; i++)
   {
@@ -172,23 +154,23 @@ namespace joedb
    if (i == 0)
     buffer_position = start;
    else if (i == buffer_count - 1)
-    buffer_position = start + size - buffer_size;
+    buffer_position = start + size - buffer.size;
    else
    {
-    buffer_position = buffer_size *
+    buffer_position = buffer.size *
     (
-     (start + i * size) / (buffer_size * (buffer_count - 1))
+     (start + i * size) / (buffer.size * (buffer_count - 1))
     );
    }
 
    seek(buffer_position);
-   read_all(buffer, buffer_size);
+   read_all(buffer.data, buffer.size);
 
-   for (int j = 0; j < buffer_size; j += int(SHA_256::chunk_size))
-    sha_256.process_chunk(buffer + j);
+   for (int j = 0; j < int(buffer.size); j += int(SHA_256::chunk_size))
+    sha_256.process_chunk(buffer.data + j);
   }
 
-  set_position(original_position);
+  seek(file_position);
   return sha_256.get_hash();
  }
 

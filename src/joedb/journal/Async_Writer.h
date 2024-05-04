@@ -21,7 +21,6 @@ namespace joedb
     current(start)
    {
     file.flush();
-    file.reset_read_buffer();
    }
 
    //////////////////////////////////////////////////////////////////////////

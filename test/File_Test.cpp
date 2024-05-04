@@ -293,7 +293,7 @@ TEST_F(File_Test, long_consecutive_read_and_writes)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(File_Test, read_write_integer)
+TEST_F(File_Test, read_write_integer_joedb_magic)
 {
  {
   std::remove("new.tmp");
@@ -302,7 +302,23 @@ TEST_F(File_Test, read_write_integer)
   new_file.set_position(0);
   EXPECT_EQ(joedb_magic, new_file.read<uint64_t>());
  }
+}
 
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, read_write_integer_compact_joedb_magic)
+{
+ {
+  std::remove("new.tmp");
+  File new_file("new.tmp", Open_Mode::create_new);
+  new_file.compact_write<uint64_t>(joedb_magic);
+  new_file.set_position(0);
+  EXPECT_EQ(joedb_magic, new_file.compact_read<uint64_t>());
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, read_write_integer_loop)
+{
 #if 0
  std::random_device rd; // not supported by valgrind
  std::mt19937_64 gen(rd());

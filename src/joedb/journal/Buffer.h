@@ -14,34 +14,19 @@ namespace joedb
  class Buffer
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   static constexpr size_t buffer_size = (1 << 12);
-   static constexpr size_t buffer_extra = 8;
-
-   char buffer[buffer_size + buffer_extra];
-   size_t index = 0;
-
   public:
-   //////////////////////////////////////////////////////////////////////////
-   void reset()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    index = 0;
-   }
+   static constexpr size_t size = (1 << 12);
+   static constexpr size_t extra_size = 8;
 
-   //////////////////////////////////////////////////////////////////////////
-   bool overflow() const
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return index >= buffer_size;
-   }
+   char data[size + extra_size];
+   size_t index;
 
    //////////////////////////////////////////////////////////////////////////
    template<typename T> void write(T x)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(index + sizeof(T) < buffer_size + buffer_extra);
-    std::copy_n((const char *)&x, sizeof(T), buffer + index);
+    JOEDB_ASSERT(index + sizeof(T) < size + extra_size);
+    std::copy_n((const char *)&x, sizeof(T), data + index);
     index += sizeof(T);
    }
 
@@ -49,9 +34,9 @@ namespace joedb
    template<typename T> T read()
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(index + sizeof(T) < buffer_size + buffer_extra);
+    JOEDB_ASSERT(index + sizeof(T) < size + extra_size);
     T result;
-    std::copy_n(buffer + index, sizeof(T), (char *)&result);
+    std::copy_n(data + index, sizeof(T), (char *)&result);
     index += sizeof(T);
     return result;
    }
@@ -71,7 +56,7 @@ namespace joedb
     {
      uint32_t extra_bytes = 2;
 
-     while ((x >> (8 * extra_bytes)) >= 32)
+     while ((x >> (8 * extra_bytes)) >= 32 && extra_bytes < sizeof(T))
       extra_bytes++;
 
      write<uint8_t>((extra_bytes << 5) | (x >> (8 * extra_bytes)));

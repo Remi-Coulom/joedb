@@ -15,7 +15,7 @@ TEST(Generic_File, copy)
  file.write<uint64_t>(magic);
 
  joedb::Test_File copy;
- copy.copy(file, 0, std::numeric_limits<size_t>::max());
+ copy.copy(file, 0, std::numeric_limits<int64_t>::max());
  copy.set_position(0);
 
  EXPECT_EQ(copy.read<uint64_t>(), magic);

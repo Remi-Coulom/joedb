@@ -112,6 +112,8 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/interpreter/Database_Schema.cpp
   ../src/joedb/interpreter/Table.cpp
   ../src/joedb/is_identifier.cpp
+
+  ../test/Buffer_Test.cpp
  )
 
 if (NOT JOEDB_PORTABLE)

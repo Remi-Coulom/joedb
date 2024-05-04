@@ -11,18 +11,19 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Buffer buffer;
+  buffer.index = 0;
 
   buffer.write<uint8_t>(12);
   buffer.write<uint16_t>(123);
   buffer.write<uint32_t>(1234);
   buffer.write<uint64_t>(12345);
 
-  buffer.reset();
+  buffer.index = 0;
 
-  EXPECT_EQ(buffer.read<uint8_t>(), 12);
-  EXPECT_EQ(buffer.read<uint16_t>(), 123);
-  EXPECT_EQ(buffer.read<uint32_t>(), 1234);
-  EXPECT_EQ(buffer.read<uint64_t>(), 12345);
+  EXPECT_EQ(buffer.read<uint8_t>(), 12U);
+  EXPECT_EQ(buffer.read<uint16_t>(), 123U);
+  EXPECT_EQ(buffer.read<uint32_t>(), 1234U);
+  EXPECT_EQ(buffer.read<uint64_t>(), 12345U);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -30,18 +31,33 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Buffer buffer;
+  buffer.index = 0;
 
   buffer.compact_write<uint8_t>(12);
   buffer.compact_write<uint16_t>(123);
   buffer.compact_write<uint32_t>(1234);
   buffer.compact_write<uint64_t>(12345);
 
-  buffer.reset();
+  buffer.index = 0;
 
-  EXPECT_EQ(buffer.compact_read<uint8_t>(), 12);
-  EXPECT_EQ(buffer.compact_read<uint16_t>(), 123);
-  EXPECT_EQ(buffer.compact_read<uint32_t>(), 1234);
-  EXPECT_EQ(buffer.compact_read<uint64_t>(), 12345);
+  EXPECT_EQ(buffer.compact_read<uint8_t>(), 12U);
+  EXPECT_EQ(buffer.compact_read<uint16_t>(), 123U);
+  EXPECT_EQ(buffer.compact_read<uint32_t>(), 1234U);
+  EXPECT_EQ(buffer.compact_read<uint64_t>(), 12345U);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Buffer, big_compact)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Buffer buffer;
+
+  const uint32_t magic = 1903481906UL;
+
+  buffer.index = 0;
+  buffer.compact_write<uint32_t>(magic);
+  buffer.index = 0;
+  EXPECT_EQ(buffer.compact_read<uint32_t>(), magic);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -52,9 +68,9 @@ namespace joedb
 
   for (uint64_t i = 0; i < 3000000; i += 1 + (i >> 16))
   {
-   buffer.reset();
+   buffer.index = 0;
    buffer.compact_write<uint64_t>(i);
-   buffer.reset();
+   buffer.index = 0;
    EXPECT_EQ(buffer.compact_read<uint64_t>(), i);
   }
  }
@@ -67,9 +83,9 @@ namespace joedb
 
   for (uint64_t i = 0; i < 3000000; i += 1 + (i >> 16))
   {
-   buffer.reset();
+   buffer.index = 0;
    buffer.compact_write<uint64_t>(i & 0x1ff);
-   buffer.reset();
+   buffer.index = 0;
    EXPECT_EQ(buffer.compact_read<uint64_t>(), i & 0x1ff);
   }
  }

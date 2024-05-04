@@ -25,7 +25,6 @@ namespace joedb
     if (current > end)
      current = end;
     file.flush();
-    file.reset_read_buffer();
    }
 
    //////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/Open_Mode.h"
 #include "joedb/journal/SHA_256.h"
-#include "joedb/index_types.h"
+#include "joedb/journal/Buffer.h"
 
 namespace joedb
 {
@@ -25,290 +25,80 @@ namespace joedb
   friend class Async_Writer;
 
   private:
-   enum {buffer_size = (1 << 12)};
-   enum {buffer_extra = 8};
-
-   char buffer[buffer_size + buffer_extra];
-   size_t write_buffer_index;
-   size_t read_buffer_index;
-   size_t read_buffer_size;
-   bool end_of_file;
-   int64_t position;
    int64_t slice_start;
    int64_t slice_length;
+
+   Buffer buffer;
+
+   int64_t file_position;
+   size_t read_buffer_size;
+   bool end_of_file;
+
+   //////////////////////////////////////////////////////////////////////////
+   bool buffer_has_write_data() const
+   //////////////////////////////////////////////////////////////////////////
+   {
+    return buffer.index > 0 && !read_buffer_size;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   bool buffer_has_read_data() const
+   //////////////////////////////////////////////////////////////////////////
+   {
+    return read_buffer_size;
+   }
 
    //////////////////////////////////////////////////////////////////////////
    void read_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    read_buffer_size = raw_read(buffer, buffer_size);
-    read_buffer_index = 0;
+    JOEDB_ASSERT(!buffer_has_write_data());
+
+    read_buffer_size = raw_read(buffer.data, buffer.size);
+    if (read_buffer_size == 0)
+     end_of_file = true;
+
+    file_position += read_buffer_size;
+    buffer.index = 0;
    }
 
    //////////////////////////////////////////////////////////////////////////
    void write_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    raw_write(buffer, write_buffer_index);
-    write_buffer_index = 0;
-   }
+    JOEDB_ASSERT(!buffer_has_read_data());
 
-   //////////////////////////////////////////////////////////////////////////
-   void putc(char c)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    JOEDB_ASSERT(read_buffer_size == 0);
-    JOEDB_ASSERT(!end_of_file);
-
-    buffer[write_buffer_index++] = c;
-    position++;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   char getc()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    JOEDB_ASSERT(write_buffer_index == 0);
-
-    if (read_buffer_index >= read_buffer_size)
-    {
-     read_buffer();
-
-     if (read_buffer_size == 0)
-     {
-      end_of_file = true;
-      return 0;
-     }
-    }
-
-    position++;
-    return buffer[read_buffer_index++];
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void reset_read_buffer()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    read_buffer_index = 0;
-    read_buffer_size = 0;
-    end_of_file = false;
+    raw_write(buffer.data, buffer.index);
+    file_position += buffer.index;
+    buffer.index = 0;
    }
 
    //////////////////////////////////////////////////////////////////////////
    void check_write_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (write_buffer_index >= buffer_size)
+    JOEDB_ASSERT(!buffer_has_read_data());
+
+    if (buffer.index >= buffer.size)
      write_buffer();
    }
 
-   template<typename T, size_t n> struct R;
-
    //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 1>
+   void check_read_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    static T read(Generic_File &file)
-    {
-     return T(file.getc());
-    }
-   };
+    JOEDB_ASSERT(!buffer_has_write_data());
 
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 2>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static T read(Generic_File &file)
-    {
-     T result;
-     file.read_data(reinterpret_cast<char *>(&result), 2);
-     return result;
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 4>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static T read(Generic_File &file)
-    {
-     T result;
-     file.read_data(reinterpret_cast<char *>(&result), 4);
-     return result;
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct R<T, 8>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static T read(Generic_File &file)
-    {
-     T result;
-     file.read_data(reinterpret_cast<char *>(&result), 8);
-     return result;
-    }
-   };
-
-   template<typename T, size_t n> struct W;
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct W<T, 1>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void write(Generic_File &file, T x)
-    {
-     file.putc(char(x));
-     file.check_write_buffer();
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct W<T, 2>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void write(Generic_File &file, T x)
-    {
-     const char *p = reinterpret_cast<const char *>(&x);
-     file.putc(p[0]);
-     file.putc(p[1]);
-     file.check_write_buffer();
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct W<T, 4>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void write(Generic_File &file, T x)
-    {
-     const char *p = reinterpret_cast<const char *>(&x);
-     file.putc(p[0]);
-     file.putc(p[1]);
-     file.putc(p[2]);
-     file.putc(p[3]);
-     file.check_write_buffer();
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct W<T, 8>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void write(Generic_File &file, T x)
-    {
-     const char *p = reinterpret_cast<const char *>(&x);
-     file.putc(p[0]);
-     file.putc(p[1]);
-     file.putc(p[2]);
-     file.putc(p[3]);
-     file.putc(p[4]);
-     file.putc(p[5]);
-     file.putc(p[6]);
-     file.putc(p[7]);
-     file.check_write_buffer();
-    }
-   };
-
-   template<typename T, size_t n> struct CW;
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct CW<T, 2>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void write(Generic_File &file, T x)
-    {
-     const uint8_t b1 = uint8_t(x >> 8);
-     const uint8_t b0 = uint8_t(x);
-
-     if (b1)
-     {
-      if (b1 < 32)
-       file.putc(char(32 | b1));
-      else
-      {
-       file.putc(64);
-       file.putc(char(b1));
-      }
-     }
-     else
-      if (b0 >= 32)
-       file.putc(32);
-
-     file.putc(char(b0));
-     file.check_write_buffer();
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct CW<T, 4>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void write(Generic_File &file, T x)
-    {
-     if (!(uint32_t(x) >> 16))
-      file.compact_write<uint16_t>(uint16_t(x));
-     else
-     {
-      const uint8_t b1 = uint8_t(x >> 24);
-      const uint8_t b0 = uint8_t(x >> 16);
-
-      if (b1)
-      {
-       if (b1 < 32)
-        file.putc(char(96 | b1));
-       else
-       {
-        file.putc(char(128));
-        file.putc(char(b1));
-       }
-       file.putc(char(b0));
-      }
-      else
-       if (b0 < 32)
-        file.putc(char(64 | b0));
-       else
-       {
-        file.putc(char(96));
-        file.putc(char(b0));
-       }
-
-      file.putc(char(x >> 8));
-      file.putc(char(x));
-      file.check_write_buffer();
-     }
-    }
-   };
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename T> struct CW<T, 8>
-   //////////////////////////////////////////////////////////////////////////
-   {
-    static void write(Generic_File &file, T x)
-    {
-     if (!(uint64_t(x) >> 32))
-      file.compact_write<uint32_t>(uint32_t(x));
-     else
-     {
-      JOEDB_ASSERT(!(char(x >> 56) & 0xe0));
-      file.putc(char(0xe0) | char(x >> 56));
-      file.putc(char(x >> 48));
-      file.putc(char(x >> 40));
-      file.putc(char(x >> 32));
-      file.putc(char(x >> 24));
-      file.putc(char(x >> 16));
-      file.putc(char(x >> 8));
-      file.putc(char(x));
-      file.check_write_buffer();
-     }
-    }
-   };
+    if (buffer.index >= read_buffer_size)
+     read_buffer();
+   }
 
    Open_Mode mode;
    const bool shared;
    bool locked_tail;
 
   protected:
+   // ??? size_t should be int64_t ??? need 32-bit version testing.
    virtual size_t raw_read(char *data, size_t size) = 0;
    virtual void raw_write(const char *data, size_t size) = 0;
    virtual int raw_seek(int64_t offset) = 0; // 0 = OK, 1 = error
@@ -320,7 +110,7 @@ namespace joedb
     return raw_seek(offset + slice_start);
    }
 
-   size_t read_all(char *p, size_t capacity)
+   size_t read_all(char *p, size_t capacity) // TODO -> cpp
    {
     size_t done = 0;
     while (done < capacity)
@@ -336,13 +126,13 @@ namespace joedb
    void destructor_flush() noexcept;
 
   public:
-   virtual size_t raw_pread(char *data, size_t size, int64_t offset)
+   virtual size_t raw_pread(char *data, size_t size, int64_t offset) // ->cpp
    {
     raw_seek(offset);
     return raw_read(data, size);
    }
 
-   virtual void raw_pwrite(const char *data, size_t size, int64_t offset)
+   virtual void raw_pwrite(const char *data, size_t size, int64_t offset) // ->cpp
    {
     raw_seek(offset);
     raw_write(data, size);
@@ -358,27 +148,46 @@ namespace joedb
     (
      mode != Open_Mode::shared_write &&
      mode != Open_Mode::read_existing
-    )
+    ) // ->cpp
    {
-    write_buffer_index = 0;
-    reset_read_buffer();
-    position = 0;
     slice_start = 0;
     slice_length = 0;
+
+    file_position = 0;
+    read_buffer_size = 0;
+    end_of_file = false;
+    buffer.index = 0;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void set_slice(int64_t start, int64_t length)
+   void flush()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (buffer_has_write_data())
+     write_buffer();
+    read_buffer_size = 0;
+    buffer.index = 0;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void commit()
    //////////////////////////////////////////////////////////////////////////
    {
     flush();
+    sync();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void set_slice(int64_t start, int64_t length) // -> cpp
+   //////////////////////////////////////////////////////////////////////////
+   {
     slice_start = start;
     slice_length = length;
     set_position(0);
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void set_mode(Open_Mode new_mode)
+   void set_mode(Open_Mode new_mode) // -> cpp
    //////////////////////////////////////////////////////////////////////////
    {
     mode = new_mode;
@@ -428,40 +237,45 @@ namespace joedb
 
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
-   int64_t get_position() const noexcept {return position;}
-   void copy(Generic_File &source, int64_t start, size_t size);
+
+   int64_t get_position() const noexcept
+   {
+    return file_position - read_buffer_size + buffer.index;
+   }
+
+   void copy(Generic_File &source, int64_t start, int64_t size);
 
    //////////////////////////////////////////////////////////////////////////
    template<typename T> void write(T x)
    //////////////////////////////////////////////////////////////////////////
    {
-    W<T, sizeof(T)>::write(*this, x);
+    buffer.write<T>(x);
+    check_write_buffer();
    }
 
    //////////////////////////////////////////////////////////////////////////
    template<typename T> T read()
    //////////////////////////////////////////////////////////////////////////
    {
-    return R<T, sizeof(T)>::read(*this);
+    T result;
+    read_data(reinterpret_cast<char *>(&result), sizeof(result));
+    return result;
    }
 
    //////////////////////////////////////////////////////////////////////////
    template<typename T> void compact_write(T x)
    //////////////////////////////////////////////////////////////////////////
    {
-    CW<T, sizeof(T)>::write(*this, x);
+    buffer.compact_write<T>(x);
+    check_write_buffer();
    }
 
    //////////////////////////////////////////////////////////////////////////
    template<typename T> T compact_read()
    //////////////////////////////////////////////////////////////////////////
    {
-    const uint8_t first_byte = uint8_t(getc());
-    int extra_bytes = first_byte >> 5;
-    T result = first_byte & 0x1f;
-    while (extra_bytes--)
-     result = T((result << 8) | uint8_t(getc()));
-    return result;
+    check_read_buffer();
+    return buffer.compact_read<T>();
    }
 
    template<typename T> T read_strong_type()
@@ -489,30 +303,29 @@ namespace joedb
    void write_data(const char *data, size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(read_buffer_size == 0 && !end_of_file);
+    JOEDB_ASSERT(!end_of_file && !buffer_has_read_data());
 
-    if (n <= buffer_extra)
+    if (n <= buffer.extra_size)
     {
-     for (size_t i = 0; i < n; i++)
-      buffer[write_buffer_index++] = data[i];
-     position += n;
+     std::copy_n(data, n, buffer.data + buffer.index);
+     buffer.index += n;
      check_write_buffer();
     }
     else
     {
-     const size_t remaining = buffer_size - write_buffer_index;
+     const size_t remaining = buffer.size + buffer.extra_size - buffer.index;
 
      if (n < remaining)
      {
-      std::copy_n(data, n, buffer + write_buffer_index);
-      write_buffer_index += n;
-      position += n;
+      std::copy_n(data, n, buffer.data + buffer.index);
+      buffer.index += n;
+      check_write_buffer();
      }
      else
      {
       flush();
       raw_write(data, n);
-      position += n;
+      file_position += n;
      }
     }
    }
@@ -521,50 +334,41 @@ namespace joedb
    void read_data(char *data, const size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(write_buffer_index == 0);
+    JOEDB_ASSERT(!buffer_has_write_data());
 
-    if (read_buffer_index + n <= read_buffer_size)
+    if (buffer.index + n <= read_buffer_size)
     {
-     std::copy_n(buffer + read_buffer_index, n, data);
-     read_buffer_index += n;
-     position += n;
+     std::copy_n(buffer.data + buffer.index, n, data);
+     buffer.index += n;
     }
     else
     {
-     size_t n0 = read_buffer_size - read_buffer_index;
-     std::copy_n(buffer + read_buffer_index, n0, data);
-     read_buffer_index += n0;
-     position += n0;
+     size_t n0 = read_buffer_size - buffer.index;
+     std::copy_n(buffer.data + buffer.index, n0, data);
+     buffer.index += n0;
 
-     if (n <= buffer_size)
+     if (n <= buffer.size)
      {
       read_buffer();
 
-      while (n0 < n && read_buffer_index < read_buffer_size)
-      {
-       data[n0++] = buffer[read_buffer_index++];
-       position++;
-      }
+      while (n0 < n && buffer.index < read_buffer_size)
+       data[n0++] = buffer.data[buffer.index++];
      }
 
      while (n0 < n)
      {
       const size_t actually_read = raw_read(data + n0, n - n0);
-
-      position += actually_read;
-      n0 += actually_read;
-
       if (actually_read == 0)
        break;
+
+      file_position += actually_read;
+      n0 += actually_read;
      }
 
      if (n0 < n)
       end_of_file = true;
     }
    }
-
-   void flush(); // flushes the write buffer to the system
-   void commit(); // flush and write to disk (fsync)
 
    SHA_256::Hash get_hash(int64_t start, int64_t size);
    SHA_256::Hash get_hash();
@@ -573,7 +377,7 @@ namespace joedb
    std::string read_blob_data(Blob blob) final;
    Blob write_blob_data(const std::string &data) final;
 
-   virtual ~Generic_File() = default;
+   virtual ~Generic_File() = default; // ->cpp
  };
 }
 
