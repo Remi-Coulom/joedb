@@ -95,8 +95,8 @@ namespace joedb
  )
  {
   SHA_256 sha_256;
-  flush();
-  seek(start);
+  int64_t old_position = get_position();
+  set_position(start);
 
   constexpr uint32_t chunks = 2048;
   std::vector<char> hashing_buffer(SHA_256::chunk_size * chunks);
@@ -127,7 +127,7 @@ namespace joedb
    }
   }
 
-  seek(file_position);
+  set_position(old_position);
   return sha_256.get_hash();
  }
 
@@ -145,7 +145,7 @@ namespace joedb
    return get_hash(start, size);
 
   SHA_256 sha_256;
-  flush();
+  const int64_t old_position = get_position();
 
   for (int i = 0; i < buffer_count; i++)
   {
@@ -170,7 +170,7 @@ namespace joedb
     sha_256.process_chunk(buffer.data + j);
   }
 
-  seek(file_position);
+  set_position(old_position);
   return sha_256.get_hash();
  }
 
