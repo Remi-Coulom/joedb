@@ -17,7 +17,8 @@ possibility to:
  - incrementally add data to a file in a crash-safe way,
  - synchronize data access between multiple processes, on the same machine or
    over a network connection,
- - check field names and types at compile time.
+ - offer a direct low-level C++ API, with compile-time checking of field names
+   and types.
 
 As shown in the diagram below, joedb compiles the database schema into C++
 code. Applications using this code can then manipulate data like a C++
@@ -33,6 +34,20 @@ data as a journal of transactions. The whole data history is stored, so it is
 possible to re-create any past state of the database. Joedb also has a network
 protocol, and can operate in a distributed fashion, a bit like [git for
 structured data](https://www.remi-coulom.fr/joedb/concurrency.html).
+
+To give an order of magnitude of database complexities, the table below shows
+the number of lines of source code of joedb and some well known SQL databases
+as of 2024-05-04. These are without tests, and measured with ``grep -c $``.
+
+|Database  |Lines of code|
+|:---------|------------:|
+|joedb     |       18,598|
+|SQLite    |      240,533|
+|PostgreSQL|    1,512,558|
+
+So joedb is an extremely simple low-level foundation for sharing relational
+data. It would be possible to build a SQL database on top of it, but it is
+already very convenient to use as-is.
 
 For more information, please take at a look at the
 [documentation](https://www.remi-coulom.fr/joedb/intro.html).
