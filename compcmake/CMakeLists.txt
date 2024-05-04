@@ -120,6 +120,7 @@ endif()
 
  add_executable(joedb_test
   ../test/Async_Test.cpp
+  ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp
   ../test/diagnostics_Test.cpp
   ../test/File_Test.cpp
