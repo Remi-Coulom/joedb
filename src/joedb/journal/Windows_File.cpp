@@ -160,20 +160,6 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Windows_File::raw_read(char *buffer, size_t size)
- /////////////////////////////////////////////////////////////////////////////
- {
-  DWORD result;
-
-  if (ReadFile(file, buffer, size_to_dword(size), &result, NULL))
-   return size_t(result);
-  else
-   throw_last_error("Reading", "file");
-
-  return 0;
- }
-
- /////////////////////////////////////////////////////////////////////////////
  size_t Windows_File::raw_pread(char* buffer, size_t size, int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -185,38 +171,14 @@ namespace joedb
   if (ReadFile(file, buffer, size_to_dword(size), &result, &overlapped))
    return size_t(result);
   else
-   throw_last_error("Reading", "file");
+  {
+   if (GetLastError() == ERROR_HANDLE_EOF)
+    return 0;
+   else
+    throw_last_error("Reading", "file");
+  }
 
   return 0;
- }
-
- /////////////////////////////////////////////////////////////////////////////
- void Windows_File::raw_write(const char *buffer, size_t size)
- /////////////////////////////////////////////////////////////////////////////
- {
-  size_t written = 0;
-
-  while (written < size)
-  {
-   DWORD actually_written;
-
-   if
-   (
-    !WriteFile
-    (
-     file,
-     buffer + written,
-     size_to_dword(size - written),
-     &actually_written,
-     NULL
-    )
-   )
-   {
-    throw_last_error("Writing", "file");
-   }
-
-   written += actually_written;
-  }
  }
 
  /////////////////////////////////////////////////////////////////////////////

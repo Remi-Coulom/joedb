@@ -37,12 +37,8 @@ namespace joedb
    BOOL lock(Lock_Operation op, int64_t start, int64_t size);
 
   protected:
-   size_t raw_read(char *buffer, size_t size) final;
    size_t raw_pread(char* data, size_t size, int64_t offset) final;
-
-   void raw_write(const char *buffer, size_t size) final;
    void raw_pwrite(const char* data, size_t size, int64_t offset) final;
-
    void raw_seek(int64_t offset) final;
    int64_t raw_get_size() const final;
    void raw_sync() final;
