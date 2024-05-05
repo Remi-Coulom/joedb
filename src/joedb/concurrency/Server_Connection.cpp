@@ -324,7 +324,7 @@ namespace joedb
   channel(channel),
   log(log),
   session_id(-1),
-  pullonly_server(true)
+  pullonly_server(false)
  {
  }
 
