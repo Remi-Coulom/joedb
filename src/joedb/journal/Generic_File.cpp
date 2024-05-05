@@ -117,7 +117,7 @@ namespace joedb
    if (current_size + int64_t(requested_size) > size)
     requested_size = size_t(size - current_size);
 
-   const size_t read_count = read_all(&hashing_buffer[0], requested_size);
+   const size_t read_count = read_data(&hashing_buffer[0], requested_size);
    current_size += int64_t(read_count);
    const uint32_t full_chunks = uint32_t(read_count / SHA_256::chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
@@ -172,7 +172,7 @@ namespace joedb
    }
 
    seek(buffer_position);
-   read_all(buffer.data, buffer.size);
+   read_data(buffer.data, buffer.size);
 
    for (int j = 0; j < int(buffer.size); j += int(SHA_256::chunk_size))
     sha_256.process_chunk(buffer.data + j);
@@ -208,23 +208,5 @@ namespace joedb
   const int64_t blob_position = get_position();
   write_string(data);
   return Blob(blob_position);
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Generic_File::shared_lock(int64_t start, int64_t size)
- ////////////////////////////////////////////////////////////////////////////
- {
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Generic_File::exclusive_lock(int64_t start, int64_t size)
- ////////////////////////////////////////////////////////////////////////////
- {
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Generic_File::unlock(int64_t start, int64_t size)
- ////////////////////////////////////////////////////////////////////////////
- {
  }
 }

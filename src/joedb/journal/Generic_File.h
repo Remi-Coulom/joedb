@@ -73,8 +73,16 @@ namespace joedb
     file_position = offset;
    }
 
+   // -1 means "unknown"
    virtual int64_t raw_get_size() const {return -1;}
    virtual void raw_sync() {}
+
+   // No need to use slice_start for lock functions:
+   //  - do not support writing multiple slices simultaneously
+   //  - public functions are head and tail only
+   virtual void shared_lock(int64_t start, int64_t size) {}
+   virtual void exclusive_lock(int64_t start, int64_t size) {}
+   virtual void unlock(int64_t start, int64_t size) {}
 
   public:
    Abstract_File()
@@ -177,19 +185,6 @@ namespace joedb
    bool locked_tail;
 
   protected:
-   size_t read_all(char *p, size_t capacity)
-   {
-    size_t done = 0;
-    while (done < capacity)
-    {
-     const size_t actually_read = pos_read(p + done, capacity - done);
-     if (actually_read == 0)
-      break;
-     done += actually_read;
-    }
-    return done;
-   };
-
    void destructor_flush() noexcept;
 
   public:
@@ -234,10 +229,6 @@ namespace joedb
    {
     mode = new_mode;
    }
-
-   virtual void shared_lock(int64_t start, int64_t size);
-   virtual void exclusive_lock(int64_t start, int64_t size);
-   virtual void unlock(int64_t start, int64_t size);
 
    static constexpr int64_t last_position = (1ULL << 63) - 1;
 
@@ -369,7 +360,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void read_data(char *data, const size_t n)
+   size_t read_data(char *data, const size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(!buffer_has_write_data());
@@ -379,6 +370,7 @@ namespace joedb
     {
      std::copy_n(buffer.data + buffer.index, n, data);
      buffer.index += n;
+     return n;
     }
     else
     {
@@ -398,12 +390,14 @@ namespace joedb
      {
       const size_t actually_read = pos_read(data + n0, n - n0);
       if (actually_read == 0)
+      {
+       end_of_file = true;
        break;
+      }
       n0 += actually_read;
      }
 
-     if (n0 < n)
-      end_of_file = true;
+     return n0;
     }
    }
 
