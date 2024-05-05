@@ -36,18 +36,18 @@ protocol, and can operate in a distributed fashion, a bit like [git for
 structured data](https://www.remi-coulom.fr/joedb/concurrency.html).
 
 To give an order of magnitude of database complexities, the table below shows
-the number of lines of source code of joedb and some well known SQL databases
-as of 2024-05-04. These are without tests, and measured with ``grep -c $``.
+the number of lines of source code of joedb, and some SQL databases. These are
+without tests, and measured with ``grep -c $``.
 
 |Database  |Lines of code|
 |:---------|------------:|
-|joedb     |       18,598|
+|joedb     |       18,403|
 |SQLite    |      240,533|
 |PostgreSQL|    1,512,558|
 
 So joedb is an extremely simple low-level foundation for sharing relational
 data. It would be possible to build a SQL database on top of it, but it is
-already very convenient to use as-is.
+already very convenient as-is.
 
 For more information, please take at a look at the
 [documentation](https://www.remi-coulom.fr/joedb/intro.html).

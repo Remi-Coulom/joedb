@@ -87,7 +87,7 @@ namespace joedb
     return server_checkpoint;
    }
 
-   virtual ~Pullonly_Client() = default;
+   virtual ~Pullonly_Client();
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -175,8 +175,6 @@ namespace joedb
 
     push_unlock();
    }
-
-   virtual ~Client();
  };
 
  ////////////////////////////////////////////////////////////////////////////

@@ -17,8 +17,8 @@ namespace joedb
   public:
    virtual int64_t handshake(Readonly_Journal &client_journal);
    virtual int64_t pull(Writable_Journal &client_journal);
-   virtual ~Pullonly_Connection();
    virtual Connection *get_push_connection();
+   virtual ~Pullonly_Connection();
  };
 
  ////////////////////////////////////////////////////////////////////////////

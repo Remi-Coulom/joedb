@@ -4,6 +4,7 @@
 #include "joedb/io/File_Parser.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/concurrency/Connection.h"
+#include "joedb/Signal.h"
 
 #include <iostream>
 #include <thread>
@@ -60,7 +61,9 @@ namespace joedb
    int64_t server_checkpoint = connection->handshake(journal);
    server_checkpoint = connection->push(journal, server_checkpoint, false);
 
-   while (follow)
+   Signal::start();
+
+   while (follow && Signal::get_signal() != SIGINT)
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     journal.pull();
