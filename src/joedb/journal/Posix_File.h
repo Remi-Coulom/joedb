@@ -25,8 +25,8 @@ namespace joedb
   protected:
    size_t raw_read(char *buffer, size_t size) final;
    void raw_write(const char *buffer, size_t size) final;
-   int raw_seek(int64_t offset) final;
-   void sync() final;
+   void raw_seek(int64_t offset) final;
+   void raw_sync() final;
 
 #ifndef __CYGWIN__
    size_t raw_pread(char *buffer, size_t size, int64_t offset) final;

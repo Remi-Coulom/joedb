@@ -75,14 +75,11 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- int Stream_File::raw_seek(int64_t offset)
+ void Stream_File::raw_seek(int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (offset < 0)
-   return 1;
-
-  const auto pos = streambuf.pubseekoff(offset, std::ios_base::beg);
-  return pos != offset;
+  if (offset < 0 || streambuf.pubseekoff(offset, std::ios_base::beg) != offset)
+   throw Exception("seek error");
  }
 
  /////////////////////////////////////////////////////////////////////////////

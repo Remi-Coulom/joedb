@@ -35,25 +35,25 @@ namespace joedb
     if (size > int64_t(capacity))
      size = capacity;
     const size_t actually_read = size > 0
-     ? file.raw_pread(buffer, size, current)
+     ? file.pos_pread(buffer, size, current)
      : 0;
     current += actually_read;
     return actually_read;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t raw_pread(char *buffer, size_t capacity, int64_t offset)
+   size_t pos_pread(char *buffer, size_t capacity, int64_t offset)
    //////////////////////////////////////////////////////////////////////////
    {
-    return file.raw_pread(buffer, capacity, offset);
+    return file.pos_pread(buffer, capacity, offset);
    }
 
    //////////////////////////////////////////////////////////////////////////
    size_t seek_and_read(char *buffer, size_t capacity, int64_t offset)
    //////////////////////////////////////////////////////////////////////////
    {
-    file.raw_seek(offset);
-    return file.raw_read(buffer, capacity);
+    file.seek(offset);
+    return file.pos_read(buffer, capacity);
    }
 
    //////////////////////////////////////////////////////////////////////////

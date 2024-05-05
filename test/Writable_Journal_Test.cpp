@@ -1,5 +1,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/io/dump.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
@@ -16,12 +17,49 @@ class Writable_Journal_Test: public ::testing::Test
 /////////////////////////////////////////////////////////////////////////////
 {
  protected:
+  void SetUp() override
+  {
+   TearDown();
+  }
+
   void TearDown() override
   {
    std::remove("test.joedb");
    std::remove("test_copy.joedb");
   }
 };
+
+/////////////////////////////////////////////////////////////////////////////
+TEST_F(Writable_Journal_Test, slice)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+// joedb::File file("x.joedb", Open_Mode::create_new);
+
+ file.write<int64_t>(1234);
+ file.set_slice(8, 0);
+
+ Writable_Journal journal(file);
+ journal.create_table("person");
+ journal.default_checkpoint();
+
+ file.set_slice(8, journal.get_checkpoint_position());
+ Readonly_Journal readonly(file);
+
+ EXPECT_EQ
+ (
+  readonly.get_checkpoint_position(),
+  journal.get_checkpoint_position()
+ );
+
+ readonly.pull();
+
+ EXPECT_EQ
+ (
+  readonly.get_checkpoint_position(),
+  journal.get_checkpoint_position()
+ );
+}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(Writable_Journal_Test, basic_operations)

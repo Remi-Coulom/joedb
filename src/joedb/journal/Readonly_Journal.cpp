@@ -151,7 +151,7 @@ void joedb::Readonly_Journal::pull()
   if (!file.tail_is_locked())
    file.shared_lock_head();
 
-  file.raw_pread((char *)&pos, sizeof(pos), checkpoint_offset);
+  file.pos_pread((char *)&pos, sizeof(pos), checkpoint_offset);
 
   if (!file.tail_is_locked())
    file.unlock_head();

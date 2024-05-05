@@ -6,13 +6,22 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ void Generic_File::flush()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (buffer_has_write_data())
+   write_buffer();
+  read_buffer_size = 0;
+  buffer.index = 0;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Generic_File::set_position(int64_t new_position)
  ////////////////////////////////////////////////////////////////////////////
  {
   flush();
   end_of_file = false;
-  if (!seek(new_position)) // throw if seek error ???
-   file_position = new_position;
+  seek(new_position);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -29,8 +38,7 @@ namespace joedb
     break;
 
    const int64_t copy_size = std::min(size, int64_t(source.read_buffer_size));
-   raw_write(source.buffer.data, copy_size); // ??? conversion to size_t ???
-   file_position += copy_size;
+   pos_write(source.buffer.data, copy_size); // ??? conversion to size_t ???
    size -= copy_size;
   }
  }

@@ -39,18 +39,15 @@ namespace joedb
    {
    }
 
-   int raw_seek(int64_t offset) final
+   void raw_seek(int64_t offset) final
    {
-    return sftp_seek64(file, uint64_t(offset));
+    if (sftp_seek64(file, uint64_t(offset)) < 0)
+     throw_last_error("seeking in", "sftp file");
    }
 
    int64_t raw_get_size() const final
    {
     return -1;
-   }
-
-   void sync() final
-   {
    }
 
   public:

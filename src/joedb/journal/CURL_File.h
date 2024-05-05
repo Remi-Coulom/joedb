@@ -30,9 +30,8 @@ namespace joedb
 
    size_t raw_read(char *buffer, size_t size) final;
    void raw_write(const char *buffer, size_t size) final;
-   int raw_seek(int64_t offset) final;
+   void raw_seek(int64_t offset) final;
    int64_t raw_get_size() const final;
-   void sync() final;
 
   public:
    CURL_File(const char *url, bool verbose);

@@ -257,20 +257,18 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- int Windows_File::raw_seek(int64_t offset)
+ void Windows_File::raw_seek(int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
   LARGE_INTEGER large_integer;
   large_integer.QuadPart = offset;
 
-  if (SetFilePointerEx(file, large_integer, NULL, FILE_BEGIN))
-   return 0;
-  else
-   return 1;
+  if (!SetFilePointerEx(file, large_integer, NULL, FILE_BEGIN))
+   throw_last_error("seeking in", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::sync()
+ void Windows_File::raw_sync()
  /////////////////////////////////////////////////////////////////////////////
  {
   if (FlushFileBuffers(file) == 0)

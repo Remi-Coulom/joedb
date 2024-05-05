@@ -99,7 +99,7 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
   {
    file.exclusive_lock_head();
 
-   file.raw_pwrite
+   file.pos_pwrite
    (
     reinterpret_cast<const char *>(&checkpoint_position),
     sizeof(checkpoint_position),
@@ -109,7 +109,7 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    if (commit_level > Commit_Level::no_commit)
     file.commit();
 
-   file.raw_pwrite
+   file.pos_pwrite
    (
     reinterpret_cast<const char *>(&checkpoint_position),
     sizeof(checkpoint_position),

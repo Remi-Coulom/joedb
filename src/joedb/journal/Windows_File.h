@@ -43,9 +43,9 @@ namespace joedb
    void raw_write(const char *buffer, size_t size) final;
    void raw_pwrite(const char* data, size_t size, int64_t offset) final;
 
-   int raw_seek(int64_t offset) final;
+   void raw_seek(int64_t offset) final;
    int64_t raw_get_size() const final;
-   void sync() final;
+   void raw_sync() final;
 
   public:
    Windows_File(const char *file_name, Open_Mode mode);

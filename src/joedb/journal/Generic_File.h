@@ -1,10 +1,6 @@
 #ifndef joedb_Generic_File_declared
 #define joedb_Generic_File_declared
 
-#include <string>
-#include <cstdint>
-#include <vector>
-
 #include "joedb/assert.h"
 #include "joedb/Blob.h"
 #include "joedb/Posthumous_Thrower.h"
@@ -12,11 +8,109 @@
 #include "joedb/journal/SHA_256.h"
 #include "joedb/journal/Buffer.h"
 
+#include <string>
+#include <cstdint>
+#include <vector>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ class Abstract_File
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  // Should size be int64_t instead of size_t?
+  // be careful when sizeof(size_t) == 4
+
+  private:
+   virtual size_t raw_read(char *data, size_t size)
+   {
+    return raw_pread(data, size, file_position);
+   }
+
+   virtual void raw_write(const char *data, size_t size)
+   {
+    raw_pwrite(data, size, file_position);
+   }
+
+   virtual size_t raw_pread(char *data, size_t size, int64_t offset)
+   {
+    raw_seek(offset);
+    return raw_read(data, size);
+   }
+
+   virtual void raw_pwrite(const char *data, size_t size, int64_t offset)
+   {
+    raw_seek(offset);
+    raw_write(data, size);
+   }
+
+   virtual void raw_seek(int64_t offset) = 0; // 0 = OK, 1 = error
+
+   int64_t file_position;
+
+  protected:
+   int64_t slice_start;
+   int64_t slice_length;
+
+   int64_t get_file_position() const {return file_position;}
+
+   size_t pos_read(char *data, size_t size)
+   {
+    size_t result = raw_read(data, size);
+    file_position += result;
+    return result;
+   }
+
+   void pos_write(const char *data, size_t size)
+   {
+    raw_write(data, size);
+    file_position += size;
+   }
+
+   void seek(int64_t offset)
+   {
+    raw_seek(slice_start + offset);
+    file_position = offset;
+   }
+
+   virtual int64_t raw_get_size() const {return -1;}
+   virtual void raw_sync() {}
+
+  public:
+   Abstract_File()
+   {
+    slice_start = 0;
+    slice_length = 0;
+    file_position = 0;
+   }
+
+   // Note: file_position is undefined after those
+
+   size_t pos_pread(char *data, size_t size, int64_t offset)
+   {
+    return raw_pread(data, size, slice_start + offset);
+   }
+
+   void pos_pwrite(const char *data, size_t size, int64_t offset)
+   {
+    raw_pwrite(data, size, slice_start + offset);
+   }
+
+   int64_t get_size() const
+   {
+    if (slice_start + slice_length)
+     return slice_length;
+    else
+     return raw_get_size();
+   }
+
+   virtual ~Abstract_File() = default;
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
  class Generic_File:
  ////////////////////////////////////////////////////////////////////////////
+  public Abstract_File,
   public Posthumous_Thrower,
   public Blob_Reader,
   public Blob_Writer
@@ -25,12 +119,8 @@ namespace joedb
   friend class Async_Writer;
 
   private:
-   int64_t slice_start;
-   int64_t slice_length;
-
    Buffer<12> buffer;
 
-   int64_t file_position;
    size_t read_buffer_size;
    bool end_of_file;
 
@@ -55,11 +145,10 @@ namespace joedb
     JOEDB_ASSERT(!buffer_has_write_data());
     JOEDB_ASSERT(buffer.index <= read_buffer_size);
 
-    read_buffer_size = raw_read(buffer.data, buffer.size);
+    read_buffer_size = pos_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
      end_of_file = true;
 
-    file_position += read_buffer_size;
     buffer.index = 0;
    }
 
@@ -69,8 +158,7 @@ namespace joedb
    {
     JOEDB_ASSERT(!buffer_has_read_data());
 
-    raw_write(buffer.data, buffer.index);
-    file_position += buffer.index;
+    pos_write(buffer.data, buffer.index);
     buffer.index = 0;
    }
 
@@ -89,24 +177,12 @@ namespace joedb
    bool locked_tail;
 
   protected:
-   // ??? size_t should be int64_t ??? need 32-bit version testing.
-   virtual size_t raw_read(char *data, size_t size) = 0;
-   virtual void raw_write(const char *data, size_t size) = 0;
-   virtual int raw_seek(int64_t offset) = 0; // 0 = OK, 1 = error
-   virtual int64_t raw_get_size() const = 0; // -1 means no known size
-   virtual void sync() = 0;
-
-   int seek(int64_t offset)
-   {
-    return raw_seek(offset + slice_start);
-   }
-
-   size_t read_all(char *p, size_t capacity) // TODO -> cpp
+   size_t read_all(char *p, size_t capacity)
    {
     size_t done = 0;
     while (done < capacity)
     {
-     const size_t actually_read = raw_read(p + done, capacity - done);
+     const size_t actually_read = pos_read(p + done, capacity - done);
      if (actually_read == 0)
       break;
      done += actually_read;
@@ -115,19 +191,6 @@ namespace joedb
    };
 
    void destructor_flush() noexcept;
-
-  public:
-   virtual size_t raw_pread(char *data, size_t size, int64_t offset) // ->cpp
-   {
-    raw_seek(offset);
-    return raw_read(data, size);
-   }
-
-   virtual void raw_pwrite(const char *data, size_t size, int64_t offset) // ->cpp
-   {
-    raw_seek(offset);
-    raw_write(data, size);
-   }
 
   public:
    //////////////////////////////////////////////////////////////////////////
@@ -141,35 +204,23 @@ namespace joedb
      mode != Open_Mode::read_existing
     ) // ->cpp
    {
-    slice_start = 0;
-    slice_length = 0;
-
-    file_position = 0;
     read_buffer_size = 0;
     end_of_file = false;
     buffer.index = 0;
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   void flush()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (buffer_has_write_data())
-     write_buffer();
-    read_buffer_size = 0;
-    buffer.index = 0;
-   }
+   void flush();
 
    //////////////////////////////////////////////////////////////////////////
    void commit()
    //////////////////////////////////////////////////////////////////////////
    {
     flush();
-    sync();
+    raw_sync();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void set_slice(int64_t start, int64_t length) // -> cpp
+   void set_slice(int64_t start, int64_t length)
    //////////////////////////////////////////////////////////////////////////
    {
     slice_start = start;
@@ -178,7 +229,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void set_mode(Open_Mode new_mode) // -> cpp
+   void set_mode(Open_Mode new_mode)
    //////////////////////////////////////////////////////////////////////////
    {
     mode = new_mode;
@@ -211,16 +262,6 @@ namespace joedb
    void exclusive_lock_head() {exclusive_lock(0, 1);}
    void unlock_head() {unlock(0, 1);}
 
-   //////////////////////////////////////////////////////////////////////////
-   int64_t get_size() const
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (slice_length)
-     return slice_length;
-    else
-     return raw_get_size();
-   }
-
    Open_Mode get_mode() const {return mode;}
    bool is_shared() const {return shared;}
 
@@ -231,7 +272,7 @@ namespace joedb
 
    int64_t get_position() const noexcept
    {
-    return file_position - read_buffer_size + buffer.index;
+    return get_file_position() - read_buffer_size + buffer.index;
    }
 
    void copy(Generic_File &source, int64_t start, int64_t size);
@@ -322,8 +363,7 @@ namespace joedb
      else
      {
       flush();
-      raw_write(data, n);
-      file_position += n;
+      pos_write(data, n);
      }
     }
    }
@@ -356,11 +396,9 @@ namespace joedb
 
      while (n0 < n)
      {
-      const size_t actually_read = raw_read(data + n0, n - n0);
+      const size_t actually_read = pos_read(data + n0, n - n0);
       if (actually_read == 0)
        break;
-
-      file_position += actually_read;
       n0 += actually_read;
      }
 
@@ -375,8 +413,6 @@ namespace joedb
 
    std::string read_blob_data(Blob blob) final;
    Blob write_blob_data(const std::string &data) final;
-
-   virtual ~Generic_File() = default; // ->cpp
  };
 }
 

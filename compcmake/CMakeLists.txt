@@ -114,6 +114,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/is_identifier.cpp
 
   ../test/Buffer_Test.cpp
+  ../test/Stream_File_Test.cpp
  )
 
 if (NOT JOEDB_PORTABLE)
