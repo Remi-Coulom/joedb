@@ -60,13 +60,19 @@ namespace joedb
   EXPECT_EQ(buffer.compact_read<uint32_t>(), magic);
  }
 
+#ifdef NDEBUG
+ static constexpr uint64_t many = 100000000;
+#else
+ static constexpr uint64_t many = 3000000;
+#endif
+
  /////////////////////////////////////////////////////////////////////////////
  TEST(Buffer, many_compact)
  /////////////////////////////////////////////////////////////////////////////
  {
   Buffer<12> buffer;
 
-  for (uint64_t i = 0; i < 3000000; i += 1 + (i >> 16))
+  for (uint64_t i = 0; i < many; i += 1)
   {
    buffer.index = 0;
    buffer.compact_write<uint64_t>(i);
@@ -81,7 +87,7 @@ namespace joedb
  {
   Buffer<12> buffer;
 
-  for (uint64_t i = 0; i < 3000000; i += 1 + (i >> 16))
+  for (uint64_t i = 0; i < many; i += 1)
   {
    buffer.index = 0;
    buffer.compact_write<uint64_t>(i & 0x1ff);

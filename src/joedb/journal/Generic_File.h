@@ -53,6 +53,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(!buffer_has_write_data());
+    JOEDB_ASSERT(buffer.index <= read_buffer_size);
 
     read_buffer_size = raw_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
@@ -81,16 +82,6 @@ namespace joedb
 
     if (buffer.index >= buffer.size)
      write_buffer();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void check_read_buffer()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    JOEDB_ASSERT(!buffer_has_write_data());
-
-    if (buffer.index >= read_buffer_size)
-     read_buffer();
    }
 
    Open_Mode mode;
@@ -274,8 +265,15 @@ namespace joedb
    template<typename T> T compact_read()
    //////////////////////////////////////////////////////////////////////////
    {
-    check_read_buffer();
-    return buffer.compact_read<T>();
+    if (read_buffer_size - buffer.index >= sizeof(T))
+     return buffer.compact_read<T>();
+
+    const uint8_t first_byte = read<uint8_t>();
+    int extra_bytes = first_byte >> 5;
+    T result = first_byte & 0x1f;
+    while (--extra_bytes >= 0)
+     result = T((result << 8) | read<uint8_t>());
+    return result;
    }
 
    template<typename T> T read_strong_type()
@@ -285,7 +283,7 @@ namespace joedb
 
    void write_reference(Record_Id id)
    {
-    compact_write<>(to_underlying(id));
+    compact_write(to_underlying(id));
    }
 
    Record_Id read_reference()
@@ -335,6 +333,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(!buffer_has_write_data());
+    JOEDB_ASSERT(buffer.index <= read_buffer_size);
 
     if (buffer.index + n <= read_buffer_size)
     {

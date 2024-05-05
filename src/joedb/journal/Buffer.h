@@ -60,7 +60,8 @@ namespace joedb
       extra_bytes++;
 
      write<uint8_t>((extra_bytes << 5) | (x >> (8 * extra_bytes)));
-
+     write<uint8_t>(x >> (8 * --extra_bytes));
+     write<uint8_t>(x >> (8 * --extra_bytes));
      while (extra_bytes)
       write<uint8_t>(x >> (8 * --extra_bytes));
     }
@@ -73,24 +74,9 @@ namespace joedb
     const uint8_t first_byte = read<uint8_t>();
     int extra_bytes = first_byte >> 5;
     T result = first_byte & 0x1f;
-    while (extra_bytes--)
+    while (--extra_bytes >= 0)
      result = T((result << 8) | read<uint8_t>());
     return result;
-   }
-
-   template<typename T> T read_strong_type()
-   {
-    return T(compact_read<typename std::underlying_type<T>::type>());
-   }
-
-   void write_reference(Record_Id id)
-   {
-    compact_write(to_underlying(id));
-   }
-
-   Record_Id read_reference()
-   {
-    return Record_Id(compact_read<std::underlying_type<Record_Id>::type>());
    }
  };
 }
