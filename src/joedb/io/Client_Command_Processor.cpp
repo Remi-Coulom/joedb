@@ -105,8 +105,8 @@ namespace joedb
 
     if (is_readonly_data())
      out << " push_every <seconds>\n";
-
-    out << " transaction\n";
+    else
+     out << " transaction\n";
    }
 
    out << '\n';
