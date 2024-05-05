@@ -143,6 +143,7 @@ joedb_admin
 
 Other Ideas
 -----------
+- Get rid of slice stuff for Android: mmap + ROM_File instead
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
