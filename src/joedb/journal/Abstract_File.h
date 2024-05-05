@@ -36,7 +36,7 @@ namespace joedb
     raw_write(data, size);
    }
 
-   virtual void raw_seek(int64_t offset) = 0; // 0 = OK, 1 = error
+   virtual void raw_seek(int64_t offset) = 0;
 
    int64_t file_position;
 
