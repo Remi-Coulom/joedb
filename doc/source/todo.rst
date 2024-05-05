@@ -114,8 +114,6 @@ Concurrency
     the server. Maybe better: use asio's (non-std::net) support for signal.
 
 - SHA-256: option for either none, fast or full.
-- reading and writing buffers: don't use network_integers.h, but create a
-  Buffer_File class, and use write<int64_t>, write<char>, ...
 - Connection_Multiplexer for multiple parallel backup servers? Complicated.
   requires asynchronous client code.
 - Notifications from server to client, in a second channel:

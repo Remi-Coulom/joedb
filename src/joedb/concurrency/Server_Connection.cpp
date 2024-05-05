@@ -1,5 +1,4 @@
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/concurrency/network_integers.h"
 #include "joedb/Exception.h"
 
 #include <iostream>
@@ -16,13 +15,13 @@ namespace joedb
 
   LOG(get_session_id() << ": releasing lock... ");
 
-  buffer[0] = 'u';
-  lock.write(buffer.data(), 1);
-  lock.read(buffer.data(), 1);
+  buffer.data[0] = 'u';
+  lock.write(buffer.data, 1);
+  lock.read(buffer.data, 1);
 
-  if (buffer[0] == 'u')
+  if (buffer.data[0] == 'u')
    LOG("OK\n");
-  else if (buffer[0] == 't')
+  else if (buffer.data[0] == 't')
    LOG("The lock had timed out\n");
   else
    throw Exception("Unexpected server reply");
@@ -42,16 +41,18 @@ namespace joedb
 
   LOG(get_session_id() << ": pulling(" << pull_type << ")... ");
 
-  buffer[0] = pull_type;
+  buffer.index = 0;
+  buffer.write<char>(pull_type);
   const int64_t client_checkpoint = client_journal.get_checkpoint_position();
-  to_network(client_checkpoint, buffer.data() + 1);
-  lock.write(buffer.data(), 9);
+  buffer.write<int64_t>(client_checkpoint);
+  lock.write(buffer.data, buffer.index);
 
-  lock.read(buffer.data(), 17);
-  if (buffer[0] != pull_type)
+  buffer.index = 0;
+  lock.read(buffer.data, 17);
+  if (buffer.read<char>() != pull_type)
    throw Exception("Unexpected server reply");
-  const int64_t server_checkpoint = from_network(buffer.data() + 1);
-  const int64_t size = from_network(buffer.data() + 9);
+  const int64_t server_checkpoint = buffer.read<int64_t>();
+  const int64_t size = buffer.read<int64_t>();
 
   LOG("checkpoint = " << server_checkpoint << "; size = " << size << "...");
 
@@ -61,11 +62,12 @@ namespace joedb
    for (int64_t read = 0; read < size;)
    {
     const int64_t remaining = size - read;
-    size_t read_size = size_t(remaining);
-    if (read_size > buffer_size)
-     read_size = buffer_size;
-    const size_t n = lock.read_some(buffer.data(), read_size);
-    tail_writer.append(buffer.data(), n);
+    const size_t read_size = size_t
+    (
+     std::min(int64_t(buffer.size), remaining)
+    );
+    const size_t n = lock.read_some(buffer.data, read_size);
+    tail_writer.append(buffer.data, n);
     read += int64_t(n);
     LOG('.');
    }
@@ -123,35 +125,36 @@ namespace joedb
 
   Async_Reader reader = client_journal.get_async_tail_reader(server_position);
 
-  buffer[0] = unlock_after ? 'U' : 'p';
-  to_network(server_position, buffer.data() + 1);
-  to_network(reader.get_remaining(), buffer.data() + 9);
+  buffer.index = 0;
+  buffer.write<char>(unlock_after ? 'U' : 'p');
+  buffer.write<int64_t>(server_position);
+  buffer.write<int64_t>(reader.get_remaining());
 
   const int64_t push_size = reader.get_remaining();
 
   LOG(get_session_id() << ": pushing(U)... size = " << push_size << "... ");
 
   {
-   size_t offset = 17;
+   size_t offset = buffer.index;
 
    while (offset + reader.get_remaining() > 0)
    {
-    const size_t size = reader.read(buffer.data() + offset, buffer_size - offset);
-    lock.write(buffer.data(), size + offset);
+    const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
+    lock.write(buffer.data, size + offset);
     offset = 0;
     LOG(size << ' ');
    }
   }
 
-  lock.read(buffer.data(), 1);
+  lock.read(buffer.data, 1);
 
-  if (buffer[0] == 'U')
+  if (buffer.data[0] == 'U')
    LOG("OK\n");
-  else if (buffer[0] == 'C')
+  else if (buffer.data[0] == 'C')
    throw Exception("Conflict: push failed");
-  else if (buffer[0] == 'R')
+  else if (buffer.data[0] == 'R')
    throw Exception("Server is read-only: push failed");
-  else if (buffer[0] == 't')
+  else if (buffer.data[0] == 't')
    throw Exception("Timeout: push failed");
   else
    throw Exception("Unexpected server reply");
@@ -174,7 +177,8 @@ namespace joedb
 
   LOG(get_session_id() << ": checking_hash... ");
 
-  buffer[0] = 'H';
+  buffer.index = 0;
+  buffer.write<char>('H');
 
   const int64_t checkpoint = std::min
   (
@@ -182,16 +186,16 @@ namespace joedb
    client_journal.get_checkpoint_position()
   );
 
-  to_network(checkpoint, buffer.data() + 1);
+  buffer.write<int64_t>(checkpoint);
 
   SHA_256::Hash hash = client_journal.get_hash(checkpoint);
   for (uint32_t i = 0; i < 8; i++)
-   uint32_to_network(hash[i], buffer.data() + 9 + 4 * i);
+   buffer.write<uint32_t>(hash[i]);
 
-  lock.write(buffer.data(), 41);
-  lock.read(buffer.data(), 1);
+  lock.write(buffer.data, buffer.index);
+  lock.read(buffer.data, 1);
 
-  const bool result = (buffer[0] == 'H');
+  const bool result = (buffer.data[0] == 'H');
 
   if (result)
    LOG("OK\n");
@@ -205,9 +209,9 @@ namespace joedb
  void Server_Connection::ping(Channel_Lock &lock)
  ////////////////////////////////////////////////////////////////////////////
  {
-  buffer[0] = 'i';
-  lock.write(buffer.data(), 1);
-  lock.read(buffer.data(), 1);
+  buffer.data[0] = 'i';
+  lock.write(buffer.data, 1);
+  lock.read(buffer.data, 1);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -247,34 +251,36 @@ namespace joedb
  {
   LOG("Connecting... ");
 
-  buffer[0] = 'j';
-  buffer[1] = 'o';
-  buffer[2] = 'e';
-  buffer[3] = 'd';
-  buffer[4] = 'b';
-
-  to_network(client_version, buffer.data() + 5);
+  buffer.index = 0;
+  buffer.write<char>('j');
+  buffer.write<char>('o');
+  buffer.write<char>('e');
+  buffer.write<char>('d');
+  buffer.write<char>('b');
+  buffer.write<int64_t>(client_version);
 
   {
    Channel_Lock lock(channel);
-   lock.write(buffer.data(), 5 + 8);
+   lock.write(buffer.data, buffer.index);
    LOG("Waiting for \"joedb\"... ");
-   lock.read(buffer.data(), 5 + 8 + 8 + 8 + 1);
+   lock.read(buffer.data, 5 + 8 + 8 + 8 + 1);
   }
+
+  buffer.index = 0;
 
   if
   (
-   buffer[0] != 'j' ||
-   buffer[1] != 'o' ||
-   buffer[2] != 'e' ||
-   buffer[3] != 'd' ||
-   buffer[4] != 'b'
+   buffer.read<char>() != 'j' ||
+   buffer.read<char>() != 'o' ||
+   buffer.read<char>() != 'e' ||
+   buffer.read<char>() != 'd' ||
+   buffer.read<char>() != 'b'
   )
   {
    throw Exception("Did not receive \"joedb\" from server");
   }
 
-  const int64_t server_version = from_network(buffer.data() + 5);
+  const int64_t server_version = buffer.read<int64_t>();
 
   if (server_version == 0)
    throw Exception("Client version rejected by server");
@@ -284,9 +290,9 @@ namespace joedb
   if (server_version < 9)
    throw Exception("Unsupported server version");
 
-  session_id = from_network(buffer.data() + 5 + 8);
-  const int64_t server_checkpoint = from_network(buffer.data() + 5 + 8 + 8);
-  const char mode = buffer.data()[5 + 8 + 8 + 8];
+  session_id = buffer.read<int64_t>();
+  const int64_t server_checkpoint = buffer.read<int64_t>();
+  const char mode = buffer.read<char>();
 
   if (mode == 'R')
    pullonly_server = true;
@@ -340,8 +346,8 @@ namespace joedb
   {
    Channel_Lock lock(channel);
    keep_alive_thread_must_stop = true;
-   buffer[0] = 'Q';
-   lock.write(buffer.data(), 1);
+   buffer.data[0] = 'Q';
+   lock.write(buffer.data, 1);
   }
   catch (...)
   {

@@ -2,6 +2,7 @@
 #define joedb_Server_declared
 
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/net.h"
 #include "joedb/concurrency/Client.h"
 
@@ -40,7 +41,7 @@ namespace joedb
     const int64_t id;
     Server &server;
     net::ip::tcp::socket socket;
-    std::array<char, 1 << 13> buffer;
+    Buffer<13> buffer;
     enum State
     {
      not_locking,
@@ -148,8 +149,6 @@ namespace joedb
     std::shared_ptr<Session> session,
     size_t size
    );
-
-   void handshake(std::shared_ptr<Session> session);
 
    void handshake_handler
    (

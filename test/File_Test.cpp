@@ -332,7 +332,7 @@ TEST_F(File_Test, read_write_integer_loop)
   File new_file("new.tmp", Open_Mode::create_new);
   for (int i = 0; i < N; i++)
   {
-   uint16_t value = uint16_t(gen());
+   uint16_t value = uint16_t(gen() & 0x1fff);
    new_file.set_position(i);
    new_file.compact_write<uint16_t>(value);
    new_file.set_position(i);
@@ -344,7 +344,7 @@ TEST_F(File_Test, read_write_integer_loop)
   File new_file("new.tmp", Open_Mode::create_new);
   for (int i = 0; i < N; i++)
   {
-   uint32_t value = uint32_t(gen());
+   uint32_t value = uint32_t(gen() & 0x1fffffff);
    new_file.set_position(i);
    new_file.compact_write<uint32_t>(value);
    new_file.set_position(i);

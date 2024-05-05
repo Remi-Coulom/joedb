@@ -4,6 +4,7 @@
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Thread_Safe_Channel.h"
 #include "joedb/Posthumous_Thrower.h"
+#include "joedb/journal/Buffer.h"
 
 #include <mutex>
 #include <condition_variable>
@@ -20,8 +21,7 @@ namespace joedb
    Thread_Safe_Channel channel;
    std::ostream *log;
 
-   enum {buffer_size = (1 << 13)};
-   std::array<char, buffer_size> buffer;
+   Buffer<13> buffer;
 
    int64_t session_id;
    bool pullonly_server;

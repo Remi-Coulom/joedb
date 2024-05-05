@@ -1,6 +1,5 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/network_integers.h"
 #include "joedb/concurrency/get_pid.h"
 #include "joedb/io/get_time_string.h"
 #include "joedb/Signal.h"
@@ -226,7 +225,7 @@ namespace joedb
   if (!error)
   {
    if (session->push_writer)
-    session->push_writer->write(session->buffer.data(), bytes_transferred); // ??? takes_time
+    session->push_writer->write(session->buffer.data, bytes_transferred); // ??? takes_time
 
    session->push_remaining_size -= bytes_transferred;
 
@@ -249,8 +248,8 @@ namespace joedb
     session->socket,
     net::buffer
     (
-     session->buffer,
-     std::min(session->push_remaining_size, session->buffer.size())
+     session->buffer.data,
+     std::min(session->push_remaining_size, session->buffer.size)
     ),
     [this, session]
     (
@@ -280,7 +279,7 @@ namespace joedb
     client_lock->push(); // ??? takes_time
    }
 
-   session->buffer[0] = session->push_status;
+   session->buffer.data[0] = session->push_status;
 
    LOG(" done. Returning '" << session->push_status << "'\n");
 
@@ -302,8 +301,9 @@ namespace joedb
  {
   if (!error)
   {
-   const int64_t start = from_network(session->buffer.data());
-   const int64_t size = from_network(session->buffer.data() + 8);
+   session->buffer.index = 0;
+   const int64_t start = session->buffer.read<int64_t>();
+   const int64_t size = session->buffer.read<int64_t>();
 
    if (locked && session->state != Session::State::locking)
    {
@@ -361,8 +361,8 @@ namespace joedb
 
     const size_t size = reader.read // ??? takes_time
     (
-     session->buffer.data() + offset,
-     session->buffer.size() - offset
+     session->buffer.data + offset,
+     session->buffer.size - offset
     );
 
     refresh_lock_timeout(session);
@@ -370,7 +370,7 @@ namespace joedb
     net::async_write
     (
      session->socket,
-     net::buffer(session->buffer, size + offset),
+     net::buffer(session->buffer.data, size + offset),
      [this, session, reader](std::error_code e, size_t s)
      {
       pull_transfer_handler(session, reader, e, s, 0);
@@ -396,7 +396,8 @@ namespace joedb
  {
   if (!error)
   {
-   const int64_t checkpoint = from_network(session->buffer.data() + 1);
+   session->buffer.index = 1;
+   const int64_t checkpoint = session->buffer.read<int64_t>();
 
    if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
@@ -406,8 +407,9 @@ namespace joedb
     checkpoint
    );
 
-   to_network(reader.get_end(), session->buffer.data() + 1);
-   to_network(reader.get_remaining(), session->buffer.data() + 9);
+   session->buffer.index = 1;
+   session->buffer.write<int64_t>(reader.get_end());
+   session->buffer.write<int64_t>(reader.get_remaining());
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
     << reader.get_remaining() << ':');
@@ -418,7 +420,7 @@ namespace joedb
     reader,
     error,
     0,
-    17
+    session->buffer.index
    );
   }
  }
@@ -430,7 +432,7 @@ namespace joedb
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer.data() + 1, 8),
+   net::buffer(session->buffer.data + 1, 8),
    [this, session](std::error_code e, size_t s)
    {
     pull_handler(session, e, s);
@@ -449,11 +451,12 @@ namespace joedb
  {
   if (!error)
   {
-   const int64_t checkpoint = from_network(session->buffer.data() + 1);
+   session->buffer.index = 1;
+   const int64_t checkpoint = session->buffer.read<int64_t>();
    SHA_256::Hash hash;
 
    for (uint32_t i = 0; i < 8; i++)
-    hash[i] = uint32_from_network(session->buffer.data() + 9 + 4 * i);
+    hash[i] = session->buffer.read<uint32_t>();
 
    const Readonly_Journal &readonly_journal = client.get_journal();
 
@@ -463,11 +466,11 @@ namespace joedb
     readonly_journal.get_hash(checkpoint) != hash // ??? takes_time
    )
    {
-    session->buffer[0] = 'h';
+    session->buffer.data[0] = 'h';
    }
 
    LOGID("hash for checkpoint = " << checkpoint << ", result = "
-    << session->buffer[0] << '\n');
+    << session->buffer.data[0] << '\n');
 
    write_buffer_and_next_command(session, 1);
   }
@@ -480,7 +483,7 @@ namespace joedb
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer.data() + 1, 40),
+   net::buffer(session->buffer.data + 1, 40),
    [this, session] (std::error_code e, size_t s)
    {
     check_hash_handler(session, e, s);
@@ -499,9 +502,9 @@ namespace joedb
  {
   if (!error)
   {
-   LOGID(session->buffer[0] << '\n');
+   LOGID(session->buffer.data[0] << '\n');
 
-   switch (session->buffer[0])
+   switch (session->buffer.data[0])
    {
     case 'P':
      pull(session);
@@ -512,11 +515,11 @@ namespace joedb
     break;
 
     case 'U': case 'p':
-     session->unlock_after_push = (session->buffer[0] == 'U');
+     session->unlock_after_push = (session->buffer.data[0] == 'U');
      net::async_read
      (
       session->socket,
-      net::buffer(session->buffer.data(), 16),
+      net::buffer(session->buffer.data, 16),
       [this, session](std::error_code e, size_t s)
       {
        push_handler(session, e, s);
@@ -528,7 +531,7 @@ namespace joedb
      if (session->state == Session::State::locking)
       unlock(*session);
      else
-      session->buffer[0] = 't';
+      session->buffer.data[0] = 't';
      write_buffer_and_next_command(session, 1);
     break;
 
@@ -559,7 +562,7 @@ namespace joedb
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer, 1),
+   net::buffer(session->buffer.data, 1),
    [this, session](std::error_code e, size_t s)
    {
     read_command_handler(session, e, s);
@@ -591,37 +594,12 @@ namespace joedb
   net::async_write
   (
    session->socket,
-   net::buffer(session->buffer, size),
+   net::buffer(session->buffer.data, size),
    [this, session](std::error_code e, size_t s)
    {
     write_buffer_and_next_command_handler(session, e, s);
    }
   );
- }
-
- ///////////////////////////////////////////////////////////////////////////
- void Server::handshake(const std::shared_ptr<Session> session)
- ///////////////////////////////////////////////////////////////////////////
- {
-  const int64_t client_version = from_network(session->buffer.data() + 5);
-
-  LOGID("client_version = " << client_version << '\n');
-
-  {
-   const int64_t reply_version = client_version < 10 ? 0 : server_version;
-   to_network(reply_version, session->buffer.data() + 5);
-  }
-
-  to_network(session->id, session->buffer.data() + 5 + 8);
-  to_network
-  (
-   client.get_journal().get_checkpoint_position(),
-   session->buffer.data() + 5 + 8 + 8
-  );
-
-  session->buffer.data()[5 + 8 + 8 + 8] = is_readonly() ? 'R' : 'W';
-
-  write_buffer_and_next_command(session, 5 + 8 + 8 + 8 + 1);
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -635,16 +613,27 @@ namespace joedb
  {
   if (!error)
   {
+   session->buffer.index = 0;
+
    if
    (
-    session->buffer[0] == 'j' &&
-    session->buffer[1] == 'o' &&
-    session->buffer[2] == 'e' &&
-    session->buffer[3] == 'd' &&
-    session->buffer[4] == 'b'
+    session->buffer.read<char>() == 'j' &&
+    session->buffer.read<char>() == 'o' &&
+    session->buffer.read<char>() == 'e' &&
+    session->buffer.read<char>() == 'd' &&
+    session->buffer.read<char>() == 'b'
    )
    {
-    handshake(session);
+    const int64_t client_version = session->buffer.read<int64_t>();
+    LOGID("client_version = " << client_version << '\n');
+  
+    session->buffer.index = 5;
+    session->buffer.write<int64_t>(client_version < 10 ? 0 : server_version);
+    session->buffer.write<int64_t>(session->id);
+    session->buffer.write<int64_t>(client.get_checkpoint());
+    session->buffer.write<char>(is_readonly() ? 'R' : 'W');
+  
+    write_buffer_and_next_command(session, session->buffer.index);
     return;
    }
 
@@ -668,7 +657,7 @@ namespace joedb
    net::async_read
    (
     session->socket,
-    net::buffer(session->buffer, 13),
+    net::buffer(session->buffer.data, 13),
     [this, session](std::error_code e, size_t s)
     {
      handshake_handler(session, e, s);

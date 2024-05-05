@@ -10,7 +10,7 @@ namespace joedb
  TEST(Buffer, basic)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Buffer buffer;
+  Buffer<12> buffer;
   buffer.index = 0;
 
   buffer.write<uint8_t>(12);
@@ -30,7 +30,7 @@ namespace joedb
  TEST(Buffer, compact)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Buffer buffer;
+  Buffer<12> buffer;
   buffer.index = 0;
 
   buffer.compact_write<uint8_t>(12);
@@ -50,9 +50,9 @@ namespace joedb
  TEST(Buffer, big_compact)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Buffer buffer;
+  Buffer<12> buffer;
 
-  const uint32_t magic = 1903481906UL;
+  const uint32_t magic = 190348190UL;
 
   buffer.index = 0;
   buffer.compact_write<uint32_t>(magic);
@@ -64,7 +64,7 @@ namespace joedb
  TEST(Buffer, many_compact)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Buffer buffer;
+  Buffer<12> buffer;
 
   for (uint64_t i = 0; i < 3000000; i += 1 + (i >> 16))
   {
@@ -79,7 +79,7 @@ namespace joedb
  TEST(Buffer, many_small)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Buffer buffer;
+  Buffer<12> buffer;
 
   for (uint64_t i = 0; i < 3000000; i += 1 + (i >> 16))
   {

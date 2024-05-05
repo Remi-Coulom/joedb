@@ -11,11 +11,11 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Buffer
+ template<int log_size> class Buffer
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   static constexpr size_t size = (1 << 12);
+   static constexpr size_t size = (1 << log_size);
    static constexpr size_t extra_size = 8;
 
    char data[size + extra_size];
@@ -56,7 +56,7 @@ namespace joedb
     {
      uint32_t extra_bytes = 2;
 
-     while ((x >> (8 * extra_bytes)) >= 32 && extra_bytes < sizeof(T))
+     while ((x >> (8 * extra_bytes)) >= 32 && extra_bytes < sizeof(T) - 1)
       extra_bytes++;
 
      write<uint8_t>((extra_bytes << 5) | (x >> (8 * extra_bytes)));

@@ -28,7 +28,7 @@ namespace joedb
    int64_t slice_start;
    int64_t slice_length;
 
-   Buffer buffer;
+   Buffer<12> buffer;
 
    int64_t file_position;
    size_t read_buffer_size;
