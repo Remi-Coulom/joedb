@@ -14,14 +14,16 @@ namespace joedb
   // be careful when sizeof(size_t) == 4
 
   private:
+   virtual void raw_seek(int64_t offset) {};
+
    virtual size_t raw_read(char *data, size_t size)
    {
-    return raw_pread(data, size, file_position);
+    return raw_pread(data, size, slice_start + file_position);
    }
 
    virtual void raw_write(const char *data, size_t size)
    {
-    raw_pwrite(data, size, file_position);
+    raw_pwrite(data, size, slice_start + file_position);
    }
 
    virtual size_t raw_pread(char *data, size_t size, int64_t offset)
@@ -36,7 +38,7 @@ namespace joedb
     raw_write(data, size);
    }
 
-   virtual void raw_seek(int64_t offset) = 0;
+   // Implement either seek + read + write or pread + pwrite
 
    int64_t file_position;
 

@@ -13,7 +13,6 @@ namespace joedb
  {
   private:
    CURL * const curl;
-   int64_t seek_offset = 0;
 
    static void throw_if_error(CURLcode code);
 
@@ -28,9 +27,8 @@ namespace joedb
 
    static size_t callback(void *contents, size_t size, size_t nmemb, void *p);
 
-   size_t raw_read(char *buffer, size_t size) final;
-   void raw_write(const char *buffer, size_t size) final;
-   void raw_seek(int64_t offset) final;
+   size_t raw_pread(char *buffer, size_t size, int64_t offset) final;
+   void raw_pwrite(const char *buffer, size_t size, int64_t offset) final;
    int64_t raw_get_size() const final;
 
   public:

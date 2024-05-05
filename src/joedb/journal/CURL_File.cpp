@@ -37,12 +37,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- size_t CURL_File::raw_read(char *buffer, size_t size)
+ size_t CURL_File::raw_pread(char *buffer, size_t size, int64_t offset)
  ////////////////////////////////////////////////////////////////////////////
  {
   Callback_Data callback_data{buffer, size, 0};
   std::ostringstream range;
-  range << seek_offset << '-' << seek_offset + size - 1;
+  range << offset << '-' << offset + size - 1;
   throw_if_error(curl_easy_setopt(curl, CURLOPT_RANGE, range.str().c_str()));
   throw_if_error(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &callback_data));
   throw_if_error(curl_easy_perform(curl));
@@ -50,16 +50,9 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void CURL_File::raw_write(const char *buffer, size_t size)
+ void CURL_File::raw_pwrite(const char *buffer, size_t size, int64_t offset)
  ////////////////////////////////////////////////////////////////////////////
  {
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void CURL_File::raw_seek(int64_t offset)
- ////////////////////////////////////////////////////////////////////////////
- {
-  seek_offset = offset;
  }
 
  ////////////////////////////////////////////////////////////////////////////

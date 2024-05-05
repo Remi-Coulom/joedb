@@ -117,6 +117,7 @@ namespace joedb
    void set_slice(int64_t start, int64_t length)
    //////////////////////////////////////////////////////////////////////////
    {
+    flush();
     slice_start = start;
     slice_length = length;
     set_position(0);

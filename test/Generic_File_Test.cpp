@@ -2,6 +2,7 @@
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Async_Writer.h"
+#include "joedb/journal/File.h"
 
 #include "gtest/gtest.h"
 
@@ -78,7 +79,7 @@ TEST(Generic_File, slice_pread_pwrite)
  EXPECT_EQ(file.read<uint64_t>(), 2ULL);
 
  {
-  uint64_t x;
+  uint64_t x = 0;
   file.pos_pread((char *)&x, sizeof(x), 0);
   EXPECT_EQ(x, 2ULL);
   file.pos_pread((char *)&x, sizeof(x), 8);
@@ -162,7 +163,12 @@ TEST(Generic_File, read_data)
 TEST(Generic_File, async)
 /////////////////////////////////////////////////////////////////////////////
 {
+#if 1
  joedb::Test_File file;
+#else
+ joedb::File file("file.joedb", joedb::Open_Mode::create_new);
+#endif
+
  for (int32_t i = 0; i < 10000; i++)
   file.write<int32_t>(i);
  file.flush();
@@ -171,8 +177,13 @@ TEST(Generic_File, async)
  joedb::Async_Reader reader2(file, 128, 256);
  joedb::Async_Writer writer(file, 40000);
 
+#if 1
  joedb::Test_File file1;
  joedb::Test_File file2;
+#else
+ joedb::File file1("file1.joedb", joedb::Open_Mode::create_new);
+ joedb::File file2("file2.joedb", joedb::Open_Mode::create_new);
+#endif
 
  joedb::Async_Writer writer1(file1, 0);
  joedb::Async_Writer writer2(file2, 0);
@@ -182,8 +193,18 @@ TEST(Generic_File, async)
 
  for (int32_t i = 4; --i >= 0;)
  {
-  writer1.write(buffer, reader1.read(buffer, buffer_size));
-  writer2.write(buffer, reader2.read(buffer, buffer_size));
+  {
+   const size_t n1 = reader1.read(buffer, buffer_size);
+   EXPECT_EQ(n1, buffer_size);
+   writer1.write(buffer, n1);
+  }
+
+  {
+   const size_t n2 = reader2.read(buffer, buffer_size);
+   EXPECT_EQ(n2, buffer_size);
+   writer2.write(buffer, n2);
+  }
+
   writer.write((char *)&i, sizeof(int32_t));
  }
 

@@ -34,11 +34,27 @@ namespace joedb
     int64_t size = end - current;
     if (size > int64_t(capacity))
      size = capacity;
-    const size_t actually_read = size > 0
-     ? file.pos_pread(buffer, size, current)
-     : 0;
-    current += actually_read;
-    return actually_read;
+
+    size_t total_read = 0;
+
+    while (size > 0)
+    {
+     const size_t actually_read = file.pos_pread
+     (
+      buffer + total_read,
+      size,
+      current
+     );
+
+     if (actually_read == 0)
+      break;
+
+     current += actually_read;
+     total_read += actually_read;
+     size -= actually_read;
+    }
+
+    return total_read;
    }
 
    //////////////////////////////////////////////////////////////////////////
