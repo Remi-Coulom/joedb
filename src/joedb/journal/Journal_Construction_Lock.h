@@ -14,19 +14,7 @@ namespace joedb
    bool creating_new;
 
   public:
-   explicit Journal_Construction_Lock(Generic_File &file): file(file)
-   {
-    if (file.get_mode() == Open_Mode::read_existing)
-    {
-     file.shared_lock_head();
-     creating_new = false;
-    }
-    else
-    {
-     file.exclusive_lock_head();
-     creating_new = file.get_size() == 0;
-    }
-   }
+   explicit Journal_Construction_Lock(Generic_File &file);
 
    Generic_File &get_file()
    {
@@ -38,16 +26,7 @@ namespace joedb
     return creating_new;
    }
 
-   ~Journal_Construction_Lock()
-   {
-    try
-    {
-     file.unlock_head();
-    }
-    catch(...)
-    {
-    }
-   }
+   ~Journal_Construction_Lock();
  };
 }
 

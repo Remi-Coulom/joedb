@@ -78,9 +78,12 @@ ipo_add_executable(joedb_convert
  ../src/joedb/Posthumous_Catcher.cpp
  ../src/joedb/Posthumous_Thrower.cpp
  ../src/joedb/io/process_journal_pair.cpp
+ ../src/joedb/journal/Abstract_File.cpp
  ../src/joedb/journal/File.cpp
+ ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
  ../src/joedb/journal/Generic_File.cpp
+ ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/journal/Writable_Journal.cpp
@@ -89,17 +92,21 @@ ipo_add_executable(joedb_convert
 if(EXISTS "${GOOGLE_TEST}/include")
 
  add_executable(joedb_file_test
+  ../test/vecmap.cpp
   ../test/Test_Main.cpp
-
-  ../test/File_Test.cpp
   ../src/joedb/String_Logger.cpp
   ../src/joedb/Destructor_Logger.cpp
+
+  ../test/File_Test.cpp
   ../src/joedb/journal/Generic_File.cpp
   ../src/joedb/Blob.cpp
   ../src/joedb/Posthumous_Thrower.cpp
   ../src/joedb/Posthumous_Catcher.cpp
+  ../src/joedb/journal/Abstract_File.cpp
+  ../src/joedb/journal/Journal_Construction_Lock.cpp
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/File.cpp
+  ../src/joedb/journal/Memory_File.cpp
 
   ../test/Generic_File_Test.cpp
 

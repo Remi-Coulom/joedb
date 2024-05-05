@@ -41,20 +41,14 @@ namespace joedb
     Journal_Construction_Lock &&lock,
     Check check,
     Commit_Level commit_level
-   ):
-    Writable_Journal(lock, check, commit_level)
-   {
-   }
+   );
 
    explicit Writable_Journal
    (
     Generic_File &file,
     Check check = Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
-   ):
-    Writable_Journal(Journal_Construction_Lock(file), check, commit_level)
-   {
-   }
+   );
 
    //////////////////////////////////////////////////////////////////////////
    class Tail_Writer

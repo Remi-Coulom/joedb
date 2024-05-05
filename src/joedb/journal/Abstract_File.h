@@ -14,29 +14,11 @@ namespace joedb
   // be careful when sizeof(size_t) == 4
 
   private:
-   virtual void raw_seek(int64_t offset) {};
-
-   virtual size_t raw_read(char *data, size_t size)
-   {
-    return raw_pread(data, size, slice_start + file_position);
-   }
-
-   virtual void raw_write(const char *data, size_t size)
-   {
-    raw_pwrite(data, size, slice_start + file_position);
-   }
-
-   virtual size_t raw_pread(char *data, size_t size, int64_t offset)
-   {
-    raw_seek(offset);
-    return raw_read(data, size);
-   }
-
-   virtual void raw_pwrite(const char *data, size_t size, int64_t offset)
-   {
-    raw_seek(offset);
-    raw_write(data, size);
-   }
+   virtual void raw_seek(int64_t offset);
+   virtual size_t raw_read(char *data, size_t size);
+   virtual void raw_write(const char *data, size_t size);
+   virtual size_t raw_pread(char *data, size_t size, int64_t offset);
+   virtual void raw_pwrite(const char *data, size_t size, int64_t offset);
 
    // Implement either seek + read + write or pread + pwrite
 
@@ -68,23 +50,18 @@ namespace joedb
    }
 
    // -1 means "unknown"
-   virtual int64_t raw_get_size() const {return -1;}
-   virtual void raw_sync() {}
+   virtual int64_t raw_get_size() const;
+   virtual void raw_sync();
 
    // No need to use slice_start for lock functions:
    //  - do not support writing multiple slices simultaneously
    //  - public functions are head and tail only
-   virtual void shared_lock(int64_t start, int64_t size) {}
-   virtual void exclusive_lock(int64_t start, int64_t size) {}
-   virtual void unlock(int64_t start, int64_t size) {}
+   virtual void shared_lock(int64_t start, int64_t size);
+   virtual void exclusive_lock(int64_t start, int64_t size);
+   virtual void unlock(int64_t start, int64_t size);
 
   public:
-   Abstract_File()
-   {
-    slice_start = 0;
-    slice_length = 0;
-    file_position = 0;
-   }
+   Abstract_File();
 
    // Note: file_position is undefined after those
 
@@ -106,7 +83,7 @@ namespace joedb
      return raw_get_size();
    }
 
-   virtual ~Abstract_File() = default;
+   virtual ~Abstract_File();
  };
 }
 

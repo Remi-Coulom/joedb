@@ -13,6 +13,9 @@ namespace joedb
  {
   protected:
    std::vector<char> data;
+   Plain_Memory_File_Data(std::vector<char> &data);
+   Plain_Memory_File_Data();
+   ~Plain_Memory_File_Data();
  };
 
  template<typename Parent>
@@ -78,6 +81,8 @@ namespace joedb
     destructor_flush();
    }
  };
+
+ extern template class Memory_File_Template<Plain_Memory_File_Data>;
 
  using Memory_File = Memory_File_Template<Plain_Memory_File_Data>;
 }
