@@ -38,7 +38,7 @@ namespace joedb
     break;
 
    const int64_t copy_size = std::min(size, int64_t(source.read_buffer_size));
-   pos_write(source.buffer.data, copy_size); // ??? conversion to size_t ???
+   pos_write(source.buffer.data, copy_size);
    size -= copy_size;
   }
  }

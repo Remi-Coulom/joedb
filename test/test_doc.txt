@@ -1,5 +1,5 @@
 attention: read_data can read partially if reaches end of file
-attention: size_t may be 32 bits
+attention: size_t may be 32 bits. Might be a good idead to use uint32_t instead of size_t for file operations.
 
 pos_pread
 pos_pwrite

@@ -52,7 +52,6 @@ namespace joedb
 
   if (!connection)
   {
-   // TODO: must be prevented by connection_parser
    std::cerr << "Cannot push to pull-only connection\n";
    return 1;
   }
