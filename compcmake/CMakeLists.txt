@@ -92,7 +92,6 @@ ipo_add_executable(joedb_convert
 if(EXISTS "${GOOGLE_TEST}/include")
 
  add_executable(joedb_file_test
-  ../test/vecmap.cpp
   ../test/Test_Main.cpp
   ../src/joedb/String_Logger.cpp
   ../src/joedb/Destructor_Logger.cpp
