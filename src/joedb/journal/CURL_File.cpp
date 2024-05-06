@@ -17,8 +17,19 @@ namespace joedb
  {
   std::ostringstream range;
   range << start << '-' << start + size - 1;
+
   error_check(curl_easy_setopt(curl, CURLOPT_RANGE, range.str().c_str()));
   error_check(curl_easy_perform(curl));
+
+  long code = 0;
+  error_check(curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code));
+
+  if (code != 0 && code != 206)
+  {
+   std::ostringstream error_message;
+   error_message << "unexpected response code: " << code;
+   throw Exception(error_message.str());
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
