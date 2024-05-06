@@ -16,7 +16,7 @@ TEST(Generic_File, copy)
  file.write<uint64_t>(magic);
 
  joedb::Test_File copy;
- copy.copy(file, 0, std::numeric_limits<int64_t>::max());
+ file.copy_to(copy, 0, std::numeric_limits<int64_t>::max());
  copy.set_position(0);
 
  EXPECT_EQ(copy.read<uint64_t>(), magic);
@@ -35,7 +35,7 @@ TEST(Generic_File, large_copy)
 
  joedb::Memory_File copy;
  copy.write<uint64_t>(~magic);
- copy.copy(file, sizeof(uint64_t), sizeof(uint64_t) * count);
+ file.copy_to(copy, sizeof(uint64_t), sizeof(uint64_t) * count);
  copy.set_position(0);
  EXPECT_EQ(copy.read<uint64_t>(), ~magic);
 

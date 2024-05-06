@@ -156,7 +156,14 @@ namespace joedb
     return get_file_position() - read_buffer_size + buffer.index;
    }
 
-   void copy(Generic_File &source, int64_t start, int64_t size);
+   //////////////////////////////////////////////////////////////////////////
+   virtual void copy_to
+   //////////////////////////////////////////////////////////////////////////
+   (
+    Generic_File &destination,
+    int64_t start,
+    int64_t size
+   );
 
    //////////////////////////////////////////////////////////////////////////
    template<typename T> void write(T x)

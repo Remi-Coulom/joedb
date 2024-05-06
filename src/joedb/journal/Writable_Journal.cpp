@@ -81,9 +81,9 @@ int64_t joedb::Writable_Journal::pull_from(Readonly_Journal &journal)
   const int64_t initial_position = get_position();
   const int64_t initial_source_position = journal.get_position();
 
-  file.copy
+  journal.file.copy_to
   (
-   journal.file,
+   file,
    checkpoint_position,
    source_checkpoint - checkpoint_position
   );
