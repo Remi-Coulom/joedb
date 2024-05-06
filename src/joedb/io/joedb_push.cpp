@@ -57,7 +57,7 @@ namespace joedb
   }
   else
   {
-   int64_t server_checkpoint = connection->handshake(journal);
+   int64_t server_checkpoint = connection->handshake(journal, true);
    server_checkpoint = connection->push(journal, server_checkpoint, false);
 
    Signal::start();
