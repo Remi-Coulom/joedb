@@ -18,16 +18,16 @@ namespace joedb
   private:
    int fd;
 
-   static void throw_last_error(const char *action, const char *file_name);
-
    int lock(int command, short type, int64_t start, int64_t size);
 
   protected:
-   size_t raw_pread(char *buffer, size_t size, int64_t offset) final;
-   void raw_pwrite(const char *buffer, size_t size, int64_t offset) final;
+   size_t pread(char *buffer, size_t size, int64_t offset) final;
+   void pwrite(const char *buffer, size_t size, int64_t offset) final;
    void raw_sync() final;
 
   public:
+   static void throw_last_error(const char *action, const char *file_name);
+
    Posix_File(int fd, Open_Mode mode):
     Generic_File(mode),
     fd(fd)
@@ -41,13 +41,7 @@ namespace joedb
    {
    }
 
-   Posix_File(int fd, size_t start, size_t length):
-    Posix_File(fd, Open_Mode::read_existing)
-   {
-    set_slice(start, length);
-   }
-
-   int64_t raw_get_size() const final;
+   int64_t get_size() const final;
    void shared_lock(int64_t start, int64_t size) final;
    bool try_exclusive_lock(int64_t start, int64_t size);
    void exclusive_lock(int64_t start, int64_t size) final;

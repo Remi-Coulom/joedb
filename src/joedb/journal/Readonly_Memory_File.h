@@ -11,21 +11,24 @@ namespace joedb
  class Readonly_Memory_File: public Generic_File
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   const char * const data;
+  protected:
+   const char * data;
    const size_t data_size;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t raw_get_size() const final
+   int64_t get_size() const final
    //////////////////////////////////////////////////////////////////////////
    {
     return int64_t(data_size);
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t raw_pread(char *buffer, size_t size, int64_t offset) final
+   size_t pread(char *buffer, size_t size, int64_t offset) final
    //////////////////////////////////////////////////////////////////////////
    {
+    if (offset < 0 || offset >= int64_t(data_size))
+     return 0;
+
     const size_t max_size = data_size - offset;
     const size_t n = std::min(size, max_size);
     std::copy_n(&data[offset], n, buffer);
@@ -33,7 +36,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void raw_pwrite(const char *buffer, size_t size, int64_t offset) final
+   void pwrite(const char *buffer, size_t size, int64_t offset) final
    //////////////////////////////////////////////////////////////////////////
    {
    }

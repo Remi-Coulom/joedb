@@ -13,7 +13,7 @@ namespace joedb
    enum {read_size = 1};
 
    //////////////////////////////////////////////////////////////////////////
-   size_t raw_pread(char *buffer, size_t size, int64_t offset) override
+   size_t pread(char *buffer, size_t size, int64_t offset) override
    //////////////////////////////////////////////////////////////////////////
    {
     const size_t max_size = data.size() - offset;

@@ -31,16 +31,16 @@ namespace joedb
 
   std::string buffer(4, ' ');
 
-  reader.pos_pread(&buffer[0], 4, 8);
+  reader.pread(&buffer[0], 4, 8);
   EXPECT_EQ(buffer, "zzzz");
-  reader.pos_pread(&buffer[0], 4, 4);
+  reader.pread(&buffer[0], 4, 4);
   EXPECT_EQ(buffer, "yyyy");
-  reader.pos_pread(&buffer[0], 4, 0);
+  reader.pread(&buffer[0], 4, 0);
   EXPECT_EQ(buffer, "xxxx");
 
   writer.write("aaaabbbbcccc", 12);
 
-  reader.pos_pread(&buffer[0], 4, 16);
+  reader.pread(&buffer[0], 4, 16);
   EXPECT_EQ(buffer, "bbbb");
 
   reader.read(&buffer[0], 4);
@@ -66,7 +66,7 @@ namespace joedb
   for (size_t i = 0; i < reads; i++)
   {
    const size_t offset = block_size * ((i * step) % blocks);
-   reader.pos_pread(buffer.data(), buffer.size(), offset);
+   reader.pread(buffer.data(), buffer.size(), offset);
   }
 
   std::remove(file_name);

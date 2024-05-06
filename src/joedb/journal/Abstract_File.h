@@ -10,24 +10,16 @@ namespace joedb
  class Abstract_File
  ////////////////////////////////////////////////////////////////////////////
  {
-  // Should size be int64_t instead of size_t?
-  // be careful when sizeof(size_t) == 4
-
   private:
    virtual void raw_seek(int64_t offset);
    virtual size_t raw_read(char *data, size_t size);
    virtual void raw_write(const char *data, size_t size);
-   virtual size_t raw_pread(char *data, size_t size, int64_t offset);
-   virtual void raw_pwrite(const char *data, size_t size, int64_t offset);
 
    // Implement either seek + read + write or pread + pwrite
 
    int64_t file_position;
 
   protected:
-   int64_t slice_start;
-   int64_t slice_length;
-
    int64_t get_file_position() const {return file_position;}
 
    size_t pos_read(char *data, size_t size)
@@ -45,17 +37,12 @@ namespace joedb
 
    void seek(int64_t offset)
    {
-    raw_seek(slice_start + offset);
+    raw_seek(offset);
     file_position = offset;
    }
 
-   // -1 means "unknown"
-   virtual int64_t raw_get_size() const;
    virtual void raw_sync();
 
-   // No need to use slice_start for lock functions:
-   //  - do not support writing multiple slices simultaneously
-   //  - public functions are head and tail only
    virtual void shared_lock(int64_t start, int64_t size);
    virtual void exclusive_lock(int64_t start, int64_t size);
    virtual void unlock(int64_t start, int64_t size);
@@ -65,23 +52,11 @@ namespace joedb
 
    // Note: file_position is undefined after those
 
-   size_t pos_pread(char *data, size_t size, int64_t offset)
-   {
-    return raw_pread(data, size, slice_start + offset);
-   }
+   virtual size_t pread(char *data, size_t size, int64_t offset);
+   virtual void pwrite(const char *data, size_t size, int64_t offset);
 
-   void pos_pwrite(const char *data, size_t size, int64_t offset)
-   {
-    raw_pwrite(data, size, slice_start + offset);
-   }
-
-   int64_t get_size() const
-   {
-    if (slice_start + slice_length)
-     return slice_length;
-    else
-     return raw_get_size();
-   }
+   // -1 means "unknown"
+   virtual int64_t get_size() const;
 
    virtual ~Abstract_File();
  };

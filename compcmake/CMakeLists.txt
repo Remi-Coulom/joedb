@@ -158,6 +158,7 @@ endif()
   ../test/SHA_256_Test.cpp
   ../test/Span_Test.cpp
   ../test/Local_Connection_Test.cpp
+  ../test/File_Slice_Test.cpp
   ../test/compiler/Blob.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp

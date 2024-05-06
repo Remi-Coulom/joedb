@@ -30,38 +30,6 @@ class Writable_Journal_Test: public ::testing::Test
 };
 
 /////////////////////////////////////////////////////////////////////////////
-TEST_F(Writable_Journal_Test, slice)
-/////////////////////////////////////////////////////////////////////////////
-{
- joedb::Memory_File file;
-// joedb::File file("x.joedb", Open_Mode::create_new);
-
- file.write<int64_t>(1234);
- file.set_slice(8, 0);
-
- Writable_Journal journal(file);
- journal.create_table("person");
- journal.default_checkpoint();
-
- file.set_slice(8, journal.get_checkpoint_position());
- Readonly_Journal readonly(file);
-
- EXPECT_EQ
- (
-  readonly.get_checkpoint_position(),
-  journal.get_checkpoint_position()
- );
-
- readonly.pull();
-
- EXPECT_EQ
- (
-  readonly.get_checkpoint_position(),
-  journal.get_checkpoint_position()
- );
-}
-
-/////////////////////////////////////////////////////////////////////////////
 TEST_F(Writable_Journal_Test, basic_operations)
 /////////////////////////////////////////////////////////////////////////////
 {

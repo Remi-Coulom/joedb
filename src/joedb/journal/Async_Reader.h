@@ -39,7 +39,7 @@ namespace joedb
 
     while (size > 0)
     {
-     const size_t actually_read = file.pos_pread
+     const size_t actually_read = file.pread
      (
       buffer + total_read,
       size,
@@ -58,10 +58,10 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t pos_pread(char *buffer, size_t capacity, int64_t offset)
+   size_t pread(char *buffer, size_t capacity, int64_t offset)
    //////////////////////////////////////////////////////////////////////////
    {
-    return file.pos_pread(buffer, capacity, offset);
+    return file.pread(buffer, capacity, offset);
    }
 
    //////////////////////////////////////////////////////////////////////////

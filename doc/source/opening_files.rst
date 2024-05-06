@@ -48,39 +48,26 @@ For example:
 -------------------------
 
 ``Generic_File_Database`` is a superclass of ``File_Database`` that takes a
-reference to a ``joedb::Generic_File`` as parameter to its constructor, instead
-of a file name. Subclasses of ``joedb::Generic_File`` allows accessing data in
+reference to a ``Generic_File`` as parameter to its constructor, instead
+of a file name. Subclasses of ``Generic_File`` allows accessing data in
 various ways:
 
- - ``joedb::Stream_File`` uses a ``std::streambuf``.
- - ``joedb::Memory_File`` writes to a ``std::vector<char>`` in memory.
- - ``joedb::Readonly_Memory_File`` reads from ``const char *``.
+ - ``Stream_File`` uses a ``std::streambuf``.
+ - ``Memory_File`` writes to a ``std::vector<char>`` in memory.
+ - ``Readonly_Memory_File`` reads from ``const char *``.
    :ref:`joedb_embed` can be used to embed a joedb database into a C++ string
    literal.
- - ``joedb::File`` is a typedef to either ``joedb::Windows_File``,
-   ``joedb::Posix_File``, or ``joedb::Portable_File``. System-specific version
-   of ``joedb::File`` offer extra features, such as locking, which is necessary
+ - ``File_Slice`` is a specialization of ``Readonly_Memory_File`` that reads a
+   range of bytes from a Posix file by memory-mapping it. It can be used to
+   read Android assets (`Documentation
+   <https://developer.android.com/ndk/reference/group/asset>`_).
+ - ``File`` is a typedef to either ``Windows_File``,
+   ``Posix_File``, or ``Portable_File``. System-specific version
+   of ``File`` offer extra features, such as locking, which is necessary
    to handle :doc:`concurrent <concurrency>` access to a file.
- - ``joedb::SFTP_File`` read-only access to a file via sftp (uses libssh).
- - ``joedb::CURL_File`` read-only access to a file via any URL (uses libcurl).
- - ``joedb::Interpreted_File`` can read joedbi commands directly.
+ - ``SFTP_File`` read-only access to a file via sftp (uses libssh).
+ - ``CURL_File`` read-only access to a file via any URL (uses libcurl).
+ - ``Interpreted_File`` can read joedbi commands directly.
 
 You can also create your own file class by subclassing ``Generic_File`` and
-implementing its pure virtual functions.
-
-.. _file_slices:
-
-File Slices (for Android APK)
------------------------------
-
-The Android NDK offers functions that return a file descriptor as well as a
-position and size of an asset within the APK (see the NDK Android Asset
-`Documentation <https://developer.android.com/ndk/reference/group/asset>`_).
-It is possible to directly open such an asset without extracting it, using the
-``set_slice`` member function of ``joedb::Generic_File``. Here is an example:
-
-.. code-block:: c++
-
-  joedb::Posix_File file(file_descriptor, joedb::Open_Mode::read_existing);
-  file.set_slice(start, length);
-  tutorial::Readonly_Database db(file);
+implementing its virtual functions.

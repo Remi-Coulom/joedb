@@ -27,9 +27,9 @@ namespace joedb
 
    static size_t callback(void *contents, size_t size, size_t nmemb, void *p);
 
-   size_t raw_pread(char *buffer, size_t size, int64_t offset) final;
-   void raw_pwrite(const char *buffer, size_t size, int64_t offset) final;
-   int64_t raw_get_size() const final;
+   size_t pread(char *buffer, size_t size, int64_t offset) final;
+   void pwrite(const char *buffer, size_t size, int64_t offset) final;
+   int64_t get_size() const final;
 
   public:
    CURL_File(const char *url, bool verbose);

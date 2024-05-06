@@ -187,27 +187,3 @@ TEST(Polymorphic_File, File_large_write)
 
  std::remove(file_name);
 }
-
-/////////////////////////////////////////////////////////////////////////////
-TEST(Polymorphic_File, File_Slice)
-/////////////////////////////////////////////////////////////////////////////
-{
- const char * file_name = "file_test.joedb.tmp";
-
- {
-  joedb::File file(file_name, joedb::Open_Mode::create_new);
-  polymorphic_journal_test(file);
-  file.set_position(60);
-  file.write(42);
-  file.flush();
- }
-
- {
-  joedb::File file(file_name, joedb::Open_Mode::write_existing);
-  EXPECT_ANY_THROW(joedb::Writable_Journal journal(file));
-  file.set_slice(0, 60);
-  polymorphic_journal_readonly_test(file);
- }
-
- std::remove(file_name);
-}

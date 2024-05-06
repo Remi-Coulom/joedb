@@ -27,7 +27,7 @@ namespace joedb
    void write(const char *buffer, size_t size)
    //////////////////////////////////////////////////////////////////////////
    {
-    file.pos_pwrite(buffer, size, current);
+    file.pwrite(buffer, size, current);
     current += size;
    }
 
