@@ -127,7 +127,9 @@ Performance
 -----------
 
 - CURL_File is very inefficient for large push or pull. Could be improved with
-  virtual function to perform large copy. Same for SFTP_File, probably.
+  virtual function to perform large copy. Same for SFTP_File, probably. write a
+  "copy_to" function in Generic_File that uses the buffer for iterative copy,
+  and override it in networked files to stream the copy.
 - use async_write_some and async_read_some during pull and push
 - vector of size 1: write ordinary insert and update to the journal instead
 - joedb::Database: use vector instead of map for tables and fields (with a bool
