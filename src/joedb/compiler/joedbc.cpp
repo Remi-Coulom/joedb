@@ -539,11 +539,12 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    (
     joedb::Connection &connection,
     joedb::Generic_File &file,
+    bool content_check = true,
     joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     Client_Data(file, check, commit_level),
-    joedb::Client(*this, connection)
+    joedb::Client(*this, connection, content_check)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();

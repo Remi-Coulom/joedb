@@ -38,11 +38,15 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Client_Data &data,
-    Pullonly_Connection &connection
+    Pullonly_Connection &connection,
+    bool content_check = true
    ):
     data(data),
     connection(connection),
-    server_checkpoint(connection.handshake(data.get_readonly_journal()))
+    server_checkpoint
+    (
+     connection.handshake(data.get_readonly_journal(), content_check)
+    )
    {
    }
 
@@ -133,9 +137,10 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Client_Data &data,
-    Connection &connection
+    Connection &connection,
+    bool content_check = true
    ):
-    Pullonly_Client(data, connection),
+    Pullonly_Client(data, connection, content_check),
     connection(connection)
    {
    }

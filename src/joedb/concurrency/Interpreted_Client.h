@@ -13,9 +13,14 @@ namespace joedb
   public Client
  {
   public:
-   Interpreted_Client(Connection &connection, Generic_File &file):
+   Interpreted_Client
+   (
+    Connection &connection,
+    Generic_File &file,
+    bool content_check = true
+   ):
     Writable_Interpreted_Client_Data(file),
-    Client(*this, connection)
+    Client(*this, connection, content_check)
    {
    }
 

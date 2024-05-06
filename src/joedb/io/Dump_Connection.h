@@ -19,7 +19,11 @@ namespace joedb
   public:
    Dump_Connection(bool muted): muted(muted) {}
 
-   int64_t handshake(Readonly_Journal &client_journal) final
+   int64_t handshake
+   (
+    Readonly_Journal &client_journal,
+    bool contentcheck
+   ) final
    {
     const int64_t client_position = client_journal.get_position();
 

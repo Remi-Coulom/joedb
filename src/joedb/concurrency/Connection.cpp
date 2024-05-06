@@ -7,7 +7,11 @@ namespace joedb
   throw Exception("Client data does not match the server");
  }
 
- int64_t Pullonly_Connection::handshake(Readonly_Journal &client_journal)
+ int64_t Pullonly_Connection::handshake
+ (
+  Readonly_Journal &client_journal,
+  bool content_check
+ )
  {
   return client_journal.get_checkpoint_position();
  }

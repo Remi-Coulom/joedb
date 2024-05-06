@@ -13,17 +13,24 @@ namespace joedb
    Readonly_Journal &server_journal;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t handshake(Readonly_Journal &client_journal) final
+   int64_t handshake
    //////////////////////////////////////////////////////////////////////////
+   (
+    Readonly_Journal &client_journal,
+    bool content_check
+   ) final
    {
-    const int64_t min = std::min
-    (
-     server_journal.get_checkpoint_position(),
-     client_journal.get_checkpoint_position()
-    );
+    if (content_check)
+    {
+     const int64_t min = std::min
+     (
+      server_journal.get_checkpoint_position(),
+      client_journal.get_checkpoint_position()
+     );
 
-    if (client_journal.get_hash(min) != server_journal.get_hash(min))
-     content_mismatch();
+     if (client_journal.get_hash(min) != server_journal.get_hash(min))
+      content_mismatch();
+    }
 
     return server_journal.get_checkpoint_position();
    }

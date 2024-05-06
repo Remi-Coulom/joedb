@@ -246,8 +246,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::handshake(Readonly_Journal &client_journal)
+ int64_t Server_Connection::handshake
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal,
+  bool content_check
+ )
  {
   LOG("Connecting... ");
 
@@ -312,8 +316,9 @@ namespace joedb
   keep_alive_thread_must_stop = false;
   keep_alive_thread = std::thread([this](){keep_alive();});
 
-  if (!check_matching_content(client_journal, server_checkpoint))
-   content_mismatch();
+  if (content_check)
+   if (!check_matching_content(client_journal, server_checkpoint))
+    content_mismatch();
 
   return server_checkpoint;
  }

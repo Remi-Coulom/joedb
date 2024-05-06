@@ -31,7 +31,7 @@ namespace joedb
  void Client_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << " <file> <connection>\n\n";
+  out << " [--nocheck] <file> <connection>\n\n";
 
   file_parser.print_help(out);
   connection_parser.print_help(out);
@@ -42,6 +42,14 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 0;
+
+  bool content_check = true;
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--nocheck") == 0)
+  {
+   arg_index++;
+   content_check = false;
+  }
+  std::cout << "content_check = " << content_check << '\n';
 
   Generic_File &client_file = file_parser.parse
   (
@@ -70,9 +78,9 @@ namespace joedb
   Connection *push_connection = pullonly_connection.get_push_connection();
 
   if (push_connection)
-   client.reset(new Client(*client_data, *push_connection));
+   client.reset(new Client(*client_data, *push_connection, content_check));
   else
-   client.reset(new Pullonly_Client(*client_data, pullonly_connection));
+   client.reset(new Pullonly_Client(*client_data, pullonly_connection, content_check));
 
   return *client;
  }
