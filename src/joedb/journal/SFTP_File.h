@@ -45,11 +45,6 @@ namespace joedb
      throw_last_error("seeking in", "sftp file");
    }
 
-   int64_t get_size() const final
-   {
-    return -1;
-   }
-
   public:
    SFTP_File(ssh::SFTP &sftp, const char *file_name):
     Generic_File(Open_Mode::read_existing),

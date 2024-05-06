@@ -29,10 +29,12 @@ namespace joedb
 
    size_t pread(char *buffer, size_t size, int64_t offset) final;
    void pwrite(const char *buffer, size_t size, int64_t offset) final;
-   int64_t get_size() const final;
 
   public:
    CURL_File(const char *url, bool verbose);
+
+   int64_t get_size() const final;
+
    ~CURL_File();
  };
 }
