@@ -15,8 +15,6 @@ namespace joedb
    const char * const data;
    const size_t data_size;
 
-   size_t current;
-
    //////////////////////////////////////////////////////////////////////////
    int64_t raw_get_size() const final
    //////////////////////////////////////////////////////////////////////////
@@ -25,30 +23,19 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t raw_read(char *buffer, size_t size) final
+   size_t raw_pread(char *buffer, size_t size, int64_t offset) final
    //////////////////////////////////////////////////////////////////////////
    {
-    const size_t max_size = data_size - current;
+    const size_t max_size = data_size - offset;
     const size_t n = std::min(size, max_size);
-    std::copy_n(&data[current], n, buffer);
-    current += n;
+    std::copy_n(&data[offset], n, buffer);
     return n;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void raw_write(const char *buffer, size_t size) final
+   void raw_pwrite(const char *buffer, size_t size, int64_t offset) final
    //////////////////////////////////////////////////////////////////////////
    {
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void raw_seek(int64_t offset) final
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (offset >= 0 && offset <= get_size())
-     current = size_t(offset);
-    else
-     throw Exception("seek out of range");
    }
 
   public:
@@ -57,8 +44,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
     Generic_File(joedb::Open_Mode::read_existing),
     data((const char *)memory),
-    data_size(size),
-    current(0)
+    data_size(size)
    {
    }
 

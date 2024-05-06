@@ -107,13 +107,16 @@ TEST(Generic_File, readonly_memory_file)
  joedb::Readonly_Memory_File file(data, size);
 
  EXPECT_EQ(file.read<uint32_t>(), 0x03020100UL);
+ EXPECT_EQ(4, file.get_position());
  file.read<uint32_t>();
  file.read<uint32_t>();
 
  file.set_position(0);
  EXPECT_EQ(0, file.get_position());
- EXPECT_ANY_THROW(file.set_position(-1));
- EXPECT_EQ(0, file.get_position());
+ EXPECT_EQ(0, file.read<uint8_t>());
+ EXPECT_EQ(1, file.read<uint8_t>());
+ EXPECT_EQ(2, file.read<uint8_t>());
+ EXPECT_EQ(3, file.read<uint8_t>());
 }
 
 /////////////////////////////////////////////////////////////////////////////
