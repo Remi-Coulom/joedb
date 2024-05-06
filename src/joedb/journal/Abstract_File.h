@@ -20,6 +20,14 @@ namespace joedb
    int64_t file_position;
 
   protected:
+   virtual void raw_sync();
+   virtual void shared_lock(int64_t start, int64_t size);
+   virtual void exclusive_lock(int64_t start, int64_t size);
+   virtual void unlock(int64_t start, int64_t size);
+
+  public:
+   Abstract_File();
+
    int64_t get_file_position() const {return file_position;}
 
    size_t pos_read(char *data, size_t size)
@@ -41,17 +49,7 @@ namespace joedb
     file_position = offset;
    }
 
-   virtual void raw_sync();
-
-   virtual void shared_lock(int64_t start, int64_t size);
-   virtual void exclusive_lock(int64_t start, int64_t size);
-   virtual void unlock(int64_t start, int64_t size);
-
-  public:
-   Abstract_File();
-
    // Note: file_position is undefined after those
-
    virtual size_t pread(char *data, size_t size, int64_t offset);
    virtual void pwrite(const char *data, size_t size, int64_t offset);
 

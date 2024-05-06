@@ -14,9 +14,9 @@ namespace joedb
   private:
    CURL * const curl;
 
-   static void throw_if_error(CURLcode code);
+   static void error_check(CURLcode code);
 
-   struct Callback_Data
+   struct pread_Callback_Data
    {
     char * const buffer;
     const size_t size;
@@ -25,10 +25,27 @@ namespace joedb
     size_t copy(char *contents, size_t real_size);
    };
 
-   static size_t callback(void *contents, size_t size, size_t nmemb, void *p);
+   static size_t pread_callback
+   (
+    void *contents,
+    size_t size,
+    size_t nmemb,
+    void *p
+   );
+
+   static size_t copy_callback
+   (
+    void *contents,
+    size_t size,
+    size_t nmemb,
+    void *p
+   );
+
+   void perform_range(int64_t start, int64_t size);
 
    size_t pread(char *buffer, size_t size, int64_t offset) final;
    void pwrite(const char *buffer, size_t size, int64_t offset) final;
+   void copy_to(Generic_File &destination, int64_t start, int64_t size) final;
 
   public:
    CURL_File(const char *url, bool verbose);
