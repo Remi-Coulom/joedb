@@ -56,6 +56,7 @@ Compression
 
 Fast IO:
 
+- https://github.com/ned14/llfio
 - http://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
 
 File Locking:

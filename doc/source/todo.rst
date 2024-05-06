@@ -130,12 +130,12 @@ Performance
   virtual function to perform large copy. Same for SFTP_File, probably. write a
   "copy_to" function in Generic_File that uses the buffer for iterative copy,
   and override it in networked files to stream the copy.
+- File design based on llfio
 - use async_write_some and async_read_some during pull and push
 - vector of size 1: write ordinary insert and update to the journal instead
 - joedb::Database: use vector instead of map for tables and fields (with a bool
   indicating if deleted)
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
-
 
 joedb_admin
 -----------
