@@ -87,22 +87,7 @@ namespace joedb
    void destructor_flush() noexcept;
 
   public:
-   //////////////////////////////////////////////////////////////////////////
-   Generic_File(Open_Mode mode):
-   //////////////////////////////////////////////////////////////////////////
-    mode(mode),
-    shared(mode == Open_Mode::shared_write),
-    locked_tail
-    (
-     mode != Open_Mode::shared_write &&
-     mode != Open_Mode::read_existing
-    ) // ->cpp
-   {
-    read_buffer_size = 0;
-    end_of_file = false;
-    buffer.index = 0;
-   }
-
+   Generic_File(Open_Mode mode);
    void flush();
 
    //////////////////////////////////////////////////////////////////////////
