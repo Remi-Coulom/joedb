@@ -17,8 +17,6 @@ else
  sleep 2
 fi
 
-export WINEPATH="/usr/x86_64-w64-mingw32/lib\;/usr/lib/gcc/x86_64-w64-mingw32/9.3-posix"
-
 for configuration in ${configurations}; do
  echo =======================================================================
  echo ${configuration}
