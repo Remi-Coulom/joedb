@@ -41,8 +41,11 @@ build()
   ../../src/joedb/io/SQL_Dump_Writable.cpp\
   ../../src/joedb/io/Interpreter_Dump_Writable.cpp\
   ../../src/joedb/io/get_time_string.cpp\
+  ../../src/joedb/journal/Abstract_File.cpp\
   ../../src/joedb/journal/diagnostics.cpp\
   ../../src/joedb/journal/Interpreted_File.cpp\
+  ../../src/joedb/journal/Journal_Construction_Lock.cpp\
+  ../../src/joedb/journal/Memory_File.cpp\
   ../../src/joedb/journal/File.cpp\
   ../../src/joedb/journal/Generic_File.cpp\
   ../../src/joedb/journal/Writable_Journal.cpp\
