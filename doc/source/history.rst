@@ -15,14 +15,15 @@ History
       when a writable journal is constructed or when the checkpoint is
       modified.
 
-  - Write access to exclusive and shared files is completely unified, so:
+  - Write access to exclusive and shared files is completely unified, so
+    ``Connection`` and ``File_Connection`` can now handle both exclusive and
+    shared files.
 
-    - ``Connection`` and ``File_Connection`` can now handle both exclusive
-      and shared files.
-    - ``Local_Connection`` is removed since it can be replaced by a plain
-      ``Connection``.
+  - Explicit handling of pull-only connections. The server can now cleanly
+    serve a read-only file.
 
-  - New ``CURL_File`` allows opening any URL as a read-only file.
+  - New ``CURL_File`` allows opening any URL as a read-only file. An http
+    server supporting range access can serve a read-only database.
 
   - Incompatibilities with previous version:
 
@@ -31,8 +32,10 @@ History
       it is important to avoid mixing joedb versions because they may not
       understand each-other's locks. Windows and MacOS do not have this
       problem.
-    - The network protocol changed, and is not compatible with the previous
-      version.
+    - The network protocol changed to indicate a pull-only connection during
+      handshake, so it is not compatible with the previous version.
+    - ``Local_Connection`` is removed since it can be replaced by a plain
+      ``Connection``.
 
 - 2024-04-23: 8.0.1
 
