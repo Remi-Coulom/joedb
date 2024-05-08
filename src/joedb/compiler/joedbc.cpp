@@ -1751,8 +1751,8 @@ static void generate_readonly_h
 
    bool pull()
    {
-    const int64_t previous_checkpoint = journal.get_checkpoint_position();
-    if (joedb::Pullonly_Client::pull() > previous_checkpoint)
+    joedb::Pullonly_Client::pull();
+    if (journal.get_position() < journal.get_checkpoint_position())
     {
      journal.play_until_checkpoint(db);
      if (db.get_schema_checkpoint() > schema_checkpoint)
