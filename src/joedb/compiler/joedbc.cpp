@@ -665,6 +665,7 @@ static void generate_readonly_h
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/Exception.h"
 #include "joedb/exception/Out_Of_Date.h"
 #include "joedb/assert.h"
@@ -1479,6 +1480,11 @@ static void generate_readonly_h
     schema_journal(schema_file)
    {}
 
+   int64_t get_schema_checkpoint() const
+   {
+    return schema_journal.get_checkpoint_position();
+   }
+
    void initialize_with_readonly_journal(joedb::Readonly_Journal &journal)
    {
     max_record_id = size_t(journal.get_checkpoint_position());
@@ -1643,7 +1649,7 @@ static void generate_readonly_h
  out << " };\n";
 
  //
- // File_Database
+ // Readonly_Database and Client
  //
  out << R"RRR(
  class Readonly_Database: public Database
@@ -1683,31 +1689,80 @@ static void generate_readonly_h
    }
  };
 
- class Pullable_Database: public Database
+ using Generic_Readonly_Database = Readonly_Database;
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Readonly_Client_Data: public joedb::Client_Data
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  protected:
+   joedb::Readonly_Journal journal;
+   Database db;
+
+   Readonly_Client_Data(joedb::File &file):
+    journal(file)
+   {
+    db.initialize_with_readonly_journal(journal);
+   }
+
+   bool is_readonly() const override
+   {
+    return true;
+   }
+
+   joedb::Readonly_Journal &get_readonly_journal() override
+   {
+    return journal;
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Pullonly_Connection
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  protected:
+   joedb::Pullonly_Connection connection;
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Readonly_Client:
+ ////////////////////////////////////////////////////////////////////////////
+  private Readonly_Client_Data,
+  private Pullonly_Connection,
+  private joedb::Pullonly_Client
  {
   private:
-   joedb::Readonly_Journal journal;
+   const int64_t schema_checkpoint;
 
   public:
-   Pullable_Database(joedb::File &file): journal(file)
+   Readonly_Client(joedb::File &file):
+    Readonly_Client_Data(file),
+    joedb::Pullonly_Client
+    (
+     *static_cast<Readonly_Client_Data *>(this),
+     Pullonly_Connection::connection,
+     false
+    ),
+    schema_checkpoint(db.get_schema_checkpoint())
    {
-    initialize_with_readonly_journal(journal);
    }
+
+   const Database &get_database() const {return db;}
 
    bool pull()
    {
-    journal.pull();
-    if (journal.get_position() < journal.get_checkpoint_position())
+    const int64_t previous_checkpoint = journal.get_checkpoint_position();
+    if (joedb::Pullonly_Client::pull() > previous_checkpoint)
     {
-     journal.play_until_checkpoint(*this);
+     journal.play_until_checkpoint(db);
+     if (db.get_schema_checkpoint() > schema_checkpoint)
+      throw joedb::Exception("Pulled a schema change");
      return true;
     }
     else
      return false;
    }
  };
-
- typedef Readonly_Database Generic_Readonly_Database;
 
 )RRR";
 

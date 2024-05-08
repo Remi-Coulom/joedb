@@ -163,7 +163,7 @@ endif()
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
-  ../test/compiler/Pullable_Database.cpp
+  ../test/compiler/Readonly_Client.cpp
   ../test/compiler/db/blob.cpp
   ../test/compiler/db/test.cpp
   ../test/compiler/db/multi_index.cpp

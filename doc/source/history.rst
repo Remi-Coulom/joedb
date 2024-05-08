@@ -36,6 +36,7 @@ History
       handshake, so it is not compatible with the previous version.
     - ``Local_Connection`` is removed since it can be replaced by a plain
       ``Connection``.
+    - ``Pullable_Database`` is removed and replaced by ``Readonly_Client``.
 
 - 2024-04-23: 8.0.1
 

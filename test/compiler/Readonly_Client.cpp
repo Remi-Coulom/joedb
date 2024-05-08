@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Compiler, Pullable_Database)
+TEST(Compiler, Readonly_Client)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * const file_name = "compiler_test.joedb";
@@ -22,17 +22,17 @@ TEST(Compiler, Pullable_Database)
   db.checkpoint();
 
   joedb::File file(file_name, joedb::Open_Mode::read_existing);
-  my_namespace::is_nested::test::Pullable_Database pullable_db(file);
+  my_namespace::is_nested::test::Readonly_Client client(file);
 
-  EXPECT_FALSE(pullable_db.pull());
-  EXPECT_EQ(pullable_db.get_city_table().get_size(), 1UL);
+  EXPECT_FALSE(client.pull());
+  EXPECT_EQ(client.get_database().get_city_table().get_size(), 1UL);
 
   db.new_city("Tokyo");
   db.checkpoint();
 
-  EXPECT_EQ(pullable_db.get_city_table().get_size(), 1UL);
-  EXPECT_TRUE(pullable_db.pull());
-  EXPECT_EQ(pullable_db.get_city_table().get_size(), 2UL);
+  EXPECT_EQ(client.get_database().get_city_table().get_size(), 1UL);
+  EXPECT_TRUE(client.pull());
+  EXPECT_EQ(client.get_database().get_city_table().get_size(), 2UL);
  }
 
  std::remove(file_name);
