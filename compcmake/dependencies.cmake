@@ -5,11 +5,10 @@ message("-- CMAKE_CROSSCOMPILING = \"${CMAKE_CROSSCOMPILING}\"")
 message("-- CMAKE_SYSTEM_NAME = \"${CMAKE_SYSTEM_NAME}\"")
 message("-- CMAKE_SIZEOF_VOID_P = \"${CMAKE_SIZEOF_VOID_P}\"")
 
-# Necessary to get gtest to work in cygwin
+# Necessary to get pread and pwrite in cygwin
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if(UNIX)
- #add_definitions(-D_POSIX_C_SOURCE=200809L) #breaks asio in cygwin
- add_definitions(-D_POSIX_C_SOURCE=200112L)
+ add_definitions(-D_POSIX_C_SOURCE=200809L)
 endif()
 
 # Threads
@@ -21,13 +20,17 @@ find_package(Threads REQUIRED)
 # Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
- find_package(Boost COMPONENTS system)
- if (Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_libraries(${Boost_LIBRARIES})
-  add_definitions(-D_XOPEN_SOURCE=500)
-  add_definitions(-DJOEDB_HAS_BOOST_NET)
-  set(HAS_NETWORKING TRUE)
+ if (TRUE)
+  message("-- asio does not work in cygwin")
+ else()
+  find_package(Boost COMPONENTS system)
+  if (Boost_FOUND)
+   include_directories(${Boost_INCLUDE_DIRS})
+   link_libraries(${Boost_LIBRARIES})
+   add_definitions(-D_XOPEN_SOURCE=500)
+   add_definitions(-DJOEDB_HAS_BOOST_NET)
+   set(HAS_NETWORKING TRUE)
+  endif()
  endif()
 else()
  set(ASIO_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../submodules/asio/asio/include)
