@@ -102,10 +102,8 @@ if (UNIX)
  add_library(joedb SHARED ${JOEDB_SOURCES})
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
  target_uses_ipo(joedb)
- if(HAS_NETWORKING AND ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-  target_link_libraries(joedb wsock32 ws2_32)
- endif()
 else()
+ # In Windows, symbols of a DLL must be explicitly exported
  add_library(joedb STATIC ${JOEDB_SOURCES})
 endif()
 
