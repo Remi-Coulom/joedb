@@ -1,6 +1,13 @@
-# Necessary to get gtest to work in cygwin (gcc_portable)
+# Informative messages about system configuration
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+message("-- UNIX = \"${UNIX}\"")
+message("-- CMAKE_CROSSCOMPILING = \"${CMAKE_CROSSCOMPILING}\"")
+message("-- CMAKE_SYSTEM_NAME = \"${CMAKE_SYSTEM_NAME}\"")
+message("-- CMAKE_SIZEOF_VOID_P = \"${CMAKE_SIZEOF_VOID_P}\"")
+
+# Necessary to get gtest to work in cygwin
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(UNIX)
  add_definitions(-D_POSIX_C_SOURCE=200809L)
 endif()
 
@@ -12,9 +19,9 @@ find_package(Threads REQUIRED)
 
 # Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-message("-- CMAKE_CROSSCOMPILING = ${CMAKE_CROSSCOMPILING}")
-message("-- CMAKE_SYSTEM_NAME = \"${CMAKE_SYSTEM_NAME}\"")
-if(NOT ${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN AND ${CMAKE_SIZEOF_VOID_P} EQUAL "8")
+ message("-- asio does not work in 64-bit cygwin")
+else()
  set(ASIO_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../submodules/asio/asio/include)
  if (EXISTS "${ASIO_DIRECTORY}/asio/ts/net.hpp")
   message("-- Found asio in submodules")
@@ -40,22 +47,28 @@ endif()
 
 # libssh
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(libssh QUIET)
 
-if (libssh_FOUND)
- if (NOT LIBSSH_LIBRARIES)
-  set(LIBSSH_LIBRARIES ssh)
- endif()
- add_definitions(-DJOEDB_HAS_SSH)
- message("== ssh was found (${LIBSSH_LIBRARIES})")
+if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN AND ${CMAKE_SIZEOF_VOID_P} EQUAL "4")
+ # https://cygwin.com/pipermail/cygwin/2022-January/250520.html
+ message("-- libssh does not work in 32-bit cygwin")
 else()
- message("== ssh not found")
- if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  message("   suggestion: sudo apt install libssh-dev")
- elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  message("   suggestion: sudo port install libssh")
- elseif(WIN32)
-  message("   suggestion: vcpkg install libssh:x64-windows")
+ find_package(libssh QUIET)
+
+ if (libssh_FOUND)
+  if (NOT LIBSSH_LIBRARIES)
+   set(LIBSSH_LIBRARIES ssh)
+  endif()
+  add_definitions(-DJOEDB_HAS_SSH)
+  message("== ssh was found (${LIBSSH_LIBRARIES})")
+ else()
+  message("== ssh not found")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+   message("   suggestion: sudo apt install libssh-dev")
+  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+   message("   suggestion: sudo port install libssh")
+  elseif(WIN32)
+   message("   suggestion: vcpkg install libssh:x64-windows")
+  endif()
  endif()
 endif()
 
