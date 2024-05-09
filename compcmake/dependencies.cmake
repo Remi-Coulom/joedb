@@ -1,3 +1,9 @@
+# Necessary to get gtest to work in cygwin (gcc_portable)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
+ add_definitions(-D_POSIX_C_SOURCE=200809L)
+endif()
+
 # Threads
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
