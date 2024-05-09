@@ -5,7 +5,7 @@
 #include "joedb/io/File_Connection_Builder.h"
 #include "joedb/journal/File.h"
 
-#ifdef JOEDB_HAS_ASIO_NET
+#ifdef JOEDB_HAS_NETWORKING
 #include "joedb/io/Network_Connection_Builder.h"
 #endif
 
@@ -29,7 +29,7 @@ namespace joedb
   builders.emplace_back(new Tail_Connection_Builder());
   builders.emplace_back(new File_Connection_Builder());
 
-#ifdef JOEDB_HAS_ASIO_NET
+#ifdef JOEDB_HAS_NETWORKING
   builders.emplace_back(new Network_Connection_Builder());
 #endif
 

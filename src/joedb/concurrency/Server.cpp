@@ -651,7 +651,7 @@ namespace joedb
  {
   if (!error && !paused)
   {
-   socket.set_option(asio::ip::tcp::no_delay(true));
+   socket.set_option(net::ip::tcp::no_delay(true));
    std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
 
    net::async_read

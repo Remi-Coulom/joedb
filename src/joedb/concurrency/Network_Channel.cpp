@@ -23,7 +23,7 @@ namespace joedb
     net::ip::tcp::resolver::flags()
    )
   );
-  socket.set_option(asio::ip::tcp::no_delay(true));
+  socket.set_option(net::ip::tcp::no_delay(true));
  }
 
  //////////////////////////////////////////////////////////////////////////

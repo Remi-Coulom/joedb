@@ -74,6 +74,7 @@ if (HAS_NETWORKING)
   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Network_Channel.cpp
  )
+ add_definitions(-DJOEDB_HAS_NETWORKING)
 endif()
 
 if(libssh_FOUND)
