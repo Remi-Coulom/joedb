@@ -20,7 +20,7 @@ find_package(Threads REQUIRED)
 
 # Networking
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN AND ${CMAKE_SIZEOF_VOID_P} EQUAL "8")
+if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
  find_package(Boost COMPONENTS system)
  if (Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
@@ -36,18 +36,7 @@ else()
   include_directories(${ASIO_DIRECTORY})
   add_definitions(-DJOEDB_HAS_ASIO_NET)
   set(HAS_NETWORKING TRUE)
-
-  if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
-   add_definitions(-D_WIN32_WINNT=0x0601)
-   add_definitions(-D__USE_W32_SOCKETS)
-  endif()
-
-  if (WIN32)
-   link_libraries(ws2_32 wsock32)
-  endif()
-
   message("== networking OK")
-
  else()
   message("== no networking. Try git submodule update --init --recursive")
  endif()
