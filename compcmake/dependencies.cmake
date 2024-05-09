@@ -7,7 +7,7 @@ message("-- CMAKE_SIZEOF_VOID_P = \"${CMAKE_SIZEOF_VOID_P}\"")
 
 # Necessary to get pread and pwrite in cygwin
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if(UNIX)
+if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN)
  add_definitions(-D_POSIX_C_SOURCE=200809L)
 endif()
 
