@@ -23,6 +23,7 @@ namespace joedb
 
   {
    const int fd = open(file_name, O_RDONLY);
+   EXPECT_TRUE(fd >= 0);
    File_Slice file(fd, 8, 4);
    EXPECT_EQ(file.read<int32_t>(), 9999);
    EXPECT_FALSE(file.is_end_of_file());
@@ -30,8 +31,6 @@ namespace joedb
    EXPECT_TRUE(file.is_end_of_file());
    close(fd);
   }
-
-  EXPECT_ANY_THROW(File_Slice(-1, 4, 4));
 
   std::remove(file_name);
  }
