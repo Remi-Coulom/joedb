@@ -181,8 +181,12 @@ endif()
   ../src/joedb/String_Logger.cpp
  )
 
- if (HAS_NETWORKING)
+ if (ASIO_FOUND)
   target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
+ endif()
+
+ if (CURL_FOUND)
+  target_sources(joedb_test PRIVATE ../test/CURL_File_Test.cpp)
  endif()
 
  # This definition is necessary for cygwin
@@ -205,7 +209,7 @@ endif()
 
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
-if (HAS_NETWORKING)
+if (ASIO_FOUND)
  joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
 
  if (libssh_FOUND)
@@ -342,7 +346,7 @@ install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
-if (HAS_NETWORKING)
+if (ASIO_FOUND)
  install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
  if (libssh_FOUND)
   install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)

@@ -68,7 +68,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
 )
 
-if (HAS_NETWORKING)
+if (ASIO_FOUND)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/concurrency/IO_Context_Wrapper.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp

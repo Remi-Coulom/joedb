@@ -133,6 +133,7 @@ namespace joedb
   error_check(curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose));
   error_check(curl_easy_setopt(curl, CURLOPT_URL, url));
   error_check(curl_easy_setopt(curl, CURLOPT_USERAGENT, "joedb"));
+  error_check(curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L));
  }
 
  ////////////////////////////////////////////////////////////////////////////
