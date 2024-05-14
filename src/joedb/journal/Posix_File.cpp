@@ -19,6 +19,9 @@
 
 namespace joedb
 {
+#ifndef _FILE_OFFSET_BITS
+#error _FILE_OFFSET_BITS should be defined to 64
+#endif
  static_assert(sizeof(off_t) >= 8);
 
  /////////////////////////////////////////////////////////////////////////////
