@@ -20,9 +20,8 @@
 namespace joedb
 {
 #ifndef _FILE_OFFSET_BITS
-#error _FILE_OFFSET_BITS should be defined to 64
+ static_assert(sizeof(off_t) == sizeof(int64_t));
 #endif
- static_assert(sizeof(off_t) >= 8);
 
  /////////////////////////////////////////////////////////////////////////////
  void Posix_File::throw_last_error
