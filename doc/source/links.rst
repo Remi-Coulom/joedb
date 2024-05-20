@@ -1,9 +1,10 @@
 Links
 =====
 
-Fast in-memory database with on-disk log persistence
+Software with similar ideas
 
 - http://redis.io/ (the AOF persistence option is very similar to joedb)
+- https://kafka.apache.org/intro Kafka is an event streaming system
 - https://prevayler.org/
 
 Database with history/revisions:
