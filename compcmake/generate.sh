@@ -66,9 +66,16 @@ echo clang_path=$clang_path
 
 if [ "$clang_path" != "" ]; then
  compiler="-DCMAKE_CXX_COMPILER=$clangpp_path -DCMAKE_C_COMPILER=$clang_path"
+
  generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
  generate clang_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
  generate clang_msan cmake $build_system -DCMAKE_BUILD_TYPE=MSAN $compiler
+
+ iwyu_path=`which include-what-you-use`
+
+ if [ "$iwyu_path" != "" ]; then
+  generate clang_iwyu cmake $build_system -DCMAKE_BUILD_TYPE=Dev $compiler -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="$iwyu_path"
+ fi
 fi
 
 echo
