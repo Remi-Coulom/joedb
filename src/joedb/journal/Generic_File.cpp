@@ -170,7 +170,7 @@ namespace joedb
  {
   constexpr int buffer_count = 256;
 
-  if (size < 4 * int64_t(buffer.size) * buffer_count)
+  if (size < 4 * buffer.ssize * buffer_count)
    return get_hash(start, size);
 
   SHA_256 sha_256;
@@ -183,19 +183,19 @@ namespace joedb
    if (i == 0)
     buffer_position = start;
    else if (i == buffer_count - 1)
-    buffer_position = start + size - buffer.size;
+    buffer_position = start + size - buffer.ssize;
    else
    {
-    buffer_position = buffer.size *
+    buffer_position = buffer.ssize *
     (
-     (start + i * size) / (buffer.size * (buffer_count - 1))
+     (start + i * size) / (buffer.ssize * (buffer_count - 1))
     );
    }
 
    seek(buffer_position);
    read_data(buffer.data, buffer.size);
 
-   for (int j = 0; j < int(buffer.size); j += int(SHA_256::chunk_size))
+   for (int j = 0; j < buffer.ssize; j += int(SHA_256::chunk_size))
     sha_256.process_chunk(buffer.data + j);
   }
 

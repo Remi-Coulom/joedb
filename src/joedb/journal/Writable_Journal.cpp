@@ -127,7 +127,8 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    (
     reinterpret_cast<const char *>(&checkpoint_position),
     sizeof(checkpoint_position),
-    checkpoint_offset + sizeof(checkpoint_position) * (2 * checkpoint_index)
+    checkpoint_offset +
+    int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index)
    );
 
    if (commit_level > Commit_Level::no_commit)
@@ -137,7 +138,8 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    (
     reinterpret_cast<const char *>(&checkpoint_position),
     sizeof(checkpoint_position),
-    checkpoint_offset + sizeof(checkpoint_position) * (2 * checkpoint_index + 1)
+    checkpoint_offset +
+    int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index + 1)
    );
 
    if (commit_level > Commit_Level::half_commit)

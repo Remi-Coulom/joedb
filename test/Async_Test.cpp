@@ -9,10 +9,10 @@
 
 namespace joedb
 {
- static constexpr size_t blocks = 250;
- static constexpr size_t step = 7;
- static constexpr size_t block_size = 1 << 13;
- static constexpr size_t reads = 200 * blocks;
+ static constexpr int64_t blocks = 250;
+ static constexpr int64_t step = 7;
+ static constexpr int64_t block_size = 1 << 13;
+ static constexpr int64_t reads = 200 * blocks;
  static constexpr const char *file_name = "server.joedb";
 
  ////////////////////////////////////////////////////////////////////////////
@@ -63,9 +63,9 @@ namespace joedb
 
   Async_Reader reader(file, 0, blocks * block_size);
 
-  for (size_t i = 0; i < reads; i++)
+  for (int64_t i = 0; i < reads; i++)
   {
-   const size_t offset = block_size * ((i * step) % blocks);
+   const int64_t offset = block_size * ((i * step) % blocks);
    reader.pread(buffer.data(), buffer.size(), offset);
   }
 
@@ -86,9 +86,9 @@ namespace joedb
 
   Async_Reader reader(file, 0, blocks * block_size);
 
-  for (size_t i = 0; i < reads; i++)
+  for (int64_t i = 0; i < reads; i++)
   {
-   const size_t offset = block_size * ((i * step) % blocks);
+   const int64_t offset = block_size * ((i * step) % blocks);
    reader.seek_and_read(buffer.data(), buffer.size(), offset);
   }
 
@@ -104,6 +104,6 @@ namespace joedb
   EXPECT_EQ(reader.get_remaining(), 0);
   constexpr int64_t capacity = 16;
   char buffer[capacity];
-  EXPECT_EQ(reader.read(buffer, capacity), 0);
+  EXPECT_EQ(reader.read(buffer, capacity), 0UL);
  }
 }

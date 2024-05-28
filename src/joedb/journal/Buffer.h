@@ -16,6 +16,7 @@ namespace joedb
  {
   public:
    static constexpr size_t size = (1 << log_size);
+   static constexpr int64_t ssize = (1 << log_size);
    static constexpr size_t extra_size = 8;
 
    char data[size + extra_size];

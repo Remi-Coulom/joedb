@@ -656,9 +656,9 @@ namespace joedb
   client.connection.lock_pull(client.client.get_writable_journal());
   client.connection.unlock(client.client.get_readonly_journal());
 
-  EXPECT_EQ(shared_client.get_database().get_tables().size(), 0);
+  EXPECT_EQ(shared_client.get_database().get_tables().size(), 0UL);
   shared_client.pull();
-  EXPECT_EQ(shared_client.get_database().get_tables().size(), 1);
+  EXPECT_EQ(shared_client.get_database().get_tables().size(), 1UL);
 
   shared_client.transaction
   (
@@ -668,9 +668,9 @@ namespace joedb
    }
   );
 
-  EXPECT_EQ(client.client.get_database().get_tables().size(), 1);
+  EXPECT_EQ(client.client.get_database().get_tables().size(), 1UL);
   client.client.pull();
-  EXPECT_EQ(client.client.get_database().get_tables().size(), 2);
+  EXPECT_EQ(client.client.get_database().get_tables().size(), 2UL);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -812,21 +812,21 @@ namespace joedb
     Readonly_Journal journal(backup_server.file);
     Database db;
     journal.replay_log(db);
-    EXPECT_EQ(db.get_tables().size(), 1);
+    EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
    {
     Readonly_Journal journal(file);
     Database db;
     journal.replay_log(db);
-    EXPECT_EQ(db.get_tables().size(), 1);
+    EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
    {
     Readonly_Journal journal(client_file);
     Database db;
     journal.replay_log(db);
-    EXPECT_EQ(db.get_tables().size(), 1);
+    EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
   }
