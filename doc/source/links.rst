@@ -1,47 +1,15 @@
 Links
 =====
 
-Software with similar ideas
+Database software with similar ideas (with history)
 
-- http://redis.io/ (the AOF persistence option is very similar to joedb)
+- https://redis.io/ (the AOF persistence option is similar to joedb)
 - https://kafka.apache.org/intro Kafka is an event streaming system
-- https://prevayler.org/
-
-Database with history/revisions:
-
-- http://stackoverflow.com/questions/39281/database-design-for-revisions
-- http://stackoverflow.com/questions/750782/database-design-for-text-revisions
-- http://stackoverflow.com/questions/2724187/where-are-all-the-native-revisioned-databases
-- http://stackoverflow.com/questions/9484714/how-to-store-datas-change-history
-- http://stackoverflow.com/questions/9852703/store-all-data-changes-with-every-details-like-stackoverflow
-- http://stackoverflow.com/questions/12321200/database-row-snapshots-revisions
-- https://opendata.stackexchange.com/questions/748/is-there-a-git-for-data
-
-- http://www.oracle.com/technetwork/issue-archive/2008/08-jul/o48totalrecall-092147.html
-- http://www.zodb.org/en/latest/
-- http://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
-- http://database-programmer.blogspot.fr/2008/07/history-tables.html
-
-- https://www.reddit.com/r/programming/comments/3tfkdq/immutability_in_db_might_be_the_next_big_thing/
-- https://www.youtube.com/watch?v=fU9hR3kiOK0
-- http://www.datomic.com/
-- http://samza.apache.org/
-- http://www.pgconf.us/2015/event/60/
-- https://github.com/attic-labs/noms
-- https://github.com/dolthub/dolt
-- `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
-
-Crash resistance:
-
-.. [Rosenblum-1991] `The Design and Implementation of a Log-Structured File System <http://www.cs.berkeley.edu/~brewer/cs262/LFS.pdf>`_
-.. [Redis-2016a] `Redis persistence demystified <http://oldblog.antirez.com/post/redis-persistence-demystified.html>`_
-.. [Redis-2016b] `fsync() on a different thread: apparently a useless trick <http://oldblog.antirez.com/post/fsync-different-thread-useless.html>`_
-.. [SQLite-AC] `Atomic Commit In SQLite <http://sqlite.org/atomiccommit.html>`_
-.. [Moyer-2011] `Ensuring data reaches disk <http://lwn.net/Articles/457667/>`_
-.. [serverfault-2009] `SATA Disks that handle write caching properly? <http://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
-.. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
-
-.. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
+- https://samza.apache.org/
+- https://prevayler.org/ (inactive)
+- https://www.datomic.com/
+- https://github.com/attic-labs/noms (inactive) a git-like database
+- https://github.com/dolthub/dolt "git for data"
 
 Structured data storage (with no history):
 
@@ -51,6 +19,38 @@ Structured data storage (with no history):
 - https://www.json.org/
 - https://en.wikipedia.org/wiki/XML
 
+Other links:
+
+- https://stackoverflow.com/questions/39281/database-design-for-revisions
+- https://stackoverflow.com/questions/750782/database-design-for-text-revisions
+- https://stackoverflow.com/questions/2724187/where-are-all-the-native-revisioned-databases
+- https://stackoverflow.com/questions/9484714/how-to-store-datas-change-history
+- https://stackoverflow.com/questions/9852703/store-all-data-changes-with-every-details-like-stackoverflow
+- https://stackoverflow.com/questions/12321200/database-row-snapshots-revisions
+- https://stackoverflow.com/questions/68323888/how-to-implement-a-real-time-data-logging-backup-system
+- https://opendata.stackexchange.com/questions/748/is-there-a-git-for-data
+
+- https://blogs.oracle.com/connect/post/managing-history
+- https://zodb.org/en/latest/
+- https://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
+- http://database-programmer.blogspot.fr/2008/07/history-tables.html
+
+- https://www.reddit.com/r/programming/comments/3tfkdq/immutability_in_db_might_be_the_next_big_thing/
+- https://www.youtube.com/watch?v=fU9hR3kiOK0
+- `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
+
+Crash resistance:
+
+.. [Rosenblum-1991] `The Design and Implementation of a Log-Structured File System <https://people.eecs.berkeley.edu/~brewer/cs262/LFS.pdf>`_
+.. [Redis-2016a] `Redis persistence demystified <http://oldblog.antirez.com/post/redis-persistence-demystified.html>`_
+.. [Redis-2016b] `fsync() on a different thread: apparently a useless trick <http://oldblog.antirez.com/post/fsync-different-thread-useless.html>`_
+.. [SQLite-AC] `Atomic Commit In SQLite <https://sqlite.org/atomiccommit.html>`_
+.. [Moyer-2011] `Ensuring data reaches disk <https://lwn.net/Articles/457667/>`_
+.. [serverfault-2009] `SATA Disks that handle write caching properly? <https://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
+.. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
+
+.. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
+
 Compression
 
 - https://code.google.com/p/snappy/ (used by LevelDB)
@@ -58,7 +58,8 @@ Compression
 Fast IO:
 
 - https://github.com/ned14/llfio
-- http://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
+- https://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
+- https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 
 File Locking:
 
