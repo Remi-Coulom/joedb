@@ -69,6 +69,7 @@ if [ "$clang_path" != "" ]; then
 
  generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
  generate clang_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
+ generate clang_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
  generate clang_msan cmake $build_system -DCMAKE_BUILD_TYPE=MSAN $compiler
 
  iwyu_path=`which include-what-you-use`
