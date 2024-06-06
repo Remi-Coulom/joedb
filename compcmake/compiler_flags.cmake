@@ -65,6 +65,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  set(CMAKE_C_FLAGS_MSAN ${MSAN_FLAGS})
  set(CMAKE_CXX_FLAGS_MSAN ${MSAN_FLAGS})
  set(CMAKE_LINKER_FLAGS_MSAN "${MSAN_FLAGS} -lc++abi")
+
+ set(CMAKE_CXX_FLAGS_ASAN "-O2 -fsanitize=address")
+ set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN}")
+
+ if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 9.0)
+  set(CMAKE_CXX_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN} -mllvm -asan-force-dynamic-shadow")
+ endif()
 endif()
 
 #############################################################################
