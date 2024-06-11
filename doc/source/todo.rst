@@ -21,6 +21,8 @@ New Operations and Types
   - custom usage label: ip address(int32), URL(string), PNG file(string),
     UTF8(string) (use base64 instead for json output), ...?
 
+- compact number format would be more efficient if not big endian.
+
 Blobs
 -----
 
