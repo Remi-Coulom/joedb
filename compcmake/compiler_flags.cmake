@@ -80,11 +80,4 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /w34265 /permissive-") # C4265 virtual destructor
 endif()
 
-#############################################################################
-if(WIN32)
-#############################################################################
- message("== win32")
- add_definitions(-D_CRT_SECURE_NO_WARNINGS)
- add_definitions(-DWIN32_LEAN_AND_MEAN)
- add_definitions(-DNOMINMAX)
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/defines.cmake")
