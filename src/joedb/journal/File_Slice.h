@@ -36,7 +36,7 @@ namespace joedb
 
    ~File_Slice()
    {
-    munmap((void *)data, mapped_size);
+    munmap(const_cast<void *>(static_cast<const void *>(data)), mapped_size);
    }
  }; 
 }
