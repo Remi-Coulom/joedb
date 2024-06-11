@@ -47,24 +47,24 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     if (x < 0x20)
-     write<uint8_t>(x);
+     write<uint8_t>(uint8_t(x));
     else if (x < 0x20 * 0x100)
     {
-     write<uint8_t>(0x20 | (x >> 8));
-     write<uint8_t>(x);
+     write<uint8_t>(uint8_t(0x20 | (x >> 8)));
+     write<uint8_t>(uint8_t(x));
     }
     else
     {
      uint32_t extra_bytes = 2;
 
-     while ((x >> (8 * extra_bytes)) >= 32 && extra_bytes < sizeof(T) - 1)
+     while ((x >> (8 * extra_bytes)) >= 0x20 && extra_bytes < sizeof(T) - 1)
       extra_bytes++;
 
-     write<uint8_t>((extra_bytes << 5) | (x >> (8 * extra_bytes)));
-     write<uint8_t>(x >> (8 * --extra_bytes));
-     write<uint8_t>(x >> (8 * --extra_bytes));
+     write<uint8_t>(uint8_t((extra_bytes << 5) | (x >> (8 * extra_bytes))));
+     write<uint8_t>(uint8_t(x >> (8 * --extra_bytes)));
+     write<uint8_t>(uint8_t(x >> (8 * --extra_bytes)));
      while (extra_bytes)
-      write<uint8_t>(x >> (8 * --extra_bytes));
+      write<uint8_t>(uint8_t(x >> (8 * --extra_bytes)));
     }
    }
 
