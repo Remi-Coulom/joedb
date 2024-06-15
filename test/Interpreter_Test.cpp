@@ -39,14 +39,6 @@ TEST(Interpreter_Test, main_test)
 
   EXPECT_EQ(reference_string.str(), out_string.str());
  }
-
- {
-  std::ostringstream dump_string;
-  joedb::Interpreter_Dump_Writable dump(dump_string);
-  dump.set_muted(true);
-  joedb::Readonly_Journal(file).replay_log(dump);
-  EXPECT_EQ("", dump_string.str());
- }
 }
 
 /////////////////////////////////////////////////////////////////////////////

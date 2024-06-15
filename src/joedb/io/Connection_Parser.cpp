@@ -3,6 +3,7 @@
 #include "joedb/io/Dump_Connection_Builder.h"
 #include "joedb/io/Dummy_Connection_Builder.h"
 #include "joedb/io/File_Connection_Builder.h"
+#include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/journal/File.h"
 
 #ifdef JOEDB_HAS_NETWORKING
@@ -25,8 +26,11 @@ namespace joedb
   if (local)
    builders.emplace_back(new Dummy_Connection_Builder());
 
-  builders.emplace_back(new Dump_Connection_Builder());
-  builders.emplace_back(new Tail_Connection_Builder());
+  builders.emplace_back
+  (
+   new Dump_Connection_Builder<Interpreter_Writable>(std::cout)
+  );
+
   builders.emplace_back(new File_Connection_Builder());
 
 #ifdef JOEDB_HAS_NETWORKING
@@ -121,8 +125,7 @@ namespace joedb
   else
    connection_name = argv[0];
 
-  std::cout << "Creating connection (" << connection_name << ") ... ";
-  std::cout.flush();
+  std::cerr << "Creating connection (" << connection_name << ") ... ";
 
   Pullonly_Connection &result = build
   (
@@ -131,7 +134,7 @@ namespace joedb
    argv + 1
   );
 
-  std::cout << "OK\n";
+  std::cerr << "OK\n";
 
   return result;
  }

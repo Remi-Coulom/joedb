@@ -8,11 +8,12 @@ namespace joedb
  (
   std::initializer_list<std::reference_wrapper<Writable>> initializer_list
  ):
-  writables(initializer_list)
+  writables(initializer_list),
+  start_index(0)
  {
  }
 
- #define MULTIPLEX(x) do {for (auto w: writables) w.get().x;} while(0)
+ #define MULTIPLEX(x) do {for (size_t i = start_index; i < writables.size(); i++) writables[i].get().x;} while(0)
 
  ////////////////////////////////////////////////////////////////////////////
  void Multiplexer::create_table(const std::string &name)

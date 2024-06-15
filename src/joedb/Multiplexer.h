@@ -15,12 +15,15 @@ namespace joedb
  {
   private:
    const std::vector<std::reference_wrapper<Writable>> writables;
+   size_t start_index;
 
   public:
    Multiplexer
    (
     std::initializer_list<std::reference_wrapper<Writable>> initializer_list
    );
+
+   void set_start_index(size_t index) {start_index = index;}
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;

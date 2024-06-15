@@ -1,40 +1,83 @@
 #ifndef joedb_Dump_Connection_Builder
 #define joedb_Dump_Connection_Builder
 
+#include "joedb/concurrency/Writable_Connection.h"
 #include "joedb/io/Connection_Builder.h"
-#include "joedb/io/Dump_Connection.h"
+#include "joedb/Multiplexer.h"
+#include "joedb/interpreter/Database_Schema.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Dump_Connection_Builder: public Connection_Builder
+ template <typename Dump_Writable> class Dump_Connection_Data
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   Dump_Connection connection{false};
+  protected:
+   Database_Schema schema;
+   Dump_Writable dump_writable;
+   Multiplexer multiplexer;
 
   public:
-   const char *get_name() const final {return "dump";}
-
-   Pullonly_Connection &build(int argc, char **argv) final
+   Dump_Connection_Data(std::ostream &out):
+    dump_writable(out, schema, false),
+    multiplexer{dump_writable, schema}
    {
-    return connection;
    }
  };
 
+ template<typename Dump_Writable>
  ////////////////////////////////////////////////////////////////////////////
- class Tail_Connection_Builder: public Connection_Builder
+ class Dump_Connection_Builder:
  ////////////////////////////////////////////////////////////////////////////
+  private Dump_Connection_Data<Dump_Writable>,
+  private Writable_Connection,
+  public Connection_Builder
  {
   private:
-   Dump_Connection connection{true};
+   bool mute_during_handshake;
 
   public:
-   const char *get_name() const final {return "tail";}
-
-   Pullonly_Connection &build(int argc, char **argv) final
+   Dump_Connection_Builder(std::ostream &out):
+    Dump_Connection_Data<Dump_Writable>(out),
+    Writable_Connection(this->multiplexer),
+    mute_during_handshake(false)
    {
-    return connection;
+   }
+
+   int get_max_parameters() const final {return 1;}
+   const char *get_name() const final {return this->dump_writable.get_name();}
+   const char *get_parameters_description() const final {return "[tail]";}
+
+   //////////////////////////////////////////////////////////////////////////
+   Pullonly_Connection &build(int argc, char **argv) final
+   //////////////////////////////////////////////////////////////////////////
+   {
+    mute_during_handshake = argc > 0;
+
+    if (mute_during_handshake)
+     this->multiplexer.set_start_index(1);
+
+    return *this;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   int64_t handshake
+   //////////////////////////////////////////////////////////////////////////
+   (
+    Readonly_Journal &client_journal,
+    bool contentcheck
+   ) override
+   {
+    const int64_t result = Writable_Connection::handshake
+    (
+     client_journal,
+     contentcheck
+    );
+
+    if (mute_during_handshake)
+     this->multiplexer.set_start_index(0);
+
+    return result;
    }
  };
 }

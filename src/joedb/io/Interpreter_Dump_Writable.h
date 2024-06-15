@@ -2,33 +2,35 @@
 #define joedb_Interpreter_Dump_Writable_declared
 
 #include "joedb/interpreter/Database.h"
+#include "joedb/Multiplexer.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Interpreter_Dump_Writable: public Writable
+ class Interpreter_Writable: public Writable
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
    std::ostream &out;
+   const Database_Schema &schema;
    const bool blob_wanted;
-   Database_Schema schema;
-   bool muted;
 
    void write_type(Type type);
 
   public:
-   Interpreter_Dump_Writable(std::ostream &out, bool blob_wanted = false):
+   Interpreter_Writable
+   (
+    std::ostream &out,
+    const Database_Schema &schema,
+    bool blob_wanted
+   ):
     out(out),
-    blob_wanted(blob_wanted),
-    muted(false)
+    schema(schema),
+    blob_wanted(blob_wanted)
    {
    }
 
-   void set_muted(bool new_muted)
-   {
-    muted = new_muted;
-   }
+   const char *get_name() const {return "dump";}
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;
@@ -81,7 +83,33 @@ namespace joedb
    void on_blob(Blob blob, Blob_Reader &reader) final;
    Blob write_blob_data(const std::string &data) final;
 
-   ~Interpreter_Dump_Writable();
+   ~Interpreter_Writable();
+ };
+
+ class Interpreter_Dump_Writable_Parent
+ {
+  protected:
+   Database_Schema schema;
+   Interpreter_Writable interpreter_writable;
+
+  public:
+   Interpreter_Dump_Writable_Parent(std::ostream &out, bool blob_wanted):
+    interpreter_writable(out, schema, blob_wanted)
+   {
+   }
+ };
+
+ class Interpreter_Dump_Writable:
+  public Interpreter_Dump_Writable_Parent,
+  public Multiplexer
+ {
+
+  public:
+   Interpreter_Dump_Writable(std::ostream &out, bool blob_wanted = false):
+    Interpreter_Dump_Writable_Parent(out, blob_wanted),
+    Multiplexer{interpreter_writable, schema}
+   {
+   }
  };
 }
 

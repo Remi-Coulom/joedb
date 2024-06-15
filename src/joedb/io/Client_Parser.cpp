@@ -49,25 +49,24 @@ namespace joedb
    arg_index++;
    content_check = false;
   }
-  std::cout << "content_check = " << content_check << '\n';
+  std::cerr << "content_check = " << content_check << '\n';
 
   Generic_File &client_file = file_parser.parse
   (
-   std::cout,
+   std::cerr,
    argc,
    argv,
    arg_index
   );
 
-  std::cout << "Creating client data... ";
-  std::cout.flush();
+  std::cerr << "Creating client data... ";
 
   if (client_file.get_mode() == Open_Mode::read_existing)
    client_data.reset(new Readonly_Interpreted_Client_Data(client_file));
   else
    client_data.reset(new Writable_Interpreted_Client_Data(client_file));
 
-  std::cout << "OK\n";
+  std::cerr << "OK\n";
 
   Pullonly_Connection &pullonly_connection = connection_parser.build
   (
