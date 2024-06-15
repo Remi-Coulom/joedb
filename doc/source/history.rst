@@ -18,13 +18,11 @@ History
   - Write access to exclusive and shared files is completely unified, so
     ``Connection`` and ``File_Connection`` can now handle both exclusive and
     shared files.
-
   - Explicit handling of pull-only connections. The server can now cleanly
     serve a read-only file.
-
   - New ``CURL_File`` allows opening any URL as a read-only file. An http
     server supporting range access can serve a read-only database.
-
+  - SQL dump connection
   - Incompatibilities with previous version:
 
     - In Posix environments, locking changed from using ``flock`` to using
@@ -148,8 +146,7 @@ History
     later to a remote server.
   - Re-organize file classes:
 
-    - ``File_Slice`` is removed. All file classes can be :ref:`sliced
-      <file_slices>` now.
+    - ``File_Slice`` is removed. All file classes can be sliced now.
     - ``Stream_File`` uses a ``std::streambuf`` instead of ``std::iostream``.
     - new ``Interpreted_File`` can read joedbi commands directly.
 
