@@ -4,6 +4,7 @@
 #include "joedb/io/Dummy_Connection_Builder.h"
 #include "joedb/io/File_Connection_Builder.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/io/SQL_Dump_Writable.h"
 #include "joedb/journal/File.h"
 
 #ifdef JOEDB_HAS_NETWORKING
@@ -29,6 +30,11 @@ namespace joedb
   builders.emplace_back
   (
    new Dump_Connection_Builder<Interpreter_Writable>(std::cout)
+  );
+
+  builders.emplace_back
+  (
+   new Dump_Connection_Builder<SQL_Writable>(std::cout)
   );
 
   builders.emplace_back(new File_Connection_Builder());

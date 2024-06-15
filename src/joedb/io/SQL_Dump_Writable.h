@@ -2,11 +2,12 @@
 #define joedb_SQL_Dump_Writable_declared
 
 #include "joedb/interpreter/Database.h"
+#include "joedb/Multiplexer.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class SQL_Dump_Writable: public Writable
+ class SQL_Writable: public Writable
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -14,7 +15,7 @@ namespace joedb
    static constexpr const char *key_type = "INTEGER";
 
    std::ostream &out;
-   Database_Schema schema;
+   const Database_Schema &schema;
    const bool drop_column;
 
    Blob_Reader *blob_reader = nullptr;
@@ -22,10 +23,18 @@ namespace joedb
    void write_type(Type type);
 
   public:
-   SQL_Dump_Writable(std::ostream &out, bool drop_column = true):
+   SQL_Writable
+   (
+    std::ostream &out,
+    const Database_Schema &schema,
+    bool drop_column = true
+   ):
     out(out),
+    schema(schema),
     drop_column(drop_column)
    {}
+
+   const char *get_name() const {return "sql";}
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;
@@ -65,7 +74,33 @@ namespace joedb
     blob_reader = &reader;
    }
 
-   ~SQL_Dump_Writable();
+   ~SQL_Writable();
+ };
+
+ class SQL_Dump_Writable_Parent
+ {
+  protected:
+   Database_Schema schema;
+   SQL_Writable interpreter_writable;
+
+  public:
+   SQL_Dump_Writable_Parent(std::ostream &out, bool drop_column = false):
+    interpreter_writable(out, schema, drop_column)
+   {
+   }
+ };
+
+ class SQL_Dump_Writable:
+  public SQL_Dump_Writable_Parent,
+  public Multiplexer
+ {
+
+  public:
+   SQL_Dump_Writable(std::ostream &out, bool drop_column = false):
+    SQL_Dump_Writable_Parent(out, drop_column),
+    Multiplexer{interpreter_writable, schema}
+   {
+   }
  };
 }
 

@@ -22,7 +22,7 @@ namespace joedb
    (
     std::ostream &out,
     const Database_Schema &schema,
-    bool blob_wanted
+    bool blob_wanted = false
    ):
     out(out),
     schema(schema),

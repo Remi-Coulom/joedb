@@ -19,7 +19,7 @@ namespace joedb
 
   public:
    Dump_Connection_Data(std::ostream &out):
-    dump_writable(out, schema, false),
+    dump_writable(out, schema),
     multiplexer{dump_writable, schema}
    {
    }

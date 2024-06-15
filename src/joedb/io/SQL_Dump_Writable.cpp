@@ -7,7 +7,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::write_type(Type type)
+ void SQL_Writable::write_type(Type type)
  ////////////////////////////////////////////////////////////////////////////
  {
   switch(type.get_type_id())
@@ -62,24 +62,22 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::create_table(const std::string &name)
+ void SQL_Writable::create_table(const std::string &name)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "CREATE TABLE \"" << name << "\"(" << id_field_name <<
          ' ' << key_type << " PRIMARY KEY);\n";
-  schema.create_table(name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::drop_table(Table_Id table_id)
+ void SQL_Writable::drop_table(Table_Id table_id)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "DROP TABLE \"" << schema.get_table_name(table_id) << "\";\n";
-  schema.drop_table(table_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::rename_table
+ void SQL_Writable::rename_table
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
@@ -88,11 +86,10 @@ namespace joedb
  {
   out << "ALTER TABLE \"" << schema.get_table_name(table_id);
   out << "\" RENAME TO \"" << name << "\";\n";
-  schema.rename_table(table_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::add_field
+ void SQL_Writable::add_field
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
@@ -104,22 +101,20 @@ namespace joedb
   out << "\" ADD \"" << name << "\" ";
   write_type(type);
   out << ";\n";
-  schema.add_field(table_id, name, type);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::drop_field(Table_Id table_id, Field_Id field_id)
+ void SQL_Writable::drop_field(Table_Id table_id, Field_Id field_id)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (!drop_column)
    out << "-- ";
   out << "ALTER TABLE \"" << schema.get_table_name(table_id);
   out << "\" DROP COLUMN \"" << schema.get_field_name(table_id, field_id) << "\";\n";
-  schema.drop_field(table_id, field_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::rename_field
+ void SQL_Writable::rename_field
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
@@ -129,39 +124,38 @@ namespace joedb
  {
   out << "ALTER TABLE \"" << schema.get_table_name(table_id) << "\" RENAME COLUMN \"";
   out << schema.get_field_name(table_id, field_id) << "\" TO \"" << name << "\";\n";
-  schema.rename_field(table_id, field_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::custom(const std::string &name)
+ void SQL_Writable::custom(const std::string &name)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "-- custom: " << name << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::comment(const std::string &comment)
+ void SQL_Writable::comment(const std::string &comment)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "-- " << comment << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::timestamp(int64_t timestamp)
+ void SQL_Writable::timestamp(int64_t timestamp)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "-- " << joedb::get_time_string(timestamp) << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::valid_data()
+ void SQL_Writable::valid_data()
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "-- valid data\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::insert_into(Table_Id table_id, Record_Id record_id)
+ void SQL_Writable::insert_into(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "INSERT INTO \"" << schema.get_table_name(table_id);
@@ -169,7 +163,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::insert_vector
+ void SQL_Writable::insert_vector
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
@@ -182,7 +176,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::delete_from(Table_Id table_id, Record_Id record_id)
+ void SQL_Writable::delete_from(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "DELETE FROM \"" << schema.get_table_name(table_id);
@@ -190,7 +184,7 @@ namespace joedb
  }
 
  #define TYPE_MACRO(type, return_type, type_id, R, W)\
- void SQL_Dump_Writable::update_##type_id\
+ void SQL_Writable::update_##type_id\
  (\
   Table_Id table_id,\
   Record_Id record_id,\
@@ -209,7 +203,7 @@ namespace joedb
  #include "joedb/TYPE_MACRO.h"
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::update_string
+ void SQL_Writable::update_string
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
@@ -224,7 +218,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::update_blob
+ void SQL_Writable::update_blob
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
@@ -247,7 +241,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void SQL_Dump_Writable::update_reference
+ void SQL_Writable::update_reference
  ////////////////////////////////////////////////////////////////////////////
  (
   Table_Id table_id,
@@ -268,6 +262,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SQL_Dump_Writable::~SQL_Dump_Writable() = default;
+ SQL_Writable::~SQL_Writable() = default;
  ////////////////////////////////////////////////////////////////////////////
 }
