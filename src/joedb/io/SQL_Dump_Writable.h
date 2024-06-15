@@ -84,7 +84,7 @@ namespace joedb
    SQL_Writable interpreter_writable;
 
   public:
-   SQL_Dump_Writable_Parent(std::ostream &out, bool drop_column = false):
+   SQL_Dump_Writable_Parent(std::ostream &out, bool drop_column = true):
     interpreter_writable(out, schema, drop_column)
    {
    }
@@ -96,7 +96,7 @@ namespace joedb
  {
 
   public:
-   SQL_Dump_Writable(std::ostream &out, bool drop_column = false):
+   SQL_Dump_Writable(std::ostream &out, bool drop_column = true):
     SQL_Dump_Writable_Parent(out, drop_column),
     Multiplexer{interpreter_writable, schema}
    {
