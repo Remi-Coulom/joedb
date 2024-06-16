@@ -16,7 +16,6 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/external/wide_char_display_width.cpp
  ${JOEDB_SRC_DIR}/joedb/Blob.cpp
  ${JOEDB_SRC_DIR}/joedb/Destructor_Logger.cpp
- ${JOEDB_SRC_DIR}/joedb/get_version.cpp
  ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
  ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
  ${JOEDB_SRC_DIR}/joedb/Posthumous_Catcher.cpp

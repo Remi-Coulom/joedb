@@ -670,6 +670,7 @@ static void generate_readonly_h
 #include "joedb/exception/Out_Of_Date.h"
 #include "joedb/assert.h"
 #include "joedb/io/type_io.h"
+#include "joedb/get_version.h"
 
 #include <string>
 #include <cstdint>
@@ -678,8 +679,12 @@ static void generate_readonly_h
 #include <map>
 #include <algorithm>
 #include <sstream>
+#include <string_view>
 
 )RRR";
+
+ out << "static_assert(std::string_view(joedb::get_version()) == \"";
+ out << joedb::get_version() << "\");\n\n";
 
  namespace_open(out, options.get_name_space());
 

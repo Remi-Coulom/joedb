@@ -23,6 +23,8 @@ History
   - New ``CURL_File`` allows opening any URL as a read-only file. An http
     server supporting range access can serve a read-only database.
   - SQL dump connection
+  - Generated code produces an error if compiled with a version of joedb
+    different from the version that was used to generate it.
   - Incompatibilities with previous version:
 
     - In Posix environments, locking changed from using ``flock`` to using
