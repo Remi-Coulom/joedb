@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 # Informative messages about system configuration
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 message("-- UNIX = \"${UNIX}\"")

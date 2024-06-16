@@ -1,8 +1,9 @@
+include_guard(GLOBAL)
+
 include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../src)
-file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/../VERSION" QUOTED_JOEDB_VERSION)
-string(REPLACE "\"" "" JOEDB_VERSION ${QUOTED_JOEDB_VERSION})
 
 include("${CMAKE_CURRENT_LIST_DIR}/ipo.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/joedb_version.cmake")
 
 set(JOEDB_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/../src)
 

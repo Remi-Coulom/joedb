@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 set(JOEDB_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 include("${JOEDB_DIR}/dependencies.cmake")
