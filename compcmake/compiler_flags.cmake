@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 message("-- CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
 
 #############################################################################
