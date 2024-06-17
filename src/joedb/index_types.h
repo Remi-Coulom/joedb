@@ -39,6 +39,10 @@ namespace joedb
  {
   return Record_Id(to_underlying(id) + size);
  }
+ constexpr inline Record_Id operator-(Record_Id id, size_t size)
+ {
+  return Record_Id(to_underlying(id) - size);
+ }
 
  inline Table_Id &operator++(Table_Id &id)
  {
@@ -51,6 +55,10 @@ namespace joedb
  inline Record_Id &operator++(Record_Id &id)
  {
   return id = id + 1;
+ }
+ inline Record_Id &operator--(Record_Id &id)
+ {
+  return id = id - 1;
  }
 }
 
