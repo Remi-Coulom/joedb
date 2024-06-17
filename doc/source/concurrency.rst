@@ -61,8 +61,11 @@ The ``Connection`` superclass  does not connect to anything.
 One use of this class is to allows generic code that takes a client as
 parameter to work the same way with either a remote connection or a local file.
 
-Another use of this class is to handle concurrency when opening a local
-file with ``Open_Mode::shared_write``.
+Even though the ``Connection`` superclass does not connect to anything, a
+client using this connection still handles concurrent accesses to a file opened
+with ``Open_Mode::shared_write``. So this connection can be used to create a
+client that handles concurrent accesses to the same file by multiple processes
+running on the same machine.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
 creates the connection and the client in a single line of code. Here is an
