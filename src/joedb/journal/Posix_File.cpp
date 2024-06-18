@@ -12,6 +12,8 @@
 #ifdef JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
 #define JOEDB_SETLK F_SETLK
 #define JOEDB_SETLKW F_SETLKW
+//#warning is C++23
+//#warning Joedb is using old-style POSIX locks. File locking is broken if you open the same file more than once within the same process. New OFD locks work better and should be enabled if your system supports them.
 #else
 #define JOEDB_SETLK F_OFD_SETLK
 #define JOEDB_SETLKW F_OFD_SETLKW
@@ -20,7 +22,11 @@
 namespace joedb
 {
 #ifndef _FILE_OFFSET_BITS
- static_assert(sizeof(off_t) == sizeof(int64_t));
+ static_assert
+ (
+  sizeof(off_t) == sizeof(int64_t),
+  "Define the _FILE_OFFSET_BITS macro to 32 or 64 to silence this error. 64 is recommended if possible. Joedb does not check for file-size overflow."
+ );
 #endif
 
  /////////////////////////////////////////////////////////////////////////////
