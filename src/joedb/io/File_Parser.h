@@ -19,6 +19,7 @@ namespace joedb
  {
   private:
    const Open_Mode default_open_mode;
+   const bool default_only;
 
 #ifdef JOEDB_HAS_SSH
    std::unique_ptr<ssh::Session> ssh_session;
@@ -29,9 +30,11 @@ namespace joedb
   public:
    File_Parser
    (
-    Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new
+    Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new,
+    bool default_only = false
    ):
-    default_open_mode(default_open_mode)
+    default_open_mode(default_open_mode),
+    default_only(default_only)
    {
    }
 

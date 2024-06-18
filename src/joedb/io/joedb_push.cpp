@@ -18,7 +18,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = false;
-  File_Parser file_parser(Open_Mode::read_existing);
+  File_Parser file_parser(Open_Mode::read_existing, true);
   Connection_Parser connection_parser(local);
 
   int arg_index = 1;

@@ -22,7 +22,7 @@ namespace joedb
  {
   out << "<file> is one of:\n";
 
-  if (default_open_mode == Open_Mode::read_existing)
+  if (default_only)
   {
    out << " [file] <file_name>\n";
   }
@@ -147,7 +147,7 @@ namespace joedb
 
    joedb::Open_Mode open_mode = default_open_mode;
 
-   if (arg_index < argc)
+   if (arg_index < argc && !default_only)
    {
     for (size_t i = 0; i < open_mode_strings.size(); i++)
     {

@@ -246,7 +246,7 @@ add_custom_command(
  OUTPUT
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
  COMMAND ${CMAKE_COMMAND} -E remove test.joedb
- COMMAND joedbi test.joedb < db/test.joedbi
+ COMMAND joedbi --new test.joedb < db/test.joedbi
  DEPENDS
   joedbi
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.joedbi
