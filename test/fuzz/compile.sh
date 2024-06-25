@@ -18,7 +18,6 @@ build()
   ../../src/external/wide_char_display_width.cpp\
   ../../src/joedb/Blob.cpp\
   ../../src/joedb/Destructor_Logger.cpp\
-  ../../src/joedb/get_version.cpp\
   ../../src/joedb/interpreter/Database.cpp\
   ../../src/joedb/interpreter/Database_Schema.cpp\
   ../../src/joedb/is_identifier.cpp\
