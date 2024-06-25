@@ -124,15 +124,14 @@ namespace joedb
   Channel_Lock lock(channel);
 
   Async_Reader reader = client_journal.get_async_tail_reader(server_position);
+  const int64_t push_size = reader.get_remaining();
 
   buffer.index = 0;
   buffer.write<char>(unlock_after ? 'U' : 'p');
   buffer.write<int64_t>(server_position);
-  buffer.write<int64_t>(reader.get_remaining());
+  buffer.write<int64_t>(push_size);
 
-  const int64_t push_size = reader.get_remaining();
-
-  LOG(get_session_id() << ": pushing(U)... size = " << push_size << "... ");
+  LOG(get_session_id() << ": pushing(U)... position = " << server_position << ", size = " << push_size << "... ");
 
   {
    size_t offset = buffer.index;
