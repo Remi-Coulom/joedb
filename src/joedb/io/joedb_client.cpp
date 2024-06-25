@@ -12,7 +12,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = true;
-  const Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new;
+  const Open_Mode default_open_mode = Open_Mode::shared_write;
 
   Client_Parser client_parser(local, default_open_mode);
 
