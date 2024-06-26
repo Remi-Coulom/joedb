@@ -1,16 +1,24 @@
 TODO
 ====
 
+Use cases
+---------
+ - use joedb to store a struct (mahjong rules, training parameters, ...)
+   - struct defined only once (in joedbi format, with default values)
+   - joedbc generates all C++ code for convenient manipulation
+   - single-row compiler option
+ - proper handling of unique_index with more than one column:
+   - joedbc produces a function to update multiple values simultaneously
+   - when reading the file, wait until end of record update before updating index(es)
+ - safe log with remote backup
+   - no need to be synchronous -> asynchronous client
+   - log rotation
+   - batching
+
 New Operations and Types
 ------------------------
 - Add an ``undo`` operation to the log. This way, it is possible to keep all
   branches of history.
-- Needs a way to modify multiple columns atomically (allows unique_index to
-  work + better trigger invocations). New operations:
-
-  - start/end atomic record update
-  - insert_and_start_atomic_update.
-  - Also for vector insertions and updates.
 
 - Use diff for large-string update
 - Differentiate between "storage type" and "usage type":
@@ -23,7 +31,6 @@ New Operations and Types
 
 Blobs
 -----
-
 - network protocol extension to handle local blob cache without downloading everything
 - zero-copy access to blob data using memory-mapped file
 
