@@ -50,7 +50,7 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 
-TSPHINXBUILD = (cd ./source/tutorial && ./generate.sh); ${SPHINXBUILD}
+TSPHINXBUILD = cd ./source/tutorial && ./generate.sh && cd - && ${SPHINXBUILD}
 
 html:
 	$(TSPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
