@@ -1,7 +1,7 @@
 History
 =======
 
-- 2024-??-??: 9.0.0
+- 2024-06-25 9.0.1
 
   - Dual locking: instead of using one global lock for a joedb file, this
     version locks head and tail separately. This allows a much nicer handling
