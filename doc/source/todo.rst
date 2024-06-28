@@ -1,19 +1,45 @@
 TODO
 ====
 
-Use cases
----------
+For next release
+----------------
  - use joedb to store a struct (mahjong rules, training parameters, ...)
+
    - struct defined only once (in joedbi format, with default values)
+     (add_field table int32 default 1234)
    - joedbc generates all C++ code for convenient manipulation
    - single-row compiler option
+
  - proper handling of unique_index with more than one column:
-   - joedbc produces a function to update multiple values simultaneously
-   - when reading the file, wait until end of record update before updating index(es)
- - safe log with remote backup
-   - no need to be synchronous -> asynchronous client
-   - log rotation
-   - batching
+
+   - joedbc produces a function to update multiple values simultaneously. Index
+     columns cannot be updated individually.
+   - do not allow more than one unique index with the same last column.
+   - when reading the file, update index only when last column is updated
+   - This may break old files.
+
+ - File specialization that stores content as history of buffer writes. For each buffer:
+
+   - position
+   - size
+   - encoding (can be used to perform on-the-fly compression)
+   - data (blob)
+
+ - log rotation, ability to delete or compress early part of the log:
+
+   - multi-part file
+   - keeps a table with all parts
+   - keep first part as schema definition + checkpoint
+   - skip deleted parts when reading
+   - option to compress a part at rotation time
+
+ - Asynchronous Server Connection (for tamper-proof log backup)
+
+   - does not wait for confirmation after push
+   - can batch frequent pushes
+   - keeps working even if server dies
+
+ - Add support for vcpkg and conan
 
 New Operations and Types
 ------------------------
@@ -123,6 +149,7 @@ Concurrency
 - SHA-256: option for either none, fast or full.
 - Connection_Multiplexer for multiple parallel backup servers? Complicated.
   requires asynchronous client code.
+- Do not crash on write error, continue to allow reading?
 - Notifications from server to client, in a second channel:
 
   - when another client makes a push
@@ -152,9 +179,6 @@ Other Ideas
 - Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
 - apply schema upgrade to readonly databases (custom functions)
-- only one file.check_write_buffer() call in write<T> and compact_write<T>:
-  make code shorter and simpler.
-- make a package for vcpkg and conan. Maybe build2?
 - Null default initial values
 - better readable interface:
 
