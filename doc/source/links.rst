@@ -1,9 +1,9 @@
 Links
 =====
 
-Database software with similar ideas (with history)
+Database software with history
 
-- https://redis.io/ (the AOF persistence option is similar to joedb)
+- https://redis.io/ (the AOF persistence option has similarities to joedb)
 - https://kafka.apache.org/intro Kafka is an event streaming system
 - https://samza.apache.org/
 - https://prevayler.org/ (inactive)
@@ -11,13 +11,49 @@ Database software with similar ideas (with history)
 - https://github.com/attic-labs/noms (inactive) a git-like database
 - https://github.com/dolthub/dolt "git for data"
 
-Structured data storage (with no history):
+Structured data storage (no history, no durable incremental update):
 
 - https://developers.google.com/protocol-buffers/
 - https://google.github.io/flatbuffers/
-- http://sqlite.org/
 - https://www.json.org/
 - https://en.wikipedia.org/wiki/XML
+- https://www.boost.org/doc/libs/1_85_0/libs/serialization/doc/index.html
+- http://www.garret.ru/post/readme.htm
+
+On-disk containers:
+
+- http://stackoverflow.com/questions/149488/disk-backed-stl-container-classes
+- http://stxxl.sourceforge.net/
+
+Using SQL from C++
+
+- https://sqlite.org/
+- https://github.com/rbock/sqlpp11
+- https://www.webtoolkit.eu/wt/doc/tutorial/dbo.html
+- https://codesynthesis.com/products/odb/
+- https://sourceforge.net/projects/litesql/
+- http://en.wikipedia.org/wiki/Active_record_pattern
+- https://www.youtube.com/watch?v=-P9FyevnL6U C++20 ❤ SQL - John Bandela - CppCon 2021
+
+Compression
+
+- https://github.com/google/snappy (used by LevelDB)
+- https://github.com/google/brotli
+- https://facebook.github.io/zstd/
+- https://lz4.org/
+- https://www.percona.com/blog/evaluating-database-compression-methods/
+
+Fast IO:
+
+- https://github.com/ned14/llfio
+- https://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
+- https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
+
+File Locking:
+
+- https://gavv.net/articles/file-locks/
+- https://man7.org/linux/man-pages/man2/flock.2.html
+- https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex
 
 Other links:
 
@@ -33,7 +69,7 @@ Other links:
 - https://blogs.oracle.com/connect/post/managing-history
 - https://zodb.org/en/latest/
 - https://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
-- http://database-programmer.blogspot.fr/2008/07/history-tables.html
+- https://database-programmer.blogspot.fr/2008/07/history-tables.html
 
 - https://www.reddit.com/r/programming/comments/3tfkdq/immutability_in_db_might_be_the_next_big_thing/
 - https://www.youtube.com/watch?v=fU9hR3kiOK0
@@ -50,59 +86,6 @@ Crash resistance:
 .. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
 
 .. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
-
-Compression
-
-- https://code.google.com/p/snappy/ (used by LevelDB)
-
-Fast IO:
-
-- https://github.com/ned14/llfio
-- https://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
-- https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
-
-File Locking:
-
-- https://gavv.net/articles/file-locks/
-- https://man7.org/linux/man-pages/man2/flock.2.html
-- https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex
-
-Berkeley DB:
-
-- http://en.wikipedia.org/wiki/Berkeley_DB
-
-Relational Template Library
-
-- http://sourceforge.net/projects/rel-temp-lib/
-
-POST++:
-
-- http://www.garret.ru/post/readme.htm
-
-On-disk containers:
-
-- http://stackoverflow.com/questions/149488/disk-backed-stl-container-classes
-- http://stxxl.sourceforge.net/
-
-Object-Relational Mapping (ORM)
-
-- http://www.codesynthesis.com/products/odb/
-- http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html
-- http://sourceforge.net/projects/litesql/
-- https://github.com/rbock/sqlpp11
-
-Active record pattern:
-
-- http://en.wikipedia.org/wiki/Active_record_pattern
-
-Serialization
-
-- http://www.boost.org/doc/libs/1_56_0/libs/serialization/doc/index.html
-
-C++
-
-- queries: http://www.drdobbs.com/cpp/linq-like-list-manipulation-in-c/240166882
-- db with templates: https://github.com/RamblingMadMan/dbpp
 
 Interesting paper
 

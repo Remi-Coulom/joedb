@@ -22,8 +22,8 @@ For next release
 
    - position
    - size
-   - encoding (can be used to perform on-the-fly compression)
-   - data (blob)
+   - data (blob) (can be compressed. pass a codec class)
+   - do not store header updates, produce virtual header with checkpoint = position + size of last buffer
 
  - log rotation, ability to delete or compress early part of the log:
 
@@ -36,7 +36,7 @@ For next release
  - Asynchronous Server Connection (for tamper-proof log backup)
 
    - does not wait for confirmation after push
-   - can batch frequent pushes
+   - can batch frequent pushes (do not send new push until after receiving the previous push confirmation)
    - keeps working even if server dies
 
  - Add support for vcpkg and conan
