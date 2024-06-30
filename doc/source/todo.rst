@@ -18,12 +18,13 @@ For next release
    - when reading the file, update index only when last column is updated
    - This may break old files.
 
+ - deletion of field used in custom function
+
  - File specialization that stores content as history of buffer writes. For each buffer:
 
    - position
    - size
    - data (blob) (can be compressed. pass a codec class)
-   - do not store header updates, produce virtual header with checkpoint = position + size of last buffer
 
  - log rotation, ability to delete or compress early part of the log:
 
