@@ -33,7 +33,11 @@ Using SQL from C++
 - https://codesynthesis.com/products/odb/
 - https://sourceforge.net/projects/litesql/
 - http://en.wikipedia.org/wiki/Active_record_pattern
-- https://www.youtube.com/watch?v=-P9FyevnL6U C++20 ❤ SQL - John Bandela - CppCon 2021
+- C++20 ❤ SQL - John Bandela - CppCon 2021
+
+  - https://www.youtube.com/watch?v=-P9FyevnL6U
+  - https://cppcon.digital-medium.co.uk/wp-content/uploads/2021/10/Cpp20SQL.pdf
+  - https://github.com/google/cpp-from-the-sky-down/tree/master/meta_struct_20/cppcon_version
 
 Compression
 
