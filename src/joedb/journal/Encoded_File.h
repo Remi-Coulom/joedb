@@ -42,7 +42,16 @@ namespace joedb
      if (intersection_size > 0)
      {
       total_size += size_t(intersection_size);
-      const auto decoded = codec.decode(db.read_blob_data(db.get_data(b)));
+
+      std::string decoded(b_end - b_start, 0);
+
+      codec.decode
+      (
+       db.read_blob_data(db.get_data(b)),
+       decoded.data(),
+       decoded.size()
+      );
+
       std::copy_n
       (
        decoded.data() + intersection_start - b_start,

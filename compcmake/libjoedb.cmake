@@ -111,4 +111,8 @@ if(CURL_FOUND)
  target_link_libraries(joedb ${CURL_LIBRARIES})
 endif()
 
+if(brotli_encode_path)
+ target_link_libraries(joedb brotlienc brotlidec)
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/defines.cmake")

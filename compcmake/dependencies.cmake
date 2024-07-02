@@ -89,9 +89,9 @@ endif()
 
 # Brotli
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_path(brotli_encode_path "brotli/encode.h")
+find_path(brotli_encode_path "brotli/encode.h" NO_CACHE)
 if (brotli_encode_path)
- message("== Brotli found")
+ message("== Brotli found in ${brotli_encode_path}")
  add_definitions(-DJOEDB_HAS_BROTLI)
 else()
  message("== Brotli not found")
