@@ -86,3 +86,16 @@ else()
   message("-- Suggestion: sudo apt install libcurl4-openssl-dev")
  endif()
 endif()
+
+# Brotli
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+find_package(Brotli)
+if (Brotli_FOUND)
+ message("== Brotli found (${Brotli_LIBRARIES})")
+ add_definitions(-DJOEDB_HAS_BROTLI)
+else()
+ message("== Brotli not found")
+ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  message("-- Suggestion: sudo apt install libbrotli-dev")
+ endif()
+endif()

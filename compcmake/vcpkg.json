@@ -5,7 +5,7 @@
   "description": "The Journal-Only Embedded Database",
   "license": "MIT",
   "dependencies": [
-    "libssh", "curl"
+    "libssh", "curl", "brotli"
   ],
   "builtin-baseline": "710677da49b03885c65c8b5ca43072d4b1acde75"
 }

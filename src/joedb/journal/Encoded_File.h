@@ -2,27 +2,10 @@
 #define joedb_Encoded_File_declared
 
 #include "joedb/db/encoded_file.h"
+#include "joedb/journal/Codec.h"
 
 namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
- class Codec
- ////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   virtual std::string encode(const char *buffer, size_t size)
-   {
-    return std::string(buffer, size);
-   }
-
-   virtual std::string decode(const std::string &encoded)
-   {
-    return encoded;
-   }
-
-   virtual ~Codec() = default;
- };
-
  ////////////////////////////////////////////////////////////////////////////
  class Encoded_File: public Generic_File
  ////////////////////////////////////////////////////////////////////////////
