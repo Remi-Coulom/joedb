@@ -120,7 +120,12 @@ if(CURL_FOUND)
 endif()
 
 if(brotli_encode_path)
- target_link_libraries(joedb brotlienc brotlidec)
+ if (MSVC)
+  target_link_libraries(joedb unofficial::brotli::brotlidec)
+  target_link_libraries(joedb unofficial::brotli::brotlienc)
+ else()
+  target_link_libraries(joedb brotlienc brotlidec)
+ endif()
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/defines.cmake")
