@@ -17,6 +17,11 @@
 #include <curl/curl.h>
 #endif
 
+#ifdef JOEDB_HAS_BROTLI
+#include <brotli/decode.h>
+#include <brotli/encode.h>
+#endif
+
 #include <istream>
 #include <ostream>
 
@@ -63,11 +68,11 @@ namespace joedb
  {
   out << "About this version of joedb\n";
   out << "---------------------------\n";
+  out << "joedb version: " << get_version() << '\n';
   out << "Writable_Journal::compatible_version: ";
   out << Writable_Journal::compatible_version << '\n';
   out << "Writable_Journal::version_number: ";
   out << Writable_Journal::version_number << '\n';
-  out << "joedb version: " << get_version() << '\n';
 
 #ifdef JOEDB_HAS_SSH
   out << "libssh version: " << ssh_version(0) << " https://www.libssh.org/\n";
@@ -83,6 +88,13 @@ namespace joedb
 
 #ifdef JOEDB_HAS_CURL
   out << "curl version: " << curl_version() << '\n';
+#endif
+
+#ifdef JOEDB_HAS_BROTLI
+  out << std::hex;
+  out << "brotli decoder version: " << BrotliDecoderVersion() << '\n';
+  out << "brotli encoder version: " << BrotliEncoderVersion() << '\n';
+  out << std::dec;
 #endif
 
   out << "compiled: " << __DATE__ << ' ' << __TIME__ << '\n';

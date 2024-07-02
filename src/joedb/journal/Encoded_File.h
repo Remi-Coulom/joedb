@@ -70,6 +70,7 @@ namespace joedb
    {
     Blob blob = db.write_blob_data(codec.encode(buffer, size));
     db.new_buffer(blob, size, offset);
+    db.checkpoint();
    }
 
   public:
@@ -84,6 +85,22 @@ namespace joedb
     codec(codec),
     db(db)
    {
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   int64_t get_size() const override
+   //////////////////////////////////////////////////////////////////////////
+   {
+    int64_t result = 0;
+
+    for (const auto buffer: db.get_buffer_table())
+    {
+     const int64_t size = db.get_offset(buffer) + db.get_size(buffer);
+     if (size > result)
+      result = size;
+    }
+
+    return result;
    }
  };
 }

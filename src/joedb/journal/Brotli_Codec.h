@@ -4,6 +4,7 @@
 #ifdef JOEDB_HAS_BROTLI
 
 #include "joedb/journal/Codec.h"
+#include "joedb/journal/Encoded_File.h"
 #include "joedb/Exception.h"
 
 #include <brotli/encode.h>
@@ -83,7 +84,7 @@ namespace joedb
    {
     std::string encoded(BrotliEncoderMaxCompressedSize(size), 0);
 
-    size_t encoded_size;
+    size_t encoded_size = encoded.size();
 
     BrotliEncoderCompress
     (
@@ -130,6 +131,31 @@ namespace joedb
    override
    {
     decoder.decode(encoded, decoded, decoded_size);
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Brotli_File_Data
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  protected:
+   Brotli_Codec codec;
+   encoded_file::File_Database db;
+
+  public:
+   Brotli_File_Data(const char *file_name): db(file_name) {}
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Brotli_File: private Brotli_File_Data, public Encoded_File
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+  public:
+   Brotli_File(const char *file_name):
+    Brotli_File_Data(file_name),
+    Encoded_File(Brotli_File_Data::codec, Brotli_File_Data::db)
+   {
    }
  };
 }

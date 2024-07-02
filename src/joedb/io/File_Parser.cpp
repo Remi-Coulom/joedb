@@ -11,6 +11,11 @@
 #include "joedb/journal/CURL_File.h"
 #endif
 
+#ifdef JOEDB_HAS_BROTLI
+#include "joedb/journal/Brotli_Codec.h"
+#include "joedb/journal/Encoded_File.h"
+#endif
+
 #include <cstring>
 #include <iostream>
 
@@ -48,6 +53,10 @@ namespace joedb
 
 #ifdef JOEDB_HAS_CURL
   out << " curl [--verbose] <URL>\n";
+#endif
+
+#ifdef JOEDB_HAS_BROTLI
+  out << " brotli <file_name>\n";
 #endif
  }
 
@@ -138,6 +147,15 @@ namespace joedb
    }
    else
     throw Runtime_Error("missing URL");
+  }
+#endif
+#ifdef JOEDB_HAS_BROTLI
+  else if (arg_index < argc + 1 && std::strcmp(argv[arg_index], "brotli") == 0)
+  {
+   arg_index++;
+   const char * const file_name = argv[arg_index];
+   arg_index++;
+   file.reset(new Brotli_File(file_name));
   }
 #endif
   else

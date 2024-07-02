@@ -62,9 +62,6 @@ function(target_uses_joedb target)
 
  if (NOT "${target_type}" STREQUAL "OBJECT_LIBRARY")
   target_link_libraries(${target} joedb)
-  if (libssh_FOUND)
-   target_link_libraries(${target} ${LIBSSH_LIBRARIES})
-  endif()
  endif()
 endfunction()
 

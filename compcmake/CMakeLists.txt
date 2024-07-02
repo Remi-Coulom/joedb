@@ -54,20 +54,27 @@ include_directories(
  ${GOOGLE_TEST}/include
 )
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function(tool_add_executable)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ joedb_add_executable(${ARGV})
+ target_link_libraries(${ARGV0} joedb_tool)
+endfunction()
+
 #############################################################################
 # Build Targets
 #############################################################################
-joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
-joedb_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
-joedb_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
-joedb_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
-joedb_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
-joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
-joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
-joedb_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
-joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
-joedb_add_executable(joedb_client ../src/joedb/io/joedb_client.cpp)
-joedb_add_executable(joedb_push ../src/joedb/io/joedb_push.cpp)
+tool_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
+tool_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
+tool_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
+tool_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
+tool_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
+tool_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
+tool_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
+tool_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
+tool_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
+tool_add_executable(joedb_client ../src/joedb/io/joedb_client.cpp)
+tool_add_executable(joedb_push ../src/joedb/io/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
@@ -212,10 +219,10 @@ endif()
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
 if (ASIO_FOUND)
- joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
+ tool_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
 
  if (libssh_FOUND)
-  joedb_add_executable(joedb_multi_server
+  tool_add_executable(joedb_multi_server
    ../src/joedb/io/joedb_multi_server.cpp
    ../src/joedb/db/multi_server.cpp
    ../src/joedb/db/multi_server_interpreted.cpp

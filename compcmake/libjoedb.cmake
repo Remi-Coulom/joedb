@@ -36,9 +36,6 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/dump.cpp
  ${JOEDB_SRC_DIR}/joedb/io/inplace_pack.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Command_Interpreter.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Client_Command_Processor.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Client_Parser.cpp
- ${JOEDB_SRC_DIR}/joedb/io/File_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Readable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Writable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Readable_Writable_Command_Processor.cpp
@@ -50,7 +47,6 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/Raw_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Connection_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp
@@ -62,12 +58,20 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/SHA_256.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Interpreted_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Channel.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client_Data.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
- ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
+)
+
+set(JOEDB_TOOL_SOURCES
+ ${JOEDB_SRC_DIR}/joedb/io/Client_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Client_Parser.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Connection_Parser.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/File_Parser.cpp
+ ${JOEDB_SRC_DIR}/joedb/db/encoded_file.cpp
 )
 
 if (ASIO_FOUND)
@@ -94,11 +98,15 @@ endif()
 
 if (UNIX)
  add_library(joedb SHARED ${JOEDB_SOURCES})
+ add_library(joedb_tool SHARED ${JOEDB_TOOL_SOURCES})
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
+ set_target_properties(joedb_tool PROPERTIES SOVERSION ${JOEDB_VERSION})
  target_uses_ipo(joedb)
+ target_uses_ipo(joedb_tool)
 else()
  # In Windows, symbols of a DLL must be explicitly exported
  add_library(joedb STATIC ${JOEDB_SOURCES})
+ add_library(joedb_tool STATIC ${JOEDB_TOOL_SOURCES})
 endif()
 
 target_link_libraries(joedb Threads::Threads)
