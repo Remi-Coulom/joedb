@@ -13,12 +13,14 @@ namespace joedb
   private:
    Codec &codec;
    encoded_file::Generic_File_Database &db;
-   static constexpr size_t big_buffer_initial_size = 1 << 20;
-   std::vector<char> big_buffer;
 
-   int64_t big_buffer_offset;
-   int64_t big_buffer_write_size;
+   std::vector<char> read_buffer;
    encoded_file::id_of_buffer decoded_buffer;
+
+   static constexpr size_t write_buffer_total_size = 1 << 20;
+   std::vector<char> write_buffer;
+   int64_t write_buffer_offset;
+   int64_t write_buffer_size;
 
   protected:
    //////////////////////////////////////////////////////////////////////////
@@ -61,13 +63,13 @@ namespace joedb
 
       if (b != decoded_buffer)
       {
-       if (int64_t(big_buffer.size()) < db.get_size(b))
-        big_buffer.resize(db.get_size(b));
+       if (int64_t(read_buffer.size()) < db.get_size(b))
+        read_buffer.resize(db.get_size(b));
 
        codec.decode
        (
         db.read_blob_data(db.get_data(b)),
-        big_buffer.data(),
+        read_buffer.data(),
         db.get_size(b)
        );
 
@@ -76,7 +78,7 @@ namespace joedb
 
       std::copy_n
       (
-       big_buffer.data() + intersection_start - b_start,
+       read_buffer.data() + intersection_start - b_start,
        intersection_size,
        buffer + intersection_start - start
       );
@@ -99,10 +101,10 @@ namespace joedb
    void flush_write_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (big_buffer_write_size > 0)
+    if (write_buffer_size > 0)
     {
-     write_blob(big_buffer.data(), big_buffer_write_size, big_buffer_offset);
-     big_buffer_write_size = 0;
+     write_blob(write_buffer.data(), write_buffer_size, write_buffer_offset);
+     write_buffer_size = 0;
     }
    }
 
@@ -110,31 +112,31 @@ namespace joedb
    void pwrite(const char *buffer, size_t size, int64_t offset) override
    //////////////////////////////////////////////////////////////////////////
    {
-    if (size > size_t(big_buffer.size()))
+    if (size > write_buffer_total_size)
     {
      flush_write_buffer();
      write_blob(buffer, size, offset);
+     return;
     }
 
     if
     (
-     big_buffer_write_size &&
+     write_buffer_size &&
      (
-      big_buffer_offset + big_buffer_write_size != offset ||
-      big_buffer_write_size + size > big_buffer.size()
+      write_buffer_offset + write_buffer_size != offset ||
+      write_buffer_size + size > write_buffer_total_size
      )
     )
     {
      flush_write_buffer();
     }
 
-    if (big_buffer_write_size == 0)
-     big_buffer_offset = offset;
+    if (write_buffer_size == 0)
+     write_buffer_offset = offset;
 
-    std::copy_n(buffer, size, big_buffer.data() + big_buffer_write_size);
+    std::copy_n(buffer, size, write_buffer.data() + write_buffer_size);
 
-    big_buffer_write_size += size;
-    decoded_buffer = encoded_file::id_of_buffer{0};
+    write_buffer_size += size;
    }
 
   public:
@@ -148,10 +150,10 @@ namespace joedb
     Generic_File(Open_Mode::write_existing_or_create_new),
     codec(codec),
     db(db),
-    big_buffer(big_buffer_initial_size),
-    big_buffer_offset(0),
-    big_buffer_write_size(0),
-    decoded_buffer{0}
+    decoded_buffer{0},
+    write_buffer(write_buffer_total_size),
+    write_buffer_offset(0),
+    write_buffer_size(0)
    {
    }
 
@@ -159,7 +161,7 @@ namespace joedb
    int64_t get_size() const override
    //////////////////////////////////////////////////////////////////////////
    {
-    int64_t result = big_buffer_offset + big_buffer_write_size;
+    int64_t result = write_buffer_offset + write_buffer_size;
 
     for (const auto buffer: db.get_buffer_table())
     {
