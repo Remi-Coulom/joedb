@@ -132,6 +132,7 @@ endif()
   ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp
   ../test/diagnostics_Test.cpp
+  ../test/Encoded_File_Test.cpp
   ../test/File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
   ../test/Generic_File_Test.cpp
@@ -176,6 +177,7 @@ endif()
   ../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/db/multi_server_readonly.cpp
   ../src/joedb/db/multi_server_interpreted.cpp
+  ../src/joedb/db/encoded_file.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
   ../src/joedb/String_Logger.cpp
@@ -230,6 +232,7 @@ joedbc_build(../test/compiler/db empty)
 joedbc_build(../test/compiler/db blob)
 joedbc_build(../benchmark benchmarkdb)
 joedbc_build(../src/joedb/db multi_server)
+joedbc_build(../src/joedb/db encoded_file)
 joedbc_build(../doc/source/tutorial tutorial)
 
 add_custom_command(

@@ -1,0 +1,4 @@
+create_table buffer
+add_field buffer data blob
+add_field buffer size int64
+add_field buffer offset int64
