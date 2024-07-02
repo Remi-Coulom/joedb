@@ -43,8 +43,6 @@ namespace joedb
      &brotli_decoded_size,
      (uint8_t *)decoded
     );
-
-    JOEDB_ASSERT(brotli_decoded_size == decoded_size);
    }
 
    ~Brotli_Decoder()

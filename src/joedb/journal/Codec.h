@@ -25,8 +25,8 @@ namespace joedb
     size_t decoded_size
    )
    {
-    JOEDB_ASSERT(encoded.size() == decoded_size);
-    std::copy_n(encoded.data(), decoded_size, decoded);
+    JOEDB_ASSERT(encoded.size() <= decoded_size);
+    std::copy_n(encoded.data(), encoded.size(), decoded);
    }
 
    virtual ~Codec() = default;
