@@ -36,13 +36,18 @@ namespace joedb
    {
     size_t brotli_decoded_size = decoded_size;
 
-    BrotliDecoderDecompress
+    const auto result = BrotliDecoderDecompress
     (
      encoded.size(),
      (const uint8_t *)(encoded.data()),
      &brotli_decoded_size,
      (uint8_t *)decoded
     );
+
+    JOEDB_ASSERT(brotli_decoded_size == decoded_size);
+
+    if (result != BROTLI_DECODER_RESULT_SUCCESS)
+     throw joedb::Runtime_Error("Brotli decompression failed");
    }
 
    ~Brotli_Decoder()
@@ -84,7 +89,7 @@ namespace joedb
 
     size_t encoded_size = encoded.size();
 
-    BrotliEncoderCompress
+    const auto result = BrotliEncoderCompress
     (
      quality,
      lgwin,
@@ -94,6 +99,9 @@ namespace joedb
      &encoded_size,
      (uint8_t *)encoded.data()
     );
+
+    if (result != BROTLI_TRUE)
+     throw joedb::Runtime_Error("Brotli compression failed");
 
     encoded.resize(encoded_size);
 

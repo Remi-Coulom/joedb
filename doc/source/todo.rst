@@ -20,11 +20,11 @@ For next release
 
  - deletion of field used in custom function
 
- - File specialization that stores content as history of buffer writes. For each buffer:
+ - Encoded_File:
 
-   - position
-   - size
-   - data (blob) (can be compressed. pass a codec class)
+   - Readonly version that uses decoder code only
+   - Handle locking and concurrency
+   - Test well
 
  - log rotation, ability to delete or compress early part of the log:
 

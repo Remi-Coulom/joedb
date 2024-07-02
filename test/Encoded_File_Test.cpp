@@ -2,6 +2,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/Brotli_Codec.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/interpreter/Database_Schema.h"
 
 #include "gtest/gtest.h"
 
@@ -67,13 +68,24 @@ namespace joedb
   encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
 
+  const size_t N = 10000;
+  const std::string table_name(N, 'x');
+
   {
    Writable_Journal journal(file);
-   journal.comment("Hello");
+   journal.create_table(table_name);
+   journal.default_checkpoint();
   }
+
+  EXPECT_TRUE(size_t(db_file.get_size()) < N);
+  EXPECT_TRUE(size_t(file.get_size()) > N);
 
   {
    Readonly_Journal journal(file);
+   Database_Schema schema;
+   journal.replay_log(schema);
+   EXPECT_EQ(schema.get_tables().size(), 1);
+   EXPECT_EQ(schema.get_tables().begin()->second, table_name);
   }
  }
 #endif

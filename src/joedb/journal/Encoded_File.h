@@ -13,7 +13,7 @@ namespace joedb
   private:
    Codec &codec;
    encoded_file::Generic_File_Database &db;
-   static constexpr size_t big_buffer_total_size = 1 << 20;
+   static constexpr size_t big_buffer_initial_size = 1 << 20;
    std::vector<char> big_buffer;
 
    int64_t big_buffer_offset;
@@ -21,6 +21,14 @@ namespace joedb
    encoded_file::id_of_buffer decoded_buffer;
 
   protected:
+   //////////////////////////////////////////////////////////////////////////
+   void raw_sync() override
+   //////////////////////////////////////////////////////////////////////////
+   {
+    flush_write_buffer();
+    db.checkpoint_full_commit();
+   }
+
    //////////////////////////////////////////////////////////////////////////
    size_t pread
    //////////////////////////////////////////////////////////////////////////
@@ -53,11 +61,14 @@ namespace joedb
 
       if (b != decoded_buffer)
       {
+       if (int64_t(big_buffer.size()) < db.get_size(b))
+        big_buffer.resize(db.get_size(b));
+
        codec.decode
        (
         db.read_blob_data(db.get_data(b)),
         big_buffer.data(),
-        big_buffer.size()
+        db.get_size(b)
        );
 
        decoded_buffer = b;
@@ -99,7 +110,7 @@ namespace joedb
    void pwrite(const char *buffer, size_t size, int64_t offset) override
    //////////////////////////////////////////////////////////////////////////
    {
-    if (size > size_t(big_buffer_total_size))
+    if (size > size_t(big_buffer.size()))
     {
      flush_write_buffer();
      write_blob(buffer, size, offset);
@@ -110,7 +121,7 @@ namespace joedb
      big_buffer_write_size &&
      (
       big_buffer_offset + big_buffer_write_size != offset ||
-      big_buffer_write_size + size > big_buffer_total_size
+      big_buffer_write_size + size > big_buffer.size()
      )
     )
     {
@@ -137,7 +148,7 @@ namespace joedb
     Generic_File(Open_Mode::write_existing_or_create_new),
     codec(codec),
     db(db),
-    big_buffer(big_buffer_total_size),
+    big_buffer(big_buffer_initial_size),
     big_buffer_offset(0),
     big_buffer_write_size(0),
     decoded_buffer{0}
