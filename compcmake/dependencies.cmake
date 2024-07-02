@@ -89,13 +89,10 @@ endif()
 
 # Brotli
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(Brotli)
-if (Brotli_FOUND)
- message("== Brotli found (${Brotli_LIBRARIES})")
+find_path(brotli_encode_path "brotli/encode.h")
+if (brotli_encode_path)
+ message("== Brotli found")
  add_definitions(-DJOEDB_HAS_BROTLI)
 else()
  message("== Brotli not found")
- if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  message("-- Suggestion: sudo apt install libbrotli-dev")
- endif()
 endif()
