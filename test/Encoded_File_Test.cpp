@@ -23,8 +23,8 @@ namespace joedb
   file.pos_write("yyy", 3);
   file.seek(0);
 
-  char data[3];
-  const size_t size = file.pos_read(data, 3);
+  char data[6];
+  const size_t size = file.pos_read(data, 6);
   EXPECT_EQ(size, 3);
   EXPECT_EQ(data[0], 'y');
   EXPECT_EQ(data[1], 'y');

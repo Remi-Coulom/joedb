@@ -44,7 +44,7 @@ namespace joedb
     const int64_t start = offset;
     const int64_t end = offset + size;
 
-    size_t total_size = 0;
+    int64_t global_end = 0;
 
     //
     // Loop over already written buffers
@@ -60,7 +60,8 @@ namespace joedb
 
      if (intersection_size > 0)
      {
-      total_size += size_t(intersection_size);
+      if (intersection_end > global_end)
+       global_end = intersection_end;
 
       if (b != decoded_buffer)
       {
@@ -99,7 +100,9 @@ namespace joedb
 
      if (intersection_size > 0)
      {
-      total_size += size_t(intersection_size);
+      if (intersection_end > global_end)
+       global_end = intersection_end;
+
       std::copy_n
       (
        write_buffer.data() + intersection_start - b_start,
@@ -109,7 +112,7 @@ namespace joedb
      }
     }
 
-    return total_size; // this is buggy if multiple writes to same area
+    return global_end - offset;
    }
 
    //////////////////////////////////////////////////////////////////////////
