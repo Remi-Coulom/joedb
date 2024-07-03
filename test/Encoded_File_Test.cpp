@@ -9,61 +9,53 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- TEST(Encoded_File, basic)
+ static void encoded_file_test(Codec &codec)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Codec codec;
-  Memory_File db_file;
-  encoded_file::Generic_File_Database db(db_file);
-  Encoded_File file(codec, db);
-
-  EXPECT_EQ(file.get_size(), 0);
-
   const int32_t value = 0x01020304;
-  file.write<int32_t>(value);
-  file.write<int32_t>(value);
-  file.set_position(0);
 
-  EXPECT_EQ(file.get_size(), 8);
-
-  EXPECT_EQ(file.read<int32_t>(), value);
-  file.set_position(0);
-
-  EXPECT_EQ(file.get_size(), 8);
-
-  EXPECT_EQ(file.read<int8_t>(), 0x04);
-  EXPECT_EQ(file.read<int8_t>(), 0x03);
-  EXPECT_EQ(file.read<int8_t>(), 0x02);
-  EXPECT_EQ(file.read<int8_t>(), 0x01);
-  EXPECT_EQ(file.read<int32_t>(), value);
- }
-
-#ifdef JOEDB_HAS_BROTLI
- ////////////////////////////////////////////////////////////////////////////
- TEST(Encoded_File, brotli)
- ////////////////////////////////////////////////////////////////////////////
- {
-  Brotli_Codec codec;
   Memory_File db_file;
-  encoded_file::Generic_File_Database db(db_file);
-  Encoded_File file(codec, db);
 
-  const int32_t value = 0x01020304;
-  file.write<int32_t>(value);
-  file.set_position(0);
-  EXPECT_EQ(file.read<int32_t>(), value);
-  file.set_position(0);
-  EXPECT_EQ(file.read<int8_t>(), 0x04);
-  EXPECT_EQ(file.read<int8_t>(), 0x03);
-  EXPECT_EQ(file.read<int8_t>(), 0x02);
-  EXPECT_EQ(file.read<int8_t>(), 0x01);
+  {
+   encoded_file::Generic_File_Database db(db_file);
+   Encoded_File file(codec, db);
+
+   EXPECT_EQ(file.get_size(), 0);
+
+   file.write<int32_t>(value);
+   file.write<int32_t>(value);
+   file.set_position(0);
+
+   EXPECT_EQ(file.get_size(), 8);
+
+   EXPECT_EQ(file.read<int32_t>(), value);
+   file.set_position(0);
+
+   EXPECT_EQ(file.get_size(), 8);
+
+   EXPECT_EQ(file.read<int8_t>(), 0x04);
+   EXPECT_EQ(file.read<int8_t>(), 0x03);
+   EXPECT_EQ(file.read<int8_t>(), 0x02);
+   EXPECT_EQ(file.read<int8_t>(), 0x01);
+   EXPECT_EQ(file.read<int32_t>(), value);
+  }
+
+  {
+   encoded_file::Generic_File_Database db(db_file);
+   Encoded_File file(codec, db);
+   EXPECT_EQ(file.get_size(), 8);
+   EXPECT_EQ(file.read<int8_t>(), 0x04);
+   EXPECT_EQ(file.read<int8_t>(), 0x03);
+   EXPECT_EQ(file.read<int8_t>(), 0x02);
+   EXPECT_EQ(file.read<int8_t>(), 0x01);
+   EXPECT_EQ(file.read<int32_t>(), value);
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Encoded_File, brotli_journal)
+ static void encoded_journal_test(Codec &codec, bool is_compression)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Brotli_Codec codec;
   Memory_File db_file;
   encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
@@ -77,7 +69,11 @@ namespace joedb
    journal.default_checkpoint();
   }
 
-  EXPECT_TRUE(size_t(db_file.get_size()) < N);
+  if (is_compression)
+  {
+   EXPECT_TRUE(size_t(db_file.get_size()) < N);
+  }
+
   EXPECT_TRUE(size_t(file.get_size()) > N);
 
   {
@@ -87,6 +83,26 @@ namespace joedb
    EXPECT_EQ(schema.get_tables().size(), 1);
    EXPECT_EQ(schema.get_tables().begin()->second, table_name);
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Encoded_File, identity_codec)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Codec codec;
+  encoded_file_test(codec);
+  encoded_journal_test(codec, false);
+ }
+
+
+#ifdef JOEDB_HAS_BROTLI
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Encoded_File, brotli_codec)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Brotli_Codec codec;
+  encoded_file_test(codec);
+  encoded_journal_test(codec, true);
  }
 #endif
 }
