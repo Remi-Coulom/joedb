@@ -4,8 +4,6 @@
 #ifdef JOEDB_HAS_BROTLI
 
 #include "joedb/journal/Codec.h"
-#include "joedb/journal/Encoded_File.h"
-#include "joedb/Exception.h"
 
 #include <brotli/encode.h>
 #include <brotli/decode.h>
@@ -20,40 +18,16 @@ namespace joedb
    BrotliDecoderState * const state;
 
   public:
-   Brotli_Decoder():
-    state(BrotliDecoderCreateInstance(nullptr, nullptr, nullptr))
-   {
-    if (state == nullptr)
-     throw joedb::Runtime_Error("could not allocate Brotli decoder");
-   }
+   Brotli_Decoder();
 
    void decode
    (
     const std::string &encoded,
     char *decoded,
     const size_t decoded_size
-   )
-   {
-    size_t brotli_decoded_size = decoded_size;
+   );
 
-    const auto result = BrotliDecoderDecompress
-    (
-     encoded.size(),
-     (const uint8_t *)(encoded.data()),
-     &brotli_decoded_size,
-     (uint8_t *)decoded
-    );
-
-    JOEDB_ASSERT(brotli_decoded_size == decoded_size);
-
-    if (result != BROTLI_DECODER_RESULT_SUCCESS)
-     throw joedb::Runtime_Error("Brotli decompression failed");
-   }
-
-   ~Brotli_Decoder()
-   {
-    BrotliDecoderDestroyInstance(state);
-   }
+   ~Brotli_Decoder();
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -73,45 +47,11 @@ namespace joedb
     int quality = BROTLI_DEFAULT_QUALITY,
     int lgwin = BROTLI_DEFAULT_WINDOW,
     BrotliEncoderMode mode = BROTLI_DEFAULT_MODE
-   ):
-    quality(quality),
-    lgwin(lgwin),
-    mode(mode),
-    state(BrotliEncoderCreateInstance(nullptr, nullptr, nullptr))
-   {
-    if (state == nullptr)
-     throw joedb::Runtime_Error("could not allocate Brotli encoder");
-   }
+   );
 
-   std::string encode(const char *buffer, size_t size)
-   {
-    std::string encoded(BrotliEncoderMaxCompressedSize(size), 0);
+   std::string encode(const char *buffer, size_t size);
 
-    size_t encoded_size = encoded.size();
-
-    const auto result = BrotliEncoderCompress
-    (
-     quality,
-     lgwin,
-     mode,
-     size,
-     (const uint8_t *)buffer,
-     &encoded_size,
-     (uint8_t *)encoded.data()
-    );
-
-    if (result != BROTLI_TRUE)
-     throw joedb::Runtime_Error("Brotli compression failed");
-
-    encoded.resize(encoded_size);
-
-    return encoded;
-   }
-
-   ~Brotli_Encoder()
-   {
-    BrotliEncoderDestroyInstance(state);
-   }
+   ~Brotli_Encoder();
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -123,10 +63,7 @@ namespace joedb
    Brotli_Decoder decoder;
 
   public:
-   std::string encode(const char *decoded, size_t decoded_size) override
-   {
-    return encoder.encode(decoded, decoded_size);
-   }
+   std::string encode(const char *decoded, size_t decoded_size) override;
 
    void decode
    (
@@ -134,35 +71,7 @@ namespace joedb
     char *decoded,
     size_t decoded_size
    )
-   override
-   {
-    decoder.decode(encoded, decoded, decoded_size);
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Brotli_File_Data
- ////////////////////////////////////////////////////////////////////////////
- {
-  protected:
-   Brotli_Codec codec;
-   encoded_file::File_Database db;
-
-  public:
-   Brotli_File_Data(const char *file_name): db(file_name) {}
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Brotli_File: private Brotli_File_Data, public Encoded_File
- ////////////////////////////////////////////////////////////////////////////
- {
-  private:
-  public:
-   Brotli_File(const char *file_name):
-    Brotli_File_Data(file_name),
-    Encoded_File(Brotli_File_Data::codec, Brotli_File_Data::db)
-   {
-   }
+   override;
  };
 }
 

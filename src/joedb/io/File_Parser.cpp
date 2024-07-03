@@ -12,8 +12,7 @@
 #endif
 
 #ifdef JOEDB_HAS_BROTLI
-#include "joedb/journal/Brotli_Codec.h"
-#include "joedb/journal/Encoded_File.h"
+#include "joedb/journal/Brotli_File.h"
 #endif
 
 #include <cstring>

@@ -48,6 +48,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Journal_Construction_Lock.cpp
