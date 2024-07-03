@@ -154,7 +154,11 @@ namespace joedb
    arg_index++;
    const char * const file_name = argv[arg_index];
    arg_index++;
+
+   out << "Opening brotli file... ";
+   out.flush();
    file.reset(new Brotli_File(file_name));
+   out << "OK\n";
   }
 #endif
   else

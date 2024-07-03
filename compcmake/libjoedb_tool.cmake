@@ -12,6 +12,7 @@ set(JOEDB_TOOL_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/File_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/db/encoded_file.cpp
  ${JOEDB_SRC_DIR}/joedb/db/multi_server_readonly.cpp
  ${JOEDB_SRC_DIR}/joedb/db/multi_server_interpreted.cpp

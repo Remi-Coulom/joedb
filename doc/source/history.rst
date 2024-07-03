@@ -1,6 +1,11 @@
 History
 =======
 
+- 2024-??-?? 9.1.0
+
+  - ``Encoded_File`` supports on-the-fly coding or decoding of data. Custom
+    codecs can be used. ``Brotli_Codec`` is provided for compression.
+
 - 2024-06-25 9.0.1
 
   - Dual locking: instead of using one global lock for a joedb file, this
