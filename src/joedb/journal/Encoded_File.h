@@ -41,14 +41,13 @@ namespace joedb
    )
    override
    {
+    flush_write_buffer();
+
     const int64_t start = offset;
     const int64_t end = offset + size;
 
     int64_t global_end = 0;
 
-    //
-    // Loop over already written buffers
-    //
     for (auto b: db.get_buffer_table())
     {
      const int64_t b_start = db.get_offset(b);
@@ -81,31 +80,6 @@ namespace joedb
       std::copy_n
       (
        read_buffer.data() + intersection_start - b_start,
-       intersection_size,
-       buffer + intersection_start - start
-      );
-     }
-    }
-
-    //
-    // Read from the write buffer
-    //
-    {
-     const int64_t b_start = write_buffer_offset;
-     const int64_t b_end = b_start + write_buffer_size;
-
-     const int64_t intersection_start = std::max(start, b_start);
-     const int64_t intersection_end = std::min(end, b_end);
-     const int64_t intersection_size = intersection_end - intersection_start;
-
-     if (intersection_size > 0)
-     {
-      if (intersection_end > global_end)
-       global_end = intersection_end;
-
-      std::copy_n
-      (
-       write_buffer.data() + intersection_start - b_start,
        intersection_size,
        buffer + intersection_start - start
       );
