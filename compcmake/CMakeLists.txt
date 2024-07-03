@@ -22,7 +22,7 @@ add_test(NAME build_all
 )
 
 include("${CMAKE_CURRENT_LIST_DIR}/compiler_flags.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/libjoedb_tool.cmake")
 
 #############################################################################
 # Dependencies
@@ -53,13 +53,6 @@ include_directories(
  ${GOOGLE_TEST}
  ${GOOGLE_TEST}/include
 )
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function(tool_add_executable)
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- joedb_add_executable(${ARGV})
- target_link_libraries(${ARGV0} joedb_tool)
-endfunction()
 
 #############################################################################
 # Build Targets
@@ -130,11 +123,11 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Stream_File_Test.cpp
  )
 
-if (NOT JOEDB_PORTABLE)
- target_sources(joedb_file_test PRIVATE ../src/joedb/journal/Portable_File.cpp)
-endif()
+ if (NOT JOEDB_PORTABLE)
+  target_sources(joedb_file_test PRIVATE ../src/joedb/journal/Portable_File.cpp)
+ endif()
 
- add_executable(joedb_test
+ tool_add_executable(joedb_test
   ../test/Async_Test.cpp
   ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp
@@ -182,9 +175,6 @@ endif()
   ../test/compiler/translation.h
   ../test/compiler/db/test_dbname_base64.cpp
   ../test/compiler/db/test_dbname_ascii.cpp
-  ../src/joedb/db/multi_server_readonly.cpp
-  ../src/joedb/db/multi_server_interpreted.cpp
-  ../src/joedb/db/encoded_file.cpp
   ../src/joedb/io/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
   ../src/joedb/String_Logger.cpp
@@ -201,7 +191,6 @@ endif()
  # This definition is necessary for cygwin
  # https://github.com/google/googletest/pull/2839
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
- target_uses_joedb(joedb_test)
 
  if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
   target_precompile_headers(joedb_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
@@ -238,8 +227,6 @@ joedbc_build(../test/compiler/db multi_index)
 joedbc_build(../test/compiler/db empty)
 joedbc_build(../test/compiler/db blob)
 joedbc_build(../benchmark benchmarkdb)
-joedbc_build(../src/joedb/db multi_server)
-joedbc_build(../src/joedb/db encoded_file)
 joedbc_build(../doc/source/tutorial tutorial)
 
 add_custom_command(

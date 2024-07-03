@@ -1,7 +1,17 @@
 #!/bin/bash
 set -e
 
-dir=../../../compcmake/gcc_debug
+mkdir -p build
+cd build
+cmake ..
+make -j 4
+cd -
+
+configuration=gcc_debug
+dir=../../../compcmake/$configuration
+cd ../../../compcmake
+./generate.sh $configuration
+cd -
 cmake --build $dir
 
 rm -f tutorial.joedb index_tutorial.joedb local_concurrency.joedb local_concurrency_?.txt
@@ -36,8 +46,3 @@ set +e
 ( cd $dir && PATH="." && joedb_multi_server ) 2>joedb_multi_server.out
 ( cd $dir && PATH="." && joedb_client ) 2>joedb_client.out
 ( cd $dir && PATH="." && joedb_push ) 2>joedb_push.out
-
-mkdir -p build
-cd build
-cmake ..
-make -j 4
