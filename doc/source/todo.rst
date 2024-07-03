@@ -23,7 +23,7 @@ For next release
  - Encoded_File:
 
    - Readonly version that uses decoder code only
-   - Handle locking and concurrency
+   - Prevent concurrency
    - Test well
 
  - log rotation, ability to delete or compress early part of the log:
