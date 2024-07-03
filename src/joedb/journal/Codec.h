@@ -2,9 +2,6 @@
 #define joedb_Codec_declared
 
 #include <string>
-#include <algorithm>
-
-#include "joedb/assert.h"
 
 namespace joedb
 {
@@ -13,21 +10,14 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual std::string encode(const char *decoded, size_t decoded_size)
-   {
-    return std::string(decoded, decoded_size);
-   }
+   virtual std::string encode(const char *decoded, size_t decoded_size) = 0;
 
    virtual void decode
    (
     const std::string &encoded,
     char *decoded,
     size_t decoded_size
-   )
-   {
-    JOEDB_ASSERT(encoded.size() == decoded_size);
-    std::copy_n(encoded.data(), decoded_size, decoded);
-   }
+   ) = 0;
 
    virtual ~Codec() = default;
  };

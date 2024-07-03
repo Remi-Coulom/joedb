@@ -1,6 +1,7 @@
 #include "joedb/journal/Encoded_File.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Brotli_Codec.h"
+#include "joedb/journal/Identity_Codec.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database_Schema.h"
 
@@ -12,7 +13,7 @@ namespace joedb
  TEST(Encoded_File, overwrite)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Codec codec;
+  Identity_Codec codec;
   Memory_File db_file;
   encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
@@ -113,10 +114,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Encoded_File, identity_codec)
+ TEST(Encoded_File, Identity_Codec)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Codec codec;
+  Identity_Codec codec;
   encoded_file_test(codec);
   encoded_journal_test(codec, false);
  }
@@ -124,7 +125,7 @@ namespace joedb
 
 #ifdef JOEDB_HAS_BROTLI
  ////////////////////////////////////////////////////////////////////////////
- TEST(Encoded_File, brotli_codec)
+ TEST(Encoded_File, Brotli_Codec)
  ////////////////////////////////////////////////////////////////////////////
  {
   Brotli_Codec codec;

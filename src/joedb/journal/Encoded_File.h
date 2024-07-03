@@ -166,9 +166,9 @@ namespace joedb
 
     for (const auto buffer: db.get_buffer_table())
     {
-     const int64_t size = db.get_offset(buffer) + db.get_size(buffer);
-     if (size > result)
-      result = size;
+     const int64_t end = db.get_offset(buffer) + db.get_size(buffer);
+     if (end > result)
+      result = end;
     }
 
     return result;

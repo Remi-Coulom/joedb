@@ -7,6 +7,7 @@
 #include "joedb/journal/Stream_File.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Encoded_File.h"
+#include "joedb/journal/Identity_Codec.h"
 
 #include "gtest/gtest.h"
 
@@ -145,9 +146,9 @@ TEST(Polymorphic_File, Encoded_File)
 /////////////////////////////////////////////////////////////////////////////
 {
  using namespace joedb;
+ Identity_Codec codec;
 
  {
-  Codec codec;
   Memory_File db_file;
   encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
@@ -156,7 +157,6 @@ TEST(Polymorphic_File, Encoded_File)
  }
 
  {
-  Codec codec;
   Memory_File db_file;
   encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
