@@ -9,6 +9,29 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ TEST(Encoded_File, overwrite)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Codec codec;
+  Memory_File db_file;
+  encoded_file::Generic_File_Database db(db_file);
+  Encoded_File file(codec, db);
+
+  file.seek(0);
+  file.pos_write("xxx", 3);
+  file.seek(0);
+  file.pos_write("yyy", 3);
+  file.seek(0);
+
+  char data[3];
+  const size_t size = file.pos_read(data, 3);
+  EXPECT_EQ(size, 3);
+  EXPECT_EQ(data[0], 'y');
+  EXPECT_EQ(data[1], 'y');
+  EXPECT_EQ(data[2], 'y');
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  static void encoded_file_test(Codec &codec)
  ////////////////////////////////////////////////////////////////////////////
  {

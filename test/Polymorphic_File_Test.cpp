@@ -6,6 +6,7 @@
 #include "joedb/journal/Portable_File.h"
 #include "joedb/journal/Stream_File.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Encoded_File.h"
 
 #include "gtest/gtest.h"
 
@@ -137,6 +138,31 @@ TEST(Polymorphic_File, Portable_File)
  }
 
  std::remove(file_name);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Polymorphic_File, Encoded_File)
+/////////////////////////////////////////////////////////////////////////////
+{
+ using namespace joedb;
+
+ {
+  Codec codec;
+  Memory_File db_file;
+  encoded_file::Generic_File_Database db(db_file);
+  Encoded_File file(codec, db);
+
+  polymorphic_test(file);
+ }
+
+ {
+  Codec codec;
+  Memory_File db_file;
+  encoded_file::Generic_File_Database db(db_file);
+  Encoded_File file(codec, db);
+
+  polymorphic_journal_test(file);
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
