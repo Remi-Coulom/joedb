@@ -66,8 +66,6 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/Client_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Connection_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/io/File_Parser.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/Brotli_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/SHA_256.cpp
@@ -100,6 +98,13 @@ if (ASIO_FOUND)
   ${JOEDB_SOURCES}
  )
  add_definitions(-DJOEDB_HAS_NETWORKING)
+endif()
+
+if(brotli_encode_path)
+ set(JOEDB_SOURCES ${JOEDB_SOURCES}
+  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
+  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_File.cpp
+ )
 endif()
 
 if (UNIX)
