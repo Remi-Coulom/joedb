@@ -4,6 +4,7 @@ set(JOEDB_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 include("${JOEDB_DIR}/dependencies.cmake")
 include("${JOEDB_DIR}/libjoedb.cmake")
+include("${JOEDB_DIR}/ipo.cmake")
 
 #############################################################################
 # Joedbc executable
@@ -13,7 +14,7 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/c_wrapper.cpp
 )
-target_link_libraries(joedbc joedb)
+target_link_libraries(joedbc joedb_bootstrap)
 
 #############################################################################
 # Functions to create dependencies for joedbc

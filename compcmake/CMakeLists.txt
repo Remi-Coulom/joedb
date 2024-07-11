@@ -22,7 +22,7 @@ add_test(NAME build_all
 )
 
 include("${CMAKE_CURRENT_LIST_DIR}/compiler_flags.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/libjoedb_tool.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 
 #############################################################################
 # Dependencies
@@ -57,17 +57,17 @@ include_directories(
 #############################################################################
 # Build Targets
 #############################################################################
-tool_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
-tool_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
-tool_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
-tool_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
-tool_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
-tool_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
-tool_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
-tool_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
-tool_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
-tool_add_executable(joedb_client ../src/joedb/io/joedb_client.cpp)
-tool_add_executable(joedb_push ../src/joedb/io/joedb_push.cpp)
+joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
+joedb_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
+joedb_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
+joedb_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
+joedb_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
+joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
+joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
+joedb_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
+joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
+joedb_add_executable(joedb_client ../src/joedb/io/joedb_client.cpp)
+joedb_add_executable(joedb_push ../src/joedb/io/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/io/joedb_convert.cpp
@@ -127,7 +127,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   target_sources(joedb_file_test PRIVATE ../src/joedb/journal/Portable_File.cpp)
  endif()
 
- tool_add_executable(joedb_test
+ joedb_add_executable(joedb_test
   ../test/Async_Test.cpp
   ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp
@@ -190,9 +190,11 @@ if(EXISTS "${GOOGLE_TEST}/include")
 
  # This definition is necessary for cygwin
  # https://github.com/google/googletest/pull/2839
+ target_compile_definitions(joedb_file_test PUBLIC _GNU_SOURCE)
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
 
  if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+  target_precompile_headers(joedb_file_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
   target_precompile_headers(joedb_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
  endif()
 
@@ -208,10 +210,10 @@ endif()
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
 if (ASIO_FOUND)
- tool_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
+ joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
 
  if (libssh_FOUND)
-  tool_add_executable(joedb_multi_server
+  joedb_add_executable(joedb_multi_server
    ../src/joedb/io/joedb_multi_server.cpp
    ../src/joedb/db/multi_server.cpp
    ../src/joedb/db/multi_server_interpreted.cpp
