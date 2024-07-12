@@ -22,7 +22,7 @@ namespace joedb
   flush_write_buffer();
 
   const int64_t start = offset;
-  const int64_t end = offset + size;
+  const int64_t end = offset + int64_t(size);
 
   int64_t global_end = 0;
 
@@ -72,7 +72,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  {
   const Blob blob = db.write_blob_data(codec.encode(buffer, size));
-  db.new_buffer(blob, size, offset);
+  db.new_buffer(blob, int64_t(size), int64_t(offset));
   db.checkpoint();
  }
 
@@ -115,7 +115,7 @@ namespace joedb
 
   std::copy_n(buffer, size, write_buffer.data() + write_buffer_size);
 
-  write_buffer_size += size;
+  write_buffer_size += int64_t(size);
  }
 
  //////////////////////////////////////////////////////////////////////////
