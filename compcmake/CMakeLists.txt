@@ -7,12 +7,13 @@ include("${CMAKE_CURRENT_LIST_DIR}/joedb_version.cmake")
 
 project(joedb VERSION ${JOEDB_VERSION})
 
+set(CMAKE_CXX_STANDARD 17)
+
 message("== JOEDB_VERSION = ${JOEDB_VERSION} ${JOEDB_VERSION_INT}")
 message("== CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 
@@ -21,7 +22,7 @@ add_test(NAME build_all
  COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config "$<CONFIG>"
 )
 
-include("${CMAKE_CURRENT_LIST_DIR}/libjoedb.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 
 #############################################################################
 # Dependencies

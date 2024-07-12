@@ -131,3 +131,5 @@ function(joedb_add_executable)
  ipo_add_executable(${ARGV})
  target_uses_joedb(${ARGV0})
 endfunction()
+
+include("${JOEDB_DIR}/libjoedb.cmake")

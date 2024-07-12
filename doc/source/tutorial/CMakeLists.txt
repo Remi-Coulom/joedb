@@ -5,7 +5,7 @@ project(tutorial)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include("../../../compcmake/libjoedb.cmake")
+include("../../../compcmake/joedbc.cmake")
 
 #
 # Including "joedbc.cmake" defines four functions
