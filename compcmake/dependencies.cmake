@@ -49,7 +49,6 @@ endif()
 
 # libssh
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 if(${CMAKE_SYSTEM_NAME} EQUAL CYGWIN AND ${CMAKE_SIZEOF_VOID_P} EQUAL "4")
  # https://cygwin.com/pipermail/cygwin/2022-January/250520.html
  message("-- libssh does not work in 32-bit cygwin")
@@ -63,6 +62,7 @@ else()
   add_definitions(-DJOEDB_HAS_SSH)
   find_path(libssh_include_path "libssh/libssh.h" NO_CACHE)
   include_directories(${libssh_include_path})
+  set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS} ${LIBSSH_LIBRARIES})
   message("== ssh was found (${LIBSSH_LIBRARIES}) (${libssh_include_path})")
  else()
   message("== ssh not found")
@@ -82,6 +82,7 @@ find_package(CURL QUIET)
 if (CURL_FOUND)
  message("== CURL found (${CURL_LIBRARIES})")
  add_definitions(-DJOEDB_HAS_CURL)
+ set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS} ${CURL_LIBRARIES})
 else()
  message("== CURL not found")
  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -100,6 +101,14 @@ if (brotli_encode_path)
  message("== Brotli found in ${brotli_encode_path}")
  add_definitions(-DJOEDB_HAS_BROTLI)
  include_directories(${brotli_include_path})
+ if (MSVC)
+  set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS}
+   unofficial::brotli::brotlidec
+   unofficial::brotli::brotlienc
+  )
+ else()
+  set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS} brotlidec brotlienc)
+ endif()
 else()
  message("== Brotli not found. Try sudo apt install libbrotli-dev")
 endif()

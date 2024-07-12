@@ -21,8 +21,7 @@ add_test(NAME build_all
  COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config "$<CONFIG>"
 )
 
-include("${CMAKE_CURRENT_LIST_DIR}/compiler_flags.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/libjoedb.cmake")
 
 #############################################################################
 # Dependencies
@@ -215,8 +214,6 @@ if (ASIO_FOUND)
  if (libssh_FOUND)
   joedb_add_executable(joedb_multi_server
    ../src/joedb/io/joedb_multi_server.cpp
-   ../src/joedb/db/multi_server.cpp
-   ../src/joedb/db/multi_server_interpreted.cpp
   )
  endif()
 endif()
@@ -353,7 +350,7 @@ if (ASIO_FOUND)
 endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
-install(TARGETS joedb
+install(TARGETS joedb_bootstrap joedb_no_db joedb_db
  ARCHIVE DESTINATION lib COMPONENT bin
  LIBRARY DESTINATION lib COMPONENT bin
  RUNTIME DESTINATION bin COMPONENT bin

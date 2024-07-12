@@ -5,7 +5,7 @@
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Journal_Construction_Lock.h"
 
-#include <vector>
+#include <array>
 
 namespace joedb
 {
@@ -14,6 +14,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Writable_Journal;
+  friend class Journal_Hasher;
 
   public:
    enum class Check
@@ -149,11 +150,6 @@ namespace joedb
    Async_Reader get_async_tail_reader(int64_t start_position) const
    {
     return Async_Reader(file, start_position, get_checkpoint_position());
-   }
-
-   SHA_256::Hash get_hash(int64_t checkpoint) const
-   {
-    return file.get_fast_hash(header_size, checkpoint - header_size);
    }
 
    static constexpr uint32_t version_number = 0x00000004;

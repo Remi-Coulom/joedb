@@ -1,4 +1,4 @@
-#include "joedb/journal/SHA_256.h"
+#include "joedb/journal/File_Hasher.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"
@@ -42,7 +42,7 @@ TEST(SHA_256, file)
  file.write<char>('b');
  file.write<char>('c');
 
- EXPECT_EQ(file.get_hash(), abc_hash);
+ EXPECT_EQ(joedb::File_Hasher::get_hash(file), abc_hash);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -58,8 +58,8 @@ TEST(SHA_256, file_slice)
  file.write<char>('d');
  file.write<char>('e');
 
- EXPECT_EQ(file.get_hash(2, 3), abc_hash);
- EXPECT_EQ(file.get_fast_hash(2, 3), abc_hash);
+ EXPECT_EQ(joedb::File_Hasher::get_hash(file, 2, 3), abc_hash);
+ EXPECT_EQ(joedb::File_Hasher::get_fast_hash(file, 2, 3), abc_hash);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -70,5 +70,5 @@ TEST(SHA_256, fast_hash_coverage)
  const size_t size = 1 << 20;
  for (size_t i = 0; i < size; i++)
   file.write<uint32_t>(uint32_t(i));
- file.get_fast_hash(0, file.get_size());
+ joedb::File_Hasher::get_fast_hash(file, 0, file.get_size());
 }

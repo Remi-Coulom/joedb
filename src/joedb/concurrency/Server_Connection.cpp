@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Server_Connection.h"
+#include "joedb/journal/File_Hasher.h"
 #include "joedb/Exception.h"
 
 #include <iostream>
@@ -185,11 +186,8 @@ namespace joedb
    client_journal.get_checkpoint_position()
   );
 
-  buffer.write<int64_t>(checkpoint);
-
-  SHA_256::Hash hash = client_journal.get_hash(checkpoint);
-  for (uint32_t i = 0; i < 8; i++)
-   buffer.write<uint32_t>(hash[i]);
+  buffer.write(checkpoint);
+  buffer.write(Journal_Hasher::get_hash(client_journal, checkpoint));
 
   lock.write(buffer.data, buffer.index);
   lock.read(buffer.data, 1);

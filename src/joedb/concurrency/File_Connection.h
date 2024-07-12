@@ -2,6 +2,7 @@
 #define joedb_File_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
+#include "joedb/journal/File_Hasher.h"
 
 namespace joedb
 {
@@ -28,8 +29,14 @@ namespace joedb
       client_journal.get_checkpoint_position()
      );
 
-     if (client_journal.get_hash(min) != server_journal.get_hash(min))
+     if
+     (
+      Journal_Hasher::get_hash(client_journal, min) !=
+      Journal_Hasher::get_hash(server_journal, min)
+     )
+     {
       content_mismatch();
+     }
     }
 
     return server_journal.get_checkpoint_position();

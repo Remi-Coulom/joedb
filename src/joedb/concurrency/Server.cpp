@@ -4,6 +4,7 @@
 #include "joedb/io/get_time_string.h"
 #include "joedb/Signal.h"
 #include "joedb/Posthumous_Catcher.h"
+#include "joedb/journal/File_Hasher.h"
 
 #include <iomanip>
 #include <sstream>
@@ -452,18 +453,15 @@ namespace joedb
   if (!error)
   {
    session->buffer.index = 1;
-   const int64_t checkpoint = session->buffer.read<int64_t>();
-   SHA_256::Hash hash;
-
-   for (uint32_t i = 0; i < 8; i++)
-    hash[i] = session->buffer.read<uint32_t>();
+   const auto checkpoint = session->buffer.read<int64_t>();
+   const auto hash = session->buffer.read<SHA_256::Hash>();
 
    const Readonly_Journal &readonly_journal = client.get_journal();
 
    if
    (
     checkpoint > readonly_journal.get_checkpoint_position() ||
-    readonly_journal.get_hash(checkpoint) != hash // ??? takes_time
+    Journal_Hasher::get_hash(readonly_journal, checkpoint) != hash // ??? takes_time
    )
    {
     session->buffer.data[0] = 'h';

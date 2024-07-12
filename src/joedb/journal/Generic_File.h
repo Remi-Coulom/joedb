@@ -5,7 +5,6 @@
 #include "joedb/Blob.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/Open_Mode.h"
-#include "joedb/journal/SHA_256.h"
 #include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Buffer.h"
 
@@ -24,6 +23,7 @@ namespace joedb
  {
   friend class Async_Reader;
   friend class Async_Writer;
+  friend class File_Hasher;
 
   private:
    Buffer<12> buffer;
@@ -282,10 +282,6 @@ namespace joedb
      return n0;
     }
    }
-
-   SHA_256::Hash get_hash(int64_t start, int64_t size);
-   SHA_256::Hash get_hash();
-   SHA_256::Hash get_fast_hash(int64_t start, int64_t size);
 
    std::string read_blob_data(Blob blob) final;
    Blob write_blob_data(const std::string &data) final;
