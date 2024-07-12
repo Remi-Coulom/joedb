@@ -86,6 +86,8 @@ endif()
 
 target_link_libraries(joedb joedb_db joedb_no_db ${JOEDB_EXTERNAL_LIBS})
 
-joedbc_build(../src/joedb/db multi_server)
-joedbc_build(../src/joedb/db encoded_file)
+message("-- JOEDB_SRC_DIR = ${JOEDB_SRC_DIR}")
+
+joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db multi_server)
+joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file)
 add_dependencies(joedb_db all_joedbc)

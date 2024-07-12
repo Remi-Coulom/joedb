@@ -3,6 +3,8 @@ include_guard(GLOBAL)
 set(JOEDB_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(JOEDB_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/../src)
 
+include_directories(BEFORE SYSTEM ${JOEDB_SRC_DIR})
+
 include("${JOEDB_DIR}/compiler_flags.cmake")
 include("${JOEDB_DIR}/dependencies.cmake")
 include("${JOEDB_DIR}/ipo.cmake")

@@ -7,7 +7,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 #############################################################################
  message("== gcc:")
  set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor"
+  "${CMAKE_CXX_FLAGS} -fPIC -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor"
  )
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)

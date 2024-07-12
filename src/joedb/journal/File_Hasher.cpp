@@ -113,7 +113,7 @@ namespace joedb
   (
    journal.file,
    journal.header_size,
-   journal.get_checkpoint_position() - journal.header_size
+   checkpoint - journal.header_size
   );
  }
 }
