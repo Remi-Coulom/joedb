@@ -5,9 +5,6 @@
 
 #include "joedb/journal/Codec.h"
 
-#include <brotli/encode.h>
-#include <brotli/decode.h>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////

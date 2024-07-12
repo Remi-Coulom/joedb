@@ -2,6 +2,9 @@
 #include "joedb/Exception.h"
 #include "joedb/assert.h"
 
+#include <brotli/encode.h>
+#include <brotli/decode.h>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
