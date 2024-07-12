@@ -26,6 +26,8 @@ set(JOEDB_SOURCES
 
 set(JOEDB_DATABASES
  ${JOEDB_SRC_DIR}/joedb/db/encoded_file.cpp
+ ${JOEDB_SRC_DIR}/joedb/db/multi_server_readonly.cpp
+ ${JOEDB_SRC_DIR}/joedb/db/multi_server_interpreted.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/io/File_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Client_Parser.cpp
@@ -35,10 +37,6 @@ if(libssh_FOUND)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/ssh/Forward_Channel.cpp
   ${JOEDB_SRC_DIR}/joedb/ssh/SFTP.cpp
- )
- set(JOEDB_DATABASES ${JOEDB_DATABASES}
-  ${JOEDB_SRC_DIR}/joedb/db/multi_server_readonly.cpp
-  ${JOEDB_SRC_DIR}/joedb/db/multi_server_interpreted.cpp
  )
 endif()
 
