@@ -10,7 +10,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual std::string encode(const char *decoded, size_t decoded_size) = 0;
+   virtual std::string encode
+   (
+    const char *decoded,
+    size_t decoded_size
+   ) = 0;
 
    virtual void decode
    (
