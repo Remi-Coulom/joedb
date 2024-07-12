@@ -58,11 +58,11 @@ set(JOEDB_BOOTSTRAP_SOURCES
 )
 
 if (UNIX)
- add_library(joedb_bootstrap SHARED ${JOEDB_BOOTSTRAP_SOURCES})
- set_target_properties(joedb_bootstrap PROPERTIES SOVERSION ${JOEDB_VERSION})
- target_uses_ipo(joedb_bootstrap)
+ add_library(joedb_for_joedbc SHARED ${JOEDB_BOOTSTRAP_SOURCES})
+ set_target_properties(joedb_for_joedbc PROPERTIES SOVERSION ${JOEDB_VERSION})
+ target_uses_ipo(joedb_for_joedbc)
 else()
- add_library(joedb_bootstrap STATIC ${JOEDB_BOOTSTRAP_SOURCES})
+ add_library(joedb_for_joedbc STATIC ${JOEDB_BOOTSTRAP_SOURCES})
 endif()
 
 #############################################################################
@@ -73,7 +73,7 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/c_wrapper.cpp
 )
-target_link_libraries(joedbc joedb_bootstrap ${JOEDB_EXTERNAL_LIBS})
+target_link_libraries(joedbc joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 
 #############################################################################
 # Functions to create dependencies for joedbc
@@ -121,7 +121,7 @@ function(target_uses_joedb target)
  get_target_property(target_type ${target} TYPE)
 
  if (NOT "${target_type}" STREQUAL "OBJECT_LIBRARY")
-  target_link_libraries(${target} joedb joedb_bootstrap ${JOEDB_EXTERNAL_LIBS})
+  target_link_libraries(${target} joedb joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
  endif()
 endfunction()
 
