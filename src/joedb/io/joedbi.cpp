@@ -15,7 +15,7 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  File_Parser file_parser(Open_Mode::read_existing);
+  File_Parser file_parser(Open_Mode::write_existing_or_create_new);
 
   if (argc <= 1)
   {
