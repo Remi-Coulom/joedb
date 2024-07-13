@@ -90,14 +90,11 @@ namespace joedb
 
    out << "Client\n";
    out << "~~~~~~\n";
-
    out << " db\n";
-
    out << " pull\n";
+
    if (!is_readonly_data())
-   {
     out << " pull_every <seconds>\n";
-   }
 
    if (push_client)
    {

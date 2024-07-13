@@ -18,16 +18,17 @@ namespace joedb
  {
   if (command == "help") ////////////////////////////////////////////////////
   {
-   out << "Journal\n";
-   out << "~~~~~~~\n";
-   out << " timestamp [<stamp>] (if no value is given, use current time)\n";
-   out << " comment \"<comment_string>\"\n";
-   out << " valid_data\n";
-   out << " flush\n";
-   out << " checkpoint\n";
-   out << " abort\n";
-   out << " blob <data_string>\n";
-   out << '\n';
+   out << R"RRR(Journal
+~~~~~~~
+ timestamp [<stamp>] (if no value is given, use current time)
+ comment "<comment_string>"
+ valid_data
+ flush
+ checkpoint
+ abort
+ blob <data_string>
+
+)RRR";
 
    return Status::ok;
   }
