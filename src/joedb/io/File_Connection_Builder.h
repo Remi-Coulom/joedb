@@ -36,7 +36,7 @@ namespace joedb
     std::ostream null_stream(nullptr);
     file_parser.parse(null_stream, argc, argv, arg_index);
 
-    if (file_parser.get_file().get_mode() == Open_Mode::read_existing)
+    if (file_parser.get_file().is_readonly())
     {
      readonly_journal.reset(new Readonly_Journal(file_parser.get_file()));
      connection.reset(new Pullonly_Journal_Connection(*readonly_journal));

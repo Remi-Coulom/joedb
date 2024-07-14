@@ -38,7 +38,7 @@ namespace joedb
    blob_file_parser.reset(new File_Parser());
    blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
 
-   if (blob_file->get_mode() != Open_Mode::read_existing)
+   if (!blob_file->is_readonly())
    {
     blob_journal.reset(new Writable_Journal(*blob_file));
     blob_journal->append();
@@ -47,7 +47,7 @@ namespace joedb
 
   Database db;
 
-  if (file.get_mode() == Open_Mode::read_existing)
+  if (file.is_readonly())
   {
    Readonly_Journal journal(file);
    journal.replay_log(db);

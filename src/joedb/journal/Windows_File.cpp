@@ -247,14 +247,6 @@ namespace joedb
   if (file == INVALID_HANDLE_VALUE)
    throw_last_error("Opening", file_name);
 
-  if (creation_disposition[static_cast<size_t>(mode)] == OPEN_ALWAYS)
-  {
-   if (GetLastError() == 0)
-    set_mode(Open_Mode::create_new);
-   else
-    set_mode(Open_Mode::write_existing);
-  }
-
   if (mode == Open_Mode::write_lock)
    exclusive_lock_tail();
  }

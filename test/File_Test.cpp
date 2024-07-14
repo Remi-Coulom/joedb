@@ -231,27 +231,31 @@ TEST_F(File_Test, open_success)
 {
  {
   File file("existing.tmp", Open_Mode::read_existing);
-  EXPECT_EQ(file.get_mode(), Open_Mode::read_existing);
+  EXPECT_TRUE(file.is_readonly());
+  EXPECT_FALSE(file.is_shared());
  }
 
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
   new_file.flush();
-  EXPECT_EQ(new_file.get_mode(), Open_Mode::create_new);
+  EXPECT_FALSE(new_file.is_readonly());
+  EXPECT_FALSE(new_file.is_shared());
  }
 
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::write_existing_or_create_new);
   new_file.flush();
-  EXPECT_EQ(new_file.get_mode(), Open_Mode::create_new);
+  EXPECT_FALSE(new_file.is_readonly());
+  EXPECT_FALSE(new_file.is_shared());
  }
 
  {
   File new_file("new.tmp", Open_Mode::write_existing_or_create_new);
   new_file.flush();
-  EXPECT_EQ(new_file.get_mode(), Open_Mode::write_existing);
+  EXPECT_FALSE(new_file.is_readonly());
+  EXPECT_FALSE(new_file.is_shared());
  }
 }
 

@@ -32,8 +32,6 @@ namespace joedb
    }
    journal.default_checkpoint();
   }
-
-  joedb_file.set_mode(Open_Mode::write_existing);
  }
 
  ////////////////////////////////////////////////////////////////////////////

@@ -79,8 +79,7 @@ namespace joedb
      write_buffer();
    }
 
-   Open_Mode mode;
-   const bool shared;
+   const Open_Mode mode;
    bool locked_tail;
 
   protected:
@@ -96,13 +95,6 @@ namespace joedb
    {
     flush();
     raw_sync();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void set_mode(Open_Mode new_mode)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    mode = new_mode;
    }
 
    static constexpr int64_t last_position = (1ULL << 63) - 1;
@@ -128,8 +120,8 @@ namespace joedb
    void exclusive_lock_head() {exclusive_lock(0, 1);}
    void unlock_head() {unlock(0, 1);}
 
-   Open_Mode get_mode() const {return mode;}
-   bool is_shared() const {return shared;}
+   bool is_shared() const {return mode == Open_Mode::shared_write;}
+   bool is_readonly() const {return mode == Open_Mode::read_existing;}
 
    bool is_end_of_file() const {return end_of_file;}
 

@@ -9,7 +9,6 @@ namespace joedb
  Generic_File::Generic_File(Open_Mode mode):
  //////////////////////////////////////////////////////////////////////////
   mode(mode),
-  shared(mode == Open_Mode::shared_write),
   locked_tail
   (
    mode != Open_Mode::shared_write &&

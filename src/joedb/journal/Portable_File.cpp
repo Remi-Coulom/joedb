@@ -15,8 +15,6 @@ namespace joedb
  bool Portable_File_Buffer::try_open(const char *file_name, Open_Mode mode)
  /////////////////////////////////////////////////////////////////////////////
  {
-  actual_mode = mode;
-
   const size_t index = static_cast<size_t>(mode);
 
   if (index < supported_open_modes)

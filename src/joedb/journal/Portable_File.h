@@ -16,7 +16,6 @@ namespace joedb
 
   protected:
    std::filebuf filebuf;
-   Open_Mode actual_mode;
 
   public:
    Portable_File_Buffer(const char *file_name, Open_Mode mode);
@@ -31,7 +30,6 @@ namespace joedb
     Portable_File_Buffer(file_name, mode),
     Stream_File(filebuf, mode)
    {
-    set_mode(actual_mode);
    }
 
    Portable_File(const std::string &file_name, Open_Mode mode):

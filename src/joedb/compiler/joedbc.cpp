@@ -2193,7 +2193,6 @@ static void generate_interpreted_cpp
  ////////////////////////////////////////////////////////////////////////////
  {
   write_data(schema_string, schema_string_size);
-  set_mode(joedb::Open_Mode::write_existing);
   append_interpreted_commands(*this, file);
  }
 

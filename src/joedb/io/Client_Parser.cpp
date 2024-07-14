@@ -61,7 +61,7 @@ namespace joedb
 
   std::cerr << "Creating client data... ";
 
-  if (client_file.get_mode() == Open_Mode::read_existing)
+  if (client_file.is_readonly())
    client_data.reset(new Readonly_Interpreted_Client_Data(client_file));
   else
    client_data.reset(new Writable_Interpreted_Client_Data(client_file));

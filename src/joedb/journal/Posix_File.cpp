@@ -151,18 +151,8 @@ namespace joedb
   )
   {
    fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
-
-   Open_Mode new_mode;
-
-   if (fd >= 0)
-    new_mode = Open_Mode::create_new;
-   else
-   {
+   if (fd < 0)
     fd = open(file_name, O_RDWR);
-    new_mode = Open_Mode::write_existing;
-   }
-
-   Generic_File::set_mode(new_mode);
   }
 
   if (fd < 0)

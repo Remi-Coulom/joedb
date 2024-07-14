@@ -16,7 +16,7 @@ joedb::Writable_Journal::Writable_Journal
  Writable(commit_level),
  current_commit_level(Commit_Level::no_commit)
 {
- if (file.get_mode() == Open_Mode::read_existing)
+ if (file.is_readonly())
  {
   throw Exception("Cannot create Writable_Journal with read-only file");
  }
@@ -34,8 +34,6 @@ joedb::Writable_Journal::Writable_Journal
   file.write<int64_t>(0);
 
   file.flush();
-
-  file.set_mode(Open_Mode::write_existing);
  }
  else if (version_number > file_version)
  {

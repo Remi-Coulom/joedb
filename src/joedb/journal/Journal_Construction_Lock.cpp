@@ -10,7 +10,7 @@ namespace joedb
  ):
   file(file)
  {
-  if (file.get_mode() == Open_Mode::read_existing)
+  if (file.is_readonly())
   {
    file.shared_lock_head();
    creating_new = false;
