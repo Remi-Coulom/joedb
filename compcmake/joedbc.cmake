@@ -66,6 +66,7 @@ if (UNIX)
 else()
  add_library(joedb_for_joedbc STATIC ${JOEDB_BOOTSTRAP_SOURCES})
 endif()
+target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 
 #############################################################################
 # Joedbc executable
@@ -75,7 +76,7 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/c_wrapper.cpp
 )
-target_link_libraries(joedbc joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
+target_link_libraries(joedbc joedb_for_joedbc)
 
 #############################################################################
 # Functions to create dependencies for joedbc

@@ -82,7 +82,7 @@ else()
  )
 endif()
 
-target_link_libraries(joedb joedb_db joedb_no_db ${JOEDB_EXTERNAL_LIBS})
+target_link_libraries(joedb joedb_db joedb_no_db joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 
 message("-- JOEDB_SRC_DIR = ${JOEDB_SRC_DIR}")
 
