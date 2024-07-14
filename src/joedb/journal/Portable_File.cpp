@@ -6,11 +6,16 @@
 namespace joedb
 {
  static constexpr int supported_open_modes = 3;
- static constexpr std::array<std::ios_base::openmode, supported_open_modes> openmode
+ static constexpr std::array<std::ios::openmode, supported_open_modes> openmode
  {
-  std::ios_base::binary | std::ios_base::in,
-  std::ios_base::binary | std::ios_base::in | std::ios_base::out,
-  std::ios_base::binary | std::ios_base::in | std::ios_base::out
+  std::ios::binary | std::ios::in,
+  std::ios::binary | std::ios::in | std::ios::out,
+  std::ios::binary | std::ios::in | std::ios::out
+#if __cplusplus >= 202302L
+  | std::ios::noreplace
+#else
+  | std::ios::app
+#endif
  };
 
  /////////////////////////////////////////////////////////////////////////////
@@ -36,7 +41,12 @@ namespace joedb
   Open_Mode mode
  )
  {
-  if (mode == Open_Mode::create_new)
+  if (mode == Open_Mode::write_existing_or_create_new)
+  {
+   try_open(file_name, Open_Mode::write_existing) ||
+   try_open(file_name, Open_Mode::create_new);
+  }
+  else if (mode == Open_Mode::create_new)
   {
    if (try_open(file_name, Open_Mode::read_existing))
     throw Exception("File already exists: " + std::string(file_name));
@@ -48,5 +58,7 @@ namespace joedb
 
   if (!filebuf.is_open())
    throw Exception("Cannot open file: " + std::string(file_name));
+
+  filebuf.pubseekoff(0, std::ios_base::beg);
  }
 }

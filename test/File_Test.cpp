@@ -544,26 +544,43 @@ TEST(File, portable)
   joedb::Portable_File("test.joedb", joedb::Open_Mode::read_existing)
  );
 
- {
+ EXPECT_ANY_THROW
+ (
+  joedb::Portable_File("test.joedb", joedb::Open_Mode::write_existing);
+ );
+
+ EXPECT_NO_THROW
+ (
   joedb::Portable_File
   (
    "test.joedb",
    joedb::Open_Mode::write_existing_or_create_new
   );
- }
+ );
+
+ EXPECT_NO_THROW
+ (
+  joedb::Portable_File
+  (
+   "test.joedb",
+   joedb::Open_Mode::write_existing_or_create_new
+  );
+ );
 
  EXPECT_ANY_THROW
  (
   joedb::Portable_File("test.joedb", joedb::Open_Mode::create_new)
  );
 
- {
+ EXPECT_NO_THROW
+ (
   joedb::Portable_File("test.joedb", joedb::Open_Mode::read_existing);
- }
+ );
 
- {
+ EXPECT_NO_THROW
+ (
   joedb::Portable_File("test.joedb", joedb::Open_Mode::write_existing);
- }
+ );
 
  EXPECT_ANY_THROW
  (
