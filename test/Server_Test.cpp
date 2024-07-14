@@ -10,6 +10,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/Signal.h"
 
+#include "Test_Sequence.h"
 #include "Test_Network_Channel.h"
 
 #include "gtest/gtest.h"
@@ -145,49 +146,6 @@ namespace joedb
    Test_Client(Test_Server &server, Generic_File &file):
     Test_Client(server.server, file)
    {
-   }
- };
-
- /////////////////////////////////////////////////////////////////////////////
- class Test_Sequence
- /////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   std::mutex mutex;
-   std::condition_variable condition;
-   int n = 0;
-
-   void log()
-   {
-    // std::cerr << "n = " << n << '\n';
-   }
-
-  public:
-   void send(int new_n)
-   {
-    {
-     std::unique_lock<std::mutex> lock(mutex);
-     n = new_n;
-     log();
-    }
-    condition.notify_all();
-   }
-
-   void increment()
-   {
-    {
-     std::unique_lock<std::mutex> lock(mutex);
-     n++;
-     log();
-    }
-    condition.notify_all();
-   }
-
-   void wait_for(int awaited_n)
-   {
-    std::unique_lock<std::mutex> lock(mutex);
-    while (awaited_n > n)
-     condition.wait(lock);
    }
  };
 

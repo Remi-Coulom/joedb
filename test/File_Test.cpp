@@ -2,6 +2,8 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Portable_File.h"
 
+#include "Test_Sequence.h"
+
 #include "gtest/gtest.h"
 
 #include <random>
@@ -113,6 +115,7 @@ TEST_F(File_Test, shared_lock_head)
  file_2.unlock_head();
 }
 
+#if 1 // This tests causes valgrind to hang
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, partial_exclusive_lock)
 {
@@ -121,35 +124,24 @@ TEST_F(File_Test, partial_exclusive_lock)
  file_1.exclusive_lock(0, 4);
  file_2.exclusive_lock(4, 4);
 
- std::mutex mutex;
+ Test_Sequence sequence;
 
- bool flag;
-
+ std::thread thread([&file_2, &sequence]()
  {
-  std::unique_lock lock(mutex);
-  flag = false;
- }
-
- std::thread thread([&file_2, &mutex, &flag]()
- {
+  sequence.send(1);
   file_2.exclusive_lock(0, 4);
-  {
-   std::unique_lock lock(mutex);
-   flag = true;
-  }
+  sequence.send(2);
  });
 
+ sequence.wait_for(1);
  std::this_thread::sleep_for(std::chrono::seconds(1));
-
- {
-  std::unique_lock lock(mutex);
-  EXPECT_FALSE(flag);
- }
-
+ EXPECT_EQ(sequence.get(), 1);
  file_1.unlock(0, 4);
+ sequence.wait_for(2);
  thread.join();
- EXPECT_TRUE(flag);
 }
+#endif
+
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
