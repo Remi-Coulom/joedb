@@ -56,7 +56,7 @@ if (ASIO_FOUND)
  add_definitions(-DJOEDB_HAS_NETWORKING)
 endif()
 
-if(brotli_encode_path)
+if(Brotli_FOUND)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
  )

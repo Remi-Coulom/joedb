@@ -96,19 +96,16 @@ if (MSVC)
  find_package(unofficial-brotli CONFIG)
 endif()
 
-find_path(brotli_encode_path "brotli/encode.h" NO_CACHE)
-if (brotli_encode_path)
- message("== Brotli found in ${brotli_encode_path}")
+find_path(brotli_encode_include_path "brotli/encode.h" NO_CACHE)
+find_library(brotli_decode_lib NAMES brotlidec)
+find_library(brotli_encode_lib NAMES brotlienc)
+
+if (brotli_encode_include_path AND brotli_decode_lib AND brotli_encode_lib)
+ set(Brotli_FOUND TRUE)
+ message("== Brotli found: ${brotli_encode_include_path} ${brotli_decode_lib} ${brotli_encode_lib}")
  add_definitions(-DJOEDB_HAS_BROTLI)
- include_directories(${brotli_include_path})
- if (MSVC)
-  set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS}
-   unofficial::brotli::brotlidec
-   unofficial::brotli::brotlienc
-  )
- else()
-  set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS} brotlidec brotlienc)
- endif()
+ include_directories(${brotli_encode_include_path})
+ set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS} ${brotli_decode_lib} ${brotli_encode_lib})
 else()
  message("== Brotli not found. Try sudo apt install libbrotli-dev")
 endif()
