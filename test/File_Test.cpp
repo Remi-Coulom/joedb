@@ -145,6 +145,18 @@ TEST_F(File_Test, partial_exclusive_lock)
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
+TEST_F(File_Test, reopen_locked)
+{
+ File("new.tmp", Open_Mode::create_new);
+ File("new.tmp", Open_Mode::write_lock);
+ File("new.tmp", Open_Mode::write_existing);
+ File("new.tmp", Open_Mode::write_lock);
+ File("new.tmp", Open_Mode::write_existing);
+ File("new.tmp", Open_Mode::write_lock);
+ File("new.tmp", Open_Mode::write_existing);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, is_shared)
 {
  File file("new.tmp", Open_Mode::shared_write);
