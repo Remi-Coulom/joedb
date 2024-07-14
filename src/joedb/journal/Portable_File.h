@@ -11,9 +11,6 @@ namespace joedb
  class Portable_File_Buffer
  ///////////////////////////////////////////////////////////////////////////
  {
-  private:
-   void ensure_created(const char *file_name);
-
   protected:
    std::filebuf filebuf;
 
