@@ -4,7 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 
-#define JOEDB_SEQUENCE_LOG
+//#define JOEDB_SEQUENCE_LOG
 #ifdef JOEDB_SEQUENCE_LOG
 #include <iostream>
 #endif
