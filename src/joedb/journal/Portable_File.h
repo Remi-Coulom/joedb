@@ -12,7 +12,7 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  {
   private:
-   bool try_open(const char *file_name, Open_Mode mode);
+   void ensure_created(const char *file_name);
 
   protected:
    std::filebuf filebuf;
