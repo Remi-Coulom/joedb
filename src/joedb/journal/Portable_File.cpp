@@ -10,7 +10,7 @@ namespace joedb
  {
   std::ios_base::binary | std::ios_base::in,
   std::ios_base::binary | std::ios_base::in | std::ios_base::out,
-  std::ios_base::binary | std::ios_base::in | std::ios_base::out | std::ios_base::trunc
+  std::ios_base::binary | std::ios_base::in | std::ios_base::out
  };
 
  /////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,10 @@ namespace joedb
   if (index < supported_open_modes)
    return filebuf.open(file_name, openmode[index]);
   else
-   return false;
+   throw Exception
+   (
+    std::string(file_name) + ": unsupported mode for Portable_File"
+   );
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -33,26 +36,12 @@ namespace joedb
   Open_Mode mode
  )
  {
-  if (mode == Open_Mode::write_existing_or_create_new)
-  {
-   try_open(file_name, Open_Mode::write_existing) ||
-   try_open(file_name, Open_Mode::create_new);
-  }
-  else if (mode == Open_Mode::create_new)
+  if (mode == Open_Mode::create_new)
   {
    if (try_open(file_name, Open_Mode::read_existing))
-   {
     throw Exception("File already exists: " + std::string(file_name));
-   }
    else
     try_open(file_name, Open_Mode::create_new);
-  }
-  else if (mode == Open_Mode::shared_write)
-  {
-   throw Exception
-   (
-    std::string(file_name) + ": Portable_File does not support shared_write"
-   );
   }
   else
    try_open(file_name, mode);
