@@ -10,11 +10,9 @@ namespace joedb
  {
   std::ios::binary | std::ios::in,
   std::ios::binary | std::ios::in | std::ios::out,
-  std::ios::binary | std::ios::in | std::ios::out
+  std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc
 #if __cplusplus >= 202302L
   | std::ios::noreplace
-#else
-  | std::ios::app
 #endif
  };
 
@@ -41,6 +39,10 @@ namespace joedb
   Open_Mode mode
  )
  {
+  // Note that before C++23, the race with create_new is dangerous:
+  // data written by another process after the first test may be erased.
+  // There is no portable solution to this race.
+
   if (mode == Open_Mode::write_existing_or_create_new)
   {
    try_open(file_name, Open_Mode::write_existing) ||
@@ -58,7 +60,5 @@ namespace joedb
 
   if (!filebuf.is_open())
    throw Exception("Cannot open file: " + std::string(file_name));
-
-  filebuf.pubseekoff(0, std::ios_base::beg);
  }
 }

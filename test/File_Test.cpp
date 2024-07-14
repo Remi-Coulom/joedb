@@ -551,21 +551,24 @@ TEST(File, portable)
 
  EXPECT_NO_THROW
  (
-  joedb::Portable_File
+  joedb::Portable_File file
   (
    "test.joedb",
    joedb::Open_Mode::write_existing_or_create_new
   );
+  file.write<int32_t>(1234);
  );
 
- EXPECT_NO_THROW
- (
-  joedb::Portable_File
+ {
+  joedb::Portable_File file
   (
    "test.joedb",
    joedb::Open_Mode::write_existing_or_create_new
   );
- );
+  file.write<int32_t>(5678);
+  file.set_position(0);
+  EXPECT_EQ(file.read<int32_t>(), 5678);
+ }
 
  EXPECT_ANY_THROW
  (
