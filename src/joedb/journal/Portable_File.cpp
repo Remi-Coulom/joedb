@@ -1,6 +1,8 @@
 #include "joedb/journal/Portable_File.h"
 #include "joedb/Exception.h"
 
+#include <array>
+
 namespace joedb
 {
  static constexpr int supported_open_modes = 3;
