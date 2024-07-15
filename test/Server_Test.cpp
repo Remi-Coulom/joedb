@@ -738,6 +738,8 @@ namespace joedb
 
   net::io_context io_context;
 
+  // necessary to avoid data races with log_stream
+  std::ostringstream another_stream;
   Server server
   {
    backup_client.client,
@@ -745,7 +747,7 @@ namespace joedb
    io_context,
    uint16_t(0),
    std::chrono::seconds(0),
-   log_to_cerr ? &std::cerr : &log_stream
+   &another_stream
   };
 
   std::thread thread([&io_context](){io_context.run();});
