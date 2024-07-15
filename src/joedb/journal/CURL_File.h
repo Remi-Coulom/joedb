@@ -3,17 +3,28 @@
 
 #include "joedb/journal/Generic_File.h"
 
+#define CURL_NO_OLDIES
 #include <curl/curl.h>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class CURL_File: public Generic_File
+ class CURL_Easy
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  protected:
+   CURL * const curl;
+
+  public:
+   CURL_Easy();
+   ~CURL_Easy();
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class CURL_File: public CURL_Easy, public Generic_File
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   CURL * const curl;
-
    static void error_check(CURLcode code);
 
    struct pread_Callback_Data
@@ -51,8 +62,6 @@ namespace joedb
    CURL_File(const char *url, bool verbose);
 
    int64_t get_size() const final;
-
-   ~CURL_File();
  };
 }
 
