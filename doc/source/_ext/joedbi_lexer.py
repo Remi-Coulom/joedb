@@ -62,4 +62,4 @@ class JoedbiLexer(RegexLexer):
     }
 
 def setup(app):
-    app.add_lexer('joedbi', JoedbiLexer())
+    app.add_lexer('joedbi', JoedbiLexer)

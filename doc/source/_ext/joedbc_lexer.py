@@ -37,4 +37,4 @@ class JoedbcLexer(RegexLexer):
     }
 
 def setup(app):
-    app.add_lexer('joedbc', JoedbcLexer())
+    app.add_lexer('joedbc', JoedbcLexer)
