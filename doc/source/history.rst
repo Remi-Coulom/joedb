@@ -1,10 +1,16 @@
 History
 =======
 
-- 2024-??-?? 9.1.0
+- 2024-??-?? 10.0.0
 
   - ``Encoded_File`` supports on-the-fly coding or decoding of data. Custom
     codecs can be used. ``Brotli_Codec`` is provided for compression.
+  - Fix some potential resource leaks when throwing from constructors.
+  - Incompatibilities with previous version:
+
+    - hashing functions were moved into a separate ``File_Hasher`` class.
+    - ``Generic_File::set_mode`` and ``get_mode`` were removed. Mode
+      is now a constant set in the constructor.
 
 - 2024-06-25 9.0.1
 

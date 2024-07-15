@@ -10,30 +10,49 @@ namespace joedb
  namespace ssh
  {
   ///////////////////////////////////////////////////////////////////////////
-  class Session
+  class Session_Wrapper
   ///////////////////////////////////////////////////////////////////////////
   {
-   private:
-    const std::string user;
-    const std::string host;
+   protected:
     const ssh_session session;
 
    public:
-    Session
-    (
-     std::string user_parameter,
-     std::string host_parameter,
-     unsigned port,
-     int verbosity
-    ):
-     user(std::move(user_parameter)),
-     host(std::move(host_parameter)),
-     session(ssh_new())
+    Session_Wrapper(): session(ssh_new())
     {
      check_not_null(session);
+    }
 
-     ssh_options_set(session, SSH_OPTIONS_HOST, host.c_str());
-     ssh_options_set(session, SSH_OPTIONS_USER, user.c_str());
+    ssh_session get() const
+    {
+     return session;
+    }
+
+    void check_result(int result) const
+    {
+     check_ssh_session_result(session, result);
+    }
+
+    ~Session_Wrapper()
+    {
+     ssh_free(session);
+    }
+  };
+
+  ///////////////////////////////////////////////////////////////////////////
+  class Session_Connection: public Session_Wrapper
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   public:
+    Session_Connection
+    (
+     const char *user,
+     const char *host,
+     unsigned port,
+     int verbosity
+    )
+    {
+     ssh_options_set(session, SSH_OPTIONS_HOST, host);
+     ssh_options_set(session, SSH_OPTIONS_USER, user);
      ssh_options_set(session, SSH_OPTIONS_PORT, &port);
      ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
 
@@ -43,26 +62,29 @@ namespace joedb
      }
 
      check_result(ssh_connect(session));
+    }
+
+    ~Session_Connection()
+    {
+     ssh_disconnect(session);
+    }
+  };
+
+  ///////////////////////////////////////////////////////////////////////////
+  class Session: public Session_Connection
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   public:
+    Session
+    (
+     const std::string &user,
+     const std::string &host,
+     unsigned port,
+     int verbosity
+    ):
+     Session_Connection(user.c_str(), host.c_str(), port, verbosity)
+    {
      check_result(ssh_userauth_publickey_auto(session, nullptr, nullptr));
-    }
-
-    ssh_session get() const
-    {
-     return session;
-    }
-
-    const std::string &get_user() const {return user;}
-    const std::string &get_host() const {return host;}
-
-    void check_result(int result) const
-    {
-     check_ssh_session_result(session, result);
-    }
-
-    ~Session()
-    {
-     if (session)
-      ssh_free(session);
     }
   };
  }
