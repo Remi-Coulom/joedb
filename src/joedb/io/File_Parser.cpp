@@ -55,7 +55,7 @@ namespace joedb
 #endif
 
 #ifdef JOEDB_HAS_BROTLI
-  out << " brotli <file_name>\n";
+  out << " brotli [--read] <file_name>\n";
 #endif
  }
 
@@ -152,6 +152,14 @@ namespace joedb
   else if (arg_index < argc + 1 && std::strcmp(argv[arg_index], "brotli") == 0)
   {
    arg_index++;
+
+   bool readonly = false;
+   if (arg_index < argc + 1 && std::strcmp(argv[arg_index], "--read") == 0)
+   {
+    readonly = true;
+    arg_index++;
+   }
+
    const char * const file_name = argv[arg_index];
    arg_index++;
 
