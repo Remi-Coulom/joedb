@@ -4,7 +4,7 @@
 #include "joedb/journal/Generic_File.h"
 #include "joedb/ssh/SFTP.h"
 
-#include <array>
+#include <fcntl.h>
 
 namespace joedb
 {
@@ -56,7 +56,7 @@ namespace joedb
       sftp.get(),
       file_name,
       O_RDONLY,
-      S_IRUSR | S_IWUSR
+      0
      )
     )
    {

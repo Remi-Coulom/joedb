@@ -5,22 +5,6 @@
 
 #include <libssh/sftp.h>
 
-//
-// Windows does not define those
-//
-#include <fcntl.h>
-#ifndef S_IRUSR
-#define S_IRUSR 0000400
-#endif
-
-#ifndef S_IWUSR
-#define S_IWUSR 0000200
-#endif
-
-#ifndef S_IRWXU
-#define S_IRWXU 0000700
-#endif
-
 namespace joedb
 {
  namespace ssh
