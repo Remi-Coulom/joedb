@@ -9,7 +9,7 @@
 namespace joedb
 {
  ///////////////////////////////////////////////////////////////////////////
- class Windows_File: public Generic_File
+ class Windows_Handle: public Generic_File
  ///////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -42,19 +42,26 @@ namespace joedb
    void raw_sync() final;
 
   public:
-   Windows_File(const char *file_name, Open_Mode mode);
-
-   Windows_File(const std::string &file_name, Open_Mode mode):
-    Windows_File(file_name.c_str(), mode)
-   {
-   }
+   Windows_Handle(const char *file_name, Open_Mode mode);
 
    int64_t get_size() const final;
    void shared_lock(int64_t start, int64_t size) final;
    void exclusive_lock(int64_t start, int64_t size) final;
    void unlock(int64_t start, int64_t size) final;
 
-   ~Windows_File() override;
+   ~Windows_Handle() override;
+ };
+
+ ///////////////////////////////////////////////////////////////////////////
+ class Windows_File: public Windows_Handle
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  public:
+   Windows_File(const char *file_name, Open_Mode mode);
+   Windows_File(const std::string &file_name, Open_Mode mode):
+    Windows_File(file_name.c_str(), mode)
+   {
+   }
  };
 }
 

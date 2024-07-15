@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- const std::array<DWORD, Windows_File::modes> Windows_File::desired_access
+ const std::array<DWORD, Windows_Handle::modes> Windows_Handle::desired_access
  {
   GENERIC_READ,
   GENERIC_READ | GENERIC_WRITE,
@@ -16,7 +16,7 @@ namespace joedb
   GENERIC_READ | GENERIC_WRITE
  };
 
- const std::array<DWORD, Windows_File::modes> Windows_File::share_mode
+ const std::array<DWORD, Windows_Handle::modes> Windows_Handle::share_mode
  {
   FILE_SHARE_READ | FILE_SHARE_WRITE,
   FILE_SHARE_READ,
@@ -26,7 +26,7 @@ namespace joedb
   FILE_SHARE_READ | FILE_SHARE_WRITE
  };
 
- const std::array<DWORD, Windows_File::modes> Windows_File::creation_disposition
+ const std::array<DWORD, Windows_Handle::modes> Windows_Handle::creation_disposition
  {
   OPEN_EXISTING,
   OPEN_EXISTING,
@@ -44,7 +44,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::throw_last_error
+ void Windows_Handle::throw_last_error
  /////////////////////////////////////////////////////////////////////////////
  (
   const char *action,
@@ -78,7 +78,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- BOOL Windows_File::lock(Lock_Operation op, int64_t start, int64_t size)
+ BOOL Windows_Handle::lock(Lock_Operation op, int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (start < 0 || size < 0)
@@ -136,7 +136,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::shared_lock(int64_t start, int64_t size)
+ void Windows_Handle::shared_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (!lock(Lock_Operation::shared_lock, start, size))
@@ -144,7 +144,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::exclusive_lock(int64_t start, int64_t size)
+ void Windows_Handle::exclusive_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (!lock(Lock_Operation::exclusive_lock, start, size))
@@ -152,7 +152,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::unlock(int64_t start, int64_t size)
+ void Windows_Handle::unlock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (!lock(Lock_Operation::unlock, start, size))
@@ -160,7 +160,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Windows_File::pread(char* buffer, size_t size, int64_t offset)
+ size_t Windows_Handle::pread(char* buffer, size_t size, int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
   OVERLAPPED overlapped{};
@@ -182,7 +182,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::pwrite
+ void Windows_Handle::pwrite
  /////////////////////////////////////////////////////////////////////////////
  (
   const char* buffer,
@@ -219,7 +219,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Windows_File::raw_sync()
+ void Windows_Handle::raw_sync()
  /////////////////////////////////////////////////////////////////////////////
  {
   if (FlushFileBuffers(file) == 0)
@@ -227,7 +227,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Windows_File::Windows_File(const char *file_name, const Open_Mode mode):
+ Windows_Handle::Windows_Handle(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
   Generic_File(mode),
   file
@@ -246,13 +246,19 @@ namespace joedb
  {
   if (file == INVALID_HANDLE_VALUE)
    throw_last_error("Opening", file_name);
+ }
 
+ /////////////////////////////////////////////////////////////////////////////
+ Windows_File::Windows_File(const char *file_name, const Open_Mode mode):
+ /////////////////////////////////////////////////////////////////////////////
+  Windows_Handle(file_name, mode)
+ {
   if (mode == Open_Mode::write_lock)
    exclusive_lock_tail();
  }
 
  /////////////////////////////////////////////////////////////////////////////
- int64_t Windows_File::get_size() const
+ int64_t Windows_Handle::get_size() const
  /////////////////////////////////////////////////////////////////////////////
  {
   LARGE_INTEGER result;
@@ -266,7 +272,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Windows_File::~Windows_File()
+ Windows_Handle::~Windows_Handle()
  /////////////////////////////////////////////////////////////////////////////
  {
   destructor_flush();
