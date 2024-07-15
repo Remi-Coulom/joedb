@@ -3,6 +3,8 @@
 
 #include "joedb/ssh/ssh.h"
 
+#include <libssh/sftp.h>
+
 namespace joedb
 {
  namespace ssh
