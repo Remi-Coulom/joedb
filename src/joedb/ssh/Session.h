@@ -10,14 +10,14 @@ namespace joedb
  namespace ssh
  {
   ///////////////////////////////////////////////////////////////////////////
-  class Session_Wrapper
+  class Session_Allocation
   ///////////////////////////////////////////////////////////////////////////
   {
    protected:
     const ssh_session session;
 
    public:
-    Session_Wrapper(): session(ssh_new())
+    Session_Allocation(): session(ssh_new())
     {
      check_not_null(session);
     }
@@ -32,14 +32,14 @@ namespace joedb
      check_ssh_session_result(session, result);
     }
 
-    ~Session_Wrapper()
+    ~Session_Allocation()
     {
      ssh_free(session);
     }
   };
 
   ///////////////////////////////////////////////////////////////////////////
-  class Session_Connection: public Session_Wrapper
+  class Session_Connection: public Session_Allocation
   ///////////////////////////////////////////////////////////////////////////
   {
    public:

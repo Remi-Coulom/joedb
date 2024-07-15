@@ -26,19 +26,19 @@ namespace joedb
  namespace ssh
  {
   ///////////////////////////////////////////////////////////////////////////
-  class SFTP
-  ////////////////////////////////////////////////////////////////////////////
+  class SFTP_Allocation
+  ///////////////////////////////////////////////////////////////////////////
   {
    private:
-    const sftp_session sftp;
-
     static char const * const error_message[];
 
+   protected:
+    const sftp_session sftp;
+
    public:
-    SFTP(const Session &session): sftp(sftp_new(session.get()))
+    SFTP_Allocation(const Session &session): sftp(sftp_new(session.get()))
     {
      check_not_null(sftp);
-     check_result(sftp_init(sftp));
     }
 
     sftp_session get() const
@@ -54,10 +54,20 @@ namespace joedb
       throw_error();
     }
 
-    ~SFTP()
+    ~SFTP_Allocation()
     {
-     if (sftp)
-      sftp_free(sftp);
+     sftp_free(sftp);
+    }
+  };
+
+  ///////////////////////////////////////////////////////////////////////////
+  class SFTP: public SFTP_Allocation
+  ////////////////////////////////////////////////////////////////////////////
+  {
+   public:
+    SFTP(const Session &session): SFTP_Allocation(session)
+    {
+     check_result(sftp_init(sftp));
     }
   };
  }

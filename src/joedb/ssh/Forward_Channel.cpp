@@ -5,6 +5,21 @@ namespace joedb
  namespace ssh
  {
   ///////////////////////////////////////////////////////////////////////////
+  Forward_Channel_Allocation::Forward_Channel_Allocation(Session &session):
+  ///////////////////////////////////////////////////////////////////////////
+   channel(ssh_channel_new(session.get()))
+  {
+   check_not_null(channel);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+  Forward_Channel_Allocation::~Forward_Channel_Allocation()
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   ssh_channel_free(channel);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
   size_t Forward_Channel::write_some(const char *data, size_t size)
   ///////////////////////////////////////////////////////////////////////////
   {
@@ -38,13 +53,11 @@ namespace joedb
    Session &session,
    const char *remote_host,
    uint16_t remote_port
-  )
+  ):
+   Forward_Channel_Allocation(session)
   {
-   channel = ssh_channel_new(session.get());
-   check_not_null(channel);
-   check_ssh_session_result
+   session.check_result
    (
-    session.get(),
     ssh_channel_open_forward
     (
      channel,
@@ -54,13 +67,6 @@ namespace joedb
      0   // unused parameter
     )
    );
-  }
-
-  ///////////////////////////////////////////////////////////////////////////
-  Forward_Channel::~Forward_Channel()
-  ///////////////////////////////////////////////////////////////////////////
-  {
-   ssh_channel_free(channel);
   }
  }
 }
