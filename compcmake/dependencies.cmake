@@ -109,3 +109,9 @@ if (brotli_encode_include_path AND brotli_decode_lib AND brotli_encode_lib)
 else()
  message("== Brotli not found. Try sudo apt install libbrotli-dev")
 endif()
+
+# winsock
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if (WIN32)
+ set(JOEDB_EXTERNAL_LIBS ${JOEDB_EXTERNAL_LIBS} wsock32 ws2_32)
+endif()
