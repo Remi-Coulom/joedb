@@ -6,7 +6,8 @@ History
   - ``Encoded_File`` supports on-the-fly coding or decoding of data. Custom
     codecs can be used. ``Brotli_Codec`` is provided for compression.
   - Fix some potential resource leaks when throwing from constructors in
-    ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``
+    ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
+    ``CURL_File``, ``Windows_File``.
   - Incompatibilities with previous version:
 
     - hashing functions were moved into a separate ``File_Hasher`` class.
