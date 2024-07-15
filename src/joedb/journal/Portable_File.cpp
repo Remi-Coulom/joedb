@@ -21,18 +21,16 @@ namespace joedb
   {
    filebuf.open(file_name, in | std::ios::out);
   }
-  else if
-  (
-   mode == Open_Mode::write_existing_or_create_new ||
-   mode == Open_Mode::create_new
-  )
+  else if (mode == Open_Mode::create_new)
   {
-   if (mode == Open_Mode::create_new && filebuf.open(file_name, in))
+   if (filebuf.open(file_name, in))
     throw Exception("File already exists: " + std::string(file_name));
-
-   filebuf.open(file_name, in | std::ios::out | std::ios::app);
-   filebuf.close();
-   filebuf.open(file_name, in | std::ios::out);
+   filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
+  }
+  else if (mode == Open_Mode::write_existing_or_create_new)
+  {
+   filebuf.open(file_name, in | std::ios::out) ||
+   filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
   }
   else
   {
