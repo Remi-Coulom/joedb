@@ -22,7 +22,7 @@ namespace joedb
    (
     std::ostream &out,
     const Database_Schema &schema,
-    bool blob_wanted = false
+    bool blob_wanted = true
    ):
     out(out),
     schema(schema),
@@ -105,7 +105,7 @@ namespace joedb
  {
 
   public:
-   Interpreter_Dump_Writable(std::ostream &out, bool blob_wanted = false):
+   Interpreter_Dump_Writable(std::ostream &out, bool blob_wanted = true):
     Interpreter_Dump_Writable_Parent(out, blob_wanted),
     Multiplexer{interpreter_writable, schema}
    {
