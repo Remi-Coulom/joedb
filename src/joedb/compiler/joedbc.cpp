@@ -1719,6 +1719,11 @@ static void generate_readonly_h
    {
     return journal;
    }
+
+   std::string read_blob_data(joedb::Blob blob)
+   {
+    return journal.read_blob_data(blob);
+   }
  };
 
  ////////////////////////////////////////////////////////////////////////////
