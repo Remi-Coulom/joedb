@@ -1697,8 +1697,10 @@ static void generate_readonly_h
  using Generic_Readonly_Database = Readonly_Database;
 
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Client_Data: public joedb::Client_Data
+ class Readonly_Client_Data:
  ////////////////////////////////////////////////////////////////////////////
+  public joedb::Client_Data,
+  public joedb::Blob_Reader
  {
   protected:
    joedb::Readonly_Journal journal;
@@ -1720,7 +1722,7 @@ static void generate_readonly_h
     return journal;
    }
 
-   std::string read_blob_data(joedb::Blob blob)
+   std::string read_blob_data(joedb::Blob blob) final
    {
     return journal.read_blob_data(blob);
    }

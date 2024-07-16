@@ -3,8 +3,6 @@ TODO
 
 For next release
 ----------------
- - Read-only Encoded_File.
-
  - use joedb to store a struct (mahjong rules, training parameters, ...)
 
    - struct defined only once (in joedbi format, with default values)

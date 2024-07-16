@@ -165,7 +165,12 @@ namespace joedb
 
    out << "Opening brotli file... ";
    out.flush();
-   file.reset(new Brotli_File(file_name));
+
+   if (readonly)
+    file.reset(new Readonly_Brotli_File(file_name));
+   else
+    file.reset(new Brotli_File(file_name));
+
    out << "OK\n";
   }
 #endif

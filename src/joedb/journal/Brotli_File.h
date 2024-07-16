@@ -27,6 +27,29 @@ namespace joedb
   public:
    Brotli_File(const char *file_name);
  };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Readonly_Brotli_File_Data
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  protected:
+   Brotli_Codec codec;
+   File file;
+   encoded_file::Readonly_Database db;
+
+  public:
+   Readonly_Brotli_File_Data(const char *file_name);
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ class Readonly_Brotli_File:
+ ////////////////////////////////////////////////////////////////////////////
+  private Readonly_Brotli_File_Data,
+  public Readonly_Encoded_File
+ {
+  public:
+   Readonly_Brotli_File(const char *file_name);
+ };
 }
 
 #endif
