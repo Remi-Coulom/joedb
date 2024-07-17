@@ -49,7 +49,8 @@ TEST(Interpreter_Test, Interpreter_Dump_Writable)
  Memory_File file;
  Writable_Journal journal(file);
  std::ostringstream dump_string;
- joedb::Interpreter_Dump_Writable writable(dump_string);
+ const bool blob_wanted = true;
+ joedb::Interpreter_Dump_Writable writable(dump_string, blob_wanted);
  Multiplexer multiplexer{db, journal, writable};
  Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
 
