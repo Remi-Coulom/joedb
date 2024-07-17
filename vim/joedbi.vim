@@ -10,7 +10,7 @@ if exists("b:current_syntax")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword joedbi_keyword valid_data schema dump sql help about quit
+syn keyword joedbi_keyword valid_data schema dump sql help about quit default
 
 syn keyword joedbi_keyword json echo blob nextgroup=joedbi_constant skipwhite
 
@@ -35,6 +35,9 @@ syn match joedbi_table '[a-zA-Z_]\w*' contained
 syn keyword joedbi_keyword add_field nextgroup=joedbi_table_field_type skipwhite
 syn match joedbi_table_field_type '[a-zA-Z_]\w*' contained nextgroup=joedbi_field_type skipwhite
 syn match joedbi_field_type '[a-zA-Z_]\w*' contained nextgroup=joedbi_type skipwhite
+
+syn keyword joedbi_keyword default nextgroup=joedbi_constant skipwhite
+syn match joedbi_table_field_type '[a-zA-Z_]\w*' contained nextgroup=joedbi_field_type skipwhite
 
 syn keyword joedbi_keyword drop_field nextgroup=joedbi_table_field skipwhite
 syn match joedbi_table_field '[a-zA-Z_]\w*' contained nextgroup=joedbi_field skipwhite
