@@ -100,7 +100,35 @@ Data manipulation
    parameters >> field_name;
    const Type type = parse_type(parameters, out);
    if (type.get_type_id() != Type::Type_Id::null)
+   {
     get_writable().add_field(table_id, field_name, type);
+
+    std::string next_word;
+    parameters >> next_word;
+
+    if (next_word == "default")
+    {
+     const Field_Id field_id =
+      get_readable().get_fields(table_id).rbegin()->first;
+
+     const Record_Id last_record_id =
+      get_readable().get_last_record_id(table_id);\
+
+     switch(type.get_type_id()) // NOLINT
+     {
+      #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
+      case Type::Type_Id::type_id:\
+      {\
+       const type value = joedb::read_##type_id(parameters);\
+       for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)\
+        if (get_readable().is_used(table_id, record_id))\
+         get_writable().update_##type_id(table_id, record_id, field_id, value);\
+      }\
+      break;
+      #include "joedb/TYPE_MACRO.h"
+     }
+    }
+   }
   }
   else if (command == "drop_field") ////////////////////////////////////////
   {
