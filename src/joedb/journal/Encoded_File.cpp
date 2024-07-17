@@ -24,61 +24,6 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- size_t Readonly_Encoded_File::pread
- //////////////////////////////////////////////////////////////////////////
- (
-  char * const buffer,
-  const size_t size,
-  const int64_t offset
- )
- {
-  const int64_t start = offset;
-  const int64_t end = offset + int64_t(size);
-
-  int64_t global_end = 0;
-
-  for (auto b: db.get_buffer_table())
-  {
-   const int64_t b_start = db.get_offset(b);
-   const int64_t b_end = b_start + db.get_size(b);
-
-   const int64_t intersection_start = std::max(start, b_start);
-   const int64_t intersection_end = std::min(end, b_end);
-   const int64_t intersection_size = intersection_end - intersection_start;
-
-   if (intersection_size > 0)
-   {
-    if (intersection_end > global_end)
-     global_end = intersection_end;
-
-    if (b != decoded_buffer)
-    {
-     if (int64_t(read_buffer.size()) < db.get_size(b))
-      read_buffer.resize(db.get_size(b));
-
-     codec.decode
-     (
-      blob_reader.read_blob_data(db.get_data(b)),
-      read_buffer.data(),
-      db.get_size(b)
-     );
-
-     decoded_buffer = b;
-    }
-
-    std::copy_n
-    (
-     read_buffer.data() + intersection_start - b_start,
-     intersection_size,
-     buffer + intersection_start - start
-    );
-   }
-  }
-
-  return global_end - offset;
- }
-
- //////////////////////////////////////////////////////////////////////////
  void Encoded_File::write_blob(const char *buffer, size_t size, size_t offset)
  //////////////////////////////////////////////////////////////////////////
  {
@@ -130,35 +75,6 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- Readonly_Encoded_File::Readonly_Encoded_File
- //////////////////////////////////////////////////////////////////////////
- (
-  Codec &codec,
-  encoded_file::Database &db,
-  Blob_Reader &blob_reader,
-  Open_Mode mode
- ):
-  Generic_File(mode),
-  db(db),
-  blob_reader(blob_reader),
-  decoded_buffer{0},
-  codec(codec)
- {
- }
-
- //////////////////////////////////////////////////////////////////////////
- Readonly_Encoded_File::Readonly_Encoded_File
- //////////////////////////////////////////////////////////////////////////
- (
-  Codec &codec,
-  encoded_file::Database &db,
-  Blob_Reader &blob_reader
- ):
-  Readonly_Encoded_File(codec, db, blob_reader, Open_Mode::read_existing)
- {
- }
-
- //////////////////////////////////////////////////////////////////////////
  Encoded_File::Encoded_File
  //////////////////////////////////////////////////////////////////////////
  (
@@ -171,22 +87,6 @@ namespace joedb
   write_buffer_offset(0),
   write_buffer_size(0)
  {
- }
-
- //////////////////////////////////////////////////////////////////////////
- int64_t Readonly_Encoded_File::get_size() const
- //////////////////////////////////////////////////////////////////////////
- {
-  int64_t result = 0;
-
-  for (const auto buffer: db.get_buffer_table())
-  {
-   const int64_t end = db.get_offset(buffer) + db.get_size(buffer);
-   if (end > result)
-    result = end;
-  }
-
-  return result;
  }
 
  //////////////////////////////////////////////////////////////////////////

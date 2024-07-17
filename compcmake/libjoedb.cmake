@@ -29,6 +29,7 @@ set(JOEDB_DATABASES
  ${JOEDB_SRC_DIR}/joedb/db/multi_server_readonly.cpp
  ${JOEDB_SRC_DIR}/joedb/db/multi_server_interpreted.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/io/File_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Client_Parser.cpp
 )
