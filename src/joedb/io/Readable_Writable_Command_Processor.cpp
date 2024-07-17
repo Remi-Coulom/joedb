@@ -114,8 +114,9 @@ Data manipulation
      const Record_Id last_record_id =
       get_readable().get_last_record_id(table_id);\
 
-     switch(type.get_type_id()) // NOLINT
+     switch(type.get_type_id())
      {
+      case Type::Type_Id::null: break;
       #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
       case Type::Type_Id::type_id:\
       {\
