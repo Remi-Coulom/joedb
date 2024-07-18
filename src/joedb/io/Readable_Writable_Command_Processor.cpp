@@ -135,7 +135,7 @@ Data manipulation
     std::string next_word;
     parameters >> next_word;
 
-    if (next_word == "default")
+    if (next_word == "=")
     {
      const Field_Id field_id =
       get_readable().get_fields(table_id).rbegin()->first;
