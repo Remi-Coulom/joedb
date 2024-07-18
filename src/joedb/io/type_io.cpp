@@ -222,14 +222,20 @@ bool joedb::read_boolean(std::istream &in)
  else if (word == "false" || word == "0")
   return false;
  else
-  throw Exception("error parsing boolean");
+ {
+  in.setstate(std::ios::failbit);
+  return false;
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::write_boolean(std::ostream &out, bool value)
 /////////////////////////////////////////////////////////////////////////////
 {
- out << value;
+ if (value)
+  out << "true";
+ else
+  out << "false";
 }
 
 /////////////////////////////////////////////////////////////////////////////
