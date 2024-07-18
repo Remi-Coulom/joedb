@@ -19,8 +19,15 @@ namespace joedb
    const Readable &readable;
    Blob_Reader *blob_reader;
 
-   Type parse_type(std::istream &in, std::ostream &out) const;
    Table_Id parse_table(std::istream &in, std::ostream &out) const;
+
+   void write_value
+   (
+    std::ostream &out,
+    Table_Id table_id,
+    Record_Id record_id,
+    Field_Id field_id
+   );
 
    Status process_command
    (

@@ -17,7 +17,7 @@ namespace joedb
    Readable_Command_Processor &readable_command_processor;
    Writable_Command_Processor &writable_command_processor;
 
-   const Readable &get_readable()
+   const Readable &get_readable() const
    {
     return readable_command_processor.readable;
    }
@@ -27,10 +27,7 @@ namespace joedb
     return writable_command_processor.writable;
    }
 
-   Type parse_type(std::istream &in, std::ostream &out) const
-   {
-    return readable_command_processor.parse_type(in, out);
-   }
+   Type parse_type(std::istream &in, std::ostream &out) const;
 
    Table_Id parse_table(std::istream &in, std::ostream &out) const
    {

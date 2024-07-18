@@ -13,32 +13,49 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Type Readable_Command_Processor::parse_type
+ void Readable_Command_Processor::write_value
  ////////////////////////////////////////////////////////////////////////////
  (
-  std::istream &in,
-  std::ostream &out
- ) const
+  std::ostream &out,
+  Table_Id table_id,
+  Record_Id record_id,
+  Field_Id field_id
+ )
  {
-  std::string type_name;
-  in >> type_name;
-
-  if (type_name == "references")
+  switch (readable.get_field_type(table_id, field_id).get_type_id())
   {
-   std::string table_name;
-   in >> table_name;
-   const Table_Id table_id = readable.find_table(table_name);
-   if (table_id != Table_Id(0))
-    return Type::reference(table_id);
+   case Type::Type_Id::null:
+   break;
+
+   case Type::Type_Id::blob:
+   {
+    const Blob blob = readable.get_blob
+    (
+     table_id,
+     record_id,
+     field_id
+    );
+
+    if (blob.get_position() && blob_reader)
+    {
+     write_string
+     (
+      out,
+      blob_reader->read_blob_data(blob)
+     );
+    }
+    else
+     write_blob(out, blob);
+   }
+   break;
+
+   #define TYPE_MACRO(type, return_type, type_id, R, W)\
+   case Type::Type_Id::type_id:\
+    write_##type_id(out, readable.get_##type_id(table_id, record_id, field_id));\
+   break;
+   #define TYPE_MACRO_NO_BLOB
+   #include "joedb/TYPE_MACRO.h"
   }
-
-  #define TYPE_MACRO(type, return_type, type_id, read, write)\
-  if (type_name == #type_id)\
-   return Type::type_id();
-  #define TYPE_MACRO_NO_REFERENCE
-  #include "joedb/TYPE_MACRO.h"
-
-  throw Exception("unknown type");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -53,11 +70,7 @@ namespace joedb
   in >> table_name;
   const Table_Id table_id = readable.find_table(table_name);
   if (table_id == Table_Id(0))
-  {
-   std::ostringstream error;
-   error << "No such table: " << table_name;
-   throw Exception(error.str());
-  }
+   throw Exception("No such table: " + table_name);
   return table_id;
  }
 
@@ -116,53 +129,17 @@ namespace joedb
      {
       rows++;
       id_column.emplace_back(record_id);
+
       for (auto field: fields)
       {
        std::ostringstream ss;
-
-       switch (readable.get_field_type(table_id, field.first).get_type_id())
-       {
-        case Type::Type_Id::null:
-        break;
-
-        case Type::Type_Id::blob:
-        {
-         const Blob blob = readable.get_blob
-         (
-          table_id,
-          record_id,
-          field.first
-         );
-
-         if (blob.get_position() && blob_reader)
-         {
-          write_string
-          (
-           ss,
-           blob_reader->read_blob_data(blob)
-          );
-         }
-         else
-          write_blob(ss, blob);
-        }
-        break;
-
-        #define TYPE_MACRO(type, return_type, type_id, R, W)\
-        case Type::Type_Id::type_id:\
-         write_##type_id(ss, readable.get_##type_id(table_id, record_id, field.first));\
-        break;
-        #define TYPE_MACRO_NO_BLOB
-        #include "joedb/TYPE_MACRO.h"
-       }
-
+       write_value(ss, table_id, record_id, field.first);
        ss.flush();
-       {
-        std::string s = ss.str();
-        const size_t width = utf8_display_size(s);
-        if (column_width[field.first] < width)
-         column_width[field.first] = width;
-        columns[field.first].emplace_back(std::move(s));
-       }
+       const std::string &s = ss.str();
+       const size_t width = utf8_display_size(s);
+       if (column_width[field.first] < width)
+        column_width[field.first] = width;
+       columns[field.first].emplace_back(s);
       }
      }
     }
@@ -237,6 +214,28 @@ namespace joedb
     }
    }
   }
+  else if (command == "record") /////////////////////////////////////////////
+  {
+   const Table_Id table_id = parse_table(parameters, out);
+   Record_Id record_id;
+   if (!(parameters >> record_id))
+    record_id = Record_Id{1};
+   if (!readable.is_used(table_id, record_id))
+    throw Exception("no such record");
+
+   const auto &fields = readable.get_fields(table_id);
+   size_t max_field_size = 0;
+   for (auto field: fields)
+    if (field.second.size() > max_field_size)
+     max_field_size = field.second.size();
+
+   for (auto field: fields)
+   {
+    out << std::setw(int(max_field_size)) << field.second << ": ";
+    write_value(out, table_id, record_id, field.first);
+    out << '\n';
+   }
+  }
   else if (command == "table_size") /////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, out);
@@ -269,6 +268,7 @@ namespace joedb
    out << R"RRR(Displaying data
 ~~~~~~~~~~~~~~~
  table <table_name> [<max_column_width>] [start] [length]
+ record <table_name> [<record_id>]
  table_size <table_name>
  schema
  dump

@@ -8,6 +8,35 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ Type Readable_Writable_Command_Processor::parse_type
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::istream &in,
+  std::ostream &out
+ ) const
+ {
+  std::string type_name;
+  in >> type_name;
+
+  if (type_name == "references")
+  {
+   std::string table_name;
+   in >> table_name;
+   const Table_Id table_id = get_readable().find_table(table_name);
+   if (table_id != Table_Id(0))
+    return Type::reference(table_id);
+  }
+
+  #define TYPE_MACRO(type, return_type, type_id, read, write)\
+  if (type_name == #type_id)\
+   return Type::type_id();
+  #define TYPE_MACRO_NO_REFERENCE
+  #include "joedb/TYPE_MACRO.h"
+
+  throw Exception("unknown type");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Readable_Writable_Command_Processor::update_value
  ////////////////////////////////////////////////////////////////////////////
  (

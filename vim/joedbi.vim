@@ -10,7 +10,7 @@ if exists("b:current_syntax")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword joedbi_keyword valid_data schema dump sql help about quit default
+syn keyword joedbi_keyword valid_data schema dump sql help about quit
 
 syn keyword joedbi_keyword json echo blob nextgroup=joedbi_constant skipwhite
 
@@ -57,6 +57,7 @@ syn keyword joedbi_keyword comment nextgroup=joedbi_constant skipwhite
 
 syn keyword joedbi_keyword timestamp nextgroup=joedbi_constant skipwhite
 
+syn keyword joedbi_keyword record nextgroup=joedbi_table_constant skipwhite
 syn keyword joedbi_keyword insert_into nextgroup=joedbi_table_constant skipwhite
 syn match joedbi_table_constant '[a-zA-Z_]\w*' contained nextgroup=joedbi_constant skipwhite
 
