@@ -31,6 +31,9 @@ namespace joedb
  int8_t read_int8(std::istream &in);
  void write_int8(std::ostream &out, int8_t value);
 
+ bool read_boolean(std::istream &in);
+ void write_boolean(std::ostream &out, bool value);
+
  void write_blob(std::ostream &out, const Blob blob);
  Blob read_blob(std::istream &in);
 
@@ -68,7 +71,6 @@ namespace joedb
 
  PRIMITIVE_IO(int32_t, int32)
  PRIMITIVE_IO(int64_t, int64)
- PRIMITIVE_IO(bool, boolean)
  PRIMITIVE_IO(Record_Id, reference)
  PRIMITIVE_IO(float, float32)
  PRIMITIVE_IO(double, float64)

@@ -50,7 +50,7 @@ namespace joedb
  create_table <table_name>
  drop_table <table_name>
  rename_table <old_table_name> <new_table_name>
- add_field <table_name> <field_name> <type>
+ add_field <table_name> <field_name> <type> [default <value>]
  drop_field <table_name> <field_name>
  rename_field <table_name> <old_field_name> <new_field_name>
  custom <custom_name>

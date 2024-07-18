@@ -108,7 +108,7 @@ Data definition
  create_table <table_name>
  drop_table <table_name>
  rename_table <old_table_name> <new_table_name>
- add_field <table_name> <field_name> <type>
+ add_field <table_name> <field_name> <type> [default <value>]
  drop_field <table_name> <field_name>
  rename_field <table_name> <old_field_name> <new_field_name>
  custom <custom_name>
@@ -184,8 +184,7 @@ OK:
 Error: drop_field: invalid field_id
 Line 45: drop_field test qsdfqsdf
 OK: drop_field test a
-Error: failed parsing value
-Line 47: insert_into test 2 3 "4"
+OK: insert_into test 2 3 "4" false
 OK: delete_from test 2
 Error: delete_record: bad record_id
 Line 49: delete_from test 123
