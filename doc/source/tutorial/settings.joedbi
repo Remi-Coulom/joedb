@@ -1,0 +1,5 @@
+create_table Settings
+insert_into Settings 1
+add_field Settings dark_mode boolean = true
+add_field Settings host string = "www.kayufu.com"
+add_field Settings user string = "remi"

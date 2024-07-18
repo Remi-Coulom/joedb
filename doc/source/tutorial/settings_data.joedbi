@@ -1,0 +1,4 @@
+insert_into Settings 1
+update Settings 1 dark_mode false
+update Settings 1 host "www.kayufu.com"
+update Settings 1 user "remi"

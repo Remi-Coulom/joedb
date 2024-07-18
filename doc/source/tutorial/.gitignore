@@ -6,6 +6,14 @@ tutorial_readonly.h
 tutorial_readonly.cpp
 tutorial_wrapper.h
 tutorial_wrapper.cpp
+settings.h
+settings.cpp
+settings_interpreted.h
+settings_interpreted.cpp
+settings_readonly.h
+settings_readonly.cpp
+settings_wrapper.h
+settings_wrapper.cpp
 edited_tutorial.h
 tutorial.joedb
 tutorial.out
