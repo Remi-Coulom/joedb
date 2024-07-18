@@ -84,6 +84,10 @@ OK: json 1
 2 "Norbert"      2 "This is my life"
 3 "Alexandre"   15 "This is my life"
 OK: table person
+name: "Rémi"
+city: 2
+ bio: "This is my life"
+OK: record person 1
 
 General commands
 ~~~~~~~~~~~~~~~~
@@ -132,6 +136,7 @@ Data manipulation
 Displaying data
 ~~~~~~~~~~~~~~~
  table <table_name> [<max_column_width>] [start] [length]
+ record <table_name> [<record_id>]
  table_size <table_name>
  schema
  dump
@@ -139,7 +144,6 @@ Displaying data
  json [<base64>]
 
 OK: help
-OK: 
 Error: create_table: name already used: city
 Line 23: create_table city
 Error: create_table: invalid identifier: 123456
