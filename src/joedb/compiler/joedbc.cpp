@@ -521,8 +521,11 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Client: private Client_Data, public joedb::Client
+ class Client:
  ////////////////////////////////////////////////////////////////////////////
+  private Client_Data,
+  public joedb::Client,
+  public joedb::Blob_Reader
  {
   private:
    int64_t schema_checkpoint;
@@ -563,6 +566,11 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    const Database &get_database() const
    {
     return db;
+   }
+
+   std::string read_blob_data(joedb::Blob blob) final
+   {
+    return db.read_blob_data(blob);
    }
 
    int64_t pull()

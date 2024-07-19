@@ -3,9 +3,9 @@ History
 
 - 2024-??-?? 10.0.0
 
-  - ``Encoded_File`` supports on-the-fly coding or decoding of data. Custom
-    codecs can be used. ``Brotli_Codec`` is provided for compression.
-  - ``Readonly_Client`` is now also a ``Blob_Reader``
+  - ``Encoded_File`` supports on-the-fly coding or decoding of data.
+    ``Brotli_Codec`` is provided for compression. Custom codecs can be used.
+  - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
   - Fix some potential resource leaks when throwing from constructors in
     ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
     ``CURL_File``, ``Windows_File``.

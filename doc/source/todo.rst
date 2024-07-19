@@ -5,8 +5,6 @@ For next release
 ----------------
  - use joedb to store a struct (mahjong rules, training parameters, ...)
 
-   - struct defined only once (in joedbi format, with default values)
-     (add_field table int32 default 1234)
    - joedbc generates all C++ code for convenient manipulation
    - single-row compiler option
 
@@ -38,6 +36,9 @@ For next release
    - keeps working even if server dies
 
  - Add support for vcpkg and conan
+
+ - Make all file reads const function. Use a separate file iterator to keep
+   track of current position.
 
 New Operations and Types
 ------------------------
