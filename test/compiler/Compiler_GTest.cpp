@@ -56,7 +56,8 @@ TEST(Compiler, file_test)
  //
  // First, try to open the database
  //
- joedb::Interpreted_File file ("compiler/db/test.joedbi");
+ joedb::Memory_File file;
+ joedb::Interpreted_File("compiler/db/test.joedbi").copy_to(file);
  test::Generic_File_Database db(file);
 
  //
@@ -772,7 +773,8 @@ TEST(Compiler, vector)
 
  try
  {
-  joedb::Interpreted_File file("compiler/vector_hole.joedbi");
+  joedb::Memory_File file;
+  joedb::Interpreted_File("compiler/vector_hole.joedbi").copy_to(file);
   vector_test::Generic_File_Database db(file);
  }
  catch (const joedb::Exception &e)
@@ -782,7 +784,8 @@ TEST(Compiler, vector)
 
  try
  {
-  joedb::Interpreted_File file("compiler/vector_hole_by_vector_insert.joedbi");
+  joedb::Memory_File file;
+  joedb::Interpreted_File("compiler/vector_hole_by_vector_insert.joedbi").copy_to(file);
 
   {
    vector_test::Generic_File_Database db(file);
@@ -806,7 +809,8 @@ TEST(Compiler, vector)
 
  try
  {
-  joedb::Interpreted_File file("compiler/vector_delete.joedbi");
+  joedb::Memory_File file;
+  joedb::Interpreted_File("compiler/vector_delete.joedbi").copy_to(file);
   vector_test::Generic_File_Database db(file);
  }
  catch (const joedb::Exception &e)

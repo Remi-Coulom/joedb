@@ -13,7 +13,8 @@ History
 
     - boolean values are printed as ``false`` and ``true`` instead of 0 and 1.
     - joedbc does not produce ``Interpreted_Database`` any more: use a
-      ``Generic_Readonly_Database`` with an ``Interpreted_File`` instead.
+      ``Generic_Readonly_Database`` with an ``Interpreted_File`` instead. Also,
+      ``Interpreted_File`` is now read-only.
     - hashing functions were moved into a separate ``File_Hasher`` class.
     - ``Generic_File::set_mode`` and ``get_mode`` were removed. Mode
       is now a constant set in the constructor.

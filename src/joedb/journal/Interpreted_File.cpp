@@ -7,14 +7,14 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_File::Interpreted_File(std::istream &file)
+ Interpreted_File_Data::Interpreted_File_Data(std::istream &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (!file)
    throw Exception("bad command stream");
 
   Database db;
-  Writable_Journal journal(*this);
+  Writable_Journal journal(memory_file);
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
   interpreter.set_echo(false);
