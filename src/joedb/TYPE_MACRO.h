@@ -12,8 +12,10 @@ TYPE_MACRO(int64_t, int64_t, int64, file.read<int64_t>, write<int64_t>)
 #ifndef TYPE_MACRO_NO_REFERENCE
 TYPE_MACRO(joedb::Record_Id, joedb::Record_Id, reference, file.read_reference, write_reference)
 #endif
+#ifndef TYPE_MACRO_NO_BOOL
 #ifndef TYPE_MACRO_NO_INT
 TYPE_MACRO(char, bool, boolean, file.read<char>, write<char>)
+#endif
 #endif
 #ifndef TYPE_MACRO_NO_FLOAT
 TYPE_MACRO(float, float, float32, file.read<float>, write<float>)
@@ -36,3 +38,4 @@ TYPE_MACRO(joedb::Blob, joedb::Blob, blob, file.read_blob, write_blob)
 #undef TYPE_MACRO_NO_INT
 #undef TYPE_MACRO_NO_FLOAT
 #undef TYPE_MACRO_NO_BLOB
+#undef TYPE_MACRO_NO_BOOL

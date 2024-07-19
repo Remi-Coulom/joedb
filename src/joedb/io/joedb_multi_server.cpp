@@ -1,5 +1,6 @@
 #include "joedb/io/main_exception_catcher.h"
-#include "joedb/db/multi_server_interpreted.h"
+#include "joedb/db/multi_server_readonly.h"
+#include "joedb/journal/Interpreted_File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
@@ -61,7 +62,10 @@ namespace joedb
   }
 
   const char * const config_file_name = argv[1];
-  multi_server::Interpreted_Database db(config_file_name);
+  multi_server::Generic_Readonly_Database db
+  (
+   Interpreted_File{config_file_name}
+  );
 
   IO_Context_Wrapper io_context_wrapper;
 

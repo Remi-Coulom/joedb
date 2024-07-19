@@ -89,8 +89,6 @@ function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  add_custom_command(
   OUTPUT
-   ${dir}/${namespace}_interpreted.cpp
-   ${dir}/${namespace}_interpreted.h
    ${dir}/${namespace}_readonly.cpp
    ${dir}/${namespace}_readonly.h
    ${dir}/${namespace}.cpp

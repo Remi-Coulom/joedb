@@ -36,7 +36,7 @@ drop_field test a
 insert_into test 2
 update test 2 b 3
 update test 2 d "4"
-update test 2 e 0
+update test 2 e false
 delete_from test 2
 update test 1 b 56789
 create_table ref
@@ -58,7 +58,7 @@ update alltypes 1 s "toto"
 update alltypes 1 i32 123456789
 update alltypes 1 i64 123456789123456789
 update alltypes 1 ref 1
-update alltypes 1 b 1
+update alltypes 1 b true
 update alltypes 1 f 3.14
 update alltypes 1 d 3.14159
 update alltypes 1 o 42

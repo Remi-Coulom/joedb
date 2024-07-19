@@ -1,2 +1,8 @@
-insert_into server 1 "test_1.joedb" 2001 0
-insert_into server 2 "test_2.joedb" 2002 0
+create_table server
+add_field server file_name string
+add_field server port int32
+
+insert_into server 1 "test_1.joedb" 2001
+insert_into server 2 "test_2.joedb" 2002
+
+add_field server timeout int32 = 0

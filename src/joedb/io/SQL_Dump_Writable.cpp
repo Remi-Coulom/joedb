@@ -200,7 +200,23 @@ namespace joedb
  #define TYPE_MACRO_NO_STRING
  #define TYPE_MACRO_NO_BLOB
  #define TYPE_MACRO_NO_REFERENCE
+ #define TYPE_MACRO_NO_BOOL
  #include "joedb/TYPE_MACRO.h"
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SQL_Writable::update_boolean
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  Field_Id field_id,
+  const bool value)
+ {
+  out << "UPDATE \"" << schema.get_table_name(table_id);
+  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
+  out << value;
+  out << " WHERE " << id_field_name << " = " << record_id << ";\n";
+ }
 
  ////////////////////////////////////////////////////////////////////////////
  void SQL_Writable::update_string

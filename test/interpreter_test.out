@@ -182,7 +182,7 @@ insert_vector test 1 1
 update test 1 a 1234
 update test 1 b 5678
 update test 1 d ""
-update test 1 e 0
+update test 1 e false
 OK: dump
 OK: 
 Error: drop_field: invalid field_id
@@ -204,7 +204,7 @@ add_field test e boolean
 insert_vector test 1 1
 update test 1 b 56789
 update test 1 d ""
-update test 1 e 0
+update test 1 e false
 OK: dump
 OK: 
 OK: create_table ref
@@ -292,7 +292,7 @@ update all_types 1 str "toto"
 update all_types 1 i32 123456789
 update all_types 1 i64 123456789123456789
 update all_types 1 ref 1
-update all_types 1 b 1
+update all_types 1 b true
 update all_types 1 f 3.14
 update all_types 1 d 3.14159
 update all_types 1 o 42
