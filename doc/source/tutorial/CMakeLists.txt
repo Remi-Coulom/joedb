@@ -42,4 +42,4 @@ joedb_add_executable(concurrency_tutorial concurrency_tutorial.cpp tutorial.cpp)
 
 joedb_add_executable(index_tutorial index_tutorial.cpp tutorial.cpp)
 
-joedb_add_executable(settings settings_main.cpp settings_readonly.cpp settings_interpreted.cpp)
+joedb_add_executable(settings settings_main.cpp settings_readonly.cpp)

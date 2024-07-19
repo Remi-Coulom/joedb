@@ -1,6 +1,10 @@
 #!/bin/bash
+set -e
+cd ../doc/source/tutorial
+./generate.sh
+cd -
 build_dir=../compcmake/gcc_debug
-cmake --build $build_dir --target joedb_test || exit 1
+cmake --build $build_dir --target joedb_test
 rm -vf *.tmp
 
 if [ "$1" == "" ]; then
