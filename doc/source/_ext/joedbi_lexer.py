@@ -9,7 +9,7 @@ class JoedbiLexer(RegexLexer):
     tokens = {
         'root': [
             (r'create_table\s+', Keyword, 'table'),
-            (r'add_field\s+', Keyword, 'table_field_type'),
+            (r'add_field\s+', Keyword, 'table_field_type_init'),
             (r'custom\s+', Keyword, 'custom'),
             (r'comment\s+', Keyword, 'literal'),
             (r'insert_into\s+', Keyword, 'table_literal'),
@@ -21,15 +21,18 @@ class JoedbiLexer(RegexLexer):
         'table': [
             (r'[a-zA-Z_]\w*', Name.Class)
         ],
-        'table_field_type': [
-            (r'[a-zA-Z_]\w*\s+', Name.Class, 'field_type')
+        'table_field_type_init': [
+            (r'[a-zA-Z_]\w*\s+', Name.Class, 'field_type_init')
         ],
-        'field_type': [
-            (r'[a-zA-Z_]\w*\s+', Name.Variable, 'type')
+        'field_type_init': [
+            (r'[a-zA-Z_]\w*\s+', Name.Variable, 'type_init')
         ],
-        'type': [
-            (r'references\s+[a-zA-Z_]\w*', Keyword.Type),
-            (r'[a-zA-Z_]\w*', Keyword.Type)
+        'type_init': [
+            (r'references\s+[a-zA-Z_]\w*', Keyword.Type, 'init'),
+            (r'[a-zA-Z_]\w*', Keyword.Type, 'init')
+        ],
+        'init': [
+            (r'\s*=\s*', Operator, 'literal')
         ],
         'custom': [
             (r'[a-zA-Z_]\w*', Name.Function)

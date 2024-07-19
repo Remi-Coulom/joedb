@@ -129,11 +129,6 @@ Run a server to share multiple databases. The config file contains joedbi comman
 .. literalinclude:: ../../test/multi_server.joedbi
    :language: joedbi
 
-The schema of the config file is this:
-
-.. literalinclude:: ../../src/joedb/db/multi_server.joedbi
-   :language: joedbi
-
 .. _joedb_client:
 
 ``joedb_client``
