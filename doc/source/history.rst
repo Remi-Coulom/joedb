@@ -5,8 +5,10 @@ History
 
   - ``Encoded_File`` supports on-the-fly coding or decoding of data.
     ``Brotli_Codec`` is provided for compression. Custom codecs can be used.
+  - The ``add_field`` interpreter command now accepts an optional ``= <value>``
+    suffix that sets the value for all existing records of the table.
   - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
-  - Fix some potential resource leaks when throwing from constructors in
+  - Fixed some potential resource leaks when throwing from constructors in
     ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
     ``CURL_File``, ``Windows_File``.
   - Incompatibilities with previous version:

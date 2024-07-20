@@ -68,6 +68,9 @@ various ways:
  - ``SFTP_File`` read-only access to a file via sftp (uses libssh).
  - ``CURL_File`` read-only access to a file via any URL (uses libcurl).
  - ``Interpreted_File`` can read joedbi commands directly.
+ - ``Encoded_File`` performs on-the-fly encoding and decoding of data. This can
+   be used for transparent compression or encryption. Does not support
+   concurrency and durability.
 
 You can also create your own file class by subclassing ``Generic_File`` and
 implementing its virtual functions.

@@ -32,10 +32,10 @@ Server to Client
 ====== ================ ======================================================
 Prefix Data             Description
 ====== ================ ======================================================
-joedb  server_version   | reply to joedb.
-       session_id       | server_version = 0 means client_version is rejected.
-       checkpoint       | 'R' is pull-only
-       'R' or 'W'
+joedb  | server_version | reply to joedb.
+       | session_id     | server_version = 0 means client_version is rejected.
+       | checkpoint     | 'R' is pull-only
+       | 'R' or 'W'
 P      checkpoint       reply to P
        size
        data

@@ -32,8 +32,8 @@ properties of a relational database, such as concurrency, transactions, and
 incremental crash-safe updates. Joedb can offer all these features by storing
 data as a journal of transactions. The whole data history is stored, so it is
 possible to re-create any past state of the database. Joedb also has a network
-protocol, and can operate in a distributed fashion, a bit like [git for
-structured data](https://www.remi-coulom.fr/joedb/concurrency.html).
+protocol, and can operate a bit like [git for structured
+data](https://www.remi-coulom.fr/joedb/concurrency.html).
 
 To give an order of magnitude of database complexities, the table below shows
 the number of lines of source code of joedb, and some SQL databases. These are
