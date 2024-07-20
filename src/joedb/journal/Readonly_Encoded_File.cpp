@@ -33,13 +33,13 @@ namespace joedb
     if (b != decoded_buffer)
     {
      if (int64_t(read_buffer.size()) < db.get_size(b))
-      read_buffer.resize(db.get_size(b));
+      read_buffer.resize(size_t(db.get_size(b)));
 
      codec.decode
      (
       blob_reader.read_blob_data(db.get_data(b)),
       read_buffer.data(),
-      db.get_size(b)
+      size_t(db.get_size(b))
      );
 
      decoded_buffer = b;
@@ -54,7 +54,7 @@ namespace joedb
    }
   }
 
-  return global_end - offset;
+  return size_t(global_end - offset);
  }
 
  //////////////////////////////////////////////////////////////////////////
