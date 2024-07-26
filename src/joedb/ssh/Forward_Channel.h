@@ -17,6 +17,8 @@ namespace joedb
 
    public:
     Forward_Channel_Allocation(Session &session);
+    Forward_Channel_Allocation(const Forward_Channel_Allocation &) = delete;
+    Forward_Channel_Allocation &operator=(const Forward_Channel_Allocation &) = delete;
     ~Forward_Channel_Allocation();
   };
 

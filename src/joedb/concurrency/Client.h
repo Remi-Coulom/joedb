@@ -198,8 +198,6 @@ namespace joedb
    Client &client;
    const int initial_uncaught_exceptions;
 
-   Client_Lock(const Client_Lock &) = delete;
-
   public:
    Client_Lock(Client &client):
     client(client),
@@ -207,6 +205,9 @@ namespace joedb
    {
     client.start_transaction();
    }
+
+   Client_Lock(const Client_Lock &) = delete;
+   Client_Lock &operator=(const Client_Lock &) = delete;
 
    Writable_Journal &get_journal()
    {

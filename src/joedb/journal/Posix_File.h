@@ -36,6 +36,9 @@ namespace joedb
 
    Posix_FD(const char *file_name, Open_Mode mode);
 
+   Posix_FD(const Posix_FD &) = delete;
+   Posix_FD &operator=(const Posix_FD &) = delete;
+
    int64_t get_size() const final;
    void shared_lock(int64_t start, int64_t size) final;
    bool try_exclusive_lock(int64_t start, int64_t size);

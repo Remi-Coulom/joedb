@@ -17,6 +17,8 @@ namespace joedb
 
   public:
    CURL_Easy();
+   CURL_Easy(const CURL_Easy &) = delete;
+   CURL_Easy &operator=(const CURL_Easy &) = delete;
    ~CURL_Easy();
  };
 

@@ -64,6 +64,9 @@ namespace joedb
      throw_last_error("opening", file_name);
    }
 
+   SFTP_File(const SFTP_File &) = delete;
+   SFTP_File& operator=(const SFTP_File &) = delete;
+
    ~SFTP_File() override
    {
     sftp_close(file);

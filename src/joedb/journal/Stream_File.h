@@ -24,7 +24,7 @@ namespace joedb
 
    int64_t get_size() const final;
 
-   ~Stream_File();
+   ~Stream_File() override;
  };
 }
 

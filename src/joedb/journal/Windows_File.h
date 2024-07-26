@@ -44,6 +44,9 @@ namespace joedb
   public:
    Windows_Handle(const char *file_name, Open_Mode mode);
 
+   Windows_Handle(const Windows_Handle &) = delete;
+   Windows_Handle &operator=(const Windows_Handle &) = delete;
+
    int64_t get_size() const final;
    void shared_lock(int64_t start, int64_t size) final;
    void exclusive_lock(int64_t start, int64_t size) final;

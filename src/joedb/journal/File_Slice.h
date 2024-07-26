@@ -34,6 +34,9 @@ namespace joedb
      Posix_File::throw_last_error("mapping", "file");
    }
 
+   File_Slice(const File_Slice &) = delete;
+   File_Slice &operator=(const File_Slice &) = delete;
+
    ~File_Slice()
    {
     munmap(const_cast<void *>(static_cast<const void *>(data)), mapped_size);

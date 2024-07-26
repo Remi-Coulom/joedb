@@ -22,6 +22,9 @@ namespace joedb
      check_not_null(session);
     }
 
+    Session_Allocation(const Session_Allocation &) = delete;
+    Session_Allocation &operator=(const Session_Allocation &) = delete;
+
     ssh_session get() const
     {
      return session;
