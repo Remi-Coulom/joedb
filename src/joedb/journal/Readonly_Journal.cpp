@@ -3,6 +3,7 @@
 #include "joedb/Exception.h"
 
 #include <sstream>
+#include <vector>
 
 #if __cplusplus < 201703L
 constexpr uint32_t joedb::Readonly_Journal::version_number;

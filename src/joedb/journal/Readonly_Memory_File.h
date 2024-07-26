@@ -4,6 +4,7 @@
 #include "joedb/journal/Generic_File.h"
 
 #include <algorithm>
+#include <vector>
 
 namespace joedb
 {

@@ -1,6 +1,8 @@
 #include "joedb/journal/File_Hasher.h"
 #include "joedb/journal/Readonly_Journal.h"
 
+#include <vector>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
