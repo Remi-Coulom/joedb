@@ -2,6 +2,7 @@
 #include "joedb/io/type_io.h"
 #include "joedb/Readable.h"
 #include "joedb/Writable.h"
+#include "joedb/Exception.h"
 
 #include <vector>
 

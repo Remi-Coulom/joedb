@@ -7,9 +7,9 @@
 #include "joedb/journal/Open_Mode.h"
 #include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Buffer.h"
+#include "joedb/index_types.h"
 
 #include <string>
-#include <vector>
 
 namespace joedb
 {

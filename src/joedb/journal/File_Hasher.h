@@ -7,8 +7,9 @@ namespace joedb
 {
  class Generic_File;
 
- struct File_Hasher
+ class File_Hasher
  {
+ public:
   static SHA_256::Hash get_hash
   (
    Generic_File &file,
@@ -31,8 +32,9 @@ namespace joedb
 
  class Readonly_Journal;
 
- struct Journal_Hasher
+ class Journal_Hasher
  {
+ public:
   static SHA_256::Hash get_hash
   (
    const Readonly_Journal &journal,

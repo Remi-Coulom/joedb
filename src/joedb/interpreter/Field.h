@@ -1,7 +1,6 @@
 #ifndef joedb_Field_declared
 #define joedb_Field_declared
 
-#include <string>
 #include <vector>
 #include <algorithm>
 

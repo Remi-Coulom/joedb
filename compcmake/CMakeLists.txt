@@ -83,7 +83,6 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Generic_File.cpp
  ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
- ../src/joedb/journal/SHA_256.cpp
  ../src/joedb/journal/Writable_Journal.cpp
 )
 
@@ -154,7 +153,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/type_io_Test.cpp
   ../test/Journal_Test.cpp
   ../test/Server_Connection_Test.cpp
-  ../test/SHA_256_Test.cpp
   ../test/Span_Test.cpp
   ../test/Local_Connection_Test.cpp
   ../test/File_Slice_Test.cpp

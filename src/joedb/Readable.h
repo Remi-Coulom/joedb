@@ -2,7 +2,6 @@
 #define joedb_Readable_declared
 
 #include "joedb/Type.h"
-#include "joedb/Exception.h"
 
 #include <map>
 #include <string>

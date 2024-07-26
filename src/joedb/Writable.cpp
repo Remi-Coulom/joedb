@@ -1,5 +1,4 @@
 #include "joedb/Writable.h"
-#include "joedb/Exception.h"
 
 namespace joedb
 {

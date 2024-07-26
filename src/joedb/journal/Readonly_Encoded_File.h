@@ -1,7 +1,7 @@
 #ifndef joedb_Readonly_Encoded_File_declared
 #define joedb_Readonly_Encoded_File_declared
 
-#include "joedb/db/encoded_file.h"
+#include "joedb/db/encoded_file_readonly.h"
 #include "joedb/journal/Codec.h"
 
 namespace joedb

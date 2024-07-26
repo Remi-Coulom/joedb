@@ -2,7 +2,6 @@
 #define joedb_Signal_declared
 
 #include <csignal>
-#include <atomic>
 
 #ifndef CDECL
 #define CDECL

@@ -4,9 +4,7 @@
 #include "joedb/io/Command_Processor.h"
 #include "joedb/Exception.h"
 
-#include <initializer_list>
 #include <vector>
-#include <memory>
 #include <functional>
 
 namespace joedb

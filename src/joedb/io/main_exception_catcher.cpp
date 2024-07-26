@@ -1,5 +1,4 @@
 #include "joedb/io/main_exception_catcher.h"
-#include "joedb/Exception.h"
 
 #include <iostream>
 

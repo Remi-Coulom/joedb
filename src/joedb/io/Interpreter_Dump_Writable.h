@@ -1,7 +1,7 @@
 #ifndef joedb_Interpreter_Dump_Writable_declared
 #define joedb_Interpreter_Dump_Writable_declared
 
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreter/Database_Schema.h"
 #include "joedb/Multiplexer.h"
 
 namespace joedb

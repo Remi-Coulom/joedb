@@ -1,7 +1,6 @@
 #include "joedb/io/Client_Command_Processor.h"
 #include "joedb/io/Command_Processor.h"
 #include "joedb/io/Command_Interpreter.h"
-#include "joedb/io/Writable_Command_Processor.h"
 #include "joedb/io/get_time_string.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/concurrency/Client.h"

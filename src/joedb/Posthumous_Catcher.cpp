@@ -1,4 +1,5 @@
 #include "joedb/Posthumous_Catcher.h"
+#include "joedb/Exception.h"
 
 namespace joedb
 {

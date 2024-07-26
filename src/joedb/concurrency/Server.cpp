@@ -6,9 +6,6 @@
 #include "joedb/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
 
-#include <iomanip>
-#include <sstream>
-
 #define LOG(x) log([&](std::ostream &out){out << x;})
 #define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
 

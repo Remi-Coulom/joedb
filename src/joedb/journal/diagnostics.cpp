@@ -22,7 +22,6 @@
 #include <brotli/encode.h>
 #endif
 
-#include <istream>
 #include <ostream>
 
 namespace joedb

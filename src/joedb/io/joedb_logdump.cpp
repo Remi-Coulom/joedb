@@ -7,6 +7,7 @@
 #include "joedb/io/SQL_Dump_Writable.h"
 #include "joedb/io/Raw_Dump_Writable.h"
 #include "joedb/io/main_exception_catcher.h"
+#include "joedb/interpreter/Database.h"
 
 #include <iostream>
 #include <memory>

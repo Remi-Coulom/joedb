@@ -1,11 +1,12 @@
 #include "joedb/io/json.h"
 #include "joedb/io/type_io.h"
 #include "joedb/io/base64.h"
-#include "joedb/interpreter/Database.h"
-#include "joedb/journal/Generic_File.h"
+#include "joedb/Readable.h"
+#include "joedb/Exception.h"
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
 int joedb::write_json

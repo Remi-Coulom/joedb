@@ -2,7 +2,7 @@
 #define joedb_Readable_Command_Processor_declared
 
 #include "joedb/io/Command_Processor.h"
-#include "joedb/Type.h"
+#include "joedb/index_types.h"
 
 namespace joedb
 {

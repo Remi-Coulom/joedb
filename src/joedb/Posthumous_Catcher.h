@@ -1,7 +1,7 @@
 #ifndef joedb_Posthumous_Catcher_declared
 #define joedb_Posthumous_Catcher_declared
 
-#include "joedb/Exception.h"
+#include <exception>
 
 namespace joedb
 {

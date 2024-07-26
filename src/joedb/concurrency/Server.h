@@ -1,7 +1,6 @@
 #ifndef joedb_Server_declared
 #define joedb_Server_declared
 
-#include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/net.h"
 #include "joedb/concurrency/Client.h"
@@ -10,7 +9,6 @@
 #include <iosfwd>
 #include <set>
 #include <chrono>
-#include <array>
 #include <optional>
 
 namespace joedb

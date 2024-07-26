@@ -4,7 +4,7 @@
 #include "joedb/io/Command_Processor.h"
 #include "joedb/io/Readable_Command_Processor.h"
 #include "joedb/io/Writable_Command_Processor.h"
-#include "joedb/index_types.h"
+#include "joedb/Type.h"
 
 namespace joedb
 {

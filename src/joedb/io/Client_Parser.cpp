@@ -1,17 +1,7 @@
 #include "joedb/io/Client_Parser.h"
 #include "joedb/io/Connection_Parser.h"
-#include "joedb/io/open_mode_strings.h"
-#include "joedb/journal/File.h"
-#include "joedb/journal/Memory_File.h"
-#include "joedb/concurrency/Writable_Journal_Client_Data.h"
-#include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/concurrency/Client.h"
-
-#ifdef JOEDB_HAS_SSH
-#include "joedb/ssh/Session.h"
-#include "joedb/journal/SFTP_File.h"
-#endif
 
 #include <iostream>
 #include <cstring>

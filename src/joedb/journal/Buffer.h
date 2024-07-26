@@ -2,7 +2,6 @@
 #define joedb_Buffer_declared
 
 #include "joedb/assert.h"
-#include "joedb/index_types.h"
 
 #include <stddef.h>
 #include <stdint.h>

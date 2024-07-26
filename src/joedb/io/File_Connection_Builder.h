@@ -4,7 +4,6 @@
 #include "joedb/io/Connection_Builder.h"
 #include "joedb/io/File_Parser.h"
 #include "joedb/concurrency/File_Connection.h"
-#include "joedb/journal/File.h"
 
 #include <iostream>
 

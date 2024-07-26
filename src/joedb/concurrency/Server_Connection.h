@@ -6,7 +6,6 @@
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/Buffer.h"
 
-#include <mutex>
 #include <condition_variable>
 #include <thread>
 #include <iosfwd>
