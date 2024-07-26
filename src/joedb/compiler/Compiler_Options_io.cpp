@@ -1,7 +1,7 @@
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/compiler/Compiler_Options.h"
 #include "joedb/is_identifier.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreter/Database_Schema.h"
 #include "joedb/compiler/nested_namespace.h"
 
 #include <iostream>
@@ -24,7 +24,7 @@ bool joedb::parse_compiler_options
   std::string command;
   iss >> command;
 
-  const Database &db = compiler_options.get_db();
+  const Database_Schema &db = compiler_options.get_db();
 
   if (command.empty() || command[0] == '#')
    continue;

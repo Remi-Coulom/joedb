@@ -15,7 +15,6 @@
 
 #include <fstream>
 #include <set>
-#include <algorithm>
 
 using namespace joedb;
 
@@ -54,7 +53,7 @@ static void write_type
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Database &db,
+ const Database_Schema &db,
  Type type,
  bool return_type,
  bool setter_type
@@ -101,7 +100,7 @@ static void write_tuple_type
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Database &db,
+ const Database_Schema &db,
  const Compiler_Options::Index &index
 )
 {
@@ -121,7 +120,7 @@ static void write_index_type
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Database &db,
+ const Database_Schema &db,
  const Compiler_Options::Index &index
 )
 {
@@ -141,7 +140,7 @@ static void write_index_type
 static void generate_h(std::ostream &out, const Compiler_Options &options)
 /////////////////////////////////////////////////////////////////////////////
 {
- const Database &db = options.get_db();
+ const Database_Schema &db = options.get_db();
  auto tables = db.get_tables();
 
  namespace_include_guard(out, "Database", options.get_name_space());
@@ -663,7 +662,7 @@ static void generate_readonly_h
  const Compiler_Options &options
 )
 {
- const Database &db = options.get_db();
+ const Database_Schema &db = options.get_db();
  auto tables = db.get_tables();
 
  namespace_include_guard(out, "readonly_Database", options.get_name_space());
@@ -2200,7 +2199,7 @@ static int joedbc_main(int argc, char **argv)
  //
  // Read file.joedbi
  //
- Database db;
+ Database_Schema db;
  Memory_File schema_file;
  std::vector<std::string> custom_names;
 
@@ -2221,6 +2220,7 @@ static int joedbc_main(int argc, char **argv)
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
   interpreter.main_loop(joedbi_file, std::cerr);
+  multiplexer.default_checkpoint();
  }
 
  //

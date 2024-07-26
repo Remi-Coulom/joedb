@@ -16,7 +16,7 @@ static void write_c_type
  Type type
 )
 {
- const Database &db = options.get_db();
+ const Database_Schema &db = options.get_db();
 
  switch (type.get_type_id())
  {
@@ -56,7 +56,7 @@ void generate_c_wrapper
 )
 {
  const std::string &name = namespace_string(options.get_name_space(), "_");
- const Database &db = options.get_db();
+ const Database_Schema &db = options.get_db();
  auto tables = db.get_tables();
 
  ////////////////////////////////////////////////////////////////////////////

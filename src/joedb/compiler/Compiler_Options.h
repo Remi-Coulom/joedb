@@ -1,7 +1,7 @@
 #ifndef joedb_Compiler_Options_declared
 #define joedb_Compiler_Options_declared
 
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreter/Database_Schema.h"
 
 #include <string>
 #include <vector>
@@ -27,7 +27,7 @@ namespace joedb
    };
 
   private:
-   const Database &db;
+   const Database_Schema &db;
    const std::vector<std::string> &custom_names;
 
    std::vector<std::string> name_space;
@@ -40,7 +40,7 @@ namespace joedb
   public:
    Compiler_Options
    (
-    const Database &db,
+    const Database_Schema &db,
     const std::vector<std::string> &custom_names
    ):
     db(db),
@@ -72,7 +72,7 @@ namespace joedb
    void set_generate_c_wrapper(bool value) {generate_c_wrapper = value;}
    void set_generate_js_wrapper(bool value) {generate_js_wrapper = value;}
 
-   const Database &get_db() const {return db;}
+   const Database_Schema &get_db() const {return db;}
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;
