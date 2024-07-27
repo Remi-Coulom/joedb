@@ -2,7 +2,6 @@
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Async_Writer.h"
-#include "joedb/journal/File.h"
 
 #include "gtest/gtest.h"
 

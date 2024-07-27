@@ -2023,7 +2023,6 @@ static void generate_cpp
 )
 {
  const std::string &file_name = options.get_name_space().back();
- const std::string ns = namespace_string(options.get_name_space());
 
  out << "#include \"" << file_name << "_readonly.cpp\"\n";
  out << "#include \"" << file_name << ".h\"\n";
