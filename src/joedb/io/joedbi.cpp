@@ -6,7 +6,7 @@
 #include "joedb/concurrency/Interpreted_Client.h"
 
 #include <iostream>
-#include <memory>
+#include <optional>
 
 namespace joedb
 {
@@ -28,31 +28,21 @@ namespace joedb
   std::ostream null_stream(nullptr);
   Generic_File &file = file_parser.parse(null_stream, argc, argv, arg_index);
 
-  std::unique_ptr<File_Parser> blob_file_parser;
+  std::optional<File_Parser> blob_file_parser;
   Generic_File *blob_file = nullptr;
-  std::unique_ptr<Writable_Journal> blob_journal;
 
   if (arg_index < argc)
   {
-   blob_file_parser.reset(new File_Parser());
+   blob_file_parser.emplace();
    blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
-
-   if (!blob_file->is_readonly())
-   {
-    blob_journal.reset(new Writable_Journal(*blob_file));
-    blob_journal->append();
-   }
   }
 
-  if (!blob_file)
-   blob_file = &file;
-
-  if (file.is_readonly())
+  if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
   {
    Database db;
    Readonly_Journal journal(file);
    journal.replay_log(db);
-   Readable_Interpreter interpreter(db, blob_file);
+   Readable_Interpreter interpreter(db, blob_file ? blob_file : &file);
    interpreter.main_loop(std::cin, std::cout);
   }
   else
@@ -60,13 +50,20 @@ namespace joedb
    joedb::Connection connection;
    Interpreted_Client client(connection, file);
 
+   std::optional<Writable_Journal> blob_journal;
+   if (blob_file)
+   {
+    blob_journal.emplace(*blob_file);
+    blob_journal->append();
+   }
+
    client.transaction([blob_file, &blob_journal]
    (
     const Readable &readable,
     Writable &writable
    )
    {
-    Writable *blob_writer = blob_journal ? blob_journal.get() : &writable;
+    Writable *blob_writer = blob_journal ? &*blob_journal : &writable;
     Interpreter interpreter(readable, writable, blob_file, blob_writer, 0);
     interpreter.main_loop(std::cin, std::cout);
     if (blob_journal)
