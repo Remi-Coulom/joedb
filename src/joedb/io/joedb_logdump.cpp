@@ -12,6 +12,7 @@
 #include <iostream>
 #include <memory>
 #include <cstring>
+#include <optional>
 
 /////////////////////////////////////////////////////////////////////////////
 static void dump
@@ -73,19 +74,16 @@ static int joedb_logdump_main(int argc, char **argv)
   }
   else
   {
-   std::unique_ptr<joedb::Readonly_Journal> journal;
+   std::optional<joedb::Readonly_Journal> journal;
 
    try
    {
-    journal.reset
+    journal.emplace
     (
-     new joedb::Readonly_Journal
-     (
-      file,
-      ignore_errors ?
-       joedb::Readonly_Journal::Check::none :
-       joedb::Readonly_Journal::Check::all
-     )
+     file,
+     ignore_errors ?
+      joedb::Readonly_Journal::Check::none :
+      joedb::Readonly_Journal::Check::all
     );
    }
    catch (const joedb::Exception &e)

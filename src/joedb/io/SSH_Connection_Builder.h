@@ -5,6 +5,7 @@
 #include "joedb/concurrency/SSH_Server_Connection.h"
 
 #include <iostream>
+#include <optional>
 
 namespace joedb
 {
@@ -13,7 +14,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::unique_ptr<SSH_Server_Connection> connection;
+   std::optional<SSH_Server_Connection> connection;
 
   public:
    bool has_sharing_option() const final {return true;}
@@ -35,17 +36,14 @@ namespace joedb
     const unsigned ssh_port = argc > 3 ? std::atoi(argv[3]) : 22;
     const int ssh_log_level = argc > 4 ? std::atoi(argv[4]) : 0;
 
-    connection.reset
+    connection.emplace
     (
-     new SSH_Server_Connection
-     (
-      user,
-      host,
-      joedb_port,
-      ssh_port,
-      ssh_log_level,
-      &std::cerr
-     )
+     user,
+     host,
+     joedb_port,
+     ssh_port,
+     ssh_log_level,
+     &std::cerr
     );
 
     return *connection;

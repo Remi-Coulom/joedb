@@ -3,6 +3,7 @@
 #include "joedb/io/Connection_Builder.h"
 
 #include <iostream>
+#include <optional>
 
 namespace joedb
 {
@@ -25,7 +26,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::unique_ptr<Network_Channel_Connection> connection;
+   std::optional<Network_Channel_Connection> connection;
 
   public:
    bool has_sharing_option() const final {return true;}
@@ -42,7 +43,7 @@ namespace joedb
     const char * const host = argv[0];
     const char * const port = argv[1];
 
-    connection.reset(new Network_Channel_Connection(host, port));
+    connection.emplace(host, port);
 
     return *connection;
    }

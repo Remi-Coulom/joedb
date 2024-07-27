@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <iosfwd>
+#include <optional>
 
 namespace joedb
 {
@@ -22,8 +23,8 @@ namespace joedb
    const bool default_only;
 
 #ifdef JOEDB_HAS_SSH
-   std::unique_ptr<ssh::Session> ssh_session;
-   std::unique_ptr<ssh::SFTP> sftp;
+   std::optional<ssh::Session> ssh_session;
+   std::optional<ssh::SFTP> sftp;
 #endif
    std::unique_ptr<Generic_File> file;
 

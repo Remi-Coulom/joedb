@@ -15,8 +15,8 @@ namespace joedb
  {
   private:
    File_Parser file_parser;
-   std::unique_ptr<Readonly_Journal> readonly_journal;
-   std::unique_ptr<Writable_Journal> writable_journal;
+   std::optional<Readonly_Journal> readonly_journal;
+   std::optional<Writable_Journal> writable_journal;
    std::unique_ptr<Pullonly_Connection> connection;
 
   public:
@@ -37,12 +37,12 @@ namespace joedb
 
     if (file_parser.get_file().is_readonly())
     {
-     readonly_journal.reset(new Readonly_Journal(file_parser.get_file()));
+     readonly_journal.emplace(file_parser.get_file());
      connection.reset(new Pullonly_Journal_Connection(*readonly_journal));
     }
     else
     {
-     writable_journal.reset(new Writable_Journal(file_parser.get_file()));
+     writable_journal.emplace(file_parser.get_file());
      connection.reset(new Journal_Connection(*writable_journal));
     }
 

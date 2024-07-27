@@ -102,14 +102,14 @@ namespace joedb
    out << "Creating ssh Session... ";
    out.flush();
 
-   ssh_session.reset(new ssh::Session(user, host, port, verbosity));
+   ssh_session.emplace(user, host, port, verbosity);
 
    out << "OK\n";
 
    out << "Initializing sftp... ";
    out.flush();
 
-   sftp.reset(new ssh::SFTP(*ssh_session));
+   sftp.emplace(*ssh_session);
 
    out << "OK\n";
 
