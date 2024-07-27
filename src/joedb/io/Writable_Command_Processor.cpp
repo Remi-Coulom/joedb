@@ -25,7 +25,6 @@ namespace joedb
  valid_data
  flush
  checkpoint
- abort
  blob <data_string>
 
 )RRR";
@@ -57,11 +56,6 @@ namespace joedb
   {
    writable.default_checkpoint();
   }
-  else if (command == "abort") //////////////////////////////////////////////
-  {
-   aborted = true;
-   return Status::quit;
-  }
   else if (command == "blob") ///////////////////////////////////////////////
   {
    const std::string value = joedb::read_string(parameters);
@@ -77,17 +71,5 @@ namespace joedb
    return Status::not_found;
 
   return Status::done;
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Writable_Command_Processor::~Writable_Command_Processor()
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (!aborted)
-  {
-   writable.default_checkpoint();
-   if (blob_writer && blob_writer != &writable)
-    blob_writer->default_checkpoint();
-  }
  }
 }

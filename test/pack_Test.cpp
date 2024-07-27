@@ -9,8 +9,6 @@
 
 #include "gtest/gtest.h"
 
-#include <fstream>
-
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -54,6 +52,7 @@ update_vector float 7 value 2 0.8 9\n\
 
    Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
    interpreter.main_loop(joedbi_iss, joedbi_oss);
+   multiplexer.default_checkpoint();
   }
  }
 

@@ -139,6 +139,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
   interpreter.main_loop(in_file, out);
+  multiplexer.default_checkpoint();
  }
 
  //

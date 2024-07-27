@@ -31,22 +31,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::run_transaction
- ////////////////////////////////////////////////////////////////////////////
- (
-  Writable_Interpreter &interpreter,
-  std::istream &in,
-  std::ostream &out
- )
- {
-  interpreter.set_parent(this);
-  interpreter.main_loop(in, out);
-
-  if (interpreter.was_aborted())
-   throw Exception("aborted");
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Client_Command_Processor::pull(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -87,10 +71,11 @@ namespace joedb
   {
    Command_Interpreter::process_command(command, parameters, in, out);
 
-   out << "Client\n";
-   out << "~~~~~~\n";
-   out << " db\n";
-   out << " pull\n";
+   out << R"RRR(Client
+~~~~~~
+ db
+ pull
+)RRR";
 
    if (!is_readonly_data())
     out << " pull_every <seconds>\n";
@@ -190,7 +175,8 @@ namespace joedb
       nullptr,
       0
      );
-     run_transaction(interpreter, in, out);
+     interpreter.set_parent(this);
+     interpreter.main_loop(in, out);
     }
    });
   }

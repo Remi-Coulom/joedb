@@ -1,9 +1,9 @@
-#include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/io/File_Parser.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/concurrency/Interpreted_Client.h"
 
 #include <iostream>
 #include <memory>
@@ -44,34 +44,35 @@ namespace joedb
    }
   }
 
-  Database db;
+  if (!blob_file)
+   blob_file = &file;
 
   if (file.is_readonly())
   {
+   Database db;
    Readonly_Journal journal(file);
    journal.replay_log(db);
-   Readable_Interpreter interpreter
-   (
-    db,
-    blob_file ? blob_file : &file
-   );
+   Readable_Interpreter interpreter(db, blob_file);
    interpreter.main_loop(std::cin, std::cout);
   }
   else
   {
-   Writable_Journal journal(file);
-   journal.lock_pull();
-   journal.replay_log(db);
-   Multiplexer multiplexer{db, journal};
-   Interpreter interpreter
+   joedb::Connection connection;
+   Interpreted_Client client(connection, file);
+
+   client.transaction([blob_file, &blob_journal]
    (
-    db,
-    multiplexer,
-    blob_file ? blob_file : &file,
-    blob_file ? blob_journal.get() : &journal,
-    0
-   );
-   interpreter.main_loop(std::cin, std::cout);
+    const Readable &readable,
+    Writable &writable
+   )
+   {
+    Writable *blob_writer = blob_journal ? blob_journal.get() : &writable;
+    Interpreter interpreter(readable, writable, blob_file, blob_writer, 0);
+    interpreter.main_loop(std::cin, std::cout);
+   });
+
+   if (blob_journal)
+    blob_journal->default_checkpoint();
   }
 
   return 0;

@@ -14,13 +14,6 @@ namespace joedb
    Pullonly_Client &client;
    Client * const push_client;
 
-   void run_transaction
-   (
-    Writable_Interpreter &interpreter,
-    std::istream &in,
-    std::ostream &out
-   );
-
    void pull(std::ostream &out);
    void print_status(std::ostream &out);
    static void sleep(int seconds, std::ostream &out);

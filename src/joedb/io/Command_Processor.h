@@ -11,7 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   enum class Status {ok, done, quit, not_found};
+   enum class Status {ok, done, quit, abort, not_found};
 
    virtual Status process_command
    (

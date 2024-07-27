@@ -94,6 +94,7 @@ General commands
  about
  help
  quit
+ abort
  echo on|off
  prompt on|off
 
@@ -104,7 +105,6 @@ Journal
  valid_data
  flush
  checkpoint
- abort
  blob <data_string>
 
 Data definition
@@ -144,13 +144,13 @@ Displaying data
  json [<base64>]
 
 OK: help
-Error: create_table: name already used: city
+Exception caught: create_table: name already used: city
 Line 23: create_table city
-Error: create_table: invalid identifier: 123456
+Exception caught: create_table: invalid identifier: 123456
 Line 24: create_table 123456
-Error: rename_table: name already used: city
+Exception caught: rename_table: name already used: city
 Line 25: rename_table person city
-Error: rename_field: name already used: name
+Exception caught: rename_field: name already used: name
 Line 26: rename_field person city name
 OK: 
 OK: drop_table city
@@ -159,17 +159,17 @@ OK: dump
 OK: 
 OK: create_table test
 OK: add_field test a int32
-Error: add_field: name already used
+Exception caught: add_field: name already used
 Line 34: add_field test a int32
 OK: add_field test b int64
-Error: unknown type
+Exception caught: unknown type
 Line 36: add_field test c qsdfqsdf
-Error: No such table: qsdfqsdf
+Exception caught: No such table: qsdfqsdf
 Line 37: drop_table qsdfqsdf
-Error: Unknown command. For a list of available commands, try "help".
+Exception caught: Unknown command. For a list of available commands, try "help".
 Line 38: qsdfqsdf
 OK: insert_into test 1 1234 5678
-Error: insert: record_id already in use
+Exception caught: insert: record_id already in use
 Line 40: insert_into test 1 1234 5678
 OK: add_field test d string
 OK: add_field test e boolean
@@ -185,16 +185,16 @@ update test 1 d ""
 update test 1 e false
 OK: dump
 OK: 
-Error: drop_field: invalid field_id
+Exception caught: drop_field: invalid field_id
 Line 45: drop_field test qsdfqsdf
 OK: drop_field test a
 OK: insert_into test 2 3 "4" false
 OK: delete_from test 2
-Error: delete_record: bad record_id
+Exception caught: delete_record: bad record_id
 Line 49: delete_from test 123
-Error: bad field
+Exception caught: bad field
 Line 50: update test 1 a 56789
-Error: update: invalid record_id
+Exception caught: update: invalid record_id
 Line 51: update test 2 b 56789
 OK: update test 1 b 56789
 create_table test
@@ -239,7 +239,7 @@ OK: create_table float
 OK: add_field float value float32
 OK: insert_vector float 1 5
 OK: update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
-Error: bad field
+Exception caught: bad field
 Line 85: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
 OK: 
 OK: create_table toto
@@ -247,30 +247,30 @@ OK: add_field toto value string
 OK: insert_vector toto 3 1
 OK: insert_vector toto 5 1
 OK: update toto 3 value "toto"
-Error: update_vector: invalid record_id range
+Exception caught: update_vector: invalid record_id range
 Line 92: update_vector toto 5 value 2 "kiki" "kuku"
 OK: 
-Error: rename_table: invalid identifier: __toto__
+Exception caught: rename_table: invalid identifier: __toto__
 Line 94: rename_table toto __toto__
-Error: No such table: azersdf
+Exception caught: No such table: azersdf
 Line 95: rename_table azersdf toto
-Error: add_field: invalid identifier: __field__
+Exception caught: add_field: invalid identifier: __field__
 Line 96: add_field toto __field__ string
-Error: No such table: azersdf
+Exception caught: No such table: azersdf
 Line 97: add_field azersdf field string
-Error: No such table: azersdf
+Exception caught: No such table: azersdf
 Line 98: drop_field azersdf field
-Error: rename_field: invalid identifier: __value__
+Exception caught: rename_field: invalid identifier: __value__
 Line 99: rename_field toto value __value__
-Error: No such table: azersdf
+Exception caught: No such table: azersdf
 Line 100: rename_field azersdf value valux
-Error: rename_field: invalid field_id
+Exception caught: rename_field: invalid field_id
 Line 101: rename_field toto valux valux
-Error: No such table: azersdf
+Exception caught: No such table: azersdf
 Line 102: insert_into azersdf 1
-Error: No such table: azersdf
+Exception caught: No such table: azersdf
 Line 103: insert_vector azersdf 1 1
-Error: No such table: azersdf
+Exception caught: No such table: azersdf
 Line 104: delete_from azersdf 1
 OK: 
 create_table all_types

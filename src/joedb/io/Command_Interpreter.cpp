@@ -24,7 +24,7 @@ namespace joedb
    if (rethrow)
     throw Exception(error.str());
    else
-    out << "Error: " << error.str();
+    out << "Exception caught: " << error.str();
   }
   else if (echo)
    out << "OK: " << line << '\n';
@@ -69,20 +69,24 @@ namespace joedb
   }
   else if (command == "help") ///////////////////////////////////////////////
   {
-   out << '\n';
-   out << "General commands\n";
-   out << "~~~~~~~~~~~~~~~~\n";
-   out << " about\n";
-   out << " help\n";
-   out << " quit\n";
-   out << " echo on|off\n";
-   out << " prompt on|off\n";
-   out << '\n';
+   out << R"RRR(
+General commands
+~~~~~~~~~~~~~~~~
+ about
+ help
+ quit
+ abort
+ echo on|off
+ prompt on|off
+
+)RRR";
 
    return Status::ok;
   }
   else if (command == "quit") ///////////////////////////////////////////////
    return Status::quit;
+  else if (command == "abort") //////////////////////////////////////////////
+   return Status::abort;
   else
    return Status::not_found;
 
@@ -144,6 +148,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   int64_t line_number = 0;
+  bool abort = false;
 
   while(true)
   {
@@ -178,6 +183,12 @@ namespace joedb
       break;
      }
 
+     if (status == Command_Processor::Status::abort)
+     {
+      abort = true;
+      break;
+     }
+
      if (status == Command_Processor::Status::done)
       break;
     }
@@ -192,7 +203,7 @@ namespace joedb
 
     after_command(out, line_number, line, nullptr);
 
-    if (quit)
+    if (quit || abort)
      break;
    }
    catch (const Exception &e)
@@ -200,5 +211,8 @@ namespace joedb
     after_command(out, line_number, line, &e);
    }
   }
+
+  if (abort)
+   throw Exception("aborted");
  }
 }

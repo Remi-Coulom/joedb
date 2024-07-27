@@ -17,7 +17,6 @@ namespace joedb
   private:
    Writable &writable;
    Writable * const blob_writer;
-   bool aborted;
 
    Status process_command
    (
@@ -34,13 +33,8 @@ namespace joedb
     Writable *blob_writer
    ):
     writable(writable),
-    blob_writer(blob_writer),
-    aborted(false)
+    blob_writer(blob_writer)
    {}
-
-   bool was_aborted() const {return aborted;}
-
-   ~Writable_Command_Processor();
  };
 }
 

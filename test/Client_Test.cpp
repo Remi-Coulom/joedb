@@ -2,7 +2,6 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/Destructor_Logger.h"
 
 #include "gtest/gtest.h"
 
