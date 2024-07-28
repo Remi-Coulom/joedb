@@ -11,18 +11,11 @@ Object Model can hide SQL from the C++ code, and improve type safety, but it
 can result in sub-optimal performance, and adds to complexity.
 
 In many applications, the immense complexity of a SQL database is not at all
-necessary. Joedb is a minimalist low-level alternative that offers the
-possibility to:
-
- - incrementally add data to a file in a crash-safe way,
- - synchronize data access between multiple processes, on the same machine or
-   over a network connection,
- - offer a direct low-level C++ API, with compile-time checking of field names
-   and types.
-
-As shown in the diagram below, joedb compiles the database schema into C++
-code. Applications using this code can then manipulate data like a C++
-container.
+necessary. Joedb is a minimalist low-level alternative that can perform ACID
+transactions, on a local database or over a network connection. As shown in the
+diagram below, joedb compiles the database schema into C++ code. Applications
+using this code can then manipulate data like a C++ container, with
+compile-time checking of field names and types:
 
 ![Diagram](doc/source/images/joedb.svg)
 
