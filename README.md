@@ -46,7 +46,7 @@ on the main branch.
 | joedb          |        19,288 |          72,268 | without tests
 | nlhohmann/json |        24,941 |          87,168 | single include
 | boost/json     |        37,609 |         123,229 |
-| SQLite         |       258,281 |       1,067,983 | sqlit3.c amalgamation
+| SQLite         |       258,281 |       1,067,983 | sqlite3.c amalgamation
 | PostgreSQL     |     1,513,329 |       5,250,316 | content of src dir, without tests
 
 So joedb is an extremely simple low-level foundation for sharing relational
