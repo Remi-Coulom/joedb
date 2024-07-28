@@ -28,22 +28,26 @@ container.
 
 Other systems such as [protocol buffers](https://protobuf.dev/) provide similar
 type-safe mechanisms for serializing structured data, but are missing key
-properties of a relational database, such as concurrency, transactions, and
-incremental crash-safe updates. Joedb can offer all these features by storing
-data as a journal of transactions. The whole data history is stored, so it is
-possible to re-create any past state of the database. Joedb also has a network
-protocol, and can operate a bit like [git for structured
+properties of a database, such as concurrency, transactions, and incremental
+crash-safe updates. Joedb can offer all these features by storing data as a
+journal of transactions. The whole data history is stored, so it is possible to
+re-create any past state of the database. Joedb also has a network protocol,
+and can operate a bit like [git for structured
 data](https://www.remi-coulom.fr/joedb/concurrency.html).
 
-To give an order of magnitude of database complexities, the table below shows
-the number of lines of source code of joedb, and some SQL databases. These are
-without tests, and measured with ``grep -c $``.
+To give an order of magnitude of joedb's complexity, the table below shows the
+the size of joedb's source code compared to some other libraries. Lines of code
+is measured with ``wc -l``. Compressed size is the size in bytes after removing
+comments and compressing with gzip. These numbers were measured on 2024-07-28
+on the main branch.
 
-|Database  |Lines of code|
-|:---------|------------:|
-|joedb     |       18,403|
-|SQLite    |      240,533|
-|PostgreSQL|    1,512,558|
+| Software       | Lines of code | Compressed size | Notes
+|:---------------|--------------:|----------------:|:--------------------------------
+| joedb          |        19,288 |          72,268 | without tests
+| nlhohmann/json |        24,941 |          87,168 | single include
+| boost/json     |        37,609 |         123,229 |
+| SQLite         |       258,281 |       1,067,983 | sqlit3.c amalgamation
+| PostgreSQL     |     1,513,329 |       5,250,316 | content of src dir, without tests
 
 So joedb is an extremely simple low-level foundation for sharing relational
 data. It would be possible to build a SQL database on top of it, but it is
