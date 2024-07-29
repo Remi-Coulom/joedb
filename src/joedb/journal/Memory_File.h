@@ -11,10 +11,8 @@ namespace joedb
  class Memory_File: public Generic_File
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
-   std::vector<char> data;
-
   protected:
+   std::vector<char> data;
    size_t pread(char *buffer, size_t size, int64_t offset) override;
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
 
