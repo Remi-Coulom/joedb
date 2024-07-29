@@ -1,9 +1,33 @@
 #include "joedb/journal/Memory_File.h"
 
+#include <algorithm>
+
 namespace joedb
 {
- Plain_Memory_File_Data::Plain_Memory_File_Data(std::vector<char> &data) {}
- Plain_Memory_File_Data::Plain_Memory_File_Data() = default;
- Plain_Memory_File_Data::~Plain_Memory_File_Data() = default;
- template class Memory_File_Template<Plain_Memory_File_Data>;
+ ////////////////////////////////////////////////////////////////////////////
+ size_t Memory_File::pread(char *buffer, size_t size, int64_t offset)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const size_t max_size = data.size() - offset;
+  const size_t n = std::min(size, max_size);
+  std::copy_n(data.data() + offset, n, buffer);
+  return n;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Memory_File::pwrite(const char *buffer, size_t size, int64_t offset)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const size_t end = offset + size;
+  if (end > data.size())
+   data.resize(end);
+  std::copy_n(buffer, size, &data[offset]);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Memory_File::~Memory_File()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  destructor_flush();
+ }
 }

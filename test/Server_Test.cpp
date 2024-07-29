@@ -6,17 +6,16 @@
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/Shared_Memory_File.h"
 #include "joedb/journal/File.h"
 #include "joedb/Signal.h"
 
 #include "Test_Sequence.h"
 #include "Test_Network_Channel.h"
+#include "Shared_Memory_File.h"
 
 #include "gtest/gtest.h"
 
 #include <thread>
-#include <fstream>
 #include <cstdio>
 
 namespace joedb
@@ -79,9 +78,9 @@ namespace joedb
     {
      server.restart();
      thread = std::thread(
-      [&io_context = io_context]()
+      [&io_context_reference = io_context]()
       {
-       io_context.run();
+       io_context_reference.run();
       }
      );
      paused = false;
