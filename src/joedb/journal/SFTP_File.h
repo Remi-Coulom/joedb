@@ -49,16 +49,7 @@ namespace joedb
    SFTP_File(ssh::SFTP &sftp, const char *file_name):
     Generic_File(Open_Mode::read_existing),
     sftp(sftp),
-    file
-    (
-     sftp_open
-     (
-      sftp.get(),
-      file_name,
-      O_RDONLY,
-      0
-     )
-    )
+    file(sftp_open(sftp.get(), file_name, O_RDONLY, 0))
    {
     if (!file)
      throw_last_error("opening", file_name);
