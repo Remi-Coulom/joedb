@@ -6,9 +6,9 @@ convenient to use from C++. Raw SQL APIs such as
 [SQLite](https://www.sqlite.org/cintro.html) do not match the C++ programming
 paradigm well: queries are strings parsed at run time, and the API is not
 type-safe. An
-[ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) or Query
-Object Model can hide SQL from the C++ code, and improve type safety, but it
-can result in sub-optimal performance, and adds to complexity.
+[ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) or a
+template library such as [sqlpp11](https://github.com/rbock/sqlpp11) can hide
+SQL from the C++ code, and improve type safety, but it adds to complexity.
 
 In many applications, the immense complexity of a SQL database is not at all
 necessary. Joedb is a minimalist low-level alternative that can perform ACID
@@ -28,9 +28,9 @@ re-create any past state of the database. Joedb also has a network protocol,
 and can operate a bit like [git for structured
 data](https://www.remi-coulom.fr/joedb/concurrency.html).
 
-To give an order of magnitude of joedb's complexity, the table below shows the
-the size of joedb's source code compared to some other libraries. Lines of code
-is measured with ``wc -l``. Compressed size is the size in bytes after removing
+To give an indication of joedb's simplicity, the table below shows the size
+of joedb's source code compared to some other libraries. Lines of code are
+counted with ``wc -l``. Compressed size is the size in bytes after removing
 comments and compressing with gzip. These numbers were measured on 2024-07-28
 on the main branch.
 
