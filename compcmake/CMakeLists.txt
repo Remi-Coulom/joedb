@@ -346,6 +346,7 @@ if (ASIO_FOUND)
  endif()
 endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_for_joedbc joedb
  ARCHIVE DESTINATION lib COMPONENT bin

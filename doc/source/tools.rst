@@ -195,7 +195,18 @@ This is the json output of the tutorial database:
 .. literalinclude:: ./tutorial/tutorial.json
    :language: json
 
+.. _joedb_edit:
+
+``joedb_edit``
+-----------------
+
+``joedb_edit`` is a bash script that dumps a joedb file to a temporary text
+file and opens the default text editor to modify it. Modifications will be
+pushed to the original if possible. Otherwise the user is given the option to
+overwrite the original file.
+
 ``joedb_browser``
 -----------------
 
-``joedb_browser`` uses ``joedb_logdump`` to produce an SQLite database, and invokes ``sqlitebrowser`` to browse it.
+``joedb_browser`` is a bash script that uses ``joedb_logdump`` to produce an
+SQLite database, and invokes ``sqlitebrowser`` to browse it.

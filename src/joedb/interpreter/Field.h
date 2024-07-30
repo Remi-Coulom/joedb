@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <variant>
 
-#include "joedb/Exception.h"
 #include "joedb/Type.h"
 #include "joedb/index_types.h"
 

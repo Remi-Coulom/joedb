@@ -1,12 +1,17 @@
 #!/bin/bash
 set -e
 
+if [ "$1" == "" ]; then
+ echo "Usage: $0 <file.joedb>"
+ exit 1
+fi
+
 tmp_sql=$(mktemp /tmp/joedb_browser.XXXXXX)
 tmp_sqlite=$(mktemp /tmp/joedb_browser.XXXXXX)
 
 {
  echo "BEGIN;"
- joedb_logdump --sqlite "$1" || exit 1
+ joedb_push "$*" sql || exit 1
  echo "COMMIT;"
 } >"$tmp_sql"
 

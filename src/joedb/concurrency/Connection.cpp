@@ -4,7 +4,7 @@ namespace joedb
 {
  void Pullonly_Connection::content_mismatch()
  {
-  throw Exception("Client data does not match the server");
+  throw Exception("Content mismatch");
  }
 
  int64_t Pullonly_Connection::handshake

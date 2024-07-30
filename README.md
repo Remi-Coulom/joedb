@@ -44,7 +44,7 @@ on the main branch.
 
 So joedb is an extremely simple low-level foundation for sharing relational
 data. It would be possible to build a SQL database on top of it, but it is
-already very convenient as-is.
+already very convenient by itself.
 
 For more information, please take at a look at the
 [documentation](https://www.remi-coulom.fr/joedb/intro.html).

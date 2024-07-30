@@ -2,6 +2,7 @@
 #include "joedb/io/open_mode_strings.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Interpreted_File.h"
 
 #ifdef JOEDB_HAS_SSH
 #include "joedb/journal/SFTP_File.h"
@@ -46,6 +47,7 @@ namespace joedb
    out << " memory\n";
   }
 
+  out << " interpreted <file_name>\n";
 #ifdef JOEDB_HAS_SSH
   out << " sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
 #endif
@@ -76,6 +78,12 @@ namespace joedb
   {
    file.reset(new Memory_File());
    arg_index++;
+  }
+  else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "interpreted") == 0)
+  {
+   const char * const file_name = argv[arg_index + 1];
+   file.reset(new Interpreted_File(file_name));
+   arg_index += 2;
   }
 #ifdef JOEDB_HAS_SSH
   else if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)

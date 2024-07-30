@@ -1,9 +1,6 @@
 #include "joedb/interpreter/Database.h"
 #include "gtest/gtest.h"
 
-#include <fstream>
-#include <sstream>
-
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////

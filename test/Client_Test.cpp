@@ -214,7 +214,7 @@ TEST(Client, hash)
   }
   catch (const joedb::Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Client data does not match the server");
+   EXPECT_STREQ(e.what(), "Content mismatch");
   }
  }
 
@@ -348,7 +348,7 @@ TEST(Client, synchronization_error_at_handshake)
  }
  catch (const Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Client data does not match the server");
+  EXPECT_STREQ(e.what(), "Content mismatch");
  }
 }
 

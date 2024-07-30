@@ -666,7 +666,7 @@ TEST(Compiler, client_hash_error)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Client data does not match the server");
+  EXPECT_STREQ(e.what(), "Content mismatch");
  }
 }
 

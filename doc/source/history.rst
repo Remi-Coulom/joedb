@@ -5,6 +5,7 @@ History
 
   - ``Encoded_File`` supports on-the-fly coding or decoding of data.
     ``Brotli_Codec`` is provided for compression. Custom codecs can be used.
+  - :ref:`joedb_edit`
   - The ``add_field`` interpreter command now accepts an optional ``= <value>``
     suffix that sets the value for all existing records of the table.
   - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
