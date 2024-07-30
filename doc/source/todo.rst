@@ -7,6 +7,8 @@ For next release
 
    - joedbc generates all C++ code for convenient manipulation
    - single-row compiler option
+   - if the joedbi contains one row of data, use it for default initialization
+     (during schema upgrade, or when generating the C++ struct).
 
  - proper handling of unique_index with more than one column:
 
@@ -150,7 +152,6 @@ Performance
 
 - File design based on llfio
 - use async_write_some and async_read_some during pull and push
-- vector of size 1: write ordinary insert and update to the journal instead
 - joedb::Database: use vector instead of map for tables and fields (with a bool
   indicating if deleted)
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505

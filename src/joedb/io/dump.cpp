@@ -152,7 +152,7 @@ void joedb::dump_data(const Readable &db, Writable &writable)
     size++;
    }
 
-   if (size)
+   if (size > 1)
    {
     writable.insert_vector(table_id, record_id, size);
 
@@ -186,9 +186,38 @@ void joedb::dump_data(const Readable &db, Writable &writable)
       #include "joedb/TYPE_MACRO.h"
      }
     }
-
-    record_id = record_id + size;
    }
+   else if (size == 1)
+   {
+    writable.insert_into(table_id, record_id);
+
+    for (const auto &field: db.get_fields(table_id))
+    {
+     const Field_Id field_id = field.first;
+
+     switch(db.get_field_type(table_id, field_id).get_type_id())
+     {
+      case Type::Type_Id::null:
+      break;
+
+      #define TYPE_MACRO(type, return_type, type_id, R, W)\
+      case Type::Type_Id::type_id:\
+      {\
+       writable.update_##type_id\
+       (\
+        table_id,\
+        record_id,\
+        field_id,\
+        db.get_##type_id(table_id, record_id, field_id)\
+       );\
+      }\
+      break;
+      #include "joedb/TYPE_MACRO.h"
+     }
+    }
+   }
+
+   record_id = record_id + size;
   }
  }
  writable.default_checkpoint();

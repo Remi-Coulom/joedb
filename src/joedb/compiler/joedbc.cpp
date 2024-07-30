@@ -2082,7 +2082,7 @@ static void generate_cpp
 
   if (file_schema_size < schema_string_size)
   {
-   //journal.comment("Automatic schema upgrade");
+   journal.comment("Automatic schema upgrade");
 
    joedb::Readonly_Memory_File schema_file(schema_string, schema_string_size);
    joedb::Readonly_Journal schema_journal(schema_file);
@@ -2095,7 +2095,7 @@ static void generate_cpp
    schema_journal.play_until_checkpoint(*this);
    upgrading_schema = false;
 
-   //journal.comment("End of automatic schema upgrade");
+   journal.comment("End of automatic schema upgrade");
    journal.default_checkpoint();
   }
  }

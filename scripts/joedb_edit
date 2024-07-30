@@ -40,6 +40,7 @@ while true; do
  else
   echo Could not push changes. Press enter to overwrite the original file.
   read
+  mv -v $1 $1.edit.$(date +%s).joedb || exit 1
   mv -vf $tmp_joedb "$1"
  fi
 

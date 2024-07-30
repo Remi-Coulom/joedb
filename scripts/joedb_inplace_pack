@@ -10,7 +10,7 @@ fi
 for file_name in "$@"; do
 
  packed_name="$file_name".joedb_packed
- unpacked_name="$file_name".joedb_unpacked
+ unpacked_name="$file_name".joedb_unpacked.$(date +%s).joedb
 
  if [[ -e "$packed_name" ]]; then
   echo "error: \"$packed_name\" already exists" >&2
@@ -20,7 +20,7 @@ for file_name in "$@"; do
   exit 1
  else
   joedb_pack "$file_name" "$packed_name"
-  mv "$file_name" "$unpacked_name"
+  mv -v "$file_name" "$unpacked_name"
   mv "$packed_name" "$file_name"
   echo "packed $file_name"
  fi
