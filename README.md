@@ -28,11 +28,11 @@ re-create any past state of the database. Joedb also has a network protocol,
 and can operate a bit like [git for structured
 data](https://www.remi-coulom.fr/joedb/concurrency.html).
 
-To give an indication of joedb's simplicity, the table below shows the size
-of joedb's source code compared to some other libraries. Lines of code are
-counted with ``wc -l``. Compressed size is the size in bytes after removing
-comments and compressing with gzip. These numbers were measured on 2024-07-28
-on the main branch.
+To give an indication of joedb's simplicity, the table below shows the size of
+joedb's source code compared to some other libraries. Lines of code are counted
+with ``wc -l``. Compressed size is the size in bytes after removing comments
+and compressing with gzip. These numbers were measured on 2024-07-28 on the
+main branch.
 
 | Software       | Lines of code | Compressed size | Notes
 |:---------------|--------------:|----------------:|:--------------------------------
