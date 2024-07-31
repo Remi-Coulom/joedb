@@ -11,7 +11,7 @@ namespace joedb
 {
  static constexpr int64_t blocks = 250;
  static constexpr int64_t step = 7;
- static constexpr int64_t block_size = 1 << 13;
+ static constexpr int64_t block_size = 1 << 12; // 1 << 13 triggers a false warning
  static constexpr int64_t reads = 200 * blocks;
  static constexpr const char *file_name = "server.joedb";
 
