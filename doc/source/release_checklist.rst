@@ -1,6 +1,8 @@
 Release Checklist
 =================
 
+- upgrade submodules
+
 Code Tests
 ----------
 
