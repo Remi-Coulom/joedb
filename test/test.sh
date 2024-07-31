@@ -1,8 +1,12 @@
 #!/bin/bash
 set -e
-cd ../doc/source/tutorial
-./generate.sh
-cd -
+
+if [ "$1" == "" ]; then
+ cd ../doc/source/tutorial
+ ./generate.sh
+ cd -
+fi
+
 build_dir=../compcmake/gcc_debug
 cmake --build $build_dir --target joedb_test
 rm -vf *.tmp

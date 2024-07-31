@@ -47,7 +47,7 @@ namespace joedb
    out << " memory\n";
   }
 
-  out << " interpreted <file_name>\n";
+  out << " interpreted [--read] <file_name>\n";
 #ifdef JOEDB_HAS_SSH
   out << " sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
 #endif
@@ -81,9 +81,34 @@ namespace joedb
   }
   else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "interpreted") == 0)
   {
-   const char * const file_name = argv[arg_index + 1];
-   file.reset(new Interpreted_File(file_name));
-   arg_index += 2;
+   arg_index++;
+
+   bool readonly;
+
+   if (default_only)
+   {
+    readonly = default_open_mode == Open_Mode::read_existing;
+   }
+   else if (arg_index < argc + 1 && std::strcmp(argv[arg_index], "--read") == 0)
+   {
+    readonly = true;
+    arg_index++;
+   }
+   else
+    readonly = false;
+
+   const char * const file_name = argv[arg_index];
+   arg_index++;
+
+   out << "Opening interpreted file... ";
+   out.flush();
+
+   if (readonly)
+    file.reset(new Readonly_Interpreted_File(file_name));
+   else
+    file.reset(new Interpreted_File(file_name));
+
+   out << "OK\n";
   }
 #ifdef JOEDB_HAS_SSH
   else if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)

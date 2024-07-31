@@ -208,5 +208,5 @@ overwrite the original file.
 ``joedb_browser``
 -----------------
 
-``joedb_browser`` is a bash script that uses ``joedb_logdump`` to produce an
-SQLite database, and invokes ``sqlitebrowser`` to browse it.
+``joedb_browser`` is a bash script that produces an SQLite database, and
+invokes ``sqlitebrowser`` to browse it.

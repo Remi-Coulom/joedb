@@ -120,6 +120,15 @@ TEST(Interpreter_Test, Raw_Dump_Writable)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Interpreter, Readonly_Interpreted_File)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::stringstream ss;
+ joedb::Readonly_Interpreted_File file(ss);
+ EXPECT_ANY_THROW(joedb::Writable_Journal{file});
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Interpreter, Interpreted_File)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -129,11 +138,38 @@ TEST(Interpreter, Interpreted_File)
  ss << "insert_into person 0\n";
  ss << "insert_into person 0\n";
  ss << "create_table city\n";
- ss.seekg(0);
 
- joedb::Interpreted_File file(ss);
+ joedb::Readonly_Interpreted_File file(ss);
  joedb::Readonly_Journal journal(file);
  Database db;
  journal.play_until_checkpoint(db);
  EXPECT_EQ(db.get_tables().size(), 2ULL);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Interpreter, Writable_Interpreted_File)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::stringstream ss;
+
+ {
+  joedb::Interpreted_Stream file(ss);
+  joedb::Writable_Journal journal(file);
+  journal.rewind();
+  journal.create_table("person");
+  journal.create_table("city");
+  journal.insert_into(Table_Id{1}, Record_Id{1});
+  journal.default_checkpoint();
+ }
+
+ EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\ninsert_into person 1\n");
+
+ joedb::Readonly_Interpreted_File file(ss);
+ joedb::Readonly_Journal journal(file);
+ Database db;
+ journal.play_until_checkpoint(db);
+ EXPECT_EQ(db.get_tables().size(), 2ULL);
+ EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});
+ EXPECT_EQ((++db.get_tables().begin())->first, Table_Id{2});
+ EXPECT_EQ(db.get_freedom(Table_Id{1}).size(), 1);
 }

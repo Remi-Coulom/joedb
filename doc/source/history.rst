@@ -5,22 +5,24 @@ History
 
   - ``Encoded_File`` supports on-the-fly coding or decoding of data.
     ``Brotli_Codec`` is provided for compression. Custom codecs can be used.
-  - :ref:`joedb_edit`
+  - It is now possible to write to an ``Interpreted_File``.
   - The ``add_field`` interpreter command now accepts an optional ``= <value>``
     suffix that sets the value for all existing records of the table.
   - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
   - Fixed some potential resource leaks when throwing from constructors in
     ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
     ``CURL_File``, ``Windows_File``.
+  - :ref:`joedb_edit`
   - Incompatibilities with previous version:
 
     - boolean values are printed as ``false`` and ``true`` instead of 0 and 1.
     - joedbc does not produce ``Interpreted_Database`` any more: use a
-      ``Generic_Readonly_Database`` with an ``Interpreted_File`` instead. Also,
-      ``Interpreted_File`` is now read-only.
+      ``Generic_Readonly_Database`` with a ``Readonly_Interpreted_File``
+      instead.
     - hashing functions were moved into a separate ``File_Hasher`` class.
-    - ``Generic_File::set_mode`` and ``get_mode`` were removed. Mode
-      is now a constant set in the constructor.
+    - ``Generic_File::set_mode`` and ``get_mode`` were removed. They are
+      replaced by the more restrictive ``make_readonly()``, ``is_shared()``,
+      and ``is_readonly()``;
 
 - 2024-06-25 9.0.1
 

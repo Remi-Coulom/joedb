@@ -60,7 +60,7 @@ namespace joedb
   const char * const config_file_name = argv[1];
   multi_server::Generic_Readonly_Database db
   (
-   Interpreted_File{config_file_name}
+   Readonly_Interpreted_File{config_file_name}
   );
 
   IO_Context_Wrapper io_context_wrapper;

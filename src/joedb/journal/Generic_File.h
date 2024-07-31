@@ -79,11 +79,12 @@ namespace joedb
      write_buffer();
    }
 
-   const Open_Mode mode;
+   Open_Mode mode;
    bool locked_tail;
 
   protected:
    void destructor_flush() noexcept;
+   void make_readonly() {mode = Open_Mode::read_existing;}
 
   public:
    Generic_File(Open_Mode mode);
