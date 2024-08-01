@@ -53,6 +53,19 @@ namespace joedb
     }
    }
 
+   bool has_index() const
+   {
+    return indices.size() > 0;
+   }
+
+   bool has_unique_index() const
+   {
+    for (const auto &index: indices)
+     if (index.unique)
+      return true;
+    return false;
+   }
+
    void set_name_space(std::vector<std::string> v)
    {
     name_space = std::move(v);

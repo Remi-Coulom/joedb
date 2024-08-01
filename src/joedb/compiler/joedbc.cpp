@@ -12,6 +12,7 @@
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/is_identifier.h"
 #include "joedb/get_version.h"
+#include "joedb/interpreter/Database.h"
 
 #include <fstream>
 #include <set>
@@ -676,19 +677,25 @@ static void generate_readonly_h
 #include "joedb/Exception.h"
 #include "joedb/exception/Out_Of_Date.h"
 #include "joedb/assert.h"
-#include "joedb/io/type_io.h"
 #include "joedb/get_version.h"
 
 #include <string>
 #include <cstdint>
 #include <cstring>
 #include <vector>
-#include <map>
 #include <algorithm>
-#include <sstream>
 #include <string_view>
 
 )RRR";
+
+ if (options.has_index())
+  out << "#include <map>\n";
+
+ if (options.has_unique_index())
+ {
+  out << "#include \"joedb/io/type_io.h\"\n";
+  out << "#include <sstream>\n";
+ }
 
  out << "static_assert(std::string_view(joedb::get_version()) == \"";
  out << joedb::get_version() << "\");\n\n";
@@ -2026,7 +2033,6 @@ static void generate_cpp
 
  out << "#include \"" << file_name << "_readonly.cpp\"\n";
  out << "#include \"" << file_name << ".h\"\n";
- out << "#include \"joedb/Exception.h\"\n";
  out << "#include \"joedb/Writable.h\"\n";
  out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
  out << '\n';
@@ -2078,7 +2084,7 @@ static void generate_cpp
  void Generic_File_Database::auto_upgrade()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const size_t file_schema_size = schema_file.get_data().size();
+  const size_t file_schema_size = schema_file.get_size();
 
   if (file_schema_size < schema_string_size)
   {
@@ -2198,7 +2204,7 @@ static int joedbc_main(int argc, char **argv)
  //
  // Read file.joedbi
  //
- Database_Schema db;
+ Database db;
  Memory_File schema_file;
  std::vector<std::string> custom_names;
 

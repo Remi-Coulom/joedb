@@ -5,10 +5,20 @@ For next release
 ----------------
  - use joedb to store a struct (mahjong rules, training parameters, ...)
 
-   - joedbc generates all C++ code for convenient manipulation
-   - single-row compiler option
    - if the joedbi contains one row of data, use it for default initialization
      (during schema upgrade, or when generating the C++ struct).
+   - generate function to initialize a whole column for tables with default
+     values: db.get_person_table().set_home(paris);
+   - single-row compiler option -> force insert of row with default values if
+     it is not already there, before schema upgrade, so that field
+     initialization can be applied during upgrade. Should work for tables with
+     default values only.
+   - struct io:
+
+     - if single row: x = db.load_settings(); db.save_settings(x);
+     - if not single row:  struct X x = db.load(settings_id), db.save(settings_id, x).
+   - generate function to load settings from a file, with auto upgrade, in one
+     single line of code. Same for saving.
 
  - proper handling of unique_index with more than one column:
 
