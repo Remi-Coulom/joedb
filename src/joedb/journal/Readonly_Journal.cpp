@@ -141,26 +141,23 @@ void joedb::Readonly_Journal::unlock()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::pull()
+void joedb::Readonly_Journal::pull_without_locking()
 /////////////////////////////////////////////////////////////////////////////
 {
  const int64_t old_position = file.get_position();
-
  std::array<int64_t, 4> pos;
-
- {
-  if (!file.tail_is_locked())
-   file.shared_lock_head();
-
-  file.pread((char *)&pos, sizeof(pos), checkpoint_offset);
-
-  if (!file.tail_is_locked())
-   file.unlock_head();
- }
-
+ file.pread((char *)&pos, sizeof(pos), checkpoint_offset);
  read_checkpoint(pos);
-
  file.set_position(old_position);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::pull()
+/////////////////////////////////////////////////////////////////////////////
+{
+ file.shared_lock_head();
+ pull_without_locking();
+ file.unlock_head();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -170,7 +167,7 @@ void joedb::Readonly_Journal::lock_pull()
  if (file.is_shared())
  {
   file.exclusive_lock_tail();
-  pull();
+  pull_without_locking();
  }
 }
 

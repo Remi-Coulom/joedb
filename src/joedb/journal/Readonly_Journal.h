@@ -39,6 +39,7 @@ namespace joedb
   private:
    static constexpr int64_t checkpoint_offset = 5 + 4;
    void read_checkpoint(const std::array<int64_t, 4> &pos);
+   void pull_without_locking();
 
    #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
    void perform_update_##type_id(Writable &writable);
