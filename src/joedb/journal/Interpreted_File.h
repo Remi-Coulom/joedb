@@ -56,6 +56,7 @@ namespace joedb
     Readonly_Interpreted_File(stream, false),
     stream(stream)
    {
+    stream.clear(); // clears eof flag after reading, get ready to write
    }
  };
 
@@ -73,6 +74,7 @@ namespace joedb
     file_stream.open(file_name, in | std::ios::out);
     if (!file_stream)
      file_stream.open(file_name, in | std::ios::out | std::ios::trunc);
+    file_stream.exceptions(std::ios::failbit);
    }
  };
 

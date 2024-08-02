@@ -4,7 +4,6 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
-#include "joedb/interpreter/Database.h"
 
 namespace joedb
 {
@@ -33,8 +32,6 @@ namespace joedb
 
   if (readonly)
    make_readonly();
-
-  stream.clear(); // clears eof flag, get ready to write
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -46,6 +43,8 @@ namespace joedb
 
   if (journal.get_checkpoint_position() > current_checkpoint)
   {
+   if (current_checkpoint > Readonly_Journal::header_size)
+    stream << '\n';
    journal.set_position(current_checkpoint);
    Interpreter_Writable writable(stream, db);
    Multiplexer multiplexer{writable, db};

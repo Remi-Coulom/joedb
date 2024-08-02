@@ -158,11 +158,12 @@ TEST(Interpreter, Writable_Interpreted_File)
   journal.rewind();
   journal.create_table("person");
   journal.create_table("city");
+  journal.default_checkpoint();
   journal.insert_into(Table_Id{1}, Record_Id{1});
   journal.default_checkpoint();
  }
 
- EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\ninsert_into person 1\n");
+ EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 1\n");
 
  joedb::Readonly_Interpreted_File file(ss);
  joedb::Readonly_Journal journal(file);
