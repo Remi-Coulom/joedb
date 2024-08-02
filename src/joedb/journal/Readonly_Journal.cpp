@@ -75,18 +75,10 @@ joedb::Readonly_Journal::Readonly_Journal
 
    checkpoint_position = header_size;
 
-   std::array<int64_t, 4> pos;
-
    for (int i = 0; i < 4; i++)
-    pos[i] = file.read<int64_t>();
+    lock.pos[i] = file.read<int64_t>();
 
-   if (check_flag(check, Check::checkpoint_mismatch))
-   {
-    if (pos[0] != pos[1] || pos[2] != pos[3])
-     throw Exception("Checkpoint mismatch");
-   }
-
-   read_checkpoint(pos);
+   read_checkpoint(lock.pos);
 
    //
    // Compare to file size (if available)

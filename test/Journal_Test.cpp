@@ -154,6 +154,26 @@ TEST(Journal, checkpoint_mismatch)
  {
   EXPECT_STREQ(e.what(), "Checkpoint mismatch");
  }
+
+ try
+ {
+  joedb::Writable_Journal journal(file, joedb::Readonly_Journal::Check::overwrite);
+  EXPECT_EQ(journal.get_checkpoint_position(), 41);
+ }
+ catch (const joedb::Exception &e)
+ {
+  FAIL() << "Mismatched checkpoint is OK with Check::overwrite";
+ }
+
+ try
+ {
+  joedb::Writable_Journal journal(file);
+  EXPECT_EQ(journal.get_checkpoint_position(), 41);
+ }
+ catch (const joedb::Exception &e)
+ {
+  FAIL() << "checkpoints should be matching now";
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -209,6 +229,57 @@ TEST(Journal, checkpoint_different_from_file_size)
  catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, crash_simulation)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+
+ int64_t correct_checkpoint;
+
+ {
+  joedb::Writable_Journal journal(file);
+  journal.create_table("person");
+  journal.default_checkpoint();
+  correct_checkpoint = journal.get_checkpoint_position();
+  journal.create_table("country");
+  journal.default_checkpoint();
+ }
+
+ file.set_position(9);
+ file.write<int64_t>(correct_checkpoint);
+ file.write<int64_t>(correct_checkpoint);
+ file.write<int64_t>(1234);
+ file.write<int64_t>(5678);
+
+ {
+  joedb::Database db;
+  joedb::Readonly_Journal journal(file);
+  EXPECT_EQ(journal.get_checkpoint_position(), correct_checkpoint);
+  journal.replay_log(db);
+  EXPECT_EQ(db.get_tables().size(), 1);
+ }
+
+ EXPECT_ANY_THROW(joedb::Writable_Journal{file});
+
+ {
+  joedb::Writable_Journal journal{file, joedb::Readonly_Journal::Check::overwrite};
+  EXPECT_EQ(journal.get_checkpoint_position(), correct_checkpoint);
+  journal.append();
+  journal.create_table("city");
+  journal.default_checkpoint();
+ }
+
+ {
+  joedb::Readonly_Journal journal(file);
+  joedb::Database db;
+  journal.replay_log(db);
+  EXPECT_EQ(db.get_tables().size(), 2);
+  EXPECT_EQ(db.get_tables().begin()->second, "person");
+  EXPECT_EQ((++db.get_tables().begin())->second, "city");
  }
 }
 

@@ -14,6 +14,8 @@ namespace joedb
    bool creating_new;
 
   public:
+   std::array<int64_t, 4> pos;
+
    explicit Journal_Construction_Lock(Generic_File &file);
 
    Journal_Construction_Lock(const Journal_Construction_Lock &) = delete;

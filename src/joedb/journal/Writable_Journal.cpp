@@ -33,12 +33,30 @@ joedb::Writable_Journal::Writable_Journal
 
   file.flush();
  }
- else if (version_number > file_version)
+ else
  {
-  file_version = version_number;
-  file.set_position(5);
-  file.write<uint32_t>(file_version);
-  file.set_position(header_size);
+  if (lock.pos[0] != lock.pos[1] || lock.pos[2] != lock.pos[3])
+  {
+   if (check_flag(check, Check::checkpoint_mismatch))
+    throw Exception("Checkpoint mismatch");
+   else
+   {
+    file.set_position(checkpoint_offset);
+    file.write<int64_t>(checkpoint_position);
+    file.write<int64_t>(checkpoint_position);
+    file.write<int64_t>(checkpoint_position);
+    file.write<int64_t>(checkpoint_position);
+    file.flush();
+   }
+  }
+
+  if (version_number > file_version)
+  {
+   file_version = version_number;
+   file.set_position(5);
+   file.write<uint32_t>(file_version);
+   file.set_position(header_size);
+  }
  }
 }
 
