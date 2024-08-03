@@ -2,8 +2,6 @@
 #include "joedb/Exception.h"
 #include "joedb/is_identifier.h"
 
-#include <sstream>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -16,9 +14,7 @@ namespace joedb
  {
   if (!is_identifier(name))
   {
-   std::ostringstream error_message;
-   error_message << message << ": invalid identifier: " << name;
-   throw Exception(error_message.str());
+   throw Exception(std::string(message) + ": invalid identifier: " + name);
   }
  }
 
@@ -40,8 +36,15 @@ namespace joedb
  )
  {
   const auto it = tables.find(table_id);
+
   if (it == tables.end())
-   throw Exception("invalid table_id");
+  {
+   throw Exception
+   (
+    "get_table: invalid table_id: " + std::to_string(to_underlying(table_id))
+   );
+  }
+
   return it->second;
  }
 
