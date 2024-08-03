@@ -185,33 +185,90 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    void initialize();
    void auto_upgrade();
-
-   void custom(const std::string &name) final
-   {
-    Database::custom(name);
 )RRR";
 
  if (!options.get_custom_names().empty())
  {
-  out << "    if (upgrading_schema)\n";
-  out << "    {\n";
+out << R"RRR(
+   void custom(const std::string &name) final
+   {
+    Database::custom(name);
+
+    if (upgrading_schema)
+    {
+)RRR";
   for (const auto &name: options.get_custom_names())
   {
    out << "     if (name == \"" << name << "\")\n";
    out << "      " << name << "(*this);\n";
   }
   out << "    }\n";
- }
- out << "   }\n";
+  out << "   }\n";
 
- if (!options.get_custom_names().empty())
- {
   out << '\n';
   out << "  public:\n";
   for (const auto &name: options.get_custom_names())
    out << "   static void " << name << "(Generic_File_Database &db);\n";
   out << "\n  private:";
  }
+
+ out << R"RRR(
+   void add_field
+   (
+    Table_Id table_id,
+    const std::string &name,
+    joedb::Type type
+   ) override
+   {
+    Database::add_field(table_id, name, type);
+)RRR";
+
+
+ for (const auto &table: tables)
+ {
+  if (db.get_freedom(table.first).size() > 0)
+  {
+   const Record_Id record_id{db.get_freedom(table.first).get_first_used() - 1};
+
+   out << "\n    if (table_id == Table_Id{" << table.first << "})\n";
+   out << "    {\n";
+   out << "     const auto field_id = ++storage_of_" << table.second << ".current_field_id;\n";
+   out << "     if (upgrading_schema)\n";
+   out << "     {\n";
+
+   for (const auto &field: db.get_fields(table.first))
+   {
+    out << "      if (field_id == Field_Id{" << field.first  << "})\n";
+    out << "      {\n";
+    out << "       for (const auto record: get_" << table.second << "_table())\n";
+    out << "        set_" << field.second << "(record, ";
+
+    const auto &type = db.get_field_type(table.first, field.first);
+    const bool reference = type.get_type_id() == joedb::Type::Type_Id::reference;
+
+    if (reference)
+    {
+     const auto it = tables.find(type.get_table_id());
+     if (it != tables.end())
+      out << "id_of_" << it->second;
+     out << "(";
+    }
+
+    joedb::write_value(out, db, nullptr, table.first, record_id, field.first);
+
+    if (reference)
+     out << ")";
+
+    out <<");\n";
+    out << "      }\n";
+   }
+
+   out << "     }\n";
+   out << "    }\n";
+  }
+ }
+ out << "   }\n";
+
  out << R"RRR(
    Generic_File_Database
    (
@@ -748,6 +805,8 @@ static void generate_readonly_h
   out << "\n struct data_of_" << tname;
 
   out <<"\n {\n";
+  if (db.get_freedom(table.first).size() > 0)
+   out <<"  Field_Id current_field_id = Field_Id(0);\n";
 
   std::vector<std::string> fields;
 
@@ -1459,7 +1518,7 @@ static void generate_readonly_h
     Table_Id table_id,
     const std::string &name,
     joedb::Type type
-   ) final
+   ) override
    {
     schema_journal.add_field(table_id, name, type);
     schema_journal.default_checkpoint();
@@ -2094,11 +2153,11 @@ static void generate_cpp
    joedb::Readonly_Journal schema_journal(schema_file);
 
    schema_journal.set_position(int64_t(file_schema_size));
-   schema_journal.play_until_checkpoint(journal);
+   schema_journal.play_until(journal, schema_string_size);
 
    schema_journal.set_position(int64_t(file_schema_size));
    upgrading_schema = true;
-   schema_journal.play_until_checkpoint(*this);
+   schema_journal.play_until(*this, schema_string_size);
    upgrading_schema = false;
 
    journal.comment("End of automatic schema upgrade");

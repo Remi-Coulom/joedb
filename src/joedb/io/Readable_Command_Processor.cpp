@@ -13,10 +13,12 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Readable_Command_Processor::write_value
+ void write_value
  ////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
+  const Readable &readable,
+  Blob_Reader *blob_reader,
   Table_Id table_id,
   Record_Id record_id,
   Field_Id field_id

@@ -10,6 +10,18 @@ namespace joedb
  class Blob_Reader;
 
  ////////////////////////////////////////////////////////////////////////////
+ void write_value
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  const Readable &readable,
+  Blob_Reader *blob_reader,
+  Table_Id table_id,
+  Record_Id record_id,
+  Field_Id field_id
+ );
+
+ ////////////////////////////////////////////////////////////////////////////
  class Readable_Command_Processor: public Command_Processor
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -27,7 +39,10 @@ namespace joedb
     Table_Id table_id,
     Record_Id record_id,
     Field_Id field_id
-   );
+   )
+   {
+    joedb::write_value(out, readable, blob_reader, table_id, record_id, field_id);
+   }
 
    Status process_command
    (
