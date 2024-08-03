@@ -1,5 +1,4 @@
 #include "joedb/journal/Interpreted_File.h"
-#include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/io/Interpreter.h"
@@ -13,12 +12,12 @@ namespace joedb
  (
   std::istream &stream,
   bool readonly
- )
+ ):
+  journal(*this)
  {
   stream.clear();
   stream.exceptions(std::ios::badbit);
 
-  Writable_Journal journal(*this);
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
   interpreter.set_echo(false);
@@ -29,8 +28,6 @@ namespace joedb
   }
   journal.default_checkpoint();
 
-  current_checkpoint = journal.get_checkpoint_position();
-
   if (readonly)
    make_readonly();
  }
@@ -39,19 +36,18 @@ namespace joedb
  void Interpreted_Stream_File::pull()
  ////////////////////////////////////////////////////////////////////////////
  {
-  Readonly_Memory_File file(get_data());
-  Readonly_Journal journal(file);
+  const int64_t previous_checkpoint = journal.get_checkpoint_position();
+  journal.pull();
 
-  if (journal.get_checkpoint_position() > current_checkpoint)
+  if (journal.get_checkpoint_position() > previous_checkpoint)
   {
-   if (current_checkpoint > Readonly_Journal::header_size)
+   if (previous_checkpoint > Readonly_Journal::header_size)
     stream << '\n';
-   journal.set_position(current_checkpoint);
    Interpreter_Writable writable(stream, db);
    Multiplexer multiplexer{writable, db};
+   journal.set_position(previous_checkpoint);
    journal.play_until_checkpoint(multiplexer);
    stream.flush();
-   current_checkpoint = journal.get_checkpoint_position();
   }
  }
 }
