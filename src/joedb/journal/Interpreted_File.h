@@ -36,7 +36,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Interpreted_Stream: public Readonly_Interpreted_File
+ class Interpreted_Stream_File: public Readonly_Interpreted_File
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -52,7 +52,7 @@ namespace joedb
    }
 
   public:
-   Interpreted_Stream(std::iostream &stream):
+   Interpreted_Stream_File(std::iostream &stream):
     Readonly_Interpreted_File(stream, false),
     stream(stream)
    {
@@ -74,7 +74,6 @@ namespace joedb
     file_stream.open(file_name, in | std::ios::out);
     if (!file_stream)
      file_stream.open(file_name, in | std::ios::out | std::ios::trunc);
-    file_stream.exceptions(std::ios::failbit);
    }
  };
 
@@ -82,12 +81,12 @@ namespace joedb
  class Interpreted_File:
  ////////////////////////////////////////////////////////////////////////////
   private Interpreted_File_Data,
-  public Interpreted_Stream
+  public Interpreted_Stream_File
  {
   public:
    Interpreted_File(const char *file_name):
     Interpreted_File_Data(file_name),
-    Interpreted_Stream(file_stream)
+    Interpreted_Stream_File(file_stream)
    {
    }
  };

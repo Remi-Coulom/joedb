@@ -153,7 +153,7 @@ TEST(Interpreter, Writable_Interpreted_File)
  std::stringstream ss;
 
  {
-  joedb::Interpreted_Stream file(ss);
+  joedb::Interpreted_Stream_File file(ss);
   joedb::Writable_Journal journal(file);
   journal.rewind();
   journal.create_table("person");

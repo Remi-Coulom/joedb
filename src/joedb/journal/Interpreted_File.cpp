@@ -16,6 +16,7 @@ namespace joedb
  )
  {
   stream.clear();
+  stream.exceptions(std::ios::badbit);
 
   Writable_Journal journal(*this);
   Multiplexer multiplexer{db, journal};
@@ -35,7 +36,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Interpreted_Stream::pull()
+ void Interpreted_Stream_File::pull()
  ////////////////////////////////////////////////////////////////////////////
  {
   Readonly_Memory_File file(get_data());
