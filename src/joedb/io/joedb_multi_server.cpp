@@ -1,6 +1,6 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/db/multi_server_readonly.h"
-#include "joedb/journal/Interpreted_File.h"
+#include "joedb/journal/Readonly_Interpreted_File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/Client.h"

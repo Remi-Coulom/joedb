@@ -1,5 +1,5 @@
 #include "joedb/db/multi_server_readonly.h"
-#include "joedb/journal/Interpreted_File.h"
+#include "joedb/journal/Readonly_Interpreted_File.h"
 
 #include "gtest/gtest.h"
 

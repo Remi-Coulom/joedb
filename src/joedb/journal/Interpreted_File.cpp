@@ -1,37 +1,9 @@
 #include "joedb/journal/Interpreted_File.h"
-#include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/io/Interpreter.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
 
 namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
- Readonly_Interpreted_File::Readonly_Interpreted_File
- ////////////////////////////////////////////////////////////////////////////
- (
-  std::istream &stream,
-  bool readonly
- ):
-  journal(*this)
- {
-  stream.clear();
-  stream.exceptions(std::ios::badbit);
-
-  Multiplexer multiplexer{db, journal};
-  Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
-  interpreter.set_echo(false);
-  interpreter.set_rethrow(true);
-  {
-   std::ofstream null_stream;
-   interpreter.main_loop(stream, null_stream);
-  }
-  journal.default_checkpoint();
-
-  if (readonly)
-   make_readonly();
- }
-
  ////////////////////////////////////////////////////////////////////////////
  void Interpreted_Stream_File::pull()
  ////////////////////////////////////////////////////////////////////////////
@@ -49,5 +21,50 @@ namespace joedb
    journal.play_until_checkpoint(multiplexer);
    stream.flush();
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreted_Stream_File::pwrite
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const char *buffer,
+  size_t size,
+  int64_t offset
+ )
+ {
+  Memory_File::pwrite(buffer, size, offset);
+  if (Readonly_Journal::is_second_checkpoint_copy(offset))
+   pull();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_Stream_File::Interpreted_Stream_File(std::iostream &stream):
+ ////////////////////////////////////////////////////////////////////////////
+  Readonly_Interpreted_File(stream, false),
+  stream(stream)
+ {
+  stream.clear(); // clears eof flag after reading, get ready to write
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_File_Data::Interpreted_File_Data(const char *file_name)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  constexpr auto in = std::ios::binary | std::ios::in;
+  file_stream.open(file_name, in | std::ios::out);
+  if (!file_stream)
+   file_stream.open(file_name, in | std::ios::out | std::ios::trunc);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_File_Data::~Interpreted_File_Data() = default;
+ ////////////////////////////////////////////////////////////////////////////
+
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_File::Interpreted_File(const char *file_name):
+ ////////////////////////////////////////////////////////////////////////////
+  Interpreted_File_Data(file_name),
+  Interpreted_Stream_File(file_stream)
+ {
  }
 }

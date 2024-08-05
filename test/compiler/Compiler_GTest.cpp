@@ -5,7 +5,7 @@
 #include "db/test_readonly.h"
 #include "db/vector_test.h"
 #include "translation.h"
-#include "joedb/journal/Interpreted_File.h"
+#include "joedb/journal/Readonly_Interpreted_File.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/interpreter/Database.h"
 
