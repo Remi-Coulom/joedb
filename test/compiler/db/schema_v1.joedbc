@@ -1,2 +1,1 @@
 namespace schema_v1
-generate_c_wrapper

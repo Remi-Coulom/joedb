@@ -7,11 +7,9 @@ namespace joedb
 {
  class Compiler_Options;
 
- // true = OK, false = error
- bool parse_compiler_options
+ void parse_compiler_options
  (
   std::istream &in,
-  std::ostream &out, // for errors and warnings
   Compiler_Options &compiler_options
  );
 }

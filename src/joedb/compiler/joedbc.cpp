@@ -8,7 +8,6 @@
 #include "joedb/io/main_exception_catcher.h"
 #include "joedb/compiler/Compiler_Options.h"
 #include "joedb/compiler/Compiler_Options_io.h"
-#include "joedb/compiler/c_wrapper.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/is_identifier.h"
 #include "joedb/get_version.h"
@@ -2299,10 +2298,14 @@ static int joedbc_main(int argc, char **argv)
 
  Compiler_Options compiler_options(db, custom_names);
 
- if (!parse_compiler_options(joedbc_file, std::cerr, compiler_options))
+ try
  {
-  std::cerr << "Error: could not parse compiler options\n";
-  return 1;
+  parse_compiler_options(joedbc_file, compiler_options);
+ }
+ catch(...)
+ {
+  std::cerr << "Error parsing .joedbc file: " << argv[2] << '\n';
+  throw;
  }
 
  //
@@ -2343,25 +2346,6 @@ static int joedbc_main(int argc, char **argv)
   );
   write_initial_comment(cpp_file, compiler_options, exe_path);
   generate_cpp(cpp_file, compiler_options);
- }
-
- if (compiler_options.get_generate_c_wrapper())
- {
-  std::ofstream header
-  (
-   compiler_options.get_name_space().back() + "_wrapper.h",
-   std::ios::trunc
-  );
-
-  std::ofstream body
-  (
-   compiler_options.get_name_space().back() + "_wrapper.cpp",
-   std::ios::trunc
-  );
-
-  write_initial_comment(header, compiler_options, exe_path);
-  write_initial_comment(body, compiler_options, exe_path);
-  joedb::generate_c_wrapper(header, body, compiler_options);
  }
 
  return 0;

@@ -23,7 +23,8 @@ namespace joedb
 
    struct Table_Options
    {
-    bool null_initialization;
+    bool null_initialization = false;
+    bool single_row = false;
    };
 
   private:
@@ -34,9 +35,6 @@ namespace joedb
    std::vector<Index> indices;
    std::map<Table_Id, Table_Options> table_options;
 
-   bool generate_c_wrapper;
-   bool generate_js_wrapper;
-
   public:
    Compiler_Options
    (
@@ -44,13 +42,10 @@ namespace joedb
     const std::vector<std::string> &custom_names
    ):
     db(db),
-    custom_names(custom_names),
-    generate_c_wrapper(false)
+    custom_names(custom_names)
    {
     for (auto table: db.get_tables())
-    {
-     table_options[table.first].null_initialization = false;
-    }
+     table_options[table.first];
    }
 
    bool has_index() const
@@ -70,20 +65,21 @@ namespace joedb
    {
     name_space = std::move(v);
    }
-   void set_table_null_initialization
-   (
-    Table_Id table_id,
-    bool null_initialization
-   )
+
+   void set_table_null_initialization(Table_Id table_id, bool value)
    {
-    table_options[table_id].null_initialization = null_initialization;
+    table_options[table_id].null_initialization = value;
    }
+
+   void set_single_row(Table_Id table_id, bool value)
+   {
+    table_options[table_id].single_row = value;
+   }
+
    void add_index(Index index)
    {
     indices.emplace_back(std::move(index));
    }
-   void set_generate_c_wrapper(bool value) {generate_c_wrapper = value;}
-   void set_generate_js_wrapper(bool value) {generate_js_wrapper = value;}
 
    const Database_Schema &get_db() const {return db;}
    const std::vector<std::string> &get_custom_names() const
@@ -99,8 +95,6 @@ namespace joedb
    {
     return table_options.find(table_id)->second;
    }
-   bool get_generate_c_wrapper() const {return generate_c_wrapper;}
-   bool get_generate_js_wrapper() const {return generate_js_wrapper;}
  };
 }
 

@@ -1,1 +1,2 @@
 namespace settings
+set_single_row settings true

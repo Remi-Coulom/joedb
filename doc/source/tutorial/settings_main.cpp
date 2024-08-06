@@ -11,7 +11,7 @@ int main(int argc, char **argv)
  settings::Generic_File_Database db(settings_file);
 
  std::cout << "dark mode: ";
- std::cout << db.get_dark_mode(db.get_Settings_table().first());
+ std::cout << db.get_dark_mode(db.get_settings_table().first());
  std::cout << '\n';
  return 0;
 }

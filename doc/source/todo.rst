@@ -5,15 +5,11 @@ For next release
 ----------------
  - use joedb to store a struct (mahjong rules, training parameters, ...)
 
-   - if the joedbi contains one row of data, use it for default initialization
-     (during schema upgrade, or when generating the C++ struct).
-   - generate function to initialize a whole column for tables with default
-     values: db.get_person_table().set_home(paris);
-   - single-row compiler option -> force insert of row with default values if
-     it is not already there, before schema upgrade, so that field
-     initialization can be applied during upgrade. Should work for tables with
-     default values only.
-   - struct io:
+   - single-row compiler option -> force insert of row (with default values if
+     available) if it is not already there, before schema upgrade, so that
+     field initialization can be applied during upgrade. Reject pull that
+     creates or delete a new row.
+   - struct io (generated as option):
 
      - if single row: x = db.load_settings(); db.save_settings(x);
      - if not single row:  struct X x = db.load(settings_id), db.save(settings_id, x).
@@ -116,9 +112,6 @@ Compiler
   - referential integrity
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
-
-- C wrapper. Catch all exceptions? Error codes?
-- jni wrapper
 
 Better Freedom_Keeper
 ---------------------
