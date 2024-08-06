@@ -1,7 +1,7 @@
 #ifndef joedb_Compiler_Options_declared
 #define joedb_Compiler_Options_declared
 
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreter/Database.h"
 
 #include <string>
 #include <vector>
@@ -28,7 +28,7 @@ namespace joedb
    };
 
   private:
-   const Database_Schema &db;
+   const Database &db;
    const std::vector<std::string> &custom_names;
 
    std::vector<std::string> name_space;
@@ -38,7 +38,7 @@ namespace joedb
   public:
    Compiler_Options
    (
-    const Database_Schema &db,
+    const Database &db,
     const std::vector<std::string> &custom_names
    ):
     db(db),
@@ -81,7 +81,7 @@ namespace joedb
     indices.emplace_back(std::move(index));
    }
 
-   const Database_Schema &get_db() const {return db;}
+   const Database &get_db() const {return db;}
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;

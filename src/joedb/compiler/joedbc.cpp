@@ -137,10 +137,22 @@ static void write_index_type
 }
 
 /////////////////////////////////////////////////////////////////////////////
+static bool has_values(const Database &db)
+/////////////////////////////////////////////////////////////////////////////
+{
+ for (const auto &table: db.get_tables())
+ {
+  if (db.get_freedom(table.first).size() > 0)
+   return true;
+ }
+ return false;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 static void generate_h(std::ostream &out, const Compiler_Options &options)
 /////////////////////////////////////////////////////////////////////////////
 {
- const Database_Schema &db = options.get_db();
+ const Database &db = options.get_db();
  auto tables = db.get_tables();
 
  namespace_include_guard(out, "Database", options.get_name_space());
@@ -211,62 +223,18 @@ out << R"RRR(
   out << "\n  private:";
  }
 
- out << R"RRR(
+ if (has_values(db))
+ {
+  out << R"RRR(
    void add_field
    (
     Table_Id table_id,
     const std::string &name,
     joedb::Type type
-   ) override
-   {
-    Database::add_field(table_id, name, type);
+   ) override;
 )RRR";
-
-
- for (const auto &table: tables)
- {
-  if (db.get_freedom(table.first).size() > 0)
-  {
-   const Record_Id record_id{db.get_freedom(table.first).get_first_used() - 1};
-
-   out << "\n    if (table_id == Table_Id{" << table.first << "})\n";
-   out << "    {\n";
-   out << "     const auto field_id = ++storage_of_" << table.second << ".current_field_id;\n";
-   out << "     if (upgrading_schema)\n";
-   out << "     {\n";
-
-   for (const auto &field: db.get_fields(table.first))
-   {
-    out << "      if (field_id == Field_Id{" << field.first  << "})\n";
-    out << "      {\n";
-    out << "       for (const auto record: get_" << table.second << "_table())\n";
-    out << "        set_" << field.second << "(record, ";
-
-    const auto &type = db.get_field_type(table.first, field.first);
-    const bool reference = type.get_type_id() == joedb::Type::Type_Id::reference;
-
-    if (reference)
-    {
-     const auto it = tables.find(type.get_table_id());
-     if (it != tables.end())
-      out << "id_of_" << it->second;
-     out << "(";
-    }
-
-    joedb::write_value(out, db, nullptr, table.first, record_id, field.first);
-
-    if (reference)
-     out << ")";
-
-    out <<");\n";
-    out << "      }\n";
-   }
-
-   out << "     }\n";
-   out << "    }\n";
-  }
  }
- out << "   }\n";
+
 
  out << R"RRR(
    Generic_File_Database
@@ -2094,7 +2062,7 @@ static void generate_cpp
  out << "#include \"joedb/Writable.h\"\n";
  out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
  out << '\n';
- out << "#include <ctime>\n";
+ out << "#include <ctime>\n\n";
 
  namespace_open(out, options.get_name_space());
 
@@ -2195,6 +2163,70 @@ static void generate_cpp
  {
  }
 )RRR";
+
+ const auto &db = options.get_db();
+ const auto &tables = db.get_tables();
+
+ if (has_values(options.get_db()))
+ {
+  out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::add_field
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id,
+  const std::string &name,
+  joedb::Type type
+ )
+ {
+  Database::add_field(table_id, name, type);
+)RRR";
+
+  for (const auto &table: tables)
+  {
+   if (db.get_freedom(table.first).size() > 0)
+   {
+    const Record_Id record_id{db.get_freedom(table.first).get_first_used() - 1};
+
+    out << "\n  if (table_id == Table_Id{" << table.first << "})\n";
+    out << "  {\n";
+    out << "   const auto field_id = ++storage_of_" << table.second << ".current_field_id;\n";
+    out << "   if (upgrading_schema)\n";
+    out << "   {\n";
+
+    for (const auto &field: db.get_fields(table.first))
+    {
+     out << "    if (field_id == Field_Id{" << field.first  << "})\n";
+     out << "    {\n";
+     out << "     for (const auto record: get_" << table.second << "_table())\n";
+     out << "      set_" << field.second << "(record, ";
+
+     const auto &type = db.get_field_type(table.first, field.first);
+     const bool reference = type.get_type_id() == joedb::Type::Type_Id::reference;
+
+     if (reference)
+     {
+      const auto it = tables.find(type.get_table_id());
+      if (it != tables.end())
+       out << "id_of_" << it->second;
+      out << "(";
+     }
+
+     joedb::write_value(out, db, nullptr, table.first, record_id, field.first);
+
+     if (reference)
+      out << ")";
+
+     out <<");\n";
+     out << "    }\n";
+    }
+
+    out << "   }\n";
+    out << "  }\n";
+   }
+  }
+  out << " }\n";
+ }
 
  namespace_close(out, options.get_name_space());
 }
