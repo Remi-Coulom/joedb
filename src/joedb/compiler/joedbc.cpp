@@ -1608,7 +1608,7 @@ static void generate_readonly_h
   //
   if (single_row)
   {
-   out << "   constexpr id_of_" << tname << " the_" << tname << "()\n";
+   out << "   static constexpr id_of_" << tname << " the_" << tname << "()\n";
    out << "   {\n";
    out << "    return id_of_" << tname << "{1};\n";
    out << "   }\n";
