@@ -5,10 +5,6 @@ For next release
 ----------------
  - use joedb to store a struct (mahjong rules, training parameters, ...)
 
-   - single-row compiler option -> force insert of row (with default values if
-     available) if it is not already there, before schema upgrade, so that
-     field initialization can be applied during upgrade. Reject pull that
-     creates or delete a new row.
    - struct io (generated as option):
 
      - if single row: x = db.load_settings(); db.save_settings(x);
@@ -100,7 +96,6 @@ Compiler
 - use std::set and std::multiset for indexes? Might be better for strings.
 - Table options:
 
-  - single_row: compiled to a simple struct, with simpler getters.
   - no_delete: allows more efficient indexing (+smaller code)
   - last N (for web access log) (last 0 = none)
 

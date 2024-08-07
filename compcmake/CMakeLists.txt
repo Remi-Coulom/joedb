@@ -125,6 +125,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
  endif()
 
  joedb_add_executable(joedb_test
+  ../doc/source/tutorial/settings.cpp
   ../test/Async_Test.cpp
   ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp
@@ -161,6 +162,8 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
   ../test/compiler/Readonly_Client.cpp
+  ../test/compiler/single_row.cpp
+  ../test/compiler/translation.h
   ../test/compiler/db/blob.cpp
   ../test/compiler/db/test.cpp
   ../test/compiler/db/multi_index.cpp
@@ -168,7 +171,6 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/compiler/db/schema_v2.cpp
   ../test/compiler/db/vector_test.cpp
   ../test/compiler/db/empty.cpp
-  ../test/compiler/translation.h
   ../test/compiler/db/test_dbname_base64.cpp
   ../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/io/base64_decode.cpp
@@ -224,6 +226,7 @@ joedbc_build(../test/compiler/db empty)
 joedbc_build(../test/compiler/db blob)
 joedbc_build(../benchmark benchmarkdb)
 joedbc_build(../doc/source/tutorial tutorial)
+joedbc_build(../doc/source/tutorial settings)
 
 add_custom_command(
  OUTPUT
