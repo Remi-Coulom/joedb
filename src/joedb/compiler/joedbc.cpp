@@ -194,9 +194,20 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
    joedb::Writable_Journal journal;
    bool ready_to_write;
 
-   void initialize();
+   void play_journal();
    void auto_upgrade();
+   void enforce_single_row();
+
+   void initialize()
+   {
+    play_journal();
+    check_schema();
+    auto_upgrade();
+    enforce_single_row();
+    default_checkpoint();
+   }
 )RRR";
+
 
  if (!options.get_custom_names().empty())
  {
@@ -240,7 +251,7 @@ out << R"RRR(
    Generic_File_Database
    (
     joedb::Generic_File &file,
-    bool upgrade,
+    bool perform_initialization,
     joedb::Readonly_Journal::Check check,
     joedb::Commit_Level commit_level
    );
@@ -303,12 +314,19 @@ out << R"RRR(
  {
   out << '\n';
   const std::string &tname = table.second;
+  const bool single_row = options.get_table_options(table.first).single_row;
 
   //
   // Erase all elements of the table
   //
-  out << "   void clear_" << tname << "_table();\n";
-  out << '\n';
+  if (!single_row)
+  {
+   out << "   void clear_" << tname << "_table();\n";
+   out << '\n';
+  }
+
+  if (single_row)
+   out << "  private:\n";
 
   //
   // Uninitialized new
@@ -327,18 +345,21 @@ out << R"RRR(
   //
   // new uninitialized vector
   //
-  out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
-  out << "   {\n";
-  out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname;
-  out << ".size() + 1));\n";
-  out << "    storage_of_" << tname << ".resize(storage_of_";
-  out << tname << ".size() + size);\n";
-  out << "    internal_vector_insert_" << tname << "(result.get_record_id(), size);\n";
-  out << "    journal.insert_vector(Table_Id(" << table.first;
-  out << "), result.get_record_id(), size);\n";
-  out << "    return result;\n";
-  out << "   }\n";
-  out << '\n';
+  if (!single_row)
+  {
+   out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
+   out << "   {\n";
+   out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname;
+   out << ".size() + 1));\n";
+   out << "    storage_of_" << tname << ".resize(storage_of_";
+   out << tname << ".size() + size);\n";
+   out << "    internal_vector_insert_" << tname << "(result.get_record_id(), size);\n";
+   out << "    journal.insert_vector(Table_Id(" << table.first;
+   out << "), result.get_record_id(), size);\n";
+   out << "    return result;\n";
+   out << "   }\n";
+   out << '\n';
+  }
 
   //
   // new with all fields
@@ -380,14 +401,26 @@ out << R"RRR(
    out << "   }\n\n";
   }
 
+  if (single_row)
+  {
+   out << "  public:\n";
+   out << "   constexpr id_of_" << tname << " the_" << tname << "()\n";
+   out << "   {\n";
+   out << "    return id_of_" << tname << "{1};\n";
+   out << "   }\n";
+  }
+
   //
   // Delete
   //
-  out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
-  out << "   {\n";
-  out << "    internal_delete_" << tname << "(record.get_record_id());\n";
-  out << "    journal.delete_from(Table_Id(" << table.first << "), record.get_record_id());\n";
-  out << "   }\n\n";
+  if (!single_row)
+  {
+   out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
+   out << "   {\n";
+   out << "    internal_delete_" << tname << "(record.get_record_id());\n";
+   out << "    journal.delete_from(Table_Id(" << table.first << "), record.get_record_id());\n";
+   out << "   }\n\n";
+  }
 
   //
   // Loop over fields
@@ -493,13 +526,17 @@ out << R"RRR(
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
+  const bool single_row = options.get_table_options(table.first).single_row;
 
-  out << " inline void Generic_File_Database::clear_" << tname << "_table()\n";
-  out << " {\n";
-  out << "  while (!get_" << tname << "_table().is_empty())\n";
-  out << "   delete_" << tname << "(get_" << tname << "_table().last());\n";
-  out << " }\n";
-  out << '\n';
+  if (!single_row)
+  {
+   out << " inline void Generic_File_Database::clear_" << tname << "_table()\n";
+   out << " {\n";
+   out << "  while (!get_" << tname << "_table().is_empty())\n";
+   out << "   delete_" << tname << "(get_" << tname << "_table().last());\n";
+   out << " }\n";
+   out << '\n';
+  }
  }
 
  //
@@ -535,13 +572,6 @@ out << R"RRR(
    {
     return db.journal;
    }
-
-   void update()
-   {
-    db.ready_to_write = false;
-    db.journal.play_until_checkpoint(db);
-    db.ready_to_write = true;
-   }
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -554,11 +584,12 @@ out << R"RRR(
   private:
    int64_t schema_checkpoint;
 
-   void update_and_throw_if_schema_changed()
+   void play_journal_and_throw_if_schema_changed()
    {
-    update();
+    db.play_journal();
     if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
+    db.enforce_single_row();
    }
 
   public:
@@ -576,12 +607,8 @@ out << R"RRR(
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
-    update();
-
     joedb::Client::transaction([this](joedb::Client_Data &data){
-     update();
-     db.check_schema();
-     db.auto_upgrade();
+     db.initialize();
     });
 
     schema_checkpoint = db.schema_journal.get_checkpoint_position();
@@ -600,7 +627,7 @@ out << R"RRR(
    int64_t pull()
    {
     const int64_t result = joedb::Client::pull();
-    update_and_throw_if_schema_changed();
+    play_journal_and_throw_if_schema_changed();
     return result;
    }
 
@@ -608,7 +635,7 @@ out << R"RRR(
    {
     joedb::Client::transaction([&](joedb::Client_Data &data)
     {
-     update_and_throw_if_schema_changed();
+     play_journal_and_throw_if_schema_changed();
      transaction(db);
     });
    }
@@ -1547,6 +1574,7 @@ static void generate_readonly_h
  {
   out << '\n';
   const std::string &tname = table.second;
+  const bool single_row = options.get_table_options(table.first).single_row;
 
   //
   // Declaration of container access
@@ -1590,7 +1618,10 @@ static void generate_readonly_h
    //
    out << "   ";
    write_type(out, db, type, true, false);
-   out << "get_" << fname << "(id_of_" << tname << " record) const\n";
+   out << "get_" << fname << "(id_of_" << tname << " record";
+   if (single_row)
+    out << "= id_of_" << tname << "{1}";
+   out << ") const\n";
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.get_record_id()));\n";
    out << "    return (";
@@ -2055,6 +2086,8 @@ static void generate_cpp
  const Compiler_Options &options
 )
 {
+ const auto &db = options.get_db();
+ const auto &tables = db.get_tables();
  const std::string &file_name = options.get_name_space().back();
 
  out << "#include \"" << file_name << "_readonly.cpp\"\n";
@@ -2096,12 +2129,12 @@ static void generate_cpp
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File_Database::initialize()
+ void Generic_File_Database::play_journal()
  ////////////////////////////////////////////////////////////////////////////
  {
   max_record_id = size_t(journal.get_checkpoint_position());
   ready_to_write = false;
-  journal.replay_log(*this);
+  journal.play_until_checkpoint(*this);
   ready_to_write = true;
   max_record_id = 0;
  }
@@ -2126,9 +2159,6 @@ static void generate_cpp
    upgrading_schema = true;
    schema_journal.play_until(*this, schema_string_size);
    upgrading_schema = false;
-
-   journal.comment("End of automatic schema upgrade");
-   journal.default_checkpoint();
   }
  }
 
@@ -2137,18 +2167,16 @@ static void generate_cpp
  ////////////////////////////////////////////////////////////////////////////
  (
   joedb::Generic_File &file,
-  bool upgrade,
+  bool perform_initialization,
   joedb::Readonly_Journal::Check check,
   joedb::Commit_Level commit_level
  ):
   journal(file, check, commit_level)
  {
-  initialize();
-  if (upgrade)
-  {
-   check_schema();
-   auto_upgrade();
-  }
+  journal.rewind();
+
+  if (perform_initialization)
+   initialize();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -2162,10 +2190,36 @@ static void generate_cpp
   Generic_File_Database(file, true, check, commit_level)
  {
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::enforce_single_row()
+ ////////////////////////////////////////////////////////////////////////////
+ {
 )RRR";
 
- const auto &db = options.get_db();
- const auto &tables = db.get_tables();
+ for (const auto &table: tables)
+ {
+  if (options.get_table_options(table.first).single_row)
+  {
+   out << "  {\n";
+   out << "   const auto table = get_" << table.second << "_table();\n";
+   out << "   if (table.get_size() == 0)\n";
+   out << "   {\n";
+   out << "    write_comment(\"Automatic insertion of single row for " << table.second << "\");\n";
+   out << "    new_" << table.second << "();\n";
+
+   if (db.get_freedom(table.first).size() > 0)
+   {
+    out << "    // TODO: initialize with default values\n";
+   }
+
+   out << "   }\n\n";
+   out << "   if (table.first() != the_" <<table.second << "() || table.last() != the_" << table.second << "())\n";
+   out << "    throw joedb::Exception(\"Single-row constraint failure for table " << table.second << "\");\n";
+   out << "  }\n";
+  }
+ }
+ out << " }\n";
 
  if (has_values(options.get_db()))
  {
@@ -2300,7 +2354,7 @@ static int joedbc_main(int argc, char **argv)
 
  {
   std::ifstream joedbi_file(argv[1]);
-  if (!joedbi_file.good())
+  if (!joedbi_file)
   {
    std::cerr << "Error: could not open " << argv[1] << '\n';
    return 1;
@@ -2322,7 +2376,7 @@ static int joedbc_main(int argc, char **argv)
  // Read file.joedbc
  //
  std::ifstream joedbc_file(argv[2]);
- if (!joedbc_file.good())
+ if (!joedbc_file)
  {
   std::cerr << "Error: could not open " << argv[2] << '\n';
   return 1;
