@@ -24,8 +24,8 @@ namespace joedb
   }
 
   {
-   settings::Generic_File_Database db(file);
-   EXPECT_EQ(db.get_host(), "new.host.com");
+   settings::Readonly_Database db(file);
+   EXPECT_EQ(db.get_host(db.the_settings()), "new.host.com");
   }
 
   {

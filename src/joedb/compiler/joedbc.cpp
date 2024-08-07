@@ -406,13 +406,7 @@ out << R"RRR(
   }
 
   if (single_row)
-  {
    out << "  public:\n";
-   out << "   constexpr id_of_" << tname << " the_" << tname << "()\n";
-   out << "   {\n";
-   out << "    return id_of_" << tname << "{1};\n";
-   out << "   }\n";
-  }
 
   //
   // Delete
@@ -1608,6 +1602,17 @@ static void generate_readonly_h
   out << "   {\n";
   out << "    return id_of_" << tname << "();\n";
   out << "   }\n";
+
+  //
+  // the_<table>
+  //
+  if (single_row)
+  {
+   out << "   constexpr id_of_" << tname << " the_" << tname << "()\n";
+   out << "   {\n";
+   out << "    return id_of_" << tname << "{1};\n";
+   out << "   }\n";
+  }
 
   //
   // Loop over fields
