@@ -61,6 +61,14 @@ namespace joedb
     return false;
    }
 
+   bool has_single_row() const
+   {
+    for (const auto &options: table_options)
+     if (options.second.single_row)
+      return true;
+    return false;
+   }
+
    void set_name_space(std::vector<std::string> v)
    {
     name_space = std::move(v);

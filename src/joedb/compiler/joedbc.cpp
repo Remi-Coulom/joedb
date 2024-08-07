@@ -196,14 +196,14 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
    void play_journal();
    void auto_upgrade();
-   void enforce_single_row();
+   void check_single_row();
 
    void initialize()
    {
     play_journal();
     check_schema();
     auto_upgrade();
-    enforce_single_row();
+    check_single_row();
     default_checkpoint();
    }
 )RRR";
@@ -246,6 +246,10 @@ out << R"RRR(
 )RRR";
  }
 
+ if (options.has_single_row())
+ {
+  out <<"\n   void create_table(const std::string &name) override;\n";
+ }
 
  out << R"RRR(
    Generic_File_Database
@@ -589,7 +593,7 @@ out << R"RRR(
     db.play_journal();
     if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
      throw joedb::Exception("Can't upgrade schema during pull");
-    db.enforce_single_row();
+    db.check_single_row();
    }
 
   public:
@@ -867,6 +871,7 @@ static void generate_readonly_h
    }
 
    size_t max_record_id;
+   Table_Id current_table_id = Table_Id{0};
 
   public:
    void set_max_record_id(size_t record_id)
@@ -1485,8 +1490,9 @@ static void generate_readonly_h
      throw joedb::Exception("Trying to open a file with incompatible schema");
    }
 
-   void create_table(const std::string &name) final
+   void create_table(const std::string &name) override
    {
+    ++current_table_id;
     schema_journal.create_table(name);
     schema_journal.default_checkpoint();
    }
@@ -2159,6 +2165,8 @@ static void generate_cpp
    upgrading_schema = true;
    schema_journal.play_until(*this, schema_string_size);
    upgrading_schema = false;
+
+   journal.comment("End of automatic schema upgrade");
   }
  }
 
@@ -2192,7 +2200,7 @@ static void generate_cpp
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File_Database::enforce_single_row()
+ void Generic_File_Database::check_single_row()
  ////////////////////////////////////////////////////////////////////////////
  {
 )RRR";
@@ -2203,23 +2211,37 @@ static void generate_cpp
   {
    out << "  {\n";
    out << "   const auto table = get_" << table.second << "_table();\n";
-   out << "   if (table.get_size() == 0)\n";
-   out << "   {\n";
-   out << "    write_comment(\"Automatic insertion of single row for " << table.second << "\");\n";
-   out << "    new_" << table.second << "();\n";
-
-   if (db.get_freedom(table.first).size() > 0)
-   {
-    out << "    // TODO: initialize with default values\n";
-   }
-
-   out << "   }\n\n";
    out << "   if (table.first() != the_" <<table.second << "() || table.last() != the_" << table.second << "())\n";
    out << "    throw joedb::Exception(\"Single-row constraint failure for table " << table.second << "\");\n";
    out << "  }\n";
   }
  }
  out << " }\n";
+
+ if (options.has_single_row())
+ {
+  out << R"RRR(
+ ////////////////////////////////////////////////////////////////////////////
+ void Generic_File_Database::create_table(const std::string &name)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Database::create_table(name);
+
+  if (upgrading_schema)
+  {
+)RRR";
+
+  for (auto &table: tables)
+  {
+   if (options.get_table_options(table.first).single_row)
+   {
+    out << "   if (current_table_id == Table_Id{" << table.first << "})\n";
+    out << "    new_" << table.second << "();\n";
+   }
+  }
+
+  out << "  }\n }\n";
+ }
 
  if (has_values(options.get_db()))
  {
