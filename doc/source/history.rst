@@ -8,6 +8,14 @@ History
   - It is now possible to write to an ``Interpreted_File``.
   - The ``add_field`` interpreter command now accepts an optional ``= <value>``
     suffix that sets the value for all existing records of the table.
+  - If the .joedbi file provided to the compiler contains data, tnen it will
+    be used as default initial value for existing records when creating a new
+    field during automatic schema upgrade.
+  - ``set_single_row <table> true`` in .joedbc file forces a table to contain a
+    single row: the row is inserted automatically right after table creation,
+    and the new and delete operations are not available. Instead, the
+    ``the_<table>()`` member function returns a reference to the unique row of
+    this table.
   - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
   - Fixed some potential resource leaks when throwing from constructors in
     ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
@@ -23,6 +31,7 @@ History
     - ``Generic_File::set_mode`` and ``get_mode`` were removed. They are
       replaced by the more restrictive ``make_readonly()``, ``is_shared()``,
       and ``is_readonly()``;
+    - ``generate_c_wrapper`` compiler option was removed
 
 - 2024-06-25 9.0.1
 
