@@ -107,12 +107,6 @@ namespace joedb
    {
     std::cerr << "Warning: set_table_storage is deprecated\n";
    }
-   else if (command == "set_table_null_initialization")
-   {
-    const Table_Id table_id = parse_table(iss, db);
-    const bool value = parse_bool(iss);
-    compiler_options.set_table_null_initialization(table_id, value);
-   }
    else if (command == "set_single_row")
    {
     const Table_Id table_id = parse_table(iss, db);

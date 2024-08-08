@@ -23,7 +23,6 @@ namespace joedb
 
    struct Table_Options
    {
-    bool null_initialization = false;
     bool single_row = false;
    };
 
@@ -72,11 +71,6 @@ namespace joedb
    void set_name_space(std::vector<std::string> v)
    {
     name_space = std::move(v);
-   }
-
-   void set_table_null_initialization(Table_Id table_id, bool value)
-   {
-    table_options[table_id].null_initialization = value;
    }
 
    void set_single_row(Table_Id table_id, bool value)

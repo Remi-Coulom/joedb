@@ -1,5 +1,4 @@
 #include "joedb/journal/Encoded_File.h"
-#include "joedb/journal/File.h"
 #include "joedb/journal/Brotli_Codec.h"
 #include "joedb/journal/Identity_Codec.h"
 #include "joedb/journal/Writable_Journal.h"

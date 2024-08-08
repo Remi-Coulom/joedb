@@ -987,6 +987,36 @@ static void generate_readonly_h
    if (index.table_id == table.first)
     out << "    remove_index_of_" << index.name << "(record_id);\n";
 
+  for (const auto &field: db.get_fields(table.first))
+  {
+   const std::string &fname = field.second;
+   const Type &type = db.get_field_type(table.first, field.first);
+
+   out << "    storage_of_" << tname << ".field_value_of_";
+   out << fname << "[size_t(record_id) - 1]";
+
+   if (type.get_type_id() == Type::Type_Id::string)
+   {
+    out << ".clear()";
+   }
+   else if (type.get_type_id() == Type::Type_Id::reference)
+   {
+    out << " = ";
+    write_type(out, db, type, false, false);
+    out << "(Record_Id(0))";
+   }
+   else if (type.get_type_id() == Type::Type_Id::blob)
+   {
+    out << " = joedb::Blob();";
+   }
+   else
+   {
+    out << " = 0";
+   }
+
+   out << ";\n";
+  }
+
   out << "    storage_of_" << tname << ".freedom_keeper.free(size_t(record_id) + 1);\n";
   out << "   }\n";
  }
@@ -995,8 +1025,6 @@ static void generate_readonly_h
  for (auto &table: tables)
  {
   const std::string &tname = table.second;
-  const auto table_options = options.get_table_options(table.first);
-  const auto null_initialization = table_options.null_initialization;
 
   out << "   void internal_insert_" << tname << "(Record_Id record_id)\n";
   out << "   {\n";
@@ -1010,33 +1038,6 @@ static void generate_readonly_h
    }
 
   out << "    storage_of_" << tname << ".freedom_keeper.use(size_t(record_id) + 1);\n";
-
-  if (null_initialization)
-   for (const auto &field: db.get_fields(table.first))
-   {
-    const std::string &fname = field.second;
-    const Type &type = db.get_field_type(table.first, field.first);
-
-    out << "    storage_of_" << tname << ".field_value_of_";
-    out << fname << "[size_t(record_id) - 1]";
-
-    if (type.get_type_id() == Type::Type_Id::string)
-    {
-     out << ".clear()";
-    }
-    else if (type.get_type_id() == Type::Type_Id::reference)
-    {
-     out << " = ";
-     write_type(out, db, type, false, false);
-     out << "(Record_Id(0))";
-    }
-    else
-    {
-     out << " = 0";
-    }
-
-    out << ";\n";
-   }
 
   out << "   }\n\n";
 
