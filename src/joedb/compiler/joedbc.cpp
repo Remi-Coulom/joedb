@@ -2172,7 +2172,7 @@ static void generate_cpp
    schema_journal.play_until(*this, schema_string_size);
    upgrading_schema = false;
 
-   journal.comment("End of automatic schema upgrade");
+   journal.valid_data();
   }
  }
 
