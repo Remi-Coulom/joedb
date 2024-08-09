@@ -46,7 +46,7 @@ joedb::Writable_Journal::Writable_Journal
     file.write<int64_t>(checkpoint_position);
     file.write<int64_t>(checkpoint_position);
     file.write<int64_t>(checkpoint_position);
-    file.flush();
+    file.commit();
    }
   }
 
