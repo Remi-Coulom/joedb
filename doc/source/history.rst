@@ -8,7 +8,7 @@ History
   - It is now possible to write to an ``Interpreted_File``.
   - The ``add_field`` interpreter command now accepts an optional ``= <value>``
     suffix that sets the value for all existing records of the table.
-  - If the .joedbi file provided to the compiler contains data, tnen it will
+  - If the .joedbi file provided to the compiler contains data, then it will
     be used as default initial value for existing records when creating a new
     field during automatic schema upgrade.
   - ``set_single_row <table> true`` in .joedbc file forces a table to contain a
