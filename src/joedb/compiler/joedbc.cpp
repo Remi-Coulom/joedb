@@ -2237,7 +2237,7 @@ static void generate_cpp
   {
 )RRR";
 
-  for (auto &table: tables)
+  for (const auto &table: tables)
   {
    if (options.get_table_options(table.first).single_row)
    {

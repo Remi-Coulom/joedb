@@ -70,7 +70,7 @@ namespace joedb
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &callback_data));
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, pread_callback));
 
-  perform_range(offset, size);
+  perform_range(offset, int64_t(size));
 
   return callback_data.offset;
  }
