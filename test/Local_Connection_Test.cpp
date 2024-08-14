@@ -2,7 +2,6 @@
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 
 #include "joedb/concurrency/Connection.h"
-#include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Destructor_Logger.h"
@@ -52,6 +51,8 @@ TEST(Local_Connection, simple_operation)
  EXPECT_EQ(1, int(client1.get_database().get_tables().size()));
  client1.pull();
  EXPECT_EQ(2, int(client1.get_database().get_tables().size()));
+
+ std::remove(file_name);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -87,6 +88,8 @@ TEST(Local_Connection, size_check)
  {
   EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
  }
+
+ std::remove(file_name);
 }
 #endif
 
