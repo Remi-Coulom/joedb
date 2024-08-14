@@ -54,6 +54,7 @@ namespace joedb
    virtual void flush() {}
    virtual void checkpoint(Commit_Level commit_level) {}
 
+   Commit_Level get_default_commit_level() const {return default_commit_level;}
    void default_checkpoint();
 
    virtual void insert_into(Table_Id table_id, Record_Id record_id) {}

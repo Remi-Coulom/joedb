@@ -30,8 +30,7 @@ joedb::Writable_Journal::Writable_Journal
   file.write<int64_t>(header_size);
   file.write<int64_t>(0);
   file.write<int64_t>(0);
-
-  file.flush();
+  commit();
  }
  else
  {
@@ -46,7 +45,7 @@ joedb::Writable_Journal::Writable_Journal
     file.write<int64_t>(checkpoint_position);
     file.write<int64_t>(checkpoint_position);
     file.write<int64_t>(checkpoint_position);
-    file.commit();
+    commit();
    }
   }
 
@@ -56,6 +55,7 @@ joedb::Writable_Journal::Writable_Journal
    file.set_position(5);
    file.write<uint32_t>(file_version);
    file.set_position(header_size);
+   commit();
   }
  }
 }

@@ -28,6 +28,13 @@ namespace joedb
     operation_t operation
    );
 
+   void commit()
+   {
+    file.flush();
+    if (get_default_commit_level() > Commit_Level::no_commit)
+     file.commit();
+   }
+
   public:
    explicit Writable_Journal
    (
