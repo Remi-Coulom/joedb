@@ -12,6 +12,8 @@ For next release
    - generate function to load settings from a file, with auto upgrade, in one
      single line of code. Same for saving.
 
+ - SQLite connection (store checkpoint and lock in DB + fail on pull if anything to be pulled)
+
  - proper handling of unique_index with more than one column:
 
    - joedbc produces a function to update multiple values simultaneously. Index
