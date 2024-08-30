@@ -1,6 +1,5 @@
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Readonly_Memory_File.h"
-#include "joedb/interpreter/Database.h"
 #include "../compiler/db/test.cpp"
 
 /////////////////////////////////////////////////////////////////////////////
