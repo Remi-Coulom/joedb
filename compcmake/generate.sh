@@ -14,8 +14,6 @@ if [ "$ninja_path" != "" ]; then
  build_system="-G Ninja"
 fi
 
-export CUDACXX=/usr/local/cuda/bin/nvcc
-
 echo
 echo =======================================================================
 echo ninja_path=$ninja_path
