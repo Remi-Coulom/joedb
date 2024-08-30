@@ -160,7 +160,7 @@ TEST(Journal, checkpoint_mismatch)
   joedb::Writable_Journal journal(file, joedb::Readonly_Journal::Check::overwrite);
   EXPECT_EQ(journal.get_checkpoint_position(), 41);
  }
- catch (const joedb::Exception &e)
+ catch (const joedb::Exception &)
  {
   FAIL() << "Mismatched checkpoint is OK with Check::overwrite";
  }
@@ -170,7 +170,7 @@ TEST(Journal, checkpoint_mismatch)
   joedb::Writable_Journal journal(file);
   EXPECT_EQ(journal.get_checkpoint_position(), 41);
  }
- catch (const joedb::Exception &e)
+ catch (const joedb::Exception &)
  {
   FAIL() << "checkpoints should be matching now";
  }
