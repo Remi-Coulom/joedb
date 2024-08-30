@@ -14,6 +14,11 @@ For next release
 
  - SQLite connection (store checkpoint and lock in DB + fail on pull if anything to be pulled)
 
+ - Blob cache:
+   - keep blob translation index in a joedb file (erasable)
+   - write blobs to another file with max size
+   - when max size reached, start again from the start (evict overwritten entries)
+
  - proper handling of unique_index with more than one column:
 
    - joedbc produces a function to update multiple values simultaneously. Index
