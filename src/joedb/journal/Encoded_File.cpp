@@ -24,11 +24,11 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Encoded_File::write_blob(const char *buffer, size_t size, size_t offset)
+ void Encoded_File::write_blob(const char *buffer, size_t size, int64_t offset)
  //////////////////////////////////////////////////////////////////////////
  {
   const Blob blob = db.write_blob_data(codec.encode(buffer, size));
-  db.new_buffer(blob, int64_t(size), int64_t(offset));
+  db.new_buffer(blob, int64_t(size), offset);
   db.checkpoint();
  }
 
@@ -58,7 +58,7 @@ namespace joedb
   (
    write_buffer_size &&
    (
-    write_buffer_offset + write_buffer_size != offset ||
+    write_buffer_offset + int64_t(write_buffer_size) != offset ||
     write_buffer_size + size > write_buffer_total_size
    )
   )
@@ -71,7 +71,7 @@ namespace joedb
 
   std::copy_n(buffer, size, write_buffer.data() + write_buffer_size);
 
-  write_buffer_size += int64_t(size);
+  write_buffer_size += size;
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ namespace joedb
  {
   return std::max
   (
-   write_buffer_offset + write_buffer_size,
+   write_buffer_offset + int64_t(write_buffer_size),
    Readonly_Encoded_File::get_size()
   );
  }

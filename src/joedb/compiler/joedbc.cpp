@@ -2155,7 +2155,7 @@ static void generate_cpp
  void Generic_File_Database::auto_upgrade()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const size_t file_schema_size = schema_file.get_size();
+  const size_t file_schema_size = size_t(schema_file.get_size());
 
   if (file_schema_size < schema_string_size)
   {

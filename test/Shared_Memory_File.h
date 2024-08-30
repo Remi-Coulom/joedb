@@ -19,9 +19,9 @@ namespace joedb
    size_t pread(char *buffer, size_t size, int64_t offset) override
    //////////////////////////////////////////////////////////////////////////
    {
-    const size_t max_size = data.size() - offset;
+    const size_t max_size = data.size() - size_t(offset);
     const size_t n = std::min(size, max_size);
-    std::copy_n(data.data() + offset, n, buffer);
+    std::copy_n(data.data() + size_t(offset), n, buffer);
     return n;
    }
 
@@ -29,10 +29,10 @@ namespace joedb
    void pwrite(const char *buffer, size_t size, int64_t offset) override
    //////////////////////////////////////////////////////////////////////////
    {
-    const size_t end = offset + size;
+    const size_t end = size_t(offset) + size;
     if (end > data.size())
      data.resize(end);
-    std::copy_n(buffer, size, &data[offset]);
+    std::copy_n(buffer, size, &data[size_t(offset)]);
    }
 
   public:

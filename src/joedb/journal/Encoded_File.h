@@ -16,9 +16,9 @@ namespace joedb
    static constexpr size_t write_buffer_total_size = 1 << 20;
    std::vector<char> write_buffer;
    int64_t write_buffer_offset;
-   int64_t write_buffer_size;
+   size_t write_buffer_size;
 
-   void write_blob(const char *buffer, size_t size, size_t offset);
+   void write_blob(const char *buffer, size_t size, int64_t offset);
    void flush_write_buffer();
 
   protected:
