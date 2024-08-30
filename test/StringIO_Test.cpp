@@ -282,7 +282,8 @@ static bool check_utf8(const std::string& string)
   }
   for (int j = 0; j < n && i < size; j++)
   {  // n bytes matching 10bbbbbb follow ?
-   if ((++i == size) || (((unsigned char)string[i] & 0xC0) != 0x80))
+   ++i;
+   if ((i == size) || (((unsigned char)string[i] & 0xC0) != 0x80))
    {
     return false;
    }

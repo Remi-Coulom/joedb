@@ -69,7 +69,6 @@ namespace joedb
 
     index.unique = (command == "create_unique_index");
 
-    std::string index_table;
     std::vector<std::string> index_columns;
 
     iss >> index.name;
