@@ -19,7 +19,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
  endif()
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 11.0)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overread") # produces false warnings
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overread -Wno-stringop-overflow -Wno-array-bounds") # produce false warnings, unfortunately
  endif()
 
  set(CMAKE_CXX_FLAGS_COVERAGE
@@ -56,7 +56,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  endif()
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 14.0)
-  set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY},-readability-avoid-unconditional-preprocessor-if,-bugprone-empty-catch,-modernize-type-traits)
+  set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY},-readability-avoid-unconditional-preprocessor-if,-bugprone-empty-catch,-modernize-type-traits,-bugprone-unchecked-optional-access)
  endif()
 
  set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG -fsave-optimization-record")
