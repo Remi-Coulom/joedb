@@ -38,8 +38,8 @@ namespace joedb
    Type_Id get_type_id() const {return type_id;}
    Table_Id get_table_id() const {return table_id;}
 
-   Type(): type_id(Type_Id::null) {}
-   Type(Type_Id type_id): type_id(type_id) {}
+   Type(): type_id(Type_Id::null), table_id{0} {}
+   Type(Type_Id type_id): type_id(type_id), table_id{0} {}
 
    #define TYPE_MACRO(type, return_type, type_id, read, write)\
    static Type type_id() {return Type(Type_Id::type_id);};
