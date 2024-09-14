@@ -172,19 +172,14 @@ Other Ideas
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
-- apply schema upgrade to readonly databases (custom functions)
-- Null default initial values
 - better readable interface:
 
   - a separate table abstraction (that could be used for query output)
   - cursors on tables
 
 - compiled Readable
-- index and referential integrity: should be in the journal, and also
-  implemented in the interpreted database?
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Note that SQL does not support inf and nan. Use NULL instead.
 - Raw commands in interpreter?
 - import from SQL
-- rapidly undo-able history?
 - namespace for each subdir?
