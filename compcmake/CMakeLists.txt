@@ -94,6 +94,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/Destructor_Logger.cpp
 
   ../test/File_Test.cpp
+  ../test/Upgradable_File_Test.cpp
   ../src/joedb/journal/Generic_File.cpp
   ../src/joedb/Blob.cpp
   ../src/joedb/Posthumous_Thrower.cpp
@@ -132,6 +133,7 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/diagnostics_Test.cpp
   ../test/Encoded_File_Test.cpp
   ../test/File_Test.cpp
+  ../test/Upgradable_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
   ../test/Generic_File_Test.cpp
   ../test/Interpreted_Test.cpp

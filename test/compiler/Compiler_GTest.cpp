@@ -8,6 +8,8 @@
 #include "joedb/journal/Readonly_Interpreted_File.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/interpreter/Database.h"
+#include "joedb/journal/Upgradable_File.h"
+#include "joedb/journal/Readonly_Memory_File.h"
 
 using namespace my_namespace::is_nested;
 
@@ -526,6 +528,21 @@ TEST(Compiler, schema_upgrade)
 
  {
   schema_v1::Generic_File_Database db(file);
+ }
+
+ {
+  joedb::Upgradable_File<joedb::Readonly_Memory_File> upgradable_file
+  (
+   file.get_data()
+  );
+
+  schema_v2::Generic_File_Database db(upgradable_file);
+
+  const auto toto = db.get_person_table().first();
+  EXPECT_EQ("Toto", db.get_name(toto));
+  const auto english = db.get_language_table().first();
+  EXPECT_EQ("English", db.get_name(english));
+  EXPECT_EQ(english, db.get_preferred_language(toto));
  }
 
  {

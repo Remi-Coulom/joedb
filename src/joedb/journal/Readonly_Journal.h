@@ -64,7 +64,6 @@ namespace joedb
 
    enum class operation_t: uint8_t
    {
-    end_of_file   = 0x00,
     create_table  = 0x01,
     drop_table    = 0x02,
     add_field     = 0x03,

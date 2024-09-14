@@ -37,9 +37,9 @@ namespace joedb
    BOOL lock(Lock_Operation op, int64_t start, int64_t size);
 
   protected:
-   size_t pread(char* data, size_t size, int64_t offset) final;
-   void pwrite(const char* data, size_t size, int64_t offset) final;
-   void raw_sync() final;
+   size_t pread(char* data, size_t size, int64_t offset) override;
+   void pwrite(const char* data, size_t size, int64_t offset) override;
+   void raw_sync() override;
 
   public:
    Windows_Handle(const char *file_name, Open_Mode mode);
@@ -47,10 +47,10 @@ namespace joedb
    Windows_Handle(const Windows_Handle &) = delete;
    Windows_Handle &operator=(const Windows_Handle &) = delete;
 
-   int64_t get_size() const final;
-   void shared_lock(int64_t start, int64_t size) final;
-   void exclusive_lock(int64_t start, int64_t size) final;
-   void unlock(int64_t start, int64_t size) final;
+   int64_t get_size() const override;
+   void shared_lock(int64_t start, int64_t size) override;
+   void exclusive_lock(int64_t start, int64_t size) override;
+   void unlock(int64_t start, int64_t size) override;
 
    ~Windows_Handle() override;
  };

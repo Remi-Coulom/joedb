@@ -25,7 +25,7 @@ namespace joedb
    }
 
   protected:
-   size_t raw_read(char *buffer, size_t size) final
+   size_t raw_read(char *buffer, size_t size) override
    {
     const ssize_t result = sftp_read(file, buffer, size);
 
@@ -35,11 +35,11 @@ namespace joedb
     return size_t(result);
    }
 
-   void raw_write(const char *buffer, size_t size) final
+   void raw_write(const char *buffer, size_t size) override
    {
    }
 
-   void raw_seek(int64_t offset) final
+   void raw_seek(int64_t offset) override
    {
     if (sftp_seek64(file, uint64_t(offset)) < 0)
      throw_last_error("seeking in", "sftp file");

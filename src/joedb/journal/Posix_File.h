@@ -21,9 +21,9 @@ namespace joedb
    int lock(int command, short type, int64_t start, int64_t size);
 
   protected:
-   size_t pread(char *buffer, size_t size, int64_t offset) final;
-   void pwrite(const char *buffer, size_t size, int64_t offset) final;
-   void raw_sync() final;
+   size_t pread(char *buffer, size_t size, int64_t offset) override;
+   void pwrite(const char *buffer, size_t size, int64_t offset) override;
+   void raw_sync() override;
 
   public:
    static void throw_last_error(const char *action, const char *file_name);
@@ -39,11 +39,11 @@ namespace joedb
    Posix_FD(const Posix_FD &) = delete;
    Posix_FD &operator=(const Posix_FD &) = delete;
 
-   int64_t get_size() const final;
-   void shared_lock(int64_t start, int64_t size) final;
+   int64_t get_size() const override;
+   void shared_lock(int64_t start, int64_t size) override;
    bool try_exclusive_lock(int64_t start, int64_t size);
-   void exclusive_lock(int64_t start, int64_t size) final;
-   void unlock(int64_t start, int64_t size) final;
+   void exclusive_lock(int64_t start, int64_t size) override;
+   void unlock(int64_t start, int64_t size) override;
 
    ~Posix_FD() override;
  };

@@ -416,7 +416,6 @@ TEST_F(File_Test, position_test)
  file.set_position(N + 1);
  const uint8_t c = file.read<uint8_t>();
  EXPECT_EQ(0, c);
- EXPECT_FALSE(file.is_end_of_file());
  EXPECT_EQ(N + 2, file.get_position());
 }
 
@@ -425,26 +424,20 @@ TEST_F(File_Test, eof)
 {
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
- EXPECT_FALSE(file.is_end_of_file());
 
- file.read<uint8_t>();
- EXPECT_TRUE(file.is_end_of_file());
+ EXPECT_ANY_THROW(file.read<uint8_t>());
 
  file.set_position(0);
  const int N = 100000;
  for (int i = N; --i >= 0;)
   file.write<uint8_t>('x');
- EXPECT_FALSE(file.is_end_of_file());
 
  file.set_position(N - 1);
- EXPECT_FALSE(file.is_end_of_file());
 
  uint8_t c = file.read<uint8_t>();
  EXPECT_EQ('x', c);
- EXPECT_FALSE(file.is_end_of_file());
 
- file.read<uint8_t>();
- EXPECT_TRUE(file.is_end_of_file());
+ EXPECT_ANY_THROW(file.read<uint8_t>());
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -15,7 +15,7 @@ namespace joedb
    virtual size_t raw_read(char *data, size_t size);
    virtual void raw_write(const char *data, size_t size);
 
-   // Implement either seek + read + write or pread + pwrite
+   // Implement either raw_seek + raw_read + raw_write or pread + pwrite
 
    int64_t file_position;
 

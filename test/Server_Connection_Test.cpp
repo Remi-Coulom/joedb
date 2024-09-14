@@ -23,7 +23,8 @@ TEST(Server_Connection, handshake)
  std::ostream * const log = nullptr;
  Debug_Channel channel;
 
- channel.joedb::Memory_File::write<char>('x');
+ for (int i = 1000; --i >= 0;)
+  channel.joedb::Memory_File::write<char>('x');
  channel.set_position(0);
 
  joedb::Server_Connection connection(channel, log);

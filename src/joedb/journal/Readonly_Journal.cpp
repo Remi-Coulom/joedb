@@ -223,11 +223,6 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 {
  switch(file.read<operation_t>())
  {
-  case operation_t::end_of_file:
-   if (file.get_position() != checkpoint_position)
-    throw Exception("Unexpected end of file");
-  break;
-
   case operation_t::create_table:
   {
    std::string name = safe_read_string();

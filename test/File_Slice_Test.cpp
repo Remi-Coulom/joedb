@@ -26,9 +26,7 @@ namespace joedb
    EXPECT_TRUE(fd >= 0);
    File_Slice file(fd, 8, 4);
    EXPECT_EQ(file.read<int32_t>(), 9999);
-   EXPECT_FALSE(file.is_end_of_file());
-   file.read<int32_t>();
-   EXPECT_TRUE(file.is_end_of_file());
+   EXPECT_ANY_THROW(file.read<int32_t>()); // end of file
    close(fd);
   }
 

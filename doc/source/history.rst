@@ -5,6 +5,8 @@ History
 
   - ``Encoded_File`` supports on-the-fly coding or decoding of data.
     ``Brotli_Codec`` is provided for compression. Custom codecs can be used.
+  - ``Upgradable_File`` allows applying automatic schema upgrades to a file, even
+    when it is opened read-only.
   - It is now possible to write to an ``Interpreted_File``.
   - The ``add_field`` interpreter command now accepts an optional ``= <value>``
     suffix that sets the value for all existing records of the table.
@@ -23,6 +25,8 @@ History
   - :ref:`joedb_edit`
   - Incompatibilities with previous version:
 
+    - The ``is_end_of_file()`` function was removed. Trying to read past the
+      end of a file now throws an exception.
     - boolean values are printed as ``false`` and ``true`` instead of 0 and 1.
     - joedbc does not produce ``Interpreted_Database`` any more: use a
       ``Generic_Readonly_Database`` with a ``Readonly_Interpreted_File``

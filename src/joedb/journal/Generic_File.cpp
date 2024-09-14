@@ -16,7 +16,6 @@ namespace joedb
   )
  {
   read_buffer_size = 0;
-  end_of_file = false;
   buffer.index = 0;
  }
 
@@ -35,7 +34,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   flush();
-  end_of_file = false;
   seek(new_position);
  }
 
@@ -54,9 +52,6 @@ namespace joedb
   while (size > 0)
   {
    read_buffer();
-   if (end_of_file)
-    break;
-
    const int64_t copy_size = std::min(size, int64_t(read_buffer_size));
    destination.pos_write(buffer.data, size_t(copy_size));
    size -= copy_size;

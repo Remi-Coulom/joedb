@@ -15,7 +15,7 @@ TEST(Generic_File, copy)
  file.write<uint64_t>(magic);
 
  joedb::Test_File copy;
- file.copy_to(copy, 0, std::numeric_limits<int64_t>::max());
+ file.copy_to(copy, 0, sizeof(uint64_t));
  copy.set_position(0);
 
  EXPECT_EQ(copy.read<uint64_t>(), magic);
@@ -53,8 +53,8 @@ TEST(Generic_File, readonly_memory_file)
 
  EXPECT_EQ(file.read<uint32_t>(), 0x03020100UL);
  EXPECT_EQ(4, file.get_position());
- file.read<uint32_t>();
- file.read<uint32_t>();
+ EXPECT_ANY_THROW(file.read<uint32_t>());
+ EXPECT_ANY_THROW(file.read<uint32_t>());
 
  file.set_position(0);
  EXPECT_EQ(0, file.get_position());
@@ -90,21 +90,19 @@ TEST(Generic_File, read_data)
  file.set_position(0);
  file.read_data((char *)data.data(), sizeof(int32_t) * file_size);
  check_data(data.data(), 0, file_size);
- EXPECT_FALSE(file.is_end_of_file());
- file.read<int32_t>();
- EXPECT_TRUE(file.is_end_of_file());
+ EXPECT_ANY_THROW(file.read<int32_t>());
 
  file.set_position(4);
  file.read_data((char *)data.data(), sizeof(int32_t) * buffer_size / 2);
  check_data(data.data(), 1, buffer_size / 2);
- EXPECT_FALSE(file.is_end_of_file());
 
  file.read_data((char *)data.data(), sizeof(int32_t) * buffer_size);
  check_data(data.data(), 1 + buffer_size / 2, buffer_size);
- EXPECT_FALSE(file.is_end_of_file());
 
- file.read_data((char *)data.data(), sizeof(int32_t) * file_size);
- EXPECT_TRUE(file.is_end_of_file());
+ EXPECT_ANY_THROW
+ (
+  file.read_data((char *)data.data(), sizeof(int32_t) * file_size)
+ );
 }
 
 /////////////////////////////////////////////////////////////////////////////

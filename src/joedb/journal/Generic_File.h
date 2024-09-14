@@ -29,7 +29,13 @@ namespace joedb
    Buffer<12> buffer;
 
    size_t read_buffer_size;
-   bool end_of_file;
+
+   //////////////////////////////////////////////////////////////////////////
+   void reading_past_end_of_file()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    throw Exception("Trying to read after end of file");
+   }
 
    //////////////////////////////////////////////////////////////////////////
    bool buffer_has_write_data() const
@@ -54,7 +60,7 @@ namespace joedb
 
     read_buffer_size = pos_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
-     end_of_file = true;
+     reading_past_end_of_file();
 
     buffer.index = 0;
    }
@@ -85,6 +91,7 @@ namespace joedb
   protected:
    void destructor_flush() noexcept;
    void make_readonly() {mode = Open_Mode::read_existing;}
+   void make_writable() {mode = Open_Mode::write_existing;}
 
   public:
    Generic_File(Open_Mode mode);
@@ -123,8 +130,6 @@ namespace joedb
 
    bool is_shared() const {return mode == Open_Mode::shared_write;}
    bool is_readonly() const {return mode == Open_Mode::read_existing;}
-
-   bool is_end_of_file() const {return end_of_file;}
 
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
@@ -215,7 +220,7 @@ namespace joedb
    void write_data(const char *data, size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(!end_of_file && !buffer_has_read_data());
+    JOEDB_ASSERT(!buffer_has_read_data());
 
     if (n <= buffer.extra_size)
     {
@@ -272,10 +277,7 @@ namespace joedb
      {
       const size_t actually_read = pos_read(data + n0, n - n0);
       if (actually_read == 0)
-      {
-       end_of_file = true;
-       break;
-      }
+       reading_past_end_of_file();
       n0 += actually_read;
      }
 
@@ -283,8 +285,8 @@ namespace joedb
     }
    }
 
-   std::string read_blob_data(Blob blob) final;
-   Blob write_blob_data(const std::string &data) final;
+   std::string read_blob_data(Blob blob) override;
+   Blob write_blob_data(const std::string &data) override;
  };
 }
 
