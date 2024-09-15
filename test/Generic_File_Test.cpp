@@ -54,7 +54,9 @@ TEST(Generic_File, readonly_memory_file)
  EXPECT_EQ(file.read<uint32_t>(), 0x03020100UL);
  EXPECT_EQ(4, file.get_position());
  EXPECT_ANY_THROW(file.read<uint32_t>());
+ EXPECT_EQ(4, file.get_position());
  EXPECT_ANY_THROW(file.read<uint32_t>());
+ EXPECT_EQ(4, file.get_position());
 
  file.set_position(0);
  EXPECT_EQ(0, file.get_position());
