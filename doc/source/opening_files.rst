@@ -71,6 +71,9 @@ various ways:
  - ``Encoded_File`` performs on-the-fly encoding and decoding of data. This can
    be used for transparent compression or encryption. Does not support
    concurrency and durability.
+ - ``Upgradable_File<File_Type>`` makes all write operations successful, but
+   nothing is actually written to the file. This is convenient if you want to
+   apply :doc:`automatic schema upgrades <schema_upgrade>` to a read-only file.
 
 You can also create your own file class by subclassing ``Generic_File`` and
 implementing its virtual functions.
