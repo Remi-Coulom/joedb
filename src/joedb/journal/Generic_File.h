@@ -58,11 +58,10 @@ namespace joedb
     JOEDB_ASSERT(!buffer_has_write_data());
     JOEDB_ASSERT(buffer.index <= read_buffer_size);
 
+    buffer.index = 0;
     read_buffer_size = pos_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
      reading_past_end_of_file();
-
-    buffer.index = 0;
    }
 
    //////////////////////////////////////////////////////////////////////////
