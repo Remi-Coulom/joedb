@@ -4,9 +4,9 @@ History
 - 2024-??-?? 10.0.0
 
   - ``Encoded_File`` supports on-the-fly coding or decoding of data.
-    ``Brotli_Codec`` is provided for compression. Custom codecs can be used.
-  - ``Upgradable_File`` allows applying automatic schema upgrades to a file, even
-    when it is opened read-only.
+    ``Brotli_Codec`` is provided for compression.
+  - ``Upgradable_File`` allows applying automatic schema upgrades to a
+    read-only file.
   - It is now possible to write to an ``Interpreted_File``.
   - The ``add_field`` interpreter command now accepts an optional ``= <value>``
     suffix that sets the value for all existing records of the table.
@@ -22,7 +22,7 @@ History
   - Fixed some potential resource leaks when throwing from constructors in
     ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
     ``CURL_File``, ``Windows_File``.
-  - :ref:`joedb_edit`
+  - :ref:`joedb_edit` allows editing a binary joedb file with a text editor.
   - Incompatibilities with previous version:
 
     - The ``is_end_of_file()`` function was removed. Trying to read past the
@@ -35,7 +35,7 @@ History
     - ``Generic_File::set_mode`` and ``get_mode`` were removed. They are
       replaced by the more restrictive ``make_readonly()``, ``is_shared()``,
       and ``is_readonly()``;
-    - ``generate_c_wrapper`` compiler option was removed
+    - ``generate_c_wrapper`` compiler option was removed.
     - ``set_table_null_initialization`` compiler option was removed. Data is
       now always initialized to zero.
 

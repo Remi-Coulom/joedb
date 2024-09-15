@@ -95,9 +95,6 @@ cases:
    Performance will be inferior to running a joedb server, though. Similarly, a
    ``File_Connection`` to a ``CURL_File`` can be used to pull from a joedb
    database served by a web server.
- - A ``File_Connection`` to a ``Memory_File`` can be used to write clean unit
-   tests that do not write to any actual file. This is also what was done in
-   the tutorial example above.
 
 ..
    TODO: asciinema of fixing broken transaction
@@ -130,10 +127,11 @@ The code below shows how to connect to a server via ssh:
 Combining Local and Remote Concurrency
 --------------------------------------
 
-A client is made of two parts: the file, and the connection. A client can
-handle concurrency for both parts simultaneously. That is to say, it is
-possible for two different clients running on the same machine to share a
-connection to the same remote server, and also share the same local file.
+A client can handle concurrency for both its file and its connection
+simultaneously: it is possible for two different clients running on the same
+machine to share a connection to the same remote server, and also share the
+same local file. For this to work, the local file must be opened with
+``Open_Mode::shared_write``.
 
 ..
    TODO: ascinema animation of synchronous backup
