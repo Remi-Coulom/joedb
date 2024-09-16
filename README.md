@@ -8,7 +8,8 @@ paradigm well: queries are strings parsed at run time, and the API is not
 type-safe. An
 [ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) or a
 template library such as [sqlpp11](https://github.com/rbock/sqlpp11) can hide
-SQL from the C++ code, and improve type safety, but it adds to complexity.
+SQL from the C++ code, and improve type safety, but such a solution only adds a
+layer on top of string manipulation, and does not remove it.
 
 In many applications, the immense complexity of a SQL database is not at all
 necessary. Joedb is a minimalist low-level alternative that can perform ACID
