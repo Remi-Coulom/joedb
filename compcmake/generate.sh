@@ -43,14 +43,15 @@ echo gpp_path=$gpp_path
 echo gcc_path=$gcc_path
 
 if [ "$gcc_path" != "" ]; then
- compiler="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_COMPILER=$gpp_path -DCMAKE_C_COMPILER=$gcc_path"
- generate gcc_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
- generate gcc_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
- generate gcc_dev cmake $build_system -DCMAKE_BUILD_TYPE=Dev $compiler
- generate gcc_portable cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DJOEDB_PORTABLE=TRUE $compiler
- generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler
- generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
- generate gcc_tsan cmake $build_system -DCMAKE_BUILD_TYPE=TSAN $compiler
+ vcpkg="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+ compiler="-DCMAKE_CXX_COMPILER=$gpp_path -DCMAKE_C_COMPILER=$gcc_path"
+ generate gcc_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $vcpkg $compiler
+ generate gcc_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $vcpkg $compiler
+ generate gcc_dev cmake $build_system -DCMAKE_BUILD_TYPE=Dev $vcpkg $compiler
+ generate gcc_portable cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DJOEDB_PORTABLE=TRUE $vcpkg $compiler
+ generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $vcpkg $compiler
+ generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $vcpkg $compiler
+ generate gcc_tsan cmake $build_system -DCMAKE_BUILD_TYPE=TSAN $vcpkg $compiler
  generate gcc_debug32 cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 $compiler
  # for gcc_debug32: sudo apt install gcc-multilib g++-multilib
 fi
