@@ -65,27 +65,24 @@ if(unofficial-brotli_FOUND)
  )
 endif()
 
-add_library(joedb_no_db OBJECT ${JOEDB_SOURCES})
-add_library(joedb_db OBJECT ${JOEDB_DATABASES})
-
 if (UNIX)
  add_library(joedb SHARED
-  $<TARGET_OBJECTS:joedb_no_db>
-  $<TARGET_OBJECTS:joedb_db>
+  ${JOEDB_SOURCES}
+  ${JOEDB_DATABASES}
  )
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
  target_uses_ipo(joedb)
 else()
  add_library(joedb STATIC
-  $<TARGET_OBJECTS:joedb_no_db>
-  $<TARGET_OBJECTS:joedb_db>
+  ${JOEDB_SOURCES}
+  ${JOEDB_DATABASES}
  )
 endif()
 
-target_link_libraries(joedb joedb_db joedb_no_db joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
+target_link_libraries(joedb joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 
 message("-- JOEDB_SRC_DIR = ${JOEDB_SRC_DIR}")
 
 joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db multi_server)
 joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file)
-add_dependencies(joedb_db all_joedbc)
+add_dependencies(joedb all_joedbc)
