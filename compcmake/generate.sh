@@ -14,7 +14,10 @@ if [ "$ninja_path" != "" ]; then
  build_system="-G Ninja"
 fi
 
-vcpkg="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+vcpkg_toolchain="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+if [ -f "$vcpkg_toolchain" ]; then
+ vcpkg="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+fi
 
 echo
 echo =======================================================================
