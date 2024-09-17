@@ -195,11 +195,6 @@ if(GTest_FOUND)
   target_sources(joedb_test PRIVATE ../test/CURL_File_Test.cpp)
  endif()
 
- # This definition is necessary for cygwin
- # https://github.com/google/googletest/pull/2839
- target_compile_definitions(joedb_file_test PUBLIC _GNU_SOURCE)
- target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
-
  if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
   target_precompile_headers(joedb_file_test PRIVATE ../test/precompiled.h)
   target_precompile_headers(joedb_test PRIVATE ../test/precompiled.h)

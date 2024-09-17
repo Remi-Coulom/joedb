@@ -11,7 +11,6 @@ Code Tests
 
   - full_test.sh
   - all github actions,
-  - cygwin
 
 - run the 3 fuzzers for a while
 - upgrade in rc3, and compile_everything.sh
