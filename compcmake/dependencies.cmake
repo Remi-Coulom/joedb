@@ -22,6 +22,9 @@ if (asio_FOUND)
  message("-- asio found")
  add_definitions(-DJOEDB_HAS_ASIO_NET)
  list(APPEND JOEDB_EXTERNAL_LIBS asio::asio)
+ if (WIN32)
+  list(APPEND JOEDB_EXTERNAL_LIBS wsock32 ws2_32)
+ endif()
 else()
  message("## asio not found")
 endif()
@@ -58,11 +61,4 @@ if (unofficial-brotli_FOUND)
  list(APPEND JOEDB_EXTERNAL_LIBS unofficial::brotli::brotlienc)
 else()
  message("## Brotli not found")
-endif()
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# winsock
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (WIN32)
- list(APPEND JOEDB_EXTERNAL_LIBS wsock32 ws2_32)
 endif()
