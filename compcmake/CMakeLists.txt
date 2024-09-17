@@ -26,31 +26,31 @@ include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 # Dependencies
 #############################################################################
 
-# Google Test
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set(GOOGLE_TEST
- ${CMAKE_CURRENT_SOURCE_DIR}/../submodules/googletest/googletest
-)
+find_package(GTest CONFIG)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if (GTest_FOUND)
+ message("-- GTest found")
+else()
+ message("## GTest not found")
+endif()
 
 # SQLite 3
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(SQLite3)
 if (SQLite3_FOUND)
+ message("-- sqlite3 found")
  ipo_add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
  target_link_libraries(sqlite3_insert ${SQLite3_LIBRARIES})
  target_include_directories(sqlite3_insert PRIVATE ${SQLite3_INCLUDE_DIRS})
 else()
- message("== WARNING: no sqlite3: Try sudo apt install libsqlite3-dev or vcpkg install sqlite3:x64-windows")
+ message("## no sqlite3")
 endif()
 
 #############################################################################
 # Includes
 #############################################################################
-include_directories(
- ../test/compiler
- ${GOOGLE_TEST}
- ${GOOGLE_TEST}/include
-)
+include_directories(../test/compiler)
 
 #############################################################################
 # Build Targets
@@ -86,7 +86,9 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Writable_Journal.cpp
 )
 
-if(EXISTS "${GOOGLE_TEST}/include")
+if(GTest_FOUND)
+
+ set(GTest_LIBRARIES GTest::gtest GTest::gtest_main)
 
  add_executable(joedb_file_test
   ../test/Test_Main.cpp
@@ -120,6 +122,8 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../test/Buffer_Test.cpp
   ../test/Stream_File_Test.cpp
  )
+
+ target_link_libraries(joedb_file_test ${GTest_LIBRARIES})
 
  if (NOT JOEDB_PORTABLE)
   target_sources(joedb_file_test PRIVATE ../src/joedb/journal/Portable_File.cpp)
@@ -181,7 +185,9 @@ if(EXISTS "${GOOGLE_TEST}/include")
   ../src/joedb/String_Logger.cpp
  )
 
- if (ASIO_FOUND)
+ target_link_libraries(joedb_test ${GTest_LIBRARIES})
+
+ if (asio_FOUND)
   target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
  endif()
 
@@ -195,8 +201,8 @@ if(EXISTS "${GOOGLE_TEST}/include")
  target_compile_definitions(joedb_test PUBLIC _GNU_SOURCE)
 
  if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
-  target_precompile_headers(joedb_file_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
-  target_precompile_headers(joedb_test PRIVATE ../submodules/googletest/googletest/include/gtest/gtest.h)
+  target_precompile_headers(joedb_file_test PRIVATE ../test/precompiled.h)
+  target_precompile_headers(joedb_test PRIVATE ../test/precompiled.h)
  endif()
 
  add_test(NAME joedb_test
@@ -204,13 +210,11 @@ if(EXISTS "${GOOGLE_TEST}/include")
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test
  )
  SET_TESTS_PROPERTIES(joedb_test PROPERTIES DEPENDS build_all)
-else()
- message("== WARNING: googletest is missing")
 endif()
 
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
-if (ASIO_FOUND)
+if (asio_FOUND)
  joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
 
  if (libssh_FOUND)
@@ -345,7 +349,7 @@ install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
-if (ASIO_FOUND)
+if (asio_FOUND)
  install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
  if (libssh_FOUND)
   install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)

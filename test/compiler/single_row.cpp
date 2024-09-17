@@ -1,5 +1,7 @@
 #include "../../doc/source/tutorial/settings.h"
 
+#include <gtest/gtest.h>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,7 @@
-#include "gtest/gtest.h"
-#include "src/gtest-all.cc"
 #include "joedb/String_Logger.h"
 #include "joedb/Destructor_Logger.h"
+
+#include <gtest/gtest.h>
 
 int main(int argc, char **argv)
 {

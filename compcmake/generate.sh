@@ -43,7 +43,7 @@ echo gpp_path=$gpp_path
 echo gcc_path=$gcc_path
 
 if [ "$gcc_path" != "" ]; then
- compiler="-DCMAKE_CXX_COMPILER=$gpp_path -DCMAKE_C_COMPILER=$gcc_path"
+ compiler="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_COMPILER=$gpp_path -DCMAKE_C_COMPILER=$gcc_path"
  generate gcc_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
  generate gcc_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
  generate gcc_dev cmake $build_system -DCMAKE_BUILD_TYPE=Dev $compiler
@@ -65,7 +65,7 @@ echo clangpp_path=$clangpp_path
 echo clang_path=$clang_path
 
 if [ "$clang_path" != "" ]; then
- compiler="-DCMAKE_CXX_COMPILER=$clangpp_path -DCMAKE_C_COMPILER=$clang_path"
+ compiler="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DCMAKE_CXX_COMPILER=$clangpp_path -DCMAKE_C_COMPILER=$clang_path"
 
  generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
  generate clang_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler

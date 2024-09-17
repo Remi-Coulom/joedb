@@ -46,7 +46,7 @@ if(CURL_FOUND)
  )
 endif()
 
-if (ASIO_FOUND)
+if (asio_FOUND)
  set(JOEDB_SOURCES
   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/IO_Context_Wrapper.cpp
@@ -56,7 +56,7 @@ if (ASIO_FOUND)
  add_definitions(-DJOEDB_HAS_NETWORKING)
 endif()
 
-if(Brotli_FOUND)
+if(unofficial-brotli_FOUND)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
  )
