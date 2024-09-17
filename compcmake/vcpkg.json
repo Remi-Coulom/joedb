@@ -4,6 +4,13 @@
   "homepage": "https://github.com/Remi-Coulom/joedb",
   "description": "The Journal-Only Embedded Database",
   "license": "MIT",
-  "dependencies": ["libssh", "curl", "brotli", "asio", "gtest", "sqlite3"],
-  "builtin-baseline": "710677da49b03885c65c8b5ca43072d4b1acde75"
+  "dependencies": [
+    "libssh",
+    "curl",
+    "brotli",
+    "asio",
+    "gtest",
+    "sqlite3"
+  ],
+  "builtin-baseline": "efb544d5a580c51f270998d6522c08debb1b5769"
 }
