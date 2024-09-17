@@ -22,6 +22,11 @@ if (asio_FOUND)
  message("-- asio found")
  add_definitions(-DJOEDB_HAS_ASIO_NET)
  list(APPEND JOEDB_EXTERNAL_LIBS asio::asio)
+
+ # This is annoying and should not be necessary, but msvc does not set
+ # include path otherwise. It works in Linux, though. Strange.
+ find_path(ASIO_INCLUDE "asio/ts/net.hpp")
+ include_directories(${ASIO_INCLUDE})
 else()
  message("## asio not found")
 endif()
