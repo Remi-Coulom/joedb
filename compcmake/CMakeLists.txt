@@ -36,9 +36,9 @@ else()
  message("## GTest not found")
 endif()
 
-# SQLite 3
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(SQLite3)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if (SQLite3_FOUND)
  message("-- sqlite3 found")
  ipo_add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
