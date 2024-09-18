@@ -1,5 +1,4 @@
-git submodule update --init --recursive
 cd joedb/compcmake/
-./generate.sh
+./generate.sh gcc_release
 cd gcc_release/
 cmake --build .

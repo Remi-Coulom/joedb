@@ -1,12 +1,6 @@
 #!/bin/bash
 echo Generating cmake build directories...
 cmake --version
-config="$1"
-
-# For some old versions of git, this must be executed at the root
-cd ..
-git submodule update --init --recursive
-cd -
 
 build_system=""
 ninja_path=`which ninja`
@@ -14,10 +8,15 @@ if [ "$ninja_path" != "" ]; then
  build_system="-G Ninja"
 fi
 
-vcpkg_toolchain="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
-if [ -f "$vcpkg_toolchain" ]; then
+if [ "$1" == "--vcpkg" ]; then
+ shift
+ vcpkg_toolchain="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
  vcpkg="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
 fi
+
+config="$1"
+
+echo "config = $config"
 
 echo
 echo =======================================================================
@@ -27,13 +26,20 @@ echo build_system=$build_system
 
 function generate {
  if [[ "$config" == "" ]] || [[ "$config" == "$1" ]]; then
+
+  if [ "$vcpkg" != "" ]; then
+   target_dir=vcpkg_$1
+  else
+   target_dir=$1
+  fi
+
   echo
-  echo "====> Generating $1 ..."
-  mkdir -p $1
-  cd $1
+  echo "====> Generating $target_dir ..."
+  mkdir -p $target_dir
+  cd $target_dir
   shift
   echo "$@"
-  "$@" ..
+  "$@" $vcpkg ..
   cd ..
  fi
 }
@@ -49,13 +55,13 @@ echo gcc_path=$gcc_path
 
 if [ "$gcc_path" != "" ]; then
  compiler="-DCMAKE_CXX_COMPILER=$gpp_path -DCMAKE_C_COMPILER=$gcc_path"
- generate gcc_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $vcpkg $compiler
- generate gcc_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $vcpkg $compiler
- generate gcc_dev cmake $build_system -DCMAKE_BUILD_TYPE=Dev $vcpkg $compiler
- generate gcc_portable cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DJOEDB_PORTABLE=TRUE $vcpkg $compiler
- generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $vcpkg $compiler
- generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $vcpkg $compiler
- generate gcc_tsan cmake $build_system -DCMAKE_BUILD_TYPE=TSAN $vcpkg $compiler
+ generate gcc_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
+ generate gcc_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
+ generate gcc_dev cmake $build_system -DCMAKE_BUILD_TYPE=Dev $compiler
+ generate gcc_portable cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DJOEDB_PORTABLE=TRUE $compiler
+ generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler
+ generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
+ generate gcc_tsan cmake $build_system -DCMAKE_BUILD_TYPE=TSAN $compiler
  generate gcc_debug32 cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 $compiler
  # for gcc_debug32: sudo apt install gcc-multilib g++-multilib
 fi
@@ -72,15 +78,15 @@ echo clang_path=$clang_path
 if [ "$clang_path" != "" ]; then
  compiler="-DCMAKE_CXX_COMPILER=$clangpp_path -DCMAKE_C_COMPILER=$clang_path"
 
- generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $vcpkg $compiler
- generate clang_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $vcpkg $compiler
- generate clang_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $vcpkg $compiler
- generate clang_msan cmake $build_system -DCMAKE_BUILD_TYPE=MSAN $vcpkg $compiler
+ generate clang_release cmake $build_system -DCMAKE_BUILD_TYPE=Release $compiler
+ generate clang_debug cmake $build_system -DCMAKE_BUILD_TYPE=Debug $compiler
+ generate clang_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
+ generate clang_msan cmake $build_system -DCMAKE_BUILD_TYPE=MSAN $compiler
 
  iwyu_path=`which include-what-you-use`
 
  if [ "$iwyu_path" != "" ]; then
-  generate clang_iwyu cmake $build_system -DCMAKE_BUILD_TYPE=Dev $vcpkg $compiler -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="$iwyu_path"
+  generate clang_iwyu cmake $build_system -DCMAKE_BUILD_TYPE=Dev $compiler -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="$iwyu_path"
  fi
 fi
 

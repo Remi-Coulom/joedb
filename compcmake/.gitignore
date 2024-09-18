@@ -9,3 +9,4 @@ aarch64_*
 mingw32_*
 mips_*
 ndk
+vcpkg_*

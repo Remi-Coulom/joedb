@@ -61,7 +61,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG -fsave-optimization-record")
 
  # See doc/source/memsan.rst to build libc++ with memsan
- find_path(LLVM_PROJECT_DIR HINTS ${CMAKE_CURRENT_LIST_DIR}/../.. ${CMAKE_CURRENT_LIST_DIR}/../../../../../repos NAMES llvm-project NO_CACHE)
+ find_path(LLVM_PROJECT_DIR HINTS ${CMAKE_CURRENT_LIST_DIR}/../.. ${CMAKE_CURRENT_LIST_DIR}/../../../../../repos NAMES llvm-project)
  message("-- CMAKE_CURRENT_LIST_DIR: ${CMAKE_CURRENT_LIST_DIR}")
  message("-- LLVM_PROJECT_DIR: ${LLVM_PROJECT_DIR}")
  set(LLVM_PROJECT_BUILD ${LLVM_PROJECT_DIR}/llvm-project/build)
