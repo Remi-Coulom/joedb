@@ -16,17 +16,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run vcpkg
-        uses: lukka/run-vcpkg@v11
-        id: runvcpkg
-        with:
-          vcpkgDirectory: '${{runner.workspace}}/b/vcpkg'
-          vcpkgGitCommitId: 'efb544d5a580c51f270998d6522c08debb1b5769'
-          vcpkgJsonGlob: '${{github.workspace}}/compcmake/vcpkg.json'
-
       - name: Configure CMake
         working-directory: ${{github.workspace}}/compcmake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=${{runner.workspace}}/b/vcpkg/scripts/buildsystems/vcpkg.cmake
+        run: cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Debug --toolchain "${{env.VCPKG_INSTALLATION_ROOT}}/scripts/buildsystems/vcpkg.cmake"
 
       - name: Test
         uses: threeal/ctest-action@v1.1.0
