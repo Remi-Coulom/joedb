@@ -9,8 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
-        os: [windows-2022]
+        os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
 
     steps:
     - name: Checkout repository
@@ -19,10 +18,6 @@ jobs:
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
       run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
-
-    - name: Build
-      working-directory: ${{github.workspace}}/compcmake/build
-      run: cmake --build .
 
     - name: Test
       uses: threeal/ctest-action@v1.1.0
