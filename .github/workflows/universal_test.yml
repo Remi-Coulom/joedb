@@ -9,19 +9,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
+        #os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
+        os: [macos-14]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Configure CMake
-      working-directory: ${{github.workspace}}/compcmake
-      run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+        id: runvcpkg
+        with:
+          vcpkgDirectory: '${{runner.workspace}}/b/vcpkg'
+          vcpkgGitCommitId: 'efb544d5a580c51f270998d6522c08debb1b5769'
+          vcpkgJsonGlob: '${{github.workspace}}/compcmake/vcpkg.json'
 
-    - name: Test
-      uses: threeal/ctest-action@v1.1.0
-      with:
-        test-dir: ${{github.workspace}}/compcmake/build
-        verbose: true
-        build-config: Debug
+      - name: Prints output of run-vcpkg's action
+        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
+
+      - name: Run cmake
+        uses: lukka/run-cmake@v11
+        with:
+          cmakeListsTxtPath: '${{github.workspace}}/compcmake/CMakeLists.txt'
+
+      - name: Test
+        uses: threeal/ctest-action@v1.1.0
+        with:
+          test-dir: ${{github.workspace}}/compcmake/build
+          verbose: true
+          build-config: Debug
