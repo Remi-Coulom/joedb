@@ -9,10 +9,11 @@ mkdir -p html
 
 lcov --directory ../compcmake/gcc_coverage\
      --capture\
+     --ignore-errors mismatch\
      --rc lcov_branch_coverage=1\
      --output-file all.info || exit 1
 
-lcov --remove all.info '/opt/local/*' '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/joedb/test*' '*joedb/src/joedb/db/*' '*/joedb/doc/source/tutorial/*'\
+lcov --remove all.info '/usr/*' '*_Test.cpp' '*Test_Main.cpp' '*/joedb/test*' '*joedb/src/joedb/db/*' '*/joedb/doc/source/tutorial/*'\
      --rc lcov_branch_coverage=1\
      --output app.info || exit 1
 
