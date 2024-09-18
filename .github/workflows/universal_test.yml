@@ -28,7 +28,7 @@ jobs:
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_DEFAULT_TRIPLET_OUT }}'"
 
       - name: Run cmake
-        uses: lukka/run-cmake@v11
+        uses: lukka/run-cmake@v10
         with:
           cmakeListsTxtPath: '${{github.workspace}}/compcmake/CMakeLists.txt'
 
