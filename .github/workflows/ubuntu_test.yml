@@ -13,13 +13,11 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     - name: Install dependencies
       run: |
        sudo apt-get update
-       sudo apt-get -y install cmake ninja-build libssh-dev clang clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user libcurl4-openssl-dev
+       sudo apt-get -y install cmake ninja-build libssh-dev clang clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user libcurl4-openssl-dev libasio-dev libbrotli-dev libgtest-dev
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
