@@ -23,12 +23,8 @@ jobs:
       working-directory: ${{github.workspace}}/compcmake/build
       run: cmake --build .
 
-    - name: Test in Windows
-      working-directory: ${{github.workspace}}/test
-      run: if [ "$RUNNER_OS" == "Windows" ]; then ../compcmake/build/Debug/joedb_test; else echo "Not Windows"; fi
-      shell: bash
-
-    - name: Test not in Windows
-      working-directory: ${{github.workspace}}/compcmake/build
-      run: if [ "$RUNNER_OS" != "Windows" ]; then ctest -V; else echo "Windows"; fi
-      shell: bash
+    - name: Test
+      uses: threeal/ctest-action@v1.1.0
+      with:
+        test-dir: ${{github.workspace}}/test
+        verbose: true
