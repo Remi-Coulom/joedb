@@ -62,7 +62,7 @@ if [ "$gcc_path" != "" ]; then
  generate gcc_coverage cmake $build_system -DCMAKE_BUILD_TYPE=Coverage $compiler
  generate gcc_asan cmake $build_system -DCMAKE_BUILD_TYPE=ASAN $compiler
  generate gcc_tsan cmake $build_system -DCMAKE_BUILD_TYPE=TSAN $compiler
- generate gcc_debug32 cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 $compiler
+ generate gcc_debug32 cmake $build_system -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-m32 -DCMAKE_C_FLAGS=-m32 -DJOEDB_NO_CURL=TRUE $compiler
  # for gcc_debug32: sudo apt install gcc-multilib g++-multilib
 fi
 
