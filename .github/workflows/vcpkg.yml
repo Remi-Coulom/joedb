@@ -31,7 +31,6 @@ jobs:
           echo VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
           echo VCPKG_BINARY_SOURCES=$VCPKG_BINARY_SOURCES
           echo ACTIONS_CACHE_URL=$ACTIONS_CACHE_URL
-          echo ACTIONS_RUNTIME_TOKEN=$ACTIONS_RUNTIME_TOKEN
 
       - name: Configure CMake
         working-directory: ${{github.workspace}}/compcmake
