@@ -1,4 +1,4 @@
-name: Universal test
+name: vcpkg test
 
 on:
   workflow_dispatch:
