@@ -34,4 +34,14 @@ TEST(Compiler, blob)
   const joedb::Blob name_blob = db.get_name(person);
   EXPECT_EQ("Jacques", file.read_blob_data(name_blob));
  }
+
+ //
+ // It is possible to read directly from the db when it is not read-only
+ {
+  blob::Generic_File_Database db(file);
+
+  const auto person = db.get_person_table().first();
+  const joedb::Blob name_blob = db.get_name(person);
+  EXPECT_EQ("Jacques", db.read_blob_data(name_blob));
+ }
 }
