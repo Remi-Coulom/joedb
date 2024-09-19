@@ -37,6 +37,7 @@ TEST(Compiler, blob)
 
  //
  // It is possible to read directly from the db when it is not read-only
+ //
  {
   blob::Generic_File_Database db(file);
 
