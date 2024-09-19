@@ -11,6 +11,5 @@
     "asio",
     "gtest",
     "sqlite3"
-  ],
-  "builtin-baseline": "efb544d5a580c51f270998d6522c08debb1b5769"
+  ]
 }

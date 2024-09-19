@@ -9,11 +9,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
+        #os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
+        os: [windows-2022]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: print vcpkg environment variables
+        shell: bash
+        run: echo VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
 
       - name: Configure CMake
         working-directory: ${{github.workspace}}/compcmake
