@@ -22,7 +22,8 @@ jobs:
 
       - name: Configure CMake
         working-directory: ${{github.workspace}}/compcmake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
+        shell: bash
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
 
       - name: Test
         uses: threeal/ctest-action@v1.1.0
