@@ -9,16 +9,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
+        os: [windows-2022, windows-2019, ubuntu-24.04, ubuntu-22.04]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: print vcpkg environment variables
+        shell: bash
+        run: echo VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+
       - name: Configure CMake
         working-directory: ${{github.workspace}}/compcmake
         shell: bash
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
 
       - name: Test
         uses: threeal/ctest-action@v1.1.0

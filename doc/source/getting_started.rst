@@ -41,7 +41,7 @@ command:
 
 .. code-block:: bash
 
-    sudo apt install git g++ cmake make ninja-build libssh-dev libbrotli-dev libcurl4-openssl-dev libgtest-dev lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser
+    sudo apt install git g++ clang clang-tidy cmake make ninja-build libssh-dev libbrotli-dev libcurl4-openssl-dev libgtest-dev lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser
 
 When the necessary packages are installed, the following commands should
 compile everything:
