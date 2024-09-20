@@ -76,8 +76,8 @@ example:
 Multiple instances of this program can safely write to the same database
 concurrently.
 
-..
-   TODO: ascinema animation
+.. asciinema:: ./asciinema/local_concurrency.cast
+   :poster: npt:0:12
 
 ``File_Connection``
 ^^^^^^^^^^^^^^^^^^^

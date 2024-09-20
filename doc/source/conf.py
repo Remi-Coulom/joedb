@@ -35,6 +35,7 @@ extensions = [
 #    'breathe',
     'sphinx.ext.imgmath',
     'sphinxcontrib.spelling',
+    'sphinxcontrib.asciinema',
     'joedbi_lexer',
     'joedbc_lexer'
 ]
