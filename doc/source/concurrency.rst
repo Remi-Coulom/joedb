@@ -33,7 +33,7 @@ Example
 The compiler produces code that ensures that locks and unlocks are correctly
 paired, and modifications to the local database can only occur during a lock.
 This is done with transaction function that takes a lambda as parameter, and
-executes it between a lock-pull and a push-unlock.
+executes it between a lock_pull and a push_unlock.
 
 .. literalinclude:: ./tutorial/concurrency_tutorial.cpp
    :language: c++
@@ -46,11 +46,11 @@ It produces this output:
 Connections
 -----------
 
-The constructor of the ``tutorial::Client`` class takes two parameters: a
-connection, and a file for local storage. The connection is an object of the
-``Connection`` class, that provides the 3 synchronization operations
-(pull, lock_pull, push_unlock). This section presents the different kinds of
-available connections.
+The constructor of the ``tutorial::Client`` class takes two parameters: a file
+for local storage, and a connection. The connection is an object of the
+``Connection`` class, that provides the synchronization operations (pull,
+lock_pull, push_unlock). This section presents the different kinds of available
+connections.
 
 Plain ``Connection``
 ^^^^^^^^^^^^^^^^^^^^
