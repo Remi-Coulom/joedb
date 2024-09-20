@@ -28,6 +28,9 @@ History
     - The ``is_end_of_file()`` function was removed. Trying to read past the
       end of a file now throws an exception.
     - boolean values are printed as ``false`` and ``true`` instead of 0 and 1.
+    - In order to be coherent with the rest of the library, the order of
+      parameters of the compiled Client's constructor are swapped: the file is
+      first, then the connection.
     - joedbc does not produce ``Interpreted_Database`` any more: use a
       ``Generic_Readonly_Database`` with a ``Readonly_Interpreted_File``
       instead.

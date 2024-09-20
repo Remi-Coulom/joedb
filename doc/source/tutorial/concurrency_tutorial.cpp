@@ -15,8 +15,8 @@ int main()
 
  joedb::File_Connection connection(server_file);
 
- tutorial::Client client1(connection, client1_file);
- tutorial::Client client2(connection, client2_file);
+ tutorial::Client client1(client1_file, connection);
+ tutorial::Client client2(client2_file, connection);
 
  //
  // The databases are empty. client1 will add a few cities.

@@ -589,10 +589,10 @@ TEST(Compiler, client)
  joedb::File_Connection connection(server_file);
 
  joedb::Memory_File client_v1_file;
- schema_v1::Client client_v1(connection, client_v1_file);
+ schema_v1::Client client_v1(client_v1_file, connection);
 
  joedb::Memory_File client_v1bis_file;
- schema_v1::Client client_v1bis(connection, client_v1bis_file);
+ schema_v1::Client client_v1bis(client_v1bis_file, connection);
 
  client_v1.transaction([](schema_v1::Generic_File_Database &db)
  {
@@ -600,7 +600,7 @@ TEST(Compiler, client)
  });
 
  joedb::Memory_File client_v2_file;
- schema_v2::Client client_v2(connection, client_v2_file);
+ schema_v2::Client client_v2(client_v2_file, connection);
 
  client_v2.transaction([](schema_v2::Generic_File_Database &db)
  {
@@ -646,7 +646,7 @@ TEST(Compiler, client_push)
  joedb::File_Connection connection(server_file);
 
  {
-  test::Client client(connection, client_file);
+  test::Client client(client_file, connection);
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
@@ -678,7 +678,7 @@ TEST(Compiler, client_hash_error)
 
  try
  {
-  test::Client client(connection, client_file);
+  test::Client client(client_file, connection);
   ADD_FAILURE() << "Should have thrown\n";
  }
  catch (const joedb::Exception &e)

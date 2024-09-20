@@ -593,14 +593,14 @@ out << R"RRR(
   public:
    Client
    (
-    joedb::Connection &connection,
     joedb::Generic_File &file,
+    joedb::Connection &connection,
     bool content_check = true,
     joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     Client_Data(file, check, commit_level),
-    joedb::Client(*this, connection, content_check)
+    joedb::Client(*static_cast<Client_Data *>(this), connection, content_check)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
@@ -661,7 +661,7 @@ out << R"RRR(
   public:
    Local_Client(const char *file_name):
     Local_Client_Data(file_name),
-    Client(Local_Client_Data::connection, Local_Client_Data::file)
+    Client(Local_Client_Data::file, Local_Client_Data::connection)
    {
    }
 
