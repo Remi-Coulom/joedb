@@ -34,6 +34,7 @@ sys.path.append(os.path.abspath("./_ext"))
 extensions = [
 #    'breathe',
     'sphinx.ext.imgmath',
+    'sphinxcontrib.jquery', # https://github.com/readthedocs/sphinx_rtd_theme/issues/1452
     'sphinxcontrib.spelling',
     'sphinxcontrib.asciinema',
     'joedbi_lexer',
