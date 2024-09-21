@@ -605,6 +605,7 @@ out << R"RRR(
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
+    db.play_journal(); // makes transaction shorter if db is big
     joedb::Client::transaction([this](joedb::Client_Data &data){
      db.initialize();
     });
