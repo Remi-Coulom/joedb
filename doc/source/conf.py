@@ -34,7 +34,6 @@ sys.path.append(os.path.abspath("./_ext"))
 extensions = [
 #    'breathe',
     'sphinx.ext.imgmath',
-    'sphinxcontrib.jquery', # https://github.com/readthedocs/sphinx_rtd_theme/issues/1452
     'sphinxcontrib.spelling',
     'sphinxcontrib.asciinema',
     'joedbi_lexer',
@@ -122,7 +121,7 @@ html_theme = 'sphinx_rtd_theme'
 html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
