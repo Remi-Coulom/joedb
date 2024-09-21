@@ -91,16 +91,29 @@ joedb::Readonly_Journal::Readonly_Journal
      checkpoint_position = file_size;
     else
     {
-     if (check_flag(check, Check::big_size) && file_size > checkpoint_position)
+     if
+     (
+      check_flag(check, Check::big_size) &&
+      !file.is_shared() &&
+      file_size > checkpoint_position
+     )
+     {
       throw Exception
       (
        "Checkpoint is smaller than file size. "
        "This file may contain an aborted transaction. "
        "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
       );
+     }
 
-     if (check_flag(check, Check::small_size) && file_size < checkpoint_position)
+     if
+     (
+      check_flag(check, Check::small_size) &&
+      file_size < checkpoint_position
+     )
+     {
       throw Exception("Checkpoint is bigger than file size");
+     }
     }
    }
   }
