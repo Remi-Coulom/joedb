@@ -3,26 +3,38 @@ History
 
 - 2024-??-?? 10.0.0
 
-  - ``Encoded_File`` supports on-the-fly coding or decoding of data.
-    ``Brotli_Codec`` is provided for compression.
-  - ``Upgradable_File`` allows applying automatic schema upgrades to a
-    read-only file.
-  - It is now possible to write to an ``Interpreted_File``.
-  - The ``add_field`` interpreter command now accepts an optional ``= <value>``
-    suffix that sets the value for all existing records of the table.
-  - If the .joedbi file provided to the compiler contains data, then it will
-    be used as default initial value for existing records when creating a new
-    field during automatic schema upgrade.
-  - ``set_single_row <table> true`` in .joedbc file forces a table to contain a
-    single row: the row is inserted automatically right after table creation,
-    and the new and delete operations are not available. Instead, the
-    ``the_<table>()`` member function returns a reference to the unique row of
-    this table.
-  - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
-  - Fixed some potential resource leaks when throwing from constructors in
-    ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
-    ``CURL_File``, ``Windows_File``.
-  - :ref:`joedb_edit` allows editing a binary joedb file with a text editor.
+  - New features:
+
+    - ``Encoded_File`` supports on-the-fly coding or decoding of data.
+      ``Brotli_Codec`` is provided for compression.
+    - It is now possible to write to an ``Interpreted_File``.
+    - The ``add_field`` interpreter command now accepts an optional ``= <value>``
+      suffix that sets the value for all existing records of the table.
+    - If the .joedbi file provided to the compiler contains data, then it will
+      be used as default initial value for existing records when creating a new
+      field during automatic schema upgrade.
+    - ``set_single_row <table> true`` in .joedbc file forces a table to contain a
+      single row: the row is inserted automatically right after table creation,
+      and the new and delete operations are not available. Instead, the
+      ``the_<table>()`` member function returns a reference to the unique row of
+      this table.
+    - ``Upgradable_File`` allows applying automatic schema upgrades to a
+      read-only file.
+    - :ref:`joedb_edit` allows editing a binary joedb file with a text editor.
+    - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
+
+  - Fixes and improvements:
+
+    - Fixed some potential resource leaks when throwing from constructors in
+      ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
+      ``CURL_File``, ``Windows_File``.
+    - Properly lock the tail of a shared file during journal construction. Not
+      doing so could wrongly trigger an error when checking for file size.
+    - The construction of a compiled client first reads the local file
+      completely before running the schema-upgrade transaction. This improves
+      concurrency by making the transaction much shorter if the local file is
+      big.
+
   - Incompatibilities with previous version:
 
     - The ``is_end_of_file()`` function was removed. Trying to read past the
