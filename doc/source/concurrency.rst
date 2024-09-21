@@ -55,16 +55,10 @@ connections.
 Plain ``Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
-The ``Connection`` superclass  does not connect to anything.
-
-One use of this class is to allows generic code that takes a client as
-parameter to work the same way with either a remote connection or a local file.
-
-Even though the ``Connection`` superclass does not connect to anything, a
-client using this connection still handles concurrent accesses to a file opened
-with ``Open_Mode::shared_write``. So this connection can be used to create a
-client that handles concurrent accesses to the same file by multiple processes
-running on the same machine.
+The ``Connection`` superclass does not connect to anything, but it can be used
+to synchronize access to a local file. Multiple clients can open the same file
+with ``joedb::Open_Mode::shared_write``, and write to it concurrently thanks
+to the synchronization provided by the plain ``Connection``.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
 creates the connection and the client in a single line of code. Here is an
