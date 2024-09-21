@@ -17,6 +17,8 @@ namespace joedb
   }
   else
   {
+   if (file.is_shared())
+    file.exclusive_lock_tail();
    file.exclusive_lock_head();
    creating_new = file.get_size() == 0;
   }
@@ -29,6 +31,8 @@ namespace joedb
   try
   {
    file.unlock_head();
+   if (file.is_shared())
+    file.unlock_tail();
   }
   catch(...)
   {

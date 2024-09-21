@@ -94,7 +94,6 @@ joedb::Readonly_Journal::Readonly_Journal
      if
      (
       check_flag(check, Check::big_size) &&
-      !file.is_shared() &&
       file_size > checkpoint_position
      )
      {
