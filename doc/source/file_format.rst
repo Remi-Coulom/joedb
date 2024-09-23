@@ -1,12 +1,34 @@
 File Format
 ===========
 
-Header
-------
+Global File structure
+---------------------
 
-Each joedb file starts with a 41-byte header that contains a file-format
-version as well as checkpoints. Integer values are stored in little-endian
-format (least significant byte first).
+===================== ========= ======================= ================
+Range                 Name      Content                 Synchronization
+===================== ========= ======================= ================
+0...                  Head      version + checkpoint    Shared lock when reading the checkpoint.
+
+                                                        Exclusive lock when writing the checkpoint,
+
+                                                        and during journal construction.
+
+41...                 Body      immutable journal       Never modified, never locked:
+
+                                                        can be safely read without any synchronization.
+
+checkpoint...         Tail      current transaction     Exclusive lock when writing the transaction,
+
+                                                        and during journal construction.
+
+===================== ========= ======================= ================
+
+Head
+----
+
+Each joedb file starts with a 41-byte head that contains a file-format version
+as well as checkpoints. Integer values are stored in little-endian format
+(least significant byte first).
 
 ====== ======================= ==============================================
 Offset Value                   Description

@@ -3,6 +3,7 @@ TODO
 
 For next release
 ----------------
+
  - use joedb to store a struct (mahjong rules, training parameters, ...)
 
    - struct io (generated as option):
