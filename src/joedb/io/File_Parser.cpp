@@ -38,8 +38,11 @@ namespace joedb
 
    for (size_t i = 0; i < open_mode_strings.size(); i++)
    {
+    const Open_Mode mode = Open_Mode(i);
+    if (!include_shared && mode == Open_Mode::shared_write)
+     continue;
     out << "  " << open_mode_strings[i];
-    if (Open_Mode(i) == default_open_mode)
+    if (mode == default_open_mode)
      out << " (default)";
     out << '\n';
    }
@@ -228,10 +231,13 @@ namespace joedb
    {
     for (size_t i = 0; i < open_mode_strings.size(); i++)
     {
+     const Open_Mode mode = Open_Mode(i);
+     if (!include_shared && mode == Open_Mode::shared_write)
+      continue;
      const std::string option = std::string("--") + open_mode_strings[i];
      if (option == argv[arg_index])
      {
-      open_mode = Open_Mode(i);
+      open_mode = mode;
       arg_index++;
      }
     }

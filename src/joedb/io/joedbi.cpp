@@ -14,7 +14,15 @@ namespace joedb
  static int main(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  File_Parser file_parser(Open_Mode::write_existing_or_create_new);
+  const bool default_only = false;
+  const bool include_shared = false;
+
+  File_Parser file_parser
+  (
+   Open_Mode::write_existing_or_create_new,
+   default_only,
+   include_shared
+  );
 
   if (argc <= 1)
   {
