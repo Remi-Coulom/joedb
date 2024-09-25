@@ -22,7 +22,7 @@ difference that merging branches is not possible. History must be linear, and a
 central mutex is used to prevent branches from diverging.
 
 Locking the central mutex is not strictly necessary: offline changes can be
-made to the local database without any synchronization with the remote server.
+made to a local database without any synchronization with the remote server.
 It will still be possible to push those changes to the server when connecting
 later, but the push will succeed only if there is no conflict with any other
 write that may have occurred.
@@ -31,8 +31,8 @@ Example
 -------
 
 The compiler produces code that ensures that locks and unlocks are correctly
-paired, and modifications to the local database can only occur during a lock.
-This is done with transaction function that takes a lambda as parameter, and
+paired, and modifications to the database can only occur during a lock.  This
+is done with transaction function that takes a lambda as parameter, and
 executes it between a lock_pull and a push_unlock.
 
 .. literalinclude:: ./tutorial/concurrency_tutorial.cpp
@@ -47,18 +47,19 @@ Connections
 -----------
 
 The constructor of the ``tutorial::Client`` class takes two parameters: a file
-for local storage, and a connection. The connection is an object of the
-``Connection`` class, that provides the synchronization operations (pull,
-lock_pull, push_unlock). This section presents the different kinds of available
-connections.
+for storing the database journal, and a connection. The connection is an object
+of the ``Connection`` class, that provides the synchronization operations
+(pull, lock_pull, push_unlock). This section presents the different kinds of
+available connections.
 
 Plain ``Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
-The ``Connection`` superclass does not connect to anything, but it can be used
-to synchronize access to a local file. Multiple clients can open the same file
-with ``joedb::Open_Mode::shared_write``, and write to it concurrently thanks
-to the synchronization provided by the plain ``Connection``.
+The ``Connection`` superclass does not connect to anything, but it can still be
+used to synchronize access to the database file. Multiple clients can use the
+plain connection to open the same file at the same time. If the file was opened
+with ``joedb::Open_Mode::shared_write``, clients can start write transactions
+simultaneously, and the connection will use file locking to synchronize them.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
 creates the connection and the client in a single line of code. Here is an

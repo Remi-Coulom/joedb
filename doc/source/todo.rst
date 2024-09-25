@@ -12,29 +12,15 @@ For next release
        subnamespace) for each table struct.
      - if single row: x = db.load_settings(); db.save_settings(x);
      - if not single row:  struct X x = db.load(settings_id), db.save(settings_id, x).
+
    - generate function to load settings from a file, with auto upgrade, in one
      single line of code. Same for saving.
 
- - SQLite connection (store checkpoint and lock in DB + fail on pull if
-   anything to be pulled)
-
  - Blob cache:
+
    - keep blob translation index in a joedb file (erasable)
    - write blobs to another file with max size
    - when max size reached, start again from the start (evict overwritten entries)
-
- - proper handling of unique_index with more than one column:
-
-   - joedbc produces a function to update multiple values simultaneously. Index
-     columns cannot be updated individually.
-   - do not allow more than one unique index with the same last column.
-   - when reading the file, update index only when last column is updated
-   - This may break old files.
-
- - allow reading dropped fields in custom functions that are invoked before the
-   drop. Store data in a column vector, and clear the vector at the time of the
-   drop. Make sure field id is not reused. (make access function private, and
-   custom functions are friends)
 
  - log rotation, ability to delete or compress early part of the log:
 
@@ -44,16 +30,21 @@ For next release
    - skip deleted parts when reading
    - option to compress a part at rotation time
 
- - Asynchronous Server Connection (for tamper-proof log backup)
+ - proper handling of unique_index with more than one column:
 
-   - does not wait for confirmation after push
-   - can batch frequent pushes (do not send new push until after receiving the previous push confirmation)
-   - keeps working even if server dies
+   - joedbc produces a function to update multiple values simultaneously. Index
+     columns cannot be updated individually.
+   - do not allow more than one unique index with the same last column.
+   - when reading the file, update index only when last column is updated
+   - This may break old files.
+   - No more than one unique index per table?
 
- - Add support for vcpkg and conan
+ - allow reading dropped fields in custom functions that are invoked before the
+   drop. Store data in a column vector, and clear the vector at the time of the
+   drop. Make sure field id is not reused. (make access function private, and
+   custom functions are friends)
 
- - Make all file reads const function. Use a separate file iterator to keep
-   track of current position.
+ - Add support for vcpkg
 
 New Operations and Types
 ------------------------
@@ -155,6 +146,15 @@ Concurrency
   - when the lock times out
   - when the server is interrupted
   - ping
+
+- SQLite connection (store checkpoint and lock in DB + fail on pull if
+  anything to be pulled)
+- Asynchronous Server Connection (for tamper-proof log backup)
+
+  - does not wait for confirmation after push
+  - can batch frequent pushes (do not send new push until after receiving the previous push confirmation)
+  - keeps working even if server dies
+
 
 Performance
 -----------

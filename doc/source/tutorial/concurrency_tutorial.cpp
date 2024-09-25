@@ -26,9 +26,9 @@ int main()
  // The lock_pull operation is performed before the lambda, and the push_unlock
  // operation is performed after the lambda, if no exception was thrown.
  // If any exception was thrown during the lambda, then the changes
- // are not pushed to the server, and the server is unlocked.
+ // are not pushed to the connection, and the connection is unlocked.
  // Writes that occured in a transaction before an exception are not sent to
- // the server, but they are written locally.
+ // the connection, but they are written to the file.
  //
  client1.transaction([](tutorial::Generic_File_Database &db)
  {
@@ -38,7 +38,7 @@ int main()
  });
 
  //
- // client1.get_database() gives a read-only access to the local copy
+ // client1.get_database() gives a read-only access to the client file
  //
  std::cout << "Number of cities for client1: ";
  std::cout << client1.get_database().get_city_table().get_size() << '\n';
