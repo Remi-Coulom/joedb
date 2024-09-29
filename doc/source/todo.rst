@@ -22,14 +22,6 @@ For next release
    - write blobs to another file with max size
    - when max size reached, start again from the start (evict overwritten entries)
 
- - log rotation, ability to delete or compress early part of the log:
-
-   - multi-part file
-   - keeps a table with all parts
-   - keep first part as schema definition + checkpoint
-   - skip deleted parts when reading
-   - option to compress a part at rotation time
-
  - proper handling of unique_index with more than one column:
 
    - joedbc produces a function to update multiple values simultaneously. Index
@@ -46,8 +38,8 @@ For next release
 
  - Add support for vcpkg
 
-Quick Checkpoints and Durable Checkpoints
------------------------------------------
+Quick Checkpoints
+-----------------
 
 The current way of checkpointing is not crash-safe when not using full commits
 (fsync). It could be made better by distinguishing between quick checkpoints,
@@ -62,6 +54,10 @@ is a quick checkpoint.
 
 Note: it would have been better to align the checkpoints in the file, but it is
 not worth breaking the current file format.
+
+In terms of API: quick_transaction or durable_transaction, no more default
+checkpoint mode. Or more simply: make all transactions quick + add a
+durable_checkpoint method to the client.
 
 New Operations and Types
 ------------------------
@@ -166,12 +162,23 @@ Concurrency
 
 - SQLite connection (store checkpoint and lock in DB + fail on pull if
   anything to be pulled)
+
+Use case: log with safe real-time remote backup
+-----------------------------------------------
+
+ - log rotation, ability to delete or compress early part of the log:
+
+   - multi-part file
+   - keeps a table with all parts
+   - keep first part as schema definition + checkpoint
+   - skip deleted parts when reading
+   - option to compress a part at rotation time
+
 - Asynchronous Server Connection (for tamper-proof log backup)
 
   - does not wait for confirmation after push
   - can batch frequent pushes (do not send new push until after receiving the previous push confirmation)
   - keeps working even if server dies
-
 
 Performance
 -----------
