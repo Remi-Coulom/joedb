@@ -38,27 +38,6 @@ For next release
 
  - Add support for vcpkg
 
-Quick Checkpoints
------------------
-
-The current way of checkpointing is not crash-safe when not using full commits
-(fsync). It could be made better by distinguishing between quick checkpoints,
-and durable checkpoints. They could work together with less frequent (slow, but
-durable) full commits, and very frequent quick commits.
-
-The 16 bytes of the unused checkpoint could be used to store the quick
-checkpoint: store one aligned 8-byte value in the middle of the 16 bytes ->
-much faster synchronization = memory-map the checkpoint, and access it with
-atomic read and writes. The 8 unused bytes should be set to 0xff to indicate it
-is a quick checkpoint.
-
-Note: it would have been better to align the checkpoints in the file, but it is
-not worth breaking the current file format.
-
-In terms of API: quick_transaction or durable_transaction, no more default
-checkpoint mode. Or more simply: make all transactions quick + add a
-durable_checkpoint method to the client.
-
 New Operations and Types
 ------------------------
 - Add an ``undo`` operation to the log. This way, it is possible to keep all
