@@ -24,22 +24,21 @@ int joedb::write_json
  //
  std::map<Table_Id, std::vector<int64_t>> reference_translation;
  std::map<Table_Id, int64_t> table_size;
- for (auto table: db.get_tables())
+ for (const auto &[tid, tname]: db.get_tables())
  {
-  const Table_Id table_id = table.first;
-  const Record_Id last_record_id = db.get_last_record_id(table_id);
-  std::vector<int64_t> &v = reference_translation[table_id];
-  v.resize(size_t(db.get_last_record_id(table_id)) + 1);
+  const Record_Id last_record_id = db.get_last_record_id(tid);
+  std::vector<int64_t> &v = reference_translation[tid];
+  v.resize(size_t(db.get_last_record_id(tid)) + 1);
   v[0] = -1;
   int64_t position = 0;
   for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
   {
-   if (!db.is_used(table_id, record_id))
+   if (!db.is_used(tid, record_id))
     v[size_t(record_id)] = -1;
    else
     v[size_t(record_id)] = position++;
   }
-  table_size[table_id] = position;
+  table_size[tid] = position;
  }
 
  //
@@ -48,32 +47,30 @@ int joedb::write_json
  out << "{\n";
 
  bool first_table = true;
- for (auto table: db.get_tables())
+ for (const auto &[tid, tname]: db.get_tables())
  {
-  const Table_Id table_id = table.first;
-  const Record_Id last_record_id = db.get_last_record_id(table_id);
+  const Record_Id last_record_id = db.get_last_record_id(tid);
 
   if (first_table)
    first_table = false;
   else
    out << ",\n";
 
-  out << " \"" << table.second << "\":\n {\n";
+  out << " \"" << tname << "\":\n {\n";
 
-  out << "  \"__size\": " << table_size[table_id];
+  out << "  \"__size\": " << table_size[tid];
 
-  for (const auto &field: db.get_fields(table_id))
+  for (const auto &[fid, fname]: db.get_fields(tid))
   {
-   const Field_Id field_id = field.first;
-   const Type &type = db.get_field_type(table_id, field_id);
+   const Type &type = db.get_field_type(tid, fid);
    out << ",\n";
 
-   out << "  \"" << field.second << "\": [";
+   out << "  \"" << fname << "\": [";
 
    bool first_value = true;
    for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
    {
-    if (db.is_used(table_id, record_id))
+    if (db.is_used(tid, record_id))
     {
      if (first_value)
       first_value = false;
@@ -87,7 +84,7 @@ int joedb::write_json
 
       case Type::Type_Id::reference:
       {
-       Record_Id i = db.get_reference(table_id, record_id, field_id);
+       Record_Id i = db.get_reference(tid, record_id, fid);
        const auto it = reference_translation.find(type.get_table_id());
        if (it != reference_translation.end())
        {
@@ -103,14 +100,14 @@ int joedb::write_json
 
       case Type::Type_Id::string:
       {
-       const std::string &s = db.get_string(table_id, record_id, field_id);
+       const std::string &s = db.get_string(tid, record_id, fid);
        result |= write_json_string(out, s, base64);
       }
       break;
 
       case Type::Type_Id::blob:
       {
-       const Blob blob = db.get_blob(table_id, record_id, field_id);
+       const Blob blob = db.get_blob(tid, record_id, fid);
        out << blob.get_position();
       }
       break;
@@ -118,7 +115,7 @@ int joedb::write_json
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
       {\
-       const auto x = db.get_##type_id(table_id, record_id, field_id);\
+       const auto x = db.get_##type_id(tid, record_id, fid);\
        if (std::isnan(x) || std::isinf(x))\
        {\
         out << '0';\
@@ -137,7 +134,7 @@ int joedb::write_json
       #define TYPE_MACRO(type, return_type, type_id, R, W)\
       case Type::Type_Id::type_id:\
       {\
-       const auto x = db.get_##type_id(table_id, record_id, field_id);\
+       const auto x = db.get_##type_id(tid, record_id, fid);\
        joedb::write_##type_id(out, x);\
       }\
       break;

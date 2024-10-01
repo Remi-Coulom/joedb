@@ -196,9 +196,9 @@ Data manipulation
 
    get_writable().insert_into(table_id, record_id);
    if (parameters.good())
-    for (const auto &field: get_readable().get_fields(table_id))
+    for (const auto &[fid, fname]: get_readable().get_fields(table_id))
     {
-     update_value(parameters, table_id, record_id, field.first);
+     update_value(parameters, table_id, record_id, fid);
      if (parameters.fail())
       throw Exception("failed parsing value");
     }

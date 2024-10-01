@@ -107,10 +107,10 @@ namespace joedb
     const auto &fields = readable.get_fields(table_id);
     std::map<Field_Id, size_t> column_width;
 
-    for (auto field: fields)
+    for (const auto &[fid, fname]: fields)
     {
-     size_t width = field.second.size();
-     column_width[field.first] = width;
+     const size_t width = fname.size();
+     column_width[fid] = width;
     }
 
     //
@@ -132,16 +132,16 @@ namespace joedb
       rows++;
       id_column.emplace_back(record_id);
 
-      for (auto field: fields)
+      for (const auto &[fid, fname]: fields)
       {
        std::ostringstream ss;
-       write_value(ss, table_id, record_id, field.first);
+       write_value(ss, table_id, record_id, fid);
        ss.flush();
        const std::string &s = ss.str();
        const size_t width = utf8_display_size(s);
-       if (column_width[field.first] < width)
-        column_width[field.first] = width;
-       columns[field.first].emplace_back(s);
+       if (column_width[fid] < width)
+        column_width[fid] = width;
+       columns[fid].emplace_back(s);
       }
      }
     }
@@ -157,11 +157,11 @@ namespace joedb
      id_width = ss.str().size();
     }
     size_t table_width = id_width;
-    for (auto field: fields)
+    for (const auto &[fid, fname]: fields)
     {
-     if (max_column_width && column_width[field.first] > max_column_width)
-      column_width[field.first] = max_column_width;
-     table_width += column_width[field.first] + 1;
+     if (max_column_width && column_width[fid] > max_column_width)
+      column_width[fid] = max_column_width;
+     table_width += column_width[fid] + 1;
     }
 
     //
@@ -169,19 +169,19 @@ namespace joedb
     //
     out << std::string(table_width, '-') << '\n';
     out << std::string(id_width, ' ');
-    for (auto field: fields)
+    for (const auto &[fid, fname]: fields)
     {
      const Type::Type_Id type_id = readable.get_field_type
      (
       table_id,
-      field.first
+      fid
      ).get_type_id();
      out << ' ';
      write_justified
      (
       out,
-      field.second,
-      column_width[field.first],
+      fname,
+      column_width[fid],
       type_id == Type::Type_Id::string || type_id == Type::Type_Id::blob
      );
     }
@@ -195,20 +195,20 @@ namespace joedb
     {
      out << std::setw(int(id_width)) << id_column[i];
 
-     for (auto field: fields)
+     for (const auto &[fid, fname]: fields)
      {
       const Type::Type_Id type_id = readable.get_field_type
       (
        table_id,
-       field.first
+       fid
       ).get_type_id();
 
       out << ' ';
       write_justified
       (
        out,
-       columns[field.first][i],
-       column_width[field.first],
+       columns[fid][i],
+       column_width[fid],
        type_id == Type::Type_Id::string || type_id == Type::Type_Id::blob
       );
      }
@@ -227,14 +227,14 @@ namespace joedb
 
    const auto &fields = readable.get_fields(table_id);
    size_t max_field_size = 0;
-   for (auto field: fields)
-    if (field.second.size() > max_field_size)
-     max_field_size = field.second.size();
+   for (const auto &[fid, fname]: fields)
+    if (fname.size() > max_field_size)
+     max_field_size = fname.size();
 
-   for (auto field: fields)
+   for (const auto &[fid, fname]: fields)
    {
-    out << std::setw(int(max_field_size)) << field.second << ": ";
-    write_value(out, table_id, record_id, field.first);
+    out << std::setw(int(max_field_size)) << fname << ": ";
+    write_value(out, table_id, record_id, fid);
     out << '\n';
    }
   }

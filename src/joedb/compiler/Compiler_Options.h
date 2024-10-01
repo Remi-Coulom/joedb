@@ -43,8 +43,8 @@ namespace joedb
     db(db),
     custom_names(custom_names)
    {
-    for (auto table: db.get_tables())
-     table_options[table.first];
+    for (const auto &[tid, tname]: db.get_tables())
+     table_options[tid];
    }
 
    bool has_index() const

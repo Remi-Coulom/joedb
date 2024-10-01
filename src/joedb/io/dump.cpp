@@ -15,13 +15,12 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  //
  std::map<Table_Id, Table_Id> table_map;
  {
-  Table_Id table_id = Table_Id(0);
-  for (auto table: db.get_tables())
+  Table_Id mapped_tid = Table_Id(0);
+  for (const auto &[tid, tname]: db.get_tables())
   {
-   ++table_id;
-   table_map[table.first] = table_id;
-
-   writable.create_table(table.second);
+   ++mapped_tid;
+   table_map[tid] = mapped_tid;
+   writable.create_table(tname);
   }
  }
 
@@ -30,18 +29,18 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  //
  std::map<Table_Id, std::map<Field_Id, Field_Id>> field_maps;
  {
-  for (auto table: db.get_tables())
+  for (const auto &[tid, tname]: db.get_tables())
   {
-   Field_Id field_id = Field_Id(0);
-   for (const auto &field: db.get_fields(table.first))
+   Field_Id mapped_fid = Field_Id(0);
+   for (const auto &[fid, fname]: db.get_fields(tid))
    {
-    ++field_id;
-    Type type = db.get_field_type(table.first, field.first);
+    ++mapped_fid;
+    Type type = db.get_field_type(tid, fid);
     if (type.get_type_id() == Type::Type_Id::reference)
      type = Type::reference(table_map[type.get_table_id()]);
-    field_maps[table.first][field.first] = field_id;
+    field_maps[tid][fid] = mapped_fid;
 
-    writable.add_field(table_map[table.first], field.second, type);
+    writable.add_field(table_map[tid], fname, type);
    }
   }
  }
@@ -52,17 +51,16 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  if (schema_only)
   return;
 
- for (auto table: db.get_tables())
+ for (const auto &[tid, tname]: db.get_tables())
  {
-  const Table_Id table_id = table.first;
-  const size_t last_record_id = size_t(db.get_last_record_id(table_id));
+  const size_t last_record_id = size_t(db.get_last_record_id(tid));
 
   for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id;)
   {
    while
    (
     size_t(record_id) <= last_record_id &&
-    !db.is_used(table_id, record_id)
+    !db.is_used(tid, record_id)
    )
    {
     ++record_id;
@@ -73,7 +71,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
    while
    (
     size_t(record_id) + size <= last_record_id &&
-    db.is_used(table_id, record_id + size)
+    db.is_used(tid, record_id + size)
    )
    {
     size++;
@@ -81,23 +79,21 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
 
    if (size)
    {
-    writable.insert_vector(table_map[table_id], record_id, size);
+    writable.insert_vector(table_map[tid], record_id, size);
     record_id = record_id + size;
    }
   }
 
-  for (const auto &field: db.get_fields(table_id))
+  for (const auto &[fid, fname]: db.get_fields(tid))
   {
-   const Field_Id field_id = field.first;
-
    for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id; ++record_id)
    {
-    if (db.is_used(table_id, record_id))
+    if (db.is_used(tid, record_id))
     {
-     Table_Id t_id = table_map[table_id];
-     Field_Id f_id = field_maps[table_id][field_id];
+     Table_Id mapped_tid = table_map[tid];
+     Field_Id mapped_fid = field_maps[tid][fid];
 
-     switch (db.get_field_type(table_id, field_id).get_type_id())
+     switch (db.get_field_type(tid, fid).get_type_id())
      {
       case Type::Type_Id::null:
       break;
@@ -106,7 +102,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
       case Type::Type_Id::type_id:\
        writable.update_##type_id\
        (\
-        t_id, record_id, f_id, db.get_##type_id(table_id, record_id, field_id)\
+        mapped_tid, record_id, mapped_fid, db.get_##type_id(tid, record_id, fid)\
        );\
       break;
       #include "joedb/TYPE_MACRO.h"
@@ -121,14 +117,13 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
 void joedb::dump_data(const Readable &db, Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
- for (auto table: db.get_tables())
+ for (const auto &[tid, tname]: db.get_tables())
  {
-  const Table_Id table_id = table.first;
-  const size_t last_record_id = size_t(db.get_last_record_id(table_id));
+  const size_t last_record_id = size_t(db.get_last_record_id(tid));
 
   Record_Id record_id = Record_Id(1);
 
-  const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(table_id);
+  const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
 
   while (size_t(record_id) <= last_record_id)
   {
@@ -154,13 +149,11 @@ void joedb::dump_data(const Readable &db, Writable &writable)
 
    if (size > 1)
    {
-    writable.insert_vector(table_id, record_id, size);
+    writable.insert_vector(tid, record_id, size);
 
-    for (const auto &field: db.get_fields(table_id))
+    for (const auto &[fid, fname]: db.get_fields(tid))
     {
-     const Field_Id field_id = field.first;
-
-     switch(db.get_field_type(table_id, field_id).get_type_id())
+     switch(db.get_field_type(tid, fid).get_type_id())
      {
       case Type::Type_Id::null:
       break;
@@ -170,15 +163,15 @@ void joedb::dump_data(const Readable &db, Writable &writable)
       {\
        writable.update_vector_##type_id\
        (\
-        table_id,\
+        tid,\
         record_id,\
-        field_id,\
+        fid,\
         size,\
         &db.get_##type_id##_storage\
         (\
-         table_id,\
+         tid,\
          record_id,\
-         field_id\
+         fid\
         )\
        );\
       }\
@@ -189,13 +182,11 @@ void joedb::dump_data(const Readable &db, Writable &writable)
    }
    else if (size == 1)
    {
-    writable.insert_into(table_id, record_id);
+    writable.insert_into(tid, record_id);
 
-    for (const auto &field: db.get_fields(table_id))
+    for (const auto &[fid, fname]: db.get_fields(tid))
     {
-     const Field_Id field_id = field.first;
-
-     switch(db.get_field_type(table_id, field_id).get_type_id())
+     switch(db.get_field_type(tid, fid).get_type_id())
      {
       case Type::Type_Id::null:
       break;
@@ -205,10 +196,10 @@ void joedb::dump_data(const Readable &db, Writable &writable)
       {\
        writable.update_##type_id\
        (\
-        table_id,\
+        tid,\
         record_id,\
-        field_id,\
-        db.get_##type_id(table_id, record_id, field_id)\
+        fid,\
+        db.get_##type_id(tid, record_id, fid)\
        );\
       }\
       break;

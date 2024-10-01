@@ -140,9 +140,9 @@ static void write_index_type
 static bool has_values(const Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
- for (const auto &table: db.get_tables())
+ for (const auto &[tid, tname]: db.get_tables())
  {
-  if (db.get_freedom(table.first).size() > 0)
+  if (db.get_freedom(tid).size() > 0)
    return true;
  }
  return false;
@@ -314,11 +314,10 @@ out << R"RRR(
    void write_valid_data();
 )RRR";
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
   out << '\n';
-  const std::string &tname = table.second;
-  const bool single_row = options.get_table_options(table.first).single_row;
+  const bool single_row = options.get_table_options(tid).single_row;
 
   //
   // Erase all elements of the table
@@ -341,7 +340,7 @@ out << R"RRR(
   out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname << ".freedom_keeper.get_free_record() - 1));\n";
   out << "    storage_of_" << tname << ".resize(storage_of_" << tname << ".freedom_keeper.size());\n";
   out << "    internal_insert_" << tname << "(result.get_record_id());\n\n";
-  out << "    journal.insert_into(Table_Id(" << table.first << "), result.get_record_id());\n";
+  out << "    journal.insert_into(Table_Id(" << tid << "), result.get_record_id());\n";
   out << "    return result;\n";
   out << "   }\n";
   out << '\n';
@@ -358,7 +357,7 @@ out << R"RRR(
    out << "    storage_of_" << tname << ".resize(storage_of_";
    out << tname << ".size() + size);\n";
    out << "    internal_vector_insert_" << tname << "(result.get_record_id(), size);\n";
-   out << "    journal.insert_vector(Table_Id(" << table.first;
+   out << "    journal.insert_vector(Table_Id(" << tid;
    out << "), result.get_record_id(), size);\n";
    out << "    return result;\n";
    out << "   }\n";
@@ -368,23 +367,21 @@ out << R"RRR(
   //
   // new with all fields
   //
-  if (!db.get_fields(table.first).empty())
+  if (!db.get_fields(tid).empty())
   {
    out << "   id_of_" << tname << " new_" << tname << '\n';
    out << "   (\n    ";
    {
     bool first = true;
 
-    for (const auto &field: db.get_fields(table.first))
+    for (const auto &[fid, fname]: db.get_fields(tid))
     {
-     const std::string &fname = field.second;
-
      if (first)
       first = false;
      else
       out << ",\n    ";
 
-     const Type &type = db.get_field_type(table.first, field.first);
+     const Type &type = db.get_field_type(tid, fid);
      write_type(out, db, type, false, true);
      out << "field_value_of_" << fname;
     }
@@ -395,11 +392,8 @@ out << R"RRR(
    out << "   {\n";
    out << "    auto result = new_" << tname << "();\n";
 
-   for (const auto &field: db.get_fields(table.first))
-   {
-    const std::string &fname = field.second;
+   for (const auto &[fid, fname]: db.get_fields(tid))
     out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
-   }
 
    out << "    return result;\n";
    out << "   }\n\n";
@@ -416,17 +410,16 @@ out << R"RRR(
    out << "   void delete_" << tname << "(id_of_" << tname << " record)\n";
    out << "   {\n";
    out << "    internal_delete_" << tname << "(record.get_record_id());\n";
-   out << "    journal.delete_from(Table_Id(" << table.first << "), record.get_record_id());\n";
+   out << "    journal.delete_from(Table_Id(" << tid << "), record.get_record_id());\n";
    out << "   }\n\n";
   }
 
   //
   // Loop over fields
   //
-  for (const auto &field: db.get_fields(table.first))
+  for (const auto &[fid, fname]: db.get_fields(tid))
   {
-   const std::string &fname = field.second;
-   const Type &type = db.get_field_type(table.first, field.first);
+   const Type &type = db.get_field_type(tid, fid);
 
    //
    // Setter
@@ -442,7 +435,7 @@ out << R"RRR(
    out << "field_value_of_" << fname << ");\n";
    out << "    journal.update_";
    out << types[int(type.get_type_id())];
-   out << "(Table_Id(" << table.first << "), record.get_record_id(), Field_Id(" << field.first << "), ";
+   out << "(Table_Id(" << tid << "), record.get_record_id(), Field_Id(" << fid << "), ";
    out << "field_value_of_" << fname;
    if (type.get_type_id() == Type::Type_Id::reference)
     out << ".get_record_id()";
@@ -464,7 +457,7 @@ out << R"RRR(
    out << "    try {f(span);}\n";
    out << "    catch (...) {exception = std::current_exception();}\n";
    out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_record_id(), size, span.begin());\n";
-   out << "    journal.update_vector_" << types[int(type.get_type_id())] << "(Table_Id(" << table.first << "), record.get_record_id(), Field_Id(" << field.first << "), size, ";
+   out << "    journal.update_vector_" << types[int(type.get_type_id())] << "(Table_Id(" << tid << "), record.get_record_id(), Field_Id(" << fid << "), size, ";
 
    if (type.get_type_id() == Type::Type_Id::reference)
     out << "reinterpret_cast<Record_Id *>";
@@ -521,10 +514,9 @@ out << R"RRR(
 
 )RRR";
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-  const bool single_row = options.get_table_options(table.first).single_row;
+  const bool single_row = options.get_table_options(tid).single_row;
 
   if (!single_row)
   {
@@ -760,15 +752,11 @@ static void generate_readonly_h
  extern const size_t schema_string_size;
 )RRR";
 
- for (auto &table: tables)
- {
-  const std::string &tname = table.second;
+ for (const auto &[tid, tname]: tables)
   out << " class container_of_" << tname << ";\n";
- }
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
   out << '\n';
   out << " class id_of_" << tname << "\n {\n";
   out << "  private:\n";
@@ -791,23 +779,21 @@ static void generate_readonly_h
   out << " };\n";
  }
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-
   out << "\n struct data_of_" << tname;
 
   out <<"\n {\n";
-  if (db.get_freedom(table.first).size() > 0)
+  if (db.get_freedom(tid).size() > 0)
    out <<"  Field_Id current_field_id = Field_Id(0);\n";
 
   std::vector<std::string> fields;
 
-  for (const auto &field: db.get_fields(table.first))
+  for (const auto &[fid, fname]: db.get_fields(tid))
   {
-   fields.emplace_back("field_value_of_" + field.second);
+   fields.emplace_back("field_value_of_" + fname);
 
-   const joedb::Type &type = db.get_field_type(table.first, field.first);
+   const joedb::Type &type = db.get_field_type(tid, fid);
 
    out << "  std::vector<";
    write_type(out, db, type, false, false);
@@ -815,7 +801,7 @@ static void generate_readonly_h
   }
 
   for (const auto &index: options.get_indices())
-   if (index.table_id == table.first)
+   if (index.table_id == tid)
    {
     out << "  std::vector<";
     write_index_type(out, db, index);
@@ -848,10 +834,10 @@ static void generate_readonly_h
 
  out << " class Database: public joedb::Writable\n {\n";
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  out << "  friend class id_of_"  << table.second << ";\n";
-  out << "  friend class container_of_"  << table.second << ";\n";
+  out << "  friend class id_of_"  << tname << ";\n";
+  out << "  friend class container_of_"  << tname << ";\n";
  }
 
  for (const auto &index: options.get_indices())
@@ -879,19 +865,15 @@ static void generate_readonly_h
  //
  // Validity checks
  //
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-
   out << "   bool is_valid(id_of_" << tname << " id) const {return is_valid_record_id_for_" << tname << "(id.get_record_id());}\n";
  }
 
  out << "\n  protected:\n";
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-
   out << "   data_of_" << tname << " storage_of_" << tname << ";\n";
 
   out << "   bool is_valid_record_id_for_" << tname;
@@ -976,22 +958,19 @@ static void generate_readonly_h
  // Internal data-modification functions
  //
  out << '\n';
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-
   out << "   void internal_delete_" << tname << "(Record_Id record_id)\n";
   out << "   {\n";
   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
 
   for (const auto &index: options.get_indices())
-   if (index.table_id == table.first)
+   if (index.table_id == tid)
     out << "    remove_index_of_" << index.name << "(record_id);\n";
 
-  for (const auto &field: db.get_fields(table.first))
+  for (const auto &[fid, fname]: db.get_fields(tid))
   {
-   const std::string &fname = field.second;
-   const Type &type = db.get_field_type(table.first, field.first);
+   const Type &type = db.get_field_type(tid, fid);
 
    out << "    storage_of_" << tname << ".field_value_of_";
    out << fname << "[size_t(record_id) - 1]";
@@ -1023,15 +1002,13 @@ static void generate_readonly_h
  }
 
  out << '\n';
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-
   out << "   void internal_insert_" << tname << "(Record_Id record_id)\n";
   out << "   {\n";
 
   for (const auto &index: options.get_indices())
-   if (index.table_id == table.first)
+   if (index.table_id == tid)
    {
     out << "    storage_of_" << tname;
     out << ".iterator_over_" << index.name << "[size_t(record_id) - 1] = ";
@@ -1047,7 +1024,7 @@ static void generate_readonly_h
   out << "    storage_of_" << tname << ".freedom_keeper.use_vector(size_t(record_id) + 1, size);\n";
 
   for (const auto &index: options.get_indices())
-   if (index.table_id == table.first)
+   if (index.table_id == tid)
    {
     out << "    std::fill_n\n";
     out << "    (\n";
@@ -1061,13 +1038,11 @@ static void generate_readonly_h
  }
 
  out << '\n';
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-  for (const auto &field: db.get_fields(table.first))
+  for (const auto &[fid, fname]: db.get_fields(tid))
   {
-   const std::string &fname = field.second;
-   const Type &type = db.get_field_type(table.first, field.first);
+   const Type &type = db.get_field_type(tid, fid);
 
    out << "   void internal_update_" << tname << "__" << fname;
    out << "\n   (\n    Record_Id record_id,\n    ";
@@ -1080,10 +1055,10 @@ static void generate_readonly_h
    out << ";\n";
 
    for (const auto &index: options.get_indices())
-    if (index.table_id == table.first &&
+    if (index.table_id == tid &&
         std::find(index.field_ids.begin(),
                   index.field_ids.end(),
-                  field.first) != index.field_ids.end())
+                  fid) != index.field_ids.end())
     {
      out << "    remove_index_of_" << index.name << "(record_id);\n";
      out << "    add_index_of_" << index.name << "(record_id);\n";
@@ -1109,10 +1084,10 @@ static void generate_readonly_h
    out << "     std::copy_n(value, size, target);\n";
 
    for (const auto &index: options.get_indices())
-    if (index.table_id == table.first &&
+    if (index.table_id == tid &&
         std::find(index.field_ids.begin(),
                   index.field_ids.end(),
-                  field.first) != index.field_ids.end())
+                  fid) != index.field_ids.end())
     {
      out << "    for (size_t i = 0; i < size; i++)\n";
      out << "     remove_index_of_" << index.name << "(record_id + i);\n";
@@ -1131,17 +1106,15 @@ static void generate_readonly_h
  out << "   {\n";
  {
   bool first = true;
-  for (auto &table: tables)
+  for (const auto &[tid, tname]: tables)
   {
-   const std::string &tname = table.second;
-
    out << "    ";
    if (first)
     first = false;
    else
     out << "else ";
 
-   out << "if (table_id == Table_Id(" << table.first << "))\n";
+   out << "if (table_id == Table_Id(" << tid << "))\n";
    out << "     internal_delete_" << tname << "(record_id);\n";
   }
  }
@@ -1157,23 +1130,21 @@ static void generate_readonly_h
  out << "     error(\"insert_into: too big\");\n";
  {
   bool first = true;
-  for (auto &table: tables)
+  for (const auto &[tid, tname]: tables)
   {
-   const std::string &name = table.second;
-
    out << "    ";
    if (first)
     first = false;
    else
     out << "else ";
 
-   out << "if (table_id == Table_Id(" << table.first << "))\n";
+   out << "if (table_id == Table_Id(" << tid << "))\n";
    out << "    {\n";
-   out << "     if (is_valid_record_id_for_" << name << "(record_id))\n";
-   out << "      error(\"Duplicate insert into table " << name << "\");\n";
-   out << "     if (storage_of_" << name << ".size() < size_t(record_id))\n";
-   out << "      storage_of_" << name << ".resize(size_t(record_id));\n";
-   out << "     internal_insert_" << name << "(record_id);\n";
+   out << "     if (is_valid_record_id_for_" << tname << "(record_id))\n";
+   out << "      error(\"Duplicate insert into table " << tname << "\");\n";
+   out << "     if (storage_of_" << tname << ".size() < size_t(record_id))\n";
+   out << "      storage_of_" << tname << ".resize(size_t(record_id));\n";
+   out << "     internal_insert_" << tname << "(record_id);\n";
    out << "    }\n";
   }
  }
@@ -1203,21 +1174,19 @@ static void generate_readonly_h
 
  {
   bool first = true;
-  for (auto &table: tables)
+  for (const auto &[tid, tname]: tables)
   {
-   const std::string &name = table.second;
-
    out << "    ";
    if (first)
     first = false;
    else
     out << "else ";
 
-   out << "if (table_id == Table_Id(" << table.first << "))\n";
+   out << "if (table_id == Table_Id(" << tid << "))\n";
    out << "    {\n";
-   out << "     if (storage_of_" << name << ".size() < size_t(record_id) + size - 1)\n";
-   out << "      storage_of_" << name << ".resize(size_t(record_id) + size - 1);\n";
-   out << "     internal_vector_insert_" << name << "(record_id, size);\n";
+   out << "     if (storage_of_" << tname << ".size() < size_t(record_id) + size - 1)\n";
+   out << "      storage_of_" << tname << ".resize(size_t(record_id) + size - 1);\n";
+   out << "     internal_vector_insert_" << tname << "(record_id, size);\n";
    out << "    }\n";
   }
  }
@@ -1228,9 +1197,9 @@ static void generate_readonly_h
  //
  std::set<Type::Type_Id> db_types;
 
- for (auto &table: tables)
-  for (const auto &field: db.get_fields(table.first))
-   db_types.insert(db.get_field_type(table.first, field.first).get_type_id());
+ for (const auto &[tid, tname]: tables)
+  for (const auto &[fid, fname]: db.get_fields(tid))
+   db_types.insert(db.get_field_type(tid, fid).get_type_id());
 
  //
  // update
@@ -1252,13 +1221,13 @@ static void generate_readonly_h
    out << "   final\n";
    out << "   {\n";
 
-   for (auto &table: tables)
+   for (const auto &[tid, tname]: tables)
    {
     bool has_typed_field = false;
 
-    for (const auto &field: db.get_fields(table.first))
+    for (const auto &[fid, fname]: db.get_fields(tid))
     {
-     const Type &type = db.get_field_type(table.first, field.first);
+     const Type &type = db.get_field_type(tid, fid);
      if (int(type.get_type_id()) == type_id)
      {
       has_typed_field = true;
@@ -1268,18 +1237,18 @@ static void generate_readonly_h
 
     if (has_typed_field)
     {
-     out << "    if (table_id == Table_Id(" << table.first << "))\n";
+     out << "    if (table_id == Table_Id(" << tid << "))\n";
      out << "    {\n";
 
-     for (const auto &field: db.get_fields(table.first))
+     for (const auto &[fid, fname]: db.get_fields(tid))
      {
-      const Type &type = db.get_field_type(table.first, field.first);
+      const Type &type = db.get_field_type(tid, fid);
       if (int(type.get_type_id()) == type_id)
       {
-       out << "     if (field_id == Field_Id(" << field.first << "))\n";
+       out << "     if (field_id == Field_Id(" << fid << "))\n";
        out << "     {\n";
-       out << "      internal_update_" << table.second;
-       out << "__" << field.second << "(record_id, ";
+       out << "      internal_update_" << tname;
+       out << "__" << fname << "(record_id, ";
        if (type.get_type_id() != Type::Type_Id::reference)
         out << "value";
        else
@@ -1323,13 +1292,13 @@ static void generate_readonly_h
    out << "   final\n";
    out << "   {\n";
 
-   for (auto &table: tables)
+   for (const auto &[tid, tname]: tables)
    {
     bool has_typed_field = false;
 
-    for (const auto &field: db.get_fields(table.first))
+    for (const auto &[fid, fname]: db.get_fields(tid))
     {
-     const Type &type = db.get_field_type(table.first, field.first);
+     const Type &type = db.get_field_type(tid, fid);
      if (int(type.get_type_id()) == type_id)
      {
       has_typed_field = true;
@@ -1339,18 +1308,18 @@ static void generate_readonly_h
 
     if (has_typed_field)
     {
-     out << "    if (table_id == Table_Id(" << table.first << "))\n";
+     out << "    if (table_id == Table_Id(" << tid << "))\n";
      out << "    {\n";
 
-     for (const auto &field: db.get_fields(table.first))
+     for (const auto &[fid, fname]: db.get_fields(tid))
      {
-      const Type &type = db.get_field_type(table.first, field.first);
+      const Type &type = db.get_field_type(tid, fid);
       if (int(type.get_type_id()) == type_id)
       {
-       out << "     if (field_id == Field_Id(" << field.first << "))\n";
+       out << "     if (field_id == Field_Id(" << fid << "))\n";
        out << "     {\n";
-       out << "      internal_update_vector_" << table.second;
-       out << "__" << field.second << "(record_id, size, ";
+       out << "      internal_update_vector_" << tname;
+       out << "__" << fname << "(record_id, size, ";
 
        if (type_id != int(joedb::Type::Type_Id::reference))
         out << "value";
@@ -1397,13 +1366,13 @@ static void generate_readonly_h
    out << "   final\n";
    out << "   {\n";
 
-   for (auto &table: tables)
+   for (const auto &[tid, tname]: tables)
    {
     bool has_typed_field = false;
 
-    for (const auto &field: db.get_fields(table.first))
+    for (const auto &[fid, fname]: db.get_fields(tid))
     {
-     const Type &type = db.get_field_type(table.first, field.first);
+     const Type &type = db.get_field_type(tid, fid);
      if (int(type.get_type_id()) == type_id)
      {
       has_typed_field = true;
@@ -1413,24 +1382,24 @@ static void generate_readonly_h
 
     if (has_typed_field)
     {
-     out << "    if (table_id == Table_Id(" << table.first << "))\n";
+     out << "    if (table_id == Table_Id(" << tid << "))\n";
      out << "    {\n";
-     out << "     capacity = size_t(storage_of_" << table.second << ".freedom_keeper.size());\n";
+     out << "     capacity = size_t(storage_of_" << tname << ".freedom_keeper.size());\n";
 
-     for (const auto &field: db.get_fields(table.first))
+     for (const auto &[fid, fname]: db.get_fields(tid))
      {
-      const Type &type = db.get_field_type(table.first, field.first);
+      const Type &type = db.get_field_type(tid, fid);
       if (int(type.get_type_id()) == type_id)
       {
-       out << "     if (field_id == Field_Id(" << field.first << "))\n"
+       out << "     if (field_id == Field_Id(" << fid << "))\n"
            << "     {\n"
            << "      return ";
 
        if (type_id == int(Type::Type_Id::reference))
         out << "reinterpret_cast<Record_Id *>";
 
-       out << "(storage_of_" << table.second;
-       out << ".field_value_of_" << field.second << ".data() + size_t(record_id) - 1);\n"
+       out << "(storage_of_" << tname;
+       out << ".field_value_of_" << fname << ".data() + size_t(record_id) - 1);\n"
            << "     }\n";
       }
      }
@@ -1572,11 +1541,10 @@ static void generate_readonly_h
    }
 )RRR";
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
   out << '\n';
-  const std::string &tname = table.second;
-  const bool single_row = options.get_table_options(table.first).single_row;
+  const bool single_row = options.get_table_options(tid).single_row;
 
   //
   // Declaration of container access
@@ -1619,10 +1587,9 @@ static void generate_readonly_h
   //
   // Loop over fields
   //
-  for (const auto &field: db.get_fields(table.first))
+  for (const auto &[fid, fname]: db.get_fields(tid))
   {
-   const std::string &fname = field.second;
-   const Type &type = db.get_field_type(table.first, field.first);
+   const Type &type = db.get_field_type(tid, fid);
 
    out << '\n';
 
@@ -1865,10 +1832,8 @@ static void generate_readonly_h
  //
  // Plain iteration over tables
  //
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
-
   out << " class container_of_" << tname << "\n";
   out << " {\n";
   out << "  friend class Database;\n";
@@ -2045,9 +2010,8 @@ out << R"RRR(
   "Interpreted_Database"
  };
 
- for (auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  const std::string &tname = table.second;
   type_names.emplace_back("id_of_" + tname);
 
   out << "   typedef " << namespace_string(options.get_name_space());
@@ -2212,14 +2176,14 @@ static void generate_cpp
  {
 )RRR";
 
- for (const auto &table: tables)
+ for (const auto &[tid, tname]: tables)
  {
-  if (options.get_table_options(table.first).single_row)
+  if (options.get_table_options(tid).single_row)
   {
    out << "  {\n";
-   out << "   const auto table = get_" << table.second << "_table();\n";
-   out << "   if (table.first() != the_" <<table.second << "() || table.last() != the_" << table.second << "())\n";
-   out << "    throw joedb::Exception(\"Single-row constraint failure for table " << table.second << "\");\n";
+   out << "   const auto table = get_" << tname << "_table();\n";
+   out << "   if (table.first() != the_" <<tname << "() || table.last() != the_" << tname << "())\n";
+   out << "    throw joedb::Exception(\"Single-row constraint failure for table " << tname << "\");\n";
    out << "  }\n";
   }
  }
@@ -2238,12 +2202,12 @@ static void generate_cpp
   {
 )RRR";
 
-  for (const auto &table: tables)
+  for (const auto &[tid, tname]: tables)
   {
-   if (options.get_table_options(table.first).single_row)
+   if (options.get_table_options(tid).single_row)
    {
-    out << "   if (current_table_id == Table_Id{" << table.first << "})\n";
-    out << "    new_" << table.second << "();\n";
+    out << "   if (current_table_id == Table_Id{" << tid << "})\n";
+    out << "    new_" << tname << "();\n";
    }
   }
 
@@ -2265,26 +2229,26 @@ static void generate_cpp
   Database::add_field(table_id, name, type);
 )RRR";
 
-  for (const auto &table: tables)
+  for (const auto &[tid, tname]: tables)
   {
-   if (db.get_freedom(table.first).size() > 0)
+   if (db.get_freedom(tid).size() > 0)
    {
-    const Record_Id record_id{db.get_freedom(table.first).get_first_used() - 1};
+    const Record_Id record_id{db.get_freedom(tid).get_first_used() - 1};
 
-    out << "\n  if (table_id == Table_Id{" << table.first << "})\n";
+    out << "\n  if (table_id == Table_Id{" << tid << "})\n";
     out << "  {\n";
-    out << "   const auto field_id = ++storage_of_" << table.second << ".current_field_id;\n";
+    out << "   const auto field_id = ++storage_of_" << tname << ".current_field_id;\n";
     out << "   if (upgrading_schema)\n";
     out << "   {\n";
 
-    for (const auto &field: db.get_fields(table.first))
+    for (const auto &[fid, fname]: db.get_fields(tid))
     {
-     out << "    if (field_id == Field_Id{" << field.first  << "})\n";
+     out << "    if (field_id == Field_Id{" << fid  << "})\n";
      out << "    {\n";
-     out << "     for (const auto record: get_" << table.second << "_table())\n";
-     out << "      set_" << field.second << "(record, ";
+     out << "     for (const auto record: get_" << tname << "_table())\n";
+     out << "      set_" << fname << "(record, ";
 
-     const auto &type = db.get_field_type(table.first, field.first);
+     const auto &type = db.get_field_type(tid, fid);
      const bool reference = type.get_type_id() == joedb::Type::Type_Id::reference;
 
      if (reference)
@@ -2295,7 +2259,7 @@ static void generate_cpp
       out << "(";
      }
 
-     joedb::write_value(out, db, nullptr, table.first, record_id, field.first);
+     joedb::write_value(out, db, nullptr, tid, record_id, fid);
 
      if (reference)
       out << ")";

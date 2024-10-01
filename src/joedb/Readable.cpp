@@ -11,9 +11,9 @@ namespace joedb
  Table_Id Readable::find_table(const std::string &name) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  for (const auto &table: get_tables())
-   if (table.second == name)
-    return table.first;
+  for (const auto &[tid, tname]: get_tables())
+   if (tname == name)
+    return tid;
   return Table_Id(0);
  }
 
@@ -23,9 +23,9 @@ namespace joedb
  {
   try
   {
-   for (const auto &field: get_fields(table_id))
-    if (field.second == name)
-     return field.first;
+   for (const auto &[fid, fname]: get_fields(table_id))
+    if (fname == name)
+     return fid;
   }
   catch (const Exception &)
   {
