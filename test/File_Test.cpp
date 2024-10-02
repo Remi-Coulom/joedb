@@ -57,12 +57,13 @@ TEST_F(File_Test, open_failure)
  );
 }
 
-#ifdef JOEDB_FILE_IS_LOCKABLE
-
 #ifndef JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  {
   File locked_file_1("locked.tmp", Open_Mode::create_new);
   locked_file_1.write<int>(1234);
@@ -86,6 +87,9 @@ TEST_F(File_Test, open_lock)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, write_locked)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File locked_file("locked.tmp", Open_Mode::write_lock);
  EXPECT_ANY_THROW(File("locked.tmp", Open_Mode::write_existing));
 }
@@ -93,6 +97,9 @@ TEST_F(File_Test, write_locked)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, lock_head_and_tail)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File file("locked.tmp", Open_Mode::shared_write);
  file.exclusive_lock_head();
  file.exclusive_lock_tail();
@@ -107,6 +114,9 @@ TEST_F(File_Test, lock_head_and_tail)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, shared_lock_head)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File file_1("locked.tmp", Open_Mode::shared_write);
  File file_2("locked.tmp", Open_Mode::shared_write);
  file_1.shared_lock_head();
@@ -119,6 +129,9 @@ TEST_F(File_Test, shared_lock_head)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, partial_exclusive_lock)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File file_1("locked.tmp", Open_Mode::shared_write);
  File file_2("locked.tmp", Open_Mode::shared_write);
  file_1.exclusive_lock(0, 4);
@@ -142,11 +155,14 @@ TEST_F(File_Test, partial_exclusive_lock)
 }
 #endif
 
-#endif
+#endif // JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, reopen_locked)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  { File("new.tmp", Open_Mode::create_new); }
  { File("new.tmp", Open_Mode::write_lock); }
  { File("new.tmp", Open_Mode::write_existing); }
@@ -159,6 +175,9 @@ TEST_F(File_Test, reopen_locked)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, is_shared)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File file("new.tmp", Open_Mode::shared_write);
  EXPECT_TRUE(file.is_shared());
 }
@@ -166,6 +185,9 @@ TEST_F(File_Test, is_shared)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, read_locked)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File locked_file("locked.tmp", Open_Mode::write_lock);
  File readonly_file("locked.tmp", Open_Mode::read_existing);
 }
@@ -173,6 +195,9 @@ TEST_F(File_Test, read_locked)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, share_locked)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File locked_file("locked.tmp", Open_Mode::write_lock);
  File shared_file("locked.tmp", Open_Mode::shared_write);
 }
@@ -180,13 +205,15 @@ TEST_F(File_Test, share_locked)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, partial_shared_lock)
 {
+ if (!joedb::File::lockable)
+  GTEST_SKIP();
+
  File file_1("locked.tmp", Open_Mode::shared_write);
  File file_2("locked.tmp", Open_Mode::shared_write);
  file_1.shared_lock(0, 4);
  file_1.exclusive_lock(4, 4);
  file_2.shared_lock(0, 4);
 }
-#endif
 
 #ifdef JOEDB_FILE_IS_POSIX_FILE
 /////////////////////////////////////////////////////////////////////////////

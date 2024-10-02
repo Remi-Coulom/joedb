@@ -21,6 +21,9 @@
 
 namespace joedb
 {
+ static constexpr size_t open_modes = open_mode_strings.size() -
+  (File::lockable ? 0 : 2);
+
  ////////////////////////////////////////////////////////////////////////////
  void File_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
@@ -36,7 +39,7 @@ namespace joedb
    out << " [file] [--<open_mode>] <file_name>\n";
    out << " <open_mode> is one of:\n";
 
-   for (size_t i = 0; i < open_mode_strings.size(); i++)
+   for (size_t i = 0; i < open_modes; i++)
    {
     const Open_Mode mode = Open_Mode(i);
     if (!include_shared && mode == Open_Mode::shared_write)
@@ -51,6 +54,7 @@ namespace joedb
   }
 
   out << " interpreted [--read] <file_name>\n";
+
 #ifdef JOEDB_HAS_SSH
   out << " sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
 #endif
@@ -229,7 +233,7 @@ namespace joedb
 
    if (arg_index < argc && !default_only)
    {
-    for (size_t i = 0; i < open_mode_strings.size(); i++)
+    for (size_t i = 0; i < open_modes; i++)
     {
      const Open_Mode mode = Open_Mode(i);
      if (!include_shared && mode == Open_Mode::shared_write)

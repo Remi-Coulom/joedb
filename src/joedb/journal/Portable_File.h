@@ -23,6 +23,8 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  {
   public:
+   inline static constexpr bool lockable = false;
+
    Portable_File(const char *file_name, Open_Mode mode):
     Portable_File_Buffer(file_name, mode),
     Stream_File(filebuf, mode)

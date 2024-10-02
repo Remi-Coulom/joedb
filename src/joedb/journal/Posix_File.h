@@ -53,6 +53,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
+   inline static constexpr bool lockable = true;
+
    Posix_File(int fd, Open_Mode mode):
     Posix_FD(fd, mode)
    {

@@ -14,11 +14,9 @@ namespace joedb
  {
   const bool local = true;
 
-#ifdef JOEDB_FILE_IS_LOCKABLE
-  const Open_Mode default_mode = Open_Mode::shared_write;
-#else
-  const Open_Mode default_mode = Open_Mode::write_existing_or_create_new;
-#endif
+  const Open_Mode default_mode = File::lockable
+   ? Open_Mode::shared_write
+   : Open_Mode::write_existing_or_create_new;
 
   Client_Parser client_parser(local, default_mode);
 

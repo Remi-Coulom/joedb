@@ -632,7 +632,6 @@ out << R"RRR(
    }
  };
 
-#ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////
  class Local_Client_Data
  ////////////////////////////////////////////////////////////////////////////
@@ -642,7 +641,7 @@ out << R"RRR(
    joedb::Connection connection;
 
    Local_Client_Data(const char *file_name):
-    file(file_name, joedb::Open_Mode::shared_write)
+    file(file_name, joedb::File::lockable ? joedb::Open_Mode::shared_write : joedb::Open_Mode::write_existing_or_create_new)
    {
    }
  };
@@ -663,7 +662,6 @@ out << R"RRR(
    {
    }
  };
-#endif
 )RRR";
 
  //
