@@ -2,6 +2,7 @@
 #define joedb_File_Parser_declared
 
 #include "joedb/journal/Generic_File.h"
+#include "joedb/journal/File.h"
 
 #ifdef JOEDB_HAS_SSH
 #include "joedb/ssh/Session.h"
@@ -38,7 +39,7 @@ namespace joedb
    ):
     default_open_mode(default_open_mode),
     default_only(default_only),
-#ifdef JOEDBH_FILE_IS_LOCKABLE
+#ifdef JOEDB_FILE_IS_LOCKABLE
     include_shared(include_shared)
 #else
     include_shared(false)
