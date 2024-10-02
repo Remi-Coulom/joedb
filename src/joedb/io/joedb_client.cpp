@@ -2,6 +2,7 @@
 #include "joedb/io/Client_Parser.h"
 #include "joedb/io/Client_Command_Processor.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/journal/File.h"
 
 #include <iostream>
 
@@ -13,7 +14,7 @@ namespace joedb
  {
   const bool local = true;
 
-#if JOEDB_FILE_IS_LOCKABLE
+#ifdef JOEDB_FILE_IS_LOCKABLE
   const Open_Mode default_mode = Open_Mode::shared_write;
 #else
   const Open_Mode default_mode = Open_Mode::write_existing_or_create_new;

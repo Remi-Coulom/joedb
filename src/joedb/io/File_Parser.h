@@ -38,7 +38,11 @@ namespace joedb
    ):
     default_open_mode(default_open_mode),
     default_only(default_only),
+#ifdef JOEDBH_FILE_IS_LOCKABLE
     include_shared(include_shared)
+#else
+    include_shared(false)
+#endif
    {
    }
 
