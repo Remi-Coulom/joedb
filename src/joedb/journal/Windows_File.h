@@ -60,6 +60,7 @@ namespace joedb
  ///////////////////////////////////////////////////////////////////////////
  {
   public:
+   inline static constexpr bool lockable = true;
    Windows_File(const char *file_name, Open_Mode mode);
    Windows_File(const std::string &file_name, Open_Mode mode):
     Windows_File(file_name.c_str(), mode)
