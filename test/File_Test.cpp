@@ -127,6 +127,7 @@ TEST_F(File_Test, shared_lock_head)
 
 #if 1 // This tests causes valgrind to hang
 /////////////////////////////////////////////////////////////////////////////
+#ifndef JOEDB_FILE_IS_PORTABLE_FILE
 TEST_F(File_Test, partial_exclusive_lock)
 {
  if (!joedb::File::lockable)
@@ -153,6 +154,7 @@ TEST_F(File_Test, partial_exclusive_lock)
  sequence.wait_for(2);
  thread.join();
 }
+#endif
 #endif
 
 #endif // JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
@@ -203,6 +205,7 @@ TEST_F(File_Test, share_locked)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+#ifndef JOEDB_FILE_IS_PORTABLE_FILE
 TEST_F(File_Test, partial_shared_lock)
 {
  if (!joedb::File::lockable)
@@ -214,6 +217,7 @@ TEST_F(File_Test, partial_shared_lock)
  file_1.exclusive_lock(4, 4);
  file_2.shared_lock(0, 4);
 }
+#endif
 
 #ifdef JOEDB_FILE_IS_POSIX_FILE
 /////////////////////////////////////////////////////////////////////////////
