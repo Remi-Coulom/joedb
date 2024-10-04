@@ -27,7 +27,7 @@ On-disk containers:
 
 Using SQL from C++
 
-- https://sqlite.org/
+- https://sqlite.org/ (streaming replication with https://github.com/benbjohnson/litestream)
 - https://github.com/rbock/sqlpp11
 - https://www.webtoolkit.eu/wt/doc/tutorial/dbo.html
 - https://codesynthesis.com/products/odb/
@@ -78,6 +78,7 @@ Other links:
 - https://www.reddit.com/r/programming/comments/3tfkdq/immutability_in_db_might_be_the_next_big_thing/
 - https://www.youtube.com/watch?v=fU9hR3kiOK0
 - `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
+- `The SQLite team is preparing an efficient remote replication tool <https://www.reddit.com/r/programming/comments/1fvp9dz/the_sqlite_team_is_preparing_an_efficient_remote/>`_
 
 Crash resistance:
 

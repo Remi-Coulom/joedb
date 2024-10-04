@@ -145,13 +145,13 @@ Concurrency
 Use case: log with safe real-time remote backup
 -----------------------------------------------
 
- - log rotation, ability to delete or compress early part of the log:
+- log rotation, ability to delete or compress early part of the log:
 
-   - multi-part file
-   - keeps a table with all parts
-   - keep first part as schema definition + checkpoint
-   - skip deleted parts when reading
-   - option to compress a part at rotation time
+  - multi-part file
+  - keeps a table with all parts
+  - keep first part as schema definition + checkpoint
+  - skip deleted parts when reading
+  - option to compress a part at rotation time
 
 - Asynchronous Server Connection (for tamper-proof log backup)
 
