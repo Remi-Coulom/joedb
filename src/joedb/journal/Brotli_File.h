@@ -14,7 +14,7 @@ namespace joedb
  {
   protected:
    Brotli_Codec codec;
-   encoded_file::File_Database db;
+   db::encoded_file::File_Database db;
 
   public:
    Brotli_File_Data(const char *file_name);
@@ -35,7 +35,7 @@ namespace joedb
   protected:
    Brotli_Codec codec;
    File file;
-   encoded_file::Readonly_Database db;
+   db::encoded_file::Readonly_Database db;
 
   public:
    Readonly_Brotli_File_Data(const char *file_name);

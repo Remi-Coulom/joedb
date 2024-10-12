@@ -1,4 +1,4 @@
-#include "joedb/db/multi_server_readonly.h"
+#include "joedb/db/multi_server/readonly.h"
 #include "joedb/journal/Readonly_Interpreted_File.h"
 
 #include "gtest/gtest.h"
@@ -7,7 +7,7 @@
 TEST(Compiler, Interpreted_Database)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::multi_server::Generic_Readonly_Database db
+ joedb::db::multi_server::Generic_Readonly_Database db
  (
   joedb::Readonly_Interpreted_File("multi_server.joedbi")
  );

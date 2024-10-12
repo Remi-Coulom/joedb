@@ -1,1 +1,1 @@
-namespace joedb::encoded_file
+namespace joedb::db::encoded_file

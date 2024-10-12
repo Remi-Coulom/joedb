@@ -1,4 +1,4 @@
-#include "benchmarkdb.h"
+#include "benchmarkdb/writable.h"
 #include <cstdio>
 
 int main(int argc, char **argv)

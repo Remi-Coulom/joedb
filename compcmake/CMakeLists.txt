@@ -131,7 +131,8 @@ if(GTest_FOUND)
  endif()
 
  joedb_add_executable(joedb_test
-  ../doc/source/tutorial/settings.cpp
+  ../doc/source/tutorial/settings/readonly.cpp
+  ../doc/source/tutorial/settings/writable.cpp
   ../test/Async_Test.cpp
   ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp
@@ -272,12 +273,14 @@ endforeach(mode)
 # Targets below require databases to be compiled
 #############################################################################
 joedb_add_executable(tutorial
- ../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial/readonly.cpp
+ ../doc/source/tutorial/tutorial/writable.cpp
  ../doc/source/tutorial/tutorial_main.cpp
 )
 
 add_executable(minimal_tutorial
- ../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial/readonly.cpp
+ ../doc/source/tutorial/tutorial/writable.cpp
  ../doc/source/tutorial/tutorial_main.cpp
  ../src/joedb/compiler/minimal_runtime.cpp
  ../src/joedb/io/main_exception_catcher.cpp
@@ -286,36 +289,35 @@ add_executable(minimal_tutorial
 
 if (NOT JOEDB_PORTABLE)
  joedb_add_executable(local_concurrency
-  ../doc/source/tutorial/tutorial.cpp
+  ../doc/source/tutorial/tutorial/readonly.cpp
+  ../doc/source/tutorial/tutorial/writable.cpp
   ../doc/source/tutorial/local_concurrency.cpp
  )
 endif()
 
 joedb_add_executable(concurrency_tutorial
- ../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial/readonly.cpp
+ ../doc/source/tutorial/tutorial/writable.cpp
  ../doc/source/tutorial/concurrency_tutorial.cpp
 )
 
 joedb_add_executable(step_by_step_replay
- ../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial/readonly.cpp
+ ../doc/source/tutorial/tutorial/writable.cpp
  ../doc/source/tutorial/step_by_step_replay.cpp
 )
 
 joedb_add_executable(file_tutorial
- ../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial/readonly.cpp
+ ../doc/source/tutorial/tutorial/writable.cpp
  ../doc/source/tutorial/file_tutorial.cpp
 )
 
 joedb_add_executable(index_tutorial
- ../doc/source/tutorial/tutorial.cpp
+ ../doc/source/tutorial/tutorial/readonly.cpp
+ ../doc/source/tutorial/tutorial/writable.cpp
  ../doc/source/tutorial/index_tutorial.cpp
 )
-
-#joedb_add_executable(wrapper_tutorial
-# ../doc/source/tutorial/tutorial.cpp
-# ../doc/source/tutorial/tutorial_wrapper.cpp
-# ../doc/source/tutorial/tutorial_main.c
-#)
 
 joedb_add_executable(joedb_generate_translation_header
  ../test/compiler/db/test.cpp
@@ -323,7 +325,8 @@ joedb_add_executable(joedb_generate_translation_header
 )
 
 joedb_add_executable(joedbc_insert
- ../benchmark/benchmarkdb.cpp
+ ../benchmark/benchmarkdb/readonly.cpp
+ ../benchmark/benchmarkdb/writable.cpp
  ../benchmark/joedbc_insert.cpp
 )
 

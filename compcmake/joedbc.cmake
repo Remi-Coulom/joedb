@@ -88,10 +88,10 @@ function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  add_custom_command(
   OUTPUT
-   ${dir}/${namespace}_readonly.cpp
-   ${dir}/${namespace}_readonly.h
-   ${dir}/${namespace}.cpp
-   ${dir}/${namespace}.h
+   ${dir}/${namespace}/readonly.cpp
+   ${dir}/${namespace}/readonly.h
+   ${dir}/${namespace}/writable.cpp
+   ${dir}/${namespace}/writable.h
   COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc
   DEPENDS
    joedbc
@@ -101,8 +101,10 @@ function(joedbc_build_absolute dir namespace)
  )
  add_custom_target(compile_${namespace}_with_joedbc
   DEPENDS
-   ${dir}/${namespace}.cpp
-   ${dir}/${namespace}.h
+   ${dir}/${namespace}/readonly.cpp
+   ${dir}/${namespace}/readonly.h
+   ${dir}/${namespace}/writable.cpp
+   ${dir}/${namespace}/writable.h
  )
  add_dependencies(all_joedbc compile_${namespace}_with_joedbc)
 endfunction()

@@ -2,7 +2,7 @@
 #define joedb_Encoded_File_declared
 
 #include "joedb/journal/Readonly_Encoded_File.h"
-#include "joedb/db/encoded_file.h"
+#include "joedb/db/encoded_file/writable.h"
 
 namespace joedb
 {
@@ -11,7 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   encoded_file::Generic_File_Database &db;
+   db::encoded_file::Generic_File_Database &db;
 
    static constexpr size_t write_buffer_total_size = 1 << 20;
    std::vector<char> write_buffer;
@@ -38,7 +38,7 @@ namespace joedb
    Encoded_File
    (
     Codec &codec,
-    encoded_file::Generic_File_Database &db
+    db::encoded_file::Generic_File_Database &db
    );
 
    int64_t get_size() const override;

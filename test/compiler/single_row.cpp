@@ -1,4 +1,4 @@
-#include "../../doc/source/tutorial/settings.h"
+#include "../../doc/source/tutorial/settings/writable.h"
 
 #include <gtest/gtest.h>
 

@@ -14,7 +14,7 @@ namespace joedb
  {
   Identity_Codec codec;
   Memory_File db_file;
-  encoded_file::Generic_File_Database db(db_file);
+  db::encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
 
   file.seek(0);
@@ -44,7 +44,7 @@ namespace joedb
   Memory_File db_file;
 
   {
-   encoded_file::Generic_File_Database db(db_file);
+   db::encoded_file::Generic_File_Database db(db_file);
    Encoded_File file(codec, db);
 
    EXPECT_EQ(file.get_size(), 0);
@@ -68,7 +68,7 @@ namespace joedb
   }
 
   {
-   encoded_file::Generic_File_Database db(db_file);
+   db::encoded_file::Generic_File_Database db(db_file);
    Encoded_File file(codec, db);
    EXPECT_EQ(file.get_size(), 8);
    EXPECT_EQ(file.read<int8_t>(), 0x04);
@@ -84,7 +84,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File db_file;
-  encoded_file::Generic_File_Database db(db_file);
+  db::encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
 
   const size_t N = 10000;

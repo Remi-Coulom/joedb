@@ -1,1 +1,1 @@
-namespace joedb::multi_server
+namespace joedb::db::multi_server

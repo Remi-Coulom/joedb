@@ -62,7 +62,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Codec &codec,
-  encoded_file::Database &db,
+  db::encoded_file::Database &db,
   Blob_Reader &blob_reader,
   Open_Mode mode
  ):
@@ -79,7 +79,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Codec &codec,
-  encoded_file::Database &db,
+  db::encoded_file::Database &db,
   Blob_Reader &blob_reader
  ):
   Readonly_Encoded_File(codec, db, blob_reader, Open_Mode::read_existing)

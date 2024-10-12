@@ -15,6 +15,7 @@
 
 #include <fstream>
 #include <set>
+#include <filesystem>
 
 using namespace joedb;
 
@@ -157,12 +158,12 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 
  namespace_include_guard(out, "Database", options.get_name_space());
 
- out << '\n';
- out << "#include \"" << options.get_name_space().back() << "_readonly.h\"\n";
- out << "#include \"joedb/concurrency/Client.h\"\n";
- out << "#include \"joedb/concurrency/Connection.h\"\n";
- out << "#include \"joedb/Span.h\"\n";
- out << '\n';
+ out << R"RRR(
+#include "readonly.h"
+#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Connection.h"
+#include "joedb/Span.h"
+)RRR";
 
  namespace_open(out, options.get_name_space());
 
@@ -2039,8 +2040,7 @@ static void generate_readonly_cpp
  const std::vector<char> &schema
 )
 {
- const std::vector<std::string> &ns = options.get_name_space();
- out << "#include \"" << ns.back() << "_readonly.h\"\n";
+ out << "#include \"readonly.h\"\n";
 
  namespace_open(out, options.get_name_space());
 
@@ -2063,10 +2063,8 @@ static void generate_cpp
 {
  const auto &db = options.get_db();
  const auto &tables = db.get_tables();
- const std::string &file_name = options.get_name_space().back();
 
- out << "#include \"" << file_name << "_readonly.cpp\"\n";
- out << "#include \"" << file_name << ".h\"\n";
+ out << "#include \"writable.h\"\n";
  out << "#include \"joedb/Writable.h\"\n";
  out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
  out << '\n';
@@ -2388,10 +2386,13 @@ static int joedbc_main(int argc, char **argv)
  //
  // Generate code
  //
+ const std::string dir_name = compiler_options.get_name_space().back();
+ std::filesystem::create_directory(dir_name);
+
  {
   std::ofstream h_file
   (
-   compiler_options.get_name_space().back() + "_readonly.h",
+   compiler_options.get_name_space().back() + "/readonly.h",
    std::ios::trunc
   );
   write_initial_comment(h_file, compiler_options, exe_path);
@@ -2400,7 +2401,7 @@ static int joedbc_main(int argc, char **argv)
  {
   std::ofstream cpp_file
   (
-   compiler_options.get_name_space().back() + "_readonly.cpp",
+   compiler_options.get_name_space().back() + "/readonly.cpp",
    std::ios::trunc
   );
   write_initial_comment(cpp_file, compiler_options, exe_path);
@@ -2409,7 +2410,7 @@ static int joedbc_main(int argc, char **argv)
  {
   std::ofstream h_file
   (
-   compiler_options.get_name_space().back() + ".h",
+   compiler_options.get_name_space().back() + "/writable.h",
    std::ios::trunc
   );
   write_initial_comment(h_file, compiler_options, exe_path);
@@ -2418,7 +2419,7 @@ static int joedbc_main(int argc, char **argv)
  {
   std::ofstream cpp_file
   (
-   compiler_options.get_name_space().back() + ".cpp",
+   compiler_options.get_name_space().back() + "/writable.cpp",
    std::ios::trunc
   );
   write_initial_comment(cpp_file, compiler_options, exe_path);
