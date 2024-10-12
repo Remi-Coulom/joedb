@@ -1,5 +1,5 @@
 #!/bin/bash
-NDK=~/android-ndk-r26b
+NDK=~/android-ndk-r27b
 ABI=arm64-v8a
 MINSDKVERSION=29
 cmake \
