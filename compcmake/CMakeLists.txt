@@ -173,13 +173,20 @@ if(GTest_FOUND)
   ../test/compiler/Readonly_Client.cpp
   ../test/compiler/single_row.cpp
   ../test/compiler/translation.h
-  ../test/compiler/db/blob.cpp
-  ../test/compiler/db/test.cpp
-  ../test/compiler/db/multi_index.cpp
-  ../test/compiler/db/schema_v1.cpp
-  ../test/compiler/db/schema_v2.cpp
-  ../test/compiler/db/vector_test.cpp
-  ../test/compiler/db/empty.cpp
+  ../test/compiler/db/blob/readonly.cpp
+  ../test/compiler/db/blob/writable.cpp
+  ../test/compiler/db/empty/readonly.cpp
+  ../test/compiler/db/empty/writable.cpp
+  ../test/compiler/db/multi_index/readonly.cpp
+  ../test/compiler/db/multi_index/writable.cpp
+  ../test/compiler/db/schema_v1/readonly.cpp
+  ../test/compiler/db/schema_v1/writable.cpp
+  ../test/compiler/db/schema_v2/readonly.cpp
+  ../test/compiler/db/schema_v2/writable.cpp
+  ../test/compiler/db/test/readonly.cpp
+  ../test/compiler/db/test/writable.cpp
+  ../test/compiler/db/vector_test/readonly.cpp
+  ../test/compiler/db/vector_test/writable.cpp
   ../test/compiler/db/test_dbname_base64.cpp
   ../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/io/base64_decode.cpp
@@ -221,13 +228,13 @@ if (asio_FOUND)
  endif()
 endif()
 
-joedbc_build(../test/compiler/db test)
-joedbc_build(../test/compiler/db schema_v1)
-joedbc_build(../test/compiler/db schema_v2)
-joedbc_build(../test/compiler/db vector_test)
-joedbc_build(../test/compiler/db multi_index)
 joedbc_build(../test/compiler/db empty)
 joedbc_build(../test/compiler/db blob)
+joedbc_build(../test/compiler/db multi_index)
+joedbc_build(../test/compiler/db schema_v1)
+joedbc_build(../test/compiler/db schema_v2)
+joedbc_build(../test/compiler/db test)
+joedbc_build(../test/compiler/db vector_test)
 joedbc_build(../benchmark benchmarkdb)
 joedbc_build(../doc/source/tutorial tutorial)
 joedbc_build(../doc/source/tutorial settings)
@@ -320,7 +327,8 @@ joedb_add_executable(index_tutorial
 )
 
 joedb_add_executable(joedb_generate_translation_header
- ../test/compiler/db/test.cpp
+ ../test/compiler/db/test/readonly.cpp
+ ../test/compiler/db/test/writable.cpp
  ../test/compiler/generate_translation_header.cpp
 )
 
@@ -331,7 +339,8 @@ joedb_add_executable(joedbc_insert
 )
 
 joedb_add_executable(update_large_string
- ../test/compiler/db/schema_v1.cpp
+ ../test/compiler/db/schema_v1/readonly.cpp
+ ../test/compiler/db/schema_v1/writable.cpp
  ../test/compiler/update_large_string.cpp
 )
 

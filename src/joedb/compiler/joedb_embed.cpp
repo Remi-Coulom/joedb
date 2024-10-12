@@ -68,7 +68,7 @@ int main(int argc, char **argv)
   }
 
   cpp << "#include \"" << file_name.str() << ".h\"\n";
-  cpp << "#include \"" << name_space.back() << "_readonly.h\"\n";
+  cpp << "#include \"" << name_space.back() << "/readonly.h\"\n";
   cpp << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   if (mode == base64)
    cpp << "#include \"joedb/io/base64.h\"\n";

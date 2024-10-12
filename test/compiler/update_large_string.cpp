@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "db/schema_v1.h"
+#include "db/schema_v1/writable.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main()

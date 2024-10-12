@@ -1,4 +1,4 @@
-#include "db/blob.h"
+#include "db/blob/writable.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"

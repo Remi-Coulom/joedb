@@ -1,6 +1,6 @@
 #include "db/test_dbname_base64.h"
 #include "db/test_dbname_ascii.h"
-#include "db/test.h"
+#include "db/test/readonly.h"
 
 #include "gtest/gtest.h"
 
