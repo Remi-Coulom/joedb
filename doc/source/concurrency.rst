@@ -55,11 +55,11 @@ available connections.
 Plain ``Connection``
 ^^^^^^^^^^^^^^^^^^^^
 
-The ``Connection`` superclass does not connect to anything, but it can still be
-used to synchronize access to the database file. Multiple clients can use the
-plain connection to open the same file at the same time. If the file was opened
-with ``joedb::Open_Mode::shared_write``, clients can start write transactions
-simultaneously, and the connection will use file locking to synchronize them.
+The ``Connection`` superclass does not connect to anything. Such a connection
+can be used in a client to handle concurrent access to a local file. If the
+file was opened with ``joedb::Open_Mode::shared_write``, clients can start
+write transactions simultaneously, and the connection will use file locking to
+synchronize them.
 
 :ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
 creates the connection and the client in a single line of code. Here is an
@@ -81,7 +81,8 @@ concurrently.
 cases:
 
  - ``File_Connection`` can be used to make a safe and clean copy of a database
-   that is being used or contains a dirty uncheckpointed transaction.
+   that contains a transaction that was not checkpointed, either because the
+   database is currently being written to, or because of a previous crash.
  - ``File_Connection`` can be used to convert between different file formats.
    For instance, pushing a plain joedb file to a brotli ``Encoded_File`` will
    create a compressed database.
