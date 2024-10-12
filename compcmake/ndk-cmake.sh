@@ -39,10 +39,11 @@ cmake \
 # redfin:/data/local/tmp/joedb $
 
 # upload binaries with adb:
+# adb push libjoedb_for_joedbc.so /data/local/tmp/joedb
 # adb push libjoedb.so /data/local/tmp/joedb
 # adb push joedbi /data/local/tmp/joedb
 
 # configure and run in adb shell:
-# redfin:/data/local/tmp/joedb $ chhmod a+x ./joedbi ./libjoedb.so
+# redfin:/data/local/tmp/joedb $ chmod a+x ./joedbi ./*.so
 # redfin:/data/local/tmp/joedb $ export LD_LIBRARY_PATH=.
 # redfin:/data/local/tmp/joedb $ echo "about" | ./joedbi
