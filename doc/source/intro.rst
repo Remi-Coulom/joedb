@@ -86,18 +86,12 @@ This tutorial database can be compiled into C++ source code with :ref:`joedbc`:
 
     joedbc tutorial.joedbi tutorial.joedbc
 
-This will produce ``tutorial.h`` and ``tutorial.cpp``, two files that can be
-used to manipulate data conveniently in C++, as shown in the
+This will produce various source files in the ``tutorial`` directory, that can
+be used to manipulate data conveniently in C++, as shown in the
 ``tutorial_main.cpp`` source file:
 
 .. literalinclude:: ./tutorial/tutorial_main.cpp
    :language: c++
-
-This program can be compiled with this command:
-
-.. code-block:: bash
-
-    c++ -o tutorial tutorial_main.cpp tutorial.cpp -ljoedb
 
 Running the resulting program will produce this output:
 
