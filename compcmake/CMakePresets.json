@@ -1,0 +1,36 @@
+{
+ "version": 6,
+ "configurePresets":
+ [
+  {
+   "name": "gcc_dev",
+   "generator": "Ninja",
+   "binaryDir": "./${presetName}",
+   "cacheVariables":
+   {
+    "CMAKE_CXX_COMPILER": "g++",
+    "CMAKE_BUILD_TYPE": "Dev"
+   }
+  },
+  {
+   "name": "gcc_release",
+   "generator": "Ninja",
+   "binaryDir": "./${presetName}",
+   "cacheVariables":
+   {
+    "CMAKE_CXX_COMPILER": "g++",
+    "CMAKE_BUILD_TYPE": "Release"
+   }
+  },
+  {
+   "name": "clang_release",
+   "generator": "Ninja",
+   "binaryDir": "./${presetName}",
+   "cacheVariables":
+   {
+    "CMAKE_CXX_COMPILER": "clang++",
+    "CMAKE_BUILD_TYPE": "Release"
+   }
+  }
+ ]
+}

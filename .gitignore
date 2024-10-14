@@ -7,3 +7,4 @@ oprofile_data
 .cache
 perf.data
 perf.data.old
+.vscode
