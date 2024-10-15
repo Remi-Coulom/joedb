@@ -3,6 +3,16 @@
  "configurePresets":
  [
   {
+   "name": "gcc_debug",
+   "generator": "Ninja",
+   "binaryDir": "./${presetName}",
+   "cacheVariables":
+   {
+    "CMAKE_CXX_COMPILER": "g++",
+    "CMAKE_BUILD_TYPE": "Debug"
+   }
+  },
+  {
    "name": "gcc_dev",
    "generator": "Ninja",
    "binaryDir": "./${presetName}",
