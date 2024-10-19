@@ -155,6 +155,7 @@ if(GTest_FOUND)
   ../test/get_time_string_Test.cpp
   ../test/Selective_Writable_Test.cpp
   ../test/Signal_Test.cpp
+  ../test/ssh_Test.cpp
   ../test/Client_Test.cpp
   ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp

@@ -74,6 +74,43 @@ namespace joedb
   };
 
   ///////////////////////////////////////////////////////////////////////////
+  class Imported_Key
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   private:
+    ssh_key key;
+
+   public:
+    Imported_Key(const char *b64_key, const char *passphrase): key(nullptr)
+    {
+     ssh_pki_import_privkey_base64
+     (
+      b64_key,
+      passphrase,
+      nullptr,
+      nullptr,
+      &key
+     );
+
+     if (key == nullptr)
+      throw joedb::Exception("Could not import private key");
+    }
+
+    Imported_Key(const Imported_Key &) = delete;
+    Imported_Key &operator=(const Imported_Key &) = delete;
+
+    ssh_key get() const
+    {
+     return key;
+    }
+
+    ~Imported_Key()
+    {
+     ssh_key_free(key);
+    }
+  };
+
+  ///////////////////////////////////////////////////////////////////////////
   class Session: public Session_Connection
   ///////////////////////////////////////////////////////////////////////////
   {
@@ -82,12 +119,22 @@ namespace joedb
     (
      const std::string &user,
      const std::string &host,
-     unsigned port,
-     int verbosity
+     const unsigned port,
+     const int verbosity,
+     const char * const b64_key = nullptr,
+     const char * const passphrase = nullptr
     ):
      Session_Connection(user.c_str(), host.c_str(), port, verbosity)
     {
-     check_result(ssh_userauth_publickey_auto(session, nullptr, nullptr));
+     if (b64_key)
+     {
+      const Imported_Key key(b64_key, passphrase);
+      check_result(ssh_userauth_publickey(session, user.c_str(), key.get()));
+     }
+     else
+     {
+      check_result(ssh_userauth_publickey_auto(session, nullptr, passphrase));
+     }
     }
   };
  }
