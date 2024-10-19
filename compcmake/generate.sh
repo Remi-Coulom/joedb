@@ -11,7 +11,7 @@ fi
 if [ "$1" == "--vcpkg" ]; then
  shift
  vcpkg_toolchain="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
- vcpkg="-DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+ vcpkg="-DCMAKE_TOOLCHAIN_FILE=$vcpkg_toolchain"
 fi
 
 config="$1"
