@@ -701,7 +701,8 @@ static void generate_readonly_h
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Compiler_Options &options
+ const Compiler_Options &options,
+ const std::vector<char> &schema
 )
 {
  const Database_Schema &db = options.get_db();
@@ -748,8 +749,9 @@ static void generate_readonly_h
  using joedb::Field_Id;
 
  extern const char * schema_string;
- extern const size_t schema_string_size;
+ inline constexpr size_t schema_string_size =
 )RRR";
+ out << schema.size() << ";\n";
 
  for (const auto &[tid, tname]: tables)
   out << " class container_of_" << tname << ";\n";
@@ -2047,8 +2049,6 @@ static void generate_readonly_cpp
  out << " const char * schema_string = ";
  write_string(out, std::string(schema.data(), schema.size()));
  out << ";\n";
- out << " const size_t schema_string_size = " << schema.size();
- out << ";\n";
 
  namespace_close(out, options.get_name_space());
 }
@@ -2396,7 +2396,7 @@ static int joedbc_main(int argc, char **argv)
    std::ios::trunc
   );
   write_initial_comment(h_file, compiler_options, exe_path);
-  generate_readonly_h(h_file, compiler_options);
+  generate_readonly_h(h_file, compiler_options, schema_file.get_data());
  }
  {
   std::ofstream cpp_file
