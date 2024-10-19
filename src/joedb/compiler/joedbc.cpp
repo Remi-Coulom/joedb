@@ -749,8 +749,7 @@ static void generate_readonly_h
  using joedb::Field_Id;
 
  extern const char * schema_string;
- inline constexpr size_t schema_string_size =
-)RRR";
+ inline constexpr size_t schema_string_size = )RRR";
  out << schema.size() << ";\n";
 
  for (const auto &[tid, tname]: tables)
