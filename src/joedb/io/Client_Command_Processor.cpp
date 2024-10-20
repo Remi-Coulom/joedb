@@ -23,9 +23,9 @@ namespace joedb
 
   out << client_checkpoint;
   if (client_checkpoint < server_checkpoint)
-   out << '+' << server_checkpoint - client_checkpoint;
+   out << '+' << server_checkpoint - client_checkpoint << ")(you can pull";
   else if (server_checkpoint < client_checkpoint)
-   out << '-' << client_checkpoint - server_checkpoint;
+   out << '-' << client_checkpoint - server_checkpoint << ")(you can push";
 
   out << ')';
  }
