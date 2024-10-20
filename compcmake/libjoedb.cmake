@@ -25,7 +25,6 @@ set(JOEDB_SOURCES
 )
 
 set(JOEDB_DATABASES
- ${JOEDB_SRC_DIR}/joedb/db/encoded_file/readonly.cpp
  ${JOEDB_SRC_DIR}/joedb/db/encoded_file/writable.cpp
  ${JOEDB_SRC_DIR}/joedb/db/multi_server/readonly.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp

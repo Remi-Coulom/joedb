@@ -2063,6 +2063,7 @@ static void generate_cpp
  const auto &db = options.get_db();
  const auto &tables = db.get_tables();
 
+ out << "#include \"readonly.cpp\"\n";
  out << "#include \"writable.h\"\n";
  out << "#include \"joedb/Writable.h\"\n";
  out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
