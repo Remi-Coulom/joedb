@@ -127,6 +127,8 @@ Concurrency
     - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
   - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
+  - support for log rotation: https://stackoverflow.com/questions/53188731/logging-compatibly-with-logrotate
+  - write log as joedb file?
   - get rid of signal. Make an interactive command-line interface to control
     the server. Maybe better: use asio's (non-std::net) support for signal.
 
