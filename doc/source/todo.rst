@@ -40,6 +40,10 @@ For next release
 
  - Add support for vcpkg
 
+ - non-durable transactions that do not break durability -> switch
+   checkpoints only after durable transaction, use negative value for
+   non-durable checkpoint.
+
 New Operations and Types
 ------------------------
 - Add an ``undo`` operation to the log. This way, it is possible to keep all
