@@ -11,6 +11,12 @@ Database software with history
 - https://github.com/attic-labs/noms (inactive) a git-like database
 - https://github.com/dolthub/dolt "git for data"
 
+Streaming replication, continuous archiving, point-in-time recovery
+
+- https://www.postgresql.org/docs/current/warm-standby.html
+- https://www.postgresql.org/docs/current/continuous-archiving.html
+- https://github.com/benbjohnson/litestream
+
 Structured data storage (no history, no durable incremental update):
 
 - https://developers.google.com/protocol-buffers/
@@ -27,7 +33,7 @@ On-disk containers:
 
 Using SQL from C++
 
-- https://sqlite.org/ (streaming replication with https://github.com/benbjohnson/litestream)
+- https://sqlite.org/ (non-durable transactions: https://www.sqlite.org/wal.html#fast)
 - https://github.com/rbock/sqlpp11
 - https://www.webtoolkit.eu/wt/doc/tutorial/dbo.html
 - https://codesynthesis.com/products/odb/
