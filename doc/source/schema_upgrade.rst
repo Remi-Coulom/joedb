@@ -53,7 +53,7 @@ programmer has to implement.
    Generic_File_Database &db
   )
   {
-   auto english = db.new_language("English", "en");
+   const auto english = db.new_language("English", "en");
    for (auto person: db.get_person_table())
     db.set_preferred_language(person, english);
   } 
