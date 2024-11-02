@@ -43,18 +43,6 @@ namespace joedb::generator
   friend class Client_Data;
   friend class Client;
 
-  protected:
-   void error(const char *message) override
-   {
-    if (ready_to_write)
-    {
-     write_timestamp();
-     write_comment(message);
-     journal.flush();
-    }
-    Database::error(message);
-   }
-
   private:
    joedb::Writable_Journal journal;
    bool ready_to_write;
