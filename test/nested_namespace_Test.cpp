@@ -40,7 +40,7 @@ TEST(nested_namespace, namespace_open)
  auto n = joedb::split_namespace("split::this::name");
  std::ostringstream out;
  joedb::namespace_open(out, n);
- EXPECT_EQ("namespace split {namespace this {namespace name {\n", out.str());
+ EXPECT_EQ("namespace split::this::name\n{", out.str());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ TEST(nested_namespace, namespace_close)
  auto n = joedb::split_namespace("split::this::name");
  std::ostringstream out;
  joedb::namespace_close(out, n);
- EXPECT_EQ("}}}\n", out.str());
+ EXPECT_EQ("}\n", out.str());
 }
 
 /////////////////////////////////////////////////////////////////////////////
