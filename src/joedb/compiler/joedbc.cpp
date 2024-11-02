@@ -19,6 +19,8 @@
 #include "joedb/compiler/generator/File_Database_h.h"
 #include "joedb/compiler/generator/writable_cpp.h"
 
+#include "joedb/compiler/generator/Client_h.h"
+
 #include <fstream>
 #include <filesystem>
 
@@ -36,8 +38,8 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  out << R"RRR(
 #include "readonly.h"
 #include "File_Database.h"
-#include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Connection.h"
+#include "Client.h"
+
 )RRR";
 
  namespace_open(out, options.get_name_space());
@@ -46,105 +48,6 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
  // Concurrency
  //
  out << R"RRR(
- ////////////////////////////////////////////////////////////////////////////
- class Client_Data: public joedb::Client_Data
- ////////////////////////////////////////////////////////////////////////////
- {
-  friend class Client;
-
-  private:
-   Generic_File_Database db;
-
-  public:
-   Client_Data
-   (
-    joedb::Generic_File &file,
-    joedb::Readonly_Journal::Check check,
-    joedb::Commit_Level commit_level
-   ):
-    db(file, false, check, commit_level)
-   {
-   }
-
-   bool is_readonly() const final
-   {
-    return false;
-   }
-
-   joedb::Writable_Journal &get_writable_journal() final
-   {
-    return db.journal;
-   }
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Client:
- ////////////////////////////////////////////////////////////////////////////
-  private Client_Data,
-  public joedb::Client,
-  public joedb::Blob_Reader
- {
-  private:
-   int64_t schema_checkpoint;
-
-   void play_journal_and_throw_if_schema_changed()
-   {
-    db.play_journal();
-    if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
-     throw joedb::Exception("Can't upgrade schema during pull");
-    db.check_single_row();
-   }
-
-  public:
-   Client
-   (
-    joedb::Generic_File &file,
-    joedb::Connection &connection,
-    bool content_check = true,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
-    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
-   ):
-    Client_Data(file, check, commit_level),
-    joedb::Client(*static_cast<Client_Data *>(this), connection, content_check)
-   {
-    if (get_checkpoint_difference() > 0)
-     push_unlock();
-
-    db.play_journal(); // makes transaction shorter if db is big
-    joedb::Client::transaction([this](joedb::Client_Data &data){
-     db.initialize();
-    });
-
-    schema_checkpoint = db.schema_journal.get_checkpoint_position();
-   }
-
-   const Database &get_database() const
-   {
-    return db;
-   }
-
-   std::string read_blob_data(joedb::Blob blob) final
-   {
-    return db.read_blob_data(blob);
-   }
-
-   int64_t pull()
-   {
-    const int64_t result = joedb::Client::pull();
-    play_journal_and_throw_if_schema_changed();
-    return result;
-   }
-
-   template<typename F> void transaction(F transaction)
-   {
-    joedb::Client::transaction([&](joedb::Client_Data &data)
-    {
-     play_journal_and_throw_if_schema_changed();
-     transaction(db);
-    });
-   }
- };
-
  ////////////////////////////////////////////////////////////////////////////
  class Local_Client_Data
  ////////////////////////////////////////////////////////////////////////////
@@ -478,6 +381,8 @@ static int joedbc_main(int argc, char **argv)
  generator::Generic_File_Database_cpp(options).generate();
  generator::File_Database_h(options).generate();
  generator::writable_cpp(options).generate();
+
+ generator::Client_h(options).generate();
 
  return 0;
 }
