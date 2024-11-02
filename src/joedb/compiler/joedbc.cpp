@@ -13,7 +13,7 @@
 #include "joedb/get_version.h"
 #include "joedb/interpreter/Database.h"
 
-#include "joedb/compiler/generator/Database_h.h"
+#include "joedb/compiler/generator/Generic_File_Database_h.h"
 
 #include <fstream>
 #include <set>
@@ -2430,7 +2430,7 @@ static int joedbc_main(int argc, char **argv)
   generate_cpp(cpp_file, options);
  }
 
- generator::Database_h(options).generate();
+ generator::Generic_File_Database_h(options).generate();
 
  return 0;
 }

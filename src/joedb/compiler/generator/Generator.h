@@ -13,7 +13,13 @@ namespace joedb::generator
    const Compiler_Options &options;
    std::ofstream out;
 
+   bool db_has_values() const;
+
    void write_initial_comment();
+   void write_type(Type type, bool return_type, bool setter_type);
+   const char *get_type_string(Type type);
+   const char *get_cpp_type_string(Type type);
+   const char *get_storage_type_string(Type type);
 
   public:
    Generator
@@ -23,7 +29,8 @@ namespace joedb::generator
     const Compiler_Options &options
    );
 
-   virtual void generate();
+   virtual void generate() = 0;
+
    virtual ~Generator();
  };
 }

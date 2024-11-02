@@ -8,6 +8,18 @@
 namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
+ bool Generator::db_has_values() const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (const auto &[tid, tname]: options.db.get_tables())
+  {
+   if (options.db.get_freedom(tid).size() > 0)
+    return true;
+  }
+  return false;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Generator::write_initial_comment()
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -23,6 +35,88 @@ namespace joedb::generator
   out << "//\n";
   out << "/////////////////////////////////////////////////////////////////////////////\n";
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Generator::write_type
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Type type,
+  bool return_type,
+  bool setter_type
+ )
+ {
+  switch (type.get_type_id())
+  {
+   case Type::Type_Id::null:
+    out << "void ";
+   break;
+
+   case Type::Type_Id::reference:
+    out << "id_of_" << options.db.get_table_name(type.get_table_id()) << ' ';
+   break;
+
+   #define TYPE_MACRO(storage_tt, return_tt, type_id, read, write)\
+   case Type::Type_Id::type_id:\
+    if (return_type || setter_type)\
+     out << #return_tt << ' ';\
+    else\
+     out << #storage_tt << ' ';\
+   break;
+   #define TYPE_MACRO_NO_REFERENCE
+   #include "joedb/TYPE_MACRO.h"
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ // type arrays
+ ////////////////////////////////////////////////////////////////////////////
+ #define STRINGIFY(X) #X
+ #define EXPAND_AND_STRINGIFY(X) STRINGIFY(X)
+
+ ////////////////////////////////////////////////////////////////////////////
+ const char *Generator::get_type_string(Type type)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  static constexpr char const * const types[] =
+  {
+   nullptr,
+  #define TYPE_MACRO(a, b, type_id, d, e) EXPAND_AND_STRINGIFY(type_id),
+  #include "joedb/TYPE_MACRO.h"
+  };
+
+  return types[int(type.get_type_id())];
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ const char *Generator::get_cpp_type_string(Type type)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  static char const * const cpp_types[] =
+  {
+   nullptr,
+  #define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
+  #include "joedb/TYPE_MACRO.h"
+  };
+
+  return cpp_types[int(type.get_type_id())];
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ const char *Generator::get_storage_type_string(Type type)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  static char const * const storage_types[] =
+  {
+   nullptr,
+  #define TYPE_MACRO(storage, b, c, d, e) EXPAND_AND_STRINGIFY(storage),
+  #include "joedb/TYPE_MACRO.h"
+  };
+
+  return storage_types[int(type.get_type_id())];
+ }
+
+ #undef EXPAND_AND_STRINGIFY
+ #undef STRINGIFY
 
  ////////////////////////////////////////////////////////////////////////////
  Generator::Generator
@@ -42,12 +136,6 @@ namespace joedb::generator
   out.exceptions(std::ios::badbit | std::ios::failbit);
   out.open(file_string, std::ios::trunc);
   write_initial_comment();
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Generator::generate()
- ////////////////////////////////////////////////////////////////////////////
- {
  }
 
  ////////////////////////////////////////////////////////////////////////////
