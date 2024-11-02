@@ -310,6 +310,7 @@ namespace joedb::generator
 
     //
     // Vector update
+    // Note: write even if exception, to keep memory and file in sync
     //
     out << "   template<typename F> void update_vector_of_" << fname;
     out << "(id_of_" << tname << " record, size_t size, F f)\n";

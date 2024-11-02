@@ -22,7 +22,7 @@ namespace joedb
  (
   std::ostream &out,
   const std::vector<std::string> &n,
-  const char *delimiter
+  const char *delimiter = "::"
  );
 
  void namespace_include_guard
