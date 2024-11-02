@@ -80,12 +80,14 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_cpp.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Types_h.cpp
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generic_File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generic_File_Database_cpp.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Database_h.cpp
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Client_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Local_Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Client_h.cpp
 )
 target_link_libraries(joedbc joedb_for_joedbc)

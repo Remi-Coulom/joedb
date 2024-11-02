@@ -17,9 +17,6 @@ namespace joedb::generator
  void File_Database_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const Database &db = options.get_db();
-  auto tables = db.get_tables();
-
   namespace_include_guard(out, "File_Database", options.get_name_space());
 
   out << R"RRR(
