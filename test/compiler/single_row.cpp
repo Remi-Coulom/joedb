@@ -1,4 +1,5 @@
-#include "../../doc/source/tutorial/settings/writable.h"
+#include "../../doc/source/tutorial/settings/Client.h"
+#include "../../doc/source/tutorial/settings/Readonly_Database.h"
 
 #include <gtest/gtest.h>
 

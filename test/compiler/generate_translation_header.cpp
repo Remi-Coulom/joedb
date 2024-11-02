@@ -12,7 +12,7 @@ static int generate_translation_header(int argc, char **argv)
  std::cout << "#ifndef translation_declared\n";
  std::cout << "#define translation_declared\n\n";
 
- std::cout << "#include \"db/test/readonly.h\"\n\n";
+ std::cout << "#include \"db/test/Database.h\"\n\n";
 
  std::cout << "namespace my_namespace\n";
  std::cout << "{\n";
