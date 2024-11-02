@@ -1,4 +1,3 @@
-#include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
@@ -14,6 +13,8 @@
 #include "joedb/interpreter/Database.h"
 
 #include "joedb/compiler/generator/Database_h.h"
+#include "joedb/compiler/generator/Database_cpp.h"
+#include "joedb/compiler/generator/readonly_cpp.h"
 #include "joedb/compiler/generator/Generic_File_Database_h.h"
 
 #include <fstream>
@@ -475,26 +476,6 @@ out << R"RRR(
 }
 
 /////////////////////////////////////////////////////////////////////////////
-static void generate_readonly_cpp
-/////////////////////////////////////////////////////////////////////////////
-(
- std::ostream &out,
- const Compiler_Options &options
-)
-{
- out << "#include \"readonly.h\"\n";
-
- namespace_open(out, options.get_name_space());
-
- out << " const char * schema_string = ";
- const std::vector<char> &v = options.schema_file.get_data();
- write_string(out, std::string(v.data(), v.size()));
- out << ";\n";
-
- namespace_close(out, options.get_name_space());
-}
-
-/////////////////////////////////////////////////////////////////////////////
 static void generate_cpp
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -844,15 +825,6 @@ static int joedbc_main(int argc, char **argv)
   generate_readonly_h(h_file, options);
  }
  {
-  std::ofstream cpp_file
-  (
-   options.get_name_space().back() + "/readonly.cpp",
-   std::ios::trunc
-  );
-  write_initial_comment(cpp_file, options, exe_path);
-  generate_readonly_cpp(cpp_file, options);
- }
- {
   std::ofstream h_file
   (
    options.get_name_space().back() + "/writable.h",
@@ -872,6 +844,9 @@ static int joedbc_main(int argc, char **argv)
  }
 
  generator::Database_h(options).generate();
+ generator::Database_cpp(options).generate();
+ generator::readonly_cpp(options).generate();
+
  generator::Generic_File_Database_h(options).generate();
 
  return 0;
