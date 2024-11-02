@@ -68,6 +68,45 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Generator::write_tuple_type(const Compiler_Options::Index &index)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << "std::tuple<";
+
+  for (size_t i = 0; i < index.field_ids.size(); i++)
+  {
+   if (i > 0)
+    out << ", ";
+
+   const Type &type = options.db.get_field_type
+   (
+    index.table_id,
+    index.field_ids[i]
+   );
+
+   write_type(type, false, false);
+  }
+
+  out << ">";
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Generator::write_index_type(const Compiler_Options::Index &index)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << "std::";
+  if (index.unique)
+   out << "map";
+  else
+   out << "multimap";
+  out << '<';
+
+  write_tuple_type(index);
+
+  out << ", id_of_" << options.db.get_table_name(index.table_id) << ">";
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  // type arrays
  ////////////////////////////////////////////////////////////////////////////
  #define STRINGIFY(X) #X

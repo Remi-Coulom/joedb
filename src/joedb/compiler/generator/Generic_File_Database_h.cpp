@@ -24,7 +24,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Generic_File_Database", options.get_name_space());
 
   out << R"RRR(
-#include "readonly.h" // TODO: remove
+#include "Database.h"
 #include "joedb/Span.h"
 
 )RRR";
