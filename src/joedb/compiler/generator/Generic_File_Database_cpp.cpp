@@ -229,6 +229,23 @@ namespace joedb::generator
    out << " }\n";
   }
 
+  for (const auto &[tid, tname]: tables)
+  {
+   const bool single_row = options.get_table_options(tid).single_row;
+
+   if (!single_row)
+   {
+    out << '\n';
+    out << "  /////////////////////////////////////////////////////////////////////////////\n";
+    out << "  void Generic_File_Database::clear_" << tname << "_table()\n";
+    out << "  /////////////////////////////////////////////////////////////////////////////\n";
+    out << "  {\n";
+    out << "   while (!get_" << tname << "_table().is_empty())\n";
+    out << "    delete_" << tname << "(get_" << tname << "_table().last());\n";
+    out << "  }\n";
+   }
+  }
+
   namespace_close(out, options.get_name_space());
  }
 }
