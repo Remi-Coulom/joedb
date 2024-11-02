@@ -43,9 +43,6 @@ History
     - In order to be coherent with the rest of the library, the order of
       parameters of the compiled Client's constructor are swapped: the file is
       first, then the connection.
-    - joedbc does not produce ``Interpreted_Database`` any more: use a
-      ``Generic_Readonly_Database`` with a ``Readonly_Interpreted_File``
-      instead.
     - hashing functions were moved into a separate ``File_Hasher`` class.
     - ``Generic_File::set_mode`` and ``get_mode`` were removed. They are
       replaced by the more restrictive ``make_readonly()``, ``is_shared()``,
