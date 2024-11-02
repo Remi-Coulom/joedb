@@ -13,9 +13,12 @@
 
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/generator/Database_cpp.h"
+#include "joedb/compiler/generator/Readonly_Database_h.h"
 #include "joedb/compiler/generator/readonly_cpp.h"
+
 #include "joedb/compiler/generator/Generic_File_Database_h.h"
 #include "joedb/compiler/generator/Generic_File_Database_cpp.h"
+#include "joedb/compiler/generator/File_Database_h.h"
 #include "joedb/compiler/generator/writable_cpp.h"
 
 #include <fstream>
@@ -40,57 +43,6 @@ static void generate_h(std::ostream &out, const Compiler_Options &options)
 )RRR";
 
  namespace_open(out, options.get_name_space());
-
- //
- // Database
- //
- out << R"RRR(
- class Client_Data;
- class Client;
-)RRR";
-
- out << R"RRR(
- class File_Database_Parent
- {
-  public:
-   joedb::File file;
-
-   File_Database_Parent(const char *file_name, joedb::Open_Mode mode):
-    file(file_name, mode)
-   {
-   }
- };
-
- class File_Database:
-  public File_Database_Parent,
-  public Generic_File_Database
- {
-  public:
-   File_Database
-   (
-    const char *file_name,
-    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
-    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
-   ):
-    File_Database_Parent(file_name, mode),
-    Generic_File_Database(file, check, commit_level)
-   {
-   }
-
-   File_Database
-   (
-    const std::string &file_name,
-    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
-    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
-   ):
-    File_Database(file_name.c_str(), mode, check, commit_level)
-   {
-   }
- };
-
-)RRR";
 
  //
  // Concurrency
@@ -272,57 +224,14 @@ static void generate_readonly_h
  namespace_include_guard(out, "readonly", options.get_name_space());
 
  out << R"RRR(
-#include "Database.h"
-#include "joedb/journal/File.h"
+#include "Readonly_Database.h"
 #include "joedb/concurrency/Client.h"
 
 )RRR";
 
  namespace_open(out, options.get_name_space());
 
- //
- // Readonly_Database and Client
- //
  out << R"RRR(
- class Readonly_Database: public Database
- {
-  public:
-   Readonly_Database(joedb::Readonly_Journal &journal)
-   {
-    initialize_with_readonly_journal(journal);
-   }
-
-   Readonly_Database(joedb::Readonly_Journal &&journal):
-    Readonly_Database(journal)
-   {
-   }
-
-   Readonly_Database(joedb::Generic_File &file):
-    Readonly_Database(joedb::Readonly_Journal(file))
-   {
-   }
-
-   Readonly_Database(joedb::Generic_File &&file):
-    Readonly_Database(file)
-   {
-   }
-
-   Readonly_Database(const char *file_name):
-    Readonly_Database
-    (
-     joedb::File(file_name, joedb::Open_Mode::read_existing)
-    )
-   {
-   }
-
-   Readonly_Database(const std::string &file_name):
-    Readonly_Database(file_name.c_str())
-   {
-   }
- };
-
- using Generic_Readonly_Database = Readonly_Database;
-
  ////////////////////////////////////////////////////////////////////////////
  class Readonly_Client_Data:
  ////////////////////////////////////////////////////////////////////////////
@@ -588,9 +497,12 @@ static int joedbc_main(int argc, char **argv)
 
  generator::Database_h(options).generate();
  generator::Database_cpp(options).generate();
+ generator::Readonly_Database_h(options).generate();
  generator::readonly_cpp(options).generate();
+
  generator::Generic_File_Database_h(options).generate();
  generator::Generic_File_Database_cpp(options).generate();
+ generator::File_Database_h(options).generate();
  generator::writable_cpp(options).generate();
 
  return 0;

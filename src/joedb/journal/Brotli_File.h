@@ -5,6 +5,8 @@
 
 #include "joedb/journal/Brotli_Codec.h"
 #include "joedb/journal/Encoded_File.h"
+#include "joedb/db/encoded_file/File_Database.h"
+#include "joedb/db/encoded_file/Readonly_Database.h"
 
 namespace joedb
 {

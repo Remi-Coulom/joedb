@@ -1,5 +1,5 @@
 #include "joedb/io/main_exception_catcher.h"
-#include "joedb/db/multi_server/readonly.h"
+#include "joedb/db/multi_server/Readonly_Database.h"
 #include "joedb/journal/Readonly_Interpreted_File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
@@ -58,7 +58,7 @@ namespace joedb
   }
 
   const char * const config_file_name = argv[1];
-  db::multi_server::Generic_Readonly_Database db
+  db::multi_server::Readonly_Database db
   (
    Readonly_Interpreted_File{config_file_name}
   );

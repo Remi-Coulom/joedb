@@ -2,7 +2,7 @@
 #define joedb_Encoded_File_declared
 
 #include "joedb/journal/Readonly_Encoded_File.h"
-#include "joedb/db/encoded_file/writable.h"
+#include "joedb/db/encoded_file/Generic_File_Database.h"
 
 namespace joedb
 {
