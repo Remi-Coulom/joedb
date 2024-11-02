@@ -2,24 +2,13 @@
 #define joedb_Readable_Command_Processor_declared
 
 #include "joedb/io/Command_Processor.h"
+#include "joedb/io/write_value.h"
 #include "joedb/index_types.h"
 
 namespace joedb
 {
  class Readable;
  class Blob_Reader;
-
- ////////////////////////////////////////////////////////////////////////////
- void write_value
- ////////////////////////////////////////////////////////////////////////////
- (
-  std::ostream &out,
-  const Readable &readable,
-  Blob_Reader *blob_reader,
-  Table_Id table_id,
-  Record_Id record_id,
-  Field_Id field_id
- );
 
  ////////////////////////////////////////////////////////////////////////////
  class Readable_Command_Processor: public Command_Processor

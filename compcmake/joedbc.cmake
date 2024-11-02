@@ -49,6 +49,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Writable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/write_value.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
@@ -74,11 +75,15 @@ target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/joedbc.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
+
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generator.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_cpp.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/readonly_cpp.cpp
+
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generic_File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generic_File_Database_cpp.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/writable_cpp.cpp
 )
 target_link_libraries(joedbc joedb_for_joedbc)
 
