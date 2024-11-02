@@ -2,6 +2,7 @@
 #define joedb_Compiler_Options_declared
 
 #include "joedb/interpreter/Database.h"
+#include "joedb/journal/Memory_File.h"
 
 #include <string>
 #include <vector>
@@ -26,27 +27,16 @@ namespace joedb
     bool single_row = false;
    };
 
-  private:
-   const Database &db;
-   const std::vector<std::string> &custom_names;
+  public:
+   Database db;
+   Memory_File schema_file;
+   std::vector<std::string> custom_names;
 
    std::vector<std::string> name_space;
    std::vector<Index> indices;
    std::map<Table_Id, Table_Options> table_options;
 
   public:
-   Compiler_Options
-   (
-    const Database &db,
-    const std::vector<std::string> &custom_names
-   ):
-    db(db),
-    custom_names(custom_names)
-   {
-    for (const auto &[tid, tname]: db.get_tables())
-     table_options[tid];
-   }
-
    bool has_index() const
    {
     return indices.size() > 0;

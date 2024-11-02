@@ -701,8 +701,7 @@ static void generate_readonly_h
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Compiler_Options &options,
- const std::vector<char> &schema
+ const Compiler_Options &options
 )
 {
  const Database_Schema &db = options.get_db();
@@ -750,7 +749,7 @@ static void generate_readonly_h
 
  extern const char * schema_string;
  inline constexpr size_t schema_string_size = )RRR";
- out << schema.size() << ";\n";
+ out << options.schema_file.get_size() << ";\n";
 
  for (const auto &[tid, tname]: tables)
   out << " class container_of_" << tname << ";\n";
@@ -2037,8 +2036,7 @@ static void generate_readonly_cpp
 /////////////////////////////////////////////////////////////////////////////
 (
  std::ostream &out,
- const Compiler_Options &options,
- const std::vector<char> &schema
+ const Compiler_Options &options
 )
 {
  out << "#include \"readonly.h\"\n";
@@ -2046,7 +2044,8 @@ static void generate_readonly_cpp
  namespace_open(out, options.get_name_space());
 
  out << " const char * schema_string = ";
- write_string(out, std::string(schema.data(), schema.size()));
+ const std::vector<char> &v = options.schema_file.get_data();
+ write_string(out, std::string(v.data(), v.size()));
  out << ";\n";
 
  namespace_close(out, options.get_name_space());
@@ -2333,49 +2332,51 @@ static int joedbc_main(int argc, char **argv)
  }
 
  const char * const exe_path = argv[0];
+ const char * const joedbi_file_name = argv[1];
+ const char * const joedbc_file_name = argv[2];
 
  //
  // Read file.joedbi
  //
- Database db;
- Memory_File schema_file;
- std::vector<std::string> custom_names;
+ Compiler_Options options;
 
  {
-  std::ifstream joedbi_file(argv[1]);
+  std::ifstream joedbi_file(joedbi_file_name);
   if (!joedbi_file)
   {
-   std::cerr << "Error: could not open " << argv[1] << '\n';
+   std::cerr << "Error: could not open " << joedbi_file_name << '\n';
    return 1;
   }
 
-  Writable_Journal journal(schema_file);
+  Writable_Journal journal(options.schema_file);
   Selective_Writable schema_writable(journal, Selective_Writable::schema);
-  Custom_Collector custom_collector(custom_names);
+  Custom_Collector custom_collector(options.custom_names);
 
-  Multiplexer multiplexer{db, schema_writable, custom_collector};
-  Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
+  Multiplexer multiplexer{options.db, schema_writable, custom_collector};
+  Interpreter interpreter(options.db, multiplexer, nullptr, nullptr, 0);
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
   interpreter.main_loop(joedbi_file, std::cerr);
   multiplexer.default_checkpoint();
  }
 
+ for (const auto &[tid, tname]: options.db.get_tables())
+  options.table_options[tid];
+
  //
  // Read file.joedbc
  //
- std::ifstream joedbc_file(argv[2]);
+ std::ifstream joedbc_file(joedbc_file_name);
  if (!joedbc_file)
  {
-  std::cerr << "Error: could not open " << argv[2] << '\n';
+  std::cerr << "Error: could not open " << joedbc_file_name << '\n';
   return 1;
  }
 
- Compiler_Options compiler_options(db, custom_names);
 
  try
  {
-  parse_compiler_options(joedbc_file, compiler_options);
+  parse_compiler_options(joedbc_file, options);
  }
  catch(...)
  {
@@ -2386,44 +2387,44 @@ static int joedbc_main(int argc, char **argv)
  //
  // Generate code
  //
- const std::string dir_name = compiler_options.get_name_space().back();
+ const std::string dir_name = options.get_name_space().back();
  std::filesystem::create_directory(dir_name);
 
  {
   std::ofstream h_file
   (
-   compiler_options.get_name_space().back() + "/readonly.h",
+   options.get_name_space().back() + "/readonly.h",
    std::ios::trunc
   );
-  write_initial_comment(h_file, compiler_options, exe_path);
-  generate_readonly_h(h_file, compiler_options, schema_file.get_data());
+  write_initial_comment(h_file, options, exe_path);
+  generate_readonly_h(h_file, options);
  }
  {
   std::ofstream cpp_file
   (
-   compiler_options.get_name_space().back() + "/readonly.cpp",
+   options.get_name_space().back() + "/readonly.cpp",
    std::ios::trunc
   );
-  write_initial_comment(cpp_file, compiler_options, exe_path);
-  generate_readonly_cpp(cpp_file, compiler_options, schema_file.get_data());
+  write_initial_comment(cpp_file, options, exe_path);
+  generate_readonly_cpp(cpp_file, options);
  }
  {
   std::ofstream h_file
   (
-   compiler_options.get_name_space().back() + "/writable.h",
+   options.get_name_space().back() + "/writable.h",
    std::ios::trunc
   );
-  write_initial_comment(h_file, compiler_options, exe_path);
-  generate_h(h_file, compiler_options);
+  write_initial_comment(h_file, options, exe_path);
+  generate_h(h_file, options);
  }
  {
   std::ofstream cpp_file
   (
-   compiler_options.get_name_space().back() + "/writable.cpp",
+   options.get_name_space().back() + "/writable.cpp",
    std::ios::trunc
   );
-  write_initial_comment(cpp_file, compiler_options, exe_path);
-  generate_cpp(cpp_file, compiler_options);
+  write_initial_comment(cpp_file, options, exe_path);
+  generate_cpp(cpp_file, options);
  }
 
  return 0;
