@@ -88,14 +88,7 @@ static void write_type
 static const char *get_type_name(Type type)
 /////////////////////////////////////////////////////////////////////////////
 {
- #define TYPE_MACRO(a, b, type_id, r, w) #type_id,
- static const char * const type_string[] =
- {
-  "null",
-  #include "joedb/TYPE_MACRO.h"
- };
-
- return type_string[int(type.get_type_id())];
+ return types[int(type.get_type_id())];
 }
 
 /////////////////////////////////////////////////////////////////////////////
