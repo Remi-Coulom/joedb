@@ -23,9 +23,9 @@ namespace joedb::generator
  {
   const Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
- 
+
   namespace_include_guard(out, "Database", options.get_name_space());
- 
+
   out << R"RRR(
 #include "joedb/Freedom_Keeper.h"
 #include "joedb/journal/Writable_Journal.h"
@@ -43,21 +43,21 @@ namespace joedb::generator
 #include <string_view>
 
 )RRR";
- 
+
   if (options.has_index())
    out << "#include <map>\n\n";
- 
+
   if (options.has_unique_index())
   {
    out << "#include \"joedb/io/type_io.h\"\n";
    out << "#include <sstream>\n\n";
   }
- 
+
   out << "static_assert(std::string_view(joedb::get_version()) == \"";
   out << joedb::get_version() << "\");\n\n";
- 
+
   namespace_open(out, options.get_name_space());
- 
+
   out << R"RRR(
  using joedb::Record_Id;
  using joedb::Table_Id;
@@ -67,10 +67,10 @@ namespace joedb::generator
  inline constexpr size_t schema_string_size = )RRR";
 
   out << options.schema_file.get_size() << ";\n";
- 
+
   for (const auto &[tid, tname]: tables)
    out << " class container_of_" << tname << ";\n";
- 
+
   for (const auto &[tid, tname]: tables)
   {
    out << '\n';
@@ -94,28 +94,28 @@ namespace joedb::generator
    out << "   constexpr id_of_" << tname << " operator[](size_t i) const {return id_of_" << tname << "(id + i);}\n";
    out << " };\n";
   }
- 
+
   for (const auto &[tid, tname]: tables)
   {
    out << "\n struct data_of_" << tname;
- 
+
    out <<"\n {\n";
    if (db.get_freedom(tid).size() > 0)
     out <<"  Field_Id current_field_id = Field_Id(0);\n";
- 
+
    std::vector<std::string> fields;
- 
+
    for (const auto &[fid, fname]: db.get_fields(tid))
    {
     fields.emplace_back("field_value_of_" + fname);
- 
+
     const joedb::Type &type = db.get_field_type(tid, fid);
- 
+
     out << "  std::vector<";
     write_type(type, false, false);
     out << "> " << fields.back() << ";\n";
    }
- 
+
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)
     {
@@ -125,7 +125,7 @@ namespace joedb::generator
      fields.emplace_back("iterator_over_" + index.name);
      out << fields.back() << ";\n";
     }
- 
+
   out << R"RRR(
 
   joedb::Compact_Freedom_Keeper freedom_keeper;
@@ -135,31 +135,31 @@ namespace joedb::generator
   void resize(size_t new_size)
   {
 )RRR";
- 
+
    fields.emplace_back("freedom_keeper");
    for (const std::string &field: fields)
     out << "   " << field << ".resize(new_size);\n";
- 
+
    out << "  }\n };\n\n";
   }
- 
+
   for (const auto &index: options.get_indices())
    if (!index.unique)
     out << " class range_of_" << index.name << ";\n";
   out << '\n';
- 
+
   out << " class Database: public joedb::Writable\n {\n";
- 
+
   for (const auto &[tid, tname]: tables)
   {
    out << "  friend class id_of_"  << tname << ";\n";
    out << "  friend class container_of_"  << tname << ";\n";
   }
- 
+
   for (const auto &index: options.get_indices())
    if (!index.unique)
     out << "  friend class range_of_" << index.name << ";\n";
- 
+
   out << R"RRR(
   protected:
    virtual void error(const char *message)
@@ -177,7 +177,7 @@ namespace joedb::generator
    }
 
 )RRR";
- 
+
   //
   // Validity checks
   //
@@ -185,32 +185,32 @@ namespace joedb::generator
   {
    out << "   bool is_valid(id_of_" << tname << " id) const {return is_valid_record_id_for_" << tname << "(id.get_record_id());}\n";
   }
- 
+
   out << "\n  protected:\n";
- 
+
   for (const auto &[tid, tname]: tables)
   {
    out << "   data_of_" << tname << " storage_of_" << tname << ";\n";
- 
+
    out << "   bool is_valid_record_id_for_" << tname;
    out << "(Record_Id record_id) const {return storage_of_" << tname;
    out << ".freedom_keeper.is_used(size_t(record_id) + 1);}\n";
   }
- 
+
   //
   // Indices
   //
   if (!options.get_indices().empty())
    out << '\n';
- 
+
   for (const auto &index: options.get_indices())
   {
    const std::string &tname = db.get_table_name(index.table_id);
- 
+
    out << "   ";
    write_index_type(index);
    out << " index_of_" << index.name << ";\n";
- 
+
    out << "   void remove_index_of_" << index.name << "(Record_Id record_id)\n";
    out << "   {\n";
    out << "    auto &iterator = storage_of_" << tname;
@@ -221,7 +221,7 @@ namespace joedb::generator
    out << "     iterator = index_of_" << index.name << ".end();\n";
    out << "    }\n";
    out << "   }\n";
- 
+
    out << "   void add_index_of_" << index.name << "(Record_Id record_id)\n";
    out << "   {\n";
    out << "    auto result = index_of_" << index.name;
@@ -269,7 +269,7 @@ namespace joedb::generator
     out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[size_t(record_id) - 1] = result;\n";
    out << "   }\n";
   }
- 
+
   //
   // Internal data-modification functions
   //
@@ -279,18 +279,18 @@ namespace joedb::generator
    out << "   void internal_delete_" << tname << "(Record_Id record_id)\n";
    out << "   {\n";
    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
- 
+
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)
      out << "    remove_index_of_" << index.name << "(record_id);\n";
- 
+
    for (const auto &[fid, fname]: db.get_fields(tid))
    {
     const Type &type = db.get_field_type(tid, fid);
- 
+
     out << "    storage_of_" << tname << ".field_value_of_";
     out << fname << "[size_t(record_id) - 1]";
- 
+
     if (type.get_type_id() == Type::Type_Id::string)
     {
      out << ".clear()";
@@ -309,20 +309,20 @@ namespace joedb::generator
     {
      out << " = 0";
     }
- 
+
     out << ";\n";
    }
- 
+
    out << "    storage_of_" << tname << ".freedom_keeper.free(size_t(record_id) + 1);\n";
    out << "   }\n";
   }
- 
+
   out << '\n';
   for (const auto &[tid, tname]: tables)
   {
    out << "   void internal_insert_" << tname << "(Record_Id record_id)\n";
    out << "   {\n";
- 
+
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)
     {
@@ -330,15 +330,15 @@ namespace joedb::generator
      out << ".iterator_over_" << index.name << "[size_t(record_id) - 1] = ";
      out << "index_of_" << index.name << ".end();\n";
     }
- 
+
    out << "    storage_of_" << tname << ".freedom_keeper.use(size_t(record_id) + 1);\n";
- 
+
    out << "   }\n\n";
- 
+
    out << "   void internal_vector_insert_" << tname << "(Record_Id record_id, size_t size)\n";
    out << "   {\n";
    out << "    storage_of_" << tname << ".freedom_keeper.use_vector(size_t(record_id) + 1, size);\n";
- 
+
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)
     {
@@ -349,17 +349,17 @@ namespace joedb::generator
      out << "     index_of_" << index.name << ".end()\n";
      out << "    );\n";
     }
- 
+
    out << "   }\n";
   }
- 
+
   out << '\n';
   for (const auto &[tid, tname]: tables)
   {
    for (const auto &[fid, fname]: db.get_fields(tid))
    {
     const Type &type = db.get_field_type(tid, fid);
- 
+
     out << "   void internal_update_" << tname << "__" << fname;
     out << "\n   (\n    Record_Id record_id,\n    ";
     write_type(type, true, false);
@@ -369,7 +369,7 @@ namespace joedb::generator
     out << "    storage_of_" << tname << ".field_value_of_" << fname;
     out << "[size_t(record_id) - 1] = field_value_of_" << fname;
     out << ";\n";
- 
+
     for (const auto &index: options.get_indices())
      if (index.table_id == tid &&
          std::find(index.field_ids.begin(),
@@ -380,7 +380,7 @@ namespace joedb::generator
       out << "    add_index_of_" << index.name << "(record_id);\n";
      }
     out << "   }\n\n";
- 
+
     out << "   void internal_update_vector_" << tname << "__" << fname << '\n';
     out << "   (\n";
     out << "    Record_Id record_id,\n";
@@ -398,7 +398,7 @@ namespace joedb::generator
     out << ".field_value_of_" << fname << "[size_t(record_id) - 1];\n";
     out << "    if (target != value)\n";
     out << "     std::copy_n(value, size, target);\n";
- 
+
     for (const auto &index: options.get_indices())
      if (index.table_id == tid &&
          std::find(index.field_ids.begin(),
@@ -413,7 +413,7 @@ namespace joedb::generator
     out << "   }\n\n";
    }
   }
- 
+
   //
   // delete_from writable function
   //
@@ -429,13 +429,13 @@ namespace joedb::generator
      first = false;
     else
      out << "else ";
- 
+
     out << "if (table_id == Table_Id(" << tid << "))\n";
     out << "     internal_delete_" << tname << "(record_id);\n";
    }
   }
   out << "   }\n";
- 
+
   //
   // insert_into
   //
@@ -453,7 +453,7 @@ namespace joedb::generator
      first = false;
     else
      out << "else ";
- 
+
     out << "if (table_id == Table_Id(" << tid << "))\n";
     out << "    {\n";
     out << "     if (is_valid_record_id_for_" << tname << "(record_id))\n";
@@ -465,7 +465,7 @@ namespace joedb::generator
    }
   }
   out << "   }\n";
- 
+
   //
   // insert_vector
   //
@@ -487,7 +487,7 @@ namespace joedb::generator
      error("insert_vector: null record_id, or too big");
     }
 )RRR";
- 
+
   {
    bool first = true;
    for (const auto &[tid, tname]: tables)
@@ -497,7 +497,7 @@ namespace joedb::generator
      first = false;
     else
      out << "else ";
- 
+
     out << "if (table_id == Table_Id(" << tid << "))\n";
     out << "    {\n";
     out << "     if (storage_of_" << tname << ".size() < size_t(record_id) + size - 1)\n";
@@ -507,16 +507,16 @@ namespace joedb::generator
    }
   }
   out << "   }\n";
- 
+
   //
   // set of existing types in the database
   //
   std::set<Type::Type_Id> db_types;
- 
+
   for (const auto &[tid, tname]: tables)
    for (const auto &[fid, fname]: db.get_fields(tid))
     db_types.insert(db.get_field_type(tid, fid).get_type_id());
- 
+
   //
   // update
   //
@@ -526,7 +526,7 @@ namespace joedb::generator
     const Type::Type_Id type_id = Type::Type_Id(type_index);
     if (db_types.find(type_id) == db_types.end())
      continue;
- 
+
     out << '\n';
     out << "   void update_" << get_type_string(type_id) << '\n';
     out << "   (\n";
@@ -537,11 +537,11 @@ namespace joedb::generator
     out << "   )\n";
     out << "   final\n";
     out << "   {\n";
- 
+
     for (const auto &[tid, tname]: tables)
     {
      bool has_typed_field = false;
- 
+
      for (const auto &[fid, fname]: db.get_fields(tid))
      {
       const Type &type = db.get_field_type(tid, fid);
@@ -551,12 +551,12 @@ namespace joedb::generator
        break;
       }
      }
- 
+
      if (has_typed_field)
      {
       out << "    if (table_id == Table_Id(" << tid << "))\n";
       out << "    {\n";
- 
+
       for (const auto &[fid, fname]: db.get_fields(tid))
       {
        const Type &type = db.get_field_type(tid, fid);
@@ -578,16 +578,16 @@ namespace joedb::generator
         out << "     }\n";
        }
       }
- 
+
       out << "     return;\n";
       out << "    }\n";
      }
     }
- 
+
     out << "   }\n";
    }
   }
- 
+
   //
   // update_vector
   //
@@ -597,7 +597,7 @@ namespace joedb::generator
     const auto type_id = Type::Type_Id(type_index);
     if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
      continue;
- 
+
     out << '\n';
     out << "   void update_vector_" << get_type_string(type_id) << '\n';
     out << "   (\n";
@@ -609,11 +609,11 @@ namespace joedb::generator
     out << "   )\n";
     out << "   final\n";
     out << "   {\n";
- 
+
     for (const auto &[tid, tname]: tables)
     {
      bool has_typed_field = false;
- 
+
      for (const auto &[fid, fname]: db.get_fields(tid))
      {
       const Type &type = db.get_field_type(tid, fid);
@@ -623,12 +623,12 @@ namespace joedb::generator
        break;
       }
      }
- 
+
      if (has_typed_field)
      {
       out << "    if (table_id == Table_Id(" << tid << "))\n";
       out << "    {\n";
- 
+
       for (const auto &[fid, fname]: db.get_fields(tid))
       {
        const Type &type = db.get_field_type(tid, fid);
@@ -638,7 +638,7 @@ namespace joedb::generator
         out << "     {\n";
         out << "      internal_update_vector_" << tname;
         out << "__" << fname << "(record_id, size, ";
- 
+
         if (type_id != joedb::Type::Type_Id::reference)
          out << "value";
         else
@@ -647,22 +647,22 @@ namespace joedb::generator
          write_type(type, false, false);
          out << "*>(value)";
         }
- 
+
         out << ");\n";
         out << "      return;\n";
         out << "     }\n";
        }
       }
- 
+
       out << "     return;\n";
       out << "    }\n";
      }
     }
- 
+
     out << "   }\n";
    }
   }
- 
+
   //
   // get_own_storage
   //
@@ -672,7 +672,7 @@ namespace joedb::generator
     const Type::Type_Id type_id = Type::Type_Id(type_index);
     if (db_types.find(Type::Type_Id(type_id)) == db_types.end())
      continue;
- 
+
     out << '\n';
     out << "   " << get_storage_type_string(type_id);
     out << " *get_own_" << get_type_string(type_id) << "_storage\n";
@@ -684,11 +684,11 @@ namespace joedb::generator
     out << "   )\n";
     out << "   final\n";
     out << "   {\n";
- 
+
     for (const auto &[tid, tname]: tables)
     {
      bool has_typed_field = false;
- 
+
      for (const auto &[fid, fname]: db.get_fields(tid))
      {
       const Type &type = db.get_field_type(tid, fid);
@@ -698,13 +698,13 @@ namespace joedb::generator
        break;
       }
      }
- 
+
      if (has_typed_field)
      {
       out << "    if (table_id == Table_Id(" << tid << "))\n";
       out << "    {\n";
       out << "     capacity = size_t(storage_of_" << tname << ".freedom_keeper.size());\n";
- 
+
       for (const auto &[fid, fname]: db.get_fields(tid))
       {
        const Type &type = db.get_field_type(tid, fid);
@@ -713,26 +713,26 @@ namespace joedb::generator
         out << "     if (field_id == Field_Id(" << fid << "))\n"
             << "     {\n"
             << "      return ";
- 
+
         if (type_id == Type::Type_Id::reference)
          out << "reinterpret_cast<Record_Id *>";
- 
+
         out << "(storage_of_" << tname;
         out << ".field_value_of_" << fname << ".data() + size_t(record_id) - 1);\n"
             << "     }\n";
        }
       }
- 
+
       out << "     return nullptr;\n";
       out << "    }\n";
      }
     }
- 
+
     out << "    return nullptr;\n";
     out << "   }\n";
    }
   }
- 
+
   //
   // Informative events are ignored
   //
@@ -741,7 +741,7 @@ namespace joedb::generator
    void timestamp(int64_t timestamp) override {};
    void valid_data() final {};
 )RRR";
- 
+
   //
   // Schema changes are forwarded to the schema string
   //
@@ -831,7 +831,7 @@ namespace joedb::generator
     schema_journal.default_checkpoint();
    }
 )RRR";
- 
+
   //
   // Public stuff
   //
@@ -859,31 +859,31 @@ namespace joedb::generator
      throw joedb::exception::Out_Of_Date();
    }
 )RRR";
- 
+
   for (const auto &[tid, tname]: tables)
   {
    out << '\n';
    const bool single_row = options.get_table_options(tid).single_row;
- 
+
    //
    // Declaration of container access
    //
    out << "   container_of_" << tname << " get_" << tname << "_table() const;\n\n";
- 
+
    out << "   id_of_" << tname << " next(id_of_" << tname << " id) const\n";
    out << "   {\n";
    out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_next(id.get_id() + 1) - 1)\n    );\n";
    out << "   }\n\n";
- 
+
    out << "   id_of_" << tname << " previous(id_of_" << tname << " id) const\n";
    out << "   {\n";
    out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_previous(id.get_id() + 1) - 1)\n    );\n";
    out << "   }\n\n";
- 
+
    out << "   template<class Comparator>\n";
    out << "   std::vector<id_of_" << tname << "> sorted_" << tname;
    out << "(Comparator comparator) const;\n\n";
- 
+
    //
    // Easy access to null
    //
@@ -891,7 +891,7 @@ namespace joedb::generator
    out << "   {\n";
    out << "    return id_of_" << tname << "();\n";
    out << "   }\n";
- 
+
    //
    // the_<table>
    //
@@ -902,16 +902,16 @@ namespace joedb::generator
     out << "    return id_of_" << tname << "{1};\n";
     out << "   }\n";
    }
- 
+
    //
    // Loop over fields
    //
    for (const auto &[fid, fname]: db.get_fields(tid))
    {
     const Type &type = db.get_field_type(tid, fid);
- 
+
     out << '\n';
- 
+
     //
     // Getter
     //
@@ -930,7 +930,7 @@ namespace joedb::generator
     out << "   }\n";
    }
   }
- 
+
   //
   // get_index_of_X
   //
@@ -944,7 +944,7 @@ namespace joedb::generator
    out << "    return index_of_" << index.name << ";\n";
    out << "   }\n";
   }
- 
+
   //
   // find_index
   //
@@ -953,7 +953,7 @@ namespace joedb::generator
    {
     const std::string &tname = db.get_table_name(index.table_id);
     out << '\n';
- 
+
     out << "   id_of_" << tname << " next_" << index.name << '(';
     out << "id_of_" << tname << " id)\n";
     out << "   {\n";
@@ -965,7 +965,7 @@ namespace joedb::generator
     out << "    else\n";
     out << "     return id_of_" << tname << "();\n";
     out << "   }\n";
- 
+
     out << "   id_of_" << tname << " previous_" << index.name << '(';
     out << "id_of_" << tname << " id)\n";
     out << "   {\n";
@@ -976,7 +976,7 @@ namespace joedb::generator
     out << "    else\n";
     out << "     return id_of_" << tname << "();\n";
     out << "   }\n";
- 
+
     out << "   id_of_" << tname << " find_" << index.name << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {
@@ -1020,8 +1020,170 @@ namespace joedb::generator
     }
     out << ") const;\n";
    }
- 
+
   out << " };\n";
+
+  //
+  // Plain iteration over tables
+  //
+  for (const auto &[tid, tname]: tables)
+  {
+   out << " class container_of_" << tname << "\n";
+   out << " {\n";
+   out << "  friend class Database;\n";
+   out << '\n';
+   out << "  private:\n";
+   out << "   const Database &db;\n";
+   out << "   container_of_" << tname << "(const Database &db): db(db) {}\n";
+   out << '\n';
+   out << "  public:\n";
+   out << "   class iterator\n";
+   out << "   {\n";
+   out << "    friend class container_of_" << tname << ";\n";
+   out << "    private:\n";
+
+
+   out << "     const joedb::Compact_Freedom_Keeper *fk;\n"; // must use pointer for copy constructor
+   out << "     size_t index;\n";
+   out << "     iterator(const data_of_" << tname << " &data): fk(&data.freedom_keeper), index(0) {}\n";
+   out << "    public:\n";
+   out << "     typedef std::forward_iterator_tag iterator_category;\n";
+   out << "     typedef id_of_" << tname << " value_type;\n";
+   out << "     typedef std::ptrdiff_t difference_type;\n";
+   out << "     typedef value_type* pointer;\n";
+   out << "     typedef value_type& reference;\n";
+   out << '\n';
+   out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
+   out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";
+   out << "     iterator &operator++() {index = fk->get_next(index); return *this;}\n";
+   out << "     iterator operator++(int) {auto copy = *this; index = fk->get_next(index); return copy;}\n";
+   out << "     iterator &operator--() {index = fk->get_previous(index); return *this;}\n";
+   out << "     iterator operator--(int) {auto copy = *this; index = fk->get_previous(index); return copy;}\n";
+   out << "     id_of_" << tname << " operator*() const {return id_of_";
+   out << tname << "(Record_Id(index - 1));}\n";
+   out << "   };\n";
+   out << '\n';
+   out << "   iterator begin() const {return ++iterator(db.storage_of_" << tname << ");}\n";
+   out << "   iterator end() const {return iterator(db.storage_of_" << tname << ");}\n";
+   out << "   bool is_empty() const {return db.storage_of_" << tname
+       << ".freedom_keeper.is_empty();}\n";
+   out << "   size_t get_size() const {return db.storage_of_" << tname << ".freedom_keeper.get_used_count();}\n";
+   out << "   static id_of_" << tname << " get_at(size_t i) {return id_of_"
+       << tname << "(Record_Id(i));}\n";
+   out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".freedom_keeper.is_used(i + 1);}\n";
+
+   out << "   id_of_" << tname << " first() const {return *begin();}\n";
+   out << "   id_of_" << tname << " last() const {return *--end();}\n";
+   out << "   id_of_" << tname << " get_end() const {return *end();}\n";
+
+   out << " };\n";
+   out << '\n';
+
+   out << " inline container_of_" << tname << " Database::get_" << tname << "_table() const\n";
+   out << " {\n";
+   out << "  return container_of_" << tname << "(*this);\n";
+   out << " }\n";
+   out << '\n';
+
+   out << " template<class Comparator>\n";
+   out << " std::vector<id_of_" << tname << "> Database::sorted_" << tname;
+   out << "(Comparator comparator) const\n";
+   out << " {\n";
+   out << "  std::vector<id_of_" << tname << "> result;\n";
+   out << "  for (auto x: get_" << tname << "_table())\n";
+   out << "   result.emplace_back(x);\n";
+   out << "  std::sort(result.begin(), result.end(), comparator);\n";
+   out << "  return result;\n";
+   out << " }\n";
+  }
+
+  //
+  // Index ranges for indexes that are not unique
+  //
+  for (const auto &index: options.get_indices())
+  {
+   if (!index.unique)
+   {
+    out << " class range_of_" << index.name << "\n";
+    out << " {\n";
+    out << "  friend class Database;\n";
+    out << "  private:\n";
+    out << "   std::pair<";
+    write_index_type(index);
+    out << "::const_iterator, ";
+    write_index_type(index);
+    out << "::const_iterator> range;\n";
+    out << "   range_of_" << index.name << "(const Database &db";
+    for (size_t i = 0; i < index.field_ids.size(); i++)
+    {
+     out << ", ";
+     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
+     write_type(type, true, false);
+     out << db.get_field_name(index.table_id, index.field_ids[i]);
+    }
+    out << ")\n";
+    out << "   {\n";
+    out << "    range = db.index_of_" << index.name << ".equal_range(";
+    write_tuple_type(index);
+    out << '(';
+    for (size_t i = 0; i < index.field_ids.size(); i++)
+    {
+     if (i > 0)
+      out << ", ";
+     out << db.get_field_name(index.table_id, index.field_ids[i]);
+    }
+    out << "));\n";
+    out << "   }\n";
+    out << "  public:\n";
+    out << "   class iterator\n";
+    out << "   {\n";
+    out << "    friend class range_of_" << index.name << ";\n";
+    out << "    private:\n";
+    out << "     ";
+    write_index_type(index);
+    out << "::const_iterator map_iterator;\n";
+    out << "     iterator(";
+    write_index_type(index);
+    out << "::const_iterator map_iterator): map_iterator(map_iterator) {}\n"
+        << "    public:\n"
+        << "     bool operator !=(const iterator &i) const\n"
+        << "     {\n"
+        << "      return map_iterator != i.map_iterator;\n"
+        << "     }\n"
+        << "     iterator &operator++() {map_iterator++; return *this;}\n"
+        << "     id_of_" << db.get_table_name(index.table_id)
+        << " operator*() const {return map_iterator->second;}\n"
+        << "   };\n"
+        << "   iterator begin() const {return range.first;}\n"
+        << "   iterator end() const {return range.second;}\n"
+        << "   bool empty() const {return range.first == range.second;}\n"
+        << "   size_t size() const {return size_t(std::distance(range.first, range.second));}\n"
+        << " };\n\n";
+
+    out << " inline range_of_" << index.name << " Database::find_" << index.name << '(';
+    for (size_t i = 0; i < index.field_ids.size(); i++)
+    {
+     if (i > 0)
+      out << ", ";
+     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
+     write_type(type, true, false);
+     out << "field_value_of_";
+     out << db.get_field_name(index.table_id, index.field_ids[i]);
+    }
+    out << ") const\n";
+    out << " {\n";
+    out << "  return range_of_" << index.name << "(*this";
+    for (size_t i = 0; i < index.field_ids.size(); i++)
+    {
+     out << ", ";
+     out << "field_value_of_";
+     out << db.get_field_name(index.table_id, index.field_ids[i]);
+    }
+    out << ");\n";
+    out << " }\n";
+   }
+  }
+
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";
  }
