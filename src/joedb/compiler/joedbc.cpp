@@ -13,6 +13,8 @@
 #include "joedb/get_version.h"
 #include "joedb/interpreter/Database.h"
 
+#include "joedb/compiler/generator/Database_h.h"
+
 #include <fstream>
 #include <set>
 #include <filesystem>
@@ -2335,11 +2337,12 @@ static int joedbc_main(int argc, char **argv)
  const char * const joedbi_file_name = argv[1];
  const char * const joedbc_file_name = argv[2];
 
+ Compiler_Options options;
+ options.exe_path = std::string(exe_path);
+
  //
  // Read file.joedbi
  //
- Compiler_Options options;
-
  {
   std::ifstream joedbi_file(joedbi_file_name);
   if (!joedbi_file)
@@ -2426,6 +2429,8 @@ static int joedbc_main(int argc, char **argv)
   write_initial_comment(cpp_file, options, exe_path);
   generate_cpp(cpp_file, options);
  }
+
+ generator::Database_h(options).generate();
 
  return 0;
 }

@@ -74,6 +74,8 @@ target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/joedbc.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generator.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_h.cpp
 )
 target_link_libraries(joedbc joedb_for_joedbc)
 

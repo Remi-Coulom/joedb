@@ -28,6 +28,7 @@ namespace joedb
    };
 
   public:
+   std::string exe_path;
    Database db;
    Memory_File schema_file;
    std::vector<std::string> custom_names;
