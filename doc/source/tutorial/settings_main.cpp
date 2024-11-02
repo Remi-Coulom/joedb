@@ -8,7 +8,7 @@ int main()
 {
  settings::Interpreted_Database db("../custom_settings.joedbi");
 
- std::cout << "dark mode: " << db.get_dark_mode() << '\n';
+ std::cout << "dark mode: " << db.get_dark_mode(db.the_settings()) << '\n';
 
  return 0;
 }
