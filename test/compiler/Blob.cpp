@@ -1,4 +1,5 @@
-#include "db/blob/writable.h"
+#include "db/blob/Generic_File_Database.h"
+#include "db/blob/Readonly_Database.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"

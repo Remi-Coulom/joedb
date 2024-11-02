@@ -1,6 +1,5 @@
-#include <iostream>
-
-#include "db/schema_v1/writable.h"
+#include "db/schema_v1/Generic_File_Database.h"
+#include "db/schema_v1/Readonly_Database.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
