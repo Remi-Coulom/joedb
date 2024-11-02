@@ -8,8 +8,16 @@ namespace joedb::generator
  class writable_cpp: public Generator
  {
   public:
-   writable_cpp(const Compiler_Options &options);
-   void generate() override;
+   writable_cpp(const Compiler_Options &options):
+    Generator(".", "writable.cpp", options)
+   {
+   }
+
+   void generate() override
+   {
+    out << "#include \"readonly.cpp\"\n";
+    out << "#include \"Generic_File_Database.cpp\"\n";
+   }
  };
 }
 

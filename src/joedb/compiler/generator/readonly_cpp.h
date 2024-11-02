@@ -8,8 +8,15 @@ namespace joedb::generator
  class readonly_cpp: public Generator
  {
   public:
-   readonly_cpp(const Compiler_Options &options);
-   void generate() override;
+   readonly_cpp(const Compiler_Options &options):
+    Generator(".", "readonly.cpp", options)
+   {
+   }
+
+   void generate() override
+   {
+    out << "#include \"Database.cpp\"\n";
+   }
  };
 }
 
