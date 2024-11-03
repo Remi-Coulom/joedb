@@ -48,8 +48,7 @@ History
       replaced by the more restrictive ``make_readonly()``, ``is_shared()``,
       and ``is_readonly()``;
     - ``generate_c_wrapper`` compiler option was removed.
-    - ``set_table_null_initialization`` compiler option was removed. Data is
-      now always initialized to zero.
+    - ``set_table_null_initialization`` compiler option was removed.
 
 - 2024-06-25 9.0.1
 

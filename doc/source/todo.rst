@@ -6,11 +6,9 @@ For next release
 
  - more joedbc code generation:
 
+   - Split Database with Database_Storage parent
    - Readonly_Interpreted_Database
-   - Upgraded_Interpreted_Database
-   - incorporate reflection into struct (template? macro?)
-   - if single row: x = db.load_settings(); db.save_settings(x);
-   - if not single row: struct X x = db.load(settings_id), db.save(settings_id, x).
+   - Reflection macro: tables/<table_name>/reflection.h
 
  - Blob cache:
 
