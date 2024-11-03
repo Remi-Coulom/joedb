@@ -6,12 +6,9 @@ For next release
 
  - structs
 
-   - "structs" subdirectory (and subnamespace) for each table struct.
    - incorporate reflection into struct (template? macro?)
    - if single row: x = db.load_settings(); db.save_settings(x);
    - if not single row: struct X x = db.load(settings_id), db.save(settings_id, x).
-   - generate function to load settings from a file, with auto upgrade, in one
-     single line of code. Same for saving.
 
  - Blob cache:
 

@@ -19,7 +19,7 @@ namespace joedb::generator
 #include "File_Database.h"
 #include "Client.h"
 #include "Local_Client.h"
-#warning writable header is deprecated
+//#warning writable header is deprecated
 )RRR";
    }
  };

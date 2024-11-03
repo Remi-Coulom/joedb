@@ -18,7 +18,7 @@ namespace joedb::generator
     out << R"RRR(#include "Readonly_Database.h"
 #include "Readonly_Client.h"
 #include "Types.h"
-#warning readonly header is deprecated
+//#warning readonly header is deprecated
 )RRR";
    }
  };

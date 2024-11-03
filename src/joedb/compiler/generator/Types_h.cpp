@@ -67,7 +67,9 @@ namespace joedb::generator
    out << " = " << ns << "container_of_" << tname << "::iterator;\n";
   }
  
-  out << " };\n";
+  out << " };\n\n";
+
+  out << " using Readonly_Types = Types;\n";
 
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";  
