@@ -91,6 +91,7 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Local_Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Client_h.cpp
 
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/struct_h.cpp
 )
 target_link_libraries(joedbc joedb_for_joedbc)

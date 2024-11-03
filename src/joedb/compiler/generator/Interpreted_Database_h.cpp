@@ -29,25 +29,14 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- class Interpreted_Database_Parent
- {
-  public:
-   joedb::Interpreted_File file;
-
-   Interpreted_Database_Parent(const char *file_name):
-    file(file_name)
-   {
-   }
- };
-
  class Interpreted_Database:
-  public Interpreted_Database_Parent,
+  private joedb::Interpreted_File,
   public Generic_File_Database
  {
   public:
    Interpreted_Database(const char *file_name):
-    Interpreted_Database_Parent(file_name),
-    Generic_File_Database(file)
+    joedb::Interpreted_File(file_name),
+    Generic_File_Database(*static_cast<joedb::Interpreted_File *>(this))
    {
    }
 
