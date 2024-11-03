@@ -1,5 +1,6 @@
 #include "joedb/compiler/generator/struct_h.h"
 #include "joedb/compiler/nested_namespace.h"
+#include "joedb/io/write_value.h"
 
 namespace joedb::generator
 {
@@ -63,12 +64,23 @@ namespace joedb::generator
   {
    const joedb::Type &type = db.get_field_type(tid, fid);
    out << "  ";
-   write_type(type, false, false);
-   out << fname << ";\n";
-  }
 
-  // TODO: struct_tt (bool instead of char for boolean)
-  // TODO: default value
+   if (type.get_type_id() == joedb::Type::Type_Id::boolean)
+    out << "bool ";
+   else
+    write_type(type, false, false);
+
+   out << fname;
+
+   if (db.get_freedom(tid).size() > 0)
+   {
+    out << " = ";
+    const Record_Id record_id{db.get_freedom(tid).get_first_used() - 1};
+    write_value(out, db, nullptr, tid, record_id, fid);
+   }
+
+   out << ";\n";
+  }
 
   out << " };\n";
 
