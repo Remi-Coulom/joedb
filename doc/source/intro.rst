@@ -32,10 +32,6 @@ or `JSON <https://www.json.org/json-en.html>`_:
   incrementally update data stored on disk in a crash-safe way, and can handle
   :doc:`concurrent connections <concurrency>` of multiple clients to a single
   database.
-- Since a joedb file is append-only, its crash-safe operation does not require
-  flushing data to disk as frequently as typical relational databases, which
-  can make it an order of magnitude faster (see :doc:`checkpoints` for details
-  and benchmarks).
 - The whole data history is stored. So, no old data can ever be lost. It is
   also possible to add time stamps and comments to the journal, and use it as a
   log of the application (if the history has to be forgotten for privacy or
