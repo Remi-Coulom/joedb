@@ -2,7 +2,7 @@ OK: ############################################################################
 OK: # Testing basic interpreter commands
 OK: ###############################################################################
 42
-OK: blob "This is my life"
+OK: write_blob "This is my life"
 OK: create_table city
 OK: create_table person
 OK: add_field city name string
@@ -105,7 +105,7 @@ Journal
  valid_data
  flush
  checkpoint
- blob <data_string>
+ write_blob <data_string>
 
 Data definition
 ~~~~~~~~~~~~~~~
@@ -142,7 +142,7 @@ Displaying data
  dump
  sql
  json [<base64>]
- dump_blob <blob> [<dump_file_name>]
+ read_blob <blob> [<output_file_name>]
 
 OK: help
 Exception caught: create_table: name already used: city

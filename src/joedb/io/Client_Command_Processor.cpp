@@ -172,7 +172,7 @@ namespace joedb
       interpreted_client_data->get_database(),
       interpreted_client_data->get_multiplexer(),
       nullptr,
-      nullptr,
+      interpreted_client_data->get_multiplexer(),
       0
      );
      interpreter.set_parent(this);

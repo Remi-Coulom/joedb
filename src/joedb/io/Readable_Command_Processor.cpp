@@ -197,7 +197,7 @@ namespace joedb
    const auto &freedom = readable.get_freedom(table_id);
    out << freedom.get_used_count() << '\n';
   }
-  else if (blob_reader && command == "dump_blob") ///////////////////////////
+  else if (blob_reader && command == "read_blob") ///////////////////////////
   {
    const Blob blob = read_blob(parameters);
 
@@ -254,7 +254,7 @@ namespace joedb
 )RRR";
 
    if (blob_reader)
-    out << " dump_blob <blob> [<dump_file_name>]\n";
+    out << " read_blob <blob> [<output_file_name>]\n";
 
    out << '\n';
 

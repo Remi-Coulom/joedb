@@ -12,7 +12,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword joedbi_keyword valid_data schema dump sql help about quit
 
-syn keyword joedbi_keyword json echo blob nextgroup=joedbi_constant skipwhite
+syn keyword joedbi_keyword json echo write_blob read_blob nextgroup=joedbi_constant skipwhite
 
 syn keyword joedbi_keyword update_vector nextgroup=joedbi_table_integer_field_constant skipwhite
 

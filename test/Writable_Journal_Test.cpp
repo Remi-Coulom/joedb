@@ -134,7 +134,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Writable dummy_writable;
   Multiplexer multiplexer{db, journal, dummy_writable};
 
-  Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
+  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;

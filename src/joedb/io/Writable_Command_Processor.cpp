@@ -25,7 +25,7 @@ namespace joedb
  valid_data
  flush
  checkpoint
- blob <data_string>
+ write_blob <data_string>
 
 )RRR";
 
@@ -56,14 +56,10 @@ namespace joedb
   {
    writable.default_checkpoint();
   }
-  else if (command == "blob") ///////////////////////////////////////////////
+  else if (command == "write_blob") ////////////////////////////////////////
   {
    const std::string value = joedb::read_string(parameters);
-
-   const Blob blob = blob_writer ?
-    blob_writer->write_blob_data(value) :
-    writable.write_blob_data(value);
-
+   const Blob blob = blob_writer.write_blob_data(value);
    joedb::write_blob(out, blob);
    out << '\n';
   }

@@ -6,6 +6,7 @@
 namespace joedb
 {
  class Writable;
+ class Blob_Writer;
 
  ////////////////////////////////////////////////////////////////////////////
  class Writable_Command_Processor:
@@ -16,7 +17,7 @@ namespace joedb
 
   private:
    Writable &writable;
-   Writable * const blob_writer;
+   Blob_Writer &blob_writer;
 
    Status process_command
    (
@@ -30,7 +31,7 @@ namespace joedb
    Writable_Command_Processor
    (
     Writable &writable,
-    Writable *blob_writer
+    Blob_Writer &blob_writer
    ):
     writable(writable),
     blob_writer(blob_writer)

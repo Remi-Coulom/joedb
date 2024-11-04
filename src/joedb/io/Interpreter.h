@@ -33,7 +33,7 @@ namespace joedb
   public Command_Interpreter
  {
   public:
-   Writable_Interpreter(Writable &writable, Writable *blob_writer = nullptr):
+   Writable_Interpreter(Writable &writable, Blob_Writer &blob_writer):
     Writable_Command_Processor(writable, blob_writer)
    {
     add_processor(*static_cast<Writable_Command_Processor *>(this));
@@ -53,7 +53,7 @@ namespace joedb
     const Readable &readable,
     Writable &writable,
     Blob_Reader *blob_reader,
-    Writable *blob_writer,
+    Blob_Writer &blob_writer,
     size_t max_record_id
    ):
     Writable_Interpreter(writable, blob_writer),

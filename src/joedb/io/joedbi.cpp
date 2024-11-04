@@ -44,8 +44,6 @@ namespace joedb
    blob_file_parser.emplace();
    blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
   }
-  else
-   blob_file = &file;
 
   if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
   {
@@ -73,7 +71,7 @@ namespace joedb
     Writable &writable
    )
    {
-    Writable *blob_writer = blob_journal ? &*blob_journal : &writable;
+    Writable &blob_writer = blob_journal ? *blob_journal : writable;
     Interpreter interpreter(readable, writable, blob_file, blob_writer, 0);
     interpreter.main_loop(std::cin, std::cout);
     if (blob_journal)

@@ -24,7 +24,7 @@ TEST(Interpreter_Test, main_test)
   Writable_Journal journal(file);
   Database db;
   Multiplexer multiplexer{db, journal};
-  Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
+  Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
@@ -52,7 +52,7 @@ TEST(Interpreter_Test, Interpreter_Dump_Writable)
  const bool blob_wanted = true;
  joedb::Interpreter_Dump_Writable writable(dump_string, blob_wanted);
  Multiplexer multiplexer{db, journal, writable};
- Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
+ Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -79,7 +79,7 @@ TEST(Interpreter_Test, SQL_Dump_Writable)
  joedb::SQL_Dump_Writable writable(dump_string);
  writable.on_blob(Blob(), file);
  Multiplexer multiplexer{db, journal, writable};
- Interpreter interpreter(db, multiplexer, &journal, nullptr, 0);
+ Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
@@ -103,7 +103,7 @@ TEST(Interpreter_Test, Raw_Dump_Writable)
  std::ostringstream dump_string;
  joedb::Raw_Dump_Writable writable(dump_string);
  Multiplexer multiplexer{db, writable};
- Interpreter interpreter(db, multiplexer, nullptr, nullptr, 0);
+ Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
 
  std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
