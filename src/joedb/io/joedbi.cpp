@@ -44,6 +44,8 @@ namespace joedb
    blob_file_parser.emplace();
    blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
   }
+  else
+   blob_file = &file;
 
   if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
   {

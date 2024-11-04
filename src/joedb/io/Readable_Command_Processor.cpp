@@ -5,6 +5,7 @@
 #include "joedb/io/json.h"
 #include "joedb/io/dump.h"
 #include "joedb/Readable.h"
+#include "joedb/journal/File.h"
 
 #include <vector>
 #include <sstream>
@@ -196,6 +197,28 @@ namespace joedb
    const auto &freedom = readable.get_freedom(table_id);
    out << freedom.get_used_count() << '\n';
   }
+  else if (blob_reader && command == "dump_blob") ///////////////////////////
+  {
+   const Blob blob = read_blob(parameters);
+
+   if (!blob.is_null())
+   {
+    std::string s = blob_reader->read_blob_data(blob);
+    const std::string file_name = read_string(parameters);
+
+    if (file_name.size() == 0)
+    {
+     write_string(out, s);
+     out << '\n';
+    }
+    else
+    {
+     File file(file_name, joedb::Open_Mode::create_new);
+     file.write_data(s.data(), s.size());
+     file.flush();
+    }
+   }
+  }
   else if (command == "schema") /////////////////////////////////////////////
   {
    Interpreter_Dump_Writable dump_writable(out);
@@ -228,8 +251,12 @@ namespace joedb
  dump
  sql
  json [<base64>]
-
 )RRR";
+
+   if (blob_reader)
+    out << " dump_blob <blob> [<dump_file_name>]\n";
+
+   out << '\n';
 
    return Status::ok;
   }
