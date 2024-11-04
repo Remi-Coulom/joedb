@@ -4,6 +4,8 @@ TODO
 For next release
 ----------------
 
+ - nice progress bars for large uploads and downloads (in client + server log)
+
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
