@@ -45,12 +45,14 @@ namespace joedb
    blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
   }
 
+  Blob_Reader &blob_reader = blob_file ? *blob_file : file;
+
   if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
   {
    Database db;
    Readonly_Journal journal(file);
    journal.replay_log(db);
-   Readable_Interpreter interpreter(db, blob_file ? blob_file : &file);
+   Readable_Interpreter interpreter(db, &blob_reader);
    interpreter.main_loop(std::cin, std::cout);
   }
   else
@@ -65,14 +67,14 @@ namespace joedb
     blob_journal->append();
    }
 
-   client.transaction([blob_file, &blob_journal]
+   client.transaction([&blob_reader, &blob_journal]
    (
     const Readable &readable,
     Writable &writable
    )
    {
     Writable &blob_writer = blob_journal ? *blob_journal : writable;
-    Interpreter interpreter(readable, writable, blob_file, blob_writer, 0);
+    Interpreter interpreter(readable, writable, &blob_reader, blob_writer, 0);
     interpreter.main_loop(std::cin, std::cout);
     if (blob_journal)
      blob_journal->default_checkpoint();
