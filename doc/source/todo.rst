@@ -34,9 +34,12 @@ For next release
 
  - Add support for vcpkg
 
- - non-durable transactions that do not break durability -> switch
-   checkpoints only after durable transaction, use negative value for
-   non-durable checkpoint.
+ - non-durable transactions that do not break durability:
+   - switch checkpoints only after durable transaction
+   - use negative value for non-durable checkpoint
+   - when opening a file: if non-durable checkpoint is equal to file size,
+     OK by default (but option)
+   - client option to run a durable transaction every n seconds
 
 New Operations and Types
 ------------------------
