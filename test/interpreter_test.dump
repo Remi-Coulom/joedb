@@ -1,4 +1,4 @@
-blob "This is my life"
+write_blob "This is my life"
 create_table city
 create_table person
 add_field city name string
