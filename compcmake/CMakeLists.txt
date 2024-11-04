@@ -153,6 +153,7 @@ if(GTest_FOUND)
   ../test/Posthumous_Thrower_Test.cpp
   ../test/get_time_string_Test.cpp
   ../test/Selective_Writable_Test.cpp
+  ../test/SHA_256_Test.cpp
   ../test/Signal_Test.cpp
   ../test/ssh_Test.cpp
   ../test/Client_Test.cpp

@@ -142,6 +142,7 @@ Displaying data
  dump
  sql
  json [<base64>]
+ dump_blob <blob> [<dump_file_name>]
 
 OK: help
 Exception caught: create_table: name already used: city

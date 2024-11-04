@@ -1,5 +1,6 @@
 #include "joedb/journal/File_Hasher.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Writable_Journal.h"
 
 #include "gtest/gtest.h"
 
@@ -71,4 +72,34 @@ TEST(SHA_256, fast_hash_coverage)
  for (size_t i = 0; i < size; i++)
   file.write<uint32_t>(uint32_t(i));
  joedb::File_Hasher::get_fast_hash(file, 0, file.get_size());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+static const joedb::SHA_256::Hash big_hash
+/////////////////////////////////////////////////////////////////////////////
+{
+ {
+  1375295911, 2979956878, 2035804433, 1588190633,
+  2991985271, 583611159, 3820768175, 909004044
+ }
+};
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(SHA_256, journal)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ joedb::Writable_Journal journal(file);
+ const size_t size = 12345678;
+ for (size_t i = 0; i < size; i++)
+  journal.timestamp(i);
+ journal.checkpoint(joedb::Commit_Level::no_commit);
+
+ const joedb::SHA_256::Hash hash = joedb::Journal_Hasher::get_hash
+ (
+  journal,
+  journal.get_checkpoint_position() - 123
+ );
+
+ EXPECT_EQ(hash, big_hash);
 }
