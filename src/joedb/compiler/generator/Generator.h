@@ -19,9 +19,10 @@ namespace joedb::generator
    void write_type(Type type, bool return_type, bool setter_type);
    void write_tuple_type(const Compiler_Options::Index &index);
    void write_index_type(const Compiler_Options::Index &index);
-   const char *get_type_string(Type type);
-   const char *get_cpp_type_string(Type type);
-   const char *get_storage_type_string(Type type);
+
+   static const char *get_type_string(Type type);
+   static const char *get_cpp_type_string(Type type);
+   static const char *get_storage_type_string(Type type);
 
   public:
    Generator
