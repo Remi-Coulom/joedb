@@ -213,7 +213,7 @@ namespace joedb
  Blob Interpreter_Writable::write_blob_data(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "blob ";
+  out << "write_blob ";
   joedb::write_string(out, data);
   out << '\n';
 
