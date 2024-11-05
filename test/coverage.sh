@@ -15,7 +15,7 @@ rm -vf `find . -name \*.gcno`
 cmake --build . --target joedb_test || exit 1
 cd -
 
+rm -vf *.tmp
 ../compcmake/gcc_coverage/joedb_test || exit 1
 
-read -p "Enter to continue..."
 ./generate-gcov-html.sh

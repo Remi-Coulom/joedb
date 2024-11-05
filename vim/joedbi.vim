@@ -29,6 +29,7 @@ syn match joedbi_table_table '[a-zA-Z_]\w*' contained nextgroup=joedbi_table ski
 
 syn keyword joedbi_keyword table nextgroup=joedbi_table_constant skipwhite
 syn keyword joedbi_keyword create_table nextgroup=joedbi_table skipwhite
+syn keyword joedbi_keyword table_size nextgroup=joedbi_table skipwhite
 syn keyword joedbi_keyword drop_table nextgroup=joedbi_table skipwhite
 syn match joedbi_table '[a-zA-Z_]\w*' contained
 

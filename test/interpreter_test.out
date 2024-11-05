@@ -3,18 +3,36 @@ OK: # Testing basic interpreter commands
 OK: ###############################################################################
 42
 OK: write_blob "This is my life"
+"This is my life"
+OK: read_blob 42
+OK: read_blob 42 bio.txt.tmp
 OK: create_table city
 OK: create_table person
+0
+OK: table_size city
+0
+OK: table_size person
 OK: add_field city name string
 OK: add_field person name string
 OK: add_field person city references city
 OK: add_field person bio blob
+create_table city
+create_table person
+add_field city name string
+add_field person name string
+add_field person city references city
+add_field person bio blob
+OK: schema
 OK: insert_into city 1 "Paris"
 OK: insert_into city 2 "Lille"
 OK: insert_into city 15 "Pétaouchnok"
 OK: insert_into person 1 "Rémi" 2 42
 OK: insert_into person 2 "Norbert" 2 42
 OK: insert_into person 3 "Alexandre" 15 42
+3
+OK: table_size city
+3
+OK: table_size person
 create_table city
 create_table person
 add_field city name string
@@ -88,6 +106,12 @@ name: "Rémi"
 city: 2
  bio: "This is my life"
 OK: record person 1
+Exception caught: no such record
+Line 29: record person 12345
+name: "Rémi"
+city: 2
+ bio: "This is my life"
+OK: record person
 
 General commands
 ~~~~~~~~~~~~~~~~
@@ -146,13 +170,13 @@ Displaying data
 
 OK: help
 Exception caught: create_table: name already used: city
-Line 23: create_table city
+Line 32: create_table city
 Exception caught: create_table: invalid identifier: 123456
-Line 24: create_table 123456
+Line 33: create_table 123456
 Exception caught: rename_table: name already used: city
-Line 25: rename_table person city
+Line 34: rename_table person city
 Exception caught: rename_field: name already used: name
-Line 26: rename_field person city name
+Line 35: rename_field person city name
 OK: 
 OK: drop_table city
 OK: drop_table person
@@ -161,17 +185,17 @@ OK:
 OK: create_table test
 OK: add_field test a int32
 Exception caught: add_field: name already used
-Line 34: add_field test a int32
+Line 43: add_field test a int32
 OK: add_field test b int64
 Exception caught: unknown type
-Line 36: add_field test c qsdfqsdf
+Line 45: add_field test c qsdfqsdf
 Exception caught: No such table: qsdfqsdf
-Line 37: drop_table qsdfqsdf
+Line 46: drop_table qsdfqsdf
 Exception caught: Unknown command. For a list of available commands, try "help".
-Line 38: qsdfqsdf
+Line 47: qsdfqsdf
 OK: insert_into test 1 1234 5678
 Exception caught: insert: record_id already in use
-Line 40: insert_into test 1 1234 5678
+Line 49: insert_into test 1 1234 5678
 OK: add_field test d string
 OK: add_field test e boolean
 create_table test
@@ -187,16 +211,16 @@ update test 1 e false
 OK: dump
 OK: 
 Exception caught: drop_field: invalid field_id
-Line 45: drop_field test qsdfqsdf
+Line 54: drop_field test qsdfqsdf
 OK: drop_field test a
 OK: insert_into test 2 3 "4" false
 OK: delete_from test 2
 Exception caught: delete_record: bad record_id
-Line 49: delete_from test 123
+Line 58: delete_from test 123
 Exception caught: bad field
-Line 50: update test 1 a 56789
+Line 59: update test 1 a 56789
 Exception caught: update: invalid record_id
-Line 51: update test 2 b 56789
+Line 60: update test 2 b 56789
 OK: update test 1 b 56789
 create_table test
 add_field test b int64
@@ -241,7 +265,7 @@ OK: add_field float value float32
 OK: insert_vector float 1 5
 OK: update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
 Exception caught: bad field
-Line 85: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
+Line 94: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
 OK: 
 OK: create_table toto
 OK: add_field toto value string
@@ -249,30 +273,30 @@ OK: insert_vector toto 3 1
 OK: insert_vector toto 5 1
 OK: update toto 3 value "toto"
 Exception caught: update_vector: invalid record_id range
-Line 92: update_vector toto 5 value 2 "kiki" "kuku"
+Line 101: update_vector toto 5 value 2 "kiki" "kuku"
 OK: 
 Exception caught: rename_table: invalid identifier: __toto__
-Line 94: rename_table toto __toto__
+Line 103: rename_table toto __toto__
 Exception caught: No such table: azersdf
-Line 95: rename_table azersdf toto
+Line 104: rename_table azersdf toto
 Exception caught: add_field: invalid identifier: __field__
-Line 96: add_field toto __field__ string
+Line 105: add_field toto __field__ string
 Exception caught: No such table: azersdf
-Line 97: add_field azersdf field string
+Line 106: add_field azersdf field string
 Exception caught: No such table: azersdf
-Line 98: drop_field azersdf field
+Line 107: drop_field azersdf field
 Exception caught: rename_field: invalid identifier: __value__
-Line 99: rename_field toto value __value__
+Line 108: rename_field toto value __value__
 Exception caught: No such table: azersdf
-Line 100: rename_field azersdf value valux
+Line 109: rename_field azersdf value valux
 Exception caught: rename_field: invalid field_id
-Line 101: rename_field toto valux valux
+Line 110: rename_field toto valux valux
 Exception caught: No such table: azersdf
-Line 102: insert_into azersdf 1
+Line 111: insert_into azersdf 1
 Exception caught: No such table: azersdf
-Line 103: insert_vector azersdf 1 1
+Line 112: insert_vector azersdf 1 1
 Exception caught: No such table: azersdf
-Line 104: delete_from azersdf 1
+Line 113: delete_from azersdf 1
 OK: 
 create_table all_types
 create_table float
