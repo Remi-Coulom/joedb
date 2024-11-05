@@ -34,6 +34,7 @@ build()
   ../../src/joedb/io/Writable_Command_Processor.cpp\
   ../../src/joedb/io/Readable_Writable_Command_Processor.cpp\
   ../../src/joedb/io/type_io.cpp\
+  ../../src/joedb/io/write_value.cpp\
   ../../src/joedb/io/dump.cpp\
   ../../src/joedb/io/json.cpp\
   ../../src/joedb/io/base64.cpp\
