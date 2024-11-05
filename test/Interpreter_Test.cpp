@@ -20,6 +20,8 @@ TEST(Interpreter_Test, main_test)
 {
  Memory_File file;
 
+ std::remove("bio.txt.tmp");
+
  {
   Writable_Journal journal(file);
   Database db;
