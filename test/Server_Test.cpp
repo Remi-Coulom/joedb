@@ -833,4 +833,30 @@ namespace joedb
   test_signal(server, SIGUSR1);
   test_signal(server, SIGINT);
  }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, content_mismatch_bug)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server(false, std::chrono::seconds(0));
+
+  Memory_File file;
+
+  {
+   Writable_Journal journal(file);
+   for (int i = 1000000; --i >= 0;)
+    journal.timestamp(i);
+   journal.checkpoint(Commit_Level::no_commit);
+  }
+
+  {
+   Test_Client client(server, file);
+   client.client.push_unlock();
+  }
+
+  {
+   Test_Client client(server, file);
+   client.client.push_unlock();
+  }
+ }
 }
