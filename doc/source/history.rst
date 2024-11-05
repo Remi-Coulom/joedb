@@ -25,6 +25,8 @@ History
 
   - Fixes and improvements:
 
+    - Fix hash calculation of large files. ``joedb_server`` could wrongly
+      report hash mismatch errors when there was no error.
     - Fixed some potential resource leaks when throwing from constructors in
       ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
       ``CURL_File``, ``Windows_File``.
@@ -41,8 +43,8 @@ History
       end of a file now throws an exception.
     - boolean values are printed as ``false`` and ``true`` instead of 0 and 1.
     - In order to be coherent with the rest of the library, the order of
-      parameters of the compiled Client's constructor are swapped: the file is
-      first, then the connection.
+      parameters of the Client's constructor are swapped: the file is first,
+      then the connection.
     - hashing functions were moved into a separate ``File_Hasher`` class.
     - ``Generic_File::set_mode`` and ``get_mode`` were removed. They are
       replaced by the more restrictive ``make_readonly()``, ``is_shared()``,

@@ -56,7 +56,7 @@ namespace joedb
   else
   {
    joedb::Connection connection;
-   Interpreted_Client client(connection, file);
+   Interpreted_Client client(file, connection);
 
    std::optional<Writable_Journal> blob_journal;
    if (blob_file)

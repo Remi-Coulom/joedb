@@ -138,7 +138,7 @@ namespace joedb
     channel("localhost", Port_String(server).get()),
     server_connection(channel, nullptr),
     connection(server_connection),
-    client(connection, file)
+    client(file, connection)
    {
    }
 
@@ -600,7 +600,7 @@ namespace joedb
 
   Connection connection;
   Shared_Memory_File file{server.data};
-  Interpreted_Client shared_client{connection, file};
+  Interpreted_Client shared_client{file, connection};
 
   client.client.transaction
   (

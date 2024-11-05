@@ -17,8 +17,8 @@ TEST(Client, Interpreted_Client)
 
  File_Connection connection(server_file);
 
- Interpreted_Client client1(connection, client1_file);
- Interpreted_Client client2(connection, client2_file);
+ Interpreted_Client client1(client1_file, connection);
+ Interpreted_Client client2(client2_file, connection);
 
  client1.transaction([](const Readable &readable, Writable &writable)
  {
@@ -52,8 +52,8 @@ TEST(Client, Transaction_Failure)
 
   File_Connection connection(server_file);
  
-  Interpreted_Client client1(connection, client1_file);
-  Interpreted_Client client2(connection, client2_file);
+  Interpreted_Client client1(client1_file, connection);
+  Interpreted_Client client2(client2_file, connection);
 
   client1.transaction([](const Readable &readable, Writable &writable)
   {
@@ -123,7 +123,7 @@ TEST(Client, no_pull_when_ahead)
 
  Memory_File server_file;
  File_Connection connection(server_file);
- Interpreted_Client client(connection, client_file);
+ Interpreted_Client client(client_file, connection);
 
  EXPECT_ANY_THROW(client.pull());
  client.push_unlock();
@@ -136,7 +136,7 @@ TEST(Client, Client_Lock)
  Memory_File client_file;
  Memory_File server_file;
  File_Connection connection(server_file);
- Interpreted_Client client(connection, client_file);
+ Interpreted_Client client(client_file, connection);
 
  {
   Client_Lock lock(client);
@@ -209,7 +209,7 @@ TEST(Client, hash)
 
   try
   {
-   Interpreted_Client client(connection, client_file);
+   Interpreted_Client client(client_file, connection);
    ADD_FAILURE() << "Connection with incompatible file should have failed";
   }
   catch (const joedb::Exception &e)
@@ -229,7 +229,7 @@ TEST(Client, hash)
 
   try
   {
-   Interpreted_Client client(connection, client_file);
+   Interpreted_Client client(client_file, connection);
    EXPECT_EQ(client.get_database().get_tables().size(), 1ULL);
    client.pull();
    EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
@@ -255,7 +255,7 @@ TEST(Client, push)
   // Push something to the server via a connection
   //
   {
-   Interpreted_Client client(connection, client_file);
+   Interpreted_Client client(client_file, connection);
 
    client.transaction([](const Readable &readable, Writable &writable)
    {
@@ -277,7 +277,7 @@ TEST(Client, push)
   // Connect again, and update the server
   //
   {
-   Interpreted_Client client(connection, client_file);
+   Interpreted_Client client(client_file, connection);
    EXPECT_TRUE(client.get_checkpoint_difference() > 0);
    client.push_unlock();
   }
@@ -288,7 +288,7 @@ TEST(Client, push)
  //
  {
   Memory_File client_file;
-  Interpreted_Client client(connection, client_file);
+  Interpreted_Client client(client_file, connection);
   EXPECT_TRUE(client.get_checkpoint_difference() < 0);
   client.pull();
   EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
@@ -308,7 +308,7 @@ TEST(Client, synchronization_error_at_handshake)
  // Push something to the server via a connection
  //
  {
-  Interpreted_Client client(connection, client_file);
+  Interpreted_Client client(client_file, connection);
   client.transaction([](const Readable &readable, Writable &writable)
   {
    writable.create_table("person");
@@ -330,7 +330,7 @@ TEST(Client, synchronization_error_at_handshake)
  //
  {
   Memory_File client2_file;
-  Interpreted_Client client2(connection, client2_file);
+  Interpreted_Client client2(client2_file, connection);
 
   client2.transaction([](const Readable &readable, Writable &writable)
   {
@@ -343,7 +343,7 @@ TEST(Client, synchronization_error_at_handshake)
  //
  try
  {
-  Interpreted_Client client(connection, client_file);
+  Interpreted_Client client(client_file, connection);
   ADD_FAILURE() << "connecting should have failed\n";
  }
  catch (const Exception &e)
@@ -361,7 +361,7 @@ TEST(Client, empty_transaction)
 
  File_Connection connection(server_file);
 
- Interpreted_Client client(connection, client_file);
+ Interpreted_Client client(client_file, connection);
 
  client.transaction([](const Readable &readable, Writable &writable){});
  client.transaction([](const Readable &readable, Writable &writable){});

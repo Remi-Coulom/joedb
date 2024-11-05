@@ -15,8 +15,8 @@ namespace joedb
   public:
    Interpreted_Client
    (
-    Connection &connection,
     Generic_File &file,
+    Connection &connection,
     bool content_check = true
    ):
     Writable_Interpreted_Client_Data(file),

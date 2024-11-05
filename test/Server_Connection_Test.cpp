@@ -32,7 +32,7 @@ TEST(Server_Connection, handshake)
  try
  {
   joedb::Memory_File client_file;
-  joedb::Interpreted_Client client(connection, client_file);
+  joedb::Interpreted_Client client(client_file, connection);
 
   ADD_FAILURE() << "Should have thrown";
  }
