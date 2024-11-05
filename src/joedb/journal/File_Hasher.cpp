@@ -92,7 +92,7 @@ namespace joedb
     );
    }
 
-   file.seek(buffer_position);
+   file.set_position(buffer_position);
    file.read_data(file.buffer.data, file.buffer.size);
 
    for (int j = 0; j < file.buffer.ssize; j += int(SHA_256::chunk_size))
