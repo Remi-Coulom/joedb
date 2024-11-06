@@ -203,7 +203,7 @@ namespace joedb
 
    if (!blob.is_null())
    {
-    std::string s = blob_reader->read_blob_data(blob);
+    const std::string s = blob_reader->read_blob_data(blob);
     const std::string file_name = read_string(parameters);
 
     if (file_name.size() == 0)
