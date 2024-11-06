@@ -9,7 +9,7 @@
 #include <errno.h>
 #include <string.h>
 
-#ifdef JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
+#ifdef JOEDB_HAS_BROKEN_POSIX_LOCKING
 #define JOEDB_SETLK F_SETLK
 #define JOEDB_SETLKW F_SETLKW
 //#warning is C++23
