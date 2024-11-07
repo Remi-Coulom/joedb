@@ -1,17 +1,10 @@
-#include "joedb/journal/File.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
-
-#include "joedb/concurrency/Connection.h"
-#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/Destructor_Logger.h"
-#include "joedb/String_Logger.h"
 
 #include "gtest/gtest.h"
 
 using namespace joedb;
-
-static const char * const file_name = "local_connection.joedb";
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
 /////////////////////////////////////////////////////////////////////////////

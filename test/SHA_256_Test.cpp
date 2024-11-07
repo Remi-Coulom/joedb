@@ -90,8 +90,8 @@ TEST(SHA_256, journal)
 {
  joedb::Memory_File file;
  joedb::Writable_Journal journal(file);
- const size_t size = 12345678;
- for (size_t i = 0; i < size; i++)
+ const int64_t size = 12345678;
+ for (int64_t i = 0; i < size; i++)
   journal.timestamp(i);
  journal.checkpoint(joedb::Commit_Level::no_commit);
 
