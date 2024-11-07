@@ -74,6 +74,7 @@ namespace joedb
    return get_hash(file, start, size);
 
   SHA_256 sha_256;
+  file.flush();
   const int64_t old_position = file.get_position();
 
   for (int i = 0; i < buffer_count; i++)
@@ -92,10 +93,9 @@ namespace joedb
     );
    }
 
-   file.set_position(buffer_position);
-   file.read_data(file.buffer.data, file.buffer.size);
+   file.pread(file.buffer.data, file.buffer.size, buffer_position);
 
-   for (int j = 0; j < file.buffer.ssize; j += int(SHA_256::chunk_size))
+   for (size_t j = 0; j < file.buffer.ssize; j += SHA_256::chunk_size)
     sha_256.process_chunk(file.buffer.data + j);
   }
 
