@@ -48,7 +48,8 @@ namespace joedb
  {
   server.log([this](std::ostream &out)
   {
-   write_id(out) << "created\n";
+   write_id(out) << "created (remote endpoint: ";
+   out << this->socket.remote_endpoint() << ")\n";
   });
   server.sessions.insert(this);
   server.write_status();
