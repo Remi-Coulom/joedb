@@ -16,6 +16,6 @@ if(UNIX)
  add_definitions(-D_FILE_OFFSET_BITS=64)
  if (CMAKE_CROSSCOMPILING_EMULATOR)
   # This is necessary for qemu to work, although OFD macros are defined
-  add_definitions(-DJOEDB_HAS_BRAINDEAD_POSIX_LOCKING)
+  add_definitions(-DJOEDB_HAS_BROKEN_POSIX_LOCKING)
  endif()
 endif()

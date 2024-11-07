@@ -11,6 +11,9 @@ For next release
    - Split Database with Database_Storage parent
    - Readonly_Interpreted_Database
    - Reflection macro: tables/<table_name>/reflection.h
+   - Compiler option:
+     - make read/write access to some fields private
+     - allow writing custom member functions
 
  - Blob cache:
 

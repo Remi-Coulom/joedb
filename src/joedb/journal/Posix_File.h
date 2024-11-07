@@ -6,7 +6,7 @@
 #include <fcntl.h>
 
 #ifndef F_OFD_SETLK
-#define JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
+#define JOEDB_HAS_BROKEN_POSIX_LOCKING
 #endif
 
 namespace joedb
