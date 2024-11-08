@@ -95,7 +95,7 @@ namespace joedb
 
    file.pread(file.buffer.data, file.buffer.size, buffer_position);
 
-   for (size_t j = 0; j < file.buffer.ssize; j += SHA_256::chunk_size)
+   for (size_t j = 0; j < file.buffer.size; j += SHA_256::chunk_size)
     sha_256.process_chunk(file.buffer.data + j);
   }
 
