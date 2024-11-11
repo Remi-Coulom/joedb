@@ -21,14 +21,8 @@ For next release
    - write blobs to another file with max size
    - when max size reached, start again from the start (evict overwritten entries)
 
- - proper handling of unique_index with more than one column:
-
-   - joedbc produces a function to update multiple values simultaneously. Index
-     columns cannot be updated individually.
-   - do not allow more than one unique index with the same last column.
-   - when reading the file, update index only when last column is updated
-   - This may break old files.
-   - No more than one unique index per table?
+ - update unique index only when last column is updated (in order of column id, so that tables created with joedb_pack can have unique index).
+ - in compiled code, do not allow updating first columns without updating last columns, both when inserting individual values, and when inserting vectors.
 
  - allow reading dropped fields in custom functions that are invoked before the
    drop. Store data in a column vector, and clear the vector at the time of the
