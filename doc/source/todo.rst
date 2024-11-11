@@ -21,8 +21,8 @@ For next release
    - write blobs to another file with max size
    - when max size reached, start again from the start (evict overwritten entries)
 
- - update unique index only when last column is updated (in order of column id, so that tables created with joedb_pack can have unique index).
  - in compiled code, do not allow updating first columns without updating last columns, both when inserting individual values, and when inserting vectors.
+ - joedb_pack: fill holes left by deleted elements, like write_json.
 
  - allow reading dropped fields in custom functions that are invoked before the
    drop. Store data in a column vector, and clear the vector at the time of the

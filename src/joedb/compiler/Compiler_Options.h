@@ -20,6 +20,27 @@ namespace joedb
     std::string name;
     Table_Id table_id;
     std::vector<Field_Id> field_ids;
+
+    bool is_trigger(const Table_Id tid, const Field_Id fid) const
+    {
+     if (tid != table_id)
+      return false;
+
+     int index = int(field_ids.size());
+     while (--index >= 0)
+      if (field_ids[index] == fid)
+       break;
+
+     if (index < 0)
+      return false;
+
+     if (unique)
+      for (auto id: field_ids)
+       if (id > fid)
+        return false;
+
+     return true;
+    }
    };
 
    struct Table_Options

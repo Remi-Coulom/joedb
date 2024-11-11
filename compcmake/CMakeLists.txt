@@ -174,6 +174,7 @@ if(GTest_FOUND)
   ../test/compiler/Readonly_Client.cpp
   ../test/compiler/single_row.cpp
   ../test/compiler/translation.h
+  ../test/compiler/unique_index.cpp
   ../test/compiler/db/blob/writable.cpp
   ../test/compiler/db/empty/writable.cpp
   ../test/compiler/db/multi_index/writable.cpp

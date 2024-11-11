@@ -348,14 +348,14 @@ namespace joedb::generator
     out << ";\n";
 
     for (const auto &index: options.get_indices())
-     if (index.table_id == tid &&
-         std::find(index.field_ids.begin(),
-                   index.field_ids.end(),
-                   fid) != index.field_ids.end())
+    {
+     if (index.is_trigger(tid, fid))
      {
       out << "    remove_index_of_" << index.name << "(record_id);\n";
       out << "    add_index_of_" << index.name << "(record_id);\n";
      }
+    }
+
     out << "   }\n\n";
 
     out << "   void internal_update_vector_" << tname << "__" << fname << '\n';
@@ -377,16 +377,16 @@ namespace joedb::generator
     out << "     std::copy_n(value, size, target);\n";
 
     for (const auto &index: options.get_indices())
-     if (index.table_id == tid &&
-         std::find(index.field_ids.begin(),
-                   index.field_ids.end(),
-                   fid) != index.field_ids.end())
+    {
+     if (index.is_trigger(tid, fid))
      {
       out << "    for (size_t i = 0; i < size; i++)\n";
       out << "     remove_index_of_" << index.name << "(record_id + i);\n";
       out << "    for (size_t i = 0; i < size; i++)\n";
       out << "     add_index_of_" << index.name << "(record_id + i);\n";
      }
+    }
+
     out << "   }\n\n";
    }
   }
