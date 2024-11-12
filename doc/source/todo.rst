@@ -4,6 +4,8 @@ TODO
 For next release
 ----------------
 
+ - do not push at end of transaction if there is nothing to push
+
  - nice progress bars for large uploads and downloads (in client + server log)
 
  - more joedbc code generation:
