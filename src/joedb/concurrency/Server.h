@@ -4,6 +4,7 @@
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/net.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/io/Progress_Bar.h"
 
 #include <queue>
 #include <iosfwd>
@@ -55,6 +56,7 @@ namespace joedb
     bool unlock_after_push;
 
     std::ostream &write_id(std::ostream &out) const;
+    std::optional<io::Progress_Bar> progress_bar;
 
     Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();

@@ -1,8 +1,10 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/journal/File_Hasher.h"
 #include "joedb/Exception.h"
+#include "joedb/io/Progress_Bar.h"
 
 #include <iostream>
+#include <optional>
 
 #define LOG(x) do {if (log) *log << x;} while (false)
 
@@ -55,10 +57,14 @@ namespace joedb
   const int64_t server_checkpoint = buffer.read<int64_t>();
   const int64_t size = buffer.read<int64_t>();
 
-  LOG("checkpoint = " << server_checkpoint << "; size = " << size << "...");
+  LOG("checkpoint = " << server_checkpoint << "; size = " << size);
 
   {
    Writable_Journal::Tail_Writer tail_writer(client_journal);
+
+   std::optional<io::Progress_Bar> progress_bar;
+   if (size > buffer.ssize && log)
+    progress_bar.emplace(size, *log);
 
    for (int64_t read = 0; read < size;)
    {
@@ -70,13 +76,15 @@ namespace joedb
     const size_t n = lock.read_some(buffer.data, read_size);
     tail_writer.append(buffer.data, n);
     read += int64_t(n);
-    LOG('.');
+    if (progress_bar)
+     progress_bar->print(read);
    }
 
    tail_writer.finish();
-  }
 
-  LOG(" OK\n");
+   if (!progress_bar)
+    LOG(" OK\n");
+  }
 
   if (size < 0)
    throw Exception("Client checkpoint is ahead of server checkpoint");
@@ -132,31 +140,40 @@ namespace joedb
   buffer.write<int64_t>(server_position);
   buffer.write<int64_t>(push_size);
 
-  LOG(get_session_id() << ": pushing(U)... position = " << server_position << ", size = " << push_size << "... ");
+  LOG(get_session_id() << ": pushing(U)... position = " << server_position << ", size = " << push_size);
 
   {
    size_t offset = buffer.index;
+
+   std::optional<io::Progress_Bar> progress_bar;
+   if (reader.get_remaining() > buffer.ssize && log)
+    progress_bar.emplace(reader.get_remaining(), *log);
+
+   int64_t written = 0;
 
    while (offset + reader.get_remaining() > 0)
    {
     const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
     lock.write(buffer.data, size + offset);
+    written += size + offset;
     offset = 0;
-    LOG(size << ' ');
+    if (progress_bar)
+     progress_bar->print(written);
    }
+
+   if (!progress_bar)
+    LOG(" done\n");
   }
 
   lock.read(buffer.data, 1);
 
-  if (buffer.data[0] == 'U')
-   LOG("OK\n");
-  else if (buffer.data[0] == 'C')
+  if (buffer.data[0] == 'C')
    throw Exception("Conflict: push failed");
   else if (buffer.data[0] == 'R')
    throw Exception("Server is read-only: push failed");
   else if (buffer.data[0] == 't')
    throw Exception("Timeout: push failed");
-  else
+  else if (buffer.data[0] != 'U')
    throw Exception("Unexpected server reply");
 
   if (unlock_after)

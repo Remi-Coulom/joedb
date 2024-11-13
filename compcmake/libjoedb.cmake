@@ -10,6 +10,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/inplace_pack.cpp
  ${JOEDB_SRC_DIR}/joedb/io/merge.cpp
  ${JOEDB_SRC_DIR}/joedb/io/process_journal_pair.cpp
+ ${JOEDB_SRC_DIR}/joedb/io/Progress_Bar.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Client_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Raw_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Connection_Parser.cpp

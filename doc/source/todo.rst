@@ -4,10 +4,6 @@ TODO
 For next release
 ----------------
 
- - do not push at end of transaction if there is nothing to push
-
- - nice progress bars for large uploads and downloads (in client + server log)
-
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
@@ -16,6 +12,7 @@ For next release
    - Compiler option:
      - make read/write access to some fields private
      - allow writing custom member functions
+     - example: encapsulate stone-vector allocation / deletion for kifusnap training set
 
  - Blob cache:
 
@@ -131,6 +128,7 @@ Concurrency
   - get rid of signal. Make an interactive command-line interface to control
     the server. Maybe better: use asio's (non-std::net) support for signal.
 
+- restart very large download from where it stopped (use hash to check before continuing?)
 - SHA-256: option for either none, fast or full.
 - Connection_Multiplexer for multiple parallel backup servers? Complicated.
   requires asynchronous client code.

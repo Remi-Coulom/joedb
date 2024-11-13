@@ -228,6 +228,9 @@ namespace joedb
 
    session->push_remaining_size -= bytes_transferred;
 
+   if (session->progress_bar)
+    session->progress_bar->print_remaining(session->push_remaining_size);
+
    push_transfer(session);
   }
  }
@@ -238,8 +241,6 @@ namespace joedb
  {
   if (session->push_remaining_size > 0)
   {
-   LOG(session->push_status);
-
    refresh_lock_timeout(session);
 
    net::async_read
@@ -280,7 +281,12 @@ namespace joedb
 
    session->buffer.data[0] = session->push_status;
 
-   LOG(" done. Returning '" << session->push_status << "'\n");
+   if (session->progress_bar)
+    session->progress_bar.reset();
+   else
+    LOG(" done. ");
+
+   LOG("Returning '" << session->push_status << "'\n");
 
    write_buffer_and_next_command(session, 1);
 
@@ -320,7 +326,10 @@ namespace joedb
     start != client.get_journal().get_checkpoint_position()
    );
 
-   LOGID("pushing, start = " << start << ", size = " << size << ':');
+   LOGID("pushing, start = " << start << ", size = " << size);
+
+   if (log_pointer && size > session->buffer.ssize)
+    session->progress_bar.emplace(size);
 
    if (is_readonly())
     session->push_status = 'R';
@@ -356,7 +365,8 @@ namespace joedb
   {
    if (offset + reader.get_remaining() > 0)
    {
-    LOG('.');
+    if (session->progress_bar)
+     session->progress_bar->print_remaining(reader.get_remaining());
 
     const size_t size = reader.read // ??? takes_time
     (
@@ -378,7 +388,10 @@ namespace joedb
    }
    else
    {
-    LOG(" OK\n");
+    if (session->progress_bar)
+     session->progress_bar.reset();
+    else
+     LOG(" OK\n");
     read_command(session);
    }
   }
@@ -412,6 +425,9 @@ namespace joedb
 
    LOGID("pulling from checkpoint = " << checkpoint << ", size = "
     << reader.get_remaining() << ':');
+
+   if (log_pointer && reader.get_remaining() > session->buffer.ssize)
+    session->progress_bar.emplace(reader.get_remaining());
 
    pull_transfer_handler
    (
