@@ -363,11 +363,11 @@ namespace joedb
  {
   if (!error)
   {
+   if (session->progress_bar)
+    session->progress_bar->print_remaining(reader.get_remaining());
+
    if (offset + reader.get_remaining() > 0)
    {
-    if (session->progress_bar)
-     session->progress_bar->print_remaining(reader.get_remaining());
-
     const size_t size = reader.read // ??? takes_time
     (
      session->buffer.data + offset,
