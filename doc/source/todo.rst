@@ -9,7 +9,9 @@ For next release
    - Split Database with Database_Storage parent
    - Readonly_Interpreted_Database
    - Reflection macro: tables/<table_name>/reflection.h
-   - Compiler option:
+   - No more struct, use reflection instead
+   - Compiled Readable
+   - Compiler options: allow encapsulation
      - make read/write access to some fields private
      - allow writing custom member functions
      - example: encapsulate stone-vector allocation / deletion for kifusnap training set
@@ -185,7 +187,6 @@ Other Ideas
   - a separate table abstraction (that could be used for query output)
   - cursors on tables
 
-- compiled Readable
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Note that SQL does not support inf and nan. Use NULL instead.
 - Raw commands in interpreter?
