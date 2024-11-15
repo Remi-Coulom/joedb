@@ -126,6 +126,7 @@ namespace joedb::generator
   out << '\n';
 
   out << " class Database: public joedb::Writable\n {\n";
+  out << "  friend class Readable;\n";
 
   for (const auto &[tid, tname]: tables)
   {

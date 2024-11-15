@@ -1,5 +1,6 @@
 #include "joedb/Readable.h"
 #include "joedb/Exception.h"
+#include "joedb/Freedom_Keeper.h"
 
 namespace joedb
 {
@@ -67,5 +68,23 @@ namespace joedb
   }
 
   return default_field_name;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Record_Id Readable::get_last_record_id(Table_Id table_id) const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return Record_Id(get_freedom(table_id).size());
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ bool Readable::is_used
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id,
+  Record_Id record_id
+ ) const
+ {
+  return get_freedom(table_id).is_used(to_underlying(record_id) + 1);
  }
 }

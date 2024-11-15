@@ -10,6 +10,7 @@
 #include "joedb/compiler/generator/Database_cpp.h"
 #include "joedb/compiler/generator/Readonly_Database_h.h"
 #include "joedb/compiler/generator/Types_h.h"
+#include "joedb/compiler/generator/Readable_h.h"
 #include "joedb/compiler/generator/readonly_h.h"
 #include "joedb/compiler/generator/readonly_cpp.h"
 
@@ -126,6 +127,7 @@ namespace joedb
   generator::Database_cpp(options).generate();
   generator::Readonly_Database_h(options).generate();
   generator::Types_h(options).generate();
+  generator::Readable_h(options).generate();
   generator::readonly_h(options).generate();
   generator::readonly_cpp(options).generate();
 
