@@ -1,5 +1,6 @@
 #include "joedb/compiler/generator/Readable_h.h"
 #include "joedb/compiler/nested_namespace.h"
+#include "joedb/io/type_io.h"
 
 namespace joedb::generator
 {
@@ -18,8 +19,8 @@ namespace joedb::generator
  ////////////////////////////////////////////////////////////////////////////
  {
   const Database_Schema &db = options.get_db();
-  auto tables = db.get_tables(); 
-  
+  auto tables = db.get_tables();
+
   namespace_include_guard(out, "Readable", options.get_name_space());
 
   out << R"RRR(
@@ -76,6 +77,49 @@ namespace joedb::generator
    Field_Id field_id
   ) const override
   {)RRR";
+
+  for (const auto &[tid, tname]: tables)
+  {
+   bool has_typed_field = false;
+
+   for (const auto &[fid, fname]: db.get_fields(tid))
+   {
+    const Type &type = db.get_field_type(tid, fid);
+    if (type.get_type_id() == type_id)
+    {
+     has_typed_field = true;
+     break;
+    }
+   }
+
+   if (has_typed_field)
+   {
+    out << "\n   if (table_id == Table_Id{" << to_underlying(tid) << "})\n";
+    out << "   {\n";
+
+    for (const auto &[fid, fname]: db.get_fields(tid))
+    {
+     const Type &type = db.get_field_type(tid, fid);
+
+     if (type.get_type_id() == type_id)
+     {
+      out << "    if (field_id == Field_Id(" << fid << "))\n";
+      out << "    {\n";
+      out << "     return ";
+      if (type_id == joedb::Type::Type_Id::reference)
+       out << "joedb::Record_Id\n     {\n      ";
+      out << "db.storage_of_" << tname << ".field_value_of_" << fname << "[size_t(record_id) - 1]";
+      if (type_id == joedb::Type::Type_Id::reference)
+       out << ".get_id()\n     }";
+      out << ";\n";
+      out << "    }\n";
+     }
+    }
+
+    out << "   }\n";
+   }
+  }
+
   out << R"RRR(
    throw joedb::Exception("unknown field");
   }
@@ -84,6 +128,6 @@ namespace joedb::generator
 
   out << " };\n";
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";  
+  out << "\n#endif\n";
  }
 }
