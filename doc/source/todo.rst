@@ -4,6 +4,7 @@ TODO
 For next release
 ----------------
 
+ - better Freedom_Keeper (see below)
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
@@ -100,9 +101,10 @@ Better Freedom_Keeper
 - index returned by public methods of Freedom_Keeper should be record ids.
 - No need to maintain a linked list of individual records
 - A linked list of intervals instead, to unify everything
-- Let joedb_merge fuse intervals to remove holes (100% update_vector)
+- Let joedb_merge & joedb_pack fuse intervals to remove holes (100% update_vector)
 - joedb_to_json can also become more efficient
 - Get ready for "last-N" storage, and no_delete option (force single interval).
+- joedb_pack can be faster (no need to loop over record_ids one by one)
 
 Concurrency
 -----------
