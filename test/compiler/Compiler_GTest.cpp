@@ -113,8 +113,9 @@ TEST(Compiler, file_test)
  catch(const std::runtime_error &e)
  {
   EXPECT_STREQ(e.what(), "city_by_name unique index failure: (\"Paris\") at id = 2 was already at id = 3");
-  db.set_name(New_York, "New York");
  }
+
+ EXPECT_EQ(db.get_name(New_York), "New York");
 
  //
  // Validity + get_at
