@@ -7,7 +7,6 @@ For next release
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
-   - Readonly_Interpreted_Database
    - Compiled Readable
    - Compiler options: allow encapsulation
      - make read/write access to some fields private
