@@ -51,66 +51,7 @@ void joedb::dump(const Readable &db, Writable &writable, bool schema_only)
  if (schema_only)
   return;
 
- for (const auto &[tid, tname]: db.get_tables())
- {
-  const size_t last_record_id = size_t(db.get_last_record_id(tid));
-
-  for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id;)
-  {
-   while
-   (
-    size_t(record_id) <= last_record_id &&
-    !db.is_used(tid, record_id)
-   )
-   {
-    ++record_id;
-   }
-
-   size_t size = 0;
-
-   while
-   (
-    size_t(record_id) + size <= last_record_id &&
-    db.is_used(tid, record_id + size)
-   )
-   {
-    size++;
-   }
-
-   if (size)
-   {
-    writable.insert_vector(table_map[tid], record_id, size);
-    record_id = record_id + size;
-   }
-  }
-
-  for (const auto &[fid, fname]: db.get_fields(tid))
-  {
-   for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id; ++record_id)
-   {
-    if (db.is_used(tid, record_id))
-    {
-     Table_Id mapped_tid = table_map[tid];
-     Field_Id mapped_fid = field_maps[tid][fid];
-
-     switch (db.get_field_type(tid, fid).get_type_id())
-     {
-      case Type::Type_Id::null:
-      break;
-
-      #define TYPE_MACRO(type, return_type, type_id, R, W)\
-      case Type::Type_Id::type_id:\
-       writable.update_##type_id\
-       (\
-        mapped_tid, record_id, mapped_fid, db.get_##type_id(tid, record_id, fid)\
-       );\
-      break;
-      #include "joedb/TYPE_MACRO.h"
-     }
-    }
-   }
-  }
- }
+ dump_data(db, writable);
 }
 
 /////////////////////////////////////////////////////////////////////////////
