@@ -88,16 +88,7 @@ namespace joedb
  }
 
  #define TYPE_MACRO(type, return_type, type_id, R, W)\
- return_type Database_Schema::get_##type_id\
- (\
-  Table_Id table_id,\
-  Record_Id record_id,\
-  Field_Id field_id\
- ) const\
- {\
-  return get_table(table_id).get_##type_id(record_id, field_id);\
- }\
- const type &Database_Schema::get_##type_id##_storage\
+ const type &Database_Schema::get_##type_id\
  (\
   Table_Id table_id,\
   Record_Id record_id,\

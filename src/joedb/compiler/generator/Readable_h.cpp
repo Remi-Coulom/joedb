@@ -66,22 +66,13 @@ namespace joedb::generator
 )RRR";
 
 
-  for (const bool storage: {false, true})
-  {
    for (int type_index = 1; type_index < int(Type::type_ids); type_index++)
    {
     const auto type_id = Type::Type_Id(type_index);
 
     out << "\n  ";
-    if (storage)
-     out << "const " << get_storage_type_string(type_id) << '&';
-    else
-     out << get_cpp_type_string(type_id);
-
+    out << "const " << get_storage_type_string(type_id) << '&';
     out << " get_" << get_type_string(type_id);
-
-    if (storage)
-     out << "_storage";
 
     out << R"RRR(
   (
@@ -121,22 +112,12 @@ namespace joedb::generator
        out << "     return ";
 
        if (type_id == joedb::Type::Type_Id::reference)
-       {
-        if (storage)
-         out << "*reinterpret_cast<const joedb::Record_Id *>(&";
-        else
-         out << "joedb::Record_Id\n     {\n      ";
-       }
+        out << "*reinterpret_cast<const joedb::Record_Id *>(&";
 
        out << "db.storage_of_" << tname << ".field_value_of_" << fname << "[size_t(record_id) - 1]";
 
        if (type_id == joedb::Type::Type_Id::reference)
-       {
-        if (storage)
-         out << ")";
-        else
-         out << ".get_id()\n     }";
-       }
+        out << ")";
 
        out << ";\n";
        out << "    }\n";
@@ -152,7 +133,6 @@ namespace joedb::generator
   }
 )RRR";
    }
-  }
 
   out << " };\n";
   namespace_close(out, options.get_name_space());

@@ -32,13 +32,7 @@ namespace joedb
 
    virtual const Compact_Freedom_Keeper &get_freedom(Table_Id table_id) const = 0;
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   virtual return_type get_##type_id\
-   (\
-    Table_Id table_id,\
-    Record_Id record_id,\
-    Field_Id field_id\
-   ) const = 0;\
-   virtual const type &get_##type_id##_storage\
+   virtual const type &get_##type_id\
    (\
     Table_Id table_id,\
     Record_Id record_id,\

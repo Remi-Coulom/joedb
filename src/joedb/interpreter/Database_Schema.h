@@ -50,13 +50,7 @@ namespace joedb
    const Compact_Freedom_Keeper &get_freedom(Table_Id table_id) const override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
-   return_type get_##type_id\
-   (\
-    Table_Id table_id,\
-    Record_Id record_id,\
-    Field_Id field_id\
-   ) const override;\
-   const type &get_##type_id##_storage\
+   const type &get_##type_id\
    (\
     Table_Id table_id,\
     Record_Id record_id,\

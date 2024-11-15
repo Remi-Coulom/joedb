@@ -108,7 +108,7 @@ void joedb::dump_data(const Readable &db, Writable &writable)
         record_id,\
         fid,\
         size,\
-        &db.get_##type_id##_storage\
+        &db.get_##type_id\
         (\
          tid,\
          record_id,\
