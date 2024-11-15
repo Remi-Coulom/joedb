@@ -25,7 +25,7 @@
 #include "joedb/compiler/generator/Readonly_Client_h.h"
 
 #include "joedb/compiler/generator/ids_h.h"
-#include "joedb/compiler/generator/struct_h.h"
+#include "joedb/compiler/generator/introspection_h.h"
 
 #include <iostream>
 
@@ -142,7 +142,7 @@ namespace joedb
   generator::ids_h(options).generate();
 
   for (const auto &table: options.db.get_tables())
-   generator::struct_h(options, table).generate();
+   generator::introspection_h(options, table).generate();
 
   return 0;
  }
