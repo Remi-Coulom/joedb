@@ -8,7 +8,6 @@ For next release
 
    - Split Database with Database_Storage parent
    - Readonly_Interpreted_Database
-   - Reflection macro: tables/<table_name>/reflection.h
    - Compiled Readable
    - Compiler options: allow encapsulation
      - make read/write access to some fields private
