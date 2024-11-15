@@ -7,7 +7,6 @@ For next release
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
-   - Compiled Readable: get_##type_id##_storage functions are broken. Must add more tests.
    - Compiler options: allow encapsulation:
 
      - make read/write access to some fields private

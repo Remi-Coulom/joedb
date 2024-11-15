@@ -65,12 +65,25 @@ namespace joedb::generator
    }
 )RRR";
 
-  for (int type_index = 1; type_index < int(Type::type_ids); type_index++)
-  {
-   const auto type_id = Type::Type_Id(type_index);
 
-   out << "\n  " << get_cpp_type_string(type_id);
-   out << " get_" << get_type_string(type_id) << R"RRR(
+  for (const bool storage: {false, true})
+  {
+   for (int type_index = 1; type_index < int(Type::type_ids); type_index++)
+   {
+    const auto type_id = Type::Type_Id(type_index);
+
+    out << "\n  ";
+    if (storage)
+     out << "const " << get_storage_type_string(type_id) << '&';
+    else
+     out << get_cpp_type_string(type_id);
+
+    out << " get_" << get_type_string(type_id);
+
+    if (storage)
+     out << "_storage";
+
+    out << R"RRR(
   (
    Table_Id table_id,
    Record_Id record_id,
@@ -78,52 +91,67 @@ namespace joedb::generator
   ) const override
   {)RRR";
 
-  for (const auto &[tid, tname]: tables)
-  {
-   bool has_typed_field = false;
-
-   for (const auto &[fid, fname]: db.get_fields(tid))
+   for (const auto &[tid, tname]: tables)
    {
-    const Type &type = db.get_field_type(tid, fid);
-    if (type.get_type_id() == type_id)
-    {
-     has_typed_field = true;
-     break;
-    }
-   }
-
-   if (has_typed_field)
-   {
-    out << "\n   if (table_id == Table_Id{" << to_underlying(tid) << "})\n";
-    out << "   {\n";
+    bool has_typed_field = false;
 
     for (const auto &[fid, fname]: db.get_fields(tid))
     {
      const Type &type = db.get_field_type(tid, fid);
-
      if (type.get_type_id() == type_id)
      {
-      out << "    if (field_id == Field_Id(" << fid << "))\n";
-      out << "    {\n";
-      out << "     return ";
-      if (type_id == joedb::Type::Type_Id::reference)
-       out << "joedb::Record_Id\n     {\n      ";
-      out << "db.storage_of_" << tname << ".field_value_of_" << fname << "[size_t(record_id) - 1]";
-      if (type_id == joedb::Type::Type_Id::reference)
-       out << ".get_id()\n     }";
-      out << ";\n";
-      out << "    }\n";
+      has_typed_field = true;
+      break;
      }
     }
 
-    out << "   }\n";
-   }
-  }
+    if (has_typed_field)
+    {
+     out << "\n   if (table_id == Table_Id{" << to_underlying(tid) << "})\n";
+     out << "   {\n";
 
-  out << R"RRR(
+     for (const auto &[fid, fname]: db.get_fields(tid))
+     {
+      const Type &type = db.get_field_type(tid, fid);
+
+      if (type.get_type_id() == type_id)
+      {
+       out << "    if (field_id == Field_Id(" << fid << "))\n";
+       out << "    {\n";
+       out << "     return ";
+
+       if (type_id == joedb::Type::Type_Id::reference)
+       {
+        if (storage)
+         out << "*reinterpret_cast<const joedb::Record_Id *>(&";
+        else
+         out << "joedb::Record_Id\n     {\n      ";
+       }
+
+       out << "db.storage_of_" << tname << ".field_value_of_" << fname << "[size_t(record_id) - 1]";
+
+       if (type_id == joedb::Type::Type_Id::reference)
+       {
+        if (storage)
+         out << ")";
+        else
+         out << ".get_id()\n     }";
+       }
+
+       out << ";\n";
+       out << "    }\n";
+      }
+     }
+
+     out << "   }\n";
+    }
+   }
+
+   out << R"RRR(
    throw joedb::Exception("unknown field");
   }
 )RRR";
+   }
   }
 
   out << " };\n";
