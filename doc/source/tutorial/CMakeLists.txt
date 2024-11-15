@@ -37,6 +37,11 @@ joedb_add_executable(tutorial
  tutorial/writable.cpp
 )
 
+joedb_add_executable(tutorial_interpreter
+ tutorial_interpreter.cpp
+ tutorial/writable.cpp
+)
+
 joedb_add_executable(local_concurrency
  local_concurrency.cpp
  tutorial/writable.cpp

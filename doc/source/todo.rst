@@ -7,11 +7,15 @@ For next release
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
-   - Compiled Readable
-   - Compiler options: allow encapsulation
+   - Compiled Readable: get_##type_id##_storage functions are broken. Must add more tests.
+   - Compiler options: allow encapsulation:
+
      - make read/write access to some fields private
      - allow writing custom member functions
      - example: encapsulate stone-vector allocation / deletion for kifusnap training set
+     - encapsulate multi-column index update (cannot write column individually)
+     - in case of unique index failure, throw before actually inserting (add test)
+     - private access to dropped fields (for old custom functions), cleared at the time of drop
 
  - Blob cache:
 
@@ -19,17 +23,10 @@ For next release
    - write blobs to another file with max size
    - when max size reached, start again from the start (evict overwritten entries)
 
- - in compiled code, do not allow updating first columns without updating last columns, both when inserting individual values, and when inserting vectors.
  - joedb_pack: fill holes left by deleted elements, like write_json.
-
- - allow reading dropped fields in custom functions that are invoked before the
-   drop. Store data in a column vector, and clear the vector at the time of the
-   drop. Make sure field id is not reused. (make access function private, and
-   custom functions are friends)
-
  - Add support for vcpkg
-
  - non-durable transactions that do not break durability:
+
    - switch checkpoints only after durable transaction
    - use negative value for non-durable checkpoint
    - when opening a file: if non-durable checkpoint is equal to file size, OK by default (but option)

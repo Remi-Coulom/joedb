@@ -26,6 +26,7 @@ namespace joedb::generator
   out << R"RRR(
 #include "Database.h"
 #include "joedb/Span.h"
+#include "joedb/Multiplexer.h"
 
 )RRR";
 
@@ -323,7 +324,12 @@ namespace joedb::generator
    }
   }
 
-  out << " };\n";
+  out << R"RRR(   joedb::Multiplexer get_multiplexer()
+   {
+    return joedb::Multiplexer{*this, journal};
+   }
+ };
+)RRR";
 
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";
