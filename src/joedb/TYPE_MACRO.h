@@ -3,7 +3,7 @@
 #endif
 
 #ifndef TYPE_MACRO_NO_STRING
-TYPE_MACRO(std::string, const std::string &, string, safe_read_string, write_string)
+TYPE_MACRO(std::string, const std::string&, string, safe_read_string, write_string)
 #endif
 #ifndef TYPE_MACRO_NO_INT
 TYPE_MACRO(int32_t, int32_t, int32, file.read<int32_t>, write<int32_t>)

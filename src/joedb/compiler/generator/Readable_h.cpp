@@ -26,6 +26,7 @@ namespace joedb::generator
 #include "Database.h"
 
 #include "joedb/interpreter/Database_Schema.h"
+#include "joedb/journal/Readonly_Memory_File.h"
 
 )RRR";
 
@@ -40,7 +41,9 @@ namespace joedb::generator
   public:
    Readable(const Database &db): db(db)
    {
-    // TODO: load schema from schema string
+    joedb::Readonly_Memory_File file(schema_string);
+    joedb::Readonly_Journal journal(file);
+    journal.replay_log(*this);
    }
 
    const joedb::Compact_Freedom_Keeper &get_freedom
@@ -50,20 +53,37 @@ namespace joedb::generator
    {
 )RRR";
 
-   for (const auto &[tid, tname]: tables)
-   {
-    out << "    if (table_id == Table_Id{" << to_underlying(tid) << "})\n";
-    out << "     return db.storage_of_" << tname << ".freedom_keeper;\n";
-   }
+  for (const auto &[tid, tname]: tables)
+  {
+   out << "    if (table_id == Table_Id{" << to_underlying(tid) << "})\n";
+   out << "     return db.storage_of_" << tname << ".freedom_keeper;\n";
+  }
 
-   out << R"RRR(
+  out << R"RRR(
     throw joedb::Exception("unknown table_id");
    }
- };
 )RRR";
 
-  namespace_close(out, options.get_name_space());
+  for (int type_index = 1; type_index < int(Type::type_ids); type_index++)
+  {
+   const auto type_id = Type::Type_Id(type_index);
 
+   out << "\n  " << get_cpp_type_string(type_id);
+   out << " get_" << get_type_string(type_id) << R"RRR(
+  (
+   Table_Id table_id,
+   Record_Id record_id,
+   Field_Id field_id
+  ) const override
+  {)RRR";
+  out << R"RRR(
+   throw joedb::Exception("unknown field");
+  }
+)RRR";
+  }
+
+  out << " };\n";
+  namespace_close(out, options.get_name_space());
   out << "\n#endif\n";  
  }
 }

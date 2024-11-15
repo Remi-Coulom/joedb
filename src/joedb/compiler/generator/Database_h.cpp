@@ -511,7 +511,7 @@ namespace joedb::generator
     out << "    Table_Id table_id,\n";
     out << "    Record_Id record_id,\n";
     out << "    Field_Id field_id,\n";
-    out << "    " << get_cpp_type_string(type_id) << "value\n";
+    out << "    " << get_cpp_type_string(type_id) << " value\n";
     out << "   )\n";
     out << "   final\n";
     out << "   {\n";

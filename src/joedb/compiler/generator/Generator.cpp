@@ -133,7 +133,7 @@ namespace joedb::generator
   static char const * const cpp_types[] =
   {
    nullptr,
-  #define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type)" ",
+  #define TYPE_MACRO(a, type, c, d, e) EXPAND_AND_STRINGIFY(type),
   #include "joedb/TYPE_MACRO.h"
   };
 
