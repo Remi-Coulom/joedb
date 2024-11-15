@@ -2,7 +2,7 @@
 #define joedb_io_Progress_Bar_declared
 
 #include <cstdint>
-#include <iostream>
+#include <iosfwd>
 
 namespace joedb::io
 {
@@ -19,11 +19,7 @@ namespace joedb::io
    int current_display;
 
   public:
-   Progress_Bar
-   (
-    int64_t total,
-    std::ostream &out = std::cerr
-   );
+   Progress_Bar(int64_t total, std::ostream &out);
    void print(int64_t current);
    void print_remaining(int64_t remaining) {print(total - remaining);}
    ~Progress_Bar();

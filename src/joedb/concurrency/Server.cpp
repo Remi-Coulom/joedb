@@ -329,7 +329,7 @@ namespace joedb
    LOGID("pushing, start = " << start << ", size = " << size);
 
    if (log_pointer && size > session->buffer.ssize)
-    session->progress_bar.emplace(size);
+    session->progress_bar.emplace(size, *log_pointer);
 
    if (is_readonly())
     session->push_status = 'R';
@@ -427,7 +427,7 @@ namespace joedb
     << reader.get_remaining() << ':');
 
    if (log_pointer && reader.get_remaining() > session->buffer.ssize)
-    session->progress_bar.emplace(reader.get_remaining());
+    session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
 
    pull_transfer_handler
    (
