@@ -236,7 +236,7 @@ namespace joedb::generator
 
       const Type &type = db.get_field_type(tid, fid);
       write_type(type, false, true);
-      out << "field_value_of_" << fname;
+      out << " field_value_of_" << fname;
      }
 
      out << '\n';
@@ -280,7 +280,7 @@ namespace joedb::generator
     out << "   void set_" << fname;
     out << "(id_of_" << tname << " record, ";
     write_type(type, false, true);
-    out << "field_value_of_" << fname << ")\n";
+    out << " field_value_of_" << fname << ")\n";
     out << "   {\n";
     out << "    internal_update_" << tname << "__" << fname;
 

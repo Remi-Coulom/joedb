@@ -340,7 +340,7 @@ namespace joedb::generator
     out << "   void internal_update_" << tname << "__" << fname;
     out << "\n   (\n    Record_Id record_id,\n    ";
     write_type(type, true, false);
-    out << "field_value_of_" << fname << "\n   )\n";
+    out << " field_value_of_" << fname << "\n   )\n";
     out << "   {\n";
     out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
     out << "    storage_of_" << tname << ".field_value_of_" << fname;
@@ -894,7 +894,7 @@ namespace joedb::generator
     //
     out << "   ";
     write_type(type, true, false);
-    out << "get_" << fname << "(id_of_" << tname << " record";
+    out << " get_" << fname << "(id_of_" << tname << " record";
     if (single_row)
      out << "= id_of_" << tname << "{1}";
     out << ") const\n";
@@ -961,7 +961,7 @@ namespace joedb::generator
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
      write_type(type, true, false);
-     out << "field_value_of_";
+     out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ") const\n";
@@ -992,7 +992,7 @@ namespace joedb::generator
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
      write_type(type, true, false);
-     out << "field_value_of_";
+     out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ") const;\n";
@@ -1096,7 +1096,7 @@ namespace joedb::generator
      out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
      write_type(type, true, false);
-     out << db.get_field_name(index.table_id, index.field_ids[i]);
+     out << ' ' << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ")\n";
     out << "   {\n";
@@ -1144,7 +1144,7 @@ namespace joedb::generator
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
      write_type(type, true, false);
-     out << "field_value_of_";
+     out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ") const\n";

@@ -48,19 +48,19 @@ namespace joedb::generator
   switch (type.get_type_id())
   {
    case Type::Type_Id::null:
-    out << "void ";
+    out << "void";
    break;
 
    case Type::Type_Id::reference:
-    out << "id_of_" << options.db.get_table_name(type.get_table_id()) << ' ';
+    out << "id_of_" << options.db.get_table_name(type.get_table_id());
    break;
 
    #define TYPE_MACRO(storage_tt, return_tt, type_id, read, write)\
    case Type::Type_Id::type_id:\
     if (return_type || setter_type)\
-     out << #return_tt << ' ';\
+     out << #return_tt;\
     else\
-     out << #storage_tt << ' ';\
+     out << #storage_tt;\
    break;
    #define TYPE_MACRO_NO_REFERENCE
    #include "joedb/TYPE_MACRO.h"
