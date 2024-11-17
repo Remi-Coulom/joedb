@@ -14,7 +14,7 @@ For next release
      - allow writing custom member functions
      - example: encapsulate stone-vector allocation / deletion for kifusnap training set
      - encapsulate multi-column index update (cannot write column individually)
-     - in case of unique index failure, throw before actually inserting (add test)
+     - in case of unique index failure, throw before actually inserting
      - private access to dropped fields (for old custom functions), cleared at the time of drop
 
  - Blob cache:
@@ -25,12 +25,14 @@ For next release
 
  - joedb_pack: fill holes left by deleted elements, like write_json.
  - Add support for vcpkg
+ - Use clang-format (try to customize it, use tabs)
  - non-durable transactions that do not break durability:
 
    - switch checkpoints only after durable transaction
    - use negative value for non-durable checkpoint
    - when opening a file: if non-durable checkpoint is equal to file size, OK by default (but option)
-   - client option to run a durable transaction every n seconds
+   - client option to checkpoint its file every n seconds
+   - try to remove default_checkpoint: checkpoint level should be parameter of push and transaction.
 
 New Operations and Types
 ------------------------
@@ -175,7 +177,6 @@ joedb_admin
 Other Ideas
 -----------
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
-- Is it possible to replace macros by templates?
 - ability to indicate minimum joedb version in joedbc (and joedbi?)
 - better readable interface:
 

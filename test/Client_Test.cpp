@@ -366,3 +366,53 @@ TEST(Client, empty_transaction)
  client.transaction([](const Readable &readable, Writable &writable){});
  client.transaction([](const Readable &readable, Writable &writable){});
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Client, push_until)
+/////////////////////////////////////////////////////////////////////////////
+{
+ Memory_File client_file;
+
+ int64_t initial;
+ int64_t after_person;
+ int64_t after_city;
+
+ {
+  Writable_Journal journal(client_file);
+  initial = journal.get_checkpoint_position();
+  journal.create_table("person");
+  after_person = journal.get_checkpoint_position();
+  journal.create_table("city");
+  after_city = journal.get_checkpoint_position();
+ }
+
+ Readonly_Journal client_journal(client_file);
+
+ Memory_File server_file;
+ Readonly_Journal server_journal(server_file);
+
+ File_Connection connection(server_file);
+ int64_t server_checkpoint = connection.handshake(client_journal, true);
+
+ EXPECT_EQ(server_checkpoint, initial);
+
+ server_checkpoint = connection.Connection::push_until
+ (
+  client_journal,
+  server_checkpoint,
+  after_person,
+  true
+ );
+
+ EXPECT_EQ(server_checkpoint, after_person);
+
+ server_checkpoint = connection.Connection::push_until
+ (
+  client_journal,
+  server_checkpoint,
+  after_person,
+  true
+ );
+
+ EXPECT_EQ(server_checkpoint, after_city);
+}
