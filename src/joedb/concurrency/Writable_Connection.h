@@ -36,18 +36,26 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t push
+   int64_t push_until
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &client_journal,
-    int64_t server_position,
+    int64_t from_position,
+    int64_t until_position,
     bool unlock_after
    ) override
    {
     const int64_t client_position = client_journal.get_position();
 
-    client_journal.set_position(server_position);
-    client_journal.play_until_checkpoint(writable);
+    const int64_t end_position = std::min
+    (
+     client_journal.get_checkpoint_position(),
+     until_position
+    );
+
+    client_journal.set_position(from_position);
+    client_journal.play_until(writable, end_position);
+    writable.default_checkpoint();
     client_journal.set_position(client_position);
 
     return client_journal.get_checkpoint_position();

@@ -35,10 +35,11 @@ namespace joedb
   return client_journal.get_checkpoint_position();
  }
 
- int64_t Connection::push
+ int64_t Connection::push_until
  (
   Readonly_Journal &client_journal,
-  int64_t server_checkpoint,
+  int64_t from_checkpoint,
+  int64_t until_checkpoint,
   bool unlock_after
  )
  {

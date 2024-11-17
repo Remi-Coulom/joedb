@@ -152,6 +152,16 @@ namespace joedb
     return Async_Reader(file, start_position, get_checkpoint_position());
    }
 
+   Async_Reader get_async_reader(int64_t start_position, int64_t until_position) const
+   {
+    return Async_Reader
+    (
+     file,
+     start_position,
+     std::min(until_position, get_checkpoint_position())
+    );
+   }
+
    static constexpr uint32_t version_number = 0x00000004;
    static constexpr uint32_t compatible_version = 0x00000004;
    static constexpr int64_t header_size = 41;
