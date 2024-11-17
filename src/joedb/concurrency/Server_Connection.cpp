@@ -161,7 +161,7 @@ namespace joedb
    {
     const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
     lock.write(buffer.data, size + offset);
-    written += size + offset;
+    written += int64_t(size + offset);
     offset = 0;
     if (progress_bar)
      progress_bar->print(written);
