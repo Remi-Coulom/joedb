@@ -72,7 +72,7 @@ namespace joedb
 
    while
    (
-    journal.get_checkpoint_position() < until_checkpoint &&
+    from_checkpoint < until_checkpoint &&
     Signal::get_signal() != SIGINT
    )
    {
