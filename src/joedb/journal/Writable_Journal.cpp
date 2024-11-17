@@ -85,10 +85,18 @@ joedb::Writable_Journal::Writable_Journal
 }
 
 /////////////////////////////////////////////////////////////////////////////
-int64_t joedb::Writable_Journal::pull_from(Readonly_Journal &journal)
+int64_t joedb::Writable_Journal::pull_from
 /////////////////////////////////////////////////////////////////////////////
+(
+ Readonly_Journal &journal,
+ int64_t until_checkpoint
+)
 {
- const int64_t source_checkpoint = journal.get_checkpoint_position();
+ const int64_t source_checkpoint = std::min
+ (
+  journal.get_checkpoint_position(),
+  until_checkpoint
+ );
 
  if (checkpoint_position < source_checkpoint)
  {

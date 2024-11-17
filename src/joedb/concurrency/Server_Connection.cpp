@@ -122,17 +122,23 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::push
+ int64_t Server_Connection::push_until
  ////////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
   int64_t server_position,
+  int64_t until_position,
   bool unlock_after
  )
  {
   Channel_Lock lock(channel);
 
-  Async_Reader reader = client_journal.get_async_tail_reader(server_position);
+  Async_Reader reader = client_journal.get_async_reader
+  (
+   server_position,
+   until_position
+  );
+
   const int64_t push_size = reader.get_remaining();
 
   buffer.index = 0;

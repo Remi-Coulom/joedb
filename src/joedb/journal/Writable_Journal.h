@@ -5,6 +5,7 @@
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Async_Writer.h"
 #include "joedb/Posthumous_Thrower.h"
+#include <limits>
 
 namespace joedb
 {
@@ -90,7 +91,11 @@ namespace joedb
     file.set_position(checkpoint_position);
    }
 
-   int64_t pull_from(Readonly_Journal &journal);
+   int64_t pull_from
+   (
+    Readonly_Journal &journal,
+    int64_t until_checkpoint = std::numeric_limits<int64_t>::max()
+   );
 
    int64_t ahead_of_checkpoint() const noexcept;
 

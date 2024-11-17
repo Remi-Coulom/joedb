@@ -13,6 +13,7 @@ namespace joedb
   private:
    Readonly_Journal &server_journal;
 
+  public:
    //////////////////////////////////////////////////////////////////////////
    int64_t handshake
    //////////////////////////////////////////////////////////////////////////
@@ -55,7 +56,6 @@ namespace joedb
     return server_journal.get_checkpoint_position();
    }
 
-  public:
    //////////////////////////////////////////////////////////////////////////
    Pullonly_Journal_Connection(Readonly_Journal &server_journal):
    //////////////////////////////////////////////////////////////////////////
@@ -86,11 +86,12 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t push
+   int64_t push_until
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &client_journal,
-    const int64_t server_checkpoint,
+    const int64_t from_checkpoint,
+    const int64_t until_checkpoint,
     bool unlock_after
    ) final
    {
@@ -98,7 +99,7 @@ namespace joedb
      server_journal.lock_pull();
     client_journal.pull();
 
-    server_journal.pull_from(client_journal);
+    server_journal.pull_from(client_journal, until_checkpoint);
 
     if (unlock_after)
      unlock(client_journal);

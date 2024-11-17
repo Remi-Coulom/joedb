@@ -557,3 +557,55 @@ TEST(Journal, reset_position_after_checkpoint)
 
  std::remove("test.joedb");
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, pull_from)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ joedb::Writable_Journal journal(file);
+
+ const int64_t initial = journal.get_checkpoint_position();
+ journal.create_table("person");
+ const int64_t after_person = journal.get_checkpoint_position();
+ journal.create_table("city");
+ const int64_t after_city = journal.get_checkpoint_position();
+
+ {
+  joedb::Memory_File to_file;
+  joedb::Writable_Journal to_journal(to_file);
+  to_journal.pull_from(journal, initial);
+  EXPECT_EQ(to_journal.get_checkpoint_position(), initial);
+  to_journal.pull_from(journal, after_person);
+  EXPECT_EQ(to_journal.get_checkpoint_position(), after_person);
+  to_journal.pull_from(journal, after_city);
+  EXPECT_EQ(to_journal.get_checkpoint_position(), after_city);
+ }
+
+ {
+  joedb::Memory_File to_file;
+  joedb::Writable_Journal to_journal(to_file);
+  to_journal.pull_from(journal);
+  EXPECT_EQ(to_journal.get_checkpoint_position(), after_city);
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Journal, empty_initial_file)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ joedb::Readonly_Journal journal{file};
+
+ EXPECT_EQ
+ (
+  journal.get_checkpoint_position(),
+  joedb::Readonly_Journal::header_size
+ );
+
+ EXPECT_EQ(file.get_size(), 0);
+
+ file.write<char>('j');
+ file.flush();
+ EXPECT_ANY_THROW(joedb::Readonly_Journal{file});
+}

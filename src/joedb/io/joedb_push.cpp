@@ -7,9 +7,11 @@
 #include "joedb/Signal.h"
 
 #include <iostream>
+#include <limits>
 #include <thread>
 #include <chrono>
 #include <cstring>
+#include <cstdlib>
 
 namespace joedb
 {
@@ -30,10 +32,18 @@ namespace joedb
    arg_index++;
   }
 
+  int64_t until_checkpoint = std::numeric_limits<int64_t>::max();
+
+  if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--until") == 0)
+  {
+   until_checkpoint = std::atoll(argv[arg_index + 1]);
+   arg_index += 2;
+  }
+
   if (arg_index >= argc)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--follow] <file> <connection>\n\n";
+   std::cerr << " [--follow] [--until <checkpoint>] <file> <connection>\n\n";
    file_parser.print_help(std::cerr);
    connection_parser.print_help(std::cerr);
    return 1;
@@ -57,17 +67,33 @@ namespace joedb
   }
   else
   {
-   int64_t server_checkpoint = connection->handshake(journal, true);
-   server_checkpoint = connection->push(journal, server_checkpoint, false);
-
+   int64_t from_checkpoint = connection->handshake(journal, true);
    Signal::start();
 
-   while (follow && Signal::get_signal() != SIGINT)
+   while
+   (
+    journal.get_checkpoint_position() < until_checkpoint &&
+    Signal::get_signal() != SIGINT
+   )
    {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    journal.pull();
-    if (journal.get_checkpoint_position() > server_checkpoint)
-     server_checkpoint = connection->push(journal, server_checkpoint, false);
+    if (journal.get_checkpoint_position() > from_checkpoint)
+    {
+     from_checkpoint = connection->push_until
+     (
+      journal,
+      from_checkpoint,
+      until_checkpoint,
+      false
+     );
+    }
+
+    if (follow)
+    {
+     std::this_thread::sleep_for(std::chrono::seconds(1));
+     journal.pull();
+    }
+    else
+     break;
    }
   }
 
