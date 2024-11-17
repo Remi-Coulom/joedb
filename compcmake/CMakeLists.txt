@@ -333,13 +333,13 @@ joedb_add_executable(update_large_string
 # Packaging
 #############################################################################
 install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT bin)
+install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT dev)
 install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT bin)
+install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT dev)
 install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
 if (asio_FOUND)
