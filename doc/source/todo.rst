@@ -7,6 +7,7 @@ For next release
  - better Freedom_Keeper (see below)
  - more joedbc code generation:
 
+   - delete_vector_of_X (with new Freedom_Keeper)
    - Split Database with Database_Storage parent
    - Compiler options: allow encapsulation:
 
