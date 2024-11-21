@@ -4,11 +4,13 @@ TODO
 For next release
 ----------------
 
+ - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - better Freedom_Keeper (see below)
  - more joedbc code generation:
 
    - delete_vector_of_X (with new Freedom_Keeper)
    - Split Database with Database_Storage parent
+   - Interpreted_Local_Client
    - Compiler options: allow encapsulation:
 
      - make read/write access to some fields private
