@@ -24,8 +24,7 @@ central mutex is used to prevent branches from diverging.
 Locking the central mutex is not strictly necessary: offline changes can be
 made to a local database without any synchronization with the remote server.
 It will still be possible to push those changes to the server when connecting
-later, but the push will succeed only if there is no conflict with any other
-write that may have occurred.
+later, but the push will succeed only if there is no conflict.
 
 Example
 -------

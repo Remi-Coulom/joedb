@@ -5,12 +5,13 @@ For next release
 ----------------
 
  - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
+ - Interpreted_File with concurrency and fsync: std::streambuf from joedb::File
  - better Freedom_Keeper (see below)
  - more joedbc code generation:
 
+   - Interpreted_Local_Client (support for lock and sync)
    - delete_vector_of_X (with new Freedom_Keeper)
    - Split Database with Database_Storage parent
-   - Interpreted_Local_Client
    - Compiler options: allow encapsulation:
 
      - make read/write access to some fields private
