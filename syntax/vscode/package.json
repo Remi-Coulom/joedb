@@ -1,0 +1,25 @@
+{
+  "name": "joedbi",
+  "displayName": "joedbi",
+  "description": "Syntax highlighting for joedbi",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "joedbi",
+      "aliases": ["joedbi", "joedbi"],
+      "extensions": [".joedbi"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "joedbi",
+      "scopeName": "source.joedbi",
+      "path": "./syntaxes/joedbi.tmLanguage.json"
+    }]
+  }
+}
