@@ -12,8 +12,8 @@
 	"repository": {
 		"keywords": {
 			"patterns": [{
-				"name": "keyword.control.joedbi",
-				"match": "\\b(if|while|for|return)\\b"
+				"name": "keyword.other",
+				"match": "\\b(create_table|delete_table|add_field|delete_field)\\b"
 			}]
 		},
 		"strings": {
