@@ -1,32 +1,20 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "joedbi",
-	"patterns": [
-		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#strings"
-		}
-	],
-	"repository": {
-		"keywords": {
-			"patterns": [{
-				"name": "keyword.other",
-				"match": "\\b(create_table|delete_table|add_field|delete_field)\\b"
-			}]
-		},
-		"strings": {
-			"name": "string.quoted.double.joedbi",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
-					"name": "constant.character.escape.joedbi",
-					"match": "\\\\."
-				}
-			]
-		}
-	},
+	"patterns":
+	    [
+		    {
+			    "name": "keyword.control",
+			    "match": "\\b(create_table|delete_table|add_field|delete_field|write_blob|read_blob|table_size|schema|insert_into|dump|sql|json|table|record|help|rename_table|drop_table|drop_field|rename_field|delete_from|update|timestamp|comment|valid_data|insert_vector|update_vector|custom|quit)\\b"
+		    },
+		    {
+			    "name": "storage.type",
+			    "match": "\\b(int8|int16|int32|int64|float32|string|references)\\b"
+		    },
+		    {
+			    "name": "comment.line.number-sign",
+			    "match": "#.*$"
+		    }
+	    ],
 	"scopeName": "source.joedbi"
 }
