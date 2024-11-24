@@ -18,6 +18,7 @@ For next release
      - allow writing custom member functions
      - example: encapsulate stone-vector allocation / deletion for kifusnap training set
      - encapsulate multi-column index update (cannot write column individually)
+     - more index-related functions: find_or_new_<index>(cols), remove_<index>(cols), update_<index>(id, cols)
      - in case of unique index failure, throw before actually inserting
      - private access to dropped fields (for old custom functions), cleared at the time of drop
 
