@@ -61,11 +61,10 @@ int main()
  // Using the index to sort persons
  //
  std::cout << "\nSorted list of persons:\n";
- for (auto key_and_value: db.get_index_of_person_by_name())
+ for (const auto &[name, person]: db.get_index_of_person_by_name())
  {
-  auto person = key_and_value.second;
-  std::cout << db.get_last_name(person) << ", ";
-  std::cout << db.get_first_name(person) << '\n';
+  const auto &[last, first] = name;
+  std::cout << last << ", " << first << '\n';
  }
 
  db.checkpoint();

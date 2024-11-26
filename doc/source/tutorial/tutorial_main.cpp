@@ -10,7 +10,7 @@ static int tutorial_main(int argc, char **argv)
  //
  // Open the database
  //
- tutorial::File_Database db("tutorial.joedb");
+ tutorial::File_Database db("tutorial.joedb", joedb::Open_Mode::create_new);
 
  //
  // Simple data manipulation
@@ -33,8 +33,8 @@ static int tutorial_main(int argc, char **argv)
  // Use the index to display cities in alphabetical order
  //
  std::cout << "List of cities in alphabetical order:\n";
- for (auto city: db.get_index_of_city_by_name())
-  std::cout << "  " << db.get_name(city.second) << '\n';
+ for (auto &[name, city]: db.get_index_of_city_by_name())
+  std::cout << "  " << std::get<0>(name) << '\n';
 
  //
  // Referring to another table
