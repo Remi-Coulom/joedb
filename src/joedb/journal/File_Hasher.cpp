@@ -1,5 +1,6 @@
 #include "joedb/journal/File_Hasher.h"
 #include "joedb/journal/Readonly_Journal.h"
+#include "joedb/journal/Readonly_Memory_File.h"
 
 #include <vector>
 
@@ -57,6 +58,14 @@ namespace joedb
  {
   file.flush();
   return File_Hasher::get_hash(file, 0, file.get_size());
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ SHA_256::Hash File_Hasher::get_hash(const std::string &s)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Readonly_Memory_File file(s.data(), s.size());
+  return File_Hasher::get_hash(file);
  }
 
  ////////////////////////////////////////////////////////////////////////////

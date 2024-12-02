@@ -3,6 +3,8 @@
 
 #include "joedb/journal/SHA_256.h"
 
+#include <string>
+
 namespace joedb
 {
  class Generic_File;
@@ -17,10 +19,8 @@ namespace joedb
    int64_t size
   );
 
-  static SHA_256::Hash get_hash
-  (
-   Generic_File &file
-  );
+  static SHA_256::Hash get_hash(Generic_File &file);
+  static SHA_256::Hash get_hash(const std::string &s);
 
   static SHA_256::Hash get_fast_hash
   (
