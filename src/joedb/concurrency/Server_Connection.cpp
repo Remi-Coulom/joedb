@@ -252,7 +252,11 @@ namespace joedb
 
    while (!keep_alive_thread_must_stop)
    {
-    condition.wait_for(lock, std::chrono::seconds(keep_alive_interval));
+    condition.wait_for
+    (
+     lock,
+     std::chrono::seconds(keep_alive_interval_seconds)
+    );
 
     if (keep_alive_thread_must_stop)
      break;
@@ -333,8 +337,11 @@ namespace joedb
    ". OK.\n"
   );
 
-  keep_alive_thread_must_stop = false;
-  keep_alive_thread = std::thread([this](){keep_alive();});
+  if (keep_alive_interval_seconds > 0)
+  {
+   keep_alive_thread_must_stop = false;
+   keep_alive_thread = std::thread([this](){keep_alive();});
+  }
 
   if (content_check)
    if (!check_matching_content(client_journal, server_checkpoint))
@@ -344,10 +351,16 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Connection::Server_Connection(Channel &channel, std::ostream *log):
+ Server_Connection::Server_Connection
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Channel &channel,
+  std::ostream *log,
+  int keep_alive_interval_seconds
+ ):
   channel(channel),
   log(log),
+  keep_alive_interval_seconds(keep_alive_interval_seconds),
   session_id(-1),
   pullonly_server(false)
  {

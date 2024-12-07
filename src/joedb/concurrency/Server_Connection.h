@@ -19,6 +19,7 @@ namespace joedb
   private:
    Thread_Safe_Channel channel;
    std::ostream *log;
+   const int keep_alive_interval_seconds;
 
    Buffer<13> buffer;
 
@@ -28,7 +29,6 @@ namespace joedb
    void ping(Channel_Lock &lock);
    bool keep_alive_thread_must_stop;
    std::thread keep_alive_thread;
-   enum {keep_alive_interval = 240};
 
    int64_t handshake
    (
@@ -58,7 +58,12 @@ namespace joedb
    void keep_alive();
 
   public:
-   Server_Connection(Channel &channel, std::ostream *log);
+   Server_Connection
+   (
+    Channel &channel,
+    std::ostream *log,
+    int keep_alive_interval_seconds = 240
+   );
 
    static constexpr int64_t client_version = 10;
    int64_t get_session_id() const {return session_id;}
