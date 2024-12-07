@@ -34,12 +34,12 @@ namespace joedb
    (
     Readonly_Journal &client_journal,
     bool content_check
-   ) override;
-   void unlock(Readonly_Journal &client_journal) override;
+   ) final;
+   void unlock(Readonly_Journal &client_journal) final;
    int64_t pull(Writable_Journal &client_journal, char pull_type);
    int64_t shared_pull(Writable_Journal &client_journal, char pull_type);
-   int64_t pull(Writable_Journal &client_journal) override;
-   int64_t lock_pull(Writable_Journal &client_journal) override;
+   int64_t pull(Writable_Journal &client_journal) final;
+   int64_t lock_pull(Writable_Journal &client_journal) final;
 
    int64_t push_until
    (
@@ -47,7 +47,7 @@ namespace joedb
     int64_t server_position,
     int64_t until_position,
     bool unlock_after
-   ) override;
+   ) final;
 
    bool check_matching_content
    (
