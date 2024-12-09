@@ -8,7 +8,6 @@ For next release
  - Interpreted_File with concurrency and fsync: std::streambuf from joedb::File
  - more joedbc code generation:
 
-   - delete_vector_of_X
    - Interpreted_Local_Client (support for lock and sync)
    - Split Database with Database_Storage parent
    - Compiler options: allow encapsulation:

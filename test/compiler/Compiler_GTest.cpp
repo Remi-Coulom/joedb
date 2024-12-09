@@ -942,3 +942,27 @@ TEST(Compiler, shared_local_file)
  std::remove(file_name);
 }
 #endif
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, delete_vector)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ test::Generic_File_Database db(file);
+
+ const auto v = db.new_vector_of_city(100);
+
+ const size_t first = 20;
+ const size_t size = 40;
+
+ db.delete_vector_of_city(v[first], size);
+
+ for (size_t i = 0; i < 100; i++)
+ {
+  const auto city = v[i];
+  if (city >= v[first] && city < v[first + size])
+   EXPECT_FALSE(db.is_valid(city));
+  else
+   EXPECT_TRUE(db.is_valid(city));
+ }
+}
