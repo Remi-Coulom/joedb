@@ -6,11 +6,10 @@ For next release
 
  - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - Interpreted_File with concurrency and fsync: std::streambuf from joedb::File
- - better Freedom_Keeper (see below)
  - more joedbc code generation:
 
+   - delete_vector_of_X
    - Interpreted_Local_Client (support for lock and sync)
-   - delete_vector_of_X (with new Freedom_Keeper)
    - Split Database with Database_Storage parent
    - Compiler options: allow encapsulation:
 
@@ -110,16 +109,6 @@ Compiler
   - referential integrity
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
-
-Better Freedom_Keeper
----------------------
-- index returned by public methods of Freedom_Keeper should be record ids.
-- No need to maintain a linked list of individual records
-- A linked list of intervals instead, to unify everything
-- Let joedb_merge & joedb_pack fuse intervals to remove holes (100% update_vector)
-- joedb_to_json can also become more efficient
-- Get ready for "last-N" storage, and no_delete option (force single interval).
-- joedb_pack can be faster (no need to loop over record_ids one by one)
 
 Concurrency
 -----------
