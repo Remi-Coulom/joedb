@@ -47,6 +47,7 @@ For next release
 
 New Operations and Types
 ------------------------
+- delete_vector
 - Add an ``undo`` operation to the log. This way, it is possible to keep all
   branches of history.
 
