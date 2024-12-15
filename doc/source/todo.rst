@@ -19,7 +19,7 @@ For next release
 
        - encapsulate multi-column update (cannot write column individually)
        - find_or_new_<index>(cols)
-       - remove_<index>(cols)
+       - delete_<index>(cols)
        - update_<index>(id, cols)
        - in case of unique index failure, throw before actually inserting
 
