@@ -21,9 +21,6 @@ For next release
        - find_or_new_<index>(cols)
        - remove_<index>(cols)
        - update_<index>(id, cols)
-       - do not use tuple if only one column
-       - would be nice if we could avoid duplicating strings: do not create
-         std::vector for index columns: take value from iterator.
        - in case of unique index failure, throw before actually inserting
 
      - private access to dropped fields (for old custom functions), cleared at the time of drop

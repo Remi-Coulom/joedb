@@ -34,7 +34,7 @@ static int tutorial_main(int argc, char **argv)
  //
  std::cout << "List of cities in alphabetical order:\n";
  for (auto &[name, city]: db.get_index_of_city_by_name())
-  std::cout << "  " << std::get<0>(name) << '\n';
+  std::cout << "  " << name << '\n';
 
  //
  // Referring to another table

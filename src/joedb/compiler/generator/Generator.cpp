@@ -71,23 +71,35 @@ namespace joedb::generator
  void Generator::write_tuple_type(const Compiler_Options::Index &index)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "std::tuple<";
-
-  for (size_t i = 0; i < index.field_ids.size(); i++)
+  if (index.field_ids.size() > 1)
   {
-   if (i > 0)
-    out << ", ";
+   out << "std::tuple<";
 
-   const Type &type = options.db.get_field_type
-   (
-    index.table_id,
-    index.field_ids[i]
-   );
+   for (size_t i = 0; i < index.field_ids.size(); i++)
+   {
+    if (i > 0)
+     out << ", ";
 
-   write_type(type, false, false);
+    const Type &type = options.db.get_field_type
+    (
+     index.table_id,
+     index.field_ids[i]
+    );
+
+    write_type(type, false, false);
+   }
+
+   out << ">";
   }
-
-  out << ">";
+  else
+  {
+   write_type
+   (
+    options.db.get_field_type(index.table_id, index.field_ids[0]),
+    false,
+    false
+   );
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
