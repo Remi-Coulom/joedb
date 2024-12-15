@@ -397,7 +397,7 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "database")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.remi-coulom.fr/joedb/")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS "libssh-dev, libbrotli-dev, libcurl4-openssl-dev")
-set(CPACK_DEBIAN_BIN_PACKAGE_DEPENDS "libssh-4, libbrotli1, libcurl4t64")
+set(CPACK_DEBIAN_BIN_PACKAGE_DEPENDS "libssh-4, libbrotli1, libcurl4")
 set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
 
 include(CPack)
