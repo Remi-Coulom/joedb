@@ -33,7 +33,7 @@ static int tutorial_main(int argc, char **argv)
  // Use the index to display cities in alphabetical order
  //
  std::cout << "List of cities in alphabetical order:\n";
- for (auto &[name, city]: db.get_index_of_city_by_name())
+ for (const auto &[name, city]: db.get_index_of_city_by_name())
   std::cout << "  " << name << '\n';
 
  //
