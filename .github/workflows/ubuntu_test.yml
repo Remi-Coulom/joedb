@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
 
     steps:
     - name: Checkout repository
@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
        sudo apt-get update
-       sudo apt-get -y install cmake ninja-build libssh-dev clang clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user libcurl4-openssl-dev libasio-dev libbrotli-dev libgtest-dev
+       sudo apt-get -y install cmake ninja-build libssh-dev clang clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user libcurl4-openssl-dev libasio-dev libbrotli-dev libgtest-dev g++-multilib
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/compcmake
