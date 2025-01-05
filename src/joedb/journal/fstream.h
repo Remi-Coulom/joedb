@@ -8,6 +8,12 @@
 
 namespace joedb
 {
+ class iostream: public std::iostream
+ {
+  public:
+   iostream(joedb::filebuf &buf): std::iostream(&buf) {}
+ };
+
  class fstream_data
  {
   protected:
@@ -22,12 +28,12 @@ namespace joedb
    }
  };
 
- class fstream: private fstream_data, public std::iostream
+ class fstream: private fstream_data, public joedb::iostream
  {
   public:
    fstream(const char *file_name, Open_Mode open_mode):
     fstream_data(file_name, open_mode),
-    std::iostream(&buf)
+    joedb::iostream(buf)
    {
    }
  };

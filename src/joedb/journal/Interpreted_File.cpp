@@ -37,8 +37,21 @@ namespace joedb
    pull();
  }
 
+ void Interpreted_Stream_File::shared_lock(int64_t start, int64_t size)
+ {
+ }
+
+ void Interpreted_Stream_File::exclusive_lock(int64_t start, int64_t size)
+ {
+ }
+
+ void Interpreted_Stream_File::unlock(int64_t start, int64_t size)
+ {
+ }
+
+
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_Stream_File::Interpreted_Stream_File(std::iostream &stream):
+ Interpreted_Stream_File::Interpreted_Stream_File(joedb::iostream &stream):
  ////////////////////////////////////////////////////////////////////////////
   Readonly_Interpreted_File(stream, false),
   stream(stream)

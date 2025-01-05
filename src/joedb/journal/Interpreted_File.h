@@ -11,13 +11,16 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::iostream &stream;
+   joedb::iostream &stream;
 
    void pull();
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
+   void shared_lock(int64_t start, int64_t size) override;
+   void exclusive_lock(int64_t start, int64_t size) override;
+   void unlock(int64_t start, int64_t size) override;
 
   public:
-   Interpreted_Stream_File(std::iostream &stream);
+   Interpreted_Stream_File(joedb::iostream &stream);
  };
 
  ////////////////////////////////////////////////////////////////////////////

@@ -156,9 +156,11 @@ TEST(Interpreter, Interpreted_File)
 TEST(Interpreter, Writable_Interpreted_File)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::stringstream ss;
+ joedb::Memory_File memory;
 
  {
+  joedb::filebuf buf(memory);
+  joedb::iostream ss(buf);
   joedb::Interpreted_Stream_File file(ss);
   joedb::Writable_Journal journal(file);
   journal.rewind();
@@ -169,16 +171,24 @@ TEST(Interpreter, Writable_Interpreted_File)
   journal.default_checkpoint();
  }
 
- EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 1\n");
+ EXPECT_EQ
+ (
+  memory.get_data().data(),
+  "create_table person\ncreate_table city\n\ninsert_into person 1\n"
+ );
 
- joedb::Readonly_Interpreted_File file(ss);
- joedb::Readonly_Journal journal(file);
- Database db;
- journal.play_until_checkpoint(db);
- EXPECT_EQ(db.get_tables().size(), 2ULL);
- EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});
- EXPECT_EQ((++db.get_tables().begin())->first, Table_Id{2});
- EXPECT_EQ(db.get_freedom(Table_Id{1}).size(), 1);
+ {
+  joedb::filebuf buf(memory);
+  joedb::iostream ss(buf);
+  joedb::Readonly_Interpreted_File file(ss);
+  joedb::Readonly_Journal journal(file);
+  Database db;
+  journal.play_until_checkpoint(db);
+  EXPECT_EQ(db.get_tables().size(), 2ULL);
+  EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});
+  EXPECT_EQ((++db.get_tables().begin())->first, Table_Id{2});
+  EXPECT_EQ(db.get_freedom(Table_Id{1}).size(), 1);
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
