@@ -8,22 +8,30 @@
 
 namespace joedb
 {
+ class dummy_stream: public std::iostream
+ {
+ };
+
  class iostream: public std::iostream
  {
+  private:
+   joedb::filebuf &buf;
+
   public:
-   iostream(joedb::filebuf &buf): std::iostream(&buf) {}
+   iostream(joedb::filebuf &buf): std::iostream(&buf), buf(buf) {}
+   joedb::filebuf &get_filebuf() {return buf;}
  };
 
  class fstream_data
  {
   protected:
    File file;
-   filebuf buf;
+   filebuf data_buf;
 
   public:
    fstream_data(const char *file_name, Open_Mode open_mode):
     file(file_name, open_mode),
-    buf(file)
+    data_buf(file)
    {
    }
  };
@@ -33,37 +41,18 @@ namespace joedb
   public:
    fstream(const char *file_name, Open_Mode open_mode):
     fstream_data(file_name, open_mode),
-    joedb::iostream(buf)
+    joedb::iostream(data_buf)
    {
    }
  };
 
- class ofstream: private fstream_data, public std::ostream
- {
-  public:
-   ofstream
-   (
-    const char *file_name,
-    Open_Mode open_mode = Open_Mode::create_new
-   ):
-    fstream_data(file_name, open_mode),
-    std::ostream(&buf)
-   {
-   }
- };
-
- class ifstream: private fstream_data, public std::istream
+ class ifstream: public fstream
  {
   public:
    ifstream(const char *file_name):
-    fstream_data(file_name, Open_Mode::read_existing),
-    std::istream(&buf)
+    fstream(file_name, Open_Mode::read_existing)
    {
    }
- };
-
- class dummy_stream: public std::iostream
- {
  };
 }
 

@@ -108,6 +108,7 @@ namespace joedb
    void destructor_flush() noexcept;
    void make_readonly() {mode = Open_Mode::read_existing;}
    void make_writable() {mode = Open_Mode::write_existing;}
+   void set_mode(Open_Mode new_mode) {mode = new_mode;}
 
   public:
    Generic_File(Open_Mode mode);

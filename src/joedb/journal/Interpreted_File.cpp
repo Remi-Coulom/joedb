@@ -39,21 +39,23 @@ namespace joedb
 
  void Interpreted_Stream_File::shared_lock(int64_t start, int64_t size)
  {
+  stream.get_filebuf().shared_lock(start, size);
  }
 
  void Interpreted_Stream_File::exclusive_lock(int64_t start, int64_t size)
  {
+  stream.get_filebuf().exclusive_lock(start, size);
  }
 
  void Interpreted_Stream_File::unlock(int64_t start, int64_t size)
  {
+  stream.get_filebuf().unlock(start, size);
  }
-
 
  ////////////////////////////////////////////////////////////////////////////
  Interpreted_Stream_File::Interpreted_Stream_File(joedb::iostream &stream):
  ////////////////////////////////////////////////////////////////////////////
-  Readonly_Interpreted_File(stream, false),
+  Readonly_Interpreted_File(stream, stream.get_filebuf().get_mode()),
   stream(stream)
  {
   stream.clear(); // clears eof flag after reading, get ready to write

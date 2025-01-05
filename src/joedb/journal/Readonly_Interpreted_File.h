@@ -16,11 +16,11 @@ namespace joedb
    Writable_Journal journal;
    Database db;
 
-   Readonly_Interpreted_File(std::istream &stream, bool readonly);
+   Readonly_Interpreted_File(std::istream &stream, Open_Mode mode);
 
   public:
    Readonly_Interpreted_File(std::istream &stream):
-    Readonly_Interpreted_File(stream, true)
+    Readonly_Interpreted_File(stream, Open_Mode::read_existing)
    {
    }
 
@@ -30,7 +30,10 @@ namespace joedb
    }
 
    Readonly_Interpreted_File(const char *file_name):
-    Readonly_Interpreted_File(joedb::ifstream(file_name))
+    Readonly_Interpreted_File
+    (
+     joedb::fstream(file_name, Open_Mode::read_existing)
+    )
    {
    }
 

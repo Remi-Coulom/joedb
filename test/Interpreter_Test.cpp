@@ -173,7 +173,7 @@ TEST(Interpreter, Writable_Interpreted_File)
 
  EXPECT_EQ
  (
-  memory.get_data().data(),
+  std::string(memory.get_data().data()),
   "create_table person\ncreate_table city\n\ninsert_into person 1\n"
  );
 

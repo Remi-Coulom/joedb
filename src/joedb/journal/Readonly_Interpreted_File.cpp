@@ -9,12 +9,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::istream &stream,
-  bool readonly
+  Open_Mode mode
  ):
   journal(*this)
  {
-  stream.exceptions(std::ios::badbit);
-
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   interpreter.set_echo(false);
@@ -25,8 +23,7 @@ namespace joedb
   }
   journal.default_checkpoint();
 
-  if (readonly)
-   make_readonly();
+  set_mode(mode);
  }
 
  ////////////////////////////////////////////////////////////////////////////

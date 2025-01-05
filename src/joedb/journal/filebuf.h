@@ -41,6 +41,26 @@ namespace joedb
     if (size > 0)
      put_position = size;
    }
+
+   Open_Mode get_mode() const
+   {
+    return file.mode;
+   }
+
+   void shared_lock(int64_t start, int64_t size)
+   {
+    file.shared_lock(start, size);
+   }
+
+   void exclusive_lock(int64_t start, int64_t size)
+   {
+    file.exclusive_lock(start, size);
+   }
+
+   void unlock(int64_t start, int64_t size)
+   {
+    file.unlock(start, size);
+   }
  };
 }
 
