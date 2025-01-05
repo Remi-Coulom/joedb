@@ -19,6 +19,7 @@ namespace joedb
    int64_t put_position;
 
   protected:
+   // TODO: seekoff xsgetn
    pos_type seekpos
    (
     pos_type pos,
@@ -36,6 +37,9 @@ namespace joedb
     get_position(0),
     put_position(0)
    {
+    const int64_t size = file.get_size();
+    if (size > 0)
+     put_position = size;
    }
  };
 }

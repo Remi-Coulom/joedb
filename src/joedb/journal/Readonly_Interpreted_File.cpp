@@ -20,7 +20,7 @@ namespace joedb
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
   {
-   std::ofstream null_stream;
+   joedb::dummy_stream null_stream;
    interpreter.main_loop(stream, null_stream);
   }
   journal.default_checkpoint();

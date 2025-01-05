@@ -119,4 +119,54 @@ namespace joedb
   std::string s(file.get_data().data(), file.get_data().size());
   EXPECT_EQ(s, "ZHelloQSDFld!How are you?");
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ static void write_after_reading(std::iostream &io)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  io << "Hello";
+  io.seekg(0);
+  io.seekp(0);
+
+  {
+   std::string s;
+   io >> s;
+   EXPECT_EQ(s, "Hello");
+  }
+
+  EXPECT_TRUE(io.eof());
+  io.clear();
+  io << "World";
+
+  {
+   std::string s;
+   io >> s;
+   EXPECT_EQ(s, "");
+  }
+
+  {
+   std::string s;
+   io.seekg(0);
+   io >> s;
+   EXPECT_EQ(s, "");
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(filebuf, write_after_reading_stringstream)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::stringstream ss;
+  write_after_reading(ss);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(filebuf, write_after_reading_filebuf)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  joedb::filebuf filebuf(file);
+  std::iostream io(&filebuf);
+  write_after_reading(io);
+ }
 }

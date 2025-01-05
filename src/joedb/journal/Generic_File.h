@@ -56,6 +56,8 @@ namespace joedb
    size_t get_available_bytes() const
    //////////////////////////////////////////////////////////////////////////
    {
+    JOEDB_ASSERT(!buffer_has_write_data());
+    JOEDB_ASSERT(buffer.index <= read_buffer_size);
     return read_buffer_size - buffer.index;
    }
 

@@ -10,6 +10,10 @@
 #include "joedb/Multiplexer.h"
 #include "gtest/gtest.h"
 
+#include "../doc/source/tutorial/settings/Interpreted_Database.h"
+#include "../doc/source/tutorial/settings/Readonly_Interpreted_Database.h"
+
+#include <fstream>
 #include <sstream>
 
 using namespace joedb;
@@ -32,7 +36,7 @@ TEST(Interpreter_Test, main_test)
   ASSERT_TRUE(in_file.good());
   std::ostringstream out_string;
   interpreter.main_loop(in_file, out_string);
-  joedb::ofstream("interpreter_test.out.tmp") << out_string.str();
+  std::ofstream("interpreter_test.out.tmp") << out_string.str();
 
   joedb::ifstream reference_file("interpreter_test.out");
   ASSERT_TRUE(reference_file.good());
@@ -60,7 +64,7 @@ TEST(Interpreter_Test, Interpreter_Dump_Writable)
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
- joedb::ofstream("interpreter_test.dump.tmp") << dump_string.str();
+ std::ofstream("interpreter_test.dump.tmp") << dump_string.str();
 
  joedb::ifstream reference_file("interpreter_test.dump");
  ASSERT_TRUE(reference_file.good());
@@ -87,7 +91,7 @@ TEST(Interpreter_Test, SQL_Dump_Writable)
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
- joedb::ofstream("interpreter_test.sql.tmp") << dump_string.str();
+ std::ofstream("interpreter_test.sql.tmp") << dump_string.str();
 
  joedb::ifstream reference_file("interpreter_test.sql");
  ASSERT_TRUE(reference_file.good());
@@ -175,4 +179,31 @@ TEST(Interpreter, Writable_Interpreted_File)
  EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});
  EXPECT_EQ((++db.get_tables().begin())->first, Table_Id{2});
  EXPECT_EQ(db.get_freedom(Table_Id{1}).size(), 1);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Interpreter, settings)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const char * const file_name = "custom_settings.joedbi";
+ std::remove(file_name);
+
+ {
+  settings::Interpreted_Database db(file_name);
+  db.set_user(db.the_settings(), "toto");
+  db.checkpoint();
+ }
+
+ {
+  settings::Interpreted_Database db(file_name);
+  db.set_user(db.the_settings(), "toto");
+  db.checkpoint();
+ }
+
+ {
+  settings::Readonly_Interpreted_Database db(file_name);
+  EXPECT_EQ(db.get_dark_mode(), true);
+  EXPECT_EQ(db.get_user(), "toto");
+  EXPECT_EQ(db.get_host(), "www.kayufu.com");
+ }
 }

@@ -21,6 +21,9 @@ namespace joedb
  filebuf::int_type filebuf::underflow()
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (file.buffer_has_write_data())
+   file.flush();
+
   if (file.get_position() != get_position)
    file.set_position(get_position);
 

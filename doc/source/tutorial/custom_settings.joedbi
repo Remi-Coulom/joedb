@@ -1,5 +1,22 @@
+comment "Automatic schema upgrade"
 create_table settings
+add_field settings dark_mode boolean
+add_field settings host string
+add_field settings user string
 insert_into settings 1
-add_field settings dark_mode boolean = false
-add_field settings host string = "www.kayufu.com"
-add_field settings user string = "joe"
+update settings 1 dark_mode true
+update settings 1 host "www.kayufu.com"
+update settings 1 user "joe"
+valid_data
+
+update settings 1 user "toto"
+
+update settings 1 user "toto"
+
+update settings 1 user "toto"
+
+update settings 1 user "toto"
+
+update settings 1 user "toto"
+
+update settings 1 user "toto"

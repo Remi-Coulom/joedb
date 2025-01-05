@@ -7,6 +7,8 @@
 
 #include "gtest/gtest.h"
 
+#include <fstream>
+
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -30,9 +32,9 @@ TEST(Selective_Writable_Test, basic)
 /////////////////////////////////////////////////////////////////////////////
 {
  {
-  joedb::ofstream schema_file("select_schema.out.tmp");
-  joedb::ofstream information_file("select_information.out.tmp");
-  joedb::ofstream data_file("select_data.out.tmp");
+  std::ofstream schema_file("select_schema.out.tmp");
+  std::ofstream information_file("select_information.out.tmp");
+  std::ofstream data_file("select_data.out.tmp");
 
   Interpreter_Dump_Writable schema_writable(schema_file);
   Interpreter_Dump_Writable information_writable(information_file);

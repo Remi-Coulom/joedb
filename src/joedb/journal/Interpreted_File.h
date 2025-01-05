@@ -2,6 +2,7 @@
 #define joedb_Interpreted_File_declared
 
 #include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/fstream.h"
 
 namespace joedb
 {
@@ -24,10 +25,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   std::fstream file_stream;
+   joedb::fstream file_stream;
 
   public:
-   Interpreted_File_Data(const char *file_name);
+   Interpreted_File_Data(const char *file_name, Open_Mode mode);
    ~Interpreted_File_Data();
  };
 
@@ -38,7 +39,11 @@ namespace joedb
   public Interpreted_Stream_File
  {
   public:
-   Interpreted_File(const char *file_name);
+   Interpreted_File
+   (
+    const char *file_name,
+    Open_Mode mode = Open_Mode::write_existing_or_create_new
+   );
  };
 }
 
