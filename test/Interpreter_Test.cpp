@@ -6,10 +6,10 @@
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/fstream.h"
 #include "joedb/Multiplexer.h"
 #include "gtest/gtest.h"
 
-#include <fstream>
 #include <sstream>
 
 using namespace joedb;
@@ -28,13 +28,13 @@ TEST(Interpreter_Test, main_test)
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
-  std::ifstream in_file("interpreter_test.joedbi");
+  joedb::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out_string;
   interpreter.main_loop(in_file, out_string);
-  std::ofstream("interpreter_test.out.tmp") << out_string.str();
+  joedb::ofstream("interpreter_test.out.tmp") << out_string.str();
 
-  std::ifstream reference_file("interpreter_test.out");
+  joedb::ifstream reference_file("interpreter_test.out");
   ASSERT_TRUE(reference_file.good());
   std::ostringstream reference_string;
   reference_string << reference_file.rdbuf();
@@ -56,13 +56,13 @@ TEST(Interpreter_Test, Interpreter_Dump_Writable)
  Multiplexer multiplexer{db, journal, writable};
  Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
- std::ifstream in_file("interpreter_test.joedbi");
+ joedb::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
- std::ofstream("interpreter_test.dump.tmp") << dump_string.str();
+ joedb::ofstream("interpreter_test.dump.tmp") << dump_string.str();
 
- std::ifstream reference_file("interpreter_test.dump");
+ joedb::ifstream reference_file("interpreter_test.dump");
  ASSERT_TRUE(reference_file.good());
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
@@ -83,13 +83,13 @@ TEST(Interpreter_Test, SQL_Dump_Writable)
  Multiplexer multiplexer{db, journal, writable};
  Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
- std::ifstream in_file("interpreter_test.joedbi");
+ joedb::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
- std::ofstream("interpreter_test.sql.tmp") << dump_string.str();
+ joedb::ofstream("interpreter_test.sql.tmp") << dump_string.str();
 
- std::ifstream reference_file("interpreter_test.sql");
+ joedb::ifstream reference_file("interpreter_test.sql");
  ASSERT_TRUE(reference_file.good());
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
@@ -107,13 +107,13 @@ TEST(Interpreter_Test, Raw_Dump_Writable)
  Multiplexer multiplexer{db, writable};
  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
 
- std::ifstream in_file("interpreter_test.joedbi");
+ joedb::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
  std::ofstream("interpreter_test.raw.tmp") << dump_string.str();
 
- std::ifstream reference_file("interpreter_test.raw");
+ joedb::ifstream reference_file("interpreter_test.raw");
  ASSERT_TRUE(reference_file.good());
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();

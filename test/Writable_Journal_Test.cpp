@@ -1,5 +1,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/fstream.h"
 #include "joedb/io/dump.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/io/Interpreter_Dump_Writable.h"
@@ -7,8 +8,6 @@
 #include "joedb/interpreter/Database.h"
 
 #include "gtest/gtest.h"
-
-#include <fstream>
 
 using namespace joedb;
 
@@ -135,7 +134,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Multiplexer multiplexer{db, journal, dummy_writable};
 
   Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
-  std::ifstream in_file("interpreter_test.joedbi");
+  joedb::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
   interpreter.main_loop(in_file, out);
@@ -161,11 +160,11 @@ TEST_F(Writable_Journal_Test, interpreter_test)
  // check that test.joedb and test_copy.joedb are identical
  //
  {
-  std::ifstream file("test.joedb");
+  joedb::ifstream file("test.joedb");
   std::ostringstream bytes_of_file;
   bytes_of_file << file.rdbuf();
 
-  std::ifstream file_copy("test_copy.joedb");
+  joedb::ifstream file_copy("test_copy.joedb");
   std::ostringstream bytes_of_file_copy;
   bytes_of_file_copy << file_copy.rdbuf();
 

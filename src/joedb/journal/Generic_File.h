@@ -24,6 +24,7 @@ namespace joedb
   friend class Async_Reader;
   friend class Async_Writer;
   friend class File_Hasher;
+  friend class filebuf;
 
   private:
    Buffer<12> buffer;
@@ -52,7 +53,14 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void read_buffer()
+   size_t get_available_bytes() const
+   //////////////////////////////////////////////////////////////////////////
+   {
+    return read_buffer_size - buffer.index;
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void read_buffer_without_throwing()
    //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(!buffer_has_write_data());
@@ -60,6 +68,13 @@ namespace joedb
 
     buffer.index = 0;
     read_buffer_size = pos_read(buffer.data, buffer.size);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void read_buffer()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    read_buffer_without_throwing();
     if (read_buffer_size == 0)
      reading_past_end_of_file();
    }
