@@ -3,7 +3,6 @@
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/io/Interpreter.h"
 #include "joedb/interpreter/Database.h"
-#include "joedb/journal/fstream.h"
 
 #include "gtest/gtest.h"
 
@@ -15,8 +14,8 @@ using namespace joedb;
 static bool identical(const char *name_1, const char *name_2)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::ifstream file_1(name_1);
- joedb::ifstream file_2(name_2);
+ std::ifstream file_1(name_1);
+ std::ifstream file_2(name_2);
 
  std::ostringstream string_1;
  std::ostringstream string_2;
@@ -50,7 +49,7 @@ TEST(Selective_Writable_Test, basic)
   Database db;
   Multiplexer multiplexer{db, select_schema, select_information, select_data};
   Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
-  joedb::ifstream in_file("interpreter_test.joedbi");
+  std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
   interpreter.main_loop(in_file, out);

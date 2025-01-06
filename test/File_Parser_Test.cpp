@@ -1,9 +1,10 @@
 #include "joedb/io/File_Parser.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/journal/fstream.h"
 #include "joedb/interpreter/Database.h"
 
 #include "gtest/gtest.h"
+
+#include <fstream>
 
 namespace joedb
 {
@@ -12,7 +13,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  joedb::dummy_stream out;
+  std::ofstream out;
   parser.print_help(out);
  }
 
@@ -21,7 +22,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  joedb::dummy_stream out;
+  std::ofstream out;
 
   int arg_index = 0;
   constexpr int argc = 1;
@@ -36,7 +37,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  joedb::dummy_stream out;
+  std::ofstream out;
 
   {
    int arg_index = 0;
@@ -64,7 +65,7 @@ namespace joedb
 
   {
    File_Parser parser;
-   joedb::dummy_stream out;
+   std::ofstream out;
 
    int arg_index = 0;
    constexpr int argc = 2;
@@ -78,7 +79,7 @@ namespace joedb
 
   {
    File_Parser parser;
-   joedb::dummy_stream out;
+   std::ofstream out;
 
    int arg_index = 0;
    constexpr int argc = 3;
@@ -103,7 +104,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  joedb::dummy_stream out;
+  std::ofstream out;
 
   int arg_index = 0;
   constexpr int argc = 2;

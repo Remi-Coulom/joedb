@@ -24,7 +24,6 @@ namespace joedb
   friend class Async_Reader;
   friend class Async_Writer;
   friend class File_Hasher;
-  friend class filebuf;
 
   private:
    Buffer<12> buffer;
@@ -53,16 +52,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t get_available_bytes() const
-   //////////////////////////////////////////////////////////////////////////
-   {
-    JOEDB_ASSERT(!buffer_has_write_data());
-    JOEDB_ASSERT(buffer.index <= read_buffer_size);
-    return read_buffer_size - buffer.index;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void read_buffer_without_throwing()
+   void read_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(!buffer_has_write_data());
@@ -70,13 +60,6 @@ namespace joedb
 
     buffer.index = 0;
     read_buffer_size = pos_read(buffer.data, buffer.size);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void read_buffer()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    read_buffer_without_throwing();
     if (read_buffer_size == 0)
      reading_past_end_of_file();
    }
@@ -108,7 +91,6 @@ namespace joedb
    void destructor_flush() noexcept;
    void make_readonly() {mode = Open_Mode::read_existing;}
    void make_writable() {mode = Open_Mode::write_existing;}
-   void set_mode(Open_Mode new_mode) {mode = new_mode;}
 
   public:
    Generic_File(Open_Mode mode);

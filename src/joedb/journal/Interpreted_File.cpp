@@ -37,39 +37,23 @@ namespace joedb
    pull();
  }
 
- void Interpreted_Stream_File::shared_lock(int64_t start, int64_t size)
- {
-  stream.get_filebuf().shared_lock(start, size);
- }
-
- void Interpreted_Stream_File::exclusive_lock(int64_t start, int64_t size)
- {
-  stream.get_filebuf().exclusive_lock(start, size);
- }
-
- void Interpreted_Stream_File::unlock(int64_t start, int64_t size)
- {
-  stream.get_filebuf().unlock(start, size);
- }
-
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_Stream_File::Interpreted_Stream_File(joedb::iostream &stream):
+ Interpreted_Stream_File::Interpreted_Stream_File(std::iostream &stream):
  ////////////////////////////////////////////////////////////////////////////
-  Readonly_Interpreted_File(stream, stream.get_filebuf().get_mode()),
+  Readonly_Interpreted_File(stream, false),
   stream(stream)
  {
   stream.clear(); // clears eof flag after reading, get ready to write
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_File_Data::Interpreted_File_Data
+ Interpreted_File_Data::Interpreted_File_Data(const char *file_name)
  ////////////////////////////////////////////////////////////////////////////
- (
-  const char *file_name,
-  Open_Mode mode
- ):
-  file_stream(file_name, mode)
  {
+  constexpr auto in = std::ios::binary | std::ios::in;
+  file_stream.open(file_name, in | std::ios::out);
+  if (!file_stream)
+   file_stream.open(file_name, in | std::ios::out | std::ios::trunc);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -77,9 +61,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
 
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_File::Interpreted_File(const char *file_name, Open_Mode mode):
+ Interpreted_File::Interpreted_File(const char *file_name):
  ////////////////////////////////////////////////////////////////////////////
-  Interpreted_File_Data(file_name, mode),
+  Interpreted_File_Data(file_name),
   Interpreted_Stream_File(file_stream)
  {
  }

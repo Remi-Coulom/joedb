@@ -5,10 +5,10 @@
 #include "joedb/io/Interpreter_Dump_Writable.h"
 #include "joedb/io/dump.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/fstream.h"
 
 #include "gtest/gtest.h"
 
+#include <fstream>
 #include <sstream>
 
 using namespace joedb;
@@ -23,7 +23,7 @@ TEST(Multiplexer_Test, interpreter_test)
  Database reference_db;
  {
   Interpreter interpreter(reference_db, reference_db, nullptr, reference_db, 0);
-  joedb::ifstream in_file("interpreter_test.joedbi");
+  std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
   interpreter.main_loop(in_file, out);
@@ -36,7 +36,7 @@ TEST(Multiplexer_Test, interpreter_test)
  {
   Multiplexer multiplexer{multiplexed_db};
   Interpreter interpreter(multiplexed_db, multiplexer, nullptr, multiplexer, 0);
-  joedb::ifstream in_file("interpreter_test.joedbi");
+  std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
   interpreter.main_loop(in_file, out);

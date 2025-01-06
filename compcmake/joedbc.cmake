@@ -53,7 +53,6 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/filebuf.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Journal_Construction_Lock.cpp

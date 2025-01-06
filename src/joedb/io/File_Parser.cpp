@@ -113,7 +113,7 @@ namespace joedb
    if (readonly)
     file.reset(new Readonly_Interpreted_File(file_name));
    else
-    file.reset(new Interpreted_File(file_name, Open_Mode::shared_write));
+    file.reset(new Interpreted_File(file_name));
 
    out << "OK\n";
   }

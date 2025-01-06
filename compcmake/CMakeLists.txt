@@ -113,7 +113,6 @@ if(GTest_FOUND)
   ../test/Journal_Test.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
   ../src/joedb/journal/Writable_Journal.cpp
-  ../src/joedb/journal/filebuf.cpp
   ../src/joedb/Readable.cpp
   ../src/joedb/Writable.cpp
   ../src/joedb/interpreter/Database.cpp
@@ -123,7 +122,6 @@ if(GTest_FOUND)
 
   ../test/Buffer_Test.cpp
   ../test/Stream_File_Test.cpp
-  ../test/filebuf_Test.cpp
  )
 
  target_link_libraries(joedb_file_test ${GTest_LIBRARIES})
@@ -136,10 +134,9 @@ if(GTest_FOUND)
   ../doc/source/tutorial/settings/writable.cpp
   ../test/Async_Test.cpp
   ../test/Buffer_Test.cpp
-  ../test/diagnostics_Test.cpp
   ../test/endianness_Test.cpp
+  ../test/diagnostics_Test.cpp
   ../test/Encoded_File_Test.cpp
-  ../test/filebuf_Test.cpp
   ../test/File_Test.cpp
   ../test/Upgradable_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp

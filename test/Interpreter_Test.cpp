@@ -6,12 +6,8 @@
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/journal/fstream.h"
 #include "joedb/Multiplexer.h"
 #include "gtest/gtest.h"
-
-#include "../doc/source/tutorial/settings/Interpreted_Database.h"
-#include "../doc/source/tutorial/settings/Readonly_Interpreted_Database.h"
 
 #include <fstream>
 #include <sstream>
@@ -32,13 +28,13 @@ TEST(Interpreter_Test, main_test)
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
-  joedb::ifstream in_file("interpreter_test.joedbi");
+  std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out_string;
   interpreter.main_loop(in_file, out_string);
   std::ofstream("interpreter_test.out.tmp") << out_string.str();
 
-  joedb::ifstream reference_file("interpreter_test.out");
+  std::ifstream reference_file("interpreter_test.out");
   ASSERT_TRUE(reference_file.good());
   std::ostringstream reference_string;
   reference_string << reference_file.rdbuf();
@@ -60,13 +56,13 @@ TEST(Interpreter_Test, Interpreter_Dump_Writable)
  Multiplexer multiplexer{db, journal, writable};
  Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
- joedb::ifstream in_file("interpreter_test.joedbi");
+ std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
  std::ofstream("interpreter_test.dump.tmp") << dump_string.str();
 
- joedb::ifstream reference_file("interpreter_test.dump");
+ std::ifstream reference_file("interpreter_test.dump");
  ASSERT_TRUE(reference_file.good());
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
@@ -87,13 +83,13 @@ TEST(Interpreter_Test, SQL_Dump_Writable)
  Multiplexer multiplexer{db, journal, writable};
  Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
- joedb::ifstream in_file("interpreter_test.joedbi");
+ std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
  std::ofstream("interpreter_test.sql.tmp") << dump_string.str();
 
- joedb::ifstream reference_file("interpreter_test.sql");
+ std::ifstream reference_file("interpreter_test.sql");
  ASSERT_TRUE(reference_file.good());
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
@@ -111,13 +107,13 @@ TEST(Interpreter_Test, Raw_Dump_Writable)
  Multiplexer multiplexer{db, writable};
  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
 
- joedb::ifstream in_file("interpreter_test.joedbi");
+ std::ifstream in_file("interpreter_test.joedbi");
  ASSERT_TRUE(in_file.good());
  std::ostringstream out_string;
  interpreter.main_loop(in_file, out_string);
  std::ofstream("interpreter_test.raw.tmp") << dump_string.str();
 
- joedb::ifstream reference_file("interpreter_test.raw");
+ std::ifstream reference_file("interpreter_test.raw");
  ASSERT_TRUE(reference_file.good());
  std::ostringstream reference_string;
  reference_string << reference_file.rdbuf();
@@ -156,11 +152,9 @@ TEST(Interpreter, Interpreted_File)
 TEST(Interpreter, Writable_Interpreted_File)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Memory_File memory;
+ std::stringstream ss;
 
  {
-  joedb::filebuf buf(memory);
-  joedb::iostream ss(buf);
   joedb::Interpreted_Stream_File file(ss);
   joedb::Writable_Journal journal(file);
   journal.rewind();
@@ -171,49 +165,14 @@ TEST(Interpreter, Writable_Interpreted_File)
   journal.default_checkpoint();
  }
 
- EXPECT_EQ
- (
-  std::string(memory.get_data().data()),
-  "create_table person\ncreate_table city\n\ninsert_into person 1\n"
- );
+ EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 1\n");
 
- {
-  joedb::filebuf buf(memory);
-  joedb::iostream ss(buf);
-  joedb::Readonly_Interpreted_File file(ss);
-  joedb::Readonly_Journal journal(file);
-  Database db;
-  journal.play_until_checkpoint(db);
-  EXPECT_EQ(db.get_tables().size(), 2ULL);
-  EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});
-  EXPECT_EQ((++db.get_tables().begin())->first, Table_Id{2});
-  EXPECT_EQ(db.get_freedom(Table_Id{1}).size(), 1);
- }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-TEST(Interpreter, settings)
-/////////////////////////////////////////////////////////////////////////////
-{
- const char * const file_name = "custom_settings.joedbi";
- std::remove(file_name);
-
- {
-  settings::Interpreted_Database db(file_name);
-  db.set_user(db.the_settings(), "toto");
-  db.checkpoint();
- }
-
- {
-  settings::Interpreted_Database db(file_name);
-  db.set_user(db.the_settings(), "toto");
-  db.checkpoint();
- }
-
- {
-  settings::Readonly_Interpreted_Database db(file_name);
-  EXPECT_EQ(db.get_dark_mode(), true);
-  EXPECT_EQ(db.get_user(), "toto");
-  EXPECT_EQ(db.get_host(), "www.kayufu.com");
- }
+ joedb::Readonly_Interpreted_File file(ss);
+ joedb::Readonly_Journal journal(file);
+ Database db;
+ journal.play_until_checkpoint(db);
+ EXPECT_EQ(db.get_tables().size(), 2ULL);
+ EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});
+ EXPECT_EQ((++db.get_tables().begin())->first, Table_Id{2});
+ EXPECT_EQ(db.get_freedom(Table_Id{1}).size(), 1);
 }

@@ -78,7 +78,7 @@ namespace joedb
  void Stream_File::raw_seek(int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (offset < 0 || streambuf.pubseekpos(offset) != offset)
+  if (offset < 0 || streambuf.pubseekoff(offset, std::ios_base::beg) != offset)
    throw Exception("seek error");
  }
 

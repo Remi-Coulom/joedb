@@ -3,7 +3,7 @@
 
 #include "joedb/journal/Stream_File.h"
 
-#include <fstream> // IWYU pragma: keep (necessary for std::filebuf)
+#include <fstream>
 
 namespace joedb
 {
