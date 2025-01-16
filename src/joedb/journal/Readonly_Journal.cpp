@@ -99,8 +99,8 @@ joedb::Readonly_Journal::Readonly_Journal
      {
       throw Exception
       (
-       "Checkpoint is smaller than file size. "
-       "This file may contain an aborted transaction. "
+       "Checkpoint (" + std::to_string(checkpoint_position) + ") is smaller than file size (" +
+       std::to_string(file_size) + "). This file may contain an aborted transaction. "
        "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
       );
      }
