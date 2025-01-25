@@ -7,7 +7,6 @@ For next release
  - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - more joedbc code generation:
 
-   - Interpreted_Local_Client (support for lock and sync)
    - Split Database with Database_Storage parent
    - Compiler options: allow encapsulation:
 
