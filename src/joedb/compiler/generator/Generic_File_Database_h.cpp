@@ -269,8 +269,8 @@ namespace joedb::generator
 
     out << "   void delete_vector_of_" << tname << "(id_of_" << tname << " v, size_t size)\n";
     out << "   {\n";
-    out << "    for (size_t i = 0; i < size; i++)\n";
-    out << "     delete_" <<tname << "(v[i]);\n";
+    out << "    for (size_t i = size; i > 0;)\n";
+    out << "     delete_" << tname << "(v[--i]);\n";
     out << "   }\n\n";
    }
 
