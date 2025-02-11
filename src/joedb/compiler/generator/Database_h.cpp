@@ -31,7 +31,6 @@ namespace joedb::generator
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Exception.h"
-#include "joedb/exception/Out_Of_Date.h"
 #include "joedb/assert.h"
 #include "joedb/get_version.h"
 #include "ids.h"
@@ -139,16 +138,18 @@ namespace joedb::generator
     out << "  friend class range_of_" << index.name << ";\n";
 
   out << R"RRR(
-  protected:
-   virtual void error(const char *message)
+  public:
+   static void throw_exception(const std::string &message)
    {
-    throw joedb::Exception(message);
+)RRR";
+  out << "    throw joedb::Exception(\"";
+  out << namespace_string(options.get_name_space()) << ": \" + message);";
+  out << R"RRR(
    }
 
    size_t max_record_id;
    Table_Id current_table_id = Table_Id{0};
 
-  public:
    void set_max_record_id(size_t record_id)
    {
     max_record_id = record_id;
@@ -239,7 +240,7 @@ namespace joedb::generator
     }
     out << "     out << \") at id = \" << record_id << ' ';\n";
     out << "     out << \"was already at id = \" << result.first->second.get_id();\n";
-    out << "     error(out.str().c_str());\n";
+    out << "     throw_exception(out.str());\n";
     out << "    }\n";
     out << "    storage_of_" << tname << ".iterator_over_" << index.name << "[size_t(record_id) - 1] = result.first;\n";
    }
@@ -421,7 +422,7 @@ namespace joedb::generator
   out << "   void insert_into(Table_Id table_id, Record_Id record_id) final\n";
   out << "   {\n";
   out << "    if (size_t(record_id) <= 0 || (max_record_id && size_t(record_id) > max_record_id))\n";
-  out << "     error(\"insert_into: too big\");\n";
+  out << "     throw_exception(\"insert_into: too big\");\n";
   {
    bool first = true;
    for (const auto &[tid, tname]: tables)
@@ -435,7 +436,7 @@ namespace joedb::generator
     out << "if (table_id == Table_Id(" << tid << "))\n";
     out << "    {\n";
     out << "     if (is_valid_record_id_for_" << tname << "(record_id))\n";
-    out << "      error(\"Duplicate insert into table " << tname << "\");\n";
+    out << "      throw_exception(\"Duplicate insert into table " << tname << "\");\n";
     out << "     if (storage_of_" << tname << ".size() < size_t(record_id))\n";
     out << "      storage_of_" << tname << ".resize(size_t(record_id));\n";
     out << "     internal_insert_" << tname << "(record_id);\n";
@@ -462,7 +463,7 @@ namespace joedb::generator
      (max_record_id && (size_t(record_id) > max_record_id || size > max_record_id))
     )
     {
-     error("insert_vector: null record_id, or too big");
+     throw_exception("insert_vector: null record_id, or too big");
     }
 )RRR";
 
@@ -749,7 +750,9 @@ namespace joedb::generator
       schema_file_size - pos
      ) != 0
     )
-     throw joedb::Exception("Trying to open a file with incompatible schema");
+    {
+     throw_exception("Trying to open a file with incompatible schema");
+    }
    }
 
    void create_table(const std::string &name) override
@@ -834,7 +837,7 @@ namespace joedb::generator
     check_schema();
 
     if (requires_schema_upgrade())
-     throw joedb::exception::Out_Of_Date();
+     throw_exception("Schema is out of date. Can't upgrade a read-only database.");
    }
 )RRR";
 

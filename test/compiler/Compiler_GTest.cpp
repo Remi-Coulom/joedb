@@ -112,7 +112,7 @@ TEST(Compiler, file_test)
  }
  catch(const std::runtime_error &e)
  {
-  EXPECT_STREQ(e.what(), "city_by_name unique index failure: (\"Paris\") at id = 2 was already at id = 3");
+  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 2 was already at id = 3");
  }
 
  // This would be nice to have
@@ -311,7 +311,7 @@ TEST(Compiler, exceptions)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "city_by_name unique index failure: (\"Paris\") at id = 3 was already at id = 1");
+  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 3 was already at id = 1");
  }
 
  try
@@ -329,7 +329,7 @@ TEST(Compiler, exceptions)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "person_by_full_name unique index failure: (\"Rémi\", \"Coulom\") at id = 6 was already at id = 2");
+  EXPECT_STREQ(e.what(), "multi_index: person_by_full_name unique index failure: (\"Rémi\", \"Coulom\") at id = 6 was already at id = 2");
  }
 
  try
@@ -356,7 +356,7 @@ TEST(Compiler, exceptions)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Duplicate insert into table city");
+  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: Duplicate insert into table city");
  }
 
  try
@@ -383,7 +383,7 @@ TEST(Compiler, exceptions)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "insert_into: too big");
+  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: insert_into: too big");
  }
 
  try
@@ -397,7 +397,7 @@ TEST(Compiler, exceptions)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "insert_vector: null record_id, or too big");
+  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: insert_vector: null record_id, or too big");
  }
 
 #ifndef NDEBUG
@@ -528,7 +528,7 @@ TEST(Compiler, schema_upgrade)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Schema is out of date. Can't upgrade a read-only database.");
+  EXPECT_STREQ(e.what(), "schema_v2: Schema is out of date. Can't upgrade a read-only database.");
  }
 
  {
@@ -571,7 +571,7 @@ TEST(Compiler, schema_upgrade)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Trying to open a file with incompatible schema");
+  EXPECT_STREQ(e.what(), "schema_v1: Trying to open a file with incompatible schema");
  }
 
  try
@@ -581,7 +581,7 @@ TEST(Compiler, schema_upgrade)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Trying to open a file with incompatible schema");
+  EXPECT_STREQ(e.what(), "schema_v1: Trying to open a file with incompatible schema");
  }
 }
 
@@ -619,7 +619,7 @@ TEST(Compiler, client)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Can't upgrade schema during pull");
+  EXPECT_STREQ(e.what(), "schema_v1: Can't upgrade schema during pull");
  }
 
  try
@@ -631,7 +631,7 @@ TEST(Compiler, client)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "Can't upgrade schema during pull");
+  EXPECT_STREQ(e.what(), "schema_v1: Can't upgrade schema during pull");
  }
 }
 

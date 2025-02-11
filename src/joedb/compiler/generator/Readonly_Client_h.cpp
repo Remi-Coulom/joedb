@@ -101,7 +101,7 @@ namespace joedb::generator
     {
      journal.play_until_checkpoint(db);
      if (db.get_schema_checkpoint() > schema_checkpoint)
-      throw joedb::Exception("Pulled a schema change");
+      Database::throw_exception("Pulled a schema change");
      return true;
     }
     else

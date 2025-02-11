@@ -72,7 +72,7 @@ namespace joedb::generator
    {
     db.play_journal();
     if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
-     throw joedb::Exception("Can't upgrade schema during pull");
+     Database::throw_exception("Can't upgrade schema during pull");
     db.check_single_row();
    }
 
