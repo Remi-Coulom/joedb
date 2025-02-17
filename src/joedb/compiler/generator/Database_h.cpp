@@ -31,6 +31,7 @@ namespace joedb::generator
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/Exception.h"
+#include "joedb/exception/Out_Of_Date.h"
 #include "joedb/assert.h"
 #include "joedb/get_version.h"
 #include "ids.h"
@@ -139,12 +140,12 @@ namespace joedb::generator
 
   out << R"RRR(
   public:
+   template<typename E = joedb::Exception>
    static void throw_exception(const std::string &message)
    {
-)RRR";
-  out << "    throw joedb::Exception(\"";
-  out << namespace_string(options.get_name_space()) << ": \" + message);";
-  out << R"RRR(
+    throw E(")RRR" <<
+    namespace_string(options.get_name_space())
+    << R"RRR(: " + message);
    }
 
    size_t max_record_id;
@@ -837,7 +838,7 @@ namespace joedb::generator
     check_schema();
 
     if (requires_schema_upgrade())
-     throw_exception("Schema is out of date. Can't upgrade a read-only database.");
+     throw_exception<joedb::exception::Out_Of_Date>("Schema is out of date. Can't upgrade a read-only database.");
    }
 )RRR";
 
