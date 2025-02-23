@@ -145,7 +145,7 @@ namespace joedb
   }
   else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
-   int seconds = 1;
+   int seconds = 0;
    parameters >> seconds;
 
    Signal::set_signal(Signal::no_signal);
@@ -153,7 +153,7 @@ namespace joedb
 
    while (Signal::get_signal() != SIGINT)
    {
-    pull(out, false);
+    pull(out, seconds == 0);
     sleep(seconds, out);
    }
   }
