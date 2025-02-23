@@ -187,3 +187,19 @@ TEST(Generic_File, async_more_capacity)
 
  EXPECT_EQ(4UL, reader.read(buffer, buffer_size));
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Generic_File, flush_and_position)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ file.write<int>(1234);
+ file.write<int>(5678);
+ file.flush();
+ file.set_position(0);
+ EXPECT_EQ(0, file.get_position());
+ EXPECT_EQ(1234, file.read<int>());
+ EXPECT_EQ(file.get_position(), 4);
+ file.flush();
+ EXPECT_EQ(file.get_position(), 4);
+}
