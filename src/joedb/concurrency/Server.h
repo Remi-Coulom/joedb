@@ -62,6 +62,12 @@ namespace joedb
     ~Session();
    };
 
+   struct Pull_Queue_Element
+   {
+    std::shared_ptr<Session> session;
+    int64_t checkpoint;
+   };
+
    std::set<Session *> sessions;
 
    void write_status();
@@ -70,6 +76,7 @@ namespace joedb
    net::steady_timer lock_timeout_timer;
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
+   std::queue<Pull_Queue_Element> pull_queue;
    void lock_dequeue();
    void lock(std::shared_ptr<Session> session, Session::State state);
    void unlock(Session &session);
@@ -110,14 +117,21 @@ namespace joedb
     size_t offset
    );
 
+   void start_pulling
+   (
+    std::shared_ptr<Session> session,
+    int64_t checkpoint
+   );
+
    void pull_handler
    (
     std::shared_ptr<Session> session,
     std::error_code error,
-    size_t bytes_transferred
+    size_t bytes_transferred,
+    bool wait
    );
 
-   void pull(std::shared_ptr<Session> session);
+   void pull(std::shared_ptr<Session> session, bool wait);
 
    void check_hash_handler
    (
@@ -191,7 +205,7 @@ namespace joedb
     std::ostream *log_pointer
    );
 
-   static constexpr int64_t server_version = 10;
+   static constexpr int64_t server_version = 11;
 
    uint16_t get_port() const {return port;}
    bool is_readonly() const;

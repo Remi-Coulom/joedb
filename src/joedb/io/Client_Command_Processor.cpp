@@ -31,11 +31,11 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::pull(std::ostream &out)
+ void Client_Command_Processor::pull(std::ostream &out, bool wait)
  ////////////////////////////////////////////////////////////////////////////
  {
   const int64_t client_checkpoint = client.get_checkpoint();
-  const int64_t server_checkpoint = client.pull();
+  const int64_t server_checkpoint = client.pull(wait);
   if (server_checkpoint > client_checkpoint)
    out << "pulled " << server_checkpoint - client_checkpoint << " bytes\n";
  }
@@ -76,10 +76,11 @@ namespace joedb
 ~~~~~~
  db
  pull
+ wait
 )RRR";
 
    if (!is_readonly_data())
-    out << " pull_every <seconds>\n";
+    out << " pull_every [<seconds>]\n";
 
    if (push_client)
    {
@@ -136,20 +137,33 @@ namespace joedb
   }
   else if (command == "pull") ///////////////////////////////////////////////
   {
-   pull(out);
+   pull(out, false);
+  }
+  else if (command == "wait") ///////////////////////////////////////////////
+  {
+   pull(out, true);
   }
   else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
-   int seconds = 1;
+   int seconds = 0;
    parameters >> seconds;
 
-   Signal::set_signal(Signal::no_signal);
-   Signal::start();
-
-   while (Signal::get_signal() != SIGINT)
+   if (seconds > 0)
    {
-    pull(out);
-    sleep(seconds, out);
+    Signal::set_signal(Signal::no_signal);
+    Signal::start();
+
+    while (Signal::get_signal() != SIGINT)
+    {
+     pull(out, false);
+     sleep(seconds, out);
+    }
+   }
+   else
+   {
+    Signal::stop();
+    while (true)
+     pull(out, true);
    }
   }
   else if (command == "transaction" && !is_readonly_data() && push_client) //

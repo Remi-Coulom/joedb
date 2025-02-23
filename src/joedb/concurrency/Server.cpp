@@ -122,7 +122,7 @@ namespace joedb
    }
 
    if (session->state == Session::State::waiting_for_lock_pull)
-    pull(session);
+    pull(session, false);
 
    session->state = Session::State::locking;
    refresh_lock_timeout(session);
@@ -140,7 +140,7 @@ namespace joedb
   if (session->state == Session::State::not_locking)
   {
    session->state = state;
-   lock_queue.push(session);
+   lock_queue.emplace(session);
    lock_dequeue();
   }
   else
@@ -297,6 +297,13 @@ namespace joedb
 
    if (session->unlock_after_push)
     unlock(*session);
+
+   while (!pull_queue.empty())
+   {
+    const Pull_Queue_Element &element = pull_queue.front();
+    start_pulling(element.session, element.checkpoint);
+    pull_queue.pop();
+   }
   }
  }
 
@@ -403,12 +410,46 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
+ void Server::start_pulling
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  int64_t checkpoint
+ )
+ {
+  const Async_Reader reader = client.get_journal().get_async_tail_reader
+  (
+   checkpoint
+  );
+
+  session->buffer.index = 1;
+  session->buffer.write<int64_t>(reader.get_end());
+  session->buffer.write<int64_t>(reader.get_remaining());
+
+  LOGID("pulling from checkpoint = " << checkpoint << ", size = "
+   << reader.get_remaining() << ':');
+
+  if (log_pointer && reader.get_remaining() > session->buffer.ssize)
+   session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
+
+  pull_transfer_handler
+  (
+   session,
+   reader,
+   std::error_code(),
+   0,
+   session->buffer.index
+  );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
  void Server::pull_handler
  ///////////////////////////////////////////////////////////////////////////
  (
   const std::shared_ptr<Session> session,
   const std::error_code error,
-  const size_t bytes_transferred
+  const size_t bytes_transferred,
+  const bool wait
  )
  {
   if (!error)
@@ -419,43 +460,27 @@ namespace joedb
    if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
 
-   const Async_Reader reader = client.get_journal().get_async_tail_reader
-   (
-    checkpoint
-   );
-
-   session->buffer.index = 1;
-   session->buffer.write<int64_t>(reader.get_end());
-   session->buffer.write<int64_t>(reader.get_remaining());
-
-   LOGID("pulling from checkpoint = " << checkpoint << ", size = "
-    << reader.get_remaining() << ':');
-
-   if (log_pointer && reader.get_remaining() > session->buffer.ssize)
-    session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
-
-   pull_transfer_handler
-   (
-    session,
-    reader,
-    error,
-    0,
-    session->buffer.index
-   );
+   if (wait && checkpoint == client.get_checkpoint())
+   {
+    LOGID("waiting at checkpoint = " << checkpoint << '\n');
+    pull_queue.emplace(Pull_Queue_Element{session, checkpoint});
+   }
+   else
+    start_pulling(session, checkpoint);
   }
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::pull(const std::shared_ptr<Session> session)
+ void Server::pull(const std::shared_ptr<Session> session, bool wait)
  ///////////////////////////////////////////////////////////////////////////
  {
   net::async_read
   (
    session->socket,
    net::buffer(session->buffer.data + 1, 8),
-   [this, session](std::error_code e, size_t s)
+   [this, session, wait](std::error_code e, size_t s)
    {
-    pull_handler(session, e, s);
+    pull_handler(session, e, s, wait);
    }
   );
  }
@@ -524,7 +549,11 @@ namespace joedb
    switch (session->buffer.data[0])
    {
     case 'P':
-     pull(session);
+     pull(session, false);
+    break;
+
+    case 'W':
+     pull(session, true);
     break;
 
     case 'L':

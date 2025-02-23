@@ -14,7 +14,7 @@ namespace joedb
    Pullonly_Client &client;
    Client * const push_client;
 
-   void pull(std::ostream &out);
+   void pull(std::ostream &out, bool wait);
    void print_status(std::ostream &out);
    static void sleep(int seconds, std::ostream &out);
 

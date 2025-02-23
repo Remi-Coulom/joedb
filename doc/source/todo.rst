@@ -12,15 +12,19 @@ For next release
 
      - make read/write access to some fields private
      - allow writing custom member functions
+     - constructor + destructor
      - example: encapsulate stone-vector allocation / deletion for kifusnap training set
-     - indexes:
+     - unique indexes:
 
        - encapsulate multi-column update (cannot write column individually)
+       - store a vector of iterators -> column data stored inside map, avoid duplicate storage.
+       - do not allow column to be in more than one unique index?
        - find_or_new_<index>(cols)
        - delete_<index>(cols)
        - update_<index>(id, cols)
        - in case of unique index failure, throw before actually inserting
 
+     - use struct (with field names) instead of tuple for index key
      - private access to dropped fields (for old custom functions), cleared at the time of drop
 
  - Blob cache:
@@ -129,13 +133,6 @@ Concurrency
 - Connection_Multiplexer for multiple parallel backup servers? Complicated.
   requires asynchronous client code.
 - Do not crash on write error, continue to allow reading?
-- Notifications from server to client, in a second channel:
-
-  - when another client makes a push
-  - when the lock times out
-  - when the server is interrupted
-  - ping
-
 - SQLite connection (store checkpoint and lock in DB + fail on pull if
   anything to be pulled)
 

@@ -16,7 +16,7 @@ namespace joedb
   return client_journal.get_checkpoint_position();
  }
 
- int64_t Pullonly_Connection::pull(Writable_Journal &client_journal)
+ int64_t Pullonly_Connection::pull(Writable_Journal &client_journal, bool wait)
  {
   client_journal.pull();
   return client_journal.get_checkpoint_position();

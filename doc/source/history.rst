@@ -1,10 +1,15 @@
 History
 =======
 
-- 2024-??-?? 10.0.0
+- 2025-??-?? 10.0.0 LTS
 
   - New features:
 
+    - This a LTS release: it will be updated with bug fixes, without
+      breaking compatibility.
+    - new ``Client::wait`` performs a ``Client::pull`` after waiting for a new
+      push from another client. This allows getting new data as soon as it is
+      available, without having to poll.
     - ``Encoded_File`` supports on-the-fly coding or decoding of data.
       ``Brotli_Codec`` is provided for compression.
     - It is now possible to write to an ``Interpreted_File``.
