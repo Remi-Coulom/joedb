@@ -56,7 +56,7 @@ namespace joedb
  SHA_256::Hash File_Hasher::get_hash(Generic_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
-  file.flush();
+  file.flush(); // necessary, to get correct file.get_size() on next line
   return File_Hasher::get_hash(file, 0, file.get_size());
  }
 
@@ -83,8 +83,8 @@ namespace joedb
    return get_hash(file, start, size);
 
   SHA_256 sha_256;
-  file.flush();
   const int64_t old_position = file.get_position();
+  file.flush();
 
   for (int i = 0; i < buffer_count; i++)
   {
