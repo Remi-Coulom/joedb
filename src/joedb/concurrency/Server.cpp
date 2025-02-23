@@ -767,6 +767,7 @@ namespace joedb
     LOG(": Received SIGINT, interrupting.\n");
     for (Session *session: sessions)
      session->socket.close();
+    pull_queue = {};
     acceptor.cancel();
    }
    else
