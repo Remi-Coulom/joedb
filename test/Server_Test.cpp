@@ -859,4 +859,46 @@ namespace joedb
    client.client.push_unlock();
   }
  }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, pull_queue)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Sequence sequence;
+
+  Test_Server server(false, std::chrono::seconds(0));
+
+  std::thread thread([&server, &sequence]()
+  {
+   try
+   {
+    Memory_File file;
+    Test_Client client(server, file);
+    client.client.pull();
+    sequence.send(1);
+    client.client.wait();
+    sequence.send(2);
+   }
+   catch(...)
+   {
+   }
+  });
+
+  sequence.wait_for(1);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  EXPECT_EQ(1, sequence.get());
+
+  Memory_File file;
+  Test_Client client(server, file);
+  client.client.transaction
+  (
+   [](const Readable &readable, Writable &writable)
+   {
+    writable.comment("hello");
+   }
+  );
+
+  sequence.wait_for(2);
+  thread.join();
+ }
 }
