@@ -80,7 +80,7 @@ namespace joedb
 )RRR";
 
    if (!is_readonly_data())
-    out << " pull_every <seconds>\n";
+    out << " pull_every [<seconds>]\n";
 
    if (push_client)
    {
@@ -148,13 +148,22 @@ namespace joedb
    int seconds = 0;
    parameters >> seconds;
 
-   Signal::set_signal(Signal::no_signal);
-   Signal::start();
-
-   while (Signal::get_signal() != SIGINT)
+   if (seconds > 0)
    {
-    pull(out, seconds == 0);
-    sleep(seconds, out);
+    Signal::set_signal(Signal::no_signal);
+    Signal::start();
+
+    while (Signal::get_signal() != SIGINT)
+    {
+     pull(out, false);
+     sleep(seconds, out);
+    }
+   }
+   else
+   {
+    Signal::stop();
+    while (true)
+     pull(out, true);
    }
   }
   else if (command == "transaction" && !is_readonly_data() && push_client) //
