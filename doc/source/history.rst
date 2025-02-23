@@ -5,8 +5,8 @@ History
 
   - New features:
 
-    - This a LTS release, which means that this branch will keep being updated
-      with bug fixes, without breaking compatibility.
+    - This a LTS release: it will be updated with bug fixes, without
+      breaking compatibility.
     - new ``Client::wait`` performs a ``Client::pull`` after waiting for a new
       push from another client. This allows getting new data as soon as it is
       available, without having to poll.
