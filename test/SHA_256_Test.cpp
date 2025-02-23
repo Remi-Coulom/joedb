@@ -96,11 +96,17 @@ TEST(SHA_256, journal)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Writable_Journal journal(file);
- const int64_t size = 12345678;
- for (int64_t i = 0; i < size; i++)
-  journal.timestamp(i);
- journal.checkpoint(joedb::Commit_Level::no_commit);
+
+ {
+  joedb::Writable_Journal journal(file);
+  const int64_t size = 12345678;
+  for (int64_t i = 0; i < size; i++)
+   journal.timestamp(i);
+  journal.checkpoint(joedb::Commit_Level::no_commit);
+ }
+
+ joedb::Readonly_Journal journal(file);
+ EXPECT_EQ(41, journal.get_position());
 
  const joedb::SHA_256::Hash hash = joedb::Journal_Hasher::get_hash
  (
@@ -109,4 +115,5 @@ TEST(SHA_256, journal)
  );
 
  EXPECT_EQ(hash, big_hash);
+ EXPECT_EQ(41, journal.get_position());
 }
