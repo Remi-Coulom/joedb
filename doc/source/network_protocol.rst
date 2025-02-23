@@ -11,6 +11,7 @@ Prefix Data              Description
 ====== ================= ======================================================
 joedb  client_version    first message, sent at connection time
 P      checkpoint        pull
+W      checkpoint        wait for new data, and pull
 L      checkpoint        lock-pull
 p      checkpoint        locked-push
        size
@@ -37,6 +38,9 @@ joedb  | server_version | reply to joedb.
        | checkpoint     | 'R' is pull-only
        | 'R' or 'W'
 P      checkpoint       reply to P
+       size
+       data
+W      checkpoint       reply to W
        size
        data
 L      checkpoint       reply to L

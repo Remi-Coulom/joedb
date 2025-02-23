@@ -5,6 +5,9 @@ History
 
   - New features:
 
+    - new ``Client::wait`` function that performs a ``Client::pull`` after
+      waiting for a new push to a server from another client. This allows
+      getting new data as soon as it is available, without having to poll.
     - ``Encoded_File`` supports on-the-fly coding or decoding of data.
       ``Brotli_Codec`` is provided for compression.
     - It is now possible to write to an ``Interpreted_File``.

@@ -102,16 +102,16 @@ namespace joedb
  {
   client_journal.lock_pull();
   const int64_t result = pull(client_journal, pull_type);
-  if (pull_type == 'P')
+  if (pull_type != 'L')
    client_journal.unlock();
   return result;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::pull(Writable_Journal &client_journal)
+ int64_t Server_Connection::pull(Writable_Journal &client_journal, bool wait)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return shared_pull(client_journal, 'P');
+  return shared_pull(client_journal, wait ? 'W' : 'P');
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -315,7 +315,7 @@ namespace joedb
 
   LOG("server_version = " << server_version << ". ");
 
-  if (server_version < 9)
+  if (server_version < 11)
    throw Exception("Unsupported server version");
 
   session_id = buffer.read<int64_t>();

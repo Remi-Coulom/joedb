@@ -134,13 +134,6 @@ Concurrency
 - Connection_Multiplexer for multiple parallel backup servers? Complicated.
   requires asynchronous client code.
 - Do not crash on write error, continue to allow reading?
-- Notifications from server to client, in a second channel:
-
-  - when another client makes a push
-  - when the lock times out
-  - when the server is interrupted
-  - ping
-
 - SQLite connection (store checkpoint and lock in DB + fail on pull if
   anything to be pulled)
 

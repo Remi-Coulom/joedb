@@ -2,7 +2,6 @@
 #define joedb_Connection_declared
 
 #include "joedb/journal/Writable_Journal.h"
-#include <limits>
 
 namespace joedb
 {
@@ -21,7 +20,7 @@ namespace joedb
     Readonly_Journal &client_journal,
     bool content_check
    );
-   virtual int64_t pull(Writable_Journal &client_journal);
+   virtual int64_t pull(Writable_Journal &client_journal, bool wait);
    virtual Connection *get_push_connection();
    virtual ~Pullonly_Connection();
  };

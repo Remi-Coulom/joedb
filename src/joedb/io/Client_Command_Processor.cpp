@@ -31,11 +31,11 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::pull(std::ostream &out)
+ void Client_Command_Processor::pull(std::ostream &out, bool wait)
  ////////////////////////////////////////////////////////////////////////////
  {
   const int64_t client_checkpoint = client.get_checkpoint();
-  const int64_t server_checkpoint = client.pull();
+  const int64_t server_checkpoint = client.pull(wait);
   if (server_checkpoint > client_checkpoint)
    out << "pulled " << server_checkpoint - client_checkpoint << " bytes\n";
  }
@@ -76,6 +76,7 @@ namespace joedb
 ~~~~~~
  db
  pull
+ wait
 )RRR";
 
    if (!is_readonly_data())
@@ -136,7 +137,11 @@ namespace joedb
   }
   else if (command == "pull") ///////////////////////////////////////////////
   {
-   pull(out);
+   pull(out, false);
+  }
+  else if (command == "wait") ///////////////////////////////////////////////
+  {
+   pull(out, true);
   }
   else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
@@ -148,7 +153,7 @@ namespace joedb
 
    while (Signal::get_signal() != SIGINT)
    {
-    pull(out);
+    pull(out, false);
     sleep(seconds, out);
    }
   }
