@@ -2,11 +2,14 @@
 #include "joedb/journal/File_Hasher.h"
 #include "joedb/Exception.h"
 #include "joedb/io/Progress_Bar.h"
+#include "joedb/io/get_time_string.h"
 
 #include <iostream>
 #include <optional>
 
 #define LOG(x) do {if (log) *log << x;} while (false)
+#define LOGID(x) do {if (log) *log << get_time_string_of_now() << ' ' << get_session_id() << ": " << x;} while (false)
+
 
 namespace joedb
 {
@@ -16,7 +19,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  LOG(get_session_id() << ": releasing lock... ");
+  LOGID("releasing lock... ");
 
   buffer.data[0] = 'u';
   lock.write(buffer.data, 1);
@@ -43,7 +46,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  LOG(get_session_id() << ": pulling(" << pull_type << ")... ");
+  LOGID("pulling(" << pull_type << ")... ");
 
   buffer.index = 0;
   buffer.write<char>(pull_type);
@@ -157,7 +160,7 @@ namespace joedb
   buffer.write<int64_t>(server_position);
   buffer.write<int64_t>(push_size);
 
-  LOG(get_session_id() << ": pushing(U)... position = " << server_position << ", size = " << push_size);
+  LOGID("pushing(U)... position = " << server_position << ", size = " << push_size);
 
   {
    size_t offset = buffer.index;
@@ -209,7 +212,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  LOG(get_session_id() << ": checking_hash... ");
+  LOGID("checking_hash... ");
 
   buffer.index = 0;
   buffer.write<char>('H');

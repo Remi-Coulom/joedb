@@ -8,9 +8,8 @@ History
     - This a LTS release: it will be updated with bug fixes, without
       breaking compatibility.
     - ``Client::pull`` now takes a ``wait_milliseconds`` optional parameter: if
-      the server has no data to be pulled, it will wait for new data for this
-      duration. This allows getting new data as soon as it is available,
-      without having to poll.
+      the server has no data to be pulled, then it will wait for another client
+      to make a push.
     - ``Encoded_File`` supports on-the-fly coding or decoding of data.
       ``Brotli_Codec`` is provided for compression.
     - It is now possible to write to an ``Interpreted_File``.
