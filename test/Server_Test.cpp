@@ -876,7 +876,7 @@ namespace joedb
     Test_Client client(server, file);
     client.client.pull();
     sequence.send(1);
-    client.client.wait();
+    client.client.pull(100000);
     sequence.send(2);
    }
    catch(...)

@@ -109,16 +109,11 @@ namespace joedb::generator
     return db.read_blob_data(blob);
    }
 
-   int64_t pull(bool wait = false)
+   int64_t pull(int64_t wait_milliseconds = 0)
    {
-    const int64_t result = joedb::Client::pull(wait);
+    const int64_t result = joedb::Client::pull(wait_milliseconds);
     play_journal_and_throw_if_schema_changed();
     return result;
-   }
-
-   int64_t wait()
-   {
-    return pull(true);
    }
 
    template<typename F> void transaction(F transaction)

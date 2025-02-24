@@ -44,7 +44,7 @@ namespace joedb
   id(++server.session_id),
   server(server),
   socket(std::move(socket)),
-  state(not_locking)
+  state(State::not_locking)
  {
   server.log([this](std::ostream &out)
   {
@@ -63,7 +63,7 @@ namespace joedb
   {
    server.sessions.erase(this);
 
-   if (state == locking)
+   if (state == State::locking)
    {
     server.log([this](std::ostream &out)
     {
@@ -121,8 +121,8 @@ namespace joedb
      client_lock.emplace(*push_client); // ??? takes_time
    }
 
-   if (session->state == Session::State::waiting_for_lock_pull)
-    pull(session, false);
+   if (session->state == Session::State::waiting_for_lock_to_pull)
+    start_pulling(session);
 
    session->state = Session::State::locking;
    refresh_lock_timeout(session);
@@ -137,7 +137,7 @@ namespace joedb
   const Session::State state
  )
  {
-  if (session->state == Session::State::not_locking)
+  if (session->state != Session::State::locking)
   {
    session->state = state;
    lock_queue.emplace(session);
@@ -199,7 +199,7 @@ namespace joedb
  void Server::refresh_lock_timeout(const std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (lock_timeout.count() > 0 && session->state == Session::locking)
+  if (lock_timeout.count() > 0 && session->state == Session::State::locking)
   {
    lock_timeout_timer.expires_after(lock_timeout);
    lock_timeout_timer.async_wait
@@ -298,11 +298,17 @@ namespace joedb
    if (session->unlock_after_push)
     unlock(*session);
 
-   while (!pull_queue.empty())
+   for (auto other_session: sessions)
    {
-    const Pull_Queue_Element &element = pull_queue.front();
-    start_pulling(element.session, element.checkpoint);
-    pull_queue.pop();
+    if
+    (
+     other_session->state == Session::State::waiting_for_push_to_pull &&
+     other_session->pull_checkpoint < client.get_checkpoint()
+    )
+    {
+     other_session->state = Session::State::not_locking;
+     start_pulling(other_session->shared_from_this());
+    }
    }
   }
  }
@@ -329,7 +335,7 @@ namespace joedb
    else if (!locked)
    {
     LOGID("Taking the lock for push attempt.\n");
-    lock(session, Session::State::waiting_for_lock_push);
+    lock(session, Session::State::waiting_for_lock_to_push);
    }
 
    const bool conflict = (size != 0) &&
@@ -400,6 +406,7 @@ namespace joedb
    }
    else
    {
+    session->pull_timer.reset();
     if (session->progress_bar)
      session->progress_bar.reset();
     else
@@ -410,23 +417,29 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::start_pulling
+ void Server::start_pulling(std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
- (
-  std::shared_ptr<Session> session,
-  int64_t checkpoint
- )
  {
+  if
+  (
+   session->lock_before_pulling &&
+   session->state != Session::State::waiting_for_lock_to_pull
+  )
+  {
+   lock(session, Session::State::waiting_for_lock_to_pull);
+   return;
+  }
+
   const Async_Reader reader = client.get_journal().get_async_tail_reader
   (
-   checkpoint
+   session->pull_checkpoint
   );
 
   session->buffer.index = 1;
   session->buffer.write<int64_t>(reader.get_end());
   session->buffer.write<int64_t>(reader.get_remaining());
 
-  LOGID("pulling from checkpoint = " << checkpoint << ", size = "
+  LOGID("pulling from checkpoint = " << session->pull_checkpoint << ", size = "
    << reader.get_remaining() << ':');
 
   if (log_pointer && reader.get_remaining() > session->buffer.ssize)
@@ -448,39 +461,59 @@ namespace joedb
  (
   const std::shared_ptr<Session> session,
   const std::error_code error,
-  const size_t bytes_transferred,
-  const bool wait
+  const size_t bytes_transferred
  )
  {
   if (!error)
   {
    session->buffer.index = 1;
-   const int64_t checkpoint = session->buffer.read<int64_t>();
+   session->pull_checkpoint = session->buffer.read<int64_t>();
+   const int64_t wait_milliseconds = session->buffer.read<int64_t>();
 
    if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
 
-   if (wait && checkpoint == client.get_checkpoint())
+   if (wait_milliseconds > 0 && session->pull_checkpoint == client.get_checkpoint())
    {
-    LOGID("waiting at checkpoint = " << checkpoint << '\n');
-    pull_queue.emplace(Pull_Queue_Element{session, checkpoint});
+    LOGID
+    (
+     "waiting at checkpoint = " << session->pull_checkpoint <<
+     " for " << wait_milliseconds << " milliseconds\n"
+    );
+
+    session->state = Session::State::waiting_for_push_to_pull;
+    session->pull_timer.emplace(io_context);
+    session->pull_timer->expires_after
+    (
+     std::chrono::milliseconds(wait_milliseconds)
+    );
+    session->pull_timer->async_wait
+    (
+     [this, session](std::error_code timer_error)
+     {
+      if (!timer_error)
+      {
+       start_pulling(session);
+      }
+     }
+    );
    }
    else
-    start_pulling(session, checkpoint);
+    start_pulling(session);
   }
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::pull(const std::shared_ptr<Session> session, bool wait)
+ void Server::pull(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
   net::async_read
   (
    session->socket,
-   net::buffer(session->buffer.data + 1, 8),
-   [this, session, wait](std::error_code e, size_t s)
+   net::buffer(session->buffer.data + 1, 16),
+   [this, session](std::error_code e, size_t s)
    {
-    pull_handler(session, e, s, wait);
+    pull_handler(session, e, s);
    }
   );
  }
@@ -549,15 +582,13 @@ namespace joedb
    switch (session->buffer.data[0])
    {
     case 'P':
-     pull(session, false);
-    break;
-
-    case 'W':
-     pull(session, true);
+     session->lock_before_pulling = false;
+     pull(session);
     break;
 
     case 'L':
-     lock(session, Session::State::waiting_for_lock_pull);
+     session->lock_before_pulling = true;
+     pull(session);
     break;
 
     case 'U': case 'p':
@@ -674,7 +705,7 @@ namespace joedb
     LOGID("client_version = " << client_version << '\n');
   
     session->buffer.index = 5;
-    session->buffer.write<int64_t>(client_version < 10 ? 0 : server_version);
+    session->buffer.write<int64_t>(client_version < 12 ? 0 : server_version);
     session->buffer.write<int64_t>(session->id);
     session->buffer.write<int64_t>(client.get_checkpoint());
     session->buffer.write<char>(is_readonly() ? 'R' : 'W');
@@ -765,9 +796,14 @@ namespace joedb
    {
     paused = true;
     LOG(": Received SIGINT, interrupting.\n");
+
     for (Session *session: sessions)
+    {
      session->socket.close();
-    pull_queue = {};
+     if (session->pull_timer)
+      session->pull_timer->cancel();
+    }
+
     acceptor.cancel();
    }
    else
@@ -783,7 +819,7 @@ namespace joedb
       for (const Session *session: sessions)
       {
        out << ' ' << session->id;
-       out << ": state = " << session->state;
+       out << ": state = " << int(session->state);
        out << "; remote_endpoint = " << session->socket.remote_endpoint();
        out << '\n';
       }

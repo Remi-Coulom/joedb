@@ -77,7 +77,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t pull(bool wait)
+   int64_t pull(int64_t wait_milliseconds = 0)
    //////////////////////////////////////////////////////////////////////////
    {
     if (data.is_readonly())
@@ -85,14 +85,16 @@ namespace joedb
     else
     {
      throw_if_pull_when_ahead();
-     server_checkpoint = connection.pull(data.get_writable_journal(), wait);
+
+     server_checkpoint = connection.pull
+     (
+      data.get_writable_journal(),
+      wait_milliseconds
+     );
     }
 
     return server_checkpoint;
    }
-
-   int64_t pull() {return pull(false);}
-   int64_t wait() {return pull(true);}
 
    virtual ~Pullonly_Client();
  };

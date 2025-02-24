@@ -1,7 +1,8 @@
 Network Protocol
 ================
 
-checkpoint, size, version, and session_id are sent as 64-bit little-endian numbers.
+checkpoint, wait_milliseconds, size, version, and session_id are sent as 64-bit
+little-endian numbers
 
 Client to Server
 ----------------
@@ -11,8 +12,9 @@ Prefix Data              Description
 ====== ================= ======================================================
 joedb  client_version    first message, sent at connection time
 P      checkpoint        pull
-W      checkpoint        wait for new data, and pull
+       wait_milliseconds
 L      checkpoint        lock-pull
+       wait_milliseconds
 p      checkpoint        locked-push
        size
        data
@@ -38,9 +40,6 @@ joedb  | server_version | reply to joedb.
        | checkpoint     | 'R' is pull-only
        | 'R' or 'W'
 P      checkpoint       reply to P
-       size
-       data
-W      checkpoint       reply to W
        size
        data
 L      checkpoint       reply to L

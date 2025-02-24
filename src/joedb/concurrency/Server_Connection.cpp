@@ -37,6 +37,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
+  int64_t wait_milliseconds,
   char pull_type
  )
  {
@@ -48,6 +49,7 @@ namespace joedb
   buffer.write<char>(pull_type);
   const int64_t client_checkpoint = client_journal.get_checkpoint_position();
   buffer.write<int64_t>(client_checkpoint);
+  buffer.write<int64_t>(wait_milliseconds);
   lock.write(buffer.data, buffer.index);
 
   buffer.index = 0;
@@ -57,7 +59,7 @@ namespace joedb
   const int64_t server_checkpoint = buffer.read<int64_t>();
   const int64_t size = buffer.read<int64_t>();
 
-  LOG("checkpoint = " << server_checkpoint << "; size = " << size);
+  LOG("server_checkpoint = " << server_checkpoint << "; size = " << size);
 
   {
    Writable_Journal::Tail_Writer tail_writer(client_journal);
@@ -97,28 +99,37 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
+  int64_t wait_milliseconds,
   char pull_type
  )
  {
   client_journal.lock_pull();
-  const int64_t result = pull(client_journal, pull_type);
+  const int64_t result = pull(client_journal, wait_milliseconds, pull_type);
   if (pull_type != 'L')
    client_journal.unlock();
   return result;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::pull(Writable_Journal &client_journal, bool wait)
+ int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  int64_t wait_milliseconds
+ )
  {
-  return shared_pull(client_journal, wait ? 'W' : 'P');
+  return shared_pull(client_journal, wait_milliseconds, 'P');
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::lock_pull(Writable_Journal &client_journal)
+ int64_t Server_Connection::lock_pull
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  int64_t wait_milliseconds
+ )
  {
-  return shared_pull(client_journal, 'L');
+  return shared_pull(client_journal, wait_milliseconds, 'L');
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -315,7 +326,7 @@ namespace joedb
 
   LOG("server_version = " << server_version << ". ");
 
-  if (server_version < 11)
+  if (server_version < 12)
    throw Exception("Unsupported server version");
 
   session_id = buffer.read<int64_t>();

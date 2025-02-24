@@ -94,9 +94,9 @@ namespace joedb::generator
 
    const Database &get_database() const {return db;}
 
-   bool pull(bool wait = false)
+   bool pull(int64_t wait_milliseconds = 0)
    {
-    joedb::Pullonly_Client::pull(wait);
+    joedb::Pullonly_Client::pull(wait_milliseconds);
     if (journal.get_position() < journal.get_checkpoint_position())
     {
      journal.play_until_checkpoint(db);
@@ -106,11 +106,6 @@ namespace joedb::generator
     }
     else
      return false;
-   }
-
-   bool wait()
-   {
-    return pull(true);
    }
  };
 )RRR";

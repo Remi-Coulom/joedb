@@ -35,17 +35,18 @@ namespace joedb
 
    int64_t session_id;
 
-   struct Session
+   struct Session: public std::enable_shared_from_this<Session>
    {
     const int64_t id;
     Server &server;
     net::ip::tcp::socket socket;
     Buffer<13> buffer;
-    enum State
+    enum class State
     {
      not_locking,
-     waiting_for_lock_pull,
-     waiting_for_lock_push,
+     waiting_for_push_to_pull,
+     waiting_for_lock_to_pull,
+     waiting_for_lock_to_push,
      locking
     };
     State state;
@@ -55,17 +56,15 @@ namespace joedb
     std::optional<Async_Writer> push_writer;
     bool unlock_after_push;
 
+    std::optional<net::steady_timer> pull_timer;
+    bool lock_before_pulling;
+    int64_t pull_checkpoint;
+
     std::ostream &write_id(std::ostream &out) const;
     std::optional<io::Progress_Bar> progress_bar;
 
     Session(Server &server, net::ip::tcp::socket &&socket);
     ~Session();
-   };
-
-   struct Pull_Queue_Element
-   {
-    std::shared_ptr<Session> session;
-    int64_t checkpoint;
    };
 
    std::set<Session *> sessions;
@@ -76,7 +75,6 @@ namespace joedb
    net::steady_timer lock_timeout_timer;
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
-   std::queue<Pull_Queue_Element> pull_queue;
    void lock_dequeue();
    void lock(std::shared_ptr<Session> session, Session::State state);
    void unlock(Session &session);
@@ -117,21 +115,16 @@ namespace joedb
     size_t offset
    );
 
-   void start_pulling
-   (
-    std::shared_ptr<Session> session,
-    int64_t checkpoint
-   );
+   void start_pulling(std::shared_ptr<Session> session);
 
    void pull_handler
    (
     std::shared_ptr<Session> session,
     std::error_code error,
-    size_t bytes_transferred,
-    bool wait
+    size_t bytes_transferred
    );
 
-   void pull(std::shared_ptr<Session> session, bool wait);
+   void pull(std::shared_ptr<Session> session);
 
    void check_hash_handler
    (
@@ -205,7 +198,7 @@ namespace joedb
     std::ostream *log_pointer
    );
 
-   static constexpr int64_t server_version = 11;
+   static constexpr int64_t server_version = 12;
 
    uint16_t get_port() const {return port;}
    bool is_readonly() const;

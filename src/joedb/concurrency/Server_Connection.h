@@ -39,13 +39,22 @@ namespace joedb
     bool content_check
    ) override;
 
-   int64_t pull(Writable_Journal &client_journal, bool wait) override;
+   int64_t pull
+   (
+    Writable_Journal &client_journal,
+    int64_t wait_milliseconds
+   ) override;
+
    Connection *get_push_connection() override;
 
    //
    // Connection overrides
    //
-   int64_t lock_pull(Writable_Journal &client_journal) override;
+   int64_t lock_pull
+   (
+    Writable_Journal &client_journal,
+    int64_t wait_milliseconds
+   ) override;
 
    int64_t push_until
    (
@@ -57,8 +66,8 @@ namespace joedb
 
    void unlock(Readonly_Journal &client_journal) override;
 
-   int64_t pull(Writable_Journal &client_journal, char pull_type);
-   int64_t shared_pull(Writable_Journal &client_journal, char pull_type);
+   int64_t pull(Writable_Journal &client_journal, int64_t wait_milliseconds, char pull_type);
+   int64_t shared_pull(Writable_Journal &client_journal, int64_t wait_milliseconds, char pull_type);
 
    bool check_matching_content
    (
@@ -76,7 +85,7 @@ namespace joedb
     int keep_alive_interval_seconds = 240
    );
 
-   static constexpr int64_t client_version = 11;
+   static constexpr int64_t client_version = 12;
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}
    void ping();

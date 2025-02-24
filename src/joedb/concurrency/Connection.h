@@ -20,7 +20,13 @@ namespace joedb
     Readonly_Journal &client_journal,
     bool content_check
    );
-   virtual int64_t pull(Writable_Journal &client_journal, bool wait);
+
+   virtual int64_t pull
+   (
+    Writable_Journal &client_journal,
+    int64_t wait_milliseconds = 0
+   );
+
    virtual Connection *get_push_connection();
    virtual ~Pullonly_Connection();
  };
@@ -30,7 +36,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual int64_t lock_pull(Writable_Journal &client_journal);
+   virtual int64_t lock_pull
+   (
+    Writable_Journal &client_journal,
+    int64_t wait_milliseconds = 0
+   );
 
    virtual int64_t push_until
    (

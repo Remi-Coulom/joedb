@@ -31,11 +31,15 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::pull(std::ostream &out, bool wait)
+ void Client_Command_Processor::pull
  ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  int64_t wait_milliseconds
+ )
  {
   const int64_t client_checkpoint = client.get_checkpoint();
-  const int64_t server_checkpoint = client.pull(wait);
+  const int64_t server_checkpoint = client.pull(wait_milliseconds);
   if (server_checkpoint > client_checkpoint)
    out << "pulled " << server_checkpoint - client_checkpoint << " bytes\n";
  }
@@ -75,8 +79,7 @@ namespace joedb
    out << R"RRR(Client
 ~~~~~~
  db
- pull
- wait
+ pull [<wait_milliseconds>]
 )RRR";
 
    if (!is_readonly_data())
@@ -87,7 +90,7 @@ namespace joedb
     out << " push\n";
 
     if (is_readonly_data())
-     out << " push_every <seconds>\n";
+     out << " push_every [<seconds>]\n";
     else
      out << " transaction\n";
    }
@@ -137,34 +140,20 @@ namespace joedb
   }
   else if (command == "pull") ///////////////////////////////////////////////
   {
-   pull(out, false);
-  }
-  else if (command == "wait") ///////////////////////////////////////////////
-  {
-   pull(out, true);
+   int64_t wait_milliseconds = 0;
+   parameters >> wait_milliseconds;
+   pull(out, wait_milliseconds);
   }
   else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
-   int seconds = 0;
+   int seconds = 1;
    parameters >> seconds;
 
-   if (seconds > 0)
-   {
-    Signal::set_signal(Signal::no_signal);
-    Signal::start();
+   Signal::set_signal(Signal::no_signal);
+   Signal::start();
 
-    while (Signal::get_signal() != SIGINT)
-    {
-     pull(out, false);
-     sleep(seconds, out);
-    }
-   }
-   else
-   {
-    Signal::stop();
-    while (true)
-     pull(out, true);
-   }
+   while (Signal::get_signal() != SIGINT)
+    pull(out, seconds * 1000);
   }
   else if (command == "transaction" && !is_readonly_data() && push_client) //
   {
