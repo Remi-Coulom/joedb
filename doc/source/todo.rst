@@ -4,6 +4,7 @@ TODO
 For next release
 ----------------
 
+ - enum instead of bool for content_check: none, full, quick, ...
  - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - more joedbc code generation:
 
