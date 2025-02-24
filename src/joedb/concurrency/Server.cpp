@@ -493,7 +493,8 @@ namespace joedb
      {
       if (!timer_error)
       {
-       start_pulling(session);
+       if (session->state == Session::State::waiting_for_push_to_pull)
+        start_pulling(session);
       }
      }
     );
