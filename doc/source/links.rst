@@ -101,3 +101,9 @@ Crash resistance:
 Interesting paper
 
 - http://db.cs.yale.edu/vldb07hstore.pdf
+
+Data Loss Stories
+
+- https://about.gitlab.com/blog/2017/02/10/postmortem-of-database-outage-of-january-31/
+- https://www.reddit.com/r/ExperiencedDevs/comments/1j2wrdv/wiped_my_companys_production_db_last_week/
+- https://www.brentozar.com/archive/2015/02/9-ways-to-lose-your-data/
