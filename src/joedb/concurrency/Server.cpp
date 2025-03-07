@@ -494,7 +494,10 @@ namespace joedb
       if (!timer_error)
       {
        if (session->state == Session::State::waiting_for_push_to_pull)
+       {
+        session->state = Session::State::not_locking;
         start_pulling(session);
+       }
       }
      }
     );
@@ -706,7 +709,7 @@ namespace joedb
     LOGID("client_version = " << client_version << '\n');
   
     session->buffer.index = 5;
-    session->buffer.write<int64_t>(client_version < 12 ? 0 : server_version);
+    session->buffer.write<int64_t>(client_version < 13 ? 0 : server_version);
     session->buffer.write<int64_t>(session->id);
     session->buffer.write<int64_t>(client.get_checkpoint());
     session->buffer.write<char>(is_readonly() ? 'R' : 'W');

@@ -329,7 +329,7 @@ namespace joedb
 
   LOG("server_version = " << server_version << ". ");
 
-  if (server_version < 12)
+  if (server_version < 13)
    throw Exception("Unsupported server version");
 
   session_id = buffer.read<int64_t>();

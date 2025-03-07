@@ -921,7 +921,7 @@ namespace joedb
     sequence.wait_for(2);
     client.client.pull(1);
     client.client.pull(1);
-   sequence.send(3);
+    sequence.send(3);
    }
    catch(...)
    {

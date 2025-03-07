@@ -85,7 +85,7 @@ namespace joedb
     int keep_alive_interval_seconds = 240
    );
 
-   static constexpr int64_t client_version = 12;
+   static constexpr int64_t client_version = 13;
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}
    void ping();
