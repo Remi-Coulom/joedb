@@ -4,6 +4,7 @@ TODO
 For next release
 ----------------
 
+ - pull should return the size of the pull, not the server checkpoint -> can write if(pull()) ...
  - enum instead of bool for content_check: none, full, quick, ...
  - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - more joedbc code generation:
