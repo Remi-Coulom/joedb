@@ -1,5 +1,7 @@
 #include "joedb/io/Command_Interpreter.h"
 
+#include <chrono>
+
 namespace joedb
 {
  class Client;
@@ -14,7 +16,7 @@ namespace joedb
    Pullonly_Client &client;
    Client * const push_client;
 
-   void pull(std::ostream &out, int64_t wait_milliseconds);
+   void pull(std::ostream &out, std::chrono::milliseconds wait);
    void print_status(std::ostream &out);
    static void sleep(int seconds, std::ostream &out);
 

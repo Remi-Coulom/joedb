@@ -42,7 +42,7 @@ namespace joedb
    int64_t pull
    (
     Writable_Journal &client_journal,
-    int64_t wait_milliseconds
+    std::chrono::milliseconds wait
    ) override;
 
    Connection *get_push_connection() override;
@@ -53,7 +53,7 @@ namespace joedb
    int64_t lock_pull
    (
     Writable_Journal &client_journal,
-    int64_t wait_milliseconds
+    std::chrono::milliseconds wait
    ) override;
 
    int64_t push_until
@@ -66,8 +66,19 @@ namespace joedb
 
    void unlock(Readonly_Journal &client_journal) override;
 
-   int64_t pull(Writable_Journal &client_journal, int64_t wait_milliseconds, char pull_type);
-   int64_t shared_pull(Writable_Journal &client_journal, int64_t wait_milliseconds, char pull_type);
+   int64_t pull
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds wait,
+    char pull_type
+   );
+
+   int64_t shared_pull
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds wait,
+    char pull_type
+   );
 
    bool check_matching_content
    (

@@ -207,7 +207,7 @@ namespace joedb
    void pause();
    void restart();
    void send_signal(int status);
-   int64_t get_milliseconds() const;
+   std::chrono::milliseconds get_time_stamp() const;
 
    ~Server();
  };

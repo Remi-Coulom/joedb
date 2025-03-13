@@ -9,28 +9,24 @@
 #define LOG(x) log([&](std::ostream &out){out << x;})
 #define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
 
-//#define JOEDB_SERVER_TIME_LOGGING
-
 namespace joedb
 {
-#ifdef JOEDB_SERVER_TIME_LOGGING
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server::get_milliseconds() const
+ std::chrono::milliseconds Server::get_time_stamp() const
  ////////////////////////////////////////////////////////////////////////////
  {
   return std::chrono::duration_cast<std::chrono::milliseconds>
   (
    std::chrono::steady_clock::now() - start_time
-  ).count();
+  );
  }
-#endif
 
  ////////////////////////////////////////////////////////////////////////////
  std::ostream &Server::Session::write_id(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-#ifdef JOEDB_SERVER_TIME_LOGGING
-  out << server.get_milliseconds() << ' ';
+#if 0
+  out << server.get_time_stamp().count() << ' ';
 #endif
 
   out << server.port << '(' << id << "): ";
@@ -468,25 +464,22 @@ namespace joedb
   {
    session->buffer.index = 1;
    session->pull_checkpoint = session->buffer.read<int64_t>();
-   const int64_t wait_milliseconds = session->buffer.read<int64_t>();
+   const std::chrono::milliseconds wait{session->buffer.read<int64_t>()};
 
    if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
 
-   if (wait_milliseconds > 0 && session->pull_checkpoint == client.get_checkpoint())
+   if (wait.count() > 0 && session->pull_checkpoint == client.get_checkpoint())
    {
     LOGID
     (
      "waiting at checkpoint = " << session->pull_checkpoint <<
-     " for " << wait_milliseconds << " milliseconds\n"
+     " for " << wait.count() << " milliseconds\n"
     );
 
     session->state = Session::State::waiting_for_push_to_pull;
     session->pull_timer.emplace(io_context);
-    session->pull_timer->expires_after
-    (
-     std::chrono::milliseconds(wait_milliseconds)
-    );
+    session->pull_timer->expires_after(wait);
     session->pull_timer->async_wait
     (
      [this, session](std::error_code timer_error)

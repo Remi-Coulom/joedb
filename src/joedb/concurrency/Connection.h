@@ -3,6 +3,8 @@
 
 #include "joedb/journal/Writable_Journal.h"
 
+#include <chrono>
+
 namespace joedb
 {
  class Connection;
@@ -24,7 +26,7 @@ namespace joedb
    virtual int64_t pull
    (
     Writable_Journal &client_journal,
-    int64_t wait_milliseconds = 0
+    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
    virtual Connection *get_push_connection();
@@ -39,7 +41,7 @@ namespace joedb
    virtual int64_t lock_pull
    (
     Writable_Journal &client_journal,
-    int64_t wait_milliseconds = 0
+    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
    virtual int64_t push_until

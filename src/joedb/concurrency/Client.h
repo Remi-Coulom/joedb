@@ -77,7 +77,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t pull(int64_t wait_milliseconds = 0)
+   int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    //////////////////////////////////////////////////////////////////////////
    {
     if (data.is_readonly())
@@ -85,12 +85,7 @@ namespace joedb
     else
     {
      throw_if_pull_when_ahead();
-
-     server_checkpoint = connection.pull
-     (
-      data.get_writable_journal(),
-      wait_milliseconds
-     );
+     server_checkpoint = connection.pull(data.get_writable_journal(), wait);
     }
 
     return server_checkpoint;

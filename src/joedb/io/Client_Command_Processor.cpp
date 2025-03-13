@@ -35,11 +35,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
-  int64_t wait_milliseconds
+  std::chrono::milliseconds wait
  )
  {
   const int64_t client_checkpoint = client.get_checkpoint();
-  const int64_t server_checkpoint = client.pull(wait_milliseconds);
+  const int64_t server_checkpoint = client.pull(wait);
   if (server_checkpoint > client_checkpoint)
    out << "pulled " << server_checkpoint - client_checkpoint << " bytes\n";
  }
@@ -142,7 +142,7 @@ namespace joedb
   {
    int64_t wait_milliseconds = 0;
    parameters >> wait_milliseconds;
-   pull(out, wait_milliseconds);
+   pull(out, std::chrono::milliseconds(wait_milliseconds));
   }
   else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
@@ -153,7 +153,7 @@ namespace joedb
    Signal::start();
 
    while (Signal::get_signal() != SIGINT)
-    pull(out, seconds * 1000);
+    pull(out, std::chrono::milliseconds(seconds * 1000));
   }
   else if (command == "transaction" && !is_readonly_data() && push_client) //
   {

@@ -876,7 +876,7 @@ namespace joedb
     Test_Client client(server, file);
     client.client.pull();
     sequence.send(1);
-    client.client.pull(100000);
+    client.client.pull(std::chrono::milliseconds(100000));
     sequence.send(2);
    }
    catch(...)
@@ -916,11 +916,11 @@ namespace joedb
    {
     Memory_File file;
     Test_Client client(server, file);
-    client.client.pull(1);
+    client.client.pull(std::chrono::milliseconds(1));
     sequence.send(1);
     sequence.wait_for(2);
-    client.client.pull(1);
-    client.client.pull(1);
+    client.client.pull(std::chrono::milliseconds(1));
+    client.client.pull(std::chrono::milliseconds(1));
     sequence.send(3);
    }
    catch(...)

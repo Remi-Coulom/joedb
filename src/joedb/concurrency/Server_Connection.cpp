@@ -40,7 +40,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
-  int64_t wait_milliseconds,
+  std::chrono::milliseconds wait,
   char pull_type
  )
  {
@@ -52,7 +52,7 @@ namespace joedb
   buffer.write<char>(pull_type);
   const int64_t client_checkpoint = client_journal.get_checkpoint_position();
   buffer.write<int64_t>(client_checkpoint);
-  buffer.write<int64_t>(wait_milliseconds);
+  buffer.write<int64_t>(wait.count());
   lock.write(buffer.data, buffer.index);
 
   buffer.index = 0;
@@ -102,12 +102,12 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
-  int64_t wait_milliseconds,
+  std::chrono::milliseconds wait,
   char pull_type
  )
  {
   client_journal.lock_pull();
-  const int64_t result = pull(client_journal, wait_milliseconds, pull_type);
+  const int64_t result = pull(client_journal, wait, pull_type);
   if (pull_type != 'L')
    client_journal.unlock();
   return result;
@@ -118,10 +118,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
-  int64_t wait_milliseconds
+  std::chrono::milliseconds wait
  )
  {
-  return shared_pull(client_journal, wait_milliseconds, 'P');
+  return shared_pull(client_journal, wait, 'P');
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -129,10 +129,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
-  int64_t wait_milliseconds
+  std::chrono::milliseconds wait
  )
  {
-  return shared_pull(client_journal, wait_milliseconds, 'L');
+  return shared_pull(client_journal, wait, 'L');
  }
 
  ////////////////////////////////////////////////////////////////////////////

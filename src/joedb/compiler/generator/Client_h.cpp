@@ -109,9 +109,9 @@ namespace joedb::generator
     return db.read_blob_data(blob);
    }
 
-   int64_t pull(int64_t wait_milliseconds = 0)
+   int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    {
-    const int64_t result = joedb::Client::pull(wait_milliseconds);
+    const int64_t result = joedb::Client::pull(wait);
     play_journal_and_throw_if_schema_changed();
     return result;
    }

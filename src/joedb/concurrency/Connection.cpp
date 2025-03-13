@@ -19,7 +19,7 @@ namespace joedb
  int64_t Pullonly_Connection::pull
  (
   Writable_Journal &client_journal,
-  int64_t wait_milliseconds
+  std::chrono::milliseconds wait
  )
  {
   client_journal.pull();
@@ -36,7 +36,7 @@ namespace joedb
  int64_t Connection::lock_pull
  (
   Writable_Journal &client_journal,
-  int64_t wait_milliseconds
+  std::chrono::milliseconds wait
  )
  {
   client_journal.lock_pull();

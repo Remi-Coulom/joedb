@@ -94,9 +94,9 @@ namespace joedb::generator
 
    const Database &get_database() const {return db;}
 
-   bool pull(int64_t wait_milliseconds = 0)
+   bool pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    {
-    joedb::Pullonly_Client::pull(wait_milliseconds);
+    joedb::Pullonly_Client::pull(wait);
     if (journal.get_position() < journal.get_checkpoint_position())
     {
      journal.play_until_checkpoint(db);

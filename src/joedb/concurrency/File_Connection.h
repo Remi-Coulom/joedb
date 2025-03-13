@@ -44,8 +44,12 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t pull(Writable_Journal &client_journal, int64_t) override
+   int64_t pull
    //////////////////////////////////////////////////////////////////////////
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds
+   ) override
    {
     client_journal.lock_pull();
     server_journal.pull();
@@ -74,8 +78,12 @@ namespace joedb
    Writable_Journal &server_journal;
 
    //////////////////////////////////////////////////////////////////////////
-   int64_t lock_pull(Writable_Journal &client_journal, int64_t) override
+   int64_t lock_pull
    //////////////////////////////////////////////////////////////////////////
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds
+   ) override
    {
     client_journal.lock_pull();
     server_journal.lock_pull();
