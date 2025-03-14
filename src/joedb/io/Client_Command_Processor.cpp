@@ -152,7 +152,7 @@ namespace joedb
    Signal::start();
 
    while (Signal::get_signal() != SIGINT)
-    pull(out, std::chrono::milliseconds(seconds * 1000));
+    pull(out, std::chrono::seconds(seconds));
   }
   else if (command == "transaction" && !is_readonly_data() && push_client) //
   {
