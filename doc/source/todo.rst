@@ -4,8 +4,12 @@ TODO
 For next release
 ----------------
 
+ - server: difference between wait for push to pull, and wait for push to lock_pull?
+   - transactions with a wait duration?
+   - never allow wait for push to lock_pull?
  - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
+ - use seconds for UI everywhere, but allow float for sub-second resolution
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
