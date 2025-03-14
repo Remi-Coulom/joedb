@@ -19,8 +19,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   enum {interrupt_check_seconds = 2};
-   enum {clear_signal_seconds = 3};
+   static constexpr std::chrono::seconds interrupt_check_duration{2};
+   static constexpr std::chrono::seconds clear_signal_duration{3};
 
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
    Pullonly_Client &client;
@@ -71,7 +71,7 @@ namespace joedb
 
    void write_status();
 
-   const std::chrono::seconds lock_timeout;
+   const std::chrono::milliseconds lock_timeout;
    net::steady_timer lock_timeout_timer;
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
@@ -194,7 +194,7 @@ namespace joedb
     bool share_client,
     net::io_context &io_context,
     uint16_t port,
-    std::chrono::seconds lock_timeout,
+    std::chrono::milliseconds lock_timeout,
     std::ostream *log_pointer
    );
 

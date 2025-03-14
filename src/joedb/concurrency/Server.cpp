@@ -200,10 +200,7 @@ namespace joedb
    lock_timeout_timer.expires_after(lock_timeout);
    lock_timeout_timer.async_wait
    (
-    [this, session](std::error_code e)
-    {
-     lock_timeout_handler(session, e);
-    }
+    [this, session](std::error_code e){lock_timeout_handler(session, e);}
    );
   }
  }
@@ -765,17 +762,10 @@ namespace joedb
  {
   if (!paused)
   {
-   interrupt_timer.expires_after
-   (
-    std::chrono::seconds(interrupt_check_seconds)
-   );
-
+   interrupt_timer.expires_after(interrupt_check_duration);
    interrupt_timer.async_wait
    (
-    [this](std::error_code e)
-    {
-     handle_interrupt_timer(e);
-    }
+    [this](std::error_code e){handle_interrupt_timer(e);}
    );
   }
  }
@@ -834,17 +824,10 @@ namespace joedb
     }
     else
     {
-     interrupt_timer.expires_after
-     (
-      std::chrono::seconds(clear_signal_seconds)
-     );
-
+     interrupt_timer.expires_after(clear_signal_duration);
      interrupt_timer.async_wait
      (
-      [this](std::error_code e)
-      {
-       handle_clear_signal_timer(e);
-      }
+      [this](std::error_code e){handle_clear_signal_timer(e);}
      );
     }
    }
@@ -870,7 +853,7 @@ namespace joedb
   const bool share_client,
   net::io_context &io_context,
   const uint16_t port,
-  const std::chrono::seconds lock_timeout,
+  const std::chrono::milliseconds lock_timeout,
   std::ostream * const log_pointer
  ):
   start_time(std::chrono::steady_clock::now()),
