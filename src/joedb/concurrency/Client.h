@@ -80,6 +80,8 @@ namespace joedb
    int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    //////////////////////////////////////////////////////////////////////////
    {
+    const int64_t old_checkpoint = get_checkpoint();
+
     if (data.is_readonly())
      data.get_readonly_journal().pull();
     else
@@ -88,7 +90,7 @@ namespace joedb
      server_checkpoint = connection.pull(data.get_writable_journal(), wait);
     }
 
-    return server_checkpoint;
+    return get_checkpoint() - old_checkpoint;
    }
 
    virtual ~Pullonly_Client();

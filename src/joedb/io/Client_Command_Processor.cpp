@@ -38,10 +38,9 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  const int64_t client_checkpoint = client.get_checkpoint();
-  const int64_t server_checkpoint = client.pull(wait);
-  if (server_checkpoint > client_checkpoint)
-   out << "pulled " << server_checkpoint - client_checkpoint << " bytes\n";
+  const int64_t byte_count = client.pull(wait);
+  if (byte_count > 0)
+   out << "pulled " << byte_count << " bytes\n";
  }
 
  ////////////////////////////////////////////////////////////////////////////

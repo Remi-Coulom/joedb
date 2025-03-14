@@ -4,9 +4,8 @@ TODO
 For next release
 ----------------
 
- - strongly typed checkpoints
+ - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
- - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
@@ -36,8 +35,6 @@ For next release
    - when max size reached, start again from the start (evict overwritten entries)
 
  - joedb_pack: fill holes left by deleted elements, like write_json.
- - Add support for vcpkg
- - Use clang-format (try to customize it, use tabs)
  - non-durable transactions that do not break durability:
 
    - switch checkpoints only after durable transaction
@@ -45,6 +42,9 @@ For next release
    - when opening a file: if non-durable checkpoint is equal to file size, OK by default (but option)
    - client option to checkpoint its file every n seconds
    - try to remove default_checkpoint: checkpoint level should be parameter of push and transaction.
+ - Add support for vcpkg
+ - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
+ - Use clang-format (try to customize it, use tabs)
 
 New Operations and Types
 ------------------------
