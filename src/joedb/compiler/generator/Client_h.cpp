@@ -109,16 +109,10 @@ namespace joedb::generator
     return db.read_blob_data(blob);
    }
 
-   void pull()
-   {
-    joedb::Client::pull(std::chrono::milliseconds(0));
-    play_journal_and_throw_if_schema_changed();
-   }
-
-   bool wait(std::chrono::milliseconds duration = std::chrono::milliseconds(0))
+   bool pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    {
     const int64_t old_checkpoint = joedb::Client::get_journal().get_checkpoint_position();
-    const int64_t new_checkpoint = joedb::Client::pull(duration);
+    const int64_t new_checkpoint = joedb::Client::pull(wait);
     play_journal_and_throw_if_schema_changed();
     return new_checkpoint > old_checkpoint;
    }
