@@ -9,7 +9,7 @@
 #include <libssh/libssh.h>
 #endif
 
-#ifdef JOEDB_HAS_ASIO_NET
+#ifdef JOEDB_HAS_ASIO
 #include <asio/version.hpp>
 #endif
 
@@ -77,7 +77,7 @@ namespace joedb
   out << "libssh version: " << ssh_version(0) << " https://www.libssh.org/\n";
 #endif
 
-#ifdef JOEDB_HAS_ASIO_NET
+#ifdef JOEDB_HAS_ASIO
   out << "asio version: ";
   out << ASIO_VERSION / 100000 << '.';
   out << ASIO_VERSION / 100 % 1000 << '.';
