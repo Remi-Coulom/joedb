@@ -34,8 +34,6 @@ namespace joedb
    bool paused;
    asio::signal_set interrupt_signals;
 
-   void list_sessions();
-
    int64_t session_id;
 
    struct Session: public std::enable_shared_from_this<Session>

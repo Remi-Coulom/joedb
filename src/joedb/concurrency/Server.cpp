@@ -759,25 +759,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::list_sessions()
- ////////////////////////////////////////////////////////////////////////////
- {
-  log([this](std::ostream &out)
-  {
-   out << port << ": timeout = " << lock_timeout.count();
-   out << " ms. sessions = " << sessions.size() << ".\n";
-
-   for (const Session *session: sessions)
-   {
-    out << ' ' << session->id;
-    out << ": state = " << int(session->state);
-    out << "; remote_endpoint = " << session->socket.remote_endpoint();
-    out << '\n';
-   }
-  });
- }
-
- ////////////////////////////////////////////////////////////////////////////
  Server::Server
  ////////////////////////////////////////////////////////////////////////////
  (
