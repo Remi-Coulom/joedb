@@ -7,16 +7,6 @@
 #define CDECL
 #endif
 
-// Note: SIGUSR1 and SIGUSR2 are not available in Windows
-
-#ifndef SIGUSR1
-#define SIGUSR1 10
-#endif
-
-#ifndef SIGUSR2
-#define SIGUSR2 12
-#endif
-
 namespace joedb
 {
  class Signal

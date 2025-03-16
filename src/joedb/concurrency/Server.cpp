@@ -4,7 +4,6 @@
 #include "joedb/io/get_time_string.h"
 #include "joedb/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
-#include "joedb/Signal.h" // IWYU pragma: keep (for SIGUSR* in Windows)
 
 #define LOG(x) log([&](std::ostream &out){out << x;})
 #define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
@@ -760,7 +759,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::list_sessions_handler()
+ void Server::list_sessions()
  ////////////////////////////////////////////////////////////////////////////
  {
   log([this](std::ostream &out)
@@ -775,25 +774,6 @@ namespace joedb
     out << "; remote_endpoint = " << session->socket.remote_endpoint();
     out << '\n';
    }
-  });
-
-  list_sessions_signal.async_wait([this](const asio::error_code &error, int)
-  {
-   if (!error)
-    list_sessions_handler();
-  });
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::print_status_handler()
- ////////////////////////////////////////////////////////////////////////////
- {
-  write_status();
-
-  print_status_signal.async_wait([this](const asio::error_code &error, int)
-  {
-   if (!error)
-     print_status_handler();
   });
  }
 
@@ -816,8 +796,6 @@ namespace joedb
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
   interrupt_signals(io_context, SIGINT, SIGTERM),
-  list_sessions_signal(io_context, SIGUSR1),
-  print_status_signal(io_context, SIGUSR2),
   session_id(0),
   lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),
@@ -859,19 +837,20 @@ namespace joedb
  void Server::start()
  ////////////////////////////////////////////////////////////////////////////
  {
-  LOG(port << ": start\n");
+  // Note: C++20 has operator<< for durations
+  LOG(port << ": start. lock_timeout = " << lock_timeout.count() << '\n');
 
   paused = false;
 
-  interrupt_signals.async_wait([this](const asio::error_code &e, int signal)
+  interrupt_signals.async_wait([this](const asio::error_code &error, int)
   {
-   if (!e)
+   if (!error)
     stop();
   });
 
-  list_sessions_handler();
-  print_status_handler();
   start_accept();
+
+  write_status();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -888,8 +867,6 @@ namespace joedb
   }
 
   acceptor.cancel();
-  print_status_signal.cancel();
-  list_sessions_signal.cancel();
   interrupt_signals.cancel();
   paused = true;
  }

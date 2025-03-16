@@ -32,13 +32,9 @@ namespace joedb
    asio::ip::tcp::acceptor acceptor;
    const uint16_t port;
    bool paused;
-
    asio::signal_set interrupt_signals;
-   asio::signal_set list_sessions_signal;
-   asio::signal_set print_status_signal;
 
-   void list_sessions_handler();
-   void print_status_handler();
+   void list_sessions();
 
    int64_t session_id;
 
