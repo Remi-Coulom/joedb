@@ -16,6 +16,7 @@
 
 #include <thread>
 #include <cstdio>
+#include <csignal>
 
 namespace joedb
 {
