@@ -293,7 +293,7 @@ namespace joedb
    if (session->unlock_after_push)
     unlock(*session);
 
-   for (auto other_session: sessions)
+   for (auto *other_session: sessions)
    {
     if
     (
