@@ -3,14 +3,15 @@ History
 
 - 2025-??-?? 10.0.0 LTS
 
+  This a long-term support release: it will be updated with bug fixes, without
+  breaking compatibility.
+
   - New features:
 
-    - This a LTS release: it will be updated with bug fixes, without
-      breaking compatibility.
-    - ``Client::pull`` now takes a ``wait_milliseconds`` optional parameter: if
-      the server has no new data to be pulled right now, then it will wait
-      until either the timeout expires or another client makes a non-empty
-      push.
+    - ``Client::pull`` now takes a optional parameter that indicates a wait
+      duration: if the server has no new data to be pulled right now, then it
+      will wait until either the timeout expires or another client makes a
+      non-empty push.
     - ``Encoded_File`` supports on-the-fly coding or decoding of data.
       ``Brotli_Codec`` is provided for compression.
     - It is now possible to write to an ``Interpreted_File``.
