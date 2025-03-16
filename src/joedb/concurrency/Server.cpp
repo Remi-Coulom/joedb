@@ -4,6 +4,7 @@
 #include "joedb/io/get_time_string.h"
 #include "joedb/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
+#include "joedb/Signal.h" // IWYU pragma: keep (for SIGUSR* in Windows)
 
 #define LOG(x) log([&](std::ostream &out){out << x;})
 #define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})

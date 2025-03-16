@@ -7,6 +7,7 @@
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
+#include "joedb/Signal.h" // IWYU pragma: keep (for SIGUSR* in Windows)
 
 #include "Test_Sequence.h"
 #include "Test_Network_Channel.h"

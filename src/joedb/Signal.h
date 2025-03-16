@@ -7,6 +7,8 @@
 #define CDECL
 #endif
 
+// Note: SIGUSR1 and SIGUSR2 are not available in Windows
+
 #ifndef SIGUSR1
 #define SIGUSR1 10
 #endif
