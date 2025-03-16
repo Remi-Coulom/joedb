@@ -14,6 +14,7 @@
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/steady_timer.hpp>
+#include <asio/signal_set.hpp>
 
 namespace joedb
 {
@@ -22,9 +23,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   static constexpr std::chrono::seconds interrupt_check_duration{2};
-   static constexpr std::chrono::seconds clear_signal_duration{3};
-
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
    Pullonly_Client &client;
    Client * const push_client;
@@ -33,8 +31,14 @@ namespace joedb
    asio::io_context &io_context;
    asio::ip::tcp::acceptor acceptor;
    const uint16_t port;
-   asio::steady_timer interrupt_timer;
    bool paused;
+
+   asio::signal_set interrupt_signals;
+   asio::signal_set list_sessions_signal;
+   asio::signal_set print_status_signal;
+
+   void list_sessions_handler();
+   void print_status_handler();
 
    int64_t session_id;
 
@@ -175,10 +179,6 @@ namespace joedb
 
    void start_accept();
 
-   void start_interrupt_timer();
-   void handle_interrupt_timer(std::error_code error);
-   void handle_clear_signal_timer(std::error_code error);
-
    std::ostream *log_pointer;
 
    template<typename F> void log(F f)
@@ -189,6 +189,9 @@ namespace joedb
      log_pointer->flush();
     }
    }
+
+   void start();
+   void stop();
 
   public:
    Server
@@ -209,7 +212,6 @@ namespace joedb
    void set_log(std::ostream *new_log);
    void pause();
    void restart();
-   void send_signal(int status);
    std::chrono::milliseconds get_time_stamp() const;
 
    ~Server();

@@ -2,7 +2,6 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/get_pid.h"
 #include "joedb/io/get_time_string.h"
-#include "joedb/Signal.h"
 #include "joedb/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
 
@@ -94,7 +93,7 @@ namespace joedb
   {
    out << port;
    out << "; pid = " << joedb::get_pid();
-   out << ": " << get_time_string_of_now();
+   out << "; " << get_time_string_of_now();
    out << "; sessions = " << sessions.size();
    out << "; checkpoint = ";
    out << client.get_journal().get_checkpoint_position() << '\n';
@@ -760,92 +759,41 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::start_interrupt_timer()
+ void Server::list_sessions_handler()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!paused)
+  log([this](std::ostream &out)
   {
-   interrupt_timer.expires_after(interrupt_check_duration);
-   interrupt_timer.async_wait
-   (
-    [this](std::error_code e){handle_interrupt_timer(e);}
-   );
-  }
+   out << port << ": timeout = " << lock_timeout.count();
+   out << " ms. sessions = " << sessions.size() << ".\n";
+
+   for (const Session *session: sessions)
+   {
+    out << ' ' << session->id;
+    out << ": state = " << int(session->state);
+    out << "; remote_endpoint = " << session->socket.remote_endpoint();
+    out << '\n';
+   }
+  });
+
+  list_sessions_signal.async_wait([this](const asio::error_code &error, int)
+  {
+   if (!error)
+    list_sessions_handler();
+  });
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::handle_interrupt_timer(const std::error_code error)
+ void Server::print_status_handler()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!error && !paused)
+  write_status();
+
+  print_status_signal.async_wait([this](const asio::error_code &error, int)
   {
-   if (Signal::get_signal() != Signal::no_signal)
-    LOG(port);
-
-   if (Signal::get_signal() == SIGINT)
-   {
-    paused = true;
-    LOG(": Received SIGINT, interrupting.\n");
-
-    for (Session *session: sessions)
-    {
-     session->socket.close();
-     if (session->pull_timer)
-      session->pull_timer->cancel();
-    }
-
-    acceptor.cancel();
-   }
-   else
-   {
-    if (Signal::get_signal() == SIGUSR1)
-    {
-     log([this](std::ostream &out)
-     {
-      out << ": timeout = " << lock_timeout.count();
-      out << "s. Received SIGUSR1, listing sessions. Count = ";
-      out << sessions.size() << ".\n";
-
-      for (const Session *session: sessions)
-      {
-       out << ' ' << session->id;
-       out << ": state = " << int(session->state);
-       out << "; remote_endpoint = " << session->socket.remote_endpoint();
-       out << '\n';
-      }
-     });
-    }
-    else if (Signal::get_signal() == SIGUSR2)
-    {
-     LOG("; Received SIGUSR2\n");
-     write_status();
-    }
-
-    if (Signal::get_signal() == Signal::no_signal)
-    {
-     start_interrupt_timer();
-    }
-    else
-    {
-     interrupt_timer.expires_after(clear_signal_duration);
-     interrupt_timer.async_wait
-     (
-      [this](std::error_code e){handle_clear_signal_timer(e);}
-     );
-    }
-   }
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::handle_clear_signal_timer(const std::error_code error)
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (!error)
-  {
-   Signal::set_signal(Signal::no_signal);
-   start_interrupt_timer();
-  }
+   if (!error)
+     print_status_handler();
+  });
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -866,16 +814,15 @@ namespace joedb
   io_context(io_context),
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
-  interrupt_timer(io_context),
-  paused(false),
+  interrupt_signals(io_context, SIGINT, SIGTERM),
+  list_sessions_signal(io_context, SIGUSR1),
+  print_status_signal(io_context, SIGUSR2),
   session_id(0),
   lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),
   locked(false),
   log_pointer(log_pointer)
  {
-  LOG(port << ": constructing joedb::Server\n");
-
   if (push_client)
    push_client->push_unlock();
 
@@ -884,11 +831,7 @@ namespace joedb
   else
    client.pull();
 
-  write_status();
-
-  Signal::start();
-  start_interrupt_timer();
-  start_accept();
+  start();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -912,22 +855,50 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server::start()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  LOG(port << ": start\n");
+
+  paused = false;
+
+  interrupt_signals.async_wait([this](const asio::error_code &e, int signal)
+  {
+   if (!e)
+    stop();
+  });
+
+  list_sessions_handler();
+  print_status_handler();
+  start_accept();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::stop()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  LOG(port << ": stop\n");
+
+  for (Session *session: sessions)
+  {
+   session->socket.close();
+   if (session->pull_timer)
+    session->pull_timer->cancel();
+  }
+
+  acceptor.cancel();
+  print_status_signal.cancel();
+  list_sessions_signal.cancel();
+  interrupt_signals.cancel();
+  paused = true;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Server::pause()
  ////////////////////////////////////////////////////////////////////////////
  {
   if (!io_context.stopped())
-  {
-   io_context.post
-   (
-    [this]()
-    {
-     LOG(port << ": pause. sessions.size() = " << sessions.size() << '\n');
-     paused = true;
-     acceptor.cancel();
-     interrupt_timer.cancel();
-    }
-   );
-  }
+   io_context.post([this](){stop();});
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -937,18 +908,8 @@ namespace joedb
   if (io_context.stopped())
   {
    io_context.restart();
-   paused = false;
-   start_interrupt_timer();
-   start_accept();
+   io_context.post([this](){start();});
   }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::send_signal(int status)
- ////////////////////////////////////////////////////////////////////////////
- {
-  Signal::set_signal(status);
-  io_context.post([this](){handle_interrupt_timer(std::error_code());});
  }
 
  ////////////////////////////////////////////////////////////////////////////

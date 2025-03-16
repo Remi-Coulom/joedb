@@ -7,7 +7,6 @@
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
-#include "joedb/Signal.h"
 
 #include "Test_Sequence.h"
 #include "Test_Network_Channel.h"
@@ -814,11 +813,10 @@ namespace joedb
    }
   });
 
-  server.restart();
   sequence.wait_for(1);
-  server.server.send_signal(signal);
+  std::raise(signal);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   sequence.send(2);
-  server.pause();
   thread.join();
  }
 
@@ -828,7 +826,6 @@ namespace joedb
  {
   Test_Server server(false, std::chrono::seconds(0));
 
-  test_signal(server, Signal::no_signal);
   test_signal(server, SIGUSR2);
   test_signal(server, SIGUSR1);
   test_signal(server, SIGINT);
