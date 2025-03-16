@@ -871,7 +871,7 @@ namespace joedb
   locked(false),
   log_pointer(log_pointer)
  {
-  LOG(port << ": constructor\n");
+  LOG(port << ": constructing joedb::Server\n");
 
   if (push_client)
    push_client->push_unlock();
