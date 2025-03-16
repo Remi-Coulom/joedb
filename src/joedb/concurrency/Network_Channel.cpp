@@ -1,5 +1,7 @@
 #include "joedb/concurrency/Network_Channel.h"
 
+#include <asio/connect.hpp>
+
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
@@ -11,33 +13,33 @@ namespace joedb
  ):
   socket(io_context)
  {
-  net::ip::tcp::resolver resolver(io_context);
-  net::connect
+  asio::ip::tcp::resolver resolver(io_context);
+  asio::connect
   (
    socket,
    resolver.resolve
    (
-    net::ip::tcp::v4(),
+    asio::ip::tcp::v4(),
     host_name,
     port_name,
-    net::ip::tcp::resolver::flags()
+    asio::ip::tcp::resolver::flags()
    )
   );
-  socket.set_option(net::ip::tcp::no_delay(true));
+  socket.set_option(asio::ip::tcp::no_delay(true));
  }
 
  //////////////////////////////////////////////////////////////////////////
  size_t Network_Channel::write_some(const char *data, size_t size)
  //////////////////////////////////////////////////////////////////////////
  {
-  return socket.write_some(net::buffer(data, size));
+  return socket.write_some(asio::buffer(data, size));
  }
 
  //////////////////////////////////////////////////////////////////////////
  size_t Network_Channel::read_some(char *data, size_t size)
  //////////////////////////////////////////////////////////////////////////
  {
-  return socket.read_some(net::buffer(data, size));
+  return socket.read_some(asio::buffer(data, size));
  }
 
  //////////////////////////////////////////////////////////////////////////

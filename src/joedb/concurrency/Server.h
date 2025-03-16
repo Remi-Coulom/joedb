@@ -2,7 +2,6 @@
 #define joedb_Server_declared
 
 #include "joedb/journal/Buffer.h"
-#include "joedb/concurrency/net.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/io/Progress_Bar.h"
 
@@ -11,6 +10,10 @@
 #include <set>
 #include <chrono>
 #include <optional>
+
+#include <asio/io_context.hpp>
+#include <asio/ip/tcp.hpp>
+#include <asio/steady_timer.hpp>
 
 namespace joedb
 {
@@ -27,10 +30,10 @@ namespace joedb
    Client * const push_client;
    const bool share_client;
    std::optional<Client_Lock> client_lock;
-   net::io_context &io_context;
-   net::ip::tcp::acceptor acceptor;
+   asio::io_context &io_context;
+   asio::ip::tcp::acceptor acceptor;
    const uint16_t port;
-   net::steady_timer interrupt_timer;
+   asio::steady_timer interrupt_timer;
    bool paused;
 
    int64_t session_id;
@@ -39,7 +42,7 @@ namespace joedb
    {
     const int64_t id;
     Server &server;
-    net::ip::tcp::socket socket;
+    asio::ip::tcp::socket socket;
     Buffer<13> buffer;
     enum class State
     {
@@ -56,14 +59,14 @@ namespace joedb
     std::optional<Async_Writer> push_writer;
     bool unlock_after_push;
 
-    std::optional<net::steady_timer> pull_timer;
+    std::optional<asio::steady_timer> pull_timer;
     bool lock_before_pulling;
     int64_t pull_checkpoint;
 
     std::ostream &write_id(std::ostream &out) const;
     std::optional<io::Progress_Bar> progress_bar;
 
-    Session(Server &server, net::ip::tcp::socket &&socket);
+    Session(Server &server, asio::ip::tcp::socket &&socket);
     ~Session();
    };
 
@@ -72,7 +75,7 @@ namespace joedb
    void write_status();
 
    const std::chrono::milliseconds lock_timeout;
-   net::steady_timer lock_timeout_timer;
+   asio::steady_timer lock_timeout_timer;
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
@@ -167,7 +170,7 @@ namespace joedb
    void handle_accept
    (
     std::error_code error,
-    net::ip::tcp::socket socket
+    asio::ip::tcp::socket socket
    );
 
    void start_accept();
@@ -192,7 +195,7 @@ namespace joedb
    (
     Pullonly_Client &client,
     bool share_client,
-    net::io_context &io_context,
+    asio::io_context &io_context,
     uint16_t port,
     std::chrono::milliseconds lock_timeout,
     std::ostream *log_pointer

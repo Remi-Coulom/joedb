@@ -2,7 +2,9 @@
 #define joedb_Network_Channel_declared
 
 #include "joedb/concurrency/Channel.h"
-#include "joedb/concurrency/net.h"
+
+#include <asio/io_context.hpp>
+#include <asio/ip/tcp.hpp>
 
 namespace joedb
 {
@@ -11,8 +13,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   net::io_context io_context;
-   net::ip::tcp::socket socket;
+   asio::io_context io_context;
+   asio::ip::tcp::socket socket;
 
    size_t write_some(const char *data, size_t size) override;
    size_t read_some(char *data, size_t size) override;

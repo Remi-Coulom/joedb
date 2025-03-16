@@ -33,7 +33,7 @@ namespace joedb
    Writable_Journal_Client_Data client_data{file};
    Connection connection;
    Client client{client_data, connection};
-   net::io_context io_context;
+   asio::io_context io_context;
 
    Server server;
    std::thread thread;
@@ -239,7 +239,7 @@ namespace joedb
   Readonly_Journal_Client_Data client_data{server_file};
   Connection connection;
   Client server_client{client_data, connection};
-  net::io_context io_context;
+  asio::io_context io_context;
 
   const bool share_client = false;
   const uint16_t port = 0;
@@ -708,7 +708,7 @@ namespace joedb
   Writable_Journal_Client_Data client_data{file};
   File_Connection connection(connection_file);
   Client client{client_data, connection};
-  net::io_context io_context;
+  asio::io_context io_context;
   const bool share_client = false;
 
   EXPECT_TRUE(file.get_size() > connection_file.get_size());
@@ -735,7 +735,7 @@ namespace joedb
   Memory_File file;
   Test_Client backup_client(backup_server, file);
 
-  net::io_context io_context;
+  asio::io_context io_context;
 
   // necessary to avoid data races with log_stream
   std::ostringstream another_stream;

@@ -9,6 +9,9 @@
 #define LOG(x) log([&](std::ostream &out){out << x;})
 #define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
 
+#include <asio/read.hpp>
+#include <asio/write.hpp>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -35,7 +38,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server::Session::Session(Server &server, net::ip::tcp::socket &&socket):
+ Server::Session::Session(Server &server, asio::ip::tcp::socket &&socket):
  ////////////////////////////////////////////////////////////////////////////
   id(++server.session_id),
   server(server),
@@ -241,10 +244,10 @@ namespace joedb
   {
    refresh_lock_timeout(session);
 
-   net::async_read
+   asio::async_read
    (
     session->socket,
-    net::buffer
+    asio::buffer
     (
      session->buffer.data,
      std::min(session->push_remaining_size, session->buffer.size)
@@ -387,10 +390,10 @@ namespace joedb
 
     refresh_lock_timeout(session);
 
-    net::async_write
+    asio::async_write
     (
      session->socket,
-     net::buffer(session->buffer.data, size + offset),
+     asio::buffer(session->buffer.data, size + offset),
      [this, session, reader](std::error_code e, size_t s)
      {
       pull_transfer_handler(session, reader, e, s, 0);
@@ -501,10 +504,10 @@ namespace joedb
  void Server::pull(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  net::async_read
+  asio::async_read
   (
    session->socket,
-   net::buffer(session->buffer.data + 1, 16),
+   asio::buffer(session->buffer.data + 1, 16),
    [this, session](std::error_code e, size_t s)
    {
     pull_handler(session, e, s);
@@ -549,10 +552,10 @@ namespace joedb
  void Server::check_hash(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  net::async_read
+  asio::async_read
   (
    session->socket,
-   net::buffer(session->buffer.data + 1, 40),
+   asio::buffer(session->buffer.data + 1, 40),
    [this, session] (std::error_code e, size_t s)
    {
     check_hash_handler(session, e, s);
@@ -587,10 +590,10 @@ namespace joedb
 
     case 'U': case 'p':
      session->unlock_after_push = (session->buffer.data[0] == 'U');
-     net::async_read
+     asio::async_read
      (
       session->socket,
-      net::buffer(session->buffer.data, 16),
+      asio::buffer(session->buffer.data, 16),
       [this, session](std::error_code e, size_t s)
       {
        push_handler(session, e, s);
@@ -630,10 +633,10 @@ namespace joedb
  void Server::read_command(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  net::async_read
+  asio::async_read
   (
    session->socket,
-   net::buffer(session->buffer.data, 1),
+   asio::buffer(session->buffer.data, 1),
    [this, session](std::error_code e, size_t s)
    {
     read_command_handler(session, e, s);
@@ -662,10 +665,10 @@ namespace joedb
   const size_t size
  )
  {
-  net::async_write
+  asio::async_write
   (
    session->socket,
-   net::buffer(session->buffer.data, size),
+   asio::buffer(session->buffer.data, size),
    [this, session](std::error_code e, size_t s)
    {
     write_buffer_and_next_command_handler(session, e, s);
@@ -717,18 +720,18 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::error_code error,
-  net::ip::tcp::socket socket
+  asio::ip::tcp::socket socket
  )
  {
   if (!error && !paused)
   {
-   socket.set_option(net::ip::tcp::no_delay(true));
+   socket.set_option(asio::ip::tcp::no_delay(true));
    std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
 
-   net::async_read
+   asio::async_read
    (
     session->socket,
-    net::buffer(session->buffer.data, 13),
+    asio::buffer(session->buffer.data, 13),
     [this, session](std::error_code e, size_t s)
     {
      handshake_handler(session, e, s);
@@ -748,7 +751,7 @@ namespace joedb
    acceptor.async_accept
    (
     io_context,
-    [this](std::error_code error, net::ip::tcp::socket socket)
+    [this](std::error_code error, asio::ip::tcp::socket socket)
     {
      handle_accept(error, std::move(socket));
     }
@@ -851,7 +854,7 @@ namespace joedb
  (
   Pullonly_Client &client,
   const bool share_client,
-  net::io_context &io_context,
+  asio::io_context &io_context,
   const uint16_t port,
   const std::chrono::milliseconds lock_timeout,
   std::ostream * const log_pointer
@@ -861,7 +864,7 @@ namespace joedb
   push_client(client.get_push_client()),
   share_client(share_client),
   io_context(io_context),
-  acceptor(io_context, net::ip::tcp::endpoint(net::ip::tcp::v4(), port)),
+  acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
   interrupt_timer(io_context),
   paused(false),
