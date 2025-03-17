@@ -722,7 +722,7 @@ namespace joedb
   asio::ip::tcp::socket socket
  )
  {
-  if (!error && !paused)
+  if (!error && !stopped)
   {
    socket.set_option(asio::ip::tcp::no_delay(true));
    std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
@@ -745,7 +745,7 @@ namespace joedb
  void Server::start_accept()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!paused)
+  if (!stopped)
   {
    acceptor.async_accept
    (
@@ -776,7 +776,7 @@ namespace joedb
   io_context(io_context),
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
-  paused(true),
+  stopped(true),
   interrupt_signals(io_context, SIGINT, SIGTERM),
   session_id(0),
   lock_timeout(lock_timeout),
@@ -819,9 +819,9 @@ namespace joedb
  void Server::start()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (paused)
+  if (stopped)
   {
-   paused = false;
+   stopped = false;
 
    interrupt_signals.async_wait([this](const asio::error_code &error, int)
    {
@@ -841,7 +841,7 @@ namespace joedb
  void Server::stop()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!paused)
+  if (!stopped)
   {
    LOG(port << ": stop\n");
 
@@ -854,24 +854,8 @@ namespace joedb
 
    acceptor.cancel();
    interrupt_signals.cancel();
-   paused = true;
+   stopped = true;
   }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::pause()
- ////////////////////////////////////////////////////////////////////////////
- {
-  io_context.post([this](){stop();});
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::restart()
- ////////////////////////////////////////////////////////////////////////////
- {
-  io_context.post([this](){start();});
-  if (io_context.stopped())
-   io_context.restart();
  }
 
  ////////////////////////////////////////////////////////////////////////////

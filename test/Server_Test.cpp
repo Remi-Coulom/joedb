@@ -66,7 +66,7 @@ namespace joedb
    {
     if (!paused)
     {
-     server.pause();
+     io_context.post([&](){server.stop();});
      thread.join();
      paused = true;
     }
@@ -76,7 +76,8 @@ namespace joedb
    {
     if (paused)
     {
-     server.restart();
+     io_context.post([this](){server.start();});
+     io_context.restart();
      thread = std::thread(
       [&io_context_reference = io_context]()
       {
@@ -265,7 +266,7 @@ namespace joedb
    client.pull();
   }
 
-  server.pause();
+  io_context.post([&](){server.stop();});
   thread.join();
   std::remove(file_name);
  }
@@ -790,7 +791,7 @@ namespace joedb
    }
   }
 
-  server.pause();
+  io_context.post([&](){server.stop();});
   thread.join();
  }
 

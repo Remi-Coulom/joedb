@@ -31,7 +31,7 @@ namespace joedb
    asio::io_context &io_context;
    asio::ip::tcp::acceptor acceptor;
    const uint16_t port;
-   bool paused;
+   bool stopped;
    asio::signal_set interrupt_signals;
 
    int64_t session_id;
@@ -184,8 +184,6 @@ namespace joedb
     }
    }
 
-   void start();
-   void stop();
 
   public:
    Server
@@ -198,14 +196,17 @@ namespace joedb
     std::ostream *log_pointer
    );
 
+   // Note: these function must be called from the io_context thread
+   // For instance: io_context.post([&](){server.stop();});
+   void start();
+   void stop();
+
    static constexpr int64_t server_version = 13;
 
    uint16_t get_port() const {return port;}
    bool is_readonly() const;
 
    void set_log(std::ostream *new_log);
-   void pause();
-   void restart();
    std::chrono::milliseconds get_time_stamp() const;
 
    ~Server();
