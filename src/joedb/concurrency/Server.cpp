@@ -776,6 +776,7 @@ namespace joedb
   io_context(io_context),
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
+  paused(true),
   interrupt_signals(io_context, SIGINT, SIGTERM),
   session_id(0),
   lock_timeout(lock_timeout),
@@ -818,57 +819,59 @@ namespace joedb
  void Server::start()
  ////////////////////////////////////////////////////////////////////////////
  {
-  // Note: C++20 has operator<< for durations
-  LOG(port << ": start. lock_timeout = " << lock_timeout.count() << '\n');
-
-  paused = false;
-
-  interrupt_signals.async_wait([this](const asio::error_code &error, int)
+  if (paused)
   {
-   if (!error)
-    stop();
-  });
+   paused = false;
 
-  start_accept();
+   interrupt_signals.async_wait([this](const asio::error_code &error, int)
+   {
+    if (!error)
+     stop();
+   });
 
-  write_status();
+   start_accept();
+
+   // Note: C++20 has operator<< for durations
+   LOG(port << ": start. lock_timeout = " << lock_timeout.count() << '\n');
+   write_status();
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::stop()
  ////////////////////////////////////////////////////////////////////////////
  {
-  LOG(port << ": stop\n");
-
-  for (Session *session: sessions)
+  if (!paused)
   {
-   session->socket.close();
-   if (session->pull_timer)
-    session->pull_timer->cancel();
-  }
+   LOG(port << ": stop\n");
 
-  acceptor.cancel();
-  interrupt_signals.cancel();
-  paused = true;
+   for (Session *session: sessions)
+   {
+    session->socket.close();
+    if (session->pull_timer)
+     session->pull_timer->cancel();
+   }
+
+   acceptor.cancel();
+   interrupt_signals.cancel();
+   paused = true;
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::pause()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!io_context.stopped())
-   io_context.post([this](){stop();});
+  io_context.post([this](){stop();});
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::restart()
  ////////////////////////////////////////////////////////////////////////////
  {
+  io_context.post([this](){start();});
   if (io_context.stopped())
-  {
    io_context.restart();
-   io_context.post([this](){start();});
-  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
