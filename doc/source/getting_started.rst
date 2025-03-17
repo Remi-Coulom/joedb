@@ -12,9 +12,9 @@ clone the repository to get the most recent version: ``git clone
 https://github.com/Remi-Coulom/joedb.git``. The dev branch is tested before
 being merged into master, so the master branch should be rather safe to use.
 
-Joedb is written in portable C++ 17, and uses `CMake <https://cmake.org/>`_ for
-its build system, and `vcpkg <https://vcpkg.io/en/>`_ for its dependencies. So
-it should be portable to almost any platform.
+Joedb is written in portable C++ 17, and uses `CMake <https://cmake.org/>`_
+for its build system, and `vcpkg <https://vcpkg.io/en/>`_ for its
+dependencies. So it should be portable to almost any platform.
 
 Note that joedb can work without any external dependencies, as pure standard
 C++. Each external dependencies provides extra optional features.
@@ -23,21 +23,17 @@ Windows
 ^^^^^^^
 
 Visual Studio can open the CMake project located in the ``compcmake`` folder.
-It comes with a ``vcpkg.json`` that should get all dependencies automatically.
+``CMakePresets.json`` contains the ``vcpkg_release`` and ``vcpkg_debug``
+presets that you can use to get all dependencies automatically with vcpkg.
 You may have to install vcpkg in Visual Studio as explained on `that page
 <https://devblogs.microsoft.com/cppblog/vcpkg-is-now-included-with-visual-studio/>`_.
-
-The ``install`` target of this project will produce a directory in
-``joedb/compcmake/out/install``. You may have to copy the generated files
-elsewhere, or adjust your system's ``PATH`` in order to make the tools easily
-available on the command line.
 
 Linux
 ^^^^^
 
-Linux can use vcpkg, but cmake should be able to find installed system packages
-as well. Full development prerequisites in Ubuntu can be installed with this
-command:
+Linux can use vcpkg, but cmake should be able to find installed system
+packages as well. Full development prerequisites in Ubuntu can be installed
+with this command:
 
 .. code-block:: bash
 
@@ -55,14 +51,6 @@ These commands will install joedb system-wide:
 
     sudo cmake --build . install
     sudo ldconfig
-
-If you wish to use vcpkg instead of OS-provided libraries, you can invoke the
-generate script this way instead (the ``VCPKGROOT`` environment variable must
-have been set):
-
-.. code-block:: bash
-
-    ./generate.sh --vcpkg gcc_release
 
 First Steps
 -----------
