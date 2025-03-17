@@ -92,7 +92,7 @@ namespace joedb
   log([this](std::ostream &out)
   {
    out << port;
-   out << "; pid = " << joedb::get_pid();
+   out << ": pid = " << joedb::get_pid();
    out << "; " << get_time_string_of_now();
    out << "; sessions = " << sessions.size();
    out << "; checkpoint = ";
