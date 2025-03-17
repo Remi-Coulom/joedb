@@ -1,4 +1,4 @@
 cd joedb/compcmake/
-./generate.sh gcc_release
+cmake --preset gcc_release -G Ninja
 cd gcc_release/
 cmake --build .
