@@ -1,8 +1,8 @@
 Network Protocol
 ================
 
-checkpoint, wait_milliseconds, size, version, and session_id are sent as 64-bit
-little-endian numbers
+checkpoint, wait_milliseconds, size, version, blob_id, and session_id are sent
+as 64-bit little-endian numbers
 
 Client to Server
 ----------------
@@ -26,6 +26,9 @@ H      checkpoint        check SHA-256 hash code
        hash (32 bytes)
 i                        ping (used to keep the connection alive)
 Q                        quit
+b      blob_id           request blob data
+B      size              write new blob
+       data
 ====== ================= ======================================================
 
 
@@ -47,10 +50,13 @@ L      checkpoint       reply to L
        data
 U                       reply to U or p when the push succeeded
 C                       reply to U or p when the push failed (conflict)
-R                       reply to L, p, U or u when the server is read-only
+R                       reply to L, p, U, u, or B when the server is read-only
 u                       reply to u (no timeout)
 t                       reply to u, U, or p in case of timeout
 H                       reply to H, hash is matching
 h                       reply to H, hash mismatch
 i                       reply to i
+b      size             reply to b
+       data
+B      blob_id          reply to B
 ====== ================ ======================================================
