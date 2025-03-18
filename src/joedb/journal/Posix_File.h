@@ -21,8 +21,6 @@ namespace joedb
    int lock(int command, short type, int64_t start, int64_t size);
 
   protected:
-   size_t pread(char *buffer, size_t size, int64_t offset) override;
-   void pwrite(const char *buffer, size_t size, int64_t offset) override;
    void raw_sync() override;
 
   public:
@@ -44,6 +42,8 @@ namespace joedb
    bool try_exclusive_lock(int64_t start, int64_t size);
    void exclusive_lock(int64_t start, int64_t size) override;
    void unlock(int64_t start, int64_t size) override;
+   size_t pread(char *buffer, size_t size, int64_t offset) override;
+   void pwrite(const char *buffer, size_t size, int64_t offset) override;
 
    ~Posix_FD() override;
  };

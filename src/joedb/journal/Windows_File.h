@@ -37,8 +37,6 @@ namespace joedb
    BOOL lock(Lock_Operation op, int64_t start, int64_t size);
 
   protected:
-   size_t pread(char* data, size_t size, int64_t offset) override;
-   void pwrite(const char* data, size_t size, int64_t offset) override;
    void raw_sync() override;
 
   public:
@@ -51,6 +49,8 @@ namespace joedb
    void shared_lock(int64_t start, int64_t size) override;
    void exclusive_lock(int64_t start, int64_t size) override;
    void unlock(int64_t start, int64_t size) override;
+   size_t pread(char* data, size_t size, int64_t offset) override;
+   void pwrite(const char* data, size_t size, int64_t offset) override;
 
    ~Windows_Handle() override;
  };
