@@ -109,7 +109,7 @@ namespace joedb
     size_t bytes_transferred
    );
 
-   void pull_transfer_handler
+   void read_transfer_handler
    (
     std::shared_ptr<Session> session,
     Async_Reader reader,
@@ -117,6 +117,8 @@ namespace joedb
     size_t bytes_transferred,
     size_t offset
    );
+
+   void start_reading(std::shared_ptr<Session> session, Async_Reader reader);
 
    void start_pulling(std::shared_ptr<Session> session);
 
@@ -128,6 +130,13 @@ namespace joedb
    );
 
    void pull(std::shared_ptr<Session> session);
+
+   void read_blob_handler
+   (
+    std::shared_ptr<Session> session,
+    std::error_code error,
+    size_t bytes_transferred
+   );
 
    void check_hash_handler
    (

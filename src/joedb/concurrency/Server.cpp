@@ -364,7 +364,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::pull_transfer_handler
+ void Server::read_transfer_handler
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::shared_ptr<Session> session,
@@ -395,7 +395,7 @@ namespace joedb
      asio::buffer(session->buffer.data, size + offset),
      [this, session, reader](std::error_code e, size_t s)
      {
-      pull_transfer_handler(session, reader, e, s, 0);
+      read_transfer_handler(session, reader, e, s, 0);
      }
     );
    }
@@ -409,6 +409,30 @@ namespace joedb
     read_command(session);
    }
   }
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::start_reading
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  Async_Reader reader
+ )
+ {
+  LOGID("reading from = " << reader.get_current() << ", size = "
+   << reader.get_remaining() << ':');
+
+  if (log_pointer && reader.get_remaining() > session->buffer.ssize)
+   session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
+
+  read_transfer_handler
+  (
+   session,
+   reader,
+   std::error_code(),
+   0,
+   session->buffer.index
+  );
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -434,20 +458,7 @@ namespace joedb
   session->buffer.write<int64_t>(reader.get_end());
   session->buffer.write<int64_t>(reader.get_remaining());
 
-  LOGID("pulling from checkpoint = " << session->pull_checkpoint << ", size = "
-   << reader.get_remaining() << ':');
-
-  if (log_pointer && reader.get_remaining() > session->buffer.ssize)
-   session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
-
-  pull_transfer_handler
-  (
-   session,
-   reader,
-   std::error_code(),
-   0,
-   session->buffer.index
-  );
+  start_reading(session, reader);
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -512,6 +523,29 @@ namespace joedb
     pull_handler(session, e, s);
    }
   );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::read_blob_handler
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  std::error_code error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   session->buffer.index = 1;
+   const int64_t blob_position = session->buffer.read<int64_t>();
+   const Async_Reader reader = client.get_journal().get_async_blob_reader
+   (
+    Blob(blob_position)
+   );
+   session->buffer.index = 1;
+   session->buffer.write<int64_t>(reader.get_remaining());
+   start_reading(session, reader);
+  }
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -621,6 +655,18 @@ namespace joedb
       unlock(*session);
     break;
 
+    case 'b':
+     asio::async_read
+     (
+      session->socket,
+      asio::buffer(session->buffer.data + 1, 8),
+      [this, session](std::error_code e, size_t s)
+      {
+       read_blob_handler(session, e, s);
+      }
+     );
+    break;
+
     default:
      LOGID("unexpected command\n");
     break;
@@ -699,13 +745,13 @@ namespace joedb
    {
     const int64_t client_version = session->buffer.read<int64_t>();
     LOGID("client_version = " << client_version << '\n');
-  
+
     session->buffer.index = 5;
     session->buffer.write<int64_t>(client_version < 13 ? 0 : server_version);
     session->buffer.write<int64_t>(session->id);
     session->buffer.write<int64_t>(client.get_checkpoint());
     session->buffer.write<char>(is_readonly() ? 'R' : 'W');
-  
+
     write_buffer_and_next_command(session, session->buffer.index);
     return;
    }
