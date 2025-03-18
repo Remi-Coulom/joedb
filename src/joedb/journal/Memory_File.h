@@ -21,6 +21,7 @@ namespace joedb
 
    int64_t get_size() const override {return int64_t(data.size());}
    const std::string &get_data() const {return data;}
+   std::string move_data() const {return std::move(data);}
 
    ~Memory_File() override;
  };

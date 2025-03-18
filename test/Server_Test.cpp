@@ -5,6 +5,7 @@
 #include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/File_Connection.h"
+#include "joedb/concurrency/Server_Blob_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
 
@@ -41,8 +42,8 @@ namespace joedb
 
    Test_Server
    (
-    bool share_client,
-    std::chrono::seconds lock_timeout
+    bool share_client = false,
+    std::chrono::seconds lock_timeout = std::chrono::seconds{0}
    ):
     server
     {
@@ -152,7 +153,7 @@ namespace joedb
  TEST(Server, basic)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   //
   // Basic operation
@@ -274,7 +275,7 @@ namespace joedb
  TEST(Server, concurrent_reads)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   const size_t comment_size = 1 << 21;
   const size_t client_count = 64;
@@ -337,7 +338,7 @@ namespace joedb
  TEST(Server, concurrent_writes)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   const size_t client_count = 64;
 
@@ -380,7 +381,7 @@ namespace joedb
  TEST(Server, multi_lock)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   Test_Sequence sequence;
 
@@ -440,7 +441,7 @@ namespace joedb
  TEST(Server, failed_push)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   Memory_File client_file;
 
@@ -544,7 +545,7 @@ namespace joedb
  TEST(Server, ping)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
   Memory_File client_file;
   Test_Client client(server, client_file);
   client.server_connection.ping();
@@ -554,7 +555,7 @@ namespace joedb
  TEST(Server, unlock_at_disconnection)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(1));
+  Test_Server server;
   server.set_log(nullptr);
   Memory_File client_file;
   {
@@ -571,7 +572,7 @@ namespace joedb
  TEST(Server, conflict)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   Memory_File client_file_0;
   Memory_File client_file_1;
@@ -593,7 +594,7 @@ namespace joedb
  TEST(Server, shared)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(true, std::chrono::seconds(0));
+  Test_Server server(true);
 
   Memory_File client_file;
   Test_Client client(server, client_file);
@@ -634,7 +635,7 @@ namespace joedb
  TEST(Server, double_lock)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   Memory_File client_file;
   Test_Client client(server, client_file);
@@ -650,7 +651,7 @@ namespace joedb
  TEST(Server, unexpected_command)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
   Memory_File client_file;
   Test_Client client(server, client_file);
   client.channel.write("!", 1);
@@ -660,7 +661,7 @@ namespace joedb
  TEST(Server, bad_handshake)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
   Port_String port_string(server);
   {
    Test_Network_Channel channel("localhost", port_string.get());
@@ -730,7 +731,7 @@ namespace joedb
  TEST(Server, synchronous_backup)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server backup_server(false, std::chrono::seconds(0));
+  Test_Server backup_server;
 
   Memory_File file;
   Test_Client backup_client(backup_server, file);
@@ -798,7 +799,7 @@ namespace joedb
  TEST(Server, signal)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
   std::raise(SIGINT);
   server.thread.join();
  }
@@ -807,7 +808,7 @@ namespace joedb
  TEST(Server, content_mismatch_bug)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   Memory_File file;
 
@@ -835,7 +836,7 @@ namespace joedb
  {
   Test_Sequence sequence;
 
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   std::thread thread([&server, &sequence]()
   {
@@ -877,7 +878,7 @@ namespace joedb
  {
   Test_Sequence sequence;
 
-  Test_Server server(false, std::chrono::seconds(0));
+  Test_Server server;
 
   std::thread thread([&server, &sequence]()
   {
@@ -913,5 +914,27 @@ namespace joedb
   sequence.send(2);
   thread.join();
   EXPECT_EQ(sequence.get(), 3);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, blob)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server;
+
+  Blob blob;
+
+  {
+   Memory_File file;
+   Test_Client client(server, file);
+   client.client.transaction([&blob](const Readable &readable, Writable &writable)
+   {
+    blob = writable.write_blob_data("glouglou");
+   });
+  }
+
+  Test_Network_Channel channel("localhost", Port_String(server).get());
+  Server_Blob_Client blob_client(channel, nullptr);
+  EXPECT_EQ(blob_client.read_blob_data(blob), "glouglou");
  }
 }
