@@ -16,8 +16,6 @@ namespace joedb
   public Writable,
   public Posthumous_Thrower
  {
-  friend class Async_Tail_Writer;
-
   private:
    Commit_Level current_commit_level;
 
