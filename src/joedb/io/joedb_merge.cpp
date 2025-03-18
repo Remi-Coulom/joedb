@@ -60,7 +60,7 @@ namespace joedb
   //
   // Build merged db by looping over all files
   //
-  std::vector<char> reference_schema;
+  std::string reference_schema;
   std::unique_ptr<Database> merged_db;
   const int width = int(std::to_string(file_names.size()).size());
   int errors = 0;

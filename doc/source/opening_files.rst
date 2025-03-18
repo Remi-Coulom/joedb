@@ -53,7 +53,7 @@ of a file name. Subclasses of ``Generic_File`` allows accessing data in
 various ways:
 
  - ``Stream_File`` uses a ``std::streambuf``.
- - ``Memory_File`` writes to a ``std::vector<char>`` in memory.
+ - ``Memory_File`` writes to a ``std::string``.
  - ``Readonly_Memory_File`` reads from ``const char *``.
    :ref:`joedb_embed` can be used to embed a joedb database into a C++ string
    literal.

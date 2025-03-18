@@ -11,7 +11,7 @@ namespace joedb
  {
   private:
    Generic_File &file;
-   const int64_t end;
+   int64_t end;
    int64_t current;
 
   public:
@@ -25,6 +25,20 @@ namespace joedb
     if (current > end)
      current = end;
     file.flush();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   Async_Reader(Generic_File &file, Blob blob): file(file)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    const int64_t original_position = file.get_position();
+
+    file.set_position(blob.get_position());
+    const int64_t size = file.compact_read<int64_t>();
+    current = file.get_position();
+    end = current + size;
+
+    file.set_position(original_position);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -57,34 +71,9 @@ namespace joedb
     return total_read;
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   size_t pread(char *buffer, size_t capacity, int64_t offset)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return file.pread(buffer, capacity, offset);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   size_t seek_and_read(char *buffer, size_t capacity, int64_t offset)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    file.seek(offset);
-    return file.pos_read(buffer, capacity);
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   int64_t get_remaining() const
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return end - current;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   int64_t get_end() const
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return end;
-   }
+   int64_t get_end() const {return end;}
+   int64_t get_current() const {return current;}
+   int64_t get_remaining() const {return end - current;}
  };
 }
 

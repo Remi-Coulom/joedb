@@ -31,16 +31,18 @@ namespace joedb
 
   std::string buffer(4, ' ');
 
-  reader.pread(&buffer[0], 4, 8);
+  Abstract_File &af(file);
+
+  file.pread(&buffer[0], 4, 8);
   EXPECT_EQ(buffer, "zzzz");
-  reader.pread(&buffer[0], 4, 4);
+  file.pread(&buffer[0], 4, 4);
   EXPECT_EQ(buffer, "yyyy");
-  reader.pread(&buffer[0], 4, 0);
+  file.pread(&buffer[0], 4, 0);
   EXPECT_EQ(buffer, "xxxx");
 
   writer.write("aaaabbbbcccc", 12);
 
-  reader.pread(&buffer[0], 4, 16);
+  af.pread(&buffer[0], 4, 16);
   EXPECT_EQ(buffer, "bbbb");
 
   reader.read(&buffer[0], 4);
@@ -57,7 +59,7 @@ namespace joedb
 
   std::vector<char> buffer(block_size);
 
-  File file (file_name, Open_Mode::create_new);
+  File file(file_name, Open_Mode::create_new);
   for (size_t i = 0; i < blocks; i++)
    file.write_data(buffer.data(), buffer.size());
 
@@ -66,7 +68,7 @@ namespace joedb
   for (int64_t i = 0; i < reads; i++)
   {
    const int64_t offset = block_size * ((i * step) % blocks);
-   reader.pread(buffer.data(), buffer.size(), offset);
+   file.pread(buffer.data(), buffer.size(), offset);
   }
 
   std::remove(file_name);
@@ -89,7 +91,8 @@ namespace joedb
   for (int64_t i = 0; i < reads; i++)
   {
    const int64_t offset = block_size * ((i * step) % blocks);
-   reader.seek_and_read(buffer.data(), buffer.size(), offset);
+   file.seek(offset);
+   file.pos_read(buffer.data(), buffer.size());
   }
 
   std::remove(file_name);
@@ -105,5 +108,25 @@ namespace joedb
   constexpr int64_t capacity = 16;
   char buffer[capacity];
   EXPECT_EQ(reader.read(buffer, capacity), 0UL);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Async, blob)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  const Blob blob = file.write_blob_data("joedb");
+  Async_Reader reader(file, blob);
+  EXPECT_EQ(reader.get_remaining(), 5);
+  constexpr int64_t capacity = 3;
+  char buffer[capacity];
+  EXPECT_EQ(reader.read(buffer, capacity), 3);
+  EXPECT_EQ(buffer[0], 'j');
+  EXPECT_EQ(buffer[1], 'o');
+  EXPECT_EQ(buffer[2], 'e');
+  EXPECT_EQ(reader.read(buffer, capacity), 2);
+  EXPECT_EQ(buffer[0], 'd');
+  EXPECT_EQ(buffer[1], 'b');
+  EXPECT_EQ(buffer[2], 'e');
  }
 }

@@ -3,7 +3,7 @@
 
 #include "joedb/journal/Generic_File.h"
 
-#include <vector>
+#include <string>
 
 namespace joedb
 {
@@ -12,7 +12,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   std::vector<char> data;
+   std::string data;
    size_t pread(char *buffer, size_t size, int64_t offset) override;
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
 
@@ -20,7 +20,8 @@ namespace joedb
    Memory_File(): Generic_File(Open_Mode::create_new) {}
 
    int64_t get_size() const override {return int64_t(data.size());}
-   const std::vector<char> &get_data() const {return data;}
+   const std::string &get_data() const {return data;}
+   std::string move_data() const {return std::move(data);}
 
    ~Memory_File() override;
  };

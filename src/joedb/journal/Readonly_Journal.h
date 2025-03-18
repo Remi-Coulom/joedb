@@ -162,6 +162,11 @@ namespace joedb
     );
    }
 
+   Async_Reader get_async_blob_reader(Blob blob) const
+   {
+    return Async_Reader(file, blob);
+   }
+
    static constexpr uint32_t version_number = 0x00000004;
    static constexpr uint32_t compatible_version = 0x00000004;
    static constexpr int64_t header_size = 41;

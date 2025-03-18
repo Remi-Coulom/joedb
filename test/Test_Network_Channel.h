@@ -4,7 +4,6 @@
 #include "joedb/concurrency/Network_Channel.h"
 
 #include <limits>
-#include <iostream>
 #include <thread>
 
 namespace joedb
