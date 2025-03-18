@@ -57,7 +57,7 @@ update_vector float 7 value 2 0.8 9\n\
  }
 
  {
-  const std::vector<char> &v = file.get_data();
+  const std::string &v = file.get_data();
   joedb::Readonly_Memory_File readonly_file(v.data(), v.size());
   Readonly_Journal journal(readonly_file);
 

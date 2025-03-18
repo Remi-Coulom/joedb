@@ -22,8 +22,8 @@ namespace joedb::generator
 
   namespace_open(out, options.get_name_space());
 
-  out << "\n const char * schema_string = ";                                         const std::vector<char> &v = options.schema_file.get_data();
-  write_string(out, std::string(v.data(), v.size()));
+  out << "\n const char * schema_string = ";
+  write_string(out, options.schema_file.get_data());
   out << ";\n";  
 
   namespace_close(out, options.get_name_space());
