@@ -58,36 +58,18 @@ namespace joedb
   lock.read(buffer.data, 17);
   if (buffer.read<char>() != pull_type)
    throw Exception("Unexpected server reply");
+
   const int64_t server_checkpoint = buffer.read<int64_t>();
   const int64_t size = buffer.read<int64_t>();
 
-  LOG("server_checkpoint = " << server_checkpoint << "; size = " << size);
-
   {
-   Writable_Journal::Tail_Writer tail_writer(client_journal);
-
-   std::optional<io::Progress_Bar> progress_bar;
-   if (size > buffer.ssize && log)
-    progress_bar.emplace(size, *log);
-
-   for (int64_t read = 0; read < size;)
-   {
-    const int64_t remaining = size - read;
-    const size_t read_size = size_t
-    (
-     std::min(int64_t(buffer.size), remaining)
-    );
-    const size_t n = lock.read_some(buffer.data, read_size);
-    tail_writer.append(buffer.data, n);
-    read += int64_t(n);
-    if (progress_bar)
-     progress_bar->print(read);
-   }
-
-   tail_writer.finish();
-
-   if (!progress_bar)
-    LOG(" OK\n");
+   client_journal.flush();
+   const int64_t old_position = client_journal.get_position();
+   Async_Writer writer = client_journal.get_async_tail_writer();
+   download(writer, lock, size);
+   client_journal.set_position(writer.get_position());
+   client_journal.default_checkpoint();
+   client_journal.set_position(old_position);
   }
 
   if (size < 0)

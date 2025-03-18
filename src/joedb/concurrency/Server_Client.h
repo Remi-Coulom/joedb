@@ -4,6 +4,7 @@
 #include "joedb/concurrency/Thread_Safe_Channel.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/Buffer.h"
+#include "joedb/journal/Async_Writer.h"
 
 #include <condition_variable>
 #include <thread>
@@ -15,22 +16,25 @@ namespace joedb
  class Server_Client: Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
+  private:
+   const int keep_alive_interval_seconds;
+   std::condition_variable condition;
+   void ping(Channel_Lock &lock);
+   bool keep_alive_thread_must_stop;
+   std::thread keep_alive_thread;
+   void keep_alive();
+
   protected:
    Thread_Safe_Channel channel;
    std::ostream *log;
-   const int keep_alive_interval_seconds;
 
    Buffer<13> buffer;
 
    int64_t session_id;
    bool pullonly_server;
-   std::condition_variable condition;
-   void ping(Channel_Lock &lock);
-   bool keep_alive_thread_must_stop;
-   std::thread keep_alive_thread;
 
-   void keep_alive();
    int64_t connect();
+   void download(Async_Writer &writer, Channel_Lock &lock, int64_t size);
 
   public:
    Server_Client

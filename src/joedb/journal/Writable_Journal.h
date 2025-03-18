@@ -56,34 +56,6 @@ namespace joedb
     Commit_Level commit_level = Commit_Level::no_commit
    );
 
-   //////////////////////////////////////////////////////////////////////////
-   class Tail_Writer
-   //////////////////////////////////////////////////////////////////////////
-   {
-    private:
-     Writable_Journal &journal;
-     const int64_t old_position;
-
-    public:
-     Tail_Writer(Writable_Journal &journal):
-      journal(journal),
-      old_position(journal.get_position())
-     {
-      journal.file.set_position(journal.get_checkpoint_position());
-     }
-
-     void append(const char *buffer, size_t size)
-     {
-      journal.file.write_data(buffer, size);
-     }
-
-     void finish()
-     {
-      journal.default_checkpoint();
-      journal.file.set_position(old_position);
-     }
-   };
-
    void append()
    {
     file.set_position(checkpoint_position);

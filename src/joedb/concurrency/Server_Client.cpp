@@ -1,7 +1,9 @@
 #include "joedb/concurrency/Server_Client.h"
 #include "joedb/Exception.h"
+#include "joedb/io/Progress_Bar.h"
 
 #include <iostream>
+#include <optional>
 
 #define LOG(x) do {if (log) *log << x;} while (false)
 
@@ -125,6 +127,39 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server_Client::download
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Async_Writer &writer,
+  Channel_Lock &lock,
+  int64_t size
+ )
+ {
+  LOG("downloading, size = " << size);
+
+  std::optional<io::Progress_Bar> progress_bar;
+  if (size > buffer.ssize && log)
+   progress_bar.emplace(size, *log);
+
+  for (int64_t read = 0; read < size;)
+  {
+   const int64_t remaining = size - read;
+   const size_t read_size = size_t
+   (
+    std::min(int64_t(buffer.size), remaining)
+   );
+   const size_t n = lock.read_some(buffer.data, read_size);
+   writer.write(buffer.data, n);
+   read += int64_t(n);
+   if (progress_bar)
+    progress_bar->print(read);
+  }
+
+  if (!progress_bar)
+   LOG(" OK\n");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Server_Client::Server_Client
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -132,9 +167,9 @@ namespace joedb
   std::ostream *log,
   int keep_alive_interval_seconds
  ):
+  keep_alive_interval_seconds(keep_alive_interval_seconds),
   channel(channel),
   log(log),
-  keep_alive_interval_seconds(keep_alive_interval_seconds),
   session_id(-1),
   pullonly_server(false)
  {
