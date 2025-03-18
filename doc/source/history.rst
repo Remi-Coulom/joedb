@@ -8,6 +8,8 @@ History
 
   - New features:
 
+    - ``Server_Blob_Client`` allows accessing blobs from a server directly,
+      without keeping a local replica of the whole database.
     - ``Client::pull`` now takes a optional parameter that indicates a wait
       duration: if the server has no new data to be pulled right now, then it
       will wait until either the timeout expires or another client makes a
