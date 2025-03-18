@@ -243,8 +243,8 @@ namespace joedb
  (
   Channel &channel,
   std::ostream *log,
-  int keep_alive_interval_seconds
- ): Server_Client(channel, log, keep_alive_interval_seconds)
+  std::chrono::seconds keep_alive_interval
+ ): Server_Client(channel, log, keep_alive_interval)
  {
  }
 

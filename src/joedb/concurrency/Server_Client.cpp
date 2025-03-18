@@ -36,11 +36,7 @@ namespace joedb
 
    while (!keep_alive_thread_must_stop)
    {
-    condition.wait_for
-    (
-     lock,
-     std::chrono::seconds(keep_alive_interval_seconds)
-    );
+    condition.wait_for(lock, keep_alive_interval);
 
     if (keep_alive_thread_must_stop)
      break;
@@ -117,7 +113,7 @@ namespace joedb
    ". OK.\n"
   );
 
-  if (keep_alive_interval_seconds > 0)
+  if (keep_alive_interval.count() > 0)
   {
    keep_alive_thread_must_stop = false;
    keep_alive_thread = std::thread([this](){keep_alive();});
@@ -165,9 +161,9 @@ namespace joedb
  (
   Channel &channel,
   std::ostream *log,
-  int keep_alive_interval_seconds
+  std::chrono::seconds keep_alive_interval
  ):
-  keep_alive_interval_seconds(keep_alive_interval_seconds),
+  keep_alive_interval(keep_alive_interval),
   channel(channel),
   log(log),
   session_id(-1),

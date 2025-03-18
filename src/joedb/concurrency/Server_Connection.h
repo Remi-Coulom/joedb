@@ -72,7 +72,7 @@ namespace joedb
    (
     Channel &channel,
     std::ostream *log,
-    int keep_alive_interval_seconds = 240
+    std::chrono::seconds keep_alive_interval = std::chrono::seconds{240}
    );
  };
 }

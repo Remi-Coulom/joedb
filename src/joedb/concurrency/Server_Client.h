@@ -9,6 +9,7 @@
 #include <condition_variable>
 #include <thread>
 #include <iosfwd>
+#include <chrono>
 
 namespace joedb
 {
@@ -17,7 +18,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   const int keep_alive_interval_seconds;
+   const std::chrono::seconds keep_alive_interval;
    std::condition_variable condition;
    void ping(Channel_Lock &lock);
    bool keep_alive_thread_must_stop;
@@ -41,7 +42,7 @@ namespace joedb
    (
     Channel &channel,
     std::ostream *log,
-    int keep_alive_interval_seconds = 240
+    std::chrono::seconds keep_alive_interval = std::chrono::seconds{240}
    );
 
    static constexpr int64_t client_version = 13;
