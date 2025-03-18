@@ -129,7 +129,7 @@ namespace joedb
 
    void pull(std::shared_ptr<Session> session);
 
-   void read_blob_handler
+   void read_handler
    (
     std::shared_ptr<Session> session,
     std::error_code error,

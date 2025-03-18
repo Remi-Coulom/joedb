@@ -29,12 +29,6 @@ For next release
      - use struct (with field names) instead of tuple for index key
      - private access to dropped fields (for old custom functions), cleared at the time of drop
 
- - Blob cache:
-
-   - keep blob translation index in a joedb file (erasable)
-   - write blobs to another file with max size
-   - when max size reached, start again from the start (evict overwritten entries)
-
  - joedb_pack: fill holes left by deleted elements, like write_json.
  - non-durable transactions that do not break durability:
 
@@ -61,11 +55,6 @@ New Operations and Types
   - uint8, uint16, uint32, uint64
   - custom usage label: ip address(int32), URL(string), PNG file(string),
     UTF8(string) (use base64 instead for json output), ...?
-
-Blobs
------
-- network protocol extension to handle local blob cache without downloading everything
-- zero-copy access to blob data using memory-mapped file
 
 On-disk Storage
 ---------------

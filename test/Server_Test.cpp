@@ -5,7 +5,7 @@
 #include "joedb/concurrency/Readonly_Journal_Client_Data.h"
 #include "joedb/concurrency/Writable_Journal_Client_Data.h"
 #include "joedb/concurrency/File_Connection.h"
-#include "joedb/concurrency/Server_Blob_Client.h"
+#include "joedb/concurrency/Server_File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
 
@@ -935,7 +935,7 @@ namespace joedb
   }
 
   Test_Network_Channel channel("localhost", Port_String(server).get());
-  Server_Blob_Client blob_client(channel, nullptr);
-  EXPECT_EQ(blob_client.read_blob_data(blob), "glouglou");
+  Server_File server_file(channel, nullptr);
+  EXPECT_EQ(server_file.read_blob_data(blob), "glouglou");
  }
 }

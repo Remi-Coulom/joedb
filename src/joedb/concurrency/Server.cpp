@@ -526,7 +526,7 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::read_blob_handler
+ void Server::read_handler
  ///////////////////////////////////////////////////////////////////////////
  (
   std::shared_ptr<Session> session,
@@ -537,11 +537,21 @@ namespace joedb
   if (!error)
   {
    session->buffer.index = 1;
-   const int64_t blob_position = session->buffer.read<int64_t>();
-   const Async_Reader reader = client.get_journal().get_async_blob_reader
+   int64_t offset = session->buffer.read<int64_t>();
+   int64_t size = session->buffer.read<int64_t>();
+   int64_t until = offset + size;
+
+   if (until > client.get_checkpoint())
+    until = client.get_checkpoint();
+   if (offset > until)
+    offset = until;
+
+   const Async_Reader reader = client.get_journal().get_async_reader
    (
-    Blob(blob_position)
+    offset,
+    until
    );
+
    session->buffer.index = 1;
    session->buffer.write<int64_t>(reader.get_remaining());
    start_reading(session, reader);
@@ -655,14 +665,14 @@ namespace joedb
       unlock(*session);
     break;
 
-    case 'b':
+    case 'r':
      asio::async_read
      (
       session->socket,
       asio::buffer(session->buffer.data + 1, 8),
       [this, session](std::error_code e, size_t s)
       {
-       read_blob_handler(session, e, s);
+       read_handler(session, e, s);
       }
      );
     break;
