@@ -44,13 +44,22 @@ namespace joedb
   continuation(continuation),
   continuation_offset(continuation_offset)
  {
+  continuation.set_position(0);
+
   if (continuation.get_size() == 0)
   {
+   continuation.write<int64_t>(continuation_offset);
    char buffer[Readonly_Journal::header_size];
    const int64_t size = file.read_data(buffer, Readonly_Journal::header_size);
    if (size < Readonly_Journal::header_size)
     throw Runtime_Error("File_Continuation requires a full header");
    continuation.write_data(buffer, Readonly_Journal::header_size);
+  }
+  else
+  {
+   const int64_t file_offset = continuation.read<int64_t>();
+   if (file_offset != continuation_offset)
+    throw Runtime_Error("Bad continuation offset");
   }
  }
 
@@ -63,12 +72,7 @@ namespace joedb
    if (offset + size > Readonly_Journal::header_size)
     size = Readonly_Journal::header_size - offset;
 
-   return continuation.pread
-   (
-    data,
-    size,
-    offset
-   );
+   return continuation.pread(data, size, offset + 8);
   }
 
   if (offset < continuation_offset)
@@ -76,20 +80,10 @@ namespace joedb
    if (offset + int64_t(size) > continuation_offset)
     size = continuation_offset - offset;
 
-   return file.pread
-   (
-    data,
-    continuation_offset - offset,
-    offset
-   );
+   return file.pread(data, size, offset);
   }
 
-  return continuation.pread
-  (
-   data,
-   size,
-   offset - continuation_offset + Readonly_Journal::header_size
-  );
+  return continuation.pread(data, size, offset + 8 - continuation_offset);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -99,11 +93,6 @@ namespace joedb
   if (offset < continuation_offset)
    throw Runtime_Error("Cannot write before continuation offset");
 
-  continuation.pwrite
-  (
-   data,
-   size,
-   offset - continuation_offset + Readonly_Journal::header_size
-  );
+  continuation.pwrite(data, size, offset + 8 - continuation_offset);
  }
 }
