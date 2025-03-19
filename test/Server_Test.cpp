@@ -928,14 +928,15 @@ namespace joedb
   {
    Memory_File file;
    Test_Client client(server, file);
-   client.client.transaction([&blob](const Readable &readable, Writable &writable)
+   client.client.transaction([&blob](const Readable &, Writable &writable)
    {
     blob = writable.write_blob_data("glouglou");
    });
   }
 
   Test_Network_Channel channel("localhost", Port_String(server).get());
-  Server_File server_file(channel, nullptr);
-  EXPECT_EQ(server_file.read_blob_data(blob), "glouglou");
+  Server_Client client(channel, nullptr);
+  Server_File file(client);
+  EXPECT_EQ(file.read_blob_data(blob), "glouglou");
  }
 }
