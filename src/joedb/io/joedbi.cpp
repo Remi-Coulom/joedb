@@ -44,6 +44,8 @@ namespace joedb
    blob_file_parser.emplace();
    blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
   }
+  else
+   blob_file = &file;
 
   if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
   {
@@ -59,7 +61,7 @@ namespace joedb
    Interpreted_Client client(file, connection);
 
    std::optional<Writable_Journal> blob_journal;
-   if (blob_file)
+   if (blob_file_parser)
    {
     blob_journal.emplace(*blob_file);
     blob_journal->append();

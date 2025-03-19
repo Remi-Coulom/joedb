@@ -107,7 +107,7 @@ namespace joedb
    Readable_Interpreter interpreter
    (
     interpreted_client_data->get_database(),
-    nullptr
+    &interpreted_client_data->get_readonly_journal()
    );
 
    interpreter.set_parent(this);
@@ -174,7 +174,7 @@ namespace joedb
      (
       interpreted_client_data->get_database(),
       interpreted_client_data->get_multiplexer(),
-      nullptr,
+      &interpreted_client_data->get_readonly_journal(),
       interpreted_client_data->get_multiplexer(),
       0
      );
