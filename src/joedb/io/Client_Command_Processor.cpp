@@ -91,7 +91,7 @@ namespace joedb
     if (is_readonly_data())
      out << " push_every [<seconds>]\n";
     else
-     out << " transaction\n";
+     out << " transaction [without_tables]\n";
    }
 
    out << '\n';
@@ -159,29 +159,61 @@ namespace joedb
    out << "Waiting for lock... ";
    out.flush();
 
-   push_client->transaction([this, &in, &out](Client_Data &data)
+   std::string param;
+   parameters >> param;
+
+   if (param == "without_tables")
    {
-    out << "OK\n";
-
-    Writable_Interpreted_Client_Data *interpreted_client_data
-    (
-     dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
-    );
-
-    if (interpreted_client_data)
+    push_client->transaction([this, &in, &out](Client_Data &data)
     {
-     Interpreter interpreter
+     out << "OK\n";
+
+     Writable_Interpreted_Client_Data *interpreted_client_data
      (
-      interpreted_client_data->get_database(),
-      interpreted_client_data->get_multiplexer(),
-      &interpreted_client_data->get_readonly_journal(),
-      interpreted_client_data->get_multiplexer(),
-      0
+      dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
      );
-     interpreter.set_parent(this);
-     interpreter.main_loop(in, out);
-    }
-   });
+
+     if (interpreted_client_data)
+     {
+      interpreted_client_data->get_writable_journal().seek_to_checkpoint();
+
+      Writable_Interpreter interpreter
+      (
+       interpreted_client_data->get_writable_journal(),
+       interpreted_client_data->get_writable_journal()
+      );
+
+      interpreter.set_parent(this);
+      interpreter.main_loop(in, out);
+     }
+    });
+   }
+   else if (param == "")
+   {
+    push_client->transaction([this, &in, &out](Client_Data &data)
+    {
+     out << "OK\n";
+
+     Writable_Interpreted_Client_Data *interpreted_client_data
+     (
+      dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
+     );
+
+     if (interpreted_client_data)
+     {
+      Interpreter interpreter
+      (
+       interpreted_client_data->get_database(),
+       interpreted_client_data->get_multiplexer(),
+       &interpreted_client_data->get_readonly_journal(),
+       interpreted_client_data->get_multiplexer(),
+       0
+      );
+      interpreter.set_parent(this);
+      interpreter.main_loop(in, out);
+     }
+    });
+   }
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);
