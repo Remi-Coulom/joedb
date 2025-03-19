@@ -42,7 +42,7 @@ namespace joedb
 
   const size_t size = remote_pread
   (
-   head.get_data(),
+   head.get_data().data(),
    Readonly_Journal::header_size,
    0
   );
