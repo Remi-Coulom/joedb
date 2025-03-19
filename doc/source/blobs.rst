@@ -23,5 +23,5 @@ In order to get better performance when manipulating a large amount of blob
 data, blobs can be stored in a separate file. This way, non-blob data will be
 stored contiguously, and can be read much faster.
 
-``Server_Blob_Client`` allows accessing blobs from a remote server without
-having to download a replica of the whole database locally.
+``Server_File`` allows accessing blobs from a remote server without having to
+download a replica of the whole database locally.

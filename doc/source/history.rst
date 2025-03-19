@@ -8,12 +8,10 @@ History
 
   - New features:
 
-    - ``Server_Blob_Client`` allows accessing blobs from a server directly,
-      without keeping a local replica of the whole database.
-    - ``Client::pull`` now takes a optional parameter that indicates a wait
-      duration: if the server has no new data to be pulled right now, then it
-      will wait until either the timeout expires or another client makes a
-      non-empty push.
+    - ``Server_File`` allows accessing a remote database without downloading a
+      complete local replica. This is convenient for large blob databases.
+    - ``Client::pull`` can now wait for another client to make a pull if the
+      pull would otherwise be empty.
     - ``Encoded_File`` supports on-the-fly coding or decoding of data.
       ``Brotli_Codec`` is provided for compression.
     - It is now possible to write to an ``Interpreted_File``.
