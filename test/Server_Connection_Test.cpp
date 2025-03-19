@@ -1,5 +1,7 @@
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/protocol_version.h"
+#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Interpreted_Client_Data.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -20,19 +22,15 @@ class Debug_Channel: public joedb::Channel, public joedb::Memory_File
 TEST(Server_Connection, handshake)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::ostream * const log = nullptr;
  Debug_Channel channel;
 
  for (int i = 1000; --i >= 0;)
   channel.joedb::Memory_File::write<char>('x');
  channel.set_position(0);
 
- joedb::Server_Connection connection(channel, log);
-
  try
  {
-  joedb::Memory_File client_file;
-  joedb::Interpreted_Client client(client_file, connection);
+  joedb::Server_Connection connection(channel);
 
   ADD_FAILURE() << "Should have thrown";
  }
@@ -46,7 +44,6 @@ TEST(Server_Connection, handshake)
 TEST(Server_Connection, session)
 /////////////////////////////////////////////////////////////////////////////
 {
- std::ostream * const log = nullptr;
  Debug_Channel channel;
 
  joedb::Generic_File &file = channel;
@@ -56,7 +53,7 @@ TEST(Server_Connection, session)
  file.write<char>('e');
  file.write<char>('d');
  file.write<char>('b');
- file.write<int64_t>(joedb::Server_Connection::client_version);
+ file.write<int64_t>(joedb::protocol_version);
  file.write<int64_t>(1234);
  file.write<int64_t>(41);
  file.write<char>('W');
@@ -73,7 +70,7 @@ TEST(Server_Connection, session)
  {
   joedb::Memory_File client_file;
   joedb::Writable_Interpreted_Client_Data data(client_file);
-  joedb::Server_Connection connection(channel, log);
+  joedb::Server_Connection connection(channel);
   joedb::Client client(data, connection);
 
   EXPECT_EQ(connection.get_session_id(), 1234);

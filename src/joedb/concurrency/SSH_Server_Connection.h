@@ -30,8 +30,9 @@ namespace joedb
      "localhost",
      joedb_port
     ),
-    Server_Connection(*static_cast<ssh::Forward_Channel *>(this), log)
+    Server_Connection(*static_cast<ssh::Forward_Channel *>(this))
    {
+    Server_Connection::set_log(log);
    }
  };
 }

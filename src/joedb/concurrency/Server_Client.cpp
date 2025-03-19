@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Server_Client.h"
+#include "joedb/concurrency/protocol_version.h"
 #include "joedb/Exception.h"
 #include "joedb/io/Progress_Bar.h"
 
@@ -61,7 +62,7 @@ namespace joedb
   buffer.write<char>('e');
   buffer.write<char>('d');
   buffer.write<char>('b');
-  buffer.write<int64_t>(client_version);
+  buffer.write<int64_t>(protocol_version);
 
   {
    Channel_Lock lock(channel);
@@ -91,7 +92,7 @@ namespace joedb
 
   LOG("server_version = " << server_version << ". ");
 
-  if (server_version < 13)
+  if (server_version < protocol_version)
    throw Exception("Unsupported server version");
 
   session_id = buffer.read<int64_t>();
@@ -154,16 +155,11 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Client::Server_Client
+ Server_Client::Server_Client(Channel &channel):
  ////////////////////////////////////////////////////////////////////////////
- (
-  Channel &channel,
-  std::ostream *log,
-  std::chrono::seconds keep_alive_interval
- ):
-  keep_alive_interval(keep_alive_interval),
+  keep_alive_interval(std::chrono::seconds{240}),
   channel(channel),
-  log(log),
+  log(nullptr),
   session_id(-1),
   pullonly_server(false)
  {

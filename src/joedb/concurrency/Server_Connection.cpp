@@ -180,7 +180,8 @@ namespace joedb
   if (unlock_after)
    client_journal.unlock();
 
-  return client_journal.get_checkpoint_position();
+  server_checkpoint = server_position + push_size;
+  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -233,17 +234,6 @@ namespace joedb
     content_mismatch();
 
   return server_checkpoint;
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Server_Connection::Server_Connection
- ////////////////////////////////////////////////////////////////////////////
- (
-  Channel &channel,
-  std::ostream *log,
-  std::chrono::seconds keep_alive_interval
- ): Server_Client(channel, log, keep_alive_interval)
- {
  }
 
  ////////////////////////////////////////////////////////////////////////////

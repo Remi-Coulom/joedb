@@ -1,6 +1,7 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/get_pid.h"
+#include "joedb/concurrency/protocol_version.h"
 #include "joedb/io/get_time_string.h"
 #include "joedb/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
@@ -757,7 +758,7 @@ namespace joedb
     LOGID("client_version = " << client_version << '\n');
 
     session->buffer.index = 5;
-    session->buffer.write<int64_t>(client_version < 13 ? 0 : server_version);
+    session->buffer.write<int64_t>(client_version < protocol_version ? 0 : protocol_version);
     session->buffer.write<int64_t>(session->id);
     session->buffer.write<int64_t>(client.get_checkpoint());
     session->buffer.write<char>(is_readonly() ? 'R' : 'W');

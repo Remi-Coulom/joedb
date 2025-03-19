@@ -138,7 +138,7 @@ namespace joedb
 
    Test_Client(Server &server, Generic_File &file):
     channel("localhost", Port_String(server).get()),
-    server_connection(channel, nullptr),
+    server_connection(channel),
     connection(server_connection),
     client(file, connection)
    {
@@ -260,7 +260,7 @@ namespace joedb
 
   {
    Test_Network_Channel channel("localhost", Port_String(server).get());
-   Server_Connection server_connection(channel, nullptr);
+   Server_Connection server_connection(channel);
    Memory_File client_file;
    Writable_Journal_Client_Data data(client_file);
    Client client(data, connection);
@@ -935,8 +935,7 @@ namespace joedb
   }
 
   Test_Network_Channel channel("localhost", Port_String(server).get());
-  Server_Client client(channel, nullptr);
-  Server_File file(client);
+  Server_File file(channel);
   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
  }
 }

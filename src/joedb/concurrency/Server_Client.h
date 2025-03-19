@@ -20,7 +20,7 @@ namespace joedb
   friend class Server_File;
 
   private:
-   const std::chrono::seconds keep_alive_interval;
+   std::chrono::seconds keep_alive_interval;
    std::condition_variable condition;
    void ping(Channel_Lock &lock);
    bool keep_alive_thread_must_stop;
@@ -41,14 +41,18 @@ namespace joedb
    void download(Async_Writer &writer, Channel_Lock &lock, int64_t size);
 
   public:
-   Server_Client
-   (
-    Channel &channel,
-    std::ostream *log,
-    std::chrono::seconds keep_alive_interval = std::chrono::seconds{240}
-   );
+   Server_Client(Channel &channel);
 
-   static constexpr int64_t client_version = 13;
+   void set_log(std::ostream *stream)
+   {
+    log = stream;
+   }
+
+   void set_keep_alive_interval(std::chrono::seconds duration)
+   {
+    keep_alive_interval = duration;
+   }
+
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}
    void ping();

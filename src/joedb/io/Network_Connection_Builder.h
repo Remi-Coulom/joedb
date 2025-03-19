@@ -16,8 +16,9 @@ namespace joedb
   public:
    Network_Channel_Connection(const char *host, const char *port):
     Network_Channel(host, port),
-    Server_Connection(*this, &std::cerr)
+    Server_Connection(*static_cast<Network_Channel*>(this))
    {
+    Server_Connection::set_log(&std::cerr);
    }
  };
 

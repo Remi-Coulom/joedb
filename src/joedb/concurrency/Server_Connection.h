@@ -68,12 +68,7 @@ namespace joedb
    );
 
   public:
-   Server_Connection
-   (
-    Channel &channel,
-    std::ostream *log,
-    std::chrono::seconds keep_alive_interval = std::chrono::seconds{240}
-   );
+   Server_Connection(Channel &channel): Server_Client(channel) {}
  };
 }
 
