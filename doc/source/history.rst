@@ -10,12 +10,12 @@ History
 
     - ``Server_File`` allows accessing a remote database without downloading a
       complete local replica. This is convenient for large blob databases.
-    - ``Client::pull`` can now wait for another client to make a pull if the
+    - ``Client::pull`` can wait for another client to make a push if the
       pull would otherwise be empty.
     - ``Encoded_File`` supports on-the-fly coding or decoding of data.
       ``Brotli_Codec`` is provided for compression.
-    - It is now possible to write to an ``Interpreted_File``.
-    - The ``add_field`` interpreter command now accepts an optional ``= <value>``
+    - It is possible to write to an ``Interpreted_File``.
+    - The ``add_field`` interpreter command accepts an optional ``= <value>``
       suffix that sets the value for all existing records of the table.
     - If the .joedbi file provided to the compiler contains data, then it will
       be used as default initial value for existing records when creating a new

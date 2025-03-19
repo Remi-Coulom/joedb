@@ -4,6 +4,7 @@ TODO
 For next release
 ----------------
 
+ - efficient ``Server_File`` for clients without a local replica (custom connection)
  - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
  - use seconds for UI everywhere, but allow float for sub-second resolution
