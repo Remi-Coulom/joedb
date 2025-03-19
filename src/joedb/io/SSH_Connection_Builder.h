@@ -2,10 +2,8 @@
 #define joedb_SSH_Connection_Builder
 
 #include "joedb/io/Connection_Builder.h"
-#include "joedb/concurrency/SSH_Server_Connection.h"
-
-#include <iostream>
-#include <optional>
+#include "joedb/ssh/Forward_Channel.h"
+#include "joedb/concurrency/Server_File.h"
 
 namespace joedb
 {
@@ -14,15 +12,19 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::optional<SSH_Server_Connection> connection;
+   const bool file;
+
+   std::unique_ptr<ssh::Session> session;
+   std::unique_ptr<ssh::Forward_Channel> channel;
+   std::unique_ptr<Server_Connection> connection;
 
   public:
+   SSH_Connection_Builder(bool file): file(file) {}
+
    bool has_sharing_option() const final {return true;}
    int get_min_parameters() const final {return 3;}
    int get_max_parameters() const final {return 5;}
-
-   const char *get_name() const final {return "ssh";}
-
+   const char *get_name() const final {return file ? "ssh_file" : "ssh";}
    const char *get_parameters_description() const final
    {
     return "<user> <host> <joedb_port> [<ssh_port> [<ssh_log_level>]]";
@@ -36,15 +38,13 @@ namespace joedb
     const unsigned ssh_port = argc > 3 ? std::atoi(argv[3]) : 22;
     const int ssh_log_level = argc > 4 ? std::atoi(argv[4]) : 0;
 
-    connection.emplace
-    (
-     user,
-     host,
-     joedb_port,
-     ssh_port,
-     ssh_log_level,
-     &std::cerr
-    );
+    session = std::make_unique<ssh::Session>(user, host, ssh_port, ssh_log_level);
+    channel = std::make_unique<ssh::Forward_Channel>(*session, "localhost", joedb_port);
+
+    if (file)
+     connection = std::make_unique<Server_File>(*channel);
+    else
+     connection = std::make_unique<Server_Connection>(*channel);
 
     return *connection;
    }

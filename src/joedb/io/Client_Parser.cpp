@@ -11,7 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  Client_Parser::Client_Parser(bool local, Open_Mode default_open_mode):
  ////////////////////////////////////////////////////////////////////////////
-  file_parser(default_open_mode),
+  file_parser(default_open_mode, false, true, true),
   connection_parser(local),
   default_open_mode(default_open_mode)
  {
@@ -41,22 +41,13 @@ namespace joedb
   }
   std::cerr << "content_check = " << content_check << '\n';
 
-  Generic_File &client_file = file_parser.parse
+  file_parser.parse
   (
    std::cerr,
    argc,
    argv,
    arg_index
   );
-
-  std::cerr << "Creating client data... ";
-
-  if (client_file.is_readonly())
-   client_data.reset(new Readonly_Interpreted_Client_Data(client_file));
-  else
-   client_data.reset(new Writable_Interpreted_Client_Data(client_file));
-
-  std::cerr << "OK\n";
 
   Pullonly_Connection &pullonly_connection = connection_parser.build
   (
@@ -65,6 +56,26 @@ namespace joedb
   );
 
   Connection *push_connection = pullonly_connection.get_push_connection();
+
+  Generic_File *client_file = file_parser.get_file();
+
+  if (!client_file)
+  {
+   client_file = dynamic_cast<Generic_File *>(&pullonly_connection);
+   content_check = false;
+  }
+
+  if (!client_file)
+   throw Runtime_Error("no client file");
+
+  std::cerr << "Creating client data... ";
+
+  if (client_file->is_readonly())
+   client_data.reset(new Readonly_Interpreted_Client_Data(*client_file));
+  else
+   client_data.reset(new Writable_Interpreted_Client_Data(*client_file));
+
+  std::cerr << "OK\n";
 
   if (push_connection)
    client.reset(new Client(*client_data, *push_connection, content_check));

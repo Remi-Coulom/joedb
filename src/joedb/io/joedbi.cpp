@@ -34,7 +34,7 @@ namespace joedb
   int arg_index = 1;
 
   std::ostream null_stream(nullptr);
-  Generic_File &file = file_parser.parse(null_stream, argc, argv, arg_index);
+  Generic_File &file = *file_parser.parse(null_stream, argc, argv, arg_index);
 
   std::optional<File_Parser> blob_file_parser;
   Generic_File *blob_file = nullptr;
@@ -42,7 +42,7 @@ namespace joedb
   if (arg_index < argc)
   {
    blob_file_parser.emplace();
-   blob_file = &blob_file_parser->parse(null_stream, argc, argv, arg_index);
+   blob_file = blob_file_parser->parse(null_stream, argc, argv, arg_index);
   }
   else
    blob_file = &file;

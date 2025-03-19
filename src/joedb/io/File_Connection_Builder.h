@@ -35,14 +35,14 @@ namespace joedb
     std::ostream null_stream(nullptr);
     file_parser.parse(null_stream, argc, argv, arg_index);
 
-    if (file_parser.get_file().is_readonly())
+    if (file_parser.get_file()->is_readonly())
     {
-     readonly_journal.emplace(file_parser.get_file());
+     readonly_journal.emplace(*file_parser.get_file());
      connection.reset(new Pullonly_Journal_Connection(*readonly_journal));
     }
     else
     {
-     writable_journal.emplace(file_parser.get_file());
+     writable_journal.emplace(*file_parser.get_file());
      connection.reset(new Journal_Connection(*writable_journal));
     }
 

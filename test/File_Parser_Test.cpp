@@ -28,7 +28,7 @@ namespace joedb
   constexpr int argc = 1;
   const char * argv[argc] = {"memory"};
   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
-  Writable_Journal journal(parser.get_file());
+  Writable_Journal journal(*parser.get_file());
   journal.comment("Hello");
  }
 
@@ -72,7 +72,7 @@ namespace joedb
    const char * argv[argc] = {"brotli", file_name};
 
    parser.parse(out, argc, const_cast<char **>(argv), arg_index);
-   Writable_Journal journal(parser.get_file());
+   Writable_Journal journal(*parser.get_file());
    journal.create_table(table_name);
    journal.default_checkpoint();
   }
@@ -86,8 +86,8 @@ namespace joedb
    const char * argv[argc] = {"brotli", "--read", file_name};
 
    parser.parse(out, argc, const_cast<char **>(argv), arg_index);
-   EXPECT_ANY_THROW(Writable_Journal{parser.get_file()});
-   Readonly_Journal journal{parser.get_file()};
+   EXPECT_ANY_THROW(Writable_Journal{*parser.get_file()});
+   Readonly_Journal journal{*parser.get_file()};
    Database db;
    journal.replay_log(db);
    ASSERT_EQ(db.get_tables().size(), 1);
@@ -115,7 +115,7 @@ namespace joedb
   };
 
   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
-  Readonly_Journal journal(parser.get_file());
+  Readonly_Journal journal(*parser.get_file());
   Database db;
   journal.replay_log(db);
 

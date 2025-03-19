@@ -22,6 +22,7 @@ namespace joedb
    const Open_Mode default_open_mode;
    const bool default_only;
    const bool include_shared;
+   const bool include_none;
 
 #ifdef JOEDB_HAS_SSH
    std::optional<ssh::Session> ssh_session;
@@ -34,15 +35,17 @@ namespace joedb
    (
     Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new,
     bool default_only = false,
-    bool include_shared = true
+    bool include_shared = true,
+    bool include_none = false
    ):
     default_open_mode(default_open_mode),
     default_only(default_only),
-    include_shared(include_shared)
+    include_shared(include_shared),
+    include_none(include_none)
    {
    }
 
-   Generic_File &parse
+   Generic_File *parse
    (
     std::ostream &out,
     int argc,
@@ -50,7 +53,7 @@ namespace joedb
     int &arg_index
    );
 
-   Generic_File &get_file() const {return *file;}
+   Generic_File *get_file() const {return file.get();}
 
    void print_help(std::ostream &out) const;
  };

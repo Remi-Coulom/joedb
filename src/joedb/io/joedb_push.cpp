@@ -49,7 +49,7 @@ namespace joedb
    return 1;
   }
 
-  Generic_File &file = file_parser.parse(std::cerr, argc, argv, arg_index);
+  Generic_File &file = *file_parser.parse(std::cerr, argc, argv, arg_index);
   Readonly_Journal journal(file);
 
   Pullonly_Connection &pullonly_connection = connection_parser.build

@@ -69,10 +69,15 @@ namespace joedb
    out << "[--read] ";
   out << "<file_name>\n";
 #endif
+
+#if defined(JOEDB_HAS_NETWORKING) || defined(JOEDB_HAS_SSH)
+  if (include_none)
+   out << " none (only for network_file and ssh_file connections)\n";
+#endif
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Generic_File &File_Parser::parse
+ Generic_File *File_Parser::parse
  ////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
@@ -84,6 +89,10 @@ namespace joedb
   if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
   {
    file.reset(new Memory_File());
+   arg_index++;
+  }
+  else if (arg_index < argc && std::strcmp(argv[arg_index], "none") == 0)
+  {
    arg_index++;
   }
   else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "interpreted") == 0)
@@ -267,6 +276,6 @@ namespace joedb
     throw Runtime_Error("missing file name");
   }
 
-  return *file;
+  return file.get();
  }
 }

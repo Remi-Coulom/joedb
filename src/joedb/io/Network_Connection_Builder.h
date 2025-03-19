@@ -1,39 +1,26 @@
 #include "joedb/concurrency/Network_Channel.h"
-#include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/Server_File.h"
 #include "joedb/io/Connection_Builder.h"
-
-#include <iostream>
-#include <optional>
 
 namespace joedb
 {
- /////////////////////////////////////////////////////////////////////////////
- class Network_Channel_Connection:
- /////////////////////////////////////////////////////////////////////////////
-  public Network_Channel,
-  public Server_Connection
- {
-  public:
-   Network_Channel_Connection(const char *host, const char *port):
-    Network_Channel(host, port),
-    Server_Connection(*static_cast<Network_Channel*>(this))
-   {
-    Server_Connection::set_log(&std::cerr);
-   }
- };
-
  /////////////////////////////////////////////////////////////////////////////
  class Network_Connection_Builder: public Connection_Builder
  /////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::optional<Network_Channel_Connection> connection;
+   const bool file;
+
+   std::unique_ptr<Network_Channel> channel;
+   std::unique_ptr<Server_Connection> connection;
 
   public:
+   Network_Connection_Builder(bool file): file(file) {}
+
    bool has_sharing_option() const final {return true;}
    int get_min_parameters() const final {return 2;}
    int get_max_parameters() const final {return 2;}
-   const char *get_name() const final {return "network";}
+   const char *get_name() const final {return file ? "network_file" : "network";}
    const char *get_parameters_description() const final
    {
     return "<host> <port>";
@@ -44,7 +31,12 @@ namespace joedb
     const char * const host = argv[0];
     const char * const port = argv[1];
 
-    connection.emplace(host, port);
+    channel = std::make_unique<Network_Channel>(host, port);
+
+    if (file)
+     connection = std::make_unique<Server_File>(*channel);
+    else
+     connection = std::make_unique<Server_Connection>(*channel);
 
     return *connection;
    }
