@@ -9,7 +9,7 @@ History
   - New features:
 
     - ``Server_File`` allows accessing a remote database without downloading a
-      complete local replica. This is convenient for large blob databases.
+      local replica. This is convenient for large blob databases.
     - ``Client::pull`` can wait for another client to make a push if the
       pull would otherwise be empty.
     - ``Encoded_File`` supports on-the-fly coding or decoding of data.
