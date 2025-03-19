@@ -670,7 +670,7 @@ namespace joedb
      asio::async_read
      (
       session->socket,
-      asio::buffer(session->buffer.data + 1, 8),
+      asio::buffer(session->buffer.data + 1, 16),
       [this, session](std::error_code e, size_t s)
       {
        read_handler(session, e, s);
