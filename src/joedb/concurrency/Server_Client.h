@@ -17,6 +17,8 @@ namespace joedb
  class Server_Client: Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
+  friend class Server_File;
+
   private:
    const std::chrono::seconds keep_alive_interval;
    std::condition_variable condition;
@@ -24,6 +26,7 @@ namespace joedb
    bool keep_alive_thread_must_stop;
    std::thread keep_alive_thread;
    void keep_alive();
+   void connect();
 
   protected:
    Thread_Safe_Channel channel;
@@ -33,8 +36,8 @@ namespace joedb
 
    int64_t session_id;
    bool pullonly_server;
+   int64_t server_checkpoint;
 
-   int64_t connect();
    void download(Async_Writer &writer, Channel_Lock &lock, int64_t size);
 
   public:

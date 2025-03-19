@@ -50,7 +50,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Client::connect()
+ void Server_Client::connect()
  ////////////////////////////////////////////////////////////////////////////
  {
   LOG("Connecting... ");
@@ -95,7 +95,7 @@ namespace joedb
    throw Exception("Unsupported server version");
 
   session_id = buffer.read<int64_t>();
-  const int64_t server_checkpoint = buffer.read<int64_t>();
+  server_checkpoint = buffer.read<int64_t>();
   const char mode = buffer.read<char>();
 
   if (mode == 'R')
@@ -118,8 +118,6 @@ namespace joedb
    keep_alive_thread_must_stop = false;
    keep_alive_thread = std::thread([this](){keep_alive();});
   }
-
-  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -169,6 +167,7 @@ namespace joedb
   session_id(-1),
   pullonly_server(false)
  {
+  connect();
  }
 
  ////////////////////////////////////////////////////////////////////////////

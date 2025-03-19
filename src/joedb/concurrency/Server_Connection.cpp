@@ -59,7 +59,7 @@ namespace joedb
   if (buffer.read<char>() != pull_type)
    throw Exception("Unexpected server reply");
 
-  const int64_t server_checkpoint = buffer.read<int64_t>();
+  server_checkpoint = buffer.read<int64_t>();
   const int64_t size = buffer.read<int64_t>();
 
   {
@@ -228,8 +228,6 @@ namespace joedb
   bool content_check
  )
  {
-  const int64_t server_checkpoint = connect();
-
   if (content_check)
    if (!check_matching_content(client_journal, server_checkpoint))
     content_mismatch();

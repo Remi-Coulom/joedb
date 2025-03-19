@@ -6,16 +6,16 @@
 
 namespace joedb
 {
- class Server_File: public Server_Client, public Generic_File
+ class Server_File: public Generic_File
  {
   private:
-   const int64_t server_checkpoint;
+   Server_Client &client;
 
   public:
-   Server_File(Channel &channel, std::ostream *log);
+   Server_File(Server_Client &client);
    size_t pread(char *data, size_t size, int64_t offset) override;
    void pwrite(const char *data, size_t size, int64_t offset) override {};
-   int64_t get_size() const override {return server_checkpoint;}
+   int64_t get_size() const override {return client.server_checkpoint;}
  };
 }
 
