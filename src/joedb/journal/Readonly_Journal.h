@@ -37,7 +37,6 @@ namespace joedb
    }
 
   private:
-   static constexpr int64_t checkpoint_offset = 5 + 4;
    void read_checkpoint(const std::array<int64_t, 4> &pos);
    void pull_without_locking();
 
@@ -170,6 +169,7 @@ namespace joedb
    static constexpr uint32_t version_number = 0x00000004;
    static constexpr uint32_t compatible_version = 0x00000004;
    static constexpr int64_t header_size = 41;
+   static constexpr int64_t checkpoint_offset = 5 + 4;
    static constexpr bool is_second_checkpoint_copy(int64_t offset)
    {
     return offset == 17 || offset == 33;

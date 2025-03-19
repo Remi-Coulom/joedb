@@ -934,8 +934,26 @@ namespace joedb
    });
   }
 
-  Test_Network_Channel channel("localhost", Port_String(server).get());
-  Server_File file(channel);
-  EXPECT_EQ(file.read_blob_data(blob), "glouglou");
+  Blob blob2;
+  {
+   Test_Network_Channel channel("localhost", Port_String(server).get());
+   Server_File file(channel);
+   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
+
+   {
+    Test_Client client(server, file);
+    client.client.transaction([&blob2](const Readable &, Writable &writable)
+    {
+     blob2 = writable.write_blob_data("glagla");
+    });
+   }
+  }
+
+  {
+   Test_Network_Channel channel("localhost", Port_String(server).get());
+   Server_File file(channel);
+   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
+   EXPECT_EQ(file.read_blob_data(blob2), "glagla");
+  }
  }
 }

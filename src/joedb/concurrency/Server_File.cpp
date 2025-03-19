@@ -3,13 +3,6 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Server_File::write_to_body_error()
- ////////////////////////////////////////////////////////////////////////////
- {
-  throw Runtime_Error("Cannot write to Server_File body");
- }
-
- ////////////////////////////////////////////////////////////////////////////
  size_t Server_File::remote_pread(char *data, size_t size, int64_t offset)
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -32,23 +25,28 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server_File::write_to_body_error()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  throw Runtime_Error("Cannot write to Server_File body");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Server_File::Server_File(Channel &channel):
  ////////////////////////////////////////////////////////////////////////////
   Server_Connection(channel),
   Generic_File(Open_Mode::write_existing),
   tail_offset(server_checkpoint)
  {
-  head.resize(Readonly_Journal::header_size);
-
-  const size_t size = remote_pread
-  (
-   head.get_data().data(),
-   Readonly_Journal::header_size,
-   0
-  );
-
-  if (size < Readonly_Journal::header_size)
-   throw Runtime_Error("error reading remote file head");
+  {
+   Writable_Journal journal(head);
+  }
+  head.set_position(Readonly_Journal::checkpoint_offset);
+  head.write<int64_t>(server_checkpoint);
+  head.write<int64_t>(server_checkpoint);
+  head.write<int64_t>(server_checkpoint);
+  head.write<int64_t>(server_checkpoint);
+  head.flush();
  }
 
  ////////////////////////////////////////////////////////////////////////////
