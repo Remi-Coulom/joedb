@@ -889,7 +889,12 @@ namespace joedb
    start_accept();
 
    // Note: C++20 has operator<< for durations
-   LOG(port << ": start. lock_timeout = " << lock_timeout.count() << '\n');
+   LOG
+   (
+    port <<
+    ": start. lock_timeout = " << lock_timeout.count() <<
+    "; protocol_version = " << protocol_version << '\n'
+   );
    write_status();
   }
  }
