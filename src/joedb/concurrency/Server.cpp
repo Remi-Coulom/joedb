@@ -420,6 +420,8 @@ namespace joedb
   Async_Reader reader
  )
  {
+  session->buffer.write<int64_t>(reader.get_remaining());
+
   LOGID("reading from = " << reader.get_current() << ", size = "
    << reader.get_remaining() << ':');
 
@@ -457,7 +459,6 @@ namespace joedb
 
   session->buffer.index = 1;
   session->buffer.write<int64_t>(reader.get_end());
-  session->buffer.write<int64_t>(reader.get_remaining());
 
   start_reading(session, reader);
  }
@@ -554,7 +555,29 @@ namespace joedb
    );
 
    session->buffer.index = 1;
-   session->buffer.write<int64_t>(reader.get_remaining());
+   start_reading(session, reader);
+  }
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::read_blob_handler
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  std::error_code error,
+  size_t bytes_transferred
+ )
+ {
+  if (!error)
+  {
+   session->buffer.index = 1;
+   const int64_t blob_position = session->buffer.read<int64_t>();
+   const Async_Reader reader = client.get_journal().get_async_blob_reader
+   (
+    Blob(blob_position)
+   );
+
+   session->buffer.index = 1;
    start_reading(session, reader);
   }
  }
@@ -674,6 +697,18 @@ namespace joedb
       [this, session](std::error_code e, size_t s)
       {
        read_handler(session, e, s);
+      }
+     );
+    break;
+
+    case 'b':
+     asio::async_read
+     (
+      session->socket,
+      asio::buffer(session->buffer.data + 1, 8),
+      [this, session](std::error_code e, size_t s)
+      {
+       read_blob_handler(session, e, s);
       }
      );
     break;

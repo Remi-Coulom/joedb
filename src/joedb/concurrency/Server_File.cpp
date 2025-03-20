@@ -6,8 +6,8 @@ namespace joedb
  size_t Server_File::remote_pread(char *data, size_t size, int64_t offset)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Server_Connection::buffer.index = 0;
-  Server_Connection::buffer.write<char>('r');
+  Server_Connection::buffer.data[0] = 'r';
+  Server_Connection::buffer.index = 1;
   Server_Connection::buffer.write<int64_t>(offset);
   Server_Connection::buffer.write<int64_t>(size);
 
@@ -75,5 +75,27 @@ namespace joedb
    tail.pwrite(data, size, offset - tail_offset);
   else
    write_to_body_error();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ std::string Server_File::read_blob_data(Blob blob)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Channel_Lock lock(channel);
+
+  Server_Connection::buffer.data[0] = 'b';
+  Server_Connection::buffer.index = 1;
+  Server_Connection::buffer.write<int64_t>(blob.get_position());
+  lock.write(Server_Connection::buffer.data, Server_Connection::buffer.index);
+
+  lock.read(Server_Connection::buffer.data, 9);
+  Server_Connection::buffer.index = 1;
+  const int64_t size = Server_Connection::buffer.read<int64_t>();
+
+  Memory_File file;
+  joedb::Async_Writer writer(file, 0);
+  download(writer, lock, size);
+
+  return file.move_data();
  }
 }

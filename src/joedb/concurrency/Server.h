@@ -136,6 +136,13 @@ namespace joedb
     size_t bytes_transferred
    );
 
+   void read_blob_handler
+   (
+    std::shared_ptr<Session> session,
+    std::error_code error,
+    size_t bytes_transferred
+   );
+
    void check_hash_handler
    (
     std::shared_ptr<Session> session,

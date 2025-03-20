@@ -939,6 +939,7 @@ namespace joedb
    Test_Network_Channel channel("localhost", Port_String(server).get());
    Server_File file(channel);
    EXPECT_EQ(file.read_blob_data(blob), "glouglou");
+   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
 
    {
     Test_Client client(server, file);

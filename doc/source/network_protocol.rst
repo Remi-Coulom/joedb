@@ -12,6 +12,7 @@ Prefix Data              Description
 joedb  client_version    first message, sent at connection time
 r      offset            read a range of bytes
        size
+b      blob              read a blob
 P      checkpoint        pull
        wait_milliseconds
 i      wait_milliseconds get server checkpoint (like P, without data)
@@ -43,6 +44,8 @@ joedb  | server_version | reply to joedb.
        | checkpoint     | 'R' is pull-only
        | 'R' or 'W'
 r      size             reply to r (size may be shorter than what was sent)
+       data
+b      size             reply to b
        data
 P      checkpoint       reply to P
        size

@@ -25,6 +25,7 @@ namespace joedb
 
    size_t pread(char *data, size_t size, int64_t offset) override;
    void pwrite(const char *data, size_t size, int64_t offset) override;
+   std::string read_blob_data(Blob blob) override;
    int64_t get_size() const override {return tail_offset + tail.get_size();}
  };
 }

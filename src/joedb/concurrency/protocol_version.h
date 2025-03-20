@@ -3,7 +3,7 @@
 
 namespace joedb
 {
- constexpr int protocol_version = 14;
+ constexpr int protocol_version = 15;
 }
 
 #endif
