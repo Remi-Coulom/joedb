@@ -14,6 +14,7 @@ namespace joedb
  {
   private:
    Pullonly_Client &client;
+   const bool has_file;
    Client * const push_client;
 
    void pull(std::ostream &out, std::chrono::milliseconds wait);
@@ -33,6 +34,6 @@ namespace joedb
    ) override;
 
   public:
-   Client_Command_Processor(Pullonly_Client &client);
+   Client_Command_Processor(Pullonly_Client &client, bool has_file);
  };
 }

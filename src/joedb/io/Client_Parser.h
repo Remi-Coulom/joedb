@@ -25,6 +25,7 @@ namespace joedb
    Client_Parser(bool local, Open_Mode default_open_mode);
 
    Pullonly_Client &parse(int argc, char **argv);
+   bool has_file() const {return file_parser.get_file() != nullptr;}
 
    void print_help(std::ostream &out) const;
  };

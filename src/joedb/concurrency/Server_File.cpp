@@ -114,9 +114,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
-  int64_t server_position,
-  int64_t until_position,
-  bool unlock_after
+  const int64_t server_position,
+  const int64_t until_position,
+  const bool unlock_after
  )
  {
   Server_Connection::push_until

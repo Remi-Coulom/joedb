@@ -75,11 +75,9 @@ namespace joedb
   {
    Command_Interpreter::process_command(command, parameters, in, out);
 
-   out << R"RRR(Client
-~~~~~~
- db
- pull [<wait_milliseconds>]
-)RRR";
+   out << "Client\n";
+   out << "~~~~~~\n";
+   out << " pull [<wait_milliseconds>]\n";
 
    if (!is_readonly_data())
     out << " pull_every [<seconds>]\n";
@@ -91,13 +89,16 @@ namespace joedb
     if (is_readonly_data())
      out << " push_every [<seconds>]\n";
     else
-     out << " transaction [without_tables]\n";
+     out << " transaction\n";
    }
+
+   if (has_file)
+    out << " db\n";
 
    out << '\n';
    return Status::ok;
   }
-  else if (command == "db") /////////////////////////////////////////////////
+  else if (has_file && command == "db") //////////////////////////////////////
   {
    Interpreted_Client_Data *interpreted_client_data
    (
@@ -170,27 +171,7 @@ namespace joedb
 
     if (interpreted_client_data)
     {
-     std::string param;
-     parameters >> param;
-
-     if (param == "without_tables")
-     {
-      auto &journal = interpreted_client_data->get_writable_journal();
-      int64_t old_position = journal.get_position();
-      journal.seek_to_checkpoint();
-
-      Writable_Interpreter interpreter
-      (
-       interpreted_client_data->get_writable_journal(),
-       interpreted_client_data->get_writable_journal()
-      );
-
-      interpreter.set_parent(this);
-      interpreter.main_loop(in, out);
-
-      journal.set_position(old_position);
-     }
-     else if (param == "")
+     if (has_file)
      {
       Interpreter interpreter
       (
@@ -200,6 +181,14 @@ namespace joedb
        interpreted_client_data->get_multiplexer(),
        0
       );
+      interpreter.set_parent(this);
+      interpreter.main_loop(in, out);
+     }
+     else
+     {
+      auto &journal = interpreted_client_data->get_writable_journal();
+      journal.seek_to_checkpoint();
+      Writable_Interpreter interpreter(journal, journal);
       interpreter.set_parent(this);
       interpreter.main_loop(in, out);
      }
@@ -213,9 +202,14 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Client_Command_Processor::Client_Command_Processor(Pullonly_Client &client):
+ Client_Command_Processor::Client_Command_Processor
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Pullonly_Client &client,
+  bool has_file
+ ):
   client(client),
+  has_file(has_file),
   push_client(client.get_push_client())
  {
  }

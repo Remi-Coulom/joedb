@@ -29,7 +29,7 @@ namespace joedb
 
   Pullonly_Client &client = client_parser.parse(argc - 1, argv + 1);
 
-  Client_Command_Processor interpreter(client);
+  Client_Command_Processor interpreter(client, client_parser.has_file());
   interpreter.set_prompt(true);
   interpreter.main_loop(std::cin, std::cout);
 
