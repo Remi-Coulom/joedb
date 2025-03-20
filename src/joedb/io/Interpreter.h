@@ -5,48 +5,60 @@
 #include "joedb/io/Readable_Command_Processor.h"
 #include "joedb/io/Writable_Command_Processor.h"
 #include "joedb/io/Readable_Writable_Command_Processor.h"
+#include "joedb/io/Blob_Reader_Command_Processor.h"
+
+#include <memory>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readable_Interpreter:
+ class Readable_Interpreter: public Command_Interpreter
  ////////////////////////////////////////////////////////////////////////////
-  private Readable_Command_Processor,
-  public Command_Interpreter
  {
+  protected:
+   Readable_Command_Processor readable_command_processor;
+   std::unique_ptr<Blob_Reader_Command_Processor> blob_reader_command_processor;
+
   public:
    Readable_Interpreter
    (
     const Readable &readable,
     Blob_Reader *blob_reader
    ):
-    Readable_Command_Processor(readable, blob_reader)
+    readable_command_processor(readable)
    {
-    add_processor(*static_cast<Readable_Command_Processor *>(this));
+    add_processor(readable_command_processor);
+    if (blob_reader)
+    {
+     blob_reader_command_processor = std::make_unique<Blob_Reader_Command_Processor>(*blob_reader);
+     add_processor(*blob_reader_command_processor);
+    }
    }
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Writable_Interpreter:
+ class Writable_Interpreter: public Command_Interpreter
  ////////////////////////////////////////////////////////////////////////////
-  public Writable_Command_Processor,
-  public Command_Interpreter
  {
+  protected:
+   Writable_Command_Processor writable_command_processor;
+
   public:
    Writable_Interpreter(Writable &writable, Blob_Writer &blob_writer):
-    Writable_Command_Processor(writable, blob_writer)
+    writable_command_processor(writable, blob_writer)
    {
-    add_processor(*static_cast<Writable_Command_Processor *>(this));
+    add_processor(writable_command_processor);
    }
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Interpreter:
+ class Interpreter: public Writable_Interpreter
  ////////////////////////////////////////////////////////////////////////////
-  public Writable_Interpreter,
-  public Readable_Command_Processor,
-  public Readable_Writable_Command_Processor
  {
+  private:
+   Readable_Command_Processor readable_command_processor;
+   Readable_Writable_Command_Processor readable_writable_command_processor;
+
   public:
    Interpreter
    (
@@ -57,16 +69,16 @@ namespace joedb
     size_t max_record_id
    ):
     Writable_Interpreter(writable, blob_writer),
-    Readable_Command_Processor(readable, blob_reader),
-    Readable_Writable_Command_Processor
+    readable_command_processor(readable),
+    readable_writable_command_processor
     (
-     *static_cast<Readable_Command_Processor *>(this),
-     *static_cast<Writable_Command_Processor *>(this),
+     readable_command_processor,
+     writable_command_processor,
      max_record_id
     )
    {
-    add_processor(*static_cast<Readable_Writable_Command_Processor *>(this));
-    add_processor(*static_cast<Readable_Command_Processor *>(this));
+    add_processor(readable_writable_command_processor);
+    add_processor(readable_command_processor);
    }
  };
 }

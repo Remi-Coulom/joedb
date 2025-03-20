@@ -5,7 +5,6 @@
 #include "joedb/io/json.h"
 #include "joedb/io/dump.h"
 #include "joedb/Readable.h"
-#include "joedb/journal/File.h"
 
 #include <vector>
 #include <sstream>
@@ -135,7 +134,7 @@ namespace joedb
       out,
       fname,
       column_width[fid],
-      type_id == Type::Type_Id::string || type_id == Type::Type_Id::blob
+      type_id == Type::Type_Id::string
      );
     }
     out << '\n';
@@ -162,7 +161,7 @@ namespace joedb
        out,
        columns[fid][i],
        column_width[fid],
-       type_id == Type::Type_Id::string || type_id == Type::Type_Id::blob
+       type_id == Type::Type_Id::string
       );
      }
      out << '\n';
@@ -197,28 +196,6 @@ namespace joedb
    const auto &freedom = readable.get_freedom(table_id);
    out << freedom.get_used_count() << '\n';
   }
-  else if (blob_reader && command == "read_blob") ///////////////////////////
-  {
-   const Blob blob = read_blob(parameters);
-
-   if (!blob.is_null())
-   {
-    const std::string s = blob_reader->read_blob_data(blob);
-    const std::string file_name = read_string(parameters);
-
-    if (file_name.empty())
-    {
-     write_string(out, s);
-     out << '\n';
-    }
-    else
-    {
-     File file(file_name, joedb::Open_Mode::create_new);
-     file.write_data(s.data(), s.size());
-     file.flush();
-    }
-   }
-  }
   else if (command == "schema") /////////////////////////////////////////////
   {
    Interpreter_Dump_Writable dump_writable(out);
@@ -251,12 +228,8 @@ namespace joedb
  dump
  sql
  json [<base64>]
+
 )RRR";
-
-   if (blob_reader)
-    out << " read_blob <blob> [<output_file_name>]\n";
-
-   out << '\n';
 
    return Status::ok;
   }

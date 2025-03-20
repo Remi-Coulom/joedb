@@ -3,12 +3,10 @@
 
 #include "joedb/io/Command_Processor.h"
 #include "joedb/io/write_value.h"
-#include "joedb/index_types.h"
 
 namespace joedb
 {
  class Readable;
- class Blob_Reader;
 
  ////////////////////////////////////////////////////////////////////////////
  class Readable_Command_Processor: public Command_Processor
@@ -18,7 +16,6 @@ namespace joedb
 
   private:
    const Readable &readable;
-   Blob_Reader *blob_reader;
 
    Table_Id parse_table(std::istream &in, std::ostream &out) const;
 
@@ -30,7 +27,7 @@ namespace joedb
     Field_Id field_id
    )
    {
-    joedb::write_value(out, readable, blob_reader, table_id, record_id, field_id);
+    joedb::write_value(out, readable, table_id, record_id, field_id);
    }
 
    Status process_command
@@ -42,13 +39,7 @@ namespace joedb
    ) final;
 
   public:
-   Readable_Command_Processor
-   (
-    const Readable &readable,
-    Blob_Reader *blob_reader
-   ):
-    readable(readable),
-    blob_reader(blob_reader)
+   Readable_Command_Processor(const Readable &readable): readable(readable)
    {
    }
  };

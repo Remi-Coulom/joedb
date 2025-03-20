@@ -92,27 +92,40 @@ namespace joedb
      out << " transaction\n";
    }
 
-   if (has_file)
-    out << " db\n";
+   out << " db\n";
 
    out << '\n';
    return Status::ok;
   }
-  else if (has_file && command == "db") //////////////////////////////////////
+  else if (command == "db") /////////////////////////////////////////////////
   {
    Interpreted_Client_Data *interpreted_client_data
    (
     dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
    );
 
-   Readable_Interpreter interpreter
-   (
-    interpreted_client_data->get_database(),
-    &interpreted_client_data->get_readonly_journal()
-   );
+   if (has_file)
+   {
+    Readable_Interpreter interpreter
+    (
+     interpreted_client_data->get_database(),
+     &interpreted_client_data->get_readonly_journal()
+    );
 
-   interpreter.set_parent(this);
-   interpreter.main_loop(in, out);
+    interpreter.set_parent(this);
+    interpreter.main_loop(in, out);
+   }
+   else
+   {
+    Command_Interpreter interpreter;
+    Blob_Reader_Command_Processor processor
+    (
+     interpreted_client_data->get_readonly_journal()
+    );
+    interpreter.add_processor(processor);
+    interpreter.set_parent(this);
+    interpreter.main_loop(in, out);
+   }
   }
   else if (command == "push" && push_client) ////////////////////////////////
   {
