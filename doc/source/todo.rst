@@ -4,7 +4,11 @@ TODO
 For next release
 ----------------
 
- - efficient ``Server_File`` for clients without a local replica (custom connection)
+ - More efficient ``Server_File``:
+
+   - reset tail after push
+   - pull without transfering data
+
  - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
  - use seconds for UI everywhere, but allow float for sub-second resolution
