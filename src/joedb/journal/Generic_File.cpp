@@ -71,8 +71,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const size_t size = compact_read<size_t>();
-  std::string s;
-  s.resize(size);
+  std::string s(size, 0);
   read_data(&s[0], size);
   return s;
  }
@@ -83,7 +82,7 @@ namespace joedb
  {
   std::string s;
   const int64_t size = compact_read<int64_t>();
-  if (size < max_size)
+  if (size > 0 && size < max_size)
   {
    s.resize(size_t(size));
    read_data(&s[0], size_t(size));
