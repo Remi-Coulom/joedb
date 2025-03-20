@@ -405,13 +405,11 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    writable.on_blob(Blob(blob_position), file);
 
    if (writable.wants_blobs())
-   {
     writable.write_blob_data(safe_read_string());
-   }
    else
    {
-    const size_t size = file.compact_read<size_t>();
-    file.set_position(file.get_position() + int64_t(size));
+    const int64_t size = file.compact_read<int64_t>();
+    file.ignore(size);
    }
   }
   break;

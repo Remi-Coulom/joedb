@@ -285,6 +285,16 @@ namespace joedb
     }
    }
 
+   //////////////////////////////////////////////////////////////////////////
+   void ignore(const int64_t n)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (buffer.index + n <= read_buffer_size)
+     buffer.index += n;
+    else
+     set_position(get_position() + n);
+   }
+
    std::string read_blob_data(Blob blob) override;
    Blob write_blob_data(const std::string &data) override;
  };
