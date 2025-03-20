@@ -66,7 +66,7 @@ namespace joedb
   }
 
   if (!client_file)
-   throw Runtime_Error("no client file");
+   throw Runtime_Error("no client file. Only ssh and network connections can work without a file.");
 
   std::cerr << "Creating client data... ";
 
