@@ -59,6 +59,7 @@ namespace joedb
 
     std::optional<asio::steady_timer> pull_timer;
     bool lock_before_pulling;
+    bool send_pull_data;
     int64_t pull_checkpoint;
 
     std::ostream &write_id(std::ostream &out) const;

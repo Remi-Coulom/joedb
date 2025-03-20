@@ -15,7 +15,8 @@ r      offset            read a range of bytes
 b      blob              read a blob
 P      checkpoint        pull
        wait_milliseconds
-i      wait_milliseconds get server checkpoint (like P, without data)
+i      checkpoint        get server checkpoint (like P, without data)
+       wait_milliseconds
 H      checkpoint        check SHA-256 hash code
        hash (32 bytes)
 Q                        quit

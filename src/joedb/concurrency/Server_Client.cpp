@@ -14,9 +14,12 @@ namespace joedb
  void Server_Client::ping(Channel_Lock &lock)
  ////////////////////////////////////////////////////////////////////////////
  {
-  buffer.data[0] = 'i';
-  lock.write(buffer.data, 1);
-  lock.read(buffer.data, 1);
+  buffer.index = 0;
+  buffer.write<char>('i');
+  buffer.write<int64_t>(0);
+  buffer.write<int64_t>(0);
+  lock.write(buffer.data, buffer.index);
+  lock.read(buffer.data, 9);
  }
 
  ////////////////////////////////////////////////////////////////////////////

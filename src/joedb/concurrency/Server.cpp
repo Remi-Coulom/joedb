@@ -460,7 +460,10 @@ namespace joedb
   session->buffer.index = 1;
   session->buffer.write<int64_t>(reader.get_end());
 
-  start_reading(session, reader);
+  if (session->send_pull_data)
+   start_reading(session, reader);
+  else
+   write_buffer_and_next_command(session, session->buffer.index);
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -647,11 +650,19 @@ namespace joedb
    {
     case 'P':
      session->lock_before_pulling = false;
+     session->send_pull_data = true;
      pull(session);
     break;
 
     case 'L':
      session->lock_before_pulling = true;
+     session->send_pull_data = true;
+     pull(session);
+    break;
+
+    case 'i':
+     session->lock_before_pulling = false;
+     session->send_pull_data = false;
      pull(session);
     break;
 
@@ -678,10 +689,6 @@ namespace joedb
 
     case 'H':
      check_hash(session);
-    break;
-
-    case 'i':
-     write_buffer_and_next_command(session, 1);
     break;
 
     case 'Q':
