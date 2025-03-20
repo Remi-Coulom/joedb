@@ -4,9 +4,10 @@ TODO
 For next release
 ----------------
 
+ - use seconds for UI everywhere, but allow float for sub-second resolution
  - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
- - use seconds for UI everywhere, but allow float for sub-second resolution
+ - always use full content check for joedb_edit
  - more joedbc code generation:
 
    - Split Database with Database_Storage parent
