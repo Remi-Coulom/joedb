@@ -5,6 +5,8 @@
 #include "joedb/ssh/Forward_Channel.h"
 #include "joedb/concurrency/Server_File.h"
 
+#include <iostream>
+
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
@@ -38,6 +40,7 @@ namespace joedb
     channel = std::make_unique<ssh::Forward_Channel>(*session, "localhost", joedb_port);
 
     connection = std::make_unique<Server_File>(*channel);
+    connection->set_log(&std::cerr);
 
     return *connection;
    }

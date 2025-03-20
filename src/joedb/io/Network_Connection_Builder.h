@@ -2,6 +2,8 @@
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/io/Connection_Builder.h"
 
+#include <iostream>
+
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
@@ -30,6 +32,7 @@ namespace joedb
     channel = std::make_unique<Network_Channel>(host, port);
 
     connection = std::make_unique<Server_File>(*channel);
+    connection->set_log(&std::cerr);
 
     return *connection;
    }

@@ -10,7 +10,7 @@ namespace joedb
  class Server_Connection: public Server_Client, public Connection
  ////////////////////////////////////////////////////////////////////////////
  {
-  private:
+  protected:
    //
    // Pullonly Connection overrides
    //

@@ -6,7 +6,6 @@ For next release
 
  - More efficient ``Server_File``:
 
-   - reset tail after push
    - pull without transfering data
 
  - strongly typed checkpoints, and byte_count (diff between checkpoints)

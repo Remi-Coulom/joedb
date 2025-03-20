@@ -12,7 +12,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   const int64_t tail_offset;
+   int64_t tail_offset;
 
    Memory_File head;
    Memory_File tail;
@@ -23,6 +23,20 @@ namespace joedb
   public:
    Server_File(Channel &channel);
 
+   //
+   // Server_Connection overrides
+   //
+   int64_t push_until
+   (
+    Readonly_Journal &client_journal,
+    int64_t server_position,
+    int64_t until_position,
+    bool unlock_after
+   ) override;
+
+   //
+   // Generic_File overrides
+   //
    size_t pread(char *data, size_t size, int64_t offset) override;
    void pwrite(const char *data, size_t size, int64_t offset) override;
    std::string read_blob_data(Blob blob) override;
