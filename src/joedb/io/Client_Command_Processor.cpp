@@ -159,23 +159,25 @@ namespace joedb
    out << "Waiting for lock... ";
    out.flush();
 
-   std::string param;
-   parameters >> param;
-
-   if (param == "without_tables")
+   push_client->transaction([&](Client_Data &data)
    {
-    push_client->transaction([this, &in, &out](Client_Data &data)
+    out << "OK\n";
+
+    Writable_Interpreted_Client_Data *interpreted_client_data
+    (
+     dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
+    );
+
+    if (interpreted_client_data)
     {
-     out << "OK\n";
+     std::string param;
+     parameters >> param;
 
-     Writable_Interpreted_Client_Data *interpreted_client_data
-     (
-      dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
-     );
-
-     if (interpreted_client_data)
+     if (param == "without_tables")
      {
-      interpreted_client_data->get_writable_journal().seek_to_checkpoint();
+      auto &journal = interpreted_client_data->get_writable_journal();
+      int64_t old_position = journal.get_position();
+      journal.seek_to_checkpoint();
 
       Writable_Interpreter interpreter
       (
@@ -185,21 +187,10 @@ namespace joedb
 
       interpreter.set_parent(this);
       interpreter.main_loop(in, out);
+
+      journal.set_position(old_position);
      }
-    });
-   }
-   else if (param == "")
-   {
-    push_client->transaction([this, &in, &out](Client_Data &data)
-    {
-     out << "OK\n";
-
-     Writable_Interpreted_Client_Data *interpreted_client_data
-     (
-      dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
-     );
-
-     if (interpreted_client_data)
+     else if (param == "")
      {
       Interpreter interpreter
       (
@@ -212,8 +203,8 @@ namespace joedb
       interpreter.set_parent(this);
       interpreter.main_loop(in, out);
      }
-    });
-   }
+    }
+   });
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);
