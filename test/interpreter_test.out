@@ -95,32 +95,46 @@ OK: sql
  }
 }
 OK: json 1
-------------------------------------
-  name        city bio              
-------------------------------------
-1 "Rémi"         2 "This is my life"
-2 "Norbert"      2 "This is my life"
-3 "Alexandre"   15 "This is my life"
+----------------------
+  name        city bio
+----------------------
+1 "Rémi"         2  42
+2 "Norbert"      2  42
+3 "Alexandre"   15  42
 OK: table person
 name: "Rémi"
 city: 2
- bio: "This is my life"
+ bio: 42
 OK: record person 1
 Exception caught: no such record
 Line 29: record person 12345
 name: "Rémi"
 city: 2
- bio: "This is my life"
+ bio: 42
 OK: record person
 
 General commands
 ~~~~~~~~~~~~~~~~
  about
- help
+ help|?
  quit
  abort
  echo on|off
  prompt on|off
+
+Displaying data
+~~~~~~~~~~~~~~~
+ table <table_name> [<max_column_width>] [start] [length]
+ record <table_name> [<record_id>]
+ table_size <table_name>
+ schema
+ dump
+ sql
+ json [<base64>]
+
+Blob Reader
+~~~~~~~~~~~
+ read_blob <blob> [<output_file_name>]\n";
 
 Journal
 ~~~~~~~
@@ -156,17 +170,6 @@ Data manipulation
  update <table_name> <record_id> <field_name> <value>
  update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
  delete_from <table_name> <record_id>
-
-Displaying data
-~~~~~~~~~~~~~~~
- table <table_name> [<max_column_width>] [start] [length]
- record <table_name> [<record_id>]
- table_size <table_name>
- schema
- dump
- sql
- json [<base64>]
- read_blob <blob> [<output_file_name>]
 
 OK: help
 Exception caught: create_table: name already used: city

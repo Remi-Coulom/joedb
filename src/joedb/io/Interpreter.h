@@ -52,11 +52,11 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Interpreter: public Writable_Interpreter
+ class Interpreter: public Readable_Interpreter
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Readable_Command_Processor readable_command_processor;
+   Writable_Command_Processor writable_command_processor;
    Readable_Writable_Command_Processor readable_writable_command_processor;
 
   public:
@@ -68,8 +68,8 @@ namespace joedb
     Blob_Writer &blob_writer,
     size_t max_record_id
    ):
-    Writable_Interpreter(writable, blob_writer),
-    readable_command_processor(readable),
+    Readable_Interpreter(readable, blob_reader),
+    writable_command_processor(writable, blob_writer),
     readable_writable_command_processor
     (
      readable_command_processor,
@@ -77,8 +77,8 @@ namespace joedb
      max_record_id
     )
    {
+    add_processor(writable_command_processor);
     add_processor(readable_writable_command_processor);
-    add_processor(readable_command_processor);
    }
  };
 }
