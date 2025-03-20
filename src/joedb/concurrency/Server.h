@@ -201,7 +201,6 @@ namespace joedb
     }
    }
 
-
   public:
    Server
    (
@@ -214,14 +213,12 @@ namespace joedb
    );
 
    uint16_t get_port() const {return port;}
-   bool is_readonly() const;
+   bool is_readonly() const {return client.is_readonly() || !push_client;}
    std::chrono::milliseconds get_time_stamp() const;
 
-   // Note: if io_context running in another thread do:
-   // io_context.post([&](){server.stop();});
+   // Note: run on io_context if on another thread: io_context.post([&](){server.stop();});
    void start();
    void stop();
-   void set_log(std::ostream *new_log);
 
    ~Server();
  };

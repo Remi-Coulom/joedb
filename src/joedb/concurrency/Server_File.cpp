@@ -1,7 +1,5 @@
 #include "joedb/concurrency/Server_File.h"
 
-#include <ostream>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -30,7 +28,17 @@ namespace joedb
  void Server_File::write_to_body_error()
  ////////////////////////////////////////////////////////////////////////////
  {
-  throw Runtime_Error("Cannot write to Server_File body");
+  throw Exception("Cannot write to Server_File body");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server_File::write_checkpoint()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  head.set_position(Readonly_Journal::checkpoint_offset);
+  head.write<int64_t>(server_checkpoint);
+  head.write<int64_t>(server_checkpoint);
+  head.flush();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -43,12 +51,48 @@ namespace joedb
   {
    Writable_Journal journal(head);
   }
-  head.set_position(Readonly_Journal::checkpoint_offset);
-  head.write<int64_t>(server_checkpoint);
-  head.write<int64_t>(server_checkpoint);
-  head.write<int64_t>(server_checkpoint);
-  head.write<int64_t>(server_checkpoint);
-  head.flush();
+  write_checkpoint();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_File::pull
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  std::chrono::milliseconds wait,
+  char pull_type
+ )
+ {
+  if (tail.get_size() > 0)
+   throw Exception("Server_File: pulling with non-empty tail");
+
+  int64_t result = Server_Connection::pull(client_journal, wait, pull_type, false);
+  write_checkpoint();
+  tail_offset = result;
+
+  return result;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_File::pull
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  std::chrono::milliseconds wait
+ )
+ {
+  return pull(client_journal, wait, 'i');
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_File::lock_pull
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Writable_Journal &client_journal,
+  std::chrono::milliseconds wait
+ )
+ {
+  return pull(client_journal, wait, 'l');
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -61,7 +105,7 @@ namespace joedb
   bool unlock_after
  )
  {
-  const int64_t new_server_checkpoint = Server_Connection::push_until
+  Server_Connection::push_until
   (
    client_journal,
    server_position,
@@ -69,15 +113,15 @@ namespace joedb
    unlock_after
   );
 
-  if (new_server_checkpoint == get_size())
+  if (server_checkpoint == get_size())
   {
-   tail_offset = new_server_checkpoint;
+   tail_offset = server_checkpoint;
    tail.resize(0);
-   if (log)
-    *log << "Cleared tail\n";
   }
+  else
+   throw Exception("Server_File could not truncate tail after push");
 
-  return new_server_checkpoint;
+  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////

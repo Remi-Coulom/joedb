@@ -4,10 +4,6 @@ TODO
 For next release
 ----------------
 
- - More efficient ``Server_File``:
-
-   - pull without transfering data
-
  - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
  - use seconds for UI everywhere, but allow float for sub-second resolution

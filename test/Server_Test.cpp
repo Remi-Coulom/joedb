@@ -58,11 +58,6 @@ namespace joedb
     restart();
    }
 
-   void set_log(std::ostream *out)
-   {
-    server.set_log(out);
-   }
-
    void pause()
    {
     if (!paused)
@@ -557,7 +552,6 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server;
-  server.set_log(nullptr);
   Memory_File client_file;
   {
    Test_Client client(server, client_file);

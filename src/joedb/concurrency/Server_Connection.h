@@ -51,7 +51,8 @@ namespace joedb
    (
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait,
-    char pull_type
+    char pull_type,
+    bool has_data
    );
 
    int64_t shared_pull

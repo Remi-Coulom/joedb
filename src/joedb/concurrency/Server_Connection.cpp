@@ -40,7 +40,8 @@ namespace joedb
  (
   Writable_Journal &client_journal,
   std::chrono::milliseconds wait,
-  char pull_type
+  char pull_type,
+  bool has_data
  )
  {
   Channel_Lock lock(channel);
@@ -55,14 +56,19 @@ namespace joedb
   lock.write(buffer.data, buffer.index);
 
   buffer.index = 0;
-  lock.read(buffer.data, 17);
+  lock.read(buffer.data, 9);
   if (buffer.read<char>() != pull_type)
    throw Exception("Unexpected server reply");
-
   server_checkpoint = buffer.read<int64_t>();
-  const int64_t size = buffer.read<int64_t>();
 
+  if (server_checkpoint < client_checkpoint)
+   throw Exception("Client checkpoint is ahead of server checkpoint");
+
+  if (has_data)
   {
+   buffer.index = 0;
+   lock.read(buffer.data, 8);
+   const int64_t size = buffer.read<int64_t>();
    client_journal.flush();
    const int64_t old_position = client_journal.get_position();
    Async_Writer writer = client_journal.get_async_tail_writer();
@@ -71,9 +77,6 @@ namespace joedb
    client_journal.default_checkpoint();
    client_journal.set_position(old_position);
   }
-
-  if (size < 0)
-   throw Exception("Client checkpoint is ahead of server checkpoint");
 
   return server_checkpoint;
  }
@@ -88,7 +91,7 @@ namespace joedb
  )
  {
   client_journal.lock_pull();
-  const int64_t result = pull(client_journal, wait, pull_type);
+  const int64_t result = pull(client_journal, wait, pull_type, true);
   if (pull_type != 'L')
    client_journal.unlock();
   return result;

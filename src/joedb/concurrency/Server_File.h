@@ -19,6 +19,7 @@ namespace joedb
 
    size_t remote_pread(char *data, size_t size, int64_t offset);
    void write_to_body_error();
+   void write_checkpoint();
 
   public:
    Server_File(Channel &channel);
@@ -26,6 +27,25 @@ namespace joedb
    //
    // Server_Connection overrides
    //
+   int64_t pull
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds wait,
+    char pull_type
+   );
+
+   int64_t pull
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds wait
+   ) override;
+
+   int64_t lock_pull
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds wait
+   ) override;
+
    int64_t push_until
    (
     Readonly_Journal &client_journal,

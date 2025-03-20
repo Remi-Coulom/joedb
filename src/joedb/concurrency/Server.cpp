@@ -666,6 +666,12 @@ namespace joedb
      pull(session);
     break;
 
+    case 'l':
+     session->lock_before_pulling = true;
+     session->send_pull_data = false;
+     pull(session);
+    break;
+
     case 'U': case 'p':
      session->unlock_after_push = (session->buffer.data[0] == 'U');
      asio::async_read
@@ -892,26 +898,6 @@ namespace joedb
    client.pull();
 
   start();
- }
-
- ////////////////////////////////////////////////////////////////////////////
- bool Server::is_readonly() const
- ////////////////////////////////////////////////////////////////////////////
- {
-  return client.is_readonly() || !push_client;
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::set_log(std::ostream *new_log)
- ////////////////////////////////////////////////////////////////////////////
- {
-  io_context.post
-  (
-   [this, new_log]()
-   {
-    log_pointer = new_log;
-   }
-  );
  }
 
  ////////////////////////////////////////////////////////////////////////////

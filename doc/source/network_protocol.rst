@@ -23,7 +23,8 @@ Q                        quit
 ------ ----------------- ------------------------------------------------------
 L      checkpoint        lock-pull
        wait_milliseconds
-l      wait_milliseconds lock (like L, without data)
+l      checkpoint        lock (like L, without data)
+       wait_milliseconds
 p      checkpoint        locked-push
        size
        data
