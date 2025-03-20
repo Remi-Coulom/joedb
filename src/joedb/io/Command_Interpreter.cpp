@@ -73,7 +73,7 @@ namespace joedb
 General commands
 ~~~~~~~~~~~~~~~~
  about
- help
+ help|?
  quit
  abort
  echo on|off
@@ -163,6 +163,9 @@ General commands
    std::istringstream iss(line);
    std::string command;
    iss >> command;
+
+   if (command == "?")
+    command = "help";
 
    try
    {
