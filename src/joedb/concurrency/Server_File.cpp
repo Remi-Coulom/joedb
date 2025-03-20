@@ -68,9 +68,23 @@ namespace joedb
 
   int64_t result = Server_Connection::pull(client_journal, wait, pull_type, false);
   write_checkpoint();
+  client_journal.pull();
   tail_offset = result;
 
   return result;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_File::handshake
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal,
+  bool content_check
+ )
+ {
+  if (!client_journal.is_same_file(*this))
+   throw Exception("Server_File: wrong file");
+  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////

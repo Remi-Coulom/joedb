@@ -39,11 +39,13 @@ namespace joedb
   builders.emplace_back(new File_Connection_Builder());
 
 #ifdef JOEDB_HAS_NETWORKING
-  builders.emplace_back(new Network_Connection_Builder());
+  builders.emplace_back(new Network_Connection_Builder(false));
+  builders.emplace_back(new Network_Connection_Builder(true));
 #endif
 
 #ifdef JOEDB_HAS_SSH
-  builders.emplace_back(new SSH_Connection_Builder());
+  builders.emplace_back(new SSH_Connection_Builder(false));
+  builders.emplace_back(new SSH_Connection_Builder(true));
 #endif
  }
 

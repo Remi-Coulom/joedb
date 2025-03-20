@@ -60,13 +60,10 @@ namespace joedb
   Generic_File *client_file = file_parser.get_file();
 
   if (!client_file)
-  {
    client_file = dynamic_cast<Generic_File *>(&pullonly_connection);
-   content_check = false;
-  }
 
   if (!client_file)
-   throw Runtime_Error("no client file. Only ssh and network connections can work without a file.");
+   throw Runtime_Error("no client file. Only ssh_file and network_file connections can work without a file.");
 
   std::cerr << "Creating client data... ";
 

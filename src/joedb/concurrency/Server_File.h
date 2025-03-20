@@ -24,15 +24,21 @@ namespace joedb
   public:
    Server_File(Channel &channel);
 
-   //
-   // Server_Connection overrides
-   //
    int64_t pull
    (
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait,
     char pull_type
    );
+
+   //
+   // Server_Connection overrides
+   //
+   int64_t handshake
+   (
+    Readonly_Journal &client_journal,
+    bool content_check
+   ) override;
 
    int64_t pull
    (

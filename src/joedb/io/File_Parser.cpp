@@ -72,7 +72,7 @@ namespace joedb
 
 #if defined(JOEDB_HAS_NETWORKING) || defined(JOEDB_HAS_SSH)
   if (include_none)
-   out << " none (only for network and ssh connections)\n";
+   out << " none (only for network_file and ssh_file connections)\n";
 #endif
  }
 
