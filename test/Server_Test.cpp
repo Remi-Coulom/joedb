@@ -950,5 +950,42 @@ namespace joedb
    EXPECT_EQ(file.read_blob_data(blob), "glouglou");
    EXPECT_EQ(file.read_blob_data(blob2), "glagla");
   }
+
+  {
+   Test_Network_Channel channel("localhost", Port_String(server).get());
+   Server_File file(channel);
+
+   try
+   {
+    file.read_blob_data(Blob{1});
+    FAIL() << "This should have failed";
+   }
+   catch (const std::exception &e)
+   {
+    EXPECT_EQ(e.what(), std::string("read_some: End of file"));
+   }
+  }
+
+  {
+   Test_Network_Channel channel("localhost", Port_String(server).get());
+   Server_File file(channel);
+
+   try
+   {
+    file.read_blob_data(Blob{123456789});
+    FAIL() << "This should have failed";
+   }
+   catch (const std::exception &e)
+   {
+    EXPECT_EQ(e.what(), std::string("read_some: End of file"));
+   }
+  }
+
+  {
+   Test_Network_Channel channel("localhost", Port_String(server).get());
+   Server_File file(channel);
+   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
+   EXPECT_EQ(file.read_blob_data(blob2), "glagla");
+  }
  }
 }
