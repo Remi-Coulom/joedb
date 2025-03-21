@@ -28,17 +28,12 @@ namespace joedb
    Buffer<12> buffer;
 
    size_t read_buffer_size;
-   bool throw_if_end_of_file = true;
-   bool end_of_file = false;
 
    //////////////////////////////////////////////////////////////////////////
    void reading_past_end_of_file()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (throw_if_end_of_file)
-     throw Exception("Trying to read past the end of file");
-    else
-     end_of_file = true;
+    throw Exception("Trying to read past the end of file");
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -66,8 +61,6 @@ namespace joedb
     read_buffer_size = pos_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
      reading_past_end_of_file();
-    else
-     end_of_file = false;
    }
 
    //////////////////////////////////////////////////////////////////////////

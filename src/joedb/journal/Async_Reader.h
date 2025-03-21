@@ -13,6 +13,7 @@ namespace joedb
    Generic_File &file;
    int64_t end;
    int64_t current;
+   bool end_of_file;
 
   public:
    //////////////////////////////////////////////////////////////////////////
@@ -20,7 +21,8 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
     file(file),
     end(end),
-    current(start)
+    current(start),
+    end_of_file(false)
    {
     if (current > end)
      current = end;
@@ -33,12 +35,12 @@ namespace joedb
    {
     const int64_t original_position = file.get_position();
 
-    file.throw_if_end_of_file = false;
-    file.set_position(blob.get_position());
-    const int64_t size = file.compact_read<int64_t>();
-    current = file.get_position();
+    const size_t read = file.pread(file.buffer.data, 8, blob.get_position());
+    file.buffer.index = 0;
+    const int64_t size = file.buffer.compact_read<int64_t>();
+    end_of_file = read < file.buffer.index;
+    current = blob.get_position() + file.buffer.index;
     end = current + size;
-    file.throw_if_end_of_file = true;
 
     file.set_position(original_position);
    }
@@ -64,11 +66,11 @@ namespace joedb
 
      if (actually_read == 0)
      {
-      file.end_of_file = true;
+      end_of_file = true;
       break;
      }
      else
-      file.end_of_file = false;
+      end_of_file = false;
 
      current += actually_read;
      total_read += actually_read;
@@ -78,7 +80,7 @@ namespace joedb
     return total_read;
    }
 
-   bool is_end_of_file() const {return file.end_of_file;}
+   bool is_end_of_file() const {return end_of_file;}
    int64_t get_end() const {return end;}
    int64_t get_current() const {return current;}
    int64_t get_remaining() const {return end - current;}
