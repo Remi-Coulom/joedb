@@ -203,3 +203,17 @@ TEST(Generic_File, flush_and_position)
  file.flush();
  EXPECT_EQ(file.get_position(), 8);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Generic_File, compact_read_bug)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ file.write<uint8_t>(0x12);
+ file.write<uint8_t>(0xc0);
+ file.write<uint8_t>(0x00);
+ file.set_position(0);
+
+ EXPECT_EQ(file.read<uint8_t>(), 0x12);
+ EXPECT_ANY_THROW(file.compact_read<int8_t>());
+}
