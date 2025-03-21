@@ -67,6 +67,8 @@ namespace joedb
       file.end_of_file = true;
       break;
      }
+     else
+      file.end_of_file = false;
 
      current += actually_read;
      total_read += actually_read;
