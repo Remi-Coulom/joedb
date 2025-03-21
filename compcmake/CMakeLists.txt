@@ -354,6 +354,12 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   ../src/joedb/Readable.cpp
   ../src/joedb/Selective_Writable.cpp
   ../src/joedb/Writable.cpp
+  ../src/joedb/concurrency/Channel.cpp
+  ../src/joedb/concurrency/Client.cpp
+  ../src/joedb/concurrency/Client_Data.cpp
+  ../src/joedb/concurrency/Connection.cpp
+  ../src/joedb/concurrency/Network_Channel.cpp
+  ../src/joedb/concurrency/Server.cpp
   ../src/joedb/interpreter/Table.cpp
   ../src/joedb/io/Command_Interpreter.cpp
   ../src/joedb/io/Command_Processor.cpp
@@ -368,6 +374,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   ../src/joedb/io/SQL_Dump_Writable.cpp
   ../src/joedb/io/Interpreter_Dump_Writable.cpp
   ../src/joedb/io/get_time_string.cpp
+  ../src/joedb/io/Progress_Bar.cpp
   ../src/joedb/journal/Abstract_File.cpp
   ../src/joedb/journal/diagnostics.cpp
   ../src/joedb/journal/Interpreted_File.cpp
@@ -379,6 +386,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
   ../src/joedb/journal/Readonly_Interpreted_File.cpp
+  ../src/joedb/journal/File_Hasher.cpp
  )
 
  set_fuzz_options(joedb_fuzz)
@@ -394,6 +402,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
  add_fuzzer(binary_journal_fuzzer)
  add_fuzzer(joedbc_fuzzer)
  add_fuzzer(joedbi_fuzzer)
+ add_fuzzer(server_fuzzer)
 endif()
 
 #############################################################################
