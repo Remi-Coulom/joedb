@@ -22,10 +22,9 @@ namespace joedb
    {
     if (offset < 0 || offset >= int64_t(data_size))
      return 0;
-
-    const size_t max_size = data_size - offset;
+    const size_t max_size = data_size - size_t(offset);
     const size_t n = std::min(size, max_size);
-    std::copy_n(&data[offset], n, buffer);
+    std::copy_n(&data[size_t(offset)], n, buffer);
     return n;
    }
 

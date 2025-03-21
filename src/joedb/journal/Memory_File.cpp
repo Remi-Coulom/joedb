@@ -8,9 +8,11 @@ namespace joedb
  size_t Memory_File::pread(char *buffer, size_t size, int64_t offset)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (offset < 0 || offset >= int64_t(data.size()))
+   return 0;
   const size_t max_size = data.size() - size_t(offset);
   const size_t n = std::min(size, max_size);
-  std::copy_n(data.data() + offset, n, buffer);
+  std::copy_n(&data[size_t(offset)], n, buffer);
   return n;
  }
 
