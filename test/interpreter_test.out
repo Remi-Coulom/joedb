@@ -134,7 +134,7 @@ Displaying data
 
 Blob Reader
 ~~~~~~~~~~~
- read_blob <blob> [<output_file_name>]\n";
+ read_blob <blob> [<output_file_name>]
 
 Journal
 ~~~~~~~
