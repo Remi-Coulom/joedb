@@ -20,7 +20,7 @@
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Connection_Parser::Connection_Parser(bool local, bool user_server_file)
+ Connection_Parser::Connection_Parser(bool local, bool use_server_file)
  //////////////////////////////////////////////////////////////////////////
  {
   if (local)
@@ -40,13 +40,13 @@ namespace joedb
 
 #ifdef JOEDB_HAS_NETWORKING
   builders.emplace_back(new Network_Connection_Builder(false));
-  if (user_server_file)
+  if (use_server_file)
    builders.emplace_back(new Network_Connection_Builder(true));
 #endif
 
 #ifdef JOEDB_HAS_SSH
   builders.emplace_back(new SSH_Connection_Builder(false));
-  if (user_server_file)
+  if (use_server_file)
    builders.emplace_back(new SSH_Connection_Builder(true));
 #endif
  }
