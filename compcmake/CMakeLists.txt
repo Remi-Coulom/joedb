@@ -330,6 +330,73 @@ joedb_add_executable(update_large_string
 )
 
 #############################################################################
+# Fuzzers
+#############################################################################
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+ message("-- clang, compiling fuzzers")
+
+ function(set_fuzz_options target)
+  target_compile_definitions(${target} PRIVATE FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  target_compile_options(${target} PRIVATE -fsanitize=address,fuzzer)
+  target_link_options(${target} PRIVATE -fsanitize=address,fuzzer)
+ endfunction()
+
+ add_library(joedb_fuzz STATIC
+  ../src/external/wide_char_display_width.cpp
+  ../src/joedb/Blob.cpp
+  ../src/joedb/Destructor_Logger.cpp
+  ../src/joedb/interpreter/Database.cpp
+  ../src/joedb/interpreter/Database_Schema.cpp
+  ../src/joedb/is_identifier.cpp
+  ../src/joedb/Multiplexer.cpp
+  ../src/joedb/Posthumous_Catcher.cpp
+  ../src/joedb/Posthumous_Thrower.cpp
+  ../src/joedb/Readable.cpp
+  ../src/joedb/Selective_Writable.cpp
+  ../src/joedb/Writable.cpp
+  ../src/joedb/interpreter/Table.cpp
+  ../src/joedb/io/Command_Interpreter.cpp
+  ../src/joedb/io/Command_Processor.cpp
+  ../src/joedb/io/Readable_Command_Processor.cpp
+  ../src/joedb/io/Writable_Command_Processor.cpp
+  ../src/joedb/io/Readable_Writable_Command_Processor.cpp
+  ../src/joedb/io/type_io.cpp
+  ../src/joedb/io/write_value.cpp
+  ../src/joedb/io/dump.cpp
+  ../src/joedb/io/json.cpp
+  ../src/joedb/io/base64.cpp
+  ../src/joedb/io/SQL_Dump_Writable.cpp
+  ../src/joedb/io/Interpreter_Dump_Writable.cpp
+  ../src/joedb/io/get_time_string.cpp
+  ../src/joedb/journal/Abstract_File.cpp
+  ../src/joedb/journal/diagnostics.cpp
+  ../src/joedb/journal/Interpreted_File.cpp
+  ../src/joedb/journal/Journal_Construction_Lock.cpp
+  ../src/joedb/journal/Memory_File.cpp
+  ../src/joedb/journal/File.cpp
+  ../src/joedb/journal/Generic_File.cpp
+  ../src/joedb/journal/Writable_Journal.cpp
+  ../src/joedb/journal/Stream_File.cpp
+  ../src/joedb/journal/Readonly_Journal.cpp
+  ../src/joedb/journal/Readonly_Interpreted_File.cpp
+ )
+
+ set_fuzz_options(joedb_fuzz)
+
+ function(add_fuzzer fuzzer)
+  add_executable(${fuzzer}
+   ../test/fuzz/${fuzzer}.cpp
+  )
+  set_fuzz_options(${fuzzer})
+  target_link_libraries(${fuzzer} joedb_fuzz ${JOEDB_EXTERNAL_LIBS})
+ endfunction()
+
+ add_fuzzer(binary_journal_fuzzer)
+ add_fuzzer(joedbc_fuzzer)
+ add_fuzzer(joedbi_fuzzer)
+endif()
+
+#############################################################################
 # Packaging
 #############################################################################
 install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
