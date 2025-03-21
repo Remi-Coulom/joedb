@@ -106,7 +106,6 @@ Concurrency
 -----------
 - joedb_server:
 
-  - fuzzer
   - use coroutines
   - stress-test tool
   - support running on multiple threads (requires mutex?)
@@ -157,14 +156,13 @@ Performance
 
 joedb_admin
 -----------
-- serve with boost::beast.
 - work as a client to a joedb_server.
 - customizable GUI, similar to the icga database editor.
 
 Other Ideas
 -----------
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
-- ability to indicate minimum joedb version in joedbc (and joedbi?)
+- ability to indicate minimum joedb version in .joedbc file (and .joedbi?)
 - better readable interface:
 
   - a separate table abstraction (that could be used for query output)
