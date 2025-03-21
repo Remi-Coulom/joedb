@@ -12,7 +12,7 @@ namespace joedb
  Client_Parser::Client_Parser(bool local, Open_Mode default_open_mode):
  ////////////////////////////////////////////////////////////////////////////
   file_parser(default_open_mode, false, true, true),
-  connection_parser(local),
+  connection_parser(local, true),
   default_open_mode(default_open_mode)
  {
  }
