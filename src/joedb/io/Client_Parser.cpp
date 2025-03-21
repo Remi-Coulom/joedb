@@ -63,7 +63,7 @@ namespace joedb
    client_file = dynamic_cast<Generic_File *>(&pullonly_connection);
 
   if (!client_file)
-   throw Exception("no client file. Only ssh_file and network_file connections can work without a file.");
+   throw Exception("server file must be used with a network_file or ssh_file connection");
 
   std::cerr << "Creating client data... ";
 
