@@ -9,7 +9,7 @@ namespace joedb
   Server_Connection::buffer.index = 0;
   Server_Connection::buffer.write<char>('r');
   Server_Connection::buffer.write<int64_t>(offset);
-  Server_Connection::buffer.write<int64_t>(size);
+  Server_Connection::buffer.write<uint64_t>(size);
 
   Channel_Lock lock(channel);
   lock.write(Server_Connection::buffer.data, Server_Connection::buffer.index);

@@ -18,7 +18,7 @@ namespace joedb
    Memory_File tail;
 
    size_t remote_pread(char *data, size_t size, int64_t offset);
-   void write_to_body_error();
+   static void write_to_body_error();
    void write_checkpoint();
 
   public:

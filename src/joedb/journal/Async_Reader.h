@@ -24,25 +24,24 @@ namespace joedb
     current(start),
     end_of_file(false)
    {
+    file.flush();
     if (current > end)
      current = end;
-    file.flush();
    }
 
    //////////////////////////////////////////////////////////////////////////
    Async_Reader(Generic_File &file, Blob blob): file(file)
    //////////////////////////////////////////////////////////////////////////
    {
-    const int64_t original_position = file.get_position();
-
+    file.flush();
     const size_t read = file.pread(file.buffer.data, 8, blob.get_position());
     file.buffer.index = 0;
-    const int64_t size = file.buffer.compact_read<int64_t>();
+    int64_t size = file.buffer.compact_read<int64_t>();
+    if (size < 0)
+     size = 0;
     end_of_file = read < file.buffer.index;
     current = blob.get_position() + file.buffer.index;
     end = current + size;
-
-    file.set_position(original_position);
    }
 
    //////////////////////////////////////////////////////////////////////////

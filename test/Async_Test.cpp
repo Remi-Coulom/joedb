@@ -129,4 +129,33 @@ namespace joedb
   EXPECT_EQ(buffer[1], 'b');
   EXPECT_EQ(buffer[2], 'e');
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Async, blob_eof)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+
+  {
+   Async_Reader reader(file, Blob{0});
+   EXPECT_TRUE(reader.is_end_of_file());
+  }
+
+  file.set_position(0);
+  file.write<char>(1);
+  EXPECT_EQ(file.get_size(), 1);
+
+  Buffer<12> buffer;
+  buffer.index = 0;
+  buffer.write<char>(1);
+  EXPECT_EQ(buffer.index, 1);
+
+  {
+   Async_Reader reader(file, Blob{0});
+   EXPECT_FALSE(reader.is_end_of_file());
+   EXPECT_EQ(reader.get_remaining(), 1);
+   EXPECT_EQ(reader.read(buffer.data, buffer.size), 0);
+   EXPECT_TRUE(reader.is_end_of_file());
+  }
+ }
 }
