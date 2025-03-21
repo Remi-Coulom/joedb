@@ -71,8 +71,8 @@ namespace joedb
 #endif
 
 #if defined(JOEDB_HAS_NETWORKING) || defined(JOEDB_HAS_SSH)
-  if (include_none)
-   out << " none (only for network_file and ssh_file connections)\n";
+  if (include_server)
+   out << " server (only for network_file and ssh_file connections)\n";
 #endif
  }
 
@@ -91,7 +91,7 @@ namespace joedb
    file.reset(new Memory_File());
    arg_index++;
   }
-  else if (arg_index < argc && std::strcmp(argv[arg_index], "none") == 0)
+  else if (arg_index < argc && std::strcmp(argv[arg_index], "server") == 0)
   {
    arg_index++;
   }
