@@ -183,7 +183,7 @@ namespace joedb
    template<typename T> T compact_read()
    //////////////////////////////////////////////////////////////////////////
    {
-    if (read_buffer_size - buffer.index >= sizeof(T))
+    if (buffer.index + 8 <= read_buffer_size)
      return buffer.compact_read<T>();
 
     const uint8_t first_byte = read<uint8_t>();
