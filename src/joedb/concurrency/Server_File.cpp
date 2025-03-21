@@ -182,6 +182,7 @@ namespace joedb
   const int64_t size = Server_Connection::buffer.read<int64_t>();
 
   Memory_File file;
+  file.resize(size);
   joedb::Async_Writer writer(file, 0);
   download(writer, lock, size);
 
