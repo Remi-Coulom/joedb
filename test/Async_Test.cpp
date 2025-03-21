@@ -159,4 +159,21 @@ namespace joedb
    EXPECT_TRUE(reader.is_end_of_file());
   }
  }
+
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Async, blob_buffer_index)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  file.write_blob_data("toto");
+  file.flush();
+  const int64_t size_0 = file.get_size();
+  Async_Reader reader(file, Blob{0});
+  file.flush();
+  EXPECT_EQ(file.get_size(), size_0);
+  file.write<char>('x');
+  file.flush();
+  EXPECT_EQ(file.get_size(), size_0 + 1);
+ }
 }

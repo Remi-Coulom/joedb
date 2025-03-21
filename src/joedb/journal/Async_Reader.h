@@ -41,6 +41,7 @@ namespace joedb
     int64_t size = file.buffer.compact_read<int64_t>();
     end_of_file = read < file.buffer.index;
     current = blob.get_position() + file.buffer.index;
+    file.buffer.index = 0;
     end = current + size;
 
     if (current > end)
