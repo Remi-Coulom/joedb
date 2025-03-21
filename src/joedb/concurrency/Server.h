@@ -11,7 +11,6 @@
 #include <chrono>
 #include <optional>
 
-#include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/steady_timer.hpp>
 #include <asio/signal_set.hpp>
