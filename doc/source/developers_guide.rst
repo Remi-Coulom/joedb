@@ -8,7 +8,8 @@ Tests are located in the ``test`` directory. There you can run:
 
   - ``./test.sh`` run the tests
   - ``./coverage.sh`` run tests, and produce coverage data with gcov.
-  - The ``fuzz`` subdirectory contains 3 fuzzers, and their corpus. Calling ``./compile.sh`` compiles the fuzzers. The you can run fuzzer X with ``./X_fuzzer X_corpus``.
+  - The ``fuzz`` subdirectory contains 3 fuzzers, and their corpus. The fuzzers
+    use llvm libFuzzer, and are compiled in the clang_release cmake preset.
 
 Understanding Source Code
 -------------------------
