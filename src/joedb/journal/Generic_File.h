@@ -22,17 +22,23 @@ namespace joedb
   public Blob_Writer
  {
   friend class File_Hasher;
+  friend class Async_Reader;
 
   private:
    Buffer<12> buffer;
 
    size_t read_buffer_size;
+   bool throw_if_end_of_file = true;
+   bool end_of_file = false;
 
    //////////////////////////////////////////////////////////////////////////
    void reading_past_end_of_file()
    //////////////////////////////////////////////////////////////////////////
    {
-    throw Exception("Trying to read past the end of file");
+    if (throw_if_end_of_file)
+     throw Exception("Trying to read past the end of file");
+    else
+     end_of_file = true;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -60,6 +66,8 @@ namespace joedb
     read_buffer_size = pos_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
      reading_past_end_of_file();
+    else
+     end_of_file = false;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -274,7 +282,10 @@ namespace joedb
      {
       const size_t actually_read = pos_read(data + n0, n - n0);
       if (actually_read == 0)
+      {
        reading_past_end_of_file();
+       break;
+      }
       n0 += actually_read;
      }
 

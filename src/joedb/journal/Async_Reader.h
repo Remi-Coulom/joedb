@@ -33,10 +33,12 @@ namespace joedb
    {
     const int64_t original_position = file.get_position();
 
+    file.throw_if_end_of_file = false;
     file.set_position(blob.get_position());
     const int64_t size = file.compact_read<int64_t>();
     current = file.get_position();
     end = current + size;
+    file.throw_if_end_of_file = true;
 
     file.set_position(original_position);
    }
@@ -61,7 +63,10 @@ namespace joedb
      );
 
      if (actually_read == 0)
+     {
+      file.end_of_file = true;
       break;
+     }
 
      current += actually_read;
      total_read += actually_read;
@@ -71,6 +76,7 @@ namespace joedb
     return total_read;
    }
 
+   bool is_end_of_file() const {return file.end_of_file;}
    int64_t get_end() const {return end;}
    int64_t get_current() const {return current;}
    int64_t get_remaining() const {return end - current;}

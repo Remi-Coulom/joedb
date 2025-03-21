@@ -388,7 +388,7 @@ namespace joedb
      session->buffer.size - offset
     );
 
-    if (size == 0 && reader.get_remaining() > 0)
+    if (reader.is_end_of_file())
      LOG ("error: unexpected end of file\n");
     else
     {
