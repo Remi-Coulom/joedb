@@ -34,16 +34,17 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     file.flush();
-    file.buffer.index = 0;
-    file.buffer.write<int64_t>(0);
+
+    file.buffer.write<int64_t>(0); // avoid uninitialized data if eof
     const size_t read = file.pread(file.buffer.data, 8, blob.get_position());
     file.buffer.index = 0;
     int64_t size = file.buffer.compact_read<int64_t>();
-    if (size < 0)
-     size = 0;
     end_of_file = read < file.buffer.index;
     current = blob.get_position() + file.buffer.index;
     end = current + size;
+
+    if (current > end)
+     current = end;
    }
 
    //////////////////////////////////////////////////////////////////////////
