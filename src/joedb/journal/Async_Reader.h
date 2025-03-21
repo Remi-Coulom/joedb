@@ -34,6 +34,8 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     file.flush();
+    file.buffer.index = 0;
+    file.buffer.write<int64_t>(0);
     const size_t read = file.pread(file.buffer.data, 8, blob.get_position());
     file.buffer.index = 0;
     int64_t size = file.buffer.compact_read<int64_t>();
@@ -48,8 +50,8 @@ namespace joedb
    size_t read(char *buffer, size_t capacity)
    //////////////////////////////////////////////////////////////////////////
    {
-    int64_t size = end - current;
-    if (size > int64_t(capacity))
+    size_t size = size_t(end - current);
+    if (size > capacity)
      size = capacity;
 
     size_t total_read = 0;

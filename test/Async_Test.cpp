@@ -143,6 +143,7 @@ namespace joedb
 
   file.set_position(0);
   file.write<char>(1);
+  file.flush();
   EXPECT_EQ(file.get_size(), 1);
 
   Buffer<12> buffer;

@@ -20,7 +20,7 @@ namespace joedb
    size_t pread(char *buffer, size_t size, int64_t offset) override
    //////////////////////////////////////////////////////////////////////////
    {
-    if (offset < 0 || offset >= int64_t(data_size))
+    if (size_t(offset) >= data_size)
      return 0;
     const size_t max_size = data_size - size_t(offset);
     const size_t n = std::min(size, max_size);
