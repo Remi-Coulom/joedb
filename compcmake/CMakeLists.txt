@@ -336,7 +336,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
  message("-- clang, compiling fuzzers")
 
  function(set_fuzz_options target)
-  target_compile_definitions(${target} PRIVATE FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  target_compile_definitions(${target} PRIVATE JOEDB_FUZZING)
   target_compile_options(${target} PRIVATE -fsanitize=address,fuzzer)
   target_link_options(${target} PRIVATE -fsanitize=address,fuzzer)
  endfunction()

@@ -2,7 +2,7 @@
 
 #include "joedb/Exception.h"
 
-#if defined (NDEBUG) && !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+#if defined (NDEBUG) && !defined(JOEDB_FUZZING)
 #define JOEDB_ASSERT(x)
 #else
 #define JOEDB_ASSERT_STRINGIFY(x) #x
