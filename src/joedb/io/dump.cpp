@@ -227,7 +227,7 @@ void joedb::pack(Readonly_Journal &input_journal, Writable &writable)
   input_journal.replay_log(multiplexer);
 
   if (schema_filter.has_blobs())
-   throw joedb::Runtime_Error("can't pack blobs");
+   throw Exception("can't pack blobs");
  }
 
  dump_data(db, writable);

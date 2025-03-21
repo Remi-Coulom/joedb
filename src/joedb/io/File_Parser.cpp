@@ -197,7 +197,7 @@ namespace joedb
     out << "OK\n";
    }
    else
-    throw Runtime_Error("missing URL");
+    throw Exception("missing URL");
   }
 #endif
 #ifdef JOEDB_HAS_BROTLI
@@ -238,7 +238,7 @@ namespace joedb
    if (arg_index < argc && std::strcmp(argv[arg_index], "file") == 0)
     arg_index++;
 
-   joedb::Open_Mode open_mode = default_open_mode;
+   Open_Mode open_mode = default_open_mode;
 
    if (arg_index < argc && !default_only)
    {
@@ -273,7 +273,7 @@ namespace joedb
     out << "OK\n";
    }
    else
-    throw Runtime_Error("missing file name");
+    throw Exception("missing file name");
   }
 
   return file.get();

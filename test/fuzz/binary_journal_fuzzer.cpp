@@ -16,12 +16,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  catch (const joedb::Exception &)
  {
  }
- catch (const joedb::Assertion_Failure &)
- {
- }
- catch (const std::bad_variant_access &)
- {
- }
 
  return 0;
 }

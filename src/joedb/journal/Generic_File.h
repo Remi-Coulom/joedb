@@ -2,6 +2,7 @@
 #define joedb_Generic_File_declared
 
 #include "joedb/assert.h"
+#include "joedb/Exception.h"
 #include "joedb/Blob.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/Open_Mode.h"

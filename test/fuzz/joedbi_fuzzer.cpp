@@ -18,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
   interpreter.main_loop(in, out);
  }
- catch (joedb::Exception &e)
+ catch (const joedb::Exception &)
  {
  }
 

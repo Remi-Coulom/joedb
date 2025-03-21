@@ -12,11 +12,11 @@ namespace joedb
   const std::string packed = file_name + ".packed";
 
   {
-   joedb::File input_file(file_name, joedb::Open_Mode::read_existing);
-   joedb::File output_file(packed, joedb::Open_Mode::create_new);
-   joedb::Readonly_Journal input_journal(input_file);
-   joedb::Writable_Journal output_journal(output_file);
-   joedb::pack(input_journal, output_journal);
+   File input_file(file_name, Open_Mode::read_existing);
+   File output_file(packed, Open_Mode::create_new);
+   Readonly_Journal input_journal(input_file);
+   Writable_Journal output_journal(output_file);
+   pack(input_journal, output_journal);
   }
 
   const std::string unpacked = file_name + ".unpacked";
@@ -27,7 +27,7 @@ namespace joedb
    std::rename(packed.c_str(), file_name.c_str())
   )
   {
-   throw joedb::Runtime_Error("error moving files");
+   throw Exception("error moving files");
   }
  }
 }
