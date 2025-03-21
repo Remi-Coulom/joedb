@@ -34,11 +34,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
   {
    joedb::Network_Channel channel("localhost", "1234");
    channel.write((const char *)Data, Size);
-   io_context.post([&server](){server.stop();});
+   io_context.post([&server](){server.stop_after_sessions();});
   }
   catch(const std::exception &e)
   {
-   std::cerr << "client exception: " << e.what() << '\n';
   }
  });
 
@@ -48,7 +47,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  }
  catch (const std::exception &e)
  {
-  std::cerr << "server exception: " << e.what() << '\n';
  }
 
  thread.join();

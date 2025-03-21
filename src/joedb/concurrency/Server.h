@@ -217,6 +217,7 @@ namespace joedb
 
    // Note: run on io_context if on another thread: io_context.post([&](){server.stop();});
    void start();
+   void stop_after_sessions();
    void stop();
 
    ~Server();
