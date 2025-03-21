@@ -41,7 +41,7 @@ namespace joedb
   {
    out << R"RRR(Blob Reader
 ~~~~~~~~~~~
- read_blob <blob> [<output_file_name>]";
+ read_blob <blob> [<output_file_name>]
 
 )RRR";
 
