@@ -4,6 +4,7 @@ TODO
 For next release
 ----------------
 
+ - joedbc_fuzzer must work without debug assertions: check input in release mode as well
  - use seconds for UI everywhere, but allow float for sub-second resolution
  - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
