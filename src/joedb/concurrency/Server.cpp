@@ -388,17 +388,22 @@ namespace joedb
      session->buffer.size - offset
     );
 
-    refresh_lock_timeout(session);
+    if (size == 0 && reader.get_remaining() > 0)
+     LOG ("error: unexpected end of file\n");
+    else
+    {
+     refresh_lock_timeout(session);
 
-    asio::async_write
-    (
-     session->socket,
-     asio::buffer(session->buffer.data, size + offset),
-     [this, session, reader](std::error_code e, size_t s)
-     {
-      read_transfer_handler(session, reader, e, s, 0);
-     }
-    );
+     asio::async_write
+     (
+      session->socket,
+      asio::buffer(session->buffer.data, size + offset),
+      [this, session, reader](std::error_code e, size_t s)
+      {
+       read_transfer_handler(session, reader, e, s, 0);
+      }
+     );
+    }
    }
    else
    {
