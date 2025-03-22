@@ -2,17 +2,21 @@
 
 #include <stdexcept>
 
+#define JOEDB_ASSERT_STRINGIFY(x) #x
+#define JOEDB_ASSERT_TO_STRING(x) JOEDB_ASSERT_STRINGIFY(x)
+#define JOEDB_CHECK(x,e) do\
+{\
+ if (!(x))\
+  throw e("!("#x ")\n  File: " __FILE__ "\n  Line: " JOEDB_ASSERT_TO_STRING(__LINE__));\
+} while(0)
+
 #if defined (NDEBUG) && !defined(JOEDB_FUZZING)
 #define JOEDB_ASSERT(x)
 #else
-#define JOEDB_ASSERT_STRINGIFY(x) #x
-#define JOEDB_ASSERT_TO_STRING(x) JOEDB_ASSERT_STRINGIFY(x)
-#define JOEDB_ASSERT(x) do\
-{\
- if (!(x))\
-  throw joedb::Assertion_Failure("!("#x ")\n  File: " __FILE__ "\n  Line: " JOEDB_ASSERT_TO_STRING(__LINE__));\
-} while(0)
+#define JOEDB_ASSERT(x) JOEDB_CHECK(x, joedb::Assertion_Failure)
 #endif
+
+#define JOEDB_RELEASE_ASSERT(x) JOEDB_CHECK(x, joedb::Exception)
 
 namespace joedb
 {
