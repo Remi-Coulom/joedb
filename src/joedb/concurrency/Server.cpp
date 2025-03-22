@@ -463,16 +463,17 @@ namespace joedb
    return;
   }
 
-  const Async_Reader reader = client.get_journal().get_async_tail_reader
-  (
-   session->pull_checkpoint
-  );
-
   session->buffer.index = 1;
-  session->buffer.write<int64_t>(reader.get_end());
+  session->buffer.write<int64_t>(client.get_checkpoint());
 
   if (session->send_pull_data)
-   start_reading(session, reader);
+  {
+   start_reading
+   (
+    session,
+    client.get_journal().get_async_tail_reader(session->pull_checkpoint)
+   );
+  }
   else
    write_buffer_and_next_command(session, session->buffer.index);
  }
@@ -527,9 +528,16 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::pull(const std::shared_ptr<Session> session)
+ void Server::pull
  ///////////////////////////////////////////////////////////////////////////
+ (
+  const std::shared_ptr<Session> session,
+  bool lock,
+  bool send
+ )
  {
+  session->lock_before_pulling = lock;
+  session->send_pull_data = send;
   async_read(session, 1, 16, &Server::pull_handler);
  }
 
@@ -622,13 +630,6 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::check_hash(const std::shared_ptr<Session> session)
- ///////////////////////////////////////////////////////////////////////////
- {
-  async_read(session, 1, 40, &Server::check_hash_handler);
- }
-
- ///////////////////////////////////////////////////////////////////////////
  void Server::read_command_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -644,27 +645,19 @@ namespace joedb
    switch (session->buffer.data[0])
    {
     case 'P':
-     session->lock_before_pulling = false;
-     session->send_pull_data = true;
-     pull(session);
+     pull(session, false, true);
     break;
 
     case 'L':
-     session->lock_before_pulling = true;
-     session->send_pull_data = true;
-     pull(session);
+     pull(session, true, true);
     break;
 
     case 'i':
-     session->lock_before_pulling = false;
-     session->send_pull_data = false;
-     pull(session);
+     pull(session, false, false);
     break;
 
     case 'l':
-     session->lock_before_pulling = true;
-     session->send_pull_data = false;
-     pull(session);
+     pull(session, true, false);
     break;
 
     case 'U': case 'p':
@@ -681,7 +674,7 @@ namespace joedb
     break;
 
     case 'H':
-     check_hash(session);
+     async_read(session, 1, 40, &Server::check_hash_handler);
     break;
 
     case 'Q':
@@ -711,19 +704,6 @@ namespace joedb
   async_read(session, 0, 1, &Server::read_command_handler);
  }
 
- ///////////////////////////////////////////////////////////////////////////
- void Server::write_buffer_and_next_command_handler
- ///////////////////////////////////////////////////////////////////////////
- (
-  const std::shared_ptr<Session> session,
-  const std::error_code error,
-  const size_t bytes_transferred
- )
- {
-  if (!error)
-   read_command(session);
- }
-
  ////////////////////////////////////////////////////////////////////////////
  void Server::write_buffer_and_next_command
  ////////////////////////////////////////////////////////////////////////////
@@ -738,7 +718,8 @@ namespace joedb
    asio::buffer(session->buffer.data, size),
    [this, session](std::error_code e, size_t s)
    {
-    write_buffer_and_next_command_handler(session, e, s);
+    if (!e)
+     read_command(session);
    }
   );
  }
@@ -901,8 +882,7 @@ namespace joedb
    for (Session *session: sessions)
    {
     session->socket.close();
-    if (session->pull_timer)
-     session->pull_timer->cancel();
+    session->pull_timer.reset();
    }
 
    acceptor.cancel();

@@ -142,7 +142,7 @@ namespace joedb
     size_t bytes_transferred
    );
 
-   void pull(std::shared_ptr<Session> session);
+   void pull(std::shared_ptr<Session> session, bool lock, bool send);
 
    void read_handler
    (
@@ -165,8 +165,6 @@ namespace joedb
     size_t bytes_transferred
    );
 
-   void check_hash(std::shared_ptr<Session> session);
-
    void read_command_handler
    (
     std::shared_ptr<Session> session,
@@ -175,13 +173,6 @@ namespace joedb
    );
 
    void read_command(std::shared_ptr<Session> session);
-
-   void write_buffer_and_next_command_handler
-   (
-    std::shared_ptr<Session> session,
-    std::error_code error,
-    size_t bytes_transferred
-   );
 
    void write_buffer_and_next_command
    (
