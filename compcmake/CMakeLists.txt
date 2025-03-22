@@ -333,13 +333,14 @@ joedb_add_executable(update_large_string
 #############################################################################
 # Fuzzers
 #############################################################################
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
  message("-- clang, compiling fuzzers")
 
  function(set_fuzz_options target)
   target_compile_definitions(${target} PRIVATE JOEDB_FUZZING)
   target_compile_options(${target} PRIVATE -fsanitize=address,fuzzer)
   target_link_options(${target} PRIVATE -fsanitize=address,fuzzer)
+  target_link_libraries(${target} ${JOEDB_EXTERNAL_LIBS})
  endfunction()
 
  add_library(joedb_fuzz STATIC
@@ -398,7 +399,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND)
    ../test/fuzz/${fuzzer}.cpp
   )
   set_fuzz_options(${fuzzer})
-  target_link_libraries(${fuzzer} joedb_fuzz ${JOEDB_EXTERNAL_LIBS})
+  target_link_libraries(${fuzzer} joedb_fuzz)
  endfunction()
 
  add_fuzzer(binary_journal_fuzzer)
