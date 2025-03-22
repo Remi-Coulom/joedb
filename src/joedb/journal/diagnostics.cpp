@@ -67,7 +67,7 @@ namespace joedb
  {
   out << "About this version of joedb\n";
   out << "---------------------------\n";
-  out << "joedb version: " << get_version() << '\n';
+  out << "joedb version: " << get_version() << ' ' << get_version_int() << '\n';
   out << "Writable_Journal::compatible_version: ";
   out << Writable_Journal::compatible_version << '\n';
   out << "Writable_Journal::version_number: ";
