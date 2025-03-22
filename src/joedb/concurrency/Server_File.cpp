@@ -16,10 +16,10 @@ namespace joedb
   lock.read(Server_Connection::buffer.data, 9);
 
   Server_Connection::buffer.index = 1;
-  const int64_t returned_size = Server_Connection::buffer.read<int64_t>();
+  const size_t returned_size = size_t(Server_Connection::buffer.read<int64_t>());
 
-  for (int64_t read = 0; read < returned_size;)
-   read += int64_t(lock.read_some(data + read, returned_size - read));
+  for (size_t read = 0; read < returned_size;)
+   read += lock.read_some(data + read, returned_size - read);
 
   return returned_size;
  }
@@ -182,7 +182,7 @@ namespace joedb
   const int64_t size = Server_Connection::buffer.read<int64_t>();
 
   Memory_File file;
-  file.resize(size);
+  file.resize(size_t(size));
   joedb::Async_Writer writer(file, 0);
   download(writer, lock, size);
 
