@@ -68,6 +68,21 @@ namespace joedb
     ~Session();
    };
 
+   typedef void (Server::*Transfer_Handler)
+   (
+    std::shared_ptr<Session> session,
+    std::error_code error,
+    size_t bytes_transferred
+   );
+
+   void async_read
+   (
+    std::shared_ptr<Session> session,
+    size_t offset,
+    size_t size,
+    Transfer_Handler handler
+   );
+
    std::set<Session *> sessions;
 
    void write_status();

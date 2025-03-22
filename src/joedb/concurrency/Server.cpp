@@ -87,6 +87,27 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server::async_read
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::shared_ptr<Session> session,
+  size_t offset,
+  size_t size,
+  Transfer_Handler handler
+ )
+ {
+  asio::async_read
+  (
+   session->socket,
+   asio::buffer(session->buffer.data + offset, size),
+   [this, handler, session](std::error_code e, size_t s)
+   {
+    (this->*handler)(session, e, s);
+   }
+  );
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Server::write_status()
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -244,27 +265,12 @@ namespace joedb
   {
    refresh_lock_timeout(session);
 
-   asio::async_read
+   async_read
    (
-    session->socket,
-    asio::buffer
-    (
-     session->buffer.data,
-     std::min(session->push_remaining_size, session->buffer.size)
-    ),
-    [this, session]
-    (
-     std::error_code error,
-     size_t bytes_transferred
-    )
-    {
-     push_transfer_handler
-     (
-      session,
-      error,
-      bytes_transferred
-     );
-    }
+    session,
+    0,
+    std::min(session->push_remaining_size, session->buffer.size),
+    &Server::push_transfer_handler
    );
   }
   else
@@ -524,15 +530,7 @@ namespace joedb
  void Server::pull(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  asio::async_read
-  (
-   session->socket,
-   asio::buffer(session->buffer.data + 1, 16),
-   [this, session](std::error_code e, size_t s)
-   {
-    pull_handler(session, e, s);
-   }
-  );
+  async_read(session, 1, 16, &Server::pull_handler);
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -627,15 +625,7 @@ namespace joedb
  void Server::check_hash(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  asio::async_read
-  (
-   session->socket,
-   asio::buffer(session->buffer.data + 1, 40),
-   [this, session] (std::error_code e, size_t s)
-   {
-    check_hash_handler(session, e, s);
-   }
-  );
+  async_read(session, 1, 40, &Server::check_hash_handler);
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -679,15 +669,7 @@ namespace joedb
 
     case 'U': case 'p':
      session->unlock_after_push = (session->buffer.data[0] == 'U');
-     asio::async_read
-     (
-      session->socket,
-      asio::buffer(session->buffer.data, 16),
-      [this, session](std::error_code e, size_t s)
-      {
-       push_handler(session, e, s);
-      }
-     );
+     async_read(session, 0, 16, &Server::push_handler);
     break;
 
     case 'u':
@@ -708,27 +690,11 @@ namespace joedb
     break;
 
     case 'r':
-     asio::async_read
-     (
-      session->socket,
-      asio::buffer(session->buffer.data + 1, 16),
-      [this, session](std::error_code e, size_t s)
-      {
-       read_handler(session, e, s);
-      }
-     );
+     async_read(session, 1, 16, &Server::read_handler);
     break;
 
     case 'b':
-     asio::async_read
-     (
-      session->socket,
-      asio::buffer(session->buffer.data + 1, 8),
-      [this, session](std::error_code e, size_t s)
-      {
-       read_blob_handler(session, e, s);
-      }
-     );
+     async_read(session, 1, 8, &Server::read_blob_handler);
     break;
 
     default:
@@ -742,15 +708,7 @@ namespace joedb
  void Server::read_command(const std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
-  asio::async_read
-  (
-   session->socket,
-   asio::buffer(session->buffer.data, 1),
-   [this, session](std::error_code e, size_t s)
-   {
-    read_command_handler(session, e, s);
-   }
-  );
+  async_read(session, 0, 1, &Server::read_command_handler);
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -836,16 +794,7 @@ namespace joedb
   {
    socket.set_option(asio::ip::tcp::no_delay(true));
    std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
-
-   asio::async_read
-   (
-    session->socket,
-    asio::buffer(session->buffer.data, 13),
-    [this, session](std::error_code e, size_t s)
-    {
-     handshake_handler(session, e, s);
-    }
-   );
+   async_read(session, 0, 13, &Server::handshake_handler);
 
    start_accept();
   }
