@@ -333,7 +333,7 @@ joedb_add_executable(update_large_string
 #############################################################################
 # Fuzzers
 #############################################################################
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND)
  message("-- clang, compiling fuzzers")
 
  function(set_fuzz_options target)

@@ -28,7 +28,7 @@ namespace joedb
   buffer.index = 0;
   int64_t size = buffer.compact_read<int64_t>();
   end_of_file = read < buffer.index;
-  current = blob.get_position() + buffer.index;
+  current = blob.get_position() + int64_t(buffer.index);
   end = current + size;
 
   if (current > end)
@@ -62,7 +62,7 @@ namespace joedb
    else
     end_of_file = false;
 
-   current += actually_read;
+   current += int64_t(actually_read);
    total_read += actually_read;
    size -= actually_read;
   }
