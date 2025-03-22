@@ -23,7 +23,6 @@ namespace joedb
   public Blob_Writer
  {
   friend class File_Hasher;
-  friend class Async_Reader;
 
   private:
    Buffer<12> buffer;

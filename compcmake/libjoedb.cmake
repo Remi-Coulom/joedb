@@ -14,6 +14,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/Client_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Raw_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Connection_Parser.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Async_Reader.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File_Hasher.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Interpreted_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Interpreted_File.cpp

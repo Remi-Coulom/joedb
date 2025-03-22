@@ -103,6 +103,7 @@ if(GTest_FOUND)
   ../src/joedb/Posthumous_Thrower.cpp
   ../src/joedb/Posthumous_Catcher.cpp
   ../src/joedb/journal/Abstract_File.cpp
+  ../src/joedb/journal/Async_Reader.cpp
   ../src/joedb/journal/Journal_Construction_Lock.cpp
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/File.cpp
