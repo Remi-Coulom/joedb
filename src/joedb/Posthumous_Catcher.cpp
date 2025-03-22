@@ -11,6 +11,7 @@ namespace joedb
   {
    exception = std::current_exception();
    if (!exception)
+   {
     try
     {
      throw Exception(message);
@@ -19,6 +20,7 @@ namespace joedb
     {
      exception = std::current_exception();
     }
+   }
   }
  }
 
