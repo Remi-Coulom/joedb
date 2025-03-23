@@ -157,6 +157,7 @@ namespace joedb
    template<typename T> void write(T x)
    //////////////////////////////////////////////////////////////////////////
    {
+    static_assert(sizeof(T) <= buffer.extra_size);
     buffer.write<T>(x);
     check_write_buffer();
    }
