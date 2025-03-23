@@ -6,7 +6,7 @@
 #include "joedb/Blob.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/Open_Mode.h"
-#include "joedb/journal/Position_File.h"
+#include "joedb/journal/Sequential_File.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/index_types.h"
 
@@ -17,7 +17,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  class Generic_File:
  ////////////////////////////////////////////////////////////////////////////
-  public Position_File,
+  public Sequential_File,
   public Posthumous_Thrower,
   public Blob_Reader,
   public Blob_Writer
@@ -58,7 +58,7 @@ namespace joedb
     JOEDB_ASSERT(buffer.index <= read_buffer_size);
 
     buffer.index = 0;
-    read_buffer_size = pos_read(buffer.data, buffer.size);
+    read_buffer_size = sequential_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
      reading_past_end_of_file();
    }
@@ -69,7 +69,7 @@ namespace joedb
    {
     JOEDB_ASSERT(!buffer_has_read_data());
 
-    pos_write(buffer.data, buffer.index);
+    sequential_write(buffer.data, buffer.index);
     buffer.index = 0;
    }
 
@@ -134,7 +134,7 @@ namespace joedb
 
    int64_t get_position() const noexcept
    {
-    return Position_File::get_position() - read_buffer_size + buffer.index;
+    return Sequential_File::get_position() - read_buffer_size + buffer.index;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -239,7 +239,7 @@ namespace joedb
      else
      {
       flush();
-      pos_write(data, n);
+      sequential_write(data, n);
      }
     }
    }
@@ -273,7 +273,7 @@ namespace joedb
 
      while (n0 < n)
      {
-      const size_t actually_read = pos_read(data + n0, n - n0);
+      const size_t actually_read = sequential_read(data + n0, n - n0);
       if (actually_read == 0)
       {
        reading_past_end_of_file();

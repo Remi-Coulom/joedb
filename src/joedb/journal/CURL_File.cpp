@@ -87,7 +87,7 @@ namespace joedb
  {
   const size_t real_size = size * nmemb;
   Generic_File &destination = *((Generic_File *)p);
-  destination.pos_write((const char *)contents, real_size);
+  destination.sequential_write((const char *)contents, real_size);
   return real_size;
  }
 

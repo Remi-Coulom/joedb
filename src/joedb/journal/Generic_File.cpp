@@ -34,7 +34,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   flush();
-  pos_seek(new_position);
+  sequential_seek(new_position);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ namespace joedb
   {
    read_buffer();
    const int64_t copy_size = std::min(size, int64_t(read_buffer_size));
-   destination.pos_write(buffer.data, size_t(copy_size));
+   destination.sequential_write(buffer.data, size_t(copy_size));
    size -= copy_size;
   }
  }

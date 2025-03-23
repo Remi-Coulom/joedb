@@ -21,12 +21,6 @@ namespace joedb
    void write_blob(const char *buffer, size_t size, int64_t offset);
    void flush_write_buffer();
 
-  protected:
-   void sync() override;
-
-   size_t pread(char *buffer, size_t size, int64_t offset) override;
-   void pwrite(const char *buffer, size_t size, int64_t offset) override;
-
   public:
    Encoded_File
    (
@@ -34,7 +28,10 @@ namespace joedb
     db::encoded_file::Generic_File_Database &db
    );
 
+   size_t pread(char *buffer, size_t size, int64_t offset) override;
+   void pwrite(const char *buffer, size_t size, int64_t offset) override;
    int64_t get_size() const override;
+   void sync() override;
 
    ~Encoded_File();
  };

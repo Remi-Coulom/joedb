@@ -91,8 +91,8 @@ namespace joedb
   for (int64_t i = 0; i < reads; i++)
   {
    const int64_t offset = block_size * ((i * step) % blocks);
-   file.pos_seek(offset);
-   file.pos_read(buffer.data(), buffer.size());
+   file.sequential_seek(offset);
+   file.sequential_read(buffer.data(), buffer.size());
   }
 
   std::remove(file_name);

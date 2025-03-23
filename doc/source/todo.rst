@@ -9,6 +9,7 @@ For next release
    - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
    - more efficient test for validity of a range of ids for vector insert/update/delete
 
+ - Generic_File -> Buffered_File
  - use seconds for UI everywhere, but allow float for sub-second resolution
  - strongly typed checkpoints, and byte_count (diff between checkpoints)
  - enum instead of bool for content_check: none, full, quick, ...
