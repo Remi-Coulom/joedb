@@ -24,14 +24,7 @@ namespace joedb
   protected:
    void sync() override;
 
-   size_t pread
-   (
-    char * const buffer,
-    const size_t size,
-    const int64_t offset
-   )
-   override;
-
+   size_t pread(char *buffer, size_t size, int64_t offset) override;
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
 
   public:

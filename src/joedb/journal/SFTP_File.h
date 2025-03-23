@@ -63,8 +63,6 @@ namespace joedb
     return size_t(result);
    }
 
-   void pwrite(const char *data, size_t size, int64_t offset) override {}
-
    ~SFTP_File() override
    {
     sftp_close(file);

@@ -57,13 +57,10 @@ namespace joedb
    void perform_range(int64_t start, int64_t size);
 
    size_t pread(char *buffer, size_t size, int64_t offset) override;
-   void pwrite(const char *buffer, size_t size, int64_t offset) override;
    void copy_to(Generic_File &destination, int64_t start, int64_t size) override;
 
   public:
    CURL_File(const char *url, bool verbose);
-
-   int64_t get_size() const override;
  };
 }
 
