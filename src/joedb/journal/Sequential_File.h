@@ -10,11 +10,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   int64_t position;
+   int64_t position = 0;
 
   public:
-   Sequential_File(): position(0) {}
-
    void sequential_seek(int64_t new_position)
    {
     position = new_position;
