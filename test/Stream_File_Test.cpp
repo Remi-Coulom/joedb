@@ -14,13 +14,14 @@ TEST(Stream_File_Test, position_test)
  Stream_File file(stringbuf, Open_Mode::create_new);
  EXPECT_EQ(0LL, file.get_position());
 
- EXPECT_ANY_THROW(file.set_position(int64_t(size_t(-1))));
- EXPECT_EQ(0LL, file.get_position());
-
  const int64_t N = 100;
  for (int i = N; --i >= 0;)
   file.write<uint8_t>('x');
  EXPECT_EQ(N, file.get_position());
+
+ file.set_position(-1);
+ EXPECT_ANY_THROW(file.read<char>());
+ file.set_position(0);
 
  const int64_t pos = 12;
  file.set_position(pos);

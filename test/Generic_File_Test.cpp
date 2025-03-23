@@ -225,12 +225,8 @@ TEST(Generic_File, compact_read_bug)
 TEST(Generic_File, position)
 /////////////////////////////////////////////////////////////////////////////
 {
-#if 1
  std::stringbuf sb;
  joedb::Stream_File file(sb, joedb::Open_Mode::write_existing);
-#else
- joedb::Memory_File file;
-#endif
 
  file.write<char>(0);
  file.write<char>(1);
@@ -245,4 +241,24 @@ TEST(Generic_File, position)
  EXPECT_EQ(buffer[0], 1);
  EXPECT_EQ(buffer[1], 2);
  EXPECT_EQ(file.read<char>(), 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Generic_File, get_position)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+
+ EXPECT_EQ(file.get_position(), 0);
+ file.write<char>(0);
+ EXPECT_EQ(file.get_position(), 1);
+ file.write<char>(1);
+ EXPECT_EQ(file.get_position(), 2);
+
+ file.set_position(0);
+ EXPECT_EQ(file.get_position(), 0);
+ file.read<char>();
+ EXPECT_EQ(file.get_position(), 1);
+ file.read<char>();
+ EXPECT_EQ(file.get_position(), 2);
 }

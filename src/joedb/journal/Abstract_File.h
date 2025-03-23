@@ -16,8 +16,7 @@ namespace joedb
    virtual void raw_write(const char *data, size_t size);
 
    // Implement either raw_seek + raw_read + raw_write or pread + pwrite
-
-   int64_t file_position;
+   // Default pread/pwrite do a raw_seek + raw_read/raw_write
 
   protected:
    virtual void raw_sync();
@@ -26,35 +25,9 @@ namespace joedb
    virtual void unlock(int64_t start, int64_t size);
 
   public:
-   Abstract_File();
-
-   int64_t get_file_position() const {return file_position;}
-
-   size_t pos_read(char *data, size_t size)
-   {
-    size_t result = raw_read(data, size);
-    file_position += result;
-    return result;
-   }
-
-   void pos_write(const char *data, size_t size)
-   {
-    raw_write(data, size);
-    file_position += size;
-   }
-
-   void seek(int64_t offset)
-   {
-    raw_seek(offset);
-    file_position = offset;
-   }
-
-   // Note: file_position is undefined after those
    virtual size_t pread(char *data, size_t size, int64_t offset);
    virtual void pwrite(const char *data, size_t size, int64_t offset);
-
-   // -1 means "unknown"
-   virtual int64_t get_size() const;
+   virtual int64_t get_size() const; // -1 means "unknown"
 
    virtual ~Abstract_File();
  };

@@ -75,7 +75,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Async, perf_with_seek_and_read)
+ TEST(Async, perf_with_seek_and_read) // This has become identical to pread
  ////////////////////////////////////////////////////////////////////////////
  {
   std::remove(file_name);
@@ -91,7 +91,7 @@ namespace joedb
   for (int64_t i = 0; i < reads; i++)
   {
    const int64_t offset = block_size * ((i * step) % blocks);
-   file.seek(offset);
+   file.pos_seek(offset);
    file.pos_read(buffer.data(), buffer.size());
   }
 

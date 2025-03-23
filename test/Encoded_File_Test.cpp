@@ -17,14 +17,14 @@ namespace joedb
   db::encoded_file::Generic_File_Database db(db_file);
   Encoded_File file(codec, db);
 
-  file.seek(0);
+  file.pos_seek(0);
   file.pos_write("xxx", 3);
-  file.seek(0);
+  file.pos_seek(0);
   file.pos_write("yyy", 3);
 
   for (int i = 2; --i >= 0;)
   {
-   file.seek(0);
+   file.pos_seek(0);
    char data[6];
    const size_t size = file.pos_read(data, 6);
    EXPECT_EQ(size, 3);

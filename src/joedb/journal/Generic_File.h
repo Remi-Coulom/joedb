@@ -6,7 +6,7 @@
 #include "joedb/Blob.h"
 #include "joedb/Posthumous_Thrower.h"
 #include "joedb/journal/Open_Mode.h"
-#include "joedb/journal/Abstract_File.h"
+#include "joedb/journal/Position_File.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/index_types.h"
 
@@ -17,7 +17,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  class Generic_File:
  ////////////////////////////////////////////////////////////////////////////
-  public Abstract_File,
+  public Position_File,
   public Posthumous_Thrower,
   public Blob_Reader,
   public Blob_Writer
@@ -134,7 +134,7 @@ namespace joedb
 
    int64_t get_position() const noexcept
    {
-    return get_file_position() - read_buffer_size + buffer.index;
+    return Position_File::get_position() - read_buffer_size + buffer.index;
    }
 
    //////////////////////////////////////////////////////////////////////////

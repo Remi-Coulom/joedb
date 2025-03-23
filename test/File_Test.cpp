@@ -504,7 +504,7 @@ TEST_F(File_Test, double_pread)
 
  {
   int32_t value;
-  file2.Generic_File::pread((char *)&value, sizeof(int32_t), 0);
+  file2.pread((char *)&value, sizeof(int32_t), 0);
   EXPECT_EQ(1234, value);
  }
 
@@ -514,7 +514,7 @@ TEST_F(File_Test, double_pread)
 
  {
   int32_t value;
-  file2.Generic_File::pread((char *)&value, sizeof(int32_t), 0);
+  file2.pread((char *)&value, sizeof(int32_t), 0);
   EXPECT_EQ(5678, value);
  }
 }
