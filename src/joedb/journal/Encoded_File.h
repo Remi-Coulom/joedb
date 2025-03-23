@@ -22,7 +22,7 @@ namespace joedb
    void flush_write_buffer();
 
   protected:
-   void raw_sync() override;
+   void sync() override;
 
    size_t pread
    (

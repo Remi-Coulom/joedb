@@ -77,7 +77,6 @@ ipo_add_executable(joedb_convert
  ../src/joedb/Posthumous_Catcher.cpp
  ../src/joedb/Posthumous_Thrower.cpp
  ../src/joedb/io/process_journal_pair.cpp
- ../src/joedb/journal/Abstract_File.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
@@ -102,7 +101,6 @@ if(GTest_FOUND)
   ../src/joedb/Blob.cpp
   ../src/joedb/Posthumous_Thrower.cpp
   ../src/joedb/Posthumous_Catcher.cpp
-  ../src/joedb/journal/Abstract_File.cpp
   ../src/joedb/journal/Async_Reader.cpp
   ../src/joedb/journal/Journal_Construction_Lock.cpp
   ../src/joedb/journal/Stream_File.cpp
@@ -377,7 +375,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/io/Interpreter_Dump_Writable.cpp
   ../src/joedb/io/get_time_string.cpp
   ../src/joedb/io/Progress_Bar.cpp
-  ../src/joedb/journal/Abstract_File.cpp
   ../src/joedb/journal/Async_Reader.cpp
   ../src/joedb/journal/diagnostics.cpp
   ../src/joedb/journal/Interpreted_File.cpp

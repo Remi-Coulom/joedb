@@ -37,7 +37,7 @@ namespace joedb
    BOOL lock(Lock_Operation op, int64_t start, int64_t size);
 
   protected:
-   void raw_sync() override;
+   void sync() override;
 
   public:
    Windows_Handle(const char *file_name, Open_Mode mode);

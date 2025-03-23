@@ -20,13 +20,7 @@ namespace joedb
   protected:
    Codec &codec;
 
-   size_t pread
-   (
-    char * const buffer,
-    const size_t size,
-    const int64_t offset
-   )
-   override;
+   size_t pread(char * buffer, size_t size, int64_t offset) override;
 
    Readonly_Encoded_File
    (

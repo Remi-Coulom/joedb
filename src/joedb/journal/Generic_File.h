@@ -100,7 +100,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     flush();
-    raw_sync();
+    sync();
    }
 
    static constexpr int64_t last_position = (1ULL << 63) - 1;

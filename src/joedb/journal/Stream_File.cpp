@@ -11,29 +11,11 @@ namespace joedb
   Open_Mode mode
  ):
   Generic_File(mode),
-  streambuf(streambuf)
+  streambuf(streambuf),
+  pos(0)
  {
   if (is_shared())
    throw Exception("Stream_File does not support shared_write");
- }
-
- /////////////////////////////////////////////////////////////////////////////
- int64_t Stream_File::get_size() const
- /////////////////////////////////////////////////////////////////////////////
- {
-  const auto pos = streambuf.pubseekoff
-  (
-   0,
-   std::ios_base::cur,
-   std::ios_base::in
-  );
-
-  const auto result = streambuf.pubseekoff
-  (
-   0,
-   std::ios_base::end,
-   std::ios_base::in
-  );
 
   streambuf.pubseekoff
   (
@@ -41,45 +23,74 @@ namespace joedb
    std::ios_base::beg,
    std::ios_base::in
   );
-
-  return int64_t(result);
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Stream_File::raw_read(char *buffer, size_t size)
+ int64_t Stream_File::get_size() const
  /////////////////////////////////////////////////////////////////////////////
  {
-  return size_t(streambuf.sgetn(buffer, std::streamsize(size)));
+  pos = streambuf.pubseekoff
+  (
+   0,
+   std::ios_base::end,
+   std::ios_base::in
+  );
+
+  return pos;
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Stream_File::raw_write(const char *buffer, size_t size)
+ void Stream_File::seek(int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
+  if (int64_t(pos) == offset)
+   return;
+
+  if (offset >= 0)
+  {
+   pos = streambuf.pubseekoff(offset, std::ios_base::beg);
+   if (int64_t(pos) == offset)
+    return;
+  }
+
+  throw Exception("seek error");
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ size_t Stream_File::pread(char *data, size_t size, int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  seek(offset);
+  const std::streamsize n = streambuf.sgetn(data, std::streamsize(size));
+  pos += n;
+  return size_t(n);
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Stream_File::pwrite(const char *data, size_t size, int64_t offset)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  seek(offset);
+
   size_t written = 0;
 
   while (written < size)
   {
-   const auto result = streambuf.sputn
+   const std::streamsize n = streambuf.sputn
    (
-    buffer + written,
+    data + written,
     std::streamsize(size - written)
    );
-   if (result <= 0)
+
+   if (n <= 0)
     throw Exception("Could not write to stream");
-   written += size_t(result);
+
+   pos += n;
+   written += size_t(n);
   }
 
   if (streambuf.pubsync() < 0)
    throw Exception("sync error");
- }
-
- /////////////////////////////////////////////////////////////////////////////
- void Stream_File::raw_seek(int64_t offset)
- /////////////////////////////////////////////////////////////////////////////
- {
-  if (offset < 0 || streambuf.pubseekoff(offset, std::ios_base::beg) != offset)
-   throw Exception("seek error");
  }
 
  /////////////////////////////////////////////////////////////////////////////

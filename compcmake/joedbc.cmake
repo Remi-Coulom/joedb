@@ -51,7 +51,6 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
  ${JOEDB_SRC_DIR}/joedb/io/Writable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/io/write_value.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp

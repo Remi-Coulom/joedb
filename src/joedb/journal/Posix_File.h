@@ -21,7 +21,7 @@ namespace joedb
    int lock(int command, short type, int64_t start, int64_t size);
 
   protected:
-   void raw_sync() override;
+   void sync() override;
 
   public:
    static void throw_last_error(const char *action, const char *file_name);

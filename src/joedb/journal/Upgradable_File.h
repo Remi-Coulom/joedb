@@ -12,7 +12,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   void raw_write(const char *data, size_t size) override {}
    void pwrite(const char *data, size_t size, int64_t offset) override {}
 
   public:
