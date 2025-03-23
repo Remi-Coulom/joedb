@@ -2,8 +2,11 @@
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Async_Writer.h"
+#include "joedb/journal/Stream_File.h"
 
 #include "gtest/gtest.h"
+
+#include <sstream>
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Generic_File, copy)
@@ -216,4 +219,30 @@ TEST(Generic_File, compact_read_bug)
 
  EXPECT_EQ(file.read<uint8_t>(), 0x12);
  EXPECT_ANY_THROW(file.compact_read<int8_t>());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Generic_File, position)
+/////////////////////////////////////////////////////////////////////////////
+{
+#if 1
+ std::stringbuf sb;
+ joedb::Stream_File file(sb, joedb::Open_Mode::write_existing);
+#else
+ joedb::Memory_File file;
+#endif
+
+ file.write<char>(0);
+ file.write<char>(1);
+ file.write<char>(2);
+ file.write<char>(3);
+
+ file.set_position(0);
+
+ joedb::Async_Reader reader(file, 1, 3);
+ char buffer[2];
+ reader.read(buffer, 2);
+ EXPECT_EQ(buffer[0], 1);
+ EXPECT_EQ(buffer[1], 2);
+ EXPECT_EQ(file.read<char>(), 0);
 }
