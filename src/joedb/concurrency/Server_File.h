@@ -21,15 +21,15 @@ namespace joedb
    static void write_to_body_error();
    void write_checkpoint();
 
-  public:
-   Server_File(Channel &channel);
-
    int64_t pull
    (
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait,
     char pull_type
    );
+
+  public:
+   Server_File(Channel &channel);
 
    //
    // Server_Connection overrides
