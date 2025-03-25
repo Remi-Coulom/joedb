@@ -61,7 +61,7 @@ namespace joedb
   // Build merged db by looping over all files
   //
   std::string reference_schema;
-  std::unique_ptr<Database> merged_db;
+  std::unique_ptr<interpreter::Database> merged_db;
   const int width = int(std::to_string(file_names.size()).size());
   int errors = 0;
 
@@ -72,7 +72,7 @@ namespace joedb
 
    try
    {
-    std::unique_ptr<joedb::Database> db(new Database());
+    std::unique_ptr<interpreter::Database> db(new interpreter::Database());
 
     File input_file(file_names[i], Open_Mode::read_existing);
     Readonly_Journal input_journal(input_file);

@@ -2,7 +2,7 @@
 #include "joedb/interpreter/Database.h"
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::merge(Database &merged, const Database &db)
+void joedb::merge(interpreter::Database &merged, const interpreter::Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::map<Table_Id, Record_Id> offset;

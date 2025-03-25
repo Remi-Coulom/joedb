@@ -3,8 +3,8 @@
 
 namespace joedb
 {
- class Database;
- void merge(Database &merged, const Database &db);
+ namespace interpreter {class Database;}
+ void merge(interpreter::Database &merged, const interpreter::Database &db);
 }
 
 #endif

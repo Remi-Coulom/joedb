@@ -20,7 +20,7 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  // Directly read database
  //
- Database reference_db;
+ interpreter::Database reference_db;
  {
   Interpreter interpreter(reference_db, reference_db, nullptr, reference_db, 0);
   std::ifstream in_file("interpreter_test.joedbi");
@@ -32,7 +32,7 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  // Read through a multiplexer
  //
- Database multiplexed_db;
+ interpreter::Database multiplexed_db;
  {
   Multiplexer multiplexer{multiplexed_db};
   Interpreter interpreter(multiplexed_db, multiplexer, nullptr, multiplexer, 0);

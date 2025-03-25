@@ -368,7 +368,7 @@ namespace joedb
   }
 
   Readonly_Journal journal(server.file);
-  Database db;
+  interpreter::Database db;
   journal.replay_log(db);
   EXPECT_EQ(db.get_tables().size(), client_count);
  }
@@ -765,21 +765,21 @@ namespace joedb
 
    {
     Readonly_Journal journal(backup_server.file);
-    Database db;
+    interpreter::Database db;
     journal.replay_log(db);
     EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
    {
     Readonly_Journal journal(file);
-    Database db;
+    interpreter::Database db;
     journal.replay_log(db);
     EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
    {
     Readonly_Journal journal(client_file);
-    Database db;
+    interpreter::Database db;
     journal.replay_log(db);
     EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");

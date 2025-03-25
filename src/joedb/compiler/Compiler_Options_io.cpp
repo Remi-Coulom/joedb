@@ -10,7 +10,7 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static Table_Id parse_table(std::istream &in, const Database_Schema &db)
+ static Table_Id parse_table(std::istream &in, const interpreter::Database_Schema &db)
  /////////////////////////////////////////////////////////////////////////////
  {
   std::string table_name;
@@ -52,7 +52,7 @@ namespace joedb
    std::string command;
    iss >> command;
 
-   const Database_Schema &db = compiler_options.get_db();
+   const interpreter::Database_Schema &db = compiler_options.get_db();
 
    if (command.empty() || command[0] == '#')
     continue;

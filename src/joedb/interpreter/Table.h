@@ -8,7 +8,7 @@
 #include "joedb/Exception.h"
 #include "joedb/Freedom_Keeper.h"
 
-namespace joedb
+namespace joedb::interpreter
 {
  class Database;
 

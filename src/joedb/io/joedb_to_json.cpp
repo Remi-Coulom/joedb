@@ -27,7 +27,7 @@ static int joedb_to_json_main(int argc, char **argv)
 
  joedb::File file(argv[file_index], joedb::Open_Mode::read_existing);
  joedb::Readonly_Journal journal(file);
- joedb::Database db;
+ joedb::interpreter::Database db;
  journal.replay_log(db);
  const int error = joedb::write_json(std::cout, db, base64);
 

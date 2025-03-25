@@ -3,7 +3,7 @@
 
 #include "joedb/interpreter/Database_Schema.h"
 
-namespace joedb
+namespace joedb::interpreter
 {
  ///////////////////////////////////////////////////////////////////////////
  class Database: public Database_Schema

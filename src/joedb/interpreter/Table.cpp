@@ -2,7 +2,7 @@
 
 #include <limits>
 
-namespace joedb
+namespace joedb::interpreter
 {
  ////////////////////////////////////////////////////////////////////////////
  Field_Id Table::find_field(const std::string &name) const

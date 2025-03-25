@@ -46,7 +46,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Readonly_Journal journal(file);
-  Database database;
+  interpreter::Database database;
   journal.replay_log(database);
  }
 

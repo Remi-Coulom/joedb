@@ -12,7 +12,7 @@ namespace joedb
  {
   private:
    std::ostream &out;
-   const Database_Schema &schema;
+   const interpreter::Database_Schema &schema;
    const bool blob_wanted;
 
    void write_type(Type type);
@@ -21,7 +21,7 @@ namespace joedb
    Interpreter_Writable
    (
     std::ostream &out,
-    const Database_Schema &schema,
+    const interpreter::Database_Schema &schema,
     bool blob_wanted = true
    ):
     out(out),
@@ -89,7 +89,7 @@ namespace joedb
  class Interpreter_Dump_Writable_Parent
  {
   protected:
-   Database_Schema schema;
+   interpreter::Database_Schema schema;
    Interpreter_Writable interpreter_writable;
 
   public:

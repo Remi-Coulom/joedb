@@ -43,7 +43,7 @@ update_vector float 7 value 2 0.8 9\n\
  {
   Writable_Journal journal(file);
 
-  Database db;
+  interpreter::Database db;
   Multiplexer multiplexer{db, journal};
 
   {

@@ -10,7 +10,7 @@ TEST(Merge_Test, merge_test)
 /////////////////////////////////////////////////////////////////////////////
 {
  const int databases = 4;
- Database db[databases];
+ interpreter::Database db[databases];
 
  Table_Id person;
  Table_Id city;

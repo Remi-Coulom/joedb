@@ -8,7 +8,7 @@
 #include "joedb/Type.h"
 #include "joedb/index_types.h"
 
-namespace joedb
+namespace joedb::interpreter
 {
  class Field
  {

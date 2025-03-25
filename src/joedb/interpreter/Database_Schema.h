@@ -7,7 +7,7 @@
 
 #include <map>
 
-namespace joedb
+namespace joedb::interpreter
 {
  ///////////////////////////////////////////////////////////////////////////
  class Database_Schema: public Readable, public Writable

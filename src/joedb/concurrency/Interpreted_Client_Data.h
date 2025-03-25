@@ -13,10 +13,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   Database database;
+   interpreter::Database database;
 
   public:
-   virtual const Database &get_database() = 0;
+   virtual const interpreter::Database &get_database() = 0;
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ namespace joedb
     return multiplexer;
    }
 
-   const Database &get_database() final
+   const interpreter::Database &get_database() final
    {
     journal.play_until_checkpoint(database);
     return database;
@@ -80,7 +80,7 @@ namespace joedb
     return journal;
    }
 
-   const Database &get_database() final
+   const interpreter::Database &get_database() final
    {
     journal.play_until_checkpoint(database);
     return database;

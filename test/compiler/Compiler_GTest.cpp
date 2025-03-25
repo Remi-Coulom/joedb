@@ -816,7 +816,7 @@ TEST(Compiler, vector)
   }
   {
    joedb::Readonly_Journal journal(file);
-   joedb::Database database;
+   joedb::interpreter::Database database;
    journal.replay_log(database);
   }
  }

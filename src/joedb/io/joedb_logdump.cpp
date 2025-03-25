@@ -118,7 +118,7 @@ static int joedb_logdump_main(int argc, char **argv)
    }
    else if (load)
    {
-    joedb::Database db;
+    joedb::interpreter::Database db;
     joedb::Multiplexer multiplexer{db, *writable};
     dump(*journal, multiplexer, print_checkpoint);
    }

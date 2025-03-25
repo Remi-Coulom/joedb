@@ -17,7 +17,7 @@ namespace joedb::generator
  void ids_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const Database_Schema &db = options.get_db();
+  const interpreter::Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "ids", options.get_name_space());

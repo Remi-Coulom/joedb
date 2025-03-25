@@ -49,7 +49,7 @@ namespace joedb
 
   if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
   {
-   Database db;
+   interpreter::Database db;
    Readonly_Journal journal(file);
    journal.replay_log(db);
    Readable_Interpreter interpreter(db, blob_file);
