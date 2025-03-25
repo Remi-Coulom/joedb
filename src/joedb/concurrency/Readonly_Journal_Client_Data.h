@@ -14,7 +14,7 @@ namespace joedb
    Readonly_Journal journal;
 
   public:
-   Readonly_Journal_Client_Data(Generic_File &file): journal(file)
+   Readonly_Journal_Client_Data(Buffered_File &file): journal(file)
    {
    }
 

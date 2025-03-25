@@ -1,4 +1,4 @@
-#include "joedb/compiler/generator/Generic_File_Database_cpp.h"
+#include "joedb/compiler/generator/Buffered_File_Database_cpp.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/io/type_io.h"
 #include "joedb/io/write_value.h"
@@ -6,23 +6,23 @@
 namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
- Generic_File_Database_cpp::Generic_File_Database_cpp
+ Buffered_File_Database_cpp::Buffered_File_Database_cpp
  ////////////////////////////////////////////////////////////////////////////
  (
   const Compiler_Options &options
  ):
-  Generator(".", "Generic_File_Database.cpp", options)
+  Generator(".", "Buffered_File_Database.cpp", options)
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File_Database_cpp::generate()
+ void Buffered_File_Database_cpp::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
   const auto &db = options.get_db();
   const auto &tables = db.get_tables();
 
-  out << "#include \"Generic_File_Database.h\"\n";
+  out << "#include \"Buffered_File_Database.h\"\n";
   out << "#include \"joedb/Writable.h\"\n";
   out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   out << '\n';
@@ -32,35 +32,35 @@ namespace joedb::generator
 
   out << R"RRR(
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::write_comment(const std::string &comment)
+  void Buffered_File_Database::write_comment(const std::string &comment)
   ////////////////////////////////////////////////////////////////////////////
   {
    journal.comment(comment);
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::write_timestamp()
+  void Buffered_File_Database::write_timestamp()
   ////////////////////////////////////////////////////////////////////////////
   {
    journal.timestamp(std::time(nullptr));
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::write_timestamp(int64_t timestamp)
+  void Buffered_File_Database::write_timestamp(int64_t timestamp)
   ////////////////////////////////////////////////////////////////////////////
   {
    journal.timestamp(timestamp);
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::write_valid_data()
+  void Buffered_File_Database::write_valid_data()
   ////////////////////////////////////////////////////////////////////////////
   {
    journal.valid_data();
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::play_journal()
+  void Buffered_File_Database::play_journal()
   ////////////////////////////////////////////////////////////////////////////
   {
    max_record_id = size_t(journal.get_checkpoint_position());
@@ -71,7 +71,7 @@ namespace joedb::generator
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::auto_upgrade()
+  void Buffered_File_Database::auto_upgrade()
   ////////////////////////////////////////////////////////////////////////////
   {
    const size_t file_schema_size = size_t(schema_file.get_size());
@@ -96,10 +96,10 @@ namespace joedb::generator
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  Generic_File_Database::Generic_File_Database
+  Buffered_File_Database::Buffered_File_Database
   ////////////////////////////////////////////////////////////////////////////
   (
-   joedb::Generic_File &file,
+   joedb::Buffered_File &file,
    bool perform_initialization,
    joedb::Readonly_Journal::Check check,
    joedb::Commit_Level commit_level
@@ -113,19 +113,19 @@ namespace joedb::generator
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  Generic_File_Database::Generic_File_Database
+  Buffered_File_Database::Buffered_File_Database
   ////////////////////////////////////////////////////////////////////////////
   (
-   joedb::Generic_File &file,
+   joedb::Buffered_File &file,
    joedb::Readonly_Journal::Check check,
    joedb::Commit_Level commit_level
   ):
-   Generic_File_Database(file, true, check, commit_level)
+   Buffered_File_Database(file, true, check, commit_level)
   {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::check_single_row()
+  void Buffered_File_Database::check_single_row()
   ////////////////////////////////////////////////////////////////////////////
   {
  )RRR";
@@ -147,7 +147,7 @@ namespace joedb::generator
   {
    out << R"RRR(
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::create_table(const std::string &name)
+  void Buffered_File_Database::create_table(const std::string &name)
   ////////////////////////////////////////////////////////////////////////////
   {
    Database::create_table(name);
@@ -172,7 +172,7 @@ namespace joedb::generator
   {
    out << R"RRR(
   ////////////////////////////////////////////////////////////////////////////
-  void Generic_File_Database::add_field
+  void Buffered_File_Database::add_field
   ////////////////////////////////////////////////////////////////////////////
   (
    Table_Id table_id,
@@ -237,7 +237,7 @@ namespace joedb::generator
    {
     out << '\n';
     out << "  /////////////////////////////////////////////////////////////////////////////\n";
-    out << "  void Generic_File_Database::clear_" << tname << "_table()\n";
+    out << "  void Buffered_File_Database::clear_" << tname << "_table()\n";
     out << "  /////////////////////////////////////////////////////////////////////////////\n";
     out << "  {\n";
     out << "   while (!get_" << tname << "_table().is_empty())\n";

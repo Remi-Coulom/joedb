@@ -1,27 +1,27 @@
-#include "joedb/compiler/generator/Generic_File_Database_h.h"
+#include "joedb/compiler/generator/Buffered_File_Database_h.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/io/type_io.h"
 
 namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
- Generic_File_Database_h::Generic_File_Database_h
+ Buffered_File_Database_h::Buffered_File_Database_h
  ////////////////////////////////////////////////////////////////////////////
  (
   const Compiler_Options &options
  ):
-  Generator(".", "Generic_File_Database.h", options)
+  Generator(".", "Buffered_File_Database.h", options)
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generic_File_Database_h::generate()
+ void Buffered_File_Database_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
   const Database &db = options.get_db();
   auto tables = db.get_tables();
 
-  namespace_include_guard(out, "Generic_File_Database", options.get_name_space());
+  namespace_include_guard(out, "Buffered_File_Database", options.get_name_space());
 
   out << R"RRR(
 #include "Database.h"
@@ -33,13 +33,13 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   //
-  // Generic_File_Database
+  // Buffered_File_Database
   //
   out << R"RRR(
  class Client_Data;
  class Client;
 
- class Generic_File_Database: public Database, public joedb::Blob_Reader
+ class Buffered_File_Database: public Database, public joedb::Blob_Reader
  {
   friend class Client_Data;
   friend class Client;
@@ -84,7 +84,7 @@ namespace joedb::generator
    out << '\n';
    out << "  public:\n";
    for (const auto &name: options.get_custom_names())
-    out << "   static void " << name << "(Generic_File_Database &db);\n";
+    out << "   static void " << name << "(Buffered_File_Database &db);\n";
    out << "\n  private:";
   }
 
@@ -106,18 +106,18 @@ namespace joedb::generator
   }
 
   out << R"RRR(
-   Generic_File_Database
+   Buffered_File_Database
    (
-    joedb::Generic_File &file,
+    joedb::Buffered_File &file,
     bool perform_initialization,
     joedb::Readonly_Journal::Check check,
     joedb::Commit_Level commit_level
    );
 
   public:
-   Generic_File_Database
+   Buffered_File_Database
    (
-    joedb::Generic_File &file,
+    joedb::Buffered_File &file,
     joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    );

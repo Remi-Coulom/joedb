@@ -20,7 +20,7 @@ namespace joedb::generator
   namespace_include_guard(out, "File_Database", options.get_name_space());
 
   out << R"RRR(
-#include "Generic_File_Database.h"
+#include "Buffered_File_Database.h"
 #include "joedb/journal/File.h"
 
 )RRR";
@@ -42,7 +42,7 @@ namespace joedb::generator
 
  class File_Database:
   public File_Database_Parent,
-  public Generic_File_Database
+  public Buffered_File_Database
  {
   public:
    File_Database
@@ -53,7 +53,7 @@ namespace joedb::generator
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     File_Database_Parent(file_name, mode),
-    Generic_File_Database(file, check, commit_level)
+    Buffered_File_Database(file, check, commit_level)
    {
    }
 

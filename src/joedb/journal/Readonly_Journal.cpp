@@ -1,5 +1,5 @@
 #include "joedb/journal/Readonly_Journal.h"
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 #include "joedb/Exception.h"
 
 #include <sstream>

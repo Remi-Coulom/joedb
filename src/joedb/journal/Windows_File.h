@@ -1,7 +1,7 @@
 #ifndef joedb_Windows_File_declared
 #define joedb_Windows_File_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <windows.h>
 #include <array>
@@ -9,7 +9,7 @@
 namespace joedb
 {
  ///////////////////////////////////////////////////////////////////////////
- class Windows_Handle: public Generic_File
+ class Windows_Handle: public Buffered_File
  ///////////////////////////////////////////////////////////////////////////
  {
   private:

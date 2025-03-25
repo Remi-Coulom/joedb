@@ -86,7 +86,7 @@ namespace joedb
  )
  {
   const size_t real_size = size * nmemb;
-  Generic_File &destination = *((Generic_File *)p);
+  Buffered_File &destination = *((Buffered_File *)p);
   destination.sequential_write((const char *)contents, real_size);
   return real_size;
  }
@@ -95,7 +95,7 @@ namespace joedb
  void CURL_File::copy_to
  ////////////////////////////////////////////////////////////////////////////
  (
-  Generic_File &destination,
+  Buffered_File &destination,
   int64_t start,
   int64_t size
  )
@@ -126,7 +126,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  CURL_File::CURL_File(const char *url, bool verbose):
  ////////////////////////////////////////////////////////////////////////////
-  Generic_File(Open_Mode::read_existing)
+  Buffered_File(Open_Mode::read_existing)
  {
   error_check(curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose));
   error_check(curl_easy_setopt(curl, CURLOPT_URL, url));

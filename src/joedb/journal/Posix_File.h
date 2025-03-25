@@ -1,7 +1,7 @@
 #ifndef joedb_Posix_File_declared
 #define joedb_Posix_File_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <fcntl.h>
 
@@ -12,7 +12,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Posix_FD: public Generic_File
+ class Posix_FD: public Buffered_File
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -27,7 +27,7 @@ namespace joedb
    static void throw_last_error(const char *action, const char *file_name);
 
    Posix_FD(int fd, Open_Mode mode):
-    Generic_File(mode),
+    Buffered_File(mode),
     fd(fd)
    {
    }

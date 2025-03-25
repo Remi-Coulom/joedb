@@ -79,7 +79,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Codec &codec,
-  db::encoded_file::Generic_File_Database &db
+  db::encoded_file::Buffered_File_Database &db
  ):
   Readonly_Encoded_File(codec, db, db, Open_Mode::write_existing_or_create_new),
   db(db),

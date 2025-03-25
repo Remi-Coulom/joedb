@@ -80,7 +80,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
- ../src/joedb/journal/Generic_File.cpp
+ ../src/joedb/journal/Buffered_File.cpp
  ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/Writable_Journal.cpp
@@ -97,7 +97,7 @@ if(GTest_FOUND)
 
   ../test/File_Test.cpp
   ../test/Upgradable_File_Test.cpp
-  ../src/joedb/journal/Generic_File.cpp
+  ../src/joedb/journal/Buffered_File.cpp
   ../src/joedb/Blob.cpp
   ../src/joedb/Posthumous_Thrower.cpp
   ../src/joedb/Posthumous_Catcher.cpp
@@ -107,7 +107,7 @@ if(GTest_FOUND)
   ../src/joedb/journal/File.cpp
   ../src/joedb/journal/Memory_File.cpp
 
-  ../test/Generic_File_Test.cpp
+  ../test/Buffered_File_Test.cpp
 
   ../test/Journal_Test.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
@@ -139,7 +139,7 @@ if(GTest_FOUND)
   ../test/File_Test.cpp
   ../test/Upgradable_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
-  ../test/Generic_File_Test.cpp
+  ../test/Buffered_File_Test.cpp
   ../test/Interpreted_Test.cpp
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
@@ -381,7 +381,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/journal/Journal_Construction_Lock.cpp
   ../src/joedb/journal/Memory_File.cpp
   ../src/joedb/journal/File.cpp
-  ../src/joedb/journal/Generic_File.cpp
+  ../src/joedb/journal/Buffered_File.cpp
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/Readonly_Journal.cpp

@@ -1,7 +1,7 @@
 #ifndef joedb_Journal_Construction_Lock_declared
 #define joedb_Journal_Construction_Lock_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <array>
 
@@ -12,18 +12,18 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Generic_File &file;
+   Buffered_File &file;
    bool creating_new;
 
   public:
    std::array<int64_t, 4> pos;
 
-   explicit Journal_Construction_Lock(Generic_File &file);
+   explicit Journal_Construction_Lock(Buffered_File &file);
 
    Journal_Construction_Lock(const Journal_Construction_Lock &) = delete;
    Journal_Construction_Lock &operator=(const Journal_Construction_Lock &) = delete;
 
-   Generic_File &get_file()
+   Buffered_File &get_file()
    {
     return file;
    }

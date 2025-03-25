@@ -6,7 +6,7 @@ namespace joedb
  Journal_Construction_Lock::Journal_Construction_Lock
  ////////////////////////////////////////////////////////////////////////////
  (
-  Generic_File &file
+  Buffered_File &file
  ):
   file(file)
  {

@@ -1,7 +1,7 @@
 #ifndef joedb_Async_Writer_declared
 #define joedb_Async_Writer_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 namespace joedb
 {
@@ -10,12 +10,12 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Generic_File &file;
+   Buffered_File &file;
    int64_t current;
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Async_Writer(Generic_File &file, int64_t start):
+   Async_Writer(Buffered_File &file, int64_t start):
    //////////////////////////////////////////////////////////////////////////
     file(file),
     current(start)

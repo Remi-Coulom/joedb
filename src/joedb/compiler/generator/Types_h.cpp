@@ -34,7 +34,7 @@ namespace joedb::generator
    "Database",
    "Readonly_Database",
    "File_Database",
-   "Generic_File_Database",
+   "Buffered_File_Database",
    "Client",
    "Readonly_Client",
    "Interpreted_File",

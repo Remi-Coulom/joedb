@@ -45,7 +45,7 @@ namespace joedb
  Server_File::Server_File(Channel &channel):
  ////////////////////////////////////////////////////////////////////////////
   Server_Connection(channel),
-  Generic_File(Open_Mode::write_existing),
+  Buffered_File(Open_Mode::write_existing),
   tail_offset(server_checkpoint)
  {
   {

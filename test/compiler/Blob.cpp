@@ -1,4 +1,4 @@
-#include "db/blob/Generic_File_Database.h"
+#include "db/blob/Buffered_File_Database.h"
 #include "db/blob/Readonly_Database.h"
 #include "joedb/journal/Memory_File.h"
 
@@ -14,7 +14,7 @@ TEST(Compiler, blob)
  // A blob is created with the write_blob_data function
  //
  {
-  blob::Generic_File_Database db(file);
+  blob::Buffered_File_Database db(file);
   const auto person = db.new_person();
   const joedb::Blob name_blob = db.write_blob_data("Jacques");
   db.set_name(person, name_blob);
@@ -40,7 +40,7 @@ TEST(Compiler, blob)
  // It is possible to read directly from the db when it is not read-only
  //
  {
-  blob::Generic_File_Database db(file);
+  blob::Buffered_File_Database db(file);
 
   const auto person = db.get_person_table().first();
   const joedb::Blob name_blob = db.get_name(person);

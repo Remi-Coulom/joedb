@@ -1,7 +1,7 @@
 #ifndef joedb_SFTP_File_declared
 #define joedb_SFTP_File_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 #include "joedb/ssh/SFTP.h"
 
 #include <fcntl.h>
@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class SFTP_File: public Generic_File
+ class SFTP_File: public Buffered_File
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -39,7 +39,7 @@ namespace joedb
 
   public:
    SFTP_File(ssh::SFTP &sftp, const char *file_name):
-    Generic_File(Open_Mode::read_existing),
+    Buffered_File(Open_Mode::read_existing),
     sftp(sftp),
     file(sftp_open(sftp.get(), file_name, O_RDONLY, 0))
    {

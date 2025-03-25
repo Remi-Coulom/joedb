@@ -1,4 +1,4 @@
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database.h"
 #include "joedb/journal/Readonly_Memory_File.h"
@@ -17,7 +17,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_readonly_test(Generic_File &file)
+ static void polymorphic_readonly_test(Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   EXPECT_EQ(file.get_size(), 8);
@@ -31,7 +31,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_test(Generic_File &file)
+ static void polymorphic_test(Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   file.write<int32_t>(1234);
@@ -42,7 +42,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_journal_readonly_test(Generic_File &file)
+ static void polymorphic_journal_readonly_test(Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   Readonly_Journal journal(file);
@@ -51,7 +51,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_journal_test(Generic_File &file)
+ static void polymorphic_journal_test(Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   {
@@ -63,7 +63,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void large_write_test(Generic_File &file)
+ static void large_write_test(Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
 #if 0
@@ -150,7 +150,7 @@ TEST(Polymorphic_File, Encoded_File)
 
  {
   Memory_File db_file;
-  db::encoded_file::Generic_File_Database db(db_file);
+  db::encoded_file::Buffered_File_Database db(db_file);
   Encoded_File file(codec, db);
 
   polymorphic_test(file);
@@ -158,7 +158,7 @@ TEST(Polymorphic_File, Encoded_File)
 
  {
   Memory_File db_file;
-  db::encoded_file::Generic_File_Database db(db_file);
+  db::encoded_file::Buffered_File_Database db(db_file);
   Encoded_File file(codec, db);
 
   polymorphic_journal_test(file);

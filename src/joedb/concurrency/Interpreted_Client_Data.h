@@ -28,7 +28,7 @@ namespace joedb
    Multiplexer multiplexer;
 
   public:
-   Writable_Interpreted_Client_Data(Generic_File &file):
+   Writable_Interpreted_Client_Data(Buffered_File &file):
     journal(file),
     multiplexer{database, journal}
    {
@@ -65,7 +65,7 @@ namespace joedb
    Readonly_Journal journal;
 
   public:
-   Readonly_Interpreted_Client_Data(Generic_File &file):
+   Readonly_Interpreted_Client_Data(Buffered_File &file):
     journal(file)
    {
    }

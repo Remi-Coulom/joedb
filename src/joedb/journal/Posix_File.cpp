@@ -135,7 +135,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  Posix_FD::Posix_FD(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
-  Generic_File(mode)
+  Buffered_File(mode)
  {
   if (mode == Open_Mode::read_existing)
    fd = open(file_name, O_RDONLY);

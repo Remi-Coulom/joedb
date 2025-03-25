@@ -54,7 +54,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/journal/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/Generic_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Buffered_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Journal_Construction_Lock.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Journal.cpp
@@ -84,8 +84,8 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Types_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readable_h.cpp
 
- ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generic_File_Database_h.cpp
- ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generic_File_Database_cpp.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Buffered_File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Buffered_File_Database_cpp.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Interpreted_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Interpreted_Database_h.cpp

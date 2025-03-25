@@ -57,10 +57,10 @@ namespace joedb
 
   Connection *push_connection = pullonly_connection.get_push_connection();
 
-  Generic_File *client_file = file_parser.get_file();
+  Buffered_File *client_file = file_parser.get_file();
 
   if (!client_file)
-   client_file = dynamic_cast<Generic_File *>(&pullonly_connection);
+   client_file = dynamic_cast<Buffered_File *>(&pullonly_connection);
 
   if (!client_file)
    throw Exception("server file must be used with a network_file or ssh_file connection");

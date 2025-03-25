@@ -1,14 +1,14 @@
 #ifndef joedb_Stream_File_declared
 #define joedb_Stream_File_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <streambuf>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Stream_File: public Generic_File
+ class Stream_File: public Buffered_File
  ////////////////////////////////////////////////////////////////////////////
  {
   private:

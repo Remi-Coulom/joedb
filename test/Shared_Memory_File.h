@@ -1,7 +1,7 @@
 #ifndef joedb_Shared_Memory_File_declared
 #define joedb_Shared_Memory_File_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <algorithm>
 #include <vector>
@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Shared_Memory_File: public Generic_File
+ class Shared_Memory_File: public Buffered_File
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
@@ -41,7 +41,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    Shared_Memory_File(std::vector<char> &data):
    //////////////////////////////////////////////////////////////////////////
-    Generic_File(Open_Mode::shared_write),
+    Buffered_File(Open_Mode::shared_write),
     data(data)
    {
    }

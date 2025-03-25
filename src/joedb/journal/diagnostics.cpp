@@ -1,5 +1,5 @@
 #include "joedb/journal/diagnostics.h"
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
 #include "joedb/io/type_io.h"
@@ -27,7 +27,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void dump_header(std::ostream &out, Generic_File &file)
+ void dump_header(std::ostream &out, Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   file.set_position(0);

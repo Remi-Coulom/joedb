@@ -51,7 +51,7 @@ namespace joedb
 
    explicit Writable_Journal
    (
-    Generic_File &file,
+    Buffered_File &file,
     Check check = Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
    );

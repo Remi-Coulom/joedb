@@ -1,7 +1,7 @@
 #ifndef joedb_Readonly_Memory_File_declared
 #define joedb_Readonly_Memory_File_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <algorithm>
 #include <vector>
@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Readonly_Memory_File: public Generic_File
+ class Readonly_Memory_File: public Buffered_File
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
@@ -32,7 +32,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    Readonly_Memory_File(const void *memory, size_t size):
    //////////////////////////////////////////////////////////////////////////
-    Generic_File(joedb::Open_Mode::read_existing),
+    Buffered_File(joedb::Open_Mode::read_existing),
     data((const char *)memory),
     data_size(size)
    {

@@ -1,21 +1,21 @@
 #ifndef joedb_Memory_File_declared
 #define joedb_Memory_File_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <string>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Memory_File: public Generic_File
+ class Memory_File: public Buffered_File
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    std::string data;
 
   public:
-   Memory_File(): Generic_File(Open_Mode::create_new) {}
+   Memory_File(): Buffered_File(Open_Mode::create_new) {}
 
    void resize(size_t size) {data.resize(size);}
    std::string &get_data() {return data;}

@@ -5,9 +5,9 @@
 
 namespace joedb
 {
- class Generic_File;
+ class Buffered_File;
 
- void dump_header(std::ostream &out, Generic_File &file);
+ void dump_header(std::ostream &out, Buffered_File &file);
  void about_joedb(std::ostream &out);
 }
 

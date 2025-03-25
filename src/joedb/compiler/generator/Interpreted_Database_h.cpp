@@ -20,7 +20,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Interpreted_Database", options.get_name_space());
 
   out << R"RRR(
-#include "Generic_File_Database.h"
+#include "Buffered_File_Database.h"
 #include "joedb/journal/Interpreted_File.h"
 
 )RRR";
@@ -31,12 +31,12 @@ namespace joedb::generator
   out << R"RRR(
  class Interpreted_Database:
   private joedb::Interpreted_File,
-  public Generic_File_Database
+  public Buffered_File_Database
  {
   public:
    Interpreted_Database(const char *file_name):
     joedb::Interpreted_File(file_name),
-    Generic_File_Database(*static_cast<joedb::Interpreted_File *>(this))
+    Buffered_File_Database(*static_cast<joedb::Interpreted_File *>(this))
    {
    }
 

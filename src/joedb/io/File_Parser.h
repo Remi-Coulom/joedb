@@ -1,7 +1,7 @@
 #ifndef joedb_File_Parser_declared
 #define joedb_File_Parser_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #ifdef JOEDB_HAS_SSH
 #include "joedb/ssh/Session.h"
@@ -28,7 +28,7 @@ namespace joedb
    std::optional<ssh::Session> ssh_session;
    std::optional<ssh::SFTP> sftp;
 #endif
-   std::unique_ptr<Generic_File> file;
+   std::unique_ptr<Buffered_File> file;
 
   public:
    File_Parser
@@ -45,7 +45,7 @@ namespace joedb
    {
    }
 
-   Generic_File *parse
+   Buffered_File *parse
    (
     std::ostream &out,
     int argc,
@@ -53,7 +53,7 @@ namespace joedb
     int &arg_index
    );
 
-   Generic_File *get_file() const {return file.get();}
+   Buffered_File *get_file() const {return file.get();}
 
    void print_help(std::ostream &out) const;
  };

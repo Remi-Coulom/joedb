@@ -41,12 +41,12 @@ namespace joedb::generator
    {
    }
 
-   Readonly_Database(joedb::Generic_File &file):
+   Readonly_Database(joedb::Buffered_File &file):
     Readonly_Database(joedb::Readonly_Journal(file))
    {
    }
 
-   Readonly_Database(joedb::Generic_File &&file):
+   Readonly_Database(joedb::Buffered_File &&file):
     Readonly_Database(file)
    {
    }

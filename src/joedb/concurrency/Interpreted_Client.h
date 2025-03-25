@@ -15,7 +15,7 @@ namespace joedb
   public:
    Interpreted_Client
    (
-    Generic_File &file,
+    Buffered_File &file,
     Connection &connection,
     bool content_check = true
    ):

@@ -14,7 +14,7 @@ namespace joedb
    Writable_Journal journal;
 
   public:
-   Writable_Journal_Client_Data(Generic_File &file): journal(file)
+   Writable_Journal_Client_Data(Buffered_File &file): journal(file)
    {
    }
 

@@ -131,7 +131,7 @@ namespace joedb
    Connection &connection;
    Interpreted_Client client;
 
-   Test_Client(Server &server, Generic_File &file):
+   Test_Client(Server &server, Buffered_File &file):
     channel("localhost", Port_String(server).get()),
     server_connection(channel),
     connection(server_connection),
@@ -139,7 +139,7 @@ namespace joedb
    {
    }
 
-   Test_Client(Test_Server &server, Generic_File &file):
+   Test_Client(Test_Server &server, Buffered_File &file):
     Test_Client(server.server, file)
    {
    }

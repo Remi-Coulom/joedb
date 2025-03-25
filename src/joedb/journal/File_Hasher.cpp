@@ -10,7 +10,7 @@ namespace joedb
  SHA_256::Hash File_Hasher::get_hash
  ////////////////////////////////////////////////////////////////////////////
  (
-  Generic_File &file,
+  Buffered_File &file,
   int64_t start,
   int64_t size
  )
@@ -53,7 +53,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash File_Hasher::get_hash(Generic_File &file)
+ SHA_256::Hash File_Hasher::get_hash(Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   file.flush(); // necessary, to get correct file.get_size() on next line
@@ -72,7 +72,7 @@ namespace joedb
  SHA_256::Hash File_Hasher::get_fast_hash
  ////////////////////////////////////////////////////////////////////////////
  (
-  Generic_File &file,
+  Buffered_File &file,
   int64_t start,
   int64_t size
  )

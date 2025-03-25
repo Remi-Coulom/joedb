@@ -45,7 +45,7 @@ namespace joedb
    #include "joedb/TYPE_MACRO.h"
 
   protected:
-   Generic_File &file;
+   Buffered_File &file;
    uint32_t file_version;
    unsigned checkpoint_index;
    int64_t checkpoint_position;
@@ -101,7 +101,7 @@ namespace joedb
 
    explicit Readonly_Journal
    (
-    Generic_File &file,
+    Buffered_File &file,
     Check check = Check::readonly
    ):
     Readonly_Journal(Journal_Construction_Lock(file), check)
@@ -123,7 +123,7 @@ namespace joedb
     return file.tail_is_locked();
    }
 
-   bool is_same_file(const Generic_File &other_file) const
+   bool is_same_file(const Buffered_File &other_file) const
    {
     return &file == &other_file;
    }

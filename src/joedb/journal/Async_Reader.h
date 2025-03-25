@@ -1,7 +1,7 @@
 #ifndef joedb_Async_Reader_declared
 #define joedb_Async_Reader_declared
 
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 namespace joedb
 {
@@ -10,14 +10,14 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Generic_File &file;
+   Buffered_File &file;
    int64_t end;
    int64_t current;
    bool end_of_file;
 
   public:
-   Async_Reader(Generic_File &file, int64_t start, int64_t end);
-   Async_Reader(Generic_File &file, Blob blob);
+   Async_Reader(Buffered_File &file, int64_t start, int64_t end);
+   Async_Reader(Buffered_File &file, Blob blob);
 
    size_t read(char *buffer, size_t capacity);
 

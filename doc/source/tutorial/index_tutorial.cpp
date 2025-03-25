@@ -1,4 +1,4 @@
-#include "tutorial/Generic_File_Database.h"
+#include "tutorial/Buffered_File_Database.h"
 
 #include <iostream>
 
@@ -7,7 +7,7 @@ int main()
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- tutorial::Generic_File_Database db(file);
+ tutorial::Buffered_File_Database db(file);
 
  //
  // Insert some cities

@@ -66,7 +66,7 @@ namespace joedb
   Blob_Reader &blob_reader,
   Open_Mode mode
  ):
-  Generic_File(mode),
+  Buffered_File(mode),
   db(db),
   blob_reader(blob_reader),
   decoded_buffer{0},

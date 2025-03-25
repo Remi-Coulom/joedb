@@ -46,7 +46,7 @@ TEST(Server_Connection, session)
 {
  Debug_Channel channel;
 
- joedb::Generic_File &file = channel;
+ joedb::Buffered_File &file = channel;
 
  file.write<char>('j');
  file.write<char>('o');

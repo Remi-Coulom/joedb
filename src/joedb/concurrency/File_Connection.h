@@ -145,7 +145,7 @@ namespace joedb
    File_Connection_Parent
    //////////////////////////////////////////////////////////////////////////
    (
-    Generic_File &server_file,
+    Buffered_File &server_file,
     Readonly_Journal::Check check,
     Commit_Level commit_level
    ):
@@ -165,7 +165,7 @@ namespace joedb
    File_Connection
    //////////////////////////////////////////////////////////////////////////
    (
-    Generic_File &server_file,
+    Buffered_File &server_file,
     Readonly_Journal::Check check = Readonly_Journal::Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
    ):

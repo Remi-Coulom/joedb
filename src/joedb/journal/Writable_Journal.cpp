@@ -1,5 +1,5 @@
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/journal/Generic_File.h"
+#include "joedb/journal/Buffered_File.h"
 #include "joedb/Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ joedb::Writable_Journal::Writable_Journal
 joedb::Writable_Journal::Writable_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
- Generic_File &file,
+ Buffered_File &file,
  Check check,
  Commit_Level commit_level
 ):

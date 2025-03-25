@@ -20,7 +20,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Client", options.get_name_space());
 
   out << R"RRR(
-#include "Generic_File_Database.h"
+#include "Buffered_File_Database.h"
 #include "joedb/concurrency/Client.h"
 
 )RRR";
@@ -34,12 +34,12 @@ namespace joedb::generator
   friend class Client;
 
   private:
-   Generic_File_Database db;
+   Buffered_File_Database db;
 
   public:
    Client_Data
    (
-    joedb::Generic_File &file,
+    joedb::Buffered_File &file,
     joedb::Readonly_Journal::Check check,
     joedb::Commit_Level commit_level
    ):
@@ -79,7 +79,7 @@ namespace joedb::generator
   public:
    Client
    (
-    joedb::Generic_File &file,
+    joedb::Buffered_File &file,
     joedb::Connection &connection,
     bool content_check = true,
     joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,

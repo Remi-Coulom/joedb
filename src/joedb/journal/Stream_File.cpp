@@ -10,7 +10,7 @@ namespace joedb
   std::streambuf &streambuf,
   Open_Mode mode
  ):
-  Generic_File(mode),
+  Buffered_File(mode),
   streambuf(streambuf),
   pos(0)
  {

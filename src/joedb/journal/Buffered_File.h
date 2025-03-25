@@ -1,5 +1,5 @@
-#ifndef joedb_Generic_File_declared
-#define joedb_Generic_File_declared
+#ifndef joedb_Buffered_File_declared
+#define joedb_Buffered_File_declared
 
 #include "joedb/assert.h"
 #include "joedb/Exception.h"
@@ -15,7 +15,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Generic_File:
+ class Buffered_File:
  ////////////////////////////////////////////////////////////////////////////
   public Sequential_File,
   public Posthumous_Thrower,
@@ -92,7 +92,7 @@ namespace joedb
    void make_writable() {mode = Open_Mode::write_existing;}
 
   public:
-   Generic_File(Open_Mode mode);
+   Buffered_File(Open_Mode mode);
    void flush();
 
    //////////////////////////////////////////////////////////////////////////
@@ -141,13 +141,13 @@ namespace joedb
    virtual void copy_to
    //////////////////////////////////////////////////////////////////////////
    (
-    Generic_File &destination,
+    Buffered_File &destination,
     int64_t start,
     int64_t size
    );
 
    //////////////////////////////////////////////////////////////////////////
-   void copy_to(Generic_File &destination)
+   void copy_to(Buffered_File &destination)
    //////////////////////////////////////////////////////////////////////////
    {
     copy_to(destination, 0, get_size());
