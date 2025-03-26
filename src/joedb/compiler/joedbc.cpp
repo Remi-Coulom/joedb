@@ -3,8 +3,8 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/io/main_exception_catcher.h"
+#include "joedb/ui/Interpreter.h"
+#include "joedb/ui/main_exception_catcher.h"
 
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/generator/Database_cpp.h"

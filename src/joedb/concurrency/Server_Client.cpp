@@ -1,7 +1,7 @@
 #include "joedb/concurrency/Server_Client.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/Exception.h"
-#include "joedb/io/Progress_Bar.h"
+#include "joedb/ui/Progress_Bar.h"
 
 #include <iostream>
 #include <optional>

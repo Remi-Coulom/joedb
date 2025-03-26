@@ -1,4 +1,4 @@
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 
 #include "gtest/gtest.h"
 

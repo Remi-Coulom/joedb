@@ -2,7 +2,7 @@
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 #include "joedb/get_version.h"
 
 #ifdef JOEDB_HAS_SSH

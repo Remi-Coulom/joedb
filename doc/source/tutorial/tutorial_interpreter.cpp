@@ -1,8 +1,8 @@
 #include "tutorial/Buffered_File_Database.h"
 #include "tutorial/Local_Client.h"
 #include "tutorial/Readable.h"
-#include "joedb/io/main_exception_catcher.h"
-#include "joedb/io/Interpreter.h"
+#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/Interpreter.h"
 
 #include <iostream>
 #include <joedb/Multiplexer.h>

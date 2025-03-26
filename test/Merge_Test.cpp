@@ -1,4 +1,4 @@
-#include "joedb/io/merge.h"
+#include "joedb/ui/merge.h"
 #include "joedb/interpreter/Database.h"
 
 #include "gtest/gtest.h"

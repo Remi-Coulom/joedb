@@ -1,5 +1,5 @@
 #include "db/test/Readonly_Database.h"
-#include "joedb/io/main_exception_catcher.h"
+#include "joedb/ui/main_exception_catcher.h"
 
 #include <iostream>
 

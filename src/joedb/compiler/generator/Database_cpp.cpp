@@ -1,6 +1,6 @@
 #include "joedb/compiler/generator/Database_cpp.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 
 namespace joedb::generator
 {

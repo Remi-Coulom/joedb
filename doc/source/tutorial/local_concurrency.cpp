@@ -1,6 +1,6 @@
 #include "tutorial/Local_Client.h"
 
-#include "joedb/io/main_exception_catcher.h"
+#include "joedb/ui/main_exception_catcher.h"
 
 #include <chrono>
 #include <thread>

@@ -1,8 +1,6 @@
-#include "joedb/io/get_time_string.h"
+#include "joedb/ui/get_time_string.h"
 
 #include "gtest/gtest.h"
-
-#include <sstream>
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(print_date, length)

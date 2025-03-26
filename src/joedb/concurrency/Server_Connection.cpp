@@ -1,8 +1,8 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/journal/File_Hasher.h"
 #include "joedb/Exception.h"
-#include "joedb/io/Progress_Bar.h"
-#include "joedb/io/get_time_string.h"
+#include "joedb/ui/Progress_Bar.h"
+#include "joedb/ui/get_time_string.h"
 
 #include <iostream>
 #include <optional>

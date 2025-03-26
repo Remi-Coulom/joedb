@@ -2,7 +2,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/get_pid.h"
 #include "joedb/concurrency/protocol_version.h"
-#include "joedb/io/get_time_string.h"
+#include "joedb/ui/get_time_string.h"
 #include "joedb/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
 

@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/get_version.h"
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 
 #include <set>
 
@@ -50,7 +50,7 @@ namespace joedb::generator
 
   if (options.has_unique_index())
   {
-   out << "#include \"joedb/io/type_io.h\"\n";
+   out << "#include \"joedb/ui/type_io.h\"\n";
    out << "#include <sstream>\n\n";
   }
 

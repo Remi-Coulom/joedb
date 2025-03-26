@@ -3,8 +3,8 @@
 #include <string>
 #include <sstream>
 
-#include "joedb/io/type_io.h"
-#include "joedb/io/base64.h"
+#include "joedb/ui/type_io.h"
+#include "joedb/ui/base64.h"
 #include "joedb/compiler/nested_namespace.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   cpp << "#include \"" << name_space.back() << "/Readonly_Database.h\"\n";
   cpp << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   if (mode == base64)
-   cpp << "#include \"joedb/io/base64.h\"\n";
+   cpp << "#include \"joedb/ui/base64.h\"\n";
   cpp << '\n';
 
   joedb::namespace_open(cpp, name_space);

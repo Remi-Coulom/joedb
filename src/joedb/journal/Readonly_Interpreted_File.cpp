@@ -1,6 +1,6 @@
 #include "joedb/journal/Readonly_Interpreted_File.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/io/Interpreter.h"
+#include "joedb/ui/Interpreter.h"
 
 namespace joedb
 {

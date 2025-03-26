@@ -1,7 +1,7 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/io/Interpreter_Dump_Writable.h"
-#include "joedb/io/Interpreter.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
+#include "joedb/ui/Interpreter.h"
 #include "joedb/interpreter/Database.h"
 
 #include "gtest/gtest.h"

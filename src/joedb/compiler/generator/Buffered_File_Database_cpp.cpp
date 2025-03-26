@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Buffered_File_Database_cpp.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/io/type_io.h"
-#include "joedb/io/write_value.h"
+#include "joedb/ui/type_io.h"
+#include "joedb/ui/write_value.h"
 
 namespace joedb::generator
 {

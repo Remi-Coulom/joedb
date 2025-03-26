@@ -3,7 +3,7 @@
 
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/io/Progress_Bar.h"
+#include "joedb/ui/Progress_Bar.h"
 
 #include <queue>
 #include <iosfwd>

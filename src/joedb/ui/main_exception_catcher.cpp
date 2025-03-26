@@ -1,0 +1,31 @@
+#include "joedb/ui/main_exception_catcher.h"
+
+#include <iostream>
+
+namespace joedb
+{
+ ////////////////////////////////////////////////////////////////////////////
+ inline void print_exception(const std::exception &e)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  std::cerr << "Exception caught: " << e.what() << '\n';
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int main_exception_catcher
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  int (*main)(int, char**), int argc, char **argv
+ )
+ {
+  try
+  {
+   return main(argc, argv);
+  }
+  catch (const std::exception &e)
+  {
+   print_exception(e);
+   return 1;
+  }
+ }
+}

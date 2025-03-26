@@ -1,6 +1,6 @@
 #include "joedb/compiler/generator/introspection_h.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/io/write_value.h"
+#include "joedb/ui/write_value.h"
 
 namespace joedb::generator
 {

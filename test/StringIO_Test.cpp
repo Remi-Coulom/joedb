@@ -1,5 +1,5 @@
-#include "joedb/io/type_io.h"
-#include "joedb/io/base64.h"
+#include "joedb/ui/type_io.h"
+#include "joedb/ui/base64.h"
 #include "external/wide_char_display_width.h"
 
 #include "gtest/gtest.h"

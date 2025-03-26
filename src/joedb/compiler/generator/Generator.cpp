@@ -1,6 +1,6 @@
 #include "joedb/compiler/generator/Generator.h"
 #include "joedb/get_version.h"
-#include "joedb/io/get_time_string.h"
+#include "joedb/ui/get_time_string.h"
 
 #include <iostream>
 #include <filesystem>

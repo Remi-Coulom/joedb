@@ -1,8 +1,8 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
-#include "joedb/io/dump.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/ui/dump.h"
+#include "joedb/ui/Interpreter.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/interpreter/Database.h"
 

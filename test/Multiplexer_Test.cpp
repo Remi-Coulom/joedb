@@ -1,9 +1,9 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreter/Database.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/io/Interpreter_Dump_Writable.h"
-#include "joedb/io/dump.h"
+#include "joedb/ui/Interpreter.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
+#include "joedb/ui/dump.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"
