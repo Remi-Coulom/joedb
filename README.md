@@ -1,22 +1,14 @@
 # Joedb, the Journal-Only Embedded Database
 
-SQL Databases are the standard tool for manipulating relational data with
-[ACID](https://en.wikipedia.org/wiki/ACID) transactions, but they are not
-convenient to use from C++. Raw SQL APIs such as
-[SQLite](https://www.sqlite.org/cintro.html) do not match the C++ programming
-paradigm well: queries are strings parsed at run time, and the API is not
-type-safe. An
-[ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) or a
-template library such as [sqlpp11](https://github.com/rbock/sqlpp11) can hide
-SQL from the C++ code, and improve type safety, but such a solution only adds a
-layer on top of string manipulation, and does not remove it.
+Joedb is a minimalist database, that allows manipulating tables like native
+type-safe C++ containers. It comes with a server and a network protocol that
+makes sharing data between machines as easy as sharing variables between
+threads. Joedb also allows writing data to files with proper crash-safe
+concurrent [ACID](https://en.wikipedia.org/wiki/ACID) transactions.
 
-In many applications, the immense complexity of a SQL database is not at all
-necessary. Joedb is a minimalist low-level alternative that can perform ACID
-transactions, on a local database or over a network connection. As shown in the
-diagram below, joedb compiles the database schema into C++ code. Applications
-using this code can then manipulate data like a C++ container, with
-compile-time checking of field names and types:
+The diagram below illustrates how the system works: `joedbc`, the joedb
+compiler, reads the database schema and produces classes that can be used to
+manipulate files.
 
 <center>
 ![Diagram](doc/source/images/joedb.svg)
