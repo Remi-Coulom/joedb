@@ -27,7 +27,7 @@ Recommended path to understanding the source:
     implementation of the abstract Readable and Writable.
   - ``src/joedb/journal``: for reading and writing journals to files
 
-    - First ``Generic_File`` is a bit like joedb's std::iostream.
+    - First ``Buffered_File`` is a bit like joedb's std::streambuf.
     - A few specializations, for Windows, Posix, in-memory, ...
     - Then ``Readonly_Journal`` and ``Writable_Journal`` are the main classes.
 

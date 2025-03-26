@@ -44,12 +44,12 @@ For example:
 .. literalinclude:: ./tutorial/file_tutorial.cpp
    :language: c++
 
-``Generic_File_Database``
+``Buffered_File_Database``
 -------------------------
 
-``Generic_File_Database`` is a superclass of ``File_Database`` that takes a
-reference to a ``Generic_File`` as parameter to its constructor, instead
-of a file name. Subclasses of ``Generic_File`` allows accessing data in
+``Buffered_File_Database`` is a superclass of ``File_Database`` that takes a
+reference to a ``Buffered_File`` as parameter to its constructor, instead
+of a file name. Subclasses of ``Buffered_File`` allows accessing data in
 various ways:
 
  - ``Stream_File`` uses a ``std::streambuf``.
@@ -75,5 +75,5 @@ various ways:
    nothing is actually written to the file. This is convenient if you want to
    apply :doc:`automatic schema upgrades <schema_upgrade>` to a read-only file.
 
-You can also create your own file class by subclassing ``Generic_File`` and
+You can also create your own file class by subclassing ``Buffered_File`` and
 implementing its virtual functions.
