@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Types_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Types_h::Types_h
@@ -17,7 +17,7 @@ namespace joedb::generator
  void Types_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreter::Database &db = options.get_db();
+  const interpreted::Database &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "Types", options.get_name_space());

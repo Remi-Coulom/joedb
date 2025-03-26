@@ -3,7 +3,7 @@
 
 #include "joedb/compiler/generator/Generator.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  class Buffered_File_Database_cpp: public Generator
  {

@@ -2,7 +2,7 @@
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/ui/write_value.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  introspection_h::introspection_h

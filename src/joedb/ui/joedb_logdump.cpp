@@ -7,7 +7,7 @@
 #include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/ui/Raw_Dump_Writable.h"
 #include "joedb/ui/main_exception_catcher.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 
 #include <iostream>
 #include <memory>
@@ -120,7 +120,7 @@ namespace joedb::ui
     }
     else if (load)
     {
-     interpreter::Database db;
+     interpreted::Database db;
      Multiplexer multiplexer{db, *writable};
      dump(*journal, multiplexer, print_checkpoint);
     }

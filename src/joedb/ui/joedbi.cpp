@@ -1,7 +1,7 @@
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/main_exception_catcher.h"
 #include "joedb/ui/File_Parser.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/concurrency/Interpreted_Client.h"
 
@@ -49,7 +49,7 @@ namespace joedb::ui
 
   if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
   {
-   interpreter::Database db;
+   interpreted::Database db;
    Readonly_Journal journal(file);
    journal.replay_log(db);
    Readable_Interpreter interpreter(db, blob_file);

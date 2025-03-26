@@ -1,7 +1,7 @@
 #ifndef joedb_Interpreter_Dump_Writable_declared
 #define joedb_Interpreter_Dump_Writable_declared
 
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreted/Database_Schema.h"
 #include "joedb/Multiplexer.h"
 
 namespace joedb::ui
@@ -12,7 +12,7 @@ namespace joedb::ui
  {
   private:
    std::ostream &out;
-   const interpreter::Database_Schema &schema;
+   const interpreted::Database_Schema &schema;
    const bool blob_wanted;
 
    void write_type(Type type);
@@ -21,7 +21,7 @@ namespace joedb::ui
    Interpreter_Writable
    (
     std::ostream &out,
-    const interpreter::Database_Schema &schema,
+    const interpreted::Database_Schema &schema,
     bool blob_wanted = true
    ):
     out(out),
@@ -89,7 +89,7 @@ namespace joedb::ui
  class Interpreter_Dump_Writable_Parent
  {
   protected:
-   interpreter::Database_Schema schema;
+   interpreted::Database_Schema schema;
    Interpreter_Writable interpreter_writable;
 
   public:

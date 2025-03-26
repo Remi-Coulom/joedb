@@ -2,7 +2,7 @@
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/ui/type_io.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Buffered_File_Database_h::Buffered_File_Database_h
@@ -18,7 +18,7 @@ namespace joedb::generator
  void Buffered_File_Database_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreter::Database &db = options.get_db();
+  const interpreted::Database &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "Buffered_File_Database", options.get_name_space());

@@ -3,12 +3,12 @@
 
 #include <map>
 
-#include "joedb/interpreter/Field.h"
+#include "joedb/interpreted/Field.h"
 #include "joedb/Type.h"
 #include "joedb/Exception.h"
 #include "joedb/Freedom_Keeper.h"
 
-namespace joedb::interpreter
+namespace joedb::interpreted
 {
  class Database;
 

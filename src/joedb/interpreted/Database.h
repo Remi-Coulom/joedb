@@ -1,9 +1,9 @@
 #ifndef joedb_Database_declared
 #define joedb_Database_declared
 
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreted/Database_Schema.h"
 
-namespace joedb::interpreter
+namespace joedb::interpreted
 {
  ///////////////////////////////////////////////////////////////////////////
  class Database: public Database_Schema

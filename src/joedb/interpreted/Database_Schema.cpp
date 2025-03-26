@@ -1,8 +1,8 @@
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreted/Database_Schema.h"
 #include "joedb/Exception.h"
 #include "joedb/is_identifier.h"
 
-namespace joedb::interpreter
+namespace joedb::interpreted
 {
  ////////////////////////////////////////////////////////////////////////////
  void Database_Schema::check_identifier

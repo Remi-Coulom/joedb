@@ -1,6 +1,6 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
@@ -61,7 +61,7 @@ namespace joedb::ui
   // Build merged db by looping over all files
   //
   std::string reference_schema;
-  std::unique_ptr<interpreter::Database> merged_db;
+  std::unique_ptr<interpreted::Database> merged_db;
   const int width = int(std::to_string(file_names.size()).size());
   int errors = 0;
 
@@ -72,7 +72,7 @@ namespace joedb::ui
 
    try
    {
-    std::unique_ptr<interpreter::Database> db(new interpreter::Database());
+    std::unique_ptr<interpreted::Database> db(new interpreted::Database());
 
     File input_file(file_names[i], Open_Mode::read_existing);
     Readonly_Journal input_journal(input_file);

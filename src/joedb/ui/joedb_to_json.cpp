@@ -1,6 +1,6 @@
 #include "joedb/ui/json.h"
 #include "joedb/ui/main_exception_catcher.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Readonly_Journal.h"
 
@@ -29,7 +29,7 @@ namespace joedb::ui
 
   File file(argv[file_index], Open_Mode::read_existing);
   Readonly_Journal journal(file);
-  interpreter::Database db;
+  interpreted::Database db;
   journal.replay_log(db);
   const int error = write_json(std::cout, db, base64);
 

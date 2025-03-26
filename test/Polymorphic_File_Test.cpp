@@ -1,6 +1,6 @@
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Portable_File.h"
@@ -46,7 +46,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Readonly_Journal journal(file);
-  interpreter::Database database;
+  interpreted::Database database;
   journal.replay_log(database);
  }
 

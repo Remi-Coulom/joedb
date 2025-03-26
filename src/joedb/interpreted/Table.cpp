@@ -1,8 +1,8 @@
-#include "joedb/interpreter/Table.h"
+#include "joedb/interpreted/Table.h"
 
 #include <limits>
 
-namespace joedb::interpreter
+namespace joedb::interpreted
 {
  ////////////////////////////////////////////////////////////////////////////
  Field_Id Table::find_field(const std::string &name) const

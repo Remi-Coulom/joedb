@@ -5,7 +5,7 @@
 
 #include <set>
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Database_h::Database_h
@@ -21,7 +21,7 @@ namespace joedb::generator
  void Database_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreter::Database_Schema &db = options.get_db();
+  const interpreted::Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "Database", options.get_name_space());

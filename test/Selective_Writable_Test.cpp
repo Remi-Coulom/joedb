@@ -2,7 +2,7 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/ui/Interpreter.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"
 
@@ -46,7 +46,7 @@ TEST(Selective_Writable_Test, basic)
   Selective_Writable select_data(data_writable,
                                     Selective_Writable::Mode::data_and_schema);
 
-  interpreter::Database db;
+  interpreted::Database db;
   Multiplexer multiplexer{db, select_schema, select_information, select_data};
   ui::Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   std::ifstream in_file("interpreter_test.joedbi");

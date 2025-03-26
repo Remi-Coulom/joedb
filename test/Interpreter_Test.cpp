@@ -2,7 +2,7 @@
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/ui/Raw_Dump_Writable.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Writable_Journal.h"
@@ -24,7 +24,7 @@ namespace joedb::ui
 
   {
    Writable_Journal journal(file);
-   interpreter::Database db;
+   interpreted::Database db;
    Multiplexer multiplexer{db, journal};
    Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
 
@@ -47,7 +47,7 @@ namespace joedb::ui
  TEST(Interpreter_Test, Interpreter_Dump_Writable)
  /////////////////////////////////////////////////////////////////////////////
  {
-  interpreter::Database db;
+  interpreted::Database db;
   Memory_File file;
   Writable_Journal journal(file);
   std::ostringstream dump_string;
@@ -74,7 +74,7 @@ namespace joedb::ui
  TEST(Interpreter_Test, SQL_Dump_Writable)
  /////////////////////////////////////////////////////////////////////////////
  {
-  interpreter::Database db;
+  interpreted::Database db;
   Memory_File file;
   Writable_Journal journal(file);
   std::ostringstream dump_string;
@@ -101,7 +101,7 @@ namespace joedb::ui
  TEST(Interpreter_Test, Raw_Dump_Writable)
  /////////////////////////////////////////////////////////////////////////////
  {
-  interpreter::Database db;
+  interpreted::Database db;
   std::ostringstream dump_string;
   Raw_Dump_Writable writable(dump_string);
   Multiplexer multiplexer{db, writable};
@@ -143,7 +143,7 @@ namespace joedb::ui
 
   joedb::Readonly_Interpreted_File file(ss);
   joedb::Readonly_Journal journal(file);
-  interpreter::Database db;
+  interpreted::Database db;
   journal.play_until_checkpoint(db);
   EXPECT_EQ(db.get_tables().size(), 2ULL);
  }
@@ -169,7 +169,7 @@ namespace joedb::ui
 
   joedb::Readonly_Interpreted_File file(ss);
   joedb::Readonly_Journal journal(file);
-  interpreter::Database db;
+  interpreted::Database db;
   journal.play_until_checkpoint(db);
   EXPECT_EQ(db.get_tables().size(), 2ULL);
   EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});

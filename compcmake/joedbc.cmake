@@ -33,9 +33,9 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
- ${JOEDB_SRC_DIR}/joedb/interpreter/Database.cpp
- ${JOEDB_SRC_DIR}/joedb/interpreter/Database_Schema.cpp
- ${JOEDB_SRC_DIR}/joedb/interpreter/Table.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Table.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/base64.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Blob_Reader_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Command_Processor.cpp

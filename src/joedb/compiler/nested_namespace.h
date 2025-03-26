@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 
-namespace joedb
+namespace joedb::compiler
 {
  std::vector<std::string> split_namespace(const std::string &s);
 

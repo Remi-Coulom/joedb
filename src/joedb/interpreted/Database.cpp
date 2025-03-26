@@ -1,9 +1,9 @@
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/Exception.h"
 
 #include <sstream>
 
-namespace joedb::interpreter
+namespace joedb::interpreted
 {
  ////////////////////////////////////////////////////////////////////////////
  void Database::insert_into(Table_Id table_id, Record_Id record_id)

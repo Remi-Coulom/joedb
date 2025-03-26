@@ -1,6 +1,6 @@
 #include "joedb/ui/dump.h"
 #include "joedb/ui/Interpreter.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
@@ -43,7 +43,7 @@ update_vector float 7 value 2 0.8 9\n\
  {
   Writable_Journal journal(file);
 
-  interpreter::Database db;
+  interpreted::Database db;
   Multiplexer multiplexer{db, journal};
 
   {

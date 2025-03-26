@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::compiler
 {
  ////////////////////////////////////////////////////////////////////////////
  class Custom_Collector: public Writable
@@ -156,5 +156,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(joedb::joedbc_main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::compiler::joedbc_main, argc, argv);
 }

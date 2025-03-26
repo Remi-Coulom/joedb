@@ -4,7 +4,7 @@
 #include "joedb/concurrency/Writable_Connection.h"
 #include "joedb/ui/Connection_Builder.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreted/Database_Schema.h"
 
 namespace joedb::ui
 {
@@ -13,7 +13,7 @@ namespace joedb::ui
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   interpreter::Database_Schema schema;
+   interpreted::Database_Schema schema;
    Dump_Writable dump_writable;
    Multiplexer multiplexer;
 

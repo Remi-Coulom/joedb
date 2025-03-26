@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/ids_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  ids_h::ids_h
@@ -17,7 +17,7 @@ namespace joedb::generator
  void ids_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreter::Database_Schema &db = options.get_db();
+  const interpreted::Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "ids", options.get_name_space());

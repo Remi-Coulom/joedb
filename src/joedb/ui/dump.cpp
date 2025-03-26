@@ -1,5 +1,5 @@
 #include "joedb/ui/dump.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/Writable.h"
 
 #include "joedb/Selective_Writable.h"
@@ -220,7 +220,7 @@ namespace joedb::ui
  void pack(Readonly_Journal &input_journal, Writable &writable)
  /////////////////////////////////////////////////////////////////////////////
  {
-  interpreter::Database db;
+  interpreted::Database db;
 
   {
    Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);

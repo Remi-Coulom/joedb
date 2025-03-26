@@ -1,5 +1,5 @@
 #include "joedb/ui/merge.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"
 
@@ -10,7 +10,7 @@ TEST(Merge_Test, merge_test)
 /////////////////////////////////////////////////////////////////////////////
 {
  const int databases = 4;
- interpreter::Database db[databases];
+ interpreted::Database db[databases];
 
  Table_Id person;
  Table_Id city;

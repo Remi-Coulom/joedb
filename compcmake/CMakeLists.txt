@@ -114,9 +114,9 @@ if(GTest_FOUND)
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/Readable.cpp
   ../src/joedb/Writable.cpp
-  ../src/joedb/interpreter/Database.cpp
-  ../src/joedb/interpreter/Database_Schema.cpp
-  ../src/joedb/interpreter/Table.cpp
+  ../src/joedb/interpreted/Database.cpp
+  ../src/joedb/interpreted/Database_Schema.cpp
+  ../src/joedb/interpreted/Table.cpp
   ../src/joedb/is_identifier.cpp
 
   ../test/Buffer_Test.cpp
@@ -345,8 +345,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/external/wide_char_display_width.cpp
   ../src/joedb/Blob.cpp
   ../src/joedb/Destructor_Logger.cpp
-  ../src/joedb/interpreter/Database.cpp
-  ../src/joedb/interpreter/Database_Schema.cpp
+  ../src/joedb/interpreted/Database.cpp
+  ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/is_identifier.cpp
   ../src/joedb/Multiplexer.cpp
   ../src/joedb/Posthumous_Catcher.cpp
@@ -360,7 +360,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/concurrency/Connection.cpp
   ../src/joedb/concurrency/Network_Channel.cpp
   ../src/joedb/concurrency/Server.cpp
-  ../src/joedb/interpreter/Table.cpp
+  ../src/joedb/interpreted/Table.cpp
   ../src/joedb/ui/Command_Interpreter.cpp
   ../src/joedb/ui/Command_Processor.cpp
   ../src/joedb/ui/Readable_Command_Processor.cpp

@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Client_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Client_h::Client_h

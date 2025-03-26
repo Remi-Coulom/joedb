@@ -1,6 +1,6 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/ui/dump.h"
@@ -20,7 +20,7 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  // Directly read database
  //
- interpreter::Database reference_db;
+ interpreted::Database reference_db;
  {
   ui::Interpreter interpreter(reference_db, reference_db, nullptr, reference_db, 0);
   std::ifstream in_file("interpreter_test.joedbi");
@@ -32,7 +32,7 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  // Read through a multiplexer
  //
- interpreter::Database multiplexed_db;
+ interpreted::Database multiplexed_db;
  {
   Multiplexer multiplexer{multiplexed_db};
   ui::Interpreter interpreter(multiplexed_db, multiplexer, nullptr, multiplexer, 0);

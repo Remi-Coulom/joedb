@@ -3,11 +3,11 @@
 
 #include "joedb/Readable.h"
 #include "joedb/Writable.h"
-#include "joedb/interpreter/Table.h"
+#include "joedb/interpreted/Table.h"
 
 #include <map>
 
-namespace joedb::interpreter
+namespace joedb::interpreted
 {
  ///////////////////////////////////////////////////////////////////////////
  class Database_Schema: public Readable, public Writable
