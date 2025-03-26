@@ -1,8 +1,8 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/io/Interpreter_Dump_Writable.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
+#include "joedb/ui/Interpreter.h"
+#include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"
 
@@ -35,9 +35,9 @@ TEST(Selective_Writable_Test, basic)
   std::ofstream information_file("select_information.out.tmp");
   std::ofstream data_file("select_data.out.tmp");
 
-  Interpreter_Dump_Writable schema_writable(schema_file);
-  Interpreter_Dump_Writable information_writable(information_file);
-  Interpreter_Dump_Writable data_writable(data_file);
+  ui::Interpreter_Dump_Writable schema_writable(schema_file);
+  ui::Interpreter_Dump_Writable information_writable(information_file);
+  ui::Interpreter_Dump_Writable data_writable(data_file);
 
   Selective_Writable select_schema(schema_writable,
                                     Selective_Writable::Mode::schema);
@@ -46,9 +46,9 @@ TEST(Selective_Writable_Test, basic)
   Selective_Writable select_data(data_writable,
                                     Selective_Writable::Mode::data_and_schema);
 
-  interpreter::Database db;
+  interpreted::Database db;
   Multiplexer multiplexer{db, select_schema, select_information, select_data};
-  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+  ui::Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;

@@ -160,7 +160,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Windows_Handle::pread(char* buffer, size_t size, int64_t offset)
+ size_t Windows_Handle::pread(char* buffer, size_t size, int64_t offset) const
  /////////////////////////////////////////////////////////////////////////////
  {
   OVERLAPPED overlapped{};

@@ -1,5 +1,5 @@
-#include "joedb/io/merge.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/ui/merge.h"
+#include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"
 
@@ -10,7 +10,7 @@ TEST(Merge_Test, merge_test)
 /////////////////////////////////////////////////////////////////////////////
 {
  const int databases = 4;
- interpreter::Database db[databases];
+ interpreted::Database db[databases];
 
  Table_Id person;
  Table_Id city;
@@ -53,9 +53,9 @@ TEST(Merge_Test, merge_test)
  db[2].update_string(person, Record_Id(2), person_name, "Tutu");
  db[2].update_reference(person, Record_Id(2), person_home, Record_Id(0));
 
- merge(db[0], db[1]);
- merge(db[0], db[2]);
- merge(db[0], db[3]);
+ ui::merge(db[0], db[1]);
+ ui::merge(db[0], db[2]);
+ ui::merge(db[0], db[3]);
 
  EXPECT_EQ(db[0].get_last_record_id(city), Record_Id(4));
  EXPECT_EQ(db[0].get_last_record_id(person), Record_Id(3));

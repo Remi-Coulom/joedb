@@ -1,10 +1,10 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
-#include "joedb/io/dump.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/ui/dump.h"
+#include "joedb/ui/Interpreter.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/Multiplexer.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"
 
@@ -33,7 +33,7 @@ class Writable_Journal_Test: public ::testing::Test
 TEST_F(Writable_Journal_Test, basic_operations)
 /////////////////////////////////////////////////////////////////////////////
 {
- interpreter::Database db1;
+ interpreted::Database db1;
 
  {
   File file("test.joedb", Open_Mode::create_new);
@@ -99,7 +99,7 @@ TEST_F(Writable_Journal_Test, basic_operations)
   journal.checkpoint(Commit_Level::full_commit);
  }
 
- interpreter::Database db2;
+ interpreted::Database db2;
 
  {
   File file("test.joedb", Open_Mode::read_existing);
@@ -110,11 +110,11 @@ TEST_F(Writable_Journal_Test, basic_operations)
  std::ostringstream oss1;
  std::ostringstream oss2;
 
- Interpreter_Dump_Writable writable1(oss1);
- Interpreter_Dump_Writable writable2(oss2);
+ ui::Interpreter_Dump_Writable writable1(oss1);
+ ui::Interpreter_Dump_Writable writable2(oss2);
 
- joedb::dump(db1, writable1);
- joedb::dump(db2, writable2);
+ joedb::ui::dump(db1, writable1);
+ joedb::ui::dump(db2, writable2);
 
  EXPECT_EQ(oss1.str(), oss2.str());
 }
@@ -130,11 +130,11 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   File file("test.joedb", Open_Mode::create_new);
   Writable_Journal journal(file);
 
-  interpreter::Database db;
+  interpreted::Database db;
   Writable dummy_writable;
   Multiplexer multiplexer{db, journal, dummy_writable};
 
-  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+  ui::Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
@@ -152,7 +152,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   File file_copy("test_copy.joedb", Open_Mode::create_new);
   Writable_Journal journal_copy(file_copy);
 
-  interpreter::Database db;
+  interpreted::Database db;
   Multiplexer multiplexer{db, journal_copy};
   journal.replay_log(multiplexer);
  }

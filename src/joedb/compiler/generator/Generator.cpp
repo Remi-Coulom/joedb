@@ -1,11 +1,11 @@
 #include "joedb/compiler/generator/Generator.h"
 #include "joedb/get_version.h"
-#include "joedb/io/get_time_string.h"
+#include "joedb/ui/get_time_string.h"
 
 #include <iostream>
 #include <filesystem>
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  bool Generator::db_has_values() const
@@ -31,7 +31,7 @@ namespace joedb::generator
   out << "// Path to compiler: " << options.exe_path << '\n';
   out << "// Version: " << joedb::get_version() << '\n';
   out << "// joedbc compilation time: " << __DATE__ << ' ' << __TIME__ << '\n';
-  out << "// Generation of this file: " << get_time_string_of_now() << '\n';
+  out << "// Generation of this file: " << ui::get_time_string_of_now() << '\n';
   out << "//\n";
   out << "/////////////////////////////////////////////////////////////////////////////\n";
  }

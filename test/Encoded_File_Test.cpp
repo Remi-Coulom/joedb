@@ -2,7 +2,7 @@
 #include "joedb/journal/Brotli_Codec.h"
 #include "joedb/journal/Identity_Codec.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreted/Database_Schema.h"
 
 #include "gtest/gtest.h"
 
@@ -102,7 +102,7 @@ namespace joedb
 
   {
    Readonly_Journal journal(file);
-   interpreter::Database_Schema schema;
+   interpreted::Database_Schema schema;
    journal.replay_log(schema);
    EXPECT_EQ(schema.get_tables().size(), 1);
    EXPECT_EQ(schema.get_tables().begin()->second, table_name);

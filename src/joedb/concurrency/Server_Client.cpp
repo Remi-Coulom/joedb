@@ -1,7 +1,7 @@
 #include "joedb/concurrency/Server_Client.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/Exception.h"
-#include "joedb/io/Progress_Bar.h"
+#include "joedb/ui/Progress_Bar.h"
 
 #include <iostream>
 #include <optional>
@@ -135,7 +135,7 @@ namespace joedb
  {
   LOG("downloading, size = " << size);
 
-  std::optional<io::Progress_Bar> progress_bar;
+  std::optional<ui::Progress_Bar> progress_bar;
   if (size > buffer.ssize && log)
    progress_bar.emplace(size, *log);
 

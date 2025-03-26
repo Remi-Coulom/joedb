@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  class Generator
  {

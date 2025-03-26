@@ -1,5 +1,5 @@
-#include "joedb/io/type_io.h"
-#include "joedb/io/base64.h"
+#include "joedb/ui/type_io.h"
+#include "joedb/ui/base64.h"
 #include "external/wide_char_display_width.h"
 
 #include "gtest/gtest.h"
@@ -33,7 +33,7 @@ TEST(StringIO_Test, wide_char_display_width)
  {
   size_t i = 0;
   std::string s = "日";
-  uint32_t c = joedb::read_utf8_char(i, s);
+  uint32_t c = joedb::ui::read_utf8_char(i, s);
   EXPECT_EQ(size_t(3), i);
   EXPECT_EQ(size_t(3), s.size());
   EXPECT_EQ(uint8_t(0xe6), uint8_t(s[0]));
@@ -51,7 +51,7 @@ TEST(StringIO_Test, read_utf8_char)
  {
   size_t i = 1;
   std::string s = "Rémi";
-  uint32_t c = joedb::read_utf8_char(i, s);
+  uint32_t c = joedb::ui::read_utf8_char(i, s);
   EXPECT_EQ(size_t(3), i);
   EXPECT_EQ(uint32_t(0x00e9), c);
  }
@@ -61,15 +61,15 @@ TEST(StringIO_Test, read_utf8_char)
 TEST(StringIO_Test, utf8_display_size)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ(size_t(0), joedb::utf8_display_size(""));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size("Remi"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size("Rémi"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size("山下"));
- EXPECT_EQ(size_t(2), joedb::utf8_display_size("𩸽"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size("바둑"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size("圍棋"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size("围棋"));
- EXPECT_EQ(size_t(4), joedb::utf8_display_size("囲碁"));
+ EXPECT_EQ(size_t(0), joedb::ui::utf8_display_size(""));
+ EXPECT_EQ(size_t(4), joedb::ui::utf8_display_size("Remi"));
+ EXPECT_EQ(size_t(4), joedb::ui::utf8_display_size("Rémi"));
+ EXPECT_EQ(size_t(4), joedb::ui::utf8_display_size("山下"));
+ EXPECT_EQ(size_t(2), joedb::ui::utf8_display_size("𩸽"));
+ EXPECT_EQ(size_t(4), joedb::ui::utf8_display_size("바둑"));
+ EXPECT_EQ(size_t(4), joedb::ui::utf8_display_size("圍棋"));
+ EXPECT_EQ(size_t(4), joedb::ui::utf8_display_size("围棋"));
+ EXPECT_EQ(size_t(4), joedb::ui::utf8_display_size("囲碁"));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ TEST(StringIO_Test, write_hexa_character)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::ostringstream out;
- joedb::write_hexa_character(out, 0x1a);
+ joedb::ui::write_hexa_character(out, 0x1a);
  EXPECT_EQ("\\x1a", out.str());
 }
 
@@ -88,37 +88,37 @@ TEST(StringIO_Test, read_string)
  for (auto p: pairs)
  {
   std::istringstream iss(p.s2);
-  std::string s = joedb::read_string(iss);
+  std::string s = joedb::ui::read_string(iss);
   EXPECT_EQ(p.s1, s);
  }
 
  {
   std::istringstream iss("");
-  std::string s = joedb::read_string(iss);
+  std::string s = joedb::ui::read_string(iss);
   EXPECT_EQ("", s);
  }
 
  {
   std::istringstream iss("   qsdf  azer");
-  std::string s = joedb::read_string(iss);
+  std::string s = joedb::ui::read_string(iss);
   EXPECT_EQ("qsdf", s);
  }
 
  {
   std::istringstream iss("\"Hello");
-  std::string s = joedb::read_string(iss);
+  std::string s = joedb::ui::read_string(iss);
   EXPECT_EQ("Hello", s);
  }
 
  {
   std::istringstream iss("\"\\x0d\"");
-  std::string s = joedb::read_string(iss);
+  std::string s = joedb::ui::read_string(iss);
   EXPECT_EQ("\x0d", s);
  }
 
  {
   std::istringstream iss("\"\\x z\"");
-  std::string s = joedb::read_string(iss);
+  std::string s = joedb::ui::read_string(iss);
   EXPECT_EQ(std::string(1, 0), s);
  }
 }
@@ -130,7 +130,7 @@ TEST(StringIO_Test, write_string)
  for (auto p: pairs)
  {
   std::ostringstream out;
-  joedb::write_string(out, p.s1);
+  joedb::ui::write_string(out, p.s1);
   EXPECT_EQ(p.s2, out.str());
  }
 }
@@ -152,9 +152,9 @@ TEST(StringIO_Test, random)
    s1[i] = char(ud(mt));
 
   std::ostringstream out;
-  joedb::write_string(out, s1);
+  joedb::ui::write_string(out, s1);
   std::istringstream in(out.str());
-  std::string s2 = joedb::read_string(in);
+  std::string s2 = joedb::ui::read_string(in);
   ASSERT_EQ(s1, s2) << "out.str() = " << out.str();
  }
 }
@@ -164,7 +164,7 @@ TEST(StringIO_Test, sql)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::ostringstream oss;
- joedb::write_sql_string(oss, "Rémi Coulom");
+ joedb::ui::write_sql_string(oss, "Rémi Coulom");
  EXPECT_EQ(oss.str(), "X'52c3a96d6920436f756c6f6d'");
 }
 
@@ -172,24 +172,24 @@ TEST(StringIO_Test, sql)
 TEST(StringIO_Test, base64_encode)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ("TWFu", joedb::base64_encode("Man"));
- EXPECT_EQ("TWE=", joedb::base64_encode("Ma"));
- EXPECT_EQ("TQ==", joedb::base64_encode("M"));
- EXPECT_EQ("UsOpbWk=", joedb::base64_encode("Rémi"));
- EXPECT_EQ("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ", joedb::base64_encode("これは日本語です"));
- EXPECT_EQ("", joedb::base64_encode(""));
+ EXPECT_EQ("TWFu", joedb::ui::base64_encode("Man"));
+ EXPECT_EQ("TWE=", joedb::ui::base64_encode("Ma"));
+ EXPECT_EQ("TQ==", joedb::ui::base64_encode("M"));
+ EXPECT_EQ("UsOpbWk=", joedb::ui::base64_encode("Rémi"));
+ EXPECT_EQ("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ", joedb::ui::base64_encode("これは日本語です"));
+ EXPECT_EQ("", joedb::ui::base64_encode(""));
 }
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(StringIO_Test, base64_decode)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ("Man", joedb::base64_decode("TWFu"));
- EXPECT_EQ("Ma", joedb::base64_decode("TWE="));
- EXPECT_EQ("M", joedb::base64_decode("TQ=="));
- EXPECT_EQ("Rémi", joedb::base64_decode("UsOpbWk="));
- EXPECT_EQ("これは日本語です", joedb::base64_decode("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ"));
- EXPECT_EQ("", joedb::base64_decode(""));
+ EXPECT_EQ("Man", joedb::ui::base64_decode("TWFu"));
+ EXPECT_EQ("Ma", joedb::ui::base64_decode("TWE="));
+ EXPECT_EQ("M", joedb::ui::base64_decode("TQ=="));
+ EXPECT_EQ("Rémi", joedb::ui::base64_decode("UsOpbWk="));
+ EXPECT_EQ("これは日本語です", joedb::ui::base64_decode("44GT44KM44Gv5pel5pys6Kqe44Gn44GZ"));
+ EXPECT_EQ("", joedb::ui::base64_decode(""));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -210,7 +210,7 @@ TEST(StringIO_Test, base64_random)
   for (char &c: original)
    c = char(cd(mt));
 
-  EXPECT_EQ(original, joedb::base64_decode(joedb::base64_encode(original)));
+  EXPECT_EQ(original, joedb::ui::base64_decode(joedb::ui::base64_encode(original)));
  }
 }
 
@@ -232,7 +232,7 @@ TEST(StringIO_Test, base64_random_decode)
   for (char &c: garbage)
    c = char(cd(mt));
 
-  joedb::base64_decode(garbage);
+  joedb::ui::base64_decode(garbage);
  }
 }
 
@@ -308,6 +308,6 @@ TEST(StringIO_Test, utf8_validation)
   s[i] = char(cd(mt));
 
  std::ostringstream out;
- joedb::write_string(out, s);
+ joedb::ui::write_string(out, s);
  EXPECT_TRUE(check_utf8(out.str()));
 }

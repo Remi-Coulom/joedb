@@ -56,27 +56,27 @@ include_directories(../test/compiler)
 #############################################################################
 # Build Targets
 #############################################################################
-joedb_add_executable(joedbi ../src/joedb/io/joedbi.cpp)
-joedb_add_executable(joedb_logdump ../src/joedb/io/joedb_logdump.cpp)
-joedb_add_executable(joedb_pack ../src/joedb/io/joedb_pack.cpp)
-joedb_add_executable(joedb_merge ../src/joedb/io/joedb_merge.cpp)
-joedb_add_executable(joedb_to_json ../src/joedb/io/joedb_to_json.cpp)
+joedb_add_executable(joedbi ../src/joedb/ui/joedbi.cpp)
+joedb_add_executable(joedb_logdump ../src/joedb/ui/joedb_logdump.cpp)
+joedb_add_executable(joedb_pack ../src/joedb/ui/joedb_pack.cpp)
+joedb_add_executable(joedb_merge ../src/joedb/ui/joedb_merge.cpp)
+joedb_add_executable(joedb_to_json ../src/joedb/ui/joedb_to_json.cpp)
 joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
-joedb_add_executable(write_lock ../src/joedb/io/write_lock.cpp)
-joedb_add_executable(joedb_sha256sum ../src/joedb/io/joedb_sha256sum.cpp)
+joedb_add_executable(write_lock ../src/joedb/ui/write_lock.cpp)
+joedb_add_executable(joedb_sha256sum ../src/joedb/ui/joedb_sha256sum.cpp)
 joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
-joedb_add_executable(joedb_client ../src/joedb/io/joedb_client.cpp)
-joedb_add_executable(joedb_push ../src/joedb/io/joedb_push.cpp)
+joedb_add_executable(joedb_client ../src/joedb/ui/joedb_client.cpp)
+joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
- ../src/joedb/io/joedb_convert.cpp
- ../src/joedb/io/main_exception_catcher.cpp
+ ../src/joedb/ui/joedb_convert.cpp
+ ../src/joedb/ui/main_exception_catcher.cpp
  ../src/joedb/Destructor_Logger.cpp
  ../src/joedb/Blob.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/Posthumous_Catcher.cpp
  ../src/joedb/Posthumous_Thrower.cpp
- ../src/joedb/io/process_journal_pair.cpp
+ ../src/joedb/ui/process_journal_pair.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
@@ -114,9 +114,9 @@ if(GTest_FOUND)
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/Readable.cpp
   ../src/joedb/Writable.cpp
-  ../src/joedb/interpreter/Database.cpp
-  ../src/joedb/interpreter/Database_Schema.cpp
-  ../src/joedb/interpreter/Table.cpp
+  ../src/joedb/interpreted/Database.cpp
+  ../src/joedb/interpreted/Database_Schema.cpp
+  ../src/joedb/interpreted/Table.cpp
   ../src/joedb/is_identifier.cpp
 
   ../test/Buffer_Test.cpp
@@ -183,7 +183,7 @@ if(GTest_FOUND)
   ../test/compiler/db/vector_test/writable.cpp
   ../test/compiler/db/test_dbname_base64.cpp
   ../test/compiler/db/test_dbname_ascii.cpp
-  ../src/joedb/io/base64_decode.cpp
+  ../src/joedb/ui/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
   ../src/joedb/String_Logger.cpp
  )
@@ -213,11 +213,11 @@ endif()
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
 if (asio_FOUND)
- joedb_add_executable(joedb_server ../src/joedb/io/joedb_server.cpp)
+ joedb_add_executable(joedb_server ../src/joedb/ui/joedb_server.cpp)
 
  if (libssh_FOUND)
   joedb_add_executable(joedb_multi_server
-   ../src/joedb/io/joedb_multi_server.cpp
+   ../src/joedb/ui/joedb_multi_server.cpp
   )
  endif()
 endif()
@@ -282,7 +282,7 @@ add_executable(minimal_tutorial
  ../doc/source/tutorial/tutorial/writable.cpp
  ../doc/source/tutorial/tutorial_main.cpp
  ../src/joedb/compiler/minimal_runtime.cpp
- ../src/joedb/io/main_exception_catcher.cpp
+ ../src/joedb/ui/main_exception_catcher.cpp
 )
 
 
@@ -345,8 +345,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/external/wide_char_display_width.cpp
   ../src/joedb/Blob.cpp
   ../src/joedb/Destructor_Logger.cpp
-  ../src/joedb/interpreter/Database.cpp
-  ../src/joedb/interpreter/Database_Schema.cpp
+  ../src/joedb/interpreted/Database.cpp
+  ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/is_identifier.cpp
   ../src/joedb/Multiplexer.cpp
   ../src/joedb/Posthumous_Catcher.cpp
@@ -360,21 +360,21 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/concurrency/Connection.cpp
   ../src/joedb/concurrency/Network_Channel.cpp
   ../src/joedb/concurrency/Server.cpp
-  ../src/joedb/interpreter/Table.cpp
-  ../src/joedb/io/Command_Interpreter.cpp
-  ../src/joedb/io/Command_Processor.cpp
-  ../src/joedb/io/Readable_Command_Processor.cpp
-  ../src/joedb/io/Writable_Command_Processor.cpp
-  ../src/joedb/io/Readable_Writable_Command_Processor.cpp
-  ../src/joedb/io/type_io.cpp
-  ../src/joedb/io/write_value.cpp
-  ../src/joedb/io/dump.cpp
-  ../src/joedb/io/json.cpp
-  ../src/joedb/io/base64.cpp
-  ../src/joedb/io/SQL_Dump_Writable.cpp
-  ../src/joedb/io/Interpreter_Dump_Writable.cpp
-  ../src/joedb/io/get_time_string.cpp
-  ../src/joedb/io/Progress_Bar.cpp
+  ../src/joedb/interpreted/Table.cpp
+  ../src/joedb/ui/Command_Interpreter.cpp
+  ../src/joedb/ui/Command_Processor.cpp
+  ../src/joedb/ui/Readable_Command_Processor.cpp
+  ../src/joedb/ui/Writable_Command_Processor.cpp
+  ../src/joedb/ui/Readable_Writable_Command_Processor.cpp
+  ../src/joedb/ui/type_io.cpp
+  ../src/joedb/ui/write_value.cpp
+  ../src/joedb/ui/dump.cpp
+  ../src/joedb/ui/json.cpp
+  ../src/joedb/ui/base64.cpp
+  ../src/joedb/ui/SQL_Dump_Writable.cpp
+  ../src/joedb/ui/Interpreter_Dump_Writable.cpp
+  ../src/joedb/ui/get_time_string.cpp
+  ../src/joedb/ui/Progress_Bar.cpp
   ../src/joedb/journal/Async_Reader.cpp
   ../src/joedb/journal/diagnostics.cpp
   ../src/joedb/journal/Interpreted_File.cpp

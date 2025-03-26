@@ -33,24 +33,24 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
- ${JOEDB_SRC_DIR}/joedb/interpreter/Database.cpp
- ${JOEDB_SRC_DIR}/joedb/interpreter/Database_Schema.cpp
- ${JOEDB_SRC_DIR}/joedb/interpreter/Table.cpp
- ${JOEDB_SRC_DIR}/joedb/io/base64.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Blob_Reader_Command_Processor.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Command_Processor.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Command_Interpreter.cpp
- ${JOEDB_SRC_DIR}/joedb/io/dump.cpp
- ${JOEDB_SRC_DIR}/joedb/io/get_time_string.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Interpreter_Dump_Writable.cpp
- ${JOEDB_SRC_DIR}/joedb/io/json.cpp
- ${JOEDB_SRC_DIR}/joedb/io/main_exception_catcher.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Readable_Command_Processor.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Readable_Writable_Command_Processor.cpp
- ${JOEDB_SRC_DIR}/joedb/io/SQL_Dump_Writable.cpp
- ${JOEDB_SRC_DIR}/joedb/io/type_io.cpp
- ${JOEDB_SRC_DIR}/joedb/io/Writable_Command_Processor.cpp
- ${JOEDB_SRC_DIR}/joedb/io/write_value.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Table.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/base64.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Blob_Reader_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Command_Interpreter.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/dump.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/get_time_string.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Interpreter_Dump_Writable.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/json.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/main_exception_catcher.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Readable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Readable_Writable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/SQL_Dump_Writable.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/type_io.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Writable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/write_value.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp

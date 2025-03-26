@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 
-namespace joedb
+namespace joedb::compiler
 {
  class Compiler_Options;
 

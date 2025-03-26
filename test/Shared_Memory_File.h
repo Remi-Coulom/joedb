@@ -16,7 +16,7 @@ namespace joedb
    std::vector<char> &data;
 
    //////////////////////////////////////////////////////////////////////////
-   size_t pread(char *buffer, size_t size, int64_t offset) override
+   size_t pread(char *buffer, size_t size, int64_t offset) const override
    //////////////////////////////////////////////////////////////////////////
    {
     if (offset < 0 || offset >= int64_t(data.size()))

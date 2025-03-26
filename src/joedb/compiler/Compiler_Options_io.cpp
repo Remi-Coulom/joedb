@@ -1,16 +1,16 @@
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/compiler/Compiler_Options.h"
 #include "joedb/is_identifier.h"
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreted/Database_Schema.h"
 #include "joedb/compiler/nested_namespace.h"
 
 #include <iostream>
 #include <sstream>
 
-namespace joedb
+namespace joedb::compiler
 {
  /////////////////////////////////////////////////////////////////////////////
- static Table_Id parse_table(std::istream &in, const interpreter::Database_Schema &db)
+ static Table_Id parse_table(std::istream &in, const interpreted::Database_Schema &db)
  /////////////////////////////////////////////////////////////////////////////
  {
   std::string table_name;
@@ -52,7 +52,7 @@ namespace joedb
    std::string command;
    iss >> command;
 
-   const interpreter::Database_Schema &db = compiler_options.get_db();
+   const interpreted::Database_Schema &db = compiler_options.get_db();
 
    if (command.empty() || command[0] == '#')
     continue;

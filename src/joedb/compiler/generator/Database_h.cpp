@@ -1,11 +1,11 @@
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/get_version.h"
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 
 #include <set>
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Database_h::Database_h
@@ -21,7 +21,7 @@ namespace joedb::generator
  void Database_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreter::Database_Schema &db = options.get_db();
+  const interpreted::Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "Database", options.get_name_space());
@@ -50,7 +50,7 @@ namespace joedb::generator
 
   if (options.has_unique_index())
   {
-   out << "#include \"joedb/io/type_io.h\"\n";
+   out << "#include \"joedb/ui/type_io.h\"\n";
    out << "#include <sstream>\n\n";
   }
 
@@ -231,7 +231,7 @@ namespace joedb::generator
      if (i > 0)
       out << "     out << \", \";\n";
      const auto type = db.get_field_type(index.table_id, index.field_ids[i]);
-     out << "     joedb::write_" << get_type_string(type) << "(out, ";
+     out << "     joedb::ui::write_" << get_type_string(type) << "(out, ";
      out << "storage_of_" << tname << ".field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
      out << "[size_t(record_id) - 1]";

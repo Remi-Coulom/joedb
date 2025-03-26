@@ -10,7 +10,7 @@
 #include "translation.h"
 #include "joedb/journal/Readonly_Interpreted_File.h"
 #include "joedb/concurrency/File_Connection.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Upgradable_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 
@@ -816,7 +816,7 @@ TEST(Compiler, vector)
   }
   {
    joedb::Readonly_Journal journal(file);
-   joedb::interpreter::Database database;
+   joedb::interpreted::Database database;
    journal.replay_log(database);
   }
  }

@@ -1,7 +1,7 @@
 #include <cstdio>
 #include "joedb/journal/File.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/Multiplexer.h"
 
 using namespace joedb;
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
   File file(file_name, Open_Mode::create_new);
   Writable_Journal journal_file(file);
-  interpreter::Database db;
+  interpreted::Database db;
   Multiplexer multiplexer{db, journal_file};
 
   multiplexer.create_table("BENCHMARK");

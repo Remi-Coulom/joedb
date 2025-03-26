@@ -2,7 +2,7 @@
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 #include "joedb/get_version.h"
 
 #ifdef JOEDB_HAS_SSH
@@ -40,7 +40,7 @@ namespace joedb
    std::string joedb;
    for (int i = 5; --i >= 0;)
     joedb.push_back(char(file.read<uint8_t>()));
-   write_string(out, joedb);
+   ui::write_string(out, joedb);
    out << '\n';
   }
 

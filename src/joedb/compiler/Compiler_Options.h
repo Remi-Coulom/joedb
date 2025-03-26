@@ -1,13 +1,13 @@
 #ifndef joedb_Compiler_Options_declared
 #define joedb_Compiler_Options_declared
 
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Memory_File.h"
 
 #include <string>
 #include <vector>
 
-namespace joedb
+namespace joedb::compiler
 {
  ///////////////////////////////////////////////////////////////////////////
  class Compiler_Options
@@ -50,7 +50,7 @@ namespace joedb
 
   public:
    std::string exe_path;
-   interpreter::Database db;
+   interpreted::Database db;
    Memory_File schema_file;
    std::vector<std::string> custom_names;
 
@@ -95,7 +95,7 @@ namespace joedb
     indices.emplace_back(std::move(index));
    }
 
-   const interpreter::Database &get_db() const {return db;}
+   const interpreted::Database &get_db() const {return db;}
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;

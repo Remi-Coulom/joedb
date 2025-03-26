@@ -3,8 +3,8 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/io/main_exception_catcher.h"
+#include "joedb/ui/Interpreter.h"
+#include "joedb/ui/main_exception_catcher.h"
 
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/generator/Database_cpp.h"
@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::compiler
 {
  ////////////////////////////////////////////////////////////////////////////
  class Custom_Collector: public Writable
@@ -89,7 +89,7 @@ namespace joedb
    Custom_Collector custom_collector(options.custom_names);
 
    Multiplexer multiplexer{options.db, schema_writable, custom_collector};
-   Interpreter interpreter(options.db, multiplexer, nullptr, multiplexer, 0);
+   ui::Interpreter interpreter(options.db, multiplexer, nullptr, multiplexer, 0);
    interpreter.set_echo(false);
    interpreter.set_rethrow(true);
    interpreter.main_loop(joedbi_file, std::cerr);
@@ -156,5 +156,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::joedbc_main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::compiler::joedbc_main, argc, argv);
 }

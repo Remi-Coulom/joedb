@@ -1,8 +1,8 @@
 #include "joedb/compiler/generator/introspection_h.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/io/write_value.h"
+#include "joedb/ui/write_value.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  introspection_h::introspection_h
@@ -56,7 +56,7 @@ namespace joedb::generator
    {
     out << ", ";
     const Record_Id record_id{db.get_freedom(tid).get_first_used() - 1};
-    write_value(out, db, tid, record_id, fid);
+    ui::write_value(out, db, tid, record_id, fid);
    }
    out << ");\n";
   }

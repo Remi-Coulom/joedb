@@ -1,8 +1,8 @@
 #include "joedb/compiler/generator/Readable_h.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Readable_h::Readable_h
@@ -18,7 +18,7 @@ namespace joedb::generator
  void Readable_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreter::Database_Schema &db = options.get_db();
+  const interpreted::Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "Readable", options.get_name_space());
@@ -26,7 +26,7 @@ namespace joedb::generator
   out << R"RRR(
 #include "Database.h"
 
-#include "joedb/interpreter/Database_Schema.h"
+#include "joedb/interpreted/Database_Schema.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 
 )RRR";
@@ -34,7 +34,7 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- class Readable: public joedb::interpreter::Database_Schema
+ class Readable: public joedb::interpreted::Database_Schema
  {
   private:
    const Database &db;

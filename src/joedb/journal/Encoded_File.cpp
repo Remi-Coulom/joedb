@@ -17,14 +17,14 @@ namespace joedb
   char * const buffer,
   const size_t size,
   const int64_t offset
- )
+ ) const
  {
   flush_write_buffer();
   return Readonly_Encoded_File::pread(buffer, size, offset);
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Encoded_File::write_blob(const char *buffer, size_t size, int64_t offset)
+ void Encoded_File::write_blob(const char *buffer, size_t size, int64_t offset) const
  //////////////////////////////////////////////////////////////////////////
  {
   const Blob blob = db.write_blob_data(codec.encode(buffer, size));
@@ -33,7 +33,7 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Encoded_File::flush_write_buffer()
+ void Encoded_File::flush_write_buffer() const
  //////////////////////////////////////////////////////////////////////////
  {
   if (write_buffer_size > 0)

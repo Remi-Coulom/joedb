@@ -1,10 +1,10 @@
-#include "joedb/io/dump.h"
-#include "joedb/io/Interpreter.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/ui/dump.h"
+#include "joedb/ui/Interpreter.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/io/Interpreter_Dump_Writable.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/Multiplexer.h"
 
 #include "gtest/gtest.h"
@@ -43,14 +43,14 @@ update_vector float 7 value 2 0.8 9\n\
  {
   Writable_Journal journal(file);
 
-  interpreter::Database db;
+  interpreted::Database db;
   Multiplexer multiplexer{db, journal};
 
   {
    std::istringstream joedbi_iss(joedbi);
    std::ostringstream joedbi_oss;
 
-   Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+   ui::Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
    interpreter.main_loop(joedbi_iss, joedbi_oss);
    multiplexer.default_checkpoint();
   }
@@ -62,7 +62,7 @@ update_vector float 7 value 2 0.8 9\n\
   Readonly_Journal journal(readonly_file);
 
   std::stringstream packed_ss;
-  Interpreter_Dump_Writable writable(packed_ss);
+  ui::Interpreter_Dump_Writable writable(packed_ss);
   pack(journal, writable);
   EXPECT_EQ(packed_ss.str(), packed_result);
  }

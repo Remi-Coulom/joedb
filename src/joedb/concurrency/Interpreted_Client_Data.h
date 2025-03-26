@@ -2,7 +2,7 @@
 #define joedb_Interpreted_Client_Data_declared
 
 #include "joedb/concurrency/Client_Data.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 
@@ -13,10 +13,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   interpreter::Database database;
+   interpreted::Database database;
 
   public:
-   virtual const interpreter::Database &get_database() = 0;
+   virtual const interpreted::Database &get_database() = 0;
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ namespace joedb
     return multiplexer;
    }
 
-   const interpreter::Database &get_database() final
+   const interpreted::Database &get_database() final
    {
     journal.play_until_checkpoint(database);
     return database;
@@ -80,7 +80,7 @@ namespace joedb
     return journal;
    }
 
-   const interpreter::Database &get_database() final
+   const interpreted::Database &get_database() final
    {
     journal.play_until_checkpoint(database);
     return database;

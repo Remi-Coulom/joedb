@@ -5,7 +5,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- size_t Memory_File::pread(char *buffer, size_t size, int64_t offset)
+ size_t Memory_File::pread(char *buffer, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
   if (size_t(offset) >= data.size())

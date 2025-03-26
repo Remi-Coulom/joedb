@@ -17,7 +17,7 @@ namespace joedb
    Memory_File head;
    Memory_File tail;
 
-   size_t remote_pread(char *data, size_t size, int64_t offset);
+   size_t remote_pread(char *data, size_t size, int64_t offset) const;
    static void write_to_body_error();
    void write_checkpoint();
 
@@ -63,7 +63,7 @@ namespace joedb
    //
    // Abstract_File overrides
    //
-   size_t pread(char *data, size_t size, int64_t offset) override;
+   size_t pread(char *data, size_t size, int64_t offset) const override;
    void pwrite(const char *data, size_t size, int64_t offset) override;
    int64_t get_size() const override {return tail_offset + tail.get_size();}
 

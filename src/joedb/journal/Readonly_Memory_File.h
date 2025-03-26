@@ -17,7 +17,7 @@ namespace joedb
    const size_t data_size;
 
    //////////////////////////////////////////////////////////////////////////
-   size_t pread(char *buffer, size_t size, int64_t offset) override
+   size_t pread(char *buffer, size_t size, int64_t offset) const override
    //////////////////////////////////////////////////////////////////////////
    {
     if (size_t(offset) >= data_size)

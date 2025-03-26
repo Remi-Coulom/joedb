@@ -14,13 +14,13 @@ namespace joedb
    db::encoded_file::Database &db;
    Blob_Reader &blob_reader;
 
-   std::vector<char> read_buffer;
-   db::encoded_file::id_of_buffer decoded_buffer;
+   mutable std::vector<char> read_buffer;
+   mutable db::encoded_file::id_of_buffer decoded_buffer;
 
   protected:
    Codec &codec;
 
-   size_t pread(char * buffer, size_t size, int64_t offset) override;
+   size_t pread(char * buffer, size_t size, int64_t offset) const override;
 
    Readonly_Encoded_File
    (

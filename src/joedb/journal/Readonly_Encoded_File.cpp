@@ -9,7 +9,7 @@ namespace joedb
   char * const buffer,
   const size_t size,
   const int64_t offset
- )
+ ) const
  {
   const int64_t start = offset;
   const int64_t end = offset + int64_t(size);

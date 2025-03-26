@@ -14,12 +14,12 @@ namespace joedb
   private:
    std::streambuf &streambuf;
    mutable std::streambuf::pos_type pos;
-   void seek(int64_t offset);
+   void seek(int64_t offset) const;
 
   public:
    Stream_File(std::streambuf &streambuf, Open_Mode mode);
 
-   size_t pread(char *data, size_t size, int64_t offset) override;
+   size_t pread(char *data, size_t size, int64_t offset) const override;
    void pwrite(const char *data, size_t size, int64_t offset) override;
    int64_t get_size() const override;
 

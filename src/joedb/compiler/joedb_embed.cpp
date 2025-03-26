@@ -3,8 +3,8 @@
 #include <string>
 #include <sstream>
 
-#include "joedb/io/type_io.h"
-#include "joedb/io/base64.h"
+#include "joedb/ui/type_io.h"
+#include "joedb/ui/base64.h"
 #include "joedb/compiler/nested_namespace.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
  }
 
  char const * const joedb_file_name = argv[1];
- std::vector<std::string> name_space = joedb::split_namespace(argv[2]);
+ std::vector<std::string> name_space = joedb::compiler::split_namespace(argv[2]);
  char const * const identifier = argv[3];
 
  std::ostringstream file_name;
@@ -71,10 +71,10 @@ int main(int argc, char **argv)
   cpp << "#include \"" << name_space.back() << "/Readonly_Database.h\"\n";
   cpp << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   if (mode == base64)
-   cpp << "#include \"joedb/io/base64.h\"\n";
+   cpp << "#include \"joedb/ui/base64.h\"\n";
   cpp << '\n';
 
-  joedb::namespace_open(cpp, name_space);
+  joedb::compiler::namespace_open(cpp, name_space);
 
   if (mode != base64)
   {
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
   if (mode == base64)
   {
-   cpp << '"' << joedb::base64_encode(file_content.str()) << '"';
+   cpp << '"' << joedb::ui::base64_encode(file_content.str()) << '"';
   }
   else if (mode == raw)
   {
@@ -97,15 +97,13 @@ int main(int argc, char **argv)
   }
   else if (mode == utf8)
   {
-   joedb::write_string(cpp, file_content.str());
+   joedb::ui::write_string(cpp, file_content.str());
   }
   else if (mode == ascii)
   {
    cpp << '"';
    for (const uint8_t c: file_content.str())
-   {
-    joedb::write_octal_character(cpp, c);
-   }
+    joedb::ui::write_octal_character(cpp, c);
    cpp << '"';
   }
 
@@ -120,7 +118,7 @@ int main(int argc, char **argv)
 
   if (mode == base64)
   {
-   cpp << "joedb::base64_decode(" << identifier << "_data)";
+   cpp << "joedb::ui::base64_decode(" << identifier << "_data)";
   }
   else
   {
@@ -147,17 +145,17 @@ int main(int argc, char **argv)
    cpp << "_data() {return " << identifier << "_data;}\n";
   }
 
-  joedb::namespace_close(cpp, name_space);
+  joedb::compiler::namespace_close(cpp, name_space);
  }
 
  {
   std::ofstream h(file_name.str() + ".h", std::ios::binary | std::ios::out);
 
-  joedb::namespace_include_guard(h, identifier, name_space);
+  joedb::compiler::namespace_include_guard(h, identifier, name_space);
 
   h << "\n#include <stddef.h>\n\n";
 
-  joedb::namespace_open(h, name_space);
+  joedb::compiler::namespace_open(h, name_space);
 
   h << " class Database;\n";
   h << " const Database &get_embedded_" << identifier << "();\n";
@@ -168,7 +166,7 @@ int main(int argc, char **argv)
    h << " char const *get_embedded_" << identifier << "_data();\n";
   }
 
-  joedb::namespace_close(h, name_space);
+  joedb::compiler::namespace_close(h, name_space);
 
   h << "#endif\n";
  }

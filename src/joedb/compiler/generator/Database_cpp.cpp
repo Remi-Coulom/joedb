@@ -1,8 +1,8 @@
 #include "joedb/compiler/generator/Database_cpp.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/io/type_io.h"
+#include "joedb/ui/type_io.h"
 
-namespace joedb::generator
+namespace joedb::compiler::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Database_cpp::Database_cpp
@@ -23,7 +23,7 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << "\n const char * schema_string = ";
-  write_string(out, options.schema_file.get_data());
+  ui::write_string(out, options.schema_file.get_data());
   out << ";\n";  
 
   namespace_close(out, options.get_name_space());

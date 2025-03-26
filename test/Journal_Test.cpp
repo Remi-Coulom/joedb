@@ -3,7 +3,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/File.h"
-#include "joedb/interpreter/Database.h"
+#include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"
 
@@ -256,7 +256,7 @@ TEST(Journal, crash_simulation)
  file.write<int64_t>(5678);
 
  {
-  joedb::interpreter::Database db;
+  joedb::interpreted::Database db;
   joedb::Readonly_Journal journal(file);
   EXPECT_EQ(journal.get_checkpoint_position(), correct_checkpoint);
   journal.replay_log(db);
@@ -275,7 +275,7 @@ TEST(Journal, crash_simulation)
 
  {
   joedb::Readonly_Journal journal(file);
-  joedb::interpreter::Database db;
+  joedb::interpreted::Database db;
   journal.replay_log(db);
   EXPECT_EQ(db.get_tables().size(), 2);
   EXPECT_EQ(db.get_tables().begin()->second, "person");
@@ -302,7 +302,7 @@ TEST(Journal, unexpected_operation)
  file.set_position(0);
 
  joedb::Readonly_Journal journal(file);
- joedb::interpreter::Database db;
+ joedb::interpreted::Database db;
 
  try
  {
