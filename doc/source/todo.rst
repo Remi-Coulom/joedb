@@ -4,6 +4,7 @@ TODO
 For next release
 ----------------
 
+ - compiled interpreter should not offer data-definition commands
  - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
    - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
