@@ -12,7 +12,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void CURL_File::perform_range(int64_t start, int64_t size)
+ void CURL_File::perform_range(int64_t start, int64_t size) const
  ////////////////////////////////////////////////////////////////////////////
  {
   std::ostringstream range;
@@ -62,7 +62,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- size_t CURL_File::pread(char *buffer, size_t size, int64_t offset)
+ size_t CURL_File::pread(char *buffer, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
   pread_Callback_Data callback_data{buffer, size, 0};

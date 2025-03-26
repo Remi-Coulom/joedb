@@ -11,9 +11,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual size_t pread(char *data, size_t size, int64_t offset) {return 0;}
-   virtual void pwrite(const char *data, size_t size, int64_t offset) {}
    virtual int64_t get_size() const {return -1;}
+   virtual size_t pread(char *data, size_t size, int64_t offset) const {return 0;}
+   virtual void pwrite(const char *data, size_t size, int64_t offset) {}
 
    virtual void sync() {}
 

@@ -3,7 +3,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- size_t Server_File::remote_pread(char *data, size_t size, int64_t offset)
+ size_t Server_File::remote_pread(char *data, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
   Server_Connection::buffer.index = 0;
@@ -139,7 +139,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- size_t Server_File::pread(char *data, size_t size, int64_t offset)
+ size_t Server_File::pread(char *data, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
   if (offset < Readonly_Journal::header_size)

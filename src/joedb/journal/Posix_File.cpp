@@ -90,7 +90,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Posix_FD::pread(char *buffer, size_t size, int64_t offset)
+ size_t Posix_FD::pread(char *buffer, size_t size, int64_t offset) const
  /////////////////////////////////////////////////////////////////////////////
  {
   const ssize_t result = ::pread(fd, buffer, size, offset);

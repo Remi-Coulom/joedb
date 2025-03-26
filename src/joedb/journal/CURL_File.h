@@ -54,9 +54,9 @@ namespace joedb
     void *p
    );
 
-   void perform_range(int64_t start, int64_t size);
+   void perform_range(int64_t start, int64_t size) const;
 
-   size_t pread(char *buffer, size_t size, int64_t offset) override;
+   size_t pread(char *buffer, size_t size, int64_t offset) const override;
    void copy_to(Buffered_File &destination, int64_t start, int64_t size) override;
 
   public:

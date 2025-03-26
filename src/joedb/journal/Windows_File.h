@@ -49,7 +49,7 @@ namespace joedb
    void shared_lock(int64_t start, int64_t size) override;
    void exclusive_lock(int64_t start, int64_t size) override;
    void unlock(int64_t start, int64_t size) override;
-   size_t pread(char* data, size_t size, int64_t offset) override;
+   size_t pread(char* data, size_t size, int64_t offset) const override;
    void pwrite(const char* data, size_t size, int64_t offset) override;
 
    ~Windows_Handle() override;

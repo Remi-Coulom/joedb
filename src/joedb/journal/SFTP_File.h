@@ -16,7 +16,7 @@ namespace joedb
    ssh::SFTP &sftp;
    const sftp_file file;
 
-   void throw_last_error(const char *action, const char *file_name)
+   void throw_last_error(const char *action, const char *file_name) const
    {
     sftp.throw_error
     (
@@ -24,9 +24,9 @@ namespace joedb
     );
    }
 
-   int64_t pos;
+   mutable int64_t pos;
 
-   void seek(int64_t offset)
+   void seek(int64_t offset) const
    {
     if (offset == pos)
      return;
@@ -50,7 +50,7 @@ namespace joedb
    SFTP_File(const SFTP_File &) = delete;
    SFTP_File& operator=(const SFTP_File &) = delete;
 
-   size_t pread(char *data, size_t size, int64_t offset) override
+   size_t pread(char *data, size_t size, int64_t offset) const override
    {
     seek(offset);
 

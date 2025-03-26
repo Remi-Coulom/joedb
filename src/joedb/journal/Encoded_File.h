@@ -16,10 +16,10 @@ namespace joedb
    static constexpr size_t write_buffer_total_size = 1 << 20;
    std::vector<char> write_buffer;
    int64_t write_buffer_offset;
-   size_t write_buffer_size;
+   mutable size_t write_buffer_size;
 
-   void write_blob(const char *buffer, size_t size, int64_t offset);
-   void flush_write_buffer();
+   void write_blob(const char *buffer, size_t size, int64_t offset) const;
+   void flush_write_buffer() const;
 
   public:
    Encoded_File
@@ -28,7 +28,7 @@ namespace joedb
     db::encoded_file::Buffered_File_Database &db
    );
 
-   size_t pread(char *buffer, size_t size, int64_t offset) override;
+   size_t pread(char *buffer, size_t size, int64_t offset) const override;
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
    int64_t get_size() const override;
    void sync() override;

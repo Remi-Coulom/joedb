@@ -29,10 +29,10 @@ namespace joedb
    void connect();
 
   protected:
-   Thread_Safe_Channel channel;
+   mutable Thread_Safe_Channel channel;
    std::ostream *log;
 
-   Buffer<13> buffer;
+   mutable Buffer<13> buffer;
 
    int64_t session_id;
    bool pullonly_server;
