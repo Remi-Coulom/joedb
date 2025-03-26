@@ -19,7 +19,7 @@ namespace joedb::ui
     return "dummy";
    }
 
-   Pullonly_Connection &build(int argc, char **argv) final
+   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     return connection;
    }

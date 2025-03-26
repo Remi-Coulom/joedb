@@ -49,7 +49,7 @@ namespace joedb::ui
    const char *get_parameters_description() const final {return "[tail]";}
 
    //////////////////////////////////////////////////////////////////////////
-   Pullonly_Connection &build(int argc, char **argv) final
+   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
    //////////////////////////////////////////////////////////////////////////
    {
     mute_during_handshake = argc > 0;

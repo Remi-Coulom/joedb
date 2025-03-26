@@ -4,6 +4,7 @@
 namespace joedb
 {
  class Pullonly_Connection;
+ class Buffered_File;
 }
 
 namespace joedb::ui
@@ -20,7 +21,7 @@ namespace joedb::ui
    virtual const char *get_name() const {return "";}
    virtual const char *get_parameters_description() const {return "";}
 
-   virtual Pullonly_Connection &build(int argc, char **argv) = 0;
+   virtual Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) = 0;
 
    virtual ~Connection_Builder() = default;
  };

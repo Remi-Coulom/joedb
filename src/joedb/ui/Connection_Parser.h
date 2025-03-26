@@ -22,15 +22,21 @@ namespace joedb::ui
    (
     Connection_Builder &builder,
     int argc,
-    char **argv
+    char **argv,
+    Buffered_File *file
    );
 
   public:
-   Connection_Parser(bool local, bool use_server_file);
+   Connection_Parser(bool local);
 
    void print_help(std::ostream &out) const;
 
-   Pullonly_Connection &build(int argc, char **argv) const;
+   Pullonly_Connection &build
+   (
+    int argc,
+    char **argv,
+    Buffered_File *file
+   ) const;
  };
 }
 

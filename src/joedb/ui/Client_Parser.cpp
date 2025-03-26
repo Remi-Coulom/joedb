@@ -12,7 +12,7 @@ namespace joedb::ui
  Client_Parser::Client_Parser(bool local, Open_Mode default_open_mode):
  ////////////////////////////////////////////////////////////////////////////
   file_parser(default_open_mode, false, true, true),
-  connection_parser(local, true),
+  connection_parser(local),
   default_open_mode(default_open_mode)
  {
  }
@@ -49,21 +49,22 @@ namespace joedb::ui
    arg_index
   );
 
+  Buffered_File *client_file = file_parser.get_file();
+
   Pullonly_Connection &pullonly_connection = connection_parser.build
   (
    argc - arg_index,
-   argv + arg_index
+   argv + arg_index,
+   client_file
   );
 
   Connection *push_connection = pullonly_connection.get_push_connection();
-
-  Buffered_File *client_file = file_parser.get_file();
 
   if (!client_file)
    client_file = dynamic_cast<Buffered_File *>(&pullonly_connection);
 
   if (!client_file)
-   throw Exception("server file must be used with a network_file or ssh_file connection");
+   throw Exception("server file must be used with a network or ssh connection");
 
   std::cerr << "Creating client data... ";
 

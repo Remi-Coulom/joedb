@@ -29,7 +29,7 @@ namespace joedb::ui
     return "<file>";
    }
 
-   Pullonly_Connection &build(int argc, char **argv) final
+   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     int arg_index = 0;
     std::ostream null_stream(nullptr);

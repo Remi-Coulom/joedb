@@ -21,7 +21,7 @@ namespace joedb::ui
  {
   const bool local = false;
   File_Parser file_parser(Open_Mode::read_existing, true);
-  Connection_Parser connection_parser(local, false);
+  Connection_Parser connection_parser(local);
 
   int arg_index = 1;
   bool follow = false;
@@ -55,7 +55,8 @@ namespace joedb::ui
   Pullonly_Connection &pullonly_connection = connection_parser.build
   (
    argc - arg_index,
-   argv + arg_index
+   argv + arg_index,
+   &file
   );
 
   Connection *connection = pullonly_connection.get_push_connection();

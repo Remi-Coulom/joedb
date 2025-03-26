@@ -20,7 +20,7 @@
 namespace joedb::ui
 {
  //////////////////////////////////////////////////////////////////////////
- Connection_Parser::Connection_Parser(bool local, bool use_server_file)
+ Connection_Parser::Connection_Parser(bool local)
  //////////////////////////////////////////////////////////////////////////
  {
   if (local)
@@ -39,15 +39,11 @@ namespace joedb::ui
   builders.emplace_back(new File_Connection_Builder());
 
 #ifdef JOEDB_HAS_NETWORKING
-  builders.emplace_back(new Network_Connection_Builder(false));
-  if (use_server_file)
-   builders.emplace_back(new Network_Connection_Builder(true));
+  builders.emplace_back(new Network_Connection_Builder());
 #endif
 
 #ifdef JOEDB_HAS_SSH
-  builders.emplace_back(new SSH_Connection_Builder(false));
-  if (use_server_file)
-   builders.emplace_back(new SSH_Connection_Builder(true));
+  builders.emplace_back(new SSH_Connection_Builder());
 #endif
  }
 
@@ -95,7 +91,8 @@ namespace joedb::ui
  (
   Connection_Builder &builder,
   int argc,
-  char **argv
+  char **argv,
+  Buffered_File *file
  )
  {
   if
@@ -114,7 +111,7 @@ namespace joedb::ui
    );
   }
 
-  return builder.build(argc, argv);
+  return builder.build(argc, argv, file);
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -122,7 +119,8 @@ namespace joedb::ui
  //////////////////////////////////////////////////////////////////////////
  (
   int argc,
-  char **argv
+  char **argv,
+  Buffered_File *file
  ) const
  {
   const char * connection_name;
@@ -140,7 +138,8 @@ namespace joedb::ui
   (
    get_builder(connection_name),
    argc - 1,
-   argv + 1
+   argv + 1,
+   file
   );
 
   std::cerr << "OK\n";
