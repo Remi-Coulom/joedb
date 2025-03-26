@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Raw_Dump_Writable: public Writable

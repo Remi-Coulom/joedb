@@ -8,7 +8,7 @@
 #include <iostream>
 #include <optional>
 
-namespace joedb
+namespace joedb::ui
 {
  /////////////////////////////////////////////////////////////////////////////
  static int main(int argc, char **argv)
@@ -89,5 +89,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::ui::main, argc, argv);
 }

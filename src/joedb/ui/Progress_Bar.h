@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <iosfwd>
 
-namespace joedb::io
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Progress_Bar

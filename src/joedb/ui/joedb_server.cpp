@@ -8,7 +8,7 @@
 #include <cstring>
 #include <cstdlib>
 
-namespace joedb
+namespace joedb::ui
 {
  /////////////////////////////////////////////////////////////////////////////
  static int server(int argc, char **argv)
@@ -84,5 +84,5 @@ and can still push data: the push will succeed only if there is no conflict.
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::server, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::ui::server, argc, argv);
 }

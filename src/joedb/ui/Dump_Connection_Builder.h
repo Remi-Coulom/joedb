@@ -6,7 +6,7 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/interpreter/Database_Schema.h"
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  template <typename Dump_Writable> class Dump_Connection_Data

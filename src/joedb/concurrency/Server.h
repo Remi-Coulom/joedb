@@ -62,7 +62,7 @@ namespace joedb
     int64_t pull_checkpoint;
 
     std::ostream &write_id(std::ostream &out) const;
-    std::optional<io::Progress_Bar> progress_bar;
+    std::optional<ui::Progress_Bar> progress_bar;
 
     Session(Server &server, asio::ip::tcp::socket &&socket);
     ~Session();

@@ -6,7 +6,7 @@
 #include "joedb/ui/Writable_Command_Processor.h"
 #include "joedb/Type.h"
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Readable_Writable_Command_Processor:

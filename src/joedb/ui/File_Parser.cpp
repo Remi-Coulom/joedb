@@ -19,7 +19,7 @@
 #include <cstring>
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  static constexpr size_t open_modes = open_mode_strings.size() -
   (File::lockable ? 0 : 2);

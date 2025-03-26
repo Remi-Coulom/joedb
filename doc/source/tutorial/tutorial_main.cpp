@@ -74,5 +74,5 @@ static int tutorial_main(int argc, char **argv)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(tutorial_main, argc, argv);
+ joedb::ui::main_exception_catcher(tutorial_main, argc, argv);
 }

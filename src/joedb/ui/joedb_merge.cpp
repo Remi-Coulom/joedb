@@ -12,7 +12,7 @@
 #include <memory>
 #include <iomanip>
 
-namespace joedb
+namespace joedb::ui
 {
  /////////////////////////////////////////////////////////////////////////////
  static int merge_main(int argc, char **argv)
@@ -160,5 +160,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::merge_main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::ui::merge_main, argc, argv);
 }

@@ -10,7 +10,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  Table_Id Readable_Command_Processor::parse_table

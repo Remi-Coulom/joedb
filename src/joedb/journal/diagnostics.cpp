@@ -40,7 +40,7 @@ namespace joedb
    std::string joedb;
    for (int i = 5; --i >= 0;)
     joedb.push_back(char(file.read<uint8_t>()));
-   write_string(out, joedb);
+   ui::write_string(out, joedb);
    out << '\n';
   }
 

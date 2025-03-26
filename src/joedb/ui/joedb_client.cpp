@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  static int client_main(int argc, char **argv)
@@ -41,5 +41,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(joedb::client_main, argc, argv);
+ joedb::ui::main_exception_catcher(joedb::ui::client_main, argc, argv);
 }

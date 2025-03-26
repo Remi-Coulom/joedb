@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace joedb
+namespace joedb::ui
 {
  std::string get_time_string(int64_t timestamp);
  std::string get_time_string_of_now();

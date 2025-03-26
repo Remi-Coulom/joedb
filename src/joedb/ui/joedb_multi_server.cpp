@@ -10,7 +10,7 @@
 #include <list>
 #include <memory>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Server_Data
@@ -91,5 +91,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::ui::main, argc, argv);
 }

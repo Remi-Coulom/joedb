@@ -7,7 +7,10 @@
 namespace joedb
 {
  class Readable;
+}
 
+namespace joedb::ui
+{
  ////////////////////////////////////////////////////////////////////////////
  class Readable_Command_Processor: public Command_Processor
  ////////////////////////////////////////////////////////////////////////////
@@ -27,7 +30,7 @@ namespace joedb
     Field_Id field_id
    )
    {
-    joedb::write_value(out, readable, table_id, record_id, field_id);
+    joedb::ui::write_value(out, readable, table_id, record_id, field_id);
    }
 
    Status process_command

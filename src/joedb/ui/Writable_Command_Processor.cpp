@@ -4,7 +4,7 @@
 
 #include <ctime>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Writable_Command_Processor::process_command
@@ -33,7 +33,7 @@ namespace joedb
   }
   else if (command == "comment") ///////////////////////////////////////////
   {
-   const std::string comment = joedb::read_string(parameters);
+   const std::string comment = read_string(parameters);
    writable.comment(comment);
   }
   else if (command == "timestamp") /////////////////////////////////////////
@@ -58,9 +58,9 @@ namespace joedb
   }
   else if (command == "write_blob") ////////////////////////////////////////
   {
-   const std::string value = joedb::read_string(parameters);
+   const std::string value = read_string(parameters);
    const Blob blob = blob_writer.write_blob_data(value);
-   joedb::write_blob(out, blob);
+   write_blob(out, blob);
    out << '\n';
   }
   else

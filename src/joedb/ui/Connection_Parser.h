@@ -7,7 +7,7 @@
 #include <memory>
 #include <iosfwd>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Connection_Parser

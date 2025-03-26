@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cstring>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  Client_Parser::Client_Parser(bool local, Open_Mode default_open_mode):

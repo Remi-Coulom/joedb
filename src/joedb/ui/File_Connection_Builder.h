@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  /////////////////////////////////////////////////////////////////////////////
  class File_Connection_Builder: public Connection_Builder

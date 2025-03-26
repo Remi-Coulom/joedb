@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  void Interpreter_Writable::write_type(Type type)
@@ -175,7 +175,7 @@ namespace joedb
   out << "update " << schema.get_table_name(table_id) << ' ';\
   out << record_id << ' ';\
   out << schema.get_field_name(table_id, field_id) << ' ';\
-  joedb::write_##type_id(out, value);\
+  write_##type_id(out, value);\
   out << '\n';\
  }\
  void Interpreter_Writable::update_vector_##type_id\
@@ -194,7 +194,7 @@ namespace joedb
   for (size_t i = 0; i < size; i++)\
   {\
    out << ' ';\
-   joedb::write_##type_id(out, value[i]);\
+   write_##type_id(out, value[i]);\
   }\
   out << '\n';\
  }
@@ -205,7 +205,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "# Blob: ";
-  joedb::write_blob(out, blob);
+  write_blob(out, blob);
   out << '\n';
  }
 
@@ -214,7 +214,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "write_blob ";
-  joedb::write_string(out, data);
+  write_string(out, data);
   out << '\n';
 
   return Blob();

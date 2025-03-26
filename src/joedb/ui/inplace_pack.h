@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace joedb
+namespace joedb::ui
 {
  void inplace_pack(const std::string &file_name);
 }

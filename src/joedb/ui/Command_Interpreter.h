@@ -8,7 +8,7 @@
 #include <functional>
 #include <stdint.h>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Command_Interpreter: public Command_Processor

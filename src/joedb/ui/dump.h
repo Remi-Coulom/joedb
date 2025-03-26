@@ -6,7 +6,10 @@ namespace joedb
  class Readable;
  class Writable;
  class Readonly_Journal;
+}
 
+namespace joedb::ui
+{
  void dump(const Readable &db, Writable &writable, bool schema_only = false);
  void dump_data(const Readable &db, Writable &writable);
 

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  inline void print_exception(const std::exception &e)

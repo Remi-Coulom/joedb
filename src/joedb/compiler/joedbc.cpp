@@ -89,7 +89,7 @@ namespace joedb
    Custom_Collector custom_collector(options.custom_names);
 
    Multiplexer multiplexer{options.db, schema_writable, custom_collector};
-   Interpreter interpreter(options.db, multiplexer, nullptr, multiplexer, 0);
+   ui::Interpreter interpreter(options.db, multiplexer, nullptr, multiplexer, 0);
    interpreter.set_echo(false);
    interpreter.set_rethrow(true);
    interpreter.main_loop(joedbi_file, std::cerr);
@@ -156,5 +156,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::joedbc_main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::joedbc_main, argc, argv);
 }

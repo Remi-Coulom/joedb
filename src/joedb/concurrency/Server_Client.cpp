@@ -135,7 +135,7 @@ namespace joedb
  {
   LOG("downloading, size = " << size);
 
-  std::optional<io::Progress_Bar> progress_bar;
+  std::optional<ui::Progress_Bar> progress_bar;
   if (size > buffer.ssize && log)
    progress_bar.emplace(size, *log);
 

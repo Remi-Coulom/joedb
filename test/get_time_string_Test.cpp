@@ -6,5 +6,5 @@
 TEST(print_date, length)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_TRUE(joedb::get_time_string_of_now().size() > 10);
+ EXPECT_TRUE(joedb::ui::get_time_string_of_now().size() > 10);
 }

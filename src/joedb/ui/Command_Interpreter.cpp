@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  void Command_Interpreter::after_command

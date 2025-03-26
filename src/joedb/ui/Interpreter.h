@@ -9,7 +9,7 @@
 
 #include <memory>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Readable_Interpreter: public Command_Interpreter

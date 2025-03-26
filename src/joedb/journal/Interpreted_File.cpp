@@ -15,7 +15,7 @@ namespace joedb
   {
    if (previous_checkpoint > Readonly_Journal::header_size)
     stream << '\n';
-   Interpreter_Writable writable(stream, db);
+   ui::Interpreter_Writable writable(stream, db);
    Multiplexer multiplexer{writable, db};
    journal.set_position(previous_checkpoint);
    journal.play_until_checkpoint(multiplexer);

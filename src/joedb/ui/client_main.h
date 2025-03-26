@@ -1,7 +1,7 @@
 #ifndef joedb_client_main_declared
 #define joedb_client_main_declared
 
-namespace joedb
+namespace joedb::ui
 {
  class Connection_Builder;
 

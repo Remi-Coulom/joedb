@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  int process_journal_pair

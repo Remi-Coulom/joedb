@@ -12,7 +12,7 @@
 #include <iosfwd>
 #include <optional>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class File_Parser

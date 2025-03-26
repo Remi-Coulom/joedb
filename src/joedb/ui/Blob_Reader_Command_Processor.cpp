@@ -3,7 +3,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/Blob.h"
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Blob_Reader_Command_Processor::process_command

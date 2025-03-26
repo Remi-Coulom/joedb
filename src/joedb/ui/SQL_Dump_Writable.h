@@ -4,7 +4,7 @@
 #include "joedb/interpreter/Database_Schema.h"
 #include "joedb/Multiplexer.h"
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class SQL_Writable: public Writable

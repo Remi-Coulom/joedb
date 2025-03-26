@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  void SQL_Writable::write_type(Type type)
@@ -144,7 +144,7 @@ namespace joedb
  void SQL_Writable::timestamp(int64_t timestamp)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "-- " << joedb::get_time_string(timestamp) << '\n';
+  out << "-- " << get_time_string(timestamp) << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ namespace joedb
  {\
   out << "UPDATE \"" << schema.get_table_name(table_id);\
   out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";\
-  joedb::write_##type_id(out, value);\
+  write_##type_id(out, value);\
   out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
  }
  #define TYPE_MACRO_NO_STRING
@@ -229,7 +229,7 @@ namespace joedb
  {
   out << "UPDATE \"" << schema.get_table_name(table_id);
   out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
-  joedb::write_sql_string(out, value);
+  write_sql_string(out, value);
   out << " WHERE " << id_field_name << " = " << record_id << ";\n";
  }
 
@@ -249,7 +249,7 @@ namespace joedb
   out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
 
   if (blob_reader)
-   joedb::write_sql_string(out, blob_reader->read_blob_data(value));
+   write_sql_string(out, blob_reader->read_blob_data(value));
   else
    out << "\"BLOB\"";
 

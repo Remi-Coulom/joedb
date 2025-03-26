@@ -6,7 +6,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Client_Parser

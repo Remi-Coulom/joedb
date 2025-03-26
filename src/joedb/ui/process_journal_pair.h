@@ -3,7 +3,7 @@
 
 #include "joedb/journal/Writable_Journal.h"
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  int process_journal_pair

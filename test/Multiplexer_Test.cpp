@@ -22,7 +22,7 @@ TEST(Multiplexer_Test, interpreter_test)
  //
  interpreter::Database reference_db;
  {
-  Interpreter interpreter(reference_db, reference_db, nullptr, reference_db, 0);
+  ui::Interpreter interpreter(reference_db, reference_db, nullptr, reference_db, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
@@ -35,7 +35,7 @@ TEST(Multiplexer_Test, interpreter_test)
  interpreter::Database multiplexed_db;
  {
   Multiplexer multiplexer{multiplexed_db};
-  Interpreter interpreter(multiplexed_db, multiplexer, nullptr, multiplexer, 0);
+  ui::Interpreter interpreter(multiplexed_db, multiplexer, nullptr, multiplexer, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
@@ -50,12 +50,12 @@ TEST(Multiplexer_Test, interpreter_test)
   std::ostringstream multiplexed;
 
   {
-   Interpreter_Dump_Writable dump_writable(reference);
+   ui::Interpreter_Dump_Writable dump_writable(reference);
    dump(reference_db, dump_writable);
   }
 
   {
-   Interpreter_Dump_Writable dump_writable(multiplexed);
+   ui::Interpreter_Dump_Writable dump_writable(multiplexed);
    dump(multiplexed_db, dump_writable);
   }
 

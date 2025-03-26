@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
  class Command_Processor

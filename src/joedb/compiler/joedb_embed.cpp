@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
   if (mode == base64)
   {
-   cpp << '"' << joedb::base64_encode(file_content.str()) << '"';
+   cpp << '"' << joedb::ui::base64_encode(file_content.str()) << '"';
   }
   else if (mode == raw)
   {
@@ -97,15 +97,13 @@ int main(int argc, char **argv)
   }
   else if (mode == utf8)
   {
-   joedb::write_string(cpp, file_content.str());
+   joedb::ui::write_string(cpp, file_content.str());
   }
   else if (mode == ascii)
   {
    cpp << '"';
    for (const uint8_t c: file_content.str())
-   {
-    joedb::write_octal_character(cpp, c);
-   }
+    joedb::ui::write_octal_character(cpp, c);
    cpp << '"';
   }
 
@@ -120,7 +118,7 @@ int main(int argc, char **argv)
 
   if (mode == base64)
   {
-   cpp << "joedb::base64_decode(" << identifier << "_data)";
+   cpp << "joedb::ui::base64_decode(" << identifier << "_data)";
   }
   else
   {

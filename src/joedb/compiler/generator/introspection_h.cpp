@@ -56,7 +56,7 @@ namespace joedb::generator
    {
     out << ", ";
     const Record_Id record_id{db.get_freedom(tid).get_first_used() - 1};
-    write_value(out, db, tid, record_id, fid);
+    ui::write_value(out, db, tid, record_id, fid);
    }
    out << ");\n";
   }

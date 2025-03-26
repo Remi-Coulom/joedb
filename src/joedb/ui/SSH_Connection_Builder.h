@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::ui
 {
  /////////////////////////////////////////////////////////////////////////////
  class SSH_Connection_Builder: public Connection_Builder
