@@ -14,7 +14,7 @@ namespace joedb::interpreted
  {
   if (!is_identifier(name))
   {
-   throw error::Exception(std::string(message) + ": invalid identifier: " + name);
+   throw Exception(std::string(message) + ": invalid identifier: " + name);
   }
  }
 
@@ -39,7 +39,7 @@ namespace joedb::interpreted
 
   if (it == tables.end())
   {
-   throw error::Exception
+   throw Exception
    (
     "get_table: invalid table_id: " + std::to_string(to_underlying(table_id))
    );
@@ -106,7 +106,7 @@ namespace joedb::interpreted
   check_identifier("create_table", name);
 
   if (find_table(name) != Table_Id(0))
-   throw error::Exception("create_table: name already used: " + name);
+   throw Exception("create_table: name already used: " + name);
 
   ++current_table_id;
   tables.insert(std::make_pair(current_table_id, Table()));
@@ -119,7 +119,7 @@ namespace joedb::interpreted
  {
   const auto it = tables.find(table_id);
   if (it == tables.end())
-   throw error::Exception("drop_table: invalid table_id");
+   throw Exception("drop_table: invalid table_id");
   table_names.erase(table_id);
   tables.erase(it);
  }
@@ -135,7 +135,7 @@ namespace joedb::interpreted
   check_identifier("rename_table", name);
 
   if (find_table(name) != Table_Id(0))
-   throw error::Exception("rename_table: name already used: " + name);
+   throw Exception("rename_table: name already used: " + name);
 
   get_table(table_id); // make sure the table exists
 
@@ -179,10 +179,10 @@ namespace joedb::interpreted
   auto &field_names = table.field_names;
   const auto field_it = field_names.find(field_id);
   if (field_it == field_names.end())
-   throw error::Exception("rename_field: invalid field_id");
+   throw Exception("rename_field: invalid field_id");
 
   if (table.find_field(name) != Field_Id(0))
-   throw error::Exception("rename_field: name already used: " + name);
+   throw Exception("rename_field: name already used: " + name);
 
   field_it->second = name;
  }

@@ -33,7 +33,7 @@ namespace joedb
    void reading_past_end_of_file()
    //////////////////////////////////////////////////////////////////////////
    {
-    throw error::Exception("Trying to read past the end of file");
+    throw Exception("Trying to read past the end of file");
    }
 
    //////////////////////////////////////////////////////////////////////////

@@ -37,7 +37,7 @@ namespace joedb
   const char *file_name
  )
  {
-  throw error::Exception
+  throw Exception
   (
    std::string(action) + ' ' + file_name + ": " + strerror(errno)
   );

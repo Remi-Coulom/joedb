@@ -30,7 +30,7 @@ namespace joedb::ui
  ////////////////////////////////////////////////////////////////////////////
  {
   if (json)
-   throw error::Exception("json can't handle non-utf8 strings");
+   throw Exception("json can't handle non-utf8 strings");
   else
    write_octal_character(out, c);
  }

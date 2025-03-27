@@ -85,18 +85,18 @@ namespace joedb::concurrency
    buffer.read<char>() != 'b'
   )
   {
-   throw error::Exception("Did not receive \"joedb\" from server");
+   throw Exception("Did not receive \"joedb\" from server");
   }
 
   const int64_t server_version = buffer.read<int64_t>();
 
   if (server_version == 0)
-   throw error::Exception("Client version rejected by server");
+   throw Exception("Client version rejected by server");
 
   LOG("server_version = " << server_version << ". ");
 
   if (server_version < protocol_version)
-   throw error::Exception("Unsupported server version");
+   throw Exception("Unsupported server version");
 
   session_id = buffer.read<int64_t>();
   server_checkpoint = buffer.read<int64_t>();
@@ -107,7 +107,7 @@ namespace joedb::concurrency
   else if (mode == 'W')
    pullonly_server = false;
   else
-   throw error::Exception("Unexpected server mode");
+   throw Exception("Unexpected server mode");
 
   LOG
   (

@@ -93,7 +93,7 @@ namespace joedb
      );
 
      if (key == nullptr)
-      throw error::Exception("Could not import private key");
+      throw Exception("Could not import private key");
     }
 
     Imported_Key(const Imported_Key &) = delete;

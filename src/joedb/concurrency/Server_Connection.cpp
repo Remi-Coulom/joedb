@@ -29,7 +29,7 @@ namespace joedb::concurrency
   else if (buffer.data[0] == 't')
    LOG("The lock had timed out\n");
   else
-   throw error::Exception("Unexpected server reply");
+   throw Exception("Unexpected server reply");
 
   client_journal.unlock();
  }
@@ -58,11 +58,11 @@ namespace joedb::concurrency
   buffer.index = 0;
   lock.read(buffer.data, 9);
   if (buffer.read<char>() != pull_type)
-   throw error::Exception("Unexpected server reply");
+   throw Exception("Unexpected server reply");
   server_checkpoint = buffer.read<int64_t>();
 
   if (server_checkpoint < client_checkpoint)
-   throw error::Exception("Client checkpoint is ahead of server checkpoint");
+   throw Exception("Client checkpoint is ahead of server checkpoint");
 
   if (has_data)
   {
@@ -172,13 +172,13 @@ namespace joedb::concurrency
   lock.read(buffer.data, 1);
 
   if (buffer.data[0] == 'C')
-   throw error::Exception("Conflict: push failed");
+   throw Exception("Conflict: push failed");
   else if (buffer.data[0] == 'R')
-   throw error::Exception("Server is read-only: push failed");
+   throw Exception("Server is read-only: push failed");
   else if (buffer.data[0] == 't')
-   throw error::Exception("Timeout: push failed");
+   throw Exception("Timeout: push failed");
   else if (buffer.data[0] != 'U')
-   throw error::Exception("Unexpected server reply");
+   throw Exception("Unexpected server reply");
 
   if (unlock_after)
    client_journal.unlock();

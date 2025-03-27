@@ -118,7 +118,7 @@ namespace joedb::ui
     if (!merged_db)
      reference_schema = schema_file.get_data();
     else if (schema_file.get_data() != reference_schema)
-     throw error::Exception
+     throw Exception
      (
       file_names[i] +
       std::string(" does not have the same schema as ") +
@@ -133,7 +133,7 @@ namespace joedb::ui
     else
      merge(*merged_db, *db);
    }
-   catch (const error::Exception &e)
+   catch (const Exception &e)
    {
     std::cerr << ' ' << e.what();
     errors++;

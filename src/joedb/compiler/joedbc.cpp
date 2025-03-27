@@ -48,7 +48,7 @@ namespace joedb::compiler
    void custom(const std::string &name) final
    {
     if (!is_identifier(name))
-     throw error::Exception("custom: invalid identifier");
+     throw Exception("custom: invalid identifier");
     names.emplace_back(name);
    }
  };

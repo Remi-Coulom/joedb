@@ -15,7 +15,7 @@ namespace joedb::interpreted
    (max_record_id && to_underlying(record_id) > max_record_id)
   )
   {
-   throw error::Exception("insert_into: too big");
+   throw Exception("insert_into: too big");
   }
 
   get_table(table_id).insert_record(record_id);
@@ -47,7 +47,7 @@ namespace joedb::interpreted
    error_message << to_underlying(record_id);
    error_message << "; size = " << size;
    error_message << "; max = " << max_record_id;
-   throw error::Exception(error_message.str());
+   throw Exception(error_message.str());
   }
 
   get_table(table_id).insert_vector(record_id, size);

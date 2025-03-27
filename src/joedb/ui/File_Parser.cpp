@@ -197,7 +197,7 @@ namespace joedb::ui
     out << "OK\n";
    }
    else
-    throw error::Exception("missing URL");
+    throw Exception("missing URL");
   }
 #endif
 #ifdef JOEDB_HAS_BROTLI
@@ -273,7 +273,7 @@ namespace joedb::ui
     out << "OK\n";
    }
    else
-    throw error::Exception("missing file name");
+    throw Exception("missing file name");
   }
 
   return file.get();

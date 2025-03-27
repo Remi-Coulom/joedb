@@ -48,9 +48,9 @@ namespace joedb::interpreted
    {\
     const auto it = fields.find(field_id);\
     if (it == fields.end())\
-     throw error::Exception("update: invalid field_id");\
+     throw Exception("update: invalid field_id");\
     if (!freedom.is_used(to_underlying(record_id) + 1))\
-     throw error::Exception("update: invalid record_id");\
+     throw Exception("update: invalid record_id");\
     it->second.set_##type_id(record_id, value);\
    }\
    void update_vector_##type_id(Record_Id record_id,\
@@ -60,28 +60,28 @@ namespace joedb::interpreted
    {\
     const auto it = fields.find(field_id);\
     if (it == fields.end())\
-     throw error::Exception("update_vector: invalid field_id");\
+     throw Exception("update_vector: invalid field_id");\
     if (!freedom.is_used(to_underlying(record_id) + 1) ||\
         !freedom.is_used(to_underlying(record_id) + size))\
-     throw error::Exception("update_vector: invalid record_id range");\
+     throw Exception("update_vector: invalid record_id range");\
     it->second.set_vector_##type_id(record_id, size, value);\
    }\
    type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id)\
    {\
     const auto it = fields.find(field_id);\
     if (it == fields.end())\
-     throw error::Exception("get_own_storage: invalid field_id");\
+     throw Exception("get_own_storage: invalid field_id");\
     if (!freedom.is_used(to_underlying(record_id) + 1))\
-     throw error::Exception("get_own_storage: invalid record_id");\
+     throw Exception("get_own_storage: invalid record_id");\
     return it->second.get_own_##type_id##_storage(record_id);\
    }\
    const type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id) const\
    {\
     const auto it = fields.find(field_id);\
     if (it == fields.end())\
-     throw error::Exception("get_own_storage: invalid field_id");\
+     throw Exception("get_own_storage: invalid field_id");\
     if (!freedom.is_used(to_underlying(record_id) + 1))\
-     throw error::Exception("get_own_storage: invalid record_id");\
+     throw Exception("get_own_storage: invalid record_id");\
     return it->second.get_own_##type_id##_storage(record_id);\
    }
    #include "joedb/TYPE_MACRO.h"

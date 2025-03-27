@@ -28,7 +28,7 @@ namespace joedb
     if (fname == name)
      return fid;
   }
-  catch (const error::Exception &)
+  catch (const Exception &)
   {
   }
   return Field_Id(0);
@@ -63,7 +63,7 @@ namespace joedb
    if (it != fields.end())
     return it->second;
   }
-  catch (const error::Exception &)
+  catch (const Exception &)
   {
   }
 

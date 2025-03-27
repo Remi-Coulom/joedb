@@ -22,4 +22,9 @@ namespace joedb::error
  };
 }
 
+namespace joedb
+{
+ using Exception = error::Exception;
+}
+
 #endif

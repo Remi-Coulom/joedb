@@ -24,7 +24,7 @@ namespace joedb::ssh
   const int result = ssh_channel_write(channel, data, uint32_t(size));
 
   if (result == SSH_ERROR)
-   throw error::Exception("Error writing to channel");
+   throw Exception("Error writing to channel");
 
   return size_t(result);
  }
@@ -36,10 +36,10 @@ namespace joedb::ssh
   const int result = ssh_channel_read(channel, data, uint32_t(size), 0);
 
   if (result == SSH_ERROR)
-   throw error::Exception("Error reading from channel");
+   throw Exception("Error reading from channel");
 
   if (result == 0)
-   throw error::Exception("End of file when reading from channel");
+   throw Exception("End of file when reading from channel");
 
   return size_t(result);
  }

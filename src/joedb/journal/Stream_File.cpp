@@ -15,7 +15,7 @@ namespace joedb
   pos(0)
  {
   if (is_shared())
-   throw error::Exception("Stream_File does not support shared_write");
+   throw Exception("Stream_File does not support shared_write");
 
   streambuf.pubseekoff
   (
@@ -53,7 +53,7 @@ namespace joedb
     return;
   }
 
-  throw error::Exception("seek error");
+  throw Exception("seek error");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -83,14 +83,14 @@ namespace joedb
    );
 
    if (n <= 0)
-    throw error::Exception("Could not write to stream");
+    throw Exception("Could not write to stream");
 
    pos += n;
    written += size_t(n);
   }
 
   if (streambuf.pubsync() < 0)
-   throw error::Exception("sync error");
+   throw Exception("sync error");
  }
 
  /////////////////////////////////////////////////////////////////////////////

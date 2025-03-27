@@ -34,7 +34,7 @@ namespace joedb::ui
   #define TYPE_MACRO_NO_REFERENCE
   #include "joedb/TYPE_MACRO.h"
 
-  throw error::Exception("unknown type");
+  throw Exception("unknown type");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ namespace joedb::ui
   switch(get_readable().get_field_type(table_id, field_id).get_type_id())
   {
    case Type::Type_Id::null:
-    throw error::Exception("bad field");
+    throw Exception("bad field");
 
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    case Type::Type_Id::type_id:\
@@ -200,7 +200,7 @@ Data manipulation
     {
      update_value(parameters, table_id, record_id, fid);
      if (parameters.fail())
-      throw error::Exception("failed parsing value");
+      throw Exception("failed parsing value");
     }
   }
   else if (command == "insert_vector") /////////////////////////////////////
@@ -233,13 +233,13 @@ Data manipulation
    parameters >> size;
 
    if (max_record_id != 0 && size >= max_record_id)
-    throw error::Exception("vector is too big");
+    throw Exception("vector is too big");
    else
    {
     switch(get_readable().get_field_type(table_id, field_id).get_type_id())
     {
      case Type::Type_Id::null:
-      throw error::Exception("bad field");
+      throw Exception("bad field");
      break;
 
      #define TYPE_MACRO(type, return_type, type_id, R, W)\

@@ -181,7 +181,7 @@ namespace joedb::ui
    {
     write_string(out, s, true);
    }
-   catch (const error::Exception &)
+   catch (const Exception &)
    {
     out << "!!! This string is not utf8 !!!\"";
     return JSON_Error::utf8;

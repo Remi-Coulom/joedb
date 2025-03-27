@@ -12,7 +12,7 @@ namespace joedb::ui
   std::ostream &out,
   int64_t line_number,
   const std::string &line,
-  const error::Exception *exception
+  const Exception *exception
  ) const
  {
   if (exception)
@@ -22,7 +22,7 @@ namespace joedb::ui
    error << "\nLine " << line_number << ": " << line << '\n';
 
    if (rethrow)
-    throw error::Exception(error.str());
+    throw Exception(error.str());
    else
     out << "Exception caught: " << error.str();
   }
@@ -198,7 +198,7 @@ General commands
 
     if (!found)
     {
-     throw error::Exception
+     throw Exception
      (
       "Unknown command. For a list of available commands, try \"help\"."
      );
@@ -209,13 +209,13 @@ General commands
     if (quit || abort)
      break;
    }
-   catch (const error::Exception &e)
+   catch (const Exception &e)
    {
     after_command(out, line_number, line, &e);
    }
   }
 
   if (abort)
-   throw error::Exception("aborted");
+   throw Exception("aborted");
  }
 }

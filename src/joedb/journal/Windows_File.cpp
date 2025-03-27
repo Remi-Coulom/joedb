@@ -71,7 +71,7 @@ namespace joedb
   while (!error.empty() && std::isspace(error.back()))
    error.pop_back();
 
-  throw error::Exception
+  throw Exception
   (
    std::string(action) + ' ' + std::string(file_name) + ": " + error
   );

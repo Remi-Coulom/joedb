@@ -140,7 +140,7 @@ namespace joedb::compiler::generator
 
   out << R"RRR(
   public:
-   template<typename E = joedb::error::Exception>
+   template<typename E = joedb::Exception>
    static void throw_exception(const std::string &message)
    {
     throw E(")RRR" <<

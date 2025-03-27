@@ -14,7 +14,7 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    if (!p)
-    throw error::Exception("SSH null error");
+    throw Exception("SSH null error");
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    if (result != SSH_OK)
-    throw error::Exception(ssh_get_error(session));
+    throw Exception(ssh_get_error(session));
   }
  }
 }

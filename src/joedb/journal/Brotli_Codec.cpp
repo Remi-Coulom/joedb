@@ -27,7 +27,7 @@ namespace joedb
   );
 
   if (result != BROTLI_TRUE)
-   throw error::Exception("Brotli compression failed");
+   throw Exception("Brotli compression failed");
 
   encoded.resize(encoded_size);
 
@@ -56,6 +56,6 @@ namespace joedb
   JOEDB_ASSERT(brotli_decoded_size == decoded_size);
 
   if (result != BROTLI_DECODER_RESULT_SUCCESS)
-   throw error::Exception("Brotli decompression failed");
+   throw Exception("Brotli decompression failed");
  }
 }

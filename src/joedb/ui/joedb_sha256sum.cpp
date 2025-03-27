@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     std::cout << std::setw(8) << hash[i];
    std::cout << "  " << file_name << '\n';
   }
-  catch (const joedb::error::Exception &e)
+  catch (const joedb::Exception &e)
   {
    std::cout << file_name << ": Error: " << e.what() << '\n';
   }

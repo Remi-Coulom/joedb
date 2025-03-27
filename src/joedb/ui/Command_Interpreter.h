@@ -27,7 +27,7 @@ namespace joedb::ui
     std::ostream &out,
     int64_t line_number,
     const std::string &line,
-    const error::Exception *exception
+    const Exception *exception
    ) const;
 
   protected:

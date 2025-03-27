@@ -137,7 +137,7 @@ namespace joedb::compiler::generator
     out << "  {\n";
     out << "   const auto table = get_" << tname << "_table();\n";
     out << "   if (table.first() != the_" <<tname << "() || table.last() != the_" << tname << "())\n";
-    out << "    throw joedb::error::Exception(\"Single-row constraint failure for table " << tname << "\");\n";
+    out << "    throw joedb::Exception(\"Single-row constraint failure for table " << tname << "\");\n";
     out << "  }\n";
    }
   }

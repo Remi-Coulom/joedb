@@ -17,7 +17,7 @@ namespace joedb::compiler
   in >> table_name;
   const Table_Id table_id = db.find_table(table_name);
   if (table_id == Table_Id(0))
-   throw error::Exception("no such table: " + table_name);
+   throw Exception("no such table: " + table_name);
   return table_id;
  }
 
@@ -33,7 +33,7 @@ namespace joedb::compiler
   else if (s == "false")
    return false;
   else
-   throw error::Exception("could not parse bool: " + s);
+   throw Exception("could not parse bool: " + s);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -90,13 +90,13 @@ namespace joedb::compiler
     }
 
     if (!joedb::is_identifier(index.name))
-     throw error::Exception("Invalid index identifier: " + index.name);
+     throw Exception("Invalid index identifier: " + index.name);
 
     for (auto field_name: index_columns)
     {
      const Field_Id field_id = db.find_field(index.table_id, field_name);
      if (field_id == Field_Id(0))
-      throw error::Exception("Field not found: " + field_name);
+      throw Exception("Field not found: " + field_name);
      index.field_ids.emplace_back(field_id);
     }
 
@@ -113,7 +113,7 @@ namespace joedb::compiler
     compiler_options.set_single_row(table_id, value);
    }
    else
-    throw error::Exception("unknown command: " + command);
+    throw Exception("unknown command: " + command);
   }
  }
 }

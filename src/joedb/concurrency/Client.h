@@ -28,7 +28,7 @@ namespace joedb::concurrency
      data.get_readonly_journal().get_position() > server_checkpoint
     )
     {
-     throw error::Exception("can't pull: client is ahead of server");
+     throw Exception("can't pull: client is ahead of server");
     }
    }
 

@@ -4,7 +4,7 @@ namespace joedb::concurrency
 {
  void Pullonly_Connection::content_mismatch()
  {
-  throw error::Exception("Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
+  throw Exception("Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
  }
 
  int64_t Pullonly_Connection::handshake
