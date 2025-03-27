@@ -1,7 +1,7 @@
 #ifndef joedb_Buffer_declared
 #define joedb_Buffer_declared
 
-#include "joedb/assert.h"
+#include "joedb/error/assert.h"
 
 #include <stddef.h>
 #include <stdint.h>

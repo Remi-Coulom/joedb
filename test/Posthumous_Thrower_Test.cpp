@@ -1,13 +1,12 @@
-#include "joedb/Posthumous_Catcher.h"
-#include "joedb/Posthumous_Thrower.h"
-#include "joedb/Destructor_Logger.h"
-#include "joedb/Logger.h"
-#include "joedb/String_Logger.h"
-#include "joedb/Stream_Logger.h"
+#include "joedb/error/Posthumous_Catcher.h"
+#include "joedb/error/Posthumous_Thrower.h"
+#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/String_Logger.h"
+#include "joedb/error/Stream_Logger.h"
 
 #include "gtest/gtest.h"
 
-namespace joedb
+namespace joedb::error
 {
  /////////////////////////////////////////////////////////////////////////////
  class Test_Catcher: public Posthumous_Catcher
@@ -48,6 +47,6 @@ namespace joedb
 
   Destructor_Logger::remove_logger();
   Destructor_Logger::set_logger();
-  Destructor_Logger::set_logger(&joedb::String_Logger::the_logger);
+  Destructor_Logger::set_logger(&String_Logger::the_logger);
  }
 }

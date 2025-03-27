@@ -1,8 +1,8 @@
-#include "joedb/Posthumous_Thrower.h"
-#include "joedb/Posthumous_Catcher.h"
-#include "joedb/Destructor_Logger.h"
+#include "joedb/error/Posthumous_Thrower.h"
+#include "joedb/error/Posthumous_Catcher.h"
+#include "joedb/error/Destructor_Logger.h"
 
-namespace joedb
+namespace joedb::error
 {
  ////////////////////////////////////////////////////////////////////////////
  void Posthumous_Thrower::postpone_exception(const char *message) noexcept

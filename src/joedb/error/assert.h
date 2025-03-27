@@ -13,12 +13,12 @@
 #if defined (NDEBUG) && !defined(JOEDB_FUZZING)
 #define JOEDB_ASSERT(x)
 #else
-#define JOEDB_ASSERT(x) JOEDB_CHECK(x, joedb::Assertion_Failure)
+#define JOEDB_ASSERT(x) JOEDB_CHECK(x, joedb::error::Assertion_Failure)
 #endif
 
 #define JOEDB_RELEASE_ASSERT(x) JOEDB_CHECK(x, joedb::Exception)
 
-namespace joedb
+namespace joedb::error
 {
  ////////////////////////////////////////////////////////////////////////////
  class Assertion_Failure: public std::logic_error

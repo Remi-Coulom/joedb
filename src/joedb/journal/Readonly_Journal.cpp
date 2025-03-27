@@ -1,6 +1,6 @@
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Buffered_File.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 #include <sstream>
 #include <vector>
@@ -58,7 +58,7 @@ joedb::Readonly_Journal::Readonly_Journal
       file.read<uint8_t>() != 'b')
   {
    if (check_flag(check, Check::joedb))
-    throw Exception("File does not start by 'joedb'");
+    throw error::Exception("File does not start by 'joedb'");
   }
   else
   {
@@ -70,7 +70,7 @@ joedb::Readonly_Journal::Readonly_Journal
    if (check_flag(check, Check::version))
    {
     if (file_version < compatible_version || file_version > version_number)
-     throw Exception("Unsupported format version");
+     throw error::Exception("Unsupported format version");
    }
 
    checkpoint_position = header_size;
@@ -97,7 +97,7 @@ joedb::Readonly_Journal::Readonly_Journal
       file_size > checkpoint_position
      )
      {
-      throw Exception
+      throw error::Exception
       (
        "Checkpoint (" + std::to_string(checkpoint_position) + ") is smaller than file size (" +
        std::to_string(file_size) + "). This file may contain an aborted transaction. "
@@ -111,7 +111,7 @@ joedb::Readonly_Journal::Readonly_Journal
       file_size < checkpoint_position
      )
      {
-      throw Exception("Checkpoint is bigger than file size");
+      throw error::Exception("Checkpoint is bigger than file size");
      }
     }
    }
@@ -344,7 +344,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    field_of_last_update = file.read_strong_type<Field_Id>();\
    const size_t size = file.compact_read<size_t>();\
    if (int64_t(size) > checkpoint_position)\
-    throw Exception("update_vector too big");\
+    throw error::Exception("update_vector too big");\
    size_t capacity;\
    cpp_type *data = writable.get_own_##type_id##_storage\
    (\
@@ -360,7 +360,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
     data = &buffer[0];\
    }\
    else if (to_underlying(record_of_last_operation) <= 0 || to_underlying(record_of_last_operation) + size - 1 > capacity)\
-    throw Exception("update_vector out of range");\
+    throw error::Exception("update_vector out of range");\
    read_vector_of_##type_id(data, size);\
    writable.update_vector_##type_id\
    (\
@@ -419,7 +419,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    std::ostringstream error;
    error << "Unexpected operation: file.get_position() = ";
    error << file.get_position();
-   throw Exception(error.str());
+   throw error::Exception(error.str());
   }
  }
 }

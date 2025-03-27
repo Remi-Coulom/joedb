@@ -1,11 +1,11 @@
-#ifndef joedb_Stream_Logger
-#define joedb_Stream_Logger
+#ifndef joedb_error_Stream_Logger
+#define joedb_error_Stream_Logger
 
-#include "joedb/Logger.h"
+#include "joedb/error/Logger.h"
 
 #include <iostream>
 
-namespace joedb
+namespace joedb::error
 {
  ////////////////////////////////////////////////////////////////////////////
  class Stream_Logger: public Logger

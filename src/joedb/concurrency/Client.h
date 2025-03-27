@@ -3,7 +3,7 @@
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Client_Data.h"
-#include "joedb/Posthumous_Thrower.h"
+#include "joedb/error/Posthumous_Thrower.h"
 
 namespace joedb::concurrency
 {
@@ -28,7 +28,7 @@ namespace joedb::concurrency
      data.get_readonly_journal().get_position() > server_checkpoint
     )
     {
-     throw Exception("can't pull: client is ahead of server");
+     throw error::Exception("can't pull: client is ahead of server");
     }
    }
 
@@ -193,7 +193,7 @@ namespace joedb::concurrency
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Client_Lock: public Posthumous_Thrower
+ class Client_Lock: public error::Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
   private:

@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "joedb/assert.h"
+#include "joedb/error/assert.h"
 
 namespace joedb
 {

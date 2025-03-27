@@ -2,7 +2,7 @@
 #define joedb_Command_Interpreter_declared
 
 #include "joedb/ui/Command_Processor.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 #include <vector>
 #include <functional>
@@ -27,7 +27,7 @@ namespace joedb::ui
     std::ostream &out,
     int64_t line_number,
     const std::string &line,
-    const Exception *exception
+    const error::Exception *exception
    ) const;
 
   protected:

@@ -30,9 +30,9 @@ namespace joedb::compiler::generator
 #include "joedb/Freedom_Keeper.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/Exception.h"
-#include "joedb/exception/Out_Of_Date.h"
-#include "joedb/assert.h"
+#include "joedb/error/Exception.h"
+#include "joedb/error/Out_Of_Date.h"
+#include "joedb/error/assert.h"
 #include "joedb/get_version.h"
 #include "ids.h"
 
@@ -140,7 +140,7 @@ namespace joedb::compiler::generator
 
   out << R"RRR(
   public:
-   template<typename E = joedb::Exception>
+   template<typename E = joedb::error::Exception>
    static void throw_exception(const std::string &message)
    {
     throw E(")RRR" <<
@@ -838,7 +838,7 @@ namespace joedb::compiler::generator
     check_schema();
 
     if (requires_schema_upgrade())
-     throw_exception<joedb::exception::Out_Of_Date>("Schema is out of date. Can't upgrade a read-only database.");
+     throw_exception<joedb::error::Out_Of_Date>("Schema is out of date. Can't upgrade a read-only database.");
    }
 )RRR";
 

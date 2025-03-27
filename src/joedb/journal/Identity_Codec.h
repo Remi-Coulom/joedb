@@ -4,7 +4,7 @@
 #include "joedb/journal/Codec.h"
 
 #include <algorithm>
-#include "joedb/assert.h"
+#include "joedb/error/assert.h"
 
 namespace joedb
 {

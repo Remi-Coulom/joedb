@@ -1,7 +1,7 @@
 #ifndef joedb_Span_declared
 #define joedb_Span_declared
 
-#include "joedb/assert.h"
+#include "joedb/error/assert.h"
 
 #include <stddef.h>
 

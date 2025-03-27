@@ -229,7 +229,7 @@ namespace joedb::ui
    input_journal.replay_log(multiplexer);
 
    if (schema_filter.has_blobs())
-    throw Exception("can't pack blobs");
+    throw error::Exception("can't pack blobs");
   }
 
   dump_data(db, writable);

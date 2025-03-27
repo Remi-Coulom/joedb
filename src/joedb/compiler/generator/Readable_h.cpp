@@ -61,7 +61,7 @@ namespace joedb::compiler::generator
   }
 
   out << R"RRR(
-    throw joedb::Exception("unknown table_id");
+    throw joedb::error::Exception("unknown table_id");
    }
 )RRR";
 
@@ -129,7 +129,7 @@ namespace joedb::compiler::generator
    }
 
    out << R"RRR(
-   throw joedb::Exception("unknown field");
+   throw joedb::error::Exception("unknown field");
   }
 )RRR";
    }

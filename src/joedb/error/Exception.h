@@ -1,9 +1,9 @@
-#ifndef joedb_Exception_declared
-#define joedb_Exception_declared
+#ifndef joedb_error_Exception_declared
+#define joedb_error_Exception_declared
 
 #include <stdexcept>
 
-namespace joedb
+namespace joedb::error
 {
  ////////////////////////////////////////////////////////////////////////////
  class Exception: public std::runtime_error

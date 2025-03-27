@@ -1,5 +1,5 @@
 #include "joedb/ui/type_io.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 namespace joedb::ui
 {
@@ -30,7 +30,7 @@ namespace joedb::ui
  ////////////////////////////////////////////////////////////////////////////
  {
   if (json)
-   throw Exception("json can't handle non-utf8 strings");
+   throw error::Exception("json can't handle non-utf8 strings");
   else
    write_octal_character(out, c);
  }

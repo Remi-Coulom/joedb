@@ -1,5 +1,5 @@
 #include "joedb/journal/Windows_File.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 #include <algorithm>
 #include <cctype>
@@ -71,7 +71,7 @@ namespace joedb
   while (!error.empty() && std::isspace(error.back()))
    error.pop_back();
 
-  throw Exception
+  throw error::Exception
   (
    std::string(action) + ' ' + std::string(file_name) + ": " + error
   );

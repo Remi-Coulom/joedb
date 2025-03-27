@@ -1,7 +1,7 @@
-#ifndef joedb_Destructor_Logger
-#define joedb_Destructor_Logger
+#ifndef joedb_error_Destructor_Logger
+#define joedb_error_Destructor_Logger
 
-namespace joedb
+namespace joedb::error
 {
  class Logger;
 

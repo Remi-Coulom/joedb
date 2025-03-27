@@ -1,7 +1,7 @@
-#ifndef joedb_Logger
-#define joedb_Logger
+#ifndef joedb_error_Logger
+#define joedb_error_Logger
 
-namespace joedb
+namespace joedb::error
 {
  ////////////////////////////////////////////////////////////////////////////
  class Logger

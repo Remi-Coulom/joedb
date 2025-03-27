@@ -1,7 +1,7 @@
-#include "joedb/Posthumous_Catcher.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Posthumous_Catcher.h"
+#include "joedb/error/Exception.h"
 
-namespace joedb
+namespace joedb::error
 {
  ////////////////////////////////////////////////////////////////////////////
  void Posthumous_Catcher::catch_current_exception(const char *message) noexcept

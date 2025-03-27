@@ -1,6 +1,6 @@
 #include "joedb/journal/Brotli_Codec.h"
-#include "joedb/Exception.h"
-#include "joedb/assert.h"
+#include "joedb/error/Exception.h"
+#include "joedb/error/assert.h"
 
 #include <brotli/encode.h>
 #include <brotli/decode.h>
@@ -27,7 +27,7 @@ namespace joedb
   );
 
   if (result != BROTLI_TRUE)
-   throw Exception("Brotli compression failed");
+   throw error::Exception("Brotli compression failed");
 
   encoded.resize(encoded_size);
 
@@ -56,6 +56,6 @@ namespace joedb
   JOEDB_ASSERT(brotli_decoded_size == decoded_size);
 
   if (result != BROTLI_DECODER_RESULT_SUCCESS)
-   throw Exception("Brotli decompression failed");
+   throw error::Exception("Brotli decompression failed");
  }
 }

@@ -1,7 +1,7 @@
 #ifndef joedb_ssh_declared
 #define joedb_ssh_declared
 
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 #include <libssh/libssh.h>
 
@@ -14,7 +14,7 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    if (!p)
-    throw joedb::Exception("SSH null error");
+    throw error::Exception("SSH null error");
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ namespace joedb
   ///////////////////////////////////////////////////////////////////////////
   {
    if (result != SSH_OK)
-    throw joedb::Exception(ssh_get_error(session));
+    throw error::Exception(ssh_get_error(session));
   }
  }
 }

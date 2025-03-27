@@ -1,5 +1,5 @@
 #include "joedb/Readable.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 #include "joedb/Freedom_Keeper.h"
 
 namespace joedb
@@ -28,7 +28,7 @@ namespace joedb
     if (fname == name)
      return fid;
   }
-  catch (const Exception &)
+  catch (const error::Exception &)
   {
   }
   return Field_Id(0);
@@ -63,7 +63,7 @@ namespace joedb
    if (it != fields.end())
     return it->second;
   }
-  catch (const Exception &)
+  catch (const error::Exception &)
   {
   }
 

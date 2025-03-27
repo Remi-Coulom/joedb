@@ -11,13 +11,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Writable_Journal_Client_Data client_data(file);
- joedb::Connection connection;
- joedb::Client client(client_data, connection, false);
+ joedb::concurrency::Writable_Journal_Client_Data client_data(file);
+ joedb::concurrency::Connection connection;
+ joedb::concurrency::Client client(client_data, connection, false);
 
  asio::io_context io_context;
 
- joedb::Server server
+ joedb::concurrency::Server server
  (
   client,
   false,
@@ -31,11 +31,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
   try
   {
-   joedb::Network_Channel channel("localhost", "1234");
+   joedb::concurrency::Network_Channel channel("localhost", "1234");
    channel.write((const char *)Data, Size);
    io_context.post([&server](){server.stop_after_sessions();});
   }
-  catch (const joedb::Exception &)
+  catch (const joedb::error::Exception &)
   {
   }
  });
@@ -44,7 +44,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
   io_context.run();
  }
- catch (const joedb::Exception &)
+ catch (const joedb::error::Exception &)
  {
  }
 

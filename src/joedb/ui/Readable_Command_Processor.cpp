@@ -24,7 +24,7 @@ namespace joedb::ui
   in >> table_name;
   const Table_Id table_id = readable.find_table(table_name);
   if (table_id == Table_Id(0))
-   throw Exception("No such table: " + table_name);
+   throw error::Exception("No such table: " + table_name);
   return table_id;
  }
 
@@ -175,7 +175,7 @@ namespace joedb::ui
    if (!(parameters >> record_id))
     record_id = Record_Id{1};
    if (!readable.is_used(table_id, record_id))
-    throw Exception("no such record");
+    throw error::Exception("no such record");
 
    const auto &fields = readable.get_fields(table_id);
    size_t max_field_size = 0;

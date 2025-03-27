@@ -1,5 +1,5 @@
 #include "joedb/journal/Buffered_File.h"
-#include "joedb/Destructor_Logger.h"
+#include "joedb/error/Destructor_Logger.h"
 
 #include <algorithm>
 
@@ -96,7 +96,7 @@ namespace joedb
  {
   if (buffer_has_write_data())
   {
-   Destructor_Logger::write("warning: an unflushed file is being destroyed");
+   error::Destructor_Logger::write("warning: an unflushed file is being destroyed");
    try
    {
     write_buffer();

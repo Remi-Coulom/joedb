@@ -88,7 +88,7 @@ namespace joedb::ui
        Readonly_Journal::Check::all
      );
     }
-    catch (const Exception &e)
+    catch (const error::Exception &e)
     {
      if (!ignore_errors)
      {

@@ -27,7 +27,7 @@ namespace joedb::ui
    std::rename(packed.c_str(), file_name.c_str())
   )
   {
-   throw Exception("error moving files");
+   throw error::Exception("error moving files");
   }
  }
 }

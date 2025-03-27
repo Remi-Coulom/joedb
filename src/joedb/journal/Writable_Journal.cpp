@@ -1,6 +1,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Buffered_File.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Writable_Journal::Writable_Journal
@@ -16,7 +16,7 @@ joedb::Writable_Journal::Writable_Journal
 {
  if (file.is_readonly())
  {
-  throw Exception("Cannot create Writable_Journal with read-only file");
+  throw error::Exception("Cannot create Writable_Journal with read-only file");
  }
  else if (lock.is_creating_new())
  {
@@ -37,7 +37,7 @@ joedb::Writable_Journal::Writable_Journal
   if (lock.pos[0] != lock.pos[1] || lock.pos[2] != lock.pos[3])
   {
    if (check_flag(check, Check::checkpoint_mismatch))
-    throw Exception("Checkpoint mismatch");
+    throw error::Exception("Checkpoint mismatch");
    else
    {
     file.set_position(checkpoint_offset);

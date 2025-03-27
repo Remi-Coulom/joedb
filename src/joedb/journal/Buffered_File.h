@@ -1,10 +1,10 @@
 #ifndef joedb_Buffered_File_declared
 #define joedb_Buffered_File_declared
 
-#include "joedb/assert.h"
-#include "joedb/Exception.h"
+#include "joedb/error/assert.h"
+#include "joedb/error/Exception.h"
 #include "joedb/Blob.h"
-#include "joedb/Posthumous_Thrower.h"
+#include "joedb/error/Posthumous_Thrower.h"
 #include "joedb/journal/Open_Mode.h"
 #include "joedb/journal/Sequential_File.h"
 #include "joedb/journal/Buffer.h"
@@ -18,7 +18,7 @@ namespace joedb
  class Buffered_File:
  ////////////////////////////////////////////////////////////////////////////
   public Sequential_File,
-  public Posthumous_Thrower,
+  public error::Posthumous_Thrower,
   public Blob_Reader,
   public Blob_Writer
  {
@@ -33,7 +33,7 @@ namespace joedb
    void reading_past_end_of_file()
    //////////////////////////////////////////////////////////////////////////
    {
-    throw Exception("Trying to read past the end of file");
+    throw error::Exception("Trying to read past the end of file");
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ namespace joedb
    template<typename T> void write(T x)
    //////////////////////////////////////////////////////////////////////////
    {
-    static_assert(sizeof(T) <= buffer.extra_size);
+    static_assert(sizeof(T) <= decltype(buffer)::extra_size);
     buffer.write<T>(x);
     check_write_buffer();
    }

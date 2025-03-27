@@ -69,14 +69,11 @@ joedb_add_executable(joedb_client ../src/joedb/ui/joedb_client.cpp)
 joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
- ../src/joedb/ui/joedb_convert.cpp
- ../src/joedb/ui/main_exception_catcher.cpp
- ../src/joedb/Destructor_Logger.cpp
  ../src/joedb/Blob.cpp
  ../src/joedb/Writable.cpp
- ../src/joedb/Posthumous_Catcher.cpp
- ../src/joedb/Posthumous_Thrower.cpp
- ../src/joedb/ui/process_journal_pair.cpp
+ ../src/joedb/error/Destructor_Logger.cpp
+ ../src/joedb/error/Posthumous_Catcher.cpp
+ ../src/joedb/error/Posthumous_Thrower.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
@@ -84,6 +81,9 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/Writable_Journal.cpp
+ ../src/joedb/ui/joedb_convert.cpp
+ ../src/joedb/ui/main_exception_catcher.cpp
+ ../src/joedb/ui/process_journal_pair.cpp
 )
 
 if(GTest_FOUND)
@@ -92,15 +92,15 @@ if(GTest_FOUND)
 
  add_executable(joedb_file_test
   ../test/Test_Main.cpp
-  ../src/joedb/String_Logger.cpp
-  ../src/joedb/Destructor_Logger.cpp
+  ../src/joedb/error/String_Logger.cpp
+  ../src/joedb/error/Destructor_Logger.cpp
 
   ../test/File_Test.cpp
   ../test/Upgradable_File_Test.cpp
   ../src/joedb/journal/Buffered_File.cpp
   ../src/joedb/Blob.cpp
-  ../src/joedb/Posthumous_Thrower.cpp
-  ../src/joedb/Posthumous_Catcher.cpp
+  ../src/joedb/error/Posthumous_Thrower.cpp
+  ../src/joedb/error/Posthumous_Catcher.cpp
   ../src/joedb/journal/Async_Reader.cpp
   ../src/joedb/journal/Journal_Construction_Lock.cpp
   ../src/joedb/journal/Stream_File.cpp
@@ -185,7 +185,7 @@ if(GTest_FOUND)
   ../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/ui/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
-  ../src/joedb/String_Logger.cpp
+  ../src/joedb/error/String_Logger.cpp
  )
 
  target_link_libraries(joedb_test ${GTest_LIBRARIES})
@@ -344,13 +344,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
  add_library(joedb_fuzz STATIC
   ../src/external/wide_char_display_width.cpp
   ../src/joedb/Blob.cpp
-  ../src/joedb/Destructor_Logger.cpp
   ../src/joedb/interpreted/Database.cpp
   ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/is_identifier.cpp
   ../src/joedb/Multiplexer.cpp
-  ../src/joedb/Posthumous_Catcher.cpp
-  ../src/joedb/Posthumous_Thrower.cpp
   ../src/joedb/Readable.cpp
   ../src/joedb/Selective_Writable.cpp
   ../src/joedb/Writable.cpp
@@ -360,6 +357,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/concurrency/Connection.cpp
   ../src/joedb/concurrency/Network_Channel.cpp
   ../src/joedb/concurrency/Server.cpp
+  ../src/joedb/error/Destructor_Logger.cpp
+  ../src/joedb/error/Posthumous_Catcher.cpp
+  ../src/joedb/error/Posthumous_Thrower.cpp
   ../src/joedb/interpreted/Table.cpp
   ../src/joedb/ui/Command_Interpreter.cpp
   ../src/joedb/ui/Command_Processor.cpp

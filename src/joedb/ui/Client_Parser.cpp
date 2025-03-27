@@ -64,7 +64,7 @@ namespace joedb::ui
    client_file = dynamic_cast<Buffered_File *>(&pullonly_connection);
 
   if (!client_file)
-   throw Exception("server file must be used with a network or ssh connection");
+   throw error::Exception("server file must be used with a network or ssh connection");
 
   std::cerr << "Creating client data... ";
 

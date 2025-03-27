@@ -14,7 +14,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
   db.set_max_record_id(size_t(journal.get_checkpoint_position()));
   journal.replay_log(db);
  }
- catch (const joedb::Exception &)
+ catch (const joedb::error::Exception &)
  {
  }
 

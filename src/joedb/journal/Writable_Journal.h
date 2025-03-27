@@ -4,7 +4,7 @@
 #include "joedb/Writable.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Async_Writer.h"
-#include "joedb/Posthumous_Thrower.h"
+#include "joedb/error/Posthumous_Thrower.h"
 #include <limits>
 
 namespace joedb
@@ -14,7 +14,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
   public Readonly_Journal,
   public Writable,
-  public Posthumous_Thrower
+  public error::Posthumous_Thrower
  {
   private:
    Commit_Level current_commit_level;

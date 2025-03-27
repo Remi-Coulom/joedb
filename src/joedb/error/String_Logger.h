@@ -1,11 +1,11 @@
 #ifndef joedb_String_Logger
 #define joedb_String_Logger
 
-#include "joedb/Logger.h"
+#include "joedb/error/Logger.h"
 
 #include <string>
 
-namespace joedb
+namespace joedb::error
 {
  ////////////////////////////////////////////////////////////////////////////
  class String_Logger: public Logger

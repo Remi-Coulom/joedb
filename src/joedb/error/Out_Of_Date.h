@@ -1,9 +1,9 @@
 #ifndef joedb_exception_Out_Of_Date_declared
 #define joedb_exception_Out_Of_Date_declared
 
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
-namespace joedb::exception
+namespace joedb::error
 {
  /// sent when the schema of a read-only compiled database is out of date
  class Out_Of_Date: public Exception

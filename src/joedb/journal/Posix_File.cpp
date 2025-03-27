@@ -1,5 +1,5 @@
 #include "joedb/journal/Posix_File.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 #include <sys/file.h>
 #include <sys/types.h>
@@ -37,7 +37,7 @@ namespace joedb
   const char *file_name
  )
  {
-  throw Exception
+  throw error::Exception
   (
    std::string(action) + ' ' + file_name + ": " + strerror(errno)
   );

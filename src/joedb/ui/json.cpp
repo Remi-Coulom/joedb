@@ -2,7 +2,7 @@
 #include "joedb/ui/type_io.h"
 #include "joedb/ui/base64.h"
 #include "joedb/Readable.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 #include <iostream>
 #include <cmath>
@@ -181,7 +181,7 @@ namespace joedb::ui
    {
     write_string(out, s, true);
    }
-   catch (const Exception &)
+   catch (const error::Exception &)
    {
     out << "!!! This string is not utf8 !!!\"";
     return JSON_Error::utf8;

@@ -68,11 +68,11 @@ namespace joedb::concurrency
     client1.transaction([](const Readable &readable, Writable &writable)
     {
      writable.create_table("city");
-     throw joedb::Exception("cancelled");
+     throw error::Exception("cancelled");
     });
     ADD_FAILURE() << "transaction should have thrown";
    }
-   catch (const joedb::Exception &e)
+   catch (const error::Exception &e)
    {
     EXPECT_STREQ(e.what(), "cancelled");
    }
@@ -96,7 +96,7 @@ namespace joedb::concurrency
     });
     ADD_FAILURE() << "interrupted write should have prevented transaction";
    }
-   catch (const joedb::Exception &e)
+   catch (const error::Exception &e)
    {
     EXPECT_STREQ(e.what(), "can't pull: client is ahead of server");
    }
@@ -172,7 +172,7 @@ namespace joedb::concurrency
   {
    Client_Lock lock(client);
    lock.get_journal().comment("Bye");
-   throw Exception("exception");
+   throw error::Exception("exception");
   }
   catch (...)
   {
@@ -212,7 +212,7 @@ namespace joedb::concurrency
     Interpreted_Client client(client_file, connection);
     ADD_FAILURE() << "Connection with incompatible file should have failed";
    }
-   catch (const joedb::Exception &e)
+   catch (const error::Exception &e)
    {
     EXPECT_STREQ(e.what(), "Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
    }
@@ -234,7 +234,7 @@ namespace joedb::concurrency
     client.pull();
     EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
    }
-   catch (const joedb::Exception &e)
+   catch (const error::Exception &e)
    {
     ADD_FAILURE() << e.what();
    }
@@ -346,7 +346,7 @@ namespace joedb::concurrency
    Interpreted_Client client(client_file, connection);
    ADD_FAILURE() << "connecting should have failed\n";
   }
-  catch (const Exception &e)
+  catch (const error::Exception &e)
   {
    EXPECT_STREQ(e.what(), "Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
   }

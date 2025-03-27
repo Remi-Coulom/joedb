@@ -35,7 +35,7 @@ namespace joedb
     error_message[error] :
     "unknown error";
 
-   throw joedb::Exception
+   throw error::Exception
    (
     std::string(message) + std::string(error_string)
    );

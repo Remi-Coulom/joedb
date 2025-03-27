@@ -1,5 +1,5 @@
 #include "joedb/journal/Stream_File.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 namespace joedb
 {
@@ -15,7 +15,7 @@ namespace joedb
   pos(0)
  {
   if (is_shared())
-   throw Exception("Stream_File does not support shared_write");
+   throw error::Exception("Stream_File does not support shared_write");
 
   streambuf.pubseekoff
   (
@@ -53,7 +53,7 @@ namespace joedb
     return;
   }
 
-  throw Exception("seek error");
+  throw error::Exception("seek error");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -83,14 +83,14 @@ namespace joedb
    );
 
    if (n <= 0)
-    throw Exception("Could not write to stream");
+    throw error::Exception("Could not write to stream");
 
    pos += n;
    written += size_t(n);
   }
 
   if (streambuf.pubsync() < 0)
-   throw Exception("sync error");
+   throw error::Exception("sync error");
  }
 
  /////////////////////////////////////////////////////////////////////////////

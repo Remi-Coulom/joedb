@@ -3,7 +3,7 @@
 #include "joedb/get_pid.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/ui/get_time_string.h"
-#include "joedb/Posthumous_Catcher.h"
+#include "joedb/error/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
 
 #define LOG(x) log([&](std::ostream &out){out << x;})
@@ -183,7 +183,7 @@ namespace joedb::concurrency
 
    if (client_lock && share_client && lock_queue.empty())
    {
-    Posthumous_Catcher catcher;
+    error::Posthumous_Catcher catcher;
     client_lock->set_catcher(catcher);
     client_lock.reset(); // ??? takes_time
     catcher.rethrow();

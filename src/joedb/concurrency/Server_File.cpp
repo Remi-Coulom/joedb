@@ -28,7 +28,7 @@ namespace joedb::concurrency
  void Server_File::write_to_body_error()
  ////////////////////////////////////////////////////////////////////////////
  {
-  throw Exception("Cannot write to Server_File body");
+  throw error::Exception("Cannot write to Server_File body");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ namespace joedb::concurrency
  )
  {
   if (tail.get_size() > 0)
-   throw Exception("Server_File: pulling with non-empty tail");
+   throw error::Exception("Server_File: pulling with non-empty tail");
 
   int64_t result = Server_Connection::pull(client_journal, wait, pull_type, false);
   write_checkpoint();
@@ -83,7 +83,7 @@ namespace joedb::concurrency
  )
  {
   if (!client_journal.is_same_file(*this))
-   throw Exception("Server_File: wrong file");
+   throw error::Exception("Server_File: wrong file");
   return server_checkpoint;
  }
 
@@ -133,7 +133,7 @@ namespace joedb::concurrency
    tail.resize(0);
   }
   else
-   throw Exception("Server_File could not truncate tail after push");
+   throw error::Exception("Server_File could not truncate tail after push");
 
   return server_checkpoint;
  }

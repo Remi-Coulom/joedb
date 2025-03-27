@@ -2,7 +2,7 @@
 #define joedb_Server_Client_declared
 
 #include "joedb/concurrency/Thread_Safe_Channel.h"
-#include "joedb/Posthumous_Thrower.h"
+#include "joedb/error/Posthumous_Thrower.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/journal/Async_Writer.h"
 
@@ -14,7 +14,7 @@
 namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
- class Server_Client: public Posthumous_Thrower
+ class Server_Client: public error::Posthumous_Thrower
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Server_File;

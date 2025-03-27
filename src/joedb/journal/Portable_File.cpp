@@ -1,5 +1,5 @@
 #include "joedb/journal/Portable_File.h"
-#include "joedb/Exception.h"
+#include "joedb/error/Exception.h"
 
 namespace joedb
 {
@@ -24,7 +24,7 @@ namespace joedb
   else if (mode == Open_Mode::create_new)
   {
    if (filebuf.open(file_name, in))
-    throw Exception("File already exists: " + std::string(file_name));
+    throw error::Exception("File already exists: " + std::string(file_name));
    filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
   }
   else if (mode == Open_Mode::write_existing_or_create_new)
@@ -34,13 +34,13 @@ namespace joedb
   }
   else
   {
-   throw Exception
+   throw error::Exception
    (
     std::string(file_name) + ": unsupported mode for Portable_File"
    );
   }
 
   if (!filebuf.is_open())
-   throw Exception("Cannot open file: " + std::string(file_name));
+   throw error::Exception("Cannot open file: " + std::string(file_name));
  }
 }

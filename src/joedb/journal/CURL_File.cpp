@@ -8,7 +8,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   if (code != CURLE_OK)
-   throw Exception(curl_easy_strerror(code));
+   throw error::Exception(curl_easy_strerror(code));
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ namespace joedb
   {
    std::ostringstream error_message;
    error_message << "unexpected response code: " << code;
-   throw Exception(error_message.str());
+   throw error::Exception(error_message.str());
   }
  }
 
@@ -113,7 +113,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   if (curl == nullptr)
-   throw Exception("Could not initialize CURL");
+   throw error::Exception("Could not initialize CURL");
  }
 
  ////////////////////////////////////////////////////////////////////////////

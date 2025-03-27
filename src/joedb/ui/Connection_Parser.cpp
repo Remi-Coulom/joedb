@@ -82,7 +82,7 @@ namespace joedb::ui
   std::ostringstream message;
   message << "Unknown connection type: " << name << '\n';
   print_help(message);
-  throw Exception(message.str());
+  throw error::Exception(message.str());
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ namespace joedb::ui
    const char * description = builder.get_parameters_description();
    if (!*description)
     description = "no parameters";
-   throw Exception
+   throw error::Exception
    (
     std::string("Wrong number of connection arguments. Expected: ") +
     std::string(description)
