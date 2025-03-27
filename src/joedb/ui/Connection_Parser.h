@@ -18,7 +18,7 @@ namespace joedb::ui
 
    Connection_Builder &get_builder(const char *name) const;
 
-   static Pullonly_Connection &build
+   static concurrency::Pullonly_Connection &build
    (
     Connection_Builder &builder,
     int argc,
@@ -31,7 +31,7 @@ namespace joedb::ui
 
    void print_help(std::ostream &out) const;
 
-   Pullonly_Connection &build
+   concurrency::Pullonly_Connection &build
    (
     int argc,
     char **argv,

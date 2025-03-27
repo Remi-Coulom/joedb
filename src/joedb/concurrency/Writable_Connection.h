@@ -3,7 +3,7 @@
 
 #include "joedb/concurrency/Connection.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Writable_Connection: public Connection

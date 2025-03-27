@@ -6,7 +6,7 @@
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Network_Channel: public Channel

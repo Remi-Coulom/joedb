@@ -4,7 +4,7 @@
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Server_Client.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Server_Connection: public Server_Client, public Connection

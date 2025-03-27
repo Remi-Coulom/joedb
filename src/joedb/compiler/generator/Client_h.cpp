@@ -28,7 +28,7 @@ namespace joedb::compiler::generator
   namespace_open(out, options.get_name_space());
  out << R"RRR(
  ////////////////////////////////////////////////////////////////////////////
- class Client_Data: public joedb::Client_Data
+ class Client_Data: public joedb::concurrency::Client_Data
  ////////////////////////////////////////////////////////////////////////////
  {
   friend class Client;
@@ -62,7 +62,7 @@ namespace joedb::compiler::generator
  class Client:
  ////////////////////////////////////////////////////////////////////////////
   private Client_Data,
-  public joedb::Client,
+  public joedb::concurrency::Client,
   public joedb::Blob_Reader
  {
   private:
@@ -80,19 +80,19 @@ namespace joedb::compiler::generator
    Client
    (
     joedb::Buffered_File &file,
-    joedb::Connection &connection,
+    joedb::concurrency::Connection &connection,
     bool content_check = true,
     joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     Client_Data(file, check, commit_level),
-    joedb::Client(*static_cast<Client_Data *>(this), connection, content_check)
+    joedb::concurrency::Client(*static_cast<Client_Data *>(this), connection, content_check)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
     db.play_journal(); // makes transaction shorter if db is big
-    joedb::Client::transaction([this](joedb::Client_Data &data){
+    joedb::concurrency::Client::transaction([this](joedb::concurrency::Client_Data &data){
      db.initialize();
     });
 
@@ -111,14 +111,14 @@ namespace joedb::compiler::generator
 
    int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    {
-    const int64_t byte_count = joedb::Client::pull(wait);
+    const int64_t byte_count = joedb::concurrency::Client::pull(wait);
     play_journal_and_throw_if_schema_changed();
     return byte_count;
    }
 
    template<typename F> void transaction(F transaction)
    {
-    joedb::Client::transaction([&](joedb::Client_Data &data)
+    joedb::concurrency::Client::transaction([&](joedb::concurrency::Client_Data &data)
     {
      play_journal_and_throw_if_schema_changed();
      transaction(db);

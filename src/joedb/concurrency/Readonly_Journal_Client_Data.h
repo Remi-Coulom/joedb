@@ -4,7 +4,7 @@
 #include "joedb/concurrency/Client_Data.h"
 #include "joedb/journal/Readonly_Journal.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Readonly_Journal_Client_Data: public Client_Data

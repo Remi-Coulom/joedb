@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-namespace joedb
+namespace joedb::concurrency
 {
  class Client;
  class Pullonly_Client;
@@ -16,9 +16,9 @@ namespace joedb::ui
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Pullonly_Client &client;
+   concurrency::Pullonly_Client &client;
    const bool has_file;
-   Client * const push_client;
+   concurrency::Client * const push_client;
 
    void pull(std::ostream &out, std::chrono::milliseconds wait);
    void print_status(std::ostream &out);
@@ -37,6 +37,6 @@ namespace joedb::ui
    ) override;
 
   public:
-   Client_Command_Processor(Pullonly_Client &client, bool has_file);
+   Client_Command_Processor(concurrency::Pullonly_Client &client, bool has_file);
  };
 }

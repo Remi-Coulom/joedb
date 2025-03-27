@@ -4,7 +4,7 @@
 #include "joedb/concurrency/Connection.h"
 #include "joedb/journal/File_Hasher.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Pullonly_Journal_Connection: public virtual Pullonly_Connection

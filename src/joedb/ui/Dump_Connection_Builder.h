@@ -30,7 +30,7 @@ namespace joedb::ui
  class Dump_Connection_Builder:
  ////////////////////////////////////////////////////////////////////////////
   private Dump_Connection_Data<Dump_Writable>,
-  private Writable_Connection,
+  private concurrency::Writable_Connection,
   public Connection_Builder
  {
   private:

@@ -11,7 +11,7 @@
 namespace joedb::ui
 {
  /////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ static int joedbi(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
   const bool default_only = false;
@@ -57,8 +57,8 @@ namespace joedb::ui
   }
   else
   {
-   joedb::Connection connection;
-   Interpreted_Client client(file, connection);
+   concurrency::Connection connection;
+   concurrency::Interpreted_Client client(file, connection);
 
    std::optional<Writable_Journal> blob_journal;
    if (blob_file_parser)
@@ -89,5 +89,5 @@ namespace joedb::ui
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(joedb::ui::main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::ui::joedbi, argc, argv);
 }

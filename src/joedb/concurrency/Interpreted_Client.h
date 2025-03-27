@@ -4,7 +4,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Interpreted_Client:

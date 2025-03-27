@@ -5,7 +5,7 @@
 
 #include <chrono>
 
-namespace joedb
+namespace joedb::concurrency
 {
  class Connection;
 

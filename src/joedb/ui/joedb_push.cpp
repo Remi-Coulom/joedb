@@ -16,7 +16,7 @@
 namespace joedb::ui
 {
  ////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ static int joedb_push(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = false;
@@ -52,14 +52,14 @@ namespace joedb::ui
   Buffered_File &file = *file_parser.parse(std::cerr, argc, argv, arg_index);
   Readonly_Journal journal(file);
 
-  Pullonly_Connection &pullonly_connection = connection_parser.build
+  concurrency::Pullonly_Connection &pullonly_connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index,
    &file
   );
 
-  Connection *connection = pullonly_connection.get_push_connection();
+  concurrency::Connection *connection = pullonly_connection.get_push_connection();
 
   if (!connection)
   {
@@ -106,5 +106,5 @@ namespace joedb::ui
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(joedb::ui::main, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::ui::joedb_push, argc, argv);
 }

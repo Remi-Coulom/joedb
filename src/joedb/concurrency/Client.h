@@ -5,7 +5,7 @@
 #include "joedb/concurrency/Client_Data.h"
 #include "joedb/Posthumous_Thrower.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  class Client;
 

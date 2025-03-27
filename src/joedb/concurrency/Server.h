@@ -15,7 +15,7 @@
 #include <asio/steady_timer.hpp>
 #include <asio/signal_set.hpp>
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Server

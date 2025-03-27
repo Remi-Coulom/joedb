@@ -11,7 +11,7 @@
 namespace joedb::ui
 {
  /////////////////////////////////////////////////////////////////////////////
- static int server(int argc, char **argv)
+ static int joedb_server(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
   const bool local = true;
@@ -56,15 +56,15 @@ and can still push data: the push will succeed only if there is no conflict.
    index += 1;
   }
 
-  Pullonly_Client &client = client_parser.parse(argc - index, argv + index);
+  concurrency::Pullonly_Client &client = client_parser.parse(argc - index, argv + index);
 
-  IO_Context_Wrapper io_context_wrapper;
+  concurrency::IO_Context_Wrapper io_context_wrapper;
 
   std::cout << "Creating server (port = " << port;
   std::cout << "; timeout = " << timeout;
   std::cout << "; share = " << share << ")\n";
 
-  Server server
+  concurrency::Server server
   (
    client,
    share,
@@ -84,5 +84,5 @@ and can still push data: the push will succeed only if there is no conflict.
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(joedb::ui::server, argc, argv);
+ return joedb::ui::main_exception_catcher(joedb::ui::joedb_server, argc, argv);
 }

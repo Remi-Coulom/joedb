@@ -11,8 +11,8 @@ namespace joedb::ui
  /////////////////////////////////////////////////////////////////////////////
  {
   private:
-   std::unique_ptr<Network_Channel> channel;
-   std::unique_ptr<Server_Connection> connection;
+   std::unique_ptr<concurrency::Network_Channel> channel;
+   std::unique_ptr<concurrency::Server_Connection> connection;
 
   public:
    bool has_sharing_option() const final {return true;}
@@ -24,17 +24,17 @@ namespace joedb::ui
     return "<host> <port>";
    }
 
-   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   concurrency::Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     const char * const host = argv[0];
     const char * const port = argv[1];
 
-    channel = std::make_unique<Network_Channel>(host, port);
+    channel = std::make_unique<concurrency::Network_Channel>(host, port);
 
     if (file)
-     connection = std::make_unique<Server_Connection>(*channel);
+     connection = std::make_unique<concurrency::Server_Connection>(*channel);
     else
-     connection = std::make_unique<Server_File>(*channel);
+     connection = std::make_unique<concurrency::Server_File>(*channel);
 
     connection->set_log(&std::cerr);
 

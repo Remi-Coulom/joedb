@@ -3,7 +3,7 @@
 
 #include <asio/io_context.hpp>
 
-namespace joedb
+namespace joedb::concurrency
 {
  struct IO_Context_Wrapper
  {

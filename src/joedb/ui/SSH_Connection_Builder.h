@@ -16,7 +16,7 @@ namespace joedb::ui
   private:
    std::unique_ptr<ssh::Session> session;
    std::unique_ptr<ssh::Forward_Channel> channel;
-   std::unique_ptr<Server_Connection> connection;
+   std::unique_ptr<concurrency::Server_Connection> connection;
 
   public:
    bool has_sharing_option() const final {return true;}
@@ -28,7 +28,7 @@ namespace joedb::ui
     return "<user> <host> <joedb_port> [<ssh_port> [<ssh_log_level>]]";
    }
 
-   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   concurrency::Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     const char * const user = argv[0];
     const char * const host = argv[1];
@@ -40,9 +40,9 @@ namespace joedb::ui
     channel = std::make_unique<ssh::Forward_Channel>(*session, "localhost", joedb_port);
 
     if (file)
-     connection = std::make_unique<Server_Connection>(*channel);
+     connection = std::make_unique<concurrency::Server_Connection>(*channel);
     else
-     connection = std::make_unique<Server_File>(*channel);
+     connection = std::make_unique<concurrency::Server_File>(*channel);
     connection->set_log(&std::cerr);
 
     return *connection;

@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Connection.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  void Pullonly_Connection::content_mismatch()
  {

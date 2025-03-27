@@ -6,7 +6,7 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Interpreted_Client_Data: public Client_Data

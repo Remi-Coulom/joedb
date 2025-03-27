@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server_File.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  size_t Server_File::remote_pread(char *data, size_t size, int64_t offset) const

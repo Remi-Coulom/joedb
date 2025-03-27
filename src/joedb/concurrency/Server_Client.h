@@ -11,7 +11,7 @@
 #include <iosfwd>
 #include <chrono>
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Server_Client: public Posthumous_Thrower

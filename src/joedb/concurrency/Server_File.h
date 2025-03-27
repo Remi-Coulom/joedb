@@ -5,7 +5,7 @@
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Memory_File.h"
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  class Server_File: public Server_Connection, public Buffered_File

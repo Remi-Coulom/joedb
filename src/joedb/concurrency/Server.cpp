@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/get_pid.h"
+#include "joedb/get_pid.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/ui/get_time_string.h"
 #include "joedb/Posthumous_Catcher.h"
@@ -12,7 +12,7 @@
 #include <asio/read.hpp>
 #include <asio/write.hpp>
 
-namespace joedb
+namespace joedb::concurrency
 {
  ////////////////////////////////////////////////////////////////////////////
  std::chrono::milliseconds Server::get_time_stamp() const
