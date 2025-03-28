@@ -36,7 +36,7 @@ namespace joedb::concurrency
 
    ADD_FAILURE() << "Should have thrown";
   }
-  catch (const error::Exception &e)
+  catch (const Exception &e)
   {
    EXPECT_STREQ(e.what(), "Did not receive \"joedb\" from server");
   }

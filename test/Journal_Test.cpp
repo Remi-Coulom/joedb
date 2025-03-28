@@ -87,7 +87,7 @@ namespace joedb
    joedb::Readonly_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
-  catch (const error::Exception &e)
+  catch (const Exception &e)
   {
    EXPECT_STREQ(e.what(), "File does not start by 'joedb'");
   }
@@ -114,7 +114,7 @@ namespace joedb
    joedb::Readonly_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
-  catch (const error::Exception &e)
+  catch (const Exception &e)
   {
    EXPECT_STREQ(e.what(), "Unsupported format version");
   }
@@ -142,7 +142,7 @@ namespace joedb
    joedb::Readonly_Journal journal(file);
    EXPECT_EQ(journal.get_checkpoint_position(), 41);
   }
-  catch (const error::Exception &)
+  catch (const Exception &)
   {
    FAIL() << "Mismatched checkpoint is OK for read-only";
   }
@@ -152,7 +152,7 @@ namespace joedb
    joedb::Writable_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
-  catch (const error::Exception &e)
+  catch (const Exception &e)
   {
    EXPECT_STREQ(e.what(), "Checkpoint mismatch");
   }
@@ -162,7 +162,7 @@ namespace joedb
    joedb::Writable_Journal journal(file, joedb::Readonly_Journal::Check::overwrite);
    EXPECT_EQ(journal.get_checkpoint_position(), 41);
   }
-  catch (const error::Exception &)
+  catch (const Exception &)
   {
    FAIL() << "Mismatched checkpoint is OK with Check::overwrite";
   }
@@ -172,7 +172,7 @@ namespace joedb
    joedb::Writable_Journal journal(file);
    EXPECT_EQ(journal.get_checkpoint_position(), 41);
   }
-  catch (const error::Exception &)
+  catch (const Exception &)
   {
    FAIL() << "checkpoints should be matching now";
   }
@@ -200,7 +200,7 @@ namespace joedb
    joedb::Readonly_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
-  catch (const error::Exception &e)
+  catch (const Exception &e)
   {
    EXPECT_STREQ(e.what(), "Checkpoint is bigger than file size");
   }
@@ -228,7 +228,7 @@ namespace joedb
    joedb::Writable_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
-  catch (const error::Exception &e)
+  catch (const Exception &e)
   {
    EXPECT_STREQ(e.what(), "Checkpoint (41) is smaller than file size (49). This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
   }
@@ -311,7 +311,7 @@ namespace joedb
    journal.replay_log(db);
    FAIL() << "Should have thrown an exception";
   }
-  catch (const error::Exception &e)
+  catch (const Exception &e)
   {
    EXPECT_STREQ(e.what(), "Unexpected operation: file.get_position() = 42");
   }

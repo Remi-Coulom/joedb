@@ -309,7 +309,7 @@ TEST(Compiler, exceptions)
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 3 was already at id = 1");
  }
@@ -327,7 +327,7 @@ TEST(Compiler, exceptions)
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "multi_index: person_by_full_name unique index failure: (\"Rémi\", \"Coulom\") at id = 6 was already at id = 2");
  }
@@ -340,7 +340,7 @@ TEST(Compiler, exceptions)
   ((joedb::Writable *)&db)->delete_from(joedb::Table_Id(5), translation.get_record_id());
   db.checkpoint();
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   ADD_FAILURE() << e.what();
  }
@@ -354,7 +354,7 @@ TEST(Compiler, exceptions)
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: Duplicate insert into table city");
  }
@@ -367,7 +367,7 @@ TEST(Compiler, exceptions)
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(5), joedb::Record_Id(3));
   db.checkpoint();
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   ADD_FAILURE() << e.what();
  }
@@ -381,7 +381,7 @@ TEST(Compiler, exceptions)
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: insert_into: too big");
  }
@@ -395,7 +395,7 @@ TEST(Compiler, exceptions)
   db.checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: insert_vector: null record_id, or too big");
  }
@@ -569,7 +569,7 @@ TEST(Compiler, schema_upgrade)
   schema_v1::Buffered_File_Database db(file);
   ADD_FAILURE() << "v1 code should not open v2 files\n";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "schema_v1: Trying to open a file with incompatible schema");
  }
@@ -579,7 +579,7 @@ TEST(Compiler, schema_upgrade)
   schema_v1::Readonly_Database db(file);
   ADD_FAILURE() << "v1 code should not open v2 files\n";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "schema_v1: Trying to open a file with incompatible schema");
  }
@@ -617,7 +617,7 @@ TEST(Compiler, client)
   client_v1.pull();
   ADD_FAILURE() << "client_v1 should not be able to pull new schema\n";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "schema_v1: Can't upgrade schema during pull");
  }
@@ -629,7 +629,7 @@ TEST(Compiler, client)
   });
   ADD_FAILURE() <<  "client_v1 should not be able to pull new schema\n";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "schema_v1: Can't upgrade schema during pull");
  }
@@ -686,7 +686,7 @@ TEST(Compiler, client_hash_error)
   test::Client client(client_file, connection);
   ADD_FAILURE() << "Should have thrown\n";
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   EXPECT_STREQ(e.what(), "Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
  }
@@ -799,7 +799,7 @@ TEST(Compiler, vector)
   joedb::Readonly_Interpreted_File("compiler/vector_hole.joedbi").copy_to(file);
   vector_test::Buffered_File_Database db(file);
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   ADD_FAILURE() << e.what();
  }
@@ -820,7 +820,7 @@ TEST(Compiler, vector)
    journal.replay_log(database);
   }
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   ADD_FAILURE() << e.what();
  }
@@ -835,7 +835,7 @@ TEST(Compiler, vector)
   joedb::Readonly_Interpreted_File("compiler/vector_delete.joedbi").copy_to(file);
   vector_test::Buffered_File_Database db(file);
  }
- catch (const joedb::error::Exception &e)
+ catch (const joedb::Exception &e)
  {
   ADD_FAILURE() << e.what();
  }

@@ -77,7 +77,7 @@ namespace joedb::concurrency
    Interpreted_Client client(connection, file);
    FAIL() << "Expected an exception\n";
   }
-  catch(const error::Exception &e)
+  catch(const Exception &e)
   {
    EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
   }
