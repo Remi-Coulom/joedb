@@ -1,4 +1,4 @@
-#include "joedb/journal/diagnostics.h"
+#include "joedb/ui/diagnostics.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Memory_File.h"
 

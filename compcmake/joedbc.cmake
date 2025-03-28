@@ -40,6 +40,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/ui/Blob_Reader_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Command_Interpreter.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/dump.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/get_time_string.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Interpreter_Dump_Writable.cpp
@@ -51,7 +52,6 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/ui/type_io.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Writable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/write_value.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Buffered_File.cpp

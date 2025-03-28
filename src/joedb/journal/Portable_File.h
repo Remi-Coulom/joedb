@@ -18,9 +18,8 @@ namespace joedb
    Portable_File_Buffer(const char *file_name, Open_Mode mode);
  };
 
- ///////////////////////////////////////////////////////////////////////////
+ /// \ingroup journal
  class Portable_File: private Portable_File_Buffer, public Stream_File
- ///////////////////////////////////////////////////////////////////////////
  {
   public:
    inline static constexpr bool lockable = false;

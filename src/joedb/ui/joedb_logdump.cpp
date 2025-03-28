@@ -2,7 +2,7 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Readonly_Journal.h"
-#include "joedb/journal/diagnostics.h"
+#include "joedb/ui/diagnostics.h"
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/ui/Raw_Dump_Writable.h"

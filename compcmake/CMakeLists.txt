@@ -368,6 +368,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/ui/Readable_Writable_Command_Processor.cpp
   ../src/joedb/ui/type_io.cpp
   ../src/joedb/ui/write_value.cpp
+  ../src/joedb/ui/diagnostics.cpp
   ../src/joedb/ui/dump.cpp
   ../src/joedb/ui/json.cpp
   ../src/joedb/ui/base64.cpp
@@ -376,7 +377,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/ui/get_time_string.cpp
   ../src/joedb/ui/Progress_Bar.cpp
   ../src/joedb/journal/Async_Reader.cpp
-  ../src/joedb/journal/diagnostics.cpp
   ../src/joedb/journal/Interpreted_File.cpp
   ../src/joedb/journal/Journal_Construction_Lock.cpp
   ../src/joedb/journal/Memory_File.cpp

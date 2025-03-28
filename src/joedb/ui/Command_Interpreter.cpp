@@ -1,5 +1,5 @@
 #include "joedb/ui/Command_Interpreter.h"
-#include "joedb/journal/diagnostics.h"
+#include "joedb/ui/diagnostics.h"
 
 #include <sstream>
 

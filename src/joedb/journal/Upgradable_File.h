@@ -6,10 +6,8 @@
 
 namespace joedb
 {
- template <typename Parent>
- ////////////////////////////////////////////////////////////////////////////
- class Upgradable_File: public Parent
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup journal
+ template <typename Parent> class Upgradable_File: public Parent
  {
   private:
    void pwrite(const char *data, size_t size, int64_t offset) override {}
