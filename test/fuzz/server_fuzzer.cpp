@@ -35,7 +35,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
    channel.write((const char *)Data, Size);
    io_context.post([&server](){server.stop_after_sessions();});
   }
-  catch (const joedb::error::Exception &)
+  catch (const joedb::Exception &)
   {
   }
  });
@@ -44,7 +44,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
   io_context.run();
  }
- catch (const joedb::error::Exception &)
+ catch (const joedb::Exception &)
  {
  }
 

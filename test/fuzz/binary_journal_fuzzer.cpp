@@ -13,7 +13,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
   joedb::Database db(1000000);
   journal.replay_log(db);
  }
- catch (const joedb::error::Exception &)
+ catch (const joedb::Exception &)
  {
  }
  catch (const std::bad_variant_access &)

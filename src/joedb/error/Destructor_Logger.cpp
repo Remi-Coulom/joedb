@@ -1,7 +1,7 @@
 #include "joedb/error/Destructor_Logger.h"
 #include "joedb/error/Stream_Logger.h"
 
-namespace joedb::error
+namespace joedb
 {
  static Stream_Logger default_logger(std::cerr);
  Logger *Destructor_Logger::the_logger = &default_logger;

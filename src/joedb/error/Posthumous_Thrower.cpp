@@ -2,7 +2,7 @@
 #include "joedb/error/Posthumous_Catcher.h"
 #include "joedb/error/Destructor_Logger.h"
 
-namespace joedb::error
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Posthumous_Thrower::postpone_exception(const char *message) noexcept

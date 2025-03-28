@@ -183,7 +183,7 @@ namespace joedb::concurrency
 
    if (client_lock && share_client && lock_queue.empty())
    {
-    error::Posthumous_Catcher catcher;
+    Posthumous_Catcher catcher;
     client_lock->set_catcher(catcher);
     client_lock.reset(); // ??? takes_time
     catcher.rethrow();

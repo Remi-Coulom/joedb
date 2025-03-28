@@ -1,11 +1,12 @@
-#ifndef joedb_error_Posthumous_Catcher_declared
-#define joedb_error_Posthumous_Catcher_declared
+#ifndef joedb_Posthumous_Catcher_declared
+#define joedb_Posthumous_Catcher_declared
 
 #include <exception>
 
-namespace joedb::error
+namespace joedb
 {
  /// Catch exceptions sent from the destructor of a @ref Posthumous_Thrower
+ /// \ingroup error
  class Posthumous_Catcher
  {
   friend class Posthumous_Thrower;

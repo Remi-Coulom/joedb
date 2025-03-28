@@ -1,13 +1,12 @@
-#ifndef joedb_error_Destructor_Logger
-#define joedb_error_Destructor_Logger
+#ifndef joedb_Destructor_Logger
+#define joedb_Destructor_Logger
 
-namespace joedb::error
+namespace joedb
 {
  class Logger;
 
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup error
  class Destructor_Logger
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    static Logger *the_logger;

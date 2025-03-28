@@ -526,7 +526,7 @@ TEST(Compiler, schema_upgrade)
   schema_v2::Readonly_Database db(file);
   ADD_FAILURE() << "v2 should not open v1 readonly without upgrade\n";
  }
- catch (const joedb::error::Out_Of_Date &e)
+ catch (const joedb::Out_Of_Date &e)
  {
   EXPECT_STREQ(e.what(), "schema_v2: Schema is out of date. Can't upgrade a read-only database.");
  }
@@ -824,7 +824,7 @@ TEST(Compiler, vector)
  {
   ADD_FAILURE() << e.what();
  }
- catch (const joedb::error::Assertion_Failure &e)
+ catch (const joedb::Assertion_Failure &e)
  {
   ADD_FAILURE() << e.what();
  }

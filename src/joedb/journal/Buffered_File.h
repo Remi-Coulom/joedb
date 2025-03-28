@@ -18,7 +18,7 @@ namespace joedb
  class Buffered_File:
  ////////////////////////////////////////////////////////////////////////////
   public Sequential_File,
-  public error::Posthumous_Thrower,
+  public Posthumous_Thrower,
   public Blob_Reader,
   public Blob_Writer
  {

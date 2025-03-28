@@ -1,11 +1,10 @@
-#ifndef joedb_error_Logger
-#define joedb_error_Logger
+#ifndef joedb_Logger
+#define joedb_Logger
 
-namespace joedb::error
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup error
  class Logger
- ////////////////////////////////////////////////////////////////////////////
  {
   public:
    virtual void write(const char *message) noexcept = 0;

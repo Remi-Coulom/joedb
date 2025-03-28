@@ -1,15 +1,14 @@
-#ifndef joedb_error_Stream_Logger
-#define joedb_error_Stream_Logger
+#ifndef joedb_Stream_Logger
+#define joedb_Stream_Logger
 
 #include "joedb/error/Logger.h"
 
 #include <iostream>
 
-namespace joedb::error
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup error
  class Stream_Logger: public Logger
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    std::ostream &out;

@@ -14,7 +14,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
   public Readonly_Journal,
   public Writable,
-  public error::Posthumous_Thrower
+  public Posthumous_Thrower
  {
   private:
    Commit_Level current_commit_level;

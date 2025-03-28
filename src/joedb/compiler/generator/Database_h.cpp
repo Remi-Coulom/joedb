@@ -838,7 +838,7 @@ namespace joedb::compiler::generator
     check_schema();
 
     if (requires_schema_upgrade())
-     throw_exception<joedb::error::Out_Of_Date>("Schema is out of date. Can't upgrade a read-only database.");
+     throw_exception<joedb::Out_Of_Date>("Schema is out of date. Can't upgrade a read-only database.");
    }
 )RRR";
 
