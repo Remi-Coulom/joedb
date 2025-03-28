@@ -5,13 +5,12 @@
 #include "joedb/concurrency/Client_Data.h"
 #include "joedb/error/Posthumous_Thrower.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  class Client;
 
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Pullonly_Client
- ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    Client_Data &data;

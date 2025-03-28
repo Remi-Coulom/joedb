@@ -15,11 +15,10 @@
 #include <asio/steady_timer.hpp>
 #include <asio/signal_set.hpp>
 
-namespace joedb::concurrency
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Server
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    const std::chrono::time_point<std::chrono::steady_clock> start_time;

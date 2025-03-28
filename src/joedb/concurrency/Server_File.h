@@ -5,11 +5,10 @@
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Memory_File.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Server_File: public Server_Connection, public Buffered_File
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    int64_t tail_offset;

@@ -32,7 +32,7 @@ namespace joedb::compiler::generator
  ////////////////////////////////////////////////////////////////////////////
  class Readonly_Client_Data:
  ////////////////////////////////////////////////////////////////////////////
-  public joedb::concurrency::Client_Data,
+  public joedb::Client_Data,
   public joedb::Blob_Reader
  {
   protected:
@@ -66,7 +66,7 @@ namespace joedb::compiler::generator
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   joedb::concurrency::Pullonly_Connection connection;
+   joedb::Pullonly_Connection connection;
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ namespace joedb::compiler::generator
  ////////////////////////////////////////////////////////////////////////////
   private Readonly_Client_Data,
   private Pullonly_Connection,
-  private joedb::concurrency::Pullonly_Client
+  private joedb::Pullonly_Client
  {
   private:
    const int64_t schema_checkpoint;
@@ -82,7 +82,7 @@ namespace joedb::compiler::generator
   public:
    Readonly_Client(joedb::File &file):
     Readonly_Client_Data(file),
-    joedb::concurrency::Pullonly_Client
+    joedb::Pullonly_Client
     (
      *static_cast<Readonly_Client_Data *>(this),
      Pullonly_Connection::connection,
@@ -96,7 +96,7 @@ namespace joedb::compiler::generator
 
    bool pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    {
-    joedb::concurrency::Pullonly_Client::pull(wait);
+    joedb::Pullonly_Client::pull(wait);
     if (journal.get_position() < journal.get_checkpoint_position())
     {
      journal.play_until_checkpoint(db);

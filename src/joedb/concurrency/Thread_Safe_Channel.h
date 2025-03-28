@@ -5,7 +5,7 @@
 
 #include <mutex>
 
-namespace joedb::concurrency
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  class Thread_Safe_Channel

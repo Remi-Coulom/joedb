@@ -13,7 +13,7 @@ int main()
  joedb::Memory_File client1_file;
  joedb::Memory_File client2_file;
 
- joedb::concurrency::File_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  tutorial::Client client1(client1_file, connection);
  tutorial::Client client2(client2_file, connection);

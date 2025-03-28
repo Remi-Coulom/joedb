@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Client_Data.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  Writable_Journal &Client_Data::get_writable_journal()
  {

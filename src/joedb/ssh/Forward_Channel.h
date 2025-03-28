@@ -24,7 +24,7 @@ namespace joedb::ssh
  class Forward_Channel:
  ///////////////////////////////////////////////////////////////////////////
   public Forward_Channel_Allocation,
-  public joedb::concurrency::Channel
+  public joedb::Channel
  {
   private:
    size_t write_some(const char *data, size_t size) final;

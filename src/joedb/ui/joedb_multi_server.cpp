@@ -18,10 +18,10 @@ namespace joedb::ui
  {
   private:
    File file;
-   concurrency::Writable_Journal_Client_Data client_data;
-   concurrency::Connection connection;
-   concurrency::Client client;
-   concurrency::Server server;
+   Writable_Journal_Client_Data client_data;
+   Connection connection;
+   Client client;
+   Server server;
 
   public:
    Server_Data
@@ -63,7 +63,7 @@ namespace joedb::ui
    Readonly_Interpreted_File{config_file_name}
   );
 
-  concurrency::IO_Context_Wrapper io_context_wrapper;
+  IO_Context_Wrapper io_context_wrapper;
 
   std::list<std::unique_ptr<Server_Data>> servers;
 

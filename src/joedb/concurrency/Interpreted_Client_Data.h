@@ -6,11 +6,10 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Interpreted_Client_Data: public Client_Data
- ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    Database database;
@@ -19,9 +18,8 @@ namespace joedb::concurrency
    virtual const Database &get_database() = 0;
  };
 
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Writable_Interpreted_Client_Data: public Interpreted_Client_Data
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Writable_Journal journal;
@@ -57,9 +55,8 @@ namespace joedb::concurrency
    }
  };
 
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Readonly_Interpreted_Client_Data: public Interpreted_Client_Data
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Readonly_Journal journal;

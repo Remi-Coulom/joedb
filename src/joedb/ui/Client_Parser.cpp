@@ -28,7 +28,7 @@ namespace joedb::ui
  }
 
  ////////////////////////////////////////////////////////////////////////////
- concurrency::Pullonly_Client &Client_Parser::parse(int argc, char **argv)
+ Pullonly_Client &Client_Parser::parse(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 0;
@@ -51,14 +51,14 @@ namespace joedb::ui
 
   Buffered_File *client_file = file_parser.get_file();
 
-  concurrency::Pullonly_Connection &pullonly_connection = connection_parser.build
+  Pullonly_Connection &pullonly_connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index,
    client_file
   );
 
-  concurrency::Connection *push_connection = pullonly_connection.get_push_connection();
+  Connection *push_connection = pullonly_connection.get_push_connection();
 
   if (!client_file)
    client_file = dynamic_cast<Buffered_File *>(&pullonly_connection);
@@ -69,16 +69,16 @@ namespace joedb::ui
   std::cerr << "Creating client data... ";
 
   if (client_file->is_readonly())
-   client_data.reset(new concurrency::Readonly_Interpreted_Client_Data(*client_file));
+   client_data.reset(new Readonly_Interpreted_Client_Data(*client_file));
   else
-   client_data.reset(new concurrency::Writable_Interpreted_Client_Data(*client_file));
+   client_data.reset(new Writable_Interpreted_Client_Data(*client_file));
 
   std::cerr << "OK\n";
 
   if (push_connection)
-   client.reset(new concurrency::Client(*client_data, *push_connection, content_check));
+   client.reset(new Client(*client_data, *push_connection, content_check));
   else
-   client.reset(new concurrency::Pullonly_Client(*client_data, pullonly_connection, content_check));
+   client.reset(new Pullonly_Client(*client_data, pullonly_connection, content_check));
 
   return *client;
  }

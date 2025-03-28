@@ -1,7 +1,7 @@
 #ifndef joedb_Connection_Builder_declared
 #define joedb_Connection_Builder_declared
 
-namespace joedb::concurrency
+namespace joedb
 {
  class Pullonly_Connection;
 }
@@ -25,7 +25,7 @@ namespace joedb::ui
    virtual const char *get_name() const {return "";}
    virtual const char *get_parameters_description() const {return "";}
 
-   virtual concurrency::Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) = 0;
+   virtual Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) = 0;
 
    virtual ~Connection_Builder() = default;
  };

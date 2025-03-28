@@ -27,7 +27,7 @@ namespace joedb::ui
    return 1;
   }
 
-  concurrency::Pullonly_Client &client = client_parser.parse(argc - 1, argv + 1);
+  Pullonly_Client &client = client_parser.parse(argc - 1, argv + 1);
 
   Client_Command_Processor interpreter(client, client_parser.has_file());
   interpreter.set_prompt(true);

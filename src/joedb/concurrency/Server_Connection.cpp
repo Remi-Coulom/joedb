@@ -10,7 +10,7 @@
 #define LOG(x) do {if (log) *log << x;} while (false)
 #define LOGID(x) do {if (log) *log << ui::get_time_string_of_now() << ' ' << get_session_id() << ": " << x;} while (false)
 
-namespace joedb::concurrency
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Server_Connection::unlock(Readonly_Journal &client_journal)

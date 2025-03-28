@@ -6,11 +6,10 @@
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
 
-namespace joedb::concurrency
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Network_Channel: public Channel
- ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    asio::io_context io_context;

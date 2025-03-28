@@ -4,11 +4,10 @@
 #include "joedb/concurrency/Client_Data.h"
 #include "joedb/journal/Readonly_Journal.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Readonly_Journal_Client_Data: public Client_Data
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Readonly_Journal journal;

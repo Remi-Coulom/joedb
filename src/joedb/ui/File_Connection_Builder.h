@@ -17,7 +17,7 @@ namespace joedb::ui
    File_Parser file_parser;
    std::optional<Readonly_Journal> readonly_journal;
    std::optional<Writable_Journal> writable_journal;
-   std::unique_ptr<concurrency::Pullonly_Connection> connection;
+   std::unique_ptr<Pullonly_Connection> connection;
 
   public:
    const char *get_name() const final {return "file";}
@@ -29,7 +29,7 @@ namespace joedb::ui
     return "<file>";
    }
 
-   concurrency::Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     int arg_index = 0;
     std::ostream null_stream(nullptr);
@@ -38,12 +38,12 @@ namespace joedb::ui
     if (file_parser.get_file()->is_readonly())
     {
      readonly_journal.emplace(*file_parser.get_file());
-     connection.reset(new concurrency::Pullonly_Journal_Connection(*readonly_journal));
+     connection.reset(new Pullonly_Journal_Connection(*readonly_journal));
     }
     else
     {
      writable_journal.emplace(*file_parser.get_file());
-     connection.reset(new concurrency::Journal_Connection(*writable_journal));
+     connection.reset(new Journal_Connection(*writable_journal));
     }
 
     return *connection;

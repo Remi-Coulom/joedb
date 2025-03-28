@@ -591,7 +591,7 @@ TEST(Compiler, client)
 {
  joedb::Memory_File server_file;
 
- joedb::concurrency::File_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  joedb::Memory_File client_v1_file;
  schema_v1::Client client_v1(client_v1_file, connection);
@@ -648,7 +648,7 @@ TEST(Compiler, client_push)
  }
 
  joedb::Memory_File server_file;
- joedb::concurrency::File_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  {
   test::Client client(client_file, connection);
@@ -679,7 +679,7 @@ TEST(Compiler, client_hash_error)
   db.checkpoint();
  }
 
- joedb::concurrency::File_Connection connection(server_file);
+ joedb::File_Connection connection(server_file);
 
  try
  {

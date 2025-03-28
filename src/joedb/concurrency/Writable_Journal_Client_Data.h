@@ -4,7 +4,7 @@
 #include "joedb/concurrency/Client_Data.h"
 #include "joedb/journal/Writable_Journal.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  class Writable_Journal_Client_Data: public Client_Data

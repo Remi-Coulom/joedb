@@ -8,7 +8,7 @@
 
 #define LOG(x) do {if (log) *log << x;} while (false)
 
-namespace joedb::concurrency
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Server_Client::ping(Channel_Lock &lock)

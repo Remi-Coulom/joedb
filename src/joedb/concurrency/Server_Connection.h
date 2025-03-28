@@ -4,11 +4,10 @@
 #include "joedb/concurrency/Connection.h"
 #include "joedb/concurrency/Server_Client.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup concurrency
  class Server_Connection: public Server_Client, public Connection
- ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    //

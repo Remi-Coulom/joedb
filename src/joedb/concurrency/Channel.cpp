@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Channel.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  void Channel::write(const char *data, size_t size)
  {

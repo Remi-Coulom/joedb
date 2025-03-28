@@ -99,9 +99,9 @@ namespace joedb::ui
   }
   else if (command == "db") /////////////////////////////////////////////////
   {
-   concurrency::Interpreted_Client_Data *interpreted_client_data
+   Interpreted_Client_Data *interpreted_client_data
    (
-    dynamic_cast<concurrency::Interpreted_Client_Data *>(&client.get_data())
+    dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
    );
 
    if (has_file)
@@ -173,13 +173,13 @@ namespace joedb::ui
    out << "Waiting for lock... ";
    out.flush();
 
-   push_client->transaction([&](concurrency::Client_Data &data)
+   push_client->transaction([&](Client_Data &data)
    {
     out << "OK\n";
 
-    concurrency::Writable_Interpreted_Client_Data *interpreted_client_data
+    Writable_Interpreted_Client_Data *interpreted_client_data
     (
-     dynamic_cast<concurrency::Writable_Interpreted_Client_Data *>(&data)
+     dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
     );
 
     if (interpreted_client_data)
@@ -218,7 +218,7 @@ namespace joedb::ui
  Client_Command_Processor::Client_Command_Processor
  ////////////////////////////////////////////////////////////////////////////
  (
-  concurrency::Pullonly_Client &client,
+  Pullonly_Client &client,
   bool has_file
  ):
   client(client),

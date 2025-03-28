@@ -12,7 +12,7 @@
 #include <asio/read.hpp>
 #include <asio/write.hpp>
 
-namespace joedb::concurrency
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  std::chrono::milliseconds Server::get_time_stamp() const

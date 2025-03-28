@@ -34,7 +34,7 @@ namespace joedb::compiler::generator
  {
   protected:
    joedb::File file;
-   joedb::concurrency::Connection connection;
+   joedb::Connection connection;
 
    Local_Client_Data(const char *file_name):
     file(file_name, joedb::File::lockable ? joedb::Open_Mode::shared_write : joedb::Open_Mode::write_existing_or_create_new)

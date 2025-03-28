@@ -11,7 +11,7 @@ namespace joedb::ui
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   concurrency::Connection connection;
+   Connection connection;
 
   public:
    const char *get_name() const final
@@ -19,7 +19,7 @@ namespace joedb::ui
     return "dummy";
    }
 
-   concurrency::Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     return connection;
    }

@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Client.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  Pullonly_Client::~Pullonly_Client() = default;
 }

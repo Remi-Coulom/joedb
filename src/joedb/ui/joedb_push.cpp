@@ -52,14 +52,14 @@ namespace joedb::ui
   Buffered_File &file = *file_parser.parse(std::cerr, argc, argv, arg_index);
   Readonly_Journal journal(file);
 
-  concurrency::Pullonly_Connection &pullonly_connection = connection_parser.build
+  Pullonly_Connection &pullonly_connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index,
    &file
   );
 
-  concurrency::Connection *connection = pullonly_connection.get_push_connection();
+  Connection *connection = pullonly_connection.get_push_connection();
 
   if (!connection)
   {

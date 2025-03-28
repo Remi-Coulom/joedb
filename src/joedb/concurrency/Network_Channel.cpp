@@ -2,7 +2,7 @@
 
 #include <asio/connect.hpp>
 
-namespace joedb::concurrency
+namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
  Network_Channel::Network_Channel

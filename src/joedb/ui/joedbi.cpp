@@ -57,8 +57,8 @@ namespace joedb::ui
   }
   else
   {
-   concurrency::Connection connection;
-   concurrency::Interpreted_Client client(file, connection);
+   Connection connection;
+   Interpreted_Client client(file, connection);
 
    std::optional<Writable_Journal> blob_journal;
    if (blob_file_parser)

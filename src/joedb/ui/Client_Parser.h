@@ -18,13 +18,13 @@ namespace joedb::ui
 
    const Open_Mode default_open_mode;
 
-   std::unique_ptr<concurrency::Interpreted_Client_Data> client_data;
-   std::unique_ptr<concurrency::Pullonly_Client> client;
+   std::unique_ptr<Interpreted_Client_Data> client_data;
+   std::unique_ptr<Pullonly_Client> client;
 
   public:
    Client_Parser(bool local, Open_Mode default_open_mode);
 
-   concurrency::Pullonly_Client &parse(int argc, char **argv);
+   Pullonly_Client &parse(int argc, char **argv);
    bool has_file() const {return file_parser.get_file() != nullptr;}
 
    void print_help(std::ostream &out) const;

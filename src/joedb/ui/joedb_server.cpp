@@ -56,15 +56,15 @@ and can still push data: the push will succeed only if there is no conflict.
    index += 1;
   }
 
-  concurrency::Pullonly_Client &client = client_parser.parse(argc - index, argv + index);
+  Pullonly_Client &client = client_parser.parse(argc - index, argv + index);
 
-  concurrency::IO_Context_Wrapper io_context_wrapper;
+  IO_Context_Wrapper io_context_wrapper;
 
   std::cout << "Creating server (port = " << port;
   std::cout << "; timeout = " << timeout;
   std::cout << "; share = " << share << ")\n";
 
-  concurrency::Server server
+  Server server
   (
    client,
    share,
