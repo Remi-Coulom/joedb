@@ -8,7 +8,7 @@ namespace joedb
  TEST(Compiler, unique_index)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::compiler::Compiler_Options::Index index;
+  joedb::Compiler_Options::Index index;
   index.table_id = Table_Id{1};
   index.unique = true;
   index.field_ids.push_back(Field_Id{2});
