@@ -6,7 +6,7 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/journal/Readonly_Journal.h"
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  void dump(const Readable &db, Writable &writable, bool schema_only)

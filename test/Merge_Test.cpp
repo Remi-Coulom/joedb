@@ -53,9 +53,9 @@ TEST(Merge_Test, merge_test)
  db[2].update_string(person, Record_Id(2), person_name, "Tutu");
  db[2].update_reference(person, Record_Id(2), person_home, Record_Id(0));
 
- ui::merge(db[0], db[1]);
- ui::merge(db[0], db[2]);
- ui::merge(db[0], db[3]);
+ merge(db[0], db[1]);
+ merge(db[0], db[2]);
+ merge(db[0], db[3]);
 
  EXPECT_EQ(db[0].get_last_record_id(city), Record_Id(4));
  EXPECT_EQ(db[0].get_last_record_id(person), Record_Id(3));

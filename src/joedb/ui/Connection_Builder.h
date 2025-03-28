@@ -4,18 +4,10 @@
 namespace joedb
 {
  class Pullonly_Connection;
-}
-
-namespace joedb
-{
  class Buffered_File;
-}
 
-namespace joedb::ui
-{
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class Connection_Builder
- ////////////////////////////////////////////////////////////////////////////
  {
   public:
    virtual bool has_sharing_option() const {return false;}

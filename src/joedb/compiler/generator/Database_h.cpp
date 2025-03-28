@@ -231,7 +231,7 @@ namespace joedb::generator
      if (i > 0)
       out << "     out << \", \";\n";
      const auto type = db.get_field_type(index.table_id, index.field_ids[i]);
-     out << "     joedb::ui::write_" << get_type_string(type) << "(out, ";
+     out << "     joedb::write_" << get_type_string(type) << "(out, ";
      out << "storage_of_" << tname << ".field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
      out << "[size_t(record_id) - 1]";

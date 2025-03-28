@@ -7,8 +7,11 @@
 #include <iostream>
 #include <cstdint>
 
-namespace joedb::ui
+namespace joedb
 {
+ /// \addtogroup ui
+ /// @{
+
  std::string read_string(std::istream &in);
  void write_string(std::ostream &out, const std::string &s, bool json = false);
  void write_sql_string(std::ostream &out, const std::string &s);
@@ -36,10 +39,7 @@ namespace joedb::ui
 
  void write_blob(std::ostream &out, const Blob blob);
  Blob read_blob(std::istream &in);
-}
 
-namespace joedb
-{
  inline std::ostream &operator<<(std::ostream &out, Table_Id table_id)
  {
   return out << to_underlying(table_id);
@@ -65,10 +65,7 @@ namespace joedb
  {
   return in >> *(std::underlying_type<Record_Id>::type *)(&record_id);
  }
-}
 
-namespace joedb::ui
-{
  #define PRIMITIVE_IO(type, type_id)\
  inline type read_##type_id(std::istream &in)\
  {type value = type(); in >> value; return value;}\
@@ -83,6 +80,8 @@ namespace joedb::ui
  PRIMITIVE_IO(int16_t, int16)
 
  #undef PRIMITIVE_IO
+
+ /// @}
 }
 
 #endif

@@ -3,8 +3,9 @@
 
 #include <string>
 
-namespace joedb::ui
+namespace joedb
 {
+ /// \ingroup ui
  void inplace_pack(const std::string &file_name);
 }
 

@@ -8,7 +8,7 @@
 #include <cmath>
 #include <vector>
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  int write_json

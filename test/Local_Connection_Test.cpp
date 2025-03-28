@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  #ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////

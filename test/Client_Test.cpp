@@ -5,7 +5,7 @@
 
 #include "gtest/gtest.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  TEST(Client, Interpreted_Client)

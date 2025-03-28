@@ -213,7 +213,7 @@ namespace joedb::generator
        out << "(";
       }
 
-      joedb::ui::write_value(out, db, tid, record_id, fid);
+      joedb::write_value(out, db, tid, record_id, fid);
 
       if (reference)
        out << ")";

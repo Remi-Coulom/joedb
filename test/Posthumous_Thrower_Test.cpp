@@ -6,7 +6,7 @@
 
 #include "gtest/gtest.h"
 
-namespace joedb::error
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  class Test_Catcher: public Posthumous_Catcher

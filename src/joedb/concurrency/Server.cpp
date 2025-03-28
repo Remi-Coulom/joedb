@@ -115,7 +115,7 @@ namespace joedb
   {
    out << port;
    out << ": pid = " << joedb::get_pid();
-   out << "; " << ui::get_time_string_of_now();
+   out << "; " << get_time_string_of_now();
    out << "; sessions = " << sessions.size();
    out << "; checkpoint = ";
    out << client.get_journal().get_checkpoint_position() << '\n';

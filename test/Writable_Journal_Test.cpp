@@ -110,11 +110,11 @@ TEST_F(Writable_Journal_Test, basic_operations)
  std::ostringstream oss1;
  std::ostringstream oss2;
 
- ui::Interpreter_Dump_Writable writable1(oss1);
- ui::Interpreter_Dump_Writable writable2(oss2);
+ Interpreter_Dump_Writable writable1(oss1);
+ Interpreter_Dump_Writable writable2(oss2);
 
- joedb::ui::dump(db1, writable1);
- joedb::ui::dump(db2, writable2);
+ joedb::dump(db1, writable1);
+ joedb::dump(db2, writable2);
 
  EXPECT_EQ(oss1.str(), oss2.str());
 }
@@ -134,7 +134,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Writable dummy_writable;
   Multiplexer multiplexer{db, journal, dummy_writable};
 
-  ui::Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;

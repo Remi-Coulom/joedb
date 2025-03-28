@@ -16,7 +16,7 @@ namespace joedb
   stream.exceptions(std::ios::badbit);
 
   Multiplexer multiplexer{db, journal};
-  ui::Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
   {

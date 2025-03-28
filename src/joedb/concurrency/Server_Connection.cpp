@@ -8,7 +8,7 @@
 #include <optional>
 
 #define LOG(x) do {if (log) *log << x;} while (false)
-#define LOGID(x) do {if (log) *log << ui::get_time_string_of_now() << ' ' << get_session_id() << ": " << x;} while (false)
+#define LOGID(x) do {if (log) *log << get_time_string_of_now() << ' ' << get_session_id() << ": " << x;} while (false)
 
 namespace joedb
 {
@@ -149,7 +149,7 @@ namespace joedb
   {
    size_t offset = buffer.index;
 
-   std::optional<ui::Progress_Bar> progress_bar;
+   std::optional<Progress_Bar> progress_bar;
    if (reader.get_remaining() > buffer.ssize && log)
     progress_bar.emplace(reader.get_remaining(), *log);
 

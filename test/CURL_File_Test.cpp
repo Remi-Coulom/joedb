@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-namespace joedb::concurrency
+namespace joedb
 {
  ///////////////////////////////////////////////////////////////////////////
  TEST(CURL_File, pull)

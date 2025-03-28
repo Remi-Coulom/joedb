@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  static int joedb_to_json(int argc, char **argv)
@@ -47,5 +47,5 @@ namespace joedb::ui
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(joedb::ui::joedb_to_json, argc, argv);
+ return joedb::main_exception_catcher(joedb::joedb_to_json, argc, argv);
 }

@@ -10,7 +10,7 @@
 #include <thread>
 #include <chrono>
 
-namespace joedb::ui
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Client_Command_Processor::write_prompt(std::ostream &out) const

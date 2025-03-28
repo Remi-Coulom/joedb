@@ -1,7 +1,7 @@
 #include "joedb/ui/process_journal_pair.h"
 #include "joedb/ui/main_exception_catcher.h"
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  static void process
@@ -30,5 +30,5 @@ namespace joedb::ui
 int main(int argc, char **argv)
 //////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(joedb::ui::main, argc, argv);
+ return joedb::main_exception_catcher(joedb::main, argc, argv);
 }

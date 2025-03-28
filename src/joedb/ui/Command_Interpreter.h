@@ -8,11 +8,10 @@
 #include <functional>
 #include <stdint.h>
 
-namespace joedb::ui
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class Command_Interpreter: public Command_Processor
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    std::vector<std::reference_wrapper<Command_Processor>> processors;

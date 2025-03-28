@@ -4,7 +4,7 @@
 
 #include <ctime>
 
-namespace joedb::ui
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Writable_Command_Processor::process_command

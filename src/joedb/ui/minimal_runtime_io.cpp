@@ -1,7 +1,7 @@
 #include "joedb/ui/type_io.h"
 #include "joedb/error/Exception.h"
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  char get_hex_char_from_digit(uint8_t n)

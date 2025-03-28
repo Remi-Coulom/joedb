@@ -4,11 +4,10 @@
 
 #include <iostream>
 
-namespace joedb::ui
+namespace joedb
 {
- /////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class Network_Connection_Builder: public Connection_Builder
- /////////////////////////////////////////////////////////////////////////////
  {
   private:
    std::unique_ptr<Network_Channel> channel;

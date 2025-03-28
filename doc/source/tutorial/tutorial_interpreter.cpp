@@ -18,7 +18,7 @@ namespace joedb
   client.transaction([](tutorial::Buffered_File_Database &db){
    tutorial::Readable readable(db);
    joedb::Multiplexer multiplexer = db.get_multiplexer();
-   ui::Interpreter interpreter(readable, multiplexer, nullptr, multiplexer, 0);
+   Interpreter interpreter(readable, multiplexer, nullptr, multiplexer, 0);
    interpreter.main_loop(std::cin, std::cout);
   });
 
@@ -30,5 +30,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::ui::main_exception_catcher(joedb::main, argc, argv);
+ joedb::main_exception_catcher(joedb::main, argc, argv);
 }

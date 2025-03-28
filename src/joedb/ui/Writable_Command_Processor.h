@@ -7,14 +7,9 @@ namespace joedb
 {
  class Writable;
  class Blob_Writer;
-}
 
-namespace joedb::ui
-{
- ////////////////////////////////////////////////////////////////////////////
- class Writable_Command_Processor:
- ////////////////////////////////////////////////////////////////////////////
-  public Command_Processor
+ /// \ingroup ui
+ class Writable_Command_Processor: public Command_Processor
  {
   friend class Readable_Writable_Command_Processor;
 

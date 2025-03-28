@@ -6,11 +6,10 @@
 #include "joedb/Multiplexer.h"
 #include "joedb/interpreted/Database_Schema.h"
 
-namespace joedb::ui
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  template <typename Dump_Writable> class Dump_Connection_Data
- ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    Database_Schema schema;
@@ -25,10 +24,8 @@ namespace joedb::ui
    }
  };
 
- template<typename Dump_Writable>
- ////////////////////////////////////////////////////////////////////////////
- class Dump_Connection_Builder:
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
+ template<typename Dump_Writable> class Dump_Connection_Builder:
   private Dump_Connection_Data<Dump_Writable>,
   private Writable_Connection,
   public Connection_Builder

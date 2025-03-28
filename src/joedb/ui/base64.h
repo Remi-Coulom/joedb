@@ -3,9 +3,11 @@
 
 #include <string>
 
-namespace joedb::ui
+namespace joedb
 {
+ /// \ingroup ui
  std::string base64_encode(const std::string &input);
+ /// \ingroup ui
  std::string base64_decode(const std::string &input);
 }
 

@@ -4,11 +4,10 @@
 #include "joedb/interpreted/Database_Schema.h"
 #include "joedb/Multiplexer.h"
 
-namespace joedb::ui
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class SQL_Writable: public Writable
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    static constexpr const char *id_field_name = "\"__id\"";

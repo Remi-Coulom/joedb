@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace joedb::ui
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Interpreter_Writable::write_type(Type type)

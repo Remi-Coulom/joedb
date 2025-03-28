@@ -5,7 +5,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
-namespace joedb::concurrency
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  class Debug_Channel: public Channel, public joedb::Memory_File

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace joedb::ui
+namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
  Progress_Bar::Progress_Bar

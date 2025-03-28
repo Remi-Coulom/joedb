@@ -14,7 +14,7 @@
 #include <cstring>
 #include <optional>
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  static void dump
@@ -137,5 +137,5 @@ namespace joedb::ui
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(joedb::ui::logdump_main, argc, argv);
+ return joedb::main_exception_catcher(joedb::logdump_main, argc, argv);
 }

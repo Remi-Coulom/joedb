@@ -6,8 +6,9 @@
 #include <stddef.h>
 #include <array>
 
-namespace joedb::ui
+namespace joedb
 {
+ /// \ingroup ui
  extern const std::array<const char *, size_t(Open_Mode::modes)> open_mode_strings;
 }
 

@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
-#include "joedb/compiler/minimal_runtime_io.cpp"
+#include "joedb/ui/minimal_runtime_io.cpp"
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  std::string read_string(std::istream &in)

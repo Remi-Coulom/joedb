@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////
  static int main(int argc, char **argv)
@@ -34,5 +34,5 @@ namespace joedb::ui
 int main(int argc, char **argv)
 //////////////////////////////////////////////////////////////////
 {
- joedb::ui::main_exception_catcher(joedb::ui::main, argc, argv);
+ joedb::main_exception_catcher(joedb::main, argc, argv);
 }

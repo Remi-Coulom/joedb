@@ -23,7 +23,7 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << "\n const char * schema_string = ";
-  ui::write_string(out, options.schema_file.get_data());
+  write_string(out, options.schema_file.get_data());
   out << ";\n";  
 
   namespace_close(out, options.get_name_space());

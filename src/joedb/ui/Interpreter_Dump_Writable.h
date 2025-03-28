@@ -4,11 +4,10 @@
 #include "joedb/interpreted/Database_Schema.h"
 #include "joedb/Multiplexer.h"
 
-namespace joedb::ui
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class Interpreter_Writable: public Writable
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    std::ostream &out;

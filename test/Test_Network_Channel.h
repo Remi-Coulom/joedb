@@ -6,7 +6,7 @@
 #include <limits>
 #include <thread>
 
-namespace joedb::concurrency
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  class Test_Network_Channel: public Network_Channel

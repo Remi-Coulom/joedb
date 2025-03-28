@@ -6,12 +6,10 @@
 #include "joedb/ui/Writable_Command_Processor.h"
 #include "joedb/Type.h"
 
-namespace joedb::ui
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
- class Readable_Writable_Command_Processor:
- ////////////////////////////////////////////////////////////////////////////
-  public Command_Processor
+ /// \ingroup ui
+ class Readable_Writable_Command_Processor: public Command_Processor
  {
   private:
    Readable_Command_Processor &readable_command_processor;

@@ -2,7 +2,7 @@
 #include "joedb/ui/type_io.h"
 #include "joedb/Readable.h"
 
-namespace joedb::ui
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void write_value

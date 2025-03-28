@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace joedb::ui
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Raw_Dump_Writable::write_type(Type type)
@@ -161,7 +161,7 @@ namespace joedb::ui
   out << "update_" << #type_id << ' ' << table_id << ' ';\
   out << record_id << ' ';\
   out << field_id << ' ';\
-  joedb::ui::write_##type_id(out, value);\
+  joedb::write_##type_id(out, value);\
   out << '\n';\
  }\
  void Raw_Dump_Writable::update_vector_##type_id\
@@ -180,7 +180,7 @@ namespace joedb::ui
   for (size_t i = 0; i < size; i++)\
   {\
    out << ' ';\
-   joedb::ui::write_##type_id(out, value[i]);\
+   joedb::write_##type_id(out, value[i]);\
   }\
   out << '\n';\
  }
@@ -191,7 +191,7 @@ namespace joedb::ui
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "write_blob ";
-  joedb::ui::write_string(out, data);
+  joedb::write_string(out, data);
   out << '\n';
   return Blob();
  }

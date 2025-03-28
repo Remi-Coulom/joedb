@@ -35,9 +35,9 @@ TEST(Selective_Writable_Test, basic)
   std::ofstream information_file("select_information.out.tmp");
   std::ofstream data_file("select_data.out.tmp");
 
-  ui::Interpreter_Dump_Writable schema_writable(schema_file);
-  ui::Interpreter_Dump_Writable information_writable(information_file);
-  ui::Interpreter_Dump_Writable data_writable(data_file);
+  Interpreter_Dump_Writable schema_writable(schema_file);
+  Interpreter_Dump_Writable information_writable(information_file);
+  Interpreter_Dump_Writable data_writable(data_file);
 
   Selective_Writable select_schema(schema_writable,
                                     Selective_Writable::Mode::schema);
@@ -48,7 +48,7 @@ TEST(Selective_Writable_Test, basic)
 
   Database db;
   Multiplexer multiplexer{db, select_schema, select_information, select_data};
-  ui::Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;

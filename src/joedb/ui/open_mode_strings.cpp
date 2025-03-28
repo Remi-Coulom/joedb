@@ -1,6 +1,6 @@
 #include "joedb/ui/open_mode_strings.h"
 
-namespace joedb::ui
+namespace joedb
 {
  const std::array<const char *, size_t(Open_Mode::modes)> open_mode_strings =
  {

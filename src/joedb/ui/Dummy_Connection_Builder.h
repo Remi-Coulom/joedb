@@ -4,11 +4,10 @@
 #include "joedb/ui/Connection_Builder.h"
 #include "joedb/concurrency/Connection.h"
 
-namespace joedb::ui
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class Dummy_Connection_Builder: public Connection_Builder
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Connection connection;

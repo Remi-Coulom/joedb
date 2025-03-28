@@ -3,7 +3,7 @@
 #include "joedb/error/Posthumous_Catcher.cpp"
 #include "joedb/error/Posthumous_Thrower.cpp"
 #include "joedb/Writable.cpp"
-#include "joedb/compiler/minimal_runtime_io.cpp"
+#include "joedb/ui/minimal_runtime_io.cpp"
 #include "joedb/journal/File.cpp"
 #include "joedb/journal/Buffered_File.cpp"
 #include "joedb/journal/Journal_Construction_Lock.cpp"

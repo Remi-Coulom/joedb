@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace joedb::ui
+namespace joedb
 {
  static char const base64_codes[] =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

@@ -17,7 +17,7 @@
 #include <cstring>
 #include <sstream>
 
-namespace joedb::ui
+namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
  Connection_Parser::Connection_Parser(bool local)

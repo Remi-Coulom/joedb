@@ -19,7 +19,7 @@
 #include <cstdio>
 #include <csignal>
 
-namespace joedb::concurrency
+namespace joedb
 {
  static constexpr bool log_to_cerr = false;
  static std::ostringstream log_stream;

@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-namespace joedb::ui
+namespace joedb
 {
  void inplace_pack(const std::string &file_name)
  {

@@ -12,7 +12,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace joedb::ui
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter_Test, main_test)

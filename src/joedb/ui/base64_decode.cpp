@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace joedb::ui
+namespace joedb
 {
  static constexpr char base64_decoding[256] =
  {

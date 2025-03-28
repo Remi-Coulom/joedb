@@ -7,13 +7,9 @@ namespace joedb
  class Client;
  class Pullonly_Client;
  class Writable_Interpreter;
-}
 
-namespace joedb::ui
-{
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class Client_Command_Processor: public Command_Interpreter
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    Pullonly_Client &client;

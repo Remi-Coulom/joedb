@@ -6,11 +6,10 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Interpreted_Client_Data.h"
 
-namespace joedb::ui
+namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
  class Client_Parser
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    File_Parser file_parser;

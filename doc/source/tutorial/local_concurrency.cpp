@@ -30,5 +30,5 @@ static int local_concurrency(int argc, char **argv)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::ui::main_exception_catcher(local_concurrency, argc, argv);
+ return joedb::main_exception_catcher(local_concurrency, argc, argv);
 }

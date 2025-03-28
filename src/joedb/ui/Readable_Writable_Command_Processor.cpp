@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace joedb::ui
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  Type Readable_Writable_Command_Processor::parse_type
@@ -55,7 +55,7 @@ namespace joedb::ui
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    case Type::Type_Id::type_id:\
    {\
-    const type value = joedb::ui::read_##type_id(in);\
+    const type value = joedb::read_##type_id(in);\
     get_writable().update_##type_id(table_id, record_id, field_id, value);\
    }\
    break;
@@ -150,7 +150,7 @@ Data manipulation
       #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
       case Type::Type_Id::type_id:\
       {\
-       const type value = joedb::ui::read_##type_id(parameters);\
+       const type value = joedb::read_##type_id(parameters);\
        for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)\
         if (get_readable().is_used(table_id, record_id))\
          get_writable().update_##type_id(table_id, record_id, field_id, value);\
@@ -247,7 +247,7 @@ Data manipulation
      {\
       std::vector<type> v(size);\
       for (size_t i = 0; i < size; i++)\
-       v[i] = joedb::ui::read_##type_id(parameters);\
+       v[i] = joedb::read_##type_id(parameters);\
       get_writable().update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
      }\
      break;
