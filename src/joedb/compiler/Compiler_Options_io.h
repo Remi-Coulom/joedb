@@ -3,10 +3,11 @@
 
 #include <iosfwd>
 
-namespace joedb::compiler
+namespace joedb
 {
  class Compiler_Options;
 
+ /// \ingroup compiler
  void parse_compiler_options
  (
   std::istream &in,

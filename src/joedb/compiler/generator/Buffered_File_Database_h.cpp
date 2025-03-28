@@ -2,7 +2,7 @@
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/ui/type_io.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Buffered_File_Database_h::Buffered_File_Database_h

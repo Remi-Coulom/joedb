@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/File_Database_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  File_Database_h::File_Database_h

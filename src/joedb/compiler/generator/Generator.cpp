@@ -5,7 +5,7 @@
 #include <iostream>
 #include <filesystem>
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  bool Generator::db_has_values() const

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace joedb::compiler
+namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
  static Table_Id parse_table(std::istream &in, const Database_Schema &db)

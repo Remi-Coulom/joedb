@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Interpreted_Database_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Interpreted_Database_h::Interpreted_Database_h

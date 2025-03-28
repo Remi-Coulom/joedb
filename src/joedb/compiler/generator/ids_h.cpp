@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/ids_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  ids_h::ids_h

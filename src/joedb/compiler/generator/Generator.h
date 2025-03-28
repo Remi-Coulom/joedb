@@ -5,8 +5,9 @@
 
 #include <fstream>
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
+ /// \ingroup compiler
  class Generator
  {
   protected:

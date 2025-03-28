@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace joedb::compiler
+namespace joedb
 {
  static const std::string scope_delimiter{"::"};
 

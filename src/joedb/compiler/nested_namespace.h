@@ -5,8 +5,11 @@
 #include <string>
 #include <iostream>
 
-namespace joedb::compiler
+namespace joedb
 {
+ /// \addtogroup compiler
+ /// @{
+
  std::vector<std::string> split_namespace(const std::string &s);
 
  std::string namespace_string
@@ -31,6 +34,8 @@ namespace joedb::compiler
   const char *name,
   const std::vector<std::string> &n
  );
+
+ /// @}
 }
 
 #endif

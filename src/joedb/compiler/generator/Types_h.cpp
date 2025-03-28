@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Types_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Types_h::Types_h

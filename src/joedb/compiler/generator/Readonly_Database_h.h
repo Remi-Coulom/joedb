@@ -3,8 +3,9 @@
 
 #include "joedb/compiler/generator/Generator.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
+ /// \ingroup compiler
  class Readonly_Database_h: public Generator
  {
   public:

@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Readonly_Client_h.h"
 #include "joedb/compiler/nested_namespace.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Readonly_Client_h::Readonly_Client_h

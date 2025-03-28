@@ -3,7 +3,7 @@
 #include "joedb/ui/type_io.h"
 #include "joedb/ui/write_value.h"
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Buffered_File_Database_cpp::Buffered_File_Database_cpp

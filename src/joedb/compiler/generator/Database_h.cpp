@@ -5,7 +5,7 @@
 
 #include <set>
 
-namespace joedb::compiler::generator
+namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
  Database_h::Database_h
