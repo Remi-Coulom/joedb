@@ -3,11 +3,10 @@
 
 #include "joedb/interpreted/Database_Schema.h"
 
-namespace joedb::interpreted
+namespace joedb
 {
- ///////////////////////////////////////////////////////////////////////////
+ /// \ingroup interpreted
  class Database: public Database_Schema
- ///////////////////////////////////////////////////////////////////////////
  {
   private:
    const size_t max_record_id;

@@ -13,7 +13,7 @@ namespace joedb::ui
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   interpreted::Database_Schema schema;
+   Database_Schema schema;
    Dump_Writable dump_writable;
    Multiplexer multiplexer;
 

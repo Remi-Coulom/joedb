@@ -33,7 +33,7 @@ class Writable_Journal_Test: public ::testing::Test
 TEST_F(Writable_Journal_Test, basic_operations)
 /////////////////////////////////////////////////////////////////////////////
 {
- interpreted::Database db1;
+ Database db1;
 
  {
   File file("test.joedb", Open_Mode::create_new);
@@ -99,7 +99,7 @@ TEST_F(Writable_Journal_Test, basic_operations)
   journal.checkpoint(Commit_Level::full_commit);
  }
 
- interpreted::Database db2;
+ Database db2;
 
  {
   File file("test.joedb", Open_Mode::read_existing);
@@ -130,7 +130,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   File file("test.joedb", Open_Mode::create_new);
   Writable_Journal journal(file);
 
-  interpreted::Database db;
+  Database db;
   Writable dummy_writable;
   Multiplexer multiplexer{db, journal, dummy_writable};
 
@@ -152,7 +152,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   File file_copy("test_copy.joedb", Open_Mode::create_new);
   Writable_Journal journal_copy(file_copy);
 
-  interpreted::Database db;
+  Database db;
   Multiplexer multiplexer{db, journal_copy};
   journal.replay_log(multiplexer);
  }

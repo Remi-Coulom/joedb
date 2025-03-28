@@ -368,7 +368,7 @@ namespace joedb::concurrency
   }
 
   Readonly_Journal journal(server.file);
-  interpreted::Database db;
+  Database db;
   journal.replay_log(db);
   EXPECT_EQ(db.get_tables().size(), client_count);
  }
@@ -765,21 +765,21 @@ namespace joedb::concurrency
 
    {
     Readonly_Journal journal(backup_server.file);
-    interpreted::Database db;
+    Database db;
     journal.replay_log(db);
     EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
    {
     Readonly_Journal journal(file);
-    interpreted::Database db;
+    Database db;
     journal.replay_log(db);
     EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
    {
     Readonly_Journal journal(client_file);
-    interpreted::Database db;
+    Database db;
     journal.replay_log(db);
     EXPECT_EQ(db.get_tables().size(), 1UL);
     EXPECT_EQ(db.get_tables().begin()->second, "person");

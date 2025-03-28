@@ -29,7 +29,7 @@ namespace joedb::ui
 
   File file(argv[file_index], Open_Mode::read_existing);
   Readonly_Journal journal(file);
-  interpreted::Database db;
+  Database db;
   journal.replay_log(db);
   const int error = write_json(std::cout, db, base64);
 

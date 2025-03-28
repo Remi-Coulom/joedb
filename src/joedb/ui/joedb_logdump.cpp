@@ -120,7 +120,7 @@ namespace joedb::ui
     }
     else if (load)
     {
-     interpreted::Database db;
+     Database db;
      Multiplexer multiplexer{db, *writable};
      dump(*journal, multiplexer, print_checkpoint);
     }

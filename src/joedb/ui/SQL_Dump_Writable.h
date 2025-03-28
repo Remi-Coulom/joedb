@@ -15,7 +15,7 @@ namespace joedb::ui
    static constexpr const char *key_type = "INTEGER";
 
    std::ostream &out;
-   const interpreted::Database_Schema &schema;
+   const Database_Schema &schema;
    const bool drop_column;
 
    Blob_Reader *blob_reader = nullptr;
@@ -26,7 +26,7 @@ namespace joedb::ui
    SQL_Writable
    (
     std::ostream &out,
-    const interpreted::Database_Schema &schema,
+    const Database_Schema &schema,
     bool drop_column = true
    ):
     out(out),
@@ -80,7 +80,7 @@ namespace joedb::ui
  class SQL_Dump_Writable_Parent
  {
   protected:
-   interpreted::Database_Schema schema;
+   Database_Schema schema;
    SQL_Writable interpreter_writable;
 
   public:

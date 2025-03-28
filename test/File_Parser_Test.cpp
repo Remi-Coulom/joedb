@@ -88,7 +88,7 @@ namespace joedb::ui
    parser.parse(out, argc, const_cast<char **>(argv), arg_index);
    EXPECT_ANY_THROW(Writable_Journal{*parser.get_file()});
    Readonly_Journal journal{*parser.get_file()};
-   interpreted::Database db;
+   Database db;
    journal.replay_log(db);
    ASSERT_EQ(db.get_tables().size(), 1);
    EXPECT_EQ(db.get_tables().begin()->second, table_name);
@@ -116,7 +116,7 @@ namespace joedb::ui
 
   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
   Readonly_Journal journal(*parser.get_file());
-  interpreted::Database db;
+  Database db;
   journal.replay_log(db);
 
   ASSERT_EQ(db.get_tables().size(), 1);

@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-namespace joedb::interpreted
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Database::insert_into(Table_Id table_id, Record_Id record_id)

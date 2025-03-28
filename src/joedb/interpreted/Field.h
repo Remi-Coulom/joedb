@@ -8,8 +8,9 @@
 #include "joedb/Type.h"
 #include "joedb/index_types.h"
 
-namespace joedb::interpreted
+namespace joedb
 {
+ /// \ingroup interpreted
  class Field
  {
   private:

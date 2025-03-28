@@ -1,4 +1,4 @@
-/// @namespace joedb::interpreted
+/// @defgroup interpreted Interpreted Database
 ///
 /// interpreted database table storage
 ///

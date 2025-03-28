@@ -2,7 +2,7 @@
 #include "joedb/error/Exception.h"
 #include "joedb/is_identifier.h"
 
-namespace joedb::interpreted
+namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
  void Database_Schema::check_identifier

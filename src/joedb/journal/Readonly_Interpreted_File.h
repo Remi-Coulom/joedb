@@ -15,7 +15,7 @@ namespace joedb
  {
   protected:
    Writable_Journal journal;
-   interpreted::Database db;
+   Database db;
 
    Readonly_Interpreted_File(std::istream &stream, bool readonly);
 

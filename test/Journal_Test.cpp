@@ -258,7 +258,7 @@ namespace joedb
   file.write<int64_t>(5678);
 
   {
-   joedb::interpreted::Database db;
+   joedb::Database db;
    joedb::Readonly_Journal journal(file);
    EXPECT_EQ(journal.get_checkpoint_position(), correct_checkpoint);
    journal.replay_log(db);
@@ -277,7 +277,7 @@ namespace joedb
 
   {
    joedb::Readonly_Journal journal(file);
-   joedb::interpreted::Database db;
+   joedb::Database db;
    journal.replay_log(db);
    EXPECT_EQ(db.get_tables().size(), 2);
    EXPECT_EQ(db.get_tables().begin()->second, "person");
@@ -304,7 +304,7 @@ namespace joedb
   file.set_position(0);
 
   joedb::Readonly_Journal journal(file);
-  joedb::interpreted::Database db;
+  joedb::Database db;
 
   try
   {

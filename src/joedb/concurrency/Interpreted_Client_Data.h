@@ -13,10 +13,10 @@ namespace joedb::concurrency
  ////////////////////////////////////////////////////////////////////////////
  {
   protected:
-   interpreted::Database database;
+   Database database;
 
   public:
-   virtual const interpreted::Database &get_database() = 0;
+   virtual const Database &get_database() = 0;
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ namespace joedb::concurrency
     return multiplexer;
    }
 
-   const interpreted::Database &get_database() final
+   const Database &get_database() final
    {
     journal.play_until_checkpoint(database);
     return database;
@@ -80,7 +80,7 @@ namespace joedb::concurrency
     return journal;
    }
 
-   const interpreted::Database &get_database() final
+   const Database &get_database() final
    {
     journal.play_until_checkpoint(database);
     return database;

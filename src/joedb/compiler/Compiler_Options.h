@@ -50,7 +50,7 @@ namespace joedb::compiler
 
   public:
    std::string exe_path;
-   interpreted::Database db;
+   Database db;
    Memory_File schema_file;
    std::vector<std::string> custom_names;
 
@@ -95,7 +95,7 @@ namespace joedb::compiler
     indices.emplace_back(std::move(index));
    }
 
-   const interpreted::Database &get_db() const {return db;}
+   const Database &get_db() const {return db;}
    const std::vector<std::string> &get_custom_names() const
    {
     return custom_names;

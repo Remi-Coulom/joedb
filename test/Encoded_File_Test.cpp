@@ -102,7 +102,7 @@ namespace joedb
 
   {
    Readonly_Journal journal(file);
-   interpreted::Database_Schema schema;
+   Database_Schema schema;
    journal.replay_log(schema);
    EXPECT_EQ(schema.get_tables().size(), 1);
    EXPECT_EQ(schema.get_tables().begin()->second, table_name);

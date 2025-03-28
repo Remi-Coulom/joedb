@@ -1,14 +1,14 @@
 #ifndef joedb_merge_declared
 #define joedb_merge_declared
 
-namespace joedb::interpreted
+namespace joedb
 {
  class Database;
 }
 
 namespace joedb::ui
 {
- void merge(interpreted::Database &merged, const interpreted::Database &db);
+ void merge(Database &merged, const Database &db);
 }
 
 #endif

@@ -14,7 +14,7 @@ TEST(endianness, reading)
 
  joedb::File file("endianness.joedb", joedb::Open_Mode::read_existing);
  joedb::Readonly_Journal journal(file);
- joedb::interpreted::Database db;
+ joedb::Database db;
  journal.replay_log(db);
  EXPECT_EQ(1, db.get_int8(Table_Id(1), Record_Id(1), Field_Id(1)));
  EXPECT_EQ(258, db.get_int16(Table_Id(1), Record_Id(1), Field_Id(2)));

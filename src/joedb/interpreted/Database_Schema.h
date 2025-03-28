@@ -7,11 +7,10 @@
 
 #include <map>
 
-namespace joedb::interpreted
+namespace joedb
 {
- ///////////////////////////////////////////////////////////////////////////
+ /// \ingroup interpreted
  class Database_Schema: public Readable, public Writable
- ///////////////////////////////////////////////////////////////////////////
  {
   protected:
    std::map<Table_Id, Table> tables;

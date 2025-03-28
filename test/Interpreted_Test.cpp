@@ -7,7 +7,7 @@ using namespace joedb;
 TEST(Interpreted_Test, database_errors)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::interpreted::Database db;
+ joedb::Database db;
  EXPECT_ANY_THROW(db.insert_into(Table_Id(1), Record_Id(1)));
  db.create_table("person");
  EXPECT_ANY_THROW(db.insert_into(Table_Id(1), Record_Id(0)));
@@ -23,7 +23,7 @@ TEST(Interpreted_Test, database_errors)
 TEST(Interpreted_Test, schema_errors)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::interpreted::Database_Schema schema;
+ joedb::Database_Schema schema;
  EXPECT_ANY_THROW(schema.get_fields(Table_Id(1)));
  EXPECT_ANY_THROW(schema.get_freedom(Table_Id(1)));
  EXPECT_ANY_THROW(schema.drop_table(Table_Id(1)));

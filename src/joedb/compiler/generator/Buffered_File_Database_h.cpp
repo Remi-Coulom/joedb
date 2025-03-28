@@ -18,7 +18,7 @@ namespace joedb::compiler::generator
  void Buffered_File_Database_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreted::Database &db = options.get_db();
+  const Database &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "Buffered_File_Database", options.get_name_space());

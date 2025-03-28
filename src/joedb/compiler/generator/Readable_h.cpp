@@ -18,7 +18,7 @@ namespace joedb::compiler::generator
  void Readable_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const interpreted::Database_Schema &db = options.get_db();
+  const Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
   namespace_include_guard(out, "Readable", options.get_name_space());
@@ -34,7 +34,7 @@ namespace joedb::compiler::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- class Readable: public joedb::interpreted::Database_Schema
+ class Readable: public joedb::Database_Schema
  {
   private:
    const Database &db;

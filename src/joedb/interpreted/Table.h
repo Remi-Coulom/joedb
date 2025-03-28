@@ -8,10 +8,11 @@
 #include "joedb/error/Exception.h"
 #include "joedb/Freedom_Keeper.h"
 
-namespace joedb::interpreted
+namespace joedb
 {
  class Database;
 
+ /// \ingroup interpreted
  class Table
  {
   friend class Database_Schema;

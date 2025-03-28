@@ -220,7 +220,7 @@ namespace joedb::ui
  void pack(Readonly_Journal &input_journal, Writable &writable)
  /////////////////////////////////////////////////////////////////////////////
  {
-  interpreted::Database db;
+  Database db;
 
   {
    Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);

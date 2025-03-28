@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
   File file(file_name, Open_Mode::create_new);
   Writable_Journal journal_file(file);
-  interpreted::Database db;
+  Database db;
   Multiplexer multiplexer{db, journal_file};
 
   multiplexer.create_table("BENCHMARK");
