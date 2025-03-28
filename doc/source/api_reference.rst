@@ -1,5 +1,5 @@
-Compiler Output
-===============
+API reference
+=============
 
 Files produced by the compiler
 ------------------------------
@@ -18,21 +18,7 @@ need to add both sources to your project.
 an old version of joedb. It is recommended to not include them in new code:
 include individual headers for the classes you are actually using instead.
 
-Database
---------
+Joedb classes
+-------------
 
- - ``namespace::Types``
- - ``namespace::Database``
-
-Table
------
-
- - ``table.begin()``, ``table.end()``: iterators for looping over the table
- - ``table.get_at(n)``: reference to row ``n`` (warning: starts at 1)
- - ``table.first()``, ``table.last()``: references to first and last rows
-
-Reference
----------
-
-Field
------
+`Doxygen <./doxygen/index.html>`_

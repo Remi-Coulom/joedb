@@ -45,7 +45,7 @@ For example:
    :language: c++
 
 ``Buffered_File_Database``
--------------------------
+--------------------------
 
 ``Buffered_File_Database`` is a superclass of ``File_Database`` that takes a
 reference to a ``Buffered_File`` as parameter to its constructor, instead

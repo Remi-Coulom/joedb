@@ -4,11 +4,11 @@ Reference
 .. toctree::
    :maxdepth: 2
 
+   api_reference
    file_format
    network_protocol
    tools
-   compiler_output
-   developers_guide
+   testing
    todo
    links
    release_checklist
