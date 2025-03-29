@@ -1,8 +1,6 @@
 #ifndef joedb_Brotli_File_declared
 #define joedb_Brotli_File_declared
 
-#ifdef JOEDB_HAS_BROTLI
-
 #include "joedb/journal/Brotli_Codec.h"
 #include "joedb/journal/Encoded_File.h"
 #include "joedb/db/encoded_file/File_Database.h"
@@ -52,7 +50,5 @@ namespace joedb
    Readonly_Brotli_File(const char *file_name);
  };
 }
-
-#endif
 
 #endif

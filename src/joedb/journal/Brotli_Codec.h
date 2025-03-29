@@ -1,8 +1,6 @@
 #ifndef joedb_Brotli_Codec_declared
 #define joedb_Brotli_Codec_declared
 
-#ifdef JOEDB_HAS_BROTLI
-
 #include "joedb/journal/Codec.h"
 
 namespace joedb
@@ -27,7 +25,5 @@ namespace joedb
    override;
  };
 }
-
-#endif
 
 #endif

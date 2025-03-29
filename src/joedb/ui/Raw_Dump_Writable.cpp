@@ -45,9 +45,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Raw_Dump_Writable::rename_table(Table_Id table_id,
+ void Raw_Dump_Writable::rename_table
  ////////////////////////////////////////////////////////////////////////////
-                   const std::string &name)
+ (
+  Table_Id table_id,
+  const std::string &name
+ )
  {
   out << "rename_table " << table_id << ' ';
   write_string(out, name);
@@ -55,10 +58,13 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Raw_Dump_Writable::add_field(Table_Id table_id,
+ void Raw_Dump_Writable::add_field
+ (
+  Table_Id table_id,
+  const std::string &name,
+  Type type
+ )
  ////////////////////////////////////////////////////////////////////////////
-                const std::string &name,
-                Type type)
  {
   out << "add_field " << table_id << ' ';
   write_string(out, name);
