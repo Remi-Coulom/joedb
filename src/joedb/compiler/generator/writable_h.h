@@ -19,7 +19,7 @@ namespace joedb::generator
     out << R"RRR(#include "readonly.h"
 #include "File_Database.h"
 #include "Client.h"
-#include "Local_Client.h"
+#include "File_Client.h"
 //#warning writable header is deprecated
 )RRR";
    }

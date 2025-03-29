@@ -1,4 +1,4 @@
-#include "tutorial/Local_Client.h"
+#include "tutorial/File_Client.h"
 
 #include "joedb/ui/main_exception_catcher.h"
 
@@ -9,7 +9,7 @@
 static int local_concurrency(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- tutorial::Local_Client client("local_concurrency.joedb");
+ tutorial::File_Client client("local_concurrency.joedb");
 
  while (true)
  {

@@ -1,5 +1,5 @@
 #include "tutorial/Buffered_File_Database.h"
-#include "tutorial/Local_Client.h"
+#include "tutorial/File_Client.h"
 #include "tutorial/Readable.h"
 #include "joedb/ui/main_exception_catcher.h"
 #include "joedb/ui/Interpreter.h"
@@ -13,7 +13,7 @@ namespace joedb
  static int main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  tutorial::Local_Client client("tutorial.joedb");
+  tutorial::File_Client client("tutorial.joedb");
 
   client.transaction([](tutorial::Buffered_File_Database &db){
    tutorial::Readable readable(db);

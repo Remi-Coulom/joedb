@@ -23,7 +23,7 @@
 #include "joedb/compiler/generator/writable_cpp.h"
 
 #include "joedb/compiler/generator/Client_h.h"
-#include "joedb/compiler/generator/Local_Client_h.h"
+#include "joedb/compiler/generator/File_Client_h.h"
 #include "joedb/compiler/generator/Readonly_Client_h.h"
 
 #include "joedb/compiler/generator/ids_h.h"
@@ -128,6 +128,7 @@ namespace joedb
   generator::Readonly_Database_h(options).generate();
   generator::Types_h(options).generate();
   generator::Readable_h(options).generate();
+
   generator::readonly_h(options).generate();
   generator::readonly_cpp(options).generate();
 
@@ -136,11 +137,12 @@ namespace joedb
   generator::File_Database_h(options).generate();
   generator::Readonly_Interpreted_File_Database_h(options).generate();
   generator::Interpreted_File_Database_h(options).generate();
+
   generator::writable_h(options).generate();
   generator::writable_cpp(options).generate();
 
   generator::Client_h(options).generate();
-  generator::Local_Client_h(options).generate();
+  generator::File_Client_h(options).generate();
   generator::Readonly_Client_h(options).generate();
 
   generator::ids_h(options).generate();

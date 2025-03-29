@@ -47,6 +47,7 @@ History
   - Incompatibilities with previous version:
 
     - ``Generic_File`` was renamed to ``Buffered_File``
+    - ``Local_Client`` was renamed to ``File_Client``
     - The ``is_end_of_file()`` function was removed. Trying to read past the
       end of a file now throws an exception.
     - boolean values are printed as ``false`` and ``true`` instead of 0 and 1.

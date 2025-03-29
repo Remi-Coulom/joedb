@@ -36,6 +36,7 @@ namespace joedb::generator
   for (const auto &[tid, tname]: tables)
   {
    out << '\n';
+   out << " /// Strongly-typed wrapper around an integer representing a row of the " << tname << " table\n";
    out << " class id_of_" << tname << "\n {\n";
    out << "  private:\n";
    out << "   Record_Id id;\n";

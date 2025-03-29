@@ -60,7 +60,7 @@ file was opened with ``joedb::Open_Mode::shared_write``, clients can start
 write transactions simultaneously, and the connection will use file locking to
 synchronize them.
 
-:ref:`joedbc <joedbc>` produces a convenient ``Local_Client`` class that
+:ref:`joedbc <joedbc>` produces a convenient ``File_Client`` class that
 creates the connection and the client in a single line of code. Here is an
 example:
 

@@ -31,13 +31,16 @@ namespace joedb::generator
 
   static constexpr const char * const type_names[] =
   {
-   "Database",
-   "Readonly_Database",
-   "File_Database",
    "Buffered_File_Database",
    "Client",
+   "Database",
+   "File_Client",
+   "File_Database",
+   "Interpreted_File_Database",
+   "Readable",
    "Readonly_Client",
-   "Interpreted_Database",
+   "Readonly_Database",
+   "Readonly_Interpreted_File_Database",
   };
 
   out << '\n';
