@@ -7,10 +7,13 @@
 
 namespace joedb
 {
+ /// \addtogroup concurrency
+ /// @{
  class Client;
 
- /// \ingroup concurrency
+ ////////////////////////////////////////////////////////////////////////////
  class Pullonly_Client
+ ////////////////////////////////////////////////////////////////////////////
  {
   protected:
    Client_Data &data;
@@ -238,6 +241,7 @@ namespace joedb
     }
    }
  };
+ /// @}
 }
 
 #endif

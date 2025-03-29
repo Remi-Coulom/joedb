@@ -1,3 +1,3 @@
-/// \defgroup compiler
+/// \defgroup compiler Compiler
 ///
-/// generation of type-safe C++ code from a database schema
+/// Generation of type-safe C++ code from a database schema

@@ -4,7 +4,6 @@ TODO
 For next release
 ----------------
 
- - namespace for each subdir is bad. undo + use groups for doxygen
  - compiled interpreter should not offer data-definition commands
  - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
