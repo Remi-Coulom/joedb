@@ -34,6 +34,10 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
+ /// Implement the @ref joedb::Readable interface for a compiled database
+ ///
+ /// This allows using a compiled database with tools such as the
+ /// command interpreter.
  class Readable: public joedb::Database_Schema
  {
   private:

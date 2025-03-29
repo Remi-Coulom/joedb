@@ -24,7 +24,7 @@ namespace joedb::generator
 
   out << "\n const char * schema_string = ";
   write_string(out, options.schema_file.get_data());
-  out << ";\n";  
+  out << ";\n";
 
   namespace_close(out, options.get_name_space());
  }

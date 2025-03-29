@@ -17,8 +17,8 @@
 #include "joedb/compiler/generator/Buffered_File_Database_h.h"
 #include "joedb/compiler/generator/Buffered_File_Database_cpp.h"
 #include "joedb/compiler/generator/File_Database_h.h"
-#include "joedb/compiler/generator/Interpreted_Database_h.h"
-#include "joedb/compiler/generator/Readonly_Interpreted_Database_h.h"
+#include "joedb/compiler/generator/Interpreted_File_Database_h.h"
+#include "joedb/compiler/generator/Readonly_Interpreted_File_Database_h.h"
 #include "joedb/compiler/generator/writable_h.h"
 #include "joedb/compiler/generator/writable_cpp.h"
 
@@ -134,8 +134,8 @@ namespace joedb
   generator::Buffered_File_Database_h(options).generate();
   generator::Buffered_File_Database_cpp(options).generate();
   generator::File_Database_h(options).generate();
-  generator::Readonly_Interpreted_Database_h(options).generate();
-  generator::Interpreted_Database_h(options).generate();
+  generator::Readonly_Interpreted_File_Database_h(options).generate();
+  generator::Interpreted_File_Database_h(options).generate();
   generator::writable_h(options).generate();
   generator::writable_cpp(options).generate();
 

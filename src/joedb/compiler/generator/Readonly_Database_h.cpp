@@ -28,6 +28,11 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
  out << R"RRR(
+ /// Load a database from a read-only file
+ ///
+ /// The file is closed after construction, so this database cannot
+ /// be updated with new concurrent changes. If you wish to be updated
+ /// with concurrent writes, use a @ref Readonly_Client
  class Readonly_Database: public Database
  {
   public:
@@ -67,6 +72,6 @@ namespace joedb::generator
 )RRR";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";  
+  out << "\n#endif\n";
  }
 }

@@ -128,6 +128,6 @@ namespace joedb::generator
 )RRR";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";  
+  out << "\n#endif\n";
  }
 }

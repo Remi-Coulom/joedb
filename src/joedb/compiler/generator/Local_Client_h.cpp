@@ -45,9 +45,8 @@ namespace joedb::generator
   };
  }
 
- ////////////////////////////////////////////////////////////////////////////
+ /// Handle concurrent access to a file
  class Local_Client: private detail::Local_Client_Data, public Client
- ////////////////////////////////////////////////////////////////////////////
  {
   public:
    Local_Client(const char *file_name):
@@ -64,6 +63,6 @@ namespace joedb::generator
 )RRR";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";  
+  out << "\n#endif\n";
  }
 }

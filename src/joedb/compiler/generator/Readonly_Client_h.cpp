@@ -32,10 +32,8 @@ namespace joedb::generator
  namespace detail
  {
   ///////////////////////////////////////////////////////////////////////////
-  class Readonly_Client_Data:
+  class Readonly_Client_Data: public joedb::Client_Data
   ///////////////////////////////////////////////////////////////////////////
-   public joedb::Client_Data,
-   public joedb::Blob_Reader
   {
    protected:
     joedb::Readonly_Journal journal;
@@ -56,28 +54,23 @@ namespace joedb::generator
     {
      return journal;
     }
+  };
 
-    std::string read_blob_data(joedb::Blob blob) final
-    {
-     return journal.read_blob_data(blob);
-    }
+  ///////////////////////////////////////////////////////////////////////////
+  class Pullonly_Connection
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   protected:
+    joedb::Pullonly_Connection connection;
   };
  }
 
- ////////////////////////////////////////////////////////////////////////////
- class Pullonly_Connection
- ////////////////////////////////////////////////////////////////////////////
- {
-  protected:
-   joedb::Pullonly_Connection connection;
- };
-
- ////////////////////////////////////////////////////////////////////////////
+ /// Client for a read-only file (allows pulling, unlike @ref Readonly_Database)
  class Readonly_Client:
- ////////////////////////////////////////////////////////////////////////////
   private detail::Readonly_Client_Data,
-  private Pullonly_Connection,
-  private joedb::Pullonly_Client
+  private detail::Pullonly_Connection,
+  private joedb::Pullonly_Client,
+  public joedb::Blob_Reader
  {
   private:
    const int64_t schema_checkpoint;
@@ -88,7 +81,7 @@ namespace joedb::generator
     joedb::Pullonly_Client
     (
      *static_cast<detail::Readonly_Client_Data *>(this),
-     Pullonly_Connection::connection,
+     detail::Pullonly_Connection::connection,
      false
     ),
     schema_checkpoint(db.get_schema_checkpoint())
@@ -110,10 +103,15 @@ namespace joedb::generator
     else
      return false;
    }
+
+   std::string read_blob_data(joedb::Blob blob) final
+   {
+    return journal.read_blob_data(blob);
+   }
  };
 )RRR";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";  
+  out << "\n#endif\n";
  }
 }

@@ -43,7 +43,7 @@ namespace joedb::generator
   out << '\n';
   for (const char * const type_name: type_names)
    out << " class " << type_name << ";\n";
- 
+
   out << R"RRR(
  /// All types defined for this database, listed in a class
  ///
@@ -55,10 +55,10 @@ namespace joedb::generator
 )RRR";
 
   const std::string ns = namespace_string(options.get_name_space()) + "::";
- 
+
   for (const char * const type_name: type_names)
    out << "   using " << type_name << " = " << ns << type_name << ";\n";
- 
+
   for (const auto &[tid, tname]: tables)
   {
    out << '\n';
@@ -67,12 +67,12 @@ namespace joedb::generator
    out << "   using iterator_of_" << tname;
    out << " = " << ns << "container_of_" << tname << "::iterator;\n";
   }
- 
+
   out << " };\n\n";
 
   out << " using Readonly_Types = Types;\n";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";  
+  out << "\n#endif\n";
  }
 }
