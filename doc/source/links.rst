@@ -81,6 +81,7 @@ Other links:
 - https://ayende.com/blog/162792/worlds-smallest-no-sql-database-persistent-transaction-logs
 - https://database-programmer.blogspot.fr/2008/07/history-tables.html
 
+- https://www.reddit.com/r/databasedevelopment/
 - https://www.reddit.com/r/programming/comments/3tfkdq/immutability_in_db_might_be_the_next_big_thing/
 - https://www.youtube.com/watch?v=fU9hR3kiOK0
 - `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
@@ -98,9 +99,10 @@ Crash resistance:
 
 .. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
 
-Interesting paper
+Papers
 
-- http://db.cs.yale.edu/vldb07hstore.pdf
+- `The End of an Architectural Era (It’s Time for a Complete Rewrite) <https://dslam.cs.umd.edu/vldb07hstore.pdf>`_
+- `Are You Sure You Want to Use MMAP in Your Database Management System? <https://db.cs.cmu.edu/papers/2022/cidr2022-p13-crotty.pdf>`_, `YouTube presentation of the paper <https://www.youtube.com/watch?v=1BRGU_AS25c>`_
 
 Data Loss Stories
 
