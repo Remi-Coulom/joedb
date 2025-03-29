@@ -6,5 +6,5 @@ Joedb, the Journal-Only Embedded Database
    :numbered:
 
    intro
-   users_guide
+   user_guide
    reference

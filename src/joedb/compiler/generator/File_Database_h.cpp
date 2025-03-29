@@ -29,19 +29,22 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- class File_Database_Parent
+ namespace detail
  {
-  public:
-   joedb::File file;
+  class File_Database_Data
+  {
+   protected:
+    joedb::File file;
 
-   File_Database_Parent(const char *file_name, joedb::Open_Mode mode):
-    file(file_name, mode)
-   {
-   }
- };
+    File_Database_Data(const char *file_name, joedb::Open_Mode mode):
+     file(file_name, mode)
+    {
+    }
+  };
+ }
 
  class File_Database:
-  public File_Database_Parent,
+  protected detail::File_Database_Data,
   public Buffered_File_Database
  {
   public:
@@ -52,7 +55,7 @@ namespace joedb::generator
     joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
-    File_Database_Parent(file_name, mode),
+    File_Database_Data(file_name, mode),
     Buffered_File_Database(file, check, commit_level)
    {
    }

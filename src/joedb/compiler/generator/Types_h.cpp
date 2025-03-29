@@ -37,7 +37,6 @@ namespace joedb::generator
    "Buffered_File_Database",
    "Client",
    "Readonly_Client",
-   "Interpreted_File",
    "Interpreted_Database",
   };
 
@@ -46,9 +45,11 @@ namespace joedb::generator
    out << " class " << type_name << ";\n";
  
   out << R"RRR(
- ////////////////////////////////////////////////////////////////////////////
+ /// All types defined for this database, listed in a class
+ ///
+ /// A namespace cannot be used as template parameter, so this class
+ /// can be used instead.
  class Types
- ////////////////////////////////////////////////////////////////////////////
  {
   public:
 )RRR";

@@ -29,37 +29,40 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- ////////////////////////////////////////////////////////////////////////////
- class Readonly_Client_Data:
- ////////////////////////////////////////////////////////////////////////////
-  public joedb::Client_Data,
-  public joedb::Blob_Reader
+ namespace detail
  {
-  protected:
-   joedb::Readonly_Journal journal;
-   Database db;
+  ///////////////////////////////////////////////////////////////////////////
+  class Readonly_Client_Data:
+  ///////////////////////////////////////////////////////////////////////////
+   public joedb::Client_Data,
+   public joedb::Blob_Reader
+  {
+   protected:
+    joedb::Readonly_Journal journal;
+    Database db;
 
-   Readonly_Client_Data(joedb::File &file):
-    journal(file)
-   {
-    db.initialize_with_readonly_journal(journal);
-   }
+    Readonly_Client_Data(joedb::File &file):
+     journal(file)
+    {
+     db.initialize_with_readonly_journal(journal);
+    }
 
-   bool is_readonly() const override
-   {
-    return true;
-   }
+    bool is_readonly() const override
+    {
+     return true;
+    }
 
-   joedb::Readonly_Journal &get_readonly_journal() override
-   {
-    return journal;
-   }
+    joedb::Readonly_Journal &get_readonly_journal() override
+    {
+     return journal;
+    }
 
-   std::string read_blob_data(joedb::Blob blob) final
-   {
-    return journal.read_blob_data(blob);
-   }
- };
+    std::string read_blob_data(joedb::Blob blob) final
+    {
+     return journal.read_blob_data(blob);
+    }
+  };
+ }
 
  ////////////////////////////////////////////////////////////////////////////
  class Pullonly_Connection
@@ -72,7 +75,7 @@ namespace joedb::generator
  ////////////////////////////////////////////////////////////////////////////
  class Readonly_Client:
  ////////////////////////////////////////////////////////////////////////////
-  private Readonly_Client_Data,
+  private detail::Readonly_Client_Data,
   private Pullonly_Connection,
   private joedb::Pullonly_Client
  {
@@ -81,10 +84,10 @@ namespace joedb::generator
 
   public:
    Readonly_Client(joedb::File &file):
-    Readonly_Client_Data(file),
+    detail::Readonly_Client_Data(file),
     joedb::Pullonly_Client
     (
-     *static_cast<Readonly_Client_Data *>(this),
+     *static_cast<detail::Readonly_Client_Data *>(this),
      Pullonly_Connection::connection,
      false
     ),

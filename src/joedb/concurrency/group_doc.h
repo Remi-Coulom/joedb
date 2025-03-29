@@ -2,4 +2,4 @@
 ///
 /// Connections, Clients, network protocol
 ///
-/// $(JOEDB_MANUAL)/concurrency.html
+/// <a href="../concurrency.html">User Guide</a>

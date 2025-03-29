@@ -28,27 +28,30 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- ////////////////////////////////////////////////////////////////////////////
- class Local_Client_Data
- ////////////////////////////////////////////////////////////////////////////
+ namespace detail
  {
-  protected:
-   joedb::File file;
-   joedb::Connection connection;
+  ///////////////////////////////////////////////////////////////////////////
+  class Local_Client_Data
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   protected:
+    joedb::File file;
+    joedb::Connection connection;
 
-   Local_Client_Data(const char *file_name):
-    file(file_name, joedb::File::lockable ? joedb::Open_Mode::shared_write : joedb::Open_Mode::write_existing_or_create_new)
-   {
-   }
- };
+    Local_Client_Data(const char *file_name):
+     file(file_name, joedb::File::lockable ? joedb::Open_Mode::shared_write : joedb::Open_Mode::write_existing_or_create_new)
+    {
+    }
+  };
+ }
 
  ////////////////////////////////////////////////////////////////////////////
- class Local_Client: private Local_Client_Data, public Client
+ class Local_Client: private detail::Local_Client_Data, public Client
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
    Local_Client(const char *file_name):
-    Local_Client_Data(file_name),
+    detail::Local_Client_Data(file_name),
     Client(Local_Client_Data::file, Local_Client_Data::connection)
    {
    }

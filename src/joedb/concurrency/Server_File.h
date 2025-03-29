@@ -1,5 +1,5 @@
-#ifndef Server_File_declared
-#define Server_File_declared
+#ifndef joedb_Server_File_declared
+#define joedb_Server_File_declared
 
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/journal/Buffered_File.h"
@@ -7,6 +7,14 @@
 
 namespace joedb
 {
+ /// Directly read file served from joedb_server
+ ///
+ /// This class allows reading a remote file via the joedb network protocol.
+ /// It is convenient for reading blobs from a large remote database without
+ /// having to download a local replica. This file can also be written to:
+ /// the head and tail of the file are stored in RAM locally, and can be
+ /// pushed to the remote server if used in a client.
+ ///
  /// \ingroup concurrency
  class Server_File: public Server_Connection, public Buffered_File
  {

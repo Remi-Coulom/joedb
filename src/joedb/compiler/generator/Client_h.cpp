@@ -27,41 +27,41 @@ namespace joedb::generator
 
   namespace_open(out, options.get_name_space());
  out << R"RRR(
- ////////////////////////////////////////////////////////////////////////////
- class Client_Data: public joedb::Client_Data
- ////////////////////////////////////////////////////////////////////////////
+ namespace detail
  {
-  friend class Client;
+  ///////////////////////////////////////////////////////////////////////////
+  class Client_Data: public joedb::Client_Data
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   protected:
+    Buffered_File_Database db;
 
-  private:
-   Buffered_File_Database db;
+    Client_Data
+    (
+     joedb::Buffered_File &file,
+     joedb::Readonly_Journal::Check check,
+     joedb::Commit_Level commit_level
+    ):
+     db(file, false, check, commit_level)
+    {
+    }
 
-  public:
-   Client_Data
-   (
-    joedb::Buffered_File &file,
-    joedb::Readonly_Journal::Check check,
-    joedb::Commit_Level commit_level
-   ):
-    db(file, false, check, commit_level)
-   {
-   }
+    bool is_readonly() const final
+    {
+     return false;
+    }
 
-   bool is_readonly() const final
-   {
-    return false;
-   }
-
-   joedb::Writable_Journal &get_writable_journal() final
-   {
-    return db.journal;
-   }
- };
+    joedb::Writable_Journal &get_writable_journal() final
+    {
+     return db.journal;
+    }
+  };
+ }
 
  ////////////////////////////////////////////////////////////////////////////
  class Client:
  ////////////////////////////////////////////////////////////////////////////
-  private Client_Data,
+  protected detail::Client_Data,
   public joedb::Client,
   public joedb::Blob_Reader
  {
@@ -85,8 +85,8 @@ namespace joedb::generator
     joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
-    Client_Data(file, check, commit_level),
-    joedb::Client(*static_cast<Client_Data *>(this), connection, content_check)
+    detail::Client_Data(file, check, commit_level),
+    joedb::Client(*static_cast<joedb::Client_Data *>(this), connection, content_check)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();

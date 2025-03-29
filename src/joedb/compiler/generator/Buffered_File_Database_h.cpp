@@ -36,12 +36,16 @@ namespace joedb::generator
   // Buffered_File_Database
   //
   out << R"RRR(
- class Client_Data;
+ namespace detail
+ {
+  class Client_Data;
+ }
+
  class Client;
 
  class Buffered_File_Database: public Database, public joedb::Blob_Reader
  {
-  friend class Client_Data;
+  friend class detail::Client_Data;
   friend class Client;
 
   private:
