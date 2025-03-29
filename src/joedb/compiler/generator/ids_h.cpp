@@ -31,8 +31,6 @@ namespace joedb::generator
 
   out << R"RRR(
  using joedb::Record_Id;
- using joedb::Table_Id;
- using joedb::Field_Id;
 )RRR";
 
   for (const auto &[tid, tname]: tables)

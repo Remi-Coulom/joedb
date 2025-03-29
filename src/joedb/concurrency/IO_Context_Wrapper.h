@@ -3,9 +3,8 @@
 
 #include <asio/io_context.hpp>
 
-namespace joedb
+namespace joedb::detail
 {
- /// \ingroup concurrency
  struct IO_Context_Wrapper
  {
   asio::io_context io_context;
