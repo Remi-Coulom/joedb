@@ -16,6 +16,7 @@ class JoedbiLexer(RegexLexer):
             (r'update\s+', Keyword, 'table_integer_field_literal'),
             (r'delete_from\s+', Keyword, 'table_integer'),
             (r'timestamp\s+', Keyword, 'timestamp'),
+            (r'valid_data\s+', Keyword),
             (r'.+', Literal)
         ],
         'table': [
