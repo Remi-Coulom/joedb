@@ -45,7 +45,7 @@ namespace joedb::generator
   };
  }
 
- /// Handle concurrent access to a file
+ /// Shortcut to directly build a @ref Client from a file name
  class File_Client: private detail::File_Client_Data, public Client
  {
   public:

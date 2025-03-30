@@ -43,6 +43,7 @@ namespace joedb::generator
   };
  }
 
+ /// Shortcut to directly build a @ref Buffered_File_Database from a file name
  class File_Database:
   protected detail::File_Database_Data,
   public Buffered_File_Database

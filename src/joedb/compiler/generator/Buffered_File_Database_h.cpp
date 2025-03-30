@@ -43,6 +43,7 @@ namespace joedb::generator
 
  class Client;
 
+ /// Manage a @ref Database stored in a @ref joedb::Writable_Journal
  class Buffered_File_Database: public Database, public joedb::Blob_Reader
  {
   friend class detail::Client_Data;

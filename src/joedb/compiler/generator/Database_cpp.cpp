@@ -20,12 +20,15 @@ namespace joedb::generator
  {
   out << "#include \"Database.h\"\n\n";
 
-  namespace_open(out, options.get_name_space());
+  auto name_space = options.get_name_space();
+  name_space.emplace_back("detail");
+
+  namespace_open(out, name_space);
 
   out << "\n const char * schema_string = ";
   write_string(out, options.schema_file.get_data());
   out << ";\n";
 
-  namespace_close(out, options.get_name_space());
+  namespace_close(out, name_space);
  }
 }

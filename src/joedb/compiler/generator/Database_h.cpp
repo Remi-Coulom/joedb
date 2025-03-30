@@ -64,10 +64,12 @@ namespace joedb::generator
  using joedb::Table_Id;
  using joedb::Field_Id;
 
- extern const char * schema_string;
- inline constexpr size_t schema_string_size = )RRR";
+ namespace detail
+ {
+  extern const char * schema_string;
+  inline constexpr size_t schema_string_size = )RRR";
 
-  out << options.schema_file.get_size() << ";\n";
+  out << options.schema_file.get_size() << ";\n }\n";
 
   for (const auto &[tid, tname]: tables)
    out << " class container_of_" << tname << ";\n";
@@ -126,6 +128,7 @@ namespace joedb::generator
     out << " class range_of_" << index.name << ";\n";
   out << '\n';
 
+  out << " /// Store all the tables of the database\n";
   out << " class Database: public joedb::Writable\n {\n";
   out << "  friend class Readable;\n";
 
@@ -733,7 +736,7 @@ namespace joedb::generator
 
    bool requires_schema_upgrade() const
    {
-    return schema_file.get_data().size() < schema_string_size;
+    return schema_file.get_data().size() < detail::schema_string_size;
    }
 
    void check_schema()
@@ -744,11 +747,11 @@ namespace joedb::generator
     if
     (
      schema_file_size < pos ||
-     schema_file_size > schema_string_size ||
+     schema_file_size > detail::schema_string_size ||
      std::memcmp
      (
       schema_file.get_data().data() + pos,
-      schema_string + pos,
+      detail::schema_string + pos,
       schema_file_size - pos
      ) != 0
     )
@@ -1011,6 +1014,7 @@ namespace joedb::generator
   //
   for (const auto &[tid, tname]: tables)
   {
+   out << " /// returned by @ref Database::get_" << tname << "_table\n";
    out << " class container_of_" << tname << "\n";
    out << " {\n";
    out << "  friend class Database;\n";
@@ -1087,6 +1091,7 @@ namespace joedb::generator
   {
    if (!index.unique)
    {
+    out << " /// returned by @ref Database::find_" << index.name << '\n';
     out << " class range_of_" << index.name << "\n";
     out << " {\n";
     out << "  friend class Database;\n";

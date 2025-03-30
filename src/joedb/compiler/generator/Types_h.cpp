@@ -48,10 +48,7 @@ namespace joedb::generator
    out << " class " << type_name << ";\n";
 
   out << R"RRR(
- /// All types defined for this database, listed in a class
- ///
- /// A namespace cannot be used as template parameter, so this class
- /// can be used instead.
+ /// All types defined for this database, listed in a class (for use as template parameter)
  class Types
  {
   public:
@@ -71,9 +68,7 @@ namespace joedb::generator
    out << " = " << ns << "container_of_" << tname << "::iterator;\n";
   }
 
-  out << " };\n\n";
-
-  out << " using Readonly_Types = Types;\n";
+  out << " };\n";
 
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";

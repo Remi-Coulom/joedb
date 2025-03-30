@@ -96,7 +96,7 @@ Running the resulting program will produce this output:
 
 All the data was stored in the tutorial.joedb file. The database file is a
 binary file, so it is not convenient to inspect it directly. The
-:ref:`joedb_logdump` tool will produce a readable log:
+:ref:`joedb_logdump` tool can produce a readable log:
 
 .. literalinclude:: ./tutorial/logdump.joedbi
    :language: joedbi

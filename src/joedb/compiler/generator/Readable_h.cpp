@@ -46,7 +46,7 @@ namespace joedb::generator
   public:
    Readable(const Database &db): db(db)
    {
-    joedb::Readonly_Memory_File file(schema_string, schema_string_size);
+    joedb::Readonly_Memory_File file(detail::schema_string, detail::schema_string_size);
     joedb::Readonly_Journal journal(file);
     journal.replay_log(*this);
    }
