@@ -109,12 +109,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- std::string Buffered_File::read_blob_data(Blob blob)
+ std::string Buffered_File::read_blob_data(const Blob blob)
  ////////////////////////////////////////////////////////////////////////////
  {
   const int64_t current_position = get_position();
   set_position(blob.get_position());
-  std::string result = read_string();
+  const std::string result = read_string();
   set_position(current_position);
   return result;
  }

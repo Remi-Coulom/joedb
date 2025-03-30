@@ -4,6 +4,8 @@ TODO
 For next release
 ----------------
 
+ - make read_blob_data const, and member of Abstract_File instead of Buffered_File.
+   get_async_* should also be members of Abstract_File.
  - compiled interpreter should not offer data-definition commands
  - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 

@@ -395,7 +395,7 @@ namespace joedb
     );
 
     if (reader.is_end_of_file())
-     LOG ("error: unexpected end of file\n");
+     LOG("error: unexpected end of file\n");
     else
     {
      refresh_lock_timeout(session);
