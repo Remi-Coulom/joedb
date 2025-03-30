@@ -47,13 +47,13 @@ History
   - Incompatibilities with previous version:
 
     - ``Generic_File`` was renamed to ``Buffered_File``
+    - ``Generic_File_Database`` was renamed to ``Writable_Database``
     - ``Local_Client`` was renamed to ``File_Client``
+    - The order of parameters of the Client's constructor are swapped: the file
+      is first, then the connection.
     - The ``is_end_of_file()`` function was removed. Trying to read past the
       end of a file now throws an exception.
     - boolean values are printed as ``false`` and ``true`` instead of 0 and 1.
-    - In order to be coherent with the rest of the library, the order of
-      parameters of the Client's constructor are swapped: the file is first,
-      then the connection.
     - hashing functions were moved into a separate ``File_Hasher`` class.
     - ``Generic_File::set_mode`` and ``get_mode`` were removed. They are
       replaced by the more restrictive ``make_readonly()``, ``is_shared()``,

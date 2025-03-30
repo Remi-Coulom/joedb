@@ -30,7 +30,7 @@ int main()
  // Writes that occured in a transaction before an exception are not sent to
  // the connection, but they are written to the file.
  //
- client1.transaction([](tutorial::Buffered_File_Database &db)
+ client1.transaction([](tutorial::Writable_Database &db)
  {
   db.new_city("Paris");
   db.new_city("New York");

@@ -1,11 +1,11 @@
 #include "db/test/Client.h"
-#include "db/multi_index/Buffered_File_Database.h"
+#include "db/multi_index/Writable_Database.h"
 #include "db/schema_v1/Client.h"
 #include "db/schema_v1/Readonly_Database.h"
 #include "db/schema_v2/Client.h"
 #include "db/schema_v2/Readonly_Database.h"
 #include "db/test/Readonly_Database.h"
-#include "db/vector_test/Buffered_File_Database.h"
+#include "db/vector_test/Writable_Database.h"
 #include "db/vector_test/Readonly_Database.h"
 #include "translation.h"
 #include "joedb/journal/Readonly_Interpreted_File.h"
@@ -63,7 +63,7 @@ TEST(Compiler, file_test)
  //
  joedb::Memory_File file;
  joedb::Readonly_Interpreted_File("compiler/db/test.joedbi").copy_to(file);
- test::Buffered_File_Database db(file);
+ test::Writable_Database db(file);
 
  //
  // Check table sizes
@@ -302,7 +302,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   db.new_city("Paris");
   db.new_city("Lille");
   db.new_city("Paris");
@@ -317,7 +317,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  multi_index::Buffered_File_Database db(file);
+  multi_index::Writable_Database db(file);
   db.new_person("Chantal", "Dupont", db.null_city());
   db.new_person("Rémi", "Coulom", db.null_city());
   db.new_person("Rémi", "Munos", db.null_city());
@@ -335,7 +335,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   auto translation = db.new_translation();
   ((joedb::Writable *)&db)->delete_from(joedb::Table_Id(5), translation.get_record_id());
   db.checkpoint();
@@ -348,7 +348,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(1));
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(1));
   db.checkpoint();
@@ -362,7 +362,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(5), joedb::Record_Id(1));
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(5), joedb::Record_Id(3));
   db.checkpoint();
@@ -375,7 +375,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(2000));
   db.checkpoint();
@@ -389,7 +389,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_vector(joedb::Table_Id(1), joedb::Record_Id(1), 2000);
   db.checkpoint();
@@ -404,7 +404,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   auto city = db.new_city("Paris");
   EXPECT_STREQ(db.get_name(city).c_str(), "Paris");
   db.delete_city(city);
@@ -421,7 +421,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
   db.checkpoint();
@@ -437,7 +437,7 @@ TEST(Compiler, exceptions)
  try
  {
   joedb::Memory_File file;
-  test::Buffered_File_Database db(file);
+  test::Writable_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
   db.checkpoint();
@@ -483,7 +483,7 @@ TEST(Compiler, checkpoints)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- test::Buffered_File_Database db(file);
+ test::Writable_Database db(file);
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
  db.checkpoint_full_commit();
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
@@ -494,10 +494,10 @@ TEST(Compiler, checkpoints)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void schema_v2::Buffered_File_Database::set_default_preferred_language_to_english
+void schema_v2::Writable_Database::set_default_preferred_language_to_english
 /////////////////////////////////////////////////////////////////////////////
 (
- Buffered_File_Database &db
+ Writable_Database &db
 )
 {
  const auto english = db.new_language("English", "en");
@@ -512,7 +512,7 @@ TEST(Compiler, schema_upgrade)
  joedb::Memory_File file;
 
  {
-  schema_v1::Buffered_File_Database db(file);
+  schema_v1::Writable_Database db(file);
 
   db.new_person("Toto");
   db.new_person("Rémi");
@@ -532,7 +532,7 @@ TEST(Compiler, schema_upgrade)
  }
 
  {
-  schema_v1::Buffered_File_Database db(file);
+  schema_v1::Writable_Database db(file);
  }
 
  {
@@ -541,7 +541,7 @@ TEST(Compiler, schema_upgrade)
    file.get_data()
   );
 
-  schema_v2::Buffered_File_Database db(upgradable_file);
+  schema_v2::Writable_Database db(upgradable_file);
 
   const auto toto = db.get_person_table().first();
   EXPECT_EQ("Toto", db.get_name(toto));
@@ -551,7 +551,7 @@ TEST(Compiler, schema_upgrade)
  }
 
  {
-  schema_v2::Buffered_File_Database db(file);
+  schema_v2::Writable_Database db(file);
 
   const auto toto = db.get_person_table().first();
   EXPECT_EQ("Toto", db.get_name(toto));
@@ -561,12 +561,12 @@ TEST(Compiler, schema_upgrade)
  }
 
  {
-  schema_v2::Buffered_File_Database db(file);
+  schema_v2::Writable_Database db(file);
  }
 
  try
  {
-  schema_v1::Buffered_File_Database db(file);
+  schema_v1::Writable_Database db(file);
   ADD_FAILURE() << "v1 code should not open v2 files\n";
  }
  catch (const joedb::Exception &e)
@@ -599,7 +599,7 @@ TEST(Compiler, client)
  joedb::Memory_File client_v1bis_file;
  schema_v1::Client client_v1bis(client_v1bis_file, connection);
 
- client_v1.transaction([](schema_v1::Buffered_File_Database &db)
+ client_v1.transaction([](schema_v1::Writable_Database &db)
  {
   db.new_person("Toto");
  });
@@ -607,7 +607,7 @@ TEST(Compiler, client)
  joedb::Memory_File client_v2_file;
  schema_v2::Client client_v2(client_v2_file, connection);
 
- client_v2.transaction([](schema_v2::Buffered_File_Database &db)
+ client_v2.transaction([](schema_v2::Writable_Database &db)
  {
   db.new_language("French", "fr");
  });
@@ -624,7 +624,7 @@ TEST(Compiler, client)
 
  try
  {
-  client_v1bis.transaction([](schema_v1::Buffered_File_Database &db)
+  client_v1bis.transaction([](schema_v1::Writable_Database &db)
   {
   });
   ADD_FAILURE() <<  "client_v1 should not be able to pull new schema\n";
@@ -642,7 +642,7 @@ TEST(Compiler, client_push)
  joedb::Memory_File client_file;
 
  {
-  test::Buffered_File_Database db(client_file);
+  test::Writable_Database db(client_file);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
@@ -655,7 +655,7 @@ TEST(Compiler, client_push)
   EXPECT_TRUE(client.get_checkpoint_difference() == 0);
  }
 
- test::Buffered_File_Database db(server_file);
+ test::Writable_Database db(server_file);
  EXPECT_FALSE(db.find_person_by_name("Rémi").empty());
 }
 
@@ -666,7 +666,7 @@ TEST(Compiler, client_hash_error)
  joedb::Memory_File client_file;
 
  {
-  test::Buffered_File_Database db(client_file);
+  test::Writable_Database db(client_file);
   db.new_person("Rémi", db.null_city());
   db.checkpoint();
  }
@@ -674,7 +674,7 @@ TEST(Compiler, client_hash_error)
  joedb::Memory_File server_file;
 
  {
-  test::Buffered_File_Database db(server_file);
+  test::Writable_Database db(server_file);
   db.new_person("X", db.null_city());
   db.checkpoint();
  }
@@ -706,7 +706,7 @@ TEST(Compiler, vector)
   test::id_of_float v;
 
   {
-   test::Buffered_File_Database db(file);
+   test::Writable_Database db(file);
    v = db.new_vector_of_float(n);
    for (size_t i = 0; i < n; i++)
     db.set_value(v[i], 0.1f * float(i));
@@ -727,7 +727,7 @@ TEST(Compiler, vector)
   joedb::Memory_File file;
 
   {
-   vector_test::Buffered_File_Database db(file);
+   vector_test::Writable_Database db(file);
    db.new_vector_of_point(0);
    db.checkpoint();
   }
@@ -745,7 +745,7 @@ TEST(Compiler, vector)
   joedb::Memory_File file;
 
   {
-   vector_test::Buffered_File_Database db(file);
+   vector_test::Writable_Database db(file);
    auto v = db.new_vector_of_point(n);
    for (size_t i = 0; i < n; i++)
    {
@@ -759,7 +759,7 @@ TEST(Compiler, vector)
   }
 
   {
-   vector_test::Buffered_File_Database db(file);
+   vector_test::Writable_Database db(file);
    auto v = db.new_vector_of_point(n);
 
    db.update_vector_of_x(v, n, [&](joedb::Span<float> x)
@@ -797,7 +797,7 @@ TEST(Compiler, vector)
  {
   joedb::Memory_File file;
   joedb::Readonly_Interpreted_File("compiler/vector_hole.joedbi").copy_to(file);
-  vector_test::Buffered_File_Database db(file);
+  vector_test::Writable_Database db(file);
  }
  catch (const joedb::Exception &e)
  {
@@ -810,7 +810,7 @@ TEST(Compiler, vector)
   joedb::Readonly_Interpreted_File("compiler/vector_hole_by_vector_insert.joedbi").copy_to(file);
 
   {
-   vector_test::Buffered_File_Database db(file);
+   vector_test::Writable_Database db(file);
    db.set_x(db.get_point_table().first(), 1.234f);
    db.checkpoint();
   }
@@ -833,7 +833,7 @@ TEST(Compiler, vector)
  {
   joedb::Memory_File file;
   joedb::Readonly_Interpreted_File("compiler/vector_delete.joedbi").copy_to(file);
-  vector_test::Buffered_File_Database db(file);
+  vector_test::Writable_Database db(file);
  }
  catch (const joedb::Exception &e)
  {
@@ -845,7 +845,7 @@ TEST(Compiler, vector)
  //
  {
   joedb::Memory_File file;
-  vector_test::Buffered_File_Database db(file);
+  vector_test::Writable_Database db(file);
 
   {
    constexpr int n = 3;
@@ -895,7 +895,7 @@ TEST(Compiler, vector)
  //
  {
   joedb::Memory_File file;
-  vector_test::Buffered_File_Database db(file);
+  vector_test::Writable_Database db(file);
   db.write_timestamp();
   db.write_comment("This was a timestamp.");
   db.checkpoint();
@@ -907,7 +907,7 @@ TEST(Compiler, index_iteration)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- test::Buffered_File_Database db(file);
+ test::Writable_Database db(file);
 
  const auto tokyo = db.new_city("Tokyo");
  const auto lille = db.new_city("Lille");
@@ -949,7 +949,7 @@ TEST(Compiler, delete_vector)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- test::Buffered_File_Database db(file);
+ test::Writable_Database db(file);
 
  const auto v = db.new_vector_of_city(100);
 

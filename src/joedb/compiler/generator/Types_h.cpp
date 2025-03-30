@@ -31,7 +31,7 @@ namespace joedb::generator
 
   static constexpr const char * const type_names[] =
   {
-   "Buffered_File_Database",
+   "Writable_Database",
    "Client",
    "Database",
    "File_Client",

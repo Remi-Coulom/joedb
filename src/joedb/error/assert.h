@@ -23,7 +23,7 @@
 
 namespace joedb
 {
- /// Indicates a bug in the code, thrown by @ref JOEDB_ASSERT
+ /// Indicates a bug in the code, thrown by @ref JOEDB_ASSERT when NDEBUG not defined
  /// \ingroup error
  class Assertion_Failure: public std::logic_error
  {

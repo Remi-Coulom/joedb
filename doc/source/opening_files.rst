@@ -44,13 +44,16 @@ For example:
 .. literalinclude:: ./tutorial/file_tutorial.cpp
    :language: c++
 
-``Buffered_File_Database``
---------------------------
+``Buffered_File``
+-----------------
 
-``Buffered_File_Database`` is a superclass of ``File_Database`` that takes a
-reference to a ``Buffered_File`` as parameter to its constructor, instead
-of a file name. Subclasses of ``Buffered_File`` allows accessing data in
-various ways:
+``File_Database`` is a shortcut that allows opening a database directly with a
+file name. Its more generic superclass ``Writable_Database`` can access data
+stored in the various specializations of the ``Buffered_File`` class.
+``Readonly_Database`` can also take a read-only ``Buffered_File`` as
+constructor parameter.
+
+Here are some specializations of ``Buffered_File`` provided by joedb:
 
  - ``Stream_File`` uses a ``std::streambuf``.
  - ``Memory_File`` writes to a ``std::string``.

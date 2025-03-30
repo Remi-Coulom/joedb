@@ -20,7 +20,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Client", options.get_name_space());
 
   out << R"RRR(
-#include "Buffered_File_Database.h"
+#include "Writable_Database.h"
 #include "joedb/concurrency/Client.h"
 
 )RRR";
@@ -34,7 +34,7 @@ namespace joedb::generator
   ///////////////////////////////////////////////////////////////////////////
   {
    protected:
-    Buffered_File_Database db;
+    Writable_Database db;
 
     Client_Data
     (
@@ -58,7 +58,7 @@ namespace joedb::generator
   };
  }
 
- /// compiled specialization of joedb::Client
+ /// Handle concurrent access to a @ref joedb::Buffered_File using a @ref joedb::Connection
  class Client:
   protected detail::Client_Data,
   public joedb::Client,
@@ -115,7 +115,11 @@ namespace joedb::generator
     return byte_count;
    }
 
-   template<typename F> void transaction(F transaction)
+   /// Execute a write transaction
+   template<typename F> void transaction
+   (
+    F transaction ///< A function object that takes a reference to a @ref Writable_Database
+   )
    {
     joedb::Client::transaction([&](joedb::Client_Data &data)
     {

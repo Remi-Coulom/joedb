@@ -1,4 +1,4 @@
-#include "db/schema_v1/Buffered_File_Database.h"
+#include "db/schema_v1/Writable_Database.h"
 #include "db/schema_v1/Readonly_Database.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -8,7 +8,7 @@ int main()
  joedb::Memory_File file;
 
  {
-  schema_v1::Buffered_File_Database db(file);
+  schema_v1::Writable_Database db(file);
 
   auto person = db.new_person();
 

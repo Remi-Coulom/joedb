@@ -12,7 +12,7 @@ namespace joedb
   joedb::Memory_File file;
 
   {
-   settings::Buffered_File_Database db(file);
+   settings::Writable_Database db(file);
 
    EXPECT_EQ(db.get_dark_mode(), true);
    EXPECT_EQ(db.get_host(), "www.kayufu.com");

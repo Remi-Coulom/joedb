@@ -1,4 +1,4 @@
-#include "tutorial/Buffered_File_Database.h"
+#include "tutorial/Writable_Database.h"
 #include "tutorial/File_Client.h"
 #include "tutorial/Readable.h"
 #include "joedb/ui/main_exception_catcher.h"
@@ -15,7 +15,7 @@ namespace joedb
  {
   tutorial::File_Client client("tutorial.joedb");
 
-  client.transaction([](tutorial::Buffered_File_Database &db){
+  client.transaction([](tutorial::Writable_Database &db){
    tutorial::Readable readable(db);
    joedb::Multiplexer multiplexer = db.get_multiplexer();
    Interpreter interpreter(readable, multiplexer, nullptr, multiplexer, 0);

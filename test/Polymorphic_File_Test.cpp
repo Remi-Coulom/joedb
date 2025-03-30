@@ -150,7 +150,7 @@ TEST(Polymorphic_File, Encoded_File)
 
  {
   Memory_File db_file;
-  db::encoded_file::Buffered_File_Database db(db_file);
+  db::encoded_file::Writable_Database db(db_file);
   Encoded_File file(codec, db);
 
   polymorphic_test(file);
@@ -158,7 +158,7 @@ TEST(Polymorphic_File, Encoded_File)
 
  {
   Memory_File db_file;
-  db::encoded_file::Buffered_File_Database db(db_file);
+  db::encoded_file::Writable_Database db(db_file);
   Encoded_File file(codec, db);
 
   polymorphic_journal_test(file);

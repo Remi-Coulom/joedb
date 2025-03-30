@@ -20,7 +20,7 @@ namespace joedb::generator
   namespace_include_guard(out, "File_Database", options.get_name_space());
 
   out << R"RRR(
-#include "Buffered_File_Database.h"
+#include "Writable_Database.h"
 #include "joedb/journal/File.h"
 
 )RRR";
@@ -43,10 +43,10 @@ namespace joedb::generator
   };
  }
 
- /// Shortcut to directly build a @ref Buffered_File_Database from a file name
+ /// Shortcut to directly build a @ref Writable_Database from a file name
  class File_Database:
   protected detail::File_Database_Data,
-  public Buffered_File_Database
+  public Writable_Database
  {
   public:
    File_Database
@@ -57,7 +57,7 @@ namespace joedb::generator
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     File_Database_Data(file_name, mode),
-    Buffered_File_Database(file, check, commit_level)
+    Writable_Database(file, check, commit_level)
    {
    }
 
