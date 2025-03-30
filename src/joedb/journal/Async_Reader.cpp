@@ -1,26 +1,34 @@
 #include "joedb/journal/Async_Reader.h"
+#include "joedb/journal/Buffer.h"
 
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Async_Reader::Async_Reader(Buffered_File &file, int64_t start, int64_t end):
+ Async_Reader::Async_Reader
  //////////////////////////////////////////////////////////////////////////
+ (
+  const Abstract_File &file,
+  int64_t start,
+  int64_t end
+ ):
   file(file),
   end(end),
   current(start),
   end_of_file(false)
  {
-  file.flush();
   if (current > end)
    current = end;
  }
 
  //////////////////////////////////////////////////////////////////////////
- Async_Reader::Async_Reader(Buffered_File &file, Blob blob): file(file)
+ Async_Reader::Async_Reader
  //////////////////////////////////////////////////////////////////////////
+ (
+  const Abstract_File &file,
+  Blob blob
+ ):
+  file(file)
  {
-  file.flush();
-
   Buffer<3> buffer;
   buffer.index = 0;
   buffer.write<int64_t>(0); // avoid uninitialized data if eof

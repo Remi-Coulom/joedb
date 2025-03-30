@@ -116,6 +116,7 @@ namespace joedb
  {
   Memory_File file;
   const Blob blob = file.write_blob_data("joedb");
+  file.flush();
   Async_Reader reader(file, blob);
   EXPECT_EQ(reader.get_remaining(), 5);
   constexpr int64_t capacity = 3;
