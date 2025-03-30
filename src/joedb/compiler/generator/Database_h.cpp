@@ -72,13 +72,14 @@ namespace joedb::generator
   for (const auto &[tid, tname]: tables)
    out << " class container_of_" << tname << ";\n";
 
+  out << "\n namespace detail\n {";
   for (const auto &[tid, tname]: tables)
   {
-   out << "\n struct data_of_" << tname;
+   out << "\n  struct data_of_" << tname;
 
-   out <<"\n {\n";
+   out <<"\n  {\n";
    if (db.get_freedom(tid).size() > 0)
-    out <<"  Field_Id current_field_id = Field_Id(0);\n";
+    out <<"   Field_Id current_field_id = Field_Id(0);\n";
 
    std::vector<std::string> fields;
 
@@ -88,7 +89,7 @@ namespace joedb::generator
 
     const joedb::Type &type = db.get_field_type(tid, fid);
 
-    out << "  std::vector<";
+    out << "   std::vector<";
     write_type(type, false, false);
     out << "> " << fields.back() << ";\n";
    }
@@ -96,7 +97,7 @@ namespace joedb::generator
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)
     {
-     out << "  std::vector<";
+     out << "   std::vector<";
      write_index_type(index);
      out << "::iterator> ";
      fields.emplace_back("iterator_over_" + index.name);
@@ -104,21 +105,21 @@ namespace joedb::generator
     }
 
   out << R"RRR(
+   joedb::Compact_Freedom_Keeper freedom_keeper;
 
-  joedb::Compact_Freedom_Keeper freedom_keeper;
+   size_t size() const {return freedom_keeper.size();}
 
-  size_t size() const {return freedom_keeper.size();}
-
-  void resize(size_t new_size)
-  {
+   void resize(size_t new_size)
+   {
 )RRR";
 
    fields.emplace_back("freedom_keeper");
    for (const std::string &field: fields)
-    out << "   " << field << ".resize(new_size);\n";
+    out << "    " << field << ".resize(new_size);\n";
 
-   out << "  }\n };\n\n";
+   out << "   }\n  };\n";
   }
+  out << " }\n\n";
 
   for (const auto &index: options.get_indices())
    if (!index.unique)
@@ -170,7 +171,7 @@ namespace joedb::generator
 
   for (const auto &[tid, tname]: tables)
   {
-   out << "   data_of_" << tname << " storage_of_" << tname << ";\n";
+   out << "   detail::data_of_" << tname << " storage_of_" << tname << ";\n";
 
    out << "   bool is_valid_record_id_for_" << tname;
    out << "(Record_Id record_id) const {return storage_of_" << tname;
@@ -717,9 +718,9 @@ namespace joedb::generator
   // Informative events are ignored
   //
   out << R"RRR(
-   void comment(const std::string &comment) override {};
-   void timestamp(int64_t timestamp) override {};
-   void valid_data() final {};
+   void comment(const std::string &comment) override {}
+   void timestamp(int64_t timestamp) override {}
+   void valid_data() final {}
 )RRR";
 
   //
@@ -1027,7 +1028,7 @@ namespace joedb::generator
 
    out << "     const joedb::Compact_Freedom_Keeper *fk;\n"; // must use pointer for copy constructor
    out << "     size_t index;\n";
-   out << "     iterator(const data_of_" << tname << " &data): fk(&data.freedom_keeper), index(0) {}\n";
+   out << "     iterator(const detail::data_of_" << tname << " &data): fk(&data.freedom_keeper), index(0) {}\n";
    out << "    public:\n";
    out << "     typedef std::forward_iterator_tag iterator_category;\n";
    out << "     typedef id_of_" << tname << " value_type;\n";
