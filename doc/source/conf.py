@@ -32,12 +32,12 @@ import sphinx_rtd_theme
 sys.path.append(os.path.abspath("./_ext"))
 
 extensions = [
-#    'breathe',
     'sphinx.ext.imgmath',
     'sphinxcontrib.spelling',
     'sphinxcontrib.asciinema',
     'joedbi_lexer',
-    'joedbc_lexer'
+    'joedbc_lexer',
+    'sphinx_favicon'
 ]
 
 # Breathe Configuration
@@ -138,6 +138,8 @@ html_theme_options = {}
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 #html_favicon = None
+
+favicons = [{"href": "logo.svg"}]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
