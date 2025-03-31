@@ -24,7 +24,7 @@ namespace joedb
  comment "<comment_string>"
  valid_data
  flush
- checkpoint
+ checkpoint [no|half|full]
  write_blob <data_string>
 
 )RRR";
@@ -54,7 +54,19 @@ namespace joedb
   }
   else if (command == "checkpoint") ////////////////////////////////////////
   {
-   writable.default_checkpoint();
+   std::string param;
+   parameters >> param;
+
+   if (param == "no")
+    writable.checkpoint(Commit_Level::no_commit);
+   else if (param == "half")
+    writable.checkpoint(Commit_Level::half_commit);
+   else if (param == "full")
+    writable.checkpoint(Commit_Level::full_commit);
+   else if (param == "")
+    writable.default_checkpoint();
+   else
+    out << "Error: unknown parameter: " << param << '\n';
   }
   else if (command == "write_blob") ////////////////////////////////////////
   {
