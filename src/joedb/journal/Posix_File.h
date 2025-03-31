@@ -17,11 +17,10 @@ namespace joedb
  {
   private:
    int fd;
-
    int lock(int command, short type, int64_t start, int64_t size);
 
   protected:
-   void sync() override;
+   bool try_exclusive_lock(int64_t start, int64_t size);
 
   public:
    static void throw_last_error(const char *action, const char *file_name);
@@ -38,12 +37,14 @@ namespace joedb
    Posix_FD &operator=(const Posix_FD &) = delete;
 
    int64_t get_size() const override;
-   void shared_lock(int64_t start, int64_t size) override;
-   bool try_exclusive_lock(int64_t start, int64_t size);
-   void exclusive_lock(int64_t start, int64_t size) override;
-   void unlock(int64_t start, int64_t size) override;
    size_t pread(char *buffer, size_t size, int64_t offset) const override;
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
+
+   void sync() override;
+
+   void shared_lock(int64_t start, int64_t size) override;
+   void exclusive_lock(int64_t start, int64_t size) override;
+   void unlock(int64_t start, int64_t size) override;
 
    ~Posix_FD() override;
  };

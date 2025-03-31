@@ -633,3 +633,15 @@ TEST(File, portable)
 
  std::remove("test.joedb");
 }
+
+TEST(File, sync)
+{
+ std::remove("test.joedb");
+ joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+ for (int i = 10; --i >= 0;)
+ {
+  file.write<int>(42);
+  file.flush();
+  file.sync();
+ }
+}

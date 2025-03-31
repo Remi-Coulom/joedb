@@ -128,8 +128,14 @@ namespace joedb
  void Posix_FD::sync()
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (fsync(fd) < 0)
+#if defined(__APPLE__) && defined(__MACH__) && defined(F_FULLFSYNC)
+  if (fcntl(fd, F_FULLFSYNC) == -1)
+#else
+  if (fsync(fd) == -1)
+#endif
+  {
    throw_last_error("syncing", "file");
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////

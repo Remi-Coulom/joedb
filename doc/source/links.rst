@@ -96,8 +96,8 @@ Crash resistance:
 .. [Moyer-2011] `Ensuring data reaches disk <https://lwn.net/Articles/457667/>`_
 .. [serverfault-2009] `SATA Disks that handle write caching properly? <https://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
 .. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
-
 .. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
+.. [Miller-2024] `Userland Disk I/O <https://transactional.blog/how-to-learn/disk-io>`_
 
 Papers
 
