@@ -40,4 +40,4 @@ data. It would be possible to build a SQL database on top of it, but it is
 already very convenient by itself.
 
 For more information, please take at a look at the
-[documentation](https://www.joedb.org/intro.html).
+[documentation](https://www.joedb.org/).

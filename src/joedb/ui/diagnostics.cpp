@@ -111,6 +111,6 @@ namespace joedb
   out << 0;
 #endif
   out << '\n';
-  out << "web site: https://www.remi-coulom.fr/joedb/\n";
+  out << "web site: https://www.joedb.org/\n";
  }
 }
