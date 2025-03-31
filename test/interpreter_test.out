@@ -142,7 +142,7 @@ Journal
  comment "<comment_string>"
  valid_data
  flush
- checkpoint
+ checkpoint [no|half|full]
  write_blob <data_string>
 
 Data definition
