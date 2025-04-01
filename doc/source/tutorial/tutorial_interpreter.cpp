@@ -1,6 +1,7 @@
 #include "tutorial/Writable_Database.h"
 #include "tutorial/File_Client.h"
 #include "tutorial/Readable.h"
+#include "tutorial/Multiplexer.h"
 #include "joedb/ui/main_exception_catcher.h"
 #include "joedb/ui/Interpreter.h"
 
@@ -17,7 +18,7 @@ namespace joedb
 
   client.transaction([](tutorial::Writable_Database &db){
    tutorial::Readable readable(db);
-   joedb::Multiplexer multiplexer = db.get_multiplexer();
+   tutorial::Multiplexer multiplexer(db);
    Interpreter interpreter(readable, multiplexer, nullptr, multiplexer, 0);
    interpreter.main_loop(std::cin, std::cout);
   });

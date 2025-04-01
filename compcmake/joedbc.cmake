@@ -89,6 +89,7 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Interpreted_File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Interpreted_File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Multiplexer_h.cpp
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Client_h.cpp

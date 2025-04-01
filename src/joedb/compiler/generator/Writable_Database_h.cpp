@@ -26,7 +26,6 @@ namespace joedb::generator
   out << R"RRR(
 #include "Database.h"
 #include "joedb/Span.h"
-#include "joedb/Multiplexer.h"
 
 )RRR";
 
@@ -42,12 +41,14 @@ namespace joedb::generator
  }
 
  class Client;
+ class Multiplexer;
 
  /// A writable @ref Database constructed from a writable @ref joedb::Buffered_File
  class Writable_Database: public Database, public joedb::Blob_Reader
  {
   friend class detail::Client_Data;
   friend class Client;
+  friend class Multiplexer;
 
   private:
    joedb::Writable_Journal journal;
@@ -335,12 +336,7 @@ namespace joedb::generator
    }
   }
 
-  out << R"RRR(   joedb::Multiplexer get_multiplexer()
-   {
-    return joedb::Multiplexer{*this, journal};
-   }
- };
-)RRR";
+  out << "\n };";
 
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";
