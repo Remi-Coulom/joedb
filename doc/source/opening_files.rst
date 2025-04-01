@@ -44,6 +44,13 @@ For example:
 .. literalinclude:: ./tutorial/file_tutorial.cpp
    :language: c++
 
+``File_Client``
+---------------
+Writes to a ``File_Database`` must be manually checkpointed
+(``db.checkpoint()``), which is not very convenient. You can avoid having to
+explicitly checkpoint your writes by using :ref:`transactions <file_client>`
+with a ``File_Client`` instead.
+
 ``Buffered_File``
 -----------------
 
