@@ -13,7 +13,7 @@ include("../../../compcmake/joedbc.cmake")
 #  * joedbc_build(<dir> <name>): add rules to compile a database with joedbc
 #     <dir> is relative to ${CMAKE_CURRENT_SOURCE_DIR}
 #     Assumes that <dir>/<name>.joedbi and <dir>/<name>.joedbc contain compiler
-#     instructions to generate <dir>/<name>.cpp
+#     instructions to generate source stored in the <dir>/<name> directory
 #     This function may be invoked multiple times, once for each database
 #     contained in the code.
 #
