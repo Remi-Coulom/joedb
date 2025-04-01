@@ -128,7 +128,7 @@ namespace joedb
  void Posix_FD::sync()
  /////////////////////////////////////////////////////////////////////////////
  {
-#if defined(__APPLE__) && defined(__MACH__) && defined(F_FULLFSYNC)
+#ifdef __APPLE__
   if (fcntl(fd, F_FULLFSYNC) == -1)
 #else
   if (fsync(fd) == -1)
