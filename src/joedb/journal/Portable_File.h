@@ -7,25 +7,26 @@
 
 namespace joedb
 {
- ///////////////////////////////////////////////////////////////////////////
- class Portable_File_Buffer
- ///////////////////////////////////////////////////////////////////////////
+ namespace detail
  {
-  protected:
-   std::filebuf filebuf;
+  class Portable_File_Buffer
+  {
+   protected:
+    std::filebuf filebuf;
 
-  public:
-   Portable_File_Buffer(const char *file_name, Open_Mode mode);
- };
+   public:
+    Portable_File_Buffer(const char *file_name, Open_Mode mode);
+  };
+ }
 
  /// \ingroup journal
- class Portable_File: private Portable_File_Buffer, public Stream_File
+ class Portable_File: private detail::Portable_File_Buffer, public Stream_File
  {
   public:
    inline static constexpr bool lockable = false;
 
    Portable_File(const char *file_name, Open_Mode mode):
-    Portable_File_Buffer(file_name, mode),
+    detail::Portable_File_Buffer(file_name, mode),
     Stream_File(filebuf, mode)
    {
    }

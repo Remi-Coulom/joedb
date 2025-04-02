@@ -27,8 +27,7 @@ For next release
      - unique indexes:
 
        - encapsulate multi-column update (cannot write column individually)
-       - store a vector of iterators -> column data stored inside map, avoid duplicate storage.
-       - do not allow column to be in more than one unique index?
+       - do not allow column to be in more than one unique index
        - find_or_new_<index>(cols)
        - delete_<index>(cols)
        - update_<index>(id, cols)

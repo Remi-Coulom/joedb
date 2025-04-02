@@ -1,7 +1,7 @@
 #include "joedb/journal/Portable_File.h"
 #include "joedb/error/Exception.h"
 
-namespace joedb
+namespace joedb::detail
 {
  /////////////////////////////////////////////////////////////////////////////
  Portable_File_Buffer::Portable_File_Buffer
