@@ -49,11 +49,11 @@ namespace joedb
    }
  };
 
- ////////////////////////////////////////////////////////////////////////////
- class Interpreter: public Readable_Interpreter
- ////////////////////////////////////////////////////////////////////////////
+ /// \ingroup ui
+ class Interpreter: public Command_Interpreter
  {
   private:
+   std::unique_ptr<Blob_Reader_Command_Processor> blob_reader_command_processor;
    Writable_Command_Processor writable_command_processor;
    Readable_Writable_Command_Processor readable_writable_command_processor;
 
@@ -66,15 +66,19 @@ namespace joedb
     Blob_Writer &blob_writer,
     size_t max_record_id
    ):
-    Readable_Interpreter(readable, blob_reader),
     writable_command_processor(writable, blob_writer),
     readable_writable_command_processor
     (
-     readable_command_processor,
-     writable_command_processor,
+     readable,
+     writable,
      max_record_id
     )
    {
+    if (blob_reader)
+    {
+     blob_reader_command_processor = std::make_unique<Blob_Reader_Command_Processor>(*blob_reader);
+     add_processor(*blob_reader_command_processor);
+    }
     add_processor(writable_command_processor);
     add_processor(readable_writable_command_processor);
    }

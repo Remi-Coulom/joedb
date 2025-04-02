@@ -9,29 +9,9 @@
 namespace joedb
 {
  /// \ingroup ui
- class Readable_Writable_Command_Processor: public Command_Processor
+ class Data_Manipulation_Command_Processor: public Readable_Command_Processor
  {
   private:
-   Readable_Command_Processor &readable_command_processor;
-   Writable_Command_Processor &writable_command_processor;
-
-   const Readable &get_readable() const
-   {
-    return readable_command_processor.readable;
-   }
-
-   Writable &get_writable()
-   {
-    return writable_command_processor.writable;
-   }
-
-   Type parse_type(std::istream &in, std::ostream &out) const;
-
-   Table_Id parse_table(std::istream &in, std::ostream &out) const
-   {
-    return readable_command_processor.parse_table(in, out);
-   }
-
    void update_value
    (
     std::istream &in,
@@ -40,27 +20,54 @@ namespace joedb
     Field_Id field_id
    );
 
+  protected:
    Status process_command
    (
     const std::string &command,
     std::istream &parameters,
     std::istream &in,
     std::ostream &out
-   ) final;
+   ) override;
 
+   Writable &writable;
    size_t max_record_id;
+
+  public:
+   Data_Manipulation_Command_Processor
+   (
+    const Readable &readable,
+    Writable &writable,
+    size_t max_record_id
+   ):
+    Readable_Command_Processor(readable),
+    writable(writable),
+    max_record_id(max_record_id)
+   {}
+ };
+
+ class Readable_Writable_Command_Processor: public Data_Manipulation_Command_Processor
+ {
+  private:
+   Type parse_type(std::istream &in, std::ostream &out) const;
+
+   Status process_command
+   (
+    const std::string &command,
+    std::istream &parameters,
+    std::istream &in,
+    std::ostream &out
+   ) override;
 
   public:
    Readable_Writable_Command_Processor
    (
-    Readable_Command_Processor &readable_command_processor,
-    Writable_Command_Processor &writable_command_processor,
+    const Readable &readable,
+    Writable &writable,
     size_t max_record_id
    ):
-    readable_command_processor(readable_command_processor),
-    writable_command_processor(writable_command_processor),
-    max_record_id(max_record_id)
-   {}
+    Data_Manipulation_Command_Processor(readable, writable, max_record_id)
+   {
+   }
  };
 }
 

@@ -11,9 +11,7 @@ namespace joedb
  /// \ingroup ui
  class Readable_Command_Processor: public Command_Processor
  {
-  friend class Readable_Writable_Command_Processor;
-
-  private:
+  protected:
    const Readable &readable;
 
    Table_Id parse_table(std::istream &in, std::ostream &out) const;
@@ -35,7 +33,7 @@ namespace joedb
     std::istream &parameters,
     std::istream &in,
     std::ostream &out
-   ) final;
+   ) override;
 
   public:
    Readable_Command_Processor(const Readable &readable): readable(readable)

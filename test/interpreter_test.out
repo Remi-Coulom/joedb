@@ -122,16 +122,6 @@ General commands
  echo on|off
  prompt on|off
 
-Displaying data
-~~~~~~~~~~~~~~~
- table <table_name> [<max_column_width>] [start] [length]
- record <table_name> [<record_id>]
- table_size <table_name>
- schema
- dump
- sql
- json [<base64>]
-
 Blob Reader
 ~~~~~~~~~~~
  read_blob <blob> [<output_file_name>]
@@ -144,6 +134,24 @@ Journal
  flush
  checkpoint [no|half|full]
  write_blob <data_string>
+
+Displaying data
+~~~~~~~~~~~~~~~
+ table <table_name> [<max_column_width>] [start] [length]
+ record <table_name> [<record_id>]
+ table_size <table_name>
+ schema
+ dump
+ sql
+ json [<base64>]
+
+Data manipulation
+~~~~~~~~~~~~~~~~~
+ insert_into <table_name> <record_id>
+ insert_vector <table_name> <record_id> <size>
+ update <table_name> <record_id> <field_name> <value>
+ update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
+ delete_from <table_name> <record_id>
 
 Data definition
 ~~~~~~~~~~~~~~~
@@ -162,14 +170,6 @@ Data definition
   float32, float64,
   boolean,
   references <table_name>
-
-Data manipulation
-~~~~~~~~~~~~~~~~~
- insert_into <table_name> <record_id>
- insert_vector <table_name> <record_id> <size>
- update <table_name> <record_id> <field_name> <value>
- update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
- delete_from <table_name> <record_id>
 
 OK: help
 Exception caught: create_table: name already used: city
