@@ -40,6 +40,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/ui/Blob_Reader_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Command_Interpreter.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Data_Manipulation_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/diagnostics.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/dump.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/get_time_string.cpp
