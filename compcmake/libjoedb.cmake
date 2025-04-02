@@ -61,9 +61,11 @@ endif()
 
 if(unofficial-brotli_FOUND)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
+  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Decoder.cpp
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
  )
  set(JOEDB_DATABASES ${JOEDB_DATABASES}
+  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Brotli_File.cpp
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_File.cpp
  )
 endif()

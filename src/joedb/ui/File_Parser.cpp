@@ -14,6 +14,7 @@
 
 #ifdef JOEDB_HAS_BROTLI
 #include "joedb/journal/Brotli_File.h"
+#include "joedb/journal/Readonly_Brotli_File.h"
 #endif
 
 #include <cstring>

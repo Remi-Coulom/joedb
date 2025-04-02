@@ -35,7 +35,7 @@ namespace joedb
      if (int64_t(read_buffer.size()) < db.get_size(b))
       read_buffer.resize(size_t(db.get_size(b)));
 
-     codec.decode
+     decoder.decode
      (
       blob_reader.read_blob_data(db.get_data(b)),
       read_buffer.data(),
@@ -61,7 +61,7 @@ namespace joedb
  Readonly_Encoded_File::Readonly_Encoded_File
  //////////////////////////////////////////////////////////////////////////
  (
-  Codec &codec,
+  Decoder &decoder,
   db::encoded_file::Database &db,
   Blob_Reader &blob_reader,
   Open_Mode mode
@@ -70,7 +70,7 @@ namespace joedb
   db(db),
   blob_reader(blob_reader),
   decoded_buffer{0},
-  codec(codec)
+  decoder(decoder)
  {
  }
 
@@ -78,11 +78,11 @@ namespace joedb
  Readonly_Encoded_File::Readonly_Encoded_File
  //////////////////////////////////////////////////////////////////////////
  (
-  Codec &codec,
+  Decoder &decoder,
   db::encoded_file::Database &db,
   Blob_Reader &blob_reader
  ):
-  Readonly_Encoded_File(codec, db, blob_reader, Open_Mode::read_existing)
+  Readonly_Encoded_File(decoder, db, blob_reader, Open_Mode::read_existing)
  {
  }
 

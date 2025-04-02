@@ -2,7 +2,7 @@
 #define joedb_Readonly_Encoded_File_declared
 
 #include "joedb/db/encoded_file/Database.h"
-#include "joedb/journal/Codec.h"
+#include "joedb/journal/Decoder.h"
 
 namespace joedb
 {
@@ -17,13 +17,13 @@ namespace joedb
    mutable db::encoded_file::id_of_buffer decoded_buffer;
 
   protected:
-   Codec &codec;
+   Decoder &decoder;
 
    size_t pread(char * buffer, size_t size, int64_t offset) const override;
 
    Readonly_Encoded_File
    (
-    Codec &codec,
+    Decoder &decoder,
     db::encoded_file::Database &db,
     Blob_Reader &blob_reader,
     Open_Mode mode
@@ -32,7 +32,7 @@ namespace joedb
   public:
    Readonly_Encoded_File
    (
-    Codec &codec,
+    Decoder &decoder,
     db::encoded_file::Database &db,
     Blob_Reader &blob_reader
    );
