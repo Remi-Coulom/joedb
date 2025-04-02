@@ -46,6 +46,7 @@ For next release
    - when opening a file: if non-durable checkpoint is equal to file size, OK by default (but option)
    - client option to checkpoint its file every n seconds
    - try to remove default_checkpoint: checkpoint level should be parameter of push and transaction.
+   - insertion of "valid_data" event should also be a parameter of transactions
  - Add support for vcpkg
  - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - Use clang-format (try to customize it, use tabs)
