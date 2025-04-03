@@ -66,3 +66,7 @@ joedb_add_executable(settings
  settings_main.cpp
  settings/writable.cpp
 )
+
+joedb_add_executable(write_server_blob
+ write_server_blob.cpp
+)
