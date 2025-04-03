@@ -9,6 +9,7 @@
 
 #include <thread>
 #include <chrono>
+#include <cmath>
 
 namespace joedb
 {
@@ -77,10 +78,10 @@ namespace joedb
 
    out << "Client\n";
    out << "~~~~~~\n";
-   out << " pull [<wait_milliseconds>]\n";
+   out << " pull [<wait_seconds>]\n";
 
    if (!is_readonly_data())
-    out << " pull_every [<seconds>]\n";
+    out << " pull_every [<wait_seconds>] [<sleep_seconds>]\n";
 
    if (push_client)
    {
@@ -153,20 +154,24 @@ namespace joedb
   }
   else if (command == "pull") ///////////////////////////////////////////////
   {
-   int64_t wait_milliseconds = 0;
-   parameters >> wait_milliseconds;
-   pull(out, std::chrono::milliseconds(wait_milliseconds));
+   float wait_seconds = 0;
+   parameters >> wait_seconds;
+   pull(out, std::chrono::milliseconds(std::lround(wait_seconds * 1000)));
   }
   else if (command == "pull_every" && !is_readonly_data()) //////////////////
   {
-   int seconds = 1;
-   parameters >> seconds;
+   float wait_seconds = 1;
+   int sleep_seconds = 1;
+   parameters >> wait_seconds >> sleep_seconds;
 
    Signal::set_signal(Signal::no_signal);
    Signal::start();
 
    while (Signal::get_signal() != SIGINT)
-    pull(out, std::chrono::seconds(seconds));
+   {
+    pull(out, std::chrono::milliseconds(std::lround(wait_seconds * 1000)));
+    sleep(sleep_seconds, out);
+   }
   }
   else if (command == "transaction" && !is_readonly_data() && push_client) //
   {
