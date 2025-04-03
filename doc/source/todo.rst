@@ -4,8 +4,6 @@ TODO
 For next release
 ----------------
 
- - make read_blob_data const, and member of Abstract_File instead of Buffered_File.
-   get_async_* should also be members of Abstract_File.
  - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
    - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
