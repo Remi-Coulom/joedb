@@ -9,7 +9,8 @@ namespace joedb
  /// \ingroup concurrency
  class Journal_Client:
   public Writable_Journal_Client_Data,
-  public Client
+  public Client,
+  public Blob_Writer
  {
   public:
    Journal_Client
@@ -32,7 +33,7 @@ namespace joedb
     });
    }
 
-   Blob write_blob(const std::string &data)
+   Blob write_blob_data(const std::string &data) override
    {
     Blob result;
     transaction([&result, &data](joedb::Writable_Journal &journal)

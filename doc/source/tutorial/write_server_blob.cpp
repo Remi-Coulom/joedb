@@ -30,7 +30,7 @@ static int write_server_blob(int argc, char **argv)
  joedb::Journal_Client client(server_file, server_file);
 
  // Writing a new blob
- const joedb::Blob blob = client.write_blob(argv[2]);
+ const joedb::Blob blob = client.write_blob_data(argv[2]);
 
  // Reading it back (no need of client, can be read from file directly)
  std::cout << "blob: " << server_file.read_blob_data(blob) << '\n';
