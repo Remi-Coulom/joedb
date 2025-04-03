@@ -172,6 +172,7 @@ namespace joedb::generator
    void write_timestamp();
    void write_timestamp(int64_t timestamp);
    void write_valid_data();
+   void flush() override {journal.flush();}
 )RRR";
 
   for (const auto &[tid, tname]: tables)
