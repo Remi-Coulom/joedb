@@ -5,7 +5,7 @@
 #include "joedb/ui/main_exception_catcher.h"
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/Blob_Reader_Command_Processor.h"
-#include "joedb/ui/Readable_Writable_Command_Processor.h"
+#include "joedb/ui/Data_Manipulation_Command_Processor.h"
 #include "joedb/ui/Writable_Command_Processor.h"
 
 #include <iostream>
