@@ -29,7 +29,7 @@ static int write_server_blob(int argc, char **argv)
  // Creating the client: server file serves both as file and connection
  joedb::Journal_Client client(server_file, server_file);
 
- // Write blobs with a client: keeps the server locked between writes
+ // Write blobs with a Client_Lock: keeps the server locked between writes
  {
   joedb::Client_Lock lock(client);
   joedb::Writable_Journal &journal = lock.get_journal();
@@ -45,7 +45,8 @@ static int write_server_blob(int argc, char **argv)
   }
  }
 
- // Writing a new blob: this uses a new transaction lambda for each write
+ // Write blobs with a transaction: lock and unlock for each write
+ for (int i = 3; --i >= 0;)
  {
   const joedb::Blob blob = client.write_blob_data(argv[2]);
   std::cout << "wrote blob with transaction: " << blob.get_position() << '\n';
