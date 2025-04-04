@@ -70,3 +70,8 @@ joedb_add_executable(settings
 joedb_add_executable(write_server_blob
  write_server_blob.cpp
 )
+
+joedb_add_executable(client_lock
+ client_lock.cpp
+ tutorial/writable.cpp
+)

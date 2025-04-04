@@ -47,7 +47,11 @@ static int write_server_blob(int argc, char **argv)
 
  // Writing a new blob: this uses a new transaction lambda for each write
  {
-  const joedb::Blob blob = client.write_blob_data(argv[2]);
+  joedb::Blob blob;
+  client.transaction([&blob, argv](joedb::Writable_Journal &journal)
+  {
+   blob = journal.write_blob_data(argv[2]);
+  });
   std::cout << "wrote blob with transaction: " << blob.get_position() << '\n';
   std::cout << "blob: " << server_file.read_blob_data(blob) << '\n';
  }

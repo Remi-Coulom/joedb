@@ -4,16 +4,11 @@
 
 namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
- inline void print_exception(const std::exception &e)
- ////////////////////////////////////////////////////////////////////////////
- {
-  std::cerr << "Exception caught: " << e.what() << '\n';
- }
-
- ////////////////////////////////////////////////////////////////////////////
+ /// Catch exception from main
+ ///
+ /// This function is particularly necessary in Windows, becase no
+ /// exception information is printed by default there.
  int main_exception_catcher
- ////////////////////////////////////////////////////////////////////////////
  (
   int (*main)(int, char**), int argc, char **argv
  )
@@ -24,7 +19,7 @@ namespace joedb
   }
   catch (const std::exception &e)
   {
-   print_exception(e);
+   std::cerr << "Exception caught: " << e.what() << '\n';
    return 1;
   }
  }

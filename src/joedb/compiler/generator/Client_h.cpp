@@ -64,6 +64,8 @@ namespace joedb::generator
   public joedb::Client,
   public joedb::Blob_Reader
  {
+  friend class Client_Lock;
+
   private:
    int64_t schema_checkpoint;
 
@@ -116,9 +118,19 @@ namespace joedb::generator
    }
 
    /// Execute a write transaction
+   ///
+   /// This function can be called with a lambda like this:
+   /// @code
+   /// client.transaction([](Writable_Database &db)
+   /// {
+   ///  db.write_comment("Hello");
+   /// });
+   /// @endcode
+   /// The transaction function locks and pulls the connection before
+   /// executing the lambda, pushes and unlocks it after.
    template<typename F> void transaction
    (
-    F transaction ///< A function object that takes a reference to a @ref Writable_Database
+    F transaction
    )
    {
     joedb::Client::transaction([&](joedb::Client_Data &data)
@@ -126,6 +138,34 @@ namespace joedb::generator
      play_journal_and_throw_if_schema_changed();
      transaction(db);
     });
+   }
+ };
+
+ /// For more flexibility than the transaction lambda
+ ///
+ /// Note that pushing will take place in the destructor of the lock object.
+ /// If you wish to handle push errors properly, you must use a
+ /// @ref joedb::Posthumous_Catcher.
+ class Client_Lock: public joedb::Client_Lock
+ {
+  private:
+   using joedb::Client_Lock::get_journal;
+
+  public:
+   Client_Lock(Client &client): joedb::Client_Lock(client)
+   {
+    client.play_journal_and_throw_if_schema_changed();
+   }
+
+   void push()
+   {
+    get_database().default_checkpoint();
+    client.push_and_keep_locked();
+   }
+
+   Writable_Database &get_database()
+   {
+    return static_cast<Client &>(client).db;
    }
  };
 )RRR";

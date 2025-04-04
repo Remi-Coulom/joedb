@@ -125,5 +125,25 @@ machine to share a connection to the same remote server, and also share the
 same local file. For this to work, the local file must be opened with
 ``Open_Mode::shared_write``.
 
+Using a ``Client_Lock`` instead of a Lambda
+-------------------------------------------
+
+The transaction function is a simple way to handle the
+lock-pull-write-push-unlock sequence, but may not be flexible enough to handle
+some more complex use cases. The ``Client_Lock`` object allows:
+
+ - starting the transaction in one function, and finishing it in another one,
+ - pushing multiple times in the middle of a transaction, without unlocking the connection,
+ - writing data in one thread, and pushing in another one.
+
+``Client_Lock`` performs lock_pull in its constructor, and push_unlock in its
+destructor. Because push_unlock can fail, error management is a little tricky,
+and requires using a ``Posthumous_Catcher``.  That's why it is recommended to
+use a transaction lambda instead of a ``Client_Lock`` whenever possible.
+
+.. literalinclude:: ./tutorial/client_lock.cpp
+   :language: c++
+
+
 ..
    TODO: ascinema animation of synchronous backup

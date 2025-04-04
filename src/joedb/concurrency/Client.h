@@ -199,13 +199,15 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Client &client;
    const int initial_uncaught_exceptions;
+
+  protected:
+   Client &client;
 
   public:
    Client_Lock(Client &client):
-    client(client),
-    initial_uncaught_exceptions(std::uncaught_exceptions())
+    initial_uncaught_exceptions(std::uncaught_exceptions()),
+    client(client)
    {
     client.start_transaction();
    }

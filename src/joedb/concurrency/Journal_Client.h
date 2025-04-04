@@ -9,8 +9,7 @@ namespace joedb
  /// \ingroup concurrency
  class Journal_Client:
   public Writable_Journal_Client_Data,
-  public Client,
-  public Blob_Writer
+  public Client
  {
   public:
    Journal_Client
@@ -31,16 +30,6 @@ namespace joedb
      data.get_writable_journal().seek_to_checkpoint();
      transaction(data.get_writable_journal());
     });
-   }
-
-   Blob write_blob_data(const std::string &data) override
-   {
-    Blob result;
-    transaction([&result, &data](joedb::Writable_Journal &journal)
-    {
-     result = journal.write_blob_data(data);
-    });
-    return result;
    }
  };
 }
