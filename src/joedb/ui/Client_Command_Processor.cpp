@@ -168,41 +168,33 @@ namespace joedb
    auto * const wdc = dynamic_cast<Writable_Database_Client *>(&client);
    auto * const wjc = dynamic_cast<Writable_Journal_Client *>(&client);
 
-   if (!wdc && !wjc)
+   if (wdc)
    {
-    out << "Transactions are not available for this type of client\n";
+    wdc->transaction([&](const Readable &readable, Writable &writable)
+    {
+     Interpreter interpreter
+     (
+      readable,
+      writable,
+      &client.get_journal(),
+      writable,
+      0
+     );
+     interpreter.set_parent(this);
+     interpreter.main_loop(in, out);
+    });
+   }
+   else if (wjc)
+   {
+    wjc->transaction([&](Writable_Journal &journal)
+    {
+     Writable_Interpreter interpreter(journal, journal);
+     interpreter.set_parent(this);
+     interpreter.main_loop(in, out);
+    });
    }
    else
-   {
-    out << "Waiting for lock... ";
-    out.flush();
-
-    if (wdc)
-    {
-     wdc->transaction([&](const Readable &readable, Writable &writable)
-     {
-      Interpreter interpreter
-      (
-       readable,
-       writable,
-       &client.get_journal(),
-       writable,
-       0
-      );
-      interpreter.set_parent(this);
-      interpreter.main_loop(in, out);
-     });
-    }
-    else if (wjc)
-    {
-     wjc->transaction([&](Writable_Journal &journal)
-     {
-      Writable_Interpreter interpreter(journal, journal);
-      interpreter.set_parent(this);
-      interpreter.main_loop(in, out);
-     });
-    }
-   }
+    out << "Transactions are not available for this type of client\n";
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);
