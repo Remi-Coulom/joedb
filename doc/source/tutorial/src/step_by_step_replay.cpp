@@ -4,26 +4,29 @@
 #include <iostream>
 #include <iomanip>
 
-/////////////////////////////////////////////////////////////////////////////
-class My_Database: public tutorial::Database
-/////////////////////////////////////////////////////////////////////////////
+namespace example
 {
- void comment(const std::string &comment) override
+ ////////////////////////////////////////////////////////////////////////////
+ class My_Database: public tutorial::Database
+ ////////////////////////////////////////////////////////////////////////////
  {
-  std::cout << "Comment: " << comment << '\n';
- };
+  void comment(const std::string &comment) override
+  {
+   std::cout << "Comment: " << comment << '\n';
+  };
 
- void timestamp(int64_t timestamp) override
- {
-  std::cout << "Timestamp: " << timestamp << '\n';
+  void timestamp(int64_t timestamp) override
+  {
+   std::cout << "Timestamp: " << timestamp << '\n';
+  };
  };
-};
+}
 
 /////////////////////////////////////////////////////////////////////////////
 int main()
 /////////////////////////////////////////////////////////////////////////////
 {
- My_Database db;
+ example::My_Database db;
  joedb::File file("tutorial.joedb", joedb::Open_Mode::read_existing);
  joedb::Readonly_Journal journal(file);
 

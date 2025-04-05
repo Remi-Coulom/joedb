@@ -6,7 +6,8 @@
 
 namespace joedb
 {
- /// @addtogroup concurrency
+ /// Handle concurrent access to a file with a joedb::Connection
+ /// @ingroup concurrency
  class Client: public Blob_Reader
  {
   friend class Client_Lock;
@@ -179,7 +180,13 @@ namespace joedb
    }
  };
 
- /// @addtogroup concurrency
+ /// Lock object that allows writing to a database managed by a joedb::Client
+ ///
+ /// This is an alternative to joedb::Client::transaction.
+ /// It is more flexible than a transaction, but a bit annoying to use because
+ /// lock_push will take place in the destructor and that makes error
+ /// management tricky.
+ /// @ingroup concurrency
  class Client_Lock: public Posthumous_Thrower
  {
   private:

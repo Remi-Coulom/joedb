@@ -7,8 +7,6 @@
 
 namespace joedb
 {
- class Connection;
-
  /// @ingroup concurrency
  class Connection
  {
