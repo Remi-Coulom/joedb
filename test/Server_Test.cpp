@@ -983,7 +983,7 @@ namespace joedb
    }
    catch (const std::exception &e)
    {
-    EXPECT_EQ(e.what(), std::string("read_some: End of file"));
+    EXPECT_EQ(e.what(), std::string("Trying to read past the end of file"));
    }
   }
 
