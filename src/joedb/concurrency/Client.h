@@ -6,18 +6,15 @@
 
 namespace joedb
 {
- /// \addtogroup concurrency
- /// @{
- class Client;
-
- ////////////////////////////////////////////////////////////////////////////
- class Pullonly_Client
- ////////////////////////////////////////////////////////////////////////////
+ /// @addtogroup concurrency
+ class Client
  {
+  friend class Client_Lock;
+
   protected:
    virtual Writable_Journal &get_writable_journal()
    {
-    throw Assertion_Failure("Client_Data has no writable journal");
+    throw Assertion_Failure("No writable journal");
    }
 
    virtual Readonly_Journal &get_readonly_journal()
@@ -25,7 +22,7 @@ namespace joedb
     return get_writable_journal();
    }
 
-   Pullonly_Connection &connection;
+   Connection &connection;
    int64_t server_checkpoint;
 
    //////////////////////////////////////////////////////////////////////////
@@ -44,11 +41,11 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Pullonly_Client
+   Client
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &journal,
-    Pullonly_Connection &connection,
+    Connection &connection,
     bool content_check = true
    ):
     connection(connection),
@@ -65,7 +62,7 @@ namespace joedb
    const Readonly_Journal &get_journal() const
    //////////////////////////////////////////////////////////////////////////
    {
-    return const_cast<Pullonly_Client *>(this)->get_readonly_journal();
+    return const_cast<Client *>(this)->get_readonly_journal();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -107,19 +104,11 @@ namespace joedb
    }
 
    virtual bool is_readonly() const = 0;
+   bool is_pullonly() const {return connection.is_pullonly();}
 
-   virtual ~Pullonly_Client();
- };
-
- ////////////////////////////////////////////////////////////////////////////
- class Client: public Pullonly_Client
- ////////////////////////////////////////////////////////////////////////////
- {
-  friend class Client_Lock;
+   virtual ~Client();
 
   private:
-   Connection &connection;
-
    //////////////////////////////////////////////////////////////////////////
    void push(bool unlock_after)
    //////////////////////////////////////////////////////////////////////////
@@ -171,29 +160,6 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Client
-   //////////////////////////////////////////////////////////////////////////
-   (
-    Readonly_Journal &journal,
-    Connection &connection,
-    bool content_check = true
-   ):
-    Pullonly_Client(journal, connection, content_check),
-    connection(connection)
-   {
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   Client *get_push_client() override
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (connection.get_push_connection())
-     return this;
-    else
-     return nullptr;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
    void push_unlock()
    //////////////////////////////////////////////////////////////////////////
    {
@@ -208,9 +174,8 @@ namespace joedb
    }
  };
 
- ////////////////////////////////////////////////////////////////////////////
+ /// @addtogroup concurrency
  class Client_Lock: public Posthumous_Thrower
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    const int initial_uncaught_exceptions;
@@ -253,7 +218,6 @@ namespace joedb
     }
    }
  };
- /// @}
 }
 
 #endif

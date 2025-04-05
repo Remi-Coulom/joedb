@@ -22,8 +22,8 @@ namespace joedb
  {
   private:
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
-   Pullonly_Client &client;
-   Writable_Journal_Client * const push_client;
+   Client &client;
+   Writable_Journal_Client *push_client;
    const bool share_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
    asio::io_context &io_context;
@@ -208,7 +208,7 @@ namespace joedb
   public:
    Server
    (
-    Pullonly_Client &client,
+    Client &client,
     bool share_client,
     asio::io_context &io_context,
     uint16_t port,
@@ -217,7 +217,12 @@ namespace joedb
    );
 
    uint16_t get_port() const {return port;}
-   bool is_readonly() const {return client.is_readonly() || !push_client;}
+
+   bool is_readonly() const
+   {
+    return client.is_readonly() || client.is_pullonly();
+   }
+
    std::chrono::milliseconds get_time_stamp() const;
 
    // Note: run on io_context if on another thread: io_context.post([&](){server.stop();});

@@ -10,9 +10,6 @@ namespace joedb
  class Server_Connection: public Server_Client, public Connection
  {
   protected:
-   //
-   // Pullonly Connection overrides
-   //
    int64_t handshake
    (
     Readonly_Journal &client_journal,
@@ -25,11 +22,6 @@ namespace joedb
     std::chrono::milliseconds wait
    ) override;
 
-   Connection *get_push_connection() override;
-
-   //
-   // Connection overrides
-   //
    int64_t lock_pull
    (
     Writable_Journal &client_journal,
@@ -45,6 +37,8 @@ namespace joedb
    ) override;
 
    void unlock(Readonly_Journal &client_journal) override;
+
+   bool is_pullonly() const override;
 
    int64_t pull
    (

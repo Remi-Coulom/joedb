@@ -2,5 +2,5 @@
 
 namespace joedb
 {
- Pullonly_Client::~Pullonly_Client() = default;
+ Client::~Client() = default;
 }

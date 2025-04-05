@@ -10,7 +10,7 @@ namespace joedb
  class Connection;
 
  /// \ingroup concurrency
- class Pullonly_Connection
+ class Connection
  {
   protected:
    static void content_mismatch();
@@ -28,14 +28,6 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
-   virtual Connection *get_push_connection();
-   virtual ~Pullonly_Connection();
- };
-
- /// \ingroup concurrency
- class Connection: public virtual Pullonly_Connection
- {
-  public:
    virtual int64_t lock_pull
    (
     Writable_Journal &client_journal,
@@ -68,7 +60,9 @@ namespace joedb
 
    virtual void unlock(Readonly_Journal &client_journal);
 
-   virtual Connection *get_push_connection();
+   virtual bool is_pullonly() const;
+
+   virtual ~Connection();
  };
 }
 

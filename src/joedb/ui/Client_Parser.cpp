@@ -31,7 +31,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Pullonly_Client &Client_Parser::parse(int argc, char **argv)
+ Client &Client_Parser::parse(int argc, char **argv, bool with_database)
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 0;
@@ -54,34 +54,36 @@ namespace joedb
 
   Buffered_File *client_file = file_parser.get_file();
 
-  Pullonly_Connection &pullonly_connection = connection_parser.build
+  Connection &connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index,
    client_file
   );
 
-  Connection *push_connection = pullonly_connection.get_push_connection();
-
   if (!client_file)
-   client_file = dynamic_cast<Buffered_File *>(&pullonly_connection);
+   client_file = dynamic_cast<Buffered_File *>(&connection);
 
   if (!client_file)
    throw Exception("server file must be used with a network or ssh connection");
 
   std::cerr << "Creating client data... ";
-
-  if (client_file->is_readonly())
-   client_data.reset(new Readonly_Interpreted_Client_Data(*client_file));
-  else
-   client_data.reset(new Writable_Interpreted_Client_Data(*client_file));
-
   std::cerr << "OK\n";
 
-  if (push_connection)
-   client.reset(new Client(*client_data, *push_connection, content_check));
+  if (with_database)
+  {
+   if (client_file->is_readonly())
+    client.reset(new Readonly_Database_Client(*client_file, connection, content_check));
+   else
+    client.reset(new Writable_Database_Client(*client_file, connection, content_check));
+  }
   else
-   client.reset(new Pullonly_Client(*client_data, pullonly_connection, content_check));
+  {
+   if (client_file->is_readonly())
+    client.reset(new Readonly_Journal_Client(*client_file, connection, content_check));
+   else
+    client.reset(new Writable_Journal_Client(*client_file, connection, content_check));
+  }
 
   return *client;
  }

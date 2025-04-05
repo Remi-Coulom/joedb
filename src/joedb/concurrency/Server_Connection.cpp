@@ -240,13 +240,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Connection *Server_Connection::get_push_connection()
+ bool Server_Connection::is_pullonly() const
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (pullonly_server)
-   return nullptr;
-  else
-   return this;
+  return pullonly_server;
  }
 }
 

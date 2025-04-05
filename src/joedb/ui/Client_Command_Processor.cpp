@@ -2,9 +2,14 @@
 #include "joedb/ui/Command_Processor.h"
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/get_time_string.h"
-#include "joedb/ui/Interpreter.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Interpreted_Client_Data.h"
+#if 0
+#include "joedb/ui/Interpreter.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
+#include "joedb/concurrency/Readonly_Journal_Client.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
+#include "joedb/concurrency/Readonly_Database_Client.h"
+#endif
 #include "joedb/Signal.h"
 
 #include <thread>
@@ -13,8 +18,10 @@
 
 namespace joedb
 {
+ using CCP = Client_Command_Processor;
+
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::write_prompt(std::ostream &out) const
+ void CCP::write_prompt(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "joedb_client(";
@@ -32,7 +39,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::pull
+ void CCP::pull
  ////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
@@ -45,7 +52,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::sleep(int seconds, std::ostream &out)
+ void CCP::sleep(int seconds, std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << get_time_string_of_now();
@@ -56,14 +63,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Client_Command_Processor::is_readonly_data() const
- ////////////////////////////////////////////////////////////////////////////
- {
-  return client.is_readonly();
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Command_Processor::Status Client_Command_Processor::process_command
+ Command_Processor::Status CCP::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
   const std::string &command,
@@ -80,14 +80,14 @@ namespace joedb
    out << "~~~~~~\n";
    out << " pull [<wait_seconds>]\n";
 
-   if (!is_readonly_data())
+   if (!client.is_readonly())
     out << " pull_every [<wait_seconds>] [<sleep_seconds>]\n";
 
-   if (push_client)
+   if (!client.is_pullonly())
    {
     out << " push\n";
 
-    if (is_readonly_data())
+    if (client.is_readonly())
      out << " push_every [<seconds>]\n";
     else
      out << " transaction\n";
@@ -100,6 +100,7 @@ namespace joedb
   }
   else if (command == "db") /////////////////////////////////////////////////
   {
+#if 0
    Interpreted_Client_Data *interpreted_client_data
    (
     dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
@@ -127,12 +128,13 @@ namespace joedb
     interpreter.set_parent(this);
     interpreter.main_loop(in, out);
    }
+#endif
   }
-  else if (command == "push" && push_client) ////////////////////////////////
+  else if (command == "push" && !client.is_pullonly()) //////////////////////
   {
-   push_client->push_unlock();
+   client.push_unlock();
   }
-  else if (command == "push_every" && is_readonly_data() && push_client) ////
+  else if (command == "push_every" && client.is_readonly() && !client.is_pullonly())
   {
    int seconds = 1;
    parameters >> seconds;
@@ -140,17 +142,17 @@ namespace joedb
    Signal::set_signal(Signal::no_signal);
    Signal::start();
 
-   push_client->push_and_keep_locked();
+   client.push_and_keep_locked();
 
    while (Signal::get_signal() != SIGINT)
    {
     sleep(seconds, out);
     client.pull();
     if (client.get_checkpoint_difference() > 0)
-     push_client->push_and_keep_locked();
+     client.push_and_keep_locked();
    }
 
-   push_client->push_unlock();
+   client.push_unlock();
   }
   else if (command == "pull") ///////////////////////////////////////////////
   {
@@ -158,7 +160,7 @@ namespace joedb
    parameters >> wait_seconds;
    pull(out, std::chrono::milliseconds(std::lround(wait_seconds * 1000)));
   }
-  else if (command == "pull_every" && !is_readonly_data()) //////////////////
+  else if (command == "pull_every" && !client.is_readonly()) ////////////////
   {
    float wait_seconds = 1;
    int sleep_seconds = 1;
@@ -173,12 +175,13 @@ namespace joedb
     sleep(sleep_seconds, out);
    }
   }
-  else if (command == "transaction" && !is_readonly_data() && push_client) //
+  else if (command == "transaction" && !client.is_readonly() && !client.is_pullonly())
   {
+#if 0
    out << "Waiting for lock... ";
    out.flush();
 
-   push_client->transaction([&](Client_Data &data)
+   client.transaction([&]()
    {
     out << "OK\n";
 
@@ -212,23 +215,11 @@ namespace joedb
      }
     }
    });
+#endif
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);
 
   return Status::done;
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Client_Command_Processor::Client_Command_Processor
- ////////////////////////////////////////////////////////////////////////////
- (
-  Pullonly_Client &client,
-  bool has_file
- ):
-  client(client),
-  has_file(has_file),
-  push_client(client.get_push_client())
- {
  }
 }

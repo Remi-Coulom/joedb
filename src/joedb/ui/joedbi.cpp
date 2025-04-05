@@ -3,7 +3,7 @@
 #include "joedb/ui/File_Parser.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
 
 #include <iostream>
 #include <optional>
@@ -58,7 +58,7 @@ namespace joedb
   else
   {
    Connection connection;
-   Interpreted_Client client(file, connection);
+   Writable_Database_Client client(file, connection);
 
    std::optional<Writable_Journal> blob_journal;
    if (blob_file_parser)

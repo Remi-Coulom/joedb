@@ -802,7 +802,7 @@ namespace joedb
  Server::Server
  ////////////////////////////////////////////////////////////////////////////
  (
-  Pullonly_Client &client,
+  Client &client,
   const bool share_client,
   asio::io_context &io_context,
   const uint16_t port,
@@ -811,7 +811,7 @@ namespace joedb
  ):
   start_time(std::chrono::steady_clock::now()),
   client(client),
-  push_client(dynamic_cast<Writable_Journal_Client*>(client.get_push_client())),
+  push_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   share_client(share_client),
   io_context(io_context),
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),

@@ -16,12 +16,12 @@ namespace joedb
 
    const Open_Mode default_open_mode;
 
-   std::unique_ptr<Pullonly_Client> client;
+   std::unique_ptr<Client> client;
 
   public:
    Client_Parser(bool local, Open_Mode default_open_mode);
 
-   Pullonly_Client &parse(int argc, char **argv);
+   Client &parse(int argc, char **argv, bool with_database);
    bool has_file() const {return file_parser.get_file() != nullptr;}
 
    void print_help(std::ostream &out) const;

@@ -7,9 +7,9 @@
 namespace joedb
 {
  /// \ingroup concurrency
- class Pullonly_Journal_Connection: public virtual Pullonly_Connection
+ class Pullonly_Journal_Connection: public Connection
  {
-  private:
+  protected:
    Readonly_Journal &server_journal;
 
   public:
@@ -65,16 +65,14 @@ namespace joedb
     server_journal(server_journal)
    {
    }
+
+   bool is_pullonly() const override {return true;}
  };
 
  /// \ingroup concurrency
- class Journal_Connection:
-  public Pullonly_Journal_Connection,
-  public Connection
+ class Journal_Connection: public Pullonly_Journal_Connection
  {
   private:
-   Writable_Journal &server_journal;
-
    //////////////////////////////////////////////////////////////////////////
    int64_t lock_pull
    //////////////////////////////////////////////////////////////////////////
@@ -105,7 +103,11 @@ namespace joedb
      server_journal.lock_pull();
     client_journal.pull();
 
-    server_journal.pull_from(client_journal, until_checkpoint);
+    static_cast<Writable_Journal &>(server_journal).pull_from
+    (
+     client_journal,
+     until_checkpoint
+    );
 
     if (unlock_after)
      unlock(client_journal);
@@ -125,36 +127,40 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    Journal_Connection(Writable_Journal &server_journal):
    //////////////////////////////////////////////////////////////////////////
-    Pullonly_Journal_Connection(server_journal),
-    server_journal(server_journal)
+    Pullonly_Journal_Connection(server_journal)
    {
    }
+
+   bool is_pullonly() const override {return false;}
  };
 
- ////////////////////////////////////////////////////////////////////////////
- class File_Connection_Parent
- ////////////////////////////////////////////////////////////////////////////
+ namespace detail
  {
-  protected:
-   Writable_Journal server_journal;
+  ///////////////////////////////////////////////////////////////////////////
+  class File_Connection_Data
+  ///////////////////////////////////////////////////////////////////////////
+  {
+   protected:
+    Writable_Journal server_journal;
 
-  public:
-   //////////////////////////////////////////////////////////////////////////
-   File_Connection_Parent
-   //////////////////////////////////////////////////////////////////////////
-   (
-    Buffered_File &server_file,
-    Readonly_Journal::Check check,
-    Commit_Level commit_level
-   ):
-   server_journal(server_file, check, commit_level)
-   {
-   }
- };
+   public:
+    /////////////////////////////////////////////////////////////////////////
+    File_Connection_Data
+    /////////////////////////////////////////////////////////////////////////
+    (
+     Buffered_File &server_file,
+     Readonly_Journal::Check check,
+     Commit_Level commit_level
+    ):
+    server_journal(server_file, check, commit_level)
+    {
+    }
+  };
+ }
 
  /// \ingroup concurrency
  class File_Connection:
-  public File_Connection_Parent,
+  public detail::File_Connection_Data,
   public Journal_Connection
  {
   public:
@@ -166,8 +172,8 @@ namespace joedb
     Readonly_Journal::Check check = Readonly_Journal::Check::all,
     Commit_Level commit_level = Commit_Level::no_commit
    ):
-   File_Connection_Parent(server_file, check, commit_level),
-   Journal_Connection(File_Connection_Parent::server_journal)
+   File_Connection_Data(server_file, check, commit_level),
+   Journal_Connection(File_Connection_Data::server_journal)
    {
    }
  };

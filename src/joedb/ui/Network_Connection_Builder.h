@@ -23,7 +23,7 @@ namespace joedb
     return "<host> <port>";
    }
 
-   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     const char * const host = argv[0];
     const char * const port = argv[1];

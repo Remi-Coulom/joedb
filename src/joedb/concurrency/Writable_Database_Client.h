@@ -32,6 +32,12 @@ namespace joedb
  {
   friend class Writable_Database_Client_Lock;
 
+  protected:
+   Writable_Journal &get_writable_journal() override
+   {
+    return journal;
+   }
+
   public:
    Writable_Database_Client
    (
