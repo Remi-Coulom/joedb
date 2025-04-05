@@ -45,16 +45,6 @@ namespace joedb::generator
      db(file, false, check, commit_level)
     {
     }
-
-    bool is_readonly() const final
-    {
-     return false;
-    }
-
-    joedb::Writable_Journal &get_writable_journal() final
-    {
-     return db.journal;
-    }
   };
  }
 
@@ -77,6 +67,17 @@ namespace joedb::generator
     db.check_single_row();
    }
 
+  protected:
+   bool is_readonly() const final
+   {
+    return false;
+   }
+
+   joedb::Writable_Journal &get_writable_journal() final
+   {
+    return db.journal;
+   }
+
   public:
    Client
    (
@@ -87,7 +88,7 @@ namespace joedb::generator
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     detail::Client_Data(file, check, commit_level),
-    joedb::Client(*static_cast<joedb::Client_Data *>(this), connection, content_check)
+    joedb::Client(db.journal, connection, content_check)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
@@ -133,7 +134,7 @@ namespace joedb::generator
     F transaction
    )
    {
-    joedb::Client::transaction([&](joedb::Client_Data &data)
+    joedb::Client::transaction([&]()
     {
      play_journal_and_throw_if_schema_changed();
      transaction(db);
@@ -148,19 +149,10 @@ namespace joedb::generator
  /// @ref joedb::Posthumous_Catcher.
  class Client_Lock: public joedb::Client_Lock
  {
-  private:
-   using joedb::Client_Lock::get_journal;
-
   public:
    Client_Lock(Client &client): joedb::Client_Lock(client)
    {
     client.play_journal_and_throw_if_schema_changed();
-   }
-
-   void push()
-   {
-    get_database().default_checkpoint();
-    client.push_and_keep_locked();
    }
 
    Writable_Database &get_database()

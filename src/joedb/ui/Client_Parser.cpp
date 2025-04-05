@@ -1,6 +1,9 @@
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Connection_Parser.h"
-#include "joedb/concurrency/Interpreted_Client_Data.h"
+#include "joedb/concurrency/Readonly_Database_Client.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
+#include "joedb/concurrency/Readonly_Journal_Client.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Client.h"
 
 #include <iostream>

@@ -118,7 +118,7 @@ namespace joedb
    out << "; " << get_time_string_of_now();
    out << "; sessions = " << sessions.size();
    out << "; checkpoint = ";
-   out << client.get_journal().get_checkpoint_position() << '\n';
+   out << client.get_checkpoint() << '\n';
   });
  }
 
@@ -811,7 +811,7 @@ namespace joedb
  ):
   start_time(std::chrono::steady_clock::now()),
   client(client),
-  push_client(client.get_push_client()),
+  push_client(dynamic_cast<Writable_Journal_Client*>(client.get_push_client())),
   share_client(share_client),
   io_context(io_context),
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),

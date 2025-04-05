@@ -2,7 +2,7 @@
 #define joedb_Server_declared
 
 #include "joedb/journal/Buffer.h"
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/ui/Progress_Bar.h"
 
 #include <queue>
@@ -23,9 +23,9 @@ namespace joedb
   private:
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
    Pullonly_Client &client;
-   Client * const push_client;
+   Writable_Journal_Client * const push_client;
    const bool share_client;
-   std::optional<Client_Lock> client_lock;
+   std::optional<Writable_Journal_Client_Lock> client_lock;
    asio::io_context &io_context;
    asio::ip::tcp::acceptor acceptor;
    const uint16_t port;
