@@ -1,7 +1,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/protocol_version.h"
-#include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Interpreted_Client_Data.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "gtest/gtest.h"
 
@@ -70,17 +69,14 @@ namespace joedb
   file.set_position(0);
 
   {
-   Memory_File client_file;
-   Writable_Interpreted_Client_Data data(client_file);
    Server_Connection connection(channel);
-   Client client(data, connection);
+   Memory_File client_file;
+   Writable_Database_Client client(client_file, connection);
 
    EXPECT_EQ(connection.get_session_id(), 1234);
 
    client.pull();
-
-   // NOLINTNEXTLINE(readability-named-parameter)
-   client.transaction([](Client_Data &){});
+   client.transaction([](Readable &, Writable &){});
   }
  }
 }

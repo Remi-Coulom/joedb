@@ -138,7 +138,10 @@ namespace joedb
     if (is_readonly())
      LOGID("Error: locking readonly server\n");
     else
+    {
+     JOEDB_ASSERT(push_client);
      client_lock.emplace(*push_client); // ??? takes_time
+    }
    }
 
    if (session->state == Session::State::waiting_for_lock_to_pull)
@@ -277,6 +280,7 @@ namespace joedb
   {
    if (session->push_writer)
    {
+    JOEDB_ASSERT(client_lock);
     client_lock->get_journal().set_position
     (
      session->push_writer->get_position()
@@ -358,6 +362,7 @@ namespace joedb
    else
    {
     session->push_status = 'U';
+    JOEDB_ASSERT(client_lock);
     session->push_writer.emplace
     (
      client_lock->get_journal().get_async_tail_writer()
@@ -828,7 +833,10 @@ namespace joedb
    push_client->push_unlock();
 
   if (!share_client && !is_readonly())
+  {
+   JOEDB_ASSERT(push_client);
    client_lock.emplace(*push_client);
+  }
   else
    client.pull();
 

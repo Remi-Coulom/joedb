@@ -30,7 +30,7 @@ namespace joedb::generator
  namespace detail
  {
   ///////////////////////////////////////////////////////////////////////////
-  class Client_Data: public joedb::Client_Data
+  class Client_Data
   ///////////////////////////////////////////////////////////////////////////
   {
    protected:
@@ -94,7 +94,7 @@ namespace joedb::generator
      push_unlock();
 
     db.play_journal(); // makes transaction shorter if db is big
-    joedb::Client::transaction([this](joedb::Client_Data &data){
+    joedb::Client::transaction([this](){
      db.initialize();
     });
 

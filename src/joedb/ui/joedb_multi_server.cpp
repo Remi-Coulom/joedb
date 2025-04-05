@@ -2,8 +2,7 @@
 #include "joedb/db/multi_server/Readonly_Database.h"
 #include "joedb/journal/Readonly_Interpreted_File.h"
 #include "joedb/concurrency/Server.h"
-#include "joedb/concurrency/Writable_Journal_Client_Data.h"
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/IO_Context_Wrapper.h"
 
 #include <iostream>
@@ -18,9 +17,8 @@ namespace joedb
  {
   private:
    File file;
-   Writable_Journal_Client_Data client_data;
    Connection connection;
-   Client client;
+   Writable_Journal_Client client;
    Server server;
 
   public:
@@ -32,8 +30,7 @@ namespace joedb
     std::chrono::seconds timeout
    ):
     file(file_name, Open_Mode::write_existing_or_create_new),
-    client_data(file),
-    client(client_data, connection),
+    client(file, connection),
     server
     (
      client,

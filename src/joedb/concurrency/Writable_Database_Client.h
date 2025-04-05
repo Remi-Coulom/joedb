@@ -50,6 +50,12 @@ namespace joedb
    {
    }
 
+   const Database &get_database()
+   {
+    journal.play_until_checkpoint(database);
+    return database;
+   }
+
    bool is_readonly() const override {return false;}
 
    template<typename F> void transaction(F transaction)

@@ -169,6 +169,9 @@ namespace joedb
     LOG(" done\n");
   }
 
+  if (unlock_after)
+   client_journal.unlock();
+
   lock.read(buffer.data, 1);
 
   if (buffer.data[0] == 'C')
@@ -179,9 +182,6 @@ namespace joedb
    throw Exception("Timeout: push failed");
   else if (buffer.data[0] != 'U')
    throw Exception("Unexpected server reply");
-
-  if (unlock_after)
-   client_journal.unlock();
 
   server_checkpoint = server_position + push_size;
   return server_checkpoint;

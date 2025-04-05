@@ -1,9 +1,8 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/concurrency/Interpreted_Client.h"
-#include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Readonly_Journal_Client_Data.h"
-#include "joedb/concurrency/Writable_Journal_Client_Data.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
+#include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/journal/Memory_File.h"
@@ -31,9 +30,8 @@ namespace joedb
   public:
    std::vector<char> data;
    Shared_Memory_File file{data};
-   Writable_Journal_Client_Data client_data{file};
    Connection connection;
-   Client client{client_data, connection};
+   Writable_Journal_Client client{file, connection};
    asio::io_context io_context;
 
    Server server;
@@ -121,21 +119,27 @@ namespace joedb
    }
  };
 
- /////////////////////////////////////////////////////////////////////////////
- class Test_Client
- /////////////////////////////////////////////////////////////////////////////
+ class Test_Client_Data
  {
   public:
    Test_Network_Channel channel;
    Server_Connection server_connection;
-   Connection &connection;
-   Interpreted_Client client;
 
-   Test_Client(Server &server, Buffered_File &file):
+   Test_Client_Data(Server &server, Buffered_File &file):
     channel("localhost", Port_String(server).get()),
-    server_connection(channel),
-    connection(server_connection),
-    client(file, connection)
+    server_connection(channel)
+   {
+   }
+ };
+
+ class Test_Client:
+  public Test_Client_Data,
+  public Writable_Database_Client
+ {
+  public:
+   Test_Client(Server &server, Buffered_File &file):
+    Test_Client_Data(server, file),
+    Writable_Database_Client(file, server_connection)
    {
    }
 
@@ -143,6 +147,8 @@ namespace joedb
     Test_Client(server.server, file)
    {
    }
+
+   using Client::get_writable_journal;
  };
 
  /////////////////////////////////////////////////////////////////////////////
@@ -161,9 +167,9 @@ namespace joedb
    Test_Client client_1(server, client_file_1);
    Test_Client client_2(server, client_file_2);
 
-   client_1.client.pull();
+   client_1.pull();
 
-   client_1.client.transaction
+   client_1.transaction
    (
     [](const Readable &readable, Writable &writable)
     {
@@ -171,14 +177,14 @@ namespace joedb
     }
    );
 
-   EXPECT_EQ(client_1.client.get_database().get_tables().size(), 1ULL);
-   EXPECT_EQ(client_2.client.get_database().get_tables().size(), 0ULL);
+   EXPECT_EQ(client_1.get_database().get_tables().size(), 1ULL);
+   EXPECT_EQ(client_2.get_database().get_tables().size(), 0ULL);
 
-   client_2.client.pull();
+   client_2.pull();
 
-   EXPECT_EQ(client_2.client.get_database().get_tables().size(), 1ULL);
+   EXPECT_EQ(client_2.get_database().get_tables().size(), 1ULL);
 
-   client_1.client.transaction
+   client_1.transaction
    (
     [](const Readable &readable, Writable &writable)
     {
@@ -233,9 +239,8 @@ namespace joedb
   }
 
   joedb::File server_file(file_name, Open_Mode::read_existing);
-  Readonly_Journal_Client_Data client_data{server_file};
   Connection connection;
-  Client server_client{client_data, connection};
+  Readonly_Journal_Client server_client{server_file, connection};
   asio::io_context io_context;
 
   const bool share_client = false;
@@ -257,8 +262,7 @@ namespace joedb
    Test_Network_Channel channel("localhost", Port_String(server).get());
    Server_Connection server_connection(channel);
    Memory_File client_file;
-   Writable_Journal_Client_Data data(client_file);
-   Client client(data, connection);
+   Writable_Journal_Client client(client_file, connection);
    client.pull();
   }
 
@@ -288,7 +292,7 @@ namespace joedb
   {
    Test_Client client(server, reference_file);
 
-   client.client.transaction
+   client.transaction
    (
     [&comment](const Readable &readable, Writable &writable)
     {
@@ -314,7 +318,7 @@ namespace joedb
      [&server, &file = files[i]]()
      {
       Test_Client client(server, file);
-      client.client.pull();
+      client.pull();
      }
     );
    }
@@ -351,7 +355,7 @@ namespace joedb
       Memory_File file;
       Test_Client client(server, file);
 
-      client.client.transaction
+      client.transaction
       (
        [i](const Readable &readable, Writable &writable)
        {
@@ -390,10 +394,11 @@ namespace joedb
     sequence.increment();
 
     sequence.wait_for(3);
-    client.connection.lock_pull(client.client.get_writable_journal());
-    sequence.send(4);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    client.connection.unlock(client.client.get_readonly_journal());
+    client.transaction([&sequence](Readable &, Writable &)
+    {
+     sequence.send(4);
+     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    });
     sequence.send(5);
    }
   );
@@ -407,9 +412,10 @@ namespace joedb
     sequence.increment();
 
     sequence.wait_for(4);
-    client.connection.lock_pull(client.client.get_writable_journal());
-    sequence.wait_for(5);
-    client.connection.unlock(client.client.get_readonly_journal());
+    client.transaction([&sequence](Readable &, Writable &)
+    {
+     sequence.wait_for(5);
+    });
    }
   );
 
@@ -422,9 +428,10 @@ namespace joedb
     sequence.increment();
 
     sequence.wait_for(4);
-    client.connection.lock_pull(client.client.get_writable_journal());
-    sequence.wait_for(5);
-    client.connection.unlock(client.client.get_readonly_journal());
+    client.transaction([&sequence](Readable &, Writable &)
+    {
+     sequence.wait_for(5);
+    });
    }
   );
 
@@ -451,7 +458,7 @@ namespace joedb
 
    try
    {
-    client.client.transaction
+    client.transaction
     (
      [](const Readable &readable, Writable &writable)
      {
@@ -465,7 +472,7 @@ namespace joedb
    {
    }
 
-   EXPECT_EQ(client.client.get_journal().get_checkpoint_position(), 262189);
+   EXPECT_EQ(client.get_journal().get_checkpoint_position(), 262189);
   }
 
   server.pause();
@@ -481,7 +488,7 @@ namespace joedb
   server.restart();
   {
    Test_Client client(server, client_file);
-   client.client.push_unlock();
+   client.push_unlock();
    EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
   }
  }
@@ -500,7 +507,7 @@ namespace joedb
 
   try
   {
-   client.client.transaction
+   client.transaction
    (
     [](const Readable &readable, Writable &writable)
     {
@@ -514,14 +521,14 @@ namespace joedb
   {
   }
 
-  EXPECT_EQ(client.client.get_journal().get_checkpoint_position(), 262189);
+  EXPECT_EQ(client.get_journal().get_checkpoint_position(), 262189);
   EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 41);
   EXPECT_TRUE(server.file.get_size() > 1000);
   EXPECT_TRUE(server.file.get_size() < 262189);
 
   server.restart();
 
-  client.client.push_unlock();
+  client.push_unlock();
   EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
  }
 
@@ -532,9 +539,9 @@ namespace joedb
   Test_Server server(false, std::chrono::seconds(1));
   Memory_File client_file;
   Test_Client client(server, client_file);
-  client.connection.lock_pull(client.client.get_writable_journal());
-  std::this_thread::sleep_for(std::chrono::seconds(2));
-  client.connection.unlock(client.client.get_readonly_journal());
+  client.transaction([](Readable &, Writable &){
+   std::this_thread::sleep_for(std::chrono::seconds(2));
+  });
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -553,13 +560,14 @@ namespace joedb
  {
   Test_Server server;
   Memory_File client_file;
+  Writable_Journal journal(client_file);
   {
    Test_Client client(server, client_file);
-   client.connection.lock_pull(client.client.get_writable_journal());
+   client.server_connection.lock_pull(journal);
   }
   {
    Test_Client client(server, client_file);
-   client.connection.lock_pull(client.client.get_writable_journal());
+   client.server_connection.lock_pull(journal);
   }
  }
 
@@ -575,14 +583,14 @@ namespace joedb
   Test_Client client_0(server, client_file_0);
   Test_Client client_1(server, client_file_1);
 
-  client_0.client.get_writable_journal().create_table("person");
-  client_0.client.get_writable_journal().default_checkpoint();
+  client_0.get_writable_journal().create_table("person");
+  client_0.get_writable_journal().default_checkpoint();
 
-  client_1.client.get_writable_journal().create_table("person");
-  client_1.client.get_writable_journal().default_checkpoint();
+  client_1.get_writable_journal().create_table("person");
+  client_1.get_writable_journal().default_checkpoint();
 
-  client_0.client.push_unlock();
-  EXPECT_ANY_THROW(client_1.client.push_unlock());
+  client_0.push_unlock();
+  EXPECT_ANY_THROW(client_1.push_unlock());
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -596,18 +604,15 @@ namespace joedb
 
   Connection connection;
   Shared_Memory_File file{server.data};
-  Interpreted_Client shared_client{file, connection};
+  Writable_Database_Client shared_client{file, connection};
 
-  client.client.transaction
+  client.transaction
   (
    [](const Readable &readable, Writable &writable)
    {
     writable.create_table("person");
    }
   );
-
-  client.connection.lock_pull(client.client.get_writable_journal());
-  client.connection.unlock(client.client.get_readonly_journal());
 
   EXPECT_EQ(shared_client.get_database().get_tables().size(), 0UL);
   shared_client.pull();
@@ -621,9 +626,9 @@ namespace joedb
    }
   );
 
-  EXPECT_EQ(client.client.get_database().get_tables().size(), 1UL);
-  client.client.pull();
-  EXPECT_EQ(client.client.get_database().get_tables().size(), 2UL);
+  EXPECT_EQ(client.get_database().get_tables().size(), 1UL);
+  client.pull();
+  EXPECT_EQ(client.get_database().get_tables().size(), 2UL);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -635,10 +640,12 @@ namespace joedb
   Memory_File client_file;
   Test_Client client(server, client_file);
 
-  client.connection.lock_pull(client.client.get_writable_journal());
+  Writable_Journal journal(client_file);
+
+  client.server_connection.lock_pull(journal);
   EXPECT_ANY_THROW
   (
-   client.connection.lock_pull(client.client.get_writable_journal())
+   client.server_connection.lock_pull(journal)
   );
  }
 
@@ -701,9 +708,8 @@ namespace joedb
    journal.default_checkpoint();
   }
 
-  Writable_Journal_Client_Data client_data{file};
   File_Connection connection(connection_file);
-  Client client{client_data, connection};
+  Writable_Journal_Client client{file, connection};
   asio::io_context io_context;
   const bool share_client = false;
 
@@ -729,20 +735,20 @@ namespace joedb
   Test_Server backup_server;
 
   Memory_File file;
-  Test_Client backup_client(backup_server, file);
+  Test_Network_Channel channel("localhost", Port_String(backup_server).get());
+  Server_Connection backup_server_connection(channel);
+  Writable_Journal_Client backup_client(file, backup_server_connection);
 
   asio::io_context io_context;
 
-  // necessary to avoid data races with log_stream
-  std::ostringstream another_stream;
   Server server
   {
-   backup_client.client,
+   backup_client,
    false,
    io_context,
    uint16_t(0),
    std::chrono::seconds(0),
-   &another_stream
+   nullptr
   };
 
   std::thread thread([&io_context](){io_context.run();});
@@ -751,11 +757,11 @@ namespace joedb
    Memory_File client_file;
    Test_Client test_client(server, client_file);
 
-   test_client.client.pull();
-   test_client.client.pull();
-   test_client.client.pull();
+   test_client.pull();
+   test_client.pull();
+   test_client.pull();
 
-   test_client.client.transaction
+   test_client.transaction
    (
     [](const Readable &readable, Writable &writable)
     {
@@ -816,12 +822,12 @@ namespace joedb
 
   {
    Test_Client client(server, file);
-   client.client.push_unlock();
+   client.push_unlock();
   }
 
   {
    Test_Client client(server, file);
-   client.client.push_unlock();
+   client.push_unlock();
   }
  }
 
@@ -839,9 +845,9 @@ namespace joedb
    {
     Memory_File file;
     Test_Client client(server, file);
-    client.client.pull();
+    client.pull();
     sequence.send(1);
-    client.client.pull(std::chrono::milliseconds(100000));
+    client.pull(std::chrono::milliseconds(100000));
     sequence.send(2);
    }
    catch(...)
@@ -855,7 +861,7 @@ namespace joedb
 
   Memory_File file;
   Test_Client client(server, file);
-  client.client.transaction
+  client.transaction
   (
    [](const Readable &readable, Writable &writable)
    {
@@ -881,11 +887,11 @@ namespace joedb
    {
     Memory_File file;
     Test_Client client(server, file);
-    client.client.pull(std::chrono::milliseconds(1));
+    client.pull(std::chrono::milliseconds(1));
     sequence.send(1);
     sequence.wait_for(2);
-    client.client.pull(std::chrono::milliseconds(1));
-    client.client.pull(std::chrono::milliseconds(1));
+    client.pull(std::chrono::milliseconds(1));
+    client.pull(std::chrono::milliseconds(1));
     sequence.send(3);
    }
    catch(...)
@@ -898,7 +904,7 @@ namespace joedb
 
   Memory_File file;
   Test_Client client(server, file);
-  client.client.transaction
+  client.transaction
   (
    [](const Readable &readable, Writable &writable)
    {
@@ -922,7 +928,7 @@ namespace joedb
   {
    Memory_File file;
    Test_Client client(server, file);
-   client.client.transaction([&blob](const Readable &, Writable &writable)
+   client.transaction([&blob](const Readable &, Writable &writable)
    {
     blob = writable.write_blob_data("glouglou");
    });
@@ -937,7 +943,7 @@ namespace joedb
 
    {
     Test_Client client(server, file);
-    client.client.transaction([&blob2](const Readable &, Writable &writable)
+    client.transaction([&blob2](const Readable &, Writable &writable)
     {
      blob2 = writable.write_blob_data("glagla");
     });

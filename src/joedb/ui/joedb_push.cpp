@@ -52,23 +52,21 @@ namespace joedb
   Buffered_File &file = *file_parser.parse(std::cerr, argc, argv, arg_index);
   Readonly_Journal journal(file);
 
-  Pullonly_Connection &pullonly_connection = connection_parser.build
+  Connection &connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index,
    &file
   );
 
-  Connection *connection = pullonly_connection.get_push_connection();
-
-  if (!connection)
+  if (connection.is_pullonly())
   {
    std::cerr << "Cannot push to pull-only connection\n";
    return 1;
   }
   else
   {
-   int64_t from_checkpoint = connection->handshake(journal, true);
+   int64_t from_checkpoint = connection.handshake(journal, true);
    Signal::start();
 
    while
@@ -79,7 +77,7 @@ namespace joedb
    {
     if (journal.get_checkpoint_position() > from_checkpoint)
     {
-     from_checkpoint = connection->push_until
+     from_checkpoint = connection.push_until
      (
       journal,
       from_checkpoint,

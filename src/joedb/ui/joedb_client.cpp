@@ -13,6 +13,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = true;
+  const bool has_database = true;
 
   const Open_Mode default_mode = File::lockable
    ? Open_Mode::shared_write
@@ -27,9 +28,9 @@ namespace joedb
    return 1;
   }
 
-  Pullonly_Client &client = client_parser.parse(argc - 1, argv + 1);
+  Client &client = client_parser.parse(argc - 1, argv + 1, has_database);
 
-  Client_Command_Processor interpreter(client, client_parser.has_file());
+  Client_Command_Processor interpreter(client);
   interpreter.set_prompt(true);
   interpreter.main_loop(std::cin, std::cout);
 

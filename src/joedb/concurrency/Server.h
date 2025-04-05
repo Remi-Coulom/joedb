@@ -220,7 +220,7 @@ namespace joedb
 
    bool is_readonly() const
    {
-    return client.is_readonly() || client.is_pullonly();
+    return client.is_readonly() || client.is_pullonly() || !push_client;
    }
 
    std::chrono::milliseconds get_time_stamp() const;
