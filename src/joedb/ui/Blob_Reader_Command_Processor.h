@@ -11,7 +11,7 @@ namespace joedb
  class Blob_Reader_Command_Processor: public Command_Processor
  {
   private:
-   Blob_Reader &blob_reader;
+   const Blob_Reader &blob_reader;
 
    Status process_command
    (
@@ -22,7 +22,7 @@ namespace joedb
    ) final;
 
   public:
-   Blob_Reader_Command_Processor(Blob_Reader &blob_reader):
+   Blob_Reader_Command_Processor(const Blob_Reader &blob_reader):
     blob_reader(blob_reader)
    {
    }

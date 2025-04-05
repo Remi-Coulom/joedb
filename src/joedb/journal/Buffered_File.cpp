@@ -1,4 +1,5 @@
 #include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Async_Reader.h"
 #include "joedb/error/Destructor_Logger.h"
 
 #include <algorithm>
@@ -109,13 +110,14 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- std::string Buffered_File::read_blob_data(const Blob blob)
+ std::string Buffered_File::read_blob_data(const Blob blob) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  const int64_t current_position = get_position();
-  set_position(blob.get_position());
-  const std::string result = read_string();
-  set_position(current_position);
+  Async_Reader reader(*this, blob);
+  std::string result(size_t(reader.get_remaining()), 0);
+  reader.read(result.data(), result.size());
+  if (reader.is_end_of_file())
+   reading_past_end_of_file();
   return result;
  }
 
@@ -125,6 +127,7 @@ namespace joedb
  {
   const int64_t blob_position = get_position();
   write_string(data);
+  flush();
   return Blob(blob_position);
  }
 }

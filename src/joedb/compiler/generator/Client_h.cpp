@@ -51,8 +51,7 @@ namespace joedb::generator
  /// Handle concurrent access to a @ref joedb::Buffered_File using a @ref joedb::Connection
  class Client:
   protected detail::Client_Data,
-  public joedb::Client,
-  public joedb::Blob_Reader
+  public joedb::Client
  {
   friend class Client_Lock;
 
@@ -104,11 +103,6 @@ namespace joedb::generator
    const Database &get_database() const
    {
     return db;
-   }
-
-   std::string read_blob_data(joedb::Blob blob) final
-   {
-    return db.read_blob_data(blob);
    }
 
    int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))

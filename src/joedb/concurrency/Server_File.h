@@ -77,7 +77,7 @@ namespace joedb
    //
    // Buffered_File override
    //
-   std::string read_blob_data(Blob blob) override;
+   std::string read_blob_data(Blob blob) const override;
  };
 }
 

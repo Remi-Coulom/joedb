@@ -29,7 +29,7 @@ namespace joedb
    size_t read_buffer_size;
 
    //////////////////////////////////////////////////////////////////////////
-   void reading_past_end_of_file()
+   static void reading_past_end_of_file()
    //////////////////////////////////////////////////////////////////////////
    {
     throw Exception("Trying to read past the end of file");
@@ -296,7 +296,7 @@ namespace joedb
      set_position(get_position() + n);
    }
 
-   std::string read_blob_data(Blob blob) override;
+   std::string read_blob_data(Blob blob) const override;
    Blob write_blob_data(const std::string &data) override;
  };
 }

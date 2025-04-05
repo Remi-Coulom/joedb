@@ -5,6 +5,7 @@
 #include "joedb/Writable.cpp"
 #include "joedb/ui/minimal_runtime_io.cpp"
 #include "joedb/journal/File.cpp"
+#include "joedb/journal/Async_Reader.cpp"
 #include "joedb/journal/Buffered_File.cpp"
 #include "joedb/journal/Journal_Construction_Lock.cpp"
 #include "joedb/journal/Memory_File.cpp"

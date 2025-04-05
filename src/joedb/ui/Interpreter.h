@@ -22,7 +22,7 @@ namespace joedb
    Readable_Interpreter
    (
     const Readable &readable,
-    Blob_Reader *blob_reader
+    const Blob_Reader *blob_reader
    ):
     readable_command_processor(readable)
    {
@@ -62,7 +62,7 @@ namespace joedb
    (
     const Readable &readable,
     Writable &writable,
-    Blob_Reader *blob_reader,
+    const Blob_Reader *blob_reader,
     Blob_Writer &blob_writer,
     size_t max_record_id
    ):

@@ -48,8 +48,7 @@ namespace joedb::generator
  /// Client for a read-only file (allows pulling, unlike @ref Readonly_Database)
  class Readonly_Client:
   private detail::Readonly_Client_Data,
-  public joedb::Client,
-  public joedb::Blob_Reader
+  public joedb::Client
  {
   private:
    const int64_t schema_checkpoint;
@@ -83,11 +82,6 @@ namespace joedb::generator
     if (db.get_schema_checkpoint() > schema_checkpoint)
      Database::throw_exception("Pulled a schema change");
     return db;
-   }
-
-   std::string read_blob_data(joedb::Blob blob) final
-   {
-    return journal.read_blob_data(blob);
    }
  };
 )RRR";

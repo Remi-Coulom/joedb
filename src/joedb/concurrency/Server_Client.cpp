@@ -131,7 +131,7 @@ namespace joedb
   Async_Writer &writer,
   Channel_Lock &lock,
   int64_t size
- )
+ ) const
  {
   LOG("downloading, size = " << size);
 
