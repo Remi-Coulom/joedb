@@ -2,14 +2,11 @@
 #include "joedb/ui/Command_Processor.h"
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/get_time_string.h"
-#include "joedb/concurrency/Client.h"
-#if 0
 #include "joedb/ui/Interpreter.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Readonly_Database_Client.h"
-#endif
 #include "joedb/Signal.h"
 
 #include <thread>
@@ -31,11 +28,16 @@ namespace joedb
 
   out << client_checkpoint;
   if (client_checkpoint < server_checkpoint)
-   out << '+' << server_checkpoint - client_checkpoint << ")(you can pull";
+   out << '+' << server_checkpoint - client_checkpoint << ")(pull to sync";
   else if (server_checkpoint < client_checkpoint)
-   out << '-' << client_checkpoint - server_checkpoint << ")(you can push";
+   out << '-' << client_checkpoint - server_checkpoint << ")(push to sync";
 
   out << ')';
+
+  if (client.is_readonly())
+   out << "(readonly)";
+  if (client.is_pullonly())
+   out << "(pullonly)";
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -76,65 +78,53 @@ namespace joedb
   {
    Command_Interpreter::process_command(command, parameters, in, out);
 
-   out << "Client\n";
-   out << "~~~~~~\n";
-   out << " pull [<wait_seconds>]\n";
+   out << R"RRR(Client
+~~~~~~
+ pull [<wait_seconds>]
+ pull_every [<wait_seconds>] [<sleep_seconds>]
+ push
+ push_every [<seconds>]
+ transaction
+ db
 
-   if (!client.is_readonly())
-    out << " pull_every [<wait_seconds>] [<sleep_seconds>]\n";
+)RRR";
 
-   if (!client.is_pullonly())
-   {
-    out << " push\n";
-
-    if (client.is_readonly())
-     out << " push_every [<seconds>]\n";
-    else
-     out << " transaction\n";
-   }
-
-   out << " db\n";
-
-   out << '\n';
    return Status::ok;
   }
   else if (command == "db") /////////////////////////////////////////////////
   {
-#if 0
-   Interpreted_Client_Data *interpreted_client_data
-   (
-    dynamic_cast<Interpreted_Client_Data *>(&client.get_data())
-   );
+   const Database *database = nullptr;
 
-   if (has_file)
    {
-    Readable_Interpreter interpreter
-    (
-     interpreted_client_data->get_database(),
-     &interpreted_client_data->get_readonly_journal()
-    );
+    auto * const rdc = dynamic_cast<Readonly_Database_Client *>(&client);
+    auto * const wdc = dynamic_cast<Writable_Database_Client *>(&client);
 
+    if (rdc)
+     database = &rdc->get_database();
+    else if (wdc)
+     database = &wdc->get_database();
+   }
+
+   if (database)
+   {
+    Readable_Interpreter interpreter(*database, &client.get_journal());
     interpreter.set_parent(this);
     interpreter.main_loop(in, out);
    }
    else
    {
     Command_Interpreter interpreter;
-    Blob_Reader_Command_Processor processor
-    (
-     interpreted_client_data->get_readonly_journal()
-    );
+    Blob_Reader_Command_Processor processor(client.get_journal());
     interpreter.add_processor(processor);
     interpreter.set_parent(this);
     interpreter.main_loop(in, out);
    }
-#endif
   }
-  else if (command == "push" && !client.is_pullonly()) //////////////////////
+  else if (command == "push") ///////////////////////////////////////////////
   {
    client.push_unlock();
   }
-  else if (command == "push_every" && client.is_readonly() && !client.is_pullonly())
+  else if (command == "push_every") /////////////////////////////////////////
   {
    int seconds = 1;
    parameters >> seconds;
@@ -160,7 +150,7 @@ namespace joedb
    parameters >> wait_seconds;
    pull(out, std::chrono::milliseconds(std::lround(wait_seconds * 1000)));
   }
-  else if (command == "pull_every" && !client.is_readonly()) ////////////////
+  else if (command == "pull_every") /////////////////////////////////////////
   {
    float wait_seconds = 1;
    int sleep_seconds = 1;
@@ -175,47 +165,46 @@ namespace joedb
     sleep(sleep_seconds, out);
    }
   }
-  else if (command == "transaction" && !client.is_readonly() && !client.is_pullonly())
+  else if (command == "transaction") ////////////////////////////////////////
   {
-#if 0
-   out << "Waiting for lock... ";
-   out.flush();
+   auto * const wdc = dynamic_cast<Writable_Database_Client *>(&client);
+   auto * const wjc = dynamic_cast<Writable_Journal_Client *>(&client);
 
-   client.transaction([&]()
+   if (!wdc && !wjc)
    {
-    out << "OK\n";
+    out << "Transactions are not available for this type of client\n";
+   }
+   else
+   {
+    out << "Waiting for lock... ";
+    out.flush();
 
-    Writable_Interpreted_Client_Data *interpreted_client_data
-    (
-     dynamic_cast<Writable_Interpreted_Client_Data *>(&data)
-    );
-
-    if (interpreted_client_data)
+    if (wdc)
     {
-     if (has_file)
+     wdc->transaction([&](const Readable &readable, Writable &writable)
      {
       Interpreter interpreter
       (
-       interpreted_client_data->get_database(),
-       interpreted_client_data->get_multiplexer(),
-       &interpreted_client_data->get_readonly_journal(),
-       interpreted_client_data->get_multiplexer(),
+       readable,
+       writable,
+       &client.get_journal(),
+       writable,
        0
       );
       interpreter.set_parent(this);
       interpreter.main_loop(in, out);
-     }
-     else
+     });
+    }
+    else if (wjc)
+    {
+     wjc->transaction([&](Writable_Journal &journal)
      {
-      auto &journal = interpreted_client_data->get_writable_journal();
-      journal.seek_to_checkpoint();
       Writable_Interpreter interpreter(journal, journal);
       interpreter.set_parent(this);
       interpreter.main_loop(in, out);
-     }
+     });
     }
-   });
-#endif
+   }
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);

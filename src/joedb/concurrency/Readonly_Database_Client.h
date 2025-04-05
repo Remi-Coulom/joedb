@@ -27,6 +27,12 @@ namespace joedb
   protected detail::Readonly_Database_Client_Data,
   public Client
  {
+  protected:
+   Readonly_Journal &get_readonly_journal() override
+   {
+    return journal;
+   }
+
   public:
    Readonly_Database_Client
    (

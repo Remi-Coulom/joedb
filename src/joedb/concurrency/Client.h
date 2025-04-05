@@ -57,7 +57,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   const Readonly_Journal &get_journal() const
+   /* const */ Readonly_Journal &get_journal() const
    //////////////////////////////////////////////////////////////////////////
    {
     return const_cast<Client *>(this)->get_readonly_journal();
