@@ -7,9 +7,9 @@ namespace joedb
 {
  class Buffered_File;
 
- /// \ingroup journal
+ /// @ingroup journal
  void dump_header(std::ostream &out, Buffered_File &file);
- /// \ingroup journal
+ /// @ingroup journal
  void about_joedb(std::ostream &out);
 }
 

@@ -3,7 +3,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  enum class Open_Mode
  {
   read_existing,

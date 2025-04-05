@@ -6,7 +6,7 @@ namespace joedb
 {
  class Client;
 
- /// \ingroup ui
+ /// @ingroup ui
  class Client_Command_Processor: public Command_Interpreter
  {
   private:

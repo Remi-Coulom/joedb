@@ -10,7 +10,7 @@
 
 namespace joedb
 {
- /// \ingroup interpreted
+ /// @ingroup interpreted
  class Field
  {
   private:

@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Interpreter_Writable: public Writable
  {
   private:

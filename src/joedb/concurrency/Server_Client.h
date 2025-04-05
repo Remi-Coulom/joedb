@@ -13,7 +13,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Server_Client: public Posthumous_Thrower
  {
   friend class Server_File;

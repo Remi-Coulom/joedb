@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- /// \ingroup error
+ /// @ingroup error
  class Stream_Logger: public Logger
  {
   private:

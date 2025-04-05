@@ -4,7 +4,7 @@
 namespace joedb
 {
  class Database;
- /// \ingroup ui
+ /// @ingroup ui
  void merge(Database &merged, const Database &db);
 }
 

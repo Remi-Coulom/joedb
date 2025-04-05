@@ -7,7 +7,7 @@ namespace joedb
 {
  class Blob_Reader;
 
- /// \ingroup ui
+ /// @ingroup ui
  class Blob_Reader_Command_Processor: public Command_Processor
  {
   private:

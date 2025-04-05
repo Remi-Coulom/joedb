@@ -3,7 +3,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  constexpr int protocol_version = 16;
 }
 

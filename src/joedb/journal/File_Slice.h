@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class File_Slice: public Readonly_Memory_File
  {
   private:

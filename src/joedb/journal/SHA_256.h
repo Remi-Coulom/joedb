@@ -16,7 +16,7 @@ namespace joedb
   return (x >> n) | (x << ((-n) & 31));
  }
 
- /// \ingroup journal
+ /// @ingroup journal
  class SHA_256
  {
   private:

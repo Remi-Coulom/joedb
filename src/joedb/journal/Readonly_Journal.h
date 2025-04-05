@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Readonly_Journal: public Blob_Reader
  {
   friend class Writable_Journal;

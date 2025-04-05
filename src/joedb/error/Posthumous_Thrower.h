@@ -7,7 +7,7 @@ namespace joedb
 
  /// A class that can postpone exceptions from its destructor by sending
  /// them to a @ref Posthumous_Catcher
- /// \ingroup error
+ /// @ingroup error
  class Posthumous_Thrower
  {
   private:

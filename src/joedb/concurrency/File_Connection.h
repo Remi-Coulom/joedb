@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Pullonly_Journal_Connection: public Connection
  {
   protected:
@@ -69,7 +69,7 @@ namespace joedb
    bool is_pullonly() const override {return true;}
  };
 
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Journal_Connection: public Pullonly_Journal_Connection
  {
   private:
@@ -158,7 +158,7 @@ namespace joedb
   };
  }
 
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class File_Connection:
   public detail::File_Connection_Data,
   public Journal_Connection

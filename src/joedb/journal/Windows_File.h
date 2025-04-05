@@ -53,7 +53,7 @@ namespace joedb
    ~Windows_Handle() override;
  };
 
- /// \ingroup journal
+ /// @ingroup journal
  class Windows_File: public Windows_Handle
  {
   public:

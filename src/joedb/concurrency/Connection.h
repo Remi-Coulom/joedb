@@ -9,7 +9,7 @@ namespace joedb
 {
  class Connection;
 
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Connection
  {
   protected:

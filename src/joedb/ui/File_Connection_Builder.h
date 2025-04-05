@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class File_Connection_Builder: public Connection_Builder
  {
   private:

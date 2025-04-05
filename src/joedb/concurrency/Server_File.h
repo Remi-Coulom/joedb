@@ -15,7 +15,7 @@ namespace joedb
  /// the head and tail of the file are stored in RAM locally, and can be
  /// pushed to the remote server if used in a client.
  ///
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Server_File: public Server_Connection, public Buffered_File
  {
   private:

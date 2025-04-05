@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Writable_Journal: 
   public Readonly_Journal,
   public Writable,

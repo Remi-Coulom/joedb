@@ -17,7 +17,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Server
  {
   private:

@@ -5,9 +5,9 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  std::string base64_encode(const std::string &input);
- /// \ingroup ui
+ /// @ingroup ui
  std::string base64_decode(const std::string &input);
 }
 

@@ -6,7 +6,7 @@ namespace joedb
  class Connection;
  class Buffered_File;
 
- /// \ingroup ui
+ /// @ingroup ui
  class Connection_Builder
  {
   public:

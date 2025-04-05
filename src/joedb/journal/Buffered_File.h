@@ -14,7 +14,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Buffered_File:
   public Sequential_File,
   public Posthumous_Thrower,

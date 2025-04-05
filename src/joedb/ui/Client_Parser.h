@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Client_Parser
  {
   private:

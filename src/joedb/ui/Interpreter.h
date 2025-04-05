@@ -11,7 +11,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Readable_Interpreter: public Command_Interpreter
  {
   protected:
@@ -35,7 +35,7 @@ namespace joedb
    }
  };
 
- /// \ingroup ui
+ /// @ingroup ui
  class Writable_Interpreter: public Command_Interpreter
  {
   protected:
@@ -49,7 +49,7 @@ namespace joedb
    }
  };
 
- /// \ingroup ui
+ /// @ingroup ui
  class Interpreter: public Command_Interpreter
  {
   private:

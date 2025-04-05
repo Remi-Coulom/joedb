@@ -20,7 +20,7 @@ namespace joedb
   };
  }
 
- /// \ingroup journal
+ /// @ingroup journal
  class Brotli_File: private detail::Brotli_File_Data, public Encoded_File
  {
   public:

@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Identity_Codec: public Codec
  {
   public:

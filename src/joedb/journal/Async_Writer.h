@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Async_Writer
  {
   private:

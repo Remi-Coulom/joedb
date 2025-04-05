@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  template <typename Parent> class Upgradable_File: public Parent
  {
   private:

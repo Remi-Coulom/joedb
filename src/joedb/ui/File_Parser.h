@@ -15,7 +15,7 @@
 namespace joedb
 {
  /// Create an instance of a @ref Buffered_File by parsing command-line arguments
- /// \ingroup ui
+ /// @ingroup ui
  class File_Parser
  {
   private:

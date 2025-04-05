@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup interpreted
+ /// @ingroup interpreted
  class Database: public Database_Schema
  {
   private:

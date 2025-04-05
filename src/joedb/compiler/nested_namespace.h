@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- /// \addtogroup compiler
+ /// @addtogroup compiler
  /// @{
 
  std::vector<std::string> split_namespace(const std::string &s);

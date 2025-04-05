@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Readable_Writable_Command_Processor: public Data_Manipulation_Command_Processor
  {
   private:

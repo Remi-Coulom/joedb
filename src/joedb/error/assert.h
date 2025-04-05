@@ -11,20 +11,20 @@
 } while(0)
 
 #if defined (NDEBUG) && !defined(JOEDB_FUZZING)
-/// \ingroup error
+/// @ingroup error
 #define JOEDB_ASSERT(x)
 #else
-/// \ingroup error
+/// @ingroup error
 #define JOEDB_ASSERT(x) JOEDB_CHECK(x, joedb::Assertion_Failure)
 #endif
 
-/// \ingroup error
+/// @ingroup error
 #define JOEDB_RELEASE_ASSERT(x) JOEDB_CHECK(x, joedb::Exception)
 
 namespace joedb
 {
  /// Indicates a bug in the code, thrown by @ref JOEDB_ASSERT when NDEBUG not defined
- /// \ingroup error
+ /// @ingroup error
  class Assertion_Failure: public std::logic_error
  {
   public:

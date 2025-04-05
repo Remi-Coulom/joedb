@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Server_Connection: public Server_Client, public Connection
  {
   protected:

@@ -7,7 +7,7 @@ namespace joedb
 {
  class Writable;
 
- /// \ingroup ui
+ /// @ingroup ui
  class Data_Manipulation_Command_Processor: public Readable_Command_Processor
  {
   private:

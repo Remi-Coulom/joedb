@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Readonly_Encoded_File: public Buffered_File
  {
   private:

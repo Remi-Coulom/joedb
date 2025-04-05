@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  void inplace_pack(const std::string &file_name);
 }
 

@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  int process_journal_pair
  (
   int argc,

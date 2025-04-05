@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  template <typename Dump_Writable> class Dump_Connection_Data
  {
   protected:
@@ -24,7 +24,7 @@ namespace joedb
    }
  };
 
- /// \ingroup ui
+ /// @ingroup ui
  template<typename Dump_Writable> class Dump_Connection_Builder:
   private Dump_Connection_Data<Dump_Writable>,
   private Writable_Connection,

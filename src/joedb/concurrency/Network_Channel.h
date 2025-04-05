@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Network_Channel: public Channel
  {
   protected:

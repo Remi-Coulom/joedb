@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \addtogroup ui
+ /// @addtogroup ui
  /// @{
 
  std::string read_string(std::istream &in);

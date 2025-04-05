@@ -10,7 +10,7 @@
 namespace joedb
 {
  /// Create an instance of a @ref Connection by parsing command-line arguments
- /// \ingroup ui
+ /// @ingroup ui
  class Connection_Parser
  {
   private:

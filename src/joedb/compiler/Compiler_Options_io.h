@@ -7,7 +7,7 @@ namespace joedb
 {
  class Compiler_Options;
 
- /// \ingroup compiler
+ /// @ingroup compiler
  void parse_compiler_options
  (
   std::istream &in,

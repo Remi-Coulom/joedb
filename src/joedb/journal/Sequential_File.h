@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Sequential_File: public Abstract_File
  {
   private:

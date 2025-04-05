@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Readonly_Memory_File: public Buffered_File
  {
   protected:

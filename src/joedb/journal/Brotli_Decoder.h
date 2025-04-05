@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Brotli_Decoder: public virtual Decoder
  {
   void decode

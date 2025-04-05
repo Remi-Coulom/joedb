@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Channel
  {
   friend class Channel_Lock;
