@@ -34,7 +34,7 @@ paired, and modifications to the database can only occur during a lock.  This
 is done with transaction function that takes a lambda as parameter, and
 executes it between a lock_pull and a push_unlock.
 
-.. literalinclude:: ./tutorial/concurrency_tutorial.cpp
+.. literalinclude:: ./tutorial/src/concurrency_tutorial.cpp
    :language: c++
 
 It produces this output:
@@ -66,7 +66,7 @@ synchronize them.
 creates the connection and the client in a single line of code. Here is an
 example:
 
-.. literalinclude:: ./tutorial/local_concurrency.cpp
+.. literalinclude:: ./tutorial/src/local_concurrency.cpp
    :language: c++
 
 Multiple instances of this program can safely write to the same database
@@ -141,7 +141,7 @@ destructor. Because push_unlock can fail, error management is a little tricky,
 and requires using a ``Posthumous_Catcher``.  That's why it is recommended to
 use a transaction lambda instead of a ``Client_Lock`` whenever possible.
 
-.. literalinclude:: ./tutorial/client_lock.cpp
+.. literalinclude:: ./tutorial/src/client_lock.cpp
    :language: c++
 
 

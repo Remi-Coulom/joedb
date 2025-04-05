@@ -77,6 +77,8 @@ namespace joedb
    client_journal.default_checkpoint();
    client_journal.set_position(old_position);
   }
+  else
+   LOG("no data\n");
 
   return server_checkpoint;
  }

@@ -15,6 +15,9 @@ namespace joedb
  /// the head and tail of the file are stored in RAM locally, and can be
  /// pushed to the remote server if used in a client.
  ///
+ /// A demo can be found in write_server_blob.cpp:
+ /// \include write_server_blob.cpp
+ ///
  /// @ingroup concurrency
  class Server_File: public Server_Connection, public Buffered_File
  {

@@ -4,7 +4,7 @@ set -e
 mkdir -p build
 cd build
 cmake ..
-make -j 4
+make -j 12
 cd -
 
 configuration=gcc_debug

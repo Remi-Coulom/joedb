@@ -141,6 +141,8 @@ namespace joedb::generator
  /// Note that pushing will take place in the destructor of the lock object.
  /// If you wish to handle push errors properly, you must use a
  /// @ref joedb::Posthumous_Catcher.
+ ///
+ /// \include client_lock.cpp
  class Client_Lock: public joedb::Client_Lock
  {
   public:

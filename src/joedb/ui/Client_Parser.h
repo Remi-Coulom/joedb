@@ -15,13 +15,14 @@ namespace joedb
    Connection_Parser connection_parser;
 
    const Open_Mode default_open_mode;
+   const bool default_with_database;
 
    std::unique_ptr<Client> client;
 
   public:
-   Client_Parser(bool local, Open_Mode default_open_mode);
+   Client_Parser(bool local, Open_Mode default_open_mode, bool with_database);
 
-   Client &parse(int argc, char **argv, bool with_database);
+   Client &parse(int argc, char **argv);
    bool has_file() const {return file_parser.get_file() != nullptr;}
 
    void print_help(std::ostream &out) const;

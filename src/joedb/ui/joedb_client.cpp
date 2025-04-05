@@ -13,13 +13,12 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = true;
-  const bool has_database = true;
 
   const Open_Mode default_mode = File::lockable
    ? Open_Mode::shared_write
    : Open_Mode::write_existing_or_create_new;
 
-  Client_Parser client_parser(local, default_mode);
+  Client_Parser client_parser(local, default_mode, true);
 
   if (argc <= 1)
   {
@@ -28,7 +27,7 @@ namespace joedb
    return 1;
   }
 
-  Client &client = client_parser.parse(argc - 1, argv + 1, has_database);
+  Client &client = client_parser.parse(argc - 1, argv + 1);
 
   Client_Command_Processor interpreter(client);
   interpreter.set_prompt(true);

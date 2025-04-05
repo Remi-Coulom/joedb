@@ -41,7 +41,7 @@ failing if anybody else is already write-locking.
 
 For example:
 
-.. literalinclude:: ./tutorial/file_tutorial.cpp
+.. literalinclude:: ./tutorial/src/file_tutorial.cpp
    :language: c++
 
 ``File_Client``

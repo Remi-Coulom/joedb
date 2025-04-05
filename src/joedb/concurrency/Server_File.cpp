@@ -144,8 +144,10 @@ namespace joedb
  {
   if (offset < Readonly_Journal::header_size)
    return head.pread(data, size, offset);
+
   if (offset < tail_offset)
    return remote_pread(data, size, offset);
+
   return tail.pread(data, size, offset - tail_offset);
  }
 
@@ -170,22 +172,27 @@ namespace joedb
  std::string Server_File::read_blob_data(Blob blob) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  Channel_Lock lock(channel);
+  if (blob.get_position() >= tail_offset)
+   return tail.read_blob_data(Blob{blob.get_position() - tail_offset});
+  else
+  {
+   Channel_Lock lock(channel);
 
-  Server_Connection::buffer.index = 0;
-  Server_Connection::buffer.write<char>('b');
-  Server_Connection::buffer.write<int64_t>(blob.get_position());
-  lock.write(Server_Connection::buffer.data, Server_Connection::buffer.index);
+   Server_Connection::buffer.index = 0;
+   Server_Connection::buffer.write<char>('b');
+   Server_Connection::buffer.write<int64_t>(blob.get_position());
+   lock.write(Server_Connection::buffer.data, Server_Connection::buffer.index);
 
-  lock.read(Server_Connection::buffer.data, 9);
-  Server_Connection::buffer.index = 1;
-  const int64_t size = Server_Connection::buffer.read<int64_t>();
+   lock.read(Server_Connection::buffer.data, 9);
+   Server_Connection::buffer.index = 1;
+   const int64_t size = Server_Connection::buffer.read<int64_t>();
 
-  Memory_File file;
-  file.resize(size_t(size));
-  joedb::Async_Writer writer(file, 0);
-  download(writer, lock, size);
+   Memory_File file;
+   file.resize(size_t(size));
+   joedb::Async_Writer writer(file, 0);
+   download(writer, lock, size);
 
-  return file.move_data();
+   return file.move_data();
+  }
  }
 }

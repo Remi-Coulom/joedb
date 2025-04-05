@@ -12,11 +12,17 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Client_Parser::Client_Parser(bool local, Open_Mode default_open_mode):
+ Client_Parser::Client_Parser
  ////////////////////////////////////////////////////////////////////////////
+ (
+  bool local,
+  Open_Mode default_open_mode,
+  bool with_database
+ ):
   file_parser(default_open_mode, false, true, true),
   connection_parser(local),
-  default_open_mode(default_open_mode)
+  default_open_mode(default_open_mode),
+  default_with_database(with_database)
  {
  }
 
@@ -24,14 +30,17 @@ namespace joedb
  void Client_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << " [--nocheck] <file> <connection>\n\n";
+  out << " [--nocheck]";
+  if (default_with_database)
+   out << " [--nodb]";
+  out << " <file> <connection>\n\n";
 
   file_parser.print_help(out);
   connection_parser.print_help(out);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Client &Client_Parser::parse(int argc, char **argv, bool with_database)
+ Client &Client_Parser::parse(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 0;
@@ -43,6 +52,13 @@ namespace joedb
    content_check = false;
   }
   std::cerr << "content_check = " << content_check << '\n';
+
+  bool with_database = default_with_database;
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
+  {
+   arg_index++;
+   with_database = false;
+  }
 
   file_parser.parse
   (
