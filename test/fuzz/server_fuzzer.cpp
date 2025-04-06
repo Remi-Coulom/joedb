@@ -1,6 +1,5 @@
 #include "joedb/concurrency/Server.h"
-#include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Writable_Journal_Client_Data.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Network_Channel.h"
 #include "joedb/journal/Memory_File.h"
 
@@ -11,9 +10,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Writable_Journal_Client_Data client_data(file);
  joedb::Connection connection;
- joedb::Client client(client_data, connection, false);
+ joedb::Writable_Journal_Client client(file, connection, false);
 
  asio::io_context io_context;
 

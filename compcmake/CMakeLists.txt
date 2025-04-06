@@ -361,8 +361,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/error/Posthumous_Catcher.cpp
   ../src/joedb/error/Posthumous_Thrower.cpp
   ../src/joedb/interpreted/Table.cpp
+  ../src/joedb/ui/Blob_Reader_Command_Processor.cpp
   ../src/joedb/ui/Command_Interpreter.cpp
   ../src/joedb/ui/Command_Processor.cpp
+  ../src/joedb/ui/Data_Manipulation_Command_Processor.cpp
   ../src/joedb/ui/Readable_Command_Processor.cpp
   ../src/joedb/ui/Writable_Command_Processor.cpp
   ../src/joedb/ui/Readable_Writable_Command_Processor.cpp
