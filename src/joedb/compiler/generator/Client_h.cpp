@@ -142,7 +142,7 @@ namespace joedb::generator
  /// If you wish to handle push errors properly, you must use a
  /// @ref joedb::Posthumous_Catcher.
  ///
- /// \include client_lock.cpp
+ /// @include client_lock.cpp
  class Client_Lock: public joedb::Client_Lock
  {
   public:
