@@ -19,11 +19,11 @@ namespace joedb
   private:
    const HANDLE file;
 
-   void throw_last_error
+   static void throw_last_error
    (
     const char *action,
     const char *file_name
-   ) const;
+   );
 
    enum class Lock_Operation
    {

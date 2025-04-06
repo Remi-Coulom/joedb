@@ -49,7 +49,7 @@ namespace joedb
  (
   const char *action,
   const char *file_name
- ) const
+ )
  {
   const DWORD last_error = GetLastError();
   LPVOID buffer;
