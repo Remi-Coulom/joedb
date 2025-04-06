@@ -5,6 +5,7 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/main_exception_catcher.h"
+#include "joedb/get_version.h"
 
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/generator/Database_cpp.h"
@@ -63,6 +64,7 @@ namespace joedb
   //
   if (argc <= 2)
   {
+   std::cerr << "joedb compiler, version " << joedb::get_version() << '\n';
    std::cerr << "Usage: " << argv[0] << " <file.joedbi> <file.joedbc>\n";
    return 1;
   }
