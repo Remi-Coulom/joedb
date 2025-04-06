@@ -67,12 +67,9 @@ namespace joedb
    const Hash &get_hash() const {return hash;}
    static constexpr size_t chunk_size = 64;
 
-   /////////////////////////////////////////////////////////////////////////
+   /// process 512 bits (32 * 16, 8 * 64) of data, SHA_256::chunk_size bytes
    void process_chunk(const char *data)
-   /////////////////////////////////////////////////////////////////////////
    {
-    // process 512 bits (32 * 16, 8 * 64) of data
-
     std::array<uint32_t, 64> w;
 
     {
@@ -121,15 +118,16 @@ namespace joedb
      hash[i] += x[i];
    }
 
-   /////////////////////////////////////////////////////////////////////////
+   /// process last bytes of the sequence
+   ///
+   /// @param data points to the final n bytes, 0 <= n < 64
+   /// @param total_length_in_bytes is the length of the whole sequence
    void process_final_chunk
-   /////////////////////////////////////////////////////////////////////////
    (
     const char * const data,
     const uint64_t total_length_in_bytes
    )
    {
-    // data points to the final n bytes, 0 <= n < 64
     std::array<uint32_t, 32> final_chunks{};
     uint8_t *byte_buffer = reinterpret_cast<uint8_t *>(&final_chunks[0]);
     uint32_t n = uint32_t(total_length_in_bytes & 0x3fULL);
