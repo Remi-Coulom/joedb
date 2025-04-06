@@ -120,14 +120,4 @@ namespace joedb
    reading_past_end_of_file();
   return result;
  }
-
- ////////////////////////////////////////////////////////////////////////////
- Blob Buffered_File::write_blob_data(const std::string &data)
- ////////////////////////////////////////////////////////////////////////////
- {
-  const int64_t blob_position = get_position();
-  write_string(data);
-  flush();
-  return Blob(blob_position);
- }
 }

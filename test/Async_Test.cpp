@@ -115,7 +115,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File file;
-  const Blob blob = file.write_blob_data("joedb");
+  const Blob blob{file.get_position()};
+  file.write_string("joedb");
   file.flush();
   Async_Reader reader(file, blob);
   EXPECT_EQ(reader.get_remaining(), 5);
@@ -167,7 +168,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File file;
-  file.write_blob_data("toto");
+  file.write_string("toto");
   file.flush();
   const int64_t size_0 = file.get_size();
   Async_Reader reader(file, Blob{0});

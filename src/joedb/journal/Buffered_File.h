@@ -18,8 +18,7 @@ namespace joedb
  class Buffered_File:
   public Sequential_File,
   public Posthumous_Thrower,
-  public Blob_Reader,
-  public Blob_Writer
+  public Blob_Reader
  {
   friend class File_Hasher;
 
@@ -297,7 +296,6 @@ namespace joedb
    }
 
    std::string read_blob_data(Blob blob) const override;
-   Blob write_blob_data(const std::string &data) override;
  };
 }
 
