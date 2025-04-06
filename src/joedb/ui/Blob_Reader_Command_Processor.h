@@ -5,13 +5,13 @@
 
 namespace joedb
 {
- class Blob_Reader;
+ class Buffered_File;
 
  /// @ingroup ui
  class Blob_Reader_Command_Processor: public Command_Processor
  {
   private:
-   const Blob_Reader &blob_reader;
+   const Buffered_File &blob_reader;
 
    Status process_command
    (
@@ -22,7 +22,7 @@ namespace joedb
    ) final;
 
   public:
-   Blob_Reader_Command_Processor(const Blob_Reader &blob_reader):
+   Blob_Reader_Command_Processor(const Buffered_File &blob_reader):
     blob_reader(blob_reader)
    {
    }

@@ -11,7 +11,7 @@ namespace joedb
  {
   private:
    db::encoded_file::Database &db;
-   Blob_Reader &blob_reader;
+   const Buffered_File &blob_reader;
 
    mutable std::vector<char> read_buffer;
    mutable db::encoded_file::id_of_buffer decoded_buffer;
@@ -25,7 +25,7 @@ namespace joedb
    (
     Decoder &decoder,
     db::encoded_file::Database &db,
-    Blob_Reader &blob_reader,
+    const Buffered_File &blob_reader,
     Open_Mode mode
    );
 
@@ -34,7 +34,7 @@ namespace joedb
    (
     Decoder &decoder,
     db::encoded_file::Database &db,
-    Blob_Reader &blob_reader
+    const Buffered_File &blob_reader
    );
 
    int64_t get_size() const override;

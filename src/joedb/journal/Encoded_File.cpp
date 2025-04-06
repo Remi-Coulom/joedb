@@ -81,7 +81,13 @@ namespace joedb
   Codec &codec,
   db::encoded_file::Writable_Database &db
  ):
-  Readonly_Encoded_File(codec, db, db, Open_Mode::write_existing_or_create_new),
+  Readonly_Encoded_File
+  (
+   codec,
+   db,
+   db.get_journal().get_file(),
+   Open_Mode::write_existing_or_create_new
+  ),
   db(db),
   codec(codec),
   write_buffer(write_buffer_total_size),

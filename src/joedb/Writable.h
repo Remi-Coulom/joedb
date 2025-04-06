@@ -108,9 +108,9 @@ namespace joedb
    }
    #include "joedb/TYPE_MACRO.h"
 
+   virtual void on_blob(Blob blob) {}
+   virtual bool wants_blob_data() const {return false;}
    virtual Blob write_blob_data(const std::string &data) {return Blob();}
-   virtual bool wants_blobs() const {return false;}
-   virtual void on_blob(Blob blob, Blob_Reader &reader) {}
 
    virtual ~Writable() = default;
  };

@@ -100,10 +100,12 @@ namespace joedb
 
     std::unique_ptr<Writable> writable;
 
+    const Buffered_File *blob_reader = blob ? &file : nullptr;
+
     if (sql)
-     writable.reset(new SQL_Dump_Writable(std::cout));
+     writable.reset(new SQL_Dump_Writable(std::cout, blob_reader));
     else if (sqlite)
-     writable.reset(new SQL_Dump_Writable(std::cout, false));
+     writable.reset(new SQL_Dump_Writable(std::cout, blob_reader, false));
     else if (raw)
      writable.reset(new Raw_Dump_Writable(std::cout));
     else

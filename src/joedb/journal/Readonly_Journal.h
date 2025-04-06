@@ -10,7 +10,7 @@
 namespace joedb
 {
  /// @ingroup journal
- class Readonly_Journal: public Blob_Reader
+ class Readonly_Journal
  {
   friend class Writable_Journal;
   friend class Journal_Hasher;
@@ -122,15 +122,7 @@ namespace joedb
     return file.tail_is_locked();
    }
 
-   bool is_same_file(const Buffered_File &other_file) const
-   {
-    return &file == &other_file;
-   }
-
-   std::string read_blob_data(Blob blob) const final
-   {
-    return file.read_blob_data(blob);
-   }
+   const Buffered_File &get_file() const {return file;}
 
    void replay_log(Writable &writable);
    void replay_with_checkpoint_comments(Writable &writable);

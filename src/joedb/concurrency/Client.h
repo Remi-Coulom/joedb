@@ -8,7 +8,7 @@ namespace joedb
 {
  /// Handle concurrent access to a file with a joedb::Connection
  /// @ingroup concurrency
- class Client: public Blob_Reader
+ class Client
  {
   friend class Client_Lock;
 
@@ -72,10 +72,10 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   std::string read_blob_data(Blob blob) const override
+   std::string read_blob_data(Blob blob) const
    //////////////////////////////////////////////////////////////////////////
    {
-    return get_journal().read_blob_data(blob);
+    return get_journal().get_file().read_blob_data(blob);
    }
 
    //////////////////////////////////////////////////////////////////////////

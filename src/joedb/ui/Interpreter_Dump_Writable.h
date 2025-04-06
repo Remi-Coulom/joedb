@@ -78,8 +78,8 @@ namespace joedb
    ) final;
    #include "joedb/TYPE_MACRO.h"
 
-   bool wants_blobs() const final {return blob_wanted;}
-   void on_blob(Blob blob, Blob_Reader &reader) final;
+   bool wants_blob_data() const final {return blob_wanted;}
+   void on_blob(Blob blob) final;
    Blob write_blob_data(const std::string &data) final;
 
    ~Interpreter_Writable();

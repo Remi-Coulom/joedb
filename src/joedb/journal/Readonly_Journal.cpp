@@ -401,10 +401,9 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::blob:
   {
-   const int64_t blob_position = get_position();
-   writable.on_blob(Blob(blob_position), file);
+   writable.on_blob(Blob(get_position()));
 
-   if (writable.wants_blobs())
+   if (writable.wants_blob_data())
     writable.write_blob_data(safe_read_string());
    else
    {

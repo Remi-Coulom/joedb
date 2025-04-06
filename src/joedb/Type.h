@@ -4,6 +4,8 @@
 #include "joedb/index_types.h"
 #include "joedb/Blob.h"
 
+#include <string>
+
 namespace joedb
 {
  typedef uint8_t Type_Id_Storage;

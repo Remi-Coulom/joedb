@@ -1,6 +1,7 @@
 #include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/ui/type_io.h"
 #include "joedb/ui/get_time_string.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <iostream>
 

@@ -15,10 +15,7 @@
 namespace joedb
 {
  /// @ingroup journal
- class Buffered_File:
-  public Sequential_File,
-  public Posthumous_Thrower,
-  public Blob_Reader
+ class Buffered_File: public Sequential_File, public Posthumous_Thrower
  {
   friend class File_Hasher;
 
@@ -295,7 +292,7 @@ namespace joedb
      set_position(get_position() + n);
    }
 
-   std::string read_blob_data(Blob blob) const override;
+   virtual std::string read_blob_data(Blob blob) const;
  };
 }
 

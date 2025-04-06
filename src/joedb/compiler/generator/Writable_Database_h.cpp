@@ -44,7 +44,7 @@ namespace joedb::generator
  class Multiplexer;
 
  /// A writable @ref Database constructed from a writable @ref joedb::Buffered_File
- class Writable_Database: public Database, public joedb::Blob_Reader
+ class Writable_Database: public Database
  {
   friend class detail::Client_Data;
   friend class Client;
@@ -128,9 +128,11 @@ namespace joedb::generator
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    );
 
-   std::string read_blob_data(joedb::Blob blob) const final
+   const joedb::Readonly_Journal &get_journal() const {return journal;}
+
+   std::string read_blob_data(joedb::Blob blob) const
    {
-    return journal.read_blob_data(blob);
+    return journal.get_file().read_blob_data(blob);
    }
 
    joedb::Blob write_blob_data(const std::string &data) final

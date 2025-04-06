@@ -6,6 +6,8 @@
 
 namespace joedb
 {
+ class Buffered_File;
+
  /// @ingroup ui
  class SQL_Writable: public Writable
  {
@@ -15,9 +17,8 @@ namespace joedb
 
    std::ostream &out;
    const Database_Schema &schema;
+   const Buffered_File *blob_reader;
    const bool drop_column;
-
-   Blob_Reader *blob_reader = nullptr;
 
    void write_type(Type type);
 
@@ -26,10 +27,12 @@ namespace joedb
    (
     std::ostream &out,
     const Database_Schema &schema,
+    const Buffered_File *blob_reader = nullptr,
     bool drop_column = true
    ):
     out(out),
     schema(schema),
+    blob_reader(blob_reader),
     drop_column(drop_column)
    {}
 
@@ -68,11 +71,6 @@ namespace joedb
                          return_type value) final;
    #include "joedb/TYPE_MACRO.h"
 
-   void on_blob(Blob blob, Blob_Reader &reader) final
-   {
-    blob_reader = &reader;
-   }
-
    ~SQL_Writable();
  };
 
@@ -83,8 +81,13 @@ namespace joedb
    SQL_Writable interpreter_writable;
 
   public:
-   SQL_Dump_Writable_Parent(std::ostream &out, bool drop_column = true):
-    interpreter_writable(out, schema, drop_column)
+   SQL_Dump_Writable_Parent
+   (
+    std::ostream &out,
+    const Buffered_File *blob_reader = nullptr,
+    bool drop_column = true
+   ):
+    interpreter_writable(out, schema, blob_reader, drop_column)
    {
    }
  };
@@ -93,10 +96,14 @@ namespace joedb
   public SQL_Dump_Writable_Parent,
   public Multiplexer
  {
-
   public:
-   SQL_Dump_Writable(std::ostream &out, bool drop_column = true):
-    SQL_Dump_Writable_Parent(out, drop_column),
+   SQL_Dump_Writable
+   (
+    std::ostream &out,
+    const Buffered_File *blob_reader = nullptr,
+    bool drop_column = true
+   ):
+    SQL_Dump_Writable_Parent(out, blob_reader, drop_column),
     Multiplexer{interpreter_writable, schema}
    {
    }

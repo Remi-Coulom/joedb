@@ -122,7 +122,7 @@ namespace joedb
  }
  #include "joedb/TYPE_MACRO.h"
 
- void Selective_Writable::on_blob(Blob blob, Blob_Reader &reader)
+ void Selective_Writable::on_blob(Blob blob)
  {
   blob_found = true;
  }

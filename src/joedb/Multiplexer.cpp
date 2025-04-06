@@ -197,21 +197,21 @@ namespace joedb
  #include "joedb/TYPE_MACRO.h"
 
  ////////////////////////////////////////////////////////////////////////////
- void Multiplexer::on_blob(Blob blob, Blob_Reader &reader)
+ void Multiplexer::on_blob(Blob blob)
  ////////////////////////////////////////////////////////////////////////////
  {
-  MULTIPLEX(on_blob(blob, reader));
+  MULTIPLEX(on_blob(blob));
  }
 
  #undef MULTIPLEX
 
  ////////////////////////////////////////////////////////////////////////////
- bool Multiplexer::wants_blobs() const
+ bool Multiplexer::wants_blob_data() const
  ////////////////////////////////////////////////////////////////////////////
  {
   for (auto w: writables)
   {
-   if (w.get().wants_blobs())
+   if (w.get().wants_blob_data())
     return true;
   }
 
@@ -226,7 +226,7 @@ namespace joedb
 
   for (auto w: writables)
   {
-   if (w.get().wants_blobs())
+   if (w.get().wants_blob_data())
     result = w.get().write_blob_data(data);
   }
 

@@ -67,7 +67,7 @@ namespace joedb
                          return_type value) override;
    #include "joedb/TYPE_MACRO.h"
 
-   void on_blob(Blob blob, Blob_Reader &reader) final;
+   void on_blob(Blob blob) final;
  };
 }
 

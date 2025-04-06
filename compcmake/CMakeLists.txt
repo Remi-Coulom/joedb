@@ -69,7 +69,6 @@ joedb_add_executable(joedb_client ../src/joedb/ui/joedb_client.cpp)
 joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
- ../src/joedb/Blob.cpp
  ../src/joedb/Writable.cpp
  ../src/joedb/error/Destructor_Logger.cpp
  ../src/joedb/error/Posthumous_Catcher.cpp
@@ -99,7 +98,6 @@ if(GTest_FOUND)
   ../test/File_Test.cpp
   ../test/Upgradable_File_Test.cpp
   ../src/joedb/journal/Buffered_File.cpp
-  ../src/joedb/Blob.cpp
   ../src/joedb/error/Posthumous_Thrower.cpp
   ../src/joedb/error/Posthumous_Catcher.cpp
   ../src/joedb/journal/Async_Reader.cpp
@@ -167,7 +165,6 @@ if(GTest_FOUND)
   ../test/Local_Connection_Test.cpp
   ../test/File_Slice_Test.cpp
   ../test/File_Parser_Test.cpp
-  ../test/compiler/Blob.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
@@ -344,7 +341,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
 
  add_library(joedb_fuzz STATIC
   ../src/external/wide_char_display_width.cpp
-  ../src/joedb/Blob.cpp
   ../src/joedb/interpreted/Database.cpp
   ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/is_identifier.cpp

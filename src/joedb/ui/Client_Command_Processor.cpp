@@ -105,14 +105,14 @@ namespace joedb
 
    if (database)
    {
-    Readable_Interpreter interpreter(*database, &client.get_journal());
+    Readable_Interpreter interpreter(*database, &client.get_journal().get_file());
     interpreter.set_parent(this);
     interpreter.main_loop(in, out);
    }
    else
    {
     Command_Interpreter interpreter;
-    Blob_Reader_Command_Processor processor(client.get_journal());
+    Blob_Reader_Command_Processor processor(client.get_journal().get_file());
     interpreter.add_processor(processor);
     interpreter.set_parent(this);
     interpreter.main_loop(in, out);
@@ -176,7 +176,7 @@ namespace joedb
      (
       readable,
       writable,
-      &client.get_journal(),
+      &client.get_journal().get_file(),
       writable,
       0
      );

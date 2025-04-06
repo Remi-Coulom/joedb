@@ -14,9 +14,9 @@
 
 namespace joedb
 {
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter_Test, main_test)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File file;
 
@@ -26,7 +26,7 @@ namespace joedb
    Writable_Journal journal(file);
    Database db;
    Multiplexer multiplexer{db, journal};
-   Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
+   Interpreter interpreter(db, multiplexer, &file, multiplexer, 0);
 
    std::ifstream in_file("interpreter_test.joedbi");
    ASSERT_TRUE(in_file.good());
@@ -43,9 +43,9 @@ namespace joedb
   }
  }
 
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter_Test, Interpreter_Dump_Writable)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   Database db;
   Memory_File file;
@@ -54,7 +54,7 @@ namespace joedb
   const bool blob_wanted = true;
   Interpreter_Dump_Writable writable(dump_string, blob_wanted);
   Multiplexer multiplexer{db, journal, writable};
-  Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, &file, multiplexer, 0);
 
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
@@ -70,18 +70,18 @@ namespace joedb
   EXPECT_EQ(reference_string.str(), dump_string.str());
  }
 
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter_Test, SQL_Dump_Writable)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   Database db;
   Memory_File file;
   Writable_Journal journal(file);
   std::ostringstream dump_string;
-  SQL_Dump_Writable writable(dump_string);
-  writable.on_blob(Blob(), file);
+  SQL_Dump_Writable writable(dump_string, &file);
+  writable.on_blob(Blob());
   Multiplexer multiplexer{db, journal, writable};
-  Interpreter interpreter(db, multiplexer, &journal, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, &file, multiplexer, 0);
 
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file.good());
@@ -97,9 +97,9 @@ namespace joedb
   EXPECT_EQ(reference_string.str(), dump_string.str());
  }
 
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter_Test, Raw_Dump_Writable)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   Database db;
   std::ostringstream dump_string;
@@ -121,18 +121,18 @@ namespace joedb
   EXPECT_EQ(reference_string.str(), dump_string.str());
  }
 
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter, Readonly_Interpreted_File)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   std::stringstream ss;
-  joedb::Readonly_Interpreted_File file(ss);
-  EXPECT_ANY_THROW(joedb::Writable_Journal{file});
+  Readonly_Interpreted_File file(ss);
+  EXPECT_ANY_THROW(Writable_Journal{file});
  }
 
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter, Interpreted_File)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   std::stringstream ss;
   ss << "create_table person\n";
@@ -141,22 +141,22 @@ namespace joedb
   ss << "insert_into person 0\n";
   ss << "create_table city\n";
 
-  joedb::Readonly_Interpreted_File file(ss);
-  joedb::Readonly_Journal journal(file);
+  Readonly_Interpreted_File file(ss);
+  Readonly_Journal journal(file);
   Database db;
   journal.play_until_checkpoint(db);
   EXPECT_EQ(db.get_tables().size(), 2ULL);
  }
 
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter, Writable_Interpreted_File)
- /////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////
  {
   std::stringstream ss;
 
   {
-   joedb::Interpreted_Stream_File file(ss);
-   joedb::Writable_Journal journal(file);
+   Interpreted_Stream_File file(ss);
+   Writable_Journal journal(file);
    journal.rewind();
    journal.create_table("person");
    journal.create_table("city");
@@ -167,8 +167,8 @@ namespace joedb
 
   EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 1\n");
 
-  joedb::Readonly_Interpreted_File file(ss);
-  joedb::Readonly_Journal journal(file);
+  Readonly_Interpreted_File file(ss);
+  Readonly_Journal journal(file);
   Database db;
   journal.play_until_checkpoint(db);
   EXPECT_EQ(db.get_tables().size(), 2ULL);

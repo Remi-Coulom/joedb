@@ -82,7 +82,7 @@ namespace joedb
   bool content_check
  )
  {
-  if (!client_journal.is_same_file(*this))
+  if (&client_journal.get_file() != this)
    throw Exception("Server_File: wrong file");
   return server_checkpoint;
  }

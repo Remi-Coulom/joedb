@@ -23,7 +23,6 @@ endif()
 #############################################################################
 set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/external/wide_char_display_width.cpp
- ${JOEDB_SRC_DIR}/joedb/Blob.cpp
  ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
  ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
  ${JOEDB_SRC_DIR}/joedb/Readable.cpp

@@ -25,8 +25,18 @@ namespace joedb
 
    Command_Interpreter interpreter;
 
-   Blob_Reader_Command_Processor blob_reader_processor(db);
-   Data_Manipulation_Command_Processor data_manipulation_processor(readable, multiplexer, 0);
+   Blob_Reader_Command_Processor blob_reader_processor
+   (
+    db.get_journal().get_file()
+   );
+
+   Data_Manipulation_Command_Processor data_manipulation_processor
+   (
+    readable,
+    multiplexer,
+    0
+   );
+
    Writable_Command_Processor writable_processor(multiplexer, db);
 
    interpreter.add_processor(blob_reader_processor);
