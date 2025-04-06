@@ -18,6 +18,7 @@ python3 -m venv ~/.venvs/sphinx
 source ~/.venvs/sphinx/bin/activate
 pip install sphinx_rtd_theme
 pip install sphinxcontrib.spelling
+pip install sphinxcontrib.doxylink
 pip install sphinx-favicon
 
 cd ~/repos

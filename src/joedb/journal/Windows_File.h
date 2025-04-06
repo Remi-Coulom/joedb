@@ -11,10 +11,10 @@ namespace joedb
  class Windows_Handle: public Buffered_File
  {
   private:
-   static constexpr size_t modes = static_cast<size_t>(joedb::Open_Mode::modes);
-   static const std::array<DWORD, modes> desired_access;
-   static const std::array<DWORD, modes> share_mode;
-   static const std::array<DWORD, modes> creation_disposition;
+   static constexpr size_t mode_count = static_cast<size_t>(joedb::Open_Mode::mode_count);
+   static const std::array<DWORD, mode_count> desired_access;
+   static const std::array<DWORD, mode_count> share_mode;
+   static const std::array<DWORD, mode_count> creation_disposition;
 
   private:
    const HANDLE file;

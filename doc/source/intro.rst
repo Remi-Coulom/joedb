@@ -65,7 +65,7 @@ An Example
 ----------
 
 A simple example of how to use joedb is available in the
-``doc/source/tutorial`` directory. The database schema is defined in the
+``doc/source/tutorial/src`` directory. The database schema is defined in the
 ``tutorial.joedbi`` file:
 
 .. literalinclude:: ./tutorial/src/tutorial.joedbi

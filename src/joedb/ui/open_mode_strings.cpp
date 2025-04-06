@@ -2,7 +2,7 @@
 
 namespace joedb
 {
- const std::array<const char *, size_t(Open_Mode::modes)> open_mode_strings =
+ const std::array<const char *, size_t(Open_Mode::mode_count)> open_mode_strings =
  {
   "read",
   "write",

@@ -23,7 +23,8 @@ include("../../../compcmake/joedbc.cmake")
 #     1: it adds a dependency, so that joedbc is invoked whenever necessary
 #     2: it links the executable to the joedb library
 #
-#  * joedb_add_executable(target source...): add an executable that uses joedb
+#  * joedb_add_executable(target source...): shortcut to add an executable
+#     that uses joedb in a single command
 #
 #  joedbc.cmake will compile joedbc and the joedb library for your project,
 #  with the same compiler and compilation options as the rest of your code.

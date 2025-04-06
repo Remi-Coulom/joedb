@@ -14,24 +14,31 @@ namespace joedb
    static void content_mismatch();
 
   public:
+   /// Called during Client construction
+   /// @param client_journal may be used to check matching content
+   /// @param content_check indicates whether matching content is tested
+   /// @retval server_checkpoint
    virtual int64_t handshake
    (
     Readonly_Journal &client_journal,
     bool content_check
    );
 
+   /// @retval server_checkpoint
    virtual int64_t pull
    (
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
+   /// @retval server_checkpoint
    virtual int64_t lock_pull
    (
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
+   /// @retval server_checkpoint
    virtual int64_t push_until
    (
     Readonly_Journal &client_journal,
@@ -40,6 +47,7 @@ namespace joedb
     bool unlock_after
    );
 
+   /// @retval server_checkpoint
    int64_t push
    (
     Readonly_Journal &client_journal,

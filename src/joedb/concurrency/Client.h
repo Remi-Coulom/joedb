@@ -92,9 +92,9 @@ namespace joedb
     return get_checkpoint() - server_checkpoint;
    }
 
-   //////////////////////////////////////////////////////////////////////////
+   /// @param wait indicates how long the connection may wait for new data
+   /// @retval pull_size number of bytes pulled
    int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
-   //////////////////////////////////////////////////////////////////////////
    {
     const int64_t old_checkpoint = get_checkpoint();
 
