@@ -17,7 +17,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- class Writable: public Blob_Writer
+ class Writable
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -108,6 +108,7 @@ namespace joedb
    }
    #include "joedb/TYPE_MACRO.h"
 
+   virtual Blob write_blob_data(const std::string &data) {return Blob();}
    virtual bool wants_blobs() const {return false;}
    virtual void on_blob(Blob blob, Blob_Reader &reader) {}
 

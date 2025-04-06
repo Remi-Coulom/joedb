@@ -6,7 +6,6 @@
 namespace joedb
 {
  class Writable;
- class Blob_Writer;
 
  /// @ingroup ui
  class Writable_Command_Processor: public Command_Processor
@@ -15,7 +14,7 @@ namespace joedb
 
   private:
    Writable &writable;
-   Blob_Writer &blob_writer;
+   Writable &blob_writer;
 
    Status process_command
    (
@@ -29,7 +28,7 @@ namespace joedb
    Writable_Command_Processor
    (
     Writable &writable,
-    Blob_Writer &blob_writer
+    Writable &blob_writer
    ):
     writable(writable),
     blob_writer(blob_writer)

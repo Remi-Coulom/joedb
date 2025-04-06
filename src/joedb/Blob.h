@@ -36,15 +36,6 @@ namespace joedb
    virtual std::string read_blob_data(Blob blob) const = 0;
    virtual ~Blob_Reader();
  };
-
- ////////////////////////////////////////////////////////////////////////////
- class Blob_Writer
- ////////////////////////////////////////////////////////////////////////////
- {
-  public:
-   virtual Blob write_blob_data(const std::string &data) {return Blob();}
-   virtual ~Blob_Writer();
- };
 }
 
 #endif
