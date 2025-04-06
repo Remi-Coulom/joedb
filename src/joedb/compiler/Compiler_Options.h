@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \ingroup compiler
+ /// @ingroup compiler
  class Compiler_Options
  {
   public:

@@ -5,7 +5,7 @@
 
 namespace joedb
 {
- /// \ingroup error
+ /// @ingroup error
  class Exception: public std::runtime_error
  {
   public:

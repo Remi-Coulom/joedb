@@ -5,7 +5,7 @@
 
 namespace joedb::generator
 {
- /// \ingroup compiler
+ /// @ingroup compiler
  class Readonly_Client_h: public Generator
  {
   public:

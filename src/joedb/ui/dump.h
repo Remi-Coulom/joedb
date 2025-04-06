@@ -7,11 +7,11 @@ namespace joedb
  class Writable;
  class Readonly_Journal;
 
- /// \ingroup ui
+ /// @ingroup ui
  void dump(const Readable &db, Writable &writable, bool schema_only = false);
- /// \ingroup ui
+ /// @ingroup ui
  void dump_data(const Readable &db, Writable &writable);
- /// \ingroup ui
+ /// @ingroup ui
  void pack(Readonly_Journal &input_journal, Writable &writable);
 }
 

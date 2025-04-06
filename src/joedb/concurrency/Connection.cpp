@@ -2,12 +2,12 @@
 
 namespace joedb
 {
- void Pullonly_Connection::content_mismatch()
+ void Connection::content_mismatch()
  {
   throw Exception("Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
  }
 
- int64_t Pullonly_Connection::handshake
+ int64_t Connection::handshake
  (
   Readonly_Journal &client_journal,
   bool content_check
@@ -16,7 +16,7 @@ namespace joedb
   return client_journal.get_checkpoint_position();
  }
 
- int64_t Pullonly_Connection::pull
+ int64_t Connection::pull
  (
   Writable_Journal &client_journal,
   std::chrono::milliseconds wait
@@ -25,13 +25,6 @@ namespace joedb
   client_journal.pull();
   return client_journal.get_checkpoint_position();
  }
-
- Connection *Pullonly_Connection::get_push_connection()
- {
-  return nullptr;
- }
-
- Pullonly_Connection::~Pullonly_Connection() = default;
 
  int64_t Connection::lock_pull
  (
@@ -61,8 +54,10 @@ namespace joedb
   client_journal.unlock();
  }
 
- Connection *Connection::get_push_connection()
+ bool Connection::is_pullonly() const
  {
-  return this;
+  return false;
  }
+
+ Connection::~Connection() = default;
 }

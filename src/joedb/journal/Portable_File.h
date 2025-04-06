@@ -3,7 +3,7 @@
 
 #include "joedb/journal/Stream_File.h"
 
-#include <fstream>
+#include <fstream> // IWYU pragma: keep
 
 namespace joedb
 {
@@ -19,7 +19,7 @@ namespace joedb
   };
  }
 
- /// \ingroup journal
+ /// @ingroup journal
  class Portable_File: private detail::Portable_File_Buffer, public Stream_File
  {
   public:

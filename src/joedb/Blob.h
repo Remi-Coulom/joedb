@@ -33,7 +33,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
-   virtual std::string read_blob_data(Blob blob) = 0;
+   virtual std::string read_blob_data(Blob blob) const = 0;
    virtual ~Blob_Reader();
  };
 

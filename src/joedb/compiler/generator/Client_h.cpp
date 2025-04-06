@@ -30,7 +30,7 @@ namespace joedb::generator
  namespace detail
  {
   ///////////////////////////////////////////////////////////////////////////
-  class Client_Data: public joedb::Client_Data
+  class Client_Data
   ///////////////////////////////////////////////////////////////////////////
   {
    protected:
@@ -45,25 +45,16 @@ namespace joedb::generator
      db(file, false, check, commit_level)
     {
     }
-
-    bool is_readonly() const final
-    {
-     return false;
-    }
-
-    joedb::Writable_Journal &get_writable_journal() final
-    {
-     return db.journal;
-    }
   };
  }
 
  /// Handle concurrent access to a @ref joedb::Buffered_File using a @ref joedb::Connection
  class Client:
   protected detail::Client_Data,
-  public joedb::Client,
-  public joedb::Blob_Reader
+  public joedb::Client
  {
+  friend class Client_Lock;
+
   private:
    int64_t schema_checkpoint;
 
@@ -73,6 +64,17 @@ namespace joedb::generator
     if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
      Database::throw_exception("Can't upgrade schema during pull");
     db.check_single_row();
+   }
+
+  protected:
+   bool is_readonly() const final
+   {
+    return false;
+   }
+
+   joedb::Writable_Journal &get_writable_journal() final
+   {
+    return db.journal;
    }
 
   public:
@@ -85,13 +87,13 @@ namespace joedb::generator
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     detail::Client_Data(file, check, commit_level),
-    joedb::Client(*static_cast<joedb::Client_Data *>(this), connection, content_check)
+    joedb::Client(db.journal, connection, content_check)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
     db.play_journal(); // makes transaction shorter if db is big
-    joedb::Client::transaction([this](joedb::Client_Data &data){
+    joedb::Client::transaction([this](){
      db.initialize();
     });
 
@@ -103,11 +105,6 @@ namespace joedb::generator
     return db;
    }
 
-   std::string read_blob_data(joedb::Blob blob) final
-   {
-    return db.read_blob_data(blob);
-   }
-
    int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    {
     const int64_t byte_count = joedb::Client::pull(wait);
@@ -116,16 +113,47 @@ namespace joedb::generator
    }
 
    /// Execute a write transaction
+   ///
+   /// This function can be called with a lambda like this:
+   /// @code
+   /// client.transaction([](Writable_Database &db)
+   /// {
+   ///  db.write_comment("Hello");
+   /// });
+   /// @endcode
+   /// The transaction function locks and pulls the connection before
+   /// executing the lambda, pushes and unlocks it after.
    template<typename F> void transaction
    (
-    F transaction ///< A function object that takes a reference to a @ref Writable_Database
+    F transaction
    )
    {
-    joedb::Client::transaction([&](joedb::Client_Data &data)
+    joedb::Client::transaction([&]()
     {
      play_journal_and_throw_if_schema_changed();
      transaction(db);
     });
+   }
+ };
+
+ /// For more flexibility than the transaction lambda
+ ///
+ /// Note that pushing will take place in the destructor of the lock object.
+ /// If you wish to handle push errors properly, you must use a
+ /// @ref joedb::Posthumous_Catcher.
+ ///
+ /// \include client_lock.cpp
+ class Client_Lock: public joedb::Client_Lock
+ {
+  public:
+   Client_Lock(Client &client): joedb::Client_Lock(client)
+   {
+    client.play_journal_and_throw_if_schema_changed();
+   }
+
+   Writable_Database &get_database()
+   {
+    return static_cast<Client &>(client).db;
    }
  };
 )RRR";

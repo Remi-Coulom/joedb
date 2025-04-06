@@ -10,7 +10,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Command_Interpreter: public Command_Processor
  {
   private:

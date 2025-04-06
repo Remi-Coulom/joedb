@@ -63,7 +63,7 @@ namespace joedb
     writable.checkpoint(Commit_Level::half_commit);
    else if (param == "full")
     writable.checkpoint(Commit_Level::full_commit);
-   else if (param == "")
+   else if (param.empty())
     writable.default_checkpoint();
    else
     out << "Error: unknown parameter: " << param << '\n';

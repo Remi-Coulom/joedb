@@ -5,7 +5,7 @@
 
 namespace joedb::generator
 {
- /// \ingroup compiler
+ /// @ingroup compiler
  class introspection_h: public Generator
  {
   private:

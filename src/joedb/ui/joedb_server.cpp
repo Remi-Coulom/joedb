@@ -16,8 +16,9 @@ namespace joedb
  {
   const bool local = true;
   const Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new;
+  const bool with_database = false;
 
-  Client_Parser client_parser(local, default_open_mode);
+  Client_Parser client_parser(local, default_open_mode, with_database);
 
   if (argc <= 1)
   {
@@ -56,7 +57,7 @@ and can still push data: the push will succeed only if there is no conflict.
    index += 1;
   }
 
-  Pullonly_Client &client = client_parser.parse(argc - index, argv + index);
+  Client &client = client_parser.parse(argc - index, argv + index);
 
   detail::IO_Context_Wrapper io_context_wrapper;
 

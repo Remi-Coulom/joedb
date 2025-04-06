@@ -128,7 +128,7 @@ namespace joedb::generator
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    );
 
-   std::string read_blob_data(joedb::Blob blob) final
+   std::string read_blob_data(joedb::Blob blob) const final
    {
     return journal.read_blob_data(blob);
    }

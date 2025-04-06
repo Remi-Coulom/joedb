@@ -8,13 +8,13 @@ History
 
   - New features:
 
-    - ``Server_File`` allows accessing a remote database without downloading a
-      local replica. This is convenient for large blob databases.
-    - ``Client::pull`` can wait for another client to make a push if the
-      pull would otherwise be empty.
-    - ``Encoded_File`` supports on-the-fly coding or decoding of data.
-      ``Brotli_Codec`` is provided for compression.
-    - It is possible to write to an ``Interpreted_File``.
+    - :joedb:`Server_File` allows accessing a remote database without
+      downloading a local replica. This is convenient for large blob databases.
+    - :joedb:`Client::pull` can wait for another client to make a
+      push if the pull would otherwise be empty.
+    - :joedb:`Encoded_File` supports on-the-fly coding or decoding of data.
+      :joedb:`Brotli_Codec` is provided for compression.
+    - It is possible to write to an :joedb:`Interpreted_File`.
     - The ``add_field`` interpreter command accepts an optional ``= <value>``
       suffix that sets the value for all existing records of the table.
     - If the .joedbi file provided to the compiler contains data, then it will
@@ -25,18 +25,19 @@ History
       and the new and delete operations are not available. Instead, the
       ``the_<table>()`` member function returns a reference to the unique row of
       this table.
-    - ``Upgradable_File`` allows applying automatic schema upgrades to a
+    - :joedb:`Upgradable_File` allows applying automatic schema upgrades to a
       read-only file.
     - :ref:`joedb_edit` allows editing a binary joedb file with a text editor.
-    - ``Client`` and ``Readonly_Client`` are ``Blob_Reader``
+    - :joedb:`Client` is a :joedb:`Blob_Reader`
 
   - Fixes and improvements:
 
     - Fix hash calculation of large files. ``joedb_server`` could wrongly
       report hash mismatch errors when there was no error.
     - Fixed some potential resource leaks when throwing from constructors in
-      ``Posix_File``, ``ssh::Session``, ``ssh::SFTP``, ``ssh::Forward_Channel``.
-      ``CURL_File``, ``Windows_File``.
+      :joedb:`Posix_File`, :joedb:`ssh::Session`, :joedb:`ssh::SFTP`,
+      :joedb:`ssh::Forward_Channel`, :joedb:`CURL_File`,
+      :joedb:`Windows_File`.
     - Properly lock the tail of a shared file during journal construction. Not
       doing so could wrongly trigger an error when checking for file size.
     - The construction of a compiled client first reads the local file
@@ -46,9 +47,9 @@ History
 
   - Incompatibilities with previous version:
 
-    - ``Generic_File`` was renamed to ``Buffered_File``
-    - ``Generic_File_Database`` was renamed to ``Writable_Database``
-    - ``Local_Client`` was renamed to ``File_Client``
+    - ``Generic_File`` was renamed to :joedb:`Buffered_File`
+    - ``Generic_File_Database`` was renamed to :joedb:`Writable_Database`
+    - ``Local_Client`` was renamed to :joedb:`File_Client`
     - The order of parameters of the Client's constructor are swapped: the file
       is first, then the connection.
     - The ``is_end_of_file()`` function was removed. Trying to read past the

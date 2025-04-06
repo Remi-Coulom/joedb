@@ -9,7 +9,7 @@ namespace joedb
 {
  class Buffered_File;
 
- /// \ingroup journal
+ /// @ingroup journal
  class File_Hasher
  {
  public:
@@ -33,7 +33,7 @@ namespace joedb
 
  class Readonly_Journal;
 
- /// \ingroup journal
+ /// @ingroup journal
  class Journal_Hasher
  {
  public:

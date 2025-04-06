@@ -77,6 +77,8 @@ namespace joedb
    client_journal.default_checkpoint();
    client_journal.set_position(old_position);
   }
+  else
+   LOG("no data\n");
 
   return server_checkpoint;
  }
@@ -169,6 +171,9 @@ namespace joedb
     LOG(" done\n");
   }
 
+  if (unlock_after)
+   client_journal.unlock();
+
   lock.read(buffer.data, 1);
 
   if (buffer.data[0] == 'C')
@@ -179,9 +184,6 @@ namespace joedb
    throw Exception("Timeout: push failed");
   else if (buffer.data[0] != 'U')
    throw Exception("Unexpected server reply");
-
-  if (unlock_after)
-   client_journal.unlock();
 
   server_checkpoint = server_position + push_size;
   return server_checkpoint;
@@ -240,13 +242,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Connection *Server_Connection::get_push_connection()
+ bool Server_Connection::is_pullonly() const
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (pullonly_server)
-   return nullptr;
-  else
-   return this;
+  return pullonly_server;
  }
 }
 

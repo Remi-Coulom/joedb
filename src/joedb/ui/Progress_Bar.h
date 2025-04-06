@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Progress_Bar
  {
   private:

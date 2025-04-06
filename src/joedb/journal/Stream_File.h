@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Stream_File: public Buffered_File
  {
   private:

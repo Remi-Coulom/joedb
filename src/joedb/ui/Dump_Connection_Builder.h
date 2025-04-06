@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  template <typename Dump_Writable> class Dump_Connection_Data
  {
   protected:
@@ -24,7 +24,7 @@ namespace joedb
    }
  };
 
- /// \ingroup ui
+ /// @ingroup ui
  template<typename Dump_Writable> class Dump_Connection_Builder:
   private Dump_Connection_Data<Dump_Writable>,
   private Writable_Connection,
@@ -46,7 +46,7 @@ namespace joedb
    const char *get_parameters_description() const final {return "[tail]";}
 
    //////////////////////////////////////////////////////////////////////////
-   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build(int argc, char **argv, Buffered_File *file) final
    //////////////////////////////////////////////////////////////////////////
    {
     mute_during_handshake = argc > 0;

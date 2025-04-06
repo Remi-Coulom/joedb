@@ -13,7 +13,7 @@
 
 namespace joedb
 {
- /// \ingroup concurrency
+ /// @ingroup concurrency
  class Server_Client: public Posthumous_Thrower
  {
   friend class Server_File;
@@ -37,7 +37,7 @@ namespace joedb
    bool pullonly_server;
    int64_t server_checkpoint;
 
-   void download(Async_Writer &writer, Channel_Lock &lock, int64_t size);
+   void download(Async_Writer &writer, Channel_Lock &lock, int64_t size) const;
 
   public:
    Server_Client(Channel &channel);

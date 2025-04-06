@@ -3,7 +3,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  int main_exception_catcher(int (*main)(int, char**), int argc, char **argv);
 }
 

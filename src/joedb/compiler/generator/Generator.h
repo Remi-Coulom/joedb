@@ -7,7 +7,7 @@
 
 namespace joedb::generator
 {
- /// \ingroup compiler
+ /// @ingroup compiler
  class Generator
  {
   protected:

@@ -5,7 +5,7 @@ namespace joedb
 {
  class Logger;
 
- /// \ingroup error
+ /// @ingroup error
  class Destructor_Logger
  {
   private:

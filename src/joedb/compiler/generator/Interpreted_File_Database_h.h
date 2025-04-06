@@ -5,7 +5,7 @@
 
 namespace joedb::generator
 {
- /// \ingroup compiler
+ /// @ingroup compiler
  class Interpreted_File_Database_h: public Generator
  {
   public:

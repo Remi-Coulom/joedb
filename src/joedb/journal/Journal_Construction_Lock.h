@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Journal_Construction_Lock
  {
   private:

@@ -5,7 +5,7 @@
 
 namespace joedb::generator
 {
- /// \ingroup compiler
+ /// @ingroup compiler
  class Database_cpp: public Generator
  {
   public:

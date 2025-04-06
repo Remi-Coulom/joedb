@@ -31,7 +31,7 @@ namespace joedb
    ~Interpreted_File_Data();
  };
 
- /// \ingroup journal
+ /// @ingroup journal
  class Interpreted_File:
   private Interpreted_File_Data,
   public Interpreted_Stream_File

@@ -6,7 +6,7 @@
 namespace joedb
 {
  /// Catch exceptions sent from the destructor of a @ref Posthumous_Thrower
- /// \ingroup error
+ /// @ingroup error
  class Posthumous_Catcher
  {
   friend class Posthumous_Thrower;

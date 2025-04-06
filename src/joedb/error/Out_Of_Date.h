@@ -6,7 +6,7 @@
 namespace joedb
 {
  /// sent when the schema of a read-only compiled database is out of date
- /// \ingroup error
+ /// @ingroup error
  class Out_Of_Date: public Exception
  {
   public:

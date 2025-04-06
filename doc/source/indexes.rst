@@ -16,7 +16,7 @@ Note that there must be no space around the comma.
 
 For example, the joedb tutorial has these index definitions:
 
-.. literalinclude:: ./tutorial/tutorial.joedbc
+.. literalinclude:: ./tutorial/src/tutorial.joedbc
    :language: joedbc
 
 So, two cities can't have the same name, but two persons can. An update that would create a duplicate city name will throw an exception.
@@ -30,7 +30,7 @@ Note: a new entry in the index is created at the first update of a field of the 
 
 Here is an example with the tutorial database:
 
-.. literalinclude:: ./tutorial/index_tutorial.cpp
+.. literalinclude:: ./tutorial/src/index_tutorial.cpp
    :language: c++
 
 And here is its output:

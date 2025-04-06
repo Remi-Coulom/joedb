@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Dummy_Connection_Builder: public Connection_Builder
  {
   private:
@@ -18,7 +18,7 @@ namespace joedb
     return "dummy";
    }
 
-   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     return connection;
    }

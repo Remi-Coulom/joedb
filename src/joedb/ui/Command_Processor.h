@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Command_Processor
  {
   public:

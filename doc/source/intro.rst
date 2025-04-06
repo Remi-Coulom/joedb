@@ -65,15 +65,15 @@ An Example
 ----------
 
 A simple example of how to use joedb is available in the
-``doc/source/tutorial`` directory. The database schema is defined in the
+``doc/source/tutorial/src`` directory. The database schema is defined in the
 ``tutorial.joedbi`` file:
 
-.. literalinclude:: ./tutorial/tutorial.joedbi
+.. literalinclude:: ./tutorial/src/tutorial.joedbi
    :language: joedbi
 
 Compiler instructions are in ``tutorial.joedbc``:
 
-.. literalinclude:: ./tutorial/tutorial.joedbc
+.. literalinclude:: ./tutorial/src/tutorial.joedbc
    :language: joedbc
 
 This tutorial database can be compiled into C++ source code with :ref:`joedbc`:
@@ -86,7 +86,7 @@ This will produce various source files in the ``tutorial`` directory, that can
 be used to manipulate data conveniently in C++, as shown in the
 ``tutorial_main.cpp`` source file:
 
-.. literalinclude:: ./tutorial/tutorial_main.cpp
+.. literalinclude:: ./tutorial/src/tutorial_main.cpp
    :language: c++
 
 Running the resulting program will produce this output:

@@ -8,8 +8,8 @@
 
 namespace joedb
 {
- /// \ingroup ui
- extern const std::array<const char *, size_t(Open_Mode::modes)> open_mode_strings;
+ /// @ingroup ui
+ extern const std::array<const char *, size_t(Open_Mode::mode_count)> open_mode_strings;
 }
 
 #endif

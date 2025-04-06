@@ -3,10 +3,10 @@
 
 namespace joedb
 {
- class Pullonly_Connection;
+ class Connection;
  class Buffered_File;
 
- /// \ingroup ui
+ /// @ingroup ui
  class Connection_Builder
  {
   public:
@@ -17,7 +17,7 @@ namespace joedb
    virtual const char *get_name() const {return "";}
    virtual const char *get_parameters_description() const {return "";}
 
-   virtual Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) = 0;
+   virtual Connection &build(int argc, char **argv, Buffered_File *file) = 0;
 
    virtual ~Connection_Builder() = default;
  };

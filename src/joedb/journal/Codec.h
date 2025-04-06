@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Codec: public virtual Decoder
  {
   public:

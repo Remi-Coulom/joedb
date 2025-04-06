@@ -1,4 +1,4 @@
-/// \defgroup concurrency Concurrency
+/// @defgroup concurrency Concurrency
 ///
 /// Connections, Clients, network protocol
 ///

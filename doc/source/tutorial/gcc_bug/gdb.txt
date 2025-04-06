@@ -1,3 +1,0 @@
-break local_concurrency
-set print asm-demangle on
-layout asm

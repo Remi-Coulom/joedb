@@ -77,6 +77,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
+ ../src/joedb/journal/Async_Reader.cpp
  ../src/joedb/journal/Buffered_File.cpp
  ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
@@ -130,7 +131,7 @@ if(GTest_FOUND)
  endif()
 
  joedb_add_executable(joedb_test
-  ../doc/source/tutorial/settings/writable.cpp
+  ../doc/source/tutorial/src/settings/writable.cpp
   ../test/Async_Test.cpp
   ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp
@@ -230,8 +231,8 @@ joedbc_build(../test/compiler/db schema_v2)
 joedbc_build(../test/compiler/db test)
 joedbc_build(../test/compiler/db vector_test)
 joedbc_build(../benchmark benchmarkdb)
-joedbc_build(../doc/source/tutorial tutorial)
-joedbc_build(../doc/source/tutorial settings)
+joedbc_build(../doc/source/tutorial/src tutorial)
+joedbc_build(../doc/source/tutorial/src settings)
 
 add_custom_command(
  OUTPUT
@@ -274,13 +275,13 @@ endforeach(mode)
 # Targets below require databases to be compiled
 #############################################################################
 joedb_add_executable(tutorial
- ../doc/source/tutorial/tutorial/writable.cpp
- ../doc/source/tutorial/tutorial_main.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+ ../doc/source/tutorial/src/tutorial_main.cpp
 )
 
 add_executable(minimal_tutorial
- ../doc/source/tutorial/tutorial/writable.cpp
- ../doc/source/tutorial/tutorial_main.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+ ../doc/source/tutorial/src/tutorial_main.cpp
  ../src/joedb/compiler/minimal_runtime.cpp
  ../src/joedb/ui/main_exception_catcher.cpp
 )
@@ -288,29 +289,29 @@ add_executable(minimal_tutorial
 
 if (NOT JOEDB_PORTABLE)
  joedb_add_executable(local_concurrency
-  ../doc/source/tutorial/tutorial/writable.cpp
-  ../doc/source/tutorial/local_concurrency.cpp
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+  ../doc/source/tutorial/src/local_concurrency.cpp
  )
 endif()
 
 joedb_add_executable(concurrency_tutorial
- ../doc/source/tutorial/tutorial/writable.cpp
- ../doc/source/tutorial/concurrency_tutorial.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+ ../doc/source/tutorial/src/concurrency_tutorial.cpp
 )
 
 joedb_add_executable(step_by_step_replay
- ../doc/source/tutorial/tutorial/writable.cpp
- ../doc/source/tutorial/step_by_step_replay.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+ ../doc/source/tutorial/src/step_by_step_replay.cpp
 )
 
 joedb_add_executable(file_tutorial
- ../doc/source/tutorial/tutorial/writable.cpp
- ../doc/source/tutorial/file_tutorial.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+ ../doc/source/tutorial/src/file_tutorial.cpp
 )
 
 joedb_add_executable(index_tutorial
- ../doc/source/tutorial/tutorial/writable.cpp
- ../doc/source/tutorial/index_tutorial.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+ ../doc/source/tutorial/src/index_tutorial.cpp
 )
 
 joedb_add_executable(joedb_generate_translation_header
@@ -353,7 +354,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/Writable.cpp
   ../src/joedb/concurrency/Channel.cpp
   ../src/joedb/concurrency/Client.cpp
-  ../src/joedb/concurrency/Client_Data.cpp
   ../src/joedb/concurrency/Connection.cpp
   ../src/joedb/concurrency/Network_Channel.cpp
   ../src/joedb/concurrency/Server.cpp
@@ -361,8 +361,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/error/Posthumous_Catcher.cpp
   ../src/joedb/error/Posthumous_Thrower.cpp
   ../src/joedb/interpreted/Table.cpp
+  ../src/joedb/ui/Blob_Reader_Command_Processor.cpp
   ../src/joedb/ui/Command_Interpreter.cpp
   ../src/joedb/ui/Command_Processor.cpp
+  ../src/joedb/ui/Data_Manipulation_Command_Processor.cpp
   ../src/joedb/ui/Readable_Command_Processor.cpp
   ../src/joedb/ui/Writable_Command_Processor.cpp
   ../src/joedb/ui/Readable_Writable_Command_Processor.cpp

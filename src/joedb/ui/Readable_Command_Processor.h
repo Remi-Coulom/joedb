@@ -8,7 +8,7 @@ namespace joedb
 {
  class Readable;
 
- /// \ingroup ui
+ /// @ingroup ui
  class Readable_Command_Processor: public Command_Processor
  {
   protected:

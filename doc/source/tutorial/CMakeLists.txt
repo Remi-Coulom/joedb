@@ -23,50 +23,61 @@ include("../../../compcmake/joedbc.cmake")
 #     1: it adds a dependency, so that joedbc is invoked whenever necessary
 #     2: it links the executable to the joedb library
 #
-#  * joedb_add_executable(target source...): add an executable that uses joedb
+#  * joedb_add_executable(target source...): shortcut to add an executable
+#     that uses joedb in a single command
 #
 #  joedbc.cmake will compile joedbc and the joedb library for your project,
 #  with the same compiler and compilation options as the rest of your code.
 #
 
-joedbc_build("." tutorial)
-joedbc_build("." settings)
+joedbc_build("src" tutorial)
+joedbc_build("src" settings)
 
 joedb_add_executable(tutorial
- tutorial_main.cpp
- tutorial/writable.cpp
+ src/tutorial_main.cpp
+ src/tutorial/writable.cpp
 )
 
 joedb_add_executable(tutorial_interpreter
- tutorial_interpreter.cpp
- tutorial/writable.cpp
+ src/tutorial_interpreter.cpp
+ src/tutorial/writable.cpp
 )
 
 joedb_add_executable(local_concurrency
- local_concurrency.cpp
- tutorial/writable.cpp
+ src/local_concurrency.cpp
+ src/tutorial/writable.cpp
 )
 
 joedb_add_executable(file_tutorial
- file_tutorial.cpp
- tutorial/writable.cpp
+ src/file_tutorial.cpp
+ src/tutorial/writable.cpp
 )
 
 joedb_add_executable(concurrency_tutorial
- concurrency_tutorial.cpp
- tutorial/writable.cpp
+ src/concurrency_tutorial.cpp
+ src/tutorial/writable.cpp
 )
 
 joedb_add_executable(index_tutorial
- index_tutorial.cpp
- tutorial/writable.cpp
+ src/index_tutorial.cpp
+ src/tutorial/writable.cpp
 )
 
 joedb_add_executable(settings
- settings_main.cpp
- settings/writable.cpp
+ src/settings_main.cpp
+ src/settings/writable.cpp
 )
 
 joedb_add_executable(write_server_blob
- write_server_blob.cpp
+ src/write_server_blob.cpp
+)
+
+joedb_add_executable(client_lock
+ src/client_lock.cpp
+ src/tutorial/writable.cpp
+)
+
+joedb_add_executable(step_by_step_replay
+ src/step_by_step_replay.cpp
+ src/tutorial/readonly.cpp
 )

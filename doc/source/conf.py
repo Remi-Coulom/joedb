@@ -35,10 +35,15 @@ extensions = [
     'sphinx.ext.imgmath',
     'sphinxcontrib.spelling',
     'sphinxcontrib.asciinema',
+    'sphinxcontrib.doxylink',
     'joedbi_lexer',
     'joedbc_lexer',
     'sphinx_favicon'
 ]
+
+doxylink = {
+ 'joedb': ('doxygen/joedb.tag', 'doxygen')
+}
 
 # Breathe Configuration
 #sys.path.append( "/usr/lib/python3/dist-packages" )

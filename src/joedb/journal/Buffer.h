@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  template<int log_size> class Buffer
  {
   public:

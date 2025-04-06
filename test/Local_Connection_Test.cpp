@@ -1,5 +1,4 @@
-#include "joedb/concurrency/Writable_Journal_Client_Data.h"
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/journal/Memory_File.h"
 
 #include "gtest/gtest.h"
@@ -93,13 +92,12 @@ namespace joedb
   Memory_File file;
 
   {
-   Writable_Journal_Client_Data client_data(file);
    Connection connection;
-   Client client(client_data, connection);
+   Writable_Journal_Client client(file, connection);
 
-   client.transaction([](Client_Data &data)
+   client.transaction([](Writable_Journal &journal)
    {
-    data.get_writable_journal().create_table("person");
+    journal.create_table("person");
    });
   }
 

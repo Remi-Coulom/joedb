@@ -18,7 +18,7 @@ namespace joedb
    ? Open_Mode::shared_write
    : Open_Mode::write_existing_or_create_new;
 
-  Client_Parser client_parser(local, default_mode);
+  Client_Parser client_parser(local, default_mode, true);
 
   if (argc <= 1)
   {
@@ -27,9 +27,9 @@ namespace joedb
    return 1;
   }
 
-  Pullonly_Client &client = client_parser.parse(argc - 1, argv + 1);
+  Client &client = client_parser.parse(argc - 1, argv + 1);
 
-  Client_Command_Processor interpreter(client, client_parser.has_file());
+  Client_Command_Processor interpreter(client);
   interpreter.set_prompt(true);
   interpreter.main_loop(std::cin, std::cout);
 

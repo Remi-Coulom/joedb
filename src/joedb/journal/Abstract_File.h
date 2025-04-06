@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Abstract_File
  {
   public:

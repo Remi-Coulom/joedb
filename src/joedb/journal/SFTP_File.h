@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class SFTP_File: public Buffered_File
  {
   private:

@@ -6,9 +6,9 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  std::string get_time_string(int64_t timestamp);
- /// \ingroup ui
+ /// @ingroup ui
  std::string get_time_string_of_now();
 }
 

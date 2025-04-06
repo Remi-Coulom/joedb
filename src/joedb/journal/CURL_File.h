@@ -20,7 +20,7 @@ namespace joedb
    ~CURL_Easy();
  };
 
- /// \ingroup journal
+ /// @ingroup journal
  class CURL_File: public CURL_Easy, public Buffered_File
  {
   private:

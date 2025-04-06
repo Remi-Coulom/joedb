@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \ingroup interpreted
+ /// @ingroup interpreted
  class Database_Schema: public Readable, public Writable
  {
   protected:

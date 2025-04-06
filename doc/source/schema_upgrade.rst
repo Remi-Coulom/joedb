@@ -48,10 +48,7 @@ programmer has to implement.
 
 .. code-block:: c++
 
-  void schema_v2::Generic_File_Database::set_default_preferred_language_to_english
-  ( 
-   Generic_File_Database &db
-  )
+  void schema_v2::Writable_Database::set_default_preferred_language_to_english(Writable_Database &db)
   {
    const auto english = db.new_language("English", "en");
    for (auto person: db.get_person_table())

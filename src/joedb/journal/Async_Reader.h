@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Async_Reader
  {
   private:

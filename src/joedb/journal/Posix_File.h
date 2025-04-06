@@ -49,7 +49,7 @@ namespace joedb
    ~Posix_FD() override;
  };
 
- /// \ingroup journal
+ /// @ingroup journal
  class Posix_File: public Posix_FD
  {
   public:

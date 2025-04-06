@@ -9,14 +9,14 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class File_Connection_Builder: public Connection_Builder
  {
   private:
    File_Parser file_parser;
    std::optional<Readonly_Journal> readonly_journal;
    std::optional<Writable_Journal> writable_journal;
-   std::unique_ptr<Pullonly_Connection> connection;
+   std::unique_ptr<Connection> connection;
 
   public:
    const char *get_name() const final {return "file";}
@@ -28,7 +28,7 @@ namespace joedb
     return "<file>";
    }
 
-   Pullonly_Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     int arg_index = 0;
     std::ostream null_stream(nullptr);

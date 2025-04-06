@@ -3,7 +3,7 @@
 
 namespace joedb
 {
- /// \ingroup error
+ /// @ingroup error
  class Logger
  {
   public:

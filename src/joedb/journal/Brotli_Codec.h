@@ -6,7 +6,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Brotli_Codec: public Codec, public Brotli_Decoder
  {
   public:

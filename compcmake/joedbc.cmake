@@ -55,6 +55,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/ui/write_value.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Async_Reader.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Buffered_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Journal_Construction_Lock.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp

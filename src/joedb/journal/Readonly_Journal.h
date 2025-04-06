@@ -9,7 +9,7 @@
 
 namespace joedb
 {
- /// \ingroup journal
+ /// @ingroup journal
  class Readonly_Journal: public Blob_Reader
  {
   friend class Writable_Journal;
@@ -127,7 +127,7 @@ namespace joedb
     return &file == &other_file;
    }
 
-   std::string read_blob_data(Blob blob) final
+   std::string read_blob_data(Blob blob) const final
    {
     return file.read_blob_data(blob);
    }

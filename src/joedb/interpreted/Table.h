@@ -12,7 +12,7 @@ namespace joedb
 {
  class Database;
 
- /// \ingroup interpreted
+ /// @ingroup interpreted
  class Table
  {
   friend class Database_Schema;

@@ -9,7 +9,7 @@ namespace joedb
 {
  class Readable;
 
- /// \ingroup ui
+ /// @ingroup ui
  void write_value
  (
   std::ostream &out,

@@ -34,7 +34,7 @@ paired, and modifications to the database can only occur during a lock.  This
 is done with transaction function that takes a lambda as parameter, and
 executes it between a lock_pull and a push_unlock.
 
-.. literalinclude:: ./tutorial/concurrency_tutorial.cpp
+.. literalinclude:: ./tutorial/src/concurrency_tutorial.cpp
    :language: c++
 
 It produces this output:
@@ -45,28 +45,28 @@ It produces this output:
 Connections
 -----------
 
-The constructor of the ``tutorial::Client`` class takes two parameters: a file
-for storing the database journal, and a connection. The connection is an object
-of the ``Connection`` class, that provides the synchronization operations
-(pull, lock_pull, push_unlock). This section presents the different kinds of
-available connections.
+The constructor of the :joedb:`tutorial::Client` class takes two parameters: a
+file for storing the database journal, and a connection. The connection is an
+object of the :joedb:`Connection` class, that provides the synchronization
+operations (pull, lock_pull, push_unlock). This section presents the different
+kinds of available connections.
 
-Plain ``Connection``
-^^^^^^^^^^^^^^^^^^^^
+Plain :joedb:`Connection`
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``Connection`` superclass does not connect to anything. Such a connection
-can be used in a client to handle concurrent access to a local file. If the
-file was opened with ``joedb::Open_Mode::shared_write``, clients can start
-write transactions simultaneously, and the connection will use file locking to
-synchronize them.
+The :joedb:`Connection` superclass does not connect to anything. Such a
+connection can be used in a client to handle concurrent access to a local file.
+If the file was opened with :joedb:`Open_Mode`::shared_write, clients
+can start write transactions simultaneously, and the connection will use file
+locking to synchronize them.
 
 .. _file_client:
 
-:ref:`joedbc <joedbc>` produces a convenient ``File_Client`` class that
-creates the connection and the client in a single line of code. Here is an
-example:
+:ref:`joedbc <joedbc>` produces a convenient :joedb:`tutorial::File_Client`
+class that creates the connection and the client in a single line of code. Here
+is an example:
 
-.. literalinclude:: ./tutorial/local_concurrency.cpp
+.. literalinclude:: ./tutorial/src/local_concurrency.cpp
    :language: c++
 
 Multiple instances of this program can safely write to the same database
@@ -75,23 +75,23 @@ concurrently.
 .. asciinema:: ./asciinema/local_concurrency.cast
    :poster: npt:0:12
 
-``File_Connection``
-^^^^^^^^^^^^^^^^^^^
+:joedb:`File_Connection`
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-``File_Connection`` creates a connection to a file. Here are some typical use
-cases:
+:joedb:`File_Connection` creates a connection to a file. Here are some typical
+use cases:
 
- - ``File_Connection`` can be used to make a safe and clean copy of a database
+ - :joedb:`File_Connection` can be used to make a safe and clean copy of a database
    that contains a transaction that was not checkpointed, either because the
    database is currently being written to, or because of a previous crash.
- - ``File_Connection`` can be used to convert between different file formats.
-   For instance, pushing a plain joedb file to a brotli ``Encoded_File`` will
-   create a compressed database.
- - A ``File_Connection`` to an ``SFTP_File`` can be a convenient way to pull
-   from a remote database without running a joedb server on the remote machine.
-   Performance will be inferior to running a joedb server, though. Similarly, a
-   ``File_Connection`` to a ``CURL_File`` can be used to pull from a joedb
-   database served by a web server.
+ - :joedb:`File_Connection` can be used to convert between different file
+   formats.  For instance, pushing a plain joedb file to a :joedb:`Brotli_File`
+   will create a compressed database.
+ - A :joedb:`File_Connection` to an :joedb:`SFTP_File` can be a convenient way
+   to pull from a remote database without running a joedb server on the remote
+   machine.  Performance will be inferior to running a joedb server, though.
+   Similarly, a :joedb:`File_Connection` to a :joedb:`CURL_File` can be used to
+   pull from a joedb database served by a web server.
 
 ..
    TODO: asciinema of fixing broken transaction
@@ -99,22 +99,19 @@ cases:
 ..
    TODO: asciinema of brotli compression
 
-``Server_Connection``
-^^^^^^^^^^^^^^^^^^^^^
+:joedb:`Server_Connection`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``Server_Connection`` allows connecting to a running :ref:`joedb_server` using
-the joedb :doc:`network protocol <network_protocol>`.
+:joedb:`Server_Connection` allows connecting to a running :ref:`joedb_server`
+using the joedb :doc:`network protocol <network_protocol>`.
 
-The constructor of ``Server_Connection`` takes a ``Channel`` parameter. Two
-channel classes are provided:
+The constructor of :joedb:`Server_Connection` takes a :joedb:`Channel`
+parameter. Two channel classes are provided:
 
- * ``Network_Channel`` opens a network socket to the server directly.
- * ``ssh::Forward_Channel`` connects to the server with ssh encryption and authentication.
+ * :joedb:`Network_Channel` opens a network socket to the server directly.
+ * :joedb:`ssh::Forward_Channel` connects to the server with ssh encryption and authentication.
 
 .. _local_and_remote_concurrency:
-
-..
-   TODO: ascinema animation of asynchronous backup
 
 Combining Local and Remote Concurrency
 --------------------------------------
@@ -123,7 +120,30 @@ A client can handle concurrency for both its file and its connection
 simultaneously: it is possible for two different clients running on the same
 machine to share a connection to the same remote server, and also share the
 same local file. For this to work, the local file must be opened with
-``Open_Mode::shared_write``.
+:joedb:`Open_Mode`::shared_write.
+
+Using a :joedb:`Client_Lock` instead of a Lambda
+------------------------------------------------
+
+The transaction function is a simple way to handle the
+lock-pull-write-push-unlock sequence, but may not be flexible enough to handle
+some more complex use cases. The :joedb:`Client_Lock` object allows:
+
+ - starting the transaction in one function, and finishing it in another one,
+ - pushing multiple times in the middle of a transaction, without unlocking the connection,
+ - writing data in one thread, and pushing in another one.
+
+:joedb:`Client_Lock` performs lock_pull in its constructor, and push_unlock in
+its destructor. Because push_unlock can fail, error management is a little
+tricky, and requires using a :joedb:`Posthumous_Catcher`.  That's why it is
+recommended to use a transaction lambda instead of a :joedb:`Client_Lock`
+whenever possible.
+
+.. literalinclude:: ./tutorial/src/client_lock.cpp
+   :language: c++
 
 ..
    TODO: ascinema animation of synchronous backup
+
+..
+   TODO: ascinema animation of asynchronous backup

@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- /// \ingroup ui
+ /// @ingroup ui
  class Raw_Dump_Writable: public Writable
  {
   private:

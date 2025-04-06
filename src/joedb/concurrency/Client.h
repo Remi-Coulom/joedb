@@ -2,22 +2,28 @@
 #define joedb_Client_declared
 
 #include "joedb/concurrency/Connection.h"
-#include "joedb/concurrency/Client_Data.h"
 #include "joedb/error/Posthumous_Thrower.h"
 
 namespace joedb
 {
- /// \addtogroup concurrency
- /// @{
- class Client;
-
- ////////////////////////////////////////////////////////////////////////////
- class Pullonly_Client
- ////////////////////////////////////////////////////////////////////////////
+ /// Handle concurrent access to a file with a joedb::Connection
+ /// @ingroup concurrency
+ class Client: public Blob_Reader
  {
+  friend class Client_Lock;
+
   protected:
-   Client_Data &data;
-   Pullonly_Connection &connection;
+   virtual Writable_Journal &get_writable_journal()
+   {
+    throw Assertion_Failure("No writable journal");
+   }
+
+   virtual Readonly_Journal &get_readonly_journal()
+   {
+    return get_writable_journal();
+   }
+
+   Connection &connection;
    int64_t server_checkpoint;
 
    //////////////////////////////////////////////////////////////////////////
@@ -27,7 +33,7 @@ namespace joedb
     if
     (
      get_checkpoint() > server_checkpoint ||
-     data.get_readonly_journal().get_position() > server_checkpoint
+     get_readonly_journal().get_position() > server_checkpoint
     )
     {
      throw Exception("can't pull: client is ahead of server");
@@ -36,32 +42,40 @@ namespace joedb
 
   public:
    //////////////////////////////////////////////////////////////////////////
-   Pullonly_Client
+   Client
    //////////////////////////////////////////////////////////////////////////
    (
-    Client_Data &data,
-    Pullonly_Connection &connection,
+    Readonly_Journal &journal,
+    Connection &connection,
     bool content_check = true
    ):
-    data(data),
     connection(connection),
     server_checkpoint
     (
-     connection.handshake(data.get_readonly_journal(), content_check)
+     connection.handshake(journal, content_check)
     )
    {
    }
 
-   Client_Data &get_data() const {return data;}
-   const Readonly_Journal &get_journal() {return data.get_readonly_journal();}
-   bool is_readonly() const {return data.is_readonly();}
-   virtual Client *get_push_client() {return nullptr;}
+   //////////////////////////////////////////////////////////////////////////
+   const Readonly_Journal &get_journal() const
+   //////////////////////////////////////////////////////////////////////////
+   {
+    return const_cast<Client *>(this)->get_readonly_journal();
+   }
 
    //////////////////////////////////////////////////////////////////////////
    int64_t get_checkpoint() const
    //////////////////////////////////////////////////////////////////////////
    {
-    return data.get_readonly_journal().get_checkpoint_position();
+    return get_journal().get_checkpoint_position();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   std::string read_blob_data(Blob blob) const override
+   //////////////////////////////////////////////////////////////////////////
+   {
+    return get_journal().read_blob_data(blob);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -78,42 +92,36 @@ namespace joedb
     return get_checkpoint() - server_checkpoint;
    }
 
-   //////////////////////////////////////////////////////////////////////////
+   /// @param wait indicates how long the connection may wait for new data
+   /// @retval pull_size number of bytes pulled
    int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
-   //////////////////////////////////////////////////////////////////////////
    {
     const int64_t old_checkpoint = get_checkpoint();
 
-    if (data.is_readonly())
-     data.get_readonly_journal().pull();
+    if (is_readonly())
+     get_readonly_journal().pull();
     else
     {
      throw_if_pull_when_ahead();
-     server_checkpoint = connection.pull(data.get_writable_journal(), wait);
+     server_checkpoint = connection.pull(get_writable_journal(), wait);
     }
 
     return get_checkpoint() - old_checkpoint;
    }
 
-   virtual ~Pullonly_Client();
- };
+   virtual bool is_readonly() const = 0;
+   bool is_pullonly() const {return connection.is_pullonly();}
 
- ////////////////////////////////////////////////////////////////////////////
- class Client: public Pullonly_Client
- ////////////////////////////////////////////////////////////////////////////
- {
-  friend class Client_Lock;
+   virtual ~Client();
 
   private:
-   Connection &connection;
-
    //////////////////////////////////////////////////////////////////////////
    void push(bool unlock_after)
    //////////////////////////////////////////////////////////////////////////
    {
     server_checkpoint = connection.push
     (
-     data.get_readonly_journal(),
+     get_readonly_journal(),
      server_checkpoint,
      unlock_after
     );
@@ -124,41 +132,39 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     throw_if_pull_when_ahead();
-    server_checkpoint = connection.lock_pull(data.get_writable_journal());
+    server_checkpoint = connection.lock_pull(get_writable_journal());
    }
 
    //////////////////////////////////////////////////////////////////////////
    void cancel_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    connection.unlock(data.get_writable_journal());
-    data.get_writable_journal().flush();
+    connection.unlock(get_writable_journal());
+    get_writable_journal().flush();
+   }
+
+  protected:
+   //////////////////////////////////////////////////////////////////////////
+   template<typename F> void transaction(F transaction)
+   //////////////////////////////////////////////////////////////////////////
+   {
+    start_transaction();
+
+    try
+    {
+     transaction();
+     get_writable_journal().default_checkpoint();
+    }
+    catch (...)
+    {
+     cancel_transaction();
+     throw;
+    }
+
+    push_unlock();
    }
 
   public:
-   //////////////////////////////////////////////////////////////////////////
-   Client
-   //////////////////////////////////////////////////////////////////////////
-   (
-    Client_Data &data,
-    Connection &connection,
-    bool content_check = true
-   ):
-    Pullonly_Client(data, connection, content_check),
-    connection(connection)
-   {
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   Client *get_push_client() override
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (connection.get_push_connection())
-     return this;
-    else
-     return nullptr;
-   }
-
    //////////////////////////////////////////////////////////////////////////
    void push_unlock()
    //////////////////////////////////////////////////////////////////////////
@@ -172,40 +178,27 @@ namespace joedb
    {
     push(false);
    }
-
-   //////////////////////////////////////////////////////////////////////////
-   template<typename F> void transaction(F transaction)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    start_transaction();
-
-    try
-    {
-     transaction(data);
-     data.get_writable_journal().default_checkpoint();
-    }
-    catch (...)
-    {
-     cancel_transaction();
-     throw;
-    }
-
-    push_unlock();
-   }
  };
 
- ////////////////////////////////////////////////////////////////////////////
+ /// Lock object that allows writing to a database managed by a joedb::Client
+ ///
+ /// This is an alternative to joedb::Client::transaction.
+ /// It is more flexible than a transaction, but a bit annoying to use because
+ /// lock_push will take place in the destructor and that makes error
+ /// management tricky.
+ /// @ingroup concurrency
  class Client_Lock: public Posthumous_Thrower
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
-   Client &client;
    const int initial_uncaught_exceptions;
+
+  protected:
+   Client &client;
 
   public:
    Client_Lock(Client &client):
-    client(client),
-    initial_uncaught_exceptions(std::uncaught_exceptions())
+    initial_uncaught_exceptions(std::uncaught_exceptions()),
+    client(client)
    {
     client.start_transaction();
    }
@@ -213,13 +206,9 @@ namespace joedb
    Client_Lock(const Client_Lock &) = delete;
    Client_Lock &operator=(const Client_Lock &) = delete;
 
-   Writable_Journal &get_journal()
-   {
-    return client.data.get_writable_journal();
-   }
-
    void push()
    {
+    client.get_writable_journal().default_checkpoint();
     client.push_and_keep_locked();
    }
 
@@ -231,7 +220,7 @@ namespace joedb
       client.cancel_transaction();
      else
      {
-      get_journal().default_checkpoint();
+      client.get_writable_journal().default_checkpoint();
       client.push_unlock();
      }
     }
@@ -241,7 +230,6 @@ namespace joedb
     }
    }
  };
- /// @}
 }
 
 #endif

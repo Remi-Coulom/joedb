@@ -1,4 +1,5 @@
-#include "joedb/concurrency/Interpreted_Client.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
@@ -8,7 +9,7 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- TEST(Client, Interpreted_Client)
+ TEST(Client, Writable_Database_Client)
  /////////////////////////////////////////////////////////////////////////////
  {
   Memory_File server_file;
@@ -17,8 +18,8 @@ namespace joedb
 
   File_Connection connection(server_file);
 
-  Interpreted_Client client1(client1_file, connection);
-  Interpreted_Client client2(client2_file, connection);
+  Writable_Database_Client client1(client1_file, connection);
+  Writable_Database_Client client2(client2_file, connection);
 
   client1.transaction([](const Readable &readable, Writable &writable)
   {
@@ -52,8 +53,8 @@ namespace joedb
 
    File_Connection connection(server_file);
 
-   Interpreted_Client client1(client1_file, connection);
-   Interpreted_Client client2(client2_file, connection);
+   Writable_Database_Client client1(client1_file, connection);
+   Writable_Database_Client client2(client2_file, connection);
 
    client1.transaction([](const Readable &readable, Writable &writable)
    {
@@ -123,7 +124,7 @@ namespace joedb
 
   Memory_File server_file;
   File_Connection connection(server_file);
-  Interpreted_Client client(client_file, connection);
+  Writable_Database_Client client(client_file, connection);
 
   EXPECT_ANY_THROW(client.pull());
   client.push_unlock();
@@ -136,10 +137,10 @@ namespace joedb
   Memory_File client_file;
   Memory_File server_file;
   File_Connection connection(server_file);
-  Interpreted_Client client(client_file, connection);
+  Writable_Journal_Client client(client_file, connection);
 
   {
-   Client_Lock lock(client);
+   Writable_Journal_Client_Lock lock(client);
 
    // None of the commented-out blocks should compile
 
@@ -162,7 +163,6 @@ namespace joedb
    lock.push();
    EXPECT_EQ(server_file.get_size(), 48);
    lock.get_journal().comment("Hi");
-   lock.push();
    EXPECT_EQ(server_file.get_size(), 48);
   }
 
@@ -170,7 +170,7 @@ namespace joedb
 
   try
   {
-   Client_Lock lock(client);
+   Writable_Journal_Client_Lock lock(client);
    lock.get_journal().comment("Bye");
    throw Exception("exception");
   }
@@ -209,7 +209,7 @@ namespace joedb
 
    try
    {
-    Interpreted_Client client(client_file, connection);
+    Writable_Database_Client client(client_file, connection);
     ADD_FAILURE() << "Connection with incompatible file should have failed";
    }
    catch (const Exception &e)
@@ -229,7 +229,7 @@ namespace joedb
 
    try
    {
-    Interpreted_Client client(client_file, connection);
+    Writable_Database_Client client(client_file, connection);
     EXPECT_EQ(client.get_database().get_tables().size(), 1ULL);
     client.pull();
     EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
@@ -255,7 +255,7 @@ namespace joedb
    // Push something to the server via a connection
    //
    {
-    Interpreted_Client client(client_file, connection);
+    Writable_Database_Client client(client_file, connection);
 
     client.transaction([](const Readable &readable, Writable &writable)
     {
@@ -277,7 +277,7 @@ namespace joedb
    // Connect again, and update the server
    //
    {
-    Interpreted_Client client(client_file, connection);
+    Writable_Database_Client client(client_file, connection);
     EXPECT_TRUE(client.get_checkpoint_difference() > 0);
     client.push_unlock();
    }
@@ -288,7 +288,7 @@ namespace joedb
   //
   {
    Memory_File client_file;
-   Interpreted_Client client(client_file, connection);
+   Writable_Database_Client client(client_file, connection);
    EXPECT_TRUE(client.get_checkpoint_difference() < 0);
    client.pull();
    EXPECT_EQ(client.get_database().get_tables().size(), 2ULL);
@@ -308,7 +308,7 @@ namespace joedb
   // Push something to the server via a connection
   //
   {
-   Interpreted_Client client(client_file, connection);
+   Writable_Database_Client client(client_file, connection);
    client.transaction([](const Readable &readable, Writable &writable)
    {
     writable.create_table("person");
@@ -330,7 +330,7 @@ namespace joedb
   //
   {
    Memory_File client2_file;
-   Interpreted_Client client2(client2_file, connection);
+   Writable_Database_Client client2(client2_file, connection);
 
    client2.transaction([](const Readable &readable, Writable &writable)
    {
@@ -343,7 +343,7 @@ namespace joedb
   //
   try
   {
-   Interpreted_Client client(client_file, connection);
+   Writable_Database_Client client(client_file, connection);
    ADD_FAILURE() << "connecting should have failed\n";
   }
   catch (const Exception &e)
@@ -361,7 +361,7 @@ namespace joedb
 
   File_Connection connection(server_file);
 
-  Interpreted_Client client(client_file, connection);
+  Writable_Database_Client client(client_file, connection);
 
   client.transaction([](const Readable &readable, Writable &writable){});
   client.transaction([](const Readable &readable, Writable &writable){});

@@ -1,6 +1,9 @@
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Connection_Parser.h"
-#include "joedb/concurrency/Interpreted_Client_Data.h"
+#include "joedb/concurrency/Readonly_Database_Client.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
+#include "joedb/concurrency/Readonly_Journal_Client.h"
+#include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Client.h"
 
 #include <iostream>
@@ -9,11 +12,17 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Client_Parser::Client_Parser(bool local, Open_Mode default_open_mode):
+ Client_Parser::Client_Parser
  ////////////////////////////////////////////////////////////////////////////
+ (
+  bool local,
+  Open_Mode default_open_mode,
+  bool with_database
+ ):
   file_parser(default_open_mode, false, true, true),
   connection_parser(local),
-  default_open_mode(default_open_mode)
+  default_open_mode(default_open_mode),
+  default_with_database(with_database)
  {
  }
 
@@ -21,14 +30,17 @@ namespace joedb
  void Client_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << " [--nocheck] <file> <connection>\n\n";
+  out << " [--nocheck]";
+  if (default_with_database)
+   out << " [--nodb]";
+  out << " <file> <connection>\n\n";
 
   file_parser.print_help(out);
   connection_parser.print_help(out);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Pullonly_Client &Client_Parser::parse(int argc, char **argv)
+ Client &Client_Parser::parse(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
   int arg_index = 0;
@@ -41,6 +53,13 @@ namespace joedb
   }
   std::cerr << "content_check = " << content_check << '\n';
 
+  bool with_database = default_with_database;
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
+  {
+   arg_index++;
+   with_database = false;
+  }
+
   file_parser.parse
   (
    std::cerr,
@@ -51,34 +70,36 @@ namespace joedb
 
   Buffered_File *client_file = file_parser.get_file();
 
-  Pullonly_Connection &pullonly_connection = connection_parser.build
+  Connection &connection = connection_parser.build
   (
    argc - arg_index,
    argv + arg_index,
    client_file
   );
 
-  Connection *push_connection = pullonly_connection.get_push_connection();
-
   if (!client_file)
-   client_file = dynamic_cast<Buffered_File *>(&pullonly_connection);
+   client_file = dynamic_cast<Buffered_File *>(&connection);
 
   if (!client_file)
    throw Exception("server file must be used with a network or ssh connection");
 
   std::cerr << "Creating client data... ";
-
-  if (client_file->is_readonly())
-   client_data.reset(new Readonly_Interpreted_Client_Data(*client_file));
-  else
-   client_data.reset(new Writable_Interpreted_Client_Data(*client_file));
-
   std::cerr << "OK\n";
 
-  if (push_connection)
-   client.reset(new Client(*client_data, *push_connection, content_check));
+  if (with_database)
+  {
+   if (client_file->is_readonly())
+    client.reset(new Readonly_Database_Client(*client_file, connection, content_check));
+   else
+    client.reset(new Writable_Database_Client(*client_file, connection, content_check));
+  }
   else
-   client.reset(new Pullonly_Client(*client_data, pullonly_connection, content_check));
+  {
+   if (client_file->is_readonly())
+    client.reset(new Readonly_Journal_Client(*client_file, connection, content_check));
+   else
+    client.reset(new Writable_Journal_Client(*client_file, connection, content_check));
+  }
 
   return *client;
  }

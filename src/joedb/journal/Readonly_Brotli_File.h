@@ -21,7 +21,7 @@ namespace joedb
   };
  }
 
- /// \ingroup journal
+ /// @ingroup journal
  class Readonly_Brotli_File:
   private detail::Readonly_Brotli_File_Data,
   public Readonly_Encoded_File
