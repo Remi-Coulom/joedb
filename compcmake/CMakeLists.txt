@@ -406,7 +406,6 @@ endif()
 #############################################################################
 # Packaging
 #############################################################################
-install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)

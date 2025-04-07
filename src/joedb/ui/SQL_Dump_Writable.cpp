@@ -180,8 +180,23 @@ namespace joedb
  void SQL_Writable::delete_from(Table_Id table_id, Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "DELETE FROM \"" << schema.get_table_name(table_id);
-  out << "\" WHERE " << id_field_name << " = " << record_id << ";\n";
+  out << "DELETE FROM \"" << schema.get_table_name(table_id) << '"';
+  write_where(record_id);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SQL_Writable::write_update(Table_Id table_id, Field_Id field_id)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << "UPDATE \"" << schema.get_table_name(table_id);
+  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void SQL_Writable::write_where(Record_Id record_id)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << " WHERE " << id_field_name << " = " << record_id << ";\n";
  }
 
  #define TYPE_MACRO(type, return_type, type_id, R, W)\
@@ -193,10 +208,9 @@ namespace joedb
   return_type value\
  )\
  {\
-  out << "UPDATE \"" << schema.get_table_name(table_id);\
-  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";\
+  write_update(table_id, field_id);\
   write_##type_id(out, value);\
-  out << " WHERE " << id_field_name << " = " << record_id << ";\n";\
+  write_where(record_id);\
  }
  #define TYPE_MACRO_NO_STRING
  #define TYPE_MACRO_NO_BLOB
@@ -213,10 +227,9 @@ namespace joedb
   Field_Id field_id,
   const bool value)
  {
-  out << "UPDATE \"" << schema.get_table_name(table_id);
-  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
+  write_update(table_id, field_id);
   out << value;
-  out << " WHERE " << id_field_name << " = " << record_id << ";\n";
+  write_where(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -228,10 +241,9 @@ namespace joedb
   Field_Id field_id,
   const std::string &value)
  {
-  out << "UPDATE \"" << schema.get_table_name(table_id);
-  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
+  write_update(table_id, field_id);
   write_sql_string(out, value);
-  out << " WHERE " << id_field_name << " = " << record_id << ";\n";
+  write_where(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -246,15 +258,14 @@ namespace joedb
   if (!blob_reader)
    out << "-- ";
 
-  out << "UPDATE \"" << schema.get_table_name(table_id);
-  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
+  write_update(table_id, field_id);
 
   if (blob_reader)
    write_sql_string(out, blob_reader->read_blob_data(value));
   else
    out << "\"BLOB\"";
 
-  out << " WHERE " << id_field_name << " = " << record_id << ";\n";
+  write_where(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -267,15 +278,14 @@ namespace joedb
   Record_Id value
  )
  {
-  out << "UPDATE \"" << schema.get_table_name(table_id);
-  out << "\" SET \"" << schema.get_field_name(table_id, field_id) << "\" = ";
+  write_update(table_id, field_id);
 
   if (value == Record_Id(0))
    out << "NULL";
   else
    out << value;
 
-  out << " WHERE " << id_field_name << " = " << record_id << ";\n";
+  write_where(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////

@@ -21,6 +21,8 @@ namespace joedb
    const bool drop_column;
 
    void write_type(Type type);
+   void write_update(Table_Id table_id, Field_Id field_id);
+   void write_where(Record_Id record_id);
 
   public:
    SQL_Writable

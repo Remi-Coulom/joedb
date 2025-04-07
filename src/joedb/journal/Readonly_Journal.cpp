@@ -2,7 +2,6 @@
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/error/Exception.h"
 
-#include <sstream>
 #include <vector>
 
 #if __cplusplus < 201703L
@@ -415,10 +414,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   default:
   {
-   std::ostringstream error;
-   error << "Unexpected operation: file.get_position() = ";
-   error << file.get_position();
-   throw Exception(error.str());
+   throw Exception("Unexpected operation: file.get_position() = " + std::to_string(file.get_position()));
   }
  }
 }

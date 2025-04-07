@@ -6,7 +6,7 @@ namespace joedb
 {
  /// Catch exception from main
  ///
- /// This function is particularly necessary in Windows, becase no
+ /// This function is particularly necessary in Windows, because no
  /// exception information is printed by default there.
  int main_exception_catcher
  (

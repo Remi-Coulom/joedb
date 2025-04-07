@@ -1,7 +1,5 @@
 #include "joedb/compiler/nested_namespace.h"
 
-#include <sstream>
-
 namespace joedb
 {
  static const std::string scope_delimiter{"::"};
@@ -35,14 +33,7 @@ namespace joedb
   const char *delimiter
  )
  {
-  for (size_t i = 0;;)
-  {
-   out << n[i];
-   if (++i < n.size())
-    out << delimiter;
-   else
-    break;
-  }
+  out << namespace_string(n, delimiter);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -53,9 +44,18 @@ namespace joedb
   const char *delimiter
  )
  {
-  std::ostringstream result;
-  namespace_write(result, n, delimiter);
-  return result.str();
+  std::string result;
+
+  for (size_t i = 0;;)
+  {
+   result += n[i];
+   if (++i < n.size())
+    result += delimiter;
+   else
+    break;
+  }
+
+  return result;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -83,10 +83,8 @@ namespace joedb
   const std::vector<std::string> &n
  )
  {
-  std::ostringstream id;
-  namespace_write(id, n, "_");
-  id << '_' << name << "_declared\n";
-  out << "#ifndef " << id.str();
-  out << "#define " << id.str();
+  std::string id = namespace_string(n, "_") + '_' + name + "_declared\n";
+  out << "#ifndef " << id;
+  out << "#define " << id;
  }
 }

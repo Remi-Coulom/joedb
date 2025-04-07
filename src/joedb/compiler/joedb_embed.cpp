@@ -1,11 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 
 #include "joedb/ui/type_io.h"
 #include "joedb/ui/base64.h"
 #include "joedb/compiler/nested_namespace.h"
+#include "joedb/journal/File.h"
 
 /////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -45,29 +45,24 @@ int main(int argc, char **argv)
  std::vector<std::string> name_space = joedb::split_namespace(argv[2]);
  char const * const identifier = argv[3];
 
- std::ostringstream file_name;
- file_name << name_space.back() << '_' << identifier;
+ const std::string file_name = name_space.back() + '_' + identifier;
 
  {
   std::ofstream cpp
   (
-   file_name.str() + ".cpp",
+   file_name + ".cpp",
    std::ios::binary | std::ios::out
   );
 
-  std::ostringstream file_content;
+  std::string file_content;
 
   {
-   std::ifstream in(joedb_file_name, std::ios::binary | std::ios::in);
-   if (!in.good())
-   {
-    std::cerr << "Error opening " << joedb_file_name << '\n';
-    return 1;
-   }
-   file_content << in.rdbuf();
+   const joedb::File in(joedb_file_name, joedb::Open_Mode::read_existing);
+   file_content.resize(in.get_size());
+   in.pread(file_content.data(), file_content.size(), 0);
   }
 
-  cpp << "#include \"" << file_name.str() << ".h\"\n";
+  cpp << "#include \"" << file_name << ".h\"\n";
   cpp << "#include \"" << name_space.back() << "/Readonly_Database.h\"\n";
   cpp << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   if (mode == base64)
@@ -75,65 +70,52 @@ int main(int argc, char **argv)
   cpp << '\n';
 
   joedb::namespace_open(cpp, name_space);
+  cpp << '\n';
 
   if (mode != base64)
   {
    cpp << " const size_t " << identifier << "_size = ";
-   cpp << file_content.str().size() << ";\n";
+   cpp << file_content.size() << ";\n";
   }
   cpp << " char const * const " << identifier << "_data = ";
 
   if (mode == base64)
   {
-   cpp << '"' << joedb::base64_encode(file_content.str()) << '"';
+   cpp << '"' << joedb::base64_encode(file_content) << '"';
   }
   else if (mode == raw)
   {
    char const * const delimiter = "glouglou";
    // TODO: generate delimiter from data
    cpp << "R\"" << delimiter << "(";
-   cpp << file_content.str();
+   cpp << file_content;
    cpp << ")" << delimiter << '\"';
   }
   else if (mode == utf8)
   {
-   joedb::write_string(cpp, file_content.str());
+   joedb::write_string(cpp, file_content);
   }
   else if (mode == ascii)
   {
    cpp << '"';
-   for (const uint8_t c: file_content.str())
+   for (const uint8_t c: file_content)
     joedb::write_octal_character(cpp, c);
    cpp << '"';
   }
 
   cpp << ";\n\n";
 
-  cpp << " struct struct_for_" << identifier << '\n';
-  cpp << " {\n";
-  cpp << "  Readonly_Database db;\n";
-  cpp << '\n';
-  cpp << "  struct_for_" << identifier << "():\n";
-  cpp << "   db(joedb::Readonly_Memory_File(";
-
-  if (mode == base64)
-  {
-   cpp << "joedb::base64_decode(" << identifier << "_data)";
-  }
-  else
-  {
-   cpp << identifier << "_data, " << identifier << "_size";
-  }
-
-  cpp << "))\n";
-  cpp << "  {\n";
-  cpp << "  }\n";
-  cpp << " };\n";
-  cpp << '\n';
   cpp << " const Database &get_embedded_" << identifier << "()\n";
   cpp << " {\n";
-  cpp << "  static struct_for_" << identifier << " s;\n";
-  cpp << "  return s.db;\n";
+  cpp << "  static const Readonly_Database db(joedb::Readonly_Memory_File(";
+
+  if (mode == base64)
+   cpp << "joedb::base64_decode(" << identifier << "_data)";
+  else
+   cpp << identifier << "_data, " << identifier << "_size";
+
+  cpp << "));\n";
+  cpp << "  return db;\n";
   cpp << " }\n";
 
   if (mode != base64)
@@ -149,7 +131,7 @@ int main(int argc, char **argv)
  }
 
  {
-  std::ofstream h(file_name.str() + ".h", std::ios::binary | std::ios::out);
+  std::ofstream h(file_name + ".h", std::ios::binary | std::ios::out);
 
   joedb::namespace_include_guard(h, identifier, name_space);
 
@@ -157,7 +139,7 @@ int main(int argc, char **argv)
 
   joedb::namespace_open(h, name_space);
 
-  h << " class Database;\n";
+  h << "\n class Database;\n";
   h << " const Database &get_embedded_" << identifier << "();\n";
 
   if (mode != base64)
