@@ -17,6 +17,8 @@ namespace joedb
 
    template<typename F> void transaction(F transaction)
    {
+    Journal_Lock lock(*writable_journal);
+
     start_transaction();
 
     try
@@ -30,7 +32,7 @@ namespace joedb
      throw;
     }
 
-    end_transaction();
+    push_unlock();
    }
 
   private:
@@ -39,14 +41,6 @@ namespace joedb
 
    Connection &connection;
    int64_t server_checkpoint;
-
-   //////////////////////////////////////////////////////////////////////////
-   void throw_if_pull_into_uncheckpointed()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    if (readonly_journal.get_position() > get_checkpoint())
-     throw Exception("can't pull: client has uncheckpointed data");
-   }
 
    //////////////////////////////////////////////////////////////////////////
    void push(bool unlock_after)
@@ -64,8 +58,6 @@ namespace joedb
    void start_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    throw_if_pull_into_uncheckpointed();
-    writable_journal->lock_pull();
     server_checkpoint = connection.lock_pull(*writable_journal);
     read_journal();
    }
@@ -74,17 +66,8 @@ namespace joedb
    void cancel_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    connection.unlock();
     writable_journal->flush();
-    writable_journal->unlock();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void end_transaction()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    push_unlock();
-    writable_journal->unlock();
+    connection.unlock();
    }
 
   public:
@@ -144,10 +127,8 @@ namespace joedb
 
     if (writable_journal)
     {
-     throw_if_pull_into_uncheckpointed();
-     writable_journal->lock_pull();
+     Journal_Lock lock(*writable_journal);
      server_checkpoint = connection.pull(*writable_journal, wait);
-     writable_journal->unlock(); // even if exception during connection.pull ?
     }
     else
      readonly_journal.pull();
@@ -191,11 +172,13 @@ namespace joedb
 
   protected:
    Client &client;
+   Journal_Lock journal_lock;
 
   public:
    Client_Lock(Client &client):
     initial_uncaught_exceptions(std::uncaught_exceptions()),
-    client(client)
+    client(client),
+    journal_lock(*client.writable_journal)
    {
     client.start_transaction();
    }
@@ -227,7 +210,7 @@ namespace joedb
        throw;
       }
 
-      client.end_transaction();
+      client.push_unlock();
      }
     }
     catch (...)

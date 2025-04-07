@@ -98,7 +98,7 @@ namespace joedb
    }
    catch (const Exception &e)
    {
-    EXPECT_STREQ(e.what(), "can't pull: client has uncheckpointed data");
+    EXPECT_STREQ(e.what(), "locking journal with uncheckpointed data");
    }
 
    EXPECT_ANY_THROW(client1.pull());

@@ -149,6 +149,26 @@ namespace joedb
 
    ~Writable_Journal() override;
  };
+
+ class Journal_Lock
+ {
+  private:
+   Writable_Journal &journal;
+
+  public:
+   Journal_Lock(Writable_Journal &journal): journal(journal)
+   {
+    if (journal.get_position() > journal.get_checkpoint_position())
+     throw Exception("locking journal with uncheckpointed data");
+    journal.lock_pull();
+   }
+
+   ~Journal_Lock()
+   {
+    try {journal.unlock();}
+    catch (...) {}
+   }
+ };
 }
 
 #endif
