@@ -69,6 +69,11 @@ namespace joedb
  class Journal_Connection: public Pullonly_Journal_Connection
  {
   private:
+   Writable_Journal &get_journal()
+   {
+    return static_cast<Writable_Journal &>(server_journal);
+   }
+
    //////////////////////////////////////////////////////////////////////////
    int64_t lock_pull
    //////////////////////////////////////////////////////////////////////////
@@ -77,7 +82,7 @@ namespace joedb
     std::chrono::milliseconds
    ) override
    {
-    server_journal.lock_pull();
+    get_journal().lock_pull();
     client_journal.pull_from(server_journal);
     return server_journal.get_checkpoint_position();
    }
@@ -92,8 +97,8 @@ namespace joedb
     bool unlock_after
    ) final
    {
-    if (!server_journal.is_locked())
-     server_journal.lock_pull();
+    if (!get_journal().is_locked())
+     get_journal().lock_pull();
 
     static_cast<Writable_Journal &>(server_journal).pull_from
     (
@@ -102,7 +107,7 @@ namespace joedb
     );
 
     if (unlock_after)
-     server_journal.unlock();
+     get_journal().unlock();
 
     return server_journal.get_checkpoint_position();
    }
@@ -111,7 +116,7 @@ namespace joedb
    void unlock() final
    //////////////////////////////////////////////////////////////////////////
    {
-    server_journal.unlock();
+    get_journal().unlock();
    }
 
   public:

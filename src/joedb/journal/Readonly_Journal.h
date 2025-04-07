@@ -115,17 +115,8 @@ namespace joedb
    int64_t get_checkpoint_position() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == header_size;}
    bool is_shared() const {return file.is_shared();}
-
-   void unlock();
    void pull();
-   void lock_pull();
-   bool is_locked() const
-   {
-    return file.tail_is_locked();
-   }
-
    const Buffered_File &get_file() const {return file;}
-
    void replay_log(Writable &writable);
    void replay_with_checkpoint_comments(Writable &writable);
    void rewind();

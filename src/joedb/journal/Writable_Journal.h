@@ -143,6 +143,10 @@ namespace joedb
 
    Writable_Journal *get_writable_journal() override {return this;}
 
+   void lock_pull();
+   bool is_locked() const {return file.tail_is_locked();}
+   void unlock();
+
    ~Writable_Journal() override;
  };
 }
