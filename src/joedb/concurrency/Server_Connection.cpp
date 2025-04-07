@@ -57,8 +57,13 @@ namespace joedb
 
   buffer.index = 0;
   lock.read(buffer.data, 9);
-  if (buffer.read<char>() != pull_type)
-   throw Exception("Unexpected server reply");
+  {
+   const char reply = buffer.read<char>();
+   if (reply == 'R')
+    throw Exception("Server is pull-only");
+   else if (reply != pull_type)
+    throw Exception("Unexpected server reply");
+  }
   server_checkpoint = buffer.read<int64_t>();
 
   if (server_checkpoint < client_checkpoint)
@@ -179,7 +184,7 @@ namespace joedb
   if (buffer.data[0] == 'C')
    throw Exception("Conflict: push failed");
   else if (buffer.data[0] == 'R')
-   throw Exception("Server is read-only: push failed");
+   throw Exception("Server is pull-only: push failed");
   else if (buffer.data[0] == 't')
    throw Exception("Timeout: push failed");
   else if (buffer.data[0] != 'U')

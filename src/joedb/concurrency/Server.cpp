@@ -136,7 +136,10 @@ namespace joedb
    if (!client_lock)
    {
     if (is_readonly())
-     LOGID("Error: locking readonly server\n");
+    {
+     LOGID("Error: locking pull-only server\n");
+     session->buffer.data[0] = 'R';
+    }
     else
     {
      JOEDB_ASSERT(push_client);

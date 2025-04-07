@@ -80,10 +80,10 @@ namespace joedb
 ~~~~~~
  pull [<wait_seconds>]
  pull_every [<wait_seconds>] [<sleep_seconds>]
+ db
  push
  push_every [<seconds>]
  transaction
- db
 
 )RRR";
 
@@ -189,12 +189,14 @@ namespace joedb
     wjc->transaction([&](Writable_Journal &journal)
     {
      Writable_Interpreter interpreter(journal, journal);
+     Blob_Reader_Command_Processor processor(journal.get_file());
+     interpreter.add_processor(processor);
      interpreter.set_parent(this);
      interpreter.main_loop(in, out);
     });
    }
    else
-    out << "Transactions are not available for this type of client\n";
+    out << "Client is not writable, cannot run transaction\n";
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);
