@@ -25,7 +25,7 @@ namespace joedb
   friend class Readonly_Journal_Client_Lock;
 
   protected:
-   Readonly_Journal &get_readonly_journal() override {return journal;}
+   void read_journal() override {journal.seek_to_checkpoint();}
 
   public:
    Readonly_Journal_Client
@@ -37,9 +37,8 @@ namespace joedb
     Readonly_Journal_Client_Data(file),
     Client(journal, connection, content_check)
    {
+    read_journal();
    }
-
-   bool is_readonly() const override {return true;}
  };
 }
 

@@ -28,10 +28,7 @@ namespace joedb
   public Client
  {
   protected:
-   Readonly_Journal &get_readonly_journal() override
-   {
-    return journal;
-   }
+   void read_journal() override {journal.play_until_checkpoint(database);}
 
   public:
    Readonly_Database_Client
@@ -43,15 +40,13 @@ namespace joedb
     Readonly_Database_Client_Data(file),
     Client(journal, connection, content_check)
    {
+    read_journal();
    }
 
-   const Database &get_database()
+   const Database &get_database() const
    {
-    journal.play_until_checkpoint(database);
     return database;
    }
-
-   bool is_readonly() const override {return true;}
  };
 }
 

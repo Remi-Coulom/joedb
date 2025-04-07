@@ -58,23 +58,16 @@ namespace joedb::generator
   private:
    int64_t schema_checkpoint;
 
-   void play_journal_and_throw_if_schema_changed()
+  protected:
+   void read_journal() override
    {
     db.play_journal();
-    if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
-     Database::throw_exception("Can't upgrade schema during pull");
-    db.check_single_row();
-   }
-
-  protected:
-   bool is_readonly() const final
-   {
-    return false;
-   }
-
-   joedb::Writable_Journal &get_writable_journal() final
-   {
-    return db.journal;
+    if (schema_checkpoint)
+    {
+     if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
+      Database::throw_exception("Can't upgrade schema during pull");
+     db.check_single_row();
+    }
    }
 
   public:
@@ -87,7 +80,8 @@ namespace joedb::generator
     joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
    ):
     detail::Client_Data(file, check, commit_level),
-    joedb::Client(db.journal, connection, content_check)
+    joedb::Client(db.journal, connection, content_check),
+    schema_checkpoint(0)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
@@ -103,13 +97,6 @@ namespace joedb::generator
    const Database &get_database() const
    {
     return db;
-   }
-
-   int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
-   {
-    const int64_t byte_count = joedb::Client::pull(wait);
-    play_journal_and_throw_if_schema_changed();
-    return byte_count;
    }
 
    /// Execute a write transaction
@@ -130,7 +117,6 @@ namespace joedb::generator
    {
     joedb::Client::transaction([&]()
     {
-     play_journal_and_throw_if_schema_changed();
      transaction(db);
     });
    }
@@ -148,7 +134,6 @@ namespace joedb::generator
   public:
    Client_Lock(Client &client): joedb::Client_Lock(client)
    {
-    client.play_journal_and_throw_if_schema_changed();
    }
 
    Writable_Database &get_database()

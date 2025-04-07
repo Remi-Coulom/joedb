@@ -25,7 +25,7 @@ namespace joedb
   friend class Writable_Journal_Client_Lock;
 
   protected:
-   Writable_Journal &get_writable_journal() override {return journal;}
+   void read_journal() override {journal.seek_to_checkpoint();}
 
   public:
    Writable_Journal_Client
@@ -37,15 +37,13 @@ namespace joedb
     Writable_Journal_Client_Data(file),
     Client(journal, connection, content_check)
    {
+    read_journal();
    }
-
-   bool is_readonly() const override {return false;}
 
    template<typename F> void transaction(F transaction)
    {
     Client::transaction([this, &transaction]()
     {
-     journal.seek_to_checkpoint();
      transaction(journal);
     });
    }
@@ -58,12 +56,11 @@ namespace joedb
    Writable_Journal_Client_Lock(Writable_Journal_Client &client):
     Client_Lock(client)
    {
-    client.journal.seek_to_checkpoint();
    }
 
    Writable_Journal &get_journal()
    {
-    return static_cast<Writable_Journal_Client &>(client).get_writable_journal();
+    return static_cast<Writable_Journal_Client &>(client).journal;
    }
  };
 }

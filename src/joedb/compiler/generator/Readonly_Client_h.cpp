@@ -53,14 +53,12 @@ namespace joedb::generator
   private:
    const int64_t schema_checkpoint;
 
-   bool is_readonly() const override
+  protected:
+   virtual void read_journal() override
    {
-    return true;
-   }
-
-   joedb::Readonly_Journal &get_readonly_journal() override
-   {
-    return journal;
+    journal.play_until_checkpoint(db);
+    if (db.get_schema_checkpoint() > schema_checkpoint)
+     Database::throw_exception("Pulled a schema change");
    }
 
   public:
@@ -76,13 +74,7 @@ namespace joedb::generator
    {
    }
 
-   const Database &get_database()
-   {
-    journal.play_until_checkpoint(db);
-    if (db.get_schema_checkpoint() > schema_checkpoint)
-     Database::throw_exception("Pulled a schema change");
-    return db;
-   }
+   const Database &get_database() const {return db;}
  };
 )RRR";
 

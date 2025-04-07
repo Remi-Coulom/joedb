@@ -141,6 +141,8 @@ namespace joedb
     return Async_Writer(file, get_checkpoint_position());
    }
 
+   Writable_Journal *get_writable_journal() override {return this;}
+
    ~Writable_Journal() override;
  };
 }

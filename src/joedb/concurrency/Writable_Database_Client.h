@@ -33,10 +33,7 @@ namespace joedb
   friend class Writable_Database_Client_Lock;
 
   protected:
-   Writable_Journal &get_writable_journal() override
-   {
-    return journal;
-   }
+   void read_journal() override {journal.play_until_checkpoint(database);}
 
   public:
    Writable_Database_Client
@@ -48,21 +45,18 @@ namespace joedb
     Writable_Database_Client_Data(file),
     Client(journal, connection, content_check)
    {
+    read_journal();
    }
 
-   const Database &get_database()
+   const Database &get_database() const
    {
-    journal.play_until_checkpoint(database);
     return database;
    }
-
-   bool is_readonly() const override {return false;}
 
    template<typename F> void transaction(F transaction)
    {
     Client::transaction([this, &transaction]()
     {
-     journal.play_until_checkpoint(database);
      transaction(database, multiplexer);
     });
    }
@@ -75,7 +69,6 @@ namespace joedb
    Writable_Database_Client_Lock(Writable_Database_Client &client):
     Client_Lock(client)
    {
-    client.journal.play_until_checkpoint(client.database);
    }
 
    const Database &get_database() const

@@ -9,6 +9,8 @@
 
 namespace joedb
 {
+ class Writable_Journal;
+
  /// @ingroup journal
  class Readonly_Journal
  {
@@ -91,8 +93,8 @@ namespace joedb
    };
 
   public:
-
    explicit Readonly_Journal(Journal_Construction_Lock &lock, Check check);
+
    explicit Readonly_Journal(Journal_Construction_Lock &&lock, Check check):
     Readonly_Journal(lock, check)
    {
@@ -165,6 +167,9 @@ namespace joedb
    {
     return offset == 17 || offset == 33;
    }
+
+   virtual Writable_Journal *get_writable_journal() {return nullptr;}
+   virtual ~Readonly_Journal() = default;
  };
 }
 

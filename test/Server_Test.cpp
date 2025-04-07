@@ -148,7 +148,7 @@ namespace joedb
    {
    }
 
-   using Client::get_writable_journal;
+   Writable_Journal &get_writable_journal() {return journal;}
  };
 
  /////////////////////////////////////////////////////////////////////////////
