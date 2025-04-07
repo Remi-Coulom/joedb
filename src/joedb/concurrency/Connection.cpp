@@ -22,7 +22,6 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  client_journal.pull();
   return client_journal.get_checkpoint_position();
  }
 
@@ -32,7 +31,6 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  client_journal.lock_pull();
   return client_journal.get_checkpoint_position();
  }
 
@@ -44,14 +42,11 @@ namespace joedb
   bool unlock_after
  )
  {
-  if (unlock_after)
-   client_journal.unlock();
   return client_journal.get_checkpoint_position();
  }
 
- void Connection::unlock(Readonly_Journal &client_journal)
+ void Connection::unlock()
  {
-  client_journal.unlock();
  }
 
  bool Connection::is_pullonly() const

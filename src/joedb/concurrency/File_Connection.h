@@ -50,12 +50,8 @@ namespace joedb
     std::chrono::milliseconds
    ) override
    {
-    client_journal.lock_pull();
     server_journal.pull();
-
     client_journal.pull_from(server_journal);
-    client_journal.unlock();
-
     return server_journal.get_checkpoint_position();
    }
 
@@ -81,11 +77,8 @@ namespace joedb
     std::chrono::milliseconds
    ) override
    {
-    client_journal.lock_pull();
     server_journal.lock_pull();
-
     client_journal.pull_from(server_journal);
-
     return server_journal.get_checkpoint_position();
    }
 
@@ -101,7 +94,6 @@ namespace joedb
    {
     if (!server_journal.is_locked())
      server_journal.lock_pull();
-    client_journal.pull();
 
     static_cast<Writable_Journal &>(server_journal).pull_from
     (
@@ -110,17 +102,16 @@ namespace joedb
     );
 
     if (unlock_after)
-     unlock(client_journal);
+     server_journal.unlock();
 
     return server_journal.get_checkpoint_position();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void unlock(Readonly_Journal &client_journal) final
+   void unlock() final
    //////////////////////////////////////////////////////////////////////////
    {
     server_journal.unlock();
-    client_journal.unlock();
    }
 
   public:

@@ -13,7 +13,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::unlock(Readonly_Journal &client_journal)
+ void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
   Channel_Lock lock(channel);
@@ -30,8 +30,6 @@ namespace joedb
    LOG("The lock had timed out\n");
   else
    throw Exception("Unexpected server reply");
-
-  client_journal.unlock();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -74,7 +72,7 @@ namespace joedb
    buffer.index = 0;
    lock.read(buffer.data, 8);
    const int64_t size = buffer.read<int64_t>();
-   client_journal.flush();
+   client_journal.flush(); // ??? necessary ???
    const int64_t old_position = client_journal.get_position();
    Async_Writer writer = client_journal.get_async_tail_writer();
    download(writer, lock, size);
@@ -89,22 +87,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::shared_pull
- ////////////////////////////////////////////////////////////////////////////
- (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds wait,
-  char pull_type
- )
- {
-  client_journal.lock_pull();
-  const int64_t result = pull(client_journal, wait, pull_type, true);
-  if (pull_type != 'L')
-   client_journal.unlock();
-  return result;
- }
-
- ////////////////////////////////////////////////////////////////////////////
  int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -112,7 +94,7 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  return shared_pull(client_journal, wait, 'P');
+  return pull(client_journal, wait, 'P', true);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -123,7 +105,7 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  return shared_pull(client_journal, wait, 'L');
+  return pull(client_journal, wait, 'L', true);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -175,9 +157,6 @@ namespace joedb
    if (!progress_bar)
     LOG(" done\n");
   }
-
-  if (unlock_after)
-   client_journal.unlock();
 
   lock.read(buffer.data, 1);
 

@@ -88,7 +88,6 @@ namespace joedb
    // The cancelled transaction was written locally, which prevents further
    // pulling from the server.
    //
-
    try
    {
     client1.transaction([](const Readable &readable, Writable &writable)
@@ -99,7 +98,7 @@ namespace joedb
    }
    catch (const Exception &e)
    {
-    EXPECT_STREQ(e.what(), "can't pull: client is ahead of server");
+    EXPECT_STREQ(e.what(), "can't pull: client has uncheckpointed data");
    }
 
    EXPECT_ANY_THROW(client1.pull());
@@ -111,7 +110,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- TEST(Client, no_pull_when_ahead)
+ TEST(Client, pull_when_ahead)
  /////////////////////////////////////////////////////////////////////////////
  {
   Memory_File client_file;
@@ -126,8 +125,10 @@ namespace joedb
   File_Connection connection(server_file);
   Writable_Database_Client client(client_file, connection);
 
-  EXPECT_ANY_THROW(client.pull());
+  client.pull();
   client.push_unlock();
+
+  EXPECT_EQ(server_file.get_size(), client_file.get_size());
  }
 
  /////////////////////////////////////////////////////////////////////////////

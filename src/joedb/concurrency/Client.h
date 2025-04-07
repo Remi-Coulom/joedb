@@ -30,7 +30,7 @@ namespace joedb
      throw;
     }
 
-    push_unlock();
+    end_transaction();
    }
 
   private:
@@ -41,17 +41,11 @@ namespace joedb
    int64_t server_checkpoint;
 
    //////////////////////////////////////////////////////////////////////////
-   void throw_if_pull_when_ahead()
+   void throw_if_pull_into_uncheckpointed()
    //////////////////////////////////////////////////////////////////////////
    {
-    if
-    (
-     get_checkpoint() > server_checkpoint ||
-     readonly_journal.get_position() > server_checkpoint
-    )
-    {
-     throw Exception("can't pull: client is ahead of server");
-    }
+    if (readonly_journal.get_position() > get_checkpoint())
+     throw Exception("can't pull: client has uncheckpointed data");
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -70,7 +64,8 @@ namespace joedb
    void start_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    throw_if_pull_when_ahead();
+    throw_if_pull_into_uncheckpointed();
+    writable_journal->lock_pull();
     server_checkpoint = connection.lock_pull(*writable_journal);
     read_journal();
    }
@@ -79,8 +74,17 @@ namespace joedb
    void cancel_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    connection.unlock(*writable_journal);
+    connection.unlock();
     writable_journal->flush();
+    writable_journal->unlock();
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void end_transaction()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    push_unlock();
+    writable_journal->unlock();
    }
 
   public:
@@ -140,11 +144,13 @@ namespace joedb
 
     if (writable_journal)
     {
-     throw_if_pull_when_ahead();
+     throw_if_pull_into_uncheckpointed();
+     writable_journal->lock_pull();
      server_checkpoint = connection.pull(*writable_journal, wait);
+     writable_journal->unlock(); // even if exception during connection.pull ?
     }
     else
-     readonly_journal.pull(); // TODO: do it all the time, don't do it in the connections?
+     readonly_journal.pull();
 
     read_journal();
 
@@ -211,8 +217,17 @@ namespace joedb
       client.cancel_transaction();
      else
      {
-      client.writable_journal->default_checkpoint();
-      client.push_unlock();
+      try
+      {
+       client.writable_journal->default_checkpoint();
+      }
+      catch (...)
+      {
+       client.cancel_transaction();
+       throw;
+      }
+
+      client.end_transaction();
      }
     }
     catch (...)

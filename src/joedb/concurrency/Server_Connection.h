@@ -18,13 +18,6 @@ namespace joedb
     bool has_data
    );
 
-   int64_t shared_pull
-   (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds wait,
-    char pull_type
-   );
-
    bool check_matching_content
    (
     Readonly_Journal &client_journal,
@@ -60,7 +53,7 @@ namespace joedb
     bool unlock_after
    ) override;
 
-   void unlock(Readonly_Journal &client_journal) override;
+   void unlock() override;
 
    bool is_pullonly() const override;
  };

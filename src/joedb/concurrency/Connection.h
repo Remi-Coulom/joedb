@@ -64,7 +64,7 @@ namespace joedb
     );
    }
 
-   virtual void unlock(Readonly_Journal &client_journal);
+   virtual void unlock();
 
    virtual bool is_pullonly() const;
 

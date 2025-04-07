@@ -337,6 +337,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   target_compile_options(${target} PRIVATE -fsanitize=address,fuzzer)
   target_link_options(${target} PRIVATE -fsanitize=address,fuzzer)
   target_link_libraries(${target} ${JOEDB_EXTERNAL_LIBS})
+  add_dependencies(${target} all_joedbc)
  endfunction()
 
  add_library(joedb_fuzz STATIC
