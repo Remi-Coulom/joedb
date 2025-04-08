@@ -28,14 +28,8 @@ namespace joedb
  Journal_Construction_Lock::~Journal_Construction_Lock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  try
-  {
-   file.unlock_head();
-   if (file.is_shared())
-    file.unlock_tail();
-  }
-  catch(...)
-  {
-  }
+  file.unlock_head();
+  if (file.is_shared())
+   file.unlock_tail();
  }
 }
