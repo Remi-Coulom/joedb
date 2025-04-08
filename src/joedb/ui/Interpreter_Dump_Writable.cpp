@@ -163,6 +163,21 @@ namespace joedb
   out << record_id << '\n';
  }
 
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreter_Writable::write_update
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const char *command,
+  Table_Id table_id,
+  Record_Id record_id,
+  Field_Id field_id
+ )
+ {
+  out << command << schema.get_table_name(table_id) << ' ';
+  out << record_id << ' ';
+  out << schema.get_field_name(table_id, field_id) << ' ';
+ }
+
  #define TYPE_MACRO(type, return_type, type_id, R, W)\
  void Interpreter_Writable::update_##type_id\
  (\
@@ -172,9 +187,7 @@ namespace joedb
   return_type value\
  )\
  {\
-  out << "update " << schema.get_table_name(table_id) << ' ';\
-  out << record_id << ' ';\
-  out << schema.get_field_name(table_id, field_id) << ' ';\
+  write_update("update ", table_id, record_id, field_id);\
   write_##type_id(out, value);\
   out << '\n';\
  }\
@@ -187,9 +200,7 @@ namespace joedb
   const type *value\
  )\
  {\
-  out << "update_vector " << schema.get_table_name(table_id) << ' ';\
-  out << to_underlying(record_id) << ' ';\
-  out << schema.get_field_name(table_id, field_id) << ' ';\
+  write_update("update_vector ", table_id, record_id, field_id);\
   out << size;\
   for (size_t i = 0; i < size; i++)\
   {\

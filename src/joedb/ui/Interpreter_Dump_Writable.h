@@ -59,6 +59,7 @@ namespace joedb
     size_t size
    ) final;
    void delete_from(Table_Id table_id, Record_Id record_id) final;
+   void write_update(const char *command, Table_Id table_id, Record_Id record_id, Field_Id field_id);
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id\
