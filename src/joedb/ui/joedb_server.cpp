@@ -59,7 +59,7 @@ and can still push data: the push will succeed only if there is no conflict.
 
   Client &client = client_parser.parse(argc - index, argv + index);
 
-  detail::IO_Context_Wrapper io_context_wrapper;
+  IO_Context_Wrapper io_context_wrapper;
 
   std::cout << "Creating server (port = " << port;
   std::cout << "; timeout = " << timeout;

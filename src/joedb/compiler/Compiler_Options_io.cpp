@@ -3,6 +3,7 @@
 #include "joedb/is_identifier.h"
 #include "joedb/interpreted/Database_Schema.h"
 #include "joedb/compiler/nested_namespace.h"
+#include "joedb/ui/type_io.h"
 
 #include <iostream>
 #include <sstream>
@@ -19,21 +20,6 @@ namespace joedb
   if (table_id == Table_Id(0))
    throw Exception("no such table: " + table_name);
   return table_id;
- }
-
- /////////////////////////////////////////////////////////////////////////////
- static bool parse_bool(std::istream &in)
- /////////////////////////////////////////////////////////////////////////////
- {
-  std::string s;
-  in >> s;
-
-  if (s == "true")
-   return true;
-  else if (s == "false")
-   return false;
-  else
-   throw Exception("could not parse bool: " + s);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -109,7 +95,7 @@ namespace joedb
    else if (command == "set_single_row")
    {
     const Table_Id table_id = parse_table(iss, db);
-    const bool value = parse_bool(iss);
+    const bool value = read_boolean(iss);
     compiler_options.set_single_row(table_id, value);
    }
    else

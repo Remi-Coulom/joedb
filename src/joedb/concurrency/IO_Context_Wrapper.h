@@ -3,7 +3,7 @@
 
 #include <asio/io_context.hpp>
 
-namespace joedb::detail
+namespace joedb
 {
  struct IO_Context_Wrapper
  {

@@ -5,6 +5,7 @@
 #include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Server_File.h"
+#include "joedb/concurrency/IO_Context_Wrapper.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
 
@@ -32,7 +33,7 @@ namespace joedb
    Shared_Memory_File file{data};
    Connection connection;
    Writable_Journal_Client client{file, connection};
-   asio::io_context io_context;
+   IO_Context_Wrapper io_context;
 
    Server server;
    std::thread thread;
@@ -47,7 +48,7 @@ namespace joedb
     {
      client,
      share_client,
-     io_context,
+     io_context.io_context,
      uint16_t(0),
      lock_timeout,
      log_to_cerr ? &std::cerr : &log_stream
@@ -60,7 +61,7 @@ namespace joedb
    {
     if (!paused)
     {
-     io_context.post([&](){server.stop();});
+     io_context.io_context.post([&](){server.stop();});
      thread.join();
      paused = true;
     }
@@ -70,8 +71,8 @@ namespace joedb
    {
     if (paused)
     {
-     io_context.post([this](){server.start();});
-     io_context.restart();
+     io_context.io_context.post([this](){server.start();});
+     io_context.io_context.restart();
      thread = std::thread(
       [&io_context_reference = io_context]()
       {
@@ -141,6 +142,10 @@ namespace joedb
     Test_Client_Data(file, server),
     Writable_Database_Client(file, server_connection)
    {
+    if (log_to_cerr)
+     server_connection.set_log(&std::cerr);
+    else
+     server_connection.set_log(nullptr);
    }
 
    Test_Client(Buffered_File &file, Test_Server &server):
@@ -241,7 +246,7 @@ namespace joedb
   joedb::File server_file(file_name, Open_Mode::read_existing);
   Connection connection;
   Readonly_Journal_Client server_client{server_file, connection};
-  asio::io_context io_context;
+  IO_Context_Wrapper io_context;
 
   const bool share_client = false;
   const uint16_t port = 0;
@@ -250,7 +255,7 @@ namespace joedb
   (
    server_client,
    share_client,
-   io_context,
+   io_context.io_context,
    port,
    std::chrono::seconds(0),
    log_to_cerr ? &std::cerr : &log_stream
@@ -266,7 +271,7 @@ namespace joedb
    client.pull();
   }
 
-  io_context.post([&](){server.stop();});
+  io_context.io_context.post([&](){server.stop();});
   thread.join();
   std::remove(file_name);
  }
@@ -710,7 +715,7 @@ namespace joedb
 
   File_Connection connection(connection_file);
   Writable_Journal_Client client{file, connection};
-  asio::io_context io_context;
+  IO_Context_Wrapper io_context;
   const bool share_client = false;
 
   EXPECT_TRUE(file.get_size() > connection_file.get_size());
@@ -719,7 +724,7 @@ namespace joedb
   {
    client,
    share_client,
-   io_context,
+   io_context.io_context,
    uint16_t(0),
    std::chrono::seconds(0),
    log_to_cerr ? &std::cerr : &log_stream
@@ -739,13 +744,13 @@ namespace joedb
   Server_Connection backup_server_connection(channel);
   Writable_Journal_Client backup_client(file, backup_server_connection);
 
-  asio::io_context io_context;
+  IO_Context_Wrapper io_context;
 
   Server server
   {
    backup_client,
    false,
-   io_context,
+   io_context.io_context,
    uint16_t(0),
    std::chrono::seconds(0),
    nullptr
@@ -792,7 +797,7 @@ namespace joedb
    }
   }
 
-  io_context.post([&](){server.stop();});
+  io_context.io_context.post([&](){server.stop();});
   thread.join();
  }
 
@@ -993,5 +998,21 @@ namespace joedb
    EXPECT_EQ(file.read_blob_data(blob), "glouglou");
    EXPECT_EQ(file.read_blob_data(blob2), "glagla");
   }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Server, Server_File)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server;
+  Test_Network_Channel channel("localhost", Port_String(server).get());
+  Server_File file(channel);
+  Writable_Journal_Client client(file, file);
+  joedb::Blob blob;
+  client.transaction([&](joedb::Writable_Journal &journal)
+  {
+   blob = journal.write_blob_data("blob_test");
+  });
+  EXPECT_EQ(file.read_blob_data(blob), "blob_test");
  }
 }

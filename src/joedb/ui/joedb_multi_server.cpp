@@ -60,7 +60,7 @@ namespace joedb
    Readonly_Interpreted_File{config_file_name}
   );
 
-  detail::IO_Context_Wrapper io_context_wrapper;
+  IO_Context_Wrapper io_context_wrapper;
 
   std::list<std::unique_ptr<Server_Data>> servers;
 

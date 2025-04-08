@@ -1,8 +1,13 @@
 #include "joedb/concurrency/Writable_Database_Client.h"
+#include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
+#include "joedb/concurrency/Readonly_Journal_Client.h"
+#include "joedb/concurrency/Writable_Connection.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
+
+#include "Shared_Memory_File.h"
 
 #include "gtest/gtest.h"
 
@@ -40,6 +45,59 @@ namespace joedb
   EXPECT_EQ(1, int(client1.get_database().get_tables().size()));
   client1.pull();
   EXPECT_EQ(2, int(client1.get_database().get_tables().size()));
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Client, Readonly_Database_Client)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  std::vector<char> data;
+  Shared_Memory_File file1(data);
+  Shared_Memory_File file2(data);
+  Shared_Memory_File file3(data);
+
+  Connection connection;
+
+  Writable_Database_Client writable_client(file1, connection);
+  Readonly_Database_Client database_client(file2, connection);
+  Readonly_Journal_Client journal_client(file3, connection);
+
+  writable_client.transaction([](const Readable &readable, Writable &writable)
+  {
+   writable.create_table("person");
+  });
+
+  EXPECT_EQ(1, int(writable_client.get_database().get_tables().size()));
+  EXPECT_EQ(0, int(database_client.get_database().get_tables().size()));
+
+  database_client.pull();
+
+  EXPECT_EQ(1, int(database_client.get_database().get_tables().size()));
+
+  EXPECT_TRUE(journal_client.get_checkpoint() < database_client.get_checkpoint());
+
+  journal_client.pull();
+
+  EXPECT_TRUE(journal_client.get_checkpoint() == database_client.get_checkpoint());
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Client, Writable_Connection)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  Database db;
+  Writable_Connection connection(db);
+  Writable_Journal_Client client(file, connection);
+
+  EXPECT_EQ(0, db.get_tables().size());
+
+  client.transaction([](Writable_Journal &journal)
+  {
+   journal.create_table("person");
+  });
+
+  EXPECT_EQ(1, db.get_tables().size());
  }
 
  /////////////////////////////////////////////////////////////////////////////
