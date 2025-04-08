@@ -4,8 +4,6 @@ TODO
 For next release
 ----------------
 
- - compiled Lock
- - rename commit -> flush_and_sync
  - Push_Thread, Checkpoint_Thread
 
  - joedbc_fuzzer must work without debug assertions: check input in release mode as well

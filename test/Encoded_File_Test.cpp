@@ -28,7 +28,7 @@ namespace joedb
    EXPECT_EQ(data[0], 'y');
    EXPECT_EQ(data[1], 'y');
    EXPECT_EQ(data[2], 'y');
-   file.commit();
+   file.flush_and_sync();
   }
  }
 

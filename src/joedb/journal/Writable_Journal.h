@@ -26,11 +26,11 @@ namespace joedb
     operation_t operation
    );
 
-   void commit()
+   void flush_and_may_sync()
    {
     file.flush();
     if (get_default_commit_level() > Commit_Level::no_commit)
-     file.commit();
+     file.sync();
    }
 
   public:

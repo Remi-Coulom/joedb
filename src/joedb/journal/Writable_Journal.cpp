@@ -30,7 +30,7 @@ joedb::Writable_Journal::Writable_Journal
   file.write<int64_t>(header_size);
   file.write<int64_t>(0);
   file.write<int64_t>(0);
-  commit();
+  flush_and_may_sync();
  }
  else
  {
@@ -45,7 +45,7 @@ joedb::Writable_Journal::Writable_Journal
     file.write<int64_t>(checkpoint_position);
     file.write<int64_t>(checkpoint_position);
     file.write<int64_t>(checkpoint_position);
-    commit();
+    flush_and_may_sync();
    }
   }
 
@@ -55,7 +55,7 @@ joedb::Writable_Journal::Writable_Journal
    file.set_position(5);
    file.write<uint32_t>(file_version);
    file.set_position(header_size);
-   commit();
+   flush_and_may_sync();
   }
  }
 }
@@ -154,7 +154,7 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    );
 
    if (commit_level > Commit_Level::no_commit)
-    file.commit();
+    file.flush_and_sync();
 
    file.pwrite
    (
@@ -165,7 +165,7 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    );
 
    if (commit_level > Commit_Level::half_commit)
-    file.commit();
+    file.flush_and_sync();
 
    file.unlock_head();
   }
