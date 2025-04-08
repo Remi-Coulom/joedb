@@ -145,7 +145,7 @@ namespace joedb
 
    void lock_pull();
    bool is_locked() const {return file.tail_is_locked();}
-   void unlock();
+   void unlock() noexcept;
 
    ~Writable_Journal() override;
  };
@@ -165,8 +165,7 @@ namespace joedb
 
    ~Journal_Lock()
    {
-    try {journal.unlock();}
-    catch (...) {}
+    journal.unlock();
    }
  };
 }

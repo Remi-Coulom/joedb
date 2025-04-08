@@ -106,23 +106,19 @@ namespace joedb
     locked_tail = true;
    }
 
-   void unlock_tail()
+   void unlock_tail() noexcept
    {
     unlock(last_position, 1);
     locked_tail = false;
    }
 
-   bool tail_is_locked() const
-   {
-    return locked_tail;
-   }
-
+   bool tail_is_locked() const noexcept {return locked_tail;}
    void shared_lock_head() {shared_lock(0, 1);}
    void exclusive_lock_head() {exclusive_lock(0, 1);}
-   void unlock_head() {unlock(0, 1);}
+   void unlock_head() noexcept {unlock(0, 1);}
 
-   bool is_shared() const {return mode == Open_Mode::shared_write;}
-   bool is_readonly() const {return mode == Open_Mode::read_existing;}
+   bool is_shared() const noexcept {return mode == Open_Mode::shared_write;}
+   bool is_readonly() const noexcept {return mode == Open_Mode::read_existing;}
 
    // set_position must be called when switching between write and read
    void set_position(int64_t position);

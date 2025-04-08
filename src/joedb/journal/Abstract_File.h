@@ -18,7 +18,7 @@ namespace joedb
 
    virtual void shared_lock(int64_t start, int64_t size) {}
    virtual void exclusive_lock(int64_t start, int64_t size) {}
-   virtual void unlock(int64_t start, int64_t size) {}
+   virtual void unlock(int64_t start, int64_t size) noexcept {}
 
    virtual ~Abstract_File() = default;
  };

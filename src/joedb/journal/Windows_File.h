@@ -48,7 +48,7 @@ namespace joedb
 
    void shared_lock(int64_t start, int64_t size) override;
    void exclusive_lock(int64_t start, int64_t size) override;
-   void unlock(int64_t start, int64_t size) override;
+   void unlock(int64_t start, int64_t size) noexcept override;
 
    ~Windows_Handle() override;
  };
