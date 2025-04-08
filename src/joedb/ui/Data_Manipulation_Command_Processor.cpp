@@ -70,7 +70,7 @@ namespace joedb
   }
   else if (command == "insert_into") ///////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
 
    Record_Id record_id = Record_Id(0);
    parameters >> record_id;
@@ -88,7 +88,7 @@ namespace joedb
   }
   else if (command == "insert_vector") /////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    Record_Id record_id = Record_Id(0);
    size_t size = 0;
    parameters >> record_id >> size;
@@ -96,7 +96,7 @@ namespace joedb
   }
   else if (command == "update") ////////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    Record_Id record_id = Record_Id(0);
    parameters >> record_id;
    std::string field_name;
@@ -106,7 +106,7 @@ namespace joedb
   }
   else if (command == "update_vector") /////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    Record_Id record_id = Record_Id(0);
    parameters >> record_id;
    std::string field_name;
@@ -140,7 +140,7 @@ namespace joedb
   }
   else if (command == "delete_from") ////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    Record_Id record_id = Record_Id(0);
    parameters >> record_id;
    writable.delete_from(table_id, record_id);

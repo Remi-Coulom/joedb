@@ -17,8 +17,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   std::istream &in,
-  std::ostream &out
- ) const
+  const Readable &readable
+ )
  {
   std::string table_name;
   in >> table_name;
@@ -40,7 +40,7 @@ namespace joedb
  {
   if (command == "table") ///////////////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
 
    size_t max_column_width = 25;
    {
@@ -170,7 +170,7 @@ namespace joedb
   }
   else if (command == "record") /////////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    Record_Id record_id;
    if (!(parameters >> record_id))
     record_id = Record_Id{1};
@@ -192,7 +192,7 @@ namespace joedb
   }
   else if (command == "table_size") /////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    const auto &freedom = readable.get_freedom(table_id);
    out << freedom.get_used_count() << '\n';
   }

@@ -87,19 +87,19 @@ namespace joedb
   }
   else if (command == "drop_table") /////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    writable.drop_table(table_id);
   }
   else if (command == "rename_table") ///////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    std::string new_name;
    parameters >> new_name;
    writable.rename_table(table_id, new_name);
   }
   else if (command == "add_field") //////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    std::string field_name;
    parameters >> field_name;
    const Type type = parse_type(parameters, out);
@@ -137,7 +137,7 @@ namespace joedb
   }
   else if (command == "drop_field") ////////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    std::string field_name;
    parameters >> field_name;
    const Field_Id field_id = readable.find_field(table_id, field_name);
@@ -145,7 +145,7 @@ namespace joedb
   }
   else if (command == "rename_field") //////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, out);
+   const Table_Id table_id = parse_table(parameters, readable);
    std::string field_name;
    parameters >> field_name;
    const Field_Id field_id = readable.find_field(table_id, field_name);

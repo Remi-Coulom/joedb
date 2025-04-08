@@ -14,8 +14,6 @@ namespace joedb
   protected:
    const Readable &readable;
 
-   Table_Id parse_table(std::istream &in, std::ostream &out) const;
-
    void write_value
    (
     std::ostream &out,
@@ -36,6 +34,8 @@ namespace joedb
    ) override;
 
   public:
+   static Table_Id parse_table(std::istream &in, const Readable &readable);
+
    Readable_Command_Processor(const Readable &readable): readable(readable)
    {
    }

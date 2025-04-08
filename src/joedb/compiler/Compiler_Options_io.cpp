@@ -4,24 +4,13 @@
 #include "joedb/interpreted/Database_Schema.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/ui/type_io.h"
+#include "joedb/ui/Readable_Command_Processor.h"
 
 #include <iostream>
 #include <sstream>
 
 namespace joedb
 {
- /////////////////////////////////////////////////////////////////////////////
- static Table_Id parse_table(std::istream &in, const Database_Schema &db)
- /////////////////////////////////////////////////////////////////////////////
- {
-  std::string table_name;
-  in >> table_name;
-  const Table_Id table_id = db.find_table(table_name);
-  if (table_id == Table_Id(0))
-   throw Exception("no such table: " + table_name);
-  return table_id;
- }
-
  /////////////////////////////////////////////////////////////////////////////
  void parse_compiler_options
  /////////////////////////////////////////////////////////////////////////////
@@ -59,7 +48,7 @@ namespace joedb
 
     iss >> index.name;
 
-    index.table_id = parse_table(iss, db);
+    index.table_id = Readable_Command_Processor::parse_table(iss, db);
 
     {
      std::string s;
@@ -94,7 +83,7 @@ namespace joedb
    }
    else if (command == "set_single_row")
    {
-    const Table_Id table_id = parse_table(iss, db);
+    const Table_Id table_id = Readable_Command_Processor::parse_table(iss, db);
     const bool value = read_boolean(iss);
     compiler_options.set_single_row(table_id, value);
    }
