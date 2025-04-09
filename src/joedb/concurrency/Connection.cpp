@@ -34,6 +34,15 @@ namespace joedb
   return client_journal.get_checkpoint_position();
  }
 
+ int64_t Connection::get_checkpoint
+ (
+  Readonly_Journal &client_journal,
+  std::chrono::milliseconds wait
+ )
+ {
+  return client_journal.get_checkpoint_position();
+ }
+
  int64_t Connection::push_until
  (
   Readonly_Journal &client_journal,

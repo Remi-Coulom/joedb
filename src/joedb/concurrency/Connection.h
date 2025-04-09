@@ -39,6 +39,13 @@ namespace joedb
    );
 
    /// @retval server_checkpoint
+   virtual int64_t get_checkpoint
+   (
+    Readonly_Journal &client_journal,
+    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+   );
+
+   /// @retval server_checkpoint
    virtual int64_t push_until
    (
     Readonly_Journal &client_journal,

@@ -12,10 +12,9 @@ namespace joedb
   protected:
    int64_t pull
    (
-    Writable_Journal &client_journal,
+    Writable_Journal *client_journal,
     std::chrono::milliseconds wait,
-    char pull_type,
-    bool has_data
+    char pull_type
    );
 
    bool check_matching_content
@@ -42,7 +41,13 @@ namespace joedb
    int64_t lock_pull
    (
     Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    std::chrono::milliseconds wait = std::chrono::milliseconds{0}
+   ) override;
+
+   int64_t get_checkpoint
+   (
+    Readonly_Journal &client_journal,
+    std::chrono::milliseconds wait
    ) override;
 
    int64_t push_until

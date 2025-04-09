@@ -58,7 +58,6 @@ namespace joedb
  int64_t Server_File::pull
  ////////////////////////////////////////////////////////////////////////////
  (
-  Writable_Journal &client_journal,
   std::chrono::milliseconds wait,
   char pull_type
  )
@@ -66,12 +65,11 @@ namespace joedb
   if (tail.get_size() > 0)
    throw Exception("Server_File: pulling with non-empty tail");
 
-  int64_t result = Server_Connection::pull(client_journal, wait, pull_type, false);
+  Server_Connection::pull(nullptr, wait, pull_type);
   write_checkpoint();
-  client_journal.pull();
-  tail_offset = result;
+  tail_offset = server_checkpoint;
 
-  return result;
+  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -95,7 +93,7 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  return pull(client_journal, wait, 'i');
+  return pull(wait, 'i');
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -106,7 +104,7 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  return pull(client_journal, wait, 'l');
+  return pull(wait, 'l');
  }
 
  ////////////////////////////////////////////////////////////////////////////

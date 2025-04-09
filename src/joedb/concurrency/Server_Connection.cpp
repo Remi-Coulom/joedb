@@ -36,10 +36,9 @@ namespace joedb
  int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
  (
-  Writable_Journal &client_journal,
+  Writable_Journal *client_journal,
   std::chrono::milliseconds wait,
-  char pull_type,
-  bool has_data
+  char pull_type
  )
  {
   Channel_Lock lock(channel);
@@ -48,7 +47,9 @@ namespace joedb
 
   buffer.index = 0;
   buffer.write<char>(pull_type);
-  const int64_t client_checkpoint = client_journal.get_checkpoint_position();
+  const int64_t client_checkpoint = client_journal
+   ? client_journal->get_checkpoint_position()
+   : 0;
   buffer.write<int64_t>(client_checkpoint);
   buffer.write<int64_t>(wait.count());
   lock.write(buffer.data, buffer.index);
@@ -58,27 +59,24 @@ namespace joedb
   {
    const char reply = buffer.read<char>();
    if (reply == 'R')
-    throw Exception("Server is pull-only");
+    throw Exception("Server is pull-only, cannot lock");
    else if (reply != pull_type)
     throw Exception("Unexpected server reply");
   }
   server_checkpoint = buffer.read<int64_t>();
 
-  if (server_checkpoint < client_checkpoint)
-   throw Exception("Client checkpoint is ahead of server checkpoint");
-
-  if (has_data)
+  if (client_journal)
   {
    buffer.index = 0;
    lock.read(buffer.data, 8);
    const int64_t size = buffer.read<int64_t>();
-   client_journal.flush(); // ??? necessary ???
-   const int64_t old_position = client_journal.get_position();
-   Async_Writer writer = client_journal.get_async_tail_writer();
+   client_journal->flush(); // ??? necessary ???
+   const int64_t old_position = client_journal->get_position();
+   Async_Writer writer = client_journal->get_async_tail_writer();
    download(writer, lock, size);
-   client_journal.set_position(writer.get_position());
-   client_journal.default_checkpoint();
-   client_journal.set_position(old_position);
+   client_journal->set_position(writer.get_position());
+   client_journal->default_checkpoint();
+   client_journal->set_position(old_position);
   }
   else
    LOG("no data\n");
@@ -94,7 +92,7 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  return pull(client_journal, wait, 'P', true);
+  return pull(&client_journal, wait, 'P');
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -105,7 +103,18 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  return pull(client_journal, wait, 'L', true);
+  return pull(&client_journal, wait, 'L');
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_Connection::get_checkpoint
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Readonly_Journal &client_journal,
+  std::chrono::milliseconds wait
+ )
+ {
+  return pull(nullptr, wait, 'i');
  }
 
  ////////////////////////////////////////////////////////////////////////////

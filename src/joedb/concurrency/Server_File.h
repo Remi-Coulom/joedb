@@ -33,7 +33,6 @@ namespace joedb
 
    int64_t pull
    (
-    Writable_Journal &client_journal,
     std::chrono::milliseconds wait,
     char pull_type
    );

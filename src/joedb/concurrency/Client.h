@@ -131,7 +131,10 @@ namespace joedb
      server_checkpoint = connection.pull(*writable_journal, wait);
     }
     else
+    {
      readonly_journal.pull();
+     server_checkpoint = connection.get_checkpoint(readonly_journal, wait);
+    }
 
     read_journal();
 
