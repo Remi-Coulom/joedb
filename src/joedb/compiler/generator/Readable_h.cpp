@@ -139,6 +139,17 @@ namespace joedb::generator
    }
 
   out << " };\n";
+
+  for (const auto &[tid, tname]: tables)
+  {
+   out << "\n namespace interpreted_" << tname << '\n';
+   out << " {\n";
+   out << "  constexpr static Table_Id table_id = Table_Id{" << int(tid) << "};\n";
+   for (const auto &[fid, fname]: db.get_fields(tid))
+    out << "  constexpr static Field_Id " << fname << "_field_id = Field_Id{" << int(fid) << "};\n";
+   out << " }\n";
+  }
+
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";
  }

@@ -57,13 +57,7 @@ namespace joedb::generator
    out << "   constexpr bool operator<=(id_of_" << tname << " x) const {return id <= x.id;}\n";
    out << "   constexpr bool operator>=(id_of_" << tname << " x) const {return id >= x.id;}\n";
    out << "   constexpr id_of_" << tname << " operator[](size_t i) const {return id_of_" << tname << "(id + i);}\n";
-   out << " };\n\n";
-   out << " namespace interpreted_" << tname << '\n';
-   out << " {\n";
-   out << "  constexpr static Table_Id table_id = Table_Id{" << int(tid) << "};\n";
-   for (const auto &[fid, fname]: db.get_fields(tid))
-    out << "  constexpr static Field_Id " << fname << "_field_id = Field_Id{" << int(fid) << "};\n";
-   out << " }\n";
+   out << " };\n";
   }
 
   namespace_close(out, options.get_name_space());
