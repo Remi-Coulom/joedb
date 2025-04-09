@@ -60,7 +60,7 @@ namespace joedb::generator
 
    out << "   constexpr static Table_Id table_id = Table_Id{" << int(tid) << "};\n";
    for (const auto &[fid, fname]: db.get_fields(tid))
-    out << "   constexpr static Field_Id id_of_" << fname << " = Field_Id{" << int(fid) << "};\n";
+    out << "   constexpr static Field_Id " << fname << "_field = Field_Id{" << int(fid) << "};\n";
    out << " };\n";
   }
 
