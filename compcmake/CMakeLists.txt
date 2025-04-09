@@ -168,6 +168,7 @@ if(GTest_FOUND)
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
+  ../test/compiler/Readable_Test.cpp
   ../test/compiler/Readonly_Client.cpp
   ../test/compiler/single_row.cpp
   ../test/compiler/translation.h
