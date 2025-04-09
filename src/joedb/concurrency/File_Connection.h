@@ -19,7 +19,7 @@ namespace joedb
    (
     Readonly_Journal &client_journal,
     bool content_check
-   ) final
+   ) override
    {
     if (content_check)
     {
@@ -74,7 +74,29 @@ namespace joedb
    {
    }
 
-   bool is_pullonly() const override {return true;}
+   //////////////////////////////////////////////////////////////////////////
+   int64_t lock_pull
+   //////////////////////////////////////////////////////////////////////////
+   (
+    Writable_Journal &client_journal,
+    std::chrono::milliseconds
+   ) override
+   {
+    throw Exception("Connected to a read-only journal: can't lock");
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   int64_t push_until
+   //////////////////////////////////////////////////////////////////////////
+   (
+    Readonly_Journal &client_journal,
+    const int64_t from_checkpoint,
+    const int64_t until_checkpoint,
+    bool unlock_after
+   ) override
+   {
+    throw Exception("Connected to a read-only journal: can't push");
+   }
  };
 
  /// @ingroup concurrency
@@ -108,7 +130,7 @@ namespace joedb
     const int64_t from_checkpoint,
     const int64_t until_checkpoint,
     bool unlock_after
-   ) final
+   ) override
    {
     if (!get_journal().is_locked())
      get_journal().lock_pull();
@@ -126,17 +148,10 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void unlock() final
+   void unlock() override
    //////////////////////////////////////////////////////////////////////////
    {
     get_journal().unlock();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   bool is_pullonly() const override
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return false;
    }
 
    //////////////////////////////////////////////////////////////////////////

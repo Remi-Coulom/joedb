@@ -34,8 +34,6 @@ namespace joedb
 
   if (client.is_readonly())
    out << "(readonly)";
-  if (client.is_pullonly())
-   out << "(pullonly)";
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -82,7 +80,6 @@ namespace joedb
  pull_every [<wait_seconds>] [<sleep_seconds>]
  db
  push
- push_every [<seconds>]
  transaction
 
 )RRR";
@@ -120,26 +117,6 @@ namespace joedb
   }
   else if (command == "push") ///////////////////////////////////////////////
   {
-   client.push_unlock();
-  }
-  else if (command == "push_every") /////////////////////////////////////////
-  {
-   int seconds = 1;
-   parameters >> seconds;
-
-   Signal::set_signal(Signal::no_signal);
-   Signal::start();
-
-   client.push_and_keep_locked();
-
-   while (Signal::get_signal() != SIGINT)
-   {
-    sleep(seconds, out);
-    client.pull();
-    if (client.get_checkpoint_difference() > 0)
-     client.push_and_keep_locked();
-   }
-
    client.push_unlock();
   }
   else if (command == "pull") ///////////////////////////////////////////////

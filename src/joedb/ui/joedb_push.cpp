@@ -59,41 +59,33 @@ namespace joedb
    &file
   );
 
-  if (connection.is_pullonly())
-  {
-   std::cerr << "Cannot push to pull-only connection\n";
-   return 1;
-  }
-  else
-  {
-   int64_t from_checkpoint = connection.handshake(journal, true);
-   Signal::start();
+  int64_t from_checkpoint = connection.handshake(journal, true);
+  Signal::start();
 
-   while
-   (
-    from_checkpoint < until_checkpoint &&
-    Signal::get_signal() != SIGINT
-   )
+  while
+  (
+   from_checkpoint < until_checkpoint &&
+   Signal::get_signal() != SIGINT
+  )
+  {
+   if (journal.get_checkpoint_position() > from_checkpoint)
    {
-    if (journal.get_checkpoint_position() > from_checkpoint)
-    {
-     from_checkpoint = connection.push_until
-     (
-      journal,
-      from_checkpoint,
-      until_checkpoint,
-      false
-     );
-    }
-
-    if (follow)
-    {
-     std::this_thread::sleep_for(std::chrono::seconds(1));
-     journal.pull();
-    }
-    else
-     break;
+    from_checkpoint = connection.push_until
+    (
+     journal,
+     from_checkpoint,
+     until_checkpoint,
+     false
+    );
    }
+
+   if (follow)
+   {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    journal.pull();
+   }
+   else
+    break;
   }
 
   return 0;

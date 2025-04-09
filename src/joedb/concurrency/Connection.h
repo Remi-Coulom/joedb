@@ -73,8 +73,6 @@ namespace joedb
 
    virtual void unlock();
 
-   virtual bool is_pullonly() const;
-
    virtual ~Connection();
  };
 }
