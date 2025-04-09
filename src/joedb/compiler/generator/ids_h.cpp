@@ -31,6 +31,8 @@ namespace joedb::generator
 
   out << R"RRR(
  using joedb::Record_Id;
+ using joedb::Table_Id;
+ using joedb::Field_Id;
 )RRR";
 
   for (const auto &[tid, tname]: tables)
@@ -54,7 +56,11 @@ namespace joedb::generator
    out << "   constexpr bool operator>(id_of_" << tname << " x) const {return id > x.id;}\n";
    out << "   constexpr bool operator<=(id_of_" << tname << " x) const {return id <= x.id;}\n";
    out << "   constexpr bool operator>=(id_of_" << tname << " x) const {return id >= x.id;}\n";
-   out << "   constexpr id_of_" << tname << " operator[](size_t i) const {return id_of_" << tname << "(id + i);}\n";
+   out << "   constexpr id_of_" << tname << " operator[](size_t i) const {return id_of_" << tname << "(id + i);}\n\n";
+
+   out << "   constexpr static Table_Id table_id = Table_Id{" << int(tid) << "};\n";
+   for (const auto &[fid, fname]: db.get_fields(tid))
+    out << "   constexpr static Field_Id id_of_" << fname << " = Field_Id{" << int(fid) << "};\n";
    out << " };\n";
   }
 
