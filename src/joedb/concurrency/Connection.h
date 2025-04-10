@@ -24,6 +24,10 @@ namespace joedb
     bool content_check
    );
 
+   /// Pull new data from the connection
+   /// @param client_journal: journal to pull into
+   /// @param wait: duration during which the connection may wait
+   /// for new data if the pull would otherwise be empty
    /// @retval server_checkpoint
    virtual int64_t pull
    (
@@ -31,6 +35,7 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
+   /// Fused lock_pull, executed at the start of a write transaction
    /// @retval server_checkpoint
    virtual int64_t lock_pull
    (
@@ -38,6 +43,7 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
+   /// Get new connection checkpoint without pulling
    /// @retval server_checkpoint
    virtual int64_t get_checkpoint
    (
@@ -45,6 +51,7 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
+   /// Push new data to the connection
    /// @retval server_checkpoint
    virtual int64_t push_until
    (
@@ -54,6 +61,7 @@ namespace joedb
     bool unlock_after
    );
 
+   /// Shortcut to call @ref push_until until the client checkpoint
    /// @retval server_checkpoint
    int64_t push
    (
@@ -71,6 +79,7 @@ namespace joedb
     );
    }
 
+   /// Can be used to cancel a transaction without pushing.
    virtual void unlock();
 
    virtual ~Connection();
