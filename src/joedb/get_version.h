@@ -9,8 +9,6 @@ namespace joedb
 #include "joedb/../../VERSION"
   ;
  }
-
- constexpr int get_version_int() {return JOEDB_VERSION;}
 }
 
 #endif
