@@ -163,6 +163,9 @@ namespace joedb
     journal.lock_pull();
    }
 
+   Journal_Lock(const Journal_Lock &lock) = delete;
+   Journal_Lock &operator=(const Journal_Lock &lock) = delete;
+
    ~Journal_Lock()
    {
     journal.unlock();
