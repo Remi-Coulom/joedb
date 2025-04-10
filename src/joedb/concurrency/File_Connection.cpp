@@ -37,7 +37,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
-  std::chrono::milliseconds
+  std::chrono::milliseconds milliseconds
  )
  {
   server_journal.pull();
@@ -50,7 +50,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
-  std::chrono::milliseconds
+  std::chrono::milliseconds milliseconds
  )
  {
   server_journal.pull();
@@ -63,7 +63,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
-  std::chrono::milliseconds
+  std::chrono::milliseconds milliseconds
  )
  {
   throw Exception("Connected to a read-only journal: can't lock");
@@ -87,7 +87,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Writable_Journal &client_journal,
-  std::chrono::milliseconds
+  std::chrono::milliseconds milliseconds
  )
  {
   get_journal().lock_pull();
