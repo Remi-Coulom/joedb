@@ -47,21 +47,11 @@ For next release
  - Add support for vcpkg
  - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
  - Use clang-format (try to customize it, use tabs)
+ - Change file format:
 
-New Operations and Types
-------------------------
-- delete_vector
-- Add an ``undo`` operation to the log. This way, it is possible to keep all
-  branches of history.
-
-- Use diff for large-string update
-- Differentiate between "storage type" and "usage type":
-
-  - remove bool type and use int8 instead, with bool usage
-  - usages: bool(int8), date(int64).
-  - uint8, uint16, uint32, uint64
-  - custom usage label: ip address(int32), URL(string), PNG file(string),
-    UTF8(string) (use base64 instead for json output), ...?
+   - delete_vector
+   - move checkpoints to start of file for alignment
+   - store blobs as position + size
 
 On-disk Storage
 ---------------
@@ -74,6 +64,14 @@ On-disk Storage
 
 Compiler
 --------
+- Differentiate between "storage type" and "usage type":
+
+  - remove bool type and use int8 instead, with bool usage
+  - usages: bool(int8), date(int64).
+  - uint8, uint16, uint32, uint64
+  - custom usage label: ip address(int32), URL(string), PNG file(string),
+    UTF8(string) (use base64 instead for json output), ...?
+
 - check that vector range is OK in constructor of vector update
 - modularize code generation
 

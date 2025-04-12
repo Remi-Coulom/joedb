@@ -12,7 +12,7 @@ Compiled Code
 
 The compiler produces C++ source files, stored in a directory named after the
 namespace of the database. For example, after compiling the joedb tutorial, you
-can look at those files in the ``joedb/doc/source/tutorial/tutorial``
+can look at those files in the ``joedb/doc/source/tutorial/src/tutorial``
 directory.
 
 ``readonly.h`` and ``readonly.cpp`` contain the code for reading databases.
