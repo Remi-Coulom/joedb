@@ -86,7 +86,12 @@ Other links:
 - https://www.youtube.com/watch?v=fU9hR3kiOK0
 - `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
 - `The SQLite team is preparing an efficient remote replication tool <https://www.reddit.com/r/programming/comments/1fvp9dz/the_sqlite_team_is_preparing_an_efficient_remote/>`_
+
+Object retirement:
 - `Andrezj's C++ blob: Operation cancelling and std::fstream <https://akrzemi1.wordpress.com/2019/05/23/operation-cancelling-and-stdfstream/>`
+- `C++’s best feature <https://akrzemi1.wordpress.com/2013/07/18/cs-best-feature/>`
+- `Throwing Destructors <https://www.kolpackov.net/projects/c++/eh/dtor-1.xhtml>`
+- https://stackoverflow.com/questions/15112219/guarantee-a-certain-function-is-called-before-destruction
 
 Crash resistance:
 
