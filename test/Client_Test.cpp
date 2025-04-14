@@ -223,6 +223,7 @@ namespace joedb
    EXPECT_EQ(server_file.get_size(), 48);
    lock.get_journal().comment("Hi");
    EXPECT_EQ(server_file.get_size(), 48);
+   lock.push_unlock();
   }
 
   EXPECT_EQ(server_file.get_size(), 52);
@@ -237,6 +238,7 @@ namespace joedb
   {
   }
 
+  client_file.flush();
   EXPECT_EQ(client_file.get_size(), 57);
   EXPECT_EQ(client.get_checkpoint(), 52);
   EXPECT_EQ(server_file.get_size(), 52);

@@ -3,7 +3,6 @@
 #include "joedb/get_pid.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/ui/get_time_string.h"
-#include "joedb/error/Posthumous_Catcher.h"
 #include "joedb/journal/File_Hasher.h"
 
 #define LOG(x) log([&](std::ostream &out){out << x;})
@@ -187,14 +186,6 @@ namespace joedb
    locked = false;
    lock_timeout_timer.cancel();
 
-   if (client_lock && share_client && lock_queue.empty())
-   {
-    Posthumous_Catcher catcher;
-    client_lock->set_catcher(catcher);
-    client_lock.reset(); // ??? takes_time
-    catcher.rethrow();
-   }
-
    lock_dequeue();
   }
  }
@@ -289,8 +280,17 @@ namespace joedb
      session->push_writer->get_position()
     );
     client_lock->get_journal().default_checkpoint();
+
     session->push_writer.reset();
-    client_lock->push(); // ??? takes_time
+
+    // ??? takes_time
+    if (share_client && session->unlock_after_push)
+    {
+     client_lock->push_unlock();
+     client_lock.reset();
+    }
+    else
+     client_lock->push();
    }
 
    session->buffer.data[0] = session->push_status;
@@ -896,9 +896,7 @@ namespace joedb
     session->pull_timer.reset();
    }
 
-   acceptor.cancel();
-   interrupt_signals.cancel();
-   stopped = true;
+   stop_after_sessions();
   }
  }
 
@@ -912,6 +910,9 @@ namespace joedb
    {
     LOG("Bug: destroying server before sessions.\n");
    }
+
+   if (client_lock)
+    client_lock->unlock();
   }
   catch (...)
   {

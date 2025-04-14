@@ -3,6 +3,7 @@
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/error/Posthumous_Thrower.h"
+#include "joedb/error/Destructor_Logger.h"
 
 namespace joedb
 {
@@ -28,7 +29,7 @@ namespace joedb
     }
     catch (...)
     {
-     cancel_transaction();
+     connection.unlock();
      throw;
     }
 
@@ -67,14 +68,6 @@ namespace joedb
    {
     server_checkpoint = connection.lock_pull(*writable_journal);
     read_journal();
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void cancel_transaction()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    writable_journal->flush();
-    connection.unlock();
    }
 
   public:
@@ -160,23 +153,26 @@ namespace joedb
 
  /// Lock object that allows writing to a database managed by a joedb::Client
  ///
- /// This is an alternative to joedb::Client::transaction.
- /// It is more flexible than a transaction, but a bit annoying to use because
- /// push_unlock will take place in the destructor and that makes error
- /// management tricky.
+ /// At the end of the life of this object, right before destruction, you
+ /// should call either @ref unlock to cancel the transaction, or
+ /// @ref push_unlock to confirm it. If you fail to do so, the destructor
+ /// will call @unlock. But calling unlock explicitly is better if possible,
+ /// because it can throw exceptions, unlike the destructor.
+ ///
  /// @ingroup concurrency
  class Client_Lock: public Posthumous_Thrower
  {
   private:
-   const int initial_uncaught_exceptions;
+   bool locked;
 
   protected:
    Client &client;
    Journal_Lock journal_lock;
+   bool is_locked() const {return locked;}
 
   public:
    Client_Lock(Client &client):
-    initial_uncaught_exceptions(std::uncaught_exceptions()),
+    locked(true),
     client(client),
     journal_lock(*client.writable_journal)
    {
@@ -186,36 +182,53 @@ namespace joedb
    Client_Lock(const Client_Lock &) = delete;
    Client_Lock &operator=(const Client_Lock &) = delete;
 
+   /// Checkpoint current journal, and push to the connection
+   ///
+   /// Unlike @push_unlock, you can call this function multiple
+   /// times during the life of the lock.
    void push()
    {
+    JOEDB_ASSERT(is_locked());
     client.writable_journal->default_checkpoint();
     client.push_and_keep_locked();
    }
 
+   /// Confirm the transaction right before lock destruction
+   ///
+   /// Destruction should happen right after this function.
+   /// Do not call any other member function after this one.
+   void push_unlock()
+   {
+    JOEDB_ASSERT(is_locked());
+    client.writable_journal->default_checkpoint();
+    client.push_unlock();
+    locked = false;
+   }
+
+   /// Cancel the transaction right before lock destruction
+   ///
+   /// Destruction should happen right after this function.
+   /// Do not call any other member function after this one.
+   void unlock()
+   {
+    JOEDB_ASSERT(is_locked());
+    client.connection.unlock();
+    locked = false;
+   }
+
    ~Client_Lock()
    {
-    try
+    if (locked)
     {
-     if (std::uncaught_exceptions() > initial_uncaught_exceptions)
-      client.cancel_transaction();
-     else
+     Destructor_Logger::write("locked in destructor, cancelling transaction");
+     try
      {
-      try
-      {
-       client.writable_journal->default_checkpoint();
-      }
-      catch (...)
-      {
-       client.cancel_transaction();
-       throw;
-      }
-
-      client.push_unlock();
+      unlock();
      }
-    }
-    catch (...)
-    {
-     postpone_exception();
+     catch (...)
+     {
+      postpone_exception("error disconnecting from connection");
+     }
     }
    }
  };

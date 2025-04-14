@@ -2,7 +2,6 @@
 #include "joedb/concurrency/Network_Channel.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/error/Posthumous_Catcher.h"
 
 #include <iostream>
 
@@ -32,22 +31,17 @@ static int write_server_blob(int argc, char **argv)
 
  // Write blobs with a Client_Lock: keeps the server locked between writes
  {
-  joedb::Posthumous_Catcher catcher;
+  joedb::Writable_Journal_Client_Lock lock(client);
 
+  for (int i = 3; --i >= 0;)
   {
-   joedb::Writable_Journal_Client_Lock lock(client);
-   lock.set_catcher(catcher);
-
-   for (int i = 3; --i >= 0;)
-   {
-    const joedb::Blob blob = lock.get_journal().write_blob_data(argv[2]);
-    lock.push();
-    std::cout << "wrote blob with lock: " << blob.get_position() << '\n';
-    std::cout << "blob: " << server_file.read_blob_data(blob) << '\n';
-   }
+   const joedb::Blob blob = lock.get_journal().write_blob_data(argv[2]);
+   lock.push();
+   std::cout << "wrote blob with lock: " << blob.get_position() << '\n';
+   std::cout << "blob: " << server_file.read_blob_data(blob) << '\n';
   }
 
-  catcher.rethrow();
+  lock.unlock();
  }
 
  // Write blobs with a transaction: lock and unlock for each write

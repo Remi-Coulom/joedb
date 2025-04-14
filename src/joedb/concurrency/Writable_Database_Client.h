@@ -71,13 +71,14 @@ namespace joedb
    {
    }
 
-   const Database &get_database() const
+   const Readable &get_readable() const
    {
     return static_cast<Writable_Database_Client &>(client).database;
    }
 
-   Multiplexer &get_multiplexer()
+   Writable &get_writable()
    {
+    JOEDB_ASSERT(is_locked());
     return static_cast<Writable_Database_Client &>(client).multiplexer;
    }
  };
