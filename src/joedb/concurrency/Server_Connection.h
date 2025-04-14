@@ -59,8 +59,6 @@ namespace joedb
    ) override;
 
    void unlock() override;
-
-   void disconnect() override;
  };
 }
 

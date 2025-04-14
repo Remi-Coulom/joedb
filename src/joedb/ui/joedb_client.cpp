@@ -33,8 +33,6 @@ namespace joedb
   interpreter.set_prompt(true);
   interpreter.main_loop(std::cin, std::cout);
 
-  client.disconnect();
-
   return 0;
  }
 }

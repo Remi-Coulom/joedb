@@ -1,7 +1,6 @@
 #include "joedb/concurrency/Server_Client.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/error/Exception.h"
-#include "joedb/error/Destructor_Logger.h"
 #include "joedb/ui/Progress_Bar.h"
 
 #include <iostream>
@@ -164,20 +163,16 @@ namespace joedb
   keep_alive_interval(std::chrono::seconds{240}),
   channel(channel),
   log(nullptr),
-  connected(false),
   session_id(-1),
   pullonly_server(false)
  {
   connect();
-  connected = true;
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server_Client::disconnect()
  ////////////////////////////////////////////////////////////////////////////
  {
-  JOEDB_ASSERT(connected);
-
   {
    Channel_Lock lock(channel);
    keep_alive_thread_must_stop = true;
@@ -186,19 +181,13 @@ namespace joedb
   condition.notify_one();
   if (keep_alive_thread.joinable())
    keep_alive_thread.join();
-
-  connected = false;
  }
 
  ////////////////////////////////////////////////////////////////////////////
  Server_Client::~Server_Client()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (connected)
-  {
-   Destructor_Logger::write("Server_Client was not disconnected before destruction");
-   try { disconnect(); } catch (...) {}
-  }
+  try { disconnect(); } catch (...) {}
  }
 }
 

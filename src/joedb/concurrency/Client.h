@@ -145,12 +145,6 @@ namespace joedb
     push(true);
    }
 
-   /// Should be called before destruction
-   void disconnect()
-   {
-    connection.disconnect();
-   }
-
    virtual ~Client();
  };
 

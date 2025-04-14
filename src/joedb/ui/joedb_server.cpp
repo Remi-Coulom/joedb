@@ -77,8 +77,6 @@ and can still push data: the push will succeed only if there is no conflict.
 
   io_context_wrapper.run();
 
-  client.disconnect();
-
   return 0;
  }
 }

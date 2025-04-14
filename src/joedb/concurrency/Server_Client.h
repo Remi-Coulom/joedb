@@ -25,6 +25,7 @@ namespace joedb
    std::thread keep_alive_thread;
    void keep_alive();
    void connect();
+   void disconnect();
 
   protected:
    mutable Thread_Safe_Channel channel;
@@ -55,9 +56,6 @@ namespace joedb
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}
    void ping();
-
-   /// This function should be called right before destruction
-   void disconnect();
 
    ~Server_Client();
  };

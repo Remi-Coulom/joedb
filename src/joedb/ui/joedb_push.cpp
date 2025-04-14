@@ -88,8 +88,6 @@ namespace joedb
     break;
   }
 
-  connection.disconnect();
-
   return 0;
  }
 }
