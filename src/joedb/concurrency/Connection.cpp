@@ -58,5 +58,9 @@ namespace joedb
  {
  }
 
+ void Connection::disconnect()
+ {
+ }
+
  Connection::~Connection() = default;
 }

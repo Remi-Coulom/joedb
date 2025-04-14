@@ -42,6 +42,8 @@ namespace joedb
     )
    {
    }
+
+   void disconnect() {client.disconnect();}
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -79,6 +81,9 @@ namespace joedb
   }
 
   io_context_wrapper.run();
+
+  for (auto &server: servers)
+   server->disconnect();
 
   return 0;
  }

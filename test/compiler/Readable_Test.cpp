@@ -13,6 +13,7 @@ TEST(Compiler, Readable)
  test::Writable_Database db(file);
 
  const test::id_of_person joe = db.new_person("Joe", db.null_city());
+ db.default_checkpoint();
 
  test::Readable readable(db);
 

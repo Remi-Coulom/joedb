@@ -2,7 +2,6 @@
 #define joedb_Client_declared
 
 #include "joedb/concurrency/Connection.h"
-#include "joedb/error/Posthumous_Thrower.h"
 #include "joedb/error/Destructor_Logger.h"
 
 namespace joedb
@@ -141,11 +140,15 @@ namespace joedb
     return get_checkpoint() - old_checkpoint;
    }
 
-   //////////////////////////////////////////////////////////////////////////
    void push_unlock()
-   //////////////////////////////////////////////////////////////////////////
    {
     push(true);
+   }
+
+   /// Should be called before destruction
+   void disconnect()
+   {
+    connection.disconnect();
    }
 
    virtual ~Client();
@@ -160,7 +163,7 @@ namespace joedb
  /// because it can throw exceptions, unlike the destructor.
  ///
  /// @ingroup concurrency
- class Client_Lock: public Posthumous_Thrower
+ class Client_Lock
  {
   private:
    bool locked;
@@ -221,14 +224,7 @@ namespace joedb
     if (locked)
     {
      Destructor_Logger::write("locked in destructor, cancelling transaction");
-     try
-     {
-      unlock();
-     }
-     catch (...)
-     {
-      postpone_exception("error disconnecting from connection");
-     }
+     try { unlock(); } catch (...) {}
     }
    }
  };

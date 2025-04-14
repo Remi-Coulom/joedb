@@ -4,7 +4,6 @@
 #include "joedb/error/assert.h"
 #include "joedb/error/Exception.h"
 #include "joedb/Blob.h"
-#include "joedb/error/Posthumous_Thrower.h"
 #include "joedb/journal/Open_Mode.h"
 #include "joedb/journal/Sequential_File.h"
 #include "joedb/journal/Buffer.h"
@@ -15,7 +14,7 @@
 namespace joedb
 {
  /// @ingroup journal
- class Buffered_File: public Sequential_File, public Posthumous_Thrower
+ class Buffered_File: public Sequential_File
  {
   friend class File_Hasher;
 

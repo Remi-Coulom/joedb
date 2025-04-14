@@ -30,8 +30,6 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
  ${JOEDB_SRC_DIR}/joedb/error/Destructor_Logger.cpp
- ${JOEDB_SRC_DIR}/joedb/error/Posthumous_Catcher.cpp
- ${JOEDB_SRC_DIR}/joedb/error/Posthumous_Thrower.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Table.cpp

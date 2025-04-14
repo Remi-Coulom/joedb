@@ -569,9 +569,14 @@ namespace joedb
 
   const int64_t initial = journal.get_checkpoint_position();
   journal.create_table("person");
+  journal.default_checkpoint();
   const int64_t after_person = journal.get_checkpoint_position();
   journal.create_table("city");
+  journal.default_checkpoint();
   const int64_t after_city = journal.get_checkpoint_position();
+
+  EXPECT_TRUE(after_person > initial);
+  EXPECT_TRUE(after_city > after_person);
 
   {
    joedb::Memory_File to_file;

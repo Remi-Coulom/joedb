@@ -4,16 +4,12 @@
 #include "joedb/Writable.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Async_Writer.h"
-#include "joedb/error/Posthumous_Thrower.h"
 #include <limits>
 
 namespace joedb
 {
  /// @ingroup journal
- class Writable_Journal: 
-  public Readonly_Journal,
-  public Writable,
-  public Posthumous_Thrower
+ class Writable_Journal: public Readonly_Journal, public Writable
  {
   private:
    Commit_Level current_commit_level;

@@ -2,7 +2,6 @@
 #define joedb_Server_Client_declared
 
 #include "joedb/concurrency/Thread_Safe_Channel.h"
-#include "joedb/error/Posthumous_Thrower.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/journal/Async_Writer.h"
 
@@ -14,7 +13,7 @@
 namespace joedb
 {
  /// @ingroup concurrency
- class Server_Client: public Posthumous_Thrower
+ class Server_Client
  {
   friend class Server_File;
 
@@ -30,6 +29,7 @@ namespace joedb
   protected:
    mutable Thread_Safe_Channel channel;
    std::ostream *log;
+   bool connected;
 
    mutable Buffer<13> buffer;
 
@@ -55,6 +55,9 @@ namespace joedb
    int64_t get_session_id() const {return session_id;}
    Thread_Safe_Channel &get_channel() {return channel;}
    void ping();
+
+   /// This function should be called right before destruction
+   void disconnect();
 
    ~Server_Client();
  };

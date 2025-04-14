@@ -957,6 +957,7 @@ TEST(Compiler, delete_vector)
  const size_t size = 40;
 
  db.delete_vector_of_city(v[first], size);
+ db.default_checkpoint();
 
  for (size_t i = 0; i < 100; i++)
  {

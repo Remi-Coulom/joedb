@@ -40,6 +40,7 @@ namespace joedb
    reference_string << reference_file.rdbuf();
 
    EXPECT_EQ(reference_string.str(), out_string.str());
+   journal.default_checkpoint();
   }
  }
 
@@ -68,6 +69,7 @@ namespace joedb
   reference_string << reference_file.rdbuf();
 
   EXPECT_EQ(reference_string.str(), dump_string.str());
+  journal.default_checkpoint();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -95,6 +97,7 @@ namespace joedb
   reference_string << reference_file.rdbuf();
 
   EXPECT_EQ(reference_string.str(), dump_string.str());
+  journal.default_checkpoint();
  }
 
  ////////////////////////////////////////////////////////////////////////////

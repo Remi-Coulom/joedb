@@ -1,6 +1,7 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/error/Exception.h"
+#include "joedb/error/Destructor_Logger.h"
 
 /////////////////////////////////////////////////////////////////////////////
 joedb::Writable_Journal::Writable_Journal
@@ -89,7 +90,7 @@ int64_t joedb::Writable_Journal::pull_from
 /////////////////////////////////////////////////////////////////////////////
 (
  Readonly_Journal &journal,
- int64_t until_checkpoint
+ const int64_t until_checkpoint
 )
 {
  const int64_t source_checkpoint = std::min
@@ -468,5 +469,5 @@ joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
  if (ahead_of_checkpoint() > 0)
-  postpone_exception("Ahead_of_checkpoint in Writable_Journal destructor");
+  Destructor_Logger::write("Ahead_of_checkpoint in Writable_Journal destructor");
 }

@@ -195,14 +195,6 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   destructor_flush();
-  try
-  {
-   if (close(fd) < 0)
-    throw_last_error("closing", "file");
-  }
-  catch (...)
-  {
-   postpone_exception("Error closing file");
-  }
+  close(fd);
  }
 }

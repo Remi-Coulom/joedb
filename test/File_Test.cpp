@@ -530,6 +530,8 @@ static void perf(size_t size)
 
  for (int i = N; --i >= 0;)
   file.write_string(s);
+
+ file.flush();
 }
 
 TEST_F(File_Test, write_data_perf100000) {perf(100000);}
@@ -593,6 +595,7 @@ TEST(File, portable)
    joedb::Open_Mode::write_existing_or_create_new
   );
   file.write<int32_t>(1234);
+  file.flush();
  );
 
  {

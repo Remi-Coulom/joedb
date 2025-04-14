@@ -3,7 +3,7 @@
 
 #include "joedb/error/Logger.h"
 
-#include <iostream>
+#include <ostream>
 
 namespace joedb
 {

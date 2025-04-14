@@ -77,6 +77,8 @@ namespace joedb
 
    client.pull();
    client.transaction([](Readable &, Writable &){});
+
+   connection.disconnect();
   }
  }
 }

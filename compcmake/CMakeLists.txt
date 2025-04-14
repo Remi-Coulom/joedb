@@ -71,8 +71,6 @@ joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
 ipo_add_executable(joedb_convert
  ../src/joedb/Writable.cpp
  ../src/joedb/error/Destructor_Logger.cpp
- ../src/joedb/error/Posthumous_Catcher.cpp
- ../src/joedb/error/Posthumous_Thrower.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
@@ -98,8 +96,6 @@ if(GTest_FOUND)
   ../test/File_Test.cpp
   ../test/Upgradable_File_Test.cpp
   ../src/joedb/journal/Buffered_File.cpp
-  ../src/joedb/error/Posthumous_Thrower.cpp
-  ../src/joedb/error/Posthumous_Catcher.cpp
   ../src/joedb/journal/Async_Reader.cpp
   ../src/joedb/journal/Journal_Construction_Lock.cpp
   ../src/joedb/journal/Stream_File.cpp
@@ -148,7 +144,6 @@ if(GTest_FOUND)
   ../test/nested_namespace_Test.cpp
   ../test/pack_Test.cpp
   ../test/Polymorphic_File_Test.cpp
-  ../test/Posthumous_Thrower_Test.cpp
   ../test/get_time_string_Test.cpp
   ../test/Selective_Writable_Test.cpp
   ../test/SHA_256_Test.cpp
@@ -356,8 +351,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/concurrency/Network_Channel.cpp
   ../src/joedb/concurrency/Server.cpp
   ../src/joedb/error/Destructor_Logger.cpp
-  ../src/joedb/error/Posthumous_Catcher.cpp
-  ../src/joedb/error/Posthumous_Thrower.cpp
   ../src/joedb/interpreted/Table.cpp
   ../src/joedb/ui/Blob_Reader_Command_Processor.cpp
   ../src/joedb/ui/Command_Interpreter.cpp

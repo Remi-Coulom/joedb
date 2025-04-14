@@ -19,6 +19,7 @@ namespace joedb
    file.write<int32_t>(5678);
    file.write<int32_t>(9999);
    file.write<int32_t>(8765);
+   file.flush();
   }
 
   {

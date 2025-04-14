@@ -274,23 +274,25 @@ namespace joedb
   {
    if (session->push_writer)
    {
-    JOEDB_ASSERT(client_lock);
-    client_lock->get_journal().set_position
-    (
-     session->push_writer->get_position()
-    );
-    client_lock->get_journal().default_checkpoint();
+    if (client_lock)
+    {
+     client_lock->get_journal().set_position
+     (
+      session->push_writer->get_position()
+     );
+     client_lock->get_journal().default_checkpoint();
+
+     // ??? takes_time
+     if (share_client && session->unlock_after_push)
+     {
+      client_lock->push_unlock();
+      client_lock.reset();
+     }
+     else
+      client_lock->push();
+    }
 
     session->push_writer.reset();
-
-    // ??? takes_time
-    if (share_client && session->unlock_after_push)
-    {
-     client_lock->push_unlock();
-     client_lock.reset();
-    }
-    else
-     client_lock->push();
    }
 
    session->buffer.data[0] = session->push_status;
@@ -365,11 +367,13 @@ namespace joedb
    else
    {
     session->push_status = 'U';
-    JOEDB_ASSERT(client_lock);
-    session->push_writer.emplace
-    (
-     client_lock->get_journal().get_async_tail_writer()
-    );
+    if (client_lock)
+    {
+     session->push_writer.emplace
+     (
+      client_lock->get_journal().get_async_tail_writer()
+     );
+    }
    }
 
    session->push_remaining_size = size_t(size);
@@ -896,6 +900,12 @@ namespace joedb
     session->pull_timer.reset();
    }
 
+   if (client_lock)
+   {
+    client_lock->unlock();
+    client_lock.reset();
+   }
+
    stop_after_sessions();
   }
  }
@@ -910,9 +920,6 @@ namespace joedb
    {
     LOG("Bug: destroying server before sessions.\n");
    }
-
-   if (client_lock)
-    client_lock->unlock();
   }
   catch (...)
   {

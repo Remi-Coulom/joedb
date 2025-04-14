@@ -30,6 +30,7 @@ namespace joedb
   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
   Writable_Journal journal(*parser.get_file());
   journal.comment("Hello");
+  journal.default_checkpoint();
  }
 
  ////////////////////////////////////////////////////////////////////////////

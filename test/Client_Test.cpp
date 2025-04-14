@@ -442,10 +442,15 @@ namespace joedb
    Writable_Journal journal(client_file);
    initial = journal.get_checkpoint_position();
    journal.create_table("person");
+   journal.default_checkpoint();
    after_person = journal.get_checkpoint_position();
    journal.create_table("city");
+   journal.default_checkpoint();
    after_city = journal.get_checkpoint_position();
   }
+
+  EXPECT_TRUE(after_person > initial);
+  EXPECT_TRUE(after_city > after_person);
 
   Readonly_Journal client_journal(client_file);
 
@@ -457,7 +462,7 @@ namespace joedb
 
   EXPECT_EQ(server_checkpoint, initial);
 
-  server_checkpoint = connection.Connection::push_until
+  server_checkpoint = connection.push_until
   (
    client_journal,
    server_checkpoint,
@@ -465,16 +470,18 @@ namespace joedb
    true
   );
 
+  EXPECT_EQ(server_file.get_size(), after_person);
   EXPECT_EQ(server_checkpoint, after_person);
 
-  server_checkpoint = connection.Connection::push_until
+  server_checkpoint = connection.push_until
   (
    client_journal,
    server_checkpoint,
-   after_person,
+   after_city,
    true
   );
 
+  EXPECT_EQ(server_file.get_size(), after_city);
   EXPECT_EQ(server_checkpoint, after_city);
  }
 }

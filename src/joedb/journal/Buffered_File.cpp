@@ -98,14 +98,7 @@ namespace joedb
   if (buffer_has_write_data())
   {
    Destructor_Logger::write("warning: an unflushed file is being destroyed");
-   try
-   {
-    write_buffer();
-   }
-   catch (...)
-   {
-    postpone_exception("failed to flush in Buffered_File destructor");
-   }
+   try { write_buffer(); } catch (...) {}
   }
  }
 

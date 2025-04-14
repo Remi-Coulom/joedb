@@ -82,6 +82,9 @@ namespace joedb
    /// Can be used to cancel a transaction without pushing.
    virtual void unlock();
 
+   /// Called before destruction
+   virtual void disconnect();
+
    virtual ~Connection();
  };
 }
