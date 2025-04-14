@@ -834,14 +834,6 @@ namespace joedb
   if (push_client)
    push_client->push_unlock();
 
-  if (!share_client && !is_readonly())
-  {
-   JOEDB_ASSERT(push_client);
-   client_lock.emplace(*push_client);
-  }
-  else
-   client.pull();
-
   start();
  }
 
@@ -852,6 +844,14 @@ namespace joedb
   if (stopped)
   {
    stopped = false;
+
+   if (!share_client && !is_readonly())
+   {
+    JOEDB_ASSERT(push_client);
+    client_lock.emplace(*push_client);
+   }
+   else
+    client.pull();
 
    interrupt_signals.async_wait([this](const asio::error_code &error, int)
    {
@@ -911,7 +911,7 @@ namespace joedb
  {
   try
   {
-   if (!this->sessions.empty())
+   if (!sessions.empty())
    {
     LOG("Bug: destroying server before sessions.\n");
    }
