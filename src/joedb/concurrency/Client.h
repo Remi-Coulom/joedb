@@ -159,7 +159,7 @@ namespace joedb
  /// At the end of the life of this object, right before destruction, you
  /// should call either @ref unlock to cancel the transaction, or
  /// @ref push_unlock to confirm it. If you fail to do so, the destructor
- /// will call @unlock. But calling unlock explicitly is better if possible,
+ /// will call @ref unlock. But calling unlock explicitly is better if possible,
  /// because it can throw exceptions, unlike the destructor.
  ///
  /// @ingroup concurrency
@@ -187,7 +187,7 @@ namespace joedb
 
    /// Checkpoint current journal, and push to the connection
    ///
-   /// Unlike @push_unlock, you can call this function multiple
+   /// Unlike @ref push_unlock, you can call this function multiple
    /// times during the life of the lock.
    void push()
    {

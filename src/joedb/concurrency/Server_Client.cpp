@@ -187,12 +187,6 @@ namespace joedb
   if (keep_alive_thread.joinable())
    keep_alive_thread.join();
 
-  {
-   Channel_Lock lock(channel);
-   buffer.data[0] = 'Q';
-   lock.write(buffer.data, 1);
-  }
-
   connected = false;
  }
 

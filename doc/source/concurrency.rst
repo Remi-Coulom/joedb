@@ -133,11 +133,10 @@ some more complex use cases. The :joedb:`Client_Lock` object allows:
  - pushing multiple times in the middle of a transaction, without unlocking the connection,
  - writing data in one thread, and pushing in another one.
 
-:joedb:`Client_Lock` performs lock_pull in its constructor, and push_unlock in
-its destructor. Because push_unlock can fail, error management is a little
-tricky, and requires using a :joedb:`Posthumous_Catcher`.  That's why it is
-recommended to use a transaction lambda instead of a :joedb:`Client_Lock`
-whenever possible.
+:joedb:`Client_Lock` performs :joedb:`Connection::lock_pull` in its
+constructor, and you have to explicitly call either
+:joedb:`Client_Lock::push_unlock` or :joedb:`Client_Lock::unlock` right before
+its destruction.
 
 .. literalinclude:: ./tutorial/src/client_lock.cpp
    :language: c++

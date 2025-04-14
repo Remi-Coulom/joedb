@@ -19,7 +19,6 @@ i      checkpoint        get server checkpoint (like P, without data)
        wait_milliseconds
 H      checkpoint        check SHA-256 hash code
        hash (32 bytes)
-Q                        quit
 ------ ----------------- ------------------------------------------------------
 L      checkpoint        lock-pull
        wait_milliseconds

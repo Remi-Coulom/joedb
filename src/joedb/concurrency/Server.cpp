@@ -689,11 +689,6 @@ namespace joedb
      async_read(session, 1, 40, &Server::check_hash_handler);
     break;
 
-    case 'Q':
-     if (session->state == Session::State::locking)
-      unlock(*session);
-    break;
-
     case 'r':
      async_read(session, 1, 16, &Server::read_handler);
     break;

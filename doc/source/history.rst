@@ -28,7 +28,6 @@ History
     - :joedb:`Upgradable_File` allows applying automatic schema upgrades to a
       read-only file.
     - :ref:`joedb_edit` allows editing a binary joedb file with a text editor.
-    - :joedb:`Client` is a :joedb:`Blob_Reader`
 
   - Fixes and improvements:
 
