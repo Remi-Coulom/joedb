@@ -131,7 +131,7 @@ some more complex use cases. The :joedb:`Client_Lock` object allows:
 
  - starting the transaction in one function, and finishing it in another one,
  - pushing multiple times in the middle of a transaction, without unlocking the connection,
- - writing data in one thread, and pushing in another one.
+ - writing data in one thread, and pushing in another one (use a mutex).
 
 :joedb:`Client_Lock` performs :joedb:`Connection::lock_pull` in its
 constructor, and you have to explicitly call either
