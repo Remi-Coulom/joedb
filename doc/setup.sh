@@ -20,10 +20,11 @@ pip install sphinx_rtd_theme
 pip install sphinxcontrib.spelling
 pip install sphinxcontrib.doxylink
 pip install sphinx-favicon
+pip install sphinx-sitemap
 
 cd ~/repos
 
-if [ ! -d asciinema]; then
+if [ ! -d sphinxcontrib.asciinema ]; then
  git clone git@github.com:Remi-Coulom/sphinxcontrib.asciinema.git
 fi
 

@@ -25,4 +25,4 @@ stored contiguously, and can be read much faster.
 
 :joedb:`Server_File` allows accessing blobs from a remote server without having
 to download a replica of the whole database locally. This is another good
-reason to store tables separately from blobs if you have a lot of blobs.
+reason to store tables separately from blobs.

@@ -54,6 +54,7 @@ TSPHINXBUILD = . ~/.venvs/sphinx/bin/activate && ${SPHINXBUILD}
 
 html:
 	$(TSPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	cp -v robots.txt sitemap.xml $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

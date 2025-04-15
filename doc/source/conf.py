@@ -38,12 +38,19 @@ extensions = [
     'sphinxcontrib.doxylink',
     'joedbi_lexer',
     'joedbc_lexer',
-    'sphinx_favicon'
+    'sphinx_favicon',
+    'sphinx_sitemap'
 ]
 
+# config of sphinxcontrib.doxylink
 doxylink = {
  'joedb': ('doxygen/joedb.tag', 'doxygen')
 }
+
+# config of sphinx_sitemap
+html_baseurl = 'https://www.joedb.org/'
+sitemap_filename = 'sphinx_sitemap.xml'
+sitemap_url_scheme = '{link}'
 
 # Breathe Configuration
 #sys.path.append( "/usr/lib/python3/dist-packages" )
