@@ -8,8 +8,8 @@ namespace joedb
  Network_Channel::Network_Channel
  //////////////////////////////////////////////////////////////////////////
  (
-  const char *host_name,
-  const char *port_name
+  std::string_view host,
+  std::string_view service
  ):
   socket(io_context)
  {
@@ -17,13 +17,7 @@ namespace joedb
   asio::connect
   (
    socket,
-   resolver.resolve
-   (
-    asio::ip::tcp::v4(),
-    host_name,
-    port_name,
-    asio::ip::tcp::resolver::flags()
-   )
+   resolver.resolve(asio::ip::tcp::v4(), host, service)
   );
   socket.set_option(asio::ip::tcp::no_delay(true));
  }

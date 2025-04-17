@@ -19,7 +19,7 @@ namespace joedb
    size_t read_some(char *data, size_t size) override;
 
   public:
-   Network_Channel(const char *host_name, const char *port_name);
+   Network_Channel(std::string_view host, std::string_view service);
    ~Network_Channel() override;
  };
 }
