@@ -40,7 +40,7 @@ namespace joedb
   file.write<char>('e');
   file.write<char>('d');
   file.write<char>('b');
-  file.write<uint32_t>(4);
+  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
   file.write<uint64_t>(0);
   file.write<uint64_t>(0);
   file.write<uint64_t>(41);
@@ -50,7 +50,7 @@ namespace joedb
   {
    joedb::Readonly_Journal journal(file);
    EXPECT_TRUE(journal.at_end_of_file());
-   EXPECT_EQ(4UL, journal.get_file_version());
+   EXPECT_EQ(joedb::Readonly_Journal::version_number, journal.get_file_version());
    EXPECT_EQ(41, journal.get_position());
 
    journal.set_position(0);
@@ -69,7 +69,7 @@ namespace joedb
 
   {
    joedb::Writable_Journal journal(file);
-   EXPECT_EQ(4UL, journal.get_file_version());
+   EXPECT_EQ(joedb::Readonly_Journal::version_number, journal.get_file_version());
    EXPECT_EQ(41, journal.get_position());
   }
  }
@@ -130,7 +130,7 @@ namespace joedb
   file.write<char>('e');
   file.write<char>('d');
   file.write<char>('b');
-  file.write<uint32_t>(4);
+  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
   file.write<uint64_t>(1);
   file.write<uint64_t>(2);
   file.write<uint64_t>(3);
@@ -188,7 +188,7 @@ namespace joedb
   file.write<char>('e');
   file.write<char>('d');
   file.write<char>('b');
-  file.write<uint32_t>(4);
+  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
   file.write<uint64_t>(0);
   file.write<uint64_t>(0);
   file.write<uint64_t>(42);
@@ -211,7 +211,7 @@ namespace joedb
   file.write<char>('e');
   file.write<char>('d');
   file.write<char>('b');
-  file.write<uint32_t>(4);
+  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
   file.write<uint64_t>(0);
   file.write<uint64_t>(0);
   file.write<uint64_t>(41);
@@ -295,7 +295,7 @@ namespace joedb
   file.write<char>('e');
   file.write<char>('d');
   file.write<char>('b');
-  file.write<uint32_t>(4);
+  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
   file.write<uint64_t>(0);
   file.write<uint64_t>(0);
   file.write<uint64_t>(42);
@@ -615,5 +615,25 @@ namespace joedb
   file.write<char>('j');
   file.flush();
   EXPECT_ANY_THROW(joedb::Readonly_Journal{file});
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, write_blob_data)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  joedb::Memory_File file;
+  joedb::Writable_Journal journal(file);
+
+  {
+   const joedb::Blob blob = journal.write_blob_data("Hello");
+   journal.flush();
+   EXPECT_EQ(journal.get_file().read_blob_data(blob), "Hello");
+  }
+
+  {
+   const joedb::Blob blob = journal.write_blob_data("");
+   journal.flush();
+   EXPECT_EQ(journal.get_file().read_blob_data(blob), "");
+  }
  }
 }

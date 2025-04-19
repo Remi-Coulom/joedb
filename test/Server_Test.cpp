@@ -940,6 +940,7 @@ namespace joedb
   }
 
   Blob blob2;
+
   {
    Test_Network_Channel channel("localhost", Port_String(server).get());
    Server_File file(channel);
@@ -968,12 +969,12 @@ namespace joedb
 
    try
    {
-    file.read_blob_data(Blob{1});
+    file.read_blob_data(Blob{1, 1234});
     FAIL() << "This should have failed";
    }
    catch (const std::exception &e)
    {
-    EXPECT_EQ(e.what(), std::string("read_some: End of file"));
+    EXPECT_EQ(e.what(), std::string("Trying to read past the end of file"));
    }
   }
 
@@ -983,7 +984,7 @@ namespace joedb
 
    try
    {
-    file.read_blob_data(Blob{123456789});
+    file.read_blob_data(Blob{123456789, 123});
     FAIL() << "This should have failed";
    }
    catch (const std::exception &e)

@@ -110,7 +110,7 @@ namespace joedb
        case Type::Type_Id::blob:
        {
         const Blob blob = db.get_blob(tid, record_id, fid);
-        out << blob.get_position();
+        out << '[' << blob.get_position() << ',' << blob.get_size() << ']';
        }
        break;
 

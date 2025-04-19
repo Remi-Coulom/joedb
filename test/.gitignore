@@ -9,3 +9,5 @@ compiler_test.joedb
 small_disk.fs
 small_disk
 test.joedb
+brotli.joedb
+codec.joedb

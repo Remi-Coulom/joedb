@@ -381,15 +381,18 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::blob:
   {
-   writable.on_blob(Blob(get_position()));
+   const int64_t size = file.compact_read<int64_t>();
+   writable.on_blob(Blob(get_position(), size));
 
-   if (writable.wants_blob_data())
-    writable.write_blob_data(safe_read_string());
-   else
+   if (writable.wants_blob_data() && size < checkpoint_position)
    {
-    const int64_t size = file.compact_read<int64_t>();
-    file.ignore(size);
+    std::string s(size, 0);
+    if (size > 0)
+     file.read_data(s.data(), size);
+    writable.write_blob_data(s);
    }
+   else
+    file.ignore(size);
   }
   break;
 

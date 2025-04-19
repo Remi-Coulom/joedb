@@ -1,11 +1,11 @@
 OK: ###############################################################################
 OK: # Testing basic interpreter commands
 OK: ###############################################################################
-42
+43,15
 OK: write_blob "This is my life"
 "This is my life"
-OK: read_blob 42
-OK: read_blob 42 bio.txt.tmp
+OK: read_blob 43,15
+OK: read_blob 43,15 bio.txt.tmp
 OK: create_table city
 OK: create_table person
 0
@@ -26,9 +26,9 @@ OK: schema
 OK: insert_into city 1 "Paris"
 OK: insert_into city 2 "Lille"
 OK: insert_into city 15 "Pétaouchnok"
-OK: insert_into person 1 "Rémi" 2 42
-OK: insert_into person 2 "Norbert" 2 42
-OK: insert_into person 3 "Alexandre" 15 42
+OK: insert_into person 1 "Rémi" 2 43,15
+OK: insert_into person 2 "Norbert" 2 43,15
+OK: insert_into person 3 "Alexandre" 15 43,15
 3
 OK: table_size city
 3
@@ -51,9 +51,9 @@ update person 3 name "Alexandre"
 update person 1 city 2
 update person 2 city 2
 update person 3 city 15
-update person 1 bio 42
-update person 2 bio 42
-update person 3 bio 42
+update person 1 bio 43,15
+update person 2 bio 43,15
+update person 3 bio 43,15
 OK: dump
 CREATE TABLE "city"("__id" INTEGER PRIMARY KEY);
 CREATE TABLE "person"("__id" INTEGER PRIMARY KEY);
@@ -91,26 +91,26 @@ OK: sql
   "__size": 3,
   "name": ["UsOpbWk=", "Tm9yYmVydA==", "QWxleGFuZHJl"],
   "city": [1, 1, 2],
-  "bio": [42, 42, 42]
+  "bio": [[43,15], [43,15], [43,15]]
  }
 }
 OK: json 1
-----------------------
-  name        city bio
-----------------------
-1 "Rémi"         2  42
-2 "Norbert"      2  42
-3 "Alexandre"   15  42
+------------------------
+  name        city   bio
+------------------------
+1 "Rémi"         2 43,15
+2 "Norbert"      2 43,15
+3 "Alexandre"   15 43,15
 OK: table person
 name: "Rémi"
 city: 2
- bio: 42
+ bio: 43,15
 OK: record person 1
 Exception caught: no such record
 Line 29: record person 12345
 name: "Rémi"
 city: 2
- bio: 42
+ bio: 43,15
 OK: record person
 
 General commands

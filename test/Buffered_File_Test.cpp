@@ -263,3 +263,15 @@ TEST(Buffered_File, get_position)
  file.read<char>();
  EXPECT_EQ(file.get_position(), 2);
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Buffered_File, blob_io)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ file.write_blob(joedb::Blob(123, 456));
+ file.set_position(0);
+ const joedb::Blob blob = file.read_blob();
+ EXPECT_EQ(blob.get_position(), 123);
+ EXPECT_EQ(blob.get_size(), 456);
+}

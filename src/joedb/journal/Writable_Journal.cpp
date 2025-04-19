@@ -436,11 +436,11 @@ joedb::Blob joedb::Writable_Journal::write_blob_data
 )
 {
  file.write<operation_t>(operation_t::blob);
- const int64_t blob_position = get_position();
  file.compact_write<size_t>(data.size());
+ const int64_t blob_position = get_position();
  file.flush();
  file.sequential_write(data.data(), data.size());
- return Blob(blob_position);
+ return Blob(blob_position, data.size());
 }
 
 /////////////////////////////////////////////////////////////////////////////

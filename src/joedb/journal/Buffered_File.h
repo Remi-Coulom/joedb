@@ -201,9 +201,20 @@ namespace joedb
 
    void write_string(const std::string &s);
    std::string read_string();
-   void write_blob(Blob blob) {compact_write<int64_t>(blob.get_position());}
-   Blob read_blob() {return Blob(compact_read<int64_t>());}
    std::string safe_read_string(int64_t max_size);
+
+   void write_blob(Blob blob)
+   {
+    compact_write<int64_t>(blob.get_position());
+    compact_write<int64_t>(blob.get_size());
+   }
+
+   Blob read_blob()
+   {
+    const int64_t position = compact_read<int64_t>();
+    const int64_t size = compact_read<int64_t>();
+    return Blob(position, size);
+   }
 
    //////////////////////////////////////////////////////////////////////////
    void write_data(const char *data, size_t n)
@@ -287,7 +298,7 @@ namespace joedb
      set_position(get_position() + n);
    }
 
-   virtual std::string read_blob_data(Blob blob) const;
+   std::string read_blob_data(Blob blob) const;
  };
 }
 

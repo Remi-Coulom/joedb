@@ -11,14 +11,16 @@ namespace joedb
  {
   private:
    int64_t position;
+   int64_t size;
 
   public:
-   explicit Blob(int64_t position):
-    position(position)
+   explicit Blob(int64_t position, int64_t size):
+    position(position),
+    size(size)
    {
    }
 
-   Blob(): Blob(0)
+   Blob(): Blob(0, 0)
    {
    }
 
@@ -26,6 +28,8 @@ namespace joedb
    bool operator<(Blob blob) const {return position < blob.position;}
 
    int64_t get_position() const noexcept {return position;}
+   int64_t get_size() const noexcept {return size;}
+   int64_t get_end() const noexcept {return position + size;}
  };
 }
 

@@ -2,7 +2,6 @@
 #define joedb_Async_Reader_declared
 
 #include "joedb/journal/Abstract_File.h"
-#include "joedb/Blob.h"
 
 namespace joedb
 {
@@ -17,7 +16,6 @@ namespace joedb
 
   public:
    Async_Reader(const Abstract_File &file, int64_t start, int64_t end);
-   Async_Reader(const Abstract_File &file, Blob blob);
 
    size_t read(char *buffer, size_t capacity);
 

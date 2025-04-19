@@ -243,7 +243,7 @@ namespace joedb
  void write_blob(std::ostream &out, Blob blob)
  /////////////////////////////////////////////////////////////////////////////
  {
-  out << blob.get_position();
+  out << blob.get_position() << ',' << blob.get_size();
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -251,7 +251,10 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   int64_t position = 0;
+  int64_t size = 0;
   in >> position;
-  return Blob(position);
+  in.ignore(1, ',');
+  in >> size;
+  return Blob(position, size);
  }
 }

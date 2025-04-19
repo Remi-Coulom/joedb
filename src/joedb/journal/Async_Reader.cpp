@@ -1,5 +1,4 @@
 #include "joedb/journal/Async_Reader.h"
-#include "joedb/journal/Buffer.h"
 
 namespace joedb
 {
@@ -16,29 +15,6 @@ namespace joedb
   current(start),
   end_of_file(false)
  {
-  if (current > end)
-   current = end;
- }
-
- //////////////////////////////////////////////////////////////////////////
- Async_Reader::Async_Reader
- //////////////////////////////////////////////////////////////////////////
- (
-  const Abstract_File &file,
-  Blob blob
- ):
-  file(file)
- {
-  Buffer<3> buffer;
-  buffer.index = 0;
-  buffer.write<int64_t>(0); // avoid uninitialized data if eof
-  const size_t read = file.pread(buffer.data, 8, blob.get_position());
-  buffer.index = 0;
-  int64_t size = buffer.compact_read<int64_t>();
-  end_of_file = read < buffer.index;
-  current = blob.get_position() + int64_t(buffer.index);
-  end = current + size;
-
   if (current > end)
    current = end;
  }

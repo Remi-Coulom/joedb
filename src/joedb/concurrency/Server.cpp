@@ -586,29 +586,6 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::read_blob_handler
- ///////////////////////////////////////////////////////////////////////////
- (
-  std::shared_ptr<Session> session,
-  std::error_code error,
-  size_t bytes_transferred
- )
- {
-  if (!error)
-  {
-   session->buffer.index = 1;
-   const int64_t blob_position = session->buffer.read<int64_t>();
-   const Async_Reader reader = client.get_journal().get_async_blob_reader
-   (
-    Blob(blob_position)
-   );
-
-   session->buffer.index = 1;
-   start_reading(session, reader);
-  }
- }
-
- ///////////////////////////////////////////////////////////////////////////
  void Server::check_hash_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -656,21 +633,10 @@ namespace joedb
 
    switch (session->buffer.data[0])
    {
-    case 'P':
-     pull(session, false, true);
-    break;
-
-    case 'L':
-     pull(session, true, true);
-    break;
-
-    case 'i':
-     pull(session, false, false);
-    break;
-
-    case 'l':
-     pull(session, true, false);
-    break;
+    case 'P': pull(session, false,  true); break;
+    case 'L': pull(session,  true,  true); break;
+    case 'i': pull(session, false, false); break;
+    case 'l': pull(session,  true, false); break;
 
     case 'U': case 'p':
      session->unlock_after_push = (session->buffer.data[0] == 'U');
@@ -691,10 +657,6 @@ namespace joedb
 
     case 'r':
      async_read(session, 1, 16, &Server::read_handler);
-    break;
-
-    case 'b':
-     async_read(session, 1, 8, &Server::read_blob_handler);
     break;
 
     default:

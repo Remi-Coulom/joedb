@@ -51,7 +51,6 @@ For next release
 
    - delete_vector
    - move checkpoints to start of file for alignment
-   - store blobs as position + size
 
 On-disk Storage
 ---------------

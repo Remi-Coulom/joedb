@@ -2,8 +2,8 @@
 # Testing basic interpreter commands
 ###############################################################################
 write_blob "This is my life"
-read_blob 42
-read_blob 42 bio.txt.tmp
+read_blob 43,15
+read_blob 43,15 bio.txt.tmp
 create_table city
 create_table person
 table_size city
@@ -16,9 +16,9 @@ schema
 insert_into city 1 "Paris"
 insert_into city 2 "Lille"
 insert_into city 15 "Pétaouchnok"
-insert_into person 1 "Rémi" 2 42
-insert_into person 2 "Norbert" 2 42
-insert_into person 3 "Alexandre" 15 42
+insert_into person 1 "Rémi" 2 43,15
+insert_into person 2 "Norbert" 2 43,15
+insert_into person 3 "Alexandre" 15 43,15
 table_size city
 table_size person
 dump

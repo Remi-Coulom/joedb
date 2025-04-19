@@ -165,32 +165,4 @@ namespace joedb
   else
    write_to_body_error();
  }
-
- ////////////////////////////////////////////////////////////////////////////
- std::string Server_File::read_blob_data(Blob blob) const
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (blob.get_position() >= tail_offset)
-   return tail.read_blob_data(Blob{blob.get_position() - tail_offset});
-  else
-  {
-   Channel_Lock lock(channel);
-
-   Server_Connection::buffer.index = 0;
-   Server_Connection::buffer.write<char>('b');
-   Server_Connection::buffer.write<int64_t>(blob.get_position());
-   lock.write(Server_Connection::buffer.data, Server_Connection::buffer.index);
-
-   lock.read(Server_Connection::buffer.data, 9);
-   Server_Connection::buffer.index = 1;
-   const int64_t size = Server_Connection::buffer.read<int64_t>();
-
-   Memory_File file;
-   file.resize(size_t(size));
-   joedb::Async_Writer writer(file, 0);
-   download(writer, lock, size);
-
-   return file.move_data();
-  }
- }
 }

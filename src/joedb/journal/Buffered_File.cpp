@@ -105,11 +105,11 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- std::string Buffered_File::read_blob_data(const Blob blob) const
+ std::string Buffered_File::read_blob_data(Blob blob) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  Async_Reader reader(*this, blob);
-  std::string result(size_t(reader.get_remaining()), 0);
+  Async_Reader reader(*this, blob.get_position(), blob.get_end());
+  std::string result(blob.get_size(), 0);
   reader.read(result.data(), result.size());
   if (reader.is_end_of_file())
    reading_past_end_of_file();
