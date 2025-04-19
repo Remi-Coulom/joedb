@@ -209,10 +209,15 @@ namespace joedb
     compact_write<int64_t>(blob.get_size());
    }
 
+   Buffered_File *blob_file = nullptr;
+
    Blob read_blob()
    {
     const int64_t position = compact_read<int64_t>();
-    const int64_t size = compact_read<int64_t>();
+    if (!blob_file)
+     throw Exception("missing blob file");
+    blob_file->set_position(position);
+    const int64_t size = blob_file->compact_read<int64_t>();
     return Blob(position, size);
    }
 

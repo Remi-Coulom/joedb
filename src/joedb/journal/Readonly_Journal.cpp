@@ -68,7 +68,7 @@ joedb::Readonly_Journal::Readonly_Journal
 
    if (check_flag(check, Check::version))
    {
-    if (file_version < compatible_version || file_version > version_number)
+    if (file_version != 4)
      throw Exception("Unsupported format version");
    }
 
