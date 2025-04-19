@@ -36,6 +36,8 @@ namespace joedb
   {
    std::cerr << "usage: " << argv[0];
    std::cerr << " [--ignore-errors] [--checkpoint N] <input.joedb> <output.joedb> <blobs.joedb>\n";
+   std::cerr << "blobs can be empty (\"\") if there is no blob field in the file\n";
+   std::cerr << "if both input and blobs are empty, upgrade output in place\n";
    return 1;
   }
 
@@ -43,28 +45,47 @@ namespace joedb
   const char *output_file_name = argv[arg_index + 1];
   const char *blobs_file_name = argv[arg_index + 2];
 
-  File input_file(input_file_name, Open_Mode::read_existing);
-
-  Readonly_Journal input_journal
-  (
-   input_file,
-   ignore_errors ?
-    Readonly_Journal::Check::none :
-    Readonly_Journal::Check::all
-  );
-
-  File output_file(output_file_name, Open_Mode::create_new);
-  Writable_Journal output_journal(output_file);
-
-  std::optional<joedb::File> blobs_file;
-
-  if (*blobs_file_name)
+  if (!*input_file_name && !*blobs_file_name)
   {
-   blobs_file.emplace(blobs_file_name, Open_Mode::read_existing);
-   input_file.blob_file = &(*blobs_file);
+   // Read the whole file to test there is no blob
+   {
+    File file(output_file_name, Open_Mode::read_existing);
+    Readonly_Journal journal(file);
+    Writable writable;
+    journal.replay_log(writable);
+   }
+   // change one byte to upgrade version
+   {
+    File file(output_file_name, Open_Mode::write_existing);
+    char version = 5;
+    file.pwrite(&version, 1, 5);
+   }
   }
+  else
+  {
+   File input_file(input_file_name, Open_Mode::read_existing);
 
-  process(input_journal, output_journal, checkpoint);
+   Readonly_Journal input_journal
+   (
+    input_file,
+    ignore_errors ?
+     Readonly_Journal::Check::none :
+     Readonly_Journal::Check::all
+   );
+
+   File output_file(output_file_name, Open_Mode::create_new);
+   Writable_Journal output_journal(output_file);
+
+   std::optional<joedb::File> blobs_file;
+
+   if (*blobs_file_name)
+   {
+    blobs_file.emplace(blobs_file_name, Open_Mode::read_existing);
+    input_file.blob_file = &(*blobs_file);
+   }
+
+   process(input_journal, output_journal, checkpoint);
+  }
 
   return 0;
  }
