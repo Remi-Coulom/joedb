@@ -19,7 +19,7 @@ namespace joedb
 
    bool check_matching_content
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     int64_t server_checkpoint
    );
 
@@ -28,7 +28,7 @@ namespace joedb
 
    int64_t handshake
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     bool content_check
    ) override;
 

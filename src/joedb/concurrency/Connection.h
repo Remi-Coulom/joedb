@@ -20,7 +20,7 @@ namespace joedb
    /// @retval server_checkpoint
    virtual int64_t handshake
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     bool content_check
    );
 

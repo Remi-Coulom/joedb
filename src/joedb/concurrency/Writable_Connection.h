@@ -24,14 +24,13 @@ namespace joedb
    int64_t handshake
    //////////////////////////////////////////////////////////////////////////
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     bool contentcheck
    ) override
    {
-    const int64_t client_position = client_journal.get_position();
-
-    client_journal.replay_log(writable);
-    client_journal.set_position(client_position);
+    File_View file_view(client_journal.get_file());
+    Readonly_Journal journal(file_view);
+    journal.replay_log(writable);
 
     return client_journal.get_checkpoint_position();
    }
@@ -46,15 +45,14 @@ namespace joedb
     bool unlock_after
    ) override
    {
-    File_View file_view(client_journal.get_file());
-    Readonly_Journal journal(file_view);
-
     const int64_t end_position = std::min
     (
-     journal.get_checkpoint_position(),
+     client_journal.get_checkpoint_position(),
      until_position
     );
 
+    File_View file_view(client_journal.get_file());
+    Readonly_Journal journal(file_view);
     journal.set_position(from_position);
     journal.play_until(writable, end_position);
     writable.default_checkpoint();
