@@ -10,7 +10,13 @@ namespace joedb
  class Abstract_File
  {
   public:
+   /// Get the size of the file, or -1 if it is unknown
    virtual int64_t get_size() const {return -1;}
+
+   /// Read a range of bytes
+   ///
+   /// The returned value may be less than size, even if the end of the file
+   /// is not reached. 0 is returned if the end of the file is reached.
    virtual size_t pread(char *data, size_t size, int64_t offset) const {return 0;}
    virtual void pwrite(const char *data, size_t size, int64_t offset) {}
 

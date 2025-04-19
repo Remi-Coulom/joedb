@@ -36,7 +36,7 @@ namespace joedb
 
  int64_t Connection::get_checkpoint
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
@@ -45,7 +45,7 @@ namespace joedb
 
  int64_t Connection::push_until
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   int64_t from_checkpoint,
   int64_t until_checkpoint,
   bool unlock_after

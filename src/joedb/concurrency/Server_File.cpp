@@ -111,7 +111,7 @@ namespace joedb
  int64_t Server_File::push_until
  ////////////////////////////////////////////////////////////////////////////
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   const int64_t server_position,
   const int64_t until_position,
   const bool unlock_after

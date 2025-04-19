@@ -89,7 +89,7 @@ joedb::Writable_Journal::Writable_Journal
 int64_t joedb::Writable_Journal::pull_from
 /////////////////////////////////////////////////////////////////////////////
 (
- Readonly_Journal &journal,
+ const Readonly_Journal &journal,
  const int64_t until_checkpoint
 )
 {
@@ -102,9 +102,8 @@ int64_t joedb::Writable_Journal::pull_from
  if (checkpoint_position < source_checkpoint)
  {
   const int64_t initial_position = get_position();
-  const int64_t initial_source_position = journal.get_position();
 
-  journal.file.copy_to
+  journal.get_file().copy_to
   (
    file,
    checkpoint_position,
@@ -114,7 +113,6 @@ int64_t joedb::Writable_Journal::pull_from
   default_checkpoint();
 
   set_position(initial_position);
-  journal.set_position(initial_source_position);
  }
 
  return checkpoint_position;

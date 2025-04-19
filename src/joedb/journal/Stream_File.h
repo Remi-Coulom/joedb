@@ -16,6 +16,8 @@ namespace joedb
    void seek(int64_t offset) const;
 
   public:
+   static constexpr bool lockable = false;
+
    Stream_File(std::streambuf &streambuf, Open_Mode mode);
 
    size_t pread(char *data, size_t size, int64_t offset) const override;

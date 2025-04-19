@@ -58,7 +58,7 @@ namespace joedb
 
    int64_t pull_from
    (
-    Readonly_Journal &journal,
+    const Readonly_Journal &journal,
     int64_t until_checkpoint = std::numeric_limits<int64_t>::max()
    );
 

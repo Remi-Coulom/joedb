@@ -47,7 +47,7 @@ namespace joedb
    /// @retval server_checkpoint
    virtual int64_t get_checkpoint
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
 
@@ -55,7 +55,7 @@ namespace joedb
    /// @retval server_checkpoint
    virtual int64_t push_until
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     int64_t from_checkpoint,
     int64_t until_checkpoint,
     bool unlock_after
@@ -65,7 +65,7 @@ namespace joedb
    /// @retval server_checkpoint
    int64_t push
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     int64_t from_checkpoint,
     bool unlock_after
    )

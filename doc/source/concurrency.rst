@@ -131,12 +131,16 @@ some more complex use cases. The :joedb:`Client_Lock` object allows:
 
  - starting the transaction in one function, and finishing it in another one,
  - pushing multiple times in the middle of a transaction, without unlocking the connection,
- - writing data in one thread, and pushing in another one (use a mutex).
+ - writing data in one thread, and asynchronously pushing from time to time
+   in another one.
 
 :joedb:`Client_Lock` performs :joedb:`Connection::lock_pull` in its
-constructor, and you have to explicitly call either
-:joedb:`Client_Lock::push_unlock` or :joedb:`Client_Lock::unlock` right before
-its destruction.
+constructor, and :joedb:`Connection::unlock` in its destructor, if the
+connection is not already unlocked. For performance reasons, it is better to
+explicitly call :joedb:`Client::push_unlock` instead of :joedb:`Client::push`
+before destruction, because the fused function can perform the two operations
+in one single round-trip between the client and the server. The lock object
+must not be used any more after being unlocked.
 
 .. literalinclude:: ./tutorial/src/client_lock.cpp
    :language: c++

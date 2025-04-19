@@ -16,6 +16,7 @@ TEST(Buffered_File, copy)
 
  joedb::Test_File file;
  file.write<uint64_t>(magic);
+ file.flush();
 
  joedb::Test_File copy;
  file.copy_to(copy, 0, sizeof(uint64_t));

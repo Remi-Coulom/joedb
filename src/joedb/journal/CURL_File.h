@@ -54,7 +54,7 @@ namespace joedb
    void perform_range(int64_t start, int64_t size) const;
 
    size_t pread(char *buffer, size_t size, int64_t offset) const override;
-   void copy_to(Buffered_File &destination, int64_t start, int64_t size) override;
+   void copy_to(Buffered_File &destination, int64_t start, int64_t size) const override;
 
   public:
    CURL_File(const char *url, bool verbose);

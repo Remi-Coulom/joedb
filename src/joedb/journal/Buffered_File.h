@@ -134,10 +134,10 @@ namespace joedb
     Buffered_File &destination,
     int64_t start,
     int64_t size
-   );
+   ) const;
 
    //////////////////////////////////////////////////////////////////////////
-   void copy_to(Buffered_File &destination)
+   void copy_to(Buffered_File &destination) const
    //////////////////////////////////////////////////////////////////////////
    {
     copy_to(destination, 0, get_size());

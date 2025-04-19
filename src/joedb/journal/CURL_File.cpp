@@ -98,7 +98,7 @@ namespace joedb
   Buffered_File &destination,
   int64_t start,
   int64_t size
- )
+ ) const
  {
   destination.set_position(start);
 

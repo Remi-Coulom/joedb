@@ -43,19 +43,21 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Buffered_File &destination,
-  int64_t start,
-  int64_t size
- )
+  const int64_t start,
+  const int64_t size
+ ) const
  {
-  set_position(start);
   destination.set_position(start);
+  int64_t done = 0;
 
-  while (size > 0)
+  while (done < size)
   {
-   read_buffer();
-   const int64_t copy_size = std::min(size, int64_t(read_buffer_size));
-   destination.sequential_write(buffer.data, size_t(copy_size));
-   size -= copy_size;
+   const size_t asked = std::min(destination.buffer.size, size_t(size - done));
+   const size_t received = pread(destination.buffer.data, asked, start + done);
+   if (received == 0)
+    reading_past_end_of_file();
+   destination.sequential_write(destination.buffer.data, received);
+   done += received;
   }
  }
 

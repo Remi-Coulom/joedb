@@ -49,7 +49,7 @@ namespace joedb
  int64_t Pullonly_Journal_Connection::get_checkpoint
  //////////////////////////////////////////////////////////////////////////
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   std::chrono::milliseconds milliseconds
  )
  {
@@ -73,7 +73,7 @@ namespace joedb
  int64_t Pullonly_Journal_Connection::push_until
  //////////////////////////////////////////////////////////////////////////
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   const int64_t from_checkpoint,
   const int64_t until_checkpoint,
   bool unlock_after
@@ -99,7 +99,7 @@ namespace joedb
  int64_t Journal_Connection::push_until
  //////////////////////////////////////////////////////////////////////////
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   const int64_t from_checkpoint,
   const int64_t until_checkpoint,
   bool unlock_after
