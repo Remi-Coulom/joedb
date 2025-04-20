@@ -18,6 +18,9 @@ namespace joedb
   Server_Connection::buffer.index = 1;
   const size_t returned_size = size_t(Server_Connection::buffer.read<int64_t>());
 
+  if (returned_size > size)
+   throw Exception("bad pread size from server");
+
   for (size_t read = 0; read < returned_size;)
    read += lock.read_some(data + read, returned_size - read);
 
