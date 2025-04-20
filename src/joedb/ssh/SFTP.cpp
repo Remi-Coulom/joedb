@@ -28,12 +28,11 @@ namespace joedb
   void SFTP_Allocation::throw_error(const char *message) const
   ///////////////////////////////////////////////////////////////////////////
   {
-   const int error = sftp_get_error(sftp);
+   const size_t error = size_t(sftp_get_error(sftp));
 
-   char const * const error_string =
-    error < int(sizeof(error_message) / sizeof(*error_message)) ?
-    error_message[error] :
-    "unknown error";
+   char const * const error_string = error < std::size(error_message)
+    ? error_message[error]
+    : "unknown error";
 
    throw Exception
    (

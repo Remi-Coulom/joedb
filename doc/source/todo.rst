@@ -11,7 +11,6 @@ For next release
      - Connection must be decoupled from Server_File
      - for this to work, Connection must provide virtual pread
      - rename Server_File to Connected_File
-     - Forward_Channel should throw std::system_error, like Network_Channel
 
    - Push_Thread: requires virtual bool Abstract_File::is_thread_safe() const
 
