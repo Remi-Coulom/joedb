@@ -46,11 +46,19 @@ For next release
    - use "valid_data" more, option to automatically write it at each push_unlock?
    - soft checkpoint that does not break durability:
 
-     - switch checkpoints only after durable transaction
-     - use negative value for non-durable checkpoint
-     - when opening a file: if non-durable checkpoint is equal to file size, OK by default (but option)
-     - remove default checkpoint (never used it)
-     - make soft checkpoint hard during retirement/destruction
+     - use negative value for soft checkpoint
+     - hard checkpoint switches to next pair
+     - soft checkpoint switches within next pair (write only one copy)
+     - make soft checkpoint hard during destruction if checkpoint is still soft
+     - default checkpoint is always soft
+     - function to directly write checkpoint after pull (no more set_position, ...)
+
+   - necessary Writable functions for durable on-disk storage:
+
+     - get_checkpoint() (return 0 for unknown)
+     - start_transaction(start_checkpoint_position) -> mark storage as dirty
+     - stop_transaction(stop_checkpoint_position) -> update checkpoint and fsync
+     - all write events must be called between start and stop (lock guard)
 
  - Tooling:
 
@@ -66,7 +74,8 @@ On-disk Storage
 - A subdirectory for each table
 - One file per column vector
 - One file for string data (string column = size + start_index)
-- Use memory-mapped files (is there a portable way?)
+- Use memory-mapped files (llfio)
+- SQLite Writable?
 
 Compiler
 --------
@@ -133,8 +142,6 @@ Concurrency
 - Connection_Multiplexer for multiple parallel backup servers? Complicated.
   requires asynchronous client code.
 - Do not crash on write error, continue to allow reading?
-- SQLite connection (store checkpoint and lock in DB + fail on pull if
-  anything to be pulled)
 
 Use case: log with safe real-time remote backup
 -----------------------------------------------

@@ -64,7 +64,7 @@ namespace joedb::generator
     check_schema();
     auto_upgrade();
     check_single_row();
-    default_checkpoint();
+    journal.default_checkpoint();
    }
 )RRR";
 
