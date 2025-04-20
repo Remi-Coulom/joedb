@@ -89,14 +89,6 @@ namespace joedb
    Buffered_File(Open_Mode mode);
    void flush();
 
-   //////////////////////////////////////////////////////////////////////////
-   void flush_and_sync()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    flush();
-    sync();
-   }
-
    static constexpr int64_t last_position = (1ULL << 63) - 1;
 
    void exclusive_lock_tail()

@@ -27,7 +27,7 @@ namespace joedb
   EXPECT_EQ(file.read<int16_t>(), 0);
   file.set_position(0);
   EXPECT_EQ(file.read<int16_t>(), 1234);
-  file.flush_and_sync();
+  file.flush();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace joedb
   file.write<int32_t>(1234);
   file.write<int32_t>(5678);
   file.set_position(0);
-  file.flush_and_sync();
+  file.flush();
   polymorphic_readonly_test(file);
  }
 

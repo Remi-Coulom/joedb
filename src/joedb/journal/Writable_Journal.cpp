@@ -142,7 +142,7 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
   current_commit_level = commit_level;
 
   {
-   file.exclusive_lock_head();
+   file.exclusive_lock_head(); // TODO: lock guard
 
    file.pwrite
    (
@@ -153,7 +153,7 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    );
 
    if (commit_level > Commit_Level::no_commit)
-    file.flush_and_sync();
+    file.sync();
 
    file.pwrite
    (
@@ -164,7 +164,7 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    );
 
    if (commit_level > Commit_Level::half_commit)
-    file.flush_and_sync();
+    file.sync();
 
    file.unlock_head();
   }
