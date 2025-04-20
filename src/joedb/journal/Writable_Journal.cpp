@@ -413,7 +413,7 @@ void joedb::Writable_Journal::update_vector_##type_id\
  record_of_last_operation = record_id;\
  field_of_last_update = field_id;\
 \
- if\
+ if constexpr\
  (\
   Type::Type_Id::type_id == Type::Type_Id::blob ||\
   Type::Type_Id::type_id == Type::Type_Id::string ||\
@@ -440,7 +440,7 @@ joedb::Blob joedb::Writable_Journal::write_blob_data
  const int64_t blob_position = get_position();
  file.flush();
  file.sequential_write(data.data(), data.size());
- return Blob(blob_position, data.size());
+ return Blob(blob_position, int64_t(data.size()));
 }
 
 /////////////////////////////////////////////////////////////////////////////

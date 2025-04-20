@@ -18,12 +18,12 @@ namespace joedb
    {
    }
 
-   int64_t get_size() const
+   int64_t get_size() const override
    {
     return file.get_size();
    }
 
-   size_t pread(char *data, size_t size, int64_t offset) const
+   size_t pread(char *data, size_t size, int64_t offset) const override
    {
     return file.pread(data, size, offset);
    }

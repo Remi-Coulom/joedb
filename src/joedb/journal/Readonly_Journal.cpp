@@ -217,7 +217,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
  {
   case operation_t::create_table:
   {
-   std::string name = safe_read_string();
+   const std::string name = safe_read_string();
    writable.create_table(name);
   }
   break;
@@ -232,7 +232,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::rename_table:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
-   std::string name = safe_read_string();
+   const std::string name = safe_read_string();
    writable.rename_table(table_id, name);
   }
   break;
@@ -240,7 +240,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::add_field:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
-   std::string name = safe_read_string();
+   const std::string name = safe_read_string();
    const Type type = read_type();
    writable.add_field(table_id, name, type);
   }
@@ -258,7 +258,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
    const Field_Id field_id = file.read_strong_type<Field_Id>();
-   std::string name = safe_read_string();
+   const std::string name = safe_read_string();
    writable.rename_field(table_id, field_id, name);
   }
   break;

@@ -14,7 +14,6 @@ message("== CMAKE_TOOLCHAIN_FILE = ${CMAKE_TOOLCHAIN_FILE}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_STANDARD 11)
 
 enable_testing()
 add_test(NAME build_all

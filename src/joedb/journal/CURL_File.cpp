@@ -1,5 +1,4 @@
 #include "joedb/journal/CURL_File.h"
-#include <sstream>
 
 namespace joedb
 {
@@ -15,21 +14,17 @@ namespace joedb
  void CURL_File::perform_range(int64_t start, int64_t size) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::ostringstream range;
-  range << start << '-' << start + size - 1;
+  const std::string range =
+   std::to_string(start) + '-' + std::to_string(start + size - 1);
 
-  error_check(curl_easy_setopt(curl, CURLOPT_RANGE, range.str().c_str()));
+  error_check(curl_easy_setopt(curl, CURLOPT_RANGE, range.c_str()));
   error_check(curl_easy_perform(curl));
 
   long code = 0;
   error_check(curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code));
 
   if (code != 0 && code != 206)
-  {
-   std::ostringstream error_message;
-   error_message << "unexpected response code: " << code;
-   throw Exception(error_message.str());
-  }
+   throw Exception("unexpected response code: " + std::to_string(code));
  }
 
  ////////////////////////////////////////////////////////////////////////////

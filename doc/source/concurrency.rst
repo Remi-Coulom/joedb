@@ -56,9 +56,9 @@ Plain :joedb:`Connection`
 
 The :joedb:`Connection` superclass does not connect to anything. Such a
 connection can be used in a client to handle concurrent access to a local file.
-If the file was opened with :joedb:`Open_Mode`::shared_write, clients
-can start write transactions simultaneously, and the connection will use file
-locking to synchronize them.
+If the file was opened with :joedb:`Open_Mode`::shared_write, clients can start
+write transactions simultaneously, and they will be synchronized with file
+locking.
 
 .. _file_client:
 
@@ -78,8 +78,7 @@ concurrently.
 :joedb:`File_Connection`
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-:joedb:`File_Connection` creates a connection to a file. Here are some typical
-use cases:
+:joedb:`File_Connection` creates a connection to a file:
 
  - :joedb:`File_Connection` can be used to make a safe and clean copy of a database
    that contains a transaction that was not checkpointed, either because the

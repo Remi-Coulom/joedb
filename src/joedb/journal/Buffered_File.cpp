@@ -57,7 +57,7 @@ namespace joedb
    if (received == 0)
     reading_past_end_of_file();
    destination.sequential_write(destination.buffer.data, received);
-   done += received;
+   done += int64_t(received);
   }
  }
 

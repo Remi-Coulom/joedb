@@ -4,25 +4,30 @@ TODO
 For next release
 ----------------
 
- - Push_Thread, Checkpoint_Thread
+ - Important new features:
 
- - joedbc_fuzzer must work without debug assertions: check input in release mode as well
+   - Robust_Connection
 
-   - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
-   - more efficient test for validity of a range of ids for vector insert/update/delete
+     - Connection must be decoupled from Server_File
+     - for this to work, Connection must provide virtual pread
+     - rename Server_File to Connected_File
+     - Forward_Channel should throw std::system_error, like Network_Channel
 
- - strongly typed checkpoints, and byte_count (diff between checkpoints)
- - enum instead of bool for content_check: none, full, quick, ...
- - always use full content check for joedb_edit
- - more joedbc code generation:
+   - Push_Thread: requires virtual bool Abstract_File::is_thread_safe() const
 
-   - Split Database with Database_Storage parent
-   - Compiler options: allow encapsulation:
+ - Important improvements:
 
-     - make read/write access to some fields private
-     - allow writing custom member functions
-     - constructor + destructor
-     - example: encapsulate stone-vector allocation / deletion for kifusnap training set
+   - joedbc_fuzzer must work without debug assertions: check input in release mode as well
+
+     - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
+     - more efficient test for validity of a range of ids for vector insert/update/delete
+
+   - strongly typed checkpoints, and byte_count (diff between checkpoints)
+   - enum instead of bool for content_check: none, minimal (hash first and last), quick, full.
+   - always use full content check for joedb_edit
+   - joedbc:
+
+     - Split Database with Database_Storage parent
      - unique indexes:
 
        - encapsulate multi-column update (cannot write column individually)
@@ -34,23 +39,26 @@ For next release
 
      - use struct (with field names) instead of tuple for index key
      - private access to dropped fields (for old custom functions), cleared at the time of drop
+     - option to make some member functions private (->private: private_new_person)
+     - option to add custom member functions
 
- - joedb_pack: fill holes left by deleted elements, like write_json.
- - non-durable transactions that do not break durability:
-
-   - switch checkpoints only after durable transaction
-   - use negative value for non-durable checkpoint
-   - when opening a file: if non-durable checkpoint is equal to file size, OK by default (but option)
-   - client option to checkpoint its file every n seconds
-   - try to remove default_checkpoint: checkpoint level should be parameter of push and transaction.
-   - insertion of "valid_data" event should also be a parameter of transactions
- - Add support for vcpkg
- - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
- - Use clang-format (try to customize it, use tabs)
- - Change file format:
-
+   - joedb_pack: fill holes left by deleted elements, like write_json.
    - delete_vector
-   - move checkpoints to start of file for alignment
+   - use "valid_data" more, option to automatically write it at each push_unlock?
+   - soft checkpoint that does not break durability:
+
+     - switch checkpoints only after durable transaction
+     - use negative value for non-durable checkpoint
+     - when opening a file: if non-durable checkpoint is equal to file size, OK by default (but option)
+     - remove default checkpoint (never used it)
+     - make soft checkpoint hard during retirement/destruction
+
+ - Tooling:
+
+   - Add support for vcpkg
+   - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
+   - Use clang-format (try to customize it, use tabs)
+   - joa
 
 On-disk Storage
 ---------------
