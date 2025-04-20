@@ -70,7 +70,6 @@ namespace joedb
    buffer.index = 0;
    lock.read(buffer.data, 8);
    const int64_t size = buffer.read<int64_t>();
-   client_journal->flush(); // ??? necessary ???
    const int64_t old_position = client_journal->get_position();
    Async_Writer writer = client_journal->get_async_tail_writer();
    download(writer, lock, size);
