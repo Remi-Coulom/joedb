@@ -212,6 +212,9 @@ if (asio_FOUND)
  joedb_add_executable(joedb_multi_server ../src/joedb/ui/joedb_multi_server.cpp)
 endif()
 
+joedb_add_executable(atomic_read ../test/atomic_read.cpp)
+joedb_add_executable(atomic_write ../test/atomic_write.cpp)
+
 joedbc_build(../test/compiler/db empty)
 joedbc_build(../test/compiler/db blob)
 joedbc_build(../test/compiler/db multi_index)
