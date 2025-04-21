@@ -59,11 +59,28 @@ Fast IO:
 - https://stackoverflow.com/questions/1201261/what-is-the-fastest-method-for-high-performance-sequential-file-i-o-in-c
 - https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 
-File Locking:
+File Locking, atomicity, durability:
 
 - https://gavv.net/articles/file-locks/
 - https://man7.org/linux/man-pages/man2/flock.2.html
 - https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex
+- https://pubs.opengroup.org/onlinepubs/9699919799/functions/V2_chap02.html#tag_15_09_07
+- https://utcc.utoronto.ca/%7Ecks/space/blog/unix/WriteNotVeryAtomic
+- https://stackoverflow.com/questions/35595685/write2-read2-atomicity-between-processes-in-linux
+- https://danluu.com/deconstruct-files/
+- https://danluu.com/file-consistency/
+
+Crash resistance:
+
+.. [Rosenblum-1991] `The Design and Implementation of a Log-Structured File System <https://people.eecs.berkeley.edu/~brewer/cs262/LFS.pdf>`_
+.. [Redis-2016a] `Redis persistence demystified <http://oldblog.antirez.com/post/redis-persistence-demystified.html>`_
+.. [Redis-2016b] `fsync() on a different thread: apparently a useless trick <http://oldblog.antirez.com/post/fsync-different-thread-useless.html>`_
+.. [SQLite-AC] `Atomic Commit In SQLite <https://sqlite.org/atomiccommit.html>`_
+.. [Moyer-2011] `Ensuring data reaches disk <https://lwn.net/Articles/457667/>`_
+.. [serverfault-2009] `SATA Disks that handle write caching properly? <https://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
+.. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
+.. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
+.. [Miller-2024] `Userland Disk I/O <https://transactional.blog/how-to-learn/disk-io>`_
 
 Other links:
 
@@ -86,18 +103,6 @@ Other links:
 - https://www.youtube.com/watch?v=fU9hR3kiOK0
 - `I Want Decentralized Version Control for Structured Data! <https://jonas-schuermann.name/projects/dvcs-for-structured-data/blog/2020-03-22-manifesto.html>`_
 - `The SQLite team is preparing an efficient remote replication tool <https://www.reddit.com/r/programming/comments/1fvp9dz/the_sqlite_team_is_preparing_an_efficient_remote/>`_
-
-Crash resistance:
-
-.. [Rosenblum-1991] `The Design and Implementation of a Log-Structured File System <https://people.eecs.berkeley.edu/~brewer/cs262/LFS.pdf>`_
-.. [Redis-2016a] `Redis persistence demystified <http://oldblog.antirez.com/post/redis-persistence-demystified.html>`_
-.. [Redis-2016b] `fsync() on a different thread: apparently a useless trick <http://oldblog.antirez.com/post/fsync-different-thread-useless.html>`_
-.. [SQLite-AC] `Atomic Commit In SQLite <https://sqlite.org/atomiccommit.html>`_
-.. [Moyer-2011] `Ensuring data reaches disk <https://lwn.net/Articles/457667/>`_
-.. [serverfault-2009] `SATA Disks that handle write caching properly? <https://serverfault.com/questions/15404/sata-disks-that-handle-write-caching-properly>`_
-.. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
-.. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
-.. [Miller-2024] `Userland Disk I/O <https://transactional.blog/how-to-learn/disk-io>`_
 
 Papers
 
