@@ -23,7 +23,8 @@ void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
 joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 /////////////////////////////////////////////////////////////////////////////
  file(lock.file),
- checkpoint_index(0),
+ hard_index(0),
+ soft_index(0),
  checkpoint_position(Header::size),
  table_of_last_operation(Table_Id(0)),
  record_of_last_operation(Record_Id(0)),
@@ -60,25 +61,42 @@ void joedb::Readonly_Journal::read_checkpoint
  const std::array<int64_t, 4> &pos
 )
 {
- for (unsigned i = 0; i < 2; i++)
+ int64_t hard_checkpoint = 0;
+ int64_t soft_checkpoint = 0;
+
+ for (int i = 0; i < 2; i++)
  {
-  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] >= checkpoint_position)
+  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] >= hard_checkpoint)
   {
-   checkpoint_position = pos[2 * i];
-   checkpoint_index = i;
+   hard_checkpoint = pos[2 * i];
+   hard_index = i;
+  }
+
+  for (int j = 0; j < 2; j++)
+  {
+   if (-pos[2 * i + j] >= soft_checkpoint)
+   {
+    soft_checkpoint = -pos[2 * i + j];
+    hard_index = i ^ 1;
+    soft_index = j;
+   }
   }
  }
+
+ if (hard_checkpoint > checkpoint_position)
+  checkpoint_position = hard_checkpoint;
+
+ if (soft_checkpoint > checkpoint_position)
+  checkpoint_position = soft_checkpoint;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::pull_without_locking()
 /////////////////////////////////////////////////////////////////////////////
 {
- const int64_t old_position = file.get_position();
  std::array<int64_t, 4> pos;
- file.pread((char *)&pos, sizeof(pos), checkpoint_offset);
+ file.pread((char *)&pos, sizeof(pos), 0);
  read_checkpoint(pos);
- file.set_position(old_position);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -106,13 +124,14 @@ void joedb::Readonly_Journal::replay_with_checkpoint_comments
 )
 {
  rewind();
- writable.start_writing(file.get_position());
- while(file.get_position() < checkpoint_position)
+ writable.start_writing(get_position());
+ while(get_position() < checkpoint_position)
  {
   one_step(writable);
-  writable.comment(std::to_string(file.get_position()));
+  writable.comment(std::to_string(get_position()));
  }
- writable.soft_checkpoint_at(file.get_position());
+ writable.soft_checkpoint_at(get_position());
+ file.flush();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -133,16 +152,18 @@ void joedb::Readonly_Journal::set_position(int64_t position)
 void joedb::Readonly_Journal::play_until(Writable &writable, int64_t end)
 /////////////////////////////////////////////////////////////////////////////
 {
- while(file.get_position() < end)
+ writable.start_writing(get_position());
+ while(get_position() < end)
   one_step(writable);
- file.set_position(file.get_position()); // get ready for writing
+ writable.soft_checkpoint_at(get_position());
+ file.flush(); // get ready for writing
 }
 
 /////////////////////////////////////////////////////////////////////////////
 bool joedb::Readonly_Journal::at_end_of_file() const
 /////////////////////////////////////////////////////////////////////////////
 {
- return file.get_position() >= checkpoint_position;
+ return get_position() >= checkpoint_position;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -334,7 +355,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   default:
   {
-   throw Exception("Unexpected operation: file.get_position() = " + std::to_string(file.get_position()));
+   throw Exception("Unexpected operation: get_position() = " + std::to_string(get_position()));
   }
  }
 }

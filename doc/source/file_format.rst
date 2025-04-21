@@ -33,12 +33,12 @@ as well as checkpoints. Integer values are stored in little-endian format
 ====== ======================= ==============================================
 Offset Value                   Description
 ====== ======================= ==============================================
-0      6a 6f 65 64 62          "joedb" file signature
-5      04 00 00 00             uint32_t file-format version
-9      9e 00 00 00 00 00 00 00 uint64_t checkpoint 1, copy 1
-17     9e 00 00 00 00 00 00 00 uint64_t checkpoint 1, copy 2
-25     3d 01 00 00 00 00 00 00 uint64_t checkpoint 2, copy 1
-33     3d 01 00 00 00 00 00 00 uint64_t checkpoint 2, copy 2
+0      9e 00 00 00 00 00 00 00 uint64_t checkpoint 1, copy 1
+8      9e 00 00 00 00 00 00 00 uint64_t checkpoint 1, copy 2
+16     3d 01 00 00 00 00 00 00 uint64_t checkpoint 2, copy 1
+24     3d 01 00 00 00 00 00 00 uint64_t checkpoint 2, copy 2
+32     04 00 00 00             uint32_t file-format version
+36     6a 6f 65 64 62          "joedb" file signature
 41                             Beginning of the log
 ====== ======================= ==============================================
 

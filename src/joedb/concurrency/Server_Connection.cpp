@@ -72,11 +72,7 @@ namespace joedb
    const int64_t size = buffer.read<int64_t>();
    Async_Writer writer = client_journal->get_async_tail_writer();
    download(writer, lock, size);
-
-   const int64_t old_position = client_journal->get_position();
-   client_journal->set_position(writer.get_position());
-   client_journal->soft_checkpoint();
-   client_journal->set_position(old_position);
+   client_journal->soft_checkpoint_at(writer.get_position());
   }
   else
    LOG("no data\n");

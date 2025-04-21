@@ -30,33 +30,24 @@ namespace joedb
  void dump_header(std::ostream &out, Buffered_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
-  file.set_position(0);
+  Header header;
+  file.pread((char *)(&header), Header::size, 0);
 
   out << "About this file\n";
   out << "---------------\n";
 
-  {
-   out << "joedb: ";
-   std::string joedb;
-   for (int i = 5; --i >= 0;)
-    joedb.push_back(char(file.read<uint8_t>()));
-   write_string(out, joedb);
-   out << '\n';
-  }
+  for (int i = 0; i < 4; i++)
+   out << "checkpoint[" << i << "] = " << header.checkpoint[i] << '\n';
 
-  {
-   const uint32_t version = file.read<uint32_t>();
-   out << "version: " << version << '\n';
-  }
+  out << "version: " << header.version << '\n';
 
-  {
-   uint64_t pos[4];
-   for (int i = 0; i < 4; i++)
-    pos[i] = file.read<uint64_t>();
-
-   for (int i = 0; i < 4; i++)
-    out << "checkpoint[" << i << "] = " << pos[i] << '\n';
-  }
+  out << "joedb: ";
+  write_string
+  (
+   out,
+   std::string(header.signature.data(), header.signature.size())
+  );
+  out << '\n';
 
   out << "file size: " << file.get_size() << '\n';
  }

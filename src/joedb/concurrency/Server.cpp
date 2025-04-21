@@ -276,11 +276,10 @@ namespace joedb
    {
     if (client_lock)
     {
-     client_lock->get_journal().set_position
+     client_lock->get_journal().soft_checkpoint_at
      (
       session->push_writer->get_position()
      );
-     client_lock->get_journal().soft_checkpoint();
 
      // ??? takes_time
      if (share_client && session->unlock_after_push)

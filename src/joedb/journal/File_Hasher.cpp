@@ -124,7 +124,7 @@ namespace joedb
   (
    journal.file,
    Header::size,
-   checkpoint - Header::size
+   checkpoint - Header::ssize
   );
  }
 }

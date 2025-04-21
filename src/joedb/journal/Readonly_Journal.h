@@ -27,7 +27,8 @@ namespace joedb
 
   protected:
    Buffered_File &file;
-   unsigned checkpoint_index;
+   int hard_index;
+   int soft_index;
    int64_t checkpoint_position;
 
    Table_Id table_of_last_operation;
@@ -99,9 +100,7 @@ namespace joedb
    void play_until(Writable &writable, int64_t end);
    void play_until_checkpoint(Writable &writable)
    {
-    writable.start_writing(get_position());
     play_until(writable, checkpoint_position);
-    writable.soft_checkpoint_at(get_position());
    }
    void seek_to_checkpoint() {set_position(checkpoint_position);}
 
@@ -121,7 +120,6 @@ namespace joedb
    }
 
    static constexpr uint32_t format_version = 6;
-   static constexpr int64_t checkpoint_offset = 0;
 
    virtual Writable_Journal *get_writable_journal() {return nullptr;}
    virtual ~Readonly_Journal() = default;

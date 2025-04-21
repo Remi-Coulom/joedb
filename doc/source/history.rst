@@ -46,6 +46,10 @@ History
 
   - Incompatibilities with previous version:
 
+    - File format changed: ``joedb_convert`` from branch ``convert_4_to_6``
+      can upgrade old file to the new format.
+    - Checkpoints changed: use either ``soft_checkpoint`` or
+      ``hard_checkpoint``. See :doc:`Checkpoints <checkpoints>` for details
     - ``Generic_File`` was renamed to :joedb:`Buffered_File`
     - ``Generic_File_Database`` was renamed to :joedb:`Writable_Database`
     - ``Local_Client`` was renamed to :joedb:`File_Client`

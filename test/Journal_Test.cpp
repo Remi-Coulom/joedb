@@ -195,7 +195,7 @@ namespace joedb
    journal.soft_checkpoint();
   }
 
-  file.set_position(Readonly_Journal::checkpoint_offset);
+  file.set_position(0);
   file.write<int64_t>(correct_checkpoint);
   file.write<int64_t>(correct_checkpoint);
   file.write<int64_t>(1234);
