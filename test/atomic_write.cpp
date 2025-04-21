@@ -8,14 +8,14 @@ int main()
  constexpr size_t offset = 1;
 
  {
-  std::string s(offset, 'o');
+  std::string s(offset, '.');
   file.pwrite(s.data(), s.size(), 0);
  }
 
  const std::string s[2] =
  {
-  "aaaaaaaaxxxxxxxx",
-  "bbbbbbbbyyyyyyyy"
+  "xxxxxxxxxxxxxxxx",
+  "yyyyyyyyyyyyyyyy"
  };
 
  for (int i = 0; ; i ^= 1)
