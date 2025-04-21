@@ -2,8 +2,7 @@
 #define joedb_Journal_Construction_Lock_declared
 
 #include "joedb/journal/Buffered_File.h"
-
-#include <array>
+#include "joedb/journal/Header.h"
 
 namespace joedb
 {
@@ -15,7 +14,7 @@ namespace joedb
    bool creating_new;
 
   public:
-   std::array<int64_t, 4> pos;
+   Header header;
 
    explicit Journal_Construction_Lock(Buffered_File &file);
 

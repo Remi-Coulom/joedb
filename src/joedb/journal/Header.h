@@ -3,23 +3,26 @@
 
 #include <stdint.h>
 #include <cstddef>
+#include <array>
 
 namespace joedb
 {
  // @ingroup journal
  struct Header
  {
-  int64_t checkpoint[4];
+  std::array<int64_t, 4> checkpoint;
   uint32_t version;
-  char joedb[5];
+  std::array<char, 5> signature;
+
+  static constexpr std::array<char, 5> joedb{'j', 'o', 'e', 'd', 'b'};
+  static constexpr int64_t ssize = 41;
+  static constexpr size_t size = ssize;
  };
 
- static_assert(offsetof(Header, checkpoint[0]) == 0);
- static_assert(offsetof(Header, checkpoint[1]) == 8);
- static_assert(offsetof(Header, checkpoint[2]) == 16);
- static_assert(offsetof(Header, checkpoint[3]) == 24);
+ static_assert(offsetof(Header, checkpoint) == 0);
  static_assert(offsetof(Header, version) == 32);
- static_assert(offsetof(Header, joedb) == 36);
+ static_assert(offsetof(Header, signature) == 36);
+ static_assert(sizeof(std::array<char, 5>) == 5);
 }
 
 #endif

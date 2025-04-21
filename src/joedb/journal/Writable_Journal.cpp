@@ -16,48 +16,14 @@ joedb::Writable_Journal::Writable_Journal
  current_commit_level(Commit_Level::no_commit)
 {
  if (file.is_readonly())
- {
   throw Exception("Cannot create Writable_Journal with read-only file");
- }
  else if (lock.is_creating_new())
  {
-  file.write<uint8_t>('j');
-  file.write<uint8_t>('o');
-  file.write<uint8_t>('e');
-  file.write<uint8_t>('d');
-  file.write<uint8_t>('b');
-  file.write<uint32_t>(version_number);
-  file.write<int64_t>(header_size);
-  file.write<int64_t>(header_size);
-  file.write<int64_t>(0);
-  file.write<int64_t>(0);
-  flush_and_may_sync();
- }
- else
- {
-  if (lock.pos[0] != lock.pos[1] || lock.pos[2] != lock.pos[3])
-  {
-   if (check_flag(check, Check::checkpoint_mismatch))
-    throw Exception("Checkpoint mismatch");
-   else
-   {
-    file.set_position(checkpoint_offset);
-    file.write<int64_t>(checkpoint_position);
-    file.write<int64_t>(checkpoint_position);
-    file.write<int64_t>(checkpoint_position);
-    file.write<int64_t>(checkpoint_position);
-    flush_and_may_sync();
-   }
-  }
-
-  if (version_number > file_version)
-  {
-   file_version = version_number;
-   file.set_position(5);
-   file.write<uint32_t>(file_version);
-   file.set_position(header_size);
-   flush_and_may_sync();
-  }
+  lock.header.signature = Header::joedb;
+  lock.header.version = format_version;
+  lock.header.checkpoint.fill(Header::size);
+  file.pwrite(reinterpret_cast<const char *>(&lock.header), Header::size, 0);
+  file.set_position(Header::size);
  }
 }
 

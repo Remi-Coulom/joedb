@@ -22,13 +22,6 @@ namespace joedb
     operation_t operation
    );
 
-   void flush_and_may_sync()
-   {
-    file.flush();
-    if (get_default_commit_level() > Commit_Level::no_commit)
-     file.sync();
-   }
-
   public:
    explicit Writable_Journal
    (

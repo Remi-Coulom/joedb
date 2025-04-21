@@ -123,8 +123,8 @@ namespace joedb
   return File_Hasher::get_fast_hash
   (
    journal.file,
-   journal.header_size,
-   checkpoint - journal.header_size
+   Header::size,
+   checkpoint - Header::size
   );
  }
 }

@@ -20,16 +20,13 @@ namespace joedb
   public:
    enum class Check
    {
+    none = 0,
     joedb = 1,
     version = 2,
     big_size = 4,
     small_size = 8,
-    set_checkpoint = 16,
-    checkpoint_mismatch = 32,
-    all = joedb | version | big_size | small_size | checkpoint_mismatch,
     readonly = joedb | version | small_size,
-    overwrite = all & ~big_size & ~checkpoint_mismatch,
-    none = set_checkpoint
+    all = joedb | version | big_size | small_size
    };
 
    static bool check_flag(Check check, Check flag)
@@ -47,7 +44,6 @@ namespace joedb
 
   protected:
    Buffered_File &file;
-   uint32_t file_version;
    unsigned checkpoint_index;
    int64_t checkpoint_position;
 
@@ -109,11 +105,10 @@ namespace joedb
    {
    }
 
-   uint32_t get_file_version() const {return file_version;}
    bool at_end_of_file() const;
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint_position() const {return checkpoint_position;}
-   bool is_empty() const {return file.get_size() == header_size;}
+   bool is_empty() const {return file.get_size() == Header::size;}
    bool is_shared() const {return file.is_shared();}
    void pull();
    const Buffered_File &get_file() const {return file;}
@@ -145,13 +140,11 @@ namespace joedb
     );
    }
 
-   static constexpr uint32_t version_number = 0x00000005;
-   static constexpr uint32_t compatible_version = 0x00000005;
-   static constexpr int64_t header_size = 41;
-   static constexpr int64_t checkpoint_offset = 5 + 4;
+   static constexpr uint32_t format_version = 6;
+   static constexpr int64_t checkpoint_offset = 0;
    static constexpr bool is_second_checkpoint_copy(int64_t offset)
    {
-    return offset == 17 || offset == 33;
+    return offset == 8 || offset == 24;
    }
 
    virtual Writable_Journal *get_writable_journal() {return nullptr;}

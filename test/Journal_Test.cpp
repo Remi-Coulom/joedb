@@ -13,44 +13,43 @@ namespace joedb
  TEST(Journal, checkpoint)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
+  Memory_File file;
 
   {
-   joedb::Writable_Journal journal(file);
+   Writable_Journal journal(file);
   }
 
   {
-   joedb::Writable_Journal journal(file);
+   Writable_Journal journal(file);
 
    journal.append();
    journal.create_table("person");
-   journal.checkpoint(joedb::Commit_Level::no_commit);
+   journal.checkpoint(Commit_Level::no_commit);
   }
 
-  joedb::Writable_Journal journal(file);
+  Writable_Journal journal(file);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, seek)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
+  Memory_File file;
+  file.write<uint64_t>(0);
+  file.write<uint64_t>(0);
+  file.write<uint64_t>(41);
+  file.write<uint64_t>(41);
+  file.write<uint32_t>(Readonly_Journal::format_version);
   file.write<char>('j');
   file.write<char>('o');
   file.write<char>('e');
   file.write<char>('d');
   file.write<char>('b');
-  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(41);
-  file.write<uint64_t>(41);
   file.set_position(0);
 
   {
-   joedb::Readonly_Journal journal(file);
+   Readonly_Journal journal(file);
    EXPECT_TRUE(journal.at_end_of_file());
-   EXPECT_EQ(joedb::Readonly_Journal::version_number, journal.get_file_version());
    EXPECT_EQ(41, journal.get_position());
 
    journal.set_position(0);
@@ -58,65 +57,60 @@ namespace joedb
   }
 
   {
-   joedb::Readonly_Memory_File readonly_file
+   Readonly_Memory_File readonly_file
    (
     file.get_data().data(),
     file.get_data().size()
    );
-   joedb::Readonly_Journal journal2(readonly_file);
-   EXPECT_ANY_THROW(joedb::Writable_Journal journal(readonly_file));
+   Readonly_Journal journal2(readonly_file);
+   EXPECT_ANY_THROW(Writable_Journal journal(readonly_file));
   }
 
   {
-   joedb::Writable_Journal journal(file);
-   EXPECT_EQ(joedb::Readonly_Journal::version_number, journal.get_file_version());
+   Writable_Journal journal(file);
    EXPECT_EQ(41, journal.get_position());
   }
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Journal, does_not_start_by_joedb)
+ TEST(Journal, missing_joedb_signature)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  file.write<int>(1234);
-  file.set_position(0);
+  Header header;
+  Memory_File file;
+  file.pwrite((const char *)&header, Header::size, 0);
 
   try
   {
-   joedb::Readonly_Journal journal(file);
+   Readonly_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
   catch (const Exception &e)
   {
-   EXPECT_STREQ(e.what(), "File does not start by 'joedb'");
+   EXPECT_STREQ(e.what(), "missing joedb signature");
   }
 
   file.set_position(0);
-  joedb::Readonly_Journal journal(file, joedb::Readonly_Journal::Check::none);
+  Readonly_Journal journal(file, Readonly_Journal::Check::none);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, unsupported_format_version)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  file.write<char>('j');
-  file.write<char>('o');
-  file.write<char>('e');
-  file.write<char>('d');
-  file.write<char>('b');
-  file.write<uint32_t>(0);
-  file.set_position(0);
+  Header header;
+  header.signature = Header::joedb;
+  Memory_File file;
+  file.pwrite((const char *)&header, sizeof(header), 0);
 
   try
   {
-   joedb::Readonly_Journal journal(file);
+   Readonly_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
   catch (const Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Unsupported format version");
+   EXPECT_STREQ(e.what(), "unsupported file format version");
   }
  }
 
@@ -124,57 +118,21 @@ namespace joedb
  TEST(Journal, checkpoint_mismatch)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  file.write<char>('j');
-  file.write<char>('o');
-  file.write<char>('e');
-  file.write<char>('d');
-  file.write<char>('b');
-  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
-  file.write<uint64_t>(1);
-  file.write<uint64_t>(2);
-  file.write<uint64_t>(3);
-  file.write<uint64_t>(4);
-  file.set_position(0);
+  Header header;
+  header.signature = Header::joedb;
+  header.version = Readonly_Journal::format_version;
+  header.checkpoint = {1, 2, 3, 4};
+  Memory_File file;
+  file.pwrite((const char *)&header, Header::size, 0);
 
   try
   {
-   joedb::Readonly_Journal journal(file);
+   Readonly_Journal journal(file);
    EXPECT_EQ(journal.get_checkpoint_position(), 41);
-  }
-  catch (const Exception &)
-  {
-   FAIL() << "Mismatched checkpoint is OK for read-only";
-  }
-
-  try
-  {
-   joedb::Writable_Journal journal(file);
-   FAIL() << "Should have thrown an exception";
   }
   catch (const Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Checkpoint mismatch");
-  }
-
-  try
-  {
-   joedb::Writable_Journal journal(file, joedb::Readonly_Journal::Check::overwrite);
-   EXPECT_EQ(journal.get_checkpoint_position(), 41);
-  }
-  catch (const Exception &)
-  {
-   FAIL() << "Mismatched checkpoint is OK with Check::overwrite";
-  }
-
-  try
-  {
-   joedb::Writable_Journal journal(file);
-   EXPECT_EQ(journal.get_checkpoint_position(), 41);
-  }
-  catch (const Exception &)
-  {
-   FAIL() << "checkpoints should be matching now";
+   FAIL() << e.what();
   }
  }
 
@@ -182,22 +140,16 @@ namespace joedb
  TEST(Journal, checkpoint_different_from_file_size)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  file.write<char>('j');
-  file.write<char>('o');
-  file.write<char>('e');
-  file.write<char>('d');
-  file.write<char>('b');
-  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(42);
-  file.write<uint64_t>(42);
-  file.set_position(0);
+  Header header;
+  header.signature = Header::joedb;
+  header.version = Readonly_Journal::format_version;
+  header.checkpoint = {0, 0, 42, 42};
+  Memory_File file;
+  file.pwrite((const char *)&header, Header::size, 0);
 
   try
   {
-   joedb::Readonly_Journal journal(file);
+   Readonly_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
   catch (const Exception &e)
@@ -205,27 +157,18 @@ namespace joedb
    EXPECT_STREQ(e.what(), "Checkpoint is bigger than file size");
   }
 
-  file.set_position(0);
-  file.write<char>('j');
-  file.write<char>('o');
-  file.write<char>('e');
-  file.write<char>('d');
-  file.write<char>('b');
-  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
+  header.checkpoint = {0, 0, 41, 41};
+  file.pwrite((const char *)&header, Header::size, 0);
+  file.set_position(41);
   file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(41);
-  file.write<uint64_t>(41);
-  file.write<uint64_t>(0);
-  file.set_position(0);
 
   {
-   joedb::Readonly_Journal journal(file);
+   Readonly_Journal journal(file);
   }
 
   try
   {
-   joedb::Writable_Journal journal(file);
+   Writable_Journal journal(file);
    FAIL() << "Should have thrown an exception";
   }
   catch (const Exception &e)
@@ -238,73 +181,54 @@ namespace joedb
  TEST(Journal, crash_simulation)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
+  Memory_File file;
 
   int64_t correct_checkpoint;
 
   {
-   joedb::Writable_Journal journal(file);
+   Writable_Journal journal(file);
+   EXPECT_EQ(journal.get_position(), Header::size);
    journal.create_table("person");
    journal.default_checkpoint();
    correct_checkpoint = journal.get_checkpoint_position();
+   EXPECT_GT(correct_checkpoint, Header::ssize);
    journal.create_table("country");
    journal.default_checkpoint();
   }
 
-  file.set_position(9);
+  file.set_position(Readonly_Journal::checkpoint_offset);
   file.write<int64_t>(correct_checkpoint);
   file.write<int64_t>(correct_checkpoint);
   file.write<int64_t>(1234);
   file.write<int64_t>(5678);
+  file.flush();
 
   {
-   joedb::Database db;
-   joedb::Readonly_Journal journal(file);
+   Database db;
+   Readonly_Journal journal(file);
+   EXPECT_EQ(journal.get_position(), Header::size);
    EXPECT_EQ(journal.get_checkpoint_position(), correct_checkpoint);
    journal.replay_log(db);
    EXPECT_EQ(db.get_tables().size(), 1);
   }
 
-  EXPECT_ANY_THROW(joedb::Writable_Journal{file});
-
-  {
-   joedb::Writable_Journal journal{file, joedb::Readonly_Journal::Check::overwrite};
-   EXPECT_EQ(journal.get_checkpoint_position(), correct_checkpoint);
-   journal.append();
-   journal.create_table("city");
-   journal.default_checkpoint();
-  }
-
-  {
-   joedb::Readonly_Journal journal(file);
-   joedb::Database db;
-   journal.replay_log(db);
-   EXPECT_EQ(db.get_tables().size(), 2);
-   EXPECT_EQ(db.get_tables().begin()->second, "person");
-   EXPECT_EQ((++db.get_tables().begin())->second, "city");
-  }
+  EXPECT_ANY_THROW(Writable_Journal{file});
  }
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, unexpected_operation)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  file.write<char>('j');
-  file.write<char>('o');
-  file.write<char>('e');
-  file.write<char>('d');
-  file.write<char>('b');
-  file.write<uint32_t>(joedb::Readonly_Journal::version_number);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(42);
-  file.write<uint64_t>(42);
-  file.write<uint8_t>(255);
-  file.set_position(0);
+  Memory_File file;
 
-  joedb::Readonly_Journal journal(file);
-  joedb::Database db;
+  {
+   Writable_Journal journal(file);
+   file.write<uint8_t>(255);
+   journal.default_checkpoint();
+  }
+
+  Readonly_Journal journal(file);
+  Database db;
 
   try
   {
@@ -324,8 +248,8 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::create_new);
-   joedb::Writable_Journal journal(file);
+   File file("test.joedb", Open_Mode::create_new);
+   Writable_Journal journal(file);
    EXPECT_EQ(41, journal.get_checkpoint_position());
   }
 
@@ -339,13 +263,13 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::create_new);
-   joedb::Writable_Journal journal(file);
+   File file("test.joedb", Open_Mode::create_new);
+   Writable_Journal journal(file);
   }
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::read_existing);
-   joedb::Readonly_Journal journal(file);
+   File file("test.joedb", Open_Mode::read_existing);
+   Readonly_Journal journal(file);
   }
 
   std::remove("test.joedb");
@@ -359,14 +283,14 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file_1("test.joedb", joedb::Open_Mode::shared_write);
-   joedb::File file_2("test.joedb", joedb::Open_Mode::shared_write);
+   File file_1("test.joedb", Open_Mode::shared_write);
+   File file_2("test.joedb", Open_Mode::shared_write);
 
-   joedb::Writable_Journal journal_1(file_1);
-   joedb::Writable_Journal journal_2(file_2);
+   Writable_Journal journal_1(file_1);
+   Writable_Journal journal_2(file_2);
 
    journal_1.valid_data();
-   journal_1.checkpoint(joedb::Commit_Level::no_commit);
+   journal_1.checkpoint(Commit_Level::no_commit);
 
    EXPECT_TRUE
    (
@@ -391,7 +315,7 @@ namespace joedb
    );
 
    {
-    joedb::Writable_Journal::Tail_Writer tail_writer(journal_2);
+    Writable_Journal::Tail_Writer tail_writer(journal_2);
     tail_writer.finish();
    }
 
@@ -408,8 +332,8 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
-   joedb::Writable_Journal journal(file);
+   File file("test.joedb", Open_Mode::shared_write);
+   Writable_Journal journal(file);
 
    for (int i = 10000; --i >= 0;)
     journal.pull();
@@ -425,8 +349,8 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::shared_write);
-   joedb::Writable_Journal journal(file);
+   File file("test.joedb", Open_Mode::shared_write);
+   Writable_Journal journal(file);
   }
 
   std::remove("test.joedb");
@@ -441,13 +365,13 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::create_new);
-   joedb::Writable_Journal journal(file);
+   File file("test.joedb", Open_Mode::create_new);
+   Writable_Journal journal(file);
 
    for (int i = 10000; --i >= 0;)
    {
     journal.valid_data();
-    journal.checkpoint(joedb::Commit_Level::no_commit);
+    journal.checkpoint(Commit_Level::no_commit);
    }
   }
 
@@ -461,8 +385,8 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::create_new);
-   joedb::Writable_Journal journal(file);
+   File file("test.joedb", Open_Mode::create_new);
+   Writable_Journal journal(file);
 
    for (int i = 10000; --i >= 0;)
     journal.pull();
@@ -476,41 +400,30 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
  #if 1
-  joedb::Memory_File file;
+  Memory_File file;
  #else
-  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+  File file("test.joedb", Open_Mode::create_new);
  #endif
 
   {
-   joedb::Writable_Journal journal(file);
+   Writable_Journal journal(file);
    journal.comment("properly checkpointed comment");
    journal.default_checkpoint();
   }
 
   {
-   joedb::Writable_Journal journal(file);
+   Writable_Journal journal(file);
    journal.set_position(journal.get_checkpoint_position());
    journal.comment("uncheckpointed comment");
   }
 
   try
   {
-   joedb::Writable_Journal journal(file);
+   Writable_Journal journal(file);
    ADD_FAILURE();
   }
   catch(...)
   {
-  }
-
-  {
-   joedb::Writable_Journal journal
-   (
-    file,
-    joedb::Readonly_Journal::Check::overwrite
-   );
-   journal.set_position(journal.get_checkpoint_position());
-   journal.comment("Overwriting the uncheckpointed comment");
-   journal.default_checkpoint();
   }
  }
 
@@ -521,8 +434,8 @@ namespace joedb
   std::remove("test.joedb");
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::create_new);
-   joedb::Writable_Journal journal(file);
+   File file("test.joedb", Open_Mode::create_new);
+   Writable_Journal journal(file);
    EXPECT_EQ(journal.get_checkpoint_position(), 41);
    journal.comment(std::string(5000, 'A'));
    journal.default_checkpoint();
@@ -533,12 +446,12 @@ namespace joedb
   }
 
   {
-   joedb::File file("test.joedb", joedb::Open_Mode::read_existing);
-   joedb::Readonly_Journal journal(file);
+   File file("test.joedb", Open_Mode::read_existing);
+   Readonly_Journal journal(file);
 
-   joedb::Memory_File copy_file;
+   Memory_File copy_file;
    {
-    joedb::Writable_Journal copy_journal(copy_file);
+    Writable_Journal copy_journal(copy_file);
 
     journal.one_step(copy_journal);
     journal.pull();
@@ -548,9 +461,9 @@ namespace joedb
     EXPECT_EQ(copy_journal.get_checkpoint_position(), 10047);
    }
 
-   joedb::Memory_File another_file;
+   Memory_File another_file;
    {
-    joedb::Writable_Journal another_journal(another_file);
+    Writable_Journal another_journal(another_file);
     journal.replay_log(another_journal);
    }
 
@@ -564,8 +477,8 @@ namespace joedb
  TEST(Journal, pull_from)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  joedb::Writable_Journal journal(file);
+  Memory_File file;
+  Writable_Journal journal(file);
 
   const int64_t initial = journal.get_checkpoint_position();
   journal.create_table("person");
@@ -579,8 +492,8 @@ namespace joedb
   EXPECT_TRUE(after_city > after_person);
 
   {
-   joedb::Memory_File to_file;
-   joedb::Writable_Journal to_journal(to_file);
+   Memory_File to_file;
+   Writable_Journal to_journal(to_file);
    to_journal.pull_from(journal, initial);
    EXPECT_EQ(to_journal.get_checkpoint_position(), initial);
    to_journal.pull_from(journal, after_person);
@@ -590,8 +503,8 @@ namespace joedb
   }
 
   {
-   joedb::Memory_File to_file;
-   joedb::Writable_Journal to_journal(to_file);
+   Memory_File to_file;
+   Writable_Journal to_journal(to_file);
    to_journal.pull_from(journal);
    EXPECT_EQ(to_journal.get_checkpoint_position(), after_city);
   }
@@ -601,37 +514,37 @@ namespace joedb
  TEST(Journal, empty_initial_file)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  joedb::Readonly_Journal journal{file};
+  Memory_File file;
+  Readonly_Journal journal{file};
 
   EXPECT_EQ
   (
    journal.get_checkpoint_position(),
-   joedb::Readonly_Journal::header_size
+   Header::size
   );
 
   EXPECT_EQ(file.get_size(), 0);
 
   file.write<char>('j');
   file.flush();
-  EXPECT_ANY_THROW(joedb::Readonly_Journal{file});
+  EXPECT_ANY_THROW(Readonly_Journal{file});
  }
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, write_blob_data)
  ////////////////////////////////////////////////////////////////////////////
  {
-  joedb::Memory_File file;
-  joedb::Writable_Journal journal(file);
+  Memory_File file;
+  Writable_Journal journal(file);
 
   {
-   const joedb::Blob blob = journal.write_blob_data("Hello");
+   const Blob blob = journal.write_blob_data("Hello");
    journal.flush();
    EXPECT_EQ(journal.get_file().read_blob_data(blob), "Hello");
   }
 
   {
-   const joedb::Blob blob = journal.write_blob_data("");
+   const Blob blob = journal.write_blob_data("");
    journal.flush();
    EXPECT_EQ(journal.get_file().read_blob_data(blob), "");
   }

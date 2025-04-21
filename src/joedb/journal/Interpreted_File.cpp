@@ -13,7 +13,7 @@ namespace joedb
 
   if (journal.get_checkpoint_position() > previous_checkpoint)
   {
-   if (previous_checkpoint > Readonly_Journal::header_size)
+   if (previous_checkpoint > Header::ssize)
     stream << '\n';
    Interpreter_Writable writable(stream, db);
    Multiplexer multiplexer{writable, db};

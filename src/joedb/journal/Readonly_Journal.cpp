@@ -4,12 +4,6 @@
 
 #include <vector>
 
-#if __cplusplus < 201703L
-constexpr uint32_t joedb::Readonly_Journal::version_number;
-constexpr uint32_t joedb::Readonly_Journal::compatible_version;
-constexpr int64_t joedb::Readonly_Journal::header_size;
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
 void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
@@ -33,86 +27,69 @@ joedb::Readonly_Journal::Readonly_Journal
  Check check
 ):
  file(lock.get_file()),
- file_version(0),
  checkpoint_index(0),
- checkpoint_position(header_size),
+ checkpoint_position(Header::size),
  table_of_last_operation(Table_Id(0)),
  record_of_last_operation(Record_Id(0)),
  field_of_last_update(Field_Id(0))
 {
- file.set_position(0);
-
  //
  // Check the format of an existing joedb file
  //
  if (!lock.is_creating_new())
  {
-  //
-  // First, check for initial "joedb"
-  //
-  if (file.read<uint8_t>() != 'j' ||
-      file.read<uint8_t>() != 'o' ||
-      file.read<uint8_t>() != 'e' ||
-      file.read<uint8_t>() != 'd' ||
-      file.read<uint8_t>() != 'b')
-  {
-   if (check_flag(check, Check::joedb))
-    throw Exception("File does not start by 'joedb'");
-  }
-  else
-  {
-   //
-   // Check version number
-   //
-   file_version = file.read<uint32_t>();
+  if (file.pread((char *)(&lock.header), Header::size, 0) < Header::size)
+   file.reading_past_end_of_file();
+  file.set_position(Header::size);
 
+  //
+  // First, check for "joedb"
+  //
+  if (lock.header.signature != Header::joedb)
+   if (check_flag(check, Check::joedb))
+    throw Exception("missing joedb signature");
+
+  //
+  // Check version number
+  //
+  if (lock.header.version != format_version)
    if (check_flag(check, Check::version))
+    throw Exception("unsupported file format version");
+
+  //
+  // Compute checkpoint position
+  //
+  checkpoint_position = Header::size;
+  read_checkpoint(lock.header.checkpoint);
+
+  //
+  // Compare to file size (if available)
+  //
+  const int64_t file_size = file.get_size();
+
+  if (file_size > 0)
+  {
+   if
+   (
+    check_flag(check, Check::big_size) &&
+    file_size > checkpoint_position
+   )
    {
-    if (file_version < compatible_version || file_version > version_number)
-     throw Exception("Unsupported format version");
+    throw Exception
+    (
+     "Checkpoint (" + std::to_string(checkpoint_position) + ") is smaller than file size (" +
+     std::to_string(file_size) + "). This file may contain an aborted transaction. "
+     "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
+    );
    }
 
-   checkpoint_position = header_size;
-
-   for (int i = 0; i < 4; i++)
-    lock.pos[i] = file.read<int64_t>();
-
-   read_checkpoint(lock.pos);
-
-   //
-   // Compare to file size (if available)
-   //
-   const int64_t file_size = file.get_size();
-
-   if (file_size > 0)
+   if
+   (
+    check_flag(check, Check::small_size) &&
+    file_size < checkpoint_position
+   )
    {
-    if (check_flag(check, Check::set_checkpoint))
-     checkpoint_position = file_size;
-    else
-    {
-     if
-     (
-      check_flag(check, Check::big_size) &&
-      file_size > checkpoint_position
-     )
-     {
-      throw Exception
-      (
-       "Checkpoint (" + std::to_string(checkpoint_position) + ") is smaller than file size (" +
-       std::to_string(file_size) + "). This file may contain an aborted transaction. "
-       "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
-      );
-     }
-
-     if
-     (
-      check_flag(check, Check::small_size) &&
-      file_size < checkpoint_position
-     )
-     {
-      throw Exception("Checkpoint is bigger than file size");
-     }
-    }
+    throw Exception("Checkpoint is bigger than file size");
    }
   }
  }
@@ -183,7 +160,7 @@ void joedb::Readonly_Journal::replay_with_checkpoint_comments
 void joedb::Readonly_Journal::rewind()
 /////////////////////////////////////////////////////////////////////////////
 {
- file.set_position(header_size);
+ file.set_position(Header::size);
 }
 
 /////////////////////////////////////////////////////////////////////////////
