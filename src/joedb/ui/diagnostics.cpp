@@ -1,6 +1,6 @@
 #include "joedb/ui/diagnostics.h"
 #include "joedb/journal/Buffered_File.h"
-#include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/File.h"
 #include "joedb/ui/type_io.h"
 #include "joedb/get_version.h"
@@ -68,10 +68,7 @@ namespace joedb
   out << "About this version of joedb\n";
   out << "---------------------------\n";
   out << "joedb version: " << get_version() << '\n';
-  out << "Writable_Journal::compatible_version: ";
-  out << Writable_Journal::compatible_version << '\n';
-  out << "Writable_Journal::version_number: ";
-  out << Writable_Journal::version_number << '\n';
+  out << "file format version: " << Readonly_Journal::format_version;
 
 #ifdef JOEDB_HAS_SSH
   out << "libssh version: " << ssh_version(0) << " https://www.libssh.org/\n";

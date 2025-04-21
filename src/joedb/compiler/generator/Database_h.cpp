@@ -747,7 +747,7 @@ namespace joedb::generator
 
    void check_schema()
    {
-    constexpr size_t pos = size_t(joedb::Writable_Journal::header_size);
+    constexpr size_t pos = joedb::Header::size;
     const size_t schema_file_size = schema_file.get_data().size();
 
     if

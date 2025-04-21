@@ -143,7 +143,7 @@ namespace joedb
  size_t Server_File::pread(char *data, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (offset < Readonly_Journal::header_size)
+  if (offset < Header::ssize)
    return head.pread(data, size, offset);
 
   if (offset < tail_offset)
@@ -156,9 +156,9 @@ namespace joedb
  void Server_File::pwrite(const char *data, size_t size, int64_t offset)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (offset < Readonly_Journal::header_size)
+  if (offset < Header::ssize)
   {
-   if (offset + size > Readonly_Journal::header_size)
+   if (offset + size > Header::ssize)
     write_to_body_error();
    else
     head.pwrite(data, size, offset);
