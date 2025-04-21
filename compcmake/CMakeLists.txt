@@ -209,12 +209,7 @@ joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
 if (asio_FOUND)
  joedb_add_executable(joedb_server ../src/joedb/ui/joedb_server.cpp)
-
- if (libssh_FOUND)
-  joedb_add_executable(joedb_multi_server
-   ../src/joedb/ui/joedb_multi_server.cpp
-  )
- endif()
+ joedb_add_executable(joedb_multi_server ../src/joedb/ui/joedb_multi_server.cpp)
 endif()
 
 joedbc_build(../test/compiler/db empty)
