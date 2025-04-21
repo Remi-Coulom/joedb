@@ -236,7 +236,7 @@ namespace joedb
   }
   catch (const Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Unexpected operation: file.get_position() = 42");
+   EXPECT_STREQ(e.what(), "Unexpected operation: get_position() = 42");
   }
  }
 
