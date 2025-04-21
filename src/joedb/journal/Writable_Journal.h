@@ -12,8 +12,6 @@ namespace joedb
  class Writable_Journal: public Readonly_Journal, public Writable
  {
   private:
-   Commit_Level current_commit_level;
-
    void generic_update
    (
     Table_Id table_id,
@@ -23,26 +21,9 @@ namespace joedb
    );
 
   public:
-   explicit Writable_Journal
-   (
-    Journal_Construction_Lock &lock,
-    Check check,
-    Commit_Level commit_level
-   );
-
-   explicit Writable_Journal
-   (
-    Journal_Construction_Lock &&lock,
-    Check check,
-    Commit_Level commit_level
-   );
-
-   explicit Writable_Journal
-   (
-    Buffered_File &file,
-    Check check = Check::all,
-    Commit_Level commit_level = Commit_Level::no_commit
-   );
+   explicit Writable_Journal(Journal_Construction_Lock &lock, Check check);
+   explicit Writable_Journal(Journal_Construction_Lock &&lock, Check check);
+   explicit Writable_Journal(Buffered_File &file, Check check = Check::all);
 
    void append()
    {
@@ -58,7 +39,10 @@ namespace joedb
    int64_t ahead_of_checkpoint() const noexcept;
 
    void flush() final {file.flush();}
-   void checkpoint(Commit_Level commit_level) final;
+
+   int64_t get_position() const override {return file.get_position();}
+   void soft_checkpoint_at(int64_t position) override;
+   void hard_checkpoint_at(int64_t position) override;
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;

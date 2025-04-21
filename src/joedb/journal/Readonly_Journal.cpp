@@ -148,12 +148,13 @@ void joedb::Readonly_Journal::replay_with_checkpoint_comments
 )
 {
  rewind();
+ writable.start_writing(file.get_position());
  while(file.get_position() < checkpoint_position)
  {
   one_step(writable);
   writable.comment(std::to_string(file.get_position()));
  }
- writable.default_checkpoint();
+ writable.soft_checkpoint_at(file.get_position());
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -49,7 +49,7 @@ int main(int argc, char **argv)
    multiplexer.update_int64(table_id, i, value_id, int64_t(i));
 #endif
 
-  journal_file.checkpoint(joedb::Commit_Level::full_commit);
+  journal_file.hard_checkpoint();
  }
 
  return 0;

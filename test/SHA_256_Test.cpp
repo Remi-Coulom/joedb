@@ -102,7 +102,7 @@ TEST(SHA_256, journal)
   const int64_t size = 12345678;
   for (int64_t i = 0; i < size; i++)
    journal.timestamp(i);
-  journal.checkpoint(joedb::Commit_Level::no_commit);
+  journal.soft_checkpoint();
  }
 
  joedb::Readonly_Journal journal(file);

@@ -292,7 +292,7 @@ TEST(Compiler, file_test)
   EXPECT_TRUE (B >= B);
  }
 
- db.checkpoint();
+ db.soft_checkpoint();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -306,7 +306,7 @@ TEST(Compiler, exceptions)
   db.new_city("Paris");
   db.new_city("Lille");
   db.new_city("Paris");
-  db.checkpoint();
+  db.soft_checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -324,7 +324,7 @@ TEST(Compiler, exceptions)
   db.new_person("Marcel", "Coulom", db.null_city());
   db.new_person("Albert", "Premier", db.null_city());
   db.new_person("Rémi", "Coulom", db.null_city());
-  db.checkpoint();
+  db.soft_checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -338,7 +338,7 @@ TEST(Compiler, exceptions)
   test::Writable_Database db(file);
   auto translation = db.new_translation();
   ((joedb::Writable *)&db)->delete_from(joedb::Table_Id(5), translation.get_record_id());
-  db.checkpoint();
+  db.soft_checkpoint();
  }
  catch (const joedb::Exception &e)
  {
@@ -351,7 +351,7 @@ TEST(Compiler, exceptions)
   test::Writable_Database db(file);
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(1));
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(1));
-  db.checkpoint();
+  db.soft_checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -365,7 +365,7 @@ TEST(Compiler, exceptions)
   test::Writable_Database db(file);
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(5), joedb::Record_Id(1));
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(5), joedb::Record_Id(3));
-  db.checkpoint();
+  db.soft_checkpoint();
  }
  catch (const joedb::Exception &e)
  {
@@ -378,7 +378,7 @@ TEST(Compiler, exceptions)
   test::Writable_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_into(joedb::Table_Id(1), joedb::Record_Id(2000));
-  db.checkpoint();
+  db.soft_checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -392,7 +392,7 @@ TEST(Compiler, exceptions)
   test::Writable_Database db(file);
   db.set_max_record_id(1000);
   ((joedb::Writable *)&db)->insert_vector(joedb::Table_Id(1), joedb::Record_Id(1), 2000);
-  db.checkpoint();
+  db.soft_checkpoint();
   ADD_FAILURE() << "should have thrown";
  }
  catch (const joedb::Exception &e)
@@ -408,7 +408,7 @@ TEST(Compiler, exceptions)
   auto city = db.new_city("Paris");
   EXPECT_STREQ(db.get_name(city).c_str(), "Paris");
   db.delete_city(city);
-  db.checkpoint();
+  db.soft_checkpoint();
   db.get_name(city);
   ADD_FAILURE() << "reading a deleted row";
  }
@@ -424,7 +424,7 @@ TEST(Compiler, exceptions)
   test::Writable_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
-  db.checkpoint();
+  db.soft_checkpoint();
   db.delete_city(city);
   ADD_FAILURE() << "double delete";
  }
@@ -440,7 +440,7 @@ TEST(Compiler, exceptions)
   test::Writable_Database db(file);
   auto city = db.new_city("Paris");
   db.delete_city(city);
-  db.checkpoint();
+  db.soft_checkpoint();
   db.set_name(city, "Paris");
   ADD_FAILURE() << "update of deleted row";
  }
@@ -485,11 +485,11 @@ TEST(Compiler, checkpoints)
  joedb::Memory_File file;
  test::Writable_Database db(file);
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
- db.checkpoint_full_commit();
+ db.hard_checkpoint();
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
  db.new_city("Paris");
  EXPECT_TRUE(db.ahead_of_checkpoint() > 0);
- db.checkpoint_full_commit();
+ db.hard_checkpoint();
  EXPECT_EQ(db.ahead_of_checkpoint(), 0);
 }
 
@@ -518,7 +518,7 @@ TEST(Compiler, schema_upgrade)
   db.new_person("Rémi");
   db.write_comment("This is a comment");
   db.write_timestamp(12345);
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  try
@@ -644,7 +644,7 @@ TEST(Compiler, client_push)
  {
   test::Writable_Database db(client_file);
   db.new_person("Rémi", db.null_city());
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  joedb::Memory_File server_file;
@@ -668,7 +668,7 @@ TEST(Compiler, client_hash_error)
  {
   test::Writable_Database db(client_file);
   db.new_person("Rémi", db.null_city());
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  joedb::Memory_File server_file;
@@ -676,7 +676,7 @@ TEST(Compiler, client_hash_error)
  {
   test::Writable_Database db(server_file);
   db.new_person("X", db.null_city());
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  joedb::File_Connection connection(server_file);
@@ -710,7 +710,7 @@ TEST(Compiler, vector)
    v = db.new_vector_of_float(n);
    for (size_t i = 0; i < n; i++)
     db.set_value(v[i], 0.1f * float(i));
-   db.checkpoint();
+   db.soft_checkpoint();
   }
 
   {
@@ -729,7 +729,7 @@ TEST(Compiler, vector)
   {
    vector_test::Writable_Database db(file);
    db.new_vector_of_point(0);
-   db.checkpoint();
+   db.soft_checkpoint();
   }
   {
    vector_test::Readonly_Database db(file);
@@ -752,7 +752,7 @@ TEST(Compiler, vector)
     db.set_x(v[i], 0.1f * float(i));
     db.set_y(v[i], 1.234f);
    }
-   db.checkpoint();
+   db.soft_checkpoint();
 
    EXPECT_EQ(db.get_point_table().first().get_id(), 1ULL);
    EXPECT_EQ(db.get_point_table().last().get_id(), 5ULL);
@@ -774,7 +774,7 @@ TEST(Compiler, vector)
     });
    });
 
-   db.checkpoint();
+   db.soft_checkpoint();
   }
 
   {
@@ -812,7 +812,7 @@ TEST(Compiler, vector)
   {
    vector_test::Writable_Database db(file);
    db.set_x(db.get_point_table().first(), 1.234f);
-   db.checkpoint();
+   db.soft_checkpoint();
   }
   {
    joedb::Readonly_Journal journal(file);
@@ -887,7 +887,7 @@ TEST(Compiler, vector)
     ADD_FAILURE() << "Joe not found";
   }
 
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  //
@@ -898,7 +898,7 @@ TEST(Compiler, vector)
   vector_test::Writable_Database db(file);
   db.write_timestamp();
   db.write_comment("This was a timestamp.");
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 }
 
@@ -914,7 +914,7 @@ TEST(Compiler, index_iteration)
  const auto abidjan = db.new_city("Abidjan");
  const auto paris = db.new_city("Paris");
 
- db.checkpoint_no_commit();
+ db.soft_checkpoint();
 
  EXPECT_EQ(db.next_city_by_name(lille), paris);
  EXPECT_EQ(db.next_city_by_name(paris), tokyo);
@@ -957,7 +957,7 @@ TEST(Compiler, delete_vector)
  const size_t size = 40;
 
  db.delete_vector_of_city(v[first], size);
- db.default_checkpoint();
+ db.soft_checkpoint();
 
  for (size_t i = 0; i < 100; i++)
  {

@@ -770,13 +770,13 @@ namespace joedb::generator
    {
     ++current_table_id;
     schema_journal.create_table(name);
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
    }
 
    void drop_table(Table_Id table_id) final
    {
     schema_journal.drop_table(table_id);
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
    }
 
    void rename_table
@@ -786,7 +786,7 @@ namespace joedb::generator
    ) final
    {
     schema_journal.rename_table(table_id, name);
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
    }
 
    void add_field
@@ -797,13 +797,13 @@ namespace joedb::generator
    ) override
    {
     schema_journal.add_field(table_id, name, type);
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
    }
 
    void drop_field(Table_Id table_id, Field_Id field_id) final
    {
     schema_journal.drop_field(table_id, field_id);
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
    }
 
    void rename_field
@@ -814,13 +814,13 @@ namespace joedb::generator
    ) final
    {
     schema_journal.rename_field(table_id, field_id, name);
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
    }
 
    void custom(const std::string &name) override
    {
     schema_journal.custom(name);
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
    }
 )RRR";
 

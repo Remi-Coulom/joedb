@@ -101,10 +101,9 @@ namespace joedb::generator
   (
    joedb::Buffered_File &file,
    bool perform_initialization,
-   joedb::Readonly_Journal::Check check,
-   joedb::Commit_Level commit_level
+   joedb::Readonly_Journal::Check check
   ):
-   journal(file, check, commit_level)
+   journal(file, check)
   {
    journal.rewind();
 
@@ -117,10 +116,9 @@ namespace joedb::generator
   ////////////////////////////////////////////////////////////////////////////
   (
    joedb::Buffered_File &file,
-   joedb::Readonly_Journal::Check check,
-   joedb::Commit_Level commit_level
+   joedb::Readonly_Journal::Check check
   ):
-   Writable_Database(file, true, check, commit_level)
+   Writable_Database(file, true, check)
   {
   }
 

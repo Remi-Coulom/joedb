@@ -8,20 +8,17 @@ joedb::Writable_Journal::Writable_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
  Journal_Construction_Lock &lock,
- Check check,
- Commit_Level commit_level
+ Check check
 ):
- Readonly_Journal(lock, check),
- Writable(commit_level),
- current_commit_level(Commit_Level::no_commit)
+ Readonly_Journal(lock, check)
 {
  if (file.is_readonly())
   throw Exception("Cannot create Writable_Journal with read-only file");
  else if (lock.is_creating_new())
  {
-  lock.header.signature = Header::joedb;
-  lock.header.version = format_version;
   lock.header.checkpoint.fill(Header::size);
+  lock.header.version = format_version;
+  lock.header.signature = Header::joedb;
   file.pwrite(reinterpret_cast<const char *>(&lock.header), Header::size, 0);
   file.set_position(Header::size);
  }
@@ -32,10 +29,9 @@ joedb::Writable_Journal::Writable_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
  Journal_Construction_Lock &&lock,
- Check check,
- Commit_Level commit_level
+ Check check
 ):
- Writable_Journal(lock, check, commit_level)
+ Writable_Journal(lock, check)
 {
 }
 
@@ -44,10 +40,9 @@ joedb::Writable_Journal::Writable_Journal
 /////////////////////////////////////////////////////////////////////////////
 (
  Buffered_File &file,
- Check check,
- Commit_Level commit_level
+ Check check
 ):
- Writable_Journal(Journal_Construction_Lock(file), check, commit_level)
+ Writable_Journal(Journal_Construction_Lock(file), check)
 {
 }
 
@@ -76,7 +71,7 @@ int64_t joedb::Writable_Journal::pull_from
    source_checkpoint - checkpoint_position
   );
 
-  default_checkpoint();
+  soft_checkpoint();
 
   set_position(initial_position);
  }
@@ -92,51 +87,70 @@ int64_t joedb::Writable_Journal::ahead_of_checkpoint() const noexcept
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
+void joedb::Writable_Journal::soft_checkpoint_at(int64_t position)
 /////////////////////////////////////////////////////////////////////////////
 {
- if
+ if (checkpoint_position >= position)
+  return;
+
+ file.flush();
+
+ checkpoint_index ^= 1;
+ checkpoint_position = position;
+
+ file.exclusive_lock_head(); // TODO: lock guard
+
+ file.pwrite
  (
-  ahead_of_checkpoint() > 0 ||
-  (ahead_of_checkpoint() == 0 && commit_level > current_commit_level)
- )
- {
-  file.flush();
+  reinterpret_cast<const char *>(&checkpoint_position),
+  sizeof(checkpoint_position),
+  checkpoint_offset +
+  int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index)
+ );
 
-  checkpoint_index ^= 1;
-  checkpoint_position = file.get_position();
-  current_commit_level = commit_level;
+ file.pwrite
+ (
+  reinterpret_cast<const char *>(&checkpoint_position),
+  sizeof(checkpoint_position),
+  checkpoint_offset +
+  int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index + 1)
+ );
 
-  {
-   file.exclusive_lock_head(); // TODO: lock guard
+ file.unlock_head();
+}
 
-   file.pwrite
-   (
-    reinterpret_cast<const char *>(&checkpoint_position),
-    sizeof(checkpoint_position),
-    checkpoint_offset +
-    int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index)
-   );
+/////////////////////////////////////////////////////////////////////////////
+void joedb::Writable_Journal::hard_checkpoint_at(int64_t position)
+/////////////////////////////////////////////////////////////////////////////
+{
+ file.flush();
 
-   if (commit_level > Commit_Level::no_commit)
-    file.sync();
+ checkpoint_index ^= 1;
+ checkpoint_position = position;
 
-   file.pwrite
-   (
-    reinterpret_cast<const char *>(&checkpoint_position),
-    sizeof(checkpoint_position),
-    checkpoint_offset +
-    int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index + 1)
-   );
+ file.exclusive_lock_head(); // TODO: lock guard
 
-   if (commit_level > Commit_Level::half_commit)
-    file.sync();
+ file.pwrite
+ (
+  reinterpret_cast<const char *>(&checkpoint_position),
+  sizeof(checkpoint_position),
+  checkpoint_offset +
+  int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index)
+ );
 
-   file.unlock_head();
-  }
+ file.sync();
 
-  file.set_position(checkpoint_position);
- }
+ file.pwrite
+ (
+  reinterpret_cast<const char *>(&checkpoint_position),
+  sizeof(checkpoint_position),
+  checkpoint_offset +
+  int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index + 1)
+ );
+
+ file.sync();
+
+ file.unlock_head();
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -20,7 +20,7 @@ TEST(Compiler, blob)
   db.set_name(person, name_blob);
   EXPECT_EQ("Jacques", db.read_blob_data(name_blob));
   db.set_city(person, "Paris");
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  //

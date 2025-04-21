@@ -64,7 +64,7 @@ namespace joedb::generator
     check_schema();
     auto_upgrade();
     check_single_row();
-    journal.default_checkpoint();
+    journal.soft_checkpoint();
    }
 )RRR";
 
@@ -116,16 +116,14 @@ namespace joedb::generator
    (
     joedb::Buffered_File &file,
     bool perform_initialization,
-    joedb::Readonly_Journal::Check check,
-    joedb::Commit_Level commit_level
+    joedb::Readonly_Journal::Check check
    );
 
   public:
    Writable_Database
    (
     joedb::Buffered_File &file,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
-    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all
    );
 
    const joedb::Readonly_Journal &get_journal() const {return journal;}
@@ -145,29 +143,14 @@ namespace joedb::generator
     return journal.ahead_of_checkpoint();
    }
 
-   void checkpoint_no_commit()
+   void soft_checkpoint()
    {
-    journal.checkpoint(joedb::Commit_Level::no_commit);
+    journal.soft_checkpoint();
    }
 
-   void checkpoint_half_commit()
+   void hard_checkpoint()
    {
-    journal.checkpoint(joedb::Commit_Level::half_commit);
-   }
-
-   void checkpoint_full_commit()
-   {
-    journal.checkpoint(joedb::Commit_Level::full_commit);
-   }
-
-   void checkpoint()
-   {
-    journal.default_checkpoint();
-   }
-
-   void checkpoint(joedb::Commit_Level commit_level) final
-   {
-    journal.checkpoint(commit_level);
+    journal.hard_checkpoint();
    }
 
    void write_comment(const std::string &comment);

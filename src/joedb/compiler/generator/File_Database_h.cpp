@@ -53,11 +53,10 @@ namespace joedb::generator
    (
     const char *file_name,
     joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
-    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all
    ):
     File_Database_Data(file_name, mode),
-    Writable_Database(file, check, commit_level)
+    Writable_Database(file, check)
    {
    }
 
@@ -65,10 +64,9 @@ namespace joedb::generator
    (
     const std::string &file_name,
     joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
-    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all
    ):
-    File_Database(file_name.c_str(), mode, check, commit_level)
+    File_Database(file_name.c_str(), mode, check)
    {
    }
  };

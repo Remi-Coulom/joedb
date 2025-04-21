@@ -52,7 +52,7 @@ update_vector float 7 value 2 0.8 9\n\
 
    Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
    interpreter.main_loop(joedbi_iss, joedbi_oss);
-   multiplexer.default_checkpoint();
+   multiplexer.soft_checkpoint();
   }
  }
 

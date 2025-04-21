@@ -24,7 +24,7 @@ namespace joedb
     try
     {
      transaction();
-     writable_journal->default_checkpoint();
+     writable_journal->soft_checkpoint();
     }
     catch (...)
     {
@@ -186,7 +186,7 @@ namespace joedb
    void push()
    {
     JOEDB_ASSERT(is_locked());
-    client.writable_journal->default_checkpoint();
+    client.writable_journal->soft_checkpoint();
     client.push_and_keep_locked();
    }
 
@@ -197,7 +197,7 @@ namespace joedb
    void push_unlock()
    {
     JOEDB_ASSERT(is_locked());
-    client.writable_journal->default_checkpoint();
+    client.writable_journal->soft_checkpoint();
     client.push_unlock();
     locked = false;
    }

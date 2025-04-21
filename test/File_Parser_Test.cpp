@@ -30,7 +30,7 @@ namespace joedb
   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
   Writable_Journal journal(*parser.get_file());
   journal.comment("Hello");
-  journal.default_checkpoint();
+  journal.soft_checkpoint();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ namespace joedb
    parser.parse(out, argc, const_cast<char **>(argv), arg_index);
    Writable_Journal journal(*parser.get_file());
    journal.create_table(table_name);
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   {

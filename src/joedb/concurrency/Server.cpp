@@ -280,7 +280,7 @@ namespace joedb
      (
       session->push_writer->get_position()
      );
-     client_lock->get_journal().default_checkpoint();
+     client_lock->get_journal().soft_checkpoint();
 
      // ??? takes_time
      if (share_client && session->unlock_after_push)

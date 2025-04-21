@@ -96,7 +96,7 @@ namespace joedb
    interpreter.set_echo(false);
    interpreter.set_rethrow(true);
    interpreter.main_loop(joedbi_file, std::cerr);
-   multiplexer.default_checkpoint();
+   multiplexer.soft_checkpoint();
   }
 
   for (const auto &[tid, tname]: options.db.get_tables())

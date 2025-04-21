@@ -46,7 +46,12 @@ namespace joedb
    void timestamp(int64_t timestamp) final;
    void valid_data() final;
    void flush() final;
-   void checkpoint(Commit_Level commit_level) final;
+
+   int64_t get_position() const final;
+   void start_writing(int64_t position) final;
+   void soft_checkpoint_at(int64_t position) final;
+   void hard_checkpoint_at(int64_t position) final;
+
    void insert_into(Table_Id table_id, Record_Id record_id) final;
    void insert_vector
    (

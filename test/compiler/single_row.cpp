@@ -19,7 +19,7 @@ namespace joedb
    EXPECT_EQ(db.get_user(), "joe");
 
    db.set_host(db.the_settings(), "new.host.com");
-   db.checkpoint();
+   db.soft_checkpoint();
 
    // compile-time errors:
    // db.new_settings();

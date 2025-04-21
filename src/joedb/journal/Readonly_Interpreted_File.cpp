@@ -23,7 +23,7 @@ namespace joedb
    std::ofstream null_stream;
    interpreter.main_loop(stream, null_stream);
   }
-  journal.default_checkpoint();
+  journal.soft_checkpoint();
 
   if (readonly)
    make_readonly();

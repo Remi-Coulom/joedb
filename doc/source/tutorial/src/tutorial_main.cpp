@@ -65,7 +65,7 @@ static int tutorial_main(int argc, char **argv)
  //
  // Writes to the database must be confirmed by an explicit checkpoint
  //
- db.checkpoint();
+ db.soft_checkpoint();
 
  return 0;
 }

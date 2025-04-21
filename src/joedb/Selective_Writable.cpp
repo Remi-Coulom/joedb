@@ -83,9 +83,24 @@ namespace joedb
    writable.valid_data();
  }
 
- void Selective_Writable::checkpoint(Commit_Level commit_level)
+ void Selective_Writable::start_writing(int64_t position)
  {
-  writable.checkpoint(commit_level);
+  writable.start_writing(position);
+ }
+
+ int64_t Selective_Writable::get_position() const
+ {
+  return writable.get_position();
+ }
+
+ void Selective_Writable::soft_checkpoint_at(int64_t position)
+ {
+  writable.soft_checkpoint_at(position);
+ }
+
+ void Selective_Writable::hard_checkpoint_at(int64_t position)
+ {
+  writable.hard_checkpoint_at(position);
  }
 
  //

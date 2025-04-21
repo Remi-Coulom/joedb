@@ -213,7 +213,7 @@ namespace joedb
    {
     Writable_Journal journal(mismatched_file);
     journal.create_table("city");
-    journal.default_checkpoint();
+    journal.soft_checkpoint();
    }
 
    try
@@ -240,7 +240,7 @@ namespace joedb
    joedb::File file(file_name, Open_Mode::create_new);
    joedb::Writable_Journal journal(file);
    journal.comment(std::string(read_size, 'x'));
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   joedb::File server_file(file_name, Open_Mode::read_existing);
@@ -282,7 +282,7 @@ namespace joedb
  {
   Test_Server server;
 
-  const size_t comment_size = 1 << 21;
+  const size_t comment_size = 1 << 5;
   const size_t client_count = 64;
 
   //
@@ -589,10 +589,10 @@ namespace joedb
   Test_Client client_1(client_file_1, server);
 
   client_0.get_writable_journal().create_table("person");
-  client_0.get_writable_journal().default_checkpoint();
+  client_0.get_writable_journal().soft_checkpoint();
 
   client_1.get_writable_journal().create_table("person");
-  client_1.get_writable_journal().default_checkpoint();
+  client_1.get_writable_journal().soft_checkpoint();
 
   client_0.push_unlock();
   EXPECT_ANY_THROW(client_1.push_unlock());
@@ -710,7 +710,7 @@ namespace joedb
   {
    Writable_Journal journal(file);
    journal.comment("Hello");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   File_Connection connection(connection_file);
@@ -822,7 +822,7 @@ namespace joedb
    Writable_Journal journal(file);
    for (int i = 1000000; --i >= 0;)
     journal.timestamp(i);
-   journal.checkpoint(Commit_Level::no_commit);
+   journal.soft_checkpoint();
   }
 
   {

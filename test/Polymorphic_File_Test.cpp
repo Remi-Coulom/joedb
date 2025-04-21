@@ -57,7 +57,7 @@ namespace joedb
   {
    Writable_Journal journal(file);
    journal.comment("This is a comment");
-   journal.checkpoint(Commit_Level::no_commit);
+   journal.soft_checkpoint();
   }
   polymorphic_journal_readonly_test(file);
  }

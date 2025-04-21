@@ -15,12 +15,11 @@ TEST(Compiler, Readonly_Client)
   (
    file_name,
    joedb::Open_Mode::create_new,
-   joedb::Readonly_Journal::Check::all,
-   joedb::Commit_Level::no_commit
+   joedb::Readonly_Journal::Check::all
   );
 
   db.new_city("Paris");
-  db.checkpoint();
+  db.soft_checkpoint();
 
   joedb::File file(file_name, joedb::Open_Mode::read_existing);
   my_namespace::is_nested::test::Readonly_Client client(file);
@@ -29,7 +28,7 @@ TEST(Compiler, Readonly_Client)
   EXPECT_EQ(client.get_database().get_city_table().get_size(), 1UL);
 
   db.new_city("Tokyo");
-  db.checkpoint();
+  db.soft_checkpoint();
 
   EXPECT_EQ(client.get_database().get_city_table().get_size(), 1UL);
   EXPECT_TRUE(client.pull());

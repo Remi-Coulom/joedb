@@ -96,7 +96,7 @@ TEST_F(Writable_Journal_Test, basic_operations)
    multi.update_float32(table_id, Record_Id(1), float32_field_id, 3.14f);
    multi.update_float64(table_id, Record_Id(1), float64_field_id, 3.141592653589);
   }
-  journal.checkpoint(Commit_Level::full_commit);
+  journal.hard_checkpoint();
  }
 
  Database db2;
@@ -139,7 +139,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   ASSERT_TRUE(in_file.good());
   std::ostringstream out;
   interpreter.main_loop(in_file, out);
-  multiplexer.default_checkpoint();
+  multiplexer.soft_checkpoint();
  }
 
  //

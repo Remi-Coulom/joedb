@@ -55,7 +55,7 @@ namespace joedb
     Readonly_Journal journal(file_view);
     journal.set_position(from_position);
     journal.play_until(writable, end_position);
-    writable.default_checkpoint();
+    writable.soft_checkpoint();
 
     return client_journal.get_checkpoint_position();
    }

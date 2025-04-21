@@ -34,7 +34,7 @@ int main(int argc, char **argv)
   }
 #endif
 
-  db.checkpoint_full_commit();
+  db.hard_checkpoint();
  }
 
  return 0;

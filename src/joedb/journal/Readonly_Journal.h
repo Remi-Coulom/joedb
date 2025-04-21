@@ -120,8 +120,9 @@ namespace joedb
    void play_until(Writable &writable, int64_t end);
    void play_until_checkpoint(Writable &writable)
    {
+    writable.start_writing(get_position());
     play_until(writable, checkpoint_position);
-    writable.default_checkpoint();
+    writable.soft_checkpoint_at(get_position());
    }
    void seek_to_checkpoint() {set_position(checkpoint_position);}
 

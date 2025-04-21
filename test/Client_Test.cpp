@@ -176,7 +176,7 @@ namespace joedb
   {
    Writable_Journal journal(client_file);
    journal.comment("Hello");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   Memory_File server_file;
@@ -217,7 +217,7 @@ namespace joedb
  #endif
 
    lock.get_journal().comment("Hello");
-   lock.get_journal().default_checkpoint();
+   lock.get_journal().soft_checkpoint();
    EXPECT_EQ(server_file.get_size(), 41);
    lock.push();
    EXPECT_EQ(server_file.get_size(), 48);
@@ -254,7 +254,7 @@ namespace joedb
    Writable_Journal server_journal(server_file);
    server_journal.create_table("person");
    server_journal.create_table("city");
-   server_journal.checkpoint(Commit_Level::no_commit);
+   server_journal.soft_checkpoint();
   }
 
   File_Connection connection(server_file);
@@ -265,7 +265,7 @@ namespace joedb
    {
     Writable_Journal client_journal(client_file);
     client_journal.create_table("country");
-    client_journal.checkpoint(Commit_Level::no_commit);
+    client_journal.soft_checkpoint();
    }
 
    try
@@ -285,7 +285,7 @@ namespace joedb
    {
     Writable_Journal client_journal(client_file);
     client_journal.create_table("person");
-    client_journal.checkpoint(Commit_Level::no_commit);
+    client_journal.soft_checkpoint();
    }
 
    try
@@ -331,7 +331,7 @@ namespace joedb
     Writable_Journal journal(client_file);
     journal.append();
     journal.create_table("city");
-    journal.checkpoint(Commit_Level::no_commit);
+    journal.soft_checkpoint();
    }
 
    //
@@ -383,7 +383,7 @@ namespace joedb
    Writable_Journal journal(client_file);
    journal.append();
    journal.create_table("city");
-   journal.checkpoint(Commit_Level::no_commit);
+   journal.soft_checkpoint();
   }
 
   //
@@ -442,10 +442,10 @@ namespace joedb
    Writable_Journal journal(client_file);
    initial = journal.get_checkpoint_position();
    journal.create_table("person");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
    after_person = journal.get_checkpoint_position();
    journal.create_table("city");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
    after_city = journal.get_checkpoint_position();
   }
 

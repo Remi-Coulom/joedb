@@ -39,10 +39,9 @@ namespace joedb::generator
     Client_Data
     (
      joedb::Buffered_File &file,
-     joedb::Readonly_Journal::Check check,
-     joedb::Commit_Level commit_level
+     joedb::Readonly_Journal::Check check
     ):
-     db(file, false, check, commit_level)
+     db(file, false, check)
     {
     }
   };
@@ -76,10 +75,9 @@ namespace joedb::generator
     joedb::Buffered_File &file,
     joedb::Connection &connection,
     bool content_check = true,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all,
-    joedb::Commit_Level commit_level = joedb::Commit_Level::no_commit
+    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all
    ):
-    detail::Client_Data(file, check, commit_level),
+    detail::Client_Data(file, check),
     joedb::Client(db.journal, connection, content_check),
     schema_checkpoint(0)
    {

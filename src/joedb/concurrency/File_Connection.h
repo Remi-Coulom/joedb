@@ -99,10 +99,9 @@ namespace joedb
     /////////////////////////////////////////////////////////////////////////
     (
      Buffered_File &server_file,
-     Readonly_Journal::Check check,
-     Commit_Level commit_level
+     Readonly_Journal::Check check
     ):
-    server_journal(server_file, check, commit_level)
+    server_journal(server_file, check)
     {
     }
   };
@@ -119,10 +118,9 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Buffered_File &server_file,
-    Readonly_Journal::Check check = Readonly_Journal::Check::all,
-    Commit_Level commit_level = Commit_Level::no_commit
+    Readonly_Journal::Check check = Readonly_Journal::Check::all
    ):
-   File_Connection_Data(server_file, check, commit_level),
+   File_Connection_Data(server_file, check),
    Journal_Connection(File_Connection_Data::server_journal)
    {
    }

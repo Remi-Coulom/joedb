@@ -7,7 +7,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  {
   flush_write_buffer();
-  db.checkpoint_full_commit();
+  db.hard_checkpoint();
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ namespace joedb
  {
   const Blob blob = db.write_blob_data(codec.encode(buffer, size));
   db.new_buffer(blob, int64_t(size), offset);
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  //////////////////////////////////////////////////////////////////////////

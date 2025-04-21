@@ -10,7 +10,7 @@ int main()
  {
   settings::Interpreted_File_Database db("../custom_settings.joedbi");
   db.set_user(db.the_settings(), "toto");
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  {

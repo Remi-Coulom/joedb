@@ -28,9 +28,4 @@ namespace joedb
  {\
  }
  #include "joedb/TYPE_MACRO.h"
-
- void Writable::default_checkpoint()
- {
-  checkpoint(default_commit_level);
- }
 }

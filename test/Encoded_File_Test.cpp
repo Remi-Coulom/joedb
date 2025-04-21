@@ -90,7 +90,7 @@ namespace joedb
   {
    Writable_Journal journal(file);
    journal.create_table(table_name);
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   if (is_compression)

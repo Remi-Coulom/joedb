@@ -40,7 +40,7 @@ namespace joedb
    reference_string << reference_file.rdbuf();
 
    EXPECT_EQ(reference_string.str(), out_string.str());
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
  }
 
@@ -69,7 +69,7 @@ namespace joedb
   reference_string << reference_file.rdbuf();
 
   EXPECT_EQ(reference_string.str(), dump_string.str());
-  journal.default_checkpoint();
+  journal.soft_checkpoint();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ namespace joedb
   reference_string << reference_file.rdbuf();
 
   EXPECT_EQ(reference_string.str(), dump_string.str());
-  journal.default_checkpoint();
+  journal.soft_checkpoint();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -163,9 +163,9 @@ namespace joedb
    journal.rewind();
    journal.create_table("person");
    journal.create_table("city");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
    journal.insert_into(Table_Id{1}, Record_Id{1});
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 1\n");

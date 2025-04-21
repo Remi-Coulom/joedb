@@ -114,7 +114,7 @@ namespace joedb
     //
     // Check that all databases have the same schema
     //
-    schema_journal.default_checkpoint();
+    schema_journal.soft_checkpoint();
     if (!merged_db)
      reference_schema = schema_file.get_data();
     else if (schema_file.get_data() != reference_schema)

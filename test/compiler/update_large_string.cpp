@@ -13,7 +13,7 @@ int main()
   auto person = db.new_person();
 
   db.set_name(person, std::string(1000000000, 'X'));
-  db.checkpoint_no_commit();
+  db.soft_checkpoint();
  }
 
  {

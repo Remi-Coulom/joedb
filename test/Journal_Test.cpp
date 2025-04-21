@@ -24,7 +24,7 @@ namespace joedb
 
    journal.append();
    journal.create_table("person");
-   journal.checkpoint(Commit_Level::no_commit);
+   journal.soft_checkpoint();
   }
 
   Writable_Journal journal(file);
@@ -189,11 +189,11 @@ namespace joedb
    Writable_Journal journal(file);
    EXPECT_EQ(journal.get_position(), Header::size);
    journal.create_table("person");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
    correct_checkpoint = journal.get_checkpoint_position();
    EXPECT_GT(correct_checkpoint, Header::ssize);
    journal.create_table("country");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   file.set_position(Readonly_Journal::checkpoint_offset);
@@ -224,7 +224,7 @@ namespace joedb
   {
    Writable_Journal journal(file);
    file.write<uint8_t>(255);
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   Readonly_Journal journal(file);
@@ -290,7 +290,7 @@ namespace joedb
    Writable_Journal journal_2(file_2);
 
    journal_1.valid_data();
-   journal_1.checkpoint(Commit_Level::no_commit);
+   journal_1.soft_checkpoint();
 
    EXPECT_TRUE
    (
@@ -371,7 +371,7 @@ namespace joedb
    for (int i = 10000; --i >= 0;)
    {
     journal.valid_data();
-    journal.checkpoint(Commit_Level::no_commit);
+    journal.soft_checkpoint();
    }
   }
 
@@ -408,7 +408,7 @@ namespace joedb
   {
    Writable_Journal journal(file);
    journal.comment("properly checkpointed comment");
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
   }
 
   {
@@ -438,10 +438,10 @@ namespace joedb
    Writable_Journal journal(file);
    EXPECT_EQ(journal.get_checkpoint_position(), 41);
    journal.comment(std::string(5000, 'A'));
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
    EXPECT_EQ(journal.get_checkpoint_position(), 5044);
    journal.comment(std::string(5000, 'B'));
-   journal.default_checkpoint();
+   journal.soft_checkpoint();
    EXPECT_EQ(journal.get_checkpoint_position(), 10047);
   }
 
@@ -457,7 +457,7 @@ namespace joedb
     journal.pull();
     journal.one_step(copy_journal);
 
-    copy_journal.default_checkpoint();
+    copy_journal.soft_checkpoint();
     EXPECT_EQ(copy_journal.get_checkpoint_position(), 10047);
    }
 
@@ -482,10 +482,10 @@ namespace joedb
 
   const int64_t initial = journal.get_checkpoint_position();
   journal.create_table("person");
-  journal.default_checkpoint();
+  journal.soft_checkpoint();
   const int64_t after_person = journal.get_checkpoint_position();
   journal.create_table("city");
-  journal.default_checkpoint();
+  journal.soft_checkpoint();
   const int64_t after_city = journal.get_checkpoint_position();
 
   EXPECT_TRUE(after_person > initial);

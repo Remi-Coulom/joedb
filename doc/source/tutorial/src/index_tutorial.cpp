@@ -67,7 +67,7 @@ int main()
   std::cout << last << ", " << first << '\n';
  }
 
- db.checkpoint();
+ db.soft_checkpoint();
 
  return 0;
 }

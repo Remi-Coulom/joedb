@@ -213,7 +213,7 @@ namespace joedb
     record_id = record_id + size;
    }
   }
-  writable.default_checkpoint();
+  writable.soft_checkpoint();
  }
 
  /////////////////////////////////////////////////////////////////////////////

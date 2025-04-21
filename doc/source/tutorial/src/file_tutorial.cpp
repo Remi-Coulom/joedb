@@ -16,7 +16,7 @@ static int file_tutorial_main(int argc, char **argv)
  {
   tutorial::File_Database db(file_name, joedb::Open_Mode::create_new);
   db.new_city("Villeneuve d'Ascq");
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  //
@@ -26,7 +26,7 @@ static int file_tutorial_main(int argc, char **argv)
  {
   tutorial::File_Database db(file_name, joedb::Open_Mode::write_existing);
   db.new_city("Tombouctou");
-  db.checkpoint();
+  db.soft_checkpoint();
  }
 
  //

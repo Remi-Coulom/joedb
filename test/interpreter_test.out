@@ -132,7 +132,8 @@ Journal
  comment "<comment_string>"
  valid_data
  flush
- checkpoint [no|half|full]
+ soft_checkpoint
+ hard_checkpoint
  write_blob <data_string>
 
 Displaying data

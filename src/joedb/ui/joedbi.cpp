@@ -77,7 +77,7 @@ namespace joedb
     Interpreter interpreter(readable, writable, blob_file, blob_writer, 0);
     interpreter.main_loop(std::cin, std::cout);
     if (blob_journal)
-     blob_journal->default_checkpoint();
+     blob_journal->soft_checkpoint();
    });
   }
 
