@@ -20,78 +20,36 @@ void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Readonly_Journal::Readonly_Journal
+joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 /////////////////////////////////////////////////////////////////////////////
-(
- Journal_Construction_Lock &lock,
- Check check
-):
- file(lock.get_file()),
+ file(lock.file),
  checkpoint_index(0),
  checkpoint_position(Header::size),
  table_of_last_operation(Table_Id(0)),
  record_of_last_operation(Record_Id(0)),
  field_of_last_update(Field_Id(0))
 {
- //
- // Check the format of an existing joedb file
- //
- if (!lock.is_creating_new())
+ if (lock.size != 0)
  {
   if (file.pread((char *)(&lock.header), Header::size, 0) < Header::size)
    file.reading_past_end_of_file();
+
   file.set_position(Header::size);
 
-  //
-  // First, check for "joedb"
-  //
-  if (lock.header.signature != Header::joedb)
-   if (check_flag(check, Check::joedb))
-    throw Exception("missing joedb signature");
+  if (lock.header.signature != Header::joedb && !lock.ignore_errors)
+   throw Exception("missing joedb signature");
 
-  //
-  // Check version number
-  //
-  if (lock.header.version != format_version)
-   if (check_flag(check, Check::version))
-    throw Exception("unsupported file format version");
+  if (lock.header.version != format_version && !lock.ignore_errors)
+   throw Exception("unsupported file format version");
 
-  //
-  // Compute checkpoint position
-  //
   checkpoint_position = Header::size;
   read_checkpoint(lock.header.checkpoint);
 
-  //
-  // Compare to file size (if available)
-  //
-  const int64_t file_size = file.get_size();
+  if (lock.size > Header::ssize && lock.ignore_errors)
+   checkpoint_position = lock.size;
 
-  if (file_size > 0)
-  {
-   if
-   (
-    check_flag(check, Check::big_size) &&
-    file_size > checkpoint_position
-   )
-   {
-    throw Exception
-    (
-     "Checkpoint (" + std::to_string(checkpoint_position) + ") is smaller than file size (" +
-     std::to_string(file_size) + "). This file may contain an aborted transaction. "
-     "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
-    );
-   }
-
-   if
-   (
-    check_flag(check, Check::small_size) &&
-    file_size < checkpoint_position
-   )
-   {
-    throw Exception("Checkpoint is bigger than file size");
-   }
-  }
+  if (lock.size > 0 && lock.size < checkpoint_position)
+   throw Exception("Checkpoint is bigger than file size");
  }
 }
 

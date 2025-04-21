@@ -17,23 +17,6 @@ namespace joedb
   friend class Writable_Journal;
   friend class Journal_Hasher;
 
-  public:
-   enum class Check
-   {
-    none = 0,
-    joedb = 1,
-    version = 2,
-    big_size = 4,
-    small_size = 8,
-    readonly = joedb | version | small_size,
-    all = joedb | version | big_size | small_size
-   };
-
-   static bool check_flag(Check check, Check flag)
-   {
-    return static_cast<int>(check) & static_cast<int>(flag);
-   }
-
   private:
    void read_checkpoint(const std::array<int64_t, 4> &pos);
    void pull_without_locking();
@@ -89,19 +72,15 @@ namespace joedb
    };
 
   public:
-   explicit Readonly_Journal(Journal_Construction_Lock &lock, Check check);
+   explicit Readonly_Journal(Journal_Construction_Lock &lock);
 
-   explicit Readonly_Journal(Journal_Construction_Lock &&lock, Check check):
-    Readonly_Journal(lock, check)
+   explicit Readonly_Journal(Journal_Construction_Lock &&lock):
+    Readonly_Journal(lock)
    {
    }
 
-   explicit Readonly_Journal
-   (
-    Buffered_File &file,
-    Check check = Check::readonly
-   ):
-    Readonly_Journal(Journal_Construction_Lock(file), check)
+   explicit Readonly_Journal(Buffered_File &file):
+    Readonly_Journal(Journal_Construction_Lock(file))
    {
    }
 
@@ -143,10 +122,6 @@ namespace joedb
 
    static constexpr uint32_t format_version = 6;
    static constexpr int64_t checkpoint_offset = 0;
-   static constexpr bool is_second_checkpoint_copy(int64_t offset)
-   {
-    return offset == 8 || offset == 24;
-   }
 
    virtual Writable_Journal *get_writable_journal() {return nullptr;}
    virtual ~Readonly_Journal() = default;

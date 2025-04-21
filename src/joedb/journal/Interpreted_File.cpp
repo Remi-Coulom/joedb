@@ -33,7 +33,7 @@ namespace joedb
  )
  {
   Memory_File::pwrite(buffer, size, offset);
-  if (Readonly_Journal::is_second_checkpoint_copy(offset))
+  if (offset < Header::ssize)
    pull();
  }
 

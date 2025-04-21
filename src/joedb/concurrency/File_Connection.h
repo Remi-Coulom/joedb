@@ -95,13 +95,9 @@ namespace joedb
 
    public:
     /////////////////////////////////////////////////////////////////////////
-    File_Connection_Data
+    File_Connection_Data(Buffered_File &server_file):
     /////////////////////////////////////////////////////////////////////////
-    (
-     Buffered_File &server_file,
-     Readonly_Journal::Check check
-    ):
-    server_journal(server_file, check)
+     server_journal(server_file)
     {
     }
   };
@@ -114,14 +110,10 @@ namespace joedb
  {
   public:
    //////////////////////////////////////////////////////////////////////////
-   File_Connection
+   File_Connection(Buffered_File &server_file):
    //////////////////////////////////////////////////////////////////////////
-   (
-    Buffered_File &server_file,
-    Readonly_Journal::Check check = Readonly_Journal::Check::all
-   ):
-   File_Connection_Data(server_file, check),
-   Journal_Connection(File_Connection_Data::server_journal)
+    File_Connection_Data(server_file),
+    Journal_Connection(File_Connection_Data::server_journal)
    {
    }
  };

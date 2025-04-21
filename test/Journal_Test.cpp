@@ -90,8 +90,7 @@ namespace joedb
    EXPECT_STREQ(e.what(), "missing joedb signature");
   }
 
-  file.set_position(0);
-  Readonly_Journal journal(file, Readonly_Journal::Check::none);
+  Readonly_Journal journal(Journal_Construction_Lock(file, true));
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -415,6 +414,7 @@ namespace joedb
    Writable_Journal journal(file);
    journal.set_position(journal.get_checkpoint_position());
    journal.comment("uncheckpointed comment");
+   journal.flush();
   }
 
   try

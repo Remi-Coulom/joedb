@@ -6,21 +6,20 @@ namespace joedb
  Journal_Construction_Lock::Journal_Construction_Lock
  ////////////////////////////////////////////////////////////////////////////
  (
-  Buffered_File &file
+  Buffered_File &file,
+  bool ignore_errors
  ):
-  file(file)
+  file(file),
+  ignore_errors(ignore_errors),
+  size(file.get_size())
  {
   if (file.is_readonly())
-  {
    file.shared_lock_head();
-   creating_new = false;
-  }
   else
   {
    if (file.is_shared())
     file.exclusive_lock_tail();
    file.exclusive_lock_head();
-   creating_new = file.get_size() == 0;
   }
  }
 

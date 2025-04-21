@@ -4,17 +4,13 @@
 #include "joedb/error/Destructor_Logger.h"
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::Writable_Journal
+joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
 /////////////////////////////////////////////////////////////////////////////
-(
- Journal_Construction_Lock &lock,
- Check check
-):
- Readonly_Journal(lock, check)
+ Readonly_Journal(lock)
 {
  if (file.is_readonly())
   throw Exception("Cannot create Writable_Journal with read-only file");
- else if (lock.is_creating_new())
+ else if (lock.size == 0)
  {
   lock.header.checkpoint.fill(Header::size);
   lock.header.version = format_version;
@@ -22,27 +18,29 @@ joedb::Writable_Journal::Writable_Journal
   file.pwrite(reinterpret_cast<const char *>(&lock.header), Header::size, 0);
   file.set_position(Header::size);
  }
+ else if (lock.size > 0 && lock.size > checkpoint_position)
+ {
+  throw Exception
+  (
+   "Checkpoint (" + std::to_string(checkpoint_position) +
+   ") is smaller than file size (" + std::to_string(lock.size) +
+   "). This file may contain an aborted transaction. "
+   "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
+  );
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::Writable_Journal
+joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &&lock):
 /////////////////////////////////////////////////////////////////////////////
-(
- Journal_Construction_Lock &&lock,
- Check check
-):
- Writable_Journal(lock, check)
+ Writable_Journal(lock)
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::Writable_Journal
+joedb::Writable_Journal::Writable_Journal(Buffered_File &file):
 /////////////////////////////////////////////////////////////////////////////
-(
- Buffered_File &file,
- Check check
-):
- Writable_Journal(Journal_Construction_Lock(file), check)
+ Writable_Journal(Journal_Construction_Lock(file))
 {
 }
 

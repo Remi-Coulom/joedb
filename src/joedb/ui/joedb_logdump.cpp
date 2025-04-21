@@ -82,20 +82,19 @@ namespace joedb
     {
      journal.emplace
      (
-      file,
-      ignore_errors ?
-       Readonly_Journal::Check::none :
-       Readonly_Journal::Check::all
+      Journal_Construction_Lock(file, ignore_errors)
      );
     }
     catch (const Exception &e)
     {
-     if (!ignore_errors)
+     if (ignore_errors)
+      throw;
+     else
      {
       std::cout << "Error opening journal file: " << e.what() << '\n';
       std::cout << "run with the --ignore-errors flag to skip this check.\n";
+      return 1;
      }
-     return 1;
     }
 
     std::unique_ptr<Writable> writable;

@@ -115,16 +115,11 @@ namespace joedb::generator
    Writable_Database
    (
     joedb::Buffered_File &file,
-    bool perform_initialization,
-    joedb::Readonly_Journal::Check check
+    bool perform_initialization
    );
 
   public:
-   Writable_Database
-   (
-    joedb::Buffered_File &file,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all
-   );
+   Writable_Database(joedb::Buffered_File &file);
 
    const joedb::Readonly_Journal &get_journal() const {return journal;}
 

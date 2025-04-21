@@ -14,8 +14,7 @@ TEST(Compiler, Readonly_Client)
   my_namespace::is_nested::test::File_Database db
   (
    file_name,
-   joedb::Open_Mode::create_new,
-   joedb::Readonly_Journal::Check::all
+   joedb::Open_Mode::create_new
   );
 
   db.new_city("Paris");

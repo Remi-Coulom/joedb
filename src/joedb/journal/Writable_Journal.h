@@ -21,9 +21,9 @@ namespace joedb
    );
 
   public:
-   explicit Writable_Journal(Journal_Construction_Lock &lock, Check check);
-   explicit Writable_Journal(Journal_Construction_Lock &&lock, Check check);
-   explicit Writable_Journal(Buffered_File &file, Check check = Check::all);
+   explicit Writable_Journal(Journal_Construction_Lock &lock);
+   explicit Writable_Journal(Journal_Construction_Lock &&lock);
+   explicit Writable_Journal(Buffered_File &file);
 
    void append()
    {

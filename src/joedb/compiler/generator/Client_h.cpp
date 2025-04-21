@@ -36,12 +36,7 @@ namespace joedb::generator
    protected:
     Writable_Database db;
 
-    Client_Data
-    (
-     joedb::Buffered_File &file,
-     joedb::Readonly_Journal::Check check
-    ):
-     db(file, false, check)
+    Client_Data(joedb::Buffered_File &file): db(file, false)
     {
     }
   };
@@ -74,10 +69,9 @@ namespace joedb::generator
    (
     joedb::Buffered_File &file,
     joedb::Connection &connection,
-    bool content_check = true,
-    joedb::Readonly_Journal::Check check = joedb::Readonly_Journal::Check::all
+    bool content_check = true
    ):
-    detail::Client_Data(file, check),
+    detail::Client_Data(file),
     joedb::Client(db.journal, connection, content_check),
     schema_checkpoint(0)
    {

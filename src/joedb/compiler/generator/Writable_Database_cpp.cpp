@@ -100,10 +100,9 @@ namespace joedb::generator
   ////////////////////////////////////////////////////////////////////////////
   (
    joedb::Buffered_File &file,
-   bool perform_initialization,
-   joedb::Readonly_Journal::Check check
+   bool perform_initialization
   ):
-   journal(file, check)
+   journal(file)
   {
    journal.rewind();
 
@@ -112,13 +111,9 @@ namespace joedb::generator
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  Writable_Database::Writable_Database
+  Writable_Database::Writable_Database(joedb::Buffered_File &file):
   ////////////////////////////////////////////////////////////////////////////
-  (
-   joedb::Buffered_File &file,
-   joedb::Readonly_Journal::Check check
-  ):
-   Writable_Database(file, true, check)
+   Writable_Database(file, true)
   {
   }
 

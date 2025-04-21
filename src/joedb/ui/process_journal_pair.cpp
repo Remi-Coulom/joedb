@@ -15,16 +15,16 @@ namespace joedb
   void (*process)(Readonly_Journal &, Writable_Journal &, int64_t checkpoint)
  )
  {
-  int64_t checkpoint = 0;
-  bool ignore_errors = false;
   int arg_index = 1;
 
+  bool ignore_errors = false;
   if (arg_index + 2 < argc && std::string(argv[arg_index]) == "--ignore-errors")
   {
    ignore_errors = true;
    arg_index++;
   }
 
+  int64_t checkpoint = 0;
   if (arg_index + 3 < argc && std::string(argv[arg_index]) == "--checkpoint")
   {
    std::istringstream(argv[arg_index + 1]) >> checkpoint;
@@ -45,10 +45,7 @@ namespace joedb
 
   Readonly_Journal input_journal
   (
-   input_file,
-   ignore_errors ?
-    Readonly_Journal::Check::none :
-    Readonly_Journal::Check::all
+   Journal_Construction_Lock(input_file, ignore_errors)
   );
 
   File output_file(output_file_name, Open_Mode::create_new);
