@@ -74,10 +74,10 @@ namespace joedb
  size_t CURL_File::copy_callback
  ////////////////////////////////////////////////////////////////////////////
  (
-  void *contents,
-  size_t size,
-  size_t nmemb,
-  void *p
+  void * const contents,
+  const size_t size,
+  const size_t nmemb,
+  void * const p
  )
  {
   const size_t real_size = size * nmemb;
@@ -91,16 +91,18 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Buffered_File &destination,
-  int64_t start,
-  int64_t size
+  const int64_t start,
+  const int64_t size
  ) const
  {
+  const int64_t old_position = destination.get_position();
   destination.set_position(start);
 
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &destination));
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, copy_callback));
 
   perform_range(start, size);
+  destination.set_position(old_position);
  }
 
  ////////////////////////////////////////////////////////////////////////////

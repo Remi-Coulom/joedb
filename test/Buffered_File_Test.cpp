@@ -35,9 +35,12 @@ TEST(Buffered_File, large_copy)
  joedb::Memory_File file;
  for (size_t i = 0; i < 1 + 2 * count; i++)
   file.write<uint64_t>(magic);
+ file.flush();
 
  joedb::Memory_File copy;
  copy.write<uint64_t>(~magic);
+ copy.flush();
+
  file.copy_to(copy, sizeof(uint64_t), sizeof(uint64_t) * count);
  copy.set_position(0);
  EXPECT_EQ(copy.read<uint64_t>(), ~magic);

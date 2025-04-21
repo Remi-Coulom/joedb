@@ -74,7 +74,7 @@ namespace joedb
     (
      journal,
      from_checkpoint,
-     until_checkpoint,
+     journal.get_checkpoint_position(),
      false
     );
    }

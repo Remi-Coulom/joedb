@@ -12,6 +12,13 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   public:
+   virtual int64_t get_position() const {return 0;}
+   virtual void start_writing(int64_t position) {}
+   virtual void soft_checkpoint_at(int64_t position) {}
+   virtual void hard_checkpoint_at(int64_t position) {}
+   void soft_checkpoint() {soft_checkpoint_at(get_position());}
+   void hard_checkpoint() {hard_checkpoint_at(get_position());}
+
    virtual void create_table(const std::string &name) {}
    virtual void drop_table(Table_Id table_id) {}
    virtual void rename_table(Table_Id table_id, const std::string &name) {}
@@ -35,14 +42,6 @@ namespace joedb
    virtual void timestamp(int64_t timestamp) {}
    virtual void valid_data() {}
    virtual void flush() {}
-
-   virtual int64_t get_position() const {return 0;}
-   virtual void start_writing(int64_t position) {}
-   virtual void soft_checkpoint_at(int64_t position) {}
-   virtual void hard_checkpoint_at(int64_t position) {}
-
-   void soft_checkpoint() {soft_checkpoint_at(get_position());}
-   void hard_checkpoint() {hard_checkpoint_at(get_position());}
 
    virtual void insert_into(Table_Id table_id, Record_Id record_id) {}
    virtual void insert_vector

@@ -47,7 +47,6 @@ namespace joedb
   const int64_t size
  ) const
  {
-  destination.set_position(start);
   int64_t done = 0;
 
   while (done < size)
@@ -56,7 +55,7 @@ namespace joedb
    const size_t received = pread(destination.buffer.data, asked, start + done);
    if (received == 0)
     reading_past_end_of_file();
-   destination.sequential_write(destination.buffer.data, received);
+   destination.pwrite(destination.buffer.data, received, start + done);
    done += int64_t(received);
   }
  }

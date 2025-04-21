@@ -38,10 +38,8 @@ namespace joedb
  void Server_File::write_checkpoint()
  ////////////////////////////////////////////////////////////////////////////
  {
-  head.set_position(0);
-  head.write<int64_t>(server_checkpoint);
-  head.write<int64_t>(server_checkpoint);
-  head.flush();
+  head.pwrite((const char *)&server_checkpoint, 8, 0);
+  head.pwrite((const char *)&server_checkpoint, 8, 8);
  }
 
  ////////////////////////////////////////////////////////////////////////////

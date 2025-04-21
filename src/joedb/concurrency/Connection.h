@@ -74,7 +74,7 @@ namespace joedb
     (
      client_journal,
      from_checkpoint,
-     std::numeric_limits<int64_t>::max(),
+     client_journal.get_checkpoint_position(),
      unlock_after
     );
    }

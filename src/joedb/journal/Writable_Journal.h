@@ -4,7 +4,6 @@
 #include "joedb/Writable.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Async_Writer.h"
-#include <limits>
 
 namespace joedb
 {
@@ -33,8 +32,13 @@ namespace joedb
    int64_t pull_from
    (
     const Readonly_Journal &journal,
-    int64_t until_checkpoint = std::numeric_limits<int64_t>::max()
+    int64_t until_checkpoint
    );
+
+   int64_t pull_from(const Readonly_Journal &journal)
+   {
+    return pull_from(journal, journal.get_checkpoint_position());
+   }
 
    int64_t ahead_of_checkpoint() const noexcept;
 

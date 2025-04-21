@@ -52,26 +52,16 @@ int64_t joedb::Writable_Journal::pull_from
  const int64_t until_checkpoint
 )
 {
- const int64_t source_checkpoint = std::min
- (
-  journal.get_checkpoint_position(),
-  until_checkpoint
- );
-
- if (checkpoint_position < source_checkpoint)
+ if (checkpoint_position < until_checkpoint)
  {
-  const int64_t initial_position = get_position();
-
   journal.get_file().copy_to
   (
    file,
    checkpoint_position,
-   source_checkpoint - checkpoint_position
+   until_checkpoint - checkpoint_position
   );
 
-  soft_checkpoint();
-
-  set_position(initial_position);
+  soft_checkpoint_at(until_checkpoint);
  }
 
  return checkpoint_position;

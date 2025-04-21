@@ -45,17 +45,10 @@ namespace joedb
     bool unlock_after
    ) override
    {
-    const int64_t end_position = std::min
-    (
-     client_journal.get_checkpoint_position(),
-     until_position
-    );
-
     File_View file_view(client_journal.get_file());
     Readonly_Journal journal(file_view);
     journal.set_position(from_position);
-    journal.play_until(writable, end_position);
-    writable.soft_checkpoint();
+    journal.play_until(writable, until_position);
 
     return client_journal.get_checkpoint_position();
    }
