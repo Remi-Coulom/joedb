@@ -4,17 +4,13 @@ TODO
 For next release
 ----------------
 
- - Important new features:
+ - New features:
 
-   - Robust_Connection
+   - Robust_Connection (Server_File is a Robust_Connection)
+   - Push_Thread: works only with thread-safe joedb::File (test at compile time)
+   - Checkpoint_Thread: implement soft and hard checkpoints first
 
-     - Connection must be decoupled from Server_File
-     - for this to work, Connection must provide virtual pread
-     - rename Server_File to Connected_File
-
-   - Push_Thread: requires virtual bool Abstract_File::is_thread_safe() const
-
- - Important improvements:
+ - Improvements:
 
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
@@ -35,8 +31,8 @@ For next release
        - delete_<index>(cols)
        - update_<index>(id, cols)
        - in case of unique index failure, throw before actually inserting
+       - use struct (with field names) instead of tuple for index key
 
-     - use struct (with field names) instead of tuple for index key
      - private access to dropped fields (for old custom functions), cleared at the time of drop
      - option to make some member functions private (->private: private_new_person)
      - option to add custom member functions
@@ -61,12 +57,14 @@ For next release
      - stop_transaction(stop_checkpoint_position) -> update checkpoint and fsync
      - all write events must be called between start and stop (lock guard)
 
+   - joedb::Database: use vector instead of map for tables and fields
+
  - Tooling:
 
    - Add support for vcpkg
+   - FetchContent and find_package
    - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
    - Use clang-format (try to customize it, use tabs)
-   - joa
 
 On-disk Storage
 ---------------
@@ -166,8 +164,6 @@ Performance
 
 - File design based on llfio
 - use async_write_some and async_read_some during pull and push
-- joedb::Database: use vector instead of map for tables and fields (with a bool
-  indicating if deleted)
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 
 joedb_admin
