@@ -110,6 +110,15 @@ parameter. Two channel classes are provided:
  * :joedb:`Network_Channel` opens a network socket to the server directly.
  * :joedb:`ssh::Forward_Channel` connects to the server with ssh encryption and authentication.
 
+:joedb:`Robust_Connection`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:joedb:`Robust_Connection` is a wrapper around :joedb:`Server_Connection` that
+will automatically reconnect in case an exception is thrown during any of the
+connection's functions. This allows rebooting the database server without
+restarting the clients: they will wait for the server to be back online, and
+reconnect when it accepts connections again.
+
 .. _local_and_remote_concurrency:
 
 Combining Local and Remote Concurrency

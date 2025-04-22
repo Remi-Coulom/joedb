@@ -6,12 +6,13 @@ For next release
 
  - New features:
 
-   - Robust_Connection (Server_File is a Robust_Connection)
+   - make Server_File robust
    - Push_Thread: works only with thread-safe joedb::File (test at compile time)
    - Checkpoint_Thread: implement soft and hard checkpoints first
 
  - Improvements:
 
+   - lock guards for all file locks
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code

@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Network_Channel.h"
+#include "joedb/concurrency/Robust_Connection.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/ui/Connection_Builder.h"
 
@@ -12,6 +13,9 @@ namespace joedb
   private:
    std::unique_ptr<Network_Channel> channel;
    std::unique_ptr<Server_Connection> connection;
+
+   std::unique_ptr<Network_Connector> connector;
+   std::unique_ptr<Robust_Connection> robust_connection;
 
   public:
    bool has_sharing_option() const final {return true;}
@@ -28,16 +32,19 @@ namespace joedb
     const char * const host = argv[0];
     const char * const port = argv[1];
 
-    channel = std::make_unique<Network_Channel>(host, port);
-
     if (file)
-     connection = std::make_unique<Server_Connection>(*channel);
+    {
+     connector = std::make_unique<Network_Connector>(host, port);
+     robust_connection = std::make_unique<Robust_Connection>(*connector, &std::cerr);
+     return *robust_connection;
+    }
     else
+    {
+     channel = std::make_unique<Network_Channel>(host, port);
      connection = std::make_unique<Server_File>(*channel);
-
-    connection->set_log(&std::cerr);
-
-    return *connection;
+     connection->set_log(&std::cerr);
+     return *connection;
+    }
    }
  };
 }
