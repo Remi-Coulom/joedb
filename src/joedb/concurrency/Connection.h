@@ -32,7 +32,7 @@ namespace joedb
    virtual int64_t pull
    (
     Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    std::chrono::milliseconds wait
    );
 
    /// Fused lock_pull, executed at the start of a write transaction
@@ -40,7 +40,7 @@ namespace joedb
    virtual int64_t lock_pull
    (
     Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    std::chrono::milliseconds wait
    );
 
    /// Get new connection checkpoint without pulling
@@ -48,7 +48,7 @@ namespace joedb
    virtual int64_t get_checkpoint
    (
     const Readonly_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    std::chrono::milliseconds wait
    );
 
    /// Push new data to the connection

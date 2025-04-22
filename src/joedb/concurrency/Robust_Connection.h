@@ -88,7 +88,7 @@ namespace joedb
    int64_t pull
    (
     Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    std::chrono::milliseconds wait
    ) override
    {
     JOEDB_ROBUSTLY_DO
@@ -101,7 +101,7 @@ namespace joedb
    int64_t lock_pull
    (
     Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    std::chrono::milliseconds wait
    ) override
    {
     JOEDB_ROBUSTLY_DO
@@ -114,7 +114,7 @@ namespace joedb
    int64_t get_checkpoint
    (
     const Readonly_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    std::chrono::milliseconds wait
    ) override
    {
     JOEDB_ROBUSTLY_DO
