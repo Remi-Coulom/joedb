@@ -43,7 +43,6 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
   if (lock.header.version != format_version && !lock.ignore_errors)
    throw Exception("unsupported file format version");
 
-  checkpoint_position = Header::size;
   read_checkpoint(lock.header.checkpoint);
 
   if (lock.size > Header::ssize && lock.ignore_errors)
