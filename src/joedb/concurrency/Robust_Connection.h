@@ -147,8 +147,13 @@ namespace joedb
 
    void unlock() override
    {
-    if (connection)
+    try
+    {
      connection->unlock();
+    }
+    catch (...)
+    {
+    }
    }
  };
 }
