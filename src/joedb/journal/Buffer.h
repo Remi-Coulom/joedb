@@ -3,9 +3,8 @@
 
 #include "joedb/error/assert.h"
 
-#include <stddef.h>
 #include <stdint.h>
-#include <algorithm>
+#include <cstring>
 
 namespace joedb
 {
@@ -25,7 +24,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     JOEDB_ASSERT(index + sizeof(T) < size + extra_size);
-    std::copy_n((const char *)&x, sizeof(T), data + index);
+    std::memcpy(data + index, (const char *)&x, sizeof(T));
     index += sizeof(T);
    }
 
@@ -35,7 +34,7 @@ namespace joedb
    {
     JOEDB_ASSERT(index + sizeof(T) < size + extra_size);
     T result;
-    std::copy_n(data + index, sizeof(T), (char *)&result);
+    std::memcpy((char *)&result, data + index, sizeof(T));
     index += sizeof(T);
     return result;
    }

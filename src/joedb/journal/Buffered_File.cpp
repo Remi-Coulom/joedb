@@ -2,8 +2,6 @@
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/error/Destructor_Logger.h"
 
-#include <algorithm>
-
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////

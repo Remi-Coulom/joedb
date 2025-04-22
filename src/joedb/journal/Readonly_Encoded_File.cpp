@@ -45,11 +45,11 @@ namespace joedb
      decoded_buffer = b;
     }
 
-    std::copy_n
+    std::memcpy
     (
+     buffer + intersection_start - start,
      read_buffer.data() + intersection_start - b_start,
-     intersection_size,
-     buffer + intersection_start - start
+     intersection_size
     );
    }
   }

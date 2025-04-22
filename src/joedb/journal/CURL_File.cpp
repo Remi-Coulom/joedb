@@ -36,7 +36,7 @@ namespace joedb
  )
  {
   const size_t copy_size = std::min(size - offset, real_size);
-  std::copy_n(contents, copy_size, buffer + offset);
+  std::memcpy(buffer + offset, contents, copy_size);
   offset += copy_size;
   return copy_size;
  }

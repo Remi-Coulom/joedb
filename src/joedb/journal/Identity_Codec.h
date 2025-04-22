@@ -2,9 +2,9 @@
 #define joedb_Identity_Codec_declared
 
 #include "joedb/journal/Codec.h"
-
-#include <algorithm>
 #include "joedb/error/assert.h"
+
+#include <cstring>
 
 namespace joedb
 {
@@ -25,7 +25,7 @@ namespace joedb
    ) override
    {
     JOEDB_ASSERT(encoded.size() == decoded_size);
-    std::copy_n(encoded.data(), decoded_size, decoded);
+    std::memcpy(decoded, encoded.data(), decoded_size);
    }
  };
 }

@@ -3,7 +3,7 @@
 
 #include <array>
 #include <stdint.h>
-#include <algorithm>
+#include <cstring>
 
 // https://en.wikipedia.org/wiki/SHA-2
 
@@ -131,7 +131,7 @@ namespace joedb
     std::array<uint32_t, 32> final_chunks{};
     uint8_t *byte_buffer = reinterpret_cast<uint8_t *>(&final_chunks[0]);
     uint32_t n = uint32_t(total_length_in_bytes & 0x3fULL);
-    std::copy_n(data, n, byte_buffer);
+    std::memcpy(byte_buffer, data, n);
     byte_buffer[n] = 0x80;
 
     const int chunk_count = n + 9 <= 64 ? 1 : 2;

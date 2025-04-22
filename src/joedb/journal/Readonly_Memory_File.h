@@ -3,7 +3,6 @@
 
 #include "joedb/journal/Buffered_File.h"
 
-#include <algorithm>
 #include <vector>
 
 namespace joedb
@@ -23,7 +22,7 @@ namespace joedb
      return 0;
     const size_t max_size = data_size - size_t(offset);
     const size_t n = std::min(size, max_size);
-    std::copy_n(&data[size_t(offset)], n, buffer);
+    std::memcpy(buffer, &data[size_t(offset)], n);
     return n;
    }
 

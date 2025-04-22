@@ -69,7 +69,7 @@ namespace joedb
   if (write_buffer_size == 0)
    write_buffer_offset = offset;
 
-  std::copy_n(buffer, size, write_buffer.data() + write_buffer_size);
+  std::memcpy(write_buffer.data() + write_buffer_size, buffer, size);
 
   write_buffer_size += size;
  }

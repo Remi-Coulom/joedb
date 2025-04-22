@@ -216,7 +216,7 @@ namespace joedb
 
     if (n <= buffer.extra_size)
     {
-     std::copy_n(data, n, buffer.data + buffer.index);
+     std::memcpy(buffer.data + buffer.index, data, n);
      buffer.index += n;
      check_write_buffer();
     }
@@ -226,7 +226,7 @@ namespace joedb
 
      if (n < remaining)
      {
-      std::copy_n(data, n, buffer.data + buffer.index);
+      std::memcpy(buffer.data + buffer.index, data, n);
       buffer.index += n;
       check_write_buffer();
      }
@@ -247,14 +247,14 @@ namespace joedb
 
     if (buffer.index + n <= read_buffer_size)
     {
-     std::copy_n(buffer.data + buffer.index, n, data);
+     std::memcpy(data, buffer.data + buffer.index, n);
      buffer.index += n;
      return n;
     }
     else
     {
      size_t n0 = read_buffer_size - buffer.index;
-     std::copy_n(buffer.data + buffer.index, n0, data);
+     std::memcpy(data, buffer.data + buffer.index, n0);
      buffer.index += n0;
 
      if (n <= buffer.size)
