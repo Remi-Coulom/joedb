@@ -1,5 +1,6 @@
 #include "joedb/ui/process_journal_pair.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Header.h"
 
 #include <iostream>
 #include <sstream>
@@ -54,11 +55,15 @@ namespace joedb
     Writable writable;
     journal.replay_log(writable);
    }
-   // change one byte to upgrade version
+   // Rewrite header in place
    {
     File file(output_file_name, Open_Mode::write_existing);
-    char version = 5;
-    file.pwrite(&version, 1, 5);
+    Header header;
+    file.pread((char *)&header.checkpoint, 32, Readonly_Journal::checkpoint_offset);
+    header.version = 5;
+    header.signature = Header::joedb;
+    file.pwrite((const char *)&header, Header::size, 0);
+    file.sync();
    }
   }
   else
@@ -85,6 +90,7 @@ namespace joedb
    }
 
    process(input_journal, output_journal, checkpoint);
+   output_file.sync();
   }
 
   return 0;

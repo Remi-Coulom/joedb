@@ -1,5 +1,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Header.h"
 #include "joedb/error/Exception.h"
 #include "joedb/error/Destructor_Logger.h"
 
@@ -21,43 +22,16 @@ joedb::Writable_Journal::Writable_Journal
  }
  else if (lock.is_creating_new())
  {
-  file.write<uint8_t>('j');
-  file.write<uint8_t>('o');
-  file.write<uint8_t>('e');
-  file.write<uint8_t>('d');
-  file.write<uint8_t>('b');
-  file.write<uint32_t>(version_number);
-  file.write<int64_t>(header_size);
-  file.write<int64_t>(header_size);
-  file.write<int64_t>(0);
-  file.write<int64_t>(0);
-  flush_and_may_sync();
+  Header header;
+  header.checkpoint.fill(header_size);
+  header.version = Readonly_Journal::version_number;
+  header.signature = Header::joedb;
+  file.pwrite((const char *)&header, Header::size, 0);
+  file.set_position(Header::size);
  }
  else
  {
-  if (lock.pos[0] != lock.pos[1] || lock.pos[2] != lock.pos[3])
-  {
-   if (check_flag(check, Check::checkpoint_mismatch))
-    throw Exception("Checkpoint mismatch");
-   else
-   {
-    file.set_position(checkpoint_offset);
-    file.write<int64_t>(checkpoint_position);
-    file.write<int64_t>(checkpoint_position);
-    file.write<int64_t>(checkpoint_position);
-    file.write<int64_t>(checkpoint_position);
-    flush_and_may_sync();
-   }
-  }
-
-  if (version_number > file_version)
-  {
-   file_version = version_number;
-   file.set_position(5);
-   file.write<uint32_t>(file_version);
-   file.set_position(header_size);
-   flush_and_may_sync();
-  }
+  throw Exception("this conversion version can create new only");
  }
 }
 
@@ -148,7 +122,6 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    (
     reinterpret_cast<const char *>(&checkpoint_position),
     sizeof(checkpoint_position),
-    checkpoint_offset +
     int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index)
    );
 
@@ -159,7 +132,6 @@ void joedb::Writable_Journal::checkpoint(joedb::Commit_Level commit_level)
    (
     reinterpret_cast<const char *>(&checkpoint_position),
     sizeof(checkpoint_position),
-    checkpoint_offset +
     int64_t(sizeof(checkpoint_position)) * (2 * checkpoint_index + 1)
    );
 
