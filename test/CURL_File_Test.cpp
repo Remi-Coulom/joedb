@@ -15,7 +15,7 @@ namespace joedb
 
   CURL_File file
   (
-   "https://github.com/Remi-Coulom/joedb/raw/master/test/endianness.joedb",
+   "https://github.com/Remi-Coulom/joedb/raw/dev/test/endianness.joedb",
    verbose
   );
 
