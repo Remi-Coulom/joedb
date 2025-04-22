@@ -1,7 +1,7 @@
 #ifndef joedb_ssh_SFTP_Attributes_declared
 #define joedb_ssh_SFTP_Attributes_declared
 
-#include "joedb/ssh/ssh.h"
+#include "joedb/error/assert.h"
 
 #include <libssh/sftp.h>
 
@@ -19,7 +19,7 @@ namespace joedb
    public:
     SFTP_Attributes(sftp_attributes attributes): attributes(attributes)
     {
-     check_not_null(attributes);
+     JOEDB_RELEASE_ASSERT(attributes);
     }
 
     sftp_attributes get() const

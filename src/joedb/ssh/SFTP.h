@@ -22,7 +22,7 @@ namespace joedb
    public:
     SFTP_Allocation(const Session &session): sftp(sftp_new(session.get()))
     {
-     check_not_null(sftp);
+     JOEDB_RELEASE_ASSERT(sftp);
     }
 
     sftp_session get() const

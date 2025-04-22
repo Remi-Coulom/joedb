@@ -1,5 +1,7 @@
 #ifndef JOEDB_ASSERT
 
+#include "joedb/error/Exception.h"
+
 #include <stdexcept>
 
 #define JOEDB_ASSERT_STRINGIFY(x) #x

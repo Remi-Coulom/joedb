@@ -1,9 +1,10 @@
 #ifndef joedb_ssh_Session_declared
 #define joedb_ssh_Session_declared
 
-#include "joedb/ssh/ssh.h"
+#include "joedb/error/assert.h"
 
 #include <string>
+#include <libssh/libssh.h>
 
 namespace joedb
 {
@@ -19,7 +20,7 @@ namespace joedb
    public:
     Session_Allocation(): session(ssh_new())
     {
-     check_not_null(session);
+     JOEDB_RELEASE_ASSERT(session);
     }
 
     Session_Allocation(const Session_Allocation &) = delete;
@@ -32,7 +33,8 @@ namespace joedb
 
     void check_result(int result) const
     {
-     check_ssh_session_result(session, result);
+     if (result != SSH_OK)
+      throw Exception(ssh_get_error(session));
     }
 
     ~Session_Allocation()
@@ -92,8 +94,7 @@ namespace joedb
       &key
      );
 
-     if (key == nullptr)
-      throw Exception("Could not import private key");
+     JOEDB_RELEASE_ASSERT(key);
     }
 
     Imported_Key(const Imported_Key &) = delete;
