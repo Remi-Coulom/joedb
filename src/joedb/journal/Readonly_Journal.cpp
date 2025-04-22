@@ -102,7 +102,7 @@ void joedb::Readonly_Journal::pull_without_locking()
 void joedb::Readonly_Journal::pull()
 /////////////////////////////////////////////////////////////////////////////
 {
- file.shared_lock_head();
+ file.shared_lock_head(); // TODO: lock guard
  pull_without_locking();
  file.unlock_head();
 }
@@ -241,8 +241,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   break;
 
   case operation_t::append:
-   writable.insert_into(table_of_last_operation,
-                         ++record_of_last_operation);
+   writable.insert_into(table_of_last_operation, ++record_of_last_operation);
   break;
 
   case operation_t::delete_from:

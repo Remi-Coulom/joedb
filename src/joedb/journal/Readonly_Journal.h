@@ -63,6 +63,7 @@ namespace joedb
     update_vector = 0x11, // deprecated
     update_next   = 0x12, // deprecated
     blob          = 0x13,
+    delete_vector = 0x14,
     updates       = 0x80,
     #define TYPE_MACRO(t, rt, type_id, r, w)\
     update_##type_id,\
@@ -119,7 +120,7 @@ namespace joedb
     );
    }
 
-   static constexpr uint32_t format_version = 6;
+   static constexpr uint32_t format_version = 5;
 
    virtual Writable_Journal *get_writable_journal() {return nullptr;}
    virtual ~Readonly_Journal() = default;
