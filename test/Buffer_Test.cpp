@@ -2,8 +2,6 @@
 
 #include "gtest/gtest.h"
 
-#include <random>
-
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
@@ -71,6 +69,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Buffer<12> buffer;
+  buffer.index = 0;
+  buffer.write<uint64_t>(0);
 
   for (uint64_t i = 0; i < many; i += 1)
   {
@@ -86,6 +86,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Buffer<12> buffer;
+  buffer.index = 0;
+  buffer.write<uint64_t>(0);
 
   for (uint64_t i = 0; i < many; i += 1)
   {
