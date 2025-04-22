@@ -112,7 +112,7 @@ namespace joedb
   const char * argv[argc] =
   {
    "curl",
-   "https://github.com/Remi-Coulom/joedb/raw/dev/test/endianness.joedb"
+   "https://github.com/Remi-Coulom/joedb/raw/refs/heads/dev/test/endianness.joedb"
   };
 
   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
