@@ -20,14 +20,6 @@ A checkpoint is considered valid if the two copies are identical.
 The two checkpoints are used alternately. This way, if a crash occurs during a
 checkpoint, it is still possible to recover the previous checkpoint.
 
-Checkpoints and Transactions
-----------------------------
-
-A checkpoint does not necessarily indicate that data is in a valid and coherent
-state. The purpose of the checkpoint is only to prevent data loss or corruption
-in case of a crash. If needed, a separate ``valid_data`` event can be used to
-indicate that data is valid.
-
 Soft Checkpoints
 ----------------
 
@@ -37,15 +29,16 @@ checkpoints do not overwrite the value of the hard checkpoint, so it will
 always be possible to safely recover from the most recent hard checkpoint in
 case of power failure.
 
-By default, all joedb tools use soft checkpoints. :joedb:`Client` and
-:joedb:`Server` have an option to use hard checkpoints instead. (TODO)
+By default, all joedb tools use soft checkpoints. If you want a hard
+checkpoint, you can either execute it manually, or set an option for
+:joedb:`Client` and :joedb:`Server`. (TODO)
 
 You can hide the latency of a hard checkpoint by running it in a parallel
 thread, after running a soft checkpoint in the main thread. Joedb classes are
 not thread-safe, so the simplest way to handle synchronization consists in
 creating a separate client for each thread, each opening the same file: the
-different threads will be synchronized via file locking, and there is no need
-for a mutex at all.
+threads will be synchronized via file locking, and there is no need for a mutex
+at all.
 
 .. _crash:
 
