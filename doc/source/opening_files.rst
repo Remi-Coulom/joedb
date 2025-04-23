@@ -38,10 +38,10 @@ For example:
 :joedb:`tutorial::File_Client`
 ------------------------------
 
-Writes to a :joedb:`tutorial::File_Database` must be manually checkpointed with
-``db.checkpoint()``, which is not very convenient. You can avoid having to
-explicitly checkpoint your writes by using :ref:`transactions <file_client>`
-with a :joedb:`tutorial::File_Client` instead.
+Writes to a :joedb:`tutorial::File_Database` must be manually checkpointed,
+which is not very convenient. You can avoid having to explicitly checkpoint
+your writes by using :ref:`transactions <file_client>` with a
+:joedb:`tutorial::File_Client` instead.
 
 :joedb:`Buffered_File`
 ----------------------
