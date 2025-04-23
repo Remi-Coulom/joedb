@@ -16,8 +16,8 @@ Joedb is written in portable C++ 17, and uses `CMake <https://cmake.org/>`_
 for its build system, and `vcpkg <https://vcpkg.io/en/>`_ for its
 dependencies. So it should be portable to almost any platform.
 
-Note that joedb can work without any external dependencies, as pure standard
-C++. Each external dependencies provides extra optional features.
+Note that joedb can work without any external dependency, as pure standard
+C++. Each external dependency provides extra optional features.
 
 Windows
 ^^^^^^^
