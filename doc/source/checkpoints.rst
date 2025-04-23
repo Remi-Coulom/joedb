@@ -34,11 +34,18 @@ Soft Checkpoints
 The checkpointing method described above is durable, but very slow. Joedb
 offers and alternative "soft" checkpoint that does not call fsync. Soft
 checkpoints do not overwrite the value of the hard checkpoint, so it will
-always be possible to recover from the most recent hard checkpoint in case of
-power failure.
+always be possible to safely recover from the most recent hard checkpoint in
+case of power failure.
 
-:joedb:`Client` and :joedb:`Server` can be configured to use soft or hard
-checkpoints. (TODO)
+By default, all joedb tools use soft checkpoints. :joedb:`Client` and
+:joedb:`Server` have an option to use hard checkpoints instead. (TODO)
+
+You can hide the latency of a hard checkpoint by running it in a parallel
+thread, after running a soft checkpoint in the main thread. Joedb classes are
+not thread-safe, so the simplest way to handle synchronization consists in
+creating a separate client for each thread, each opening the same file: the
+different threads will be synchronized via file locking, and there is no need
+for a mutex at all.
 
 .. _crash:
 
@@ -56,7 +63,7 @@ information about the size of the file, and the values of the soft and hard
 checkpoints. Recovering the journal until the hard checkpoint should be
 completely safe. Recovering until the soft checkpoint is very likely to be safe
 if it is shorter than the file size. It is also possible to recover until the
-very end of the file, but that is much more risky. This journal truncation can
+very end of the file, but that is much more risky. Journal truncation can
 be performed with the :ref:`joedb_convert` tool.
 
 If you do not wish to manually recover from a crash, you can also tell joedb to

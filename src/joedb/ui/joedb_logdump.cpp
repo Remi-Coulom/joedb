@@ -69,11 +69,7 @@ namespace joedb
    File file(argv[arg_index], Open_Mode::read_existing);
 
    if (header)
-   {
     dump_header(std::cout, file);
-    std::cout << '\n';
-    about_joedb(std::cout);
-   }
    else
    {
     std::optional<Readonly_Journal> journal;

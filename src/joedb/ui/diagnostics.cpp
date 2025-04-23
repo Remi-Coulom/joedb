@@ -33,12 +33,10 @@ namespace joedb
   Header header;
   file.pread((char *)(&header), Header::size, 0);
 
-  out << "About this file\n"
-         "---------------\n"
-         "    file size = " << file.get_size();
+  out << "    file size: " << file.get_size();
 
   for (int i = 0; i < 4; i++)
-   out << "\ncheckpoint[" << i << "] = " << header.checkpoint[i];
+   out << "\ncheckpoint[" << i << "]: " << header.checkpoint[i];
 
   out << "\nformat version: " << header.version;
   out << "\nsignature: ";
