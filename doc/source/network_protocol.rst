@@ -10,14 +10,14 @@ Client to Server
 Prefix Data              Description
 ====== ================= ======================================================
 joedb  client_version    first message, sent at connection time
+H      checkpoint        check SHA-256 hash code
+       hash (32 bytes)
 r      offset            read a range of bytes
        size
 P      checkpoint        pull
        wait_milliseconds
 i      checkpoint        get server checkpoint (like P, without data)
        wait_milliseconds
-H      checkpoint        check SHA-256 hash code
-       hash (32 bytes)
 ------ ----------------- ------------------------------------------------------
 L      checkpoint        lock-pull
        wait_milliseconds
@@ -43,16 +43,16 @@ joedb  | server_version | reply to joedb.
        | session_id     | server_version = 0 means client_version is rejected.
        | checkpoint     | 'R' is pull-only
        | 'R' or 'W'
+H                       reply to H, hash is matching
+h                       reply to H, hash mismatch
 r      size             reply to r (size may be shorter than what was sent)
        data
 P      checkpoint       reply to P
        size
        data
 i      checkpoint       reply to i
-H                       reply to H, hash is matching
-h                       reply to H, hash mismatch
-R                       reply to L, l, p, U, or u when the server is read-only
 ------ ---------------- ------------------------------------------------------
+R                       reply to L, l, p, U, or u when the server is read-only
 L      checkpoint       reply to L
        size
        data
