@@ -1,11 +1,12 @@
 Introduction
 ============
 
-Joedb is a light-weight C++ relational database. Joedb keeps tabular data in
-memory, and writes a journal to a file. The whole data history is stored, so it
-is possible to re-create any past state of the database. Joedb has a network
-protocol, and can operate in a distributed fashion, a bit like :doc:`git for
-structured data <concurrency>`.
+Joedb is a light-weight C++ database that keeps tabular data in memory, and
+writes a journal to a file. The whole data history is stored, so it is possible
+to re-create any past state of the database. Joedb has a network protocol, and
+can operate in a distributed fashion, a bit like :doc:`git for structured data
+<concurrency>`. It supports local and remote concurrent access to a file, with
+ACID transactions.
 
 Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
@@ -100,3 +101,20 @@ binary file, so it is not convenient to inspect it directly. The
 
 .. literalinclude:: ./tutorial/logdump.joedbi
    :language: joedbi
+
+Concurrency Examples
+--------------------
+
+TODO: asciinema for each
+
+Concurrent access to a local file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Concurrent access to a remote server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Asynchronous real-time backup
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Synchronous real-time backup
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~

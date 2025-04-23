@@ -33,72 +33,68 @@ namespace joedb
   Header header;
   file.pread((char *)(&header), Header::size, 0);
 
-  out << "About this file\n";
-  out << "---------------\n";
+  out << "About this file\n"
+         "---------------\n"
+         "    file size = " << file.get_size();
 
   for (int i = 0; i < 4; i++)
-   out << "checkpoint[" << i << "] = " << header.checkpoint[i] << '\n';
+   out << "\ncheckpoint[" << i << "] = " << header.checkpoint[i];
 
-  out << "version: " << header.version << '\n';
-
-  out << "joedb: ";
+  out << "\nformat version: " << header.version;
+  out << "\nsignature: ";
   write_string
   (
    out,
    std::string(header.signature.data(), header.signature.size())
   );
   out << '\n';
-
-  out << "file size: " << file.get_size() << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void about_joedb(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "About this version of joedb\n";
-  out << "---------------------------\n";
-  out << "joedb version: " << get_version() << '\n';
-  out << "file format version: " << Readonly_Journal::format_version;
+  out << "About this version of joedb\n"
+         "---------------------------\n"
+         "joedb version: " << get_version();
+  out << "\nfile format version: " << Readonly_Journal::format_version;
 
 #ifdef JOEDB_HAS_SSH
-  out << "libssh version: " << ssh_version(0) << " https://www.libssh.org/\n";
+  out << "\nlibssh version: " << ssh_version(0) << " https://www.libssh.org/";
 #endif
 
 #ifdef JOEDB_HAS_ASIO
-  out << "asio version: ";
+  out << "\nasio version: ";
   out << ASIO_VERSION / 100000 << '.';
   out << ASIO_VERSION / 100 % 1000 << '.';
   out << ASIO_VERSION % 100;
-  out << " https://think-async.com/Asio/\n";
+  out << " https://think-async.com/Asio/";
 #endif
 
 #ifdef JOEDB_HAS_CURL
-  out << "curl version: " << curl_version() << '\n';
+  out << "\ncurl version: " << curl_version();
 #endif
 
 #ifdef JOEDB_HAS_BROTLI
   out << std::hex;
-  out << "brotli decoder version: " << BrotliDecoderVersion() << '\n';
-  out << "brotli encoder version: " << BrotliEncoderVersion() << '\n';
+  out << "\nbrotli decoder version: " << BrotliDecoderVersion();
+  out << "\nbrotli encoder version: " << BrotliEncoderVersion();
   out << std::dec;
 #endif
 
-  out << "compiled: " << __DATE__ << ' ' << __TIME__ << '\n';
-  out << "sizeof(size_t) = " << sizeof(size_t) << '\n';
-  out << "sizeof(long) = " << sizeof(long) << '\n';
-  out << "sizeof(std::streamoff) = " << sizeof(std::streamoff) << '\n';
+  out << "\ncompiled: " << __DATE__ << ' ' << __TIME__;
+  out << "\nsizeof(size_t) = " << sizeof(size_t);
+  out << "\nsizeof(long) = " << sizeof(long);
+  out << "\nsizeof(std::streamoff) = " << sizeof(std::streamoff);
 #ifdef __unix__
-  out << "sizeof(off_t) = " << sizeof(off_t) << '\n';
+  out << "\nsizeof(off_t) = " << sizeof(off_t);
 #endif
-  out << "File = " << JOEDB_INCLUDE(JOEDB_FILE, h) << '\n';
-  out << "broken_posix_locking = ";
+  out << "\nFile = " << JOEDB_INCLUDE(JOEDB_FILE, h);
 #ifdef JOEDB_HAS_BROKEN_POSIX_LOCKING
-  out << 1;
+  out << "\nbroken_posix_locking = true";
 #else
-  out << 0;
+  out << "\nbroken_posix_locking = false";
 #endif
-  out << '\n';
-  out << "web site: https://www.joedb.org/\n";
+  out << "\nweb site: https://www.joedb.org/\n";
  }
 }

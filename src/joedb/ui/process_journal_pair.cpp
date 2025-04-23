@@ -24,17 +24,17 @@ namespace joedb
    arg_index++;
   }
 
-  int64_t checkpoint = 0;
-  if (arg_index + 3 < argc && std::string(argv[arg_index]) == "--checkpoint")
+  int64_t until = 0;
+  if (arg_index + 3 < argc && std::string(argv[arg_index]) == "--until")
   {
-   std::istringstream(argv[arg_index + 1]) >> checkpoint;
+   std::istringstream(argv[arg_index + 1]) >> until;
    arg_index += 2;
   }
 
   if (arg_index + 2 != argc)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--ignore-errors] [--checkpoint N] <input.joedb> <output.joedb> \n";
+   std::cerr << " [--ignore-errors] [--until <checkpoint>] <input.joedb> <output.joedb> \n";
    return 1;
   }
 
@@ -51,7 +51,7 @@ namespace joedb
   File output_file(output_file_name, Open_Mode::create_new);
   Writable_Journal output_journal(output_file);
 
-  process(input_journal, output_journal, checkpoint);
+  process(input_journal, output_journal, until);
 
   return 0;
  }

@@ -80,8 +80,7 @@ In case the joedb file format ever changes in a way that is not compatible with
 the previous version, then this tool can be used to perform the conversion. The
 new format is first implemented in write functions. At this moment,
 ``joedb_convert`` is still able to read the old format, and writes the new
-format. This happened in the early days of joedb, but is not likely to happen
-again in the future.
+format.
 
 .. _joedb_merge:
 

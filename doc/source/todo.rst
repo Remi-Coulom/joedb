@@ -8,7 +8,8 @@ For next release
 
    - make Server_File robust
    - Push_Thread: works only with thread-safe joedb::File (test at compile time)
-   - Checkpoint_Thread: implement soft and hard checkpoints first
+   - hard_checkpoint option for client and server (default = soft)
+   - do not write hard_checkpoint again if it is already written
 
  - Improvements:
 

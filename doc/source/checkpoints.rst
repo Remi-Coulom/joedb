@@ -31,11 +31,37 @@ indicate that data is valid.
 Soft Checkpoints
 ----------------
 
-The checkpointing method described above is durable, but extremely slow. Joedb
+The checkpointing method described above is durable, but very slow. Joedb
 offers and alternative "soft" checkpoint that does not call fsync. Soft
 checkpoints do not overwrite the value of the hard checkpoint, so it will
 always be possible to recover from the most recent hard checkpoint in case of
 power failure.
+
+:joedb:`Client` and :joedb:`Server` can be configured to use soft or hard
+checkpoints. (TODO)
+
+.. _crash:
+
+Recovering from a Crash
+-----------------------
+
+If a crash occurs in the middle of a transaction, then the file may end up
+containing a dirty uncheckpointed tail. Also, if a power failure occurs while
+using soft checkpoints, the checkpoint stored in the file's header may not
+match the size of the file after rebooting. In such a situation, in order to
+prevent any risk of data loss, joedb will refuse to open the file for writing.
+
+If an error is detected, you can use ``joedb_logdump --header`` to get detailed
+information about the size of the file, and the values of the soft and hard
+checkpoints. Recovering the journal until the hard checkpoint should be
+completely safe. Recovering until the soft checkpoint is very likely to be safe
+if it is shorter than the file size. It is also possible to recover until the
+very end of the file, but that is much more risky. This journal truncation can
+be performed with the :ref:`joedb_convert` tool.
+
+If you do not wish to manually recover from a crash, you can also tell joedb to
+automatically recover from the most recent valid checkpoint, and silently
+overwrite the uncheckpointed tail (TODO).
 
 Benchmarks
 ----------
