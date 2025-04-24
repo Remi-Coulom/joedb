@@ -11,11 +11,8 @@ namespace joedb
  class Network_Connection_Builder: public Connection_Builder
  {
   private:
-   std::unique_ptr<Network_Channel> channel;
-   std::unique_ptr<Server_Connection> connection;
-
    std::unique_ptr<Network_Connector> connector;
-   std::unique_ptr<Robust_Connection> robust_connection;
+   std::unique_ptr<Robust_Connection> connection;
 
   public:
    bool has_sharing_option() const final {return true;}
@@ -32,19 +29,14 @@ namespace joedb
     const char * const host = argv[0];
     const char * const port = argv[1];
 
+    connector = std::make_unique<Network_Connector>(host, port);
+
     if (file)
-    {
-     connector = std::make_unique<Network_Connector>(host, port);
-     robust_connection = std::make_unique<Robust_Connection>(*connector, &std::cerr);
-     return *robust_connection;
-    }
+     connection = std::make_unique<Robust_Connection>(*connector, &std::cerr);
     else
-    {
-     channel = std::make_unique<Network_Channel>(host, port);
-     connection = std::make_unique<Server_File>(*channel);
-     connection->set_log(&std::cerr);
-     return *connection;
-    }
+     connection = std::make_unique<Server_File>(*connector, &std::cerr);
+
+    return *connection;
    }
  };
 }

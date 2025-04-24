@@ -23,8 +23,8 @@ static int write_server_blob(int argc, char **argv)
  }
 
  // Connect to the server
- joedb::Network_Channel channel("localhost", argv[1]);
- joedb::Server_File server_file(channel);
+ joedb::Network_Connector connector("localhost", argv[1]);
+ joedb::Server_File server_file(connector, &std::cerr);
 
  // Creating the client: server file serves both as file and connection
  joedb::Writable_Journal_Client client(server_file, server_file);

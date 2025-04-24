@@ -13,6 +13,31 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ size_t Server_Connection::pread(char *data, size_t size, int64_t offset) const
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  buffer.index = 0;
+  buffer.write<char>('r');
+  buffer.write<int64_t>(offset);
+  buffer.write<uint64_t>(size);
+
+  Channel_Lock lock(channel);
+  lock.write(buffer.data, buffer.index);
+  lock.read(buffer.data, 9);
+
+  buffer.index = 1;
+  const size_t returned_size = size_t(buffer.read<int64_t>());
+
+  if (returned_size > size)
+   throw Exception("bad pread size from server");
+
+  for (size_t read = 0; read < returned_size;)
+   read += lock.read_some(data + read, returned_size - read);
+
+  return returned_size;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {

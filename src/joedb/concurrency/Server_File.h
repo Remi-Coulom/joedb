@@ -1,7 +1,7 @@
 #ifndef joedb_Server_File_declared
 #define joedb_Server_File_declared
 
-#include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/Robust_Connection.h"
 #include "joedb/journal/Buffered_File.h"
 #include "joedb/journal/Memory_File.h"
 
@@ -19,7 +19,7 @@ namespace joedb
  /// @include write_server_blob.cpp
  ///
  /// @ingroup concurrency
- class Server_File: public Server_Connection, public Buffered_File
+ class Server_File: public Robust_Connection, public Buffered_File
  {
   private:
    int64_t tail_offset;
@@ -27,7 +27,6 @@ namespace joedb
    Memory_File head;
    Memory_File tail;
 
-   size_t remote_pread(char *data, size_t size, int64_t offset) const;
    static void write_to_body_error();
    void write_checkpoint();
 
@@ -38,7 +37,7 @@ namespace joedb
    );
 
   public:
-   Server_File(Channel &channel);
+   Server_File(const Connector &connector, std::ostream *log);
 
    //
    // Server_Connection overrides

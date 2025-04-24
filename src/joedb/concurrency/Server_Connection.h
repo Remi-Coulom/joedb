@@ -10,13 +10,6 @@ namespace joedb
  class Server_Connection: public Server_Client, public Connection
  {
   protected:
-   int64_t pull
-   (
-    Writable_Journal *client_journal,
-    std::chrono::milliseconds wait,
-    char pull_type
-   );
-
    bool check_matching_content
    (
     const Readonly_Journal &client_journal,
@@ -25,6 +18,15 @@ namespace joedb
 
   public:
    Server_Connection(Channel &channel): Server_Client(channel) {}
+
+   size_t pread(char *data, size_t size, int64_t offset) const;
+
+   int64_t pull
+   (
+    Writable_Journal *client_journal,
+    std::chrono::milliseconds wait,
+    char pull_type
+   );
 
    int64_t handshake
    (

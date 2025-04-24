@@ -16,20 +16,23 @@ namespace joedb
   private:
    const Connector &connector;
    std::ostream *log;
-   std::unique_ptr<Channel> channel;
-   std::unique_ptr<Server_Connection> connection;
+   mutable std::unique_ptr<Channel> channel;
 
    const Readonly_Journal *saved_journal = nullptr;
    bool saved_content_check = true;
 
   protected:
-   void reconnect(const std::exception *e)
+   mutable std::unique_ptr<Server_Connection> connection;
+
+   void reconnect(const std::exception *e) const
    {
     if (log && e)
     {
      *log << "Robust_Connection: reconnecting after error: ";
      *log << e->what() << '\n';
     }
+
+    connection.reset();
 
     for (int ms = 1000; !connection; ms = (31 * ms + 32000) >> 5)
     {
@@ -52,19 +55,36 @@ namespace joedb
     }
    }
 
-#define JOEDB_ROBUSTLY_DO(X)\
+#define ROBUSTLY_DO(X)\
    while (true) {try {X;} catch (const std::exception &e) {reconnect(&e);}}
 
-  public:
-   Robust_Connection
+   int64_t pull
    (
-    const Connector &connector,
-    std::ostream *log
-   ):
+    Writable_Journal *client_journal,
+    std::chrono::milliseconds wait,
+    char pull_type
+   )
+   {
+    ROBUSTLY_DO
+    (
+     return connection->pull(client_journal, wait, pull_type)
+    );
+   }
+
+  public:
+   Robust_Connection(const Connector &connector, std::ostream *log):
     connector(connector),
     log(log)
    {
     reconnect(nullptr);
+   }
+
+   size_t pread(char *data, size_t size, int64_t offset) const
+   {
+    ROBUSTLY_DO
+    (
+     return connection->pread(data, size, offset);
+    );
    }
 
    int64_t handshake
@@ -75,7 +95,7 @@ namespace joedb
    {
     saved_journal = &client_journal;
     saved_content_check = content_check;
-    JOEDB_ROBUSTLY_DO
+    ROBUSTLY_DO
     (
      return connection->handshake(client_journal, content_check)
     );
@@ -87,10 +107,7 @@ namespace joedb
     std::chrono::milliseconds wait
    ) override
    {
-    JOEDB_ROBUSTLY_DO
-    (
-     return connection->pull(client_journal, wait)
-    );
+    return pull(&client_journal, wait, 'P');
    }
 
    int64_t lock_pull
@@ -99,10 +116,7 @@ namespace joedb
     std::chrono::milliseconds wait
    ) override
    {
-    JOEDB_ROBUSTLY_DO
-    (
-     return connection->lock_pull(client_journal, wait)
-    );
+    return pull(&client_journal, wait, 'L');
    }
 
    int64_t get_checkpoint
@@ -111,10 +125,7 @@ namespace joedb
     std::chrono::milliseconds wait
    ) override
    {
-    JOEDB_ROBUSTLY_DO
-    (
-     return connection->get_checkpoint(client_journal, wait)
-    );
+    return pull(nullptr, wait, 'i');
    }
 
    int64_t push_until
@@ -125,7 +136,7 @@ namespace joedb
     bool unlock_after
    ) override
    {
-    JOEDB_ROBUSTLY_DO
+    ROBUSTLY_DO
     (
      return connection->push_until
      (
@@ -149,6 +160,7 @@ namespace joedb
       *log << "Robust_Connection::unlock() error: " << e.what() << '\n';
     }
    }
+#undef ROBUSTLY_DO
  };
 }
 
