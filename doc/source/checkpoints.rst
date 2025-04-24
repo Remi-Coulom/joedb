@@ -25,9 +25,10 @@ Soft Checkpoints
 
 The checkpointing method described above is durable, but very slow. Joedb
 offers and alternative "soft" checkpoint that does not call fsync. Soft
-checkpoints do not overwrite the value of the hard checkpoint, so it will
-always be possible to safely recover from the most recent hard checkpoint in
-case of power failure.
+checkpoints are stored in the joedb header as negative values to differentiate
+them from hard checkpoints. Soft checkpoints never overwrite the value of the
+hard checkpoint, so it will always be possible to safely recover from the most
+recent hard checkpoint in case of power failure.
 
 By default, all joedb tools use soft checkpoints. If you want a hard
 checkpoint, you can either execute it manually, or set an option for
@@ -35,10 +36,8 @@ checkpoint, you can either execute it manually, or set an option for
 
 You can hide the latency of a hard checkpoint by running it in a parallel
 thread, after running a soft checkpoint in the main thread. Joedb classes are
-not thread-safe, so the simplest way to handle synchronization consists in
-creating a separate client for each thread, each opening the same file: the
-threads will be synchronized via file locking, and there is no need for a mutex
-at all.
+not thread-safe, so careful synchronization must be used. The Client_Lock
+object provides ready-made functions for this (TODO)
 
 .. _crash:
 
