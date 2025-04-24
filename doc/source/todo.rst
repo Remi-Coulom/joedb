@@ -6,7 +6,7 @@ For next release
 
  - New features:
 
-   - make Server_File robust
+   - Logger class for server, robust_connection, ...: write to logcat in Android
    - Push_Thread: works only with thread-safe joedb::File (test at compile time)
    - hard_checkpoint option for client and server (default = soft)
    - do not write hard_checkpoint again if it is already written

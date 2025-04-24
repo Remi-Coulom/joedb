@@ -32,16 +32,17 @@ namespace joedb
      *log << e->what() << '\n';
     }
 
-    connection.reset();
-
-    for (int ms = 1000; !connection; ms = (31 * ms + 32000) >> 5)
+    for (int ms = 1000; ; ms = (31 * ms + 32000) >> 5)
     {
      try
      {
+      connection.reset();
+      channel.reset();
       channel = connector.new_channel();
       connection = std::make_unique<Server_Connection>(*channel);
       if (saved_journal)
        connection->handshake(*saved_journal, saved_content_check);
+      return;
      }
      catch (std::exception &e)
      {
