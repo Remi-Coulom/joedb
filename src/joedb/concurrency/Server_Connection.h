@@ -21,13 +21,6 @@ namespace joedb
 
    size_t pread(char *data, size_t size, int64_t offset) const;
 
-   int64_t pull
-   (
-    Writable_Journal *client_journal,
-    std::chrono::milliseconds wait,
-    char pull_type
-   );
-
    int64_t handshake
    (
     const Readonly_Journal &client_journal,
@@ -36,31 +29,18 @@ namespace joedb
 
    int64_t pull
    (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds wait
+    bool lock_before,
+    std::chrono::milliseconds wait,
+    Writable_Journal *client_journal
    ) override;
 
-   int64_t lock_pull
+   int64_t push
    (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds{0}
-   ) override;
-
-   int64_t get_checkpoint
-   (
-    const Readonly_Journal &client_journal,
-    std::chrono::milliseconds wait
-   ) override;
-
-   int64_t push_until
-   (
-    const Readonly_Journal &client_journal,
-    int64_t server_position,
-    int64_t until_position,
+    const Readonly_Journal *client_journal,
+    int64_t from,
+    int64_t until,
     bool unlock_after
    ) override;
-
-   void unlock() override;
  };
 }
 

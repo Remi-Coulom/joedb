@@ -36,46 +36,29 @@ namespace joedb
  int64_t Pullonly_Journal_Connection::pull
  //////////////////////////////////////////////////////////////////////////
  (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds milliseconds
+  bool lock_before,
+  std::chrono::milliseconds wait,
+  Writable_Journal *client_journal
  )
  {
+  if (lock_before)
+   throw Exception("Connected to a read-only journal: can't lock");
+
   server_journal.pull();
-  client_journal.pull_from(server_journal);
+
+  if (client_journal)
+   client_journal->pull_from(server_journal);
+
   return server_journal.get_checkpoint_position();
  }
 
  //////////////////////////////////////////////////////////////////////////
- int64_t Pullonly_Journal_Connection::get_checkpoint
+ int64_t Pullonly_Journal_Connection::push
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal &client_journal,
-  std::chrono::milliseconds milliseconds
- )
- {
-  server_journal.pull();
-  return server_journal.get_checkpoint_position();
- }
-
-
- //////////////////////////////////////////////////////////////////////////
- int64_t Pullonly_Journal_Connection::lock_pull
- //////////////////////////////////////////////////////////////////////////
- (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds milliseconds
- )
- {
-  throw Exception("Connected to a read-only journal: can't lock");
- }
-
- //////////////////////////////////////////////////////////////////////////
- int64_t Pullonly_Journal_Connection::push_until
- //////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &client_journal,
-  const int64_t from_checkpoint,
-  const int64_t until_checkpoint,
+  const Readonly_Journal *client_journal,
+  const int64_t from,
+  const int64_t until,
   bool unlock_after
  )
  {
@@ -83,48 +66,51 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- int64_t Journal_Connection::lock_pull
+ int64_t Journal_Connection::pull
  //////////////////////////////////////////////////////////////////////////
  (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds milliseconds
+  bool lock_before,
+  std::chrono::milliseconds wait,
+  Writable_Journal *client_journal
  )
  {
-  get_journal().lock_pull();
-  client_journal.pull_from(server_journal);
+  if (lock_before)
+   get_journal().lock_pull();
+  else
+   get_journal().pull();
+
+  if (client_journal)
+   client_journal->pull_from(server_journal);
+
   return server_journal.get_checkpoint_position();
  }
 
  //////////////////////////////////////////////////////////////////////////
- int64_t Journal_Connection::push_until
+ int64_t Journal_Connection::push
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal &client_journal,
-  const int64_t from_checkpoint,
-  const int64_t until_checkpoint,
+  const Readonly_Journal *client_journal,
+  const int64_t from,
+  const int64_t until,
   bool unlock_after
  )
  {
   if (!get_journal().is_locked())
    get_journal().lock_pull();
 
-  static_cast<Writable_Journal &>(server_journal).pull_from
-  (
-   client_journal,
-   until_checkpoint
-  );
+  if (client_journal)
+  {
+   static_cast<Writable_Journal &>(server_journal).pull_from
+   (
+    *client_journal,
+    until
+   );
+  }
 
   if (unlock_after)
    get_journal().unlock();
 
   return server_journal.get_checkpoint_position();
- }
-
- //////////////////////////////////////////////////////////////////////////
- void Journal_Connection::unlock()
- //////////////////////////////////////////////////////////////////////////
- {
-  get_journal().unlock();
  }
 
  //////////////////////////////////////////////////////////////////////////

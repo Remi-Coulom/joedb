@@ -18,44 +18,29 @@ namespace joedb
 
  int64_t Connection::pull
  (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds wait
+  bool lock_before,
+  std::chrono::milliseconds wait,
+  Writable_Journal *client_journal
  )
  {
-  return client_journal.get_checkpoint_position();
+  if (client_journal)
+   return client_journal->get_checkpoint_position();
+  else
+   return -1;
  }
 
- int64_t Connection::lock_pull
+ int64_t Connection::push
  (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds wait
- )
- {
-  return client_journal.get_checkpoint_position();
- }
-
- int64_t Connection::get_checkpoint
- (
-  const Readonly_Journal &client_journal,
-  std::chrono::milliseconds wait
- )
- {
-  return client_journal.get_checkpoint_position();
- }
-
- int64_t Connection::push_until
- (
-  const Readonly_Journal &client_journal,
-  int64_t from_checkpoint,
-  int64_t until_checkpoint,
+  const Readonly_Journal *client_journal,
+  int64_t from,
+  int64_t until,
   bool unlock_after
  )
  {
-  return client_journal.get_checkpoint_position();
- }
-
- void Connection::unlock()
- {
+  if (client_journal)
+   return client_journal->get_checkpoint_position();
+  else
+   return -1;
  }
 
  Connection::~Connection() = default;

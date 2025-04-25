@@ -48,8 +48,9 @@ namespace joedb
    {
     server_checkpoint = connection.push
     (
-     readonly_journal,
+     &readonly_journal,
      server_checkpoint,
+     readonly_journal.get_checkpoint_position(),
      unlock_after
     );
    }
@@ -127,12 +128,12 @@ namespace joedb
     if (writable_journal)
     {
      Journal_Lock lock(*writable_journal);
-     server_checkpoint = connection.pull(*writable_journal, wait);
+     server_checkpoint = connection.pull(false, wait, writable_journal);
     }
     else
     {
      readonly_journal.pull();
-     server_checkpoint = connection.get_checkpoint(readonly_journal, wait);
+     server_checkpoint = connection.pull(false, wait, nullptr);
     }
 
     read_journal();

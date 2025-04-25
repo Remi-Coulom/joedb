@@ -18,7 +18,7 @@ namespace joedb
    /// Called during Client construction
    /// @param client_journal may be used to check matching content
    /// @param content_check indicates whether matching content is tested
-   /// @retval server checkpoint
+   /// @retval connection checkpoint (-1 if not available)
    virtual int64_t handshake
    (
     const Readonly_Journal &client_journal,
@@ -30,7 +30,7 @@ namespace joedb
    /// @param wait duration during which the connection may wait
    /// for new data if the pull would otherwise be empty
    /// @param client_journal journal to pull into
-   /// @retval server checkpoint
+   /// @retval server checkpoint (-1 if not available)
    virtual int64_t pull
    (
     bool lock_before,
@@ -39,14 +39,25 @@ namespace joedb
    );
 
    /// Push new data to the connection
-   /// @retval server checkpoint
+   /// @retval server checkpoint (-1 if not available)
    virtual int64_t push
    (
     const Readonly_Journal *client_journal,
-    int64_t from_checkpoint,
-    int64_t until_checkpoint,
+    int64_t from,
+    int64_t until,
     bool unlock_after
    );
+
+   /// unlock
+   void unlock()
+   {
+    push(nullptr, -1, -1, true);
+   }
+
+   int64_t lock_pull(Writable_Journal &journal)
+   {
+    return pull(true, std::chrono::milliseconds(0), &journal);
+   }
 
    virtual ~Connection();
  };

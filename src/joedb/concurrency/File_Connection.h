@@ -25,27 +25,16 @@ namespace joedb
 
    int64_t pull
    (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds
+    bool lock_before,
+    std::chrono::milliseconds wait,
+    Writable_Journal *client_journal
    ) override;
 
-   int64_t get_checkpoint
+   int64_t push
    (
-    const Readonly_Journal &client_journal,
-    std::chrono::milliseconds
-   ) override;
-
-   int64_t lock_pull
-   (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds
-   ) override;
-
-   int64_t push_until
-   (
-    const Readonly_Journal &client_journal,
-    const int64_t from_checkpoint,
-    const int64_t until_checkpoint,
+    const Readonly_Journal *client_journal,
+    const int64_t from,
+    const int64_t until,
     bool unlock_after
    ) override;
  };
@@ -65,21 +54,20 @@ namespace joedb
    {
    }
 
-   int64_t lock_pull
+   int64_t pull
    (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds
+    bool lock_before,
+    std::chrono::milliseconds wait,
+    Writable_Journal *client_journal
    ) override;
 
-   int64_t push_until
+   int64_t push
    (
-    const Readonly_Journal &client_journal,
-    const int64_t from_checkpoint,
-    const int64_t until_checkpoint,
+    const Readonly_Journal *client_journal,
+    const int64_t from,
+    const int64_t until,
     bool unlock_after
    ) override;
-
-   void unlock() override;
 
    ~Journal_Connection();
  };
