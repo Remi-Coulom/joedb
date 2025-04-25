@@ -26,37 +26,38 @@ namespace joedb::ssh
    }
  };
 
+ /// @ingroup concurrency
  class Connector: public joedb::Connector
  {
   private:
-   const std::string &user;
-   const std::string &host;
+   const std::string user;
+   const std::string host;
    const unsigned port;
    const int verbosity;
    const char * const b64_key;
    const char * const passphrase;
-   const char * const remote_host;
+   const std::string remote_host;
    const uint16_t remote_port;
 
   public:
    Connector
    (
-    const std::string &user,
-    const std::string &host,
+    std::string user,
+    std::string host,
     const unsigned port,
     const int verbosity,
     const char * const b64_key,
     const char * const passphrase,
-    const char * const remote_host,
+    std::string remote_host,
     const uint16_t remote_port
    ):
-    user(user),
-    host(host),
+    user(std::move(user)),
+    host(std::move(host)),
     port(port),
     verbosity(verbosity),
     b64_key(b64_key),
     passphrase(passphrase),
-    remote_host(remote_host),
+    remote_host(std::move(remote_host)),
     remote_port(remote_port)
    {
    }
@@ -71,7 +72,7 @@ namespace joedb::ssh
      verbosity,
      b64_key,
      passphrase,
-     remote_host,
+     remote_host.c_str(),
      remote_port
     );
    }
