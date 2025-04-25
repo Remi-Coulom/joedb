@@ -98,6 +98,8 @@ namespace joedb
   if (!get_journal().is_locked())
    get_journal().lock_pull();
 
+  if (from != server_journal.get_checkpoint_position())
+   throw Exception("push error: conflict");
   get_journal().pull_from(client_journal, until);
 
   if (unlock_after)

@@ -29,12 +29,7 @@ namespace joedb
     file.set_position(checkpoint_position);
    }
 
-   int64_t pull_from
-   (
-    const Readonly_Journal &journal,
-    int64_t until_checkpoint
-   );
-
+   int64_t pull_from(const Readonly_Journal &journal, int64_t until);
    int64_t pull_from(const Readonly_Journal &journal)
    {
     return pull_from(journal, journal.get_checkpoint_position());

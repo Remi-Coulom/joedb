@@ -49,20 +49,14 @@ int64_t joedb::Writable_Journal::pull_from
 /////////////////////////////////////////////////////////////////////////////
 (
  const Readonly_Journal &journal,
- const int64_t until_checkpoint
+ const int64_t until
 )
 {
- /// ??? conflict if journal.checkpoint_position < checkpoint_position ???
- if (checkpoint_position < until_checkpoint)
+ if (checkpoint_position < until)
  {
-  journal.get_file().copy_to
-  (
-   file,
-   checkpoint_position,
-   until_checkpoint - checkpoint_position
-  );
-
-  soft_checkpoint_at(until_checkpoint);
+  const int64_t size = until - checkpoint_position;
+  journal.get_file().copy_to(file, checkpoint_position, size);
+  soft_checkpoint_at(until);
  }
 
  return checkpoint_position;
