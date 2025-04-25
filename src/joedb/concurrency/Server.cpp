@@ -334,7 +334,6 @@ namespace joedb
  {
   if (!error)
   {
-   session->push_status = session->buffer.data[0];
    session->buffer.index = 0;
    const int64_t from = session->buffer.read<int64_t>();
    const int64_t until = session->buffer.read<int64_t>();
@@ -442,10 +441,8 @@ namespace joedb
   Async_Reader reader
  )
  {
-  session->buffer.write<int64_t>(reader.get_remaining());
-
-  LOGID("reading from = " << reader.get_current() << ", size = "
-   << reader.get_remaining() << ':');
+  LOGID("reading from = " << reader.get_current() << ", until = "
+   << reader.get_end() << ':');
 
   if (log_pointer && reader.get_remaining() > session->buffer.ssize)
    session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
@@ -501,8 +498,8 @@ namespace joedb
   if (!error)
   {
    session->buffer.index = 1;
-   session->pull_checkpoint = session->buffer.read<int64_t>();
    const std::chrono::milliseconds wait{session->buffer.read<int64_t>()};
+   session->pull_checkpoint = session->buffer.read<int64_t>();
 
    if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
@@ -566,6 +563,7 @@ namespace joedb
    );
 
    session->buffer.index = 1;
+   session->buffer.write<int64_t>(until - offset);
    start_reading(session, reader);
   }
  }
@@ -639,6 +637,7 @@ namespace joedb
 
     case 'N': case 'O':
      session->unlock_after_push = (session->buffer.data[0] == 'O');
+     session->push_status = session->buffer.data[0];
      async_read(session, 0, 16, &Server::push_handler);
     break;
 

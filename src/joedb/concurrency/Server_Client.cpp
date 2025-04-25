@@ -15,7 +15,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   buffer.index = 0;
-  buffer.write<char>('i');
+  buffer.write<char>('D');
   buffer.write<int64_t>(0);
   buffer.write<int64_t>(0);
   lock.write(buffer.data, buffer.index);

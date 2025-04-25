@@ -462,9 +462,9 @@ namespace joedb
 
   EXPECT_EQ(server_checkpoint, initial);
 
-  server_checkpoint = connection.push_until
+  server_checkpoint = connection.push
   (
-   client_journal,
+   &client_journal,
    server_checkpoint,
    after_person,
    true
@@ -473,9 +473,9 @@ namespace joedb
   EXPECT_EQ(server_file.get_size(), after_person);
   EXPECT_EQ(server_checkpoint, after_person);
 
-  server_checkpoint = connection.push_until
+  server_checkpoint = connection.push
   (
-   client_journal,
+   &client_journal,
    server_checkpoint,
    after_city,
    true

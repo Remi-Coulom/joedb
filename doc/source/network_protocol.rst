@@ -19,10 +19,10 @@ E      wait from         pull, lock, no data
 F      wait from         pull, no lock, data
 G      wait from         pull, lock, data
 
-L                        push, lock, no data
-M                        push, unlock, no data
-N      from until data   push, lock, data
-O      from until data   push, unlock, data
+L                        lock
+M                        unlock
+N      from until data   push, keep locked
+O      from until data   push, unlock
 ====== ================= ======================================================
 
 Server to Client

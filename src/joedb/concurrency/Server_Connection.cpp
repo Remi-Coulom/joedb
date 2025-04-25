@@ -48,7 +48,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  const char pull_type = 'D' + int(lock_before) + 2 * !!client_journal;
+  const char pull_type = char('D' + int(lock_before) + 2 * !!client_journal);
 
   LOGID("pulling(" << pull_type << ")... ");
 
@@ -66,9 +66,9 @@ namespace joedb
   {
    const char reply = buffer.read<char>();
    if (reply == 'R')
-    throw Exception("Server is pull-only, cannot lock");
+    throw Exception("pull error: server is pull-only, cannot lock");
    else if (reply != pull_type)
-    throw Exception("Unexpected server reply");
+    throw Exception("pull error: unexpected server reply");
   }
   server_checkpoint = buffer.read<int64_t>();
 
@@ -98,7 +98,7 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  const char push_type = 'L' + int(unlock_after) + 2 * !!client_journal;
+  const char push_type = char('L' + int(unlock_after) + 2 * !!client_journal);
   buffer.index = 0;
   buffer.write<char>(push_type);
 
@@ -111,7 +111,7 @@ namespace joedb
    buffer.write<int64_t>(from);
    buffer.write<int64_t>(until);
 
-   LOGID("pushing(U)... from = " << from << ", until = " << until);
+   LOGID("pushing(" << push_type << ")... from = " << from << ", until = " << until);
 
    size_t offset = buffer.index;
 

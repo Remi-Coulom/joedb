@@ -30,17 +30,11 @@ namespace joedb
    static void write_to_body_error();
    void write_checkpoint();
 
-   int64_t pull
-   (
-    std::chrono::milliseconds wait,
-    char pull_type
-   );
-
   public:
-   Server_File(const Connector &connector, std::ostream *log);
+   Server_File(const Connector &connector, std::ostream *log = nullptr);
 
    //
-   // Server_Connection overrides
+   // Connection overrides
    //
    int64_t handshake
    (
@@ -50,19 +44,14 @@ namespace joedb
 
    int64_t pull
    (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds wait
+    bool lock_before,
+    std::chrono::milliseconds wait,
+    Writable_Journal *client_journal
    ) override;
 
-   int64_t lock_pull
+   int64_t push
    (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds wait
-   ) override;
-
-   int64_t push_until
-   (
-    const Readonly_Journal &client_journal,
+    const Readonly_Journal *client_journal,
     int64_t server_position,
     int64_t until_position,
     bool unlock_after

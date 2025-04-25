@@ -942,8 +942,8 @@ namespace joedb
   Blob blob2;
 
   {
-   Test_Network_Channel channel("localhost", Port_String(server).get());
-   Server_File file(channel);
+   Network_Connector connector("localhost", Port_String(server).get());
+   Server_File file(connector);
    EXPECT_EQ(file.read_blob_data(blob), "glouglou");
    EXPECT_EQ(file.read_blob_data(blob), "glouglou");
 
@@ -957,15 +957,15 @@ namespace joedb
   }
 
   {
-   Test_Network_Channel channel("localhost", Port_String(server).get());
-   Server_File file(channel);
+   Network_Connector connector("localhost", Port_String(server).get());
+   Server_File file(connector);
    EXPECT_EQ(file.read_blob_data(blob), "glouglou");
    EXPECT_EQ(file.read_blob_data(blob2), "glagla");
   }
 
   {
-   Test_Network_Channel channel("localhost", Port_String(server).get());
-   Server_File file(channel);
+   Network_Connector connector("localhost", Port_String(server).get());
+   Server_File file(connector);
 
    try
    {
@@ -979,8 +979,8 @@ namespace joedb
   }
 
   {
-   Test_Network_Channel channel("localhost", Port_String(server).get());
-   Server_File file(channel);
+   Network_Connector connector("localhost", Port_String(server).get());
+   Server_File file(connector);
 
    try
    {
@@ -994,8 +994,8 @@ namespace joedb
   }
 
   {
-   Test_Network_Channel channel("localhost", Port_String(server).get());
-   Server_File file(channel);
+   Network_Connector connector("localhost", Port_String(server).get());
+   Server_File file(connector);
    EXPECT_EQ(file.read_blob_data(blob), "glouglou");
    EXPECT_EQ(file.read_blob_data(blob2), "glagla");
   }
@@ -1006,8 +1006,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   Test_Server server;
-  Test_Network_Channel channel("localhost", Port_String(server).get());
-  Server_File file(channel);
+  Network_Connector connector("localhost", Port_String(server).get());
+  Server_File file(connector);
   Writable_Journal_Client client(file, file);
   joedb::Blob blob;
   client.transaction([&](joedb::Writable_Journal &journal)

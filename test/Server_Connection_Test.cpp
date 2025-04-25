@@ -59,13 +59,11 @@ namespace joedb
   file.write<int64_t>(41);
   file.write<char>('W');
   file.write<char>('H');
-  file.write<char>('P');
+  file.write<char>('F');
   file.write<int64_t>(41);
-  file.write<int64_t>(0);
-  file.write<char>('L');
+  file.write<char>('G');
   file.write<int64_t>(41);
-  file.write<int64_t>(0);
-  file.write<char>('U');
+  file.write<char>('O');
   file.set_position(0);
 
   {
