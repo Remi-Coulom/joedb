@@ -44,10 +44,10 @@ E      until            reply to E
 F      until data       reply to F
 G      until data       reply to G
 
-L                       reply to L (success)
-M                       reply to M (success)
-N                       reply to N (success)
-O                       reply to O (success)
+L                       reply to L
+M                       reply to M
+N                       reply to N
+O                       reply to O
 
 R                       reply to E, G, L, M, N, O when the server is read-only
 C                       reply to N, O in case of conflict

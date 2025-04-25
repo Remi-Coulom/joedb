@@ -474,16 +474,14 @@ namespace joedb
    return;
   }
 
-  if (session->send_pull_data)
-  {
-   start_reading
-   (
-    session,
-    client.get_journal().get_async_tail_reader(session->pull_checkpoint)
-   );
-  }
-  else
-   write_buffer_and_next_command(session, session->buffer.index);
+  if (!session->send_pull_data)
+   session->pull_checkpoint = client.get_checkpoint();
+
+  start_reading
+  (
+   session,
+   client.get_journal().get_async_tail_reader(session->pull_checkpoint)
+  );
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -555,13 +553,11 @@ namespace joedb
    if (from > until)
     from = until;
 
-   const Async_Reader reader = client.get_journal().get_async_reader
+   start_reading
    (
-    from,
-    until
+    session,
+    client.get_journal().get_async_reader(from, until)
    );
-
-   start_reading(session, reader);
   }
  }
 
@@ -854,7 +850,7 @@ namespace joedb
   {
    if (!sessions.empty())
    {
-    LOG("Bug: destroying server before sessions.\n");
+    LOG("Destroying server before sessions.\n");
    }
   }
   catch (...)
