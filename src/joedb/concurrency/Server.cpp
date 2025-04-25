@@ -425,9 +425,7 @@ namespace joedb
   Async_Reader reader
  )
  {
-  LOGID("reading from = " << reader.get_current() << ", until = "
-   << reader.get_end() << ':');
-
+  LOGID("reading from = " << reader.get_current() << ", until = " << reader.get_end());
   session->progress_bar.emplace(reader.get_remaining(), log_pointer);
 
   session->buffer.index = 1;
