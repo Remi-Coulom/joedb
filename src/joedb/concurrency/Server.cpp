@@ -447,6 +447,9 @@ namespace joedb
   if (log_pointer && reader.get_remaining() > session->buffer.ssize)
    session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
 
+  session->buffer.index = 1;
+  session->buffer.write<int64_t>(reader.get_end());
+
   read_transfer_handler
   (
    session,
@@ -470,9 +473,6 @@ namespace joedb
    lock(session, Session::State::waiting_for_lock_to_pull);
    return;
   }
-
-  session->buffer.index = 1;
-  session->buffer.write<int64_t>(client.get_checkpoint());
 
   if (session->send_pull_data)
   {
@@ -547,23 +547,20 @@ namespace joedb
   if (!error)
   {
    session->buffer.index = 1;
-   int64_t offset = session->buffer.read<int64_t>();
-   int64_t size = session->buffer.read<int64_t>();
-   int64_t until = offset + size;
+   int64_t from = session->buffer.read<int64_t>();
+   int64_t until = session->buffer.read<int64_t>();
 
    if (until > client.get_checkpoint())
     until = client.get_checkpoint();
-   if (offset > until)
-    offset = until;
+   if (from > until)
+    from = until;
 
    const Async_Reader reader = client.get_journal().get_async_reader
    (
-    offset,
+    from,
     until
    );
 
-   session->buffer.index = 1;
-   session->buffer.write<int64_t>(until - offset);
    start_reading(session, reader);
   }
  }

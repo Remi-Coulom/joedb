@@ -19,17 +19,19 @@ namespace joedb
   buffer.index = 0;
   buffer.write<char>('r');
   buffer.write<int64_t>(offset);
-  buffer.write<uint64_t>(size);
+  buffer.write<uint64_t>(offset + size);
 
   Channel_Lock lock(channel);
   lock.write(buffer.data, buffer.index);
   lock.read(buffer.data, 9);
 
   buffer.index = 1;
-  const size_t returned_size = size_t(buffer.read<int64_t>());
+  const int64_t until = buffer.read<int64_t>();
 
-  if (returned_size > size)
+  if (until < offset || until > offset + int64_t(size))
    throw Exception("bad pread size from server");
+
+  const size_t returned_size = size_t(until - offset);
 
   for (size_t read = 0; read < returned_size;)
    read += lock.read_some(data + read, returned_size - read);

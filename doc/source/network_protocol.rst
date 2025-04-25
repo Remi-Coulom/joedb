@@ -12,7 +12,7 @@ Prefix Data              Description
 joedb  client_version    first message, sent at connection time
 H      until             check SHA-256 hash code
        hash (32 bytes)
-r      offset size       read a range of bytes
+r      from until        read a range of bytes
 
 D      wait from         pull, no lock, no data
 E      wait from         pull, lock, no data
@@ -37,7 +37,7 @@ joedb  | server_version | reply to joedb.
        | 'R' or 'W'
 H                       reply to H, hash is matching
 h                       reply to H, hash mismatch
-r      size data        reply to r (size may be shorter than what was sent)
+r      until data       reply to r (size may be shorter than what was asked)
 
 D      until            reply to D
 E      until            reply to E
