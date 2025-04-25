@@ -8,8 +8,11 @@ History
 
   - New features:
 
+    - :joedb:`Robust_Connection` is like :joedb:`Server_Connection`, but will
+      automatically reconnect in case of error.
     - :joedb:`Server_File` allows accessing a remote database without
-      downloading a local replica. This is convenient for large blob databases.
+      downloading a local replica. This is particularly convenient for large
+      blob databases.
     - :joedb:`Client::pull` can wait for another client to make a
       push if the pull would otherwise be empty.
     - :joedb:`Encoded_File` supports on-the-fly coding or decoding of data.
@@ -20,11 +23,11 @@ History
     - If the .joedbi file provided to the compiler contains data, then it will
       be used as default initial value for existing records when creating a new
       field during automatic schema upgrade.
-    - ``set_single_row <table> true`` in .joedbc file forces a table to contain a
-      single row: the row is inserted automatically right after table creation,
-      and the new and delete operations are not available. Instead, the
-      ``the_<table>()`` member function returns a reference to the unique row of
-      this table.
+    - ``set_single_row <table> true`` in .joedbc file forces a table to contain
+      a single row: the row is inserted automatically right after table
+      creation, and the new and delete operations are not available. Instead,
+      the ``the_<table>()`` member function returns a reference to the unique
+      row of this table.
     - :joedb:`Upgradable_File` allows applying automatic schema upgrades to a
       read-only file.
     - :ref:`joedb_edit` allows editing a binary joedb file with a text editor.

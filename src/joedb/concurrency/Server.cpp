@@ -266,7 +266,7 @@ namespace joedb
    (
     session,
     0,
-    std::min(session->push_remaining_size, session->buffer.size),
+    size_t(std::min(session->push_remaining_size, session->buffer.ssize)),
     &Server::push_transfer_handler
    );
   }
@@ -334,9 +334,10 @@ namespace joedb
  {
   if (!error)
   {
+   session->push_status = session->buffer.data[0];
    session->buffer.index = 0;
-   const int64_t start = session->buffer.read<int64_t>();
-   const int64_t size = session->buffer.read<int64_t>();
+   const int64_t from = session->buffer.read<int64_t>();
+   const int64_t until = session->buffer.read<int64_t>();
 
    if (locked && session->state != Session::State::locking)
    {
@@ -348,16 +349,16 @@ namespace joedb
     lock(session, Session::State::waiting_for_lock_to_push);
    }
 
-   const bool conflict = (size != 0) &&
+   const bool conflict =
    (
     session->state != Session::State::locking ||
-    start != client.get_journal().get_checkpoint_position()
+    from != client.get_journal().get_checkpoint_position()
    );
 
-   LOGID("pushing, start = " << start << ", size = " << size);
+   LOGID("pushing, from = " << from << ", until = " << until);
 
-   if (log_pointer && size > session->buffer.ssize)
-    session->progress_bar.emplace(size, *log_pointer);
+   if (log_pointer && until - from > session->buffer.ssize)
+    session->progress_bar.emplace(until - from, *log_pointer);
 
    if (is_readonly())
     session->push_status = 'R';
@@ -365,7 +366,6 @@ namespace joedb
     session->push_status = 'C';
    else
    {
-    session->push_status = 'U';
     if (client_lock)
     {
      session->push_writer.emplace
@@ -375,7 +375,7 @@ namespace joedb
     }
    }
 
-   session->push_remaining_size = size_t(size);
+   session->push_remaining_size = until - from;
 
    push_transfer(session);
   }
@@ -539,20 +539,6 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::pull
- ///////////////////////////////////////////////////////////////////////////
- (
-  const std::shared_ptr<Session> session,
-  bool lock,
-  bool send
- )
- {
-  session->lock_before_pulling = lock;
-  session->send_pull_data = send;
-  async_read(session, 1, 16, &Server::pull_handler);
- }
-
- ///////////////////////////////////////////////////////////////////////////
  void Server::read_handler
  ///////////////////////////////////////////////////////////////////////////
  (
@@ -632,30 +618,28 @@ namespace joedb
 
    switch (session->buffer.data[0])
    {
-    case 'P': pull(session, false,  true); break;
-    case 'L': pull(session,  true,  true); break;
-    case 'i': pull(session, false, false); break;
-    case 'l': pull(session,  true, false); break;
-
-    case 'U': case 'p':
-     session->unlock_after_push = (session->buffer.data[0] == 'U');
-     async_read(session, 0, 16, &Server::push_handler);
-    break;
-
-    case 'u':
-     if (session->state == Session::State::locking)
-      unlock(*session);
-     else
-      session->buffer.data[0] = 't';
-     write_buffer_and_next_command(session, 1);
-    break;
-
     case 'H':
      async_read(session, 1, 40, &Server::check_hash_handler);
     break;
 
     case 'r':
      async_read(session, 1, 16, &Server::read_handler);
+    break;
+
+    case 'D': case 'E': case 'F': case 'G':
+     session->lock_before_pulling = session->buffer.data[0] & 1;
+     session->send_pull_data = session->buffer.data[0] & 2;
+     async_read(session, 1, 16, &Server::pull_handler);
+    break;
+
+    case 'M':
+     unlock(*session);
+     write_buffer_and_next_command(session, 1);
+    break;
+
+    case 'N': case 'O':
+     session->unlock_after_push = (session->buffer.data[0] == 'O');
+     async_read(session, 0, 16, &Server::push_handler);
     break;
 
     default:

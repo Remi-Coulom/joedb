@@ -70,9 +70,9 @@ namespace joedb
   {
    if (journal.get_checkpoint_position() > from_checkpoint)
    {
-    from_checkpoint = connection.push_until
+    from_checkpoint = connection.push
     (
-     journal,
+     &journal,
      from_checkpoint,
      journal.get_checkpoint_position(),
      false

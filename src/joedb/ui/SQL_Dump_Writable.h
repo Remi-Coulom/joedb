@@ -40,6 +40,9 @@ namespace joedb
 
    const char *get_name() const {return "sql";}
 
+   void start_writing(int64_t position);
+   void hard_checkpoint_at(int64_t position);
+
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;
    void rename_table(Table_Id table_id, const std::string &name) final;

@@ -38,45 +38,27 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Connection::unlock()
- ////////////////////////////////////////////////////////////////////////////
- {
-  Channel_Lock lock(channel);
-
-  LOGID("releasing lock... ");
-
-  buffer.data[0] = 'u';
-  lock.write(buffer.data, 1);
-  lock.read(buffer.data, 1);
-
-  if (buffer.data[0] == 'u')
-   LOG("OK\n");
-  else if (buffer.data[0] == 't')
-   LOG("The lock had timed out\n");
-  else
-   throw Exception("Unexpected server reply");
- }
-
- ////////////////////////////////////////////////////////////////////////////
  int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
  (
-  Writable_Journal *client_journal,
+  bool lock_before,
   std::chrono::milliseconds wait,
-  char pull_type
+  Writable_Journal *client_journal
  )
  {
   Channel_Lock lock(channel);
+
+  const char pull_type = 'D' + int(lock_before) + 2 * !!client_journal;
 
   LOGID("pulling(" << pull_type << ")... ");
 
   buffer.index = 0;
   buffer.write<char>(pull_type);
-  const int64_t client_checkpoint = client_journal
-   ? client_journal->get_checkpoint_position()
-   : 0;
-  buffer.write<int64_t>(client_checkpoint);
   buffer.write<int64_t>(wait.count());
+  if (client_journal)
+   buffer.write<int64_t>(client_journal->get_checkpoint_position());
+  else
+   buffer.write<int64_t>(-1);
   lock.write(buffer.data, buffer.index);
 
   buffer.index = 0;
@@ -93,8 +75,7 @@ namespace joedb
   if (client_journal)
   {
    buffer.index = 0;
-   lock.read(buffer.data, 8);
-   const int64_t size = buffer.read<int64_t>();
+   const int64_t size = server_checkpoint - client_journal->get_checkpoint_position();
    Async_Writer writer = client_journal->get_async_tail_writer();
    download(writer, lock, size);
    client_journal->soft_checkpoint_at(writer.get_position());
@@ -106,66 +87,32 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::pull
+ int64_t Server_Connection::push
  ////////////////////////////////////////////////////////////////////////////
  (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds wait
- )
- {
-  return pull(&client_journal, wait, 'P');
- }
-
- ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::lock_pull
- ////////////////////////////////////////////////////////////////////////////
- (
-  Writable_Journal &client_journal,
-  std::chrono::milliseconds wait
- )
- {
-  return pull(&client_journal, wait, 'L');
- }
-
- ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::get_checkpoint
- ////////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &client_journal,
-  std::chrono::milliseconds wait
- )
- {
-  return pull(nullptr, wait, 'i');
- }
-
- ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::push_until
- ////////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &client_journal,
-  int64_t server_position,
-  int64_t until_position,
+  const Readonly_Journal *client_journal,
+  int64_t from,
+  int64_t until,
   bool unlock_after
  )
  {
   Channel_Lock lock(channel);
 
-  Async_Reader reader = client_journal.get_async_reader
-  (
-   server_position,
-   until_position
-  );
-
-  const int64_t push_size = reader.get_remaining();
-
+  const char push_type = 'L' + int(unlock_after) + 2 * !!client_journal;
   buffer.index = 0;
-  buffer.write<char>(unlock_after ? 'U' : 'p');
-  buffer.write<int64_t>(server_position);
-  buffer.write<int64_t>(push_size);
+  buffer.write<char>(push_type);
 
-  LOGID("pushing(U)... position = " << server_position << ", size = " << push_size);
-
+  if (!client_journal)
+   lock.write(buffer.data, buffer.size);
+  else
   {
+   Async_Reader reader = client_journal->get_async_reader(from, until);
+
+   buffer.write<int64_t>(from);
+   buffer.write<int64_t>(until);
+
+   LOGID("pushing(U)... from = " << from << ", until = " << until);
+
    size_t offset = buffer.index;
 
    std::optional<Progress_Bar> progress_bar;
@@ -174,7 +121,7 @@ namespace joedb
 
    int64_t written = 0;
 
-   while (offset + reader.get_remaining() > 0)
+   while (offset + reader.get_remaining() > 0) // ??? eof error ???
    {
     const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
     lock.write(buffer.data, size + offset);
@@ -190,16 +137,18 @@ namespace joedb
 
   lock.read(buffer.data, 1);
 
-  if (buffer.data[0] == 'C')
-   throw Exception("Conflict: push failed");
-  else if (buffer.data[0] == 'R')
-   throw Exception("Server is pull-only: push failed");
+  if (buffer.data[0] == 'R')
+   throw Exception("push error: server is pull-only");
+  else if (buffer.data[0] == 'C')
+   throw Exception("push error: conflict");
   else if (buffer.data[0] == 't')
-   throw Exception("Timeout: push failed");
-  else if (buffer.data[0] != 'U')
-   throw Exception("Unexpected server reply");
+   throw Exception("push error: time out");
+  else if (buffer.data[0] != push_type)
+   throw Exception("push error: unexpected reply");
 
-  server_checkpoint = server_position + push_size;
+  if (client_journal)
+   server_checkpoint = until;
+
   return server_checkpoint;
  }
 

@@ -11,13 +11,14 @@ namespace joedb
  class Connection
  {
   protected:
+   /// Called by @ref handshake when the file and the connection do not match
    static void content_mismatch();
 
   public:
    /// Called during Client construction
    /// @param client_journal may be used to check matching content
    /// @param content_check indicates whether matching content is tested
-   /// @retval server_checkpoint
+   /// @retval connection checkpoint (-1 if not available)
    virtual int64_t handshake
    (
     const Readonly_Journal &client_journal,
@@ -25,62 +26,37 @@ namespace joedb
    );
 
    /// Pull new data from the connection
-   /// @param client_journal: journal to pull into
-   /// @param wait: duration during which the connection may wait
+   /// @param lock_before whether the connection should be locked
+   /// @param wait duration during which the connection may wait
    /// for new data if the pull would otherwise be empty
-   /// @retval server_checkpoint
+   /// @param client_journal journal to pull into
+   /// @retval server checkpoint (-1 if not available)
    virtual int64_t pull
    (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
-   );
-
-   /// Fused lock_pull, executed at the start of a write transaction
-   /// @retval server_checkpoint
-   virtual int64_t lock_pull
-   (
-    Writable_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
-   );
-
-   /// Get new connection checkpoint without pulling
-   /// @retval server_checkpoint
-   virtual int64_t get_checkpoint
-   (
-    const Readonly_Journal &client_journal,
-    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+    bool lock_before,
+    std::chrono::milliseconds wait,
+    Writable_Journal *client_journal
    );
 
    /// Push new data to the connection
-   /// @retval server_checkpoint
-   virtual int64_t push_until
+   /// @retval server checkpoint (-1 if not available)
+   virtual int64_t push
    (
-    const Readonly_Journal &client_journal,
-    int64_t from_checkpoint,
-    int64_t until_checkpoint,
+    const Readonly_Journal *client_journal,
+    int64_t from,
+    int64_t until,
     bool unlock_after
    );
 
-   /// Shortcut to call @ref push_until until the client checkpoint
-   /// @retval server_checkpoint
-   int64_t push
-   (
-    const Readonly_Journal &client_journal,
-    int64_t from_checkpoint,
-    bool unlock_after
-   )
+   void unlock()
    {
-    return push_until
-    (
-     client_journal,
-     from_checkpoint,
-     client_journal.get_checkpoint_position(),
-     unlock_after
-    );
+    push(nullptr, -1, -1, true);
    }
 
-   /// Can be used to cancel a transaction without pushing.
-   virtual void unlock();
+   int64_t lock_pull(Writable_Journal &journal)
+   {
+    return pull(true, std::chrono::milliseconds(0), &journal);
+   }
 
    virtual ~Connection();
  };

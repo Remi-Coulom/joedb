@@ -10,28 +10,20 @@ Client to Server
 Prefix Data              Description
 ====== ================= ======================================================
 joedb  client_version    first message, sent at connection time
-H      checkpoint        check SHA-256 hash code
+H      until             check SHA-256 hash code
        hash (32 bytes)
-r      offset            read a range of bytes
-       size
-P      checkpoint        pull
-       wait_milliseconds
-i      checkpoint        get server checkpoint (like P, without data)
-       wait_milliseconds
------- ----------------- ------------------------------------------------------
-L      checkpoint        lock-pull
-       wait_milliseconds
-l      checkpoint        lock (like L, without data)
-       wait_milliseconds
-p      checkpoint        locked-push
-       size
-       data
-U      checkpoint        push-unlock
-       size
-       data
-u                        unlock
-====== ================= ======================================================
+r      offset size       read a range of bytes
 
+D      wait from         pull, no lock, no data
+E      wait from         pull, lock, no data
+F      wait from         pull, no lock, data
+G      wait from         pull, lock, data
+
+L                        push, lock, no data
+M                        push, unlock, no data
+N      from until data   push, lock, data
+O      from until data   push, unlock, data
+====== ================= ======================================================
 
 Server to Client
 ----------------
@@ -45,20 +37,19 @@ joedb  | server_version | reply to joedb.
        | 'R' or 'W'
 H                       reply to H, hash is matching
 h                       reply to H, hash mismatch
-r      size             reply to r (size may be shorter than what was sent)
-       data
-P      checkpoint       reply to P
-       size
-       data
-i      checkpoint       reply to i
------- ---------------- ------------------------------------------------------
-R                       reply to L, l, p, U, or u when the server is read-only
-L      checkpoint       reply to L
-       size
-       data
-l      checkpoint       reply to l
-U                       reply to U or p when the push succeeded
-C                       reply to U or p when the push failed (conflict)
-u                       reply to u (no timeout)
-t                       reply to u, U, or p in case of lock timeout
+r      size data        reply to r (size may be shorter than what was sent)
+
+D      until            reply to D
+E      until            reply to E
+F      until data       reply to F
+G      until data       reply to G
+
+L                       reply to L (success)
+M                       reply to M (success)
+N                       reply to N (success)
+O                       reply to O (success)
+
+R                       reply to E, G, L, M, N, O when the server is read-only
+C                       reply to N, O in case of conflict
+t                       reply to N, O in case of time out
 ====== ================ ======================================================

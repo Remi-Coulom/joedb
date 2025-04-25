@@ -50,8 +50,8 @@ namespace joedb
     };
     State state;
 
-    size_t push_remaining_size;
     char push_status;
+    int64_t push_remaining_size;
     std::optional<Async_Writer> push_writer;
     bool unlock_after_push;
 
@@ -140,8 +140,6 @@ namespace joedb
     std::error_code error,
     size_t bytes_transferred
    );
-
-   void pull(std::shared_ptr<Session> session, bool lock, bool send);
 
    void read_handler
    (
