@@ -15,8 +15,7 @@ joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
   lock.header.checkpoint.fill(Header::size);
   lock.header.version = format_version;
   lock.header.signature = Header::joedb;
-  file.pwrite(reinterpret_cast<const char *>(&lock.header), Header::size, 0);
-  file.set_position(Header::size);
+  file.sequential_write((const char *)(&lock.header), Header::size);
  }
  else if (lock.size > 0 && lock.size > checkpoint_position)
  {
@@ -28,20 +27,6 @@ joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
    "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
   );
  }
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &&lock):
-/////////////////////////////////////////////////////////////////////////////
- Writable_Journal(lock)
-{
-}
-
-/////////////////////////////////////////////////////////////////////////////
-joedb::Writable_Journal::Writable_Journal(Buffered_File &file):
-/////////////////////////////////////////////////////////////////////////////
- Writable_Journal(Journal_Construction_Lock(file))
-{
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -21,8 +21,16 @@ namespace joedb
 
   public:
    explicit Writable_Journal(Journal_Construction_Lock &lock);
-   explicit Writable_Journal(Journal_Construction_Lock &&lock);
-   explicit Writable_Journal(Buffered_File &file);
+
+   explicit Writable_Journal(Journal_Construction_Lock &&lock):
+    Writable_Journal(lock)
+   {
+   }
+
+   explicit Writable_Journal(Buffered_File &file):
+    Writable_Journal(Journal_Construction_Lock(file))
+   {
+   }
 
    void append()
    {
