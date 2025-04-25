@@ -72,7 +72,7 @@ namespace joedb
    {
     from_checkpoint = connection.push
     (
-     &journal,
+     journal,
      from_checkpoint,
      journal.get_checkpoint_position(),
      false

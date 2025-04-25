@@ -39,23 +39,18 @@ namespace joedb
    int64_t push
    //////////////////////////////////////////////////////////////////////////
    (
-    const Readonly_Journal *client_journal,
+    const Readonly_Journal &client_journal,
     int64_t from_position,
     int64_t until_position,
     bool unlock_after
    ) override
    {
-    if (client_journal)
-    {
-     File_View file_view(client_journal->get_file());
-     Readonly_Journal journal(file_view);
-     journal.set_position(from_position);
-     journal.play_until(writable, until_position);
+    File_View file_view(client_journal.get_file());
+    Readonly_Journal journal(file_view);
+    journal.set_position(from_position);
+    journal.play_until(writable, until_position);
 
-     return client_journal->get_checkpoint_position();
-    }
-    else
-     return -1;
+    return client_journal.get_checkpoint_position();
    }
  };
 }

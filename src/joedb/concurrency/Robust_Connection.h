@@ -104,7 +104,7 @@ namespace joedb
 
    int64_t push
    (
-    const Readonly_Journal *client_journal,
+    const Readonly_Journal &client_journal,
     int64_t from_checkpoint,
     int64_t until_checkpoint,
     bool unlock_after
@@ -120,6 +120,19 @@ namespace joedb
       unlock_after
      )
     );
+   }
+
+   void unlock() override
+   {
+    try
+    {
+     connection->unlock();
+    }
+    catch (const std::exception &e)
+    {
+     if (log)
+      *log << "Robust_Connection::unlock() error: " << e.what() << '\n';
+    }
    }
 #undef ROBUSTLY_DO
  };

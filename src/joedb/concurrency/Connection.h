@@ -25,7 +25,7 @@ namespace joedb
     bool content_check
    );
 
-   /// Pull new data from the connection
+   /// Pull from the connection
    /// @param lock_before whether the connection should be locked
    /// @param wait duration during which the connection may wait
    /// for new data if the pull would otherwise be empty
@@ -38,25 +38,23 @@ namespace joedb
     Writable_Journal *client_journal
    );
 
+   int64_t lock_pull(Writable_Journal &journal)
+   {
+    return pull(true, std::chrono::milliseconds(0), &journal);
+   }
+
    /// Push new data to the connection
    /// @retval server checkpoint (-1 if not available)
    virtual int64_t push
    (
-    const Readonly_Journal *client_journal,
+    const Readonly_Journal &client_journal,
     int64_t from,
     int64_t until,
     bool unlock_after
    );
 
-   void unlock()
-   {
-    push(nullptr, -1, -1, true);
-   }
-
-   int64_t lock_pull(Writable_Journal &journal)
-   {
-    return pull(true, std::chrono::milliseconds(0), &journal);
-   }
+   /// Unlock the connection
+   virtual void unlock();
 
    virtual ~Connection();
  };

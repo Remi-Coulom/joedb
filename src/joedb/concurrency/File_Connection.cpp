@@ -56,7 +56,7 @@ namespace joedb
  int64_t Pullonly_Journal_Connection::push
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal *client_journal,
+  const Readonly_Journal &client_journal,
   const int64_t from,
   const int64_t until,
   bool unlock_after
@@ -89,7 +89,7 @@ namespace joedb
  int64_t Journal_Connection::push
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal *client_journal,
+  const Readonly_Journal &client_journal,
   const int64_t from,
   const int64_t until,
   bool unlock_after
@@ -98,19 +98,19 @@ namespace joedb
   if (!get_journal().is_locked())
    get_journal().lock_pull();
 
-  if (client_journal)
-  {
-   static_cast<Writable_Journal &>(server_journal).pull_from
-   (
-    *client_journal,
-    until
-   );
-  }
+  get_journal().pull_from(client_journal, until);
 
   if (unlock_after)
    get_journal().unlock();
 
   return server_journal.get_checkpoint_position();
+ }
+
+ //////////////////////////////////////////////////////////////////////////
+ void Journal_Connection::unlock()
+ //////////////////////////////////////////////////////////////////////////
+ {
+  get_journal().unlock();
  }
 
  //////////////////////////////////////////////////////////////////////////

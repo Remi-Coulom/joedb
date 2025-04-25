@@ -48,7 +48,7 @@ namespace joedb
    {
     server_checkpoint = connection.push
     (
-     &readonly_journal,
+     readonly_journal,
      server_checkpoint,
      readonly_journal.get_checkpoint_position(),
      unlock_after

@@ -464,7 +464,7 @@ namespace joedb
 
   server_checkpoint = connection.push
   (
-   &client_journal,
+   client_journal,
    server_checkpoint,
    after_person,
    true
@@ -475,7 +475,7 @@ namespace joedb
 
   server_checkpoint = connection.push
   (
-   &client_journal,
+   client_journal,
    server_checkpoint,
    after_city,
    true

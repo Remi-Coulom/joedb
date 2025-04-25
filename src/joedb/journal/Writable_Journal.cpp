@@ -52,6 +52,7 @@ int64_t joedb::Writable_Journal::pull_from
  const int64_t until_checkpoint
 )
 {
+ /// ??? conflict if journal.checkpoint_position < checkpoint_position ???
  if (checkpoint_position < until_checkpoint)
  {
   journal.get_file().copy_to

@@ -13,13 +13,45 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ bool Server_Connection::check_matching_content
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const Readonly_Journal &client_journal,
+  int64_t server_checkpoint
+ )
+ {
+  LOGID("checking_hash... ");
+
+  const int64_t checkpoint = std::min
+  (
+   server_checkpoint,
+   client_journal.get_checkpoint_position()
+  );
+
+  buffer.index = 0;
+  buffer.write<char>('H');
+  buffer.write<int64_t>(checkpoint);
+  buffer.write(Journal_Hasher::get_hash(client_journal, checkpoint));
+
+  {
+   Channel_Lock lock(channel);
+   lock.write(buffer.data, buffer.index);
+   lock.read(buffer.data, 1);
+  }
+
+  LOG(buffer.data[0] << '\n');
+
+  return (buffer.data[0] == 'H');
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  size_t Server_Connection::pread(char *data, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
   buffer.index = 0;
   buffer.write<char>('r');
   buffer.write<int64_t>(offset);
-  buffer.write<uint64_t>(offset + size);
+  buffer.write<int64_t>(offset + int64_t(size));
 
   Channel_Lock lock(channel);
   lock.write(buffer.data, buffer.index);
@@ -37,6 +69,21 @@ namespace joedb
    read += lock.read_some(data + read, returned_size - read);
 
   return returned_size;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Server_Connection::handshake
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const Readonly_Journal &client_journal,
+  bool content_check
+ )
+ {
+  if (content_check)
+   if (!check_matching_content(client_journal, server_checkpoint))
+    content_mismatch();
+
+  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -92,7 +139,7 @@ namespace joedb
  int64_t Server_Connection::push
  ////////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal *client_journal,
+  const Readonly_Journal &client_journal,
   int64_t from,
   int64_t until,
   bool unlock_after
@@ -100,18 +147,15 @@ namespace joedb
  {
   Channel_Lock lock(channel);
 
-  const char push_type = char('L' + int(unlock_after) + 2 * !!client_journal);
+  const char push_type = char('N' + int(unlock_after));
   buffer.index = 0;
   buffer.write<char>(push_type);
+  buffer.write<int64_t>(from);
+  buffer.write<int64_t>(until);
 
-  if (!client_journal)
-   lock.write(buffer.data, buffer.size);
-  else
   {
-   Async_Reader reader = client_journal->get_async_reader(from, until);
+   Async_Reader reader = client_journal.get_async_reader(from, until);
 
-   buffer.write<int64_t>(from);
-   buffer.write<int64_t>(until);
 
    LOGID("pushing(" << push_type << ")... from = " << from << ", until = " << until);
 
@@ -123,7 +167,7 @@ namespace joedb
 
    int64_t written = 0;
 
-   while (offset + reader.get_remaining() > 0) // ??? eof error ???
+   while (offset + reader.get_remaining() > 0) // ??? eof error -> always throw ???
    {
     const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
     lock.write(buffer.data, size + offset);
@@ -148,62 +192,28 @@ namespace joedb
   else if (buffer.data[0] != push_type)
    throw Exception("push error: unexpected reply");
 
-  if (client_journal)
-   server_checkpoint = until;
+  server_checkpoint = until;
 
   return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Server_Connection::check_matching_content
+ void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &client_journal,
-  int64_t server_checkpoint
- )
  {
-  Channel_Lock lock(channel);
+  LOGID("releasing lock... ");
 
-  LOGID("checking_hash... ");
+  {
+   Channel_Lock lock(channel);
+   buffer.data[0] = 'M';
+   lock.write(buffer.data, 1);
+   lock.read(buffer.data, 1);
+  }
 
-  buffer.index = 0;
-  buffer.write<char>('H');
+  LOG(buffer.data[0] << '\n');
 
-  const int64_t checkpoint = std::min
-  (
-   server_checkpoint,
-   client_journal.get_checkpoint_position()
-  );
-
-  buffer.write(checkpoint);
-  buffer.write(Journal_Hasher::get_hash(client_journal, checkpoint));
-
-  lock.write(buffer.data, buffer.index);
-  lock.read(buffer.data, 1);
-
-  const bool result = (buffer.data[0] == 'H');
-
-  if (result)
-   LOG("OK\n");
-  else
-   LOG("Error\n");
-
-  return result;
- }
-
- ////////////////////////////////////////////////////////////////////////////
- int64_t Server_Connection::handshake
- ////////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &client_journal,
-  bool content_check
- )
- {
-  if (content_check)
-   if (!check_matching_content(client_journal, server_checkpoint))
-    content_mismatch();
-
-  return server_checkpoint;
+  if (buffer.data[0] != 'M')
+   throw Exception("unlock error: unexpected reply");
  }
 }
 

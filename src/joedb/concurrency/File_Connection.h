@@ -32,7 +32,7 @@ namespace joedb
 
    int64_t push
    (
-    const Readonly_Journal *client_journal,
+    const Readonly_Journal &client_journal,
     const int64_t from,
     const int64_t until,
     bool unlock_after
@@ -63,11 +63,13 @@ namespace joedb
 
    int64_t push
    (
-    const Readonly_Journal *client_journal,
+    const Readonly_Journal &client_journal,
     const int64_t from,
     const int64_t until,
     bool unlock_after
    ) override;
+
+   void unlock() override;
 
    ~Journal_Connection();
  };

@@ -31,16 +31,17 @@ namespace joedb
 
  int64_t Connection::push
  (
-  const Readonly_Journal *client_journal,
+  const Readonly_Journal &client_journal,
   int64_t from,
   int64_t until,
   bool unlock_after
  )
  {
-  if (client_journal)
-   return client_journal->get_checkpoint_position();
-  else
-   return -1;
+  return client_journal.get_checkpoint_position();
+ }
+
+ void Connection::unlock()
+ {
  }
 
  Connection::~Connection() = default;

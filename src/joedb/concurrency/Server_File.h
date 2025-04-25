@@ -51,7 +51,7 @@ namespace joedb
 
    int64_t push
    (
-    const Readonly_Journal *client_journal,
+    const Readonly_Journal &client_journal,
     int64_t server_position,
     int64_t until_position,
     bool unlock_after
