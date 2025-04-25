@@ -159,15 +159,15 @@ namespace joedb
    Progress_Bar progress_bar(reader.get_remaining(), log);
 
    size_t offset = buffer.index;
-   int64_t written = 0;
 
-   while (offset + reader.get_remaining() > 0) // ??? eof error -> always throw ???
+   while (offset + reader.get_remaining() > 0)
    {
     const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
+    if (reader.is_end_of_file())
+     throw Exception("push error: unexpected end of file");
     lock.write(buffer.data, size + offset);
-    written += int64_t(size + offset);
     offset = 0;
-    progress_bar.print(written);
+    progress_bar.print_remaining(reader.get_remaining());
    }
   }
 
