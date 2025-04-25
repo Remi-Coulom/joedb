@@ -8,6 +8,7 @@ For next release
 
    - do not write hard_checkpoint again if it is already written
    - lock guards for all file locks
+   - Android logcat
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code

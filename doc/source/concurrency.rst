@@ -142,10 +142,9 @@ some more complex use cases. The :joedb:`Client_Lock` object allows:
  - writing data in one thread, and asynchronously pushing from time to time
    in another one (use a mutex).
 
-:joedb:`Client_Lock` performs :joedb:`Connection::lock_pull` in its
-constructor, and you have to explicitly call either
-:joedb:`Client_Lock::push_unlock` or :joedb:`Client_Lock::unlock` right before
-its destruction.
+:joedb:`Client_Lock` performs lock_pull in its constructor, and you have to
+explicitly call either :joedb:`Client_Lock::push_unlock` or
+:joedb:`Client_Lock::unlock` right before its destruction.
 
 .. literalinclude:: ./tutorial/src/client_lock.cpp
    :language: c++
