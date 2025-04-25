@@ -290,8 +290,7 @@ namespace joedb
    session->buffer.data[0] = session->push_status;
 
    session->progress_bar.reset();
-
-   LOG("Returning '" << session->push_status << "'\n");
+   LOGID("Returning '" << session->push_status << "'\n");
 
    write_buffer_and_next_command(session, 1);
 
