@@ -8,8 +8,11 @@ History
 
   - New features:
 
+    - :joedb:`Robust_Connection` is like :joedb:`Server_Connection`, but will
+      automatically reconnect in case of error.
     - :joedb:`Server_File` allows accessing a remote database without
-      downloading a local replica. This is convenient for large blob databases.
+      downloading a local replica. This is particularly convenient for large
+      blob databases.
     - :joedb:`Client::pull` can wait for another client to make a
       push if the pull would otherwise be empty.
     - :joedb:`Encoded_File` supports on-the-fly coding or decoding of data.
