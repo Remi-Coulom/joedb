@@ -19,8 +19,8 @@ namespace joedb
  int64_t Connection::pull
  (
   bool lock_before,
-  std::chrono::milliseconds wait,
-  Writable_Journal *client_journal
+  Writable_Journal *client_journal,
+  std::chrono::milliseconds wait
  )
  {
   if (client_journal)

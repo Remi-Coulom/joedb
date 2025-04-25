@@ -35,14 +35,14 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   bool lock_before,
-  std::chrono::milliseconds wait,
-  Writable_Journal *client_journal
+  Writable_Journal *client_journal,
+  std::chrono::milliseconds wait
  )
  {
   if (tail.get_size() > 0)
    throw Exception("Server_File: pulling with non-empty tail");
 
-  Robust_Connection::pull(lock_before, wait, client_journal);
+  Robust_Connection::pull(lock_before, client_journal, wait);
   write_checkpoint();
   tail_offset = connection->server_checkpoint;
 

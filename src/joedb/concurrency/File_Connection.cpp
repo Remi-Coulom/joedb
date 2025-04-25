@@ -37,8 +37,8 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   bool lock_before,
-  std::chrono::milliseconds wait,
-  Writable_Journal *client_journal
+  Writable_Journal *client_journal,
+  std::chrono::milliseconds wait
  )
  {
   if (lock_before)
@@ -70,8 +70,8 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   bool lock_before,
-  std::chrono::milliseconds wait,
-  Writable_Journal *client_journal
+  Writable_Journal *client_journal,
+  std::chrono::milliseconds wait
  )
  {
   if (lock_before)

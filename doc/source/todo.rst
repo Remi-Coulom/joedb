@@ -6,7 +6,6 @@ For next release
 
  - Improvements:
 
-   - no optional for progress bars: just do not print if not big enough
    - do not write hard_checkpoint again if it is already written
    - lock guards for all file locks
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well

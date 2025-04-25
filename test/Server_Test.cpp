@@ -568,11 +568,11 @@ namespace joedb
   Writable_Journal journal(client_file);
   {
    Test_Client client(client_file, server);
-   client.server_connection.lock_pull(journal);
+   client.server_connection.pull(true, &journal);
   }
   {
    Test_Client client(client_file, server);
-   client.server_connection.lock_pull(journal);
+   client.server_connection.pull(true, &journal);
   }
  }
 
@@ -647,10 +647,10 @@ namespace joedb
 
   Writable_Journal journal(client_file);
 
-  client.server_connection.lock_pull(journal);
+  client.server_connection.pull(true, &journal);
   EXPECT_ANY_THROW
   (
-   client.server_connection.lock_pull(journal)
+   client.server_connection.pull(true, &journal)
   );
  }
 

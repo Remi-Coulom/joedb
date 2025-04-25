@@ -34,14 +34,9 @@ namespace joedb
    virtual int64_t pull
    (
     bool lock_before,
-    std::chrono::milliseconds wait,
-    Writable_Journal *client_journal
+    Writable_Journal *client_journal,
+    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
-
-   int64_t lock_pull(Writable_Journal &journal)
-   {
-    return pull(true, std::chrono::milliseconds(0), &journal);
-   }
 
    /// Push new data to the connection
    /// @retval server checkpoint (-1 if not available)

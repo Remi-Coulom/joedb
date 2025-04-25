@@ -9,32 +9,38 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   int64_t total,
-  std::ostream &out
+  std::ostream *out
  ):
   total(total),
   out(out),
   current_display(0)
  {
-  out << '\n';
-  for (int i = length; --i >= 0;)
-   out << '.';
-  out << '\r';
-  out.flush();
+  if (out)
+  {
+   if (total > threshold)
+    *out << '\n' << std::string(length, '.') << '\r';
+   else
+    *out << ": size = " << total;
+
+   out->flush();
+  }
  }
 
  //////////////////////////////////////////////////////////////////////////
  void Progress_Bar::print(int64_t current)
  //////////////////////////////////////////////////////////////////////////
  {
-  const int display = int((current * length) / total);
-
-  if (display > current_display)
+  if (out && total > threshold)
   {
-   for (int i = display - current_display; --i >= 0;)
-    out << '#';
-   out.flush();
+   const int display = int((current * length) / total);
 
-   current_display = display;
+   if (display > current_display)
+   {
+    *out << std::string(display - current_display, '#');
+    out->flush();
+
+    current_display = display;
+   }
   }
  }
 
@@ -44,8 +50,14 @@ namespace joedb
  {
   try
   {
-   out << '\n';
-   out.flush();
+   if (out)
+   {
+    if (total > threshold)
+     *out << '\n';
+    else
+     *out << " done.\n";
+    out->flush();
+   }
   }
   catch(...)
   {

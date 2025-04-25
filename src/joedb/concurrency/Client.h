@@ -66,7 +66,7 @@ namespace joedb
    void start_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    server_checkpoint = connection.lock_pull(*writable_journal);
+    server_checkpoint = connection.pull(true, writable_journal);
     read_journal();
    }
 
@@ -128,12 +128,12 @@ namespace joedb
     if (writable_journal)
     {
      Journal_Lock lock(*writable_journal);
-     server_checkpoint = connection.pull(false, wait, writable_journal);
+     server_checkpoint = connection.pull(false, writable_journal, wait);
     }
     else
     {
      readonly_journal.pull();
-     server_checkpoint = connection.pull(false, wait, nullptr);
+     server_checkpoint = connection.pull(false, nullptr, wait);
     }
 
     read_journal();

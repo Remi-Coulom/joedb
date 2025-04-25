@@ -241,14 +241,7 @@ namespace joedb
     session->push_writer->write(session->buffer.data, bytes_transferred); // ??? takes_time
 
    session->push_remaining_size -= bytes_transferred;
-
-   if (session->progress_bar)
-   {
-    session->progress_bar->print_remaining
-    (
-     int64_t(session->push_remaining_size)
-    );
-   }
+   session->progress_bar->print_remaining(session->push_remaining_size);
 
    push_transfer(session);
   }
@@ -296,10 +289,7 @@ namespace joedb
 
    session->buffer.data[0] = session->push_status;
 
-   if (session->progress_bar)
-    session->progress_bar.reset();
-   else
-    LOG(" done. ");
+   session->progress_bar.reset();
 
    LOG("Returning '" << session->push_status << "'\n");
 
@@ -355,9 +345,7 @@ namespace joedb
    );
 
    LOGID("pushing, from = " << from << ", until = " << until);
-
-   if (log_pointer && until - from > session->buffer.ssize)
-    session->progress_bar.emplace(until - from, *log_pointer);
+   session->progress_bar.emplace(until - from, log_pointer);
 
    if (is_readonly())
     session->push_status = 'R';
@@ -393,8 +381,7 @@ namespace joedb
  {
   if (!error)
   {
-   if (session->progress_bar)
-    session->progress_bar->print_remaining(reader.get_remaining());
+   session->progress_bar->print_remaining(reader.get_remaining());
 
    if (offset + reader.get_remaining() > 0)
    {
@@ -424,10 +411,7 @@ namespace joedb
    else
    {
     session->pull_timer.reset();
-    if (session->progress_bar)
-     session->progress_bar.reset();
-    else
-     LOG(" OK\n");
+    session->progress_bar.reset();
     read_command(session);
    }
   }
@@ -444,8 +428,7 @@ namespace joedb
   LOGID("reading from = " << reader.get_current() << ", until = "
    << reader.get_end() << ':');
 
-  if (log_pointer && reader.get_remaining() > session->buffer.ssize)
-   session->progress_bar.emplace(reader.get_remaining(), *log_pointer);
+  session->progress_bar.emplace(reader.get_remaining(), log_pointer);
 
   session->buffer.index = 1;
   session->buffer.write<int64_t>(reader.get_end());

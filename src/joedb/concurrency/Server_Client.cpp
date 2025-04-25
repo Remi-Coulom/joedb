@@ -4,7 +4,6 @@
 #include "joedb/ui/Progress_Bar.h"
 
 #include <iostream>
-#include <optional>
 
 #define LOG(x) do {if (log) *log << x;} while (false)
 
@@ -133,28 +132,18 @@ namespace joedb
   int64_t size
  ) const
  {
-  LOG("downloading, size = " << size);
-
-  std::optional<Progress_Bar> progress_bar;
-  if (size > buffer.ssize && log)
-   progress_bar.emplace(size, *log);
+  LOG("downloading");
+  Progress_Bar progress_bar(size, log);
 
   for (int64_t read = 0; read < size;)
   {
    const int64_t remaining = size - read;
-   const size_t read_size = size_t
-   (
-    std::min(int64_t(buffer.size), remaining)
-   );
+   const size_t read_size = size_t(std::min(buffer.ssize, remaining));
    const size_t n = lock.read_some(buffer.data, read_size);
    writer.write(buffer.data, n);
    read += int64_t(n);
-   if (progress_bar)
-    progress_bar->print(read);
+   progress_bar.print(read);
   }
-
-  if (!progress_bar)
-   LOG(" OK\n");
  }
 
  ////////////////////////////////////////////////////////////////////////////

@@ -5,7 +5,6 @@
 #include "joedb/ui/get_time_string.h"
 
 #include <iostream>
-#include <optional>
 
 #define LOG(x) do {if (log) *log << x;} while (false)
 #define LOGID(x) do {if (log) *log << get_time_string_of_now() << ' ' << get_session_id() << ": " << x;} while (false)
@@ -91,8 +90,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   bool lock_before,
-  std::chrono::milliseconds wait,
-  Writable_Journal *client_journal
+  Writable_Journal *client_journal,
+  std::chrono::milliseconds wait
  )
  {
   Channel_Lock lock(channel);
@@ -156,15 +155,10 @@ namespace joedb
   {
    Async_Reader reader = client_journal.get_async_reader(from, until);
 
-
    LOGID("pushing(" << push_type << ")... from = " << from << ", until = " << until);
+   Progress_Bar progress_bar(reader.get_remaining(), log);
 
    size_t offset = buffer.index;
-
-   std::optional<Progress_Bar> progress_bar;
-   if (reader.get_remaining() > buffer.ssize && log)
-    progress_bar.emplace(reader.get_remaining(), *log);
-
    int64_t written = 0;
 
    while (offset + reader.get_remaining() > 0) // ??? eof error -> always throw ???
@@ -173,12 +167,8 @@ namespace joedb
     lock.write(buffer.data, size + offset);
     written += int64_t(size + offset);
     offset = 0;
-    if (progress_bar)
-     progress_bar->print(written);
+    progress_bar.print(written);
    }
-
-   if (!progress_bar)
-    LOG(" done\n");
   }
 
   lock.read(buffer.data, 1);
