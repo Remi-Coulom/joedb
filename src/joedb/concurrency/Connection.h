@@ -48,7 +48,6 @@ namespace joedb
     bool unlock_after
    );
 
-   /// unlock
    void unlock()
    {
     push(nullptr, -1, -1, true);
