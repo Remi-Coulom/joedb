@@ -18,7 +18,7 @@ namespace joedb
    /// Called during Client construction
    /// @param client_journal may be used to check matching content
    /// @param content_check indicates whether matching content is tested
-   /// @retval server_checkpoint
+   /// @retval server checkpoint
    virtual int64_t handshake
    (
     const Readonly_Journal &client_journal,
@@ -28,9 +28,9 @@ namespace joedb
    /// Pull new data from the connection
    /// @param lock_before whether the connection should be locked
    /// @param wait duration during which the connection may wait
-   /// @param client_journal journal to pull into
    /// for new data if the pull would otherwise be empty
-   /// @retval server_checkpoint
+   /// @param client_journal journal to pull into
+   /// @retval server checkpoint
    virtual int64_t pull
    (
     bool lock_before,
@@ -39,8 +39,8 @@ namespace joedb
    );
 
    /// Push new data to the connection
-   /// @retval server_checkpoint
-   virtual int64_t push_until
+   /// @retval server checkpoint
+   virtual int64_t push
    (
     const Readonly_Journal *client_journal,
     int64_t from_checkpoint,
