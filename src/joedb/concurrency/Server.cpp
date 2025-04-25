@@ -661,14 +661,7 @@ namespace joedb
   {
    session->buffer.index = 0;
 
-   if
-   (
-    session->buffer.read<char>() == 'j' &&
-    session->buffer.read<char>() == 'o' &&
-    session->buffer.read<char>() == 'e' &&
-    session->buffer.read<char>() == 'd' &&
-    session->buffer.read<char>() == 'b'
-   )
+   if (session->buffer.read<std::array<char, 5>>() == Header::joedb)
    {
     const int64_t client_version = session->buffer.read<int64_t>();
     LOGID("client_version = " << client_version << '\n');

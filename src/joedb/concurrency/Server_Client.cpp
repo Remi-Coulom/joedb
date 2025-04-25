@@ -2,6 +2,7 @@
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/error/Exception.h"
 #include "joedb/ui/Progress_Bar.h"
+#include "joedb/journal/Header.h"
 
 #include <iostream>
 
@@ -59,33 +60,19 @@ namespace joedb
   LOG("Connecting... ");
 
   buffer.index = 0;
-  buffer.write<char>('j');
-  buffer.write<char>('o');
-  buffer.write<char>('e');
-  buffer.write<char>('d');
-  buffer.write<char>('b');
+  buffer.write<std::array<char, 5>>(Header::joedb);
   buffer.write<int64_t>(protocol_version);
 
   {
    Channel_Lock lock(channel);
    lock.write(buffer.data, buffer.index);
-   LOG("Waiting for \"joedb\"... ");
    lock.read(buffer.data, 5 + 8 + 8 + 8 + 1);
   }
 
   buffer.index = 0;
 
-  if
-  (
-   buffer.read<char>() != 'j' ||
-   buffer.read<char>() != 'o' ||
-   buffer.read<char>() != 'e' ||
-   buffer.read<char>() != 'd' ||
-   buffer.read<char>() != 'b'
-  )
-  {
+  if (buffer.read<std::array<char, 5>>() != Header::joedb)
    throw Exception("Did not receive \"joedb\" from server");
-  }
 
   const int64_t server_version = buffer.read<int64_t>();
 
