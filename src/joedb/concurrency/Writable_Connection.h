@@ -37,12 +37,13 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &client_journal,
-    int64_t from_position,
-    int64_t until_position,
+    int64_t from,
+    int64_t until,
     bool unlock_after
    ) override
    {
-    client_journal.play_until(writable, until_position);
+    client_journal.set_position(from);
+    client_journal.play_until(writable, until);
     return client_journal.get_checkpoint_position();
    }
  };
