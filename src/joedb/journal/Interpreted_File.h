@@ -5,9 +5,8 @@
 
 namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// @ingroup journal
  class Interpreted_Stream_File: public Readonly_Interpreted_File
- ////////////////////////////////////////////////////////////////////////////
  {
   private:
    std::iostream &stream;
@@ -19,21 +18,22 @@ namespace joedb
    Interpreted_Stream_File(std::iostream &stream);
  };
 
- ////////////////////////////////////////////////////////////////////////////
- class Interpreted_File_Data
- ////////////////////////////////////////////////////////////////////////////
+ namespace detail
  {
-  protected:
-   std::fstream file_stream;
+  class Interpreted_File_Data
+  {
+   protected:
+    std::fstream file_stream;
 
-  public:
-   Interpreted_File_Data(const char *file_name);
-   ~Interpreted_File_Data();
- };
+   public:
+    Interpreted_File_Data(const char *file_name);
+    ~Interpreted_File_Data();
+  };
+ }
 
  /// @ingroup journal
  class Interpreted_File:
-  private Interpreted_File_Data,
+  private detail::Interpreted_File_Data,
   public Interpreted_Stream_File
  {
   public:

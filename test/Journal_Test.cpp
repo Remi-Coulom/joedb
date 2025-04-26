@@ -48,15 +48,6 @@ namespace joedb
   file.set_position(0);
 
   {
-   Readonly_Journal journal(file);
-   EXPECT_TRUE(journal.at_end_of_file());
-   EXPECT_EQ(41, journal.get_position());
-
-   journal.set_position(0);
-   EXPECT_FALSE(journal.at_end_of_file());
-  }
-
-  {
    Readonly_Memory_File readonly_file
    (
     file.get_data().data(),
@@ -412,7 +403,7 @@ namespace joedb
 
   {
    Writable_Journal journal(file);
-   journal.set_position(journal.get_checkpoint_position());
+   journal.skip_until(journal.get_checkpoint_position());
    journal.comment("uncheckpointed comment");
    journal.flush();
   }

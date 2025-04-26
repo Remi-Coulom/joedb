@@ -35,6 +35,8 @@ namespace joedb
    Record_Id record_of_last_operation;
    Field_Id field_of_last_update;
 
+   void reset_context();
+
    Type read_type();
    std::string safe_read_string();
 
@@ -86,7 +88,6 @@ namespace joedb
    {
    }
 
-   bool at_end_of_file() const;
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint_position() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == Header::size;}
@@ -96,14 +97,22 @@ namespace joedb
    void replay_log(Writable &writable);
    void replay_with_checkpoint_comments(Writable &writable);
    void rewind();
-   void set_position(int64_t position);
    void one_step(Writable &writable);
    void play_until(Writable &writable, int64_t end);
+   void skip_until(int64_t end)
+   {
+    Writable writable;
+    play_until(writable, end);
+   }
+   void rewind_until(int64_t end)
+   {
+    rewind();
+    skip_until(end);
+   }
    void play_until_checkpoint(Writable &writable)
    {
     play_until(writable, checkpoint_position);
    }
-   void seek_to_checkpoint() {set_position(checkpoint_position);}
 
    Async_Reader get_async_tail_reader(int64_t start_position) const
    {

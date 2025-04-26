@@ -20,15 +20,21 @@ void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::reset_context()
+/////////////////////////////////////////////////////////////////////////////
+{
+ table_of_last_operation = Table_Id(0);
+ record_of_last_operation = Record_Id(0);
+ field_of_last_update = Field_Id(0);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 /////////////////////////////////////////////////////////////////////////////
  file(lock.file),
  hard_index(0),
  soft_index(0),
- checkpoint_position(Header::size),
- table_of_last_operation(Table_Id(0)),
- record_of_last_operation(Record_Id(0)),
- field_of_last_update(Field_Id(0))
+ checkpoint_position(Header::size)
 {
  if (lock.size != 0)
  {
@@ -51,6 +57,8 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
   if (lock.size > 0 && lock.size < checkpoint_position)
    throw Exception("Checkpoint is bigger than file size");
  }
+
+ reset_context();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -138,13 +146,7 @@ void joedb::Readonly_Journal::rewind()
 /////////////////////////////////////////////////////////////////////////////
 {
  file.set_position(Header::size);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void joedb::Readonly_Journal::set_position(int64_t position)
-/////////////////////////////////////////////////////////////////////////////
-{
- file.set_position(position);
+ reset_context();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -156,13 +158,6 @@ void joedb::Readonly_Journal::play_until(Writable &writable, int64_t end)
   one_step(writable);
  writable.soft_checkpoint_at(get_position());
  file.flush(); // get ready for writing
-}
-
-/////////////////////////////////////////////////////////////////////////////
-bool joedb::Readonly_Journal::at_end_of_file() const
-/////////////////////////////////////////////////////////////////////////////
-{
- return get_position() >= checkpoint_position;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -17,7 +17,7 @@ namespace joedb
     stream << '\n';
    Interpreter_Writable writable(stream, db);
    Multiplexer multiplexer{writable, db};
-   journal.set_position(previous_checkpoint);
+   journal.rewind_until(previous_checkpoint);
    journal.play_until_checkpoint(multiplexer);
    stream.flush();
   }
@@ -47,7 +47,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_File_Data::Interpreted_File_Data(const char *file_name)
+ detail::Interpreted_File_Data::Interpreted_File_Data(const char *file_name)
  ////////////////////////////////////////////////////////////////////////////
  {
   constexpr auto in = std::ios::binary | std::ios::in;
@@ -57,7 +57,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_File_Data::~Interpreted_File_Data() = default;
+ detail::Interpreted_File_Data::~Interpreted_File_Data() = default;
  ////////////////////////////////////////////////////////////////////////////
 
  ////////////////////////////////////////////////////////////////////////////

@@ -25,7 +25,10 @@ namespace joedb
   friend class Writable_Journal_Client_Lock;
 
   protected:
-   void read_journal() override {journal.seek_to_checkpoint();}
+   void read_journal() override
+   {
+    journal.skip_until(journal.get_checkpoint_position());
+   }
 
   public:
    Writable_Journal_Client

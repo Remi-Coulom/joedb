@@ -11,6 +11,7 @@ namespace joedb
  {
   private:
    Writable &writable;
+   int64_t position;
 
   public:
    //////////////////////////////////////////////////////////////////////////
@@ -28,8 +29,8 @@ namespace joedb
    ) override
    {
     client_journal.replay_log(writable);
-
-    return client_journal.get_checkpoint_position();
+    position = client_journal.get_checkpoint_position();
+    return position;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -42,9 +43,12 @@ namespace joedb
     bool unlock_after
    ) override
    {
-    client_journal.set_position(from);
+    if (from != position)
+     throw Exception("pushing from wrong position");
+    client_journal.rewind_until(from);
     client_journal.play_until(writable, until);
-    return client_journal.get_checkpoint_position();
+    position = until;
+    return position;
    }
  };
 }

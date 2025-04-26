@@ -32,7 +32,7 @@ int main()
 
  int counter = 0;
 
- while (!journal.at_end_of_file())
+ while (journal.get_position() < journal.get_checkpoint_position())
  {
   journal.one_step(db);
   ++counter;
