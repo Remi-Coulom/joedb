@@ -208,7 +208,7 @@ TEST(Buffered_File, flush_and_position)
  EXPECT_EQ(1234, file.read<int>());
  EXPECT_EQ(file.get_position(), 4);
  file.flush();
- EXPECT_EQ(file.get_position(), 8);
+ EXPECT_EQ(file.get_position(), 4);
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,12 @@ namespace joedb
  {
   if (buffer_has_write_data())
    write_buffer();
-  read_buffer_size = 0;
+  else if (read_buffer_size)
+  {
+   const int64_t position = get_position();
+   read_buffer_size = 0;
+   sequential_seek(position);
+  }
   buffer.index = 0;
  }
 
