@@ -168,7 +168,7 @@ namespace joedb
    journal.soft_checkpoint();
   }
 
-  EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 1\n");
+  EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\nsoft_checkpoint\n\ninsert_into person 1\nsoft_checkpoint\n\n");
 
   Readonly_Interpreted_File file(ss);
   Readonly_Journal journal(file);

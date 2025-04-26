@@ -32,10 +32,14 @@ drop_table toto\n\
 add_field float value float32\n\
 create_table toto\n\
 drop_table toto\n\
+soft_checkpoint\n\
+\n\
 insert_vector float 1 3\n\
 update_vector float 1 value 3 0.5 0.23 0.7\n\
 insert_vector float 7 2\n\
 update_vector float 7 value 2 0.8 9\n\
+soft_checkpoint\n\
+\n\
 ";
 
  Memory_File file;

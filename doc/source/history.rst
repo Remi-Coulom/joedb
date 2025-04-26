@@ -49,7 +49,7 @@ History
 
   - Incompatibilities with previous version:
 
-    - File format changed: ``joedb_convert`` from branch ``convert_4_to_6``
+    - File format changed: ``joedb_convert`` from branch ``convert_4_to_5``
       can upgrade old file to the new format.
     - Checkpoints changed: use either ``soft_checkpoint`` or
       ``hard_checkpoint``. See :doc:`Checkpoints <checkpoints>` for details
