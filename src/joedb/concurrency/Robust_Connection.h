@@ -8,11 +8,15 @@
 
 namespace joedb
 {
+
  /// @ref Server_Connection that automatically reconnects on error
  ///
  /// @ingroup concurrency
  class Robust_Connection: public Connection
  {
+  using clock = std::chrono::steady_clock;
+  using time_point = std::chrono::time_point<clock>;
+
   private:
    const Connector &connector;
    std::ostream *log;
@@ -20,6 +24,9 @@ namespace joedb
 
    Readonly_Journal *handshake_journal = nullptr;
    bool handshake_content_check = true;
+
+   static constexpr auto period = std::chrono::seconds(2);
+   mutable time_point last_connection_time = clock::now() - period;
 
   protected:
    mutable std::unique_ptr<Server_Connection> connection;
@@ -32,9 +39,10 @@ namespace joedb
      *log << e->what() << std::endl;
     }
 
-    for (int ms = 1000; ; ms = (31 * ms + 32000) >> 5)
+    while (true)
     {
-     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+     std::this_thread::sleep_until(last_connection_time + period);
+     last_connection_time = clock::now();
 
      try
      {
@@ -63,6 +71,7 @@ namespace joedb
     connector(connector),
     log(log)
    {
+    last_connection_time = clock::now() - std::chrono::hours(1);
     reconnect(nullptr);
    }
 
