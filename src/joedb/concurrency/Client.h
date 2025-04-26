@@ -24,7 +24,7 @@ namespace joedb
     try
     {
      transaction();
-     writable_journal->soft_checkpoint();
+     do_checkpoint();
     }
     catch (...)
     {
@@ -42,6 +42,26 @@ namespace joedb
    Connection &connection;
    int64_t server_checkpoint;
 
+   bool use_valid_data = false;
+   bool use_timestamp = false;
+   bool use_hard_checkpoint = false;
+
+   //////////////////////////////////////////////////////////////////////////
+   void do_checkpoint()
+   //////////////////////////////////////////////////////////////////////////
+   {
+    if (use_valid_data)
+     writable_journal->valid_data();
+
+    if (use_timestamp)
+     writable_journal->timestamp(std::time(nullptr));
+
+    writable_journal->soft_checkpoint();
+
+    if (use_hard_checkpoint)
+     writable_journal->hard_checkpoint();
+   }
+
    //////////////////////////////////////////////////////////////////////////
    void push(bool unlock_after)
    //////////////////////////////////////////////////////////////////////////
@@ -53,13 +73,6 @@ namespace joedb
      readonly_journal.get_checkpoint_position(),
      unlock_after
     );
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   void push_and_keep_locked()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    push(false);
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -88,6 +101,15 @@ namespace joedb
     )
    {
    }
+
+   /// Automatically write valid_data at every checkpoint (default = false)
+   void set_valid_data(bool b) {use_valid_data = b;}
+
+   /// Automatically write time stamp at every checkpoint (default = false)
+   void set_timestamp(bool b) {use_timestamp = b;}
+
+   /// Use hard checkpoints (default = false)
+   void set_hard_checkpoint(bool b) {use_hard_checkpoint = b;}
 
    bool is_readonly() const
    {
@@ -184,8 +206,8 @@ namespace joedb
    void push()
    {
     JOEDB_ASSERT(is_locked());
-    client.writable_journal->soft_checkpoint();
-    client.push_and_keep_locked();
+    client.do_checkpoint();
+    client.push(false);
    }
 
    /// Confirm the transaction right before lock destruction
@@ -195,8 +217,8 @@ namespace joedb
    void push_unlock()
    {
     JOEDB_ASSERT(is_locked());
-    client.writable_journal->soft_checkpoint();
-    client.push_unlock();
+    client.do_checkpoint();
+    client.push(true);
     locked = false;
    }
 

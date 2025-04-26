@@ -3,6 +3,7 @@
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/get_time_string.h"
 #include "joedb/ui/Interpreter.h"
+#include "joedb/ui/type_io.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
@@ -81,6 +82,10 @@ namespace joedb
  db
  push
  transaction
+
+ set_valid_data <true|false>
+ set_timestamp <true|false>
+ set_hard_checkpoint <true|false>
 
 )RRR";
 
@@ -174,6 +179,18 @@ namespace joedb
    }
    else
     out << "Client is not writable, cannot run transaction\n";
+  }
+  else if (command == "set_valid_data") /////////////////////////////////////
+  {
+   client.set_valid_data(read_boolean(parameters));
+  }
+  else if (command == "set_timestamp") //////////////////////////////////////
+  {
+   client.set_timestamp(read_boolean(parameters));
+  }
+  else if (command == "set_hard_checkpoint") ////////////////////////////////
+  {
+   client.set_hard_checkpoint(read_boolean(parameters));
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);

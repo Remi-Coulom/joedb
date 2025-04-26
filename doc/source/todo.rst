@@ -36,7 +36,6 @@ For next release
 
    - joedb_pack: fill holes left by deleted elements, like write_json.
    - delete_vector
-   - use "valid_data" more, option to automatically write it at each push_unlock?
    - joedb::Database: use vector instead of map for tables and fields
 
  - Tooling:
