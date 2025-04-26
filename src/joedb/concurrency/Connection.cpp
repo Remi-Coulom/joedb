@@ -19,14 +19,12 @@ namespace joedb
  int64_t Connection::pull
  (
   bool lock_before,
-  Writable_Journal *client_journal,
+  bool write_data,
+  Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
-  if (client_journal)
-   return client_journal->get_checkpoint_position();
-  else
-   return -1;
+  return client_journal.get_checkpoint_position();
  }
 
  int64_t Connection::push

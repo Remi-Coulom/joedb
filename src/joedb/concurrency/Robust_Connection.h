@@ -95,13 +95,14 @@ namespace joedb
    int64_t pull
    (
     bool lock_before,
-    Writable_Journal *client_journal,
+    bool write_data,
+    Writable_Journal &client_journal,
     std::chrono::milliseconds wait
    ) override
    {
     ROBUSTLY_DO
     (
-     return connection->pull(lock_before, client_journal, wait)
+     return connection->pull(lock_before, write_data, client_journal, wait)
     );
    }
 

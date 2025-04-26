@@ -90,23 +90,21 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   bool lock_before,
-  Writable_Journal *client_journal,
+  bool write_data,
+  Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
   Channel_Lock lock(channel);
 
-  const char pull_type = char('D' + int(lock_before) + 2 * !!client_journal);
+  const char pull_type = char('D' + int(lock_before) + 2 * int(write_data));
 
   LOGID("pulling(" << pull_type << ")... ");
 
   buffer.index = 0;
   buffer.write<char>(pull_type);
   buffer.write<int64_t>(wait.count());
-  if (client_journal)
-   buffer.write<int64_t>(client_journal->get_checkpoint_position());
-  else
-   buffer.write<int64_t>(-1);
+  buffer.write<int64_t>(client_journal.get_checkpoint_position());
   lock.write(buffer.data, buffer.index);
 
   buffer.index = 0;
@@ -120,13 +118,13 @@ namespace joedb
   }
   server_checkpoint = buffer.read<int64_t>();
 
-  if (client_journal)
+  if (write_data)
   {
    buffer.index = 0;
-   const int64_t size = server_checkpoint - client_journal->get_checkpoint_position();
-   Async_Writer writer = client_journal->get_async_tail_writer();
+   const int64_t size = server_checkpoint - client_journal.get_checkpoint_position();
+   Async_Writer writer = client_journal.get_async_tail_writer();
    download(writer, lock, size);
-   client_journal->soft_checkpoint_at(writer.get_position());
+   client_journal.soft_checkpoint_at(writer.get_position());
   }
   else
    LOG("no data\n");

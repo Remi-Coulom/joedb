@@ -37,7 +37,8 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   bool lock_before,
-  Writable_Journal *client_journal,
+  bool write_data,
+  Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
@@ -46,8 +47,8 @@ namespace joedb
 
   server_journal.pull();
 
-  if (client_journal)
-   client_journal->pull_from(server_journal);
+  if (write_data)
+   client_journal.pull_from(server_journal);
 
   return server_journal.get_checkpoint_position();
  }
@@ -70,7 +71,8 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   bool lock_before,
-  Writable_Journal *client_journal,
+  bool write_data,
+  Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
@@ -79,8 +81,8 @@ namespace joedb
   else
    get_journal().pull();
 
-  if (client_journal)
-   client_journal->pull_from(server_journal);
+  if (write_data)
+   client_journal.pull_from(server_journal);
 
   return server_journal.get_checkpoint_position();
  }

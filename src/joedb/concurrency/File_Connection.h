@@ -26,7 +26,8 @@ namespace joedb
    int64_t pull
    (
     bool lock_before,
-    Writable_Journal *client_journal,
+    bool write_data,
+    Writable_Journal &client_journal,
     std::chrono::milliseconds wait
    ) override;
 
@@ -57,7 +58,8 @@ namespace joedb
    int64_t pull
    (
     bool lock_before,
-    Writable_Journal *client_journal,
+    bool write_data,
+    Writable_Journal &client_journal,
     std::chrono::milliseconds wait
    ) override;
 
