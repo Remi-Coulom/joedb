@@ -218,7 +218,7 @@ namespace joedb
      throw Exception("missing blob file");
     blob_file->set_position(position);
     const int64_t size = blob_file->compact_read<int64_t>();
-    return Blob(position, size);
+    return Blob(blob_file->get_position(), size);
    }
 
    //////////////////////////////////////////////////////////////////////////
