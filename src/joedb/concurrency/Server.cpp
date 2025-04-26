@@ -240,7 +240,7 @@ namespace joedb
    if (session->push_writer)
     session->push_writer->write(session->buffer.data, bytes_transferred); // ??? takes_time
 
-   session->push_remaining_size -= bytes_transferred;
+   session->push_remaining_size -= int64_t(bytes_transferred);
    session->progress_bar->print_remaining(session->push_remaining_size);
 
    push_transfer(session);

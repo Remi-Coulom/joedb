@@ -18,7 +18,7 @@ namespace joedb
    std::ostream *log;
    mutable std::unique_ptr<Channel> channel;
 
-   const Readonly_Journal *handshake_journal = nullptr;
+   Readonly_Journal *handshake_journal = nullptr;
    bool handshake_content_check = true;
 
   protected:
@@ -80,7 +80,7 @@ namespace joedb
 
    int64_t handshake
    (
-    const Readonly_Journal &client_journal,
+    Readonly_Journal &client_journal,
     bool content_check
    ) override
    {
@@ -107,7 +107,7 @@ namespace joedb
 
    int64_t push
    (
-    const Readonly_Journal &client_journal,
+    Readonly_Journal &client_journal,
     int64_t from_checkpoint,
     int64_t until_checkpoint,
     bool unlock_after

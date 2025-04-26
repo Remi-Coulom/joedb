@@ -9,7 +9,7 @@ namespace joedb
 
  int64_t Connection::handshake
  (
-  const Readonly_Journal &client_journal,
+  Readonly_Journal &client_journal,
   bool content_check
  )
  {
@@ -31,7 +31,7 @@ namespace joedb
 
  int64_t Connection::push
  (
-  const Readonly_Journal &client_journal,
+  Readonly_Journal &client_journal,
   int64_t from,
   int64_t until,
   bool unlock_after

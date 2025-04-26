@@ -7,7 +7,7 @@ namespace joedb
  int64_t Pullonly_Journal_Connection::handshake
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal &client_journal,
+  Readonly_Journal &client_journal,
   bool content_check
  )
  {
@@ -56,7 +56,7 @@ namespace joedb
  int64_t Pullonly_Journal_Connection::push
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal &client_journal,
+  Readonly_Journal &client_journal,
   const int64_t from,
   const int64_t until,
   bool unlock_after
@@ -89,7 +89,7 @@ namespace joedb
  int64_t Journal_Connection::push
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal &client_journal,
+  Readonly_Journal &client_journal,
   const int64_t from,
   const int64_t until,
   bool unlock_after

@@ -159,7 +159,7 @@ Pushes a local file to a connection. For example:
 .. code-block:: bash
 
     # Follow additions to the end of a file
-    joedb_push --follow file.joedb tail
+    joedb_push --follow file.joedb dump tail
 
 .. code-block:: bash
 

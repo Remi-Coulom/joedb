@@ -102,7 +102,6 @@ if(GTest_FOUND)
   ../src/joedb/journal/Memory_File.cpp
 
   ../test/Buffered_File_Test.cpp
-  ../test/File_View_Test.cpp
 
   ../test/Journal_Test.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
@@ -135,7 +134,6 @@ if(GTest_FOUND)
   ../test/Upgradable_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
   ../test/Buffered_File_Test.cpp
-  ../test/File_View_Test.cpp
   ../test/Interpreted_Test.cpp
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp

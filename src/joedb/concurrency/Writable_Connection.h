@@ -2,7 +2,6 @@
 #define joedb_Writable_Connection_declared
 
 #include "joedb/concurrency/Connection.h"
-#include "joedb/journal/File_View.h"
 
 namespace joedb
 {
@@ -24,13 +23,11 @@ namespace joedb
    int64_t handshake
    //////////////////////////////////////////////////////////////////////////
    (
-    const Readonly_Journal &client_journal,
+    Readonly_Journal &client_journal,
     bool contentcheck
    ) override
    {
-    File_View file_view(client_journal.get_file());
-    Readonly_Journal journal(file_view);
-    journal.replay_log(writable);
+    client_journal.replay_log(writable);
 
     return client_journal.get_checkpoint_position();
    }
@@ -39,17 +36,13 @@ namespace joedb
    int64_t push
    //////////////////////////////////////////////////////////////////////////
    (
-    const Readonly_Journal &client_journal,
+    Readonly_Journal &client_journal,
     int64_t from_position,
     int64_t until_position,
     bool unlock_after
    ) override
    {
-    File_View file_view(client_journal.get_file());
-    Readonly_Journal journal(file_view);
-    journal.set_position(from_position);
-    journal.play_until(writable, until_position);
-
+    client_journal.play_until(writable, until_position);
     return client_journal.get_checkpoint_position();
    }
  };

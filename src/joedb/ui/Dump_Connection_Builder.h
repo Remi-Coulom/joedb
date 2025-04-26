@@ -61,7 +61,7 @@ namespace joedb
    int64_t handshake
    //////////////////////////////////////////////////////////////////////////
    (
-    const Readonly_Journal &client_journal,
+    Readonly_Journal &client_journal,
     bool contentcheck
    ) override
    {
