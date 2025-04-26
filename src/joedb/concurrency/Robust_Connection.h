@@ -56,10 +56,6 @@ namespace joedb
        connection->handshake(*handshake_journal, handshake_content_check);
       return;
      }
-     catch (Content_Mismatch &e)
-     {
-      throw;
-     }
      catch (std::exception &e)
      {
       log_exception(&e);
@@ -74,10 +70,6 @@ namespace joedb
      try
      {
       return f();
-     }
-     catch (Content_Mismatch &e)
-     {
-      throw;
      }
      catch (const std::exception &e)
      {
