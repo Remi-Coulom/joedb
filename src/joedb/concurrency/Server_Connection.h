@@ -17,7 +17,10 @@ namespace joedb
    );
 
   public:
-   Server_Connection(Channel &channel): Server_Client(channel) {}
+   Server_Connection(Channel &channel, std::ostream *log = nullptr):
+    Server_Client(channel, log)
+   {
+   }
 
    size_t pread(char *data, size_t size, int64_t offset) const;
 

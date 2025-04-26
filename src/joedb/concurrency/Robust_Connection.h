@@ -50,8 +50,7 @@ namespace joedb
       connection.reset();
       channel.reset();
       channel = connector.new_channel();
-      connection = std::make_unique<Server_Connection>(*channel);
-      connection->set_log(log);
+      connection = std::make_unique<Server_Connection>(*channel, log);
       if (handshake_journal)
        connection->handshake(*handshake_journal, handshake_content_check);
       return;

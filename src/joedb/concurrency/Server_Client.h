@@ -41,12 +41,7 @@ namespace joedb
    void download(Async_Writer &writer, Channel_Lock &lock, int64_t size) const;
 
   public:
-   Server_Client(Channel &channel);
-
-   void set_log(std::ostream *stream)
-   {
-    log = stream;
-   }
+   Server_Client(Channel &channel, std::ostream *log = nullptr);
 
    void set_keep_alive_interval(std::chrono::seconds duration)
    {

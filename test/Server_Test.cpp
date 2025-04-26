@@ -128,7 +128,7 @@ namespace joedb
 
    Test_Client_Data(Buffered_File &file, Server &server):
     channel("localhost", Port_String(server).get()),
-    server_connection(channel)
+    server_connection(channel, log_to_cerr ? &std::cerr : nullptr)
    {
    }
  };
@@ -142,10 +142,6 @@ namespace joedb
     Test_Client_Data(file, server),
     Writable_Database_Client(file, server_connection)
    {
-    if (log_to_cerr)
-     server_connection.set_log(&std::cerr);
-    else
-     server_connection.set_log(nullptr);
    }
 
    Test_Client(Buffered_File &file, Test_Server &server):
