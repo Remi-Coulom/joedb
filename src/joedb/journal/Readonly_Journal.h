@@ -113,6 +113,11 @@ namespace joedb
    {
     play_until(writable, checkpoint_position);
    }
+   void skip_directly_to(int64_t position)
+   {
+    reset_context();
+    file.set_position(position);
+   }
 
    Async_Reader get_async_tail_reader(int64_t start_position) const
    {
