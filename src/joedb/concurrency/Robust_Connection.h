@@ -8,7 +8,6 @@
 
 namespace joedb
 {
-
  /// @ref Server_Connection that automatically reconnects on error
  ///
  /// @ingroup concurrency
@@ -33,11 +32,8 @@ namespace joedb
 
    void reconnect(const std::exception *e) const
    {
-    if (log && e)
-    {
-     *log << "Robust_Connection: reconnecting after error: ";
-     *log << e->what() << std::endl;
-    }
+    if (e && log)
+     *log << "Robust_Connection: " << e->what() << std::endl;
 
     while (true)
     {
@@ -58,10 +54,22 @@ namespace joedb
      catch (std::exception &e)
      {
       if (log)
-      {
-       *log << "Robust_Connection: error while reconnecting: ";
-       *log << e.what() << std::endl;
-      }
+       *log << "Robust_Connection: " << e.what() << std::endl;
+     }
+    }
+   }
+
+   template<typename F> auto try_until_success(const F &f) const
+   {
+    while (true)
+    {
+     try
+     {
+      return f();
+     }
+     catch (const std::exception &e)
+     {
+      reconnect(&e);
      }
     }
    }
@@ -71,18 +79,15 @@ namespace joedb
     connector(connector),
     log(log)
    {
-    last_connection_time = clock::now() - std::chrono::hours(1);
+    last_connection_time = clock::now() - period;
     reconnect(nullptr);
    }
 
-#define ROBUSTLY_DO(X)\
-   while (true) {try {X;} catch (const std::exception &e) {reconnect(&e);}}
-
    size_t pread(char *data, size_t size, int64_t offset) const
    {
-    ROBUSTLY_DO
-    (
-     return connection->pread(data, size, offset);
+    return try_until_success([&]()
+    {
+     return connection->pread(data, size, offset);}
     );
    }
 
@@ -92,12 +97,15 @@ namespace joedb
     bool content_check
    ) override
    {
+    const int64_t result = try_until_success([&]()
+    {
+     return connection->handshake(client_journal, content_check);
+    });
+
     handshake_journal = &client_journal;
     handshake_content_check = content_check;
-    ROBUSTLY_DO
-    (
-     return connection->handshake(client_journal, content_check)
-    );
+
+    return result;
    }
 
    int64_t pull
@@ -108,10 +116,10 @@ namespace joedb
     std::chrono::milliseconds wait
    ) override
    {
-    ROBUSTLY_DO
-    (
-     return connection->pull(lock_before, write_data, client_journal, wait)
-    );
+    return try_until_success([&]()
+    {
+     return connection->pull(lock_before, write_data, client_journal, wait);
+    });
    }
 
    int64_t push
@@ -122,16 +130,16 @@ namespace joedb
     bool unlock_after
    ) override
    {
-    ROBUSTLY_DO
-    (
+    return try_until_success([&]()
+    {
      return connection->push
      (
       client_journal,
       from_checkpoint,
       until_checkpoint,
       unlock_after
-     )
-    );
+     );
+    });
    }
 
    void unlock() override
@@ -146,7 +154,6 @@ namespace joedb
       *log << "Robust_Connection::unlock() error: " << e.what() << '\n';
     }
    }
-#undef ROBUSTLY_DO
  };
 }
 
