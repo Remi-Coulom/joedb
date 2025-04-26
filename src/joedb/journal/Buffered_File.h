@@ -81,6 +81,7 @@ namespace joedb
   public:
    Buffered_File(Open_Mode mode);
    void flush();
+   void flush_for_writing();
 
    static constexpr int64_t last_position = (1ULL << 63) - 1;
 

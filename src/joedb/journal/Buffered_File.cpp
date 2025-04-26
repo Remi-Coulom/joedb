@@ -24,13 +24,19 @@ namespace joedb
  {
   if (buffer_has_write_data())
    write_buffer();
-  else if (read_buffer_size)
-  {
-   const int64_t position = get_position();
-   read_buffer_size = 0;
-   sequential_seek(position);
-  }
+  read_buffer_size = 0;
   buffer.index = 0;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Buffered_File::flush_for_writing()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (buffer.index == read_buffer_size)
+  {
+   read_buffer_size = 0;
+   buffer.index = 0;
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

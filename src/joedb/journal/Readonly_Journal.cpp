@@ -153,11 +153,15 @@ void joedb::Readonly_Journal::rewind()
 void joedb::Readonly_Journal::play_until(Writable &writable, int64_t end)
 /////////////////////////////////////////////////////////////////////////////
 {
- writable.start_writing(get_position());
- while(get_position() < end)
-  one_step(writable);
- writable.soft_checkpoint_at(get_position());
- file.flush(); // get ready for writing
+ if (get_position() < end)
+ {
+  writable.start_writing(get_position());
+  while(get_position() < end)
+   one_step(writable);
+  writable.soft_checkpoint_at(get_position());
+ }
+
+ file.flush_for_writing();
 }
 
 /////////////////////////////////////////////////////////////////////////////
