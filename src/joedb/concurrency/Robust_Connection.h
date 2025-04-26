@@ -29,12 +29,13 @@ namespace joedb
     if (log && e)
     {
      *log << "Robust_Connection: reconnecting after error: ";
-     *log << e->what() << '\n';
-     log->flush();
+     *log << e->what() << std::endl;
     }
 
     for (int ms = 1000; ; ms = (31 * ms + 32000) >> 5)
     {
+     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+
      try
      {
       connection.reset();
@@ -50,11 +51,9 @@ namespace joedb
      {
       if (log)
       {
-       *log << "Robust_Connection: " << ms;
-       *log << "ms of sleep after error: " << e.what() << '\n';
-       log->flush();
+       *log << "Robust_Connection: error while reconnecting: ";
+       *log << e.what() << std::endl;
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(ms));
      }
     }
    }
