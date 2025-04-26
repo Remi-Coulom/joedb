@@ -2,9 +2,16 @@
 
 namespace joedb
 {
+ Content_Mismatch::Content_Mismatch(): Exception
+ (
+  "Content mismatch: the file and the connection have diverged"
+ )
+ {
+ }
+
  void Connection::content_mismatch()
  {
-  throw Exception("Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
+  throw Content_Mismatch();
  }
 
  int64_t Connection::handshake

@@ -27,13 +27,18 @@ namespace joedb
    static constexpr auto period = std::chrono::seconds(2);
    mutable time_point last_connection_time = clock::now() - period;
 
+   void log_exception(const std::exception *e) const
+   {
+    if (e && log)
+     *log << "Robust_Connection: " << e->what() << std::endl;
+   }
+
   protected:
    mutable std::unique_ptr<Server_Connection> connection;
 
    void reconnect(const std::exception *e) const
    {
-    if (e && log)
-     *log << "Robust_Connection: " << e->what() << std::endl;
+    log_exception(e);
 
     while (true)
     {
@@ -51,10 +56,13 @@ namespace joedb
        connection->handshake(*handshake_journal, handshake_content_check);
       return;
      }
+     catch (Content_Mismatch &e)
+     {
+      throw;
+     }
      catch (std::exception &e)
      {
-      if (log)
-       *log << "Robust_Connection: " << e.what() << std::endl;
+      log_exception(&e);
      }
     }
    }
@@ -66,6 +74,10 @@ namespace joedb
      try
      {
       return f();
+     }
+     catch (Content_Mismatch &e)
+     {
+      throw;
      }
      catch (const std::exception &e)
      {

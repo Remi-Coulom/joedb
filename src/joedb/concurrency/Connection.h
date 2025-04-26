@@ -8,6 +8,13 @@
 namespace joedb
 {
  /// @ingroup concurrency
+ class Content_Mismatch: public Exception
+ {
+  public:
+   Content_Mismatch();
+ };
+
+ /// @ingroup concurrency
  class Connection
  {
   protected:
