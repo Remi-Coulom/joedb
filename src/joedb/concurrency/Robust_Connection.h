@@ -24,7 +24,7 @@ namespace joedb
    Readonly_Journal *handshake_journal = nullptr;
    bool handshake_content_check = true;
 
-   static constexpr auto period = std::chrono::seconds(2);
+   static constexpr auto period = std::chrono::seconds(5);
    mutable time_point last_connection_time = clock::now() - period;
 
    void log_exception(const std::exception *e) const
@@ -82,7 +82,6 @@ namespace joedb
     connector(connector),
     log(log)
    {
-    last_connection_time = clock::now() - period;
     reconnect(nullptr);
    }
 
