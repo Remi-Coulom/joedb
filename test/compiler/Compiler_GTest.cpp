@@ -686,9 +686,8 @@ TEST(Compiler, client_hash_error)
   test::Client client(client_file, connection);
   ADD_FAILURE() << "Should have thrown\n";
  }
- catch (const joedb::Exception &e)
+ catch (const joedb::Content_Mismatch &e)
  {
-  EXPECT_STREQ(e.what(), "Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
  }
 }
 

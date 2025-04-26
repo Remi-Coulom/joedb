@@ -221,9 +221,8 @@ namespace joedb
     Test_Client client(mismatched_file, server);
     FAIL() << "This should not work";
    }
-   catch (const Exception &e)
+   catch (const joedb::Content_Mismatch &e)
    {
-    EXPECT_STREQ(e.what(), "Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
    }
   }
  }

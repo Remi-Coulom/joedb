@@ -273,9 +273,8 @@ namespace joedb
     Writable_Database_Client client(client_file, connection);
     ADD_FAILURE() << "Connection with incompatible file should have failed";
    }
-   catch (const Exception &e)
+   catch (const Content_Mismatch &e)
    {
-    EXPECT_STREQ(e.what(), "Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
    }
   }
 
@@ -407,9 +406,8 @@ namespace joedb
    Writable_Database_Client client(client_file, connection);
    ADD_FAILURE() << "connecting should have failed\n";
   }
-  catch (const Exception &e)
+  catch (const Content_Mismatch &e)
   {
-   EXPECT_STREQ(e.what(), "Content mismatch. The file and the connection have diverged, and cannot be synced by pulling or pushing.");
   }
  }
 
