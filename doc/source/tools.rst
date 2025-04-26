@@ -166,6 +166,16 @@ Pushes a local file to a connection. For example:
     # Keep a backup server updated
     joedb_push --follow database.joedb network backup_server 1234
 
+.. code-block:: bash
+
+    # Export a joedb file to sqlite
+    joedb_push database.joedb sql | sqlite3 database.sqlite
+
+.. code-block:: bash
+
+    # Compress a database
+    joedb_push database.joedb file brotli compressed.joedb
+
 .. _joedb_embed:
 
 ``joedb_embed``

@@ -822,9 +822,7 @@ namespace joedb
   try
   {
    if (!sessions.empty())
-   {
     LOG("Destroying server before sessions.\n");
-   }
   }
   catch (...)
   {

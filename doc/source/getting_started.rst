@@ -6,11 +6,9 @@ This explains how to install and use joedb.
 Compiling from source
 ---------------------
 
-You can get the source code of from `joedb's github page
-<https://github.com/Remi-Coulom/joedb/>`_. You can also clone the repository to
-get the most recent version: ``git clone
-https://github.com/Remi-Coulom/joedb.git``. The dev branch is tested before
-merging into master, so the master branch should be rather safe to use.
+The source code of joedb can be found on `joedb's github page
+<https://github.com/Remi-Coulom/joedb/>`_. The master branch can be cloned with
+``git clone https://github.com/Remi-Coulom/joedb.git``.
 
 Joedb is written in portable C++ 17, and uses `CMake <https://cmake.org/>`_
 for its build system, and `vcpkg <https://vcpkg.io/en/>`_ for its
