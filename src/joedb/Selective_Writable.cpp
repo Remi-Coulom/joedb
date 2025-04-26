@@ -112,18 +112,32 @@ namespace joedb
    writable.insert_into(table_id, record_id);
  }
 
- void Selective_Writable::insert_vector(Table_Id table_id,
-                    Record_Id record_id,
-                    size_t size)
+ void Selective_Writable::delete_from(Table_Id table_id, Record_Id record_id)
+ {
+  if (mode & data)
+   writable.delete_from(table_id, record_id);
+ }
+
+ void Selective_Writable::insert_vector
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  size_t size
+ )
  {
   if (mode & data)
    writable.insert_vector(table_id, record_id, size);
  }
 
- void Selective_Writable::delete_from(Table_Id table_id, Record_Id record_id)
+ void Selective_Writable::delete_vector
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  size_t size
+ )
  {
   if (mode & data)
-   writable.delete_from(table_id, record_id);
+   writable.delete_vector(table_id, record_id, size);
  }
 
  #define TYPE_MACRO(type, return_type, type_id, R, W)\

@@ -59,10 +59,11 @@ namespace joedb
    out << R"RRR(Data manipulation
 ~~~~~~~~~~~~~~~~~
  insert_into <table_name> <record_id>
+ delete_from <table_name> <record_id>
  insert_vector <table_name> <record_id> <size>
+ delete_vector <table_name> <record_id> <size>
  update <table_name> <record_id> <field_name> <value>
  update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
- delete_from <table_name> <record_id>
 
 )RRR";
 
@@ -71,9 +72,9 @@ namespace joedb
   else if (command == "insert_into") ///////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-
    Record_Id record_id = Record_Id(0);
    parameters >> record_id;
+
    if (record_id == Record_Id(0))
     record_id = readable.get_last_record_id(table_id) + 1;
 
@@ -86,6 +87,14 @@ namespace joedb
       throw Exception("failed parsing value");
     }
   }
+  else if (command == "delete_from") ////////////////////////////////////////
+  {
+   const Table_Id table_id = parse_table(parameters, readable);
+   Record_Id record_id = Record_Id(0);
+   parameters >> record_id;
+
+   writable.delete_from(table_id, record_id);
+  }
   else if (command == "insert_vector") /////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
@@ -93,6 +102,14 @@ namespace joedb
    size_t size = 0;
    parameters >> record_id >> size;
    writable.insert_vector(table_id, record_id, size);
+  }
+  else if (command == "delete_vector") /////////////////////////////////////
+  {
+   const Table_Id table_id = parse_table(parameters, readable);
+   Record_Id record_id = Record_Id(0);
+   size_t size = 0;
+   parameters >> record_id >> size;
+   writable.delete_vector(table_id, record_id, size);
   }
   else if (command == "update") ////////////////////////////////////////////
   {
@@ -137,13 +154,6 @@ namespace joedb
      #include "joedb/TYPE_MACRO.h"
     }
    }
-  }
-  else if (command == "delete_from") ////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = Record_Id(0);
-   parameters >> record_id;
-   writable.delete_from(table_id, record_id);
   }
   else
    return Status::not_found;

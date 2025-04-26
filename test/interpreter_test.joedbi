@@ -112,6 +112,9 @@ insert_into azersdf 1
 insert_vector azersdf 1 1
 delete_from azersdf 1
 
+insert_vector float 6 20
+delete_vector float 11 10
+
 dump
 
 quit

@@ -257,7 +257,8 @@ namespace joedb::generator
     out << "   void delete_vector_of_" << tname << "(id_of_" << tname << " v, size_t size)\n";
     out << "   {\n";
     out << "    for (size_t i = size; i > 0;)\n";
-    out << "     delete_" << tname << "(v[--i]);\n";
+    out << "     internal_delete_" << tname << "(v[--i].get_record_id());\n";
+    out << "    journal.delete_vector(Table_Id(" << tid << "), v.get_record_id(), size);\n";
     out << "   }\n\n";
    }
 

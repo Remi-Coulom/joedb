@@ -149,10 +149,11 @@ Displaying data
 Data manipulation
 ~~~~~~~~~~~~~~~~~
  insert_into <table_name> <record_id>
+ delete_from <table_name> <record_id>
  insert_vector <table_name> <record_id> <size>
+ delete_vector <table_name> <record_id> <size>
  update <table_name> <record_id> <field_name> <value>
  update_vector <table_name> <record_id> <field_name> <N> <v_1> ... <v_N>
- delete_from <table_name> <record_id>
 
 Data definition
 ~~~~~~~~~~~~~~~
@@ -302,6 +303,9 @@ Line 112: insert_vector azersdf 1 1
 Exception caught: No such table: azersdf
 Line 113: delete_from azersdf 1
 OK: 
+OK: insert_vector float 6 20
+OK: delete_vector float 11 10
+OK: 
 create_table all_types
 create_table float
 create_table toto
@@ -326,12 +330,23 @@ update all_types 1 f 3.14
 update all_types 1 d 3.14159
 update all_types 1 o 42
 update all_types 1 oulala 12345
-insert_vector float 1 5
+insert_vector float 1 10
+insert_vector float 21 5
 update float 1 value 0.1
 update float 2 value 0.2
 update float 3 value 0.3
 update float 4 value 0.4
 update float 5 value 0.5
+update float 6 value 0
+update float 7 value 0
+update float 8 value 0
+update float 9 value 0
+update float 10 value 0
+update float 21 value 0
+update float 22 value 0
+update float 23 value 0
+update float 24 value 0
+update float 25 value 0
 insert_vector toto 3 1
 insert_vector toto 5 1
 update toto 3 value "toto"

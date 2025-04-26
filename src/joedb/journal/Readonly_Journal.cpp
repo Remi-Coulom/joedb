@@ -228,6 +228,14 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   }
   break;
 
+  case operation_t::delete_from:
+  {
+   const Table_Id table_id = file.read_strong_type<Table_Id>();
+   const Record_Id record_id = file.read_strong_type<Record_Id>();
+   writable.delete_from(table_id, record_id);
+  }
+  break;
+
   case operation_t::insert_vector:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
@@ -239,16 +247,17 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   }
   break;
 
-  case operation_t::append:
-   writable.insert_into(table_of_last_operation, ++record_of_last_operation);
-  break;
-
-  case operation_t::delete_from:
+  case operation_t::delete_vector:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
    const Record_Id record_id = file.read_strong_type<Record_Id>();
-   writable.delete_from(table_id, record_id);
+   const size_t size = file.compact_read<size_t>();
+   writable.delete_vector(table_id, record_id, size);
   }
+  break;
+
+  case operation_t::append:
+   writable.insert_into(table_of_last_operation, ++record_of_last_operation);
   break;
 
   #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\

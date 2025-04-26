@@ -58,10 +58,21 @@ namespace joedb
    // data events
    //
    void insert_into(Table_Id table_id, Record_Id record_id) override;
-   void insert_vector(Table_Id table_id,
-                      Record_Id record_id,
-                      size_t size) override;
    void delete_from(Table_Id table_id, Record_Id record_id) override;
+
+   void insert_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) override;
+
+   void delete_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id(Table_Id table_id,\

@@ -47,13 +47,21 @@ namespace joedb
    virtual void flush() {}
 
    virtual void insert_into(Table_Id table_id, Record_Id record_id) {}
+   virtual void delete_from(Table_Id table_id, Record_Id record_id) {}
+
    virtual void insert_vector
    (
     Table_Id table_id,
     Record_Id record_id,
     size_t size
-   ) {}
-   virtual void delete_from(Table_Id table_id, Record_Id record_id) {}
+   );
+
+   virtual void delete_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   );
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual void update_##type_id\

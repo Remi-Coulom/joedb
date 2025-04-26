@@ -35,7 +35,6 @@ For next release
      - option to add custom member functions
 
    - joedb_pack: fill holes left by deleted elements, like write_json.
-   - delete_vector
    - joedb::Database: use vector instead of map for tables and fields
 
  - Tooling:

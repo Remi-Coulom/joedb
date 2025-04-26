@@ -79,3 +79,5 @@ add_field toto value string
 insert_vector toto 3 1
 insert_vector toto 5 1
 update toto 3 value "toto"
+insert_vector float 6 20
+delete_vector float 11 10

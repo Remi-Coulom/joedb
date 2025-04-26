@@ -28,4 +28,26 @@ namespace joedb
  {\
  }
  #include "joedb/TYPE_MACRO.h"
+
+ void Writable::insert_vector
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  size_t size
+ )
+ {
+  for (size_t i = 0; i < size; i++)
+   insert_into(table_id, record_id + i);
+ }
+
+ void Writable::delete_vector
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  size_t size
+ )
+ {
+  for (size_t i = 0; i < size; i++)
+   delete_from(table_id, record_id + size - 1 - i);
+ }
 }

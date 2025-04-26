@@ -135,6 +135,14 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Raw_Dump_Writable::delete_from(Table_Id table_id, Record_Id record_id)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  out << "delete_from " << table_id << ' ';
+  out << record_id << '\n';
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Raw_Dump_Writable::insert_vector
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -148,11 +156,16 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Raw_Dump_Writable::delete_from(Table_Id table_id, Record_Id record_id)
+ void Raw_Dump_Writable::delete_vector
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  size_t size
+ )
  {
-  out << "delete_from " << table_id << ' ';
-  out << record_id << '\n';
+  out << "delete_vector " << table_id << ' ';
+  out << record_id << ' ' << size << '\n';
  }
 
  #define TYPE_MACRO(type, return_type, type_id, R, W)\

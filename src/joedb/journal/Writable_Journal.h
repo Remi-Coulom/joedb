@@ -84,7 +84,9 @@ namespace joedb
    void comment(const std::string &comment) final;
    void timestamp(int64_t timestamp) final;
    void valid_data() final;
+
    void insert_into(Table_Id table_id, Record_Id record_id) final;
+   void delete_from(Table_Id table_id, Record_Id record_id) final;
 
    void insert_vector
    (
@@ -93,7 +95,12 @@ namespace joedb
     size_t size
    ) final;
 
-   void delete_from(Table_Id table_id, Record_Id record_id) final;
+   void delete_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) final;
 
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    void update_##type_id\

@@ -79,3 +79,5 @@ add_field 7 "value" string
 insert_vector 7 3 1
 insert_vector 7 5 1
 update_string 7 3 1 "toto"
+insert_vector 6 6 20
+delete_vector 6 11 10

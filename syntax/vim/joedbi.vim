@@ -17,6 +17,7 @@ syn keyword joedbi_keyword json echo write_blob read_blob nextgroup=joedbi_const
 syn keyword joedbi_keyword update_vector nextgroup=joedbi_table_integer_field_constant skipwhite
 
 syn keyword joedbi_keyword insert_vector nextgroup=joedbi_table_integer_integer skipwhite
+syn keyword joedbi_keyword delete_vector nextgroup=joedbi_table_integer_integer skipwhite
 syn match joedbi_table_integer_integer '[a-zA-Z_]\w*' contained nextgroup=joedbi_integer_integer skipwhite
 syn match joedbi_integer_integer '\d\+' contained nextgroup=joedbi_integer skipwhite
 

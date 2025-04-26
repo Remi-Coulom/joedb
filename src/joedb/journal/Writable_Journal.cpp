@@ -242,6 +242,19 @@ void joedb::Writable_Journal::insert_into
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Writable_Journal::delete_from
+/////////////////////////////////////////////////////////////////////////////
+(
+ Table_Id table_id,
+ Record_Id record_id
+)
+{
+ file.write<operation_t>(operation_t::delete_from);
+ file.compact_write<>(to_underlying(table_id));
+ file.compact_write<>(to_underlying(record_id));
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::Writable_Journal::insert_vector
 /////////////////////////////////////////////////////////////////////////////
 (
@@ -260,16 +273,18 @@ void joedb::Writable_Journal::insert_vector
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void joedb::Writable_Journal::delete_from
+void joedb::Writable_Journal::delete_vector
 /////////////////////////////////////////////////////////////////////////////
 (
  Table_Id table_id,
- Record_Id record_id
+ Record_Id record_id,
+ size_t size
 )
 {
- file.write<operation_t>(operation_t::delete_from);
+ file.write<operation_t>(operation_t::delete_vector);
  file.compact_write<>(to_underlying(table_id));
  file.compact_write<>(to_underlying(record_id));
+ file.compact_write<>(size);
 }
 
 /////////////////////////////////////////////////////////////////////////////
