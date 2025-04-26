@@ -381,6 +381,8 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::blob:
   {
+   if (file.blob_file)
+    throw Exception("Use in-place conversion for files that contain blobs. Converting files that contain both blobs and a blob field is not supported. File a github issue if you need it.");
    const int64_t size = file.compact_read<int64_t>();
    writable.on_blob(Blob(get_position(), size));
 
