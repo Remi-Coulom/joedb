@@ -102,14 +102,14 @@ namespace joedb::generator
    /// @endcode
    /// The transaction function locks and pulls the connection before
    /// executing the lambda, pushes and unlocks it after.
-   template<typename F> void transaction
+   template<typename F> auto transaction
    (
     F transaction
    )
    {
-    joedb::Client::transaction([&]()
+    return joedb::Client::transaction([&]()
     {
-     transaction(db);
+     return transaction(db);
     });
    }
  };

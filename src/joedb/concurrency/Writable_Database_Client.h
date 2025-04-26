@@ -53,11 +53,11 @@ namespace joedb
     return database;
    }
 
-   template<typename F> void transaction(F transaction)
+   template<typename F> auto transaction(F transaction)
    {
-    Client::transaction([this, &transaction]()
+    return Client::transaction([this, &transaction]()
     {
-     transaction(database, multiplexer);
+     return transaction(database, multiplexer);
     });
    }
  };

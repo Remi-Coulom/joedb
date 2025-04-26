@@ -4,6 +4,8 @@
 #include "joedb/concurrency/Connection.h"
 #include "joedb/error/Destructor_Logger.h"
 
+#include <optional>
+
 namespace joedb
 {
  /// Handle concurrent access to a file with a joedb::Connection
@@ -15,24 +17,47 @@ namespace joedb
   protected:
    virtual void read_journal() = 0;
 
-   template<typename F> void transaction(F transaction)
+   template<typename F> auto transaction(F transaction)
    {
     Journal_Lock lock(*writable_journal);
 
     start_transaction();
 
-    try
-    {
-     transaction();
-     do_checkpoint();
-    }
-    catch (...)
-    {
-     connection.unlock();
-     throw;
-    }
+    using T = decltype(transaction());
 
-    push_unlock();
+    if constexpr (std::is_void<T>::value)
+    {
+     try
+     {
+      transaction();
+      do_checkpoint();
+     }
+     catch (...)
+     {
+      connection.unlock();
+      throw;
+     }
+
+     push_unlock();
+    }
+    else
+    {
+     std::optional<T> result;
+
+     try
+     {
+      result = transaction();
+      do_checkpoint();
+     }
+     catch (...)
+     {
+      connection.unlock();
+      throw;
+     }
+
+     push_unlock();
+     return result.value();
+    }
    }
 
   private:

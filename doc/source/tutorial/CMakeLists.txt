@@ -81,3 +81,7 @@ joedb_add_executable(step_by_step_replay
  src/step_by_step_replay.cpp
  src/tutorial/readonly.cpp
 )
+
+joedb_add_executable(server_file_tutorial
+ src/server_file_tutorial.cpp
+)

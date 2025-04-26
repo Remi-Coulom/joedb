@@ -8,8 +8,8 @@ History
 
   - New features:
 
-    - :joedb:`Robust_Connection` is like :joedb:`Server_Connection`, but will
-      automatically reconnect in case of error.
+    - :joedb:`Robust_Connection` is like :joedb:`Server_Connection`, but
+      automatically reconnects after an error.
     - :joedb:`Server_File` allows accessing a remote database without
       downloading a local replica. This is particularly convenient for large
       blob databases.

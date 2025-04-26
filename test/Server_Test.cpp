@@ -1004,11 +1004,12 @@ namespace joedb
   Network_Connector connector("localhost", Port_String(server).get());
   Server_File file(connector);
   Writable_Journal_Client client(file, file);
-  joedb::Blob blob;
-  client.transaction([&](joedb::Writable_Journal &journal)
+
+  const auto blob = client.transaction([](joedb::Writable_Journal &journal)
   {
-   blob = journal.write_blob_data("blob_test");
+   return journal.write_blob_data("blob_test");
   });
+
   EXPECT_EQ(file.read_blob_data(blob), "blob_test");
  }
 }

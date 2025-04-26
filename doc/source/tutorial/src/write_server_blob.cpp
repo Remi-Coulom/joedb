@@ -47,10 +47,9 @@ static int write_server_blob(int argc, char **argv)
  // Write blobs with a transaction: lock and unlock for each write
  for (int i = 3; --i >= 0;)
  {
-  joedb::Blob blob;
-  client.transaction([&blob, argv](joedb::Writable_Journal &journal)
+  const auto blob = client.transaction([argv](joedb::Writable_Journal &journal)
   {
-   blob = journal.write_blob_data(argv[2]);
+   return journal.write_blob_data(argv[2]);
   });
   std::cout << "wrote blob with transaction: " << blob.get_position() << '\n';
   std::cout << "blob: " << server_file.read_blob_data(blob) << '\n';
