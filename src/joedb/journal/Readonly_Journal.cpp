@@ -352,7 +352,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
     std::string s(size, 0);
     if (size > 0)
      file.read_data(s.data(), size);
-    writable.write_blob_data(s);
+    writable.write_blob(s);
    }
    else
     file.ignore(size);

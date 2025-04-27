@@ -1,4 +1,4 @@
-#include "joedb/concurrency/Network_Channel.h"
+#include "joedb/concurrency/Network_Connector.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
@@ -12,10 +12,10 @@ int main()
 
  const auto blob = client.transaction([](joedb::Writable_Journal &journal)
  {
-  return journal.write_blob_data("blob");
+  return journal.write_blob("blob");
  });
 
- std::cout << server_file.read_blob_data(blob) << '\n';
+ std::cout << server_file.read_blob(blob) << '\n';
 
  return 0;
 }

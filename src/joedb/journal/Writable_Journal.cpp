@@ -383,7 +383,7 @@ void joedb::Writable_Journal::update_vector_##type_id\
 #include "joedb/TYPE_MACRO.h"
 
 /////////////////////////////////////////////////////////////////////////////
-joedb::Blob joedb::Writable_Journal::write_blob_data
+joedb::Blob joedb::Writable_Journal::write_blob
 /////////////////////////////////////////////////////////////////////////////
 (
  const std::string &data

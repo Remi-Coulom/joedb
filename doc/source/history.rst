@@ -8,6 +8,7 @@ History
 
   - New features:
 
+    - Transactions can return a value.
     - :joedb:`Robust_Connection` is like :joedb:`Server_Connection`, but
       automatically reconnects after an error.
     - :joedb:`Server_File` allows accessing a remote database without
@@ -56,6 +57,8 @@ History
     - ``Generic_File`` was renamed to :joedb:`Buffered_File`
     - ``Generic_File_Database`` was renamed to :joedb:`Writable_Database`
     - ``Local_Client`` was renamed to :joedb:`File_Client`
+    - ``read_blob_data`` was renamed to ``read_blob``
+    - ``write_blob_data`` was renamed to ``write_blob``
     - The order of parameters of the Client's constructor are swapped: the file
       is first, then the connection.
     - The ``is_end_of_file()`` function was removed. Trying to read past the

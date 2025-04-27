@@ -206,7 +206,7 @@ namespace joedb
  #include "joedb/TYPE_MACRO.h"
 
  ////////////////////////////////////////////////////////////////////////////
- Blob Raw_Dump_Writable::write_blob_data(const std::string &data)
+ Blob Raw_Dump_Writable::write_blob(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "write_blob ";

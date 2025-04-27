@@ -11,14 +11,14 @@ TEST(Compiler, blob)
  joedb::Memory_File file;
 
  //
- // A blob is created with the write_blob_data function
+ // A blob is created with the write_blob function
  //
  {
   blob::Writable_Database db(file);
   const auto person = db.new_person();
-  const joedb::Blob name_blob = db.write_blob_data("Jacques");
+  const joedb::Blob name_blob = db.write_blob("Jacques");
   db.set_name(person, name_blob);
-  EXPECT_EQ("Jacques", db.read_blob_data(name_blob));
+  EXPECT_EQ("Jacques", db.read_blob(name_blob));
   db.set_city(person, "Paris");
   db.soft_checkpoint();
  }
@@ -33,7 +33,7 @@ TEST(Compiler, blob)
   const auto person = db.get_person_table().first();
   EXPECT_EQ("Paris", db.get_city(person));
   const joedb::Blob name_blob = db.get_name(person);
-  EXPECT_EQ("Jacques", file.read_blob_data(name_blob));
+  EXPECT_EQ("Jacques", file.read_blob(name_blob));
  }
 
  //
@@ -44,6 +44,6 @@ TEST(Compiler, blob)
 
   const auto person = db.get_person_table().first();
   const joedb::Blob name_blob = db.get_name(person);
-  EXPECT_EQ("Jacques", db.read_blob_data(name_blob));
+  EXPECT_EQ("Jacques", db.read_blob(name_blob));
  }
 }

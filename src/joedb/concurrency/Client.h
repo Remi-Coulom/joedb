@@ -4,8 +4,6 @@
 #include "joedb/concurrency/Connection.h"
 #include "joedb/error/Destructor_Logger.h"
 
-#include <optional>
-
 namespace joedb
 {
  /// Handle concurrent access to a file with a joedb::Connection
@@ -42,7 +40,7 @@ namespace joedb
     }
     else
     {
-     std::optional<T> result;
+     T result;
 
      try
      {
@@ -56,7 +54,7 @@ namespace joedb
      }
 
      push_unlock();
-     return result.value();
+     return result;
     }
    }
 
@@ -151,9 +149,9 @@ namespace joedb
     return get_journal().get_checkpoint_position();
    }
 
-   std::string read_blob_data(Blob blob) const
+   std::string read_blob(Blob blob) const
    {
-    return get_journal().get_file().read_blob_data(blob);
+    return get_journal().get_file().read_blob(blob);
    }
 
    int64_t get_server_checkpoint() const

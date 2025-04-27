@@ -522,22 +522,22 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Journal, write_blob_data)
+ TEST(Journal, write_blob)
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File file;
   Writable_Journal journal(file);
 
   {
-   const Blob blob = journal.write_blob_data("Hello");
+   const Blob blob = journal.write_blob("Hello");
    journal.flush();
-   EXPECT_EQ(journal.get_file().read_blob_data(blob), "Hello");
+   EXPECT_EQ(journal.get_file().read_blob(blob), "Hello");
   }
 
   {
-   const Blob blob = journal.write_blob_data("");
+   const Blob blob = journal.write_blob("");
    journal.flush();
-   EXPECT_EQ(journal.get_file().read_blob_data(blob), "");
+   EXPECT_EQ(journal.get_file().read_blob(blob), "");
   }
  }
 }

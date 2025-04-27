@@ -75,7 +75,7 @@ namespace joedb
    #include "joedb/TYPE_MACRO.h"
 
    bool wants_blob_data() const final {return true;}
-   Blob write_blob_data(const std::string &data) final;
+   Blob write_blob(const std::string &data) final;
 
    ~Raw_Dump_Writable();
  };

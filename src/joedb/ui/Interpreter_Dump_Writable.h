@@ -95,7 +95,7 @@ namespace joedb
 
    bool wants_blob_data() const final {return blob_wanted;}
    void on_blob(Blob blob) final;
-   Blob write_blob_data(const std::string &data) final;
+   Blob write_blob(const std::string &data) final;
 
    ~Interpreter_Writable();
  };

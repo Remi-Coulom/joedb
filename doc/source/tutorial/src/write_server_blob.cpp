@@ -1,5 +1,5 @@
 #include "joedb/ui/main_exception_catcher.h"
-#include "joedb/concurrency/Network_Channel.h"
+#include "joedb/concurrency/Network_Connector.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
@@ -35,10 +35,10 @@ static int write_server_blob(int argc, char **argv)
 
   for (int i = 3; --i >= 0;)
   {
-   const joedb::Blob blob = lock.get_journal().write_blob_data(argv[2]);
+   const joedb::Blob blob = lock.get_journal().write_blob(argv[2]);
    lock.push();
    std::cout << "wrote blob with lock: " << blob.get_position() << '\n';
-   std::cout << "blob: " << server_file.read_blob_data(blob) << '\n';
+   std::cout << "blob: " << server_file.read_blob(blob) << '\n';
   }
 
   lock.unlock();
@@ -49,10 +49,10 @@ static int write_server_blob(int argc, char **argv)
  {
   const auto blob = client.transaction([argv](joedb::Writable_Journal &journal)
   {
-   return journal.write_blob_data(argv[2]);
+   return journal.write_blob(argv[2]);
   });
   std::cout << "wrote blob with transaction: " << blob.get_position() << '\n';
-  std::cout << "blob: " << server_file.read_blob_data(blob) << '\n';
+  std::cout << "blob: " << server_file.read_blob(blob) << '\n';
  }
 
  return 0;

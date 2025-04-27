@@ -222,7 +222,7 @@ namespace joedb
  )\
  {\
   write_update("update ", table_id, record_id, field_id);\
-  write_##type_id(out, value);\
+  joedb::write_##type_id(out, value);\
   out << '\n';\
  }\
  void Interpreter_Writable::update_vector_##type_id\
@@ -239,7 +239,7 @@ namespace joedb
   for (size_t i = 0; i < size; i++)\
   {\
    out << ' ';\
-   write_##type_id(out, value[i]);\
+   joedb::write_##type_id(out, value[i]);\
   }\
   out << '\n';\
  }
@@ -250,12 +250,12 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "# Blob: ";
-  write_blob(out, blob);
+  joedb::write_blob(out, blob);
   out << '\n';
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Blob Interpreter_Writable::write_blob_data(const std::string &data)
+ Blob Interpreter_Writable::write_blob(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "write_blob ";

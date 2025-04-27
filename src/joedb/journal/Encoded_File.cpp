@@ -27,7 +27,7 @@ namespace joedb
  void Encoded_File::write_blob(const char *buffer, size_t size, int64_t offset) const
  //////////////////////////////////////////////////////////////////////////
  {
-  const Blob blob = db.write_blob_data(codec.encode(buffer, size));
+  const Blob blob = db.write_blob(codec.encode(buffer, size));
   db.new_buffer(blob, int64_t(size), offset);
   db.soft_checkpoint();
  }

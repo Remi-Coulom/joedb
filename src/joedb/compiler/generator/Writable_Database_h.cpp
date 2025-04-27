@@ -123,14 +123,14 @@ namespace joedb::generator
 
    const joedb::Readonly_Journal &get_journal() const {return journal;}
 
-   std::string read_blob_data(joedb::Blob blob) const
+   std::string read_blob(joedb::Blob blob) const
    {
-    return journal.get_file().read_blob_data(blob);
+    return journal.get_file().read_blob(blob);
    }
 
-   joedb::Blob write_blob_data(const std::string &data) final
+   joedb::Blob write_blob(const std::string &data) final
    {
-    return journal.write_blob_data(data);
+    return journal.write_blob(data);
    }
 
    int64_t ahead_of_checkpoint() const

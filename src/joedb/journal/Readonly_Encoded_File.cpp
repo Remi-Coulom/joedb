@@ -37,7 +37,7 @@ namespace joedb
 
      decoder.decode
      (
-      blob_reader.read_blob_data(db.get_data(b)),
+      blob_reader.read_blob(db.get_data(b)),
       read_buffer.data(),
       size_t(db.get_size(b))
      );

@@ -291,7 +291,7 @@ namespace joedb
      set_position(get_position() + n);
    }
 
-   std::string read_blob_data(Blob blob) const;
+   std::string read_blob(Blob blob) const;
  };
 }
 

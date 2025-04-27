@@ -6,6 +6,7 @@
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/IO_Context_Wrapper.h"
+#include "joedb/concurrency/Network_Connector.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
 
@@ -930,7 +931,7 @@ namespace joedb
    Test_Client client(file, server);
    client.transaction([&blob](const Readable &, Writable &writable)
    {
-    blob = writable.write_blob_data("glouglou");
+    blob = writable.write_blob("glouglou");
    });
   }
 
@@ -939,14 +940,14 @@ namespace joedb
   {
    Network_Connector connector("localhost", Port_String(server).get());
    Server_File file(connector);
-   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
-   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
+   EXPECT_EQ(file.read_blob(blob), "glouglou");
+   EXPECT_EQ(file.read_blob(blob), "glouglou");
 
    {
     Test_Client client(file, server);
     client.transaction([&blob2](const Readable &, Writable &writable)
     {
-     blob2 = writable.write_blob_data("glagla");
+     blob2 = writable.write_blob("glagla");
     });
    }
   }
@@ -954,8 +955,8 @@ namespace joedb
   {
    Network_Connector connector("localhost", Port_String(server).get());
    Server_File file(connector);
-   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
-   EXPECT_EQ(file.read_blob_data(blob2), "glagla");
+   EXPECT_EQ(file.read_blob(blob), "glouglou");
+   EXPECT_EQ(file.read_blob(blob2), "glagla");
   }
 
   {
@@ -964,7 +965,7 @@ namespace joedb
 
    try
    {
-    file.read_blob_data(Blob{1, 1234});
+    file.read_blob(Blob{1, 1234});
     FAIL() << "This should have failed";
    }
    catch (const std::exception &e)
@@ -979,7 +980,7 @@ namespace joedb
 
    try
    {
-    file.read_blob_data(Blob{123456789, 123});
+    file.read_blob(Blob{123456789, 123});
     FAIL() << "This should have failed";
    }
    catch (const std::exception &e)
@@ -991,8 +992,8 @@ namespace joedb
   {
    Network_Connector connector("localhost", Port_String(server).get());
    Server_File file(connector);
-   EXPECT_EQ(file.read_blob_data(blob), "glouglou");
-   EXPECT_EQ(file.read_blob_data(blob2), "glagla");
+   EXPECT_EQ(file.read_blob(blob), "glouglou");
+   EXPECT_EQ(file.read_blob(blob2), "glagla");
   }
  }
 
@@ -1007,9 +1008,9 @@ namespace joedb
 
   const auto blob = client.transaction([](joedb::Writable_Journal &journal)
   {
-   return journal.write_blob_data("blob_test");
+   return journal.write_blob("blob_test");
   });
 
-  EXPECT_EQ(file.read_blob_data(blob), "blob_test");
+  EXPECT_EQ(file.read_blob(blob), "blob_test");
  }
 }

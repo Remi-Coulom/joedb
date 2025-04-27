@@ -261,7 +261,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Blob Multiplexer::write_blob_data(const std::string &data)
+ Blob Multiplexer::write_blob(const std::string &data)
  ////////////////////////////////////////////////////////////////////////////
  {
   Blob result;
@@ -269,7 +269,7 @@ namespace joedb
   for (auto w: writables)
   {
    if (w.get().wants_blob_data())
-    result = w.get().write_blob_data(data);
+    result = w.get().write_blob(data);
   }
 
   return result;

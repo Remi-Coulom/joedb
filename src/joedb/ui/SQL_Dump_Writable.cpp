@@ -262,7 +262,7 @@ namespace joedb
   write_update(table_id, field_id);
 
   if (blob_reader)
-   write_sql_string(out, blob_reader->read_blob_data(value));
+   write_sql_string(out, blob_reader->read_blob(value));
   else
    out << "\"BLOB\"";
 
