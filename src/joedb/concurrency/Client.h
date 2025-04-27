@@ -36,11 +36,11 @@ namespace joedb
       throw;
      }
 
-     push_unlock();
+     push(Unlock_Action::unlock_after);
     }
     else
     {
-     const T result = [this, &transaction]()
+     const T result = [&]()
      {
       try
       {
@@ -55,7 +55,7 @@ namespace joedb
       }
      } ();
 
-     push_unlock();
+     push(Unlock_Action::unlock_after);
      return result;
     }
    }
@@ -88,7 +88,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push(bool unlock_after)
+   void push(Unlock_Action unlock_action)
    //////////////////////////////////////////////////////////////////////////
    {
     server_checkpoint = connection.push
@@ -96,7 +96,7 @@ namespace joedb
      readonly_journal,
      server_checkpoint,
      readonly_journal.get_checkpoint(),
-     unlock_after
+     unlock_action
     );
    }
 
@@ -104,7 +104,13 @@ namespace joedb
    void start_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    server_checkpoint = connection.pull(true, true, *writable_journal);
+    server_checkpoint = connection.pull
+    (
+     Lock_Action::lock_before,
+     Data_Transfer::with_data,
+     *writable_journal
+    );
+
     read_journal();
    }
 
@@ -115,7 +121,7 @@ namespace joedb
    (
     Readonly_Journal &journal,
     Connection &connection,
-    bool content_check = true
+    Content_Check content_check = Content_Check::quick
    ):
     readonly_journal(journal),
     writable_journal(journal.get_writable_journal()),
@@ -175,7 +181,14 @@ namespace joedb
     if (writable_journal)
     {
      const Journal_Lock lock(*writable_journal);
-     server_checkpoint = connection.pull(false, true, *writable_journal, wait);
+
+     server_checkpoint = connection.pull
+     (
+      Lock_Action::no_locking,
+      Data_Transfer::with_data,
+      *writable_journal,
+      wait
+     );
     }
     else
      readonly_journal.pull();
@@ -183,11 +196,6 @@ namespace joedb
     read_journal();
 
     return get_checkpoint() - old_checkpoint;
-   }
-
-   void push_unlock()
-   {
-    push(true);
    }
 
    virtual ~Client();
@@ -232,7 +240,7 @@ namespace joedb
    {
     JOEDB_ASSERT(is_locked());
     client.do_checkpoint();
-    client.push(false);
+    client.push(Unlock_Action::keep_locked);
    }
 
    /// Confirm the transaction right before lock destruction
@@ -243,7 +251,7 @@ namespace joedb
    {
     JOEDB_ASSERT(is_locked());
     client.do_checkpoint();
-    client.push(true);
+    client.push(Unlock_Action::unlock_after);
     locked = false;
    }
 
