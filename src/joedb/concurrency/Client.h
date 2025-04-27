@@ -40,18 +40,20 @@ namespace joedb
     }
     else
     {
-     T result;
-
-     try
+     const T result = [this, &transaction]()
      {
-      result = transaction();
-      do_checkpoint();
-     }
-     catch (...)
-     {
-      connection.unlock();
-      throw;
-     }
+      try
+      {
+       const T inner_result = transaction();
+       do_checkpoint();
+       return inner_result;
+      }
+      catch (...)
+      {
+       connection.unlock();
+       throw;
+      }
+     } ();
 
      push_unlock();
      return result;
