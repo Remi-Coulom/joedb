@@ -41,7 +41,9 @@ By default, all joedb tools use soft checkpoints. If you want a hard
 checkpoint, you can either execute it manually, or set an option for
 :joedb:`Client` and :joedb:`Server`.
 
-You can hide the latency of a hard checkpoint by running it asynchronously.
+You can hide the latency of a hard checkpoint by running it asynchronously,
+after a soft checkpoint: other clients will see the new data as soon as the
+soft checkpoint is written.
 
 .. _crash:
 
@@ -70,7 +72,7 @@ Benchmarks
 ----------
 
 The source code for these benchmarks can be found in the joedb/benchmark
-directory. They were run on an Ubuntu 20.04 machine with an AMD Ryzen 7 5800X
+directory. They were run on an Ubuntu 24.04 machine with an AMD Ryzen 7 5800X
 CPU, and a 2Tb Corsair MP600 NVMe SSD, with an encrypted ext4 file system.
 
 Bulk Insert
@@ -153,21 +155,32 @@ Commit Rate
 ~~~~~~~~~~~
 
 Instead of one big commit at the end, each insert is now committed to disk one
-by one. With N = 1000:
+by one. With N = 10,000:
 
-+------+---------+--------------+--------------+
-|      | sqlite3 | joedb (hard) | joedb (soft) |
-+======+=========+==============+==============+
-| real | 2.543s  | 2.000s       | 0.002s       |
-+------+---------+--------------+--------------+
-| user | 0.027s  | 0.004s       | 0.000s       |
-+------+---------+--------------+--------------+
-| sys  | 0.130s  | 0.038s       | 0.002s       |
-+------+---------+--------------+--------------+
++------+---------+----------+
+|      | sqlite3 | joedb    |
++======+=========+==========+
+| real | 24.937s | 19.101s  |
++------+---------+----------+
+| user |  0.175s |  0.028s  |
++------+---------+----------+
+| sys  |  1.523s |  0.641s  |
++------+---------+----------+
 
 There is much less difference in performance compared to a big transaction, but
 joedb is still faster.
 
-Note also that joedb does not require a file system: it can also operate over a
-raw device directly, which might offer additional opportunities for performance
-optimization.
+joedb's soft checkpoint is similar in terms of durability to sqlite's WAL mode
+with syncrhonous=NORMAL: after a power failure, some of the most recently
+written data may be lost, but it is possible to recover safely to a recent
+consistent state. With N = 1,000,000:
+
++------+---------+----------+
+|      | sqlite3 | joedb    |
++======+=========+==========+
+| real | 12.826s |  2.639s  |
++------+---------+----------+
+| user |  2.751s |  0.320s  |
++------+---------+----------+
+| sys  |  5.945s |  2.316s  |
++------+---------+----------+
