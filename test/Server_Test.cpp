@@ -218,7 +218,7 @@ namespace joedb
     Test_Client client(mismatched_file, server);
     FAIL() << "This should not work";
    }
-   catch (const joedb::Content_Mismatch &e)
+   catch (const joedb::Content_Mismatch &)
    {
    }
   }

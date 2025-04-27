@@ -686,7 +686,7 @@ TEST(Compiler, client_hash_error)
   test::Client client(client_file, connection);
   ADD_FAILURE() << "Should have thrown\n";
  }
- catch (const joedb::Content_Mismatch &e)
+ catch (const joedb::Content_Mismatch &)
  {
  }
 }
