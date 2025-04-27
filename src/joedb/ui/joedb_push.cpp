@@ -68,13 +68,13 @@ namespace joedb
    Signal::get_signal() != SIGINT
   )
   {
-   if (journal.get_checkpoint_position() > from_checkpoint)
+   if (journal.get_checkpoint() > from_checkpoint)
    {
     from_checkpoint = connection.push
     (
      journal,
      from_checkpoint,
-     journal.get_checkpoint_position(),
+     journal.get_checkpoint(),
      false
     );
    }

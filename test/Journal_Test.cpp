@@ -118,7 +118,7 @@ namespace joedb
   try
   {
    Readonly_Journal journal(file);
-   EXPECT_EQ(journal.get_checkpoint_position(), 41);
+   EXPECT_EQ(journal.get_checkpoint(), 41);
   }
   catch (const Exception &e)
   {
@@ -180,7 +180,7 @@ namespace joedb
    EXPECT_EQ(journal.get_position(), Header::size);
    journal.create_table("person");
    journal.soft_checkpoint();
-   correct_checkpoint = journal.get_checkpoint_position();
+   correct_checkpoint = journal.get_checkpoint();
    EXPECT_GT(correct_checkpoint, Header::ssize);
    journal.create_table("country");
    journal.soft_checkpoint();
@@ -197,7 +197,7 @@ namespace joedb
    Database db;
    Readonly_Journal journal(file);
    EXPECT_EQ(journal.get_position(), Header::size);
-   EXPECT_EQ(journal.get_checkpoint_position(), correct_checkpoint);
+   EXPECT_EQ(journal.get_checkpoint(), correct_checkpoint);
    journal.replay_log(db);
    EXPECT_EQ(db.get_tables().size(), 1);
   }
@@ -240,7 +240,7 @@ namespace joedb
   {
    File file("test.joedb", Open_Mode::create_new);
    Writable_Journal journal(file);
-   EXPECT_EQ(41, journal.get_checkpoint_position());
+   EXPECT_EQ(41, journal.get_checkpoint());
   }
 
   std::remove("test.joedb");
@@ -284,14 +284,14 @@ namespace joedb
 
    EXPECT_TRUE
    (
-    journal_1.get_checkpoint_position() > journal_2.get_checkpoint_position()
+    journal_1.get_checkpoint() > journal_2.get_checkpoint()
    );
 
    journal_2.pull();
 
    EXPECT_TRUE
    (
-    journal_1.get_checkpoint_position() == journal_2.get_checkpoint_position()
+    journal_1.get_checkpoint() == journal_2.get_checkpoint()
    );
 
    EXPECT_TRUE
@@ -301,7 +301,7 @@ namespace joedb
 
    EXPECT_TRUE
    (
-    journal_2.get_checkpoint_position() == journal_1.get_position()
+    journal_2.get_checkpoint() == journal_1.get_position()
    );
 
    {
@@ -403,7 +403,7 @@ namespace joedb
 
   {
    Writable_Journal journal(file);
-   journal.skip_directly_to(journal.get_checkpoint_position());
+   journal.skip_directly_to(journal.get_checkpoint());
    journal.comment("uncheckpointed comment");
    journal.flush();
   }
@@ -427,13 +427,13 @@ namespace joedb
   {
    File file("test.joedb", Open_Mode::create_new);
    Writable_Journal journal(file);
-   EXPECT_EQ(journal.get_checkpoint_position(), 41);
+   EXPECT_EQ(journal.get_checkpoint(), 41);
    journal.comment(std::string(5000, 'A'));
    journal.soft_checkpoint();
-   EXPECT_EQ(journal.get_checkpoint_position(), 5044);
+   EXPECT_EQ(journal.get_checkpoint(), 5044);
    journal.comment(std::string(5000, 'B'));
    journal.soft_checkpoint();
-   EXPECT_EQ(journal.get_checkpoint_position(), 10047);
+   EXPECT_EQ(journal.get_checkpoint(), 10047);
   }
 
   {
@@ -449,7 +449,7 @@ namespace joedb
     journal.one_step(copy_journal);
 
     copy_journal.soft_checkpoint();
-    EXPECT_EQ(copy_journal.get_checkpoint_position(), 10047);
+    EXPECT_EQ(copy_journal.get_checkpoint(), 10047);
    }
 
    Memory_File another_file;
@@ -471,13 +471,13 @@ namespace joedb
   Memory_File file;
   Writable_Journal journal(file);
 
-  const int64_t initial = journal.get_checkpoint_position();
+  const int64_t initial = journal.get_checkpoint();
   journal.create_table("person");
   journal.soft_checkpoint();
-  const int64_t after_person = journal.get_checkpoint_position();
+  const int64_t after_person = journal.get_checkpoint();
   journal.create_table("city");
   journal.soft_checkpoint();
-  const int64_t after_city = journal.get_checkpoint_position();
+  const int64_t after_city = journal.get_checkpoint();
 
   EXPECT_TRUE(after_person > initial);
   EXPECT_TRUE(after_city > after_person);
@@ -486,18 +486,18 @@ namespace joedb
    Memory_File to_file;
    Writable_Journal to_journal(to_file);
    to_journal.pull_from(journal, initial);
-   EXPECT_EQ(to_journal.get_checkpoint_position(), initial);
+   EXPECT_EQ(to_journal.get_checkpoint(), initial);
    to_journal.pull_from(journal, after_person);
-   EXPECT_EQ(to_journal.get_checkpoint_position(), after_person);
+   EXPECT_EQ(to_journal.get_checkpoint(), after_person);
    to_journal.pull_from(journal, after_city);
-   EXPECT_EQ(to_journal.get_checkpoint_position(), after_city);
+   EXPECT_EQ(to_journal.get_checkpoint(), after_city);
   }
 
   {
    Memory_File to_file;
    Writable_Journal to_journal(to_file);
    to_journal.pull_from(journal);
-   EXPECT_EQ(to_journal.get_checkpoint_position(), after_city);
+   EXPECT_EQ(to_journal.get_checkpoint(), after_city);
   }
  }
 
@@ -510,7 +510,7 @@ namespace joedb
 
   EXPECT_EQ
   (
-   journal.get_checkpoint_position(),
+   journal.get_checkpoint(),
    Header::size
   );
 

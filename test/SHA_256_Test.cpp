@@ -111,7 +111,7 @@ TEST(SHA_256, journal)
  const joedb::SHA_256::Hash hash = joedb::Journal_Hasher::get_hash
  (
   journal,
-  journal.get_checkpoint_position() - 123
+  journal.get_checkpoint() - 123
  );
 
  EXPECT_EQ(hash, big_hash);

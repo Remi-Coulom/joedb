@@ -15,8 +15,8 @@ namespace joedb
   {
    const int64_t min = std::min
    (
-    server_journal.get_checkpoint_position(),
-    client_journal.get_checkpoint_position()
+    server_journal.get_checkpoint(),
+    client_journal.get_checkpoint()
    );
 
    if
@@ -29,7 +29,7 @@ namespace joedb
    }
   }
 
-  return server_journal.get_checkpoint_position();
+  return server_journal.get_checkpoint();
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ namespace joedb
   if (write_data)
    client_journal.pull_from(server_journal);
 
-  return server_journal.get_checkpoint_position();
+  return server_journal.get_checkpoint();
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ namespace joedb
   if (write_data)
    client_journal.pull_from(server_journal);
 
-  return server_journal.get_checkpoint_position();
+  return server_journal.get_checkpoint();
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -100,14 +100,14 @@ namespace joedb
   if (!get_journal().is_locked())
    get_journal().lock_pull();
 
-  if (from != server_journal.get_checkpoint_position())
+  if (from != server_journal.get_checkpoint())
    throw Exception("push error: conflict");
   get_journal().pull_from(client_journal, until);
 
   if (unlock_after)
    get_journal().unlock();
 
-  return server_journal.get_checkpoint_position();
+  return server_journal.get_checkpoint();
  }
 
  //////////////////////////////////////////////////////////////////////////

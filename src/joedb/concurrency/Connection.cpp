@@ -20,7 +20,7 @@ namespace joedb
   bool content_check
  )
  {
-  return client_journal.get_checkpoint_position();
+  return client_journal.get_checkpoint();
  }
 
  int64_t Connection::pull
@@ -31,7 +31,7 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  return client_journal.get_checkpoint_position();
+  return client_journal.get_checkpoint();
  }
 
  int64_t Connection::push
@@ -42,7 +42,7 @@ namespace joedb
   bool unlock_after
  )
  {
-  return client_journal.get_checkpoint_position();
+  return client_journal.get_checkpoint();
  }
 
  void Connection::unlock()

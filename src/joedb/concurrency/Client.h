@@ -93,7 +93,7 @@ namespace joedb
     (
      readonly_journal,
      server_checkpoint,
-     readonly_journal.get_checkpoint_position(),
+     readonly_journal.get_checkpoint(),
      unlock_after
     );
    }
@@ -146,7 +146,7 @@ namespace joedb
 
    int64_t get_checkpoint() const
    {
-    return get_journal().get_checkpoint_position();
+    return get_journal().get_checkpoint();
    }
 
    std::string read_blob(Blob blob) const

@@ -125,7 +125,7 @@ namespace joedb
   (
    readonly_journal,
    from_checkpoint,
-   readonly_journal.get_checkpoint_position(),
+   readonly_journal.get_checkpoint(),
    false
   );
 
@@ -139,7 +139,7 @@ namespace joedb
   (
    readonly_journal,
    from_checkpoint,
-   readonly_journal.get_checkpoint_position(),
+   readonly_journal.get_checkpoint(),
    false
   );
 
@@ -484,13 +484,13 @@ namespace joedb
 
   {
    Writable_Journal journal(client_file);
-   initial = journal.get_checkpoint_position();
+   initial = journal.get_checkpoint();
    journal.create_table("person");
    journal.soft_checkpoint();
-   after_person = journal.get_checkpoint_position();
+   after_person = journal.get_checkpoint();
    journal.create_table("city");
    journal.soft_checkpoint();
-   after_city = journal.get_checkpoint_position();
+   after_city = journal.get_checkpoint();
   }
 
   EXPECT_TRUE(after_person > initial);

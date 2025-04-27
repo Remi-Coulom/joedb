@@ -473,12 +473,12 @@ namespace joedb
    {
    }
 
-   EXPECT_EQ(client.get_journal().get_checkpoint_position(), 262189);
+   EXPECT_EQ(client.get_journal().get_checkpoint(), 262189);
   }
 
   server.pause();
 
-  EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 41);
+  EXPECT_EQ(server.client.get_journal().get_checkpoint(), 41);
 
   EXPECT_TRUE(server.file.get_size() > 1000);
   EXPECT_TRUE(server.file.get_size() < 262189);
@@ -490,7 +490,7 @@ namespace joedb
   {
    Test_Client client(client_file, server);
    client.push_unlock();
-   EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
+   EXPECT_EQ(server.client.get_journal().get_checkpoint(), 262189);
   }
  }
 
@@ -522,15 +522,15 @@ namespace joedb
   {
   }
 
-  EXPECT_EQ(client.get_journal().get_checkpoint_position(), 262189);
-  EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 41);
+  EXPECT_EQ(client.get_journal().get_checkpoint(), 262189);
+  EXPECT_EQ(server.client.get_journal().get_checkpoint(), 41);
   EXPECT_TRUE(server.file.get_size() > 1000);
   EXPECT_TRUE(server.file.get_size() < 262189);
 
   server.restart();
 
   client.push_unlock();
-  EXPECT_EQ(server.client.get_journal().get_checkpoint_position(), 262189);
+  EXPECT_EQ(server.client.get_journal().get_checkpoint(), 262189);
  }
 
  /////////////////////////////////////////////////////////////////////////////

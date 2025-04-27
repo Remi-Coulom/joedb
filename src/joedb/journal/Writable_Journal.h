@@ -40,7 +40,7 @@ namespace joedb
    int64_t pull_from(const Readonly_Journal &journal, int64_t until);
    int64_t pull_from(const Readonly_Journal &journal)
    {
-    return pull_from(journal, journal.get_checkpoint_position());
+    return pull_from(journal, journal.get_checkpoint());
    }
 
    int64_t ahead_of_checkpoint() const noexcept;
@@ -125,7 +125,7 @@ namespace joedb
 
    Async_Writer get_async_tail_writer()
    {
-    return Async_Writer(file, get_checkpoint_position());
+    return Async_Writer(file, get_checkpoint());
    }
 
    Writable_Journal *get_writable_journal() override {return this;}
@@ -145,7 +145,7 @@ namespace joedb
   public:
    Journal_Lock(Writable_Journal &journal): journal(journal)
    {
-    if (journal.get_position() > journal.get_checkpoint_position())
+    if (journal.get_position() > journal.get_checkpoint())
      throw Exception("locking journal with uncheckpointed data");
     journal.lock_pull();
    }

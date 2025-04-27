@@ -88,11 +88,11 @@ TEST(Multiplexer_Test, flush)
  EXPECT_EQ(f1.get_size(), 48);
  EXPECT_EQ(f2.get_size(), 48);
 
- EXPECT_EQ(j1.get_checkpoint_position(), 41);
- EXPECT_EQ(j2.get_checkpoint_position(), 41);
+ EXPECT_EQ(j1.get_checkpoint(), 41);
+ EXPECT_EQ(j2.get_checkpoint(), 41);
 
  multiplexer.soft_checkpoint();
 
- EXPECT_EQ(j1.get_checkpoint_position(), 48);
- EXPECT_EQ(j2.get_checkpoint_position(), 48);
+ EXPECT_EQ(j1.get_checkpoint(), 48);
+ EXPECT_EQ(j2.get_checkpoint(), 48);
 }

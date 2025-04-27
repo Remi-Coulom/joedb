@@ -58,7 +58,7 @@ namespace joedb::generator
     db.play_journal();
     if (schema_checkpoint)
     {
-     if (db.schema_journal.get_checkpoint_position() > schema_checkpoint)
+     if (db.schema_journal.get_checkpoint() > schema_checkpoint)
       Database::throw_exception("Can't upgrade schema during pull");
      db.check_single_row();
     }
@@ -83,7 +83,7 @@ namespace joedb::generator
      db.initialize();
     });
 
-    schema_checkpoint = db.schema_journal.get_checkpoint_position();
+    schema_checkpoint = db.schema_journal.get_checkpoint();
    }
 
    const Database &get_database() const

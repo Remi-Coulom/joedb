@@ -13,7 +13,7 @@ namespace joedb
  )
  {
   if (checkpoint <= 0)
-   checkpoint = input.get_checkpoint_position();
+   checkpoint = input.get_checkpoint();
   input.play_until(output, checkpoint);
   output.soft_checkpoint();
  }

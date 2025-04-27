@@ -340,7 +340,7 @@ namespace joedb
    const bool conflict =
    (
     session->state != Session::State::locking ||
-    from != client.get_journal().get_checkpoint_position()
+    from != client.get_journal().get_checkpoint()
    );
 
    LOGID("pushing, from = " << from << ", until = " << until);
@@ -560,7 +560,7 @@ namespace joedb
 
    if
    (
-    checkpoint > readonly_journal.get_checkpoint_position() ||
+    checkpoint > readonly_journal.get_checkpoint() ||
     Journal_Hasher::get_hash(readonly_journal, checkpoint) != hash // ??? takes_time
    )
    {

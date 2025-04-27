@@ -24,7 +24,7 @@ namespace joedb
   const int64_t checkpoint = std::min
   (
    server_checkpoint,
-   client_journal.get_checkpoint_position()
+   client_journal.get_checkpoint()
   );
 
   buffer.index = 0;
@@ -104,7 +104,7 @@ namespace joedb
   buffer.index = 0;
   buffer.write<char>(pull_type);
   buffer.write<int64_t>(wait.count());
-  buffer.write<int64_t>(client_journal.get_checkpoint_position());
+  buffer.write<int64_t>(client_journal.get_checkpoint());
   lock.write(buffer.data, buffer.index);
 
   buffer.index = 0;
@@ -121,7 +121,7 @@ namespace joedb
   if (write_data)
   {
    buffer.index = 0;
-   const int64_t size = server_checkpoint - client_journal.get_checkpoint_position();
+   const int64_t size = server_checkpoint - client_journal.get_checkpoint();
    Async_Writer writer = client_journal.get_async_tail_writer();
    download(writer, lock, size);
    client_journal.soft_checkpoint_at(writer.get_position());

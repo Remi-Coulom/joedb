@@ -28,7 +28,7 @@ namespace joedb
    ) override
    {
     client_journal.replay_log(writable);
-    return client_journal.get_checkpoint_position();
+    return client_journal.get_checkpoint();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ namespace joedb
    {
     JOEDB_RELEASE_ASSERT(client_journal.get_position() == from);
     client_journal.play_until(writable, until);
-    return client_journal.get_checkpoint_position();
+    return client_journal.get_checkpoint();
    }
  };
 }

@@ -89,7 +89,7 @@ namespace joedb
    }
 
    int64_t get_position() const {return file.get_position();}
-   int64_t get_checkpoint_position() const {return checkpoint_position;}
+   int64_t get_checkpoint() const {return checkpoint_position;}
    bool is_empty() const {return file.get_size() == Header::size;}
    bool is_shared() const {return file.is_shared();}
    int64_t pull();
@@ -110,7 +110,7 @@ namespace joedb
 
    Async_Reader get_async_tail_reader(int64_t start_position) const
    {
-    return Async_Reader(file, start_position, get_checkpoint_position());
+    return Async_Reader(file, start_position, get_checkpoint());
    }
 
    Async_Reader get_async_reader(int64_t start_position, int64_t until_position) const
@@ -119,7 +119,7 @@ namespace joedb
     (
      file,
      start_position,
-     std::min(until_position, get_checkpoint_position())
+     std::min(until_position, get_checkpoint())
     );
    }
 

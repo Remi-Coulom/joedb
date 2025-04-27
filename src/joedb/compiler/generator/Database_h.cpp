@@ -836,12 +836,12 @@ namespace joedb::generator
 
    int64_t get_schema_checkpoint() const
    {
-    return schema_journal.get_checkpoint_position();
+    return schema_journal.get_checkpoint();
    }
 
    void initialize_with_readonly_journal(joedb::Readonly_Journal &journal)
    {
-    max_record_id = size_t(journal.get_checkpoint_position());
+    max_record_id = size_t(journal.get_checkpoint());
     journal.replay_log(*this);
     max_record_id = 0;
 
