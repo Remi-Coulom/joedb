@@ -319,7 +319,7 @@ namespace joedb
     Writable_Database_Client client(client_file, connection);
     ADD_FAILURE() << "Connection with incompatible file should have failed";
    }
-   catch (const Content_Mismatch &e)
+   catch (const Content_Mismatch &)
    {
    }
   }
@@ -452,7 +452,7 @@ namespace joedb
    Writable_Database_Client client(client_file, connection);
    ADD_FAILURE() << "connecting should have failed\n";
   }
-  catch (const Content_Mismatch &e)
+  catch (const Content_Mismatch &)
   {
   }
  }
