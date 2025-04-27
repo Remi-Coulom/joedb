@@ -22,9 +22,10 @@ int main(int argc, char **argv)
    nullptr,
    nullptr
   );
-  //sqlite3_exec(db, "PRAGMA synchronous=OFF", nullptr, nullptr, nullptr);
 
-  sqlite3_exec(db, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
+  sqlite3_exec(db, "PRAGMA journal_mode=WAL", nullptr, nullptr, nullptr);
+  sqlite3_exec(db, "PRAGMA synchronous=NORMAL", nullptr, nullptr, nullptr);
+
   sqlite3_stmt *prepared_statement;
   sqlite3_prepare_v2
   (
@@ -35,14 +36,16 @@ int main(int argc, char **argv)
    nullptr
   );
 
+
   for (int i = 1; i <= N; i++)
   {
+   sqlite3_exec(db, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
    sqlite3_bind_int64(prepared_statement, 1, i);
    sqlite3_step(prepared_statement);
    sqlite3_reset(prepared_statement);
+   sqlite3_exec(db, "END TRANSACTION", nullptr, nullptr, nullptr);
   }
 
-  sqlite3_exec(db, "END TRANSACTION", nullptr, nullptr, nullptr);
  }
 
  return 0;

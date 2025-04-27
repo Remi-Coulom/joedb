@@ -13,11 +13,11 @@ int main(int argc, char **argv)
 
   benchmarkdb::File_Database db("insert.joedb");
 
-#if 1
+#if 0
   for (size_t i = 1; i <= N; i++)
   {
    db.new_benchmark("TOTO", int64_t(i));
-   db.hard_checkpoint();
+   db.soft_checkpoint();
   }
 #else
   {
