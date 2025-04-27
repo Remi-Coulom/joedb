@@ -8,14 +8,10 @@ namespace joedb
  void Interpreted_Stream_File::pull()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const int64_t previous_checkpoint = journal.get_checkpoint_position();
-  journal.pull();
-
-  if (journal.get_checkpoint_position() > previous_checkpoint)
+  if (readonly_journal.pull())
   {
    Interpreter_Writable writable(stream, db);
    Multiplexer multiplexer{writable, db};
-   readonly_journal.pull();
    readonly_journal.play_until_checkpoint(multiplexer);
    stream.flush();
   }
