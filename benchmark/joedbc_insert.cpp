@@ -13,9 +13,12 @@ int main(int argc, char **argv)
 
   benchmarkdb::File_Database db("insert.joedb");
 
-#if 0
+#if 1
   for (size_t i = 1; i <= N; i++)
+  {
    db.new_benchmark("TOTO", int64_t(i));
+   db.hard_checkpoint();
+  }
 #else
   {
    auto v = db.new_vector_of_benchmark(N);
@@ -32,9 +35,9 @@ int main(int argc, char **argv)
      value[i] = int64_t(i) + 1;
    });
   }
+  db.hard_checkpoint();
 #endif
 
-  db.hard_checkpoint();
  }
 
  return 0;

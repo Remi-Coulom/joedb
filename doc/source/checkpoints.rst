@@ -11,14 +11,21 @@ Two copies of two checkpoint positions are stored in the beginning of the
 
 1. Write all log entries up to this checkpoint, and the first copy of the
    checkpoint position.
-2. Flush data to disk (fsync).
+2. file.sync() (flush data and metadata to storage)
 3. Write the second copy of the checkpoint position.
-4. Flush data to disk.
+4. file.datasync() (flush data to storage)
 
 A checkpoint is considered valid if the two copies are identical.
 
 The two checkpoints are used alternately. This way, if a crash occurs during a
 checkpoint, it is still possible to recover the previous checkpoint.
+
+On most modern file systems, the size of the file can be used as the second
+copy of the checkpoint position, since it will be written to storage in a
+second step, after writing data. But writing two checkpoint copies in the joedb
+file itself makes the format independent from the properties of the file
+system. It would even allow storing a joedb file on a raw device directly,
+without any file system at all.
 
 Soft Checkpoints
 ----------------
@@ -32,12 +39,9 @@ recent hard checkpoint in case of power failure.
 
 By default, all joedb tools use soft checkpoints. If you want a hard
 checkpoint, you can either execute it manually, or set an option for
-:joedb:`Client` and :joedb:`Server`. (TODO)
+:joedb:`Client` and :joedb:`Server`.
 
-You can hide the latency of a hard checkpoint by running it in a parallel
-thread, after running a soft checkpoint in the main thread. Joedb classes are
-not thread-safe, so careful synchronization must be used. The Client_Lock
-object provides ready-made functions for this (TODO)
+You can hide the latency of a hard checkpoint by running it asynchronously.
 
 .. _crash:
 

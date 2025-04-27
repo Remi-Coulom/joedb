@@ -21,6 +21,7 @@ namespace joedb
    virtual void pwrite(const char *data, size_t size, int64_t offset) {}
 
    virtual void sync() {}
+   virtual void datasync() {sync();}
 
    virtual void shared_lock(int64_t start, int64_t size) {}
    virtual void exclusive_lock(int64_t start, int64_t size) {}

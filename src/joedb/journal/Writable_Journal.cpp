@@ -107,7 +107,7 @@ void joedb::Writable_Journal::hard_checkpoint_at(int64_t position)
   int64_t(sizeof(checkpoint_position)) * (2 * hard_index + 1)
  );
 
- file.sync();
+ file.datasync();
 
  file.unlock_head();
 }

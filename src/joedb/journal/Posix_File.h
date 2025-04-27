@@ -4,6 +4,7 @@
 #include "joedb/journal/Buffered_File.h"
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #ifndef F_OFD_SETLK
 #define JOEDB_HAS_BROKEN_POSIX_LOCKING
@@ -41,6 +42,9 @@ namespace joedb
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
 
    void sync() override;
+#if _POSIX_SYNCHRONIZED_IO > 0
+   void datasync() override;
+#endif
 
    void shared_lock(int64_t start, int64_t size) override;
    void exclusive_lock(int64_t start, int64_t size) override;

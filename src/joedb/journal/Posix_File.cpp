@@ -4,8 +4,6 @@
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 
@@ -136,6 +134,18 @@ namespace joedb
    throw_last_error("syncing", "file");
   }
  }
+
+#if _POSIX_SYNCHRONIZED_IO > 0
+ /////////////////////////////////////////////////////////////////////////////
+ void Posix_FD::datasync()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  if (fdatasync(fd) == -1)
+  {
+   throw_last_error("syncing", "file");
+  }
+ }
+#endif
 
  /////////////////////////////////////////////////////////////////////////////
  Posix_FD::Posix_FD(const char *file_name, const Open_Mode mode):

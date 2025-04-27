@@ -93,6 +93,9 @@ namespace joedb
 #else
   out << "\nbroken_posix_locking = false";
 #endif
+#ifdef _POSIX_SYNCHRONIZED_IO
+  out << "\n_POSIX_SYNCHRONIZED_IO = " << _POSIX_SYNCHRONIZED_IO;
+#endif
   out << "\nweb site: https://www.joedb.org/\n";
  }
 }
