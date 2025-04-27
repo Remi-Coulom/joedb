@@ -24,7 +24,7 @@ namespace joedb
  comment "<comment_string>"
  valid_data
  flush
- soft_checkpoint
+ [soft_]checkpoint
  hard_checkpoint
  write_blob <data_string>
 
@@ -53,7 +53,7 @@ namespace joedb
   {
    writable.flush();
   }
-  else if (command == "soft_checkpoint") ///////////////////////////////////
+  else if (command == "soft_checkpoint" || command == "checkpoint") ////////
   {
    writable.soft_checkpoint();
   }

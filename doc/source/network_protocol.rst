@@ -1,7 +1,10 @@
 Network Protocol
 ================
 
-all numbers are sent as 64-bit little-endian numbers
+The interaction between a client and a server is a simple iterative dialog
+where the client sends a query, and waits for an answer from the server.
+
+All values are sent as 64-bit little-endian numbers.
 
 Client to Server
 ----------------
@@ -52,4 +55,5 @@ O                       reply to O
 R                       reply to E, G, L, M, N, O when the server is read-only
 C                       reply to N, O in case of conflict
 t                       reply to N, O in case of time out
+
 ====== ================ ======================================================

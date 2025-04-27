@@ -6,6 +6,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/File_View.h"
 
 #include "Shared_Memory_File.h"
 
@@ -92,12 +93,57 @@ namespace joedb
 
   EXPECT_EQ(0, db.get_tables().size());
 
-  client.transaction([](Writable_Journal &journal)
-  {
-   journal.create_table("person");
-  });
+  EXPECT_ANY_THROW
+  (
+   client.transaction([](Writable_Journal &journal)
+   {
+    journal.create_table("person");
+   });
+  );
+ }
 
-  EXPECT_EQ(1, db.get_tables().size());
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Client, Writable_Connection_with_view)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  Writable_Journal journal(file);
+  File_View file_view(file);
+  Readonly_Journal readonly_journal(file_view);
+  Database db;
+
+  Writable_Connection connection(db);
+
+  int64_t from_checkpoint = connection.handshake(readonly_journal, true);
+
+  journal.create_table("person");
+  journal.insert_into(Table_Id{1}, Record_Id{1});
+  journal.soft_checkpoint();
+
+  readonly_journal.pull();
+  from_checkpoint = connection.push
+  (
+   readonly_journal,
+   from_checkpoint,
+   readonly_journal.get_checkpoint_position(),
+   false
+  );
+
+  EXPECT_EQ(1, db.get_freedom(Table_Id{1}).size());
+
+  journal.insert_into(Table_Id{1}, Record_Id{2});
+  journal.soft_checkpoint();
+
+  readonly_journal.pull();
+  from_checkpoint = connection.push
+  (
+   readonly_journal,
+   from_checkpoint,
+   readonly_journal.get_checkpoint_position(),
+   false
+  );
+
+  EXPECT_EQ(2, db.get_freedom(Table_Id{1}).size());
  }
 
  /////////////////////////////////////////////////////////////////////////////

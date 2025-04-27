@@ -403,7 +403,7 @@ namespace joedb
 
   {
    Writable_Journal journal(file);
-   journal.skip_until(journal.get_checkpoint_position());
+   journal.skip_directly_to(journal.get_checkpoint_position());
    journal.comment("uncheckpointed comment");
    journal.flush();
   }

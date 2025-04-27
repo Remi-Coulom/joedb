@@ -6,9 +6,11 @@ For next release
 
  - Improvements:
 
+   - store Imported_Key in ssh::Connector, not passphrase
    - do not write hard_checkpoint again if it is already written
    - lock guards for all file locks
    - Android logcat
+   - (asynchronous) hard_checkpoint option for the server
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code

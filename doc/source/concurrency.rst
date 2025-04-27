@@ -119,15 +119,16 @@ connection's functions. This allows rebooting the database server without
 restarting the clients: they will wait for the server to be back online, and
 reconnect when it accepts connections again.
 
+.. _Server_File:
+
 :joedb:`Server_File`
 ^^^^^^^^^^^^^^^^^^^^
 
 When the database is very big, downloading a local copy may not be possible or
 convenient. :joedb:`Server_File` solves this problem by reading the body of the
 file from the remote server directly. The head and tail of the file are stored
-locally in memory, which allows writing. All reads of the body are performed
-using the network connection. This is particularly convenient for large blob
-databases.
+locally in memory, which allows writing. This is particularly convenient for
+large blob databases.
 
 :joedb:`Server_File` is both a :joedb:`Connection` and a
 :joedb:`Buffered_File`. When constructing a :joedb:`Client`, it must be used as

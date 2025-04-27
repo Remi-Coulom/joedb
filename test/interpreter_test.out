@@ -132,7 +132,7 @@ Journal
  comment "<comment_string>"
  valid_data
  flush
- soft_checkpoint
+ [soft_]checkpoint
  hard_checkpoint
  write_blob <data_string>
 

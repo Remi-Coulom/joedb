@@ -2,6 +2,7 @@
 #define joedb_Interpreted_File_declared
 
 #include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/File_View.h"
 
 namespace joedb
 {
@@ -10,6 +11,8 @@ namespace joedb
  {
   private:
    std::iostream &stream;
+   File_View file_view;
+   Readonly_Journal readonly_journal;
 
    void pull();
    void pwrite(const char *buffer, size_t size, int64_t offset) override;

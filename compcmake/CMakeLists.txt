@@ -93,6 +93,7 @@ if(GTest_FOUND)
   ../src/joedb/error/Destructor_Logger.cpp
 
   ../test/File_Test.cpp
+  ../test/File_View_Test.cpp
   ../test/Upgradable_File_Test.cpp
   ../src/joedb/journal/Buffered_File.cpp
   ../src/joedb/journal/Async_Reader.cpp
@@ -131,6 +132,7 @@ if(GTest_FOUND)
   ../test/diagnostics_Test.cpp
   ../test/Encoded_File_Test.cpp
   ../test/File_Test.cpp
+  ../test/File_View_Test.cpp
   ../test/Upgradable_File_Test.cpp
   ../test/Freedom_Keeper_Test.cpp
   ../test/Buffered_File_Test.cpp

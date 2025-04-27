@@ -99,23 +99,12 @@ namespace joedb
    void rewind();
    void one_step(Writable &writable);
    void play_until(Writable &writable, int64_t end);
-   void skip_until(int64_t end)
-   {
-    Writable writable;
-    play_until(writable, end);
-   }
-   void rewind_until(int64_t end)
-   {
-    rewind();
-    skip_until(end);
-   }
    void play_until_checkpoint(Writable &writable)
    {
     play_until(writable, checkpoint_position);
    }
    void skip_directly_to(int64_t position)
    {
-    reset_context();
     file.set_position(position);
    }
 

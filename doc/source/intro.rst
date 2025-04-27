@@ -4,9 +4,9 @@ Introduction
 Joedb is a light-weight C++ database that keeps tabular data in memory, and
 writes a journal to a file. The whole data history is stored, so it is possible
 to re-create any past state of the database. Joedb has a network protocol, and
-can operate in a distributed fashion, a bit like :doc:`git for structured data
-<concurrency>`. It supports local and remote concurrent access to a file, with
-ACID transactions.
+can operate in a distributed fashion, a bit like :doc:`git for data
+<concurrency>`. It provides `ACID <https://en.wikipedia.org/wiki/ACID>`_
+transactions for local and remote concurrent access to a file.
 
 Joedb comes with a compiler that takes a database schema as input, and produces
 C++ code. The generated C++ data-manipulation code is convenient to use,
