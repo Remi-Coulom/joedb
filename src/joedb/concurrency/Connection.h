@@ -14,6 +14,31 @@ namespace joedb
    Content_Mismatch();
  };
 
+ enum class Content_Check
+ {
+  none,
+  quick,
+  full
+ };
+
+ enum class Data_Transfer
+ {
+  without_data = 0,
+  with_data = 1
+ };
+
+ enum class Lock_Action
+ {
+  no_locking = 0,
+  lock_before = 1
+ };
+
+ enum class Unlock_Action
+ {
+  keep_locked = 0,
+  unlock_after = 1
+ };
+
  /// @ingroup concurrency
  class Connection
  {
@@ -25,19 +50,19 @@ namespace joedb
    /// Called during Client construction
    ///
    /// @param client_journal may be used to check matching content
-   /// @param content_check indicates whether matching content is tested
+   /// @param content_check indicates how matching content is tested
    ///
    /// @retval connection checkpoint (-1 if not available)
    virtual int64_t handshake
    (
     Readonly_Journal &client_journal,
-    bool content_check
+    Content_Check content_check
    );
 
    /// Pull from the connection
    ///
-   /// @param lock_before whether the connection should be locked
-   /// @param write_data whether data should be written into @ref client_journal
+   /// @param lock_action whether the connection should be locked before pulling
+   /// @param data_transfer whether data should be transferred
    /// @param client_journal journal to pull into
    /// @param wait duration during which the connection may wait
    /// for new data if the pull would otherwise be empty
@@ -45,8 +70,8 @@ namespace joedb
    /// @retval server checkpoint (-1 if not available)
    virtual int64_t pull
    (
-    bool lock_before,
-    bool write_data,
+    Lock_Action lock_action,
+    Data_Transfer data_transfer,
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    );
@@ -59,7 +84,7 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t from,
     int64_t until,
-    bool unlock_after
+    Unlock_Action unlock_action
    );
 
    /// Unlock the connection
