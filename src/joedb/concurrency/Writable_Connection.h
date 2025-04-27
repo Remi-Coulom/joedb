@@ -24,7 +24,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &client_journal,
-    bool contentcheck
+    Content_Check contentcheck
    ) override
    {
     client_journal.replay_log(writable);
@@ -38,7 +38,7 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t from,
     int64_t until,
-    bool unlock_after
+    Unlock_Action unlock_action
    ) override
    {
     JOEDB_RELEASE_ASSERT(client_journal.get_position() == from);

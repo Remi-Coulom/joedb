@@ -23,8 +23,7 @@ namespace joedb
   Pullonly_Journal_Connection connection(journal);
 
   Memory_File memory_file;
-  const bool content_check = false;
-  Writable_Database_Client client(memory_file, connection, content_check);
+  Writable_Database_Client client(memory_file, connection, Content_Check::none);
 
   client.pull();
 

@@ -45,13 +45,13 @@ namespace joedb
  {
   int arg_index = 0;
 
-  bool content_check = true;
+  Content_Check content_check = Content_Check::quick;
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nocheck") == 0)
   {
    arg_index++;
-   content_check = false;
+   content_check = Content_Check::none;
   }
-  std::cerr << "content_check = " << content_check << '\n';
+  std::cerr << "content_check = " << int(content_check) << '\n';
 
   bool with_database = default_with_database;
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)

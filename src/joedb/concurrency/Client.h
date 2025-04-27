@@ -198,6 +198,11 @@ namespace joedb
     return get_checkpoint() - old_checkpoint;
    }
 
+   void push_unlock()
+   {
+    push(Unlock_Action::unlock_after);
+   }
+
    virtual ~Client();
  };
 
@@ -206,8 +211,8 @@ namespace joedb
  /// At the end of the life of this object, right before destruction, you
  /// should call either @ref unlock to cancel the transaction, or
  /// @ref push_unlock to confirm it. If you fail to do so, the destructor
- /// will call @ref unlock. But calling unlock explicitly is better if possible,
- /// because it can throw exceptions, unlike the destructor.
+ /// will call @ref unlock. But calling unlock explicitly is better,
+ /// if possible, because it can throw exceptions, unlike the destructor.
  ///
  /// @ingroup concurrency
  class Client_Lock
@@ -238,7 +243,7 @@ namespace joedb
    /// times during the life of the lock.
    void push()
    {
-    JOEDB_ASSERT(is_locked());
+    JOEDB_RELEASE_ASSERT(is_locked());
     client.do_checkpoint();
     client.push(Unlock_Action::keep_locked);
    }
@@ -249,7 +254,7 @@ namespace joedb
    /// Do not call any other member function after this one.
    void push_unlock()
    {
-    JOEDB_ASSERT(is_locked());
+    JOEDB_RELEASE_ASSERT(is_locked());
     client.do_checkpoint();
     client.push(Unlock_Action::unlock_after);
     locked = false;
@@ -261,7 +266,7 @@ namespace joedb
    /// Do not call any other member function after this one.
    void unlock()
    {
-    JOEDB_ASSERT(is_locked());
+    JOEDB_RELEASE_ASSERT(is_locked());
     client.connection.unlock();
     locked = false;
    }

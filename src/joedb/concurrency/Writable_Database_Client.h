@@ -40,7 +40,7 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    bool content_check = true
+    Content_Check content_check = Content_Check::quick
    ):
     Writable_Database_Client_Data(file),
     Client(journal, connection, content_check)

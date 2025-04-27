@@ -22,7 +22,7 @@ namespace joedb
    mutable std::unique_ptr<Channel> channel;
 
    Readonly_Journal *handshake_journal = nullptr;
-   bool handshake_content_check = true;
+   Content_Check handshake_content_check = Content_Check::quick;
 
    static constexpr auto period = std::chrono::seconds(5);
    mutable time_point last_connection_time = clock::now() - period;
@@ -96,7 +96,7 @@ namespace joedb
    int64_t handshake
    (
     Readonly_Journal &client_journal,
-    bool content_check
+    Content_Check content_check
    ) override
    {
     const int64_t result = try_until_success([&]()
@@ -112,15 +112,15 @@ namespace joedb
 
    int64_t pull
    (
-    bool lock_before,
-    bool write_data,
+    Lock_Action lock_action,
+    Data_Transfer data_transfer,
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait
    ) override
    {
     return try_until_success([&]()
     {
-     return connection->pull(lock_before, write_data, client_journal, wait);
+     return connection->pull(lock_action, data_transfer, client_journal, wait);
     });
    }
 
@@ -129,7 +129,7 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t from_checkpoint,
     int64_t until_checkpoint,
-    bool unlock_after
+    Unlock_Action unlock_action
    ) override
    {
     return try_until_success([&]()
@@ -139,7 +139,7 @@ namespace joedb
       client_journal,
       from_checkpoint,
       until_checkpoint,
-      unlock_after
+      unlock_action
      );
     });
    }

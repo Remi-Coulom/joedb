@@ -34,8 +34,8 @@ namespace joedb
  int64_t Server_File::pull
  ////////////////////////////////////////////////////////////////////////////
  (
-  bool lock_before,
-  bool write_data,
+  Lock_Action lock_action,
+  Data_Transfer data_transfer,
   Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
@@ -43,7 +43,14 @@ namespace joedb
   if (tail.get_size() > 0)
    throw Exception("Server_File: pulling with non-empty tail");
 
-  Robust_Connection::pull(lock_before, false, client_journal, wait);
+  Robust_Connection::pull
+  (
+   lock_action,
+   Data_Transfer::without_data,
+   client_journal,
+   wait
+  );
+
   write_checkpoint();
   tail_offset = connection->server_checkpoint;
 
@@ -55,7 +62,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
-  bool content_check
+  Content_Check content_check
  )
  {
   if (&client_journal.get_file() != this)
@@ -70,7 +77,7 @@ namespace joedb
   Readonly_Journal &client_journal,
   const int64_t server_position,
   const int64_t until_position,
-  const bool unlock_after
+  const Unlock_Action unlock_action
  )
  {
   Robust_Connection::push
@@ -78,7 +85,7 @@ namespace joedb
    client_journal,
    server_position,
    until_position,
-   unlock_after
+   unlock_action
   );
 
   if (connection->server_checkpoint == get_size())

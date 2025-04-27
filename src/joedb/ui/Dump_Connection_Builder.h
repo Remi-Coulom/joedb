@@ -62,13 +62,13 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    (
     Readonly_Journal &client_journal,
-    bool contentcheck
+    Content_Check content_check
    ) override
    {
     const int64_t result = Writable_Connection::handshake
     (
      client_journal,
-     contentcheck
+     content_check
     );
 
     if (mute_during_handshake)

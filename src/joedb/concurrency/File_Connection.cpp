@@ -8,10 +8,10 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
-  bool content_check
+  Content_Check content_check
  )
  {
-  if (content_check)
+  if (content_check != Content_Check::none)
   {
    const int64_t min = std::min
    (
@@ -36,18 +36,18 @@ namespace joedb
  int64_t Pullonly_Journal_Connection::pull
  //////////////////////////////////////////////////////////////////////////
  (
-  bool lock_before,
-  bool write_data,
+  Lock_Action lock_action,
+  Data_Transfer data_transfer,
   Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
-  if (lock_before)
+  if (bool(lock_action))
    throw Exception("Connected to a read-only journal: can't lock");
 
   server_journal.pull();
 
-  if (write_data)
+  if (bool(data_transfer))
    client_journal.pull_from(server_journal);
 
   return server_journal.get_checkpoint();
@@ -60,7 +60,7 @@ namespace joedb
   Readonly_Journal &client_journal,
   const int64_t from,
   const int64_t until,
-  bool unlock_after
+  Unlock_Action unlock_action
  )
  {
   throw Exception("Connected to a read-only journal: can't push");
@@ -70,18 +70,18 @@ namespace joedb
  int64_t Journal_Connection::pull
  //////////////////////////////////////////////////////////////////////////
  (
-  bool lock_before,
-  bool write_data,
+  Lock_Action lock_action,
+  Data_Transfer data_transfer,
   Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
-  if (lock_before)
+  if (bool(lock_action))
    get_journal().lock_pull();
   else
    get_journal().pull();
 
-  if (write_data)
+  if (bool(data_transfer))
    client_journal.pull_from(server_journal);
 
   return server_journal.get_checkpoint();
@@ -94,7 +94,7 @@ namespace joedb
   Readonly_Journal &client_journal,
   const int64_t from,
   const int64_t until,
-  bool unlock_after
+  Unlock_Action unlock_action
  )
  {
   if (!get_journal().is_locked())
@@ -104,7 +104,7 @@ namespace joedb
    throw Exception("push error: conflict");
   get_journal().pull_from(client_journal, until);
 
-  if (unlock_after)
+  if (bool(unlock_action))
    get_journal().unlock();
 
   return server_journal.get_checkpoint();

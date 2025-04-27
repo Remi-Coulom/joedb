@@ -27,13 +27,13 @@ namespace joedb
    int64_t handshake
    (
     Readonly_Journal &client_journal,
-    bool content_check
+    Content_Check content_check
    ) override;
 
    int64_t pull
    (
-    bool lock_before,
-    bool write_data,
+    Lock_Action lock_action,
+    Data_Transfer data_transfer,
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    ) override;
@@ -43,7 +43,7 @@ namespace joedb
     Readonly_Journal &client_journal,
     int64_t from,
     int64_t until,
-    bool unlock_after
+    Unlock_Action unlock_action
    ) override;
 
    void unlock() override;

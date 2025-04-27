@@ -114,7 +114,11 @@ namespace joedb
 
   Writable_Connection connection(db);
 
-  int64_t from_checkpoint = connection.handshake(readonly_journal, true);
+  int64_t from_checkpoint = connection.handshake
+  (
+   readonly_journal,
+   Content_Check::quick
+  );
 
   journal.create_table("person");
   journal.insert_into(Table_Id{1}, Record_Id{1});
@@ -126,7 +130,7 @@ namespace joedb
    readonly_journal,
    from_checkpoint,
    readonly_journal.get_checkpoint(),
-   false
+   Unlock_Action::keep_locked
   );
 
   EXPECT_EQ(1, db.get_freedom(Table_Id{1}).size());
@@ -140,7 +144,7 @@ namespace joedb
    readonly_journal,
    from_checkpoint,
    readonly_journal.get_checkpoint(),
-   false
+   Unlock_Action::keep_locked
   );
 
   EXPECT_EQ(2, db.get_freedom(Table_Id{1}).size());
@@ -502,7 +506,11 @@ namespace joedb
   Readonly_Journal server_journal(server_file);
 
   File_Connection connection(server_file);
-  int64_t server_checkpoint = connection.handshake(client_journal, true);
+  int64_t server_checkpoint = connection.handshake
+  (
+   client_journal,
+   Content_Check::quick
+  );
 
   EXPECT_EQ(server_checkpoint, initial);
 
@@ -511,7 +519,7 @@ namespace joedb
    client_journal,
    server_checkpoint,
    after_person,
-   true
+   Unlock_Action::unlock_after
   );
 
   EXPECT_EQ(server_file.get_size(), after_person);
@@ -522,7 +530,7 @@ namespace joedb
    client_journal,
    server_checkpoint,
    after_city,
-   true
+   Unlock_Action::unlock_after
   );
 
   EXPECT_EQ(server_file.get_size(), after_city);

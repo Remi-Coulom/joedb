@@ -75,10 +75,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Readonly_Journal &client_journal,
-  bool content_check
+  Content_Check content_check
  )
  {
-  if (content_check)
+  if (content_check != Content_Check::none)
    if (!check_matching_content(client_journal, server_checkpoint))
     content_mismatch();
 
@@ -89,15 +89,15 @@ namespace joedb
  int64_t Server_Connection::pull
  ////////////////////////////////////////////////////////////////////////////
  (
-  bool lock_before,
-  bool write_data,
+  Lock_Action lock_action,
+  Data_Transfer data_transfer,
   Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
  {
   Channel_Lock lock(channel);
 
-  const char pull_type = char('D' + int(lock_before) + 2 * int(write_data));
+  const char pull_type = char('D' + int(lock_action) + 2*int(data_transfer));
 
   LOGID("pulling(" << pull_type << ")... ");
 
@@ -118,7 +118,7 @@ namespace joedb
   }
   server_checkpoint = buffer.read<int64_t>();
 
-  if (write_data)
+  if (bool(data_transfer))
   {
    buffer.index = 0;
    const int64_t size = server_checkpoint - client_journal.get_checkpoint();
@@ -139,12 +139,12 @@ namespace joedb
   Readonly_Journal &client_journal,
   int64_t from,
   int64_t until,
-  bool unlock_after
+  Unlock_Action unlock_action
  )
  {
   Channel_Lock lock(channel);
 
-  const char push_type = char('N' + int(unlock_after));
+  const char push_type = char('N' + int(unlock_action));
   buffer.index = 0;
   buffer.write<char>(push_type);
   buffer.write<int64_t>(from);

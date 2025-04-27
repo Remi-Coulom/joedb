@@ -68,7 +68,7 @@ namespace joedb::generator
     (
      journal,
      Readonly_Client_Data::connection,
-     false
+     joedb::Content_Check::none
     ),
     schema_checkpoint(db.get_schema_checkpoint())
    {

@@ -59,7 +59,7 @@ namespace joedb
    &file
   );
 
-  int64_t from_checkpoint = connection.handshake(journal, true);
+  int64_t from_checkpoint = connection.handshake(journal, Content_Check::quick);
   Signal::start();
 
   while
@@ -75,7 +75,7 @@ namespace joedb
      journal,
      from_checkpoint,
      journal.get_checkpoint(),
-     false
+     Unlock_Action::keep_locked
     );
    }
 

@@ -17,7 +17,7 @@ namespace joedb
  int64_t Connection::handshake
  (
   Readonly_Journal &client_journal,
-  bool content_check
+  Content_Check content_check
  )
  {
   return client_journal.get_checkpoint();
@@ -25,8 +25,8 @@ namespace joedb
 
  int64_t Connection::pull
  (
-  bool lock_before,
-  bool write_data,
+  Lock_Action lock_action,
+  Data_Transfer data_transfer,
   Writable_Journal &client_journal,
   std::chrono::milliseconds wait
  )
@@ -39,7 +39,7 @@ namespace joedb
   Readonly_Journal &client_journal,
   int64_t from,
   int64_t until,
-  bool unlock_after
+  Unlock_Action unlock_after
  )
  {
   return client_journal.get_checkpoint();
