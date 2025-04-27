@@ -55,7 +55,8 @@ namespace joedb
   out << "About this version of joedb\n"
          "---------------------------\n"
          "joedb version: " << get_version();
-  out << "\nfile format version: " << Readonly_Journal::format_version;
+  out << " https://www.joedb.org/\nfile format version: ";
+  out << Readonly_Journal::format_version;
 
 #ifdef JOEDB_HAS_SSH
   out << "\nlibssh version: " << ssh_version(0) << " https://www.libssh.org/";
@@ -81,6 +82,7 @@ namespace joedb
 #endif
 
   out << "\ncompiled: " << __DATE__ << ' ' << __TIME__;
+  out << "\nsizeof(bool) = " << sizeof(bool);
   out << "\nsizeof(size_t) = " << sizeof(size_t);
   out << "\nsizeof(long) = " << sizeof(long);
   out << "\nsizeof(std::streamoff) = " << sizeof(std::streamoff);
@@ -96,6 +98,5 @@ namespace joedb
 #ifdef _POSIX_SYNCHRONIZED_IO
   out << "\n_POSIX_SYNCHRONIZED_IO = " << _POSIX_SYNCHRONIZED_IO;
 #endif
-  out << "\nweb site: https://www.joedb.org/\n";
  }
 }

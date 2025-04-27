@@ -17,7 +17,7 @@ namespace joedb
 
    template<typename F> auto transaction(F transaction)
    {
-    Journal_Lock lock(*writable_journal);
+    const Journal_Lock lock(*writable_journal);
 
     start_transaction();
 
@@ -174,7 +174,7 @@ namespace joedb
 
     if (writable_journal)
     {
-     Journal_Lock lock(*writable_journal);
+     const Journal_Lock lock(*writable_journal);
      server_checkpoint = connection.pull(false, true, *writable_journal, wait);
     }
     else
@@ -209,7 +209,7 @@ namespace joedb
 
   protected:
    Client &client;
-   Journal_Lock journal_lock;
+   const Journal_Lock journal_lock;
    bool is_locked() const {return locked;}
 
   public:

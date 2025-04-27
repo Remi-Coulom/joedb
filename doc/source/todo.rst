@@ -17,7 +17,8 @@ For next release
      - more efficient test for validity of a range of ids for vector insert/update/delete
 
    - strongly typed checkpoints, and byte_count (diff between checkpoints)
-   - enum instead of bool for content_check: none, minimal (hash first and last), quick, full.
+   - strongly typed enum instead of bool for connection functions
+   - strongly typed enum instead of bool for content_check: none, minimal (hash first and last), quick, full.
    - always use full content check for joedb_edit
    - joedbc:
 
