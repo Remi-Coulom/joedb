@@ -11,7 +11,7 @@ Two copies of two checkpoint positions are stored in the beginning of the
 
 1. Write all log entries up to this checkpoint, and the first copy of the
    checkpoint position.
-2. file.sync() (flush data and metadata to storage)
+2. file.sync() (flush data and metadata (file size) to storage)
 3. Write the second copy of the checkpoint position.
 4. file.datasync() (flush data to storage)
 
@@ -23,16 +23,15 @@ checkpoint, it is still possible to recover the previous checkpoint.
 On most modern file systems, the size of the file can be used as the second
 copy of the checkpoint position, since it will be written to storage in a
 second step, after writing data. But writing two checkpoint copies in the joedb
-file itself makes the format independent from the properties of the file
-system. It would even allow storing a joedb file on a raw device directly,
-without any file system at all.
+file itself makes the format independent from the file system. It would
+be possible to write a joedb database to a raw device directly.
 
 Soft Checkpoints
 ----------------
 
 The checkpointing method described above is durable, but very slow. Joedb
 offers and alternative "soft" checkpoint that does not call fsync. Soft
-checkpoints are stored in the joedb header as negative values to differentiate
+checkpoints are stored in the joedb header as negative values, to differentiate
 them from hard checkpoints. Soft checkpoints never overwrite the value of the
 hard checkpoint, so it will always be possible to safely recover from the most
 recent hard checkpoint in case of power failure.
@@ -45,15 +44,18 @@ You can hide the latency of a hard checkpoint by running it asynchronously,
 after a soft checkpoint: other clients will see the new data as soon as the
 soft checkpoint is written.
 
+Concurrent file access over NFS
+-------------------------------
+
+(TODO)
+
 .. _crash:
 
 Recovering from a Crash
 -----------------------
 
 If a crash occurs in the middle of a transaction, then the file may end up
-containing a dirty uncheckpointed tail. Also, if a power failure occurs while
-using soft checkpoints, the checkpoint stored in the file's header may not
-match the size of the file after rebooting. In such a situation, in order to
+containing a dirty uncheckpointed tail. In such a situation, in order to
 prevent any risk of data loss, joedb will refuse to open the file for writing.
 
 If an error is detected, you can use ``joedb_logdump --header`` to get detailed
@@ -158,7 +160,7 @@ Instead of one big commit at the end, each insert is now committed to disk one
 by one. With N = 10,000:
 
 +------+---------+----------+
-|      | sqlite3 | joedb    |
+|      | sqlite3 |   joedb  |
 +======+=========+==========+
 | real | 24.937s | 19.101s  |
 +------+---------+----------+
@@ -171,12 +173,12 @@ There is much less difference in performance compared to a big transaction, but
 joedb is still faster.
 
 joedb's soft checkpoint is similar in terms of durability to sqlite's WAL mode
-with syncrhonous=NORMAL: after a power failure, some of the most recently
+with synchronous=NORMAL: after a power failure, some of the most recently
 written data may be lost, but it is possible to recover safely to a recent
 consistent state. With N = 1,000,000:
 
 +------+---------+----------+
-|      | sqlite3 | joedb    |
+|      | sqlite3 |   joedb  |
 +======+=========+==========+
 | real | 12.826s |  2.639s  |
 +------+---------+----------+
