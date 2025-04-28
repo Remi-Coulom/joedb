@@ -36,18 +36,30 @@ them from hard checkpoints. Soft checkpoints never overwrite the value of the
 hard checkpoint, so it will always be possible to safely recover from the most
 recent hard checkpoint in case of power failure.
 
-By default, all joedb tools use soft checkpoints. If you want a hard
-checkpoint, you can either execute it manually, or set an option for
+By default, all joedb tools use soft checkpoints. A hard checkpoint can be
+written, by either executing it manually, or setting an option for
 :joedb:`Client` and :joedb:`Server`.
 
-You can hide the latency of a hard checkpoint by running it asynchronously,
-after a soft checkpoint: other clients will see the new data as soon as the
-soft checkpoint is written.
+Checkpoints and Concurrency
+---------------------------
 
-Concurrent file access over NFS
--------------------------------
+In addition to durability, another important purpose of checkpoints is to
+notify other processes of changes to a joedb file. Joedb uses an exclusive file
+lock when writing the tail or the head of the file, and a shared file lock when
+reading the head (see :doc:`concurrency`, and :doc:`file_format` for more
+details). This allows proper synchronization of simultaneous access to the same
+database.
 
-(TODO)
+Joedb's checkpoints work over NFS, when NFS is configured to correctly handle
+file locking. The performance of file locking over NFS is very bad in case of
+contention, though: on Ubuntu 24.04 with nfsv4, it takes 30 seconds for a
+client to find out that a lock it is waiting on has been released. It seems
+that the NFS protocol does not provide a way for the server to notify clients
+when a lock has been released, so the client has to poll the server from time
+to time, which makes good performance impossible. So it is reassuring that
+opening a joedb file over NFS should work correctly, but it should be avoided
+in case contention is likely. :ref:`joedb_server` provides considerably better
+performance for distributed applications.
 
 .. _crash:
 
@@ -58,13 +70,13 @@ If a crash occurs in the middle of a transaction, then the file may end up
 containing a dirty uncheckpointed tail. In such a situation, in order to
 prevent any risk of data loss, joedb will refuse to open the file for writing.
 
-If an error is detected, you can use ``joedb_logdump --header`` to get detailed
+If an error is detected, ``joedb_logdump --header`` provides detailed
 information about the size of the file, and the values of the soft and hard
 checkpoints. Recovering the journal until the hard checkpoint should be
 completely safe. Recovering until the soft checkpoint is very likely to be safe
 if it is shorter than the file size. It is also possible to recover until the
-very end of the file, but that is much more risky. Journal truncation can
-be performed with the :ref:`joedb_convert` tool.
+very end of the file, but that is much more risky. Journal truncation can be
+performed with the :ref:`joedb_convert` tool.
 
 If you do not wish to manually recover from a crash, you can also tell joedb to
 automatically recover from the most recent valid checkpoint, and silently
@@ -172,7 +184,7 @@ by one. With N = 10,000:
 There is much less difference in performance compared to a big transaction, but
 joedb is still faster.
 
-joedb's soft checkpoint is similar in terms of durability to sqlite's WAL mode
+Joedb's soft checkpoint is similar in terms of durability to sqlite's WAL mode
 with synchronous=NORMAL: after a power failure, some of the most recently
 written data may be lost, but it is possible to recover safely to a recent
 consistent state. With N = 1,000,000:
@@ -186,3 +198,4 @@ consistent state. With N = 1,000,000:
 +------+---------+----------+
 | sys  |  5.945s |  2.316s  |
 +------+---------+----------+
+
