@@ -1,5 +1,4 @@
 <svg width="4em" height="4em" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
  <circle r="45" cx="50" cy="50" fill="#222"/>
- <text x="50" y="50" dominant-baseline="central" textLength="77" lengthAdjust="spacingAndGlyphs" text-anchor="middle" style="font: bold 2em sans-serif"><tspan fill="#f55">JOE</tspan><tspan fill="#fff">DB</tspan></text>
-
+ <text dominant-baseline="central" lengthAdjust="spacingAndGlyphs" text-anchor="middle" style="font: bold 2em sans-serif" y="50" textLength="77" x="50"><tspan fill="#f55">JOE</tspan><tspan fill="#fff">DB</tspan></text>
 </svg>
