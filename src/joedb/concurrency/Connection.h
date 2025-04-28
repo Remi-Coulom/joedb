@@ -52,7 +52,7 @@ namespace joedb
    /// @param client_journal may be used to check matching content
    /// @param content_check indicates how matching content is tested
    ///
-   /// @retval connection checkpoint (-1 if not available)
+   /// @retval connection checkpoint
    virtual int64_t handshake
    (
     Readonly_Journal &client_journal,
@@ -67,7 +67,7 @@ namespace joedb
    /// @param wait duration during which the connection may wait
    /// for new data if the pull would otherwise be empty
    ///
-   /// @retval server checkpoint (-1 if not available)
+   /// @retval server checkpoint
    virtual int64_t pull
    (
     Lock_Action lock_action,
@@ -78,7 +78,7 @@ namespace joedb
 
    /// Push new data to the connection
    ///
-   /// @retval server checkpoint (-1 if not available)
+   /// @retval server checkpoint
    virtual int64_t push
    (
     Readonly_Journal &client_journal,
