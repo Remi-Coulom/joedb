@@ -6,20 +6,19 @@ For next release
 
  - Improvements:
 
-   - store Imported_Key in ssh::Connector, not passphrase
-   - do not write hard_checkpoint again if it is already written
-   - lock guards for all file locks
-   - Android logcat
-   - (asynchronous) hard_checkpoint option for the server
+   - Checkpoints:
+
+     - do not write hard_checkpoint again if it is already written
+     - lock guards for all file locks
+     - (asynchronous) hard_checkpoint option for the server
+
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
      - more efficient test for validity of a range of ids for vector insert/update/delete
 
    - strongly typed checkpoints, and byte_count (diff between checkpoints)
-   - strongly typed enum instead of bool for connection functions
-   - strongly typed enum instead of bool for content_check: none, minimal (hash first and last), quick, full.
-   - always use full content check for joedb_edit
+   - implement full content check, and always use it for joedb_edit
    - joedbc:
 
      - Split Database with Database_Storage parent
@@ -119,9 +118,12 @@ Concurrency
 
 - restart very large download from where it stopped (use hash to check before continuing?)
 - SHA-256: option for either none, fast or full.
-- Connection_Multiplexer for multiple parallel backup servers? Complicated.
-  requires asynchronous client code.
+
 - Do not crash on write error, continue to allow reading?
+- Asynchronous client code:
+
+  - Robust_Connection to synchronous backup should not block reads in Server
+  - Connection_Multiplexer for multiple parallel synchronous backup servers
 
 Use case: log with safe real-time remote backup
 -----------------------------------------------
@@ -143,7 +145,7 @@ Use case: log with safe real-time remote backup
 Performance
 -----------
 
-- File design based on llfio
+- Memory-mapped specialization of Abstract_File using llfio
 - use async_write_some and async_read_some during pull and push
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
 
@@ -154,6 +156,7 @@ joedb_admin
 
 Other Ideas
 -----------
+- Android logcat (custom std::streambuf, not part of joedb)
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - ability to indicate minimum joedb version in .joedbc file (and .joedbi?)
 - better readable interface:
