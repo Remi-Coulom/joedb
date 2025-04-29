@@ -11,6 +11,8 @@ namespace joedb
  class Client_Parser
  {
   private:
+   static constexpr const char *check_string[3] = {"none", "quick", "full"};
+
    File_Parser file_parser;
    Connection_Parser connection_parser;
 

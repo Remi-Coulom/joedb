@@ -30,7 +30,17 @@ namespace joedb
  void Client_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << " [--nocheck]";
+  out << " [--check ";
+
+  for (size_t i = 0; i < std::size(check_string); i++)
+  {
+   if (i > 0)
+    out << '|';
+   out << check_string[i];
+  }
+
+  out << ']';
+
   if (default_with_database)
    out << " [--nodb]";
   out << " <file> <connection>\n\n";
@@ -46,12 +56,15 @@ namespace joedb
   int arg_index = 0;
 
   Content_Check content_check = Content_Check::quick;
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--nocheck") == 0)
+  if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--check") == 0)
   {
    arg_index++;
-   content_check = Content_Check::none;
+   for (size_t i = 0; i < std::size(check_string); i++)
+    if (std::strcmp(argv[arg_index], check_string[i]) == 0)
+     content_check = Content_Check(i);
+   arg_index++;
   }
-  std::cerr << "content_check = " << int(content_check) << '\n';
+  std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
 
   bool with_database = default_with_database;
   if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
