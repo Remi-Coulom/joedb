@@ -23,7 +23,7 @@ namespace joedb
    template<typename T> void write(T x)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(index + sizeof(T) < size + extra_size);
+    JOEDB_DEBUG_ASSERT(index + sizeof(T) < size + extra_size);
     std::memcpy(data + index, (const char *)&x, sizeof(T));
     index += sizeof(T);
    }
@@ -32,7 +32,7 @@ namespace joedb
    template<typename T> T read()
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(index + sizeof(T) < size + extra_size);
+    JOEDB_DEBUG_ASSERT(index + sizeof(T) < size + extra_size);
     T result;
     std::memcpy((char *)&result, data + index, sizeof(T));
     index += sizeof(T);

@@ -268,7 +268,7 @@ namespace joedb::generator
   {
    out << "   void internal_delete_" << tname << "(Record_Id record_id)\n";
    out << "   {\n";
-   out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
+   out << "    JOEDB_DEBUG_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
 
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)
@@ -355,7 +355,7 @@ namespace joedb::generator
     write_type(type, true, false);
     out << " field_value_of_" << fname << "\n   )\n";
     out << "   {\n";
-    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
+    out << "    JOEDB_DEBUG_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
     out << "    storage_of_" << tname << ".field_value_of_" << fname;
     out << "[size_t(record_id) - 1] = field_value_of_" << fname;
     out << ";\n";
@@ -381,7 +381,7 @@ namespace joedb::generator
     out << "   )\n";
     out << "   {\n";
     out << "    for (size_t i = 0; i < size; i++)\n";
-    out << "     JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record_id + i));\n";
+    out << "     JOEDB_DEBUG_ASSERT(is_valid_record_id_for_" << tname << "(record_id + i));\n";
     out << "    ";
     write_type(type, false, false);
     out << " *target = &storage_of_" << tname;
@@ -914,7 +914,7 @@ namespace joedb::generator
      out << "= id_of_" << tname << "{1}";
     out << ") const\n";
     out << "   {\n";
-    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(record.get_record_id()));\n";
+    out << "    JOEDB_DEBUG_ASSERT(is_valid_record_id_for_" << tname << "(record.get_record_id()));\n";
     out << "    return (";
     write_type(type, true, false);
     out << ")(storage_of_" << tname;
@@ -949,7 +949,7 @@ namespace joedb::generator
     out << "   id_of_" << tname << " next_" << index.name << '(';
     out << "id_of_" << tname << " id)\n";
     out << "   {\n";
-    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
+    out << "    JOEDB_DEBUG_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
     out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id() - 1];\n";
     out << "    ++iterator;\n";
     out << "    if (iterator != index_of_" << index.name << ".end())\n";
@@ -961,7 +961,7 @@ namespace joedb::generator
     out << "   id_of_" << tname << " previous_" << index.name << '(';
     out << "id_of_" << tname << " id)\n";
     out << "   {\n";
-    out << "    JOEDB_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
+    out << "    JOEDB_DEBUG_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
     out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id() - 1];\n";
     out << "    if (iterator != index_of_" << index.name << ".begin())\n";
     out << "     return (--iterator)->second;\n";

@@ -128,7 +128,7 @@ namespace joedb::generator
 
    Writable_Database &get_database()
    {
-    JOEDB_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(is_locked());
     return static_cast<Client &>(client).db;
    }
  };

@@ -78,7 +78,7 @@ namespace joedb
 
    Writable &get_writable()
    {
-    JOEDB_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(is_locked());
     return static_cast<Writable_Database_Client &>(client).multiplexer;
    }
  };

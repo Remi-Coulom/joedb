@@ -102,9 +102,9 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    void use(size_t index)
    {
-    JOEDB_ASSERT(index > 1);
-    JOEDB_ASSERT(index < records.size());
-    JOEDB_ASSERT(records[index].is_free);
+    JOEDB_DEBUG_ASSERT(index > 1);
+    JOEDB_DEBUG_ASSERT(index < records.size());
+    JOEDB_DEBUG_ASSERT(records[index].is_free);
 
     Record &record = records[index];
     record.is_free = false;
@@ -124,9 +124,9 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    void free(size_t index)
    {
-    JOEDB_ASSERT(index > 1);
-    JOEDB_ASSERT(index < records.size());
-    JOEDB_ASSERT(!records[index].is_free);
+    JOEDB_DEBUG_ASSERT(index > 1);
+    JOEDB_DEBUG_ASSERT(index < records.size());
+    JOEDB_DEBUG_ASSERT(!records[index].is_free);
 
     Record &record = records[index];
     record.is_free = true;

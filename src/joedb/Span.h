@@ -22,13 +22,13 @@ namespace joedb
 
    T &operator[](size_t i)
    {
-    JOEDB_ASSERT(i < size);
+    JOEDB_DEBUG_ASSERT(i < size);
     return p[i];
    }
 
    const T &operator[](size_t i) const
    {
-    JOEDB_ASSERT(i < size);
+    JOEDB_DEBUG_ASSERT(i < size);
     return p[i];
    }
 

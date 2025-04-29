@@ -41,8 +41,8 @@ namespace joedb
    void read_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(!buffer_has_write_data());
-    JOEDB_ASSERT(buffer.index <= read_buffer_size);
+    JOEDB_DEBUG_ASSERT(!buffer_has_write_data());
+    JOEDB_DEBUG_ASSERT(buffer.index <= read_buffer_size);
 
     buffer.index = 0;
     read_buffer_size = sequential_read(buffer.data, buffer.size);
@@ -54,7 +54,7 @@ namespace joedb
    void write_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(!buffer_has_read_data());
+    JOEDB_DEBUG_ASSERT(!buffer_has_read_data());
 
     sequential_write(buffer.data, buffer.index);
     buffer.index = 0;
@@ -64,7 +64,7 @@ namespace joedb
    void check_write_buffer()
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(!buffer_has_read_data());
+    JOEDB_DEBUG_ASSERT(!buffer_has_read_data());
 
     if (buffer.index >= buffer.size)
      write_buffer();
@@ -243,7 +243,7 @@ namespace joedb
    void write_data(const char *data, size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(!buffer_has_read_data());
+    JOEDB_DEBUG_ASSERT(!buffer_has_read_data());
 
     if (n <= buffer.extra_size)
     {
@@ -273,8 +273,8 @@ namespace joedb
    size_t read_data(char *data, const size_t n)
    //////////////////////////////////////////////////////////////////////////
    {
-    JOEDB_ASSERT(!buffer_has_write_data());
-    JOEDB_ASSERT(buffer.index <= read_buffer_size);
+    JOEDB_DEBUG_ASSERT(!buffer_has_write_data());
+    JOEDB_DEBUG_ASSERT(buffer.index <= read_buffer_size);
 
     if (buffer.index + n <= read_buffer_size)
     {

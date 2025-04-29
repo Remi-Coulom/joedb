@@ -24,7 +24,7 @@ namespace joedb
     size_t decoded_size
    ) override
    {
-    JOEDB_ASSERT(encoded.size() == decoded_size);
+    JOEDB_DEBUG_ASSERT(encoded.size() == decoded_size);
     std::memcpy(decoded, encoded.data(), decoded_size);
    }
  };

@@ -1,4 +1,4 @@
-#ifndef JOEDB_ASSERT
+#ifndef JOEDB_DEBUG_ASSERT
 
 #include "joedb/error/Exception.h"
 
@@ -14,10 +14,10 @@
 
 #if defined (NDEBUG) && !defined(JOEDB_FUZZING)
 /// @ingroup error
-#define JOEDB_ASSERT(x)
+#define JOEDB_DEBUG_ASSERT(x)
 #else
 /// @ingroup error
-#define JOEDB_ASSERT(x) JOEDB_CHECK(x, joedb::Assertion_Failure)
+#define JOEDB_DEBUG_ASSERT(x) JOEDB_CHECK(x, joedb::Assertion_Failure)
 #endif
 
 /// @ingroup error

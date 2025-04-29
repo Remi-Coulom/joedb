@@ -141,7 +141,7 @@ namespace joedb
     }
     else
     {
-     JOEDB_ASSERT(push_client);
+     JOEDB_DEBUG_ASSERT(push_client);
      client_lock.emplace(*push_client); // ??? takes_time
     }
    }
@@ -757,7 +757,7 @@ namespace joedb
 
    if (!share_client && !is_readonly())
    {
-    JOEDB_ASSERT(push_client);
+    JOEDB_DEBUG_ASSERT(push_client);
     client_lock.emplace(*push_client);
    }
    else

@@ -63,7 +63,7 @@ namespace joedb
 
    Writable_Journal &get_journal()
    {
-    JOEDB_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(is_locked());
     return static_cast<Writable_Journal_Client &>(client).journal;
    }
  };

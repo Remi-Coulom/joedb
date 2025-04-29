@@ -25,7 +25,7 @@ namespace joedb
    (uint8_t *)decoded
   );
 
-  JOEDB_ASSERT(brotli_decoded_size == decoded_size);
+  JOEDB_DEBUG_ASSERT(brotli_decoded_size == decoded_size);
 
   if (result != BROTLI_DECODER_RESULT_SUCCESS)
    throw Exception("Brotli decompression failed");
