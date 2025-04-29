@@ -102,6 +102,36 @@ namespace joedb
    void exclusive_lock_head() {exclusive_lock(0, 1);}
    void unlock_head() noexcept {unlock(0, 1);}
 
+   class Head_Shared_Lock
+   {
+    private:
+     Buffered_File &file;
+    public:
+     Head_Shared_Lock(Buffered_File &file): file(file)
+     {
+      file.shared_lock_head();
+     }
+     ~Head_Shared_Lock()
+     {
+      file.unlock_head();
+     }
+   };
+
+   class Head_Exclusive_Lock
+   {
+    private:
+     Buffered_File &file;
+    public:
+     Head_Exclusive_Lock(Buffered_File &file): file(file)
+     {
+      file.exclusive_lock_head();
+     }
+     ~Head_Exclusive_Lock()
+     {
+      file.unlock_head();
+     }
+   };
+
    bool is_shared() const noexcept {return mode == Open_Mode::shared_write;}
    bool is_readonly() const noexcept {return mode == Open_Mode::read_existing;}
 

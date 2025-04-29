@@ -8,7 +8,7 @@ History
 
   - New features:
 
-    - add missing `delete_vector` operation
+    - add missing ``delete_vector`` operation
     - Transactions can return a value.
     - :joedb:`Robust_Connection` automatically reconnects after an error.
     - :ref:`Server_File` allows accessing a remote database without

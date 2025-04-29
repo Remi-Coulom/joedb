@@ -67,7 +67,7 @@ void joedb::Writable_Journal::soft_checkpoint_at(int64_t position)
  soft_index ^= 1;
  checkpoint_position = position;
 
- file.exclusive_lock_head(); // TODO: lock guard
+ Buffered_File::Head_Exclusive_Lock lock(file);
 
  const int64_t neg = -checkpoint_position;
 
@@ -77,8 +77,6 @@ void joedb::Writable_Journal::soft_checkpoint_at(int64_t position)
   sizeof(neg),
   int64_t(sizeof(neg)) * (2 * (hard_index ^ 1) + soft_index)
  );
-
- file.unlock_head();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -90,7 +88,7 @@ void joedb::Writable_Journal::hard_checkpoint_at(int64_t position)
  hard_index ^= 1;
  checkpoint_position = position;
 
- file.exclusive_lock_head(); // TODO: lock guard
+ Buffered_File::Head_Exclusive_Lock lock(file);
 
  file.pwrite
  (
@@ -109,8 +107,6 @@ void joedb::Writable_Journal::hard_checkpoint_at(int64_t position)
  );
 
  file.datasync();
-
- file.unlock_head();
 }
 
 /////////////////////////////////////////////////////////////////////////////
