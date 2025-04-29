@@ -19,7 +19,7 @@ namespace joedb
   Open_Mode default_open_mode,
   bool with_database
  ):
-  file_parser(default_open_mode, false, true, true),
+  file_parser(default_open_mode, default_open_mode == Open_Mode::read_existing, true, true),
   connection_parser(local),
   default_open_mode(default_open_mode),
   default_with_database(with_database)

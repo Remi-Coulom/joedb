@@ -13,7 +13,7 @@ namespace joedb
   friend class Client_Lock;
 
   protected:
-   virtual void read_journal() = 0;
+   virtual void read_journal() {}
 
    template<typename F> auto transaction(F transaction)
    {
@@ -65,7 +65,7 @@ namespace joedb
    Writable_Journal * const writable_journal;
 
    Connection &connection;
-   int64_t server_checkpoint;
+   int64_t connection_checkpoint;
 
    bool use_valid_data = false;
    bool use_timestamp = false;
@@ -88,13 +88,13 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void push(Unlock_Action unlock_action)
+   int64_t push(Unlock_Action unlock_action)
    //////////////////////////////////////////////////////////////////////////
    {
-    server_checkpoint = connection.push
+    return connection_checkpoint = connection.push
     (
      readonly_journal,
-     server_checkpoint,
+     connection_checkpoint,
      readonly_journal.get_checkpoint(),
      unlock_action
     );
@@ -104,7 +104,7 @@ namespace joedb
    void start_transaction()
    //////////////////////////////////////////////////////////////////////////
    {
-    server_checkpoint = connection.pull
+    connection_checkpoint = connection.pull
     (
      Lock_Action::lock_before,
      Data_Transfer::with_data,
@@ -126,7 +126,7 @@ namespace joedb
     readonly_journal(journal),
     writable_journal(journal.get_writable_journal()),
     connection(connection),
-    server_checkpoint
+    connection_checkpoint
     (
      connection.handshake(journal, content_check)
     )
@@ -152,7 +152,7 @@ namespace joedb
     return readonly_journal;
    }
 
-   int64_t get_checkpoint() const
+   int64_t get_journal_checkpoint() const
    {
     return get_journal().get_checkpoint();
    }
@@ -162,27 +162,27 @@ namespace joedb
     return get_journal().get_file().read_blob(blob);
    }
 
-   int64_t get_server_checkpoint() const
+   int64_t get_connection_checkpoint() const
    {
-    return server_checkpoint;
+    return connection_checkpoint;
    }
 
    int64_t get_checkpoint_difference() const
    {
-    return get_checkpoint() - server_checkpoint;
+    return get_journal_checkpoint() - connection_checkpoint;
    }
 
    /// @param wait indicates how long the connection may wait for new data
    /// @retval pull_size number of bytes pulled
    int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
    {
-    const int64_t old_checkpoint = get_checkpoint();
+    const int64_t old_checkpoint = get_journal_checkpoint();
 
     if (writable_journal)
     {
      const Journal_Lock lock(*writable_journal);
 
-     server_checkpoint = connection.pull
+     connection_checkpoint = connection.pull
      (
       Lock_Action::no_locking,
       Data_Transfer::with_data,
@@ -195,12 +195,12 @@ namespace joedb
 
     read_journal();
 
-    return get_checkpoint() - old_checkpoint;
+    return get_journal_checkpoint() - old_checkpoint;
    }
 
-   void push_unlock()
+   int64_t push_unlock()
    {
-    push(Unlock_Action::unlock_after);
+    return push(Unlock_Action::unlock_after);
    }
 
    virtual ~Client();
@@ -220,6 +220,12 @@ namespace joedb
   private:
    bool locked;
 
+   static Writable_Journal &dereference(Writable_Journal *journal)
+   {
+    JOEDB_RELEASE_ASSERT(journal);
+    return *journal;
+   }
+
   protected:
    Client &client;
    const Journal_Lock journal_lock;
@@ -229,7 +235,7 @@ namespace joedb
    Client_Lock(Client &client):
     locked(true),
     client(client),
-    journal_lock(*client.writable_journal)
+    journal_lock(dereference(client.writable_journal))
    {
     client.start_transaction();
    }

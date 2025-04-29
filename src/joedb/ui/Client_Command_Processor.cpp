@@ -22,14 +22,14 @@ namespace joedb
  {
   out << "joedb_client(";
 
-  const int64_t client_checkpoint = client.get_checkpoint();
-  const int64_t server_checkpoint = client.get_server_checkpoint();
+  const int64_t journal_checkpoint = client.get_journal_checkpoint();
+  const int64_t connection_checkpoint = client.get_connection_checkpoint();
 
-  out << client_checkpoint;
-  if (client_checkpoint < server_checkpoint)
-   out << '+' << server_checkpoint - client_checkpoint << ")(pull to sync";
-  else if (server_checkpoint < client_checkpoint)
-   out << '-' << client_checkpoint - server_checkpoint << ")(push to sync";
+  out << journal_checkpoint;
+  if (journal_checkpoint < connection_checkpoint)
+   out << '+' << connection_checkpoint - journal_checkpoint << ")(pull to sync";
+  else if (connection_checkpoint < journal_checkpoint)
+   out << '-' << journal_checkpoint - connection_checkpoint << ")(push to sync";
 
   out << ')';
 

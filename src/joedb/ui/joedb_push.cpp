@@ -1,9 +1,5 @@
 #include "joedb/ui/main_exception_catcher.h"
-#include "joedb/ui/Connection_Builder.h"
-#include "joedb/ui/Connection_Parser.h"
-#include "joedb/ui/File_Parser.h"
-#include "joedb/journal/Readonly_Journal.h"
-#include "joedb/concurrency/Connection.h"
+#include "joedb/ui/Client_Parser.h"
 #include "joedb/Signal.h"
 
 #include <iostream>
@@ -20,12 +16,13 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const bool local = false;
-  File_Parser file_parser(Open_Mode::read_existing, true);
-  Connection_Parser connection_parser(local);
+  const bool with_database = false;
+  const Open_Mode default_mode = Open_Mode::read_existing;
+  Client_Parser client_parser(local, default_mode, with_database);
 
   int arg_index = 1;
-  bool follow = false;
 
+  bool follow = false;
   if (arg_index < argc && std::strcmp(argv[arg_index], "--follow") == 0)
   {
    follow = true;
@@ -33,7 +30,6 @@ namespace joedb
   }
 
   int64_t until_checkpoint = std::numeric_limits<int64_t>::max();
-
   if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--until") == 0)
   {
    until_checkpoint = std::atoll(argv[arg_index + 1]);
@@ -43,23 +39,14 @@ namespace joedb
   if (arg_index >= argc)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--follow] [--until <checkpoint>] <file> <connection>\n\n";
-   file_parser.print_help(std::cerr);
-   connection_parser.print_help(std::cerr);
+   std::cerr << " [--follow] [--until <checkpoint>]";
+   client_parser.print_help(std::cerr);
    return 1;
   }
 
-  Buffered_File &file = *file_parser.parse(std::cerr, argc, argv, arg_index);
-  Readonly_Journal journal(file);
+  Client &client = client_parser.parse(argc - arg_index, argv + arg_index);
 
-  Connection &connection = connection_parser.build
-  (
-   argc - arg_index,
-   argv + arg_index,
-   &file
-  );
-
-  int64_t from_checkpoint = connection.handshake(journal, Content_Check::quick);
+  int64_t from_checkpoint = client.get_connection_checkpoint();
   Signal::start();
 
   while
@@ -68,21 +55,13 @@ namespace joedb
    Signal::get_signal() != SIGINT
   )
   {
-   if (journal.get_checkpoint() > from_checkpoint)
-   {
-    from_checkpoint = connection.push
-    (
-     journal,
-     from_checkpoint,
-     journal.get_checkpoint(),
-     Unlock_Action::keep_locked
-    );
-   }
+   if (client.get_journal_checkpoint() > from_checkpoint)
+    from_checkpoint = client.push_unlock();
 
    if (follow)
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    journal.pull();
+    client.pull();
    }
    else
     break;

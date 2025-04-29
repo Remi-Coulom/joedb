@@ -117,7 +117,7 @@ namespace joedb
    out << "; " << get_time_string_of_now();
    out << "; sessions = " << sessions.size();
    out << "; checkpoint = ";
-   out << client.get_checkpoint() << '\n';
+   out << client.get_journal_checkpoint() << '\n';
   });
  }
 
@@ -302,7 +302,7 @@ namespace joedb
     if
     (
      other_session->state == Session::State::waiting_for_push_to_pull &&
-     other_session->pull_checkpoint < client.get_checkpoint()
+     other_session->pull_checkpoint < client.get_journal_checkpoint()
     )
     {
      other_session->state = Session::State::not_locking;
@@ -455,7 +455,7 @@ namespace joedb
   }
 
   if (!session->send_pull_data)
-   session->pull_checkpoint = client.get_checkpoint();
+   session->pull_checkpoint = client.get_journal_checkpoint();
 
   start_reading
   (
@@ -482,7 +482,11 @@ namespace joedb
    if (!client_lock) // todo: deep-share option
     client.pull(); // ??? takes_time
 
-   if (wait.count() > 0 && session->pull_checkpoint == client.get_checkpoint())
+   if
+   (
+    wait.count() > 0 &&
+    session->pull_checkpoint == client.get_journal_checkpoint()
+   )
    {
     LOGID
     (
@@ -528,8 +532,8 @@ namespace joedb
    int64_t from = session->buffer.read<int64_t>();
    int64_t until = session->buffer.read<int64_t>();
 
-   if (until > client.get_checkpoint())
-    until = client.get_checkpoint();
+   if (until > client.get_journal_checkpoint())
+    until = client.get_journal_checkpoint();
    if (from > until)
     from = until;
 
@@ -669,7 +673,7 @@ namespace joedb
     session->buffer.index = 5;
     session->buffer.write<int64_t>(client_version < protocol_version ? 0 : protocol_version);
     session->buffer.write<int64_t>(session->id);
-    session->buffer.write<int64_t>(client.get_checkpoint());
+    session->buffer.write<int64_t>(client.get_journal_checkpoint());
     session->buffer.write<char>(is_readonly() ? 'R' : 'W');
 
     write_buffer_and_next_command(session, session->buffer.index);

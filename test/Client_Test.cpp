@@ -75,11 +75,11 @@ namespace joedb
 
   EXPECT_EQ(1, int(database_client.get_database().get_tables().size()));
 
-  EXPECT_TRUE(journal_client.get_checkpoint() < database_client.get_checkpoint());
+  EXPECT_TRUE(journal_client.get_journal_checkpoint() < database_client.get_journal_checkpoint());
 
   journal_client.pull();
 
-  EXPECT_TRUE(journal_client.get_checkpoint() == database_client.get_checkpoint());
+  EXPECT_TRUE(journal_client.get_journal_checkpoint() == database_client.get_journal_checkpoint());
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -290,7 +290,7 @@ namespace joedb
 
   client_file.flush();
   EXPECT_EQ(client_file.get_size(), 57);
-  EXPECT_EQ(client.get_checkpoint(), 52);
+  EXPECT_EQ(client.get_journal_checkpoint(), 52);
   EXPECT_EQ(server_file.get_size(), 52);
  }
 

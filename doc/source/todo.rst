@@ -16,8 +16,12 @@ For next release
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
      - more efficient test for validity of a range of ids for vector insert/update/delete
 
-   - strongly typed checkpoints, and byte_count (diff between checkpoints)
-   - implement full content check, and always use it for joedb_edit
+   - implement full content check
+   - joedb_push: client with a read-only journal should:
+     - lock the connection at handshake
+     - fail if behind
+     - keep the connection locked after push
+     - unlock in destructor
    - joedbc:
 
      - Split Database with Database_Storage parent
@@ -36,7 +40,6 @@ For next release
      - option to add custom member functions
 
    - joedb_pack: fill holes left by deleted elements, like write_json.
-   - joedb::Database: use vector instead of map for tables and fields
 
  - Tooling:
 

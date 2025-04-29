@@ -34,7 +34,7 @@ while true; do
   continue
  fi
 
- joedb_push $tmp_joedb file "$1"
+ joedb_push --check full $tmp_joedb file "$1"
  if [ $? -eq 0 ]; then
   echo Push was successful
  else
