@@ -13,7 +13,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  joedb::Destructor_Logger::set_logger(nullptr);
  joedb::Memory_File file;
  joedb::Connection connection;
- joedb::Writable_Journal_Client client(file, connection, false);
+ joedb::Writable_Journal_Client client(file, connection);
 
  asio::io_context io_context;
 

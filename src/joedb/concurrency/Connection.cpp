@@ -39,7 +39,7 @@ namespace joedb
   Readonly_Journal &client_journal,
   int64_t from,
   int64_t until,
-  Unlock_Action unlock_after
+  Unlock_Action unlock_action
  )
  {
   return client_journal.get_checkpoint();
