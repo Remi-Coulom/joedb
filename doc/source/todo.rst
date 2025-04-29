@@ -17,11 +17,17 @@ For next release
      - more efficient test for validity of a range of ids for vector insert/update/delete
 
    - implement full content check
+
    - joedb_push: client with a read-only journal should:
+
      - lock the connection at handshake
      - fail if behind
      - keep the connection locked after push
      - unlock in destructor
+     - in a separate Readonly_Client class to handle non-writable journal
+     - A Client superclass above Readonly_Client and Writable_Client? May be
+       necessary for Server. Nice for joedb_client?
+
    - joedbc:
 
      - Split Database with Database_Storage parent
