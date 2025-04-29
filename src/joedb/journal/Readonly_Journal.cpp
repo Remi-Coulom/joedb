@@ -38,18 +38,19 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 {
  if (lock.size != 0)
  {
-  if (file.pread((char *)(&lock.header), Header::size, 0) < Header::size)
+  Header header;
+  if (file.pread((char *)(&header), Header::size, 0) < Header::size)
    file.reading_past_end_of_file();
 
   file.set_position(Header::size);
 
-  if (lock.header.signature != Header::joedb && !lock.ignore_errors)
+  if (header.signature != Header::joedb && !lock.ignore_errors)
    throw Exception("missing joedb signature");
 
-  if (lock.header.version != format_version && !lock.ignore_errors)
+  if (header.version != format_version && !lock.ignore_errors)
    throw Exception("unsupported file format version");
 
-  read_checkpoint(lock.header.checkpoint);
+  read_checkpoint(header.checkpoint);
 
   if (lock.size > Header::ssize && lock.ignore_errors)
    checkpoint_position = lock.size;

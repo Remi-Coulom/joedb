@@ -12,10 +12,11 @@ joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
   throw Exception("Cannot create Writable_Journal with read-only file");
  else if (lock.size == 0)
  {
-  lock.header.checkpoint.fill(Header::size);
-  lock.header.version = format_version;
-  lock.header.signature = Header::joedb;
-  file.sequential_write((const char *)(&lock.header), Header::size);
+  Header header;
+  header.checkpoint.fill(Header::size);
+  header.version = format_version;
+  header.signature = Header::joedb;
+  file.sequential_write((const char *)(&header), Header::size);
  }
  else if (lock.size > 0 && lock.size > checkpoint_position)
  {

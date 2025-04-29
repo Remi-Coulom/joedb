@@ -2,7 +2,6 @@
 #define joedb_Journal_Construction_Lock_declared
 
 #include "joedb/journal/Buffered_File.h"
-#include "joedb/journal/Header.h"
 
 namespace joedb
 {
@@ -13,7 +12,6 @@ namespace joedb
    Buffered_File &file;
    const bool ignore_errors;
    const int64_t size;
-   Header header;
 
    explicit Journal_Construction_Lock
    (

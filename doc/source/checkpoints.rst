@@ -40,27 +40,6 @@ By default, all joedb tools use soft checkpoints. A hard checkpoint can be
 written, by either executing it manually, or setting an option for
 :joedb:`Client` and :joedb:`Server`.
 
-Checkpoints and Concurrency
----------------------------
-
-In addition to durability, another important purpose of checkpoints is to
-notify other processes of changes to a joedb file. Joedb uses an exclusive file
-lock when writing the tail or the head of the file, and a shared file lock when
-reading the head (see :doc:`concurrency`, and :doc:`file_format` for more
-details). This allows proper synchronization of simultaneous access to the same
-database.
-
-Joedb's checkpoints work over NFS, when NFS is configured to correctly handle
-file locking. The performance of file locking over NFS is very bad in case of
-contention, though: on Ubuntu 24.04 with nfsv4, it takes 30 seconds for a
-client to find out that a lock it is waiting on has been released. It seems
-that the NFS protocol does not provide a way for the server to notify clients
-when a lock has been released, so the client has to poll the server from time
-to time, which makes good performance impossible. So it is reassuring that
-opening a joedb file over NFS should work correctly, but it should be avoided
-in case contention is likely. :ref:`joedb_server` provides considerably better
-performance for distributed applications.
-
 .. _crash:
 
 Recovering from a Crash
@@ -76,11 +55,38 @@ checkpoints. Recovering the journal until the hard checkpoint should be
 completely safe. Recovering until the soft checkpoint is very likely to be safe
 if it is shorter than the file size. It is also possible to recover until the
 very end of the file, but that is much more risky. Journal truncation can be
-performed with the :ref:`joedb_convert` tool.
+performed with the :ref:`joedb_push` tool.
 
 If you do not wish to manually recover from a crash, you can also tell joedb to
 automatically recover from the most recent valid checkpoint, and silently
 overwrite the uncheckpointed tail (TODO).
+
+Checkpoints and Concurrency
+---------------------------
+
+In addition to durability, another important purpose of checkpoints is to
+notify other processes of changes to a joedb file. Joedb uses an exclusive lock
+when writing checkpoints, and a shared lock when reading them (see
+:doc:`concurrency`, and :doc:`file_format` for more details). This allows
+proper synchronization of simultaneous access to the same database.
+
+Joedb relies on locks and fsync to handle concurrency and durability, but those
+features are not available for all file systems. This is particularly true when
+mounting a remote drive. Beware that sshfs, does not support file locking or
+fsync. Depending on its version and how it is configured, NFS may or may not
+properly support file locking and fsync
+
+Even when properly configured for concurrency and durability, the performance
+of file locking over NFS can be very bad in case of contention: on Ubuntu 24.04
+with nfsv4, it takes 30 seconds for a client to find out that a lock it is
+waiting for has been released. It seems that the NFS protocol does not provide
+a way for the server to notify clients when a lock has been released, so the
+client has to poll the server from time to time, which makes good performance
+impossible. So, although it may sometimes work correctly, concurrency over NFS
+is very inefficient.
+
+For distributed access to a database, :ref:`joedb_server` provides considerably
+better reliability and performance.
 
 Benchmarks
 ----------

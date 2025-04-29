@@ -3,6 +3,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Header.h"
 #include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"

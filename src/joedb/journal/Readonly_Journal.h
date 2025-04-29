@@ -4,6 +4,7 @@
 #include "joedb/Writable.h"
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Journal_Construction_Lock.h"
+#include "joedb/journal/Header.h"
 
 #include <array>
 
@@ -90,7 +91,7 @@ namespace joedb
 
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint() const {return checkpoint_position;}
-   bool is_empty() const {return file.get_size() == Header::size;}
+   bool is_empty() const {return file.get_size() == Header::ssize;}
    bool is_shared() const {return file.is_shared();}
    int64_t pull();
    const Buffered_File &get_file() const {return file;}
