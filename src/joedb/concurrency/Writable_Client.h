@@ -1,5 +1,5 @@
-#ifndef joedb_Client_declared
-#define joedb_Client_declared
+#ifndef joedb_Writable_Client_declared
+#define joedb_Writable_Client_declared
 
 #include "joedb/concurrency/Connection.h"
 #include "joedb/error/Destructor_Logger.h"
@@ -17,7 +17,7 @@ namespace joedb
 
    template<typename F> auto transaction(F transaction)
    {
-    const Journal_Lock lock(*writable_journal);
+    const Journal_Lock lock(journal);
 
     start_transaction();
 
@@ -61,8 +61,7 @@ namespace joedb
    }
 
   private:
-   Readonly_Journal &readonly_journal;
-   Writable_Journal * const writable_journal;
+   Writable_Journal &journal;
 
    Connection &connection;
    int64_t connection_checkpoint;
@@ -76,15 +75,15 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     if (use_valid_data)
-     writable_journal->valid_data();
+     journal.valid_data();
 
     if (use_timestamp)
-     writable_journal->timestamp(std::time(nullptr));
+     journal.timestamp(std::time(nullptr));
 
-    writable_journal->soft_checkpoint();
+    journal.soft_checkpoint();
 
     if (use_hard_checkpoint)
-     writable_journal->hard_checkpoint();
+     journal.hard_checkpoint();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -93,9 +92,9 @@ namespace joedb
    {
     return connection_checkpoint = connection.push
     (
-     readonly_journal,
+     journal,
      connection_checkpoint,
-     readonly_journal.get_checkpoint(),
+     journal.get_checkpoint(),
      unlock_action
     );
    }
@@ -108,7 +107,7 @@ namespace joedb
     (
      Lock_Action::lock_before,
      Data_Transfer::with_data,
-     *writable_journal
+     journal
     );
 
     read_journal();
@@ -119,12 +118,11 @@ namespace joedb
    Client
    //////////////////////////////////////////////////////////////////////////
    (
-    Readonly_Journal &journal,
+    Writable_Journal &journal,
     Connection &connection,
     Content_Check content_check = Content_Check::quick
    ):
-    readonly_journal(journal),
-    writable_journal(journal.get_writable_journal()),
+    journal(journal),
     connection(connection),
     connection_checkpoint
     (
@@ -142,14 +140,9 @@ namespace joedb
    /// Use hard checkpoints (default = false)
    void set_hard_checkpoint(bool b) {use_hard_checkpoint = b;}
 
-   bool is_readonly() const
-   {
-    return writable_journal == nullptr;
-   }
-
    const Readonly_Journal &get_journal() const
    {
-    return readonly_journal;
+    return journal;
    }
 
    int64_t get_journal_checkpoint() const
@@ -178,20 +171,15 @@ namespace joedb
    {
     const int64_t old_checkpoint = get_journal_checkpoint();
 
-    if (writable_journal)
-    {
-     const Journal_Lock lock(*writable_journal);
+    const Journal_Lock lock(journal);
 
-     connection_checkpoint = connection.pull
-     (
-      Lock_Action::no_locking,
-      Data_Transfer::with_data,
-      *writable_journal,
-      wait
-     );
-    }
-    else
-     readonly_journal.pull();
+    connection_checkpoint = connection.pull
+    (
+     Lock_Action::no_locking,
+     Data_Transfer::with_data,
+     journal,
+     wait
+    );
 
     read_journal();
 
@@ -220,12 +208,6 @@ namespace joedb
   private:
    bool locked;
 
-   static Writable_Journal &dereference(Writable_Journal *journal)
-   {
-    JOEDB_RELEASE_ASSERT(journal);
-    return *journal;
-   }
-
   protected:
    Client &client;
    const Journal_Lock journal_lock;
@@ -235,7 +217,7 @@ namespace joedb
    Client_Lock(Client &client):
     locked(true),
     client(client),
-    journal_lock(dereference(client.writable_journal))
+    journal_lock(client.journal)
    {
     client.start_transaction();
    }
