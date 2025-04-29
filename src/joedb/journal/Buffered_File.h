@@ -70,17 +70,6 @@ namespace joedb
      write_buffer();
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   void ensure_available_write_buffer(size_t n)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    JOEDB_ASSERT(n < buffer.size);
-    JOEDB_ASSERT(!buffer_has_read_data());
-
-    if (buffer.index + n >= buffer.size)
-     write_buffer();
-   }
-
    Open_Mode mode;
    bool locked_tail;
 
