@@ -1,7 +1,7 @@
 #ifndef joedb_Writable_Database_Client_declared
 #define joedb_Writable_Database_Client_declared
 
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Writable_Client.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/Multiplexer.h"
 
@@ -12,14 +12,14 @@ namespace joedb
   class Writable_Database_Client_Data
   {
    protected:
-    Writable_Journal journal;
+    Writable_Journal data_journal;
     Database database;
     Multiplexer multiplexer;
 
    public:
     Writable_Database_Client_Data(Buffered_File &file):
-     journal(file),
-     multiplexer{journal, database}
+     data_journal(file),
+     multiplexer{data_journal, database}
     {
     }
   };
@@ -28,12 +28,12 @@ namespace joedb
  /// @ingroup concurrency
  class Writable_Database_Client:
   protected detail::Writable_Database_Client_Data,
-  public Client
+  public Writable_Client
  {
   friend class Writable_Database_Client_Lock;
 
   protected:
-   void read_journal() override {journal.play_until_checkpoint(database);}
+   void read_journal() override {data_journal.play_until_checkpoint(database);}
 
   public:
    Writable_Database_Client
@@ -43,7 +43,7 @@ namespace joedb
     Content_Check content_check = Content_Check::quick
    ):
     Writable_Database_Client_Data(file),
-    Client(journal, connection, content_check)
+    Writable_Client(data_journal, connection, content_check)
    {
     read_journal();
    }
@@ -55,7 +55,7 @@ namespace joedb
 
    template<typename F> auto transaction(F transaction)
    {
-    return Client::transaction([this, &transaction]()
+    return Writable_Client::transaction([this, &transaction]()
     {
      return transaction(database, multiplexer);
     });
@@ -78,7 +78,7 @@ namespace joedb
 
    Writable &get_writable()
    {
-    JOEDB_DEBUG_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(locked);
     return static_cast<Writable_Database_Client &>(client).multiplexer;
    }
  };

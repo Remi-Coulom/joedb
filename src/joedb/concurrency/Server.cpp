@@ -134,16 +134,13 @@ namespace joedb
 
    if (!client_lock)
    {
-    if (is_readonly())
+    if (!writable_journal_client)
     {
      LOGID("Error: locking pull-only server\n");
      session->buffer.data[0] = 'R';
     }
     else
-    {
-     JOEDB_DEBUG_ASSERT(push_client);
-     client_lock.emplace(*push_client); // ??? takes_time
-    }
+     client_lock.emplace(*writable_journal_client); // ??? takes_time
    }
 
    if (session->state == Session::State::waiting_for_lock_to_pull)
@@ -346,7 +343,7 @@ namespace joedb
    LOGID("pushing, from = " << from << ", until = " << until);
    session->progress_bar.emplace(until - from, log_pointer);
 
-   if (is_readonly())
+   if (!writable_journal_client)
     session->push_status = 'R';
    else if (conflict)
     session->push_status = 'C';
@@ -674,7 +671,7 @@ namespace joedb
     session->buffer.write<int64_t>(client_version < protocol_version ? 0 : protocol_version);
     session->buffer.write<int64_t>(session->id);
     session->buffer.write<int64_t>(client.get_journal_checkpoint());
-    session->buffer.write<char>(is_readonly() ? 'R' : 'W');
+    session->buffer.write<char>(writable_journal_client ? 'W' : 'R');
 
     write_buffer_and_next_command(session, session->buffer.index);
     return;
@@ -732,7 +729,7 @@ namespace joedb
  ):
   start_time(std::chrono::steady_clock::now()),
   client(client),
-  push_client(dynamic_cast<Writable_Journal_Client*>(&client)),
+  writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   share_client(share_client),
   io_context(io_context),
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
@@ -745,8 +742,8 @@ namespace joedb
   locked(false),
   log_pointer(log_pointer)
  {
-  if (push_client)
-   push_client->push_unlock();
+  if (writable_journal_client)
+   writable_journal_client->push_unlock();
 
   start();
  }
@@ -759,13 +756,8 @@ namespace joedb
   {
    stopped = false;
 
-   if (!share_client && !is_readonly())
-   {
-    JOEDB_DEBUG_ASSERT(push_client);
-    client_lock.emplace(*push_client);
-   }
-   else
-    client.pull();
+   if (!share_client && writable_journal_client)
+    client_lock.emplace(*writable_journal_client);
 
    interrupt_signals.async_wait([this](const asio::error_code &error, int)
    {

@@ -29,9 +29,20 @@ namespace joedb
 
   Client &client = client_parser.parse(argc - 1, argv + 1);
 
-  Client_Command_Processor interpreter(client);
-  interpreter.set_prompt(true);
-  interpreter.main_loop(std::cin, std::cout);
+  std::unique_ptr<Client_Command_Processor> interpreter;
+
+  Readonly_Client *readonly_client = dynamic_cast<Readonly_Client*>(&client);
+  Writable_Client *writable_client = dynamic_cast<Writable_Client*>(&client);
+
+  if (readonly_client)
+   interpreter.reset(new Readonly_Client_Command_Processor(*readonly_client));
+  else if (writable_client)
+   interpreter.reset(new Writable_Client_Command_Processor(*writable_client));
+
+  JOEDB_RELEASE_ASSERT(interpreter);
+
+  interpreter->set_prompt(true);
+  interpreter->main_loop(std::cin, std::cout);
 
   return 0;
  }

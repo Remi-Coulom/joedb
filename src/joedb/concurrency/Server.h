@@ -23,7 +23,7 @@ namespace joedb
   private:
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
    Client &client;
-   Writable_Journal_Client *push_client;
+   Writable_Journal_Client *writable_journal_client;
    const bool share_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
    asio::io_context &io_context;
@@ -208,11 +208,6 @@ namespace joedb
    );
 
    uint16_t get_port() const {return port;}
-
-   bool is_readonly() const
-   {
-    return client.is_readonly() || !push_client;
-   }
 
    std::chrono::milliseconds get_time_stamp() const;
 

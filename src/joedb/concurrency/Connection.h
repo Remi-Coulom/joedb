@@ -49,21 +49,19 @@ namespace joedb
   public:
    /// Called during Client construction
    ///
-   /// @param lock_action whether the connection should be locked
    /// @param client_journal may be used to check matching content
    /// @param content_check indicates how matching content is tested
    ///
    /// @retval connection checkpoint
    virtual int64_t handshake
    (
-    Lock_Action lock_action,
     Readonly_Journal &client_journal,
     Content_Check content_check
    );
 
    /// Pull from the connection
    ///
-   /// @param lock_action whether the connection should be locked
+   /// @param lock_action whether the connection should be locked before pulling
    /// @param data_transfer whether data should be transferred
    /// @param client_journal journal to pull into
    /// @param wait duration during which the connection may wait

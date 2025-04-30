@@ -1,7 +1,7 @@
 #ifndef joedb_Readonly_Journal_Client_declared
 #define joedb_Readonly_Journal_Client_declared
 
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Readonly_Client.h"
 
 namespace joedb
 {
@@ -10,17 +10,17 @@ namespace joedb
   class Readonly_Journal_Client_Data
   {
    protected:
-    Readonly_Journal journal;
+    Readonly_Journal data_journal;
 
    public:
-    Readonly_Journal_Client_Data(Buffered_File &file): journal(file) {}
+    Readonly_Journal_Client_Data(Buffered_File &file): data_journal(file) {}
   };
  }
 
  /// @ingroup concurrency
  class Readonly_Journal_Client:
   protected detail::Readonly_Journal_Client_Data,
-  public Client
+  public Readonly_Client
  {
   friend class Readonly_Journal_Client_Lock;
 
@@ -32,7 +32,7 @@ namespace joedb
     Content_Check content_check = Content_Check::quick
    ):
     Readonly_Journal_Client_Data(file),
-    Client(journal, connection, content_check)
+    Readonly_Client(data_journal, connection, content_check)
    {
    }
  };

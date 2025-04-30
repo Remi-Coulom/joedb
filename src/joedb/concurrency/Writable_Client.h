@@ -1,23 +1,22 @@
 #ifndef joedb_Writable_Client_declared
 #define joedb_Writable_Client_declared
 
-#include "joedb/concurrency/Connection.h"
+#include "joedb/concurrency/Client.h"
 #include "joedb/error/Destructor_Logger.h"
 
 namespace joedb
 {
- /// Handle concurrent access to a file with a joedb::Connection
+ /// Writable specialization of Client
+ ///
  /// @ingroup concurrency
- class Client
+ class Writable_Client: public Client
  {
   friend class Client_Lock;
 
   protected:
-   virtual void read_journal() {}
-
    template<typename F> auto transaction(F transaction)
    {
-    const Journal_Lock lock(journal);
+    const Journal_Lock lock(get_writable_journal());
 
     start_transaction();
 
@@ -61,73 +60,48 @@ namespace joedb
    }
 
   private:
-   Writable_Journal &journal;
-
-   Connection &connection;
-   int64_t connection_checkpoint;
+   Writable_Journal &get_writable_journal()
+   {
+    return static_cast<Writable_Journal&>(Client::journal);
+   }
 
    bool use_valid_data = false;
    bool use_timestamp = false;
    bool use_hard_checkpoint = false;
 
-   //////////////////////////////////////////////////////////////////////////
    void do_checkpoint()
-   //////////////////////////////////////////////////////////////////////////
    {
     if (use_valid_data)
-     journal.valid_data();
+     get_writable_journal().valid_data();
 
     if (use_timestamp)
-     journal.timestamp(std::time(nullptr));
+     get_writable_journal().timestamp(std::time(nullptr));
 
-    journal.soft_checkpoint();
+    get_writable_journal().soft_checkpoint();
 
     if (use_hard_checkpoint)
-     journal.hard_checkpoint();
+     get_writable_journal().hard_checkpoint();
    }
 
-   //////////////////////////////////////////////////////////////////////////
-   int64_t push(Unlock_Action unlock_action)
-   //////////////////////////////////////////////////////////////////////////
-   {
-    return connection_checkpoint = connection.push
-    (
-     journal,
-     connection_checkpoint,
-     journal.get_checkpoint(),
-     unlock_action
-    );
-   }
-
-   //////////////////////////////////////////////////////////////////////////
    void start_transaction()
-   //////////////////////////////////////////////////////////////////////////
    {
     connection_checkpoint = connection.pull
     (
      Lock_Action::lock_before,
      Data_Transfer::with_data,
-     journal
+     get_writable_journal()
     );
 
     read_journal();
    }
 
   public:
-   //////////////////////////////////////////////////////////////////////////
-   Client
-   //////////////////////////////////////////////////////////////////////////
+   Writable_Client
    (
     Writable_Journal &journal,
     Connection &connection,
     Content_Check content_check = Content_Check::quick
-   ):
-    journal(journal),
-    connection(connection),
-    connection_checkpoint
-    (
-     connection.handshake(journal, content_check)
-    )
+   ): Client(journal, connection, content_check)
    {
    }
 
@@ -140,44 +114,23 @@ namespace joedb
    /// Use hard checkpoints (default = false)
    void set_hard_checkpoint(bool b) {use_hard_checkpoint = b;}
 
-   const Readonly_Journal &get_journal() const
-   {
-    return journal;
-   }
-
-   int64_t get_journal_checkpoint() const
-   {
-    return get_journal().get_checkpoint();
-   }
-
-   std::string read_blob(Blob blob) const
-   {
-    return get_journal().get_file().read_blob(blob);
-   }
-
-   int64_t get_connection_checkpoint() const
-   {
-    return connection_checkpoint;
-   }
-
-   int64_t get_checkpoint_difference() const
-   {
-    return get_journal_checkpoint() - connection_checkpoint;
-   }
-
    /// @param wait indicates how long the connection may wait for new data
+   ///
    /// @retval pull_size number of bytes pulled
-   int64_t pull(std::chrono::milliseconds wait = std::chrono::milliseconds(0))
+   int64_t pull
+   (
+    std::chrono::milliseconds wait = std::chrono::milliseconds(0)
+   ) override
    {
     const int64_t old_checkpoint = get_journal_checkpoint();
 
-    const Journal_Lock lock(journal);
+    const Journal_Lock lock(get_writable_journal());
 
     connection_checkpoint = connection.pull
     (
      Lock_Action::no_locking,
      Data_Transfer::with_data,
-     journal,
+     get_writable_journal(),
      wait
     );
 
@@ -186,12 +139,15 @@ namespace joedb
     return get_journal_checkpoint() - old_checkpoint;
    }
 
-   int64_t push_unlock()
+   void pull_push()
    {
-    return push(Unlock_Action::unlock_after);
+    transaction([](){});
    }
 
-   virtual ~Client();
+   void push_unlock()
+   {
+    push(Unlock_Action::unlock_after);
+   }
  };
 
  /// Lock object that allows writing to a database managed by a joedb::Client
@@ -205,19 +161,16 @@ namespace joedb
  /// @ingroup concurrency
  class Client_Lock
  {
-  private:
+  protected:
+   Writable_Client &client;
+   const Journal_Lock journal_lock;
    bool locked;
 
-  protected:
-   Client &client;
-   const Journal_Lock journal_lock;
-   bool is_locked() const {return locked;}
-
   public:
-   Client_Lock(Client &client):
-    locked(true),
+   Client_Lock(Writable_Client &client):
     client(client),
-    journal_lock(client.journal)
+    journal_lock(client.get_writable_journal()),
+    locked(true)
    {
     client.start_transaction();
    }
@@ -231,7 +184,7 @@ namespace joedb
    /// times during the life of the lock.
    void push()
    {
-    JOEDB_RELEASE_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(locked);
     client.do_checkpoint();
     client.push(Unlock_Action::keep_locked);
    }
@@ -242,10 +195,9 @@ namespace joedb
    /// Do not call any other member function after this one.
    void push_unlock()
    {
-    JOEDB_RELEASE_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(locked);
     client.do_checkpoint();
     client.push(Unlock_Action::unlock_after);
-    locked = false;
    }
 
    /// Cancel the transaction right before lock destruction
@@ -254,11 +206,11 @@ namespace joedb
    /// Do not call any other member function after this one.
    void unlock()
    {
-    JOEDB_RELEASE_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(locked);
     client.connection.unlock();
-    locked = false;
    }
 
+   /// The destructor unlocks the connection if necessary
    ~Client_Lock()
    {
     if (locked)

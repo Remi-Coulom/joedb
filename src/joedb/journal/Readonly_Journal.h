@@ -125,9 +125,6 @@ namespace joedb
    }
 
    static constexpr uint32_t format_version = 5;
-
-   virtual Writable_Journal *get_writable_journal() {return nullptr;}
-   virtual ~Readonly_Journal() = default;
  };
 }
 

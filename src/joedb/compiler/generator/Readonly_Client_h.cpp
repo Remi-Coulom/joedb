@@ -21,7 +21,7 @@ namespace joedb::generator
 
   out << R"RRR(
 #include "Database.h"
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/journal/File.h"
 
 )RRR";
@@ -48,7 +48,7 @@ namespace joedb::generator
  /// Client for a read-only file (allows pulling, unlike @ref Readonly_Database)
  class Readonly_Client:
   private detail::Readonly_Client_Data,
-  public joedb::Client
+  public joedb::Readonly_Client
  {
   private:
    const int64_t schema_checkpoint;
@@ -56,7 +56,7 @@ namespace joedb::generator
   protected:
    virtual void read_journal() override
    {
-    journal.play_until_checkpoint(db);
+    joedb::Readonly_Client::journal.play_until_checkpoint(db);
     if (db.get_schema_checkpoint() > schema_checkpoint)
      Database::throw_exception("Pulled a schema change");
    }
@@ -64,9 +64,9 @@ namespace joedb::generator
   public:
    Readonly_Client(joedb::File &file):
     detail::Readonly_Client_Data(file),
-    joedb::Client
+    joedb::Readonly_Client
     (
-     journal,
+     Readonly_Client_Data::journal,
      Readonly_Client_Data::connection,
      joedb::Content_Check::none
     ),

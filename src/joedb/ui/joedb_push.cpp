@@ -1,5 +1,6 @@
 #include "joedb/ui/main_exception_catcher.h"
 #include "joedb/ui/Client_Parser.h"
+#include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/Signal.h"
 
 #include <iostream>
@@ -45,27 +46,28 @@ namespace joedb
   }
 
   Client &client = client_parser.parse(argc - arg_index, argv + arg_index);
+  Readonly_Client *readonly_client = dynamic_cast<Readonly_Client*>(&client);
+  JOEDB_RELEASE_ASSERT(readonly_client);
 
-  int64_t from_checkpoint = client.get_connection_checkpoint();
-  Signal::start();
-
-  while
-  (
-   from_checkpoint < until_checkpoint &&
-   Signal::get_signal() != SIGINT
-  )
+  if (follow)
   {
-   if (client.get_journal_checkpoint() > from_checkpoint)
-    from_checkpoint = client.push_unlock();
+   Signal::start();
 
-   if (follow)
+   while
+   (
+    client.get_connection_checkpoint() < until_checkpoint &&
+    Signal::get_signal() != SIGINT
+   )
    {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
     client.pull();
+    if (client.get_journal_checkpoint() > client.get_connection_checkpoint())
+     readonly_client->push(Unlock_Action::keep_locked);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
    }
-   else
-    break;
   }
+
+  // TODO: single push_unlock if !follow?
+  // TODO: explicit unlock before destruction
 
   return 0;
  }

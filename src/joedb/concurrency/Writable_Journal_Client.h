@@ -1,7 +1,7 @@
 #ifndef joedb_Writable_Journal_Client_declared
 #define joedb_Writable_Journal_Client_declared
 
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Writable_Client.h"
 
 namespace joedb
 {
@@ -10,24 +10,24 @@ namespace joedb
   class Writable_Journal_Client_Data
   {
    protected:
-    Writable_Journal journal;
+    Writable_Journal data_journal;
 
    public:
-    Writable_Journal_Client_Data(Buffered_File &file): journal(file) {}
+    Writable_Journal_Client_Data(Buffered_File &file): data_journal(file) {}
   };
  }
 
  /// @ingroup concurrency
  class Writable_Journal_Client:
   protected detail::Writable_Journal_Client_Data,
-  public Client
+  public Writable_Client
  {
   friend class Writable_Journal_Client_Lock;
 
   protected:
    void read_journal() override
    {
-    journal.skip_directly_to(journal.get_checkpoint());
+    data_journal.skip_directly_to(data_journal.get_checkpoint());
    }
 
   public:
@@ -38,16 +38,16 @@ namespace joedb
     Content_Check content_check = Content_Check::quick
    ):
     Writable_Journal_Client_Data(file),
-    Client(journal, connection, content_check)
+    Writable_Client(data_journal, connection, content_check)
    {
     read_journal();
    }
 
    template<typename F> auto transaction(F transaction)
    {
-    return Client::transaction([this, &transaction]()
+    return Writable_Client::transaction([this, &transaction]()
     {
-     return transaction(journal);
+     return transaction(data_journal);
     });
    }
  };
@@ -63,8 +63,8 @@ namespace joedb
 
    Writable_Journal &get_journal()
    {
-    JOEDB_DEBUG_ASSERT(is_locked());
-    return static_cast<Writable_Journal_Client &>(client).journal;
+    JOEDB_DEBUG_ASSERT(locked);
+    return static_cast<Writable_Journal_Client &>(client).data_journal;
    }
  };
 }

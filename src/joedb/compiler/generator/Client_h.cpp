@@ -21,7 +21,7 @@ namespace joedb::generator
 
   out << R"RRR(
 #include "Writable_Database.h"
-#include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Writable_Client.h"
 
 )RRR";
 
@@ -45,7 +45,7 @@ namespace joedb::generator
  /// Handle concurrent access to a @ref joedb::Buffered_File using a @ref joedb::Connection
  class Client:
   protected detail::Client_Data,
-  public joedb::Client
+  public joedb::Writable_Client
  {
   friend class Client_Lock;
 
@@ -72,14 +72,14 @@ namespace joedb::generator
     joedb::Content_Check content_check = joedb::Content_Check::quick
    ):
     detail::Client_Data(file),
-    joedb::Client(db.journal, connection, content_check),
+    joedb::Writable_Client(db.journal, connection, content_check),
     schema_checkpoint(0)
    {
     if (get_checkpoint_difference() > 0)
      push_unlock();
 
     db.play_journal(); // makes transaction shorter if db is big
-    joedb::Client::transaction([this](){
+    joedb::Writable_Client::transaction([this](){
      db.initialize();
     });
 
@@ -107,7 +107,7 @@ namespace joedb::generator
     F transaction
    )
    {
-    return joedb::Client::transaction([&]()
+    return joedb::Writable_Client::transaction([&]()
     {
      return transaction(db);
     });
@@ -128,7 +128,7 @@ namespace joedb::generator
 
    Writable_Database &get_database()
    {
-    JOEDB_DEBUG_ASSERT(is_locked());
+    JOEDB_DEBUG_ASSERT(locked);
     return static_cast<Client &>(client).db;
    }
  };

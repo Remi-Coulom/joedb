@@ -5,6 +5,7 @@
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/type_io.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Readonly_Database_Client.h"
@@ -20,7 +21,7 @@ namespace joedb
  void Client_Command_Processor::write_prompt(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "joedb_client(";
+  out << get_name() << '(';
 
   const int64_t journal_checkpoint = client.get_journal_checkpoint();
   const int64_t connection_checkpoint = client.get_connection_checkpoint();
@@ -30,11 +31,7 @@ namespace joedb
    out << '+' << connection_checkpoint - journal_checkpoint << ")(pull to sync";
   else if (connection_checkpoint < journal_checkpoint)
    out << '-' << journal_checkpoint - connection_checkpoint << ")(push to sync";
-
   out << ')';
-
-  if (client.is_readonly())
-   out << "(readonly)";
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -77,15 +74,9 @@ namespace joedb
 
    out << R"RRR(Client
 ~~~~~~
+ db
  pull [<wait_seconds>]
  pull_every [<wait_seconds>] [<sleep_seconds>]
- db
- push
- transaction
-
- set_valid_data <true|false>
- set_timestamp <true|false>
- set_hard_checkpoint <true|false>
 
 )RRR";
 
@@ -120,10 +111,6 @@ namespace joedb
     interpreter.main_loop(in, out);
    }
   }
-  else if (command == "push") ///////////////////////////////////////////////
-  {
-   client.push_unlock();
-  }
   else if (command == "pull") ///////////////////////////////////////////////
   {
    float wait_seconds = 0;
@@ -144,6 +131,84 @@ namespace joedb
     pull(out, std::chrono::milliseconds(std::lround(wait_seconds * 1000)));
     sleep(sleep_seconds, out);
    }
+  }
+  else //////////////////////////////////////////////////////////////////////
+   return Command_Interpreter::process_command(command, parameters, in, out);
+
+  return Status::done;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Command_Processor::Status Readonly_Client_Command_Processor::process_command
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const std::string &command,
+  std::istream &parameters,
+  std::istream &in,
+  std::ostream &out
+ )
+ {
+  if (command == "help") ////////////////////////////////////////////////////
+  {
+   Client_Command_Processor::process_command(command, parameters, in, out);
+
+   out << R"RRR(Readonly Client
+~~~~~~~~~~~~~~~
+ push
+ push_every [<sleep_seconds>]
+
+)RRR";
+
+   return Status::ok;
+  }
+  else if (command == "push") ///////////////////////////////////////////////
+  {
+   get_readonly_client().push(Unlock_Action::keep_locked);
+  }
+  else if (command == "push_every") /////////////////////////////////////////
+  {
+   int sleep_seconds = 1;
+   parameters >> sleep_seconds;
+
+   Signal::set_signal(Signal::no_signal);
+   Signal::start();
+
+   while (Signal::get_signal() != SIGINT)
+   {
+    get_readonly_client().push(Unlock_Action::keep_locked);
+    sleep(sleep_seconds, out);
+   }
+  }
+  else //////////////////////////////////////////////////////////////////////
+   return Client_Command_Processor::process_command(command, parameters, in, out);
+
+  return Status::done;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Command_Processor::Status Writable_Client_Command_Processor::process_command
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const std::string &command,
+  std::istream &parameters,
+  std::istream &in,
+  std::ostream &out
+ )
+ {
+  if (command == "help") ////////////////////////////////////////////////////
+  {
+   Client_Command_Processor::process_command(command, parameters, in, out);
+
+   out << R"RRR(Writable Client
+~~~~~~~~~~~~~~~
+ transaction
+ set_valid_data <true|false>
+ set_timestamp <true|false>
+ set_hard_checkpoint <true|false>
+
+)RRR";
+
+   return Status::ok;
   }
   else if (command == "transaction") ////////////////////////////////////////
   {
@@ -182,18 +247,18 @@ namespace joedb
   }
   else if (command == "set_valid_data") /////////////////////////////////////
   {
-   client.set_valid_data(read_boolean(parameters));
+   get_writable_client().set_valid_data(read_boolean(parameters));
   }
   else if (command == "set_timestamp") //////////////////////////////////////
   {
-   client.set_timestamp(read_boolean(parameters));
+   get_writable_client().set_timestamp(read_boolean(parameters));
   }
   else if (command == "set_hard_checkpoint") ////////////////////////////////
   {
-   client.set_hard_checkpoint(read_boolean(parameters));
+   get_writable_client().set_hard_checkpoint(read_boolean(parameters));
   }
   else //////////////////////////////////////////////////////////////////////
-   return Command_Interpreter::process_command(command, parameters, in, out);
+   return Client_Command_Processor::process_command(command, parameters, in, out);
 
   return Status::done;
  }

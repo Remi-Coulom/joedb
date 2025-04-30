@@ -16,7 +16,6 @@ namespace joedb
 
  int64_t Connection::handshake
  (
-  Lock_Action lock_action,
   Readonly_Journal &client_journal,
   Content_Check content_check
  )

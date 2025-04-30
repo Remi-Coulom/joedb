@@ -3,7 +3,6 @@
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/Writable_Connection.h"
-#include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File_View.h"

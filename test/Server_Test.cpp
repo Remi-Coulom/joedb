@@ -150,7 +150,10 @@ namespace joedb
    {
    }
 
-   Writable_Journal &get_writable_journal() {return journal;}
+   Writable_Journal &get_writable_journal()
+   {
+    return Writable_Database_Client_Data::data_journal;
+   }
  };
 
  /////////////////////////////////////////////////////////////////////////////
