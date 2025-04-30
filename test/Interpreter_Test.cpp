@@ -189,10 +189,15 @@ namespace joedb
   Memory_File file;
   Connection connection;
   Writable_Database_Client client(file, connection);
-  std::istringstream iss("create_table person\ninsert_into person 1\ninsert_into person 1\nquit\n");
-  client.transaction([&](const Readable &readable, Writable &writable){
-   Interpreter interpreter(readable, writable, &file, writable, 0);
+  client.transaction([](const Readable &readable, Writable &writable){
+   Interpreter interpreter(readable, writable, nullptr, writable, 0);
    std::fstream null_stream;
+   std::istringstream iss
+   (
+    "create_table person\n"
+    "insert_into person 1\n"
+    "insert_into person 1\n"
+   );
    interpreter.main_loop(iss, null_stream);
   });
 
