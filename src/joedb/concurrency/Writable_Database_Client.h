@@ -33,7 +33,10 @@ namespace joedb
   friend class Writable_Database_Client_Lock;
 
   protected:
-   void read_journal() override {data_journal.play_until_checkpoint(database);}
+   void read_journal() override
+   {
+    data_journal.play_until_checkpoint(database);
+   }
 
   public:
    Writable_Database_Client

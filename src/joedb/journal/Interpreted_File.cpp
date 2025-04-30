@@ -5,19 +5,6 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Interpreted_Stream_File::pull()
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (readonly_journal.pull())
-  {
-   Interpreter_Writable writable(stream, db);
-   Multiplexer multiplexer{writable, db};
-   readonly_journal.play_until_checkpoint(multiplexer);
-   stream.flush();
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Interpreted_Stream_File::pwrite
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -27,8 +14,14 @@ namespace joedb
  )
  {
   Memory_File::pwrite(buffer, size, offset);
-  if (offset < Header::ssize)
-   pull();
+
+  if (offset < Header::ssize && readonly_journal.pull())
+  {
+   Interpreter_Writable writable(stream, db);
+   Multiplexer multiplexer{writable, db};
+   readonly_journal.play_until_checkpoint(multiplexer);
+   stream.flush();
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

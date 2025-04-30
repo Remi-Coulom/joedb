@@ -14,7 +14,6 @@ namespace joedb
    File_View file_view;
    Readonly_Journal readonly_journal;
 
-   void pull();
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
 
   public:

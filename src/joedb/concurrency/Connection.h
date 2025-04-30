@@ -14,6 +14,7 @@ namespace joedb
    Content_Mismatch();
  };
 
+ /// @ingroup concurrency
  enum class Content_Check
  {
   none,
@@ -21,18 +22,21 @@ namespace joedb
   full
  };
 
+ /// @ingroup concurrency
  enum class Data_Transfer
  {
   without_data = 0,
   with_data = 1
  };
 
+ /// @ingroup concurrency
  enum class Lock_Action
  {
   no_locking = 0,
   lock_before = 1
  };
 
+ /// @ingroup concurrency
  enum class Unlock_Action
  {
   keep_locked = 0,

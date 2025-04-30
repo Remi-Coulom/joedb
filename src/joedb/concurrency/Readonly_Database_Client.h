@@ -28,7 +28,10 @@ namespace joedb
   public Readonly_Client
  {
   protected:
-   void read_journal() override {journal.play_until_checkpoint(database);}
+   void read_journal() override
+   {
+    data_journal.play_until_checkpoint(database);
+   }
 
   public:
    Readonly_Database_Client

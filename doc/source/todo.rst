@@ -6,6 +6,11 @@ For next release
 
  - Improvements:
 
+   - Client:
+
+     - remove all dynamic_casts: Client_Interface super-class with virtual functions for transaction interface and client interpreter
+     - make a virtual push() = 0 in Client (lock or unlock depending on type)
+
    - Checkpoints:
 
      - do not write hard_checkpoint again if it is already written
