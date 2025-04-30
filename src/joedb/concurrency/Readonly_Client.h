@@ -7,11 +7,14 @@ namespace joedb
 {
  /// Specialized client for read-only files
  ///
+ /// This Client has no support for transactions: the connection is locked
+ /// in the constructor and unlocked in the destructor. Only allowed
+ /// operations are pulling from the journal, and pushing to the connection.
+ ///
  /// @ingroup concurrency
  class Readonly_Client: public Client
  {
   public:
-   /// Lock connection right after hanshake
    Readonly_Client
    (
     Readonly_Journal &journal,
@@ -20,11 +23,22 @@ namespace joedb
    ):
     Client(journal, connection, content_check)
    {
-    push(Unlock_Action::keep_locked);
-    if (get_connection_checkpoint() > get_journal_checkpoint())
-     throw Exception("Readonly_Client: conflict");
+    push();
    }
 
+   /// pull from the journal, then push to the connection
+   /// if new data is available
+   int64_t push() override
+   {
+    pull();
+
+    if (get_journal_checkpoint() > get_connection_checkpoint())
+     return Client::push(Unlock_Action::keep_locked);
+    else
+     return get_connection_checkpoint();
+   }
+
+   /// pull from the journal
    int64_t pull
    (
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
@@ -35,7 +49,10 @@ namespace joedb
     return result;
    }
 
-   using Client::push;
+   ~Readonly_Client() override
+   {
+    try {connection.unlock();} catch (...) {}
+   }
  };
 }
 

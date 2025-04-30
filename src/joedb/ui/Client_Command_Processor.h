@@ -1,5 +1,4 @@
 #include "joedb/ui/Command_Interpreter.h"
-#include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/concurrency/Writable_Client.h"
 
 #include <chrono>
@@ -25,32 +24,6 @@ namespace joedb
    Client_Command_Processor(Client &client): client(client) {}
 
    void write_prompt(std::ostream &out) const override;
-
-   Status process_command
-   (
-    const std::string &command,
-    std::istream &parameters,
-    std::istream &in,
-    std::ostream &out
-   ) override;
- };
-
- /// @ingroup ui
- class Readonly_Client_Command_Processor: public Client_Command_Processor
- {
-  private:
-   Readonly_Client &get_readonly_client()
-   {
-    return static_cast<Readonly_Client&>(Client_Command_Processor::client);
-   }
-
-   std::string get_name() const override {return "readonly_client";}
-
-  public:
-   Readonly_Client_Command_Processor(Readonly_Client &client):
-    Client_Command_Processor(client)
-   {
-   }
 
    Status process_command
    (

@@ -6,10 +6,10 @@ For next release
 
  - Improvements:
 
+   - throw before inserting (2 * insert_into person 1 -> bug written to file)
    - Client:
 
      - remove all dynamic_casts: Client_Interface super-class with virtual functions for transaction interface and client interpreter
-     - make a virtual push() = 0 in Client (lock or unlock depending on type)
 
    - Checkpoints:
 

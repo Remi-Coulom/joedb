@@ -60,9 +60,7 @@ namespace joedb
    )
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    client.pull();
-    if (client.get_journal_checkpoint() > client.get_connection_checkpoint())
-     readonly_client->push(Unlock_Action::keep_locked);
+    client.push();
    }
   }
 

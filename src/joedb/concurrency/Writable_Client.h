@@ -35,7 +35,7 @@ namespace joedb
       throw;
      }
 
-     push(Unlock_Action::unlock_after);
+     push_unlock();
     }
     else
     {
@@ -54,7 +54,7 @@ namespace joedb
       }
      } ();
 
-     push(Unlock_Action::unlock_after);
+     push_unlock();
      return result;
     }
    }
@@ -144,9 +144,17 @@ namespace joedb
     transaction([](){});
    }
 
-   void push_unlock()
+   int64_t push_unlock()
    {
-    push(Unlock_Action::unlock_after);
+    return Client::push(Unlock_Action::unlock_after);
+   }
+
+   int64_t push() override
+   {
+    if (get_journal_checkpoint() > get_connection_checkpoint())
+     return push_unlock();
+    else
+     return get_connection_checkpoint();
    }
  };
 
@@ -186,7 +194,7 @@ namespace joedb
    {
     JOEDB_DEBUG_ASSERT(locked);
     client.do_checkpoint();
-    client.push(Unlock_Action::keep_locked);
+    client.Client::push(Unlock_Action::keep_locked);
    }
 
    /// Confirm the transaction right before lock destruction
@@ -197,7 +205,7 @@ namespace joedb
    {
     JOEDB_DEBUG_ASSERT(locked);
     client.do_checkpoint();
-    client.push(Unlock_Action::unlock_after);
+    client.Client::push(Unlock_Action::unlock_after);
    }
 
    /// Cancel the transaction right before lock destruction

@@ -743,7 +743,7 @@ namespace joedb
   log_pointer(log_pointer)
  {
   if (writable_journal_client)
-   writable_journal_client->push_unlock();
+   writable_journal_client->push();
 
   start();
  }

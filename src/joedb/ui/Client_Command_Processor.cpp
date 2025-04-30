@@ -5,7 +5,6 @@
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/type_io.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Readonly_Database_Client.h"
@@ -77,6 +76,8 @@ namespace joedb
  db
  pull [<wait_seconds>]
  pull_every [<wait_seconds>] [<sleep_seconds>]
+ push
+ push_every [<sleep_seconds>]
 
 )RRR";
 
@@ -132,38 +133,9 @@ namespace joedb
     sleep(sleep_seconds, out);
    }
   }
-  else //////////////////////////////////////////////////////////////////////
-   return Command_Interpreter::process_command(command, parameters, in, out);
-
-  return Status::done;
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Command_Processor::Status Readonly_Client_Command_Processor::process_command
- ////////////////////////////////////////////////////////////////////////////
- (
-  const std::string &command,
-  std::istream &parameters,
-  std::istream &in,
-  std::ostream &out
- )
- {
-  if (command == "help") ////////////////////////////////////////////////////
-  {
-   Client_Command_Processor::process_command(command, parameters, in, out);
-
-   out << R"RRR(Readonly Client
-~~~~~~~~~~~~~~~
- push
- push_every [<sleep_seconds>]
-
-)RRR";
-
-   return Status::ok;
-  }
   else if (command == "push") ///////////////////////////////////////////////
   {
-   get_readonly_client().push(Unlock_Action::keep_locked);
+   client.push();
   }
   else if (command == "push_every") /////////////////////////////////////////
   {
@@ -175,12 +147,12 @@ namespace joedb
 
    while (Signal::get_signal() != SIGINT)
    {
-    get_readonly_client().push(Unlock_Action::keep_locked);
+    client.push();
     sleep(sleep_seconds, out);
    }
   }
   else //////////////////////////////////////////////////////////////////////
-   return Client_Command_Processor::process_command(command, parameters, in, out);
+   return Command_Interpreter::process_command(command, parameters, in, out);
 
   return Status::done;
  }
