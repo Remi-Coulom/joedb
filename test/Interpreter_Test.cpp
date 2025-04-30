@@ -6,6 +6,7 @@
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/Multiplexer.h"
 #include "gtest/gtest.h"
 
@@ -178,5 +179,28 @@ namespace joedb
   EXPECT_EQ(db.get_tables().begin()->first, Table_Id{1});
   EXPECT_EQ((++db.get_tables().begin())->first, Table_Id{2});
   EXPECT_EQ(db.get_freedom(Table_Id{1}).size(), 1);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Interpreter, double_insert)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  // Use the interpreter to write a double "insert_into person 1"
+  Memory_File file;
+  Connection connection;
+  Writable_Database_Client client(file, connection);
+  std::istringstream iss("create_table person\ninsert_into person 1\ninsert_into person 1\nquit\n");
+  client.transaction([&](const Readable &readable, Writable &writable){
+   Interpreter interpreter(readable, writable, &file, writable, 0);
+   interpreter.main_loop(iss, std::cerr);
+  });
+
+  // It is better to catch the error before writing to the file
+  // The second erroneous insert should not be in the file
+  {
+   Readonly_Journal journal(file);
+   Database db;
+   journal.replay_log(db);
+  }
  }
 }
