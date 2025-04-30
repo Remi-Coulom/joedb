@@ -36,12 +36,6 @@ namespace joedb
    }
 
    using Client::push;
-
-   ~Readonly_Client()
-   {
-    // TODO: must keep track if locked, and test
-    try {connection.unlock();} catch (...) {}
-   }
  };
 }
 

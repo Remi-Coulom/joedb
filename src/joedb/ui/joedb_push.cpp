@@ -59,15 +59,12 @@ namespace joedb
     Signal::get_signal() != SIGINT
    )
    {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     client.pull();
     if (client.get_journal_checkpoint() > client.get_connection_checkpoint())
      readonly_client->push(Unlock_Action::keep_locked);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
    }
   }
-
-  // TODO: single push_unlock if !follow?
-  // TODO: explicit unlock before destruction
 
   return 0;
  }
