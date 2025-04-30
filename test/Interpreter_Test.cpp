@@ -192,7 +192,8 @@ namespace joedb
   std::istringstream iss("create_table person\ninsert_into person 1\ninsert_into person 1\nquit\n");
   client.transaction([&](const Readable &readable, Writable &writable){
    Interpreter interpreter(readable, writable, &file, writable, 0);
-   interpreter.main_loop(iss, std::cerr);
+   std::fstream null_stream;
+   interpreter.main_loop(iss, null_stream);
   });
 
   // It is better to catch the error before writing to the file

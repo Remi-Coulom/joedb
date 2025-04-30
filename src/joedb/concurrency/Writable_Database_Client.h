@@ -19,7 +19,7 @@ namespace joedb
    public:
     Writable_Database_Client_Data(Buffered_File &file):
      data_journal(file),
-     multiplexer{data_journal, database}
+     multiplexer{database, data_journal}
     {
     }
   };
