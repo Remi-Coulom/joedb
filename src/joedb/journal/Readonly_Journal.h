@@ -100,6 +100,7 @@ namespace joedb
    void rewind();
    void one_step(Writable &writable);
    void play_until(Writable &writable, int64_t end);
+   void append_until(Writable &writable, int64_t end);
    void play_until_checkpoint(Writable &writable)
    {
     play_until(writable, checkpoint_position);

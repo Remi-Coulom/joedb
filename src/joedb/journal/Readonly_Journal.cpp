@@ -154,11 +154,25 @@ void joedb::Readonly_Journal::rewind()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void joedb::Readonly_Journal::append_until(Writable &writable, int64_t end)
+/////////////////////////////////////////////////////////////////////////////
+{
+ while(get_position() < end)
+  one_step(writable);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::play_until(Writable &writable, int64_t end)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (get_position() < end)
  {
+  const int64_t writable_position = writable.get_position();
+  if (get_position() < writable_position)
+  {
+   Writable dummy_writable;
+   play_until(dummy_writable, writable_position);
+  }
   writable.start_writing(get_position());
   while(get_position() < end)
    one_step(writable);

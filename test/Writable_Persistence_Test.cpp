@@ -25,9 +25,19 @@ namespace joedb
   {
    Memory_File file;
    Writable_Journal journal(file);
-   journal.comment("Hella");
+   journal.comment("Hello");
    journal.soft_checkpoint();
    EXPECT_ANY_THROW(journal.start_writing(41));
+  }
+  {
+   Memory_File file;
+   Writable_Journal journal(file);
+   journal.comment("Hello");
+   journal.comment("Goodbye");
+   journal.soft_checkpoint();
+   EXPECT_EQ(journal.get_checkpoint(), 57);
+   journal.replay_log(storage);
+   EXPECT_EQ(storage.get_checkpoint(), 57);
   }
  }
 }
