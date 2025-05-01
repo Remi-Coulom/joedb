@@ -150,7 +150,6 @@ namespace joedb
    throw Exception("server file must be used with a network or ssh connection");
 
   std::cerr << "Creating client data... ";
-  std::cerr << "OK\n";
 
   if (db_type == DB_Type::none)
   {
@@ -206,6 +205,8 @@ namespace joedb
   }
   else
    throw Exception("unsupported db type");
+
+  std::cerr << "OK\n";
 
   return *client;
  }
