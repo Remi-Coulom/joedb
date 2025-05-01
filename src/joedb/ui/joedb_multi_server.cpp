@@ -34,7 +34,6 @@ namespace joedb
     server
     (
      client,
-     false,
      io_context,
      port,
      timeout,

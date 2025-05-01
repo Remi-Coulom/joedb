@@ -49,6 +49,11 @@ namespace joedb
     return journal;
    }
 
+   bool is_shared() const
+   {
+    return journal.is_shared();
+   }
+
    int64_t get_journal_checkpoint() const
    {
     return get_journal().get_checkpoint();

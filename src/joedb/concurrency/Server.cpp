@@ -272,7 +272,7 @@ namespace joedb
      );
 
      // ??? takes_time
-     if (share_client && session->unlock_after_push)
+     if (client.is_shared() && session->unlock_after_push)
      {
       client_lock->push_unlock();
       client_lock.reset();
@@ -721,7 +721,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Client &client,
-  const bool share_client,
   asio::io_context &io_context,
   const uint16_t port,
   const std::chrono::milliseconds lock_timeout,
@@ -730,7 +729,6 @@ namespace joedb
   start_time(std::chrono::steady_clock::now()),
   client(client),
   writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
-  share_client(share_client),
   io_context(io_context),
   acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
   port(acceptor.local_endpoint().port()),
@@ -756,7 +754,7 @@ namespace joedb
   {
    stopped = false;
 
-   if (!share_client && writable_journal_client)
+   if (!client.is_shared() && writable_journal_client)
     client_lock.emplace(*writable_journal_client);
 
    interrupt_signals.async_wait([this](const asio::error_code &error, int)

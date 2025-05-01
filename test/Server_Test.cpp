@@ -42,13 +42,11 @@ namespace joedb
 
    Test_Server
    (
-    bool share_client = false,
     std::chrono::seconds lock_timeout = std::chrono::seconds{0}
    ):
     server
     {
      client,
-     share_client,
      io_context.io_context,
      uint16_t(0),
      lock_timeout,
@@ -247,13 +245,11 @@ namespace joedb
   Readonly_Journal_Client server_client{server_file, connection};
   IO_Context_Wrapper io_context;
 
-  const bool share_client = false;
   const uint16_t port = 0;
 
   Server server
   (
    server_client,
-   share_client,
    io_context.io_context,
    port,
    std::chrono::seconds(0),
@@ -501,7 +497,7 @@ namespace joedb
  TEST(Server, push_timeout)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(1));
+  Test_Server server(std::chrono::seconds(1));
 
   Memory_File client_file;
   Test_Client client(client_file, server);
@@ -540,7 +536,7 @@ namespace joedb
  TEST(Server, lock_timeout)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(false, std::chrono::seconds(1));
+  Test_Server server(std::chrono::seconds(1));
   Memory_File client_file;
   Test_Client client(client_file, server);
   client.transaction([](Readable &, Writable &){
@@ -611,7 +607,7 @@ namespace joedb
  TEST(Server, shared)
  /////////////////////////////////////////////////////////////////////////////
  {
-  Test_Server server(true);
+  Test_Server server;
 
   Memory_File client_file;
   Test_Client client(client_file, server);
@@ -736,14 +732,12 @@ namespace joedb
   File_Connection connection(connection_file);
   Writable_Journal_Client client{file, connection};
   IO_Context_Wrapper io_context;
-  const bool share_client = false;
 
   EXPECT_TRUE(file.get_size() > connection_file.get_size());
 
   Server server
   {
    client,
-   share_client,
    io_context.io_context,
    uint16_t(0),
    std::chrono::seconds(0),
@@ -769,7 +763,6 @@ namespace joedb
   Server server
   {
    backup_client,
-   false,
    io_context.io_context,
    uint16_t(0),
    std::chrono::seconds(0),

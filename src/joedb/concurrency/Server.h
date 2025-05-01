@@ -24,7 +24,6 @@ namespace joedb
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
    Client &client;
    Writable_Journal_Client *writable_journal_client;
-   const bool share_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
    asio::io_context &io_context;
    asio::ip::tcp::acceptor acceptor;
@@ -200,7 +199,6 @@ namespace joedb
    Server
    (
     Client &client,
-    bool share_client,
     asio::io_context &io_context,
     uint16_t port,
     std::chrono::milliseconds lock_timeout,

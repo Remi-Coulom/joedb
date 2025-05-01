@@ -206,6 +206,7 @@ namespace joedb
     JOEDB_DEBUG_ASSERT(locked);
     client.do_checkpoint();
     client.Client::push(Unlock_Action::unlock_after);
+    locked = false;
    }
 
    /// Cancel the transaction right before lock destruction
@@ -216,6 +217,7 @@ namespace joedb
    {
     JOEDB_DEBUG_ASSERT(locked);
     client.connection.unlock();
+    locked = false;
    }
 
    /// The destructor unlocks the connection if necessary
