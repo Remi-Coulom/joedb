@@ -24,29 +24,26 @@ namespace joedb
     Client(journal, connection, content_check)
    {
     push();
+    read_journal();
    }
 
-   /// pull from the journal, then push to the connection
-   /// if new data is available
-   int64_t push() override
-   {
-    pull();
-
-    if (get_journal_checkpoint() > get_connection_checkpoint())
-     return Client::push(Unlock_Action::keep_locked);
-    else
-     return get_connection_checkpoint();
-   }
-
-   /// pull from the journal
    int64_t pull
    (
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    ) override
    {
     const int64_t result = journal.pull();
-    read_journal();
+    if (result)
+     read_journal();
     return result;
+   }
+
+   int64_t push() override
+   {
+    if (get_journal_checkpoint() > get_connection_checkpoint())
+     return Client::push(Unlock_Action::keep_locked);
+    else
+     return get_connection_checkpoint();
    }
 
    ~Readonly_Client() override

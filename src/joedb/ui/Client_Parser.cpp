@@ -1,5 +1,6 @@
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Connection_Parser.h"
+#include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Readonly_Journal_Client.h"
@@ -11,18 +12,51 @@
 
 namespace joedb
 {
+ class SQL_Client_Data
+ {
+  protected:
+   Readonly_Journal data_journal;
+   SQL_Dump_Writable writable;
+
+   SQL_Client_Data(Buffered_File &file):
+    data_journal(file),
+    writable(std::cout)
+   {
+   }
+ };
+
+ class SQL_Client: private SQL_Client_Data, public Readonly_Client
+ {
+  public:
+   SQL_Client
+   (
+    Buffered_File &file,
+    Connection &connection,
+    Content_Check content_check
+   ):
+    SQL_Client_Data(file),
+    Readonly_Client(data_journal, connection, content_check)
+   {
+    read_journal();
+   }
+
+  void read_journal() override
+  {
+   data_journal.play_until_checkpoint(writable);
+  }
+ };
+
  ////////////////////////////////////////////////////////////////////////////
  Client_Parser::Client_Parser
  ////////////////////////////////////////////////////////////////////////////
  (
-  bool local,
   Open_Mode default_open_mode,
-  bool with_database
+  DB_Type default_db_type
  ):
   file_parser(default_open_mode, default_open_mode == Open_Mode::read_existing, true, true),
-  connection_parser(local),
+  connection_parser(),
   default_open_mode(default_open_mode),
-  default_with_database(with_database)
+  default_db_type(default_db_type)
  {
  }
 
@@ -39,11 +73,17 @@ namespace joedb
    out << check_string[i];
   }
 
-  out << ']';
+  out << "] [--db ";
 
-  if (default_with_database)
-   out << " [--nodb]";
-  out << " <file> <connection>\n\n";
+  for (size_t i = 0; i < std::size(db_string); i++)
+  {
+   if (i > 0)
+    out << '|';
+   out << db_string[i];
+  }
+
+
+  out << "] <file> <connection>\n\n";
 
   file_parser.print_help(out);
   connection_parser.print_help(out);
@@ -66,12 +106,16 @@ namespace joedb
   }
   std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
 
-  bool with_database = default_with_database;
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--nodb") == 0)
+  DB_Type db_type = default_db_type;
+  if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--db") == 0)
   {
    arg_index++;
-   with_database = false;
+   for (size_t i = 0; i < std::size(db_string); i++)
+    if (std::strcmp(argv[arg_index], db_string[i]) == 0)
+     db_type = DB_Type(i);
+   arg_index++;
   }
+  std::cerr << "db_type = " << db_string[int(db_type)] << '\n';
 
   file_parser.parse
   (
@@ -99,20 +143,46 @@ namespace joedb
   std::cerr << "Creating client data... ";
   std::cerr << "OK\n";
 
-  if (with_database)
+  if (db_type == DB_Type::none)
   {
    if (client_file->is_readonly())
-    client.reset(new Readonly_Database_Client(*client_file, connection, content_check));
+   {
+    client.reset
+    (
+     new Readonly_Journal_Client(*client_file, connection, content_check)
+    );
+   }
    else
-    client.reset(new Writable_Database_Client(*client_file, connection, content_check));
+   {
+    client.reset
+    (
+     new Writable_Journal_Client(*client_file, connection, content_check)
+    );
+   }
+  }
+  else if (db_type == DB_Type::interpreted)
+  {
+   if (client_file->is_readonly())
+   {
+    client.reset
+    (
+     new Readonly_Database_Client(*client_file, connection, content_check)
+    );
+   }
+   else
+   {
+    client.reset
+    (
+     new Writable_Database_Client(*client_file, connection, content_check)
+    );
+   }
+  }
+  else if (db_type == DB_Type::sql)
+  {
+   client.reset(new SQL_Client(*client_file, connection, content_check));
   }
   else
-  {
-   if (client_file->is_readonly())
-    client.reset(new Readonly_Journal_Client(*client_file, connection, content_check));
-   else
-    client.reset(new Writable_Journal_Client(*client_file, connection, content_check));
-  }
+   throw Exception("unsupported db type");
 
   return *client;
  }

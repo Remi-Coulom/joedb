@@ -18,12 +18,10 @@
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Connection_Parser::Connection_Parser(bool local)
+ Connection_Parser::Connection_Parser()
  //////////////////////////////////////////////////////////////////////////
  {
-  if (local)
-   builders.emplace_back(new Dummy_Connection_Builder());
-
+  builders.emplace_back(new Dummy_Connection_Builder());
   builders.emplace_back(new File_Connection_Builder());
 
 #ifdef JOEDB_HAS_NETWORKING

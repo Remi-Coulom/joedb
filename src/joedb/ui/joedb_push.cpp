@@ -16,10 +16,8 @@ namespace joedb
  static int joedb_push(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const bool local = false;
-  const bool with_database = false;
   const Open_Mode default_mode = Open_Mode::read_existing;
-  Client_Parser client_parser(local, default_mode, with_database);
+  Client_Parser client_parser(default_mode, Client_Parser::DB_Type::dump);
 
   int arg_index = 1;
 
@@ -60,6 +58,7 @@ namespace joedb
    )
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
+    client.pull();
     client.push();
    }
   }

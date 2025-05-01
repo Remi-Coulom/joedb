@@ -27,7 +27,7 @@ namespace joedb
    );
 
   public:
-   Connection_Parser(bool local);
+   Connection_Parser();
 
    void print_help(std::ostream &out) const;
 

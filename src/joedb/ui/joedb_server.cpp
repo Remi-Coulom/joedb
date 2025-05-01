@@ -14,11 +14,9 @@ namespace joedb
  static int joedb_server(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const bool local = true;
   const Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new;
-  const bool with_database = false;
 
-  Client_Parser client_parser(local, default_open_mode, with_database);
+  Client_Parser client_parser(default_open_mode, Client_Parser::DB_Type::none);
 
   if (argc <= 1)
   {

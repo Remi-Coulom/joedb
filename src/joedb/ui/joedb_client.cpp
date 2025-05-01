@@ -12,13 +12,11 @@ namespace joedb
  static int joedb_client(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const bool local = true;
-
   const Open_Mode default_mode = File::lockable
    ? Open_Mode::shared_write
    : Open_Mode::write_existing_or_create_new;
 
-  Client_Parser client_parser(local, default_mode, true);
+  Client_Parser client_parser(default_mode, Client_Parser::DB_Type::interpreted);
 
   if (argc <= 1)
   {
