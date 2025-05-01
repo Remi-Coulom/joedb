@@ -1,6 +1,7 @@
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Connection_Parser.h"
 #include "joedb/ui/SQL_Dump_Writable.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Readonly_Journal_Client.h"
@@ -12,37 +13,41 @@
 
 namespace joedb
 {
- class SQL_Client_Data
+ template<typename Writable>
+ class Writable_Readonly_Client_Data
  {
   protected:
    Readonly_Journal data_journal;
-   SQL_Dump_Writable writable;
+   Writable writable;
 
-   SQL_Client_Data(Buffered_File &file):
+   Writable_Readonly_Client_Data(Buffered_File &file):
     data_journal(file),
     writable(std::cout)
    {
    }
  };
 
- class SQL_Client: private SQL_Client_Data, public Readonly_Client
+ template<typename Writable>
+ class Writable_Readonly_Client:
+  private Writable_Readonly_Client_Data<Writable>,
+  public Readonly_Client
  {
   public:
-   SQL_Client
+   Writable_Readonly_Client
    (
     Buffered_File &file,
     Connection &connection,
     Content_Check content_check
    ):
-    SQL_Client_Data(file),
-    Readonly_Client(data_journal, connection, content_check)
+    Writable_Readonly_Client_Data<Writable>(file),
+    Readonly_Client(this->data_journal, connection, content_check)
    {
     read_journal();
    }
 
   void read_journal() override
   {
-   data_journal.play_until_checkpoint(writable);
+   this->data_journal.play_until_checkpoint(this->writable);
   }
  };
 
@@ -179,7 +184,21 @@ namespace joedb
   }
   else if (db_type == DB_Type::sql)
   {
-   client.reset(new SQL_Client(*client_file, connection, content_check));
+   client.reset(new Writable_Readonly_Client<joedb::SQL_Dump_Writable>
+   (
+    *client_file,
+    connection,
+    content_check
+   ));
+  }
+  else if (db_type == DB_Type::dump)
+  {
+   client.reset(new Writable_Readonly_Client<joedb::Interpreter_Dump_Writable>
+   (
+    *client_file,
+    connection,
+    content_check
+   ));
   }
   else
    throw Exception("unsupported db type");
