@@ -2,10 +2,8 @@
 #include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Readonly_Journal_Client.h"
-#include "joedb/concurrency/Writable_Connection.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/File_View.h"
 
 #include "Shared_Memory_File.h"
 
@@ -79,74 +77,6 @@ namespace joedb
   journal_client.pull();
 
   EXPECT_TRUE(journal_client.get_journal_checkpoint() == database_client.get_journal_checkpoint());
- }
-
- /////////////////////////////////////////////////////////////////////////////
- TEST(Client, Writable_Connection)
- /////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File file;
-  Database db;
-  Writable_Connection connection(db);
-  Writable_Journal_Client client(file, connection);
-
-  EXPECT_EQ(0, db.get_tables().size());
-
-  EXPECT_ANY_THROW
-  (
-   client.transaction([](Writable_Journal &journal)
-   {
-    journal.create_table("person");
-   });
-  );
- }
-
- /////////////////////////////////////////////////////////////////////////////
- TEST(Client, Writable_Connection_with_view)
- /////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File file;
-  Writable_Journal journal(file);
-  File_View file_view(file);
-  Readonly_Journal readonly_journal(file_view);
-  Database db;
-
-  Writable_Connection connection(db);
-
-  int64_t from_checkpoint = connection.handshake
-  (
-   readonly_journal,
-   Content_Check::quick
-  );
-
-  journal.create_table("person");
-  journal.insert_into(Table_Id{1}, Record_Id{1});
-  journal.soft_checkpoint();
-
-  readonly_journal.pull();
-  from_checkpoint = connection.push
-  (
-   readonly_journal,
-   from_checkpoint,
-   readonly_journal.get_checkpoint(),
-   Unlock_Action::keep_locked
-  );
-
-  EXPECT_EQ(1, db.get_freedom(Table_Id{1}).size());
-
-  journal.insert_into(Table_Id{1}, Record_Id{2});
-  journal.soft_checkpoint();
-
-  readonly_journal.pull();
-  from_checkpoint = connection.push
-  (
-   readonly_journal,
-   from_checkpoint,
-   readonly_journal.get_checkpoint(),
-   Unlock_Action::keep_locked
-  );
-
-  EXPECT_EQ(2, db.get_freedom(Table_Id{1}).size());
  }
 
  /////////////////////////////////////////////////////////////////////////////
