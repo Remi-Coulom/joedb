@@ -48,6 +48,7 @@ namespace joedb
    void flush() final {file.flush();}
 
    int64_t get_position() const override {return file.get_position();}
+   void start_writing(int64_t position) override;
    void soft_checkpoint_at(int64_t position) override;
    void hard_checkpoint_at(int64_t position) override;
 

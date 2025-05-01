@@ -16,14 +16,18 @@ namespace joedb
    Memory_File file;
    Writable_Journal journal(file);
    journal.comment("Hello");
+   journal.soft_checkpoint();
+   EXPECT_EQ(storage.get_checkpoint(), 41);
    journal.replay_log(storage);
+   EXPECT_EQ(storage.get_checkpoint(), 48);
   }
 
   {
    Memory_File file;
    Writable_Journal journal(file);
    journal.comment("Hella");
-   EXPECT_ANY_THROW(journal.replay_log(storage));
+   journal.soft_checkpoint();
+   EXPECT_ANY_THROW(journal.start_writing(41));
   }
  }
 }
