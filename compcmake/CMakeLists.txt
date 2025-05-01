@@ -161,6 +161,7 @@ if(GTest_FOUND)
   ../test/Local_Connection_Test.cpp
   ../test/File_Slice_Test.cpp
   ../test/File_Parser_Test.cpp
+  ../test/Writable_Persistence_Test.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
