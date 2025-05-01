@@ -7,6 +7,7 @@
 #include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Client.h"
+#include "joedb/journal/File.h"
 
 #include <iostream>
 #include <cstring>
@@ -49,6 +50,45 @@ namespace joedb
   {
    this->data_journal.play_until_checkpoint(this->writable);
   }
+ };
+
+ class Joedb_Client_Data
+ {
+  protected:
+   File data_file;
+   Writable_Journal writable;
+
+   Readonly_Journal data_journal;
+   Connection data_connection;
+
+  public:
+   Joedb_Client_Data(Buffered_File &file):
+    data_file("joedb.joedb", Open_Mode::write_existing_or_create_new),
+    writable(data_file),
+    data_journal(file)
+   {
+   }
+ };
+
+ class Joedb_Client: public Joedb_Client_Data, public Readonly_Client
+ {
+  public:
+   Joedb_Client
+   (
+    Buffered_File &file,
+    Connection &connection,
+    Content_Check content_check
+   ):
+    Joedb_Client_Data(file),
+    Readonly_Client(data_journal, connection, content_check)
+   {
+    read_journal();
+   }
+
+   void read_journal() override
+   {
+    this->data_journal.play_until_checkpoint(this->writable);
+   }
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -197,6 +237,15 @@ namespace joedb
   else if (db_type == DB_Type::dump)
   {
    client.reset(new Writable_Readonly_Client<joedb::Interpreter_Dump_Writable>
+   (
+    *client_file,
+    connection,
+    content_check
+   ));
+  }
+  else if (db_type == DB_Type::joedb)
+  {
+   client.reset(new Joedb_Client
    (
     *client_file,
     connection,

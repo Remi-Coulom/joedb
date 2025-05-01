@@ -16,23 +16,25 @@ namespace joedb
     none,
     interpreted,
     dump,
-    sql
+    sql,
+    joedb
    };
 
   private:
-   static constexpr const char *check_string[3] =
+   static constexpr const char *check_string[] =
    {
     "none",
     "quick",
     "full"
    };
 
-   static constexpr const char *db_string[4] =
+   static constexpr const char *db_string[] =
    {
     "none",
     "interpreted",
     "dump",
-    "sql"
+    "sql",
+    "joedb"
    };
 
    File_Parser file_parser;
