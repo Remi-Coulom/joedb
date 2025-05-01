@@ -61,7 +61,7 @@ namespace joedb
  int64_t Server_File::handshake
  ////////////////////////////////////////////////////////////////////////////
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   Content_Check content_check
  )
  {
@@ -74,7 +74,7 @@ namespace joedb
  int64_t Server_File::push
  ////////////////////////////////////////////////////////////////////////////
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   const int64_t server_position,
   const int64_t until_position,
   const Unlock_Action unlock_action

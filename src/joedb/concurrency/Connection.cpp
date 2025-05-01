@@ -16,7 +16,7 @@ namespace joedb
 
  int64_t Connection::handshake
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   Content_Check content_check
  )
  {
@@ -36,7 +36,7 @@ namespace joedb
 
  int64_t Connection::push
  (
-  Readonly_Journal &client_journal,
+  const Readonly_Journal &client_journal,
   int64_t from,
   int64_t until,
   Unlock_Action unlock_action

@@ -26,7 +26,7 @@ namespace joedb
 
    int64_t handshake
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     Content_Check content_check
    ) override;
 
@@ -40,7 +40,7 @@ namespace joedb
 
    int64_t push
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     int64_t from,
     int64_t until,
     Unlock_Action unlock_action

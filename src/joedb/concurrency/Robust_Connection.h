@@ -21,7 +21,7 @@ namespace joedb
    std::ostream *log;
    mutable std::unique_ptr<Channel> channel;
 
-   Readonly_Journal *handshake_journal = nullptr;
+   const Readonly_Journal *handshake_journal = nullptr;
    Content_Check handshake_content_check = Content_Check::quick;
 
    static constexpr auto period = std::chrono::seconds(5);
@@ -95,7 +95,7 @@ namespace joedb
 
    int64_t handshake
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     Content_Check content_check
    ) override
    {
@@ -126,7 +126,7 @@ namespace joedb
 
    int64_t push
    (
-    Readonly_Journal &client_journal,
+    const Readonly_Journal &client_journal,
     int64_t from_checkpoint,
     int64_t until_checkpoint,
     Unlock_Action unlock_action
