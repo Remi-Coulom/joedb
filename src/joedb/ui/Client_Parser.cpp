@@ -76,6 +76,8 @@ namespace joedb
    if (i > 0)
     out << '|';
    out << check_string[i];
+   if (size_t(default_content_check) == i)
+    out << '*';
   }
 
   out << "] [--db ";
@@ -85,6 +87,8 @@ namespace joedb
    if (i > 0)
     out << '|';
    out << db_string[i];
+   if (size_t(default_db_type) == i)
+    out << '*';
   }
 
 
@@ -100,7 +104,7 @@ namespace joedb
  {
   int arg_index = 0;
 
-  Content_Check content_check = Content_Check::quick;
+  Content_Check content_check = default_content_check;
   if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--check") == 0)
   {
    arg_index++;

@@ -17,7 +17,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const Open_Mode default_mode = Open_Mode::read_existing;
-  Client_Parser client_parser(default_mode, Client_Parser::DB_Type::dump);
+  Client_Parser client_parser(default_mode, Client_Parser::DB_Type::none);
 
   int arg_index = 1;
 

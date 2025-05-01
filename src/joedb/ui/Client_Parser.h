@@ -20,14 +20,27 @@ namespace joedb
    };
 
   private:
-   static constexpr const char *check_string[3] = {"none", "quick", "full"};
-   static constexpr const char *db_string[4] = {"none", "interpreted", "dump", "sql"};
+   static constexpr const char *check_string[3] =
+   {
+    "none",
+    "quick",
+    "full"
+   };
+
+   static constexpr const char *db_string[4] =
+   {
+    "none",
+    "interpreted",
+    "dump",
+    "sql"
+   };
 
    File_Parser file_parser;
    Connection_Parser connection_parser;
 
    const Open_Mode default_open_mode;
    const DB_Type default_db_type;
+   static constexpr Content_Check default_content_check = Content_Check::quick;
 
    std::unique_ptr<Client> client;
 
