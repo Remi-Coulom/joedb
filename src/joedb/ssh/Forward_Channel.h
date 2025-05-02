@@ -29,6 +29,7 @@ namespace joedb::ssh
   private:
    size_t write_some(const char *data, size_t size) final;
    size_t read_some(char *data, size_t size) final;
+   int timeout_ms;
 
   public:
    Forward_Channel
@@ -37,6 +38,8 @@ namespace joedb::ssh
     const char *remote_host,
     uint16_t remote_port
    );
+
+   void set_timeout(int ms) {timeout_ms = ms;}
  };
 }
 

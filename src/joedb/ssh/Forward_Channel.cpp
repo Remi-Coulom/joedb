@@ -33,7 +33,14 @@ namespace joedb::ssh
  size_t Forward_Channel::read_some(char *data, size_t size)
  ///////////////////////////////////////////////////////////////////////////
  {
-  const int result = ssh_channel_read(channel, data, uint32_t(size), 0);
+  const int result = ssh_channel_read_timeout
+  (
+   channel,
+   data,
+   uint32_t(size),
+   0,
+   timeout_ms
+  );
 
   if (result == SSH_ERROR)
    throw Exception("Error reading from channel");
@@ -52,7 +59,8 @@ namespace joedb::ssh
   const char *remote_host,
   uint16_t remote_port
  ):
-  Forward_Channel_Allocation(session)
+  Forward_Channel_Allocation(session),
+  timeout_ms(-1)
  {
   session.check_result
   (

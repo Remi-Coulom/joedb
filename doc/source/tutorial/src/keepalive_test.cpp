@@ -39,12 +39,18 @@ int main(int argc, char **argv)
 
   try
   {
+   channel.set_timeout
+   (
+    int(std::chrono::milliseconds(wait + increment).count()) + 30000
+   );
+
    client.pull(wait + increment);
    wait = wait + increment;
    increment *= 2;
   }
-  catch (...)
+  catch (const std::exception &e)
   {
+   std::cerr << "Caught exception: " << e.what() << '\n';
    increment = (std::chrono::seconds(3) + increment) / 4;
   }
  }
