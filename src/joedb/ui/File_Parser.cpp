@@ -47,7 +47,7 @@ namespace joedb
      continue;
     out << "  " << open_mode_strings[i];
     if (mode == default_open_mode)
-     out << " (default)";
+     out << '*';
     out << '\n';
    }
 
