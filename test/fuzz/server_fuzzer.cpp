@@ -20,7 +20,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  joedb::Server server
  (
   client,
-  false,
   io_context,
   1234,
   std::chrono::milliseconds{100},

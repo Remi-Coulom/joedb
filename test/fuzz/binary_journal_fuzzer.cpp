@@ -10,7 +10,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
   joedb::Readonly_Memory_File file(Data, Size);
   joedb::Readonly_Journal journal(joedb::Journal_Construction_Lock(file, true));
-  joedb::Database db(1000000);
+  joedb::Database db(joedb::Record_Id{1000000});
   journal.replay_log(db);
  }
  catch (const joedb::Exception &)

@@ -77,7 +77,7 @@ namespace joedb
    {\
     const auto it = find_field_from_id(field_id);\
     check_record_id(record_id);\
-    check_record_id(record_id + size - 1);\
+    check_record_id(record_id + ptrdiff_t(size) - 1);\
     it->second.set_vector_##type_id(record_id, size, value);\
    }\
    type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id)\

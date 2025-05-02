@@ -77,7 +77,7 @@ void joedb::merge(Database &merged, const Database &db)
   {
    for (Record_Id record_id = Record_Id(1); size_t(record_id) <= size_t(last_record_id); ++record_id)
    {
-    if (freedom_keeper.is_used(size_t(record_id) + 1))
+    if (freedom_keeper.is_used(to_underlying(record_id) + 1))
     {
      const Record_Id merged_record_id = offset[tid] + size_t(record_id);
      merged.insert_into(tid, merged_record_id);

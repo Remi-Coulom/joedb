@@ -55,13 +55,13 @@ namespace joedb
 
   for (const auto &[tid, tname]: db.get_tables())
   {
-   const size_t last_record_id = size_t(db.get_last_record_id(tid));
+   const Record_Id last_record_id = db.get_last_record_id(tid);
 
-   for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id;)
+   for (Record_Id record_id = Record_Id(1); record_id <= last_record_id;)
    {
     while
     (
-     size_t(record_id) <= last_record_id &&
+     record_id <= last_record_id &&
      !db.is_used(tid, record_id)
     )
     {
@@ -72,7 +72,7 @@ namespace joedb
 
     while
     (
-     size_t(record_id) + size <= last_record_id &&
+     record_id + size <= last_record_id &&
      db.is_used(tid, record_id + size)
     )
     {
@@ -88,7 +88,7 @@ namespace joedb
 
    for (const auto &[fid, fname]: db.get_fields(tid))
    {
-    for (Record_Id record_id = Record_Id(1); size_t(record_id) <= last_record_id; ++record_id)
+    for (Record_Id record_id{1}; record_id <= last_record_id; ++record_id)
     {
      if (db.is_used(tid, record_id))
      {
@@ -121,18 +121,18 @@ namespace joedb
  {
   for (const auto &[tid, tname]: db.get_tables())
   {
-   const size_t last_record_id = size_t(db.get_last_record_id(tid));
+   const Record_Id last_record_id = db.get_last_record_id(tid);
 
    Record_Id record_id = Record_Id(1);
 
    const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
 
-   while (size_t(record_id) <= last_record_id)
+   while (record_id <= last_record_id)
    {
     while
     (
-     size_t(record_id) <= last_record_id &&
-     !freedom_keeper.is_used(size_t(record_id) + 1)
+     record_id <= last_record_id &&
+     !freedom_keeper.is_used(to_underlying(record_id) + 1)
     )
     {
      ++record_id;
@@ -142,8 +142,8 @@ namespace joedb
 
     while
     (
-     size_t(record_id) + size <= last_record_id &&
-     freedom_keeper.is_used(size_t(record_id) + size + 1)
+     record_id + size <= last_record_id &&
+     freedom_keeper.is_used(to_underlying(record_id + size) + 1)
     )
     {
      size++;

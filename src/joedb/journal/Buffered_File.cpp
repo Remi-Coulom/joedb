@@ -126,7 +126,7 @@ namespace joedb
    if (diff)
     return false;
 
-   current += n0;
+   current += int64_t(n0);
   }
 
   return true;

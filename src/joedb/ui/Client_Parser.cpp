@@ -104,7 +104,6 @@ namespace joedb
   DB_Type default_db_type
  ):
   file_parser(default_open_mode, default_open_mode == Open_Mode::read_existing, true, true),
-  connection_parser(),
   default_open_mode(default_open_mode),
   default_db_type(default_db_type)
  {
