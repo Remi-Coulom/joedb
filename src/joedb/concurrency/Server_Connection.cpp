@@ -99,7 +99,8 @@ namespace joedb
 
   const char pull_type = char('D' + int(lock_action) + 2*int(data_transfer));
 
-  LOGID("pulling(" << pull_type << ")... ");
+  LOGID("pulling, lock = " << int(lock_action) << ", data = " <<
+   int(data_transfer) << ", wait = " << double(wait.count()) * 0.001 << "s\n");
 
   buffer.index = 0;
   buffer.write<char>(pull_type);
@@ -123,6 +124,7 @@ namespace joedb
    buffer.index = 0;
    const int64_t size = server_checkpoint - client_journal.get_checkpoint();
    Async_Writer writer = client_journal.get_async_tail_writer();
+   LOGID("data transfer: ");
    download(writer, lock, size);
    client_journal.soft_checkpoint_at(writer.get_position());
   }

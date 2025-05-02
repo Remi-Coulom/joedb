@@ -85,3 +85,7 @@ joedb_add_executable(step_by_step_replay
 joedb_add_executable(server_file_tutorial
  src/server_file_tutorial.cpp
 )
+
+joedb_add_executable(keepalive_test
+ src/keepalive_test.cpp
+)
