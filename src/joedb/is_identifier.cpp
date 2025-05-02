@@ -1,38 +1,36 @@
 #include "joedb/is_identifier.h"
 
-/////////////////////////////////////////////////////////////////////////////
-constexpr bool joedb::is_letter(char c)
-/////////////////////////////////////////////////////////////////////////////
+namespace joedb
 {
- return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
-}
-
-/////////////////////////////////////////////////////////////////////////////
-constexpr bool joedb::is_number(char c)
-/////////////////////////////////////////////////////////////////////////////
-{
- return ('0' <= c && c <= '9');
-}
-
-/////////////////////////////////////////////////////////////////////////////
-bool joedb::is_identifier(const std::string &s)
-/////////////////////////////////////////////////////////////////////////////
-{
- if (s.empty())
-  return false;
-
- if (is_number(s[0]))
-  return false;
-
- char previous = 0;
- for (const char c: s)
+ constexpr bool is_letter(char c)
  {
-  if (c != '_' && !is_letter(c) && !is_number(c))
-   return false;
-  if (c == '_' && previous == '_')
-   return false;
-  previous = c;
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
  }
 
- return true;
+ constexpr bool is_number(char c)
+ {
+  return ('0' <= c && c <= '9');
+ }
+
+ /// @ingroup joedb
+ bool is_identifier(const std::string &s)
+ {
+  if (s.empty())
+   return false;
+
+  if (is_number(s[0]))
+   return false;
+
+  char previous = 0;
+  for (const char c: s)
+  {
+   if (c != '_' && !is_letter(c) && !is_number(c))
+    return false;
+   if (c == '_' && previous == '_')
+    return false;
+   previous = c;
+  }
+
+  return true;
+ }
 }
