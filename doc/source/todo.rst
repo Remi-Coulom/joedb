@@ -6,20 +6,7 @@ For next release
 
  - Improvements:
 
-   - Client:
-
-     - remove all dynamic_casts: Client_Interface super-class with virtual functions for transaction interface and client interpreter
-
-   - Checkpoints:
-
-     - do not write hard_checkpoint again if it is already written
-     - (asynchronous) hard_checkpoint option for the server
-
-   - joedbc_fuzzer must work without debug assertions: check input in release mode as well
-
-     - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
-     - more efficient test for validity of a range of ids for vector insert/update/delete
-
+   - use -1 for null references, and start indexing at zero
    - joedbc:
 
      - Split Database with Database_Storage parent
@@ -38,6 +25,17 @@ For next release
      - option to add custom member functions
 
    - joedb_pack: fill holes left by deleted elements, like write_json.
+   - Checkpoints:
+
+     - do not write hard_checkpoint again if it is already written
+     - "--checkpoint soft*|hard|async" option for the server
+
+   - joedbc_fuzzer must work without debug assertions: check input in release mode as well
+
+     - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
+     - more efficient test for validity of a range of ids for vector insert/update/delete
+
+   - SHA-256: full option in network protocol
 
  - Tooling:
 
@@ -85,7 +83,6 @@ Compiler
     - safety checks
     - incrementally updated group-by queries
 
-- use std::set and std::multiset for indexes? Might be better for strings.
 - Table options:
 
   - no_delete: allows more efficient indexing (+smaller code)
@@ -117,7 +114,6 @@ Concurrency
   - write log as joedb file?
 
 - restart very large download from where it stopped (use hash to check before continuing?)
-- SHA-256: option for either none, fast or full.
 
 - Do not crash on write error, continue to allow reading?
 - Asynchronous client code:
