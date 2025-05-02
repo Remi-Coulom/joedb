@@ -23,6 +23,16 @@ TEST(Buffered_File, copy)
  copy.set_position(0);
 
  EXPECT_EQ(copy.read<uint64_t>(), magic);
+
+ EXPECT_TRUE(file.equal_to(copy, 0, 8));
+
+ joedb::Test_File not_copy;
+
+ EXPECT_FALSE(file.equal_to(not_copy, 0, 8));
+
+ copy.write<uint64_t>(magic + 1);
+
+ EXPECT_FALSE(file.equal_to(not_copy, 0, 8));
 }
 
 /////////////////////////////////////////////////////////////////////////////

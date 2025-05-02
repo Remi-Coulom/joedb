@@ -62,11 +62,74 @@ namespace joedb
   {
    const size_t asked = std::min(destination.buffer.size, size_t(size - done));
    const size_t received = pread(destination.buffer.data, asked, start + done);
+
    if (received == 0)
     reading_past_end_of_file();
+
    destination.pwrite(destination.buffer.data, received, start + done);
    done += int64_t(received);
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ bool Buffered_File::equal_to
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Buffered_File &destination,
+  const int64_t from,
+  const int64_t until
+ ) const
+ {
+  destination.flush();
+
+  for (int64_t current = from; current < until;)
+  {
+   const size_t half_buffer_size = Buffered_File::buffer.size / 2;
+
+   const size_t n0 = pread
+   (
+    destination.buffer.data,
+    half_buffer_size,
+    current
+   );
+
+   size_t n1 = 0;
+
+   while (n1 < n0)
+   {
+    const size_t n = destination.pread
+    (
+     destination.buffer.data + half_buffer_size + n1,
+     n0 - n1,
+     current
+    );
+
+    if (n == 0)
+     break;
+
+    n1 += n;
+   }
+
+   if (n1 != n0)
+    return false;
+
+   if (n0 == 0)
+    reading_past_end_of_file();
+
+   const int diff = std::memcmp
+   (
+    destination.buffer.data,
+    destination.buffer.data + half_buffer_size,
+    n0
+   );
+
+   if (diff)
+    return false;
+
+   current += n0;
+  }
+
+  return true;
  }
 
  ////////////////////////////////////////////////////////////////////////////

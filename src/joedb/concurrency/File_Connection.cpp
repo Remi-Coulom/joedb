@@ -19,14 +19,24 @@ namespace joedb
     client_journal.get_checkpoint()
    );
 
-   if
-   (
-    Journal_Hasher::get_hash(client_journal, min) !=
-    Journal_Hasher::get_hash(server_journal, min)
-   )
+   if (content_check == Content_Check::quick)
    {
-    content_mismatch();
+    if
+    (
+     Journal_Hasher::get_hash(client_journal, min) !=
+     Journal_Hasher::get_hash(server_journal, min)
+    )
+    {
+     content_mismatch();
+    }
    }
+   else if (content_check == Content_Check::full)
+   {
+    if (!client_journal.equal_to(server_journal, min))
+     content_mismatch();
+   }
+   else
+    JOEDB_RELEASE_ASSERT(false);
   }
 
   return server_journal.get_checkpoint();
