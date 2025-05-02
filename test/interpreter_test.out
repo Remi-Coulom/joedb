@@ -277,7 +277,7 @@ OK: add_field toto value string
 OK: insert_vector toto 3 1
 OK: insert_vector toto 5 1
 OK: update toto 3 value "toto"
-Exception caught: update_vector: invalid record_id range
+Exception caught: update: invalid record_id
 Line 101: update_vector toto 5 value 2 "kiki" "kuku"
 OK: 
 Exception caught: rename_table: invalid identifier: __toto__

@@ -24,6 +24,25 @@ namespace joedb
 
    Compact_Freedom_Keeper freedom;
 
+   auto find_field_from_id(Field_Id field_id)
+   {
+    const auto it = fields.find(field_id);
+    if (it == fields.end())
+     throw Exception("invalid field_id");
+    return it;
+   }
+
+   auto find_field_from_id(Field_Id field_id) const
+   {
+    return const_cast<Table *>(this)->find_field_from_id(field_id);
+   }
+
+   void check_record_id(Record_Id record_id)
+   {
+    if (!freedom.is_used(to_underlying(record_id) + 1))
+     throw Exception("update: invalid record_id");
+   }
+
   public:
    const Compact_Freedom_Keeper &get_freedom() const {return freedom;}
 
@@ -41,17 +60,14 @@ namespace joedb
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    return_type get_##type_id(Record_Id rid, Field_Id fid) const\
    {\
-    return fields.find(fid)->second.get_##type_id(rid);\
+    return find_field_from_id(fid)->second.get_##type_id(rid);\
    }\
    void update_##type_id(Record_Id record_id,\
                          Field_Id field_id,\
                          return_type value)\
    {\
-    const auto it = fields.find(field_id);\
-    if (it == fields.end())\
-     throw Exception("update: invalid field_id");\
-    if (!freedom.is_used(to_underlying(record_id) + 1))\
-     throw Exception("update: invalid record_id");\
+    const auto it = find_field_from_id(field_id);\
+    check_record_id(record_id);\
     it->second.set_##type_id(record_id, value);\
    }\
    void update_vector_##type_id(Record_Id record_id,\
@@ -59,21 +75,15 @@ namespace joedb
                                 size_t size,\
                                 const type *value)\
    {\
-    const auto it = fields.find(field_id);\
-    if (it == fields.end())\
-     throw Exception("update_vector: invalid field_id");\
-    if (!freedom.is_used(to_underlying(record_id) + 1) ||\
-        !freedom.is_used(to_underlying(record_id) + size))\
-     throw Exception("update_vector: invalid record_id range");\
+    const auto it = find_field_from_id(field_id);\
+    check_record_id(record_id);\
+    check_record_id(record_id + size - 1);\
     it->second.set_vector_##type_id(record_id, size, value);\
    }\
    type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id)\
    {\
-    const auto it = fields.find(field_id);\
-    if (it == fields.end())\
-     throw Exception("get_own_storage: invalid field_id");\
-    if (!freedom.is_used(to_underlying(record_id) + 1))\
-     throw Exception("get_own_storage: invalid record_id");\
+    const auto it = find_field_from_id(field_id);\
+    check_record_id(record_id);\
     return it->second.get_own_##type_id##_storage(record_id);\
    }\
    const type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id) const\
