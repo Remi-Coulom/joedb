@@ -18,7 +18,7 @@ static int write_server_blob(int argc, char **argv)
   std::cerr << "Before running this program, start a joedb server with:\n";
   std::cerr << "joedb_server -port <port> blobs.joedb\n";
   std::cerr << "You can interactively read and write blobs this way:\n";
-  std::cerr << "joedb_client --nodb server network localhost <port>\n";
+  std::cerr << "joedb_client --db none server network localhost <port>\n";
   return 1;
  }
 
