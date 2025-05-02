@@ -7,7 +7,10 @@
 #include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Client.h"
+
+#ifdef PERSISTENCE_TEST
 #include "joedb/journal/File.h"
+#endif
 
 #include <iostream>
 #include <cstring>
@@ -52,6 +55,7 @@ namespace joedb
   }
  };
 
+#ifdef PERSISTENCE_TEST
  class Joedb_Client_Data
  {
   protected:
@@ -90,6 +94,7 @@ namespace joedb
     this->data_journal.play_until_checkpoint(this->writable);
    }
  };
+#endif
 
  ////////////////////////////////////////////////////////////////////////////
  Client_Parser::Client_Parser
@@ -243,6 +248,7 @@ namespace joedb
     content_check
    ));
   }
+#ifdef PERSISTENCE_TEST
   else if (db_type == DB_Type::joedb)
   {
    client.reset(new Joedb_Client
@@ -252,6 +258,7 @@ namespace joedb
     content_check
    ));
   }
+#endif
   else
    throw Exception("unsupported db type");
 

@@ -7,6 +7,7 @@
 
 namespace joedb
 {
+//#define PERSISTENCE_TEST
  /// @ingroup ui
  class Client_Parser
  {
@@ -17,7 +18,9 @@ namespace joedb
     interpreted,
     dump,
     sql,
+#ifdef PERSISTENCE_TEST
     joedb
+#endif
    };
 
   private:
@@ -34,7 +37,9 @@ namespace joedb
     "interpreted",
     "dump",
     "sql",
+#ifdef PERSISTENCE_TEST
     "joedb"
+#endif
    };
 
    File_Parser file_parser;
