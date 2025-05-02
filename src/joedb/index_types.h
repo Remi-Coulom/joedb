@@ -2,6 +2,7 @@
 #define joedb_index_types_declared
 
 #include <stdint.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <type_traits>
 
@@ -9,7 +10,7 @@ namespace joedb
 {
  enum class Table_Id: uint16_t {};
  enum class Field_Id: uint16_t {};
- enum class Record_Id: size_t {};
+ enum class Record_Id: ptrdiff_t {};
 
  constexpr inline std::underlying_type<Table_Id>::type to_underlying
  (

@@ -12,7 +12,7 @@ namespace joedb
   if
   (
    to_underlying(record_id) <= 0 ||
-   (max_record_id && to_underlying(record_id) > max_record_id)
+   (max_record_id > Record_Id{0} && record_id > max_record_id)
   )
   {
    throw Exception("insert_into: too big");
@@ -34,10 +34,10 @@ namespace joedb
   (
    to_underlying(record_id) <= 0 ||
    (
-    max_record_id &&
+    max_record_id > Record_Id{0} &&
     (
-     to_underlying(record_id) > max_record_id ||
-     size > max_record_id
+     record_id > max_record_id ||
+     size > size_t(max_record_id)
     )
    )
   )
@@ -46,7 +46,7 @@ namespace joedb
    error_message << "insert_vector: record_id = ";
    error_message << to_underlying(record_id);
    error_message << "; size = " << size;
-   error_message << "; max = " << max_record_id;
+   error_message << "; max = " << to_underlying(max_record_id);
    throw Exception(error_message.str());
   }
 

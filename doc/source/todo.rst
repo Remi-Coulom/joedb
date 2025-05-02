@@ -7,6 +7,8 @@ For next release
  - Improvements:
 
    - use -1 for null references, and start indexing at zero
+   - Freedom_Keeper: instead of if (compact), use a pointer and
+     virtual functions.
    - joedbc:
 
      - Split Database with Database_Storage parent

@@ -17,19 +17,19 @@ namespace joedb
    {
     public:
      bool is_free;
-     size_t next;
-     size_t previous;
+     ptrdiff_t next;
+     ptrdiff_t previous;
 
     public:
      Record() {}
-     Record(bool is_free, size_t next, size_t previous):
+     Record(bool is_free, ptrdiff_t next, ptrdiff_t previous):
       is_free(is_free),
       next(next),
       previous(previous)
      {}
    };
 
-   size_t used_count;
+   ptrdiff_t used_count;
    std::vector<Record> records;
    enum {used_list = 0, free_list = 1};
 
@@ -46,24 +46,24 @@ namespace joedb
    }
 
    bool is_empty() const {return used_count == 0;}
-   size_t get_used_count() const {return used_count;}
-   size_t size() const {return records.size() - 2;}
-   size_t get_first_free() const {return records[free_list].next;}
-   size_t get_first_used() const {return records[used_list].next;}
-   size_t get_next(size_t index) const {return records[index].next;}
-   size_t get_previous(size_t index) const {return records[index].previous;}
-   bool is_free(size_t index) const {return records[index].is_free;}
-   bool is_used(size_t index) const
+   ptrdiff_t get_used_count() const {return used_count;}
+   ptrdiff_t size() const {return ptrdiff_t(records.size() - 2);}
+   ptrdiff_t get_first_free() const {return records[free_list].next;}
+   ptrdiff_t get_first_used() const {return records[used_list].next;}
+   ptrdiff_t get_next(ptrdiff_t index) const {return records[index].next;}
+   ptrdiff_t get_previous(ptrdiff_t index) const {return records[index].previous;}
+   bool is_free(ptrdiff_t index) const {return records[index].is_free;}
+   bool is_used(ptrdiff_t index) const
    {
     return index > 1 &&
-           index < records.size() &&
+           index < ptrdiff_t(records.size()) &&
            !records[index].is_free;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t get_free_record()
+   ptrdiff_t get_free_record()
    {
-    size_t result = records[free_list].next;
+    ptrdiff_t result = records[free_list].next;
     if (result == free_list)
     {
      push_back();
@@ -73,17 +73,17 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t allocate()
+   ptrdiff_t allocate()
    {
-    const size_t result = get_free_record();
+    const ptrdiff_t result = get_free_record();
     use(result);
     return result;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   size_t push_back()
+   ptrdiff_t push_back()
    {
-    const size_t index = records.size();
+    const ptrdiff_t index = records.size();
     records.emplace_back(true, records[free_list].next, free_list);
 
     records[records[free_list].next].previous = index;
@@ -93,14 +93,14 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void resize(size_t new_size)
+   void resize(ptrdiff_t new_size)
    {
     while(size() < new_size)
      push_back();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void use(size_t index)
+   void use(ptrdiff_t index)
    {
     JOEDB_DEBUG_ASSERT(index > 1);
     JOEDB_DEBUG_ASSERT(index < records.size());
@@ -122,7 +122,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void free(size_t index)
+   void free(ptrdiff_t index)
    {
     JOEDB_DEBUG_ASSERT(index > 1);
     JOEDB_DEBUG_ASSERT(index < records.size());
@@ -150,8 +150,8 @@ namespace joedb
  {
   private:
    bool compact;
-   size_t compact_used_size;
-   size_t compact_free_size;
+   ptrdiff_t compact_used_size;
+   ptrdiff_t compact_free_size;
 
    Freedom_Keeper fk;
 
@@ -162,7 +162,7 @@ namespace joedb
     while (fk.size() < compact_free_size)
      fk.push_back();
 
-    for (size_t i = 0; i < compact_used_size; i++)
+    for (ptrdiff_t i = 0; i < compact_used_size; i++)
      fk.use(i + 2);
    }
 
@@ -174,7 +174,7 @@ namespace joedb
    {
    }
 
-   size_t size() const
+   ptrdiff_t size() const
    {
     if (compact)
      return compact_free_size;
@@ -190,7 +190,7 @@ namespace joedb
      return fk.is_empty();
    }
 
-   size_t get_used_count() const
+   ptrdiff_t get_used_count() const
    {
     if (compact)
      return compact_used_size;
@@ -198,7 +198,7 @@ namespace joedb
      return fk.get_used_count();
    }
 
-   bool is_used(size_t index) const
+   bool is_used(ptrdiff_t index) const
    {
     if (compact)
      return index - 2 < compact_used_size;
@@ -206,7 +206,7 @@ namespace joedb
      return fk.is_used(index);
    }
 
-   bool is_free(size_t index) const
+   bool is_free(ptrdiff_t index) const
    {
     if (compact)
      return index - 2 >= compact_used_size;
@@ -214,7 +214,7 @@ namespace joedb
      return fk.is_free(index);
    }
 
-   size_t get_free_record()
+   ptrdiff_t get_free_record()
    {
     if (compact)
     {
@@ -226,7 +226,7 @@ namespace joedb
      return fk.get_free_record();
    }
 
-   void use(size_t index)
+   void use(ptrdiff_t index)
    {
     if (compact)
     {
@@ -242,7 +242,7 @@ namespace joedb
      fk.use(index);
    }
 
-   void use_vector(size_t index, size_t size)
+   void use_vector(ptrdiff_t index, ptrdiff_t size)
    {
     if
     (
@@ -255,12 +255,12 @@ namespace joedb
     }
     else
     {
-     for (size_t i = 0; i < size; i++)
+     for (ptrdiff_t i = 0; i < size; i++)
       use(index + i);
     }
    }
 
-   void free(size_t index)
+   void free(ptrdiff_t index)
    {
     if (compact)
     {
@@ -276,7 +276,7 @@ namespace joedb
      fk.free(index);
    }
 
-   size_t push_back()
+   ptrdiff_t push_back()
    {
     if (compact)
      return ++compact_free_size + 1;
@@ -289,7 +289,7 @@ namespace joedb
     return compact;
    }
 
-   size_t get_first_free() const
+   ptrdiff_t get_first_free() const
    {
     if (compact)
     {
@@ -302,7 +302,7 @@ namespace joedb
      return fk.get_first_free();
    }
 
-   size_t get_first_used() const
+   ptrdiff_t get_first_used() const
    {
     if (compact)
     {
@@ -315,7 +315,7 @@ namespace joedb
      return fk.get_first_used();
    }
 
-   size_t get_next(size_t index) const
+   ptrdiff_t get_next(ptrdiff_t index) const
    {
     if (compact)
     {
@@ -325,7 +325,7 @@ namespace joedb
      if (index == 1)
       return get_first_free();
 
-     const size_t result = index + 1;
+     const ptrdiff_t result = index + 1;
 
      if (result == compact_used_size + 2)
       return 0;
@@ -339,7 +339,7 @@ namespace joedb
      return fk.get_next(index);
    }
 
-   size_t get_previous(size_t index) const
+   ptrdiff_t get_previous(ptrdiff_t index) const
    {
     if (compact)
     {
@@ -359,7 +359,7 @@ namespace joedb
        return compact_free_size + 1;
      }
 
-     const size_t result = index - 1;
+     const ptrdiff_t result = index - 1;
 
      if (result == 1)
       return 0;
@@ -371,7 +371,7 @@ namespace joedb
      return fk.get_previous(index);
    }
 
-   void resize(size_t size)
+   void resize(ptrdiff_t size)
    {
     if (compact)
     {
@@ -382,7 +382,7 @@ namespace joedb
      fk.resize(size);
    }
 
-   void append_vector(size_t size)
+   void append_vector(ptrdiff_t size)
    {
     if (compact && compact_free_size == compact_used_size)
     {
@@ -391,7 +391,7 @@ namespace joedb
     }
     else
     {
-     for (size_t i = 0; i < size; i++)
+     for (ptrdiff_t i = 0; i < size; i++)
       use(push_back());
     }
    }

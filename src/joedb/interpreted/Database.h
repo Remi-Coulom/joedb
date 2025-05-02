@@ -9,10 +9,10 @@ namespace joedb
  class Database: public Database_Schema
  {
   private:
-   const size_t max_record_id;
+   const Record_Id max_record_id;
 
   public:
-   Database(size_t max_record_id = 0):
+   Database(Record_Id max_record_id = Record_Id{0}):
     max_record_id(max_record_id)
    {
    }

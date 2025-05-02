@@ -48,7 +48,7 @@ namespace joedb::generator
    out << "   constexpr id_of_" << tname << "(): id(Record_Id(0)) {}\n";
    out << "   constexpr bool is_null() const {return id == Record_Id(0);}\n";
    out << "   constexpr bool is_not_null() const {return id != Record_Id(0);}\n";
-   out << "   constexpr size_t get_id() const {return size_t(id);}\n";
+   out << "   constexpr auto get_id() const {return to_underlying(id);}\n";
    out << "   constexpr Record_Id get_record_id() const {return id;}\n";
    out << "   constexpr bool operator==(id_of_" << tname << " x) const {return id == x.id;}\n";
    out << "   constexpr bool operator!=(id_of_" << tname << " x) const {return id != x.id;}\n";
