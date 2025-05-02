@@ -9,6 +9,7 @@
 
 namespace joedb
 {
+ /// @ingroup joedb
  class Signal
  {
   public:

@@ -8,8 +8,13 @@
 
 namespace joedb
 {
+ /// @ingroup joedb
  enum class Table_Id: uint16_t {};
+
+ /// @ingroup joedb
  enum class Field_Id: uint16_t {};
+
+ /// @ingroup joedb
  enum class Record_Id: ptrdiff_t {};
 
  constexpr inline std::underlying_type<Table_Id>::type to_underlying

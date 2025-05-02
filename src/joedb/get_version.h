@@ -3,6 +3,7 @@
 
 namespace joedb
 {
+ /// @ingroup joedb
  constexpr const char *get_version()
  {
   return

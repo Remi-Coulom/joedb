@@ -8,6 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////
 namespace joedb
 {
+ /// @ingroup joedb
  inline int get_pid()
  {
   return 0;
@@ -21,6 +22,7 @@ namespace joedb
 
 namespace joedb
 {
+ /// @ingroup joedb
  inline DWORD get_pid()
  {
   return GetCurrentProcessId();
@@ -34,6 +36,7 @@ namespace joedb
 
 namespace joedb
 {   
+ /// @ingroup joedb
  inline int get_pid()
  {
   return ::getpid();

@@ -10,6 +10,7 @@ namespace joedb
 {
  typedef uint8_t Type_Id_Storage;
 
+ /// @ingroup joedb
  class Type
  {
   public:
