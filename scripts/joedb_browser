@@ -8,7 +8,7 @@ fi
 
 tmp_sqlite=$(mktemp /tmp/joedb_browser.XXXXXX)
 
-joedb_push "$*" sql | sqlite3 "$tmp_sqlite"
+joedb_push --db sql "$*" | sqlite3 "$tmp_sqlite"
 
 sqlitebrowser "$tmp_sqlite"
 
