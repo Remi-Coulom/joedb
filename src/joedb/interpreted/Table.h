@@ -78,12 +78,7 @@ namespace joedb
    }\
    const type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id) const\
    {\
-    const auto it = fields.find(field_id);\
-    if (it == fields.end())\
-     throw Exception("get_own_storage: invalid field_id");\
-    if (!freedom.is_used(to_underlying(record_id) + 1))\
-     throw Exception("get_own_storage: invalid record_id");\
-    return it->second.get_own_##type_id##_storage(record_id);\
+    return const_cast<Table *>(this)->get_own_##type_id##_storage(record_id, field_id);\
    }
    #include "joedb/TYPE_MACRO.h"
  };
