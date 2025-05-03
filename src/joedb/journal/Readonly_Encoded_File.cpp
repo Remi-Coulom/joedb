@@ -49,7 +49,7 @@ namespace joedb
     (
      buffer + intersection_start - start,
      read_buffer.data() + intersection_start - b_start,
-     intersection_size
+     size_t(intersection_size)
     );
    }
   }

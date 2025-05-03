@@ -180,7 +180,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Async_Reader reader(*this, blob.get_position(), blob.get_end());
-  std::string result(blob.get_size(), 0);
+  std::string result(size_t(blob.get_size()), 0);
   reader.read(result.data(), result.size());
   if (reader.is_end_of_file())
    reading_past_end_of_file();

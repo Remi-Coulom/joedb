@@ -732,7 +732,7 @@ namespace joedb
   io_context(io_context),
   endpoint_path(std::move(endpoint_path)),
   endpoint(this->endpoint_path),
-  acceptor(io_context, endpoint),
+  acceptor(io_context, endpoint, false),
   stopped(true),
   interrupt_signals(io_context, SIGINT, SIGTERM),
   session_id(0),

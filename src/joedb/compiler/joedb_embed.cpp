@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
   {
    const joedb::File in(joedb_file_name, joedb::Open_Mode::read_existing);
-   file_content.resize(in.get_size());
+   file_content.resize(size_t(in.get_size()));
    in.pread(file_content.data(), file_content.size(), 0);
   }
 

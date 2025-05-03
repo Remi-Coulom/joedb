@@ -16,7 +16,7 @@ namespace joedb
    size_t pread(char *buffer, size_t size, int64_t offset) const override
    //////////////////////////////////////////////////////////////////////////
    {
-    const size_t max_size = data.size() - offset;
+    const size_t max_size = data.size() - size_t(offset);
     const size_t n = std::min(read_size, std::min(size, max_size));
     std::copy_n(data.data() + offset, n, buffer);
     return n;
