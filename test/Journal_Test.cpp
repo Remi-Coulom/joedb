@@ -69,7 +69,12 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Header header;
+  header.checkpoint.fill(Header::size);
+  header.version = Readonly_Journal::format_version;
+  header.signature = Header::joedb;
+  header.signature[4] = 'B';
   Memory_File file;
+
   file.pwrite((const char *)&header, Header::size, 0);
 
   try
