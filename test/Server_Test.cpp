@@ -1034,6 +1034,7 @@ namespace joedb
   {
   }
 
+  server.io_context.io_context.poll();
   EXPECT_FALSE(server.server.has_client_lock());
  }
 }

@@ -126,34 +126,40 @@ namespace joedb
  void Server::lock_dequeue()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!locked && !lock_queue.empty())
+  if (!locked)
   {
-   locked = true;
-   const std::shared_ptr<Session> session = lock_queue.front();
-   lock_queue.pop();
-   LOGID("locking\n");
-
-   if (!client_lock)
+   if (lock_queue.empty())
    {
-    if (!writable_journal_client)
+    if (client.is_shared() && client_lock)
     {
-     LOGID("Error: locking pull-only server\n");
-     session->buffer.data[0] = 'R';
+     client_lock->unlock();
+     client_lock.reset();
     }
-    else
-     client_lock.emplace(*writable_journal_client); // ??? takes_time
    }
+   else
+   {
+    locked = true;
+    const std::shared_ptr<Session> session = lock_queue.front();
+    lock_queue.pop();
+    LOGID("locking\n");
 
-   if (session->state == Session::State::waiting_for_lock_to_pull)
-    start_pulling(session);
+    if (!client_lock)
+    {
+     if (!writable_journal_client)
+     {
+      LOGID("Error: locking pull-only server\n");
+      session->buffer.data[0] = 'R';
+     }
+     else
+      client_lock.emplace(*writable_journal_client); // ??? takes_time
+    }
 
-   session->state = Session::State::locking;
-   refresh_lock_timeout(session);
-  }
-  else if (client.is_shared() && client_lock)
-  {
-   client_lock->unlock();
-   client_lock.reset();
+    if (session->state == Session::State::waiting_for_lock_to_pull)
+     start_pulling(session);
+
+    session->state = Session::State::locking;
+    refresh_lock_timeout(session);
+   }
   }
  }
 
