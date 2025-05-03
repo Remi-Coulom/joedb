@@ -682,24 +682,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::handle_accept
- ////////////////////////////////////////////////////////////////////////////
- (
-  const std::error_code error,
-  asio::ip::tcp::socket socket
- )
- {
-  if (!error && !stopped)
-  {
-   socket.set_option(asio::ip::tcp::no_delay(true));
-   std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
-   async_read(session, 0, 13, &Server::handshake_handler);
-
-   start_accept();
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Server::start_accept()
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -710,7 +692,14 @@ namespace joedb
     io_context,
     [this](std::error_code error, asio::ip::tcp::socket socket)
     {
-     handle_accept(error, std::move(socket));
+     if (!error && !stopped)
+     {
+      socket.set_option(asio::ip::tcp::no_delay(true));
+      std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
+      async_read(session, 0, 13, &Server::handshake_handler);
+
+      start_accept();
+     }
     }
    );
   }

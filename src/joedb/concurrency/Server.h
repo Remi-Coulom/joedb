@@ -176,12 +176,6 @@ namespace joedb
     size_t bytes_transferred
    );
 
-   void handle_accept
-   (
-    std::error_code error,
-    asio::ip::tcp::socket socket
-   );
-
    void start_accept();
 
    std::ostream *log_pointer;
