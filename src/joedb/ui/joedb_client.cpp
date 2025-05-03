@@ -31,7 +31,7 @@ namespace joedb
 
   Writable_Client *writable_client = dynamic_cast<Writable_Client*>(&client);
 
-  if (writable_client)
+  if (writable_client && !client.is_pullonly())
    interpreter.reset(new Writable_Client_Command_Processor(*writable_client));
   else
    interpreter.reset(new Client_Command_Processor(client));

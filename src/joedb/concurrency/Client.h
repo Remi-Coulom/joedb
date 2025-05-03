@@ -54,6 +54,11 @@ namespace joedb
     return journal.is_shared();
    }
 
+   bool is_pullonly() const
+   {
+    return connection.is_pullonly();
+   }
+
    int64_t get_journal_checkpoint() const
    {
     return get_journal().get_checkpoint();

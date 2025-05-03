@@ -47,6 +47,11 @@ namespace joedb
    ) override;
 
    void unlock() override;
+
+   bool is_pullonly() const override
+   {
+    return this->pullonly_server;
+   }
  };
 }
 

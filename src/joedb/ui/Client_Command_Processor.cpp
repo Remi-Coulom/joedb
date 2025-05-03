@@ -24,13 +24,20 @@ namespace joedb
 
   const int64_t journal_checkpoint = client.get_journal_checkpoint();
   const int64_t connection_checkpoint = client.get_connection_checkpoint();
+  const int64_t diff = connection_checkpoint - journal_checkpoint;
 
   out << journal_checkpoint;
-  if (journal_checkpoint < connection_checkpoint)
-   out << '+' << connection_checkpoint - journal_checkpoint << ")(pull to sync";
-  else if (connection_checkpoint < journal_checkpoint)
-   out << '-' << journal_checkpoint - connection_checkpoint << ")(push to sync";
-  out << ')';
+  if (diff > 0)
+   out << '+' << diff << ")(pull to sync)";
+  else if (diff < 0)
+  {
+   out << diff << ')';
+
+   if (client.is_pullonly())
+    out << "(cannot push)";
+   else
+    out << "(push to sync)";
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -76,10 +83,13 @@ namespace joedb
  db
  pull [<wait_seconds>]
  pull_every [<wait_seconds>] [<sleep_seconds>]
+)RRR";
+   if (!client.is_pullonly())
+    out << R"RRR(Client
  push
  push_every [<sleep_seconds>]
-
 )RRR";
+   out << '\n';
 
    return Status::ok;
   }
@@ -133,11 +143,11 @@ namespace joedb
     sleep(sleep_seconds, out);
    }
   }
-  else if (command == "push") ///////////////////////////////////////////////
+  else if (command == "push" && !client.is_pullonly()) //////////////////////
   {
    client.push();
   }
-  else if (command == "push_every") /////////////////////////////////////////
+  else if (command == "push_every" && !client.is_pullonly()) ////////////////
   {
    int sleep_seconds = 1;
    parameters >> sleep_seconds;
