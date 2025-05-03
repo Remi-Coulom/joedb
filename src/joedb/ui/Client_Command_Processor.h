@@ -1,3 +1,6 @@
+#ifndef joedb_Client_Command_Processor_declared
+#define joedb_Client_Command_Processor_declared
+
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/concurrency/Writable_Client.h"
 
@@ -60,3 +63,5 @@ namespace joedb
    ) override;
  };
 }
+
+#endif

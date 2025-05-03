@@ -1,4 +1,4 @@
-#include "joedb/concurrency/Network_Connector.h"
+#include "joedb/concurrency/Local_Connector.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
@@ -6,7 +6,7 @@
 
 int main()
 {
- joedb::Network_Connector connector("localhost", "1234");
+ joedb::Local_Connector connector("blobs.sock");
  joedb::Server_File server_file(connector);
  joedb::Writable_Journal_Client client(server_file, server_file);
 

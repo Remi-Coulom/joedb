@@ -26,7 +26,7 @@ namespace joedb
    (
     asio::io_context &io_context,
     const std::string &file_name,
-    uint16_t port,
+    const std::string &endpoint_path,
     std::chrono::seconds timeout
    ):
     file(file_name, Open_Mode::write_existing_or_create_new),
@@ -35,7 +35,7 @@ namespace joedb
     (
      client,
      io_context,
-     port,
+     endpoint_path,
      timeout,
      &std::cerr
     )
@@ -71,7 +71,7 @@ namespace joedb
     (
      io_context_wrapper.io_context,
      db.get_file_name(server),
-     uint16_t(db.get_port(server)),
+     db.get_endpoint_path(server),
      std::chrono::seconds(db.get_timeout(server))
     )
    );

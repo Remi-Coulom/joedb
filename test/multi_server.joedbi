@@ -1,8 +1,8 @@
 create_table server
 add_field server file_name string
-add_field server port int32
+add_field server endpoint_path string
 
-insert_into server 1 "test_1.joedb" 2001
-insert_into server 2 "test_2.joedb" 2002
+insert_into server 1 "test_1.joedb" "test_1.sock"
+insert_into server 2 "test_2.joedb" "test_2.sock"
 
 add_field server timeout int32 = 0

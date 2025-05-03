@@ -21,7 +21,7 @@ namespace joedb
   if (argc <= 1)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--port p] [--timeout t]";
+   std::cerr << " [--socket <endpoint_path>] [--timeout t]";
    client_parser.print_help(std::cerr);
    std::cerr << R"RRR(
 The timeout is the time (in seconds) during which a client lock is kept.
@@ -34,10 +34,10 @@ and can still push data: the push will succeed only if there is no conflict.
 
   int32_t index = 1;
 
-  uint16_t port = 0;
-  if (index + 1 < argc && std::strcmp(argv[index], "--port") == 0)
+  std::string endpoint_path("joedb_server.sock");
+  if (index + 1 < argc && std::strcmp(argv[index], "--socket") == 0)
   {
-   port = uint16_t(std::atoi(argv[index + 1]));
+   endpoint_path = argv[index + 1];
    index += 2;
   }
 
@@ -52,14 +52,14 @@ and can still push data: the push will succeed only if there is no conflict.
 
   IO_Context_Wrapper io_context_wrapper;
 
-  std::cout << "Creating server (port = " << port;
-  std::cout << "; timeout = " << timeout;
+  std::cout << "Creating server (endpoint_path = " << endpoint_path;
+  std::cout << "; timeout = " << timeout << ")\n";
 
   Server server
   (
    client,
    io_context_wrapper.io_context,
-   port,
+   endpoint_path,
    std::chrono::seconds(timeout),
    &std::cerr
   );

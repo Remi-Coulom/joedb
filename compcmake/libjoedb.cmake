@@ -53,6 +53,7 @@ if (asio_FOUND)
   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/IO_Context_Wrapper.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Network_Channel.cpp
+  ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}
  )
  add_definitions(-DJOEDB_HAS_NETWORKING)

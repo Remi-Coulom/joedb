@@ -10,6 +10,7 @@
 
 #include <asio/read.hpp>
 #include <asio/write.hpp>
+#include <cstdio>
 
 namespace joedb
 {
@@ -31,24 +32,24 @@ namespace joedb
   out << server.get_time_stamp().count() << ' ';
 #endif
 
-  out << server.port << '(' << id << "): ";
+  out << server.endpoint_path << '(' << id << "): ";
 
   return out;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server::Session::Session(Server &server, asio::ip::tcp::socket &&socket):
+ Server::Session::Session
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Server &server,
+  asio::local::stream_protocol::socket &&socket
+ ):
   id(++server.session_id),
   server(server),
   socket(std::move(socket)),
   state(State::not_locking)
  {
-  server.log([this](std::ostream &out)
-  {
-   write_id(out) << "created (remote endpoint: ";
-   out << this->socket.remote_endpoint() << ")\n";
-  });
+  server.log([this](std::ostream &out) {write_id(out) << "created\n";});
   server.sessions.insert(this);
   server.write_status();
  }
@@ -112,7 +113,7 @@ namespace joedb
  {
   log([this](std::ostream &out)
   {
-   out << port;
+   out << endpoint_path;
    out << ": pid = " << joedb::get_pid();
    out << "; " << get_time_string_of_now();
    out << "; sessions = " << sessions.size();
@@ -690,11 +691,10 @@ namespace joedb
    acceptor.async_accept
    (
     io_context,
-    [this](std::error_code error, asio::ip::tcp::socket socket)
+    [this](std::error_code error, asio::local::stream_protocol::socket socket)
     {
      if (!error && !stopped)
      {
-      socket.set_option(asio::ip::tcp::no_delay(true));
       std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
       async_read(session, 0, 13, &Server::handshake_handler);
 
@@ -711,7 +711,7 @@ namespace joedb
  (
   Client &client,
   asio::io_context &io_context,
-  const uint16_t port,
+  std::string endpoint_path,
   const std::chrono::milliseconds lock_timeout,
   std::ostream * const log_pointer
  ):
@@ -719,8 +719,9 @@ namespace joedb
   client(client),
   writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   io_context(io_context),
-  acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
-  port(acceptor.local_endpoint().port()),
+  endpoint_path(std::move(endpoint_path)),
+  endpoint(this->endpoint_path),
+  acceptor(io_context, endpoint),
   stopped(true),
   interrupt_signals(io_context, SIGINT, SIGTERM),
   session_id(0),
@@ -757,7 +758,7 @@ namespace joedb
    // Note: C++20 has operator<< for durations
    LOG
    (
-    port <<
+    get_endpoint_path() <<
     ": start. lock_timeout = " << lock_timeout.count() <<
     "; protocol_version = " << protocol_version << '\n'
    );
@@ -780,7 +781,7 @@ namespace joedb
  {
   if (!stopped)
   {
-   LOG(port << ": stop\n");
+   LOG(get_endpoint_path() << ": stop\n");
 
    for (Session *session: sessions)
    {
@@ -806,6 +807,7 @@ namespace joedb
   {
    if (!sessions.empty())
     LOG("Destroying server before sessions.\n");
+   std::remove(endpoint_path.c_str());
   }
   catch (...)
   {

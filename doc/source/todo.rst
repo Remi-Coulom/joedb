@@ -9,7 +9,6 @@ For next release
    - use -1 for null references, and start indexing at zero
    - Freedom_Keeper: instead of if (compact), use a pointer and
      virtual functions.
-   - support unix sockets for server + ssh client
    - joedbc:
 
      - Split Database with Database_Storage parent

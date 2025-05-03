@@ -1,5 +1,5 @@
 #include "joedb/ui/main_exception_catcher.h"
-#include "joedb/concurrency/Network_Connector.h"
+#include "joedb/concurrency/Local_Connector.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
@@ -11,19 +11,19 @@
 /// without downloading a full replica of the database.
 static int write_server_blob(int argc, char **argv)
 {
- if (argc < 3)
+ if (argc < 2)
  {
-  std::cerr << "usage: " << argv[0] << " <port> <blob_string>\n";
-  std::cerr << "This program will try to connect to a server on localhost.\n";
+  std::cerr << "usage: " << argv[0] << " <blob_string>\n";
+  std::cerr << "This program will try to connect to a local server.\n";
   std::cerr << "Before running this program, start a joedb server with:\n";
-  std::cerr << "joedb_server -port <port> blobs.joedb\n";
+  std::cerr << "joedb_server --socket blobs.sock blobs.joedb\n";
   std::cerr << "You can interactively read and write blobs this way:\n";
-  std::cerr << "joedb_client --db none server network localhost <port>\n";
+  std::cerr << "joedb_client --db none server local blobs.sock\n";
   return 1;
  }
 
  // Connect to the server
- joedb::Network_Connector connector("localhost", argv[1]);
+ joedb::Local_Connector connector("blobs.sock");
  joedb::Server_File server_file(connector, &std::cerr);
 
  // Creating the client: server file serves both as file and connection
@@ -35,7 +35,7 @@ static int write_server_blob(int argc, char **argv)
 
   for (int i = 3; --i >= 0;)
   {
-   const joedb::Blob blob = lock.get_journal().write_blob(argv[2]);
+   const joedb::Blob blob = lock.get_journal().write_blob(argv[1]);
    lock.push();
    std::cout << "wrote blob with lock: " << blob.get_position() << '\n';
    std::cout << "blob: " << server_file.read_blob(blob) << '\n';
@@ -49,7 +49,7 @@ static int write_server_blob(int argc, char **argv)
  {
   const auto blob = client.transaction([argv](joedb::Writable_Journal &journal)
   {
-   return journal.write_blob(argv[2]);
+   return journal.write_blob(argv[1]);
   });
   std::cout << "wrote blob with transaction: " << blob.get_position() << '\n';
   std::cout << "blob: " << server_file.read_blob(blob) << '\n';

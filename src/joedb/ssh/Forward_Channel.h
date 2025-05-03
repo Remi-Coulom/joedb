@@ -39,6 +39,12 @@ namespace joedb::ssh
     uint16_t remote_port
    );
 
+   Forward_Channel
+   (
+    Session &session,
+    const char *remote_path
+   );
+
    void set_timeout(int ms) {timeout_ms = ms;}
  };
 }

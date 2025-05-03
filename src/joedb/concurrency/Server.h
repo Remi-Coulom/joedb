@@ -11,7 +11,7 @@
 #include <chrono>
 #include <optional>
 
-#include <asio/ip/tcp.hpp>
+#include <asio/local/stream_protocol.hpp>
 #include <asio/steady_timer.hpp>
 #include <asio/signal_set.hpp>
 
@@ -26,8 +26,9 @@ namespace joedb
    Writable_Journal_Client *writable_journal_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
    asio::io_context &io_context;
-   asio::ip::tcp::acceptor acceptor;
-   const uint16_t port;
+   std::string endpoint_path;
+   asio::local::stream_protocol::endpoint endpoint;
+   asio::local::stream_protocol::acceptor acceptor;
    bool stopped;
    asio::signal_set interrupt_signals;
 
@@ -37,7 +38,7 @@ namespace joedb
    {
     const int64_t id;
     Server &server;
-    asio::ip::tcp::socket socket;
+    asio::local::stream_protocol::socket socket;
     Buffer<13> buffer;
     enum class State
     {
@@ -62,7 +63,7 @@ namespace joedb
     std::ostream &write_id(std::ostream &out) const;
     std::optional<Progress_Bar> progress_bar;
 
-    Session(Server &server, asio::ip::tcp::socket &&socket);
+    Session(Server &server, asio::local::stream_protocol::socket &&socket);
     ~Session();
    };
 
@@ -194,12 +195,12 @@ namespace joedb
    (
     Client &client,
     asio::io_context &io_context,
-    uint16_t port,
+    std::string endpoint_path,
     std::chrono::milliseconds lock_timeout,
     std::ostream *log_pointer
    );
 
-   uint16_t get_port() const {return port;}
+   const std::string &get_endpoint_path() const {return endpoint_path;}
 
    std::chrono::milliseconds get_time_stamp() const;
 

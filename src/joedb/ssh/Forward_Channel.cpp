@@ -74,5 +74,27 @@ namespace joedb::ssh
    )
   );
  }
+
+ ///////////////////////////////////////////////////////////////////////////
+ Forward_Channel::Forward_Channel
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  Session &session,
+  const char *remote_path
+ ):
+  Forward_Channel_Allocation(session),
+  timeout_ms(-1)
+ {
+  session.check_result
+  (
+   ssh_channel_open_forward_unix
+   (
+    channel,
+    remote_path,
+    "", // unused parameter
+    0   // unused parameter
+   )
+  );
+ }
 }
 

@@ -23,14 +23,14 @@ namespace joedb
    const char *get_name() const final {return "ssh";}
    const char *get_parameters_description() const final
    {
-    return "<user> <host> <joedb_port> [<ssh_port> [<ssh_log_level>]]";
+    return "<user> <host> <endpoint_path> [<ssh_port> [<ssh_log_level>]]";
    }
 
    Connection &build(int argc, char **argv, Buffered_File *file) final
    {
     const char * const user = argv[0];
     const char * const host = argv[1];
-    const uint16_t joedb_port = uint16_t(std::atoi(argv[2]));
+    const char * const remote_path = argv[2];
     const unsigned ssh_port = argc > 3 ? std::atoi(argv[3]) : 22;
     const int ssh_log_level = argc > 4 ? std::atoi(argv[4]) : 0;
 
@@ -42,8 +42,7 @@ namespace joedb
      ssh_log_level,
      nullptr,
      nullptr,
-     "localhost",
-     joedb_port
+     remote_path
     );
 
     if (file)

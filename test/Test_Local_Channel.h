@@ -1,7 +1,7 @@
-#ifndef joedb_Test_Network_Channel_declared
-#define joedb_Test_Network_Channel_declared
+#ifndef joedb_Test_Local_Channel_declared
+#define joedb_Test_Local_Channel_declared
 
-#include "joedb/concurrency/Network_Channel.h"
+#include "joedb/concurrency/Local_Channel.h"
 
 #include <limits>
 #include <thread>
@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Test_Network_Channel: public Network_Channel
+ class Test_Local_Channel: public Local_Channel
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -33,7 +33,7 @@ namespace joedb
 
      size_t written = 0;
      if (write_size > 0)
-      written = Network_Channel::write_some(data, write_size);
+      written = Local_Channel::write_some(data, write_size);
 
      if (failure_is_timeout)
      {
@@ -41,13 +41,13 @@ namespace joedb
       fail_after_writing = std::numeric_limits<size_t>::max();
      }
      else
-      Network_Channel::socket.close();
+      Local_Channel::socket.close();
 
      return written;
     }
     else
     {
-     size_t written = Network_Channel::write_some(data, size);
+     size_t written = Local_Channel::write_some(data, size);
      total_written += written;
      return written;
     }
@@ -55,16 +55,16 @@ namespace joedb
 
    size_t read_some(char *data, size_t size) override
    {
-    const size_t result = Network_Channel::read_some(data, size);
+    const size_t result = Local_Channel::read_some(data, size);
     total_read += result;
     if (total_read >= fail_after_reading)
-     Network_Channel::socket.close();
+     Local_Channel::socket.close();
     return result;
    }
 
   public:
-   Test_Network_Channel( const char *host_name, const char * port_name):
-    Network_Channel(host_name, port_name)
+   Test_Local_Channel(const std::string &endpoint_path):
+    Local_Channel(endpoint_path)
    {
    }
 

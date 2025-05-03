@@ -17,11 +17,10 @@ namespace joedb::ssh
     const int verbosity,
     const char * const b64_key,
     const char * const passphrase,
-    const char * const remote_host,
-    const uint16_t remote_port
+    const char * const remote_path
    ):
     Session(user, host, port, verbosity, b64_key, passphrase),
-    Forward_Channel(*this, remote_host, remote_port)
+    Forward_Channel(*this, remote_path)
    {
    }
  };
@@ -36,8 +35,7 @@ namespace joedb::ssh
    const int verbosity;
    const char * const b64_key;
    const char * const passphrase;
-   const std::string remote_host;
-   const uint16_t remote_port;
+   const std::string remote_path;
 
   public:
    Connector
@@ -48,8 +46,7 @@ namespace joedb::ssh
     const int verbosity,
     const char * const b64_key,
     const char * const passphrase,
-    std::string remote_host,
-    const uint16_t remote_port
+    std::string remote_path
    ):
     user(std::move(user)),
     host(std::move(host)),
@@ -57,8 +54,7 @@ namespace joedb::ssh
     verbosity(verbosity),
     b64_key(b64_key),
     passphrase(passphrase),
-    remote_host(std::move(remote_host)),
-    remote_port(remote_port)
+    remote_path(std::move(remote_path))
    {
    }
 
@@ -72,8 +68,7 @@ namespace joedb::ssh
      verbosity,
      b64_key,
      passphrase,
-     remote_host.c_str(),
-     remote_port
+     remote_path.c_str()
     );
    }
  };
