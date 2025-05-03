@@ -39,7 +39,7 @@ namespace joedb::ssh
    data,
    uint32_t(size),
    0,
-   timeout_ms
+   int(timeout.count())
   );
 
   if (result == SSH_ERROR)
@@ -59,8 +59,7 @@ namespace joedb::ssh
   const char *remote_host,
   uint16_t remote_port
  ):
-  Forward_Channel_Allocation(session),
-  timeout_ms(-1)
+  Forward_Channel_Allocation(session)
  {
   session.check_result
   (
@@ -82,8 +81,7 @@ namespace joedb::ssh
   Session &session,
   const char *remote_path
  ):
-  Forward_Channel_Allocation(session),
-  timeout_ms(-1)
+  Forward_Channel_Allocation(session)
  {
   session.check_result
   (

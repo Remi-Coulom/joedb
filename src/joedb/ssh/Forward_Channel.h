@@ -4,6 +4,8 @@
 #include "joedb/concurrency/Channel.h"
 #include "joedb/ssh/Session.h"
 
+#include <chrono>
+
 namespace joedb::ssh
 {
  ///////////////////////////////////////////////////////////////////////////
@@ -29,7 +31,7 @@ namespace joedb::ssh
   private:
    size_t write_some(const char *data, size_t size) final;
    size_t read_some(char *data, size_t size) final;
-   int timeout_ms;
+   std::chrono::milliseconds timeout = std::chrono::minutes{30};
 
   public:
    Forward_Channel
@@ -45,7 +47,10 @@ namespace joedb::ssh
     const char *remote_path
    );
 
-   void set_timeout(int ms) {timeout_ms = ms;}
+   void set_timeout(std::chrono::milliseconds ms)
+   {
+    timeout = ms;
+   }
  };
 }
 

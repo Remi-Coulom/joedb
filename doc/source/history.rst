@@ -8,7 +8,8 @@ History
 
   - New features:
 
-    - add missing ``delete_vector`` operation
+    - ``joedb_server`` uses unix domain sockets instead of tcp/ip sockets
+    - new ``delete_vector`` operation
     - Transactions can return a value.
     - :joedb:`Robust_Connection` automatically reconnects after an error.
     - :ref:`Server_File` allows accessing a remote database without
