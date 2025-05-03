@@ -488,7 +488,7 @@ namespace joedb
    const std::chrono::milliseconds wait{session->buffer.read<int64_t>()};
    session->pull_checkpoint = session->buffer.read<int64_t>();
 
-   if (!client_lock) // todo: deep-share option
+   if (!client_lock)
     client.pull(); // ??? takes_time
 
    if
@@ -683,7 +683,10 @@ namespace joedb
     session->buffer.write<int64_t>(client_version < protocol_version ? 0 : protocol_version);
     session->buffer.write<int64_t>(session->id);
     session->buffer.write<int64_t>(client.get_journal_checkpoint());
-    session->buffer.write<char>(writable_journal_client ? 'W' : 'R');
+    session->buffer.write<char>
+    (
+     (writable_journal_client && !client.is_pullonly()) ? 'W' : 'R'
+    );
 
     write_buffer_and_next_command(session, session->buffer.index);
     return;
