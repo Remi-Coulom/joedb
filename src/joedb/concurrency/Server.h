@@ -201,7 +201,7 @@ namespace joedb
    );
 
    const std::string &get_endpoint_path() const {return endpoint_path;}
-
+   bool has_client_lock() const {return bool(client_lock);}
    std::chrono::milliseconds get_time_stamp() const;
 
    // Note: run on io_context if on another thread: io_context.post([&](){server.stop();});

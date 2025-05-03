@@ -150,6 +150,11 @@ namespace joedb
    session->state = Session::State::locking;
    refresh_lock_timeout(session);
   }
+  else if (client.is_shared() && client_lock)
+  {
+   client_lock->unlock();
+   client_lock.reset();
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

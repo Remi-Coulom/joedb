@@ -1012,4 +1012,28 @@ namespace joedb
 
   EXPECT_EQ(file.read_blob(blob), "blob_test");
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, shared_abort)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server;
+  EXPECT_TRUE(server.client.is_shared());
+
+  Memory_File file;
+  Test_Client client(file, server);
+
+  try
+  {
+   client.transaction([](Readable &readable, Writable &writable)
+   {
+    throw Exception("aborted transaction");
+   });
+  }
+  catch (...)
+  {
+  }
+
+  EXPECT_FALSE(server.server.has_client_lock());
+ }
 }
