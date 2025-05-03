@@ -9,6 +9,7 @@ For next release
    - use -1 for null references, and start indexing at zero
    - Freedom_Keeper: instead of if (compact), use a pointer and
      virtual functions.
+   - support unix sockets for server + ssh client
    - joedbc:
 
      - Split Database with Database_Storage parent
@@ -111,7 +112,6 @@ Concurrency
     - thread_count = max(core_count, 2 * server_count)
     - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
 
-  - ipv6: https://raw.githubusercontent.com/boostcon/2011_presentations/master/wed/IPv6.pdf
   - support for log rotation: https://stackoverflow.com/questions/53188731/logging-compatibly-with-logrotate
   - write log as joedb file?
 
