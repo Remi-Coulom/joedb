@@ -49,5 +49,10 @@ namespace joedb
  {
  }
 
+ bool Connection::is_pullonly() const
+ {
+  return false;
+ }
+
  Connection::~Connection() = default;
 }

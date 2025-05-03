@@ -94,6 +94,8 @@ namespace joedb
    /// Unlock the connection
    virtual void unlock();
 
+   bool is_pullonly() const;
+
    virtual ~Connection();
  };
 }
