@@ -21,6 +21,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/concurrency/Client.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/File_Connection.cpp
+ ${JOEDB_SRC_DIR}/joedb/concurrency/Robust_Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Client.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_File.cpp

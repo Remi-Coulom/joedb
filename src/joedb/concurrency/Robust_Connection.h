@@ -27,40 +27,12 @@ namespace joedb
    static constexpr auto period = std::chrono::seconds(5);
    mutable time_point last_connection_time = clock::now() - period;
 
-   void log_exception(const std::exception *e) const
-   {
-    if (e && log)
-     *log << "Robust_Connection: " << e->what() << std::endl;
-   }
+   void log_exception(const std::exception *e) const;
 
   protected:
    mutable std::unique_ptr<Server_Connection> connection;
 
-   void reconnect(const std::exception *e) const
-   {
-    log_exception(e);
-
-    while (true)
-    {
-     std::this_thread::sleep_until(last_connection_time + period);
-     last_connection_time = clock::now();
-
-     try
-     {
-      connection.reset();
-      channel.reset();
-      channel = connector.new_channel();
-      connection = std::make_unique<Server_Connection>(*channel, log);
-      if (handshake_journal)
-       connection->handshake(*handshake_journal, handshake_content_check);
-      return;
-     }
-     catch (std::exception &e)
-     {
-      log_exception(&e);
-     }
-    }
-   }
+   void reconnect(const std::exception *e) const;
 
    template<typename F> auto try_until_success(const F &f) const
    {
@@ -85,30 +57,13 @@ namespace joedb
     reconnect(nullptr);
    }
 
-   size_t pread(char *data, size_t size, int64_t offset) const
-   {
-    return try_until_success([&]()
-    {
-     return connection->pread(data, size, offset);}
-    );
-   }
+   size_t pread(char *data, size_t size, int64_t offset) const;
 
    int64_t handshake
    (
     const Readonly_Journal &client_journal,
     Content_Check content_check
-   ) override
-   {
-    const int64_t result = try_until_success([&]()
-    {
-     return connection->handshake(client_journal, content_check);
-    });
-
-    handshake_journal = &client_journal;
-    handshake_content_check = content_check;
-
-    return result;
-   }
+   ) override;
 
    int64_t pull
    (
@@ -116,13 +71,7 @@ namespace joedb
     Data_Transfer data_transfer,
     Writable_Journal &client_journal,
     std::chrono::milliseconds wait
-   ) override
-   {
-    return try_until_success([&]()
-    {
-     return connection->pull(lock_action, data_transfer, client_journal, wait);
-    });
-   }
+   ) override;
 
    int64_t push
    (
@@ -130,32 +79,9 @@ namespace joedb
     int64_t from_checkpoint,
     int64_t until_checkpoint,
     Unlock_Action unlock_action
-   ) override
-   {
-    return try_until_success([&]()
-    {
-     return connection->push
-     (
-      client_journal,
-      from_checkpoint,
-      until_checkpoint,
-      unlock_action
-     );
-    });
-   }
+   ) override;
 
-   void unlock() override
-   {
-    try
-    {
-     connection->unlock();
-    }
-    catch (const std::exception &e)
-    {
-     if (log)
-      *log << "Robust_Connection::unlock() error: " << e.what() << '\n';
-    }
-   }
+   void unlock() override;
  };
 }
 
