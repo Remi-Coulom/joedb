@@ -52,6 +52,7 @@ namespace joedb
   );
 
   write_checkpoint();
+  client_journal.pull();
   tail_offset = connection->server_checkpoint;
 
   return connection->server_checkpoint;

@@ -774,7 +774,8 @@ namespace joedb
    (
     get_endpoint_path() <<
     ": start. lock_timeout = " << lock_timeout.count() <<
-    "; protocol_version = " << protocol_version << '\n'
+    "; protocol_version = " << protocol_version <<
+    "; shared = " << client.is_shared() << '\n'
    );
    write_status();
   }

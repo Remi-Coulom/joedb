@@ -196,7 +196,7 @@ namespace joedb
     Test_Client client(mismatched_file, server);
     FAIL() << "This should not work";
    }
-   catch (const joedb::Content_Mismatch &)
+   catch (const Content_Mismatch &)
    {
    }
   }
@@ -211,13 +211,13 @@ namespace joedb
   std::remove(file_name);
 
   {
-   joedb::File file(file_name, Open_Mode::create_new);
-   joedb::Writable_Journal journal(file);
+   File file(file_name, Open_Mode::create_new);
+   Writable_Journal journal(file);
    journal.comment(std::string(read_size, 'x'));
    journal.soft_checkpoint();
   }
 
-  joedb::File server_file(file_name, Open_Mode::read_existing);
+  File server_file(file_name, Open_Mode::read_existing);
   Connection connection;
   Readonly_Journal_Client server_client{server_file, connection};
   IO_Context_Wrapper io_context;
@@ -1005,12 +1005,53 @@ namespace joedb
   Server_File file(connector);
   Writable_Journal_Client client(file, file);
 
-  const auto blob = client.transaction([](joedb::Writable_Journal &journal)
+  const auto blob = client.transaction([](Writable_Journal &journal)
   {
    return journal.write_blob("blob_test");
   });
 
   EXPECT_EQ(file.read_blob(blob), "blob_test");
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, Server_File_pull)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server;
+  Local_Connector connector(server.server.get_endpoint_path());
+  Server_File file(connector);
+  Writable_Journal_Client client(file, file);
+
+  const auto blob = client.transaction([](Writable_Journal &journal)
+  {
+   return journal.write_blob("blob_test");
+  });
+
+  EXPECT_EQ(file.read_blob(blob), "blob_test");
+
+  EXPECT_EQ(client.get_journal_checkpoint(), 52);
+  EXPECT_EQ(client.get_connection_checkpoint(), 52);
+
+  Blob x_blob;
+
+  {
+   Memory_File x_file;
+   Test_Client x_client(x_file, server);
+   x_blob = x_client.transaction([](Readable &readable, Writable &writable)
+   {
+    return writable.write_blob("another one");
+   });
+  }
+
+  EXPECT_EQ(client.get_journal_checkpoint(), 52);
+  EXPECT_EQ(client.get_connection_checkpoint(), 52);
+
+  EXPECT_ANY_THROW(file.read_blob(x_blob));
+  client.pull();
+  EXPECT_EQ(file.read_blob(x_blob), "another one");
+
+  EXPECT_EQ(client.get_journal_checkpoint(), 65);
+  EXPECT_EQ(client.get_connection_checkpoint(), 65);
  }
 
  ////////////////////////////////////////////////////////////////////////////
