@@ -70,11 +70,12 @@ when writing checkpoints, and a shared lock when reading them (see
 :doc:`concurrency`, and :doc:`file_format` for more details). This allows
 proper synchronization of simultaneous access to the same database.
 
-Joedb relies on locks and fsync to handle concurrency and durability, but those
-features are not available for all file systems. This is particularly true when
-mounting a remote drive. Beware that sshfs, does not support file locking or
-fsync. Depending on its version and how it is configured, NFS may or may not
-properly support file locking and fsync
+Joedb relies on locks and fsync to handle concurrency and durability, but
+those features are not available for all file systems. This is particularly
+true when mounting a remote drive. Beware that sshfs, does not support file
+locking or fsync at all. Depending on its version and how it is configured,
+NFS may or may not properly support file locking and fsync. Samba, on the
+other hand, seems to handle concurrency rather well.
 
 Even when properly configured for concurrency and durability, the performance
 of file locking over NFS can be very bad in case of contention: on Ubuntu 24.04
