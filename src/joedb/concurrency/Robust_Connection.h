@@ -58,7 +58,6 @@ namespace joedb
    }
 
    size_t pread(char *data, size_t size, int64_t offset) const;
-   bool is_pullonly() const {return connection->is_pullonly();}
 
    int64_t handshake
    (
@@ -83,6 +82,7 @@ namespace joedb
    ) override;
 
    void unlock() override;
+   bool is_pullonly() const override {return connection->is_pullonly();}
  };
 }
 

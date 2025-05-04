@@ -546,4 +546,20 @@ namespace joedb
    EXPECT_EQ(journal.get_file().read_blob(blob), "");
   }
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, write_big_blob)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+  Writable_Journal journal(file);
+
+  const std::string big_string(10000, 'x');
+
+  {
+   const Blob blob = journal.write_blob(big_string);
+   journal.flush();
+   EXPECT_EQ(journal.get_file().read_blob(blob), big_string);
+  }
+ }
 }
