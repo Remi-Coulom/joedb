@@ -1,6 +1,5 @@
 #include "joedb/ui/main_exception_catcher.h"
-#include "joedb/db/multi_server/Readonly_Database.h"
-#include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/IO_Context_Wrapper.h"
@@ -47,32 +46,32 @@ namespace joedb
  static int main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (argc != 2)
+  if (argc < 3)
   {
-   std::cerr << "usage: " << argv[0] << " <config.joedbi>\n";
+   std::cerr << "usage: " << argv[0] << " <timeout_seconds> <db>+\n";
+   std::cerr << "file name: <db>.joedb\n";
+   std::cerr << "socket name: <db>.sock\n";
+   std::cerr << "example: " << argv[0] << " 10 db1 db2 db3 db4\n";
    return 1;
   }
 
-  const char * const config_file_name = argv[1];
-  db::multi_server::Readonly_Database db
-  (
-   Readonly_Interpreted_File{config_file_name}
-  );
+  std::chrono::seconds timeout(std::stoi(argv[1]));
 
   IO_Context_Wrapper io_context_wrapper;
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
-  for (auto server: db.get_server_table())
+  for (int i = 2; i < argc; i++)
   {
+   std::string base_name(argv[i]);
    servers.emplace_back
    (
     new Server_Data
     (
      io_context_wrapper.io_context,
-     db.get_file_name(server),
-     db.get_endpoint_path(server),
-     std::chrono::seconds(db.get_timeout(server))
+     base_name + ".joedb",
+     base_name + ".sock",
+     timeout
     )
    );
   }

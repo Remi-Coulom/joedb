@@ -1,5 +1,5 @@
 create_table settings
 insert_into settings 1
 add_field settings dark_mode boolean = false
-add_field settings host string = "www.kayufu.com"
+add_field settings host string = "www.joedb.org"
 add_field settings user string = "joe"

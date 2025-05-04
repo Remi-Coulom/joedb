@@ -29,7 +29,6 @@ set(JOEDB_SOURCES
 
 set(JOEDB_DATABASES
  ${JOEDB_SRC_DIR}/joedb/db/encoded_file/writable.cpp
- ${JOEDB_SRC_DIR}/joedb/db/multi_server/readonly.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/File_Parser.cpp
@@ -89,6 +88,5 @@ target_link_libraries(joedb joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 
 message("-- JOEDB_SRC_DIR = ${JOEDB_SRC_DIR}")
 
-joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db multi_server)
 joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file)
 add_dependencies(joedb all_joedbc)

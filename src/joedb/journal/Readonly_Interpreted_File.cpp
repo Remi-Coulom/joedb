@@ -13,6 +13,9 @@ namespace joedb
  ):
   journal(*this)
  {
+  if (!stream)
+   throw Exception("opening interpreted file: !stream");
+
   stream.exceptions(std::ios::badbit);
 
   Multiplexer multiplexer{db, journal};

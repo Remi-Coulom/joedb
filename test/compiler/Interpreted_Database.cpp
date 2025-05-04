@@ -1,5 +1,4 @@
-#include "joedb/db/multi_server/Readonly_Database.h"
-#include "joedb/journal/Readonly_Interpreted_File.h"
+#include "../../doc/source/tutorial/src/settings/Readonly_Interpreted_File_Database.h"
 
 #include "gtest/gtest.h"
 
@@ -7,10 +6,17 @@
 TEST(Compiler, Interpreted_Database)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::db::multi_server::Readonly_Database db
+ EXPECT_ANY_THROW
  (
-  joedb::Readonly_Interpreted_File("multi_server.joedbi")
+  joedb::Readonly_Interpreted_File("this_file_does_not_exist.joedbi")
  );
 
- EXPECT_EQ(db.get_server_table().get_size(), 2UL);
+ settings::Readonly_Interpreted_File_Database db
+ (
+  "../doc/source/tutorial/custom_settings.joedbi"
+ );
+
+ EXPECT_FALSE(db.get_dark_mode());
+ EXPECT_EQ(db.get_user(), "joe");
+ EXPECT_EQ(db.get_host(), "www.joedb.org");
 }

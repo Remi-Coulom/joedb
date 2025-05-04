@@ -1,4 +1,0 @@
-create_table server
-add_field server file_name string
-add_field server endpoint_path string
-add_field server timeout int32

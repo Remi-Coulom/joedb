@@ -1,2 +1,0 @@
-namespace joedb::db::multi_server
-create_unique_index server_by_port server endpoint_path

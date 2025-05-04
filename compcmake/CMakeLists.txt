@@ -348,7 +348,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/concurrency/Channel.cpp
   ../src/joedb/concurrency/Client.cpp
   ../src/joedb/concurrency/Connection.cpp
-  ../src/joedb/concurrency/Network_Channel.cpp
+  ../src/joedb/concurrency/Local_Channel.cpp
   ../src/joedb/concurrency/Server.cpp
   ../src/joedb/error/Destructor_Logger.cpp
   ../src/joedb/interpreted/Table.cpp
