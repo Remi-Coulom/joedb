@@ -73,7 +73,7 @@ namespace joedb
 
 #if defined(JOEDB_HAS_NETWORKING) || defined(JOEDB_HAS_SSH)
   if (include_server)
-   out << " server (works with a connection to a server)\n";
+   out << " server (client must use a connection to a server)\n";
 #endif
  }
 

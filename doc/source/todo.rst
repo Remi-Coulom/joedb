@@ -33,7 +33,8 @@ For next release
    - Checkpoints:
 
      - do not write hard_checkpoint again if it is already written
-     - "--checkpoint soft*|hard|async" option for the server
+     - "--hard_checkpoint" option for client_parser
+     - "--overwrite" option -> overwrite tail
 
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 

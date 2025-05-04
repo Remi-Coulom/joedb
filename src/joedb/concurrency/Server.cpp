@@ -49,7 +49,10 @@ namespace joedb
   socket(std::move(socket)),
   state(State::not_locking)
  {
-  server.log([this](std::ostream &out) {write_id(out) << "created\n";});
+  server.log([this](std::ostream &out)
+  {
+   write_id(out) << "new session created\n";}
+  );
   server.sessions.insert(this);
   server.write_status();
  }
