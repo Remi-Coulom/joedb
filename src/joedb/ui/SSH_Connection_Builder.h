@@ -26,7 +26,12 @@ namespace joedb
     return "<user> <host> <endpoint_path> [<ssh_port> [<ssh_log_level>]]";
    }
 
-   Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build
+   (
+    const int argc,
+    const char * const * const argv,
+    Buffered_File *file
+   ) final
    {
     const char * const user = argv[0];
     const char * const host = argv[1];

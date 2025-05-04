@@ -73,8 +73,8 @@ namespace joedb
   header.version = Readonly_Journal::format_version;
   header.signature = Header::joedb;
   header.signature[4] = 'B';
-  Memory_File file;
 
+  Memory_File file;
   file.pwrite((const char *)&header, Header::size, 0);
 
   try
@@ -95,7 +95,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Header header;
+  header.checkpoint.fill(Header::size);
+  header.version = 0;
   header.signature = Header::joedb;
+
   Memory_File file;
   file.pwrite((const char *)&header, sizeof(header), 0);
 
@@ -115,9 +118,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Header header;
-  header.signature = Header::joedb;
-  header.version = Readonly_Journal::format_version;
   header.checkpoint = {1, 2, 3, 4};
+  header.version = Readonly_Journal::format_version;
+  header.signature = Header::joedb;
+
   Memory_File file;
   file.pwrite((const char *)&header, Header::size, 0);
 
@@ -137,9 +141,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Header header;
-  header.signature = Header::joedb;
-  header.version = Readonly_Journal::format_version;
   header.checkpoint = {0, 0, 42, 42};
+  header.version = Readonly_Journal::format_version;
+  header.signature = Header::joedb;
+
   Memory_File file;
   file.pwrite((const char *)&header, Header::size, 0);
 

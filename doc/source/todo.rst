@@ -6,9 +6,8 @@ For next release
 
  - Improvements:
 
-   - use -1 for null references, and start indexing at zero
-   - Freedom_Keeper: instead of if (compact), use a pointer and
-     virtual functions.
+   - use -1 for null references (->none), and start indexing at zero
+   - Freedom_Keeper: instead of if (compact), use a pointer and virtual functions.
 
    - joedbc:
 
@@ -33,6 +32,7 @@ For next release
      - do not write hard_checkpoint again if it is already written
      - "--hard_checkpoint" option for client_parser
      - "--overwrite" option -> overwrite tail
+     - get_hard_checkpoint and get_soft_checkpoint member functions
 
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 

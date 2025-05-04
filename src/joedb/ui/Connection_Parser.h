@@ -22,7 +22,7 @@ namespace joedb
    (
     Connection_Builder &builder,
     int argc,
-    char **argv,
+    const char * const * argv,
     Buffered_File *file
    );
 
@@ -34,7 +34,7 @@ namespace joedb
    Connection &build
    (
     int argc,
-    char **argv,
+    const char * const * argv,
     Buffered_File *file
    ) const;
  };

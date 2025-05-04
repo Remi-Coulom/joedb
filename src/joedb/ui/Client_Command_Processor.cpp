@@ -87,10 +87,7 @@ namespace joedb
  pull_every [<wait_seconds>] [<sleep_seconds>]
 )RRR";
    if (!client.is_pullonly())
-    out << R"RRR(Client
- push
- push_every [<sleep_seconds>]
-)RRR";
+    out << " push\n push_every [<sleep_seconds>]\n";
    out << '\n';
 
    return Status::ok;

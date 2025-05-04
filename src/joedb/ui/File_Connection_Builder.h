@@ -28,7 +28,12 @@ namespace joedb
     return "<file>";
    }
 
-   Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build
+   (
+    const int argc,
+    const char * const * const argv,
+    Buffered_File *file
+   ) final
    {
     int arg_index = 0;
     std::ostream null_stream(nullptr);

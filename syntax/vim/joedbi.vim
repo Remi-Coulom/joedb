@@ -10,7 +10,7 @@ if exists("b:current_syntax")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syn keyword joedbi_keyword valid_data flush checkpoint schema dump sql help about quit
+syn keyword joedbi_keyword valid_data flush checkpoint schema dump sql help about quit transaction push pull db
 
 syn keyword joedbi_keyword json echo write_blob read_blob nextgroup=joedbi_constant skipwhite
 

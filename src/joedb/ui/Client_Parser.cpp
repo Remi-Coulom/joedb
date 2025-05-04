@@ -143,8 +143,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Client &Client_Parser::parse(int argc, char **argv)
+ Client &Client_Parser::parse
  ////////////////////////////////////////////////////////////////////////////
+ (
+  const int argc,
+  const char * const * const argv
+ )
  {
   int arg_index = 0;
 
@@ -193,7 +197,7 @@ namespace joedb
   if (!client_file)
    throw Exception("server file must be used with a network or ssh connection");
 
-  std::cerr << "Creating client data... ";
+  std::cerr << "Creating client... ";
 
   if (db_type == DB_Type::none)
   {

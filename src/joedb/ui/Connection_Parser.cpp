@@ -78,8 +78,8 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Connection_Builder &builder,
-  int argc,
-  char **argv,
+  const int argc,
+  const char * const * const argv,
   Buffered_File *file
  )
  {
@@ -106,27 +106,26 @@ namespace joedb
  Connection &Connection_Parser::build
  //////////////////////////////////////////////////////////////////////////
  (
-  int argc,
-  char **argv,
+  const int argc,
+  const char * const * argv,
   Buffered_File *file
  ) const
  {
   const char * connection_name;
+  int arg_index = 0;
+
   if (argc <= 0)
-  {
-   argc = 1;
    connection_name = builders[0]->get_name();
-  }
   else
-   connection_name = argv[0];
+   connection_name = argv[arg_index++];
 
   std::cerr << "Creating connection (" << connection_name << ") ... ";
 
   Connection &result = build
   (
    get_builder(connection_name),
-   argc - 1,
-   argv + 1,
+   argc - arg_index,
+   argv + arg_index,
    file
   );
 

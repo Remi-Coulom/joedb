@@ -1,0 +1,47 @@
+writable_client(41)> 
+General commands
+~~~~~~~~~~~~~~~~
+ about
+ help|?
+ quit
+ abort
+ echo on|off
+ prompt on|off
+
+Client
+~~~~~~
+ db
+ pull [<wait_seconds>]
+ pull_every [<wait_seconds>] [<sleep_seconds>]
+ push
+ push_every [<sleep_seconds>]
+
+Writable Client
+~~~~~~~~~~~~~~~
+ transaction
+ set_valid_data <true|false>
+ set_timestamp <true|false>
+ set_hard_checkpoint <true|false>
+
+OK: help
+writable_client(41)> writable_client(41)/joedbi> OK:  create_table person
+writable_client(41)/joedbi> OK:  add_field person name string
+writable_client(41)/joedbi> OK:  insert_into person 1
+writable_client(41)/joedbi> OK:  update person 1 name "Joe"
+writable_client(41)/joedbi> -------
+  name 
+-------
+1 "Joe"
+OK:  table person
+writable_client(41)/joedbi> OK: quit
+OK: transaction
+writable_client(66)> OK: push
+writable_client(66)> OK: pull
+writable_client(66)> writable_client(66)/joedbi> -------
+  name 
+-------
+1 "Joe"
+OK:  table person
+writable_client(66)/joedbi> OK: quit
+OK: db
+writable_client(66)> 

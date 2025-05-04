@@ -27,7 +27,12 @@ namespace joedb
     return "<host> <port>";
    }
 
-   Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build
+   (
+    const int argc,
+    const char * const * const argv,
+    Buffered_File *file
+   ) final
    {
     const char * const host = argv[0];
     const char * const port = argv[1];

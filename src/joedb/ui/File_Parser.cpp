@@ -83,7 +83,7 @@ namespace joedb
  (
   std::ostream &out,
   const int argc,
-  char ** const argv,
+  const char * const * const argv,
   int &arg_index
  )
  {

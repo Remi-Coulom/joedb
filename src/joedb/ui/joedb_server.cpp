@@ -37,7 +37,7 @@ and can still push data: the push will succeed only if there is no conflict.
   std::string_view endpoint_base("joedb");
   for (int i = 1; i < argc; i++)
   {
-   std::string_view v(argv[i]);
+   const std::string_view v(argv[i]);
    if (v.size() > 6 && v.compare(v.size() - 6, 6, ".joedb") == 0)
    {
     endpoint_base = v;

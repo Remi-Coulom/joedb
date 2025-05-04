@@ -27,7 +27,12 @@ namespace joedb
     return "<endpoint_path>";
    }
 
-   Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build
+   (
+    const int argc,
+    const char * const * const argv,
+    Buffered_File *file
+   ) final
    {
     const char * const endpoint_path = argv[0];
 

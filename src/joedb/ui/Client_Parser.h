@@ -58,7 +58,7 @@ namespace joedb
     DB_Type default_db_type
    );
 
-   Client &parse(int argc, char **argv);
+   Client &parse(int argc, const char * const * argv);
    bool has_file() const {return file_parser.get_file() != nullptr;}
 
    void print_help(std::ostream &out) const;

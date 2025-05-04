@@ -18,7 +18,12 @@ namespace joedb
     return "dummy";
    }
 
-   Connection &build(int argc, char **argv, Buffered_File *file) final
+   Connection &build
+   (
+    const int argc,
+    const char * const * const argv,
+    Buffered_File *file
+   ) final
    {
     return connection;
    }

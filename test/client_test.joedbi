@@ -1,0 +1,13 @@
+help
+transaction
+ create_table person
+ add_field person name string
+ insert_into person 1
+ update person 1 name "Joe"
+ table person
+quit
+push
+pull
+db
+ table person
+quit
