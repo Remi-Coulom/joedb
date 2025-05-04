@@ -36,7 +36,7 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
  soft_index(0),
  checkpoint_position(Header::size)
 {
- if (lock.size != 0 || !lock.is_for_writable_journal())
+ if (lock.size != 0)
  {
   Header header;
   if (file.pread((char *)(&header), Header::size, 0) < Header::size)
@@ -58,6 +58,8 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
   if (lock.size > 0 && lock.size < checkpoint_position)
    throw Exception("Checkpoint is bigger than file size");
  }
+ else if (!lock.is_for_writable_journal())
+  throw Exception("file is empty");
 
  reset_context();
 }
