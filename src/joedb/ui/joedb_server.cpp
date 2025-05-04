@@ -34,7 +34,19 @@ and can still push data: the push will succeed only if there is no conflict.
 
   int32_t index = 1;
 
-  std::string endpoint_path("joedb_server.sock");
+  std::string_view endpoint_base("joedb");
+  for (int i = 1; i < argc; i++)
+  {
+   std::string_view v(argv[i]);
+   if (v.size() > 6 && v.compare(v.size() - 6, 6, ".joedb") == 0)
+   {
+    endpoint_base = v;
+    endpoint_base.remove_suffix(6);
+    break;
+   }
+  }
+  std::string endpoint_path = std::string(endpoint_base) + ".sock";
+
   if (index + 1 < argc && std::strcmp(argv[index], "--socket") == 0)
   {
    endpoint_path = argv[index + 1];
