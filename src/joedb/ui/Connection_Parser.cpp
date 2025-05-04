@@ -5,7 +5,6 @@
 #include "joedb/ui/SQL_Dump_Writable.h"
 
 #ifdef JOEDB_HAS_NETWORKING
-#include "joedb/ui/Network_Connection_Builder.h"
 #include "joedb/ui/Local_Connection_Builder.h"
 #endif
 
@@ -26,7 +25,6 @@ namespace joedb
   builders.emplace_back(new File_Connection_Builder());
 
 #ifdef JOEDB_HAS_NETWORKING
-  builders.emplace_back(new Network_Connection_Builder());
   builders.emplace_back(new Local_Connection_Builder());
 #endif
 

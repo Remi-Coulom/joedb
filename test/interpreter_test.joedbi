@@ -117,4 +117,7 @@ delete_vector float 11 10
 
 dump
 
+soft_checkpoint
+hard_checkpoint
+
 quit

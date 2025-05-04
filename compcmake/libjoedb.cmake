@@ -52,7 +52,6 @@ if (asio_FOUND)
  set(JOEDB_SOURCES
   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/IO_Context_Wrapper.cpp
-  ${JOEDB_SRC_DIR}/joedb/concurrency/Network_Channel.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}
  )

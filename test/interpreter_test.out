@@ -353,4 +353,7 @@ update toto 3 value "toto"
 update toto 5 value ""
 OK: dump
 OK: 
+OK: soft_checkpoint
+OK: hard_checkpoint
+OK: 
 OK: quit

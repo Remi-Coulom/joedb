@@ -155,20 +155,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Database db;
   Multiplexer multiplexer{db, journal_copy};
   journal.replay_log(multiplexer);
- }
 
- //
- // check that test.joedb and test_copy.joedb are identical
- //
- {
-  std::ifstream file("test.joedb");
-  std::ostringstream bytes_of_file;
-  bytes_of_file << file.rdbuf();
-
-  std::ifstream file_copy("test_copy.joedb");
-  std::ostringstream bytes_of_file_copy;
-  bytes_of_file_copy << file_copy.rdbuf();
-
-  EXPECT_EQ(bytes_of_file.str(), bytes_of_file_copy.str());
+  EXPECT_TRUE(journal_copy.equal_to(journal, journal.get_checkpoint()));
  }
 }
