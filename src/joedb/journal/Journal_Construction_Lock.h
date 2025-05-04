@@ -8,10 +8,22 @@ namespace joedb
  /// @ingroup journal
  class Journal_Construction_Lock
  {
+  friend class Writable_Journal;
+
+  private:
+   bool for_writable_journal = false;
+   Journal_Construction_Lock &set_for_writable_journal()
+   {
+    for_writable_journal = true;
+    return *this;
+   }
+
   public:
    Buffered_File &file;
    const bool ignore_errors;
    const int64_t size;
+
+   bool is_for_writable_journal() const {return for_writable_journal;}
 
    explicit Journal_Construction_Lock
    (

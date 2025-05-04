@@ -36,7 +36,7 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
  soft_index(0),
  checkpoint_position(Header::size)
 {
- if (lock.size != 0)
+ if (lock.size != 0 || !lock.is_for_writable_journal())
  {
   Header header;
   if (file.pread((char *)(&header), Header::size, 0) < Header::size)

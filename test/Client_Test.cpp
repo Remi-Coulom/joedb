@@ -432,7 +432,6 @@ namespace joedb
   Readonly_Journal client_journal(client_file);
 
   Memory_File server_file;
-  Readonly_Journal server_journal(server_file);
 
   File_Connection connection(server_file);
   int64_t server_checkpoint = connection.handshake

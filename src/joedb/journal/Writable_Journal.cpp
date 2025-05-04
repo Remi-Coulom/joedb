@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////
 joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
 /////////////////////////////////////////////////////////////////////////////
- Readonly_Journal(lock)
+ Readonly_Journal(lock.set_for_writable_journal())
 {
  if (file.is_readonly())
   throw Exception("Cannot create Writable_Journal with read-only file");

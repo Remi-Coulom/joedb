@@ -517,19 +517,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File file;
-  Readonly_Journal journal{file};
-
-  EXPECT_EQ
-  (
-   journal.get_checkpoint(),
-   Header::size
-  );
-
-  EXPECT_EQ(file.get_size(), 0);
-
-  file.write<char>('j');
-  file.flush();
-  EXPECT_ANY_THROW(Readonly_Journal{file});
+  EXPECT_ANY_THROW(Readonly_Journal journal{file});
+  Writable_Journal journal{file};
+  EXPECT_EQ(journal.get_checkpoint(), Header::size);
+  EXPECT_EQ(file.get_size(), Header::ssize);
  }
 
  ////////////////////////////////////////////////////////////////////////////
