@@ -22,19 +22,19 @@ checkpoint, it is still possible to recover the previous checkpoint.
 
 On most modern file systems, the size of the file can be used as the second
 copy of the checkpoint position, since it will be written to storage in a
-second step, after writing data. But writing two checkpoint copies in the joedb
-file itself makes the format independent from the file system. It would
-be possible to write a joedb database to a raw device directly.
+second step, after writing data. But writing two checkpoint copies in the
+joedb file itself makes the format independent from the file system. It even
+makes it possible to write a joedb database to a raw device directly.
 
 Soft Checkpoints
 ----------------
 
 The checkpointing method described above is durable, but very slow. Joedb
-offers and alternative "soft" checkpoint that does not call fsync. Soft
-checkpoints are stored in the joedb header as negative values, to differentiate
-them from hard checkpoints. Soft checkpoints never overwrite the value of the
-hard checkpoint, so it will always be possible to safely recover from the most
-recent hard checkpoint in case of power failure.
+offers an alternative "soft" checkpoint that does not call fsync. Soft
+checkpoints are stored in the joedb header as negative values, to
+differentiate them from hard checkpoints. Soft checkpoints never overwrite the
+value of the hard checkpoint, so it will always be possible to safely recover
+from the most recent hard checkpoint in case of power failure.
 
 By default, all joedb tools use soft checkpoints. A hard checkpoint can be
 written, by either executing it manually, or setting an option for
@@ -59,7 +59,7 @@ performed with the :ref:`joedb_push` tool.
 
 If you do not wish to manually recover from a crash, you can also tell joedb to
 automatically recover from the most recent valid checkpoint, and silently
-overwrite the uncheckpointed tail (TODO).
+overwrite the uncheckpointed tail.
 
 Checkpoints and Concurrency
 ---------------------------

@@ -10,8 +10,6 @@ For next release
    - Freedom_Keeper: instead of if (compact), use a pointer and
      virtual functions.
 
-   - pread must pull if tries to read past current checkpoint and no lock.
-
    - joedbc:
 
      - Split Database with Database_Storage parent
