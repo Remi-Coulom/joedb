@@ -9,10 +9,10 @@ static int client_lock(int argc, char **argv)
   tutorial::Client_Lock lock(client);
 
   lock.get_database().write_comment("Hello");
-  lock.push();
+  lock.checkpoint_and_push();
   lock.get_database().write_comment("Goodbye");
   lock.get_database().write_timestamp();
-  lock.push_unlock();
+  lock.checkpoint_and_push_unlock();
  }
 
  return 0;
