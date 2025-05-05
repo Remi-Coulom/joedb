@@ -289,11 +289,11 @@ namespace joedb
      // ??? takes_time
      if (client.is_shared() && session->unlock_after_push)
      {
-      client_lock->push_unlock();
+      client_lock->checkpoint_and_push_unlock();
       client_lock.reset();
      }
      else
-      client_lock->push();
+      client_lock->checkpoint_and_push();
     }
 
     session->push_writer.reset();
@@ -748,7 +748,7 @@ namespace joedb
   log_pointer(log_pointer)
  {
   if (writable_journal_client)
-   writable_journal_client->push();
+   writable_journal_client->push_if_ahead();
 
   start();
  }

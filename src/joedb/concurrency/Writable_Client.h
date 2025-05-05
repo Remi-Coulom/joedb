@@ -149,7 +149,7 @@ namespace joedb
     return Client::push(Unlock_Action::unlock_after);
    }
 
-   int64_t push() override
+   int64_t push_if_ahead() override
    {
     if (get_journal_checkpoint() > get_connection_checkpoint())
      return push_unlock();
@@ -186,11 +186,28 @@ namespace joedb
    Client_Lock(const Client_Lock &) = delete;
    Client_Lock &operator=(const Client_Lock &) = delete;
 
+   /// Checkpoint current journal, but do not push yet
+   void do_checkpoint()
+   {
+    JOEDB_DEBUG_ASSERT(locked);
+    client.do_checkpoint();
+   }
+
+   /// Push if the journal checkpoint is ahead of the connection checkpoint
+   ///
+   /// This function keeps the connection locked
+   void push_if_ahead()
+   {
+    JOEDB_DEBUG_ASSERT(locked);
+    if (client.get_journal_checkpoint() > client.get_connection_checkpoint())
+     client.Client::push(Unlock_Action::keep_locked);
+   }
+
    /// Checkpoint current journal, and push to the connection
    ///
    /// Unlike @ref push_unlock, you can call this function multiple
    /// times during the life of the lock.
-   void push()
+   void checkpoint_and_push()
    {
     JOEDB_DEBUG_ASSERT(locked);
     client.do_checkpoint();
@@ -201,7 +218,7 @@ namespace joedb
    ///
    /// Destruction should happen right after this function.
    /// Do not call any other member function after this one.
-   void push_unlock()
+   void checkpoint_and_push_unlock()
    {
     JOEDB_DEBUG_ASSERT(locked);
     client.do_checkpoint();

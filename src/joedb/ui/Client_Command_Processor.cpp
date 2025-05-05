@@ -144,7 +144,7 @@ namespace joedb
   }
   else if (command == "push" && !client.is_pullonly()) //////////////////////
   {
-   client.push();
+   client.push_if_ahead();
   }
   else if (command == "push_every" && !client.is_pullonly()) ////////////////
   {
@@ -156,7 +156,7 @@ namespace joedb
 
    while (Signal::get_signal() != SIGINT)
    {
-    client.push();
+    client.push_if_ahead();
     sleep(sleep_seconds, out);
    }
   }

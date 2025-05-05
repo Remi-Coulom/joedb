@@ -36,7 +36,7 @@ static int write_server_blob(int argc, char **argv)
   for (int i = 3; --i >= 0;)
   {
    const joedb::Blob blob = lock.get_journal().write_blob(argv[1]);
-   lock.push();
+   lock.checkpoint_and_push();
    std::cout << "wrote blob with lock: " << blob.get_position() << '\n';
    std::cout << "blob: " << server_file.read_blob(blob) << '\n';
   }

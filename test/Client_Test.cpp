@@ -198,11 +198,11 @@ namespace joedb
    lock.get_journal().comment("Hello");
    lock.get_journal().soft_checkpoint();
    EXPECT_EQ(server_file.get_size(), 41);
-   lock.push();
+   lock.checkpoint_and_push();
    EXPECT_EQ(server_file.get_size(), 48);
    lock.get_journal().comment("Hi");
    EXPECT_EQ(server_file.get_size(), 48);
-   lock.push_unlock();
+   lock.checkpoint_and_push_unlock();
   }
 
   EXPECT_EQ(server_file.get_size(), 52);

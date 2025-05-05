@@ -23,7 +23,7 @@ namespace joedb
    ):
     Client(journal, connection, content_check)
    {
-    push();
+    Client::push(Unlock_Action::keep_locked);
     read_journal();
    }
 
@@ -38,8 +38,9 @@ namespace joedb
     return result;
    }
 
-   int64_t push() override
+   int64_t push_if_ahead() override
    {
+    pull();
     if (get_journal_checkpoint() > get_connection_checkpoint())
      return Client::push(Unlock_Action::keep_locked);
     else

@@ -58,8 +58,7 @@ namespace joedb
    )
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    client.pull();
-    client.push();
+    client.push_if_ahead();
    }
   }
 
