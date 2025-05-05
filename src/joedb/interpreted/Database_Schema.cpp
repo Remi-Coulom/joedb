@@ -109,8 +109,8 @@ namespace joedb
    throw Exception("create_table: name already used: " + name);
 
   ++current_table_id;
-  tables.insert(std::make_pair(current_table_id, Table()));
-  table_names[current_table_id] = name;
+  tables.try_emplace(current_table_id);
+  table_names.try_emplace(current_table_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////

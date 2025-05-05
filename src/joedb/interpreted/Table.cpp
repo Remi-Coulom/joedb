@@ -24,8 +24,8 @@ namespace joedb
    throw Exception("add_field: reached maximum field count");
 
   ++current_field_id;
-  fields.insert(std::make_pair(current_field_id, Field(type, freedom.size())));
-  field_names[current_field_id] = name;
+  fields.try_emplace(current_field_id, type, freedom.size());
+  field_names.try_emplace(current_field_id, name);
  }
 
  ////////////////////////////////////////////////////////////////////////////
