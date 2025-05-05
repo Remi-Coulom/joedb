@@ -1,5 +1,5 @@
-Introduction: a C++ Database
-============================
+A C++ Database
+==============
 
 Joedb stands for the "Journal-Only Embedded Database". It is a light-weight
 C++ database that keeps tabular data in memory, and writes a journal to a
