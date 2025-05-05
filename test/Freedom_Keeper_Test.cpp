@@ -6,13 +6,14 @@
 TEST(Freedom_Keeper, exceptions)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Freedom_Keeper fk;
+ joedb::List_Freedom_Keeper fk;
 
  EXPECT_ANY_THROW(fk.use(0));
  EXPECT_ANY_THROW(fk.use(1));
  EXPECT_ANY_THROW(fk.use(2));
 
- size_t i = fk.allocate();
+ const ptrdiff_t i = fk.push_back();
+ fk.use(i);
  EXPECT_ANY_THROW(fk.use(i));
 
  fk.free(i);
@@ -31,7 +32,7 @@ class Freedom_Keeper_Test: public ::testing::Test
 
 using fk_types = ::testing::Types
 <
- joedb::Freedom_Keeper,
+ joedb::List_Freedom_Keeper,
  joedb::Compact_Freedom_Keeper
 >;
 
@@ -54,6 +55,7 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
 /////////////////////////////////////////////////////////////////////////////
 {
  auto &fk = this->fk;
+ EXPECT_TRUE(fk.is_compact());
 
  EXPECT_EQ(0UL, fk.size());
  EXPECT_EQ(2UL, fk.push_back());
@@ -61,6 +63,7 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
  EXPECT_EQ(1UL, fk.size());
  fk.use(2);
  EXPECT_FALSE(fk.is_free(2));
+ EXPECT_TRUE(fk.is_compact());
 
  fk.use(fk.push_back()); // 3
  fk.use(fk.push_back()); // 4
@@ -69,7 +72,7 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
  fk.use(fk.push_back()); // 7
  fk.use(fk.push_back()); // 8
 
- size_t pushed = fk.push_back();
+ ptrdiff_t pushed = fk.push_back();
  EXPECT_EQ(9UL, pushed);
 
  EXPECT_EQ(8UL, fk.size());
@@ -80,6 +83,7 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
  }
 
  fk.free(5);
+ EXPECT_FALSE(fk.is_compact());
 
  EXPECT_EQ(8UL, fk.size());
 

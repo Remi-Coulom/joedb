@@ -11,6 +11,44 @@ namespace joedb
  /// @ingroup joedb
  class Freedom_Keeper
  {
+  public:
+   virtual bool is_empty() const = 0;
+   virtual ptrdiff_t get_used_count() const = 0;
+   virtual ptrdiff_t size() const = 0;
+   virtual ptrdiff_t get_first_free() const = 0;
+   virtual ptrdiff_t get_first_used() const = 0;
+   virtual ptrdiff_t get_next(ptrdiff_t index) const = 0;
+   virtual ptrdiff_t get_previous(ptrdiff_t index) const = 0;
+   virtual bool is_free(ptrdiff_t index) const = 0;
+   virtual bool is_used(ptrdiff_t index) const = 0;
+   virtual bool is_compact() const = 0;
+
+   virtual ptrdiff_t get_free_record() = 0;
+   virtual ptrdiff_t push_back() = 0;
+   virtual void resize(ptrdiff_t new_size) = 0;
+   virtual bool use(ptrdiff_t index) = 0;
+   virtual bool free(ptrdiff_t index) = 0;
+
+   virtual bool use_vector(ptrdiff_t index, ptrdiff_t size)
+   {
+    for (ptrdiff_t i = 0; i < size; i++)
+     use(index + i);
+    return true;
+   }
+
+   virtual bool append_vector(ptrdiff_t size)
+   {
+    for (ptrdiff_t i = 0; i < size; i++)
+     use(push_back());
+    return true;
+   }
+
+   virtual ~Freedom_Keeper() = default;
+ };
+
+ /// @ingroup joedb
+ class List_Freedom_Keeper: public Freedom_Keeper
+ {
   private: //////////////////////////////////////////////////////////////////
    struct Record
    {
@@ -33,7 +71,7 @@ namespace joedb
    enum {used_list = 0, free_list = 1};
 
   public: ///////////////////////////////////////////////////////////////////
-   Freedom_Keeper(): used_count(0), records(2)
+   List_Freedom_Keeper(): used_count(0), records(2)
    {
     records[used_list].is_free = false;
     records[used_list].next = used_list;
@@ -44,23 +82,24 @@ namespace joedb
     records[free_list].previous = free_list;
    }
 
-   bool is_empty() const {return used_count == 0;}
-   ptrdiff_t get_used_count() const {return used_count;}
-   ptrdiff_t size() const {return ptrdiff_t(records.size() - 2);}
-   ptrdiff_t get_first_free() const {return records[free_list].next;}
-   ptrdiff_t get_first_used() const {return records[used_list].next;}
-   ptrdiff_t get_next(ptrdiff_t index) const {return records[index].next;}
-   ptrdiff_t get_previous(ptrdiff_t index) const {return records[index].previous;}
-   bool is_free(ptrdiff_t index) const {return records[index].is_free;}
-   bool is_used(ptrdiff_t index) const
+   bool is_empty() const override {return used_count == 0;}
+   ptrdiff_t get_used_count() const override {return used_count;}
+   ptrdiff_t size() const override {return ptrdiff_t(records.size() - 2);}
+   ptrdiff_t get_first_free() const override {return records[free_list].next;}
+   ptrdiff_t get_first_used() const override {return records[used_list].next;}
+   ptrdiff_t get_next(ptrdiff_t index) const override {return records[index].next;}
+   ptrdiff_t get_previous(ptrdiff_t index) const override {return records[index].previous;}
+   bool is_free(ptrdiff_t index) const override {return records[index].is_free;}
+   bool is_used(ptrdiff_t index) const override
    {
     return index > 1 &&
            index < ptrdiff_t(records.size()) &&
            !records[index].is_free;
    }
+   bool is_compact() const override {return size() == used_count;}
 
    //////////////////////////////////////////////////////////////////////////
-   ptrdiff_t get_free_record()
+   ptrdiff_t get_free_record() override
    {
     ptrdiff_t result = records[free_list].next;
     if (result == free_list)
@@ -72,15 +111,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   ptrdiff_t allocate()
-   {
-    const ptrdiff_t result = get_free_record();
-    use(result);
-    return result;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   ptrdiff_t push_back()
+   ptrdiff_t push_back() override
    {
     const ptrdiff_t index = records.size();
     records.emplace_back(true, records[free_list].next, free_list);
@@ -92,14 +123,14 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void resize(ptrdiff_t new_size)
+   void resize(ptrdiff_t new_size) override
    {
     while(size() < new_size)
      push_back();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void use(ptrdiff_t index)
+   bool use(ptrdiff_t index) override
    {
     JOEDB_DEBUG_ASSERT(index > 1);
     JOEDB_DEBUG_ASSERT(index < records.size());
@@ -118,10 +149,12 @@ namespace joedb
     records[record.next].previous = index;
 
     used_count++;
+
+    return true;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void free(ptrdiff_t index)
+   bool free(ptrdiff_t index) override
    {
     JOEDB_DEBUG_ASSERT(index > 1);
     JOEDB_DEBUG_ASSERT(index < records.size());
@@ -140,258 +173,228 @@ namespace joedb
     records[free_list].next = index;
 
     used_count--;
+
+    return true;
+   }
+ };
+
+ class Dense_Freedom_Keeper: public Freedom_Keeper
+ {
+  private:
+   ptrdiff_t used_size = 0;
+   ptrdiff_t free_size = 0;
+
+  public:
+   bool is_empty() const override {return used_size == 0;}
+   ptrdiff_t get_used_count() const override {return used_size;}
+   ptrdiff_t size() const override {return free_size;}
+
+   ptrdiff_t get_first_free() const override
+   {
+    if (used_size == free_size)
+     return 1;
+    else
+     return used_size + 2;
+   }
+
+   ptrdiff_t get_first_used() const override
+   {
+    if (used_size == 0)
+     return 0;
+    else
+     return 2;
+   }
+
+   ptrdiff_t get_next(ptrdiff_t index) const override
+   {
+    if (index == 0)
+     return get_first_used();
+
+    if (index == 1)
+     return get_first_free();
+
+    const ptrdiff_t result = index + 1;
+
+    if (result == used_size + 2)
+     return 0;
+
+    if (index == free_size + 2)
+     return 1;
+
+    return result;
+   }
+
+   ptrdiff_t get_previous(ptrdiff_t index) const override
+   {
+    if (index == 0)
+    {
+     if (used_size == 0)
+      return 0;
+     else
+      return used_size + 1;
+    }
+
+    if (index == 1)
+    {
+     if (used_size == free_size)
+      return 1;
+     else
+      return free_size + 1;
+    }
+
+    const ptrdiff_t result = index - 1;
+
+    if (result == 1)
+     return 0;
+    if (result == used_size + 1)
+     return 1;
+    return index - 1;
+   }
+
+   bool is_free(ptrdiff_t index) const override {return index - 2 >= used_size;}
+   bool is_used(ptrdiff_t index) const override {return index - 2 < used_size;}
+   bool is_compact() const override {return true;}
+
+   ptrdiff_t get_free_record() override
+   {
+    if (free_size == used_size)
+     ++free_size;
+    return used_size + 2;
+   }
+
+   ptrdiff_t push_back() override {return ++free_size + 1;}
+
+   void resize(ptrdiff_t size) override
+   {
+    if (free_size < size)
+     free_size = size;
+   }
+
+   bool use(ptrdiff_t index) override
+   {
+    if (index == used_size + 2 && used_size < free_size)
+    {
+     used_size++;
+     return true;
+    }
+    else
+     return false;
+   }
+
+   bool free(ptrdiff_t index) override
+   {
+    if (index == used_size + 1 && index > 1)
+    {
+     --used_size;
+     return true;
+    }
+    else
+     return false;
+   }
+
+   bool use_vector(ptrdiff_t index, ptrdiff_t size) override
+   {
+    if (index == used_size + 2 && used_size + size <= free_size)
+    {
+     used_size += size;
+     return true;
+    }
+    else
+     return false;
+   }
+
+   bool append_vector(ptrdiff_t size) override
+   {
+    if (free_size == used_size)
+    {
+     free_size += size;
+     used_size += size;
+     return true;
+    }
+    else
+     return false;
    }
  };
 
  /// @ingroup joedb
- class Compact_Freedom_Keeper
+ class Compact_Freedom_Keeper: public Freedom_Keeper
  {
   private:
-   bool compact;
-   ptrdiff_t compact_used_size;
-   ptrdiff_t compact_free_size;
-
-   Freedom_Keeper fk;
+   List_Freedom_Keeper lfk;
+   Dense_Freedom_Keeper dfk;
+   Freedom_Keeper *fk;
 
    void lose_compactness()
    {
-    compact = false;
+    JOEDB_RELEASE_ASSERT(fk == &dfk);
 
-    while (fk.size() < compact_free_size)
-     fk.push_back();
+    while (lfk.size() < dfk.size())
+     lfk.push_back();
 
-    for (ptrdiff_t i = 0; i < compact_used_size; i++)
-     fk.use(i + 2);
+    for (ptrdiff_t i = 0; i < dfk.get_used_count(); i++)
+     lfk.use(i + 2);
+
+    fk = &lfk;
    }
 
   public:
-   Compact_Freedom_Keeper():
-    compact(true),
-    compact_used_size(0),
-    compact_free_size(0)
-   {
-   }
+   Compact_Freedom_Keeper() {fk = &dfk;}
+   Compact_Freedom_Keeper(const Compact_Freedom_Keeper &) = delete;
+   Compact_Freedom_Keeper& operator=(const Compact_Freedom_Keeper &) = delete;
 
-   ptrdiff_t size() const
-   {
-    if (compact)
-     return compact_free_size;
-    else
-     return fk.size();
-   }
+   bool is_empty() const override {return fk->is_empty();}
+   ptrdiff_t get_used_count() const override {return fk->get_used_count();}
+   ptrdiff_t size() const override {return fk->size();}
+   ptrdiff_t get_first_free() const override {return fk->get_first_free();}
+   ptrdiff_t get_first_used() const override {return fk->get_first_used();}
+   ptrdiff_t get_next(ptrdiff_t index) const override {return fk->get_next(index);}
+   ptrdiff_t get_previous(ptrdiff_t index) const override {return fk->get_previous(index);}
+   bool is_free(ptrdiff_t index) const override {return fk->is_free(index);}
+   bool is_used(ptrdiff_t index) const override {return fk->is_used(index);}
+   bool is_compact() const override {return fk->is_compact();}
 
-   bool is_empty() const
-   {
-    if (compact)
-     return compact_used_size == 0;
-    else
-     return fk.is_empty();
-   }
+   ptrdiff_t get_free_record() override {return fk->get_free_record();}
+   ptrdiff_t push_back() override {return fk->push_back();}
+   void resize(ptrdiff_t new_size) override {fk->resize(new_size);}
 
-   ptrdiff_t get_used_count() const
+   bool use(ptrdiff_t index) override
    {
-    if (compact)
-     return compact_used_size;
-    else
-     return fk.get_used_count();
-   }
-
-   bool is_used(ptrdiff_t index) const
-   {
-    if (compact)
-     return index - 2 < compact_used_size;
-    else
-     return fk.is_used(index);
-   }
-
-   bool is_free(ptrdiff_t index) const
-   {
-    if (compact)
-     return index - 2 >= compact_used_size;
-    else
-     return fk.is_free(index);
-   }
-
-   ptrdiff_t get_free_record()
-   {
-    if (compact)
+    if (!fk->use(index))
     {
-     if (compact_free_size == compact_used_size)
-      ++compact_free_size;
-     return compact_used_size + 2;
+     lose_compactness();
+     fk->use(index);
     }
-    else
-     return fk.get_free_record();
+    return true;
    }
 
-   void use(ptrdiff_t index)
+   bool free(ptrdiff_t index) override
    {
-    if (compact)
+    if (!fk->free(index))
     {
-     if (index == compact_used_size + 2 && compact_used_size < compact_free_size)
-      compact_used_size++;
-     else
-     {
-      lose_compactness();
-      fk.use(index);
-     }
+     lose_compactness();
+     fk->free(index);
     }
-    else
-     fk.use(index);
+    return true;
    }
 
-   void use_vector(ptrdiff_t index, ptrdiff_t size)
+   bool use_vector(ptrdiff_t index, ptrdiff_t size) override
    {
-    if
-    (
-     compact &&
-     index == compact_used_size + 2 &&
-     compact_used_size + size <= compact_free_size
-    )
+    if (!fk->use_vector(index, size))
     {
-     compact_used_size += size;
+     lose_compactness();
+     fk->use_vector(index, size);
     }
-    else
-    {
-     for (ptrdiff_t i = 0; i < size; i++)
-      use(index + i);
-    }
+    return true;
    }
 
-   void free(ptrdiff_t index)
+   bool append_vector(ptrdiff_t size) override
    {
-    if (compact)
+    if (!fk->append_vector(size))
     {
-     if (index == compact_used_size + 1 && index > 1)
-      --compact_used_size;
-     else
-     {
-      lose_compactness();
-      fk.free(index);
-     }
+     lose_compactness();
+     fk->append_vector(size);
     }
-    else
-     fk.free(index);
-   }
-
-   ptrdiff_t push_back()
-   {
-    if (compact)
-     return ++compact_free_size + 1;
-    else
-     return fk.push_back();
-   }
-
-   bool is_compact() const
-   {
-    return compact;
-   }
-
-   ptrdiff_t get_first_free() const
-   {
-    if (compact)
-    {
-     if (compact_used_size == compact_free_size)
-      return 1;
-     else
-      return compact_used_size + 2;
-    }
-    else
-     return fk.get_first_free();
-   }
-
-   ptrdiff_t get_first_used() const
-   {
-    if (compact)
-    {
-     if (compact_used_size == 0)
-      return 0;
-     else
-      return 2;
-    }
-    else
-     return fk.get_first_used();
-   }
-
-   ptrdiff_t get_next(ptrdiff_t index) const
-   {
-    if (compact)
-    {
-     if (index == 0)
-      return get_first_used();
-
-     if (index == 1)
-      return get_first_free();
-
-     const ptrdiff_t result = index + 1;
-
-     if (result == compact_used_size + 2)
-      return 0;
-
-     if (index == compact_free_size + 2)
-      return 1;
-
-     return result;
-    }
-    else
-     return fk.get_next(index);
-   }
-
-   ptrdiff_t get_previous(ptrdiff_t index) const
-   {
-    if (compact)
-    {
-     if (index == 0)
-     {
-      if (compact_used_size == 0)
-       return 0;
-      else
-       return compact_used_size + 1;
-     }
-
-     if (index == 1)
-     {
-      if (compact_used_size == compact_free_size)
-       return 1;
-      else
-       return compact_free_size + 1;
-     }
-
-     const ptrdiff_t result = index - 1;
-
-     if (result == 1)
-      return 0;
-     if (result == compact_used_size + 1)
-      return 1;
-     return index - 1;
-    }
-    else
-     return fk.get_previous(index);
-   }
-
-   void resize(ptrdiff_t size)
-   {
-    if (compact)
-    {
-     if (compact_free_size < size)
-      compact_free_size = size;
-    }
-    else
-     fk.resize(size);
-   }
-
-   void append_vector(ptrdiff_t size)
-   {
-    if (compact && compact_free_size == compact_used_size)
-    {
-     compact_free_size += size;
-     compact_used_size += size;
-    }
-    else
-    {
-     for (ptrdiff_t i = 0; i < size; i++)
-      use(push_back());
-    }
+    return true;
    }
  };
 }
