@@ -74,7 +74,7 @@ namespace joedb
    for (auto &field: fields)
     field.second.resize(to_underlying(record_id) + size - 1);
 
-   freedom.append_vector(ptrdiff_t(size));
+   freedom.append_vector(index_t(size));
   }
   else
   {

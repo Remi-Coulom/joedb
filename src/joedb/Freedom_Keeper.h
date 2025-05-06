@@ -1,10 +1,10 @@
 #ifndef joedb_Freedom_Keeper_declared
 #define joedb_Freedom_Keeper_declared
 
-#include <cstddef>
-#include <vector>
-
+#include "joedb/index_types.h"
 #include "joedb/error/assert.h"
+
+#include <vector>
 
 namespace joedb
 {
@@ -13,32 +13,32 @@ namespace joedb
  {
   public:
    virtual bool is_empty() const = 0;
-   virtual ptrdiff_t get_used_count() const = 0;
-   virtual ptrdiff_t size() const = 0;
-   virtual ptrdiff_t get_first_free() const = 0;
-   virtual ptrdiff_t get_first_used() const = 0;
-   virtual ptrdiff_t get_next(ptrdiff_t index) const = 0;
-   virtual ptrdiff_t get_previous(ptrdiff_t index) const = 0;
-   virtual bool is_free(ptrdiff_t index) const = 0;
-   virtual bool is_used(ptrdiff_t index) const = 0;
+   virtual index_t get_used_count() const = 0;
+   virtual index_t size() const = 0;
+   virtual index_t get_first_free() const = 0;
+   virtual index_t get_first_used() const = 0;
+   virtual index_t get_next(index_t index) const = 0;
+   virtual index_t get_previous(index_t index) const = 0;
+   virtual bool is_free(index_t index) const = 0;
+   virtual bool is_used(index_t index) const = 0;
    virtual bool is_compact() const = 0;
 
-   virtual ptrdiff_t get_free_record() = 0;
-   virtual ptrdiff_t push_back() = 0;
-   virtual void resize(ptrdiff_t new_size) = 0;
-   virtual bool use(ptrdiff_t index) = 0;
-   virtual bool free(ptrdiff_t index) = 0;
+   virtual index_t get_free_record() = 0;
+   virtual index_t push_back() = 0;
+   virtual void resize(index_t new_size) = 0;
+   virtual bool use(index_t index) = 0;
+   virtual bool free(index_t index) = 0;
 
-   virtual bool use_vector(ptrdiff_t index, ptrdiff_t size)
+   virtual bool use_vector(index_t index, index_t size)
    {
-    for (ptrdiff_t i = 0; i < size; i++)
+    for (index_t i = 0; i < size; i++)
      use(index + i);
     return true;
    }
 
-   virtual bool append_vector(ptrdiff_t size)
+   virtual bool append_vector(index_t size)
    {
-    for (ptrdiff_t i = 0; i < size; i++)
+    for (index_t i = 0; i < size; i++)
      use(push_back());
     return true;
    }
@@ -54,19 +54,19 @@ namespace joedb
    {
     public:
      bool is_free;
-     ptrdiff_t next;
-     ptrdiff_t previous;
+     index_t next;
+     index_t previous;
 
     public:
      Record() {}
-     Record(bool is_free, ptrdiff_t next, ptrdiff_t previous):
+     Record(bool is_free, index_t next, index_t previous):
       is_free(is_free),
       next(next),
       previous(previous)
      {}
    };
 
-   ptrdiff_t used_count;
+   index_t used_count;
    std::vector<Record> records;
    enum {used_list = 0, free_list = 1};
 
@@ -83,25 +83,25 @@ namespace joedb
    }
 
    bool is_empty() const override {return used_count == 0;}
-   ptrdiff_t get_used_count() const override {return used_count;}
-   ptrdiff_t size() const override {return ptrdiff_t(records.size() - 2);}
-   ptrdiff_t get_first_free() const override {return records[free_list].next;}
-   ptrdiff_t get_first_used() const override {return records[used_list].next;}
-   ptrdiff_t get_next(ptrdiff_t index) const override {return records[index].next;}
-   ptrdiff_t get_previous(ptrdiff_t index) const override {return records[index].previous;}
-   bool is_free(ptrdiff_t index) const override {return records[index].is_free;}
-   bool is_used(ptrdiff_t index) const override
+   index_t get_used_count() const override {return used_count;}
+   index_t size() const override {return index_t(records.size() - 2);}
+   index_t get_first_free() const override {return records[free_list].next;}
+   index_t get_first_used() const override {return records[used_list].next;}
+   index_t get_next(index_t index) const override {return records[index].next;}
+   index_t get_previous(index_t index) const override {return records[index].previous;}
+   bool is_free(index_t index) const override {return records[index].is_free;}
+   bool is_used(index_t index) const override
    {
     return index > 1 &&
-           index < ptrdiff_t(records.size()) &&
+           index < index_t(records.size()) &&
            !records[index].is_free;
    }
    bool is_compact() const override {return size() == used_count;}
 
    //////////////////////////////////////////////////////////////////////////
-   ptrdiff_t get_free_record() override
+   index_t get_free_record() override
    {
-    ptrdiff_t result = records[free_list].next;
+    index_t result = records[free_list].next;
     if (result == free_list)
     {
      push_back();
@@ -111,9 +111,9 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   ptrdiff_t push_back() override
+   index_t push_back() override
    {
-    const ptrdiff_t index = records.size();
+    const index_t index = records.size();
     records.emplace_back(true, records[free_list].next, free_list);
 
     records[records[free_list].next].previous = index;
@@ -123,14 +123,14 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void resize(ptrdiff_t new_size) override
+   void resize(index_t new_size) override
    {
     while(size() < new_size)
      push_back();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool use(ptrdiff_t index) override
+   bool use(index_t index) override
    {
     JOEDB_DEBUG_ASSERT(index > 1);
     JOEDB_DEBUG_ASSERT(index < records.size());
@@ -154,7 +154,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool free(ptrdiff_t index) override
+   bool free(index_t index) override
    {
     JOEDB_DEBUG_ASSERT(index > 1);
     JOEDB_DEBUG_ASSERT(index < records.size());
@@ -181,15 +181,15 @@ namespace joedb
  class Dense_Freedom_Keeper: public Freedom_Keeper
  {
   private:
-   ptrdiff_t used_size = 0;
-   ptrdiff_t free_size = 0;
+   index_t used_size = 0;
+   index_t free_size = 0;
 
   public:
    bool is_empty() const override {return used_size == 0;}
-   ptrdiff_t get_used_count() const override {return used_size;}
-   ptrdiff_t size() const override {return free_size;}
+   index_t get_used_count() const override {return used_size;}
+   index_t size() const override {return free_size;}
 
-   ptrdiff_t get_first_free() const override
+   index_t get_first_free() const override
    {
     if (used_size == free_size)
      return 1;
@@ -197,7 +197,7 @@ namespace joedb
      return used_size + 2;
    }
 
-   ptrdiff_t get_first_used() const override
+   index_t get_first_used() const override
    {
     if (used_size == 0)
      return 0;
@@ -205,7 +205,7 @@ namespace joedb
      return 2;
    }
 
-   ptrdiff_t get_next(ptrdiff_t index) const override
+   index_t get_next(index_t index) const override
    {
     if (index == 0)
      return get_first_used();
@@ -213,7 +213,7 @@ namespace joedb
     if (index == 1)
      return get_first_free();
 
-    const ptrdiff_t result = index + 1;
+    const index_t result = index + 1;
 
     if (result == used_size + 2)
      return 0;
@@ -224,7 +224,7 @@ namespace joedb
     return result;
    }
 
-   ptrdiff_t get_previous(ptrdiff_t index) const override
+   index_t get_previous(index_t index) const override
    {
     if (index == 0)
     {
@@ -242,7 +242,7 @@ namespace joedb
       return free_size + 1;
     }
 
-    const ptrdiff_t result = index - 1;
+    const index_t result = index - 1;
 
     if (result == 1)
      return 0;
@@ -251,26 +251,26 @@ namespace joedb
     return index - 1;
    }
 
-   bool is_free(ptrdiff_t index) const override {return index - 2 >= used_size;}
-   bool is_used(ptrdiff_t index) const override {return index - 2 < used_size;}
+   bool is_free(index_t index) const override {return index - 2 >= used_size;}
+   bool is_used(index_t index) const override {return index - 2 < used_size;}
    bool is_compact() const override {return true;}
 
-   ptrdiff_t get_free_record() override
+   index_t get_free_record() override
    {
     if (free_size == used_size)
      ++free_size;
     return used_size + 2;
    }
 
-   ptrdiff_t push_back() override {return ++free_size + 1;}
+   index_t push_back() override {return ++free_size + 1;}
 
-   void resize(ptrdiff_t size) override
+   void resize(index_t size) override
    {
     if (free_size < size)
      free_size = size;
    }
 
-   bool use(ptrdiff_t index) override
+   bool use(index_t index) override
    {
     if (index == used_size + 2 && used_size < free_size)
     {
@@ -281,7 +281,7 @@ namespace joedb
      return false;
    }
 
-   bool free(ptrdiff_t index) override
+   bool free(index_t index) override
    {
     if (index == used_size + 1 && index > 1)
     {
@@ -292,7 +292,7 @@ namespace joedb
      return false;
    }
 
-   bool use_vector(ptrdiff_t index, ptrdiff_t size) override
+   bool use_vector(index_t index, index_t size) override
    {
     if (index == used_size + 2 && used_size + size <= free_size)
     {
@@ -303,7 +303,7 @@ namespace joedb
      return false;
    }
 
-   bool append_vector(ptrdiff_t size) override
+   bool append_vector(index_t size) override
    {
     if (free_size == used_size)
     {
@@ -331,7 +331,7 @@ namespace joedb
     while (lfk.size() < dfk.size())
      lfk.push_back();
 
-    for (ptrdiff_t i = 0; i < dfk.get_used_count(); i++)
+    for (index_t i = 0; i < dfk.get_used_count(); i++)
      lfk.use(i + 2);
 
     fk = &lfk;
@@ -343,21 +343,21 @@ namespace joedb
    Compact_Freedom_Keeper& operator=(const Compact_Freedom_Keeper &) = delete;
 
    bool is_empty() const override {return fk->is_empty();}
-   ptrdiff_t get_used_count() const override {return fk->get_used_count();}
-   ptrdiff_t size() const override {return fk->size();}
-   ptrdiff_t get_first_free() const override {return fk->get_first_free();}
-   ptrdiff_t get_first_used() const override {return fk->get_first_used();}
-   ptrdiff_t get_next(ptrdiff_t index) const override {return fk->get_next(index);}
-   ptrdiff_t get_previous(ptrdiff_t index) const override {return fk->get_previous(index);}
-   bool is_free(ptrdiff_t index) const override {return fk->is_free(index);}
-   bool is_used(ptrdiff_t index) const override {return fk->is_used(index);}
+   index_t get_used_count() const override {return fk->get_used_count();}
+   index_t size() const override {return fk->size();}
+   index_t get_first_free() const override {return fk->get_first_free();}
+   index_t get_first_used() const override {return fk->get_first_used();}
+   index_t get_next(index_t index) const override {return fk->get_next(index);}
+   index_t get_previous(index_t index) const override {return fk->get_previous(index);}
+   bool is_free(index_t index) const override {return fk->is_free(index);}
+   bool is_used(index_t index) const override {return fk->is_used(index);}
    bool is_compact() const override {return fk->is_compact();}
 
-   ptrdiff_t get_free_record() override {return fk->get_free_record();}
-   ptrdiff_t push_back() override {return fk->push_back();}
-   void resize(ptrdiff_t new_size) override {fk->resize(new_size);}
+   index_t get_free_record() override {return fk->get_free_record();}
+   index_t push_back() override {return fk->push_back();}
+   void resize(index_t new_size) override {fk->resize(new_size);}
 
-   bool use(ptrdiff_t index) override
+   bool use(index_t index) override
    {
     if (!fk->use(index))
     {
@@ -367,7 +367,7 @@ namespace joedb
     return true;
    }
 
-   bool free(ptrdiff_t index) override
+   bool free(index_t index) override
    {
     if (!fk->free(index))
     {
@@ -377,7 +377,7 @@ namespace joedb
     return true;
    }
 
-   bool use_vector(ptrdiff_t index, ptrdiff_t size) override
+   bool use_vector(index_t index, index_t size) override
    {
     if (!fk->use_vector(index, size))
     {
@@ -387,7 +387,7 @@ namespace joedb
     return true;
    }
 
-   bool append_vector(ptrdiff_t size) override
+   bool append_vector(index_t size) override
    {
     if (!fk->append_vector(size))
     {
