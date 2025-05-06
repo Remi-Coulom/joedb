@@ -12,7 +12,6 @@ namespace joedb
  class Freedom_Keeper
  {
   public:
-   virtual bool is_empty() const = 0;
    virtual index_t get_used_count() const = 0;
    virtual index_t size() const = 0;
    virtual index_t get_first_free() const = 0;
@@ -82,7 +81,6 @@ namespace joedb
     records[free_list].previous = free_list;
    }
 
-   bool is_empty() const override {return used_count == 0;}
    index_t get_used_count() const override {return used_count;}
    index_t size() const override {return index_t(records.size() - 2);}
    index_t get_first_free() const override {return records[free_list].next;}
@@ -185,7 +183,6 @@ namespace joedb
    index_t free_size = 0;
 
   public:
-   bool is_empty() const override {return used_size == 0;}
    index_t get_used_count() const override {return used_size;}
    index_t size() const override {return free_size;}
 
@@ -342,7 +339,6 @@ namespace joedb
    Compact_Freedom_Keeper(const Compact_Freedom_Keeper &) = delete;
    Compact_Freedom_Keeper& operator=(const Compact_Freedom_Keeper &) = delete;
 
-   bool is_empty() const override {return fk->is_empty();}
    index_t get_used_count() const override {return fk->get_used_count();}
    index_t size() const override {return fk->size();}
    index_t get_first_free() const override {return fk->get_first_free();}

@@ -1059,7 +1059,7 @@ namespace joedb::generator
    out << "   iterator begin() const {return ++iterator(db.storage_of_" << tname << ");}\n";
    out << "   iterator end() const {return iterator(db.storage_of_" << tname << ");}\n";
    out << "   bool is_empty() const {return db.storage_of_" << tname
-       << ".freedom_keeper.is_empty();}\n";
+       << ".freedom_keeper.get_used_count() == 0;}\n";
    out << "   size_t get_size() const {return db.storage_of_" << tname << ".freedom_keeper.get_used_count();}\n";
    out << "   static id_of_" << tname << " get_at(size_t i) {return id_of_"
        << tname << "(Record_Id(i));}\n";
