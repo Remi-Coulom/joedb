@@ -57,42 +57,42 @@ TYPED_TEST(Freedom_Keeper_Test, basic)
  auto &fk = this->fk;
  EXPECT_TRUE(fk.is_compact());
 
- EXPECT_EQ(0UL, fk.size());
- EXPECT_EQ(2UL, fk.push_back());
- EXPECT_TRUE(fk.is_free(2));
- EXPECT_EQ(1UL, fk.size());
- fk.use(2);
- EXPECT_FALSE(fk.is_free(2));
+ EXPECT_EQ(0, fk.size());
+ EXPECT_EQ(0, fk.push_back());
+ EXPECT_TRUE(fk.is_free(0));
+ EXPECT_EQ(1, fk.size());
+ fk.use(0);
+ EXPECT_FALSE(fk.is_free(0));
  EXPECT_TRUE(fk.is_compact());
 
+ fk.use(fk.push_back()); // 1
+ fk.use(fk.push_back()); // 2
  fk.use(fk.push_back()); // 3
  fk.use(fk.push_back()); // 4
  fk.use(fk.push_back()); // 5
  fk.use(fk.push_back()); // 6
- fk.use(fk.push_back()); // 7
- fk.use(fk.push_back()); // 8
 
  ptrdiff_t pushed = fk.push_back();
- EXPECT_EQ(9UL, pushed);
+ EXPECT_EQ(7, pushed);
 
- EXPECT_EQ(8UL, fk.size());
- for (int i = 2; i <= 8; i++)
+ EXPECT_EQ(8, fk.size());
+ for (int i = 0; i <= 6; i++)
  {
   EXPECT_FALSE(fk.is_free(i));
   EXPECT_TRUE(fk.is_used(i));
  }
 
- fk.free(5);
+ fk.free(3);
  EXPECT_FALSE(fk.is_compact());
 
- EXPECT_EQ(8UL, fk.size());
+ EXPECT_EQ(8, fk.size());
 
- EXPECT_TRUE(fk.is_free(9));
- EXPECT_TRUE(fk.is_free(5));
- EXPECT_FALSE(fk.is_used(5));
+ EXPECT_TRUE(fk.is_free(7));
+ EXPECT_TRUE(fk.is_free(3));
+ EXPECT_FALSE(fk.is_used(3));
 
- for (int i = 2; i <= 8; i++)
-  if (i != 5)
+ for (int i = 0; i <= 6; i++)
+  if (i != 3)
   {
    EXPECT_FALSE(fk.is_free(i));
    EXPECT_TRUE(fk.is_used(i));
@@ -105,40 +105,74 @@ TYPED_TEST(Freedom_Keeper_Test, previous_next)
 {
  auto &fk = this->fk;
 
- EXPECT_EQ(0UL, fk.get_first_used());
- EXPECT_EQ(1UL, fk.get_first_free());
+ EXPECT_EQ(-2, fk.get_first_used());
+ EXPECT_EQ(-1, fk.get_first_free());
 
- EXPECT_EQ(0UL, fk.get_next(0UL));
- EXPECT_EQ(0UL, fk.get_previous(0UL));
+ EXPECT_EQ(-2, fk.get_next(-2));
+ EXPECT_EQ(-2, fk.get_previous(-2));
 
- EXPECT_EQ(1UL, fk.get_next(1UL));
- EXPECT_EQ(1UL, fk.get_previous(1UL));
+ EXPECT_EQ(-1, fk.get_next(-1));
+ EXPECT_EQ(-1, fk.get_previous(-1));
+
+ fk.use(fk.push_back());
+ EXPECT_EQ(1, fk.size());
+ EXPECT_EQ(0, fk.get_first_used());
+ EXPECT_EQ(-2, fk.get_previous(0));
+ EXPECT_EQ(-2, fk.get_next(0));
+ EXPECT_EQ(0, fk.get_previous(-2));
+ EXPECT_EQ(0, fk.get_next(-2));
+ EXPECT_EQ(-1, fk.get_next(-1));
+ EXPECT_EQ(-1, fk.get_previous(-1));
+
+ {
+  const auto i = fk.push_back();
+  EXPECT_EQ(1, i);
+  EXPECT_EQ(1, fk.get_used_count());
+  EXPECT_EQ(2, fk.size());
+  EXPECT_EQ(-1, fk.get_next(i));
+  EXPECT_EQ(-1, fk.get_previous(i));
+  EXPECT_EQ(i, fk.get_next(-1));
+  EXPECT_EQ(i, fk.get_previous(-1));
+
+  EXPECT_EQ(-2, fk.get_previous(0));
+  EXPECT_EQ(-2, fk.get_next(0));
+  EXPECT_EQ(0, fk.get_previous(-2));
+  EXPECT_EQ(0, fk.get_next(-2));
+
+  fk.use(i);
+  EXPECT_EQ(-1, fk.get_next(-1));
+  EXPECT_EQ(-1, fk.get_previous(-1));
+
+  EXPECT_EQ(0, fk.get_previous(1));
+  EXPECT_EQ(-2, fk.get_next(1));
+
+  EXPECT_EQ(1, fk.get_previous(-2));
+  EXPECT_EQ(1, fk.get_next(0));
+ }
+ EXPECT_EQ(0, fk.get_next(-2));
+ EXPECT_EQ(1, fk.get_next(0));
+ EXPECT_EQ(-2, fk.get_next(1));
 
  fk.use(fk.push_back());
 
- EXPECT_EQ(2UL, fk.get_first_used());
-
- fk.use(fk.push_back());
- fk.use(fk.push_back());
-
- EXPECT_EQ(1UL, fk.get_first_free());
+ EXPECT_EQ(-1, fk.get_first_free());
 
  fk.push_back();
 
- EXPECT_EQ(5UL, fk.get_first_free());
+ EXPECT_EQ(3, fk.get_first_free());
 
  fk.push_back();
  fk.push_back();
 
- EXPECT_EQ(3UL, fk.get_next(2UL));
- EXPECT_EQ(4UL, fk.get_next(3UL));
- EXPECT_EQ(0UL, fk.get_next(4UL));
- EXPECT_EQ(2UL, fk.get_next(0UL));
+ EXPECT_EQ(1, fk.get_next(0));
+ EXPECT_EQ(2, fk.get_next(1));
+ EXPECT_EQ(-2, fk.get_next(2));
+ EXPECT_EQ(0, fk.get_next(-2));
 
- EXPECT_EQ(0UL, fk.get_previous(2UL));
- EXPECT_EQ(2UL, fk.get_previous(3UL));
- EXPECT_EQ(3UL, fk.get_previous(4UL));
- EXPECT_EQ(4UL, fk.get_previous(0UL));
+ EXPECT_EQ(-2, fk.get_previous(0));
+ EXPECT_EQ(0, fk.get_previous(1));
+ EXPECT_EQ(1, fk.get_previous(2));
+ EXPECT_EQ(2, fk.get_previous(-2));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -152,8 +186,8 @@ TEST(Freedom_Keeper, compactness)
   fk.use(fk.push_back());
 
  EXPECT_TRUE(fk.is_compact());
- fk.free(9);
+ fk.free(7);
  EXPECT_TRUE(fk.is_compact());
- fk.free(6);
+ fk.free(4);
  EXPECT_FALSE(fk.is_compact());
 }
