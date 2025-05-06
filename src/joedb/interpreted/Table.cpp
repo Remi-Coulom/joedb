@@ -69,12 +69,12 @@ namespace joedb
  void Table::insert_vector(Record_Id record_id, size_t size)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (freedom.is_compact() && to_underlying(record_id) == freedom.size() + 1)
+  if (to_underlying(record_id) == freedom.size() + 1)
   {
+   freedom.resize(freedom.size() + size);
    for (auto &field: fields)
-    field.second.resize(to_underlying(record_id) + size - 1);
-
-   freedom.append_vector(index_t(size));
+    field.second.resize(freedom.size());
+   freedom.use_vector(index_t(record_id) + 1, index_t(size));
   }
   else
   {

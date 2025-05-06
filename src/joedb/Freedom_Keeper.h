@@ -35,13 +35,6 @@ namespace joedb
     return true;
    }
 
-   virtual bool append_vector(index_t size)
-   {
-    for (index_t i = 0; i < size; i++)
-     use(push_back());
-    return true;
-   }
-
    virtual ~Freedom_Keeper() = default;
  };
 
@@ -299,18 +292,6 @@ namespace joedb
     else
      return false;
    }
-
-   bool append_vector(index_t size) override
-   {
-    if (free_size == used_size)
-    {
-     free_size += size;
-     used_size += size;
-     return true;
-    }
-    else
-     return false;
-   }
  };
 
  /// @ingroup joedb
@@ -379,16 +360,6 @@ namespace joedb
     {
      lose_compactness();
      fk->use_vector(index, size);
-    }
-    return true;
-   }
-
-   bool append_vector(index_t size) override
-   {
-    if (!fk->append_vector(size))
-    {
-     lose_compactness();
-     fk->append_vector(size);
     }
     return true;
    }
