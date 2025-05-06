@@ -20,7 +20,7 @@ namespace joedb
  /// @ingroup joedb
  enum class Record_Id: index_t {};
 
- constexpr inline std::underlying_type<Table_Id>::type to_underlying
+ constexpr std::underlying_type<Table_Id>::type to_underlying
  (
   Table_Id id
  )
@@ -28,7 +28,7 @@ namespace joedb
   return std::underlying_type<Table_Id>::type(id);
  }
 
- constexpr inline std::underlying_type<Field_Id>::type to_underlying
+ constexpr std::underlying_type<Field_Id>::type to_underlying
  (
   Field_Id id
  )
@@ -36,7 +36,7 @@ namespace joedb
   return std::underlying_type<Field_Id>::type(id);
  }
 
- constexpr inline std::underlying_type<Record_Id>::type to_underlying
+ constexpr std::underlying_type<Record_Id>::type to_underlying
  (
   Record_Id id
  )
@@ -44,11 +44,21 @@ namespace joedb
   return std::underlying_type<Record_Id>::type(id);
  }
 
- constexpr inline Record_Id operator+(Record_Id id, size_t size)
+ constexpr bool is_null(Record_Id id)
+ {
+  return to_underlying(id) == 0;
+ }
+
+ constexpr bool is_not_null(Record_Id id)
+ {
+  return !is_null(id);
+ }
+
+ constexpr Record_Id operator+(Record_Id id, size_t size)
  {
   return Record_Id(to_underlying(id) + size);
  }
- constexpr inline Record_Id operator-(Record_Id id, size_t size)
+ constexpr Record_Id operator-(Record_Id id, size_t size)
  {
   return Record_Id(to_underlying(id) - size);
  }
