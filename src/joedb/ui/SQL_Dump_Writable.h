@@ -18,7 +18,6 @@ namespace joedb
    std::ostream &out;
    const Database_Schema &schema;
    const Buffered_File *blob_reader;
-   const bool drop_column;
 
    void write_type(Type type);
    void write_update(Table_Id table_id, Field_Id field_id);
@@ -29,13 +28,11 @@ namespace joedb
    (
     std::ostream &out,
     const Database_Schema &schema,
-    const Buffered_File *blob_reader = nullptr,
-    bool drop_column = true
+    const Buffered_File *blob_reader = nullptr
    ):
     out(out),
     schema(schema),
-    blob_reader(blob_reader),
-    drop_column(drop_column)
+    blob_reader(blob_reader)
    {}
 
    const char *get_name() const {return "sql";}
@@ -86,10 +83,9 @@ namespace joedb
    SQL_Dump_Writable_Parent
    (
     std::ostream &out,
-    const Buffered_File *blob_reader = nullptr,
-    bool drop_column = true
+    const Buffered_File *blob_reader = nullptr
    ):
-    interpreter_writable(out, schema, blob_reader, drop_column)
+    interpreter_writable(out, schema, blob_reader)
    {
    }
  };
@@ -102,10 +98,9 @@ namespace joedb
    SQL_Dump_Writable
    (
     std::ostream &out,
-    const Buffered_File *blob_reader = nullptr,
-    bool drop_column = true
+    const Buffered_File *blob_reader = nullptr
    ):
-    SQL_Dump_Writable_Parent(out, blob_reader, drop_column),
+    SQL_Dump_Writable_Parent(out, blob_reader),
     Multiplexer{interpreter_writable, schema}
    {
    }
