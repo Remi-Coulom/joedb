@@ -281,7 +281,7 @@ namespace joedb
  {
   write_update(table_id, field_id);
 
-  if (value == Record_Id(0))
+  if (is_null(value))
    out << "NULL";
   else
    out << value;
