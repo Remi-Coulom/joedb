@@ -24,7 +24,7 @@ void joedb::Readonly_Journal::reset_context()
 /////////////////////////////////////////////////////////////////////////////
 {
  table_of_last_operation = Table_Id(0);
- record_of_last_operation = Record_Id(0);
+ record_of_last_operation = Record_Id(-1);
  field_of_last_update = Field_Id(0);
 }
 
@@ -321,7 +321,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
     buffer.resize(size);\
     data = &buffer[0];\
    }\
-   else if (to_underlying(record_of_last_operation) <= 0 || to_underlying(record_of_last_operation) + size - 1 > capacity)\
+   else if (to_underlying(record_of_last_operation) < 0 || to_underlying(record_of_last_operation) + size > capacity)\
     throw Exception("update_vector out of range");\
    read_vector_of_##type_id(data, size);\
    writable.update_vector_##type_id\

@@ -32,7 +32,7 @@ namespace joedb
  {
   if
   (
-   to_underlying(record_id) <= 0 ||
+   to_underlying(record_id) < 0 ||
    (
     max_record_id >= Record_Id{0} &&
     (

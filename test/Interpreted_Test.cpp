@@ -34,4 +34,25 @@ namespace joedb
   EXPECT_ANY_THROW(schema.drop_field(Table_Id(1), Field_Id(1)));
   EXPECT_ANY_THROW(schema.rename_field(Table_Id(1), Field_Id(1), "toto"));
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Interpreted_Test, more_range_errors)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  {
+   joedb::Database db;
+   db.create_table("person");
+   EXPECT_ANY_THROW(db.insert_into(Table_Id{1}, Record_Id{-1}));
+   EXPECT_NO_THROW(db.insert_into(Table_Id{1}, Record_Id{0}));
+   EXPECT_ANY_THROW(db.insert_into(Table_Id{1}, Record_Id{0}));
+  }
+  {
+   joedb::Database db;
+   db.create_table("person");
+   const size_t size = 123;
+   EXPECT_ANY_THROW(db.insert_vector(Table_Id{1}, Record_Id{-1}, size));
+   EXPECT_NO_THROW(db.insert_vector(Table_Id{1}, Record_Id{0}, size));
+   EXPECT_ANY_THROW(db.insert_vector(Table_Id{1}, Record_Id{0}, size));
+  }
+ }
 }

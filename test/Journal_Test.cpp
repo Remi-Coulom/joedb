@@ -558,4 +558,72 @@ namespace joedb
    EXPECT_EQ(journal.get_file().read_blob(blob), big_string);
   }
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, range_errors)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  {
+   Memory_File file;
+   {
+    Writable_Journal journal(file);
+    journal.create_table("person");
+    journal.add_field(Table_Id{1}, "age", joedb::Type::int32());
+    journal.insert_into(Table_Id{1}, Record_Id{0});
+    journal.update_int32(Table_Id{1}, Record_Id{0}, Field_Id{1}, 42);
+    journal.soft_checkpoint();
+   }
+   {
+    Readonly_Journal journal(file);
+    Writable writable;
+    journal.replay_log(writable);
+   }
+  }
+
+  {
+   Memory_File file;
+   {
+    Writable_Journal journal(file);
+    journal.create_table("person");
+    journal.add_field(Table_Id{1}, "age", joedb::Type::int32());
+    journal.insert_vector(Table_Id{1}, Record_Id{0}, 1);
+    const int32_t n = 42;
+    journal.update_vector_int32(Table_Id{1}, Record_Id{0}, Field_Id{1}, 1, &n);
+    journal.soft_checkpoint();
+   }
+   {
+    Readonly_Journal journal(file);
+    Writable writable;
+    journal.replay_log(writable);
+   }
+   {
+    Readonly_Journal journal(file);
+    Database db;
+    journal.replay_log(db);
+   }
+  }
+
+  {
+   Memory_File file;
+   {
+    Writable_Journal journal(file);
+    journal.create_table("person");
+    journal.add_field(Table_Id{1}, "age", joedb::Type::int32());
+    journal.insert_vector(Table_Id{1}, Record_Id{0}, 1);
+    const int32_t n[2] = {42, 43};
+    journal.update_vector_int32(Table_Id{1}, Record_Id{0}, Field_Id{1}, 2, n);
+    journal.soft_checkpoint();
+   }
+   {
+    Readonly_Journal journal(file);
+    Writable writable;
+    journal.replay_log(writable);
+   }
+   {
+    Readonly_Journal journal(file);
+    Database db;
+    EXPECT_ANY_THROW(journal.replay_log(db));
+   }
+  }
+ }
 }

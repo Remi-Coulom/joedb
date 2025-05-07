@@ -11,7 +11,7 @@ void joedb::merge(Database &merged, const Database &db)
  // First loop over tables to fill the offset map
  //
  for (const auto &[tid, tname]: merged.get_tables())
-  offset[tid] = merged.get_last_record_id(tid);
+  offset[tid] = merged.get_last_record_id(tid) + 1;
 
  //
  // Second loop to copy data, with added offset
@@ -21,13 +21,13 @@ void joedb::merge(Database &merged, const Database &db)
   const Record_Id last_record_id = db.get_last_record_id(tid);
   const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
 
-  if (last_record_id == Record_Id(0))
+  if (last_record_id == Record_Id{-1})
   {
    // do nothing, table is empty
   }
   else if (freedom_keeper.is_compact())
   {
-   merged.insert_vector(tid, offset[tid] + 1, size_t(last_record_id));
+   merged.insert_vector(tid, offset[tid], size_t(last_record_id + 1));
 
    for (const auto &[fid, fname]: db.get_fields(tid))
    {
@@ -45,10 +45,10 @@ void joedb::merge(Database &merged, const Database &db)
       merged.update_vector_##type_id\
       (\
        tid,\
-       offset[tid] + 1,\
+       offset[tid],\
        fid,\
-       size_t(last_record_id),\
-       db.get_own_##type_id##_const_storage(tid, Record_Id(1), fid, capacity)\
+       size_t(last_record_id + 1),\
+       db.get_own_##type_id##_const_storage(tid, Record_Id(0), fid, capacity)\
       );\
      }\
      break;
@@ -57,29 +57,29 @@ void joedb::merge(Database &merged, const Database &db)
 
     if (type.get_type_id() == Type::Type_Id::reference)
     {
-     const size_t reference_offset = size_t(offset[type.get_table_id()]);
+     const auto reference_offset = offset[type.get_table_id()];
 
      Record_Id *reference = merged.get_own_reference_storage
      (
       tid,
-      offset[tid] + 1,
+      offset[tid],
       fid,
       capacity
      );
 
-     for (size_t i = 0; i < size_t(last_record_id); i++)
-      if (reference[i] != Record_Id(0))
-       reference[i] = reference[i] + reference_offset;
+     for (size_t i = 0; i < size_t(last_record_id + 1); i++)
+      if (reference[i] != null)
+       reference[i] = reference[i] + to_underlying(reference_offset);
     }
    }
   }
   else
   {
-   for (Record_Id record_id = Record_Id(1); size_t(record_id) <= size_t(last_record_id); ++record_id)
+   for (Record_Id record_id = Record_Id(0); record_id <= last_record_id; ++record_id)
    {
-    if (freedom_keeper.is_used(to_underlying(record_id) + 1))
+    if (freedom_keeper.is_used(to_underlying(record_id)))
     {
-     const Record_Id merged_record_id = offset[tid] + size_t(record_id);
+     const Record_Id merged_record_id = offset[tid] + to_underlying(record_id);
      merged.insert_into(tid, merged_record_id);
 
      for (const auto &[fid, fname]: db.get_fields(tid))
@@ -94,8 +94,8 @@ void joedb::merge(Database &merged, const Database &db)
        case Type::Type_Id::reference:
        {
         Record_Id referenced = db.get_reference(tid, record_id, fid);
-        if (referenced != Record_Id(0))
-         referenced = referenced + size_t(offset[type.get_table_id()]);
+        if (referenced != null)
+         referenced = referenced + to_underlying(offset[type.get_table_id()]);
         merged.update_reference
         (
          tid,
