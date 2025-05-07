@@ -69,8 +69,8 @@ namespace joedb
     std::vector<Record_Id> id_column;
 
     size_t rows = 0;
-    const Record_Id last_record_id = readable.get_last_record_id(table_id);
-    for (Record_Id record_id = Record_Id(0); record_id <= last_record_id; ++record_id)
+    const Record_Id size = readable.get_size(table_id);
+    for (Record_Id record_id{0}; record_id < size; ++record_id)
     {
      if
      (
@@ -101,7 +101,7 @@ namespace joedb
     size_t id_width = 0;
     {
      std::ostringstream ss;
-     ss << last_record_id;
+     ss << size - 1;
      ss.flush();
      id_width = ss.str().size();
     }

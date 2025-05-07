@@ -49,7 +49,7 @@ namespace joedb
     Table_Id table_id,
     Field_Id field_id
    ) const;
-   Record_Id get_last_record_id(Table_Id table_id) const;
+   Record_Id get_size(Table_Id table_id) const;
    bool is_used(Table_Id table_id, Record_Id record_id) const;
 
    virtual ~Readable();

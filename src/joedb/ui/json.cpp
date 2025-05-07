@@ -28,11 +28,11 @@ namespace joedb
   std::map<Table_Id, int64_t> table_size;
   for (const auto &[tid, tname]: db.get_tables())
   {
-   const Record_Id last_record_id = db.get_last_record_id(tid);
+   const Record_Id size = db.get_size(tid);
    std::vector<int64_t> &v = reference_translation[tid];
-   v.resize(size_t(db.get_last_record_id(tid)) + 1);
+   v.resize(size_t(size));
    int64_t position = 0;
-   for (auto record_id = Record_Id(0); record_id <= last_record_id; ++record_id)
+   for (Record_Id record_id{0}; record_id < size; ++record_id)
    {
     if (!db.is_used(tid, record_id))
      v[size_t(record_id)] = -1;
@@ -50,7 +50,7 @@ namespace joedb
   bool first_table = true;
   for (const auto &[tid, tname]: db.get_tables())
   {
-   const Record_Id last_record_id = db.get_last_record_id(tid);
+   const Record_Id size = db.get_size(tid);
 
    if (first_table)
     first_table = false;
@@ -69,7 +69,7 @@ namespace joedb
     out << "  \"" << fname << "\": [";
 
     bool first_value = true;
-    for (Record_Id record_id = Record_Id(0); record_id <= last_record_id; ++record_id)
+    for (Record_Id record_id{0}; record_id < size; ++record_id)
     {
      if (db.is_used(tid, record_id))
      {

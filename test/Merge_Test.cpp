@@ -57,8 +57,8 @@ TEST(Merge_Test, merge_test)
  merge(db[0], db[2]);
  merge(db[0], db[3]);
 
- EXPECT_EQ(db[0].get_last_record_id(city), Record_Id(3));
- EXPECT_EQ(db[0].get_last_record_id(person), Record_Id(2));
+ EXPECT_EQ(db[0].get_size(city), Record_Id(4));
+ EXPECT_EQ(db[0].get_size(person), Record_Id(3));
  EXPECT_EQ(db[0].get_string(city, Record_Id(0), city_name), "Lille");
  EXPECT_EQ(db[0].get_string(city, Record_Id(2), city_name), "Maubeuge");
  EXPECT_EQ(db[0].get_string(city, Record_Id(3), city_name), "Paris");

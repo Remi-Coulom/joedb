@@ -55,24 +55,18 @@ namespace joedb
 
   for (const auto &[tid, tname]: db.get_tables())
   {
-   const Record_Id last_record_id = db.get_last_record_id(tid);
+   const Record_Id table_size = db.get_size(tid);
 
-   for (Record_Id record_id = Record_Id(0); record_id <= last_record_id;)
+   for (Record_Id record_id{0}; record_id < table_size;)
    {
-    while
-    (
-     record_id <= last_record_id &&
-     !db.is_used(tid, record_id)
-    )
-    {
+    while (record_id < table_size && !db.is_used(tid, record_id))
      ++record_id;
-    }
 
     size_t size = 0;
 
     while
     (
-     record_id + size <= last_record_id &&
+     record_id + size < table_size &&
      db.is_used(tid, record_id + size)
     )
     {
@@ -88,7 +82,7 @@ namespace joedb
 
    for (const auto &[fid, fname]: db.get_fields(tid))
    {
-    for (Record_Id record_id{0}; record_id <= last_record_id; ++record_id)
+    for (Record_Id record_id{0}; record_id < table_size; ++record_id)
     {
      if (db.is_used(tid, record_id))
      {
@@ -121,17 +115,17 @@ namespace joedb
  {
   for (const auto &[tid, tname]: db.get_tables())
   {
-   const Record_Id last_record_id = db.get_last_record_id(tid);
+   const Record_Id table_size = db.get_size(tid);
 
    Record_Id record_id = Record_Id(0);
 
    const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
 
-   while (record_id <= last_record_id)
+   while (record_id < table_size)
    {
     while
     (
-     record_id <= last_record_id &&
+     record_id < table_size &&
      !freedom_keeper.is_used(to_underlying(record_id))
     )
     {
@@ -142,7 +136,7 @@ namespace joedb
 
     while
     (
-     record_id + size <= last_record_id &&
+     record_id + size < table_size &&
      freedom_keeper.is_used(to_underlying(record_id + size))
     )
     {

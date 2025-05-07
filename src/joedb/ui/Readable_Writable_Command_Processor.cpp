@@ -1,5 +1,5 @@
 #include "joedb/ui/Readable_Writable_Command_Processor.h"
-#include "joedb/ui/type_io.h"
+#include "joedb/ui/type_io.h" // IWYU pragma: keep
 #include "joedb/Readable.h"
 #include "joedb/Writable.h"
 #include "joedb/error/Exception.h"
@@ -115,8 +115,7 @@ namespace joedb
      const Field_Id field_id =
       readable.get_fields(table_id).rbegin()->first;
 
-     const Record_Id last_record_id =
-      readable.get_last_record_id(table_id);\
+     const Record_Id size = readable.get_size(table_id);
 
      switch(type.get_type_id())
      {
@@ -125,7 +124,7 @@ namespace joedb
       case Type::Type_Id::type_id:\
       {\
        const type value = joedb::read_##type_id(parameters);\
-       for (Record_Id record_id = Record_Id(0); record_id <= last_record_id; ++record_id)\
+       for (Record_Id record_id{0}; record_id < size; ++record_id)\
         if (readable.is_used(table_id, record_id))\
          writable.update_##type_id(table_id, record_id, field_id, value);\
       }\
