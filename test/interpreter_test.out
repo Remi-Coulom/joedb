@@ -23,12 +23,12 @@ add_field person name string
 add_field person city references city
 add_field person bio blob
 OK: schema
-OK: insert_into city 1 "Paris"
-OK: insert_into city 2 "Lille"
-OK: insert_into city 15 "Pétaouchnok"
-OK: insert_into person 1 "Rémi" 2 43,15
-OK: insert_into person 2 "Norbert" 2 43,15
-OK: insert_into person 3 "Alexandre" 15 43,15
+OK: insert_into city 0 "Paris"
+OK: insert_into city 1 "Lille"
+OK: insert_into city 14 "Pétaouchnok"
+OK: insert_into person 0 "Rémi" 1 43,15
+OK: insert_into person 1 "Norbert" 1 43,15
+OK: insert_into person 2 "Alexandre" 14 43,15
 3
 OK: table_size city
 3
@@ -39,21 +39,21 @@ add_field city name string
 add_field person name string
 add_field person city references city
 add_field person bio blob
-insert_vector city 1 2
-insert_vector city 15 1
-update city 1 name "Paris"
-update city 2 name "Lille"
-update city 15 name "Pétaouchnok"
-insert_vector person 1 3
-update person 1 name "Rémi"
-update person 2 name "Norbert"
-update person 3 name "Alexandre"
-update person 1 city 2
-update person 2 city 2
-update person 3 city 15
+insert_vector city 0 2
+insert_vector city 14 1
+update city 0 name "Paris"
+update city 1 name "Lille"
+update city 14 name "Pétaouchnok"
+insert_vector person 0 3
+update person 0 name "Rémi"
+update person 1 name "Norbert"
+update person 2 name "Alexandre"
+update person 0 city 1
+update person 1 city 1
+update person 2 city 14
+update person 0 bio 43,15
 update person 1 bio 43,15
 update person 2 bio 43,15
-update person 3 bio 43,15
 OK: dump
 CREATE TABLE "city"("__id" INTEGER PRIMARY KEY);
 CREATE TABLE "person"("__id" INTEGER PRIMARY KEY);
@@ -61,24 +61,24 @@ ALTER TABLE "city" ADD "name" TEXT;
 ALTER TABLE "person" ADD "name" TEXT;
 ALTER TABLE "person" ADD "city" INTEGER REFERENCES "city";
 ALTER TABLE "person" ADD "bio" BLOB;
+INSERT INTO "city"("__id") VALUES(0);
 INSERT INTO "city"("__id") VALUES(1);
-INSERT INTO "city"("__id") VALUES(2);
-INSERT INTO "city"("__id") VALUES(15);
-UPDATE "city" SET "name" = X'5061726973' WHERE "__id" = 1;
-UPDATE "city" SET "name" = X'4c696c6c65' WHERE "__id" = 2;
-UPDATE "city" SET "name" = X'50c3a974616f7563686e6f6b' WHERE "__id" = 15;
+INSERT INTO "city"("__id") VALUES(14);
+UPDATE "city" SET "name" = X'5061726973' WHERE "__id" = 0;
+UPDATE "city" SET "name" = X'4c696c6c65' WHERE "__id" = 1;
+UPDATE "city" SET "name" = X'50c3a974616f7563686e6f6b' WHERE "__id" = 14;
+INSERT INTO "person"("__id") VALUES(0);
 INSERT INTO "person"("__id") VALUES(1);
 INSERT INTO "person"("__id") VALUES(2);
-INSERT INTO "person"("__id") VALUES(3);
-UPDATE "person" SET "name" = X'52c3a96d69' WHERE "__id" = 1;
-UPDATE "person" SET "name" = X'4e6f7262657274' WHERE "__id" = 2;
-UPDATE "person" SET "name" = X'416c6578616e647265' WHERE "__id" = 3;
-UPDATE "person" SET "city" = 2 WHERE "__id" = 1;
-UPDATE "person" SET "city" = 2 WHERE "__id" = 2;
-UPDATE "person" SET "city" = 15 WHERE "__id" = 3;
+UPDATE "person" SET "name" = X'52c3a96d69' WHERE "__id" = 0;
+UPDATE "person" SET "name" = X'4e6f7262657274' WHERE "__id" = 1;
+UPDATE "person" SET "name" = X'416c6578616e647265' WHERE "__id" = 2;
+UPDATE "person" SET "city" = 1 WHERE "__id" = 0;
+UPDATE "person" SET "city" = 1 WHERE "__id" = 1;
+UPDATE "person" SET "city" = 14 WHERE "__id" = 2;
+-- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 0;
 -- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 1;
 -- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 2;
--- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 3;
 OK: sql
 {
  "city":
@@ -98,18 +98,18 @@ OK: json 1
 ------------------------
   name        city   bio
 ------------------------
-1 "Rémi"         2 43,15
-2 "Norbert"      2 43,15
-3 "Alexandre"   15 43,15
+0 "Rémi"         1 43,15
+1 "Norbert"      1 43,15
+2 "Alexandre"   14 43,15
 OK: table person
 name: "Rémi"
-city: 2
+city: 1
  bio: 43,15
-OK: record person 1
+OK: record person 0
 Exception caught: no such record
 Line 29: record person 12345
 name: "Rémi"
-city: 2
+city: 1
  bio: 43,15
 OK: record person
 
@@ -198,9 +198,9 @@ Exception caught: No such table: qsdfqsdf
 Line 46: drop_table qsdfqsdf
 Exception caught: Unknown command. For a list of available commands, try "help".
 Line 47: qsdfqsdf
-OK: insert_into test 1 1234 5678
+OK: insert_into test 0 1234 5678
 Exception caught: insert: record_id already in use
-Line 49: insert_into test 1 1234 5678
+Line 49: insert_into test 0 1234 5678
 OK: add_field test d string
 OK: add_field test e boolean
 create_table test
@@ -208,33 +208,33 @@ add_field test a int32
 add_field test b int64
 add_field test d string
 add_field test e boolean
-insert_vector test 1 1
-update test 1 a 1234
-update test 1 b 5678
-update test 1 d ""
-update test 1 e false
+insert_vector test 0 1
+update test 0 a 1234
+update test 0 b 5678
+update test 0 d ""
+update test 0 e false
 OK: dump
 OK: 
 Exception caught: drop_field: invalid field_id
 Line 54: drop_field test qsdfqsdf
 OK: drop_field test a
-OK: insert_into test 2 3 "4" false
-OK: delete_from test 2
+OK: insert_into test 1 3 "4" false
+OK: delete_from test 1
 Exception caught: delete_record: bad record_id
 Line 58: delete_from test 123
 Exception caught: bad field
-Line 59: update test 1 a 56789
+Line 59: update test 0 a 56789
 Exception caught: update: invalid record_id
-Line 60: update test 2 b 56789
-OK: update test 1 b 56789
+Line 60: update test 1 b 56789
+OK: update test 0 b 56789
 create_table test
 add_field test b int64
 add_field test d string
 add_field test e boolean
-insert_vector test 1 1
-update test 1 b 56789
-update test 1 d ""
-update test 1 e false
+insert_vector test 0 1
+update test 0 b 56789
+update test 0 d ""
+update test 0 e false
 OK: dump
 OK: 
 OK: create_table ref
@@ -255,7 +255,7 @@ OK: add_field alltypes f float32
 OK: add_field alltypes d float64
 OK: add_field alltypes o int8
 OK: add_field alltypes oulala int16
-OK: insert_into alltypes 1 "toto" 123456789 123456789123456789 1 1 3.14 3.14159265359 42 12345
+OK: insert_into alltypes 0 "toto" 123456789 123456789123456789 1 1 3.14 3.14159265359 42 12345
 OK: 
 OK: timestamp 1234567890
 OK: comment "This is a comment. これは日本語です。"
@@ -267,18 +267,18 @@ OK: rename_field all_types s str
 OK: 
 OK: create_table float
 OK: add_field float value float32
-OK: insert_vector float 1 5
-OK: update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
+OK: insert_vector float 0 5
+OK: update_vector float 0 value 5 0.1 0.2 0.3 0.4 0.5
 Exception caught: bad field
-Line 94: update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
+Line 94: update_vector float 0 qsdf 5 0.1 0.2 0.3 0.4 0.5
 OK: 
 OK: create_table toto
 OK: add_field toto value string
-OK: insert_vector toto 3 1
-OK: insert_vector toto 5 1
-OK: update toto 3 value "toto"
+OK: insert_vector toto 2 1
+OK: insert_vector toto 4 1
+OK: update toto 2 value "toto"
 Exception caught: update: invalid record_id
-Line 101: update_vector toto 5 value 2 "kiki" "kuku"
+Line 101: update_vector toto 4 value 2 "kiki" "kuku"
 OK: 
 Exception caught: rename_table: invalid identifier: __toto__
 Line 103: rename_table toto __toto__
@@ -297,14 +297,14 @@ Line 109: rename_field azersdf value valux
 Exception caught: rename_field: invalid field_id
 Line 110: rename_field toto valux valux
 Exception caught: No such table: azersdf
-Line 111: insert_into azersdf 1
+Line 111: insert_into azersdf 0
 Exception caught: No such table: azersdf
-Line 112: insert_vector azersdf 1 1
+Line 112: insert_vector azersdf 0 1
 Exception caught: No such table: azersdf
-Line 113: delete_from azersdf 1
+Line 113: delete_from azersdf 0
 OK: 
-OK: insert_vector float 6 20
-OK: delete_vector float 11 10
+OK: insert_vector float 5 20
+OK: delete_vector float 10 10
 OK: 
 create_table all_types
 create_table float
@@ -320,37 +320,37 @@ add_field all_types o int8
 add_field all_types oulala int16
 add_field float value float32
 add_field toto value string
-insert_vector all_types 1 1
-update all_types 1 str "toto"
-update all_types 1 i32 123456789
-update all_types 1 i64 123456789123456789
-update all_types 1 ref 1
-update all_types 1 b true
-update all_types 1 f 3.14
-update all_types 1 d 3.14159
-update all_types 1 o 42
-update all_types 1 oulala 12345
-insert_vector float 1 10
-insert_vector float 21 5
-update float 1 value 0.1
-update float 2 value 0.2
-update float 3 value 0.3
-update float 4 value 0.4
-update float 5 value 0.5
+insert_vector all_types 0 1
+update all_types 0 str "toto"
+update all_types 0 i32 123456789
+update all_types 0 i64 123456789123456789
+update all_types 0 ref 1
+update all_types 0 b true
+update all_types 0 f 3.14
+update all_types 0 d 3.14159
+update all_types 0 o 42
+update all_types 0 oulala 12345
+insert_vector float 0 10
+insert_vector float 20 5
+update float 0 value 0.1
+update float 1 value 0.2
+update float 2 value 0.3
+update float 3 value 0.4
+update float 4 value 0.5
+update float 5 value 0
 update float 6 value 0
 update float 7 value 0
 update float 8 value 0
 update float 9 value 0
-update float 10 value 0
+update float 20 value 0
 update float 21 value 0
 update float 22 value 0
 update float 23 value 0
 update float 24 value 0
-update float 25 value 0
-insert_vector toto 3 1
-insert_vector toto 5 1
-update toto 3 value "toto"
-update toto 5 value ""
+insert_vector toto 2 1
+insert_vector toto 4 1
+update toto 2 value "toto"
+update toto 4 value ""
 OK: dump
 OK: 
 OK: soft_checkpoint

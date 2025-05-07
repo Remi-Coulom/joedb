@@ -13,19 +13,19 @@ add_field person name string
 add_field person city references city
 add_field person bio blob
 schema
-insert_into city 1 "Paris"
-insert_into city 2 "Lille"
-insert_into city 15 "Pétaouchnok"
-insert_into person 1 "Rémi" 2 43,15
-insert_into person 2 "Norbert" 2 43,15
-insert_into person 3 "Alexandre" 15 43,15
+insert_into city 0 "Paris"
+insert_into city 1 "Lille"
+insert_into city 14 "Pétaouchnok"
+insert_into person 0 "Rémi" 1 43,15
+insert_into person 1 "Norbert" 1 43,15
+insert_into person 2 "Alexandre" 14 43,15
 table_size city
 table_size person
 dump
 sql
 json 1
 table person
-record person 1
+record person 0
 record person 12345
 record person
 help
@@ -45,20 +45,20 @@ add_field test b int64
 add_field test c qsdfqsdf
 drop_table qsdfqsdf
 qsdfqsdf
-insert_into test 1 1234 5678
-insert_into test 1 1234 5678
+insert_into test 0 1234 5678
+insert_into test 0 1234 5678
 add_field test d string
 add_field test e boolean
 dump
 
 drop_field test qsdfqsdf
 drop_field test a
-insert_into test 2 3 "4" false
-delete_from test 2
+insert_into test 1 3 "4" false
+delete_from test 1
 delete_from test 123
-update test 1 a 56789
-update test 2 b 56789
+update test 0 a 56789
 update test 1 b 56789
+update test 0 b 56789
 dump
 
 create_table ref
@@ -77,7 +77,7 @@ add_field alltypes f float32
 add_field alltypes d float64
 add_field alltypes o int8
 add_field alltypes oulala int16
-insert_into alltypes 1 "toto" 123456789 123456789123456789 1 1 3.14 3.14159265359 42 12345
+insert_into alltypes 0 "toto" 123456789 123456789123456789 1 1 3.14 3.14159265359 42 12345
 
 timestamp 1234567890
 comment "This is a comment. これは日本語です。"
@@ -89,16 +89,16 @@ rename_field all_types s str
 
 create_table float
 add_field float value float32
-insert_vector float 1 5
-update_vector float 1 value 5 0.1 0.2 0.3 0.4 0.5
-update_vector float 1 qsdf 5 0.1 0.2 0.3 0.4 0.5
+insert_vector float 0 5
+update_vector float 0 value 5 0.1 0.2 0.3 0.4 0.5
+update_vector float 0 qsdf 5 0.1 0.2 0.3 0.4 0.5
 
 create_table toto
 add_field toto value string
-insert_vector toto 3 1
-insert_vector toto 5 1
-update toto 3 value "toto"
-update_vector toto 5 value 2 "kiki" "kuku"
+insert_vector toto 2 1
+insert_vector toto 4 1
+update toto 2 value "toto"
+update_vector toto 4 value 2 "kiki" "kuku"
 
 rename_table toto __toto__
 rename_table azersdf toto
@@ -108,12 +108,12 @@ drop_field azersdf field
 rename_field toto value __value__
 rename_field azersdf value valux
 rename_field toto valux valux
-insert_into azersdf 1
-insert_vector azersdf 1 1
-delete_from azersdf 1
+insert_into azersdf 0
+insert_vector azersdf 0 1
+delete_from azersdf 0
 
-insert_vector float 6 20
-delete_vector float 11 10
+insert_vector float 5 20
+delete_vector float 10 10
 
 dump
 

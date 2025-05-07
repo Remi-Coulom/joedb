@@ -31,9 +31,8 @@ namespace joedb
    const Record_Id last_record_id = db.get_last_record_id(tid);
    std::vector<int64_t> &v = reference_translation[tid];
    v.resize(size_t(db.get_last_record_id(tid)) + 1);
-   v[0] = -1;
    int64_t position = 0;
-   for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
+   for (auto record_id = Record_Id(0); record_id <= last_record_id; ++record_id)
    {
     if (!db.is_used(tid, record_id))
      v[size_t(record_id)] = -1;
@@ -70,7 +69,7 @@ namespace joedb
     out << "  \"" << fname << "\": [";
 
     bool first_value = true;
-    for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
+    for (Record_Id record_id = Record_Id(0); record_id <= last_record_id; ++record_id)
     {
      if (db.is_used(tid, record_id))
      {
@@ -86,17 +85,18 @@ namespace joedb
 
        case Type::Type_Id::reference:
        {
-        Record_Id i = db.get_reference(tid, record_id, fid);
+        Record_Id reference = db.get_reference(tid, record_id, fid);
         const auto it = reference_translation.find(type.get_table_id());
         if (it != reference_translation.end())
         {
          const std::vector<int64_t> &v = it->second;
-         if (size_t(i) >= v.size())
-          i = Record_Id(0);
-         out << v[size_t(i)];
+         if (to_underlying(reference) < 0 || size_t(reference) >= v.size())
+          out << -1;
+         else
+          out << v[size_t(reference)];
         }
         else
-         out << i; // reference to a missing table
+         out << to_underlying(reference); // reference to a missing table
        }
        break;
 

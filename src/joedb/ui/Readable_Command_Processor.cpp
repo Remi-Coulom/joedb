@@ -170,7 +170,7 @@ namespace joedb
    const Table_Id table_id = parse_table(parameters, readable);
    Record_Id record_id;
    if (!(parameters >> record_id))
-    record_id = Record_Id{1};
+    record_id = Record_Id{0};
    if (!readable.is_used(table_id, record_id))
     throw Exception("no such record");
 

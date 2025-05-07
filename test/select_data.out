@@ -4,41 +4,41 @@ add_field city name string
 add_field person name string
 add_field person city references city
 add_field person bio blob
+insert_into city 0
+update city 0 name "Paris"
 insert_into city 1
-update city 1 name "Paris"
-insert_into city 2
-update city 2 name "Lille"
-insert_into city 15
-update city 15 name "Pétaouchnok"
+update city 1 name "Lille"
+insert_into city 14
+update city 14 name "Pétaouchnok"
+insert_into person 0
+update person 0 name "Rémi"
+update person 0 city 1
+update person 0 bio 43,15
 insert_into person 1
-update person 1 name "Rémi"
-update person 1 city 2
+update person 1 name "Norbert"
+update person 1 city 1
 update person 1 bio 43,15
 insert_into person 2
-update person 2 name "Norbert"
-update person 2 city 2
+update person 2 name "Alexandre"
+update person 2 city 14
 update person 2 bio 43,15
-insert_into person 3
-update person 3 name "Alexandre"
-update person 3 city 15
-update person 3 bio 43,15
 drop_table city
 drop_table person
 create_table test
 add_field test a int32
 add_field test b int64
-insert_into test 1
-update test 1 a 1234
-update test 1 b 5678
+insert_into test 0
+update test 0 a 1234
+update test 0 b 5678
 add_field test d string
 add_field test e boolean
 drop_field test a
-insert_into test 2
-update test 2 b 3
-update test 2 d "4"
-update test 2 e false
-delete_from test 2
-update test 1 b 56789
+insert_into test 1
+update test 1 b 3
+update test 1 d "4"
+update test 1 e false
+delete_from test 1
+update test 0 b 56789
 create_table ref
 add_field ref ref references test
 drop_table test
@@ -53,33 +53,33 @@ add_field alltypes f float32
 add_field alltypes d float64
 add_field alltypes o int8
 add_field alltypes oulala int16
-insert_into alltypes 1
-update alltypes 1 s "toto"
-update alltypes 1 i32 123456789
-update alltypes 1 i64 123456789123456789
-update alltypes 1 ref 1
-update alltypes 1 b true
-update alltypes 1 f 3.14
-update alltypes 1 d 3.14159
-update alltypes 1 o 42
-update alltypes 1 oulala 12345
+insert_into alltypes 0
+update alltypes 0 s "toto"
+update alltypes 0 i32 123456789
+update alltypes 0 i64 123456789123456789
+update alltypes 0 ref 1
+update alltypes 0 b true
+update alltypes 0 f 3.14
+update alltypes 0 d 3.14159
+update alltypes 0 o 42
+update alltypes 0 oulala 12345
 custom toto_le_petit_rigolo
 rename_table alltypes all_types
 rename_field all_types s str
 create_table float
 add_field float value float32
-insert_vector float 1 5
-update float 1 value 0.1
-update float 2 value 0.2
-update float 3 value 0.3
-update float 4 value 0.4
-update float 5 value 0.5
+insert_vector float 0 5
+update float 0 value 0.1
+update float 1 value 0.2
+update float 2 value 0.3
+update float 3 value 0.4
+update float 4 value 0.5
 create_table toto
 add_field toto value string
-insert_vector toto 3 1
-insert_vector toto 5 1
-update toto 3 value "toto"
-insert_vector float 6 20
-delete_vector float 11 10
+insert_vector toto 2 1
+insert_vector toto 4 1
+update toto 2 value "toto"
+insert_vector float 5 20
+delete_vector float 10 10
 
 
