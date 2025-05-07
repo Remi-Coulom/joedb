@@ -107,7 +107,7 @@ using the joedb :doc:`network protocol <network_protocol>`.
 The constructor of :joedb:`Server_Connection` takes a :joedb:`Channel`
 parameter. Two channel classes are provided:
 
- * :joedb:`Network_Channel` opens a network socket to the server directly.
+ * :joedb:`Local_Channel` opens a local socket to the server directly.
  * :joedb:`ssh::Forward_Channel` connects to the server with ssh encryption and authentication.
 
 :joedb:`Robust_Connection`
@@ -162,7 +162,7 @@ some more complex use cases. The :joedb:`Client_Lock` object allows:
    in another one (use a mutex).
 
 :joedb:`Client_Lock` performs lock_pull in its constructor, and you have to
-explicitly call either :joedb:`Client_Lock::push_unlock` or
+explicitly call either :joedb:`Client_Lock::checkpoint_and_push_unlock` or
 :joedb:`Client_Lock::unlock` right before its destruction.
 
 .. literalinclude:: ./tutorial/src/client_lock.cpp

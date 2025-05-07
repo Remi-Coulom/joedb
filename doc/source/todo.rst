@@ -6,8 +6,6 @@ For next release
 
  - Improvements:
 
-   - use -1 for null references (->none), and start indexing at zero
-
    - joedbc:
 
      - Split Database with Database_Storage parent

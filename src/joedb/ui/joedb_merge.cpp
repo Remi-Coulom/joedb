@@ -108,7 +108,7 @@ namespace joedb
       multiplexer.reset(new Multiplexer{*db, schema_filter, *output_schema});
      }
 
-     input_journal.replay_log(*multiplexer);
+     input_journal.raw_play_until_checkpoint(*multiplexer);
     }
 
     //

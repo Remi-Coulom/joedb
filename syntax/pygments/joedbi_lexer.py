@@ -44,7 +44,7 @@ class JoedbiLexer(RegexLexer):
         ],
         'literal': [
             (r'\s*\"([^\\\"]|\\.)*\"', Literal.String),
-            (r'\s*\d+', Number.Integer)
+            (r'-?\s*\d+', Number.Integer)
         ],
         'integer': [
             (r"\d+", Number.Integer)

@@ -123,11 +123,6 @@ Run a server to share a single database. See :doc:`concurrency` for more informa
 .. literalinclude:: ./tutorial/joedb_multi_server.out
    :language: none
 
-Run a server to share multiple databases. The config file contains joedbi commands to set server parameters. For instance:
-
-.. literalinclude:: ../../test/multi_server.joedbi
-   :language: joedbi
-
 .. _joedb_client:
 
 ``joedb_client``
