@@ -140,9 +140,9 @@ namespace joedb
  {
   std::stringstream ss;
   ss << "create_table person\n";
-  ss << "insert_into person 0\n";
-  ss << "insert_into person 0\n";
-  ss << "insert_into person 0\n";
+  ss << "insert_into person -1\n";
+  ss << "insert_into person -1\n";
+  ss << "insert_into person -1\n";
   ss << "create_table city\n";
 
   Readonly_Interpreted_File file(ss);
@@ -165,11 +165,11 @@ namespace joedb
    journal.create_table("person");
    journal.create_table("city");
    journal.soft_checkpoint();
-   journal.insert_into(Table_Id{1}, Record_Id{1});
+   journal.insert_into(Table_Id{1}, Record_Id{0});
    journal.soft_checkpoint();
   }
 
-  EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 1\n\n");
+  EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 0\n\n");
 
   Readonly_Interpreted_File file(ss);
   Readonly_Journal journal(file);
