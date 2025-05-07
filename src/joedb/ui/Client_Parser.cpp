@@ -37,7 +37,7 @@ namespace joedb
 
   void read_journal() override
   {
-   this->data_journal.play_until_checkpoint(writable);
+   Readonly_Journal::play_until_checkpoint(writable);
   }
  };
 

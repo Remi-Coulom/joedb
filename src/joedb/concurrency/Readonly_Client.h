@@ -5,18 +5,6 @@
 
 namespace joedb
 {
- namespace detail
- {
-  class Readonly_Client_Data
-  {
-   protected:
-    Readonly_Journal readonly_journal;
-
-   public:
-    Readonly_Client_Data(Buffered_File &file): readonly_journal(file) {}
-  };
- }
-
  /// Specialized client for read-only files
  ///
  /// This Client has no support for transactions: the connection is locked
@@ -24,7 +12,7 @@ namespace joedb
  /// operations are pulling from the journal, and pushing to the connection.
  ///
  /// @ingroup concurrency
- class Readonly_Client: protected detail::Readonly_Client_Data, public Client
+ class Readonly_Client: protected Readonly_Journal, public Client
  {
   public:
    Readonly_Client
@@ -33,8 +21,8 @@ namespace joedb
     Connection &connection,
     Content_Check content_check = Content_Check::quick
    ):
-    detail::Readonly_Client_Data(file),
-    Client(readonly_journal, connection, content_check)
+    Readonly_Journal(file),
+    Client(*this, connection, content_check)
    {
     Client::push(Unlock_Action::keep_locked);
     read_journal();
@@ -45,7 +33,7 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    ) override
    {
-    const int64_t result = readonly_journal.pull();
+    const int64_t result = Readonly_Journal::pull();
     if (result)
      read_journal();
     return result;
@@ -54,7 +42,7 @@ namespace joedb
    int64_t push_if_ahead() override
    {
     pull();
-    if (get_journal_checkpoint() > get_connection_checkpoint())
+    if (Readonly_Journal::get_checkpoint() > get_connection_checkpoint())
      return Client::push(Unlock_Action::keep_locked);
     else
      return get_connection_checkpoint();

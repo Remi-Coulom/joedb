@@ -13,7 +13,7 @@ namespace joedb
   protected:
    void read_journal() override
    {
-    skip_directly_to(get_checkpoint());
+    Writable_Journal::skip_directly_to(Writable_Journal::get_checkpoint());
    }
 
   public:
