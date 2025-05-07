@@ -10,10 +10,10 @@ namespace joedb
   class Readonly_Client_Data
   {
    protected:
-    Readonly_Journal data_journal;
+    Readonly_Journal readonly_journal;
 
    public:
-    Readonly_Client_Data(Buffered_File &file): data_journal(file) {}
+    Readonly_Client_Data(Buffered_File &file): readonly_journal(file) {}
   };
  }
 
@@ -34,7 +34,7 @@ namespace joedb
     Content_Check content_check = Content_Check::quick
    ):
     detail::Readonly_Client_Data(file),
-    Client(data_journal, connection, content_check)
+    Client(readonly_journal, connection, content_check)
    {
     Client::push(Unlock_Action::keep_locked);
     read_journal();
@@ -45,7 +45,7 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    ) override
    {
-    const int64_t result = data_journal.pull();
+    const int64_t result = readonly_journal.pull();
     if (result)
      read_journal();
     return result;

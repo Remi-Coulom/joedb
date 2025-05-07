@@ -7,35 +7,19 @@
 
 namespace joedb
 {
- namespace detail
- {
-  class Writable_Database_Client_Data
-  {
-   protected:
-    Writable_Journal data_journal;
-    Database database;
-    Multiplexer multiplexer;
-
-   public:
-    Writable_Database_Client_Data(Buffered_File &file):
-     data_journal(file),
-     multiplexer{database, data_journal}
-    {
-    }
-  };
- };
-
  /// @ingroup concurrency
- class Writable_Database_Client:
-  protected detail::Writable_Database_Client_Data,
-  public Writable_Client
+ class Writable_Database_Client: public Writable_Client
  {
   friend class Writable_Database_Client_Lock;
+
+  private:
+   Database database;
+   Multiplexer multiplexer;
 
   protected:
    void read_journal() override
    {
-    data_journal.play_until_checkpoint(database);
+    play_until_checkpoint(database);
    }
 
   public:
@@ -45,8 +29,8 @@ namespace joedb
     Connection &connection,
     Content_Check content_check = Content_Check::quick
    ):
-    Writable_Database_Client_Data(file),
-    Writable_Client(data_journal, connection, content_check)
+    Writable_Client(file, connection, content_check),
+    multiplexer{database, get_writable_journal()}
    {
     read_journal();
    }

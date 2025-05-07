@@ -48,8 +48,6 @@ namespace joedb
    File data_file;
    Writable_Journal writable;
 
-   Connection data_connection;
-
   public:
    Joedb_Client
    (
