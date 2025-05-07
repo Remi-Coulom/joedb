@@ -11,8 +11,8 @@ namespace joedb
  {
   if
   (
-   to_underlying(record_id) <= 0 ||
-   (max_record_id > Record_Id{0} && record_id > max_record_id)
+   to_underlying(record_id) < 0 ||
+   (max_record_id >= Record_Id{0} && record_id > max_record_id)
   )
   {
    throw Exception("insert_into: too big");
@@ -34,7 +34,7 @@ namespace joedb
   (
    to_underlying(record_id) <= 0 ||
    (
-    max_record_id > Record_Id{0} &&
+    max_record_id >= Record_Id{0} &&
     (
      record_id > max_record_id ||
      size > size_t(max_record_id)

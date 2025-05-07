@@ -72,6 +72,8 @@ void joedb::Writable_Journal::soft_checkpoint_at(int64_t position)
 
  file.flush();
 
+ JOEDB_DEBUG_ASSERT(file.get_size() < 0 || position <= file.get_size());
+
  soft_index ^= 1;
  checkpoint_position = position;
 

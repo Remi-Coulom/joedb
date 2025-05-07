@@ -24,7 +24,7 @@ namespace joedb
 
    static constexpr size_t index(Record_Id record_id)
    {
-    return to_underlying(record_id) - 1;
+    return to_underlying(record_id);
    }
 
   public:

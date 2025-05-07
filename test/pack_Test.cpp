@@ -18,11 +18,11 @@ TEST(pack, simple_pack)
  static char const * const joedbi =
 "create_table float\n\
 add_field float value float32\n\
-insert_into float 1 0.5\n\
-insert_into float 2 0.23\n\
-insert_into float 3 0.7\n\
-insert_into float 7 0.8\n\
-insert_into float 8 9.0\n\
+insert_into float 0 0.5\n\
+insert_into float 1 0.23\n\
+insert_into float 2 0.7\n\
+insert_into float 6 0.8\n\
+insert_into float 7 9.0\n\
 create_table toto\n\
 drop_table toto\n\
 ";
@@ -33,10 +33,10 @@ add_field float value float32\n\
 create_table toto\n\
 drop_table toto\n\
 \n\
-insert_vector float 1 3\n\
-update_vector float 1 value 3 0.5 0.23 0.7\n\
-insert_vector float 7 2\n\
-update_vector float 7 value 2 0.8 9\n\
+insert_vector float 0 3\n\
+update_vector float 0 value 3 0.5 0.23 0.7\n\
+insert_vector float 6 2\n\
+update_vector float 6 value 2 0.8 9\n\
 \n\
 ";
 

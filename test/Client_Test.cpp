@@ -1,7 +1,6 @@
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
 
@@ -58,7 +57,7 @@ namespace joedb
 
   Writable_Database_Client writable_client(file1, connection);
   Readonly_Database_Client database_client(file2, connection);
-  Readonly_Journal_Client journal_client(file3, connection);
+  Readonly_Client journal_client(file3, connection);
 
   writable_client.transaction([](const Readable &readable, Writable &writable)
   {

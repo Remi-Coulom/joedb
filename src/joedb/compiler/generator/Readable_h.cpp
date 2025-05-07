@@ -118,7 +118,7 @@ namespace joedb::generator
        if (type_id == joedb::Type::Type_Id::reference)
         out << "*reinterpret_cast<const joedb::Record_Id *>(&";
 
-       out << "db.storage_of_" << tname << ".field_value_of_" << fname << "[size_t(record_id) - 1]";
+       out << "db.storage_of_" << tname << ".field_value_of_" << fname << "[to_underlying(record_id)]";
 
        if (type_id == joedb::Type::Type_Id::reference)
         out << ")";

@@ -49,7 +49,7 @@ namespace joedb
      max_column_width = w;
    }
 
-   Record_Id start = Record_Id(0);
+   Record_Id start = Record_Id{0};
    size_t length = 0;
 
    parameters >> start >> length;
@@ -60,10 +60,7 @@ namespace joedb
     std::map<Field_Id, size_t> column_width;
 
     for (const auto &[fid, fname]: fields)
-    {
-     const size_t width = fname.size();
-     column_width[fid] = width;
-    }
+     column_width[fid] = fname.size();
 
     //
     // Store values in strings to determine column widths
@@ -73,7 +70,7 @@ namespace joedb
 
     size_t rows = 0;
     const Record_Id last_record_id = readable.get_last_record_id(table_id);
-    for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)
+    for (Record_Id record_id = Record_Id(0); record_id <= last_record_id; ++record_id)
     {
      if
      (

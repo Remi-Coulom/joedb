@@ -112,7 +112,6 @@ namespace joedb
    return 1;
   }
 
-
   try
   {
    parse_compiler_options(joedbc_file, options);

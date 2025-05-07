@@ -74,7 +74,7 @@ namespace joedb
  Record_Id Readable::get_last_record_id(Table_Id table_id) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  return Record_Id(get_freedom(table_id).size());
+  return Record_Id(get_freedom(table_id).size() - 1);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -85,6 +85,6 @@ namespace joedb
   Record_Id record_id
  ) const
  {
-  return get_freedom(table_id).is_used(to_underlying(record_id) + 1);
+  return get_freedom(table_id).is_used(to_underlying(record_id));
  }
 }

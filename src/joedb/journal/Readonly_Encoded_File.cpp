@@ -69,7 +69,7 @@ namespace joedb
   Buffered_File(mode),
   db(db),
   blob_reader(blob_reader),
-  decoded_buffer{0},
+  decoded_buffer{null},
   decoder(decoder)
  {
  }

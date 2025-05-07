@@ -8,9 +8,9 @@
 static void test(const my_namespace::is_nested::test::Database &db)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ(db.get_name(db.get_person_table().get_at(1)), "Rémi");
- EXPECT_EQ(db.get_name(db.get_person_table().get_at(2)), "Norbert");
- EXPECT_EQ(db.get_name(db.get_person_table().get_at(3)), "Alexandre");
+ EXPECT_EQ(db.get_name(db.get_person_table().get_at(0)), "Rémi");
+ EXPECT_EQ(db.get_name(db.get_person_table().get_at(1)), "Norbert");
+ EXPECT_EQ(db.get_name(db.get_person_table().get_at(2)), "Alexandre");
 }
 
 /////////////////////////////////////////////////////////////////////////////

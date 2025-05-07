@@ -29,10 +29,9 @@ namespace joedb::generator
 
   out << R"RRR(
  /// Client for a read-only file (allows pulling, unlike @ref Readonly_Database)
- class Readonly_Client: public joedb::Readonly_Client
+ class Readonly_Client: private joedb::Connection, public joedb::Readonly_Client
  {
   private:
-   joedb::Connection connection;
    Database db;
    int64_t schema_checkpoint;
 
@@ -49,13 +48,15 @@ namespace joedb::generator
     joedb::Readonly_Client
     (
      file,
-     connection,
+     *static_cast<joedb::Connection *>(this),
      joedb::Content_Check::none
     )
    {
     db.initialize_with_readonly_journal(*this);
     schema_checkpoint = db.get_schema_checkpoint();
    }
+
+   using joedb::Readonly_Client::pull;
 
    const Database &get_database() const {return db;}
  };

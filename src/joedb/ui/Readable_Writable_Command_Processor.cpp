@@ -125,7 +125,7 @@ namespace joedb
       case Type::Type_Id::type_id:\
       {\
        const type value = joedb::read_##type_id(parameters);\
-       for (Record_Id record_id = Record_Id(1); record_id <= last_record_id; ++record_id)\
+       for (Record_Id record_id = Record_Id(0); record_id <= last_record_id; ++record_id)\
         if (readable.is_used(table_id, record_id))\
          writable.update_##type_id(table_id, record_id, field_id, value);\
       }\

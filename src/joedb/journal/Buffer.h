@@ -43,6 +43,8 @@ namespace joedb
    template<typename T> void compact_write(T x)
    //////////////////////////////////////////////////////////////////////////
    {
+    JOEDB_DEBUG_ASSERT(x >= 0);
+
     if (x < 0x20)
      write<uint8_t>(uint8_t(x));
     else if (x < 0x20 * 0x100)

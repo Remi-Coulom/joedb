@@ -44,9 +44,11 @@ namespace joedb
   return std::underlying_type<Record_Id>::type(id);
  }
 
+ constexpr Record_Id null{-1};
+
  constexpr bool is_null(Record_Id id)
  {
-  return to_underlying(id) == 0;
+  return to_underlying(id) < 0;
  }
 
  constexpr bool is_not_null(Record_Id id)

@@ -2,7 +2,7 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/concurrency/Readonly_Journal_Client.h"
+#include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/IO_Context_Wrapper.h"
@@ -219,7 +219,7 @@ namespace joedb
 
   File server_file(file_name, Open_Mode::read_existing);
   Connection connection;
-  Readonly_Journal_Client server_client{server_file, connection};
+  Readonly_Client server_client{server_file, connection};
   IO_Context_Wrapper io_context;
 
   Server server

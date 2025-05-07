@@ -39,7 +39,7 @@ namespace joedb
 
    void check_record_id(Record_Id record_id)
    {
-    if (!freedom.is_used(to_underlying(record_id) + 1))
+    if (!freedom.is_used(to_underlying(record_id)))
      throw Exception("update: invalid record_id");
    }
 

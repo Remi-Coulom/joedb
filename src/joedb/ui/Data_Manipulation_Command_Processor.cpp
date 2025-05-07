@@ -72,10 +72,10 @@ namespace joedb
   else if (command == "insert_into") ///////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = Record_Id(0);
+   Record_Id record_id = null;
    parameters >> record_id;
 
-   if (record_id == Record_Id(0))
+   if (record_id == null)
     record_id = readable.get_last_record_id(table_id) + 1;
 
    writable.insert_into(table_id, record_id);

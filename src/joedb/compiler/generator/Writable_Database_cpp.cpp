@@ -23,7 +23,6 @@ namespace joedb::generator
   const auto &tables = db.get_tables();
 
   out << "#include \"Writable_Database.h\"\n";
-  out << "#include \"joedb/Writable.h\"\n";
   out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   out << '\n';
   out << "#include <ctime>\n\n";
@@ -122,20 +121,20 @@ namespace joedb::generator
   void Writable_Database::check_single_row()
   ////////////////////////////////////////////////////////////////////////////
   {
- )RRR";
+)RRR";
 
   for (const auto &[tid, tname]: tables)
   {
    if (options.get_table_options(tid).single_row)
    {
-    out << "  {\n";
-    out << "   const auto table = get_" << tname << "_table();\n";
-    out << "   if (table.first() != the_" <<tname << "() || table.last() != the_" << tname << "())\n";
-    out << "    throw joedb::Exception(\"Single-row constraint failure for table " << tname << "\");\n";
-    out << "  }\n";
+    out << "   {\n";
+    out << "    const auto table = get_" << tname << "_table();\n";
+    out << "    if (table.first() != the_" <<tname << "() || table.last() != the_" << tname << "())\n";
+    out << "     throw joedb::Exception(\"Single-row constraint failure for table " << tname << "\");\n";
+    out << "   }\n";
    }
   }
-  out << " }\n";
+  out << "  }\n";
 
   if (options.has_single_row())
   {
@@ -159,7 +158,7 @@ namespace joedb::generator
     }
    }
 
-   out << "  }\n }\n";
+   out << "   }\n  }\n";
   }
 
   if (db_has_values())
@@ -179,22 +178,22 @@ namespace joedb::generator
 
    for (const auto &[tid, tname]: tables)
    {
-    if (db.get_freedom(tid).size() > 0)
+    if (db.get_freedom(tid).get_used_count() > 0)
     {
-     const Record_Id record_id{db.get_freedom(tid).get_first_used() - 1};
+     const Record_Id record_id{db.get_freedom(tid).get_first_used()};
 
-     out << "\n  if (table_id == Table_Id{" << tid << "})\n";
-     out << "  {\n";
-     out << "   const auto field_id = ++storage_of_" << tname << ".current_field_id;\n";
-     out << "   if (upgrading_schema)\n";
+     out << "\n   if (table_id == Table_Id{" << tid << "})\n";
      out << "   {\n";
+     out << "    const auto field_id = ++storage_of_" << tname << ".current_field_id;\n";
+     out << "    if (upgrading_schema)\n";
+     out << "    {\n";
 
      for (const auto &[fid, fname]: db.get_fields(tid))
      {
-      out << "    if (field_id == Field_Id{" << fid  << "})\n";
-      out << "    {\n";
-      out << "     for (const auto record: get_" << tname << "_table())\n";
-      out << "      set_" << fname << "(record, ";
+      out << "     if (field_id == Field_Id{" << fid  << "})\n";
+      out << "     {\n";
+      out << "      for (const auto record: get_" << tname << "_table())\n";
+      out << "       set_" << fname << "(record, ";
 
       const auto &type = db.get_field_type(tid, fid);
       const bool reference = type.get_type_id() == joedb::Type::Type_Id::reference;
@@ -213,14 +212,14 @@ namespace joedb::generator
        out << ")";
 
       out <<");\n";
-      out << "    }\n";
+      out << "     }\n";
      }
 
+     out << "    }\n";
      out << "   }\n";
-     out << "  }\n";
     }
    }
-   out << " }\n";
+   out << "  }\n";
   }
 
   for (const auto &[tid, tname]: tables)

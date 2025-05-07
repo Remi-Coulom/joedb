@@ -223,12 +223,12 @@ namespace joedb
 
    void write_reference(Record_Id id)
    {
-    compact_write(to_underlying(id));
+    compact_write(to_underlying(id) + 1);
    }
 
    Record_Id read_reference()
    {
-    return Record_Id(compact_read<std::underlying_type<Record_Id>::type>());
+    return Record_Id(compact_read<std::underlying_type<Record_Id>::type>() - 1);
    }
 
    void write_string(const std::string &s);

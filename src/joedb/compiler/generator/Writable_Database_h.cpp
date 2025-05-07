@@ -177,7 +177,7 @@ namespace joedb::generator
    out << "   id_of_" << tname << " new_" << tname << "()\n";
    out << "   {\n";
 
-   out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname << ".freedom_keeper.get_free_record() - 1));\n";
+   out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname << ".freedom_keeper.get_free_record()));\n";
    out << "    storage_of_" << tname << ".resize(storage_of_" << tname << ".freedom_keeper.size());\n";
    out << "    internal_insert_" << tname << "(result.get_record_id());\n\n";
    out << "    journal.insert_into(Table_Id(" << tid << "), result.get_record_id());\n";
@@ -193,7 +193,7 @@ namespace joedb::generator
     out << "   id_of_" << tname << " new_vector_of_" << tname << "(size_t size)\n";
     out << "   {\n";
     out << "    id_of_" << tname << " result(Record_Id(storage_of_" << tname;
-    out << ".size() + 1));\n";
+    out << ".size()));\n";
     out << "    storage_of_" << tname << ".resize(storage_of_";
     out << tname << ".size() + size);\n";
     out << "    internal_vector_insert_" << tname << "(result.get_record_id(), size);\n";
@@ -301,7 +301,7 @@ namespace joedb::generator
     out << "    joedb::Span<";
     write_type(type, false, false);
     out << "> span(&storage_of_" << tname;
-    out << ".field_value_of_" << fname << "[record.get_id() - 1], size);\n";
+    out << ".field_value_of_" << fname << "[record.get_id()], size);\n";
     out << "    try {f(span);}\n";
     out << "    catch (...) {exception = std::current_exception();}\n";
     out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_record_id(), size, span.begin());\n";

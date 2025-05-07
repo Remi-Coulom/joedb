@@ -52,10 +52,10 @@ namespace joedb::generator
 
    out << ", " << fname;
 
-   if (db.get_freedom(tid).size() > 0)
+   if (db.get_freedom(tid).get_used_count() > 0)
    {
     out << ", ";
-    const Record_Id record_id{db.get_freedom(tid).get_first_used() - 1};
+    const Record_Id record_id{db.get_freedom(tid).get_first_used()};
     write_value(out, db, tid, record_id, fid);
    }
    out << ");\n";

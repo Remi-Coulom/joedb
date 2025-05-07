@@ -43,15 +43,15 @@ static const std::string &get_translation
 TEST(Compiler, id_test)
 /////////////////////////////////////////////////////////////////////////////
 {
- test::id_of_person null_person(0);
+ test::id_of_person null_person;
  test::id_of_person non_null_person(1234);
 
  EXPECT_TRUE(null_person.is_null());
  EXPECT_FALSE(null_person.is_not_null());
  EXPECT_FALSE(non_null_person.is_null());
  EXPECT_TRUE(non_null_person.is_not_null());
- EXPECT_EQ(null_person.get_id(), 0UL);
- EXPECT_EQ(non_null_person.get_id(), 1234UL);
+ EXPECT_EQ(null_person.get_id(), -1);
+ EXPECT_EQ(non_null_person.get_id(), 1234);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -94,11 +94,11 @@ TEST(Compiler, file_test)
  db.new_person("Évariste", db.null_city());
  db.new_person("Catherine", db.null_city());
 
- EXPECT_EQ(db.get_person_table().get_size(), 3ULL);
- EXPECT_EQ(db.get_city_table().get_size(), 4ULL);
+ EXPECT_EQ(db.get_person_table().get_size(), 3);
+ EXPECT_EQ(db.get_city_table().get_size(), 4);
 
- EXPECT_EQ(db.get_city_table().first().get_id(), 1ULL);
- EXPECT_EQ(db.get_city_table().last().get_id(), 4ULL);
+ EXPECT_EQ(db.get_city_table().first().get_id(), 0);
+ EXPECT_EQ(db.get_city_table().last().get_id(), 3);
  EXPECT_EQ(db.get_name(db.get_city_table().first()), "Barcelona");
  EXPECT_EQ(db.get_name(db.get_city_table().last()), "Tokyo");
 
@@ -112,7 +112,7 @@ TEST(Compiler, file_test)
  }
  catch(const std::runtime_error &e)
  {
-  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 2 was already at id = 3");
+  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 1 was already at id = 2");
  }
 
  // This would be nice to have
@@ -124,16 +124,16 @@ TEST(Compiler, file_test)
  EXPECT_EQ(db.get_name(db.find_city_by_name("Paris")), "Paris");
  db.delete_city(db.find_city_by_name("Paris"));
 
- EXPECT_FALSE(db.get_city_table().is_valid_at(0));
+ EXPECT_FALSE(db.get_city_table().is_valid_at(-1));
+ EXPECT_TRUE (db.get_city_table().is_valid_at(0));
  EXPECT_TRUE (db.get_city_table().is_valid_at(1));
- EXPECT_TRUE (db.get_city_table().is_valid_at(2));
- EXPECT_FALSE(db.get_city_table().is_valid_at(3));
- EXPECT_TRUE (db.get_city_table().is_valid_at(4));
+ EXPECT_FALSE(db.get_city_table().is_valid_at(2));
+ EXPECT_TRUE (db.get_city_table().is_valid_at(3));
+ EXPECT_FALSE(db.get_city_table().is_valid_at(4));
  EXPECT_FALSE(db.get_city_table().is_valid_at(5));
- EXPECT_FALSE(db.get_city_table().is_valid_at(6));
 
- EXPECT_EQ(db.get_name(test::container_of_city::get_at(1)), "Barcelona");
- EXPECT_EQ(db.get_name(test::container_of_city::get_at(4)), "Tokyo");
+ EXPECT_EQ(db.get_name(test::container_of_city::get_at(0)), "Barcelona");
+ EXPECT_EQ(db.get_name(test::container_of_city::get_at(3)), "Tokyo");
 
  //
  // Loop over not-unique index
@@ -268,7 +268,7 @@ TEST(Compiler, file_test)
  //
  {
   auto x = db.new_table_with_no_field();
-  EXPECT_EQ(x.get_id(), 1ULL);
+  EXPECT_EQ(x.get_id(), 0);
  }
 
  //
@@ -311,7 +311,7 @@ TEST(Compiler, exceptions)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 3 was already at id = 1");
+  EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 2 was already at id = 0");
  }
 
  try
@@ -329,7 +329,7 @@ TEST(Compiler, exceptions)
  }
  catch (const joedb::Exception &e)
  {
-  EXPECT_STREQ(e.what(), "multi_index: person_by_full_name unique index failure: (\"Rémi\", \"Coulom\") at id = 6 was already at id = 2");
+  EXPECT_STREQ(e.what(), "multi_index: person_by_full_name unique index failure: (\"Rémi\", \"Coulom\") at id = 5 was already at id = 1");
  }
 
  try
@@ -753,8 +753,8 @@ TEST(Compiler, vector)
    }
    db.soft_checkpoint();
 
-   EXPECT_EQ(db.get_point_table().first().get_id(), 1ULL);
-   EXPECT_EQ(db.get_point_table().last().get_id(), 5ULL);
+   EXPECT_EQ(db.get_point_table().first().get_id(), 0ULL);
+   EXPECT_EQ(db.get_point_table().last().get_id(), 4ULL);
   }
 
   {
