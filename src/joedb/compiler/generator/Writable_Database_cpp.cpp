@@ -83,11 +83,11 @@ namespace joedb::generator
     joedb::Readonly_Journal schema_journal(schema_file);
 
     schema_journal.skip_directly_to(int64_t(file_schema_size));
-    schema_journal.append_until(journal, detail::schema_string_size);
+    schema_journal.raw_play_until(journal, detail::schema_string_size);
 
     schema_journal.skip_directly_to(int64_t(file_schema_size));
     upgrading_schema = true;
-    schema_journal.append_until(*this, detail::schema_string_size);
+    schema_journal.raw_play_until(*this, detail::schema_string_size);
     upgrading_schema = false;
 
     journal.valid_data();

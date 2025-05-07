@@ -32,7 +32,6 @@ drop_table toto\n\
 add_field float value float32\n\
 create_table toto\n\
 drop_table toto\n\
-\n\
 insert_vector float 0 3\n\
 update_vector float 0 value 3 0.5 0.23 0.7\n\
 insert_vector float 6 2\n\

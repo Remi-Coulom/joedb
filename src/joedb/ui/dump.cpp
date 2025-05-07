@@ -226,7 +226,7 @@ namespace joedb
    Selective_Writable schema_filter(writable, Selective_Writable::Mode::schema);
    Multiplexer multiplexer{db, schema_filter};
 
-   input_journal.replay_log(multiplexer);
+   input_journal.raw_play_until_checkpoint(multiplexer);
 
    if (schema_filter.has_blobs())
     throw Exception("can't pack blobs");
