@@ -68,4 +68,11 @@ update_vector float 6 value 2 0.8 9\n\
   pack(journal, writable);
   EXPECT_EQ(packed_ss.str(), packed_result);
  }
+
+ {
+  Readonly_Journal input_journal(file);
+  Memory_File output_file;
+  Writable_Journal output_journal(output_file);
+  pack(input_journal, output_journal);
+ }
 }
