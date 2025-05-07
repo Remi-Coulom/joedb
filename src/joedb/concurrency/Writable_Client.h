@@ -9,16 +9,11 @@ namespace joedb
  /// Writable specialization of Client
  ///
  /// @ingroup concurrency
- class Writable_Client: protected Writable_Journal, public Client
+ class Writable_Client: public Client
  {
   friend class Client_Lock;
 
   protected:
-   Writable_Journal &get_writable_journal()
-   {
-    return *static_cast<Writable_Journal *>(this);
-   }
-
    template<typename F> auto transaction(F transaction)
    {
     const Journal_Lock lock(get_writable_journal());
@@ -65,6 +60,11 @@ namespace joedb
    }
 
   private:
+   Writable_Journal &get_writable_journal()
+   {
+    return static_cast<Writable_Journal&>(Client::journal);
+   }
+
    bool use_valid_data = false;
    bool use_timestamp = false;
    bool use_hard_checkpoint = false;
@@ -98,12 +98,10 @@ namespace joedb
   public:
    Writable_Client
    (
-    Buffered_File &file,
+    Writable_Journal &journal,
     Connection &connection,
     Content_Check content_check = Content_Check::quick
-   ):
-    Writable_Journal(file),
-    Client(get_writable_journal(), connection, content_check)
+   ): Client(journal, connection, content_check)
    {
    }
 
