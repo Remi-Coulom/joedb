@@ -4,7 +4,6 @@
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
-#include "joedb/concurrency/Readonly_Journal_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Client.h"
 
@@ -18,64 +17,39 @@
 namespace joedb
 {
  template<typename Writable>
- class Writable_Readonly_Client_Data
+ class Readonly_Writable_Client: public Readonly_Client
  {
-  protected:
-   Readonly_Journal data_journal;
+  private:
    Writable writable;
 
-   Writable_Readonly_Client_Data(Buffered_File &file):
-    data_journal(file),
-    writable(std::cout)
-   {
-   }
- };
-
- template<typename Writable>
- class Writable_Readonly_Client:
-  private Writable_Readonly_Client_Data<Writable>,
-  public Readonly_Client
- {
   public:
-   Writable_Readonly_Client
+   Readonly_Writable_Client
    (
     Buffered_File &file,
     Connection &connection,
     Content_Check content_check
    ):
-    Writable_Readonly_Client_Data<Writable>(file),
-    Readonly_Client(this->data_journal, connection, content_check)
+    Readonly_Client(file, connection, content_check),
+    writable(std::cout)
    {
     read_journal();
    }
 
   void read_journal() override
   {
-   this->data_journal.play_until_checkpoint(this->writable);
+   this->data_journal.play_until_checkpoint(writable);
   }
  };
 
 #ifdef PERSISTENCE_TEST
- class Joedb_Client_Data
+ class Joedb_Client: public Readonly_Client
  {
-  protected:
+  private:
    File data_file;
    Writable_Journal writable;
 
-   Readonly_Journal data_journal;
    Connection data_connection;
 
-  public:
-   Joedb_Client_Data(Buffered_File &file):
-    data_file("joedb.joedb", Open_Mode::write_existing_or_create_new),
-    writable(data_file),
-    data_journal(file)
-   {
-   }
- };
-
- class Joedb_Client: public Joedb_Client_Data, public Readonly_Client
- {
   public:
    Joedb_Client
    (
@@ -83,8 +57,9 @@ namespace joedb
     Connection &connection,
     Content_Check content_check
    ):
-    Joedb_Client_Data(file),
-    Readonly_Client(data_journal, connection, content_check)
+    Readonly_Client(file, connection, content_check),
+    data_file("joedb.joedb", Open_Mode::write_existing_or_create_new),
+    writable(data_file)
    {
     read_journal();
    }
@@ -205,7 +180,7 @@ namespace joedb
    {
     client.reset
     (
-     new Readonly_Journal_Client(*client_file, connection, content_check)
+     new Readonly_Client(*client_file, connection, content_check)
     );
    }
    else
@@ -235,7 +210,7 @@ namespace joedb
   }
   else if (db_type == DB_Type::sql)
   {
-   client.reset(new Writable_Readonly_Client<joedb::SQL_Dump_Writable>
+   client.reset(new Readonly_Writable_Client<joedb::SQL_Dump_Writable>
    (
     *client_file,
     connection,
@@ -244,7 +219,7 @@ namespace joedb
   }
   else if (db_type == DB_Type::dump)
   {
-   client.reset(new Writable_Readonly_Client<joedb::Interpreter_Dump_Writable>
+   client.reset(new Readonly_Writable_Client<joedb::Interpreter_Dump_Writable>
    (
     *client_file,
     connection,
