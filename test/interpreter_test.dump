@@ -17,7 +17,7 @@ update person 0 city 1
 update person 0 bio 43,15
 insert_into person 1
 update person 1 name "Norbert"
-update person 1 city 1
+update person 1 city -1
 update person 1 bio 43,15
 insert_into person 2
 update person 2 name "Alexandre"

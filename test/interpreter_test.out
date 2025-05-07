@@ -27,7 +27,7 @@ OK: insert_into city 0 "Paris"
 OK: insert_into city 1 "Lille"
 OK: insert_into city 14 "Pétaouchnok"
 OK: insert_into person 0 "Rémi" 1 43,15
-OK: insert_into person 1 "Norbert" 1 43,15
+OK: insert_into person 1 "Norbert" -1 43,15
 OK: insert_into person 2 "Alexandre" 14 43,15
 3
 OK: table_size city
@@ -49,7 +49,7 @@ update person 0 name "Rémi"
 update person 1 name "Norbert"
 update person 2 name "Alexandre"
 update person 0 city 1
-update person 1 city 1
+update person 1 city -1
 update person 2 city 14
 update person 0 bio 43,15
 update person 1 bio 43,15
@@ -74,7 +74,7 @@ UPDATE "person" SET "name" = X'52c3a96d69' WHERE "__id" = 0;
 UPDATE "person" SET "name" = X'4e6f7262657274' WHERE "__id" = 1;
 UPDATE "person" SET "name" = X'416c6578616e647265' WHERE "__id" = 2;
 UPDATE "person" SET "city" = 1 WHERE "__id" = 0;
-UPDATE "person" SET "city" = 1 WHERE "__id" = 1;
+UPDATE "person" SET "city" = NULL WHERE "__id" = 1;
 UPDATE "person" SET "city" = 14 WHERE "__id" = 2;
 -- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 0;
 -- UPDATE "person" SET "bio" = "BLOB" WHERE "__id" = 1;
@@ -90,7 +90,7 @@ OK: sql
  {
   "__size": 3,
   "name": ["UsOpbWk=", "Tm9yYmVydA==", "QWxleGFuZHJl"],
-  "city": [1, 1, 2],
+  "city": [1, -1, 2],
   "bio": [[43,15], [43,15], [43,15]]
  }
 }
@@ -99,7 +99,7 @@ OK: json 1
   name        city   bio
 ------------------------
 0 "Rémi"         1 43,15
-1 "Norbert"      1 43,15
+1 "Norbert"     -1 43,15
 2 "Alexandre"   14 43,15
 OK: table person
 name: "Rémi"

@@ -16,7 +16,7 @@ UPDATE "person" SET "city" = 1 WHERE "__id" = 0;
 UPDATE "person" SET "bio" = X'54686973206973206d79206c696665' WHERE "__id" = 0;
 INSERT INTO "person"("__id") VALUES(1);
 UPDATE "person" SET "name" = X'4e6f7262657274' WHERE "__id" = 1;
-UPDATE "person" SET "city" = 1 WHERE "__id" = 1;
+UPDATE "person" SET "city" = NULL WHERE "__id" = 1;
 UPDATE "person" SET "bio" = X'54686973206973206d79206c696665' WHERE "__id" = 1;
 INSERT INTO "person"("__id") VALUES(2);
 UPDATE "person" SET "name" = X'416c6578616e647265' WHERE "__id" = 2;
