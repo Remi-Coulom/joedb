@@ -22,61 +22,45 @@ namespace joedb::generator
   out << R"RRR(
 #include "Database.h"
 #include "joedb/concurrency/Readonly_Client.h"
-#include "joedb/journal/File.h"
 
 )RRR";
 
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- namespace detail
- {
-  class Readonly_Client_Data
-  {
-   protected:
-    joedb::Connection connection;
-    joedb::Readonly_Journal journal;
-    Database db;
-
-    Readonly_Client_Data(joedb::File &file): journal(file)
-    {
-     db.initialize_with_readonly_journal(journal);
-    }
-  };
- }
-
  /// Client for a read-only file (allows pulling, unlike @ref Readonly_Database)
- class Readonly_Client:
-  private detail::Readonly_Client_Data,
-  public joedb::Readonly_Client
+ class Readonly_Client: public joedb::Readonly_Client
  {
   private:
-   const int64_t schema_checkpoint;
+   joedb::Connection connection;
+   Database db;
+   int64_t schema_checkpoint;
 
   protected:
    virtual void read_journal() override
    {
-    joedb::Readonly_Client::journal.play_until_checkpoint(db);
+    Readonly_Journal::play_until_checkpoint(db);
     if (db.get_schema_checkpoint() > schema_checkpoint)
      Database::throw_exception("Pulled a schema change");
    }
 
   public:
-   Readonly_Client(joedb::File &file):
-    detail::Readonly_Client_Data(file),
+   Readonly_Client(joedb::Buffered_File &file):
     joedb::Readonly_Client
     (
-     Readonly_Client_Data::journal,
-     Readonly_Client_Data::connection,
+     file,
+     connection,
      joedb::Content_Check::none
-    ),
-    schema_checkpoint(db.get_schema_checkpoint())
+    )
    {
+    db.initialize_with_readonly_journal(*this);
+    schema_checkpoint = db.get_schema_checkpoint();
    }
 
    const Database &get_database() const {return db;}
  };
 )RRR";
+
 
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";
