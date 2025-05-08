@@ -178,7 +178,7 @@ namespace joedb::generator
 
    for (const auto &[tid, tname]: tables)
    {
-    if (db.get_freedom(tid).get_used_count() > 0)
+    if (db.get_freedom(tid).get_used_count() > Record_Id{0})
     {
      const Record_Id record_id{db.get_freedom(tid).get_first_used()};
 

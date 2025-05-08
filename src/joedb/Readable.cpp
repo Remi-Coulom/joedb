@@ -74,7 +74,7 @@ namespace joedb
  Record_Id Readable::get_size(Table_Id table_id) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  return Record_Id(get_freedom(table_id).size());
+  return get_freedom(table_id).get_size();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -85,6 +85,6 @@ namespace joedb
   Record_Id record_id
  ) const
  {
-  return get_freedom(table_id).is_used(to_underlying(record_id));
+  return get_freedom(table_id).is_used(record_id);
  }
 }

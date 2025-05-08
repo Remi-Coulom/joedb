@@ -86,7 +86,7 @@ namespace joedb::generator
    out << "\n  struct data_of_" << tname;
 
    out <<"\n  {\n";
-   if (db.get_freedom(tid).size() > 0)
+   if (db.get_freedom(tid).get_used_count() > Record_Id{0})
     out <<"   Field_Id current_field_id = Field_Id(0);\n";
 
    std::vector<std::string> fields;
@@ -115,9 +115,9 @@ namespace joedb::generator
   out << R"RRR(
    joedb::Compact_Freedom_Keeper freedom_keeper;
 
-   joedb::index_t size() const {return freedom_keeper.size();}
+   size_t size() const {return freedom_keeper.size();}
 
-   void resize(joedb::index_t new_size)
+   void resize(size_t new_size)
    {
 )RRR";
 
@@ -184,7 +184,7 @@ namespace joedb::generator
 
    out << "   bool is_valid_record_id_for_" << tname;
    out << "(Record_Id record_id) const {return storage_of_" << tname;
-   out << ".freedom_keeper.is_used(to_underlying(record_id));}\n";
+   out << ".freedom_keeper.is_used(record_id);}\n";
   }
 
   //
@@ -303,7 +303,7 @@ namespace joedb::generator
     out << ";\n";
    }
 
-   out << "    storage_of_" << tname << ".freedom_keeper.free(to_underlying(record_id));\n";
+   out << "    storage_of_" << tname << ".freedom_keeper.free(record_id);\n";
    out << "   }\n";
   }
 
@@ -321,13 +321,13 @@ namespace joedb::generator
      out << "index_of_" << index.name << ".end();\n";
     }
 
-   out << "    storage_of_" << tname << ".freedom_keeper.use(to_underlying(record_id));\n";
+   out << "    storage_of_" << tname << ".freedom_keeper.use(record_id);\n";
 
    out << "   }\n\n";
 
    out << "   void internal_vector_insert_" << tname << "(Record_Id record_id, size_t size)\n";
    out << "   {\n";
-   out << "    storage_of_" << tname << ".freedom_keeper.use_vector(to_underlying(record_id), size);\n";
+   out << "    storage_of_" << tname << ".freedom_keeper.use_vector(record_id, Record_Id(size));\n";
 
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)
@@ -448,7 +448,7 @@ namespace joedb::generator
     out << "    {\n";
     out << "     if (is_valid_record_id_for_" << tname << "(record_id))\n";
     out << "      throw_exception(\"Duplicate insert into table " << tname << "\");\n";
-    out << "     if (storage_of_" << tname << ".size() <= to_underlying(record_id))\n";
+    out << "     if (storage_of_" << tname << ".size() <= size_t(record_id))\n";
     out << "      storage_of_" << tname << ".resize(to_underlying(record_id) + 1);\n";
     out << "     internal_insert_" << tname << "(record_id);\n";
     out << "    }\n";
@@ -490,7 +490,7 @@ namespace joedb::generator
 
     out << "if (table_id == Table_Id(" << tid << "))\n";
     out << "    {\n";
-    out << "     if (storage_of_" << tname << ".size() < to_underlying(record_id) + joedb::index_t(size))\n";
+    out << "     if (storage_of_" << tname << ".size() < size_t(record_id) + size)\n";
     out << "      storage_of_" << tname << ".resize(to_underlying(record_id) + size);\n";
     out << "     internal_vector_insert_" << tname << "(record_id, size);\n";
     out << "    }\n";
@@ -864,12 +864,12 @@ namespace joedb::generator
 
    out << "   id_of_" << tname << " next(id_of_" << tname << " id) const\n";
    out << "   {\n";
-   out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_next(id.get_id()))\n    );\n";
+   out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_next(id.get_record_id()))\n    );\n";
    out << "   }\n\n";
 
    out << "   id_of_" << tname << " previous(id_of_" << tname << " id) const\n";
    out << "   {\n";
-   out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_previous(id.get_id()))\n    );\n";
+   out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_previous(id.get_record_id()))\n    );\n";
    out << "   }\n\n";
 
    out << "   template<class Comparator>\n";
@@ -1037,8 +1037,8 @@ namespace joedb::generator
 
 
    out << "     const joedb::Compact_Freedom_Keeper *fk;\n"; // must use pointer for copy constructor
-   out << "     joedb::index_t index;\n";
-   out << "     iterator(const detail::data_of_" << tname << " &data): fk(&data.freedom_keeper), index(-2) {}\n";
+   out << "     Record_Id index;\n";
+   out << "     iterator(const detail::data_of_" << tname << " &data): fk(&data.freedom_keeper), index(joedb::Freedom_Keeper_Constants::used_list) {}\n";
    out << "    public:\n";
    out << "     typedef std::forward_iterator_tag iterator_category;\n";
    out << "     typedef id_of_" << tname << " value_type;\n";
@@ -1059,11 +1059,11 @@ namespace joedb::generator
    out << "   iterator begin() const {return ++iterator(db.storage_of_" << tname << ");}\n";
    out << "   iterator end() const {return iterator(db.storage_of_" << tname << ");}\n";
    out << "   bool is_empty() const {return db.storage_of_" << tname
-       << ".freedom_keeper.get_used_count() == 0;}\n";
-   out << "   joedb::index_t get_size() const {return db.storage_of_" << tname << ".freedom_keeper.get_used_count();}\n";
+       << ".freedom_keeper.get_used_count() == Record_Id{0};}\n";
+   out << "   joedb::index_t get_size() const {return to_underlying(db.storage_of_" << tname << ".freedom_keeper.get_used_count());}\n";
    out << "   static id_of_" << tname << " get_at(size_t i) {return id_of_"
        << tname << "(Record_Id(i));}\n";
-   out << "   bool is_valid_at(joedb::index_t i) {return db.storage_of_" << tname << ".freedom_keeper.is_used(i);}\n";
+   out << "   bool is_valid_at(size_t i) {return db.storage_of_" << tname << ".freedom_keeper.is_used(Record_Id(i));}\n";
 
    out << "   id_of_" << tname << " first() const {return *begin();}\n";
    out << "   id_of_" << tname << " last() const {return *--end();}\n";

@@ -13,7 +13,7 @@ namespace joedb::generator
  {
   for (const auto &[tid, tname]: options.db.get_tables())
   {
-   if (options.db.get_freedom(tid).get_used_count() > 0)
+   if (options.db.get_freedom(tid).get_used_count() > Record_Id{0})
     return true;
   }
   return false;

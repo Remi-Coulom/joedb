@@ -8,41 +8,49 @@
 
 namespace joedb
 {
- class Freedom_Keeper
+ class Freedom_Keeper_Constants
  {
   public:
-   static constexpr index_t used_list = -2;
-   static constexpr index_t free_list = -1;
+   static constexpr Record_Id used_list{-2};
+   static constexpr Record_Id free_list{-1};
  };
 
- class List_Data: public Freedom_Keeper
+ class List_Data: public Freedom_Keeper_Constants
  {
   private:
    std::vector<uint8_t> is_free_v;
-   std::vector<index_t> next_v;
-   std::vector<index_t> previous_v;
+   std::vector<Record_Id> next_v;
+   std::vector<Record_Id> previous_v;
 
   protected:
    uint8_t *is_free_p;
-   index_t *next_p;
-   index_t *previous_p;
+   Record_Id *next_p;
+   Record_Id *previous_p;
 
-   index_t freedom_size;
+   uint8_t &is_free_f(Record_Id id) {return is_free_p[to_underlying(id)];}
+   Record_Id &next_f(Record_Id id) {return next_p[to_underlying(id)];}
+   Record_Id &previous_f(Record_Id id) {return previous_p[to_underlying(id)];}
 
-   void resize_vector(index_t size)
+   uint8_t is_free_f(Record_Id id) const {return is_free_p[to_underlying(id)];}
+   Record_Id next_f(Record_Id id) const {return next_p[to_underlying(id)];}
+   Record_Id previous_f(Record_Id id) const {return previous_p[to_underlying(id)];}
+
+   Record_Id freedom_size;
+
+   void resize_vector(Record_Id size)
    {
     this->freedom_size = size;
 
-    is_free_v.resize(freedom_size + 2);
-    next_v.resize(freedom_size + 2);
-    previous_v.resize(freedom_size + 2);
+    is_free_v.resize(to_underlying(size) + 2);
+    next_v.resize(to_underlying(size) + 2);
+    previous_v.resize(to_underlying(size) + 2);
 
     is_free_p = is_free_v.data() + 2;
     next_p = next_v.data() + 2;
     previous_p = previous_v.data() + 2;
    }
 
-   List_Data() {resize_vector(0);}
+   List_Data() {resize_vector(Record_Id{0});}
    List_Data(const List_Data &) = delete;
    List_Data &operator=(const List_Data &) = delete;
  };
@@ -51,130 +59,132 @@ namespace joedb
  class List_Freedom_Keeper: public List_Data
  {
   private: //////////////////////////////////////////////////////////////////
-   index_t used_count;
+   Record_Id used_count;
 
   public: ///////////////////////////////////////////////////////////////////
-   List_Freedom_Keeper(): used_count(0)
+   List_Freedom_Keeper(): used_count{0}
    {
-    is_free_p[used_list] = false;
-    next_p[used_list] = used_list;
-    previous_p[used_list] = used_list;
+    is_free_f(used_list) = false;
+    next_f(used_list) = used_list;
+    previous_f(used_list) = used_list;
 
-    is_free_p[free_list] = true;
-    next_p[free_list] = free_list;
-    previous_p[free_list] = free_list;
+    is_free_f(free_list) = true;
+    next_f(free_list) = free_list;
+    previous_f(free_list) = free_list;
    }
 
-   index_t get_used_count() const {return used_count;}
-   index_t size() const {return freedom_size;}
-   index_t get_first_free() const {return next_p[free_list];}
-   index_t get_first_used() const {return next_p[used_list];}
-   index_t get_next(const index_t index) const {return next_p[index];}
-   index_t get_previous(const index_t index) const {return previous_p[index];}
-   bool is_free(index_t index) const {return is_free_p[index];}
-   bool is_used(index_t index) const
+   Record_Id get_used_count() const {return used_count;}
+   Record_Id get_size() const {return freedom_size;}
+   size_t size() const {return size_t(freedom_size);}
+   Record_Id get_first_free() const {return next_f(free_list);}
+   Record_Id get_first_used() const {return next_f(used_list);}
+   Record_Id get_next(const Record_Id index) const {return next_f(index);}
+   Record_Id get_previous(const Record_Id index) const {return previous_f(index);}
+   bool is_free(Record_Id index) const {return is_free_f(index);}
+   bool is_used(Record_Id index) const
    {
-    return index >= 0 && index < freedom_size && !is_free_p[index];
+    return is_not_null(index) && index < freedom_size && !is_free_f(index);
    }
    bool is_compact() const {return freedom_size == used_count;}
 
    //////////////////////////////////////////////////////////////////////////
-   index_t get_free_record()
+   Record_Id get_free_record()
    {
-    index_t result = next_p[free_list];
+    Record_Id result = next_f(free_list);
     if (result == free_list)
     {
      push_back();
-     result = next_p[free_list];
+     result = next_f(free_list);
     }
     return result;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   index_t push_back()
+   Record_Id push_back()
    {
-    const index_t index = freedom_size;
+    const Record_Id index = freedom_size;
     resize_vector(freedom_size + 1);
 
-    is_free_p[index] = true;
-    next_p[index] = next_p[free_list];
-    previous_p[index] = free_list;
+    is_free_f(index) = true;
+    next_f(index) = next_f(free_list);
+    previous_f(index) = free_list;
 
-    previous_p[next_p[free_list]] = index;
-    next_p[free_list] = index;
+    previous_f(next_f(free_list)) = index;
+    next_f(free_list) = index;
 
     return index;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void resize(const index_t new_size)
+   void resize(const Record_Id new_size)
    {
-    while(size() < new_size)
+    while(get_size() < new_size)
      push_back();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void use(const index_t index)
+   void use(const Record_Id index)
    {
-    JOEDB_DEBUG_ASSERT(index >= 0);
+    JOEDB_DEBUG_ASSERT(index >= Record_Id{0});
     JOEDB_DEBUG_ASSERT(index < freedom_size);
-    JOEDB_DEBUG_ASSERT(is_free_p[index]);
+    JOEDB_DEBUG_ASSERT(is_free_f(index));
 
-    is_free_p[index] = false;
+    is_free_f(index) = false;
 
-    next_p[previous_p[index]] = next_p[index];
-    previous_p[next_p[index]] = previous_p[index];
+    next_f(previous_f(index)) = next_f(index);
+    previous_f(next_f(index)) = previous_f(index);
 
-    previous_p[index] = previous_p[used_list];
-    next_p[index] = used_list;
+    previous_f(index) = previous_f(used_list);
+    next_f(index) = used_list;
 
-    next_p[previous_p[index]] = index;
-    previous_p[used_list] = index;
+    next_f(previous_f(index)) = index;
+    previous_f(used_list) = index;
 
-    used_count++;
+    ++used_count;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void free(index_t index)
+   void free(Record_Id index)
    {
-    JOEDB_DEBUG_ASSERT(index >= 0);
+    JOEDB_DEBUG_ASSERT(index >= Record_Id{0});
     JOEDB_DEBUG_ASSERT(index < freedom_size);
-    JOEDB_DEBUG_ASSERT(!is_free_p[index]);
+    JOEDB_DEBUG_ASSERT(!is_free_f(index));
 
-    is_free_p[index] = true;
+    is_free_f(index) = true;
 
-    next_p[previous_p[index]] = next_p[index];
-    previous_p[next_p[index]] = previous_p[index];
+    next_f(previous_f(index)) = next_f(index);
+    previous_f(next_f(index)) = previous_f(index);
 
-    next_p[index] = next_p[free_list];
-    previous_p[index] = free_list;
+    next_f(index) = next_f(free_list);
+    previous_f(index) = free_list;
 
-    previous_p[next_p[free_list]] = index;
-    next_p[free_list] = index;
+    previous_f(next_f(free_list)) = index;
+    next_f(free_list) = index;
 
-    used_count--;
+    --used_count;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void use_vector(index_t index, index_t size)
+   void use_vector(Record_Id index, Record_Id size)
    {
-    for (index_t i = 0; i < size; i++)
-     use(index + i);
+    for (Record_Id i{0}; i < size; ++i)
+     use(index + to_underlying(i));
    }
  };
 
  /// @ingroup joedb
- class Dense_Freedom_Keeper: public Freedom_Keeper
+ class Dense_Freedom_Keeper: public Freedom_Keeper_Constants
  {
   private:
-   index_t used_size = 0;
-   index_t free_size = 0;
+   Record_Id used_size{0};
+   Record_Id free_size{0};
 
   public:
-   index_t get_used_count() const {return used_size;}
-   index_t size() const {return free_size;}
+   Record_Id get_used_count() const {return used_size;}
+   Record_Id get_size() const {return free_size;}
+   size_t size() const {return size_t(free_size);}
 
-   index_t get_first_free() const
+   Record_Id get_first_free() const
    {
     if (used_size == free_size)
      return free_list;
@@ -182,15 +192,15 @@ namespace joedb
      return used_size;
    }
 
-   index_t get_first_used() const
+   Record_Id get_first_used() const
    {
-    if (used_size == 0)
+    if (to_underlying(used_size) == 0)
      return used_list;
     else
-     return 0;
+     return Record_Id{0};
    }
 
-   index_t get_next(index_t index) const
+   Record_Id get_next(Record_Id index) const
    {
     if (index == used_list)
      return get_first_used();
@@ -198,7 +208,7 @@ namespace joedb
     if (index == free_list)
      return get_first_free();
 
-    const index_t result = index + 1;
+    const Record_Id result = index + 1;
 
     if (result == used_size)
      return used_list;
@@ -209,11 +219,11 @@ namespace joedb
     return result;
    }
 
-   index_t get_previous(index_t index) const
+   Record_Id get_previous(Record_Id index) const
    {
     if (index == used_list)
     {
-     if (used_size == 0)
+     if (used_size == Record_Id{0})
       return used_list;
      else
       return used_size - 1;
@@ -227,9 +237,9 @@ namespace joedb
       return free_size - 1;
     }
 
-    const index_t result = index - 1;
+    const Record_Id result = index - 1;
 
-    if (result == -1)
+    if (result == Record_Id{-1})
      return used_list;
 
     if (result == used_size - 1)
@@ -238,39 +248,39 @@ namespace joedb
     return result;
    }
 
-   bool is_free(index_t index) const {return index >= used_size;}
-   bool is_used(index_t index) const {return index < used_size;}
+   bool is_free(Record_Id index) const {return index >= used_size;}
+   bool is_used(Record_Id index) const {return index < used_size;}
    bool is_compact() const {return true;}
 
-   index_t get_free_record()
+   Record_Id get_free_record()
    {
     if (free_size == used_size)
      ++free_size;
     return used_size;
    }
 
-   index_t push_back() {return free_size++;}
+   Record_Id push_back() {return ++free_size - 1;}
 
-   void resize(index_t size)
+   void resize(Record_Id size)
    {
     if (free_size < size)
      free_size = size;
    }
 
-   bool use(index_t index)
+   bool use(Record_Id index)
    {
     if (index == used_size && used_size < free_size)
     {
-     used_size++;
+     ++used_size;
      return true;
     }
     else
      return false;
    }
 
-   bool free(index_t index)
+   bool free(Record_Id index)
    {
-    if (index == used_size - 1 && index >= 0)
+    if (index == used_size - 1 && index >= Record_Id{0})
     {
      --used_size;
      return true;
@@ -279,11 +289,11 @@ namespace joedb
      return false;
    }
 
-   bool use_vector(index_t index, index_t size)
+   bool use_vector(Record_Id index, Record_Id size)
    {
-    if (index == used_size && used_size + size <= free_size)
+    if (index == used_size && used_size + to_underlying(size) <= free_size)
     {
-     used_size += size;
+     used_size = used_size + to_underlying(size);
      return true;
     }
     else
@@ -292,7 +302,7 @@ namespace joedb
  };
 
  /// @ingroup joedb
- class Compact_Freedom_Keeper: public Freedom_Keeper
+ class Compact_Freedom_Keeper
  {
   private:
    List_Freedom_Keeper lfk;
@@ -304,10 +314,10 @@ namespace joedb
    {
     JOEDB_RELEASE_ASSERT(dense);
 
-    while (lfk.size() < dfk.size())
+    while (lfk.get_size() < dfk.get_size())
      lfk.push_back();
 
-    for (index_t i = 0; i < dfk.get_used_count(); i++)
+    for (Record_Id i{0}; i < dfk.get_used_count(); ++i)
      lfk.use(i);
 
     dense = false;
@@ -315,23 +325,25 @@ namespace joedb
 
   public:
 #define SWITCH(f) (dense ? dfk.f : lfk.f)
-   index_t get_used_count() const {return SWITCH(get_used_count());}
-   index_t size() const {return SWITCH(size());}
+   Record_Id get_used_count() const {return SWITCH(get_used_count());}
+   Record_Id get_size() const {return SWITCH(get_size());}
+   size_t size() const {return SWITCH(size());}
 
-   index_t get_first_free() const {return SWITCH(get_first_free());}
-   index_t get_first_used() const {return SWITCH(get_first_used());}
-   index_t get_next(index_t index) const {return SWITCH(get_next(index));}
-   index_t get_previous(index_t index) const {return SWITCH(get_previous(index));}
-   bool is_free(index_t index) const {return SWITCH(is_free(index));}
-   bool is_used(index_t index) const {return SWITCH(is_used(index));}
+   Record_Id get_first_free() const {return SWITCH(get_first_free());}
+   Record_Id get_first_used() const {return SWITCH(get_first_used());}
+   Record_Id get_next(Record_Id index) const {return SWITCH(get_next(index));}
+   Record_Id get_previous(Record_Id index) const {return SWITCH(get_previous(index));}
+   bool is_free(Record_Id index) const {return SWITCH(is_free(index));}
+   bool is_used(Record_Id index) const {return SWITCH(is_used(index));}
    bool is_compact() const {return SWITCH(is_compact());}
 
-   index_t get_free_record() {return SWITCH(get_free_record());}
-   index_t push_back() {return SWITCH(push_back());}
-   void resize(index_t new_size) {SWITCH(resize(new_size));}
+   Record_Id get_free_record() {return SWITCH(get_free_record());}
+   Record_Id push_back() {return SWITCH(push_back());}
+   void resize(Record_Id new_size) {SWITCH(resize(new_size));}
+   void resize(size_t new_size) {resize(Record_Id(new_size));}
 #undef SWITCH
 
-   void use(index_t index)
+   void use(Record_Id index)
    {
     if (dense)
     {
@@ -345,7 +357,7 @@ namespace joedb
      lfk.use(index);
    }
 
-   void free(index_t index)
+   void free(Record_Id index)
    {
     if (dense)
     {
@@ -359,7 +371,7 @@ namespace joedb
      lfk.free(index);
    }
 
-   void use_vector(index_t index, index_t size)
+   void use_vector(Record_Id index, Record_Id size)
    {
     if (dense)
     {

@@ -6,6 +6,15 @@ For next release
 
  - Improvements:
 
+   - Checkpoints:
+
+     - do not write hard_checkpoint again if it is already written
+     - "--checkpoint soft|hard" option for client_parser
+     - "--overwrite" option -> silently overwrite tail
+     - get_hard_checkpoint and get_soft_checkpoint member functions
+
+   - SHA-256: full option in network protocol
+
    - joedbc:
 
      - Split Database with Database_Storage parent
@@ -23,20 +32,10 @@ For next release
      - option to make some member functions private (->private: private_new_person)
      - option to add custom member functions
 
-   - joedb_pack: fill holes left by deleted elements, like write_json.
-   - Checkpoints:
-
-     - do not write hard_checkpoint again if it is already written
-     - "--hard_checkpoint" option for client_parser
-     - "--overwrite" option -> overwrite tail
-     - get_hard_checkpoint and get_soft_checkpoint member functions
-
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
      - more efficient test for validity of a range of ids for vector insert/update/delete
-
-   - SHA-256: full option in network protocol
 
  - Tooling:
 
@@ -100,6 +99,8 @@ Compiler
 
 Concurrency
 -----------
+- asynchronous hard checkpoint: add wait_for_hard_checkpoint(int64_t) function
+  in Connection.
 - joedb_server:
 
   - use coroutines
@@ -164,3 +165,4 @@ Other Ideas
 - Note that SQL does not support inf and nan. Use NULL instead.
 - Raw commands in interpreter?
 - import from SQL
+- joedb_pack: option to fill holes left by deleted elements

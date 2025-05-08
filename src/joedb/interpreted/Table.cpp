@@ -43,38 +43,38 @@ namespace joedb
  void Table::delete_record(Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!freedom.is_used(to_underlying(record_id)))
+  if (!freedom.is_used(record_id))
    throw Exception("delete_record: bad record_id");
-  freedom.free(to_underlying(record_id));
+  freedom.free(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Table::insert_record(Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (to_underlying(record_id) >= freedom.size())
+  if (record_id >= freedom.get_size())
   {
    for (auto &field: fields)
     field.second.resize(to_underlying(record_id) + 1);
-   while (freedom.size() <= to_underlying(record_id))
+   while (freedom.get_size() <= record_id)
     freedom.push_back();
   }
-  else if (!freedom.is_free(to_underlying(record_id)))
+  else if (!freedom.is_free(record_id))
    throw Exception("insert: record_id already in use");
 
-  freedom.use(to_underlying(record_id));
+  freedom.use(record_id);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Table::insert_vector(Record_Id record_id, size_t size)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (to_underlying(record_id) == freedom.size())
+  if (record_id == freedom.get_size())
   {
-   freedom.resize(freedom.size() + ptrdiff_t(size));
+   freedom.resize(freedom.size() + size);
    for (auto &field: fields)
     field.second.resize(freedom.size());
-   freedom.use_vector(index_t(record_id), index_t(size));
+   freedom.use_vector(record_id, Record_Id(size));
   }
   else
   {

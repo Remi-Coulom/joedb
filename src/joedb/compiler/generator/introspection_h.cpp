@@ -25,7 +25,7 @@ namespace joedb::generator
 
   out << "#ifndef JOEDB_INTROSPECTION\n";
 
-  if (db.get_freedom(tid).size() > 0)
+  if (db.get_freedom(tid).get_used_count() > Record_Id{0})
    out << "#define JOEDB_INTROSPECTION(field_type, field_name, initial)\n";
   else
    out << "#define JOEDB_INTROSPECTION(field_type, field_name)\n";
@@ -52,7 +52,7 @@ namespace joedb::generator
 
    out << ", " << fname;
 
-   if (db.get_freedom(tid).get_used_count() > 0)
+   if (db.get_freedom(tid).get_used_count() > Record_Id{0})
    {
     out << ", ";
     const Record_Id record_id{db.get_freedom(tid).get_first_used()};
