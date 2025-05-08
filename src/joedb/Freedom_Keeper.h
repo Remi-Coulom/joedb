@@ -8,40 +8,14 @@
 
 namespace joedb
 {
- /// @ingroup joedb
  class Freedom_Keeper
  {
   public:
-   virtual index_t get_used_count() const = 0;
-   virtual index_t size() const = 0;
-   virtual index_t get_first_free() const = 0;
-   virtual index_t get_first_used() const = 0;
-   virtual index_t get_next(index_t index) const = 0;
-   virtual index_t get_previous(index_t index) const = 0;
-   virtual bool is_free(index_t index) const = 0;
-   virtual bool is_used(index_t index) const = 0;
-   virtual bool is_compact() const = 0;
-
-   virtual index_t get_free_record() = 0;
-   virtual index_t push_back() = 0;
-   virtual void resize(index_t new_size) = 0;
-   virtual bool use(index_t index) = 0;
-   virtual bool free(index_t index) = 0;
-
-   virtual bool use_vector(index_t index, index_t size)
-   {
-    for (index_t i = 0; i < size; i++)
-     use(index + i);
-    return true;
-   }
-
-   virtual ~Freedom_Keeper() = default;
-
    static constexpr index_t used_list = -2;
    static constexpr index_t free_list = -1;
  };
 
- class List_Data
+ class List_Data: public Freedom_Keeper
  {
   private:
    std::vector<uint8_t> is_free_v;
@@ -74,7 +48,7 @@ namespace joedb
  };
 
  /// @ingroup joedb
- class List_Freedom_Keeper: public List_Data, public Freedom_Keeper
+ class List_Freedom_Keeper: public List_Data
  {
   private: //////////////////////////////////////////////////////////////////
    index_t used_count;
@@ -91,21 +65,21 @@ namespace joedb
     previous_p[free_list] = free_list;
    }
 
-   index_t get_used_count() const override {return used_count;}
-   index_t size() const override {return freedom_size;}
-   index_t get_first_free() const override {return next_p[free_list];}
-   index_t get_first_used() const override {return next_p[used_list];}
-   index_t get_next(const index_t index) const override {return next_p[index];}
-   index_t get_previous(const index_t index) const override {return previous_p[index];}
-   bool is_free(index_t index) const override {return is_free_p[index];}
-   bool is_used(index_t index) const override
+   index_t get_used_count() const {return used_count;}
+   index_t size() const {return freedom_size;}
+   index_t get_first_free() const {return next_p[free_list];}
+   index_t get_first_used() const {return next_p[used_list];}
+   index_t get_next(const index_t index) const {return next_p[index];}
+   index_t get_previous(const index_t index) const {return previous_p[index];}
+   bool is_free(index_t index) const {return is_free_p[index];}
+   bool is_used(index_t index) const
    {
     return index >= 0 && index < freedom_size && !is_free_p[index];
    }
-   bool is_compact() const override {return freedom_size == used_count;}
+   bool is_compact() const {return freedom_size == used_count;}
 
    //////////////////////////////////////////////////////////////////////////
-   index_t get_free_record() override
+   index_t get_free_record()
    {
     index_t result = next_p[free_list];
     if (result == free_list)
@@ -117,7 +91,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   index_t push_back() override
+   index_t push_back()
    {
     const index_t index = freedom_size;
     resize_vector(freedom_size + 1);
@@ -133,14 +107,14 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void resize(const index_t new_size) override
+   void resize(const index_t new_size)
    {
     while(size() < new_size)
      push_back();
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool use(const index_t index) override
+   void use(const index_t index)
    {
     JOEDB_DEBUG_ASSERT(index >= 0);
     JOEDB_DEBUG_ASSERT(index < freedom_size);
@@ -158,12 +132,10 @@ namespace joedb
     previous_p[used_list] = index;
 
     used_count++;
-
-    return true;
    }
 
    //////////////////////////////////////////////////////////////////////////
-   bool free(index_t index) override
+   void free(index_t index)
    {
     JOEDB_DEBUG_ASSERT(index >= 0);
     JOEDB_DEBUG_ASSERT(index < freedom_size);
@@ -181,8 +153,13 @@ namespace joedb
     next_p[free_list] = index;
 
     used_count--;
+   }
 
-    return true;
+   //////////////////////////////////////////////////////////////////////////
+   void use_vector(index_t index, index_t size)
+   {
+    for (index_t i = 0; i < size; i++)
+     use(index + i);
    }
  };
 
@@ -194,10 +171,10 @@ namespace joedb
    index_t free_size = 0;
 
   public:
-   index_t get_used_count() const override {return used_size;}
-   index_t size() const override {return free_size;}
+   index_t get_used_count() const {return used_size;}
+   index_t size() const {return free_size;}
 
-   index_t get_first_free() const override
+   index_t get_first_free() const
    {
     if (used_size == free_size)
      return free_list;
@@ -205,7 +182,7 @@ namespace joedb
      return used_size;
    }
 
-   index_t get_first_used() const override
+   index_t get_first_used() const
    {
     if (used_size == 0)
      return used_list;
@@ -213,7 +190,7 @@ namespace joedb
      return 0;
    }
 
-   index_t get_next(index_t index) const override
+   index_t get_next(index_t index) const
    {
     if (index == used_list)
      return get_first_used();
@@ -232,7 +209,7 @@ namespace joedb
     return result;
    }
 
-   index_t get_previous(index_t index) const override
+   index_t get_previous(index_t index) const
    {
     if (index == used_list)
     {
@@ -261,26 +238,26 @@ namespace joedb
     return result;
    }
 
-   bool is_free(index_t index) const override {return index >= used_size;}
-   bool is_used(index_t index) const override {return index < used_size;}
-   bool is_compact() const override {return true;}
+   bool is_free(index_t index) const {return index >= used_size;}
+   bool is_used(index_t index) const {return index < used_size;}
+   bool is_compact() const {return true;}
 
-   index_t get_free_record() override
+   index_t get_free_record()
    {
     if (free_size == used_size)
      ++free_size;
     return used_size;
    }
 
-   index_t push_back() override {return free_size++;}
+   index_t push_back() {return free_size++;}
 
-   void resize(index_t size) override
+   void resize(index_t size)
    {
     if (free_size < size)
      free_size = size;
    }
 
-   bool use(index_t index) override
+   bool use(index_t index)
    {
     if (index == used_size && used_size < free_size)
     {
@@ -291,7 +268,7 @@ namespace joedb
      return false;
    }
 
-   bool free(index_t index) override
+   bool free(index_t index)
    {
     if (index == used_size - 1 && index >= 0)
     {
@@ -302,7 +279,7 @@ namespace joedb
      return false;
    }
 
-   bool use_vector(index_t index, index_t size) override
+   bool use_vector(index_t index, index_t size)
    {
     if (index == used_size && used_size + size <= free_size)
     {
@@ -320,11 +297,12 @@ namespace joedb
   private:
    List_Freedom_Keeper lfk;
    Dense_Freedom_Keeper dfk;
-   Freedom_Keeper *fk;
+
+   bool dense = true;
 
    void lose_compactness()
    {
-    JOEDB_RELEASE_ASSERT(fk == &dfk);
+    JOEDB_RELEASE_ASSERT(dense);
 
     while (lfk.size() < dfk.size())
      lfk.push_back();
@@ -332,56 +310,67 @@ namespace joedb
     for (index_t i = 0; i < dfk.get_used_count(); i++)
      lfk.use(i);
 
-    fk = &lfk;
+    dense = false;
    }
 
   public:
-   Compact_Freedom_Keeper() {fk = &dfk;}
-   Compact_Freedom_Keeper(const Compact_Freedom_Keeper &) = delete;
-   Compact_Freedom_Keeper& operator=(const Compact_Freedom_Keeper &) = delete;
+#define SWITCH(f) (dense ? dfk.f : lfk.f)
+   index_t get_used_count() const {return SWITCH(get_used_count());}
+   index_t size() const {return SWITCH(size());}
 
-   index_t get_used_count() const override {return fk->get_used_count();}
-   index_t size() const override {return fk->size();}
-   index_t get_first_free() const override {return fk->get_first_free();}
-   index_t get_first_used() const override {return fk->get_first_used();}
-   index_t get_next(index_t index) const override {return fk->get_next(index);}
-   index_t get_previous(index_t index) const override {return fk->get_previous(index);}
-   bool is_free(index_t index) const override {return fk->is_free(index);}
-   bool is_used(index_t index) const override {return fk->is_used(index);}
-   bool is_compact() const override {return fk->is_compact();}
+   index_t get_first_free() const {return SWITCH(get_first_free());}
+   index_t get_first_used() const {return SWITCH(get_first_used());}
+   index_t get_next(index_t index) const {return SWITCH(get_next(index));}
+   index_t get_previous(index_t index) const {return SWITCH(get_previous(index));}
+   bool is_free(index_t index) const {return SWITCH(is_free(index));}
+   bool is_used(index_t index) const {return SWITCH(is_used(index));}
+   bool is_compact() const {return SWITCH(is_compact());}
 
-   index_t get_free_record() override {return fk->get_free_record();}
-   index_t push_back() override {return fk->push_back();}
-   void resize(index_t new_size) override {fk->resize(new_size);}
+   index_t get_free_record() {return SWITCH(get_free_record());}
+   index_t push_back() {return SWITCH(push_back());}
+   void resize(index_t new_size) {SWITCH(resize(new_size));}
+#undef SWITCH
 
-   bool use(index_t index) override
+   void use(index_t index)
    {
-    if (!fk->use(index))
+    if (dense)
     {
-     lose_compactness();
-     fk->use(index);
+     if (!dfk.use(index))
+     {
+      lose_compactness();
+      lfk.use(index);
+     }
     }
-    return true;
+    else
+     lfk.use(index);
    }
 
-   bool free(index_t index) override
+   void free(index_t index)
    {
-    if (!fk->free(index))
+    if (dense)
     {
-     lose_compactness();
-     fk->free(index);
+     if (!dfk.free(index))
+     {
+      lose_compactness();
+      lfk.free(index);
+     }
     }
-    return true;
+    else
+     lfk.free(index);
    }
 
-   bool use_vector(index_t index, index_t size) override
+   void use_vector(index_t index, index_t size)
    {
-    if (!fk->use_vector(index, size))
+    if (dense)
     {
-     lose_compactness();
-     fk->use_vector(index, size);
+     if (!dfk.use_vector(index, size))
+     {
+      lose_compactness();
+      lfk.use_vector(index, size);
+     }
     }
-    return true;
+    else
+     lfk.use_vector(index, size);
    }
  };
 }
