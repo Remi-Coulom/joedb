@@ -7,7 +7,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 #############################################################################
  message("== gcc:")
  set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor"
+  "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor -Wsuggest-override"
  )
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)
@@ -52,7 +52,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
  endif()
 
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor -Wsuggest-override")
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")

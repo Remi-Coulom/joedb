@@ -18,11 +18,11 @@ namespace joedb
    std::unique_ptr<Robust_Connection> connection;
 
   public:
-   bool has_sharing_option() const final {return true;}
-   int get_min_parameters() const final {return 1;}
-   int get_max_parameters() const final {return 1;}
-   const char *get_name() const final {return "local";}
-   const char *get_parameters_description() const final
+   bool has_sharing_option() const override {return true;}
+   int get_min_parameters() const override {return 1;}
+   int get_max_parameters() const override {return 1;}
+   const char *get_name() const override {return "local";}
+   const char *get_parameters_description() const override
    {
     return "<endpoint_path>";
    }
@@ -32,7 +32,7 @@ namespace joedb
     const int argc,
     const char * const * const argv,
     Buffered_File *file
-   ) final
+   ) override
    {
     const char * const endpoint_path = argv[0];
 

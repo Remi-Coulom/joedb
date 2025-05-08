@@ -17,11 +17,11 @@ namespace joedb
    std::unique_ptr<Connection> connection;
 
   public:
-   bool has_sharing_option() const final {return true;}
-   int get_min_parameters() const final {return 3;}
-   int get_max_parameters() const final {return 5;}
-   const char *get_name() const final {return "ssh";}
-   const char *get_parameters_description() const final
+   bool has_sharing_option() const override {return true;}
+   int get_min_parameters() const override {return 3;}
+   int get_max_parameters() const override {return 5;}
+   const char *get_name() const override {return "ssh";}
+   const char *get_parameters_description() const override
    {
     return "<user> <host> <endpoint_path> [<ssh_port> [<ssh_log_level>]]";
    }
@@ -31,7 +31,7 @@ namespace joedb
     const int argc,
     const char * const * const argv,
     Buffered_File *file
-   ) final
+   ) override
    {
     const char * const user = argv[0];
     const char * const host = argv[1];

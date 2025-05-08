@@ -24,50 +24,50 @@ namespace joedb
 
    void set_start_index(size_t index) {start_index = index;}
 
-   void create_table(const std::string &name) final;
-   void drop_table(Table_Id table_id) final;
-   void rename_table(Table_Id table_id, const std::string &name) final;
+   void create_table(const std::string &name) override;
+   void drop_table(Table_Id table_id) override;
+   void rename_table(Table_Id table_id, const std::string &name) override;
    void add_field
    (
     Table_Id table_id,
     const std::string &name,
     Type type
-   ) final;
-   void drop_field(Table_Id table_id, Field_Id field_id) final;
+   ) override;
+   void drop_field(Table_Id table_id, Field_Id field_id) override;
    void rename_field
    (
     Table_Id table_id,
     Field_Id field_id,
     const std::string &name
-   ) final;
-   void custom(const std::string &name) final;
-   void comment(const std::string &comment) final;
-   void timestamp(int64_t timestamp) final;
-   void valid_data() final;
-   void flush() final;
+   ) override;
+   void custom(const std::string &name) override;
+   void comment(const std::string &comment) override;
+   void timestamp(int64_t timestamp) override;
+   void valid_data() override;
+   void flush() override;
 
-   int64_t get_position() const final;
-   void start_writing(int64_t position) final;
-   void end_writing(int64_t position) final;
-   void soft_checkpoint() final;
-   void hard_checkpoint() final;
+   int64_t get_position() const override;
+   void start_writing(int64_t position) override;
+   void end_writing(int64_t position) override;
+   void soft_checkpoint() override;
+   void hard_checkpoint() override;
 
-   void insert_into(Table_Id table_id, Record_Id record_id) final;
-   void delete_from(Table_Id table_id, Record_Id record_id) final;
+   void insert_into(Table_Id table_id, Record_Id record_id) override;
+   void delete_from(Table_Id table_id, Record_Id record_id) override;
 
    void insert_vector
    (
     Table_Id table_id,
     Record_Id record_id,
     size_t size
-   ) final;
+   ) override;
 
    void delete_vector
    (
     Table_Id table_id,
     Record_Id record_id,
     size_t size
-   ) final;
+   ) override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id\
@@ -76,7 +76,7 @@ namespace joedb
     Record_Id record_id,\
     Field_Id field_id,\
     return_type value\
-   ) final;\
+   ) override;\
    void update_vector_##type_id\
    (\
     Table_Id table_id,\
@@ -84,19 +84,19 @@ namespace joedb
     Field_Id field_id,\
     size_t size,\
     const type *value\
-   ) final;\
+   ) override;\
    type *get_own_##type_id##_storage\
    (\
     Table_Id table_id,\
     Record_Id record_id,\
     Field_Id field_id,\
     size_t &capacity\
-   ) final;
+   ) override;
    #include "joedb/TYPE_MACRO.h"
 
-   void on_blob(Blob blob) final;
-   bool wants_blob_data() const final;
-   Blob write_blob(const std::string &data) final;
+   void on_blob(Blob blob) override;
+   bool wants_blob_data() const override;
+   Blob write_blob(const std::string &data) override;
 
    ~Multiplexer() override;
  };

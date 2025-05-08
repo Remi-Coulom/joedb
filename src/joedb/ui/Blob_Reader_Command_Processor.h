@@ -19,7 +19,7 @@ namespace joedb
     std::istream &parameters,
     std::istream &in,
     std::ostream &out
-   ) final;
+   ) override;
 
   public:
    Blob_Reader_Command_Processor(const Buffered_File &blob_reader):

@@ -71,7 +71,7 @@ namespace joedb::generator
   if (!options.get_custom_names().empty())
   {
    out << R"RRR(
-   void custom(const std::string &name) final
+   void custom(const std::string &name) override
    {
     Database::custom(name);
 
@@ -127,7 +127,7 @@ namespace joedb::generator
     return journal.get_file().read_blob(blob);
    }
 
-   joedb::Blob write_blob(const std::string &data) final
+   joedb::Blob write_blob(const std::string &data) override
    {
     return journal.write_blob(data);
    }
@@ -137,12 +137,12 @@ namespace joedb::generator
     return journal.ahead_of_checkpoint();
    }
 
-   void soft_checkpoint()
+   void soft_checkpoint() override
    {
     journal.soft_checkpoint();
    }
 
-   void hard_checkpoint()
+   void hard_checkpoint() override
    {
     journal.hard_checkpoint();
    }

@@ -408,7 +408,7 @@ namespace joedb::generator
   // delete_from writable function
   //
   out << '\n';
-  out << "   void delete_from(Table_Id table_id, Record_Id record_id) final\n";
+  out << "   void delete_from(Table_Id table_id, Record_Id record_id) override\n";
   out << "   {\n";
   {
    bool first = true;
@@ -430,7 +430,7 @@ namespace joedb::generator
   // insert_into
   //
   out << '\n';
-  out << "   void insert_into(Table_Id table_id, Record_Id record_id) final\n";
+  out << "   void insert_into(Table_Id table_id, Record_Id record_id) override\n";
   out << "   {\n";
   out << "    if (to_underlying(record_id) < 0 || (max_record_id && to_underlying(record_id) >= max_record_id))\n";
   out << "     throw_exception(\"insert_into: too big\");\n";
@@ -466,7 +466,7 @@ namespace joedb::generator
     Table_Id table_id,
     Record_Id record_id,
     size_t size
-   ) final
+   ) override
    {
     if
     (
@@ -525,7 +525,7 @@ namespace joedb::generator
     out << "    Field_Id field_id,\n";
     out << "    " << get_cpp_type_string(type_id) << " value\n";
     out << "   )\n";
-    out << "   final\n";
+    out << "   override\n";
     out << "   {\n";
 
     for (const auto &[tid, tname]: tables)
@@ -597,7 +597,7 @@ namespace joedb::generator
     out << "    size_t size,\n";
     out << "    const " << get_storage_type_string(type_id) << " *value\n";
     out << "   )\n";
-    out << "   final\n";
+    out << "   override\n";
     out << "   {\n";
 
     for (const auto &[tid, tname]: tables)
@@ -672,7 +672,7 @@ namespace joedb::generator
     out << "    Field_Id field_id,\n";
     out << "    size_t &capacity\n";
     out << "   )\n";
-    out << "   final\n";
+    out << "   override\n";
     out << "   {\n";
 
     for (const auto &[tid, tname]: tables)
@@ -729,7 +729,7 @@ namespace joedb::generator
   out << R"RRR(
    void comment(const std::string &comment) override {}
    void timestamp(int64_t timestamp) override {}
-   void valid_data() final {}
+   void valid_data() override {}
 )RRR";
 
   //
@@ -773,7 +773,7 @@ namespace joedb::generator
     schema_journal.soft_checkpoint();
    }
 
-   void drop_table(Table_Id table_id) final
+   void drop_table(Table_Id table_id) override
    {
     schema_journal.drop_table(table_id);
     schema_journal.soft_checkpoint();
@@ -783,7 +783,7 @@ namespace joedb::generator
    (
     Table_Id table_id,
     const std::string &name
-   ) final
+   ) override
    {
     schema_journal.rename_table(table_id, name);
     schema_journal.soft_checkpoint();
@@ -800,7 +800,7 @@ namespace joedb::generator
     schema_journal.soft_checkpoint();
    }
 
-   void drop_field(Table_Id table_id, Field_Id field_id) final
+   void drop_field(Table_Id table_id, Field_Id field_id) override
    {
     schema_journal.drop_field(table_id, field_id);
     schema_journal.soft_checkpoint();
@@ -811,7 +811,7 @@ namespace joedb::generator
     Table_Id table_id,
     Field_Id field_id,
     const std::string &name
-   ) final
+   ) override
    {
     schema_journal.rename_field(table_id, field_id, name);
     schema_journal.soft_checkpoint();

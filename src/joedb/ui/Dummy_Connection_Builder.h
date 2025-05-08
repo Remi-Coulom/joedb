@@ -13,7 +13,7 @@ namespace joedb
    Connection connection;
 
   public:
-   const char *get_name() const final
+   const char *get_name() const override
    {
     return "dummy";
    }
@@ -23,7 +23,7 @@ namespace joedb
     const int argc,
     const char * const * const argv,
     Buffered_File *file
-   ) final
+   ) override
    {
     return connection;
    }

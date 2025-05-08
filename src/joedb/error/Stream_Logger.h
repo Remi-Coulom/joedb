@@ -13,7 +13,7 @@ namespace joedb
   private:
    std::ostream &out;
 
-   void write(const char *message) noexcept final
+   void write(const char *message) noexcept override
    {
     try
     {

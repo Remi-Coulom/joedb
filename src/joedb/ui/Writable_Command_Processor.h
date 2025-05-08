@@ -22,7 +22,7 @@ namespace joedb
     std::istream &parameters,
     std::istream &in,
     std::ostream &out
-   ) final;
+   ) override;
 
   public:
    Writable_Command_Processor

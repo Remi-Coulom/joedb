@@ -37,37 +37,37 @@ namespace joedb
 
    const char *get_name() const {return "sql";}
 
-   void start_writing(int64_t position);
-   void end_writing(int64_t position);
+   void start_writing(int64_t position) override;
+   void end_writing(int64_t position) override;
 
-   void create_table(const std::string &name) final;
-   void drop_table(Table_Id table_id) final;
-   void rename_table(Table_Id table_id, const std::string &name) final;
+   void create_table(const std::string &name) override;
+   void drop_table(Table_Id table_id) override;
+   void rename_table(Table_Id table_id, const std::string &name) override;
    void add_field
    (
     Table_Id table_id,
     const std::string &name,
     Type type
-   ) final;
-   void drop_field(Table_Id table_id, Field_Id field_id) final;
+   ) override;
+   void drop_field(Table_Id table_id, Field_Id field_id) override;
    void rename_field
    (
     Table_Id table_id,
     Field_Id field_id,
     const std::string &name
-   ) final;
-   void custom(const std::string &name) final;
-   void comment(const std::string &comment) final;
-   void timestamp(int64_t timestamp) final;
-   void valid_data() final;
-   void insert_into(Table_Id table_id, Record_Id record_id) final;
-   void delete_from(Table_Id table_id, Record_Id record_id) final;
+   ) override;
+   void custom(const std::string &name) override;
+   void comment(const std::string &comment) override;
+   void timestamp(int64_t timestamp) override;
+   void valid_data() override;
+   void insert_into(Table_Id table_id, Record_Id record_id) override;
+   void delete_from(Table_Id table_id, Record_Id record_id) override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id(Table_Id table_id,\
                          Record_Id record_id,\
                          Field_Id field_id,\
-                         return_type value) final;
+                         return_type value) override;
    #include "joedb/TYPE_MACRO.h"
 
    ~SQL_Writable();

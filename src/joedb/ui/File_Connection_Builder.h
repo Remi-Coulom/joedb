@@ -19,11 +19,11 @@ namespace joedb
    std::unique_ptr<Connection> connection;
 
   public:
-   const char *get_name() const final {return "file";}
-   int get_min_parameters() const final {return 1;}
-   int get_max_parameters() const final {return 100;}
+   const char *get_name() const override {return "file";}
+   int get_min_parameters() const override {return 1;}
+   int get_max_parameters() const override {return 100;}
 
-   const char *get_parameters_description() const final
+   const char *get_parameters_description() const override
    {
     return "<file>";
    }
@@ -33,7 +33,7 @@ namespace joedb
     const int argc,
     const char * const * const argv,
     Buffered_File *file
-   ) final
+   ) override
    {
     int arg_index = 0;
     std::ostream null_stream(nullptr);
