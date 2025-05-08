@@ -228,7 +228,7 @@ namespace joedb
 
    Record_Id read_reference()
    {
-    return Record_Id(compact_read<std::underlying_type<Record_Id>::type>() - 1);
+    return Record_Id(read_strong_type<Record_Id>() - 1);
    }
 
    void write_string(const std::string &s);

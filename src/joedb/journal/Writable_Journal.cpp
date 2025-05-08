@@ -263,7 +263,7 @@ void joedb::Writable_Journal::insert_into
  {
   file.write<operation_t>(operation_t::insert_into);
   file.compact_write<>(to_underlying(table_id));
-  file.compact_write<>(to_underlying(record_id));
+  file.write_reference(record_id);
  }
 
  table_of_last_operation = table_id;
@@ -280,7 +280,7 @@ void joedb::Writable_Journal::delete_from
 {
  file.write<operation_t>(operation_t::delete_from);
  file.compact_write<>(to_underlying(table_id));
- file.compact_write<>(to_underlying(record_id));
+ file.write_reference(record_id);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -294,7 +294,7 @@ void joedb::Writable_Journal::insert_vector
 {
  file.write<operation_t>(operation_t::insert_vector);
  file.compact_write<>(to_underlying(table_id));
- file.compact_write<>(to_underlying(record_id));
+ file.write_reference(record_id);
  file.compact_write<>(size);
 
  table_of_last_operation = table_id;
@@ -312,7 +312,7 @@ void joedb::Writable_Journal::delete_vector
 {
  file.write<operation_t>(operation_t::delete_vector);
  file.compact_write<>(to_underlying(table_id));
- file.compact_write<>(to_underlying(record_id));
+ file.write_reference(record_id);
  file.compact_write<>(size);
 }
 
@@ -357,7 +357,7 @@ void joedb::Writable_Journal::generic_update
  {
   file.write<operation_t>(operation);
   file.compact_write<>(to_underlying(table_id));
-  file.compact_write<>(to_underlying(record_id));
+  file.write_reference(record_id);
   file.compact_write<>(to_underlying(field_id));
   table_of_last_operation = table_id;
   record_of_last_operation = record_id;
@@ -389,7 +389,7 @@ void joedb::Writable_Journal::update_vector_##type_id\
 {\
  file.write<operation_t>(operation_t::update_vector_##type_id);\
  file.compact_write<>(to_underlying(table_id));\
- file.compact_write<>(to_underlying(record_id));\
+ file.write_reference(record_id);\
  file.compact_write<>(to_underlying(field_id));\
  file.compact_write<>(size);\
  table_of_last_operation = table_id;\

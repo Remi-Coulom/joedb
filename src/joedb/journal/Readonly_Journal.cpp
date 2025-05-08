@@ -241,7 +241,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::insert_into:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
-   const Record_Id record_id = file.read_strong_type<Record_Id>();
+   const Record_Id record_id = file.read_reference();
    writable.insert_into(table_id, record_id);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
@@ -251,7 +251,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::delete_from:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
-   const Record_Id record_id = file.read_strong_type<Record_Id>();
+   const Record_Id record_id = file.read_reference();
    writable.delete_from(table_id, record_id);
   }
   break;
@@ -259,7 +259,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::insert_vector:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
-   const Record_Id record_id = file.read_strong_type<Record_Id>();
+   const Record_Id record_id = file.read_reference();
    const size_t size = file.compact_read<size_t>();
    writable.insert_vector(table_id, record_id, size);
    table_of_last_operation = table_id;
@@ -270,7 +270,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::delete_vector:
   {
    const Table_Id table_id = file.read_strong_type<Table_Id>();
-   const Record_Id record_id = file.read_strong_type<Record_Id>();
+   const Record_Id record_id = file.read_reference();
    const size_t size = file.compact_read<size_t>();
    writable.delete_vector(table_id, record_id, size);
   }
@@ -283,7 +283,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
   case operation_t::update_##type_id:\
    table_of_last_operation = file.read_strong_type<Table_Id>();\
-   record_of_last_operation = file.read_strong_type<Record_Id>();\
+   record_of_last_operation = file.read_reference();\
    field_of_last_update = file.read_strong_type<Field_Id>();\
    perform_update_##type_id(writable);\
   break;\
@@ -303,7 +303,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   case operation_t::update_vector_##type_id:\
   {\
    table_of_last_operation = file.read_strong_type<Table_Id>();\
-   record_of_last_operation = file.read_strong_type<Record_Id>();\
+   record_of_last_operation = file.read_reference();\
    field_of_last_update = file.read_strong_type<Field_Id>();\
    const size_t size = file.compact_read<size_t>();\
    if (int64_t(size) > checkpoint_position)\

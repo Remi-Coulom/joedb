@@ -40,6 +40,37 @@ static const std::string &get_translation
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, start_at_zero)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+
+ {
+  test::Writable_Database db(file);
+  const auto lille = db.new_city("Lille");
+  EXPECT_EQ(lille.get_record_id(), joedb::Record_Id{0});
+  EXPECT_EQ(lille.get_id(), 0);
+  const auto person = db.new_person("Rémi", lille);
+  EXPECT_EQ(person.get_id(), 0);
+  EXPECT_EQ(db.get_home(person).get_id(), 0);
+  EXPECT_FALSE(db.get_home(person).is_null());
+  const auto homeless = db.new_person("Arthur", db.null_city());
+  EXPECT_TRUE(db.get_home(homeless).is_null());
+  db.soft_checkpoint();
+ }
+
+ {
+  test::Readonly_Database db(file);
+  const test::id_of_city lille{0};
+  EXPECT_EQ(db.get_name(lille), "Lille");
+  const test::id_of_person person{0};
+  const test::id_of_person homeless{1};
+  EXPECT_EQ(db.get_name(person), "Rémi");
+  EXPECT_EQ(db.get_name(homeless), "Arthur");
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, id_test)
 /////////////////////////////////////////////////////////////////////////////
 {
