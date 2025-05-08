@@ -22,7 +22,7 @@ namespace joedb
    std::map<Field_Id, std::string> field_names;
    Field_Id current_field_id = Field_Id(0);
 
-   Compact_Freedom_Keeper freedom;
+   Freedom_Keeper freedom;
 
    auto find_field_from_id(Field_Id field_id)
    {
@@ -44,7 +44,7 @@ namespace joedb
    }
 
   public:
-   const Compact_Freedom_Keeper &get_freedom() const {return freedom;}
+   const Freedom_Keeper &get_freedom() const {return freedom;}
 
    const std::map<Field_Id, Field> &get_fields() const {return fields;}
    Field_Id find_field(const std::string &name) const;

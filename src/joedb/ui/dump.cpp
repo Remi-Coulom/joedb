@@ -115,7 +115,7 @@ namespace joedb
  {
   for (const auto &[tid, tname]: db.get_tables())
   {
-   const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
+   const Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
    const Record_Id table_size{freedom_keeper.get_size()};
 
    for (Record_Id record_id{0}; record_id < table_size;)

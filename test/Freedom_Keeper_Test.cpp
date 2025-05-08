@@ -35,7 +35,7 @@ namespace joedb
  using fk_types = ::testing::Types
  <
   List_Freedom_Keeper,
-  Compact_Freedom_Keeper
+  Freedom_Keeper
  >;
 
  TYPED_TEST_SUITE(Freedom_Keeper_Test, fk_types,);
@@ -181,7 +181,7 @@ namespace joedb
  TEST(Freedom_Keeper, compactness)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Compact_Freedom_Keeper fk;
+  Freedom_Keeper fk;
   EXPECT_TRUE(fk.is_compact());
 
   for (int i = 8; --i >= 0;)

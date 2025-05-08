@@ -51,7 +51,7 @@ namespace joedb::generator
     journal.replay_log(*this);
    }
 
-   const joedb::Compact_Freedom_Keeper &get_freedom
+   const joedb::Freedom_Keeper &get_freedom
    (
     Table_Id table_id
    ) const override

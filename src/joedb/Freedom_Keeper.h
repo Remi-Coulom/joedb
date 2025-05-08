@@ -302,7 +302,7 @@ namespace joedb
  };
 
  /// @ingroup joedb
- class Compact_Freedom_Keeper
+ class Freedom_Keeper
  {
   private:
    List_Freedom_Keeper lfk;

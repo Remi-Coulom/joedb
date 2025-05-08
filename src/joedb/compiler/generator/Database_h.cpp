@@ -113,7 +113,7 @@ namespace joedb::generator
     }
 
   out << R"RRR(
-   joedb::Compact_Freedom_Keeper freedom_keeper;
+   joedb::Freedom_Keeper freedom_keeper;
 
    size_t size() const {return freedom_keeper.size();}
 
@@ -1036,7 +1036,7 @@ namespace joedb::generator
    out << "    private:\n";
 
 
-   out << "     const joedb::Compact_Freedom_Keeper *fk;\n"; // must use pointer for copy constructor
+   out << "     const joedb::Freedom_Keeper *fk;\n"; // must use pointer for copy constructor
    out << "     Record_Id index;\n";
    out << "     iterator(const detail::data_of_" << tname << " &data): fk(&data.freedom_keeper), index(joedb::Freedom_Keeper_Constants::used_list) {}\n";
    out << "    public:\n";

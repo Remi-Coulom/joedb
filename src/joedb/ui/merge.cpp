@@ -19,7 +19,7 @@ void joedb::merge(Database &merged, const Database &db)
  for (const auto &[tid, tname]: merged.get_tables())
  {
   const Record_Id size = db.get_size(tid);
-  const Compact_Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
+  const Freedom_Keeper &freedom_keeper = db.get_freedom(tid);
 
   if (size == Record_Id{0})
   {

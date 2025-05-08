@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- class Compact_Freedom_Keeper;
+ class Freedom_Keeper;
 
  /// @ingroup joedb
  class Readable
@@ -29,7 +29,7 @@ namespace joedb
     Field_Id field_id
    ) const = 0;
 
-   virtual const Compact_Freedom_Keeper &get_freedom(Table_Id table_id) const = 0;
+   virtual const Freedom_Keeper &get_freedom(Table_Id table_id) const = 0;
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual const type &get_##type_id\
    (\
