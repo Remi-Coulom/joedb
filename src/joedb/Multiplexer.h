@@ -48,8 +48,9 @@ namespace joedb
 
    int64_t get_position() const final;
    void start_writing(int64_t position) final;
-   void soft_checkpoint_at(int64_t position) final;
-   void hard_checkpoint_at(int64_t position) final;
+   void end_writing(int64_t position) final;
+   void soft_checkpoint() final;
+   void hard_checkpoint() final;
 
    void insert_into(Table_Id table_id, Record_Id record_id) final;
    void delete_from(Table_Id table_id, Record_Id record_id) final;

@@ -83,24 +83,29 @@ namespace joedb
    writable.valid_data();
  }
 
- void Selective_Writable::start_writing(int64_t position)
- {
-  writable.start_writing(position);
- }
-
  int64_t Selective_Writable::get_position() const
  {
   return writable.get_position();
  }
 
- void Selective_Writable::soft_checkpoint_at(int64_t position)
+ void Selective_Writable::start_writing(int64_t position)
  {
-  writable.soft_checkpoint_at(position);
+  writable.start_writing(position);
  }
 
- void Selective_Writable::hard_checkpoint_at(int64_t position)
+ void Selective_Writable::end_writing(int64_t position)
  {
-  writable.hard_checkpoint_at(position);
+  writable.end_writing(position);
+ }
+
+ void Selective_Writable::soft_checkpoint()
+ {
+  writable.soft_checkpoint();
+ }
+
+ void Selective_Writable::hard_checkpoint()
+ {
+  writable.hard_checkpoint();
  }
 
  //

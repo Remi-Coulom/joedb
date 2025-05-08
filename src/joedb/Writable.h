@@ -13,13 +13,10 @@ namespace joedb
   public:
    virtual int64_t get_position() const {return 0;}
    virtual void start_writing(int64_t position) {}
-   virtual void soft_checkpoint_at(int64_t position) {}
-   virtual void hard_checkpoint_at(int64_t position)
-   {
-    soft_checkpoint_at(position);
-   }
-   void soft_checkpoint() {soft_checkpoint_at(get_position());}
-   void hard_checkpoint() {hard_checkpoint_at(get_position());}
+   virtual void end_writing(int64_t position) {}
+
+   virtual void soft_checkpoint() {}
+   virtual void hard_checkpoint() {soft_checkpoint();}
 
    virtual void create_table(const std::string &name) {}
    virtual void drop_table(Table_Id table_id) {}

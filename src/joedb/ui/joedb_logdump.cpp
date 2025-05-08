@@ -38,7 +38,7 @@ namespace joedb
   if (argc <= 1)
   {
    std::cerr << "usage: " << argv[0];
-   std::cerr << " [--sql] [--sqlite] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] [--print-checkpoint] [--blob] <file.joedb>\n";
+   std::cerr << " [--sql] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] [--print-checkpoint] [--blob] <file.joedb>\n";
    return 1;
   }
   else
@@ -54,7 +54,6 @@ namespace joedb
   }
 
    OPTION(sql, "--sql");
-   OPTION(sqlite, "--sqlite");
    OPTION(raw, "--raw");
    OPTION(header, "--header");
    OPTION(schema_only, "--schema-only");
@@ -99,8 +98,6 @@ namespace joedb
 
     if (sql)
      writable.reset(new SQL_Dump_Writable(std::cout, blob_reader));
-    else if (sqlite)
-     writable.reset(new SQL_Dump_Writable(std::cout, blob_reader, false));
     else if (raw)
      writable.reset(new Raw_Dump_Writable(std::cout));
     else

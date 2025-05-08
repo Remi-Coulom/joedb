@@ -49,8 +49,13 @@ namespace joedb
 
    int64_t get_position() const override {return file.get_position();}
    void start_writing(int64_t position) override;
-   void soft_checkpoint_at(int64_t position) override;
-   void hard_checkpoint_at(int64_t position) override;
+   void end_writing(int64_t position) override;
+
+   void soft_checkpoint_at(int64_t position);
+   void hard_checkpoint_at(int64_t position);
+
+   void soft_checkpoint() override;
+   void hard_checkpoint() override;
 
    void create_table(const std::string &name) final;
    void drop_table(Table_Id table_id) final;

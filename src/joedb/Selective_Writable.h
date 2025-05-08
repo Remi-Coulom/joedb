@@ -50,8 +50,9 @@ namespace joedb
    void valid_data() override;
    int64_t get_position() const override;
    void start_writing(int64_t position) override;
-   void soft_checkpoint_at(int64_t position) override;
-   void hard_checkpoint_at(int64_t position) override;
+   void end_writing(int64_t position) override;
+   void soft_checkpoint() override;
+   void hard_checkpoint() override;
 
    //
    // data events

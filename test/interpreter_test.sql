@@ -116,5 +116,3 @@ DELETE FROM "float" WHERE "__id" = 13;
 DELETE FROM "float" WHERE "__id" = 12;
 DELETE FROM "float" WHERE "__id" = 11;
 DELETE FROM "float" WHERE "__id" = 10;
-COMMIT; --checkpoint = 610
-COMMIT; --checkpoint = 610
