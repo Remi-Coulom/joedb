@@ -8,11 +8,13 @@ namespace joedb
  Progress_Bar::Progress_Bar
  //////////////////////////////////////////////////////////////////////////
  (
-  int64_t total,
-  std::ostream *out
+  const int64_t total,
+  std::ostream * const out,
+  const int64_t threshold
  ):
   total(total),
   out(out),
+  threshold(threshold),
   current_display(0)
  {
   if (out)
@@ -27,7 +29,7 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Progress_Bar::print(int64_t current)
+ void Progress_Bar::print(const int64_t current)
  //////////////////////////////////////////////////////////////////////////
  {
   if (out && total > threshold)
