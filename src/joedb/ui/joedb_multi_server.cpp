@@ -46,31 +46,37 @@ namespace joedb
  static int main(int argc, char **argv)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (argc < 3)
+  if (argc < 2)
   {
-   std::cerr << "usage: " << argv[0] << " <timeout_seconds> <db>+\n";
-   std::cerr << "file name: <db>.joedb\n";
-   std::cerr << "socket name: <db>.sock\n";
-   std::cerr << "example: " << argv[0] << " 10 db1 db2 db3 db4\n";
+   std::cerr << "usage: " << argv[0] << " [--timeout t] <filename.joedb>+\n";
    return 1;
   }
 
-  std::chrono::seconds timeout(std::stoi(argv[1]));
+  int32_t index = 1;
+
+  std::chrono::seconds timeout{0};
+  if (index + 1 < argc && std::strcmp(argv[index], "--timeout") == 0)
+  {
+   index++;
+   timeout = std::chrono::seconds(std::stoi(argv[index]));
+   index++;
+  }
 
   IO_Context_Wrapper io_context_wrapper;
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
-  for (int i = 2; i < argc; i++)
+  for (; index < argc; index++)
   {
-   std::string base_name(argv[i]);
+   std::string file_name(argv[index]);
+   std::cerr << "Creating server for: " << file_name << '\n';
    servers.emplace_back
    (
     new Server_Data
     (
      io_context_wrapper.io_context,
-     base_name + ".joedb",
-     base_name + ".sock",
+     file_name,
+     file_name + ".sock",
      timeout
     )
    );

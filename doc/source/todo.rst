@@ -9,7 +9,6 @@ For next release
    - Checkpoints:
 
      - do not write hard_checkpoint again if it is already written
-     - "--checkpoint soft|hard" option for client_parser
      - "--overwrite" option -> silently overwrite tail
      - get_hard_checkpoint and get_soft_checkpoint member functions
 

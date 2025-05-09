@@ -86,7 +86,7 @@ namespace joedb
  void Client_Parser::print_help(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << " [--check ";
+  out << " [--hard_checkpoint] [--check ";
 
   for (size_t i = 0; i < std::size(check_string); i++)
   {
@@ -124,6 +124,13 @@ namespace joedb
  )
  {
   int arg_index = 0;
+
+  bool hard_checkpoint = false;
+  if (arg_index < argc && std::strcmp(argv[arg_index], "--hard_checkpoint") == 0)
+  {
+   arg_index++;
+   hard_checkpoint = true;
+  }
 
   Content_Check content_check = default_content_check;
   if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--check") == 0)
@@ -237,6 +244,12 @@ namespace joedb
 #endif
   else
    throw Exception("unsupported db type");
+
+  {
+   auto *writable_client = dynamic_cast<Writable_Client*>(client.get());
+   if (writable_client)
+    writable_client->set_hard_checkpoint(hard_checkpoint);
+  }
 
   std::cerr << "OK\n";
 
