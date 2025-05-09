@@ -43,7 +43,7 @@ namespace joedb::generator
    out << "  private:\n";
    out << "   Record_Id id;\n";
    out << "\n  public:\n";
-   out << "   constexpr explicit id_of_" << tname << "(size_t id): id(Record_Id(id)) {}\n";
+   out << "   constexpr explicit id_of_" << tname << "(joedb::index_t id): id(Record_Id(id)) {}\n";
    out << "   constexpr explicit id_of_" << tname << "(Record_Id id): id(id) {}\n";
    out << "   constexpr id_of_" << tname << "(): id(joedb::null) {}\n";
    out << "   constexpr bool is_null() const {return joedb::is_null(id);}\n";
