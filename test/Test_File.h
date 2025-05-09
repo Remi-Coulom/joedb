@@ -18,7 +18,7 @@ namespace joedb
    {
     const size_t max_size = data.size() - size_t(offset);
     const size_t n = std::min(read_size, std::min(size, max_size));
-    std::copy_n(data.data() + offset, n, buffer);
+    std::memcpy(buffer, data.data() + offset, n);
     return n;
    }
  };
