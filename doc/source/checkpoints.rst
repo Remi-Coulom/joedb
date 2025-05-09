@@ -194,7 +194,7 @@ by one. With N = 10,000:
 There is much less difference in performance compared to a big transaction, but
 joedb is still faster.
 
-Joedb's soft checkpoint is similar in terms of durability to sqlite's WAL mode
+Joedb's soft checkpoint is similar in terms of durability to SQLite's WAL mode
 with synchronous=NORMAL: after a power failure, some of the most recently
 written data may be lost, but it is possible to recover safely to a recent
 consistent state. With N = 1,000,000:
@@ -209,3 +209,5 @@ consistent state. With N = 1,000,000:
 | sys  |  5.945s |  2.316s  |
 +------+---------+----------+
 
+In addition to performance, one great advantage of joedb's soft checkpoints is
+that, unlike SQLite's WAL, it works over a network filesystem.
