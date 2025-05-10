@@ -86,7 +86,7 @@ namespace joedb
    true
   )
  {
-  const bool hard_checkpoint = arguments.has_option("hard_checkpoint");
+  const bool hard_checkpoint = arguments.has_flag("hard_checkpoint");
 
   static std::vector<const char *> check_string
   {

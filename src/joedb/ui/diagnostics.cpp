@@ -52,9 +52,7 @@ namespace joedb
  void about_joedb(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "About this version of joedb\n"
-         "---------------------------\n"
-         "joedb version: " << get_version();
+  out << "joedb version: " << get_version();
   out << " https://www.joedb.org/\nfile format version: ";
   out << Readonly_Journal::format_version;
 

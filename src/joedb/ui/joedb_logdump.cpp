@@ -35,14 +35,14 @@ namespace joedb
  static int logdump(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const bool sql = arguments.has_option("sql");
-  const bool raw = arguments.has_option("raw");
-  const bool header = arguments.has_option("header");
-  const bool schema_only = arguments.has_option("schema_only");
-  const bool ignore_errors = arguments.has_option("ignore_errors");
-  const bool load = arguments.has_option("load");
-  const bool print_checkpoint = arguments.has_option("print_checkpoint");
-  const bool blob = arguments.has_option("blob");
+  const bool sql = arguments.has_flag("sql");
+  const bool raw = arguments.has_flag("raw");
+  const bool header = arguments.has_flag("header");
+  const bool schema_only = arguments.has_flag("schema_only");
+  const bool ignore_errors = arguments.has_flag("ignore_errors");
+  const bool load = arguments.has_flag("load");
+  const bool print_checkpoint = arguments.has_flag("print_checkpoint");
+  const bool blob = arguments.has_flag("blob");
   const std::string_view file_name = arguments.get_next("file.joedb");
 
   if (arguments.has_missing())

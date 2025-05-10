@@ -65,7 +65,7 @@ namespace joedb
   public:
    Arguments(int argc, const char * const *argv);
 
-   bool has_option(const char * name);
+   bool has_flag(const char * name);
 
    std::string_view get_string_option
    (

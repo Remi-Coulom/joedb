@@ -13,7 +13,7 @@ namespace joedb
   void (*process)(Readonly_Journal &, Writable_Journal &, int64_t checkpoint)
  )
  {
-  const bool ignore_errors = arguments.has_option("ignore_errors");
+  const bool ignore_errors = arguments.has_flag("ignore_errors");
   const int64_t until = arguments.get_option<int64_t>
   (
    "until",

@@ -13,7 +13,7 @@ int main(int argc, char **argv)
  std::cout << std::setfill('0');
 
  joedb::Arguments arguments(argc, argv);
- const bool fast = arguments.has_option("fast");
+ const bool fast = arguments.has_flag("fast");
 
  while (arguments.get_remaining_count())
  {

@@ -35,7 +35,7 @@ namespace joedb
    args.emplace_back(argv[i]);
  }
 
- bool Arguments::has_option(const char * name)
+ bool Arguments::has_flag(const char * name)
  {
   options.emplace_back(name, std::string_view{});
 

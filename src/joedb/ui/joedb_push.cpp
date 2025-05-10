@@ -17,7 +17,7 @@ namespace joedb
  static int push(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const bool follow = arguments.has_option("follow");
+  const bool follow = arguments.has_flag("follow");
   const int64_t until_checkpoint = arguments.get_option<int64_t>
   (
    "until",

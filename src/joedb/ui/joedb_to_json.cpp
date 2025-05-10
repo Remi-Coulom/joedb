@@ -12,7 +12,7 @@ namespace joedb
  static int joedb_to_json(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const bool base64 = arguments.has_option("base64");
+  const bool base64 = arguments.has_flag("base64");
   const std::string_view file_name = arguments.get_next("file.joedb");
 
   if (arguments.has_missing())
