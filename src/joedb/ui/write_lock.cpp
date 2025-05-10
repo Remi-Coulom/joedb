@@ -1,26 +1,27 @@
 #include "joedb/journal/File.h"
 #include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/Arguments.h"
 
 #include <iostream>
 
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ static int lock(Arguments &arguments)
  /////////////////////////////////////////////////////////////////
  {
-  if (argc < 2)
+  const std::string_view file_name = arguments.get_next("file_name");
+
+  if (arguments.has_missing())
   {
-   std::cerr << "usage: " << argv[0] << " <file_name>\n";
+   arguments.print_help(std::cerr);
    return 1;
   }
-
-  const char * const file_name = argv[1];
 
   std::cout << "Locking " << file_name << "...";
   std::cout.flush();
 
-  File lock(file_name, Open_Mode::write_lock);
+  File lock(file_name.data(), Open_Mode::write_lock);
 
   std::cout << "\nLocked. Enter to stop.";
   std::cout.flush();
@@ -34,5 +35,5 @@ namespace joedb
 int main(int argc, char **argv)
 //////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(joedb::main, argc, argv);
+ joedb::main_exception_catcher(joedb::lock, argc, argv);
 }

@@ -17,10 +17,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ static int main(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return process_journal_pair(argc, argv, joedb::process);
+  return process_journal_pair(arguments, joedb::process);
  }
 }
 

@@ -9,23 +9,26 @@ namespace joedb
 {
  TEST(ui, client)
  {
-  Client_Parser parser
-  (
-   Open_Mode::shared_write,
-   Client_Parser::DB_Type::none
-  );
   const std::array<const char *, 5> args
   {
    "--check", "none", "--db", "interpreted", "memory"
   };
-  Client &client = parser.parse(args.size(), args.data());
+
+  Arguments arguments(args.size(), args.data());
+
+  Client_Parser parser
+  (
+   Open_Mode::shared_write,
+   Client_Parser::DB_Type::none,
+   arguments
+  );
 
   {
    std::ostringstream out;
    parser.print_help(out);
   }
 
-  Writable_Client *writable_client = dynamic_cast<Writable_Client *>(&client);
+  Writable_Client *writable_client = dynamic_cast<Writable_Client *>(parser.get());
   ASSERT_TRUE(writable_client);
   Writable_Client_Command_Processor processor(*writable_client);
 

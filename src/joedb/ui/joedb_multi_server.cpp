@@ -26,7 +26,7 @@ namespace joedb
     asio::io_context &io_context,
     const std::string &file_name,
     const std::string &endpoint_path,
-    std::chrono::seconds timeout
+    std::chrono::milliseconds timeout
    ):
     file(file_name, Open_Mode::write_existing_or_create_new),
     client(file, connection),
@@ -43,32 +43,32 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ static int multi_server(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (argc < 2)
+  const float timeout_seconds = arguments.get_option<float>
+  (
+   "timeout",
+   "seconds",
+   0.0f
+  );
+
+  arguments.add_parameter("file.joedb");
+  arguments.add_parameter("...");
+
+  if (arguments.get_remaining_count() == 0)
   {
-   std::cerr << "usage: " << argv[0] << " [--timeout t] <filename.joedb>+\n";
+   arguments.print_help(std::cerr);
    return 1;
-  }
-
-  int32_t index = 1;
-
-  std::chrono::seconds timeout{0};
-  if (index + 1 < argc && std::strcmp(argv[index], "--timeout") == 0)
-  {
-   index++;
-   timeout = std::chrono::seconds(std::stoi(argv[index]));
-   index++;
   }
 
   IO_Context_Wrapper io_context_wrapper;
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
-  for (; index < argc; index++)
+  while (arguments.get_remaining_count())
   {
-   std::string file_name(argv[index]);
+   const std::string file_name(arguments.get_next());
    std::cerr << "Creating server for: " << file_name << '\n';
    servers.emplace_back
    (
@@ -77,7 +77,7 @@ namespace joedb
      io_context_wrapper.io_context,
      file_name,
      file_name + ".sock",
-     timeout
+     std::chrono::milliseconds(int(timeout_seconds * 1000))
     )
    );
   }
@@ -92,5 +92,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::main, argc, argv);
+ return joedb::main_exception_catcher(joedb::multi_server, argc, argv);
 }

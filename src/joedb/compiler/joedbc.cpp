@@ -58,8 +58,8 @@ namespace joedb
  static int joedbc_main(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const auto joedbi_file_name = arguments.get_next_arg("file.joedbi");
-  const auto joedbc_file_name = arguments.get_next_arg("file.joedbc");
+  const std::string_view joedbi_file_name = arguments.get_next("file.joedbi");
+  const std::string_view joedbc_file_name = arguments.get_next("file.joedbc");
 
   if (arguments.has_missing())
   {

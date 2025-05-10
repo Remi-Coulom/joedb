@@ -11,7 +11,7 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static int joedbi(int argc, char **argv)
+ static int joedbi(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
   const bool default_only = false;
@@ -24,25 +24,24 @@ namespace joedb
    include_shared
   );
 
-  if (argc <= 1)
+  if (arguments.size() <= 1)
   {
-   std::cerr << "usage: " << argv[0] << " <file> [<blob_file>]\n\n";
+   std::cerr << "usage: " << arguments[0] << " <file> [<blob_file>]\n\n";
    file_parser.print_help(std::cerr);
    return 1;
   }
 
   int arg_index = 1;
-
   std::ostream null_stream(nullptr);
-  Buffered_File &file = *file_parser.parse(null_stream, argc, argv, arg_index);
+  Buffered_File &file = *file_parser.parse(null_stream, arguments.get_argc(), arguments.get_argv(), arg_index);
 
   std::optional<File_Parser> blob_file_parser;
   Buffered_File *blob_file = nullptr;
 
-  if (arg_index < argc)
+  if (arg_index < arguments.get_argc())
   {
    blob_file_parser.emplace();
-   blob_file = blob_file_parser->parse(null_stream, argc, argv, arg_index);
+   blob_file = blob_file_parser->parse(null_stream, arguments.get_argc(), arguments.get_argv(), arg_index);
   }
   else
    blob_file = &file;

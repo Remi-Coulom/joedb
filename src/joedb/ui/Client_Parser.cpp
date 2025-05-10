@@ -76,15 +76,15 @@ namespace joedb
   DB_Type default_db_type,
   Arguments &arguments
  ):
+  default_open_mode(default_open_mode),
+  default_db_type(default_db_type),
   file_parser
   (
    default_open_mode,
    default_open_mode == Open_Mode::read_existing,
    true,
    true
-  ),
-  default_open_mode(default_open_mode),
-  default_db_type(default_db_type)
+  )
  {
   const bool hard_checkpoint = arguments.has_option("hard_checkpoint");
 
@@ -104,7 +104,6 @@ namespace joedb
     int(Content_Check::quick)
    )
   );
-  std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
 
   static std::vector<const char *> db_string
   {
@@ -126,13 +125,31 @@ namespace joedb
     int(default_db_type)
    )
   );
+
+  arguments.add_parameter("file");
+  arguments.add_parameter("connection");
+  if (arguments.get_remaining_count() == 0)
+   return;
+
+  std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
   std::cerr << "db_type = " << db_string[int(db_type)] << '\n';
 
-  file_parser.parse(std::cerr, arguments);
+  file_parser.parse
+  (
+   std::cerr,
+   arguments.get_argc(),
+   arguments.get_argv(),
+   arguments.get_index()
+  );
 
   Buffered_File *client_file = file_parser.get_file();
 
-  Connection &connection = connection_parser.build(arguments, client_file);
+  Connection &connection = connection_parser.build
+  (
+   arguments.get_argc() - arguments.get_index(),
+   arguments.get_argv() + arguments.get_index(),
+   client_file
+  );
 
   if (!client_file)
    client_file = dynamic_cast<Buffered_File *>(&connection);

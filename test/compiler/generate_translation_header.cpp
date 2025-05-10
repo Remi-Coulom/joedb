@@ -4,7 +4,7 @@
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////
-static int generate_translation_header(int argc, char **argv)
+static int generate_translation_header(joedb::Arguments &arguments)
 /////////////////////////////////////////////////////////////////////////////
 {
  my_namespace::is_nested::test::Readonly_Database db("test.joedb");

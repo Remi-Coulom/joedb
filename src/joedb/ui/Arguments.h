@@ -3,6 +3,7 @@
 
 #include "joedb/error/Exception.h"
 #include "joedb/get_version.h"
+#include "joedb/error/assert.h"
 
 #include <string_view>
 #include <vector>
@@ -14,6 +15,9 @@ namespace joedb
  class Arguments
  {
   private:
+   const int argc;
+   const char * const * const argv;
+
    struct Argument
    {
     std::string_view s;
@@ -28,7 +32,7 @@ namespace joedb
    };
 
    std::vector<Argument> args;
-   size_t index = 1;
+   int index = 1;
    bool missing_arg = false;
 
    struct Option
@@ -66,19 +70,28 @@ namespace joedb
 
    void update_index()
    {
-    while (index < args.size() && args[index].used)
+    while (index < argc && args[index].used)
      index++;
    }
 
+   std::string_view use_index()
+   {
+    JOEDB_DEBUG_ASSERT(index < argc);
+    args[index].used = true;
+    const auto result = args[index].s;
+    update_index();
+    return result;
+   }
+
   public:
-   Arguments(size_t argc, const char * const *argv)
+   Arguments(size_t argc, const char * const *argv): argc(argc), argv(argv)
    {
     args.reserve(argc);
     for (size_t i = 0; i < argc; i++)
      args.emplace_back(argv[i]);
    }
 
-   bool has_option(std::string_view name)
+   bool has_option(const char * name)
    {
     options.emplace_back(name, std::string_view{});
 
@@ -97,8 +110,8 @@ namespace joedb
 
    std::string_view get_string_option
    (
-    std::string_view name,
-    std::string_view description,
+    const char * name,
+    const char * description,
     std::string_view default_string
    )
    {
@@ -120,7 +133,7 @@ namespace joedb
 
    size_t get_enum_option
    (
-    std::string_view name,
+    const char * name,
     const std::vector<const char *> &labels,
     size_t default_index
    )
@@ -153,8 +166,8 @@ namespace joedb
    template<typename T>
    T get_option
    (
-    std::string_view name,
-    std::string_view description,
+    const char * name,
+    const char * description,
     T default_value
    )
    {
@@ -192,8 +205,8 @@ namespace joedb
 
    std::string_view get_next()
    {
-    if (index < args.size())
-     return args[index++].s;
+    if (index < argc)
+     return use_index();
     else
      return std::string_view{};
    }
@@ -203,17 +216,12 @@ namespace joedb
     options.emplace_back(parameter);
    }
 
-   std::string_view get_next_arg(const std::string_view parameter)
+   std::string_view get_next(const std::string_view parameter)
    {
     options.emplace_back(parameter);
 
-    if (index < args.size())
-    {
-     args[index].used = true;
-     const auto result = args[index].s;
-     update_index();
-     return result;
-    }
+    if (index < argc)
+     return use_index();
     else
     {
      missing_arg = true;
@@ -253,8 +261,7 @@ namespace joedb
       {
        for (size_t i = 0; i < option.labels->size(); i++)
        {
-        if (i > 0)
-         out << '|';
+        out << (i > 0 ? '|' : ' ');
         out << option.labels->at(i);
         if (size_t(option.default_index) == i)
          out << '*';
@@ -271,7 +278,12 @@ namespace joedb
     return out;
    }
 
+   size_t size() const {return args.size();}
    std::string_view operator[](size_t i) const {return args[i].s;}
+
+   int get_argc() const {return argc;}
+   const char * const *get_argv() const {return argv;}
+   int &get_index() {return index;}
  };
 }
 

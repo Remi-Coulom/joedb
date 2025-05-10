@@ -4,7 +4,7 @@
 #include "joedb/ui/main_exception_catcher.h"
 
 /////////////////////////////////////////////////////////////////////////////
-static int file_tutorial_main(int argc, char **argv)
+static int file_tutorial_main(joedb::Arguments &arguments)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char * const file_name = "file_tutorial.joedb";

@@ -9,25 +9,19 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static int joedb_to_json(int argc, char **argv)
+ static int joedb_to_json(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (argc <= 1)
+  const bool base64 = arguments.has_option("base64");
+  const std::string_view file_name = arguments.get_next("file.joedb");
+
+  if (arguments.has_missing())
   {
-   std::cerr << "usage: " << argv[0] << " [--base64] <file.joedb>\n";
+   arguments.print_help(std::cerr);
    return 1;
   }
 
-  bool base64 = false;
-  int file_index = 1;
-
-  if (argc > 2 && argv[1] == std::string("--base64"))
-  {
-   file_index++;
-   base64 = true;
-  }
-
-  File file(argv[file_index], Open_Mode::read_existing);
+  File file(file_name.data(), Open_Mode::read_existing);
   Readonly_Journal journal(file);
   Database db;
   journal.replay_log(db);

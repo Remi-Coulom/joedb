@@ -1,5 +1,4 @@
 #include "joedb/ui/process_journal_pair.h"
-#include "joedb/ui/Arguments.h"
 #include "joedb/journal/File.h"
 
 #include <iostream>
@@ -10,13 +9,10 @@ namespace joedb
  int process_journal_pair
  ////////////////////////////////////////////////////////////////////////////
  (
-  int argc,
-  char **argv,
+  Arguments &arguments,
   void (*process)(Readonly_Journal &, Writable_Journal &, int64_t checkpoint)
  )
  {
-  Arguments arguments(argc, argv);
-
   const bool ignore_errors = arguments.has_option("ignore_errors");
   const int64_t until = arguments.get_option<int64_t>
   (
@@ -24,8 +20,8 @@ namespace joedb
    "checkpoint",
    0
   );
-  const std::string_view input = arguments.get_next_arg("input.joedb");
-  const std::string_view output = arguments.get_next_arg("output.joedb");
+  const std::string_view input = arguments.get_next("input.joedb");
+  const std::string_view output = arguments.get_next("output.joedb");
 
   if (arguments.has_missing())
   {

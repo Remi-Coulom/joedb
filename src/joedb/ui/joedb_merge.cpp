@@ -15,14 +15,14 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static int merge_main(int argc, char **argv)
+ static int merge_main(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (argc < 2)
+  if (arguments.get_argc() < 2)
   {
-   std::cerr << "usage: " << argv[0];
+   std::cerr << "usage: " << arguments[0];
    std::cerr << " <db_1.joedb> ... <db_N.joedb> <output.joedb>\n";
-   std::cerr << "or read file names from input stream: " << argv[0];
+   std::cerr << "or read file names from input stream: " << arguments[0];
    std::cerr << " <output.joedb> <file_list.txt\n";
    std::cerr << "Note: output file must not already exist\n";
    return 1;
@@ -31,7 +31,7 @@ namespace joedb
   //
   // Create output file
   //
-  File output_file(argv[argc - 1], Open_Mode::create_new);
+  File output_file(arguments[arguments.size() - 1].data(), Open_Mode::create_new);
   Writable_Journal output_journal(output_file);
 
   //
@@ -39,8 +39,8 @@ namespace joedb
   //
   std::vector<std::string> file_names;
 
-  for (int i = 1; i < argc - 1; i++)
-   file_names.emplace_back(argv[i]);
+  for (int i = 1; i < arguments.get_argc() - 1; i++)
+   file_names.emplace_back(arguments[i]);
 
   if (file_names.empty())
   {

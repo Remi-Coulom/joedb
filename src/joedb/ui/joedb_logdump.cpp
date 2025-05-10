@@ -32,95 +32,80 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- static int logdump_main(int argc, char **argv)
+ static int logdump_main(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (argc <= 1)
+  const bool sql = arguments.has_option("sql");
+  const bool raw = arguments.has_option("raw");
+  const bool header = arguments.has_option("header");
+  const bool schema_only = arguments.has_option("schema_only");
+  const bool ignore_errors = arguments.has_option("ignore_errors");
+  const bool load = arguments.has_option("load");
+  const bool print_checkpoint = arguments.has_option("print_checkpoint");
+  const bool blob = arguments.has_option("blob");
+  const std::string_view file_name = arguments.get_next("file.joedb");
+
+  if (arguments.has_missing())
   {
-   std::cerr << "usage: " << argv[0];
-   std::cerr << " [--sql] [--raw] [--header] [--schema-only] [--ignore-errors] [--load] [--print-checkpoint] [--blob] <file.joedb>\n";
+   arguments.print_help(std::cerr);
    return 1;
   }
+
+  File file(file_name.data(), Open_Mode::read_existing);
+
+  if (header)
+   dump_header(std::cout, file);
   else
   {
-   int arg_index = 1;
+   std::optional<Readonly_Journal> journal;
 
- #define OPTION(b, s)\
-  bool b = false;\
-  if (arg_index < argc && std::strcmp(argv[arg_index], s) == 0)\
-  {\
-   b = true;\
-   arg_index++;\
-  }
-
-   OPTION(sql, "--sql");
-   OPTION(raw, "--raw");
-   OPTION(header, "--header");
-   OPTION(schema_only, "--schema-only");
-   OPTION(ignore_errors, "--ignore-errors");
-   OPTION(load, "--load");
-   OPTION(print_checkpoint, "--print-checkpoint");
-   OPTION(blob, "--blob");
-
-   if (arg_index != argc - 1)
-    return logdump_main(1, argv);
-
-   File file(argv[arg_index], Open_Mode::read_existing);
-
-   if (header)
-    dump_header(std::cout, file);
-   else
+   try
    {
-    std::optional<Readonly_Journal> journal;
-
-    try
-    {
-     journal.emplace
-     (
-      Journal_Construction_Lock(file, ignore_errors)
-     );
-    }
-    catch (const Exception &e)
-    {
-     if (ignore_errors)
-      throw;
-     else
-     {
-      std::cout << "Error opening journal file: " << e.what() << '\n';
-      std::cout << "run with the --ignore-errors flag to skip this check.\n";
-      return 1;
-     }
-    }
-
-    std::unique_ptr<Writable> writable;
-
-    const Buffered_File *blob_reader = blob ? &file : nullptr;
-
-    if (sql)
-     writable.reset(new SQL_Dump_Writable(std::cout, blob_reader));
-    else if (raw)
-     writable.reset(new Raw_Dump_Writable(std::cout));
-    else
-     writable.reset(new Interpreter_Dump_Writable(std::cout, blob));
-
-    if (schema_only)
-    {
-     Selective_Writable selective_writable
-     (
-      *writable,
-      Selective_Writable::Mode::schema
-     );
-     journal->replay_log(selective_writable);
-    }
-    else if (load)
-    {
-     Database db;
-     Multiplexer multiplexer{db, *writable};
-     dump(*journal, multiplexer, print_checkpoint);
-    }
-    else
-     dump(*journal, *writable, print_checkpoint);
+    journal.emplace
+    (
+     Journal_Construction_Lock(file, ignore_errors)
+    );
    }
+   catch (const Exception &e)
+   {
+    if (ignore_errors)
+     throw;
+    else
+    {
+     std::cout << "Error opening journal file: " << e.what() << '\n';
+     std::cout << "run with the --ignore-errors flag to skip this check.\n";
+     return 1;
+    }
+   }
+
+   std::unique_ptr<Writable> writable;
+
+   const Buffered_File *blob_reader = blob ? &file : nullptr;
+
+   if (sql)
+    writable.reset(new SQL_Dump_Writable(std::cout, blob_reader));
+   else if (raw)
+    writable.reset(new Raw_Dump_Writable(std::cout));
+   else
+    writable.reset(new Interpreter_Dump_Writable(std::cout, blob));
+
+   if (schema_only)
+   {
+    Selective_Writable selective_writable
+    (
+     *writable,
+     Selective_Writable::Mode::schema
+    );
+    journal->replay_log(selective_writable);
+   }
+   else if (load)
+   {
+    Database db;
+    Multiplexer multiplexer{db, *writable};
+    dump(*journal, multiplexer, print_checkpoint);
+   }
+   else
+    dump(*journal, *writable, print_checkpoint);
   }
 
   return 0;

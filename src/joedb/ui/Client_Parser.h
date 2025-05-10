@@ -3,6 +3,7 @@
 
 #include "joedb/ui/File_Parser.h"
 #include "joedb/ui/Connection_Parser.h"
+#include "joedb/ui/Arguments.h"
 #include "joedb/concurrency/Client.h"
 
 namespace joedb
@@ -41,9 +42,13 @@ namespace joedb
    );
 
    Client *get() {return client.get();}
-   bool has_file() const {return file_parser.get() != nullptr;}
+   bool has_file() const {return file_parser.get_file() != nullptr;}
 
-   void print_help(std::ostream &out) const;
+   void print_help(std::ostream &out) const
+   {
+    file_parser.print_help(out);
+    connection_parser.print_help(out);
+   }
  };
 }
 
