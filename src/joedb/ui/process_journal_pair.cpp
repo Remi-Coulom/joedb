@@ -23,7 +23,7 @@ namespace joedb
   const std::string_view input = arguments.get_next("input.joedb");
   const std::string_view output = arguments.get_next("output.joedb");
 
-  if (arguments.has_missing())
+  if (arguments.missing())
   {
    arguments.print_help(std::cerr);
    return 1;

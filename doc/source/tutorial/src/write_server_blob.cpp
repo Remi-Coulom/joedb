@@ -13,7 +13,7 @@ static int write_server_blob(joedb::Arguments &arguments)
 {
  const std::string blob_string{arguments.get_next("blob_string")};
 
- if (arguments.has_missing())
+ if (arguments.missing())
  {
   arguments.print_help(std::cerr);
   std::cerr << "This program will try to connect to a local server.\n";

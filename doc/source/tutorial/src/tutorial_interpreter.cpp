@@ -19,7 +19,7 @@ namespace joedb
  {
   const std::string_view file_name = arguments.get_next("file.joedb");
 
-  if (arguments.has_missing())
+  if (arguments.missing())
   {
    arguments.print_help(std::cerr);
    return 1;

@@ -163,20 +163,13 @@ namespace joedb
 
  std::string_view Arguments::get_next()
  {
-  if (index < argc)
-   return use_index();
-  else
-   return std::string_view{};
- }
-
- void Arguments::add_parameter(const char * parameter)
- {
-  options.emplace_back(parameter);
+  return get_next(nullptr);
  }
 
  std::string_view Arguments::get_next(const char * parameter)
  {
-  options.emplace_back(parameter);
+  if (parameter)
+   options.emplace_back(parameter);
 
   if (index < argc)
    return use_index();
@@ -185,6 +178,22 @@ namespace joedb
    missing_arg = true;
    return std::string_view{};
   }
+ }
+
+ bool Arguments::peek(const char *s)
+ {
+  if (index < argc && args[index].s == s)
+  {
+   use_index();
+   return true;
+  }
+  else
+   return false;
+ }
+
+ void Arguments::add_parameter(const char * parameter)
+ {
+  options.emplace_back(parameter);
  }
 
  std::ostream &Arguments::print_help(std::ostream &out)

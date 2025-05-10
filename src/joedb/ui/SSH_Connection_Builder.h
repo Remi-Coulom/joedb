@@ -18,36 +18,41 @@ namespace joedb
 
   public:
    bool has_sharing_option() const override {return true;}
-   int get_min_parameters() const override {return 3;}
-   int get_max_parameters() const override {return 5;}
    const char *get_name() const override {return "ssh";}
    const char *get_parameters_description() const override
    {
     return "<user> <host> <endpoint_path> [<ssh_port> [<ssh_log_level>]]";
    }
 
-   Connection &build
-   (
-    const int argc,
-    const char * const * const argv,
-    Buffered_File *file
-   ) override
+   Connection *build(Arguments &arguments, Buffered_File *file) override
    {
-    const char * const user = argv[0];
-    const char * const host = argv[1];
-    const char * const remote_path = argv[2];
-    const unsigned ssh_port = argc > 3 ? std::atoi(argv[3]) : 22;
-    const int ssh_log_level = argc > 4 ? std::atoi(argv[4]) : 0;
+    const std::string_view user = arguments.get_next();
+    const std::string_view host = arguments.get_next();
+    const std::string_view remote_path = arguments.get_next();
+
+    if (arguments.missing())
+     return nullptr;
+
+    const std::string_view port_string = arguments.get_next();
+    const std::string_view log_level_string = arguments.get_next();
+
+    unsigned ssh_port = 22;
+    if (port_string.data())
+     ssh_port = std::atoi(port_string.data());
+
+    int ssh_log_level =  0;
+    if (log_level_string.data())
+     ssh_log_level = std::atoi(log_level_string.data());
 
     connector = std::make_unique<ssh::Connector>
     (
-     user,
-     host,
+     user.data(),
+     host.data(),
      ssh_port,
      ssh_log_level,
      nullptr,
      nullptr,
-     remote_path
+     remote_path.data()
     );
 
     if (file)
@@ -55,7 +60,7 @@ namespace joedb
     else
      connection = std::make_unique<Server_File>(*connector, &std::cerr);
 
-    return *connection;
+    return connection.get();
    }
  };
 }

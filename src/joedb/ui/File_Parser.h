@@ -2,6 +2,7 @@
 #define joedb_File_Parser_declared
 
 #include "joedb/journal/Buffered_File.h"
+#include "joedb/ui/Arguments.h"
 
 #ifdef JOEDB_HAS_SSH
 #include "joedb/ssh/Session.h"
@@ -45,16 +46,8 @@ namespace joedb
    {
    }
 
-   Buffered_File *parse
-   (
-    std::ostream &out,
-    int argc,
-    const char * const * argv,
-    int &arg_index
-   );
-
+   Buffered_File *parse(std::ostream &out, Arguments &arguments);
    Buffered_File *get_file() const {return file.get();}
-
    void print_help(std::ostream &out) const;
  };
 }

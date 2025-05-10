@@ -15,7 +15,7 @@ namespace joedb
   const std::string_view host = arguments.get_next("host");
   const std::string_view endpoint_path = arguments.get_next("endpoint_path");
 
-  if (arguments.has_missing())
+  if (arguments.missing())
   {
    arguments.print_help(std::cerr);
    return 1;

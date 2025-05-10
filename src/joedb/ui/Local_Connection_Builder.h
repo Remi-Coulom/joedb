@@ -19,31 +19,27 @@ namespace joedb
 
   public:
    bool has_sharing_option() const override {return true;}
-   int get_min_parameters() const override {return 1;}
-   int get_max_parameters() const override {return 1;}
    const char *get_name() const override {return "local";}
    const char *get_parameters_description() const override
    {
     return "<endpoint_path>";
    }
 
-   Connection &build
-   (
-    const int argc,
-    const char * const * const argv,
-    Buffered_File *file
-   ) override
+   Connection *build(Arguments &arguments, Buffered_File *file) override
    {
-    const char * const endpoint_path = argv[0];
+    const std::string_view endpoint_path = arguments.get_next();
 
-    connector = std::make_unique<Local_Connector>(endpoint_path);
+    if (arguments.missing())
+     return nullptr;
+
+    connector = std::make_unique<Local_Connector>(endpoint_path.data());
 
     if (file)
      connection = std::make_unique<Robust_Connection>(*connector, &std::cerr);
     else
      connection = std::make_unique<Server_File>(*connector, &std::cerr);
 
-    return *connection;
+    return connection.get();
    }
  };
 }

@@ -24,10 +24,9 @@ namespace joedb
   File_Parser parser;
   std::ofstream out;
 
-  int arg_index = 0;
-  constexpr int argc = 1;
-  const char * argv[argc] = {"memory"};
-  parser.parse(out, argc, const_cast<char **>(argv), arg_index);
+  std::array argv{"test", "memory"};
+  Arguments arguments(argv.size(), argv.data());
+  ASSERT_TRUE(parser.parse(out, arguments));
   Writable_Journal journal(*parser.get_file());
   journal.comment("Hello");
   journal.soft_checkpoint();
@@ -41,17 +40,15 @@ namespace joedb
   std::ofstream out;
 
   {
-   int arg_index = 0;
-   constexpr int argc = 2;
-   const char * argv[argc] = {"interpreted", "dump_test.joedbi"};
-   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
+   std::array argv{"test", "interpreted", "dump_test.joedbi"};
+   Arguments arguments(argv.size(), argv.data());
+   parser.parse(out, arguments);
   }
 
   {
-   int arg_index = 0;
-   constexpr int argc = 3;
-   const char * argv[argc] = {"interpreted", "--read", "dump_test.joedbi"};
-   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
+   std::array argv{"test", "interpreted", "--read", "dump_test.joedbi"};
+   Arguments arguments(argv.size(), argv.data());
+   parser.parse(out, arguments);
   }
  }
 
@@ -68,11 +65,9 @@ namespace joedb
    File_Parser parser;
    std::ofstream out;
 
-   int arg_index = 0;
-   constexpr int argc = 2;
-   const char * argv[argc] = {"brotli", file_name};
-
-   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
+   std::array argv{"test", "brotli", file_name};
+   Arguments arguments(argv.size(), argv.data());
+   ASSERT_TRUE(parser.parse(out, arguments));
    Writable_Journal journal(*parser.get_file());
    journal.create_table(table_name);
    journal.soft_checkpoint();
@@ -82,11 +77,9 @@ namespace joedb
    File_Parser parser;
    std::ofstream out;
 
-   int arg_index = 0;
-   constexpr int argc = 3;
-   const char * argv[argc] = {"brotli", "--read", file_name};
-
-   parser.parse(out, argc, const_cast<char **>(argv), arg_index);
+   std::array argv{"test", "brotli", "--read", file_name};
+   Arguments arguments(argv.size(), argv.data());
+   ASSERT_TRUE(parser.parse(out, arguments));
    EXPECT_ANY_THROW(Writable_Journal{*parser.get_file()});
    Readonly_Journal journal{*parser.get_file()};
    Database db;
@@ -107,15 +100,14 @@ namespace joedb
   File_Parser parser;
   std::ofstream out;
 
-  int arg_index = 0;
-  constexpr int argc = 2;
-  const char * argv[argc] =
+  std::array argv
   {
+   "test",
    "curl",
    "https://github.com/Remi-Coulom/joedb/raw/refs/heads/dev/test/endianness.joedb"
   };
-
-  parser.parse(out, argc, const_cast<char **>(argv), arg_index);
+  Arguments arguments(argv.size(), argv.data());
+  ASSERT_TRUE(parser.parse(out, arguments));
   Readonly_Journal journal(*parser.get_file());
   Database db;
   journal.replay_log(db);

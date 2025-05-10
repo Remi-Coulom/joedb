@@ -16,27 +16,14 @@ namespace joedb
   private:
    std::vector<std::unique_ptr<Connection_Builder>> builders;
 
-   Connection_Builder &get_builder(const char *name) const;
-
-   static Connection &build
-   (
-    Connection_Builder &builder,
-    int argc,
-    const char * const * argv,
-    Buffered_File *file
-   );
+   Connection_Builder &get_builder(std::string_view name) const;
 
   public:
    Connection_Parser();
 
    void print_help(std::ostream &out) const;
 
-   Connection &build
-   (
-    int argc,
-    const char * const * argv,
-    Buffered_File *file
-   ) const;
+   Connection *build(Arguments &arguments, Buffered_File *file) const;
  };
 }
 

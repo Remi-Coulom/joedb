@@ -24,32 +24,31 @@ namespace joedb
    include_shared
   );
 
-  if (arguments.size() <= 1)
+  std::ostream null_stream(nullptr);
+  Buffered_File *file = file_parser.parse(null_stream, arguments);
+
+  std::optional<File_Parser> blob_file_parser;
+  Buffered_File *blob_file = nullptr;
+
+  if (arguments.get_remaining_count())
+  {
+   blob_file_parser.emplace();
+   blob_file = blob_file_parser->parse(null_stream, arguments);
+  }
+  else
+   blob_file = file;
+
+  if (!file)
   {
    std::cerr << "usage: " << arguments[0] << " <file> [<blob_file>]\n\n";
    file_parser.print_help(std::cerr);
    return 1;
   }
 
-  int arg_index = 1;
-  std::ostream null_stream(nullptr);
-  Buffered_File &file = *file_parser.parse(null_stream, arguments.get_argc(), arguments.get_argv(), arg_index);
-
-  std::optional<File_Parser> blob_file_parser;
-  Buffered_File *blob_file = nullptr;
-
-  if (arg_index < arguments.get_argc())
-  {
-   blob_file_parser.emplace();
-   blob_file = blob_file_parser->parse(null_stream, arguments.get_argc(), arguments.get_argv(), arg_index);
-  }
-  else
-   blob_file = &file;
-
-  if (file.is_readonly() || (blob_file && blob_file->is_readonly()))
+  if (file->is_readonly() || (blob_file && blob_file->is_readonly()))
   {
    Database db;
-   Readonly_Journal journal(file);
+   Readonly_Journal journal(*file);
    journal.replay_log(db);
    Readable_Interpreter interpreter(db, blob_file);
    interpreter.main_loop(std::cin, std::cout);
@@ -57,7 +56,7 @@ namespace joedb
   else
   {
    Connection connection;
-   Writable_Database_Client client(file, connection);
+   Writable_Database_Client client(*file, connection);
 
    std::optional<Writable_Journal> blob_journal;
    if (blob_file_parser)

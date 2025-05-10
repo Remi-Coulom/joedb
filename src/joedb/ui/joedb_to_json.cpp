@@ -15,7 +15,7 @@ namespace joedb
   const bool base64 = arguments.has_flag("base64");
   const std::string_view file_name = arguments.get_next("file.joedb");
 
-  if (arguments.has_missing())
+  if (arguments.missing())
   {
    arguments.print_help(std::cerr);
    return 1;

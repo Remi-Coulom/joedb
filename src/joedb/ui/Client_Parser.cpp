@@ -128,34 +128,24 @@ namespace joedb
 
   arguments.add_parameter("file");
   arguments.add_parameter("connection");
+
   if (arguments.get_remaining_count() == 0)
    return;
 
   std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
   std::cerr << "db_type = " << db_string[int(db_type)] << '\n';
 
-  file_parser.parse
-  (
-   std::cerr,
-   arguments.get_argc(),
-   arguments.get_argv(),
-   arguments.get_index()
-  );
-
-  Buffered_File *client_file = file_parser.get_file();
-
-  Connection &connection = connection_parser.build
-  (
-   arguments.get_argc() - arguments.get_index(),
-   arguments.get_argv() + arguments.get_index(),
-   client_file
-  );
+  Buffered_File *client_file = file_parser.parse(std::cerr, arguments);
+  Connection *connection = connection_parser.build(arguments, client_file);
 
   if (!client_file)
-   client_file = dynamic_cast<Buffered_File *>(&connection);
+   client_file = dynamic_cast<Buffered_File *>(connection);
 
   if (!client_file)
-   throw Exception("server file must be used with a network or ssh connection");
+   throw Exception("could not create file");
+
+  if (!connection)
+   throw Exception("could not create connection");
 
   std::cerr << "Creating client... ";
 
@@ -165,14 +155,14 @@ namespace joedb
    {
     client.reset
     (
-     new Readonly_Client(*client_file, connection, content_check)
+     new Readonly_Client(*client_file, *connection, content_check)
     );
    }
    else
    {
     client.reset
     (
-     new Writable_Journal_Client(*client_file, connection, content_check)
+     new Writable_Journal_Client(*client_file, *connection, content_check)
     );
    }
   }
@@ -182,14 +172,14 @@ namespace joedb
    {
     client.reset
     (
-     new Readonly_Database_Client(*client_file, connection, content_check)
+     new Readonly_Database_Client(*client_file, *connection, content_check)
     );
    }
    else
    {
     client.reset
     (
-     new Writable_Database_Client(*client_file, connection, content_check)
+     new Writable_Database_Client(*client_file, *connection, content_check)
     );
    }
   }
@@ -198,7 +188,7 @@ namespace joedb
    client.reset(new Readonly_Writable_Client<joedb::SQL_Dump_Writable>
    (
     *client_file,
-    connection,
+    *connection,
     content_check
    ));
   }
@@ -207,7 +197,7 @@ namespace joedb
    client.reset(new Readonly_Writable_Client<joedb::Interpreter_Dump_Writable>
    (
     *client_file,
-    connection,
+    *connection,
     content_check
    ));
   }

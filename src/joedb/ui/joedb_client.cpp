@@ -26,6 +26,7 @@ namespace joedb
   if (!client_parser.get())
   {
    arguments.print_help(std::cerr) << '\n';
+   client_parser.print_help(std::cerr);
    return 1;
   }
 

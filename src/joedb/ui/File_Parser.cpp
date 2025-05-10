@@ -78,170 +78,122 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Buffered_File *File_Parser::parse
+ Buffered_File *File_Parser::parse(std::ostream &out, Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
- (
-  std::ostream &out,
-  const int argc,
-  const char * const * const argv,
-  int &arg_index
- )
  {
-  if (arg_index < argc && std::strcmp(argv[arg_index], "memory") == 0)
-  {
+  if (arguments.peek("memory"))
    file.reset(new Memory_File());
-   arg_index++;
-  }
-  else if (arg_index < argc && std::strcmp(argv[arg_index], "server") == 0)
+  else if (arguments.peek("server"))
+   file.reset();
+  else if (arguments.peek("interpreted"))
   {
-   arg_index++;
-  }
-  else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "interpreted") == 0)
-  {
-   arg_index++;
-
-   bool readonly;
+   bool readonly = false;
 
    if (default_only)
-   {
     readonly = default_open_mode == Open_Mode::read_existing;
-   }
-   else if (arg_index < argc + 1 && std::strcmp(argv[arg_index], "--read") == 0)
-   {
+   else if (arguments.peek("--read"))
     readonly = true;
-    arg_index++;
-   }
-   else
-    readonly = false;
 
-   const char * const file_name = argv[arg_index];
-   arg_index++;
+   const std::string_view file_name = arguments.get_next();
+   if (arguments.missing())
+    return nullptr;
 
    out << "Opening interpreted file... ";
    out.flush();
 
    if (readonly)
-    file.reset(new Readonly_Interpreted_File(file_name));
+    file.reset(new Readonly_Interpreted_File(file_name.data()));
    else
-    file.reset(new Interpreted_File(file_name));
+    file.reset(new Interpreted_File(file_name.data()));
 
    out << "OK\n";
   }
 #ifdef JOEDB_HAS_SSH
-  else if (arg_index + 3 < argc && std::strcmp(argv[arg_index], "sftp") == 0)
+  else if (arguments.peek("sftp"))
   {
-   arg_index++;
+   std::string_view port_string;
+   if (arguments.peek("--port"))
+    port_string = arguments.get_next();
+
+   std::string_view verbosity_string;
+   if (arguments.peek("--verbosity"))
+    verbosity_string = arguments.get_next();
+
+   const std::string_view user = arguments.get_next();
+   const std::string_view host = arguments.get_next();
+   const std::string_view file_name = arguments.get_next();
+
+   if (arguments.missing())
+    return nullptr;
 
    unsigned port = 22;
-   if (arg_index + 4 < argc && std::strcmp(argv[arg_index], "--port") == 0)
-   {
-    arg_index++;
-    port = uint16_t(std::atoi(argv[arg_index++]));
-   }
+   if (port_string.data())
+    port = uint16_t(std::atoi(port_string.data()));
 
    int verbosity = 0;
-   if (arg_index + 4 < argc && std::strcmp(argv[arg_index], "--verbosity") == 0)
-   {
-    arg_index++;
-    verbosity = std::atoi(argv[arg_index++]);
-   }
-
-   const char * const user = argv[arg_index++];
-   const char * const host = argv[arg_index++];
+   if (verbosity_string.data())
+    verbosity = std::atoi(verbosity_string.data());
 
    out << "Creating ssh Session... ";
    out.flush();
+   ssh_session.emplace(user.data(), host.data(), port, verbosity);
 
-   ssh_session.emplace(user, host, port, verbosity);
-
-   out << "OK\n";
-
-   out << "Initializing sftp... ";
+   out << "OK\nInitializing sftp... ";
    out.flush();
-
    sftp.emplace(*ssh_session);
 
-   out << "OK\n";
-
-   const char * const file_name = argv[arg_index++];
-
-   out << "Opening file... ";
-
-   file.reset(new SFTP_File(*sftp, file_name));
+   out << "OK\nOpening file... ";
+   out.flush();
+   file.reset(new SFTP_File(*sftp, file_name.data()));
 
    out << "OK\n";
   }
 #endif
 #ifdef JOEDB_HAS_CURL
-  else if (arg_index < argc && std::strcmp(argv[arg_index], "curl") == 0)
+  else if (arguments.peek("curl"))
   {
-   arg_index++;
+   const bool verbose = arguments.peek("--verbose");
+   const std::string_view url = arguments.get_next();
 
-   bool verbose = false;
-   if (arg_index < argc && std::strcmp(argv[arg_index], "--verbose") == 0)
-   {
-    verbose = true;
-    arg_index++;
-   }
+   if (arguments.missing())
+    return nullptr;
 
-   const char * url = nullptr;
-
-   if (arg_index < argc)
-   {
-    url = argv[arg_index];
-    arg_index++;
-   }
-
-   if (url && *url)
-   {
-    file.reset(new CURL_File(url, verbose));
-    out << "OK\n";
-   }
-   else
-    throw Exception("missing URL");
+   file.reset(new CURL_File(url.data(), verbose));
   }
 #endif
 #ifdef JOEDB_HAS_BROTLI
-  else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "brotli") == 0)
+  else if (arguments.peek("brotli"))
   {
-   arg_index++;
-
-   bool readonly;
+   bool readonly = false;
 
    if (default_only)
-   {
     readonly = default_open_mode == Open_Mode::read_existing;
-   }
-   else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--read") == 0)
-   {
+   else if (arguments.peek("--read"))
     readonly = true;
-    arg_index++;
-   }
-   else
-    readonly = false;
 
-   const char * const file_name = argv[arg_index];
-   arg_index++;
+   const std::string_view file_name = arguments.get_next();
+
+   if (arguments.missing())
+    return nullptr;
 
    out << "Opening brotli file... ";
    out.flush();
 
    if (readonly)
-    file.reset(new Readonly_Brotli_File(file_name));
+    file.reset(new Readonly_Brotli_File(file_name.data()));
    else
-    file.reset(new Brotli_File(file_name));
+    file.reset(new Brotli_File(file_name.data()));
 
    out << "OK\n";
   }
 #endif
   else
   {
-   if (arg_index < argc && std::strcmp(argv[arg_index], "file") == 0)
-    arg_index++;
+   arguments.peek("file");
 
    Open_Mode open_mode = default_open_mode;
 
-   if (arg_index < argc && !default_only)
+   if (!default_only)
    {
     for (size_t i = 0; i < open_modes; i++)
     {
@@ -249,32 +201,20 @@ namespace joedb
      if (!include_shared && mode == Open_Mode::shared_write)
       continue;
      const std::string option = std::string("--") + open_mode_strings[i];
-     if (option == argv[arg_index])
-     {
+     if (arguments.peek(option.data()))
       open_mode = mode;
-      arg_index++;
-     }
     }
    }
 
-   const char *file_name = nullptr;
-   if (arg_index < argc)
-   {
-    file_name = argv[arg_index];
-    arg_index++;
-   }
+   const std::string_view file_name = arguments.get_next();
+
+   if (arguments.missing())
+    return nullptr;
 
    out << "Opening local file (open_mode = ";
    out << open_mode_strings[size_t(open_mode)] << ") ... ";
    out.flush();
-
-   if (file_name && *file_name)
-   {
-    file.reset(new File(file_name, open_mode));
-    out << "OK\n";
-   }
-   else
-    throw Exception("missing file name");
+   file.reset(new File(file_name.data(), open_mode));
   }
 
   return file.get();

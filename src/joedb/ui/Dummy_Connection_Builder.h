@@ -18,14 +18,9 @@ namespace joedb
     return "dummy";
    }
 
-   Connection &build
-   (
-    const int argc,
-    const char * const * const argv,
-    Buffered_File *file
-   ) override
+   Connection *build(Arguments &arguments, Buffered_File *file) override
    {
-    return connection;
+    return &connection;
    }
  };
 }

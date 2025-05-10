@@ -56,14 +56,12 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- Connection_Builder &Connection_Parser::get_builder(const char *name) const
+ Connection_Builder &Connection_Parser::get_builder(std::string_view name) const
  //////////////////////////////////////////////////////////////////////////
  {
   for (const auto &b: builders)
-  {
-   if (std::strcmp(b->get_name(), name) == 0)
+   if (name == b->get_name())
     return *b;
-  }
 
   std::ostringstream message;
   message << "Unknown connection type: " << name << '\n';
@@ -72,60 +70,23 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- Connection &Connection_Parser::build
+ Connection *Connection_Parser::build
  //////////////////////////////////////////////////////////////////////////
  (
-  Connection_Builder &builder,
-  const int argc,
-  const char * const * const argv,
-  Buffered_File *file
- )
- {
-  if
-  (
-   argc < builder.get_min_parameters() ||
-   argc > builder.get_max_parameters()
-  )
-  {
-   const char * description = builder.get_parameters_description();
-   if (!*description)
-    description = "no parameters";
-   throw Exception
-   (
-    std::string("Wrong number of connection arguments. Expected: ") +
-    std::string(description)
-   );
-  }
-
-  return builder.build(argc, argv, file);
- }
-
- //////////////////////////////////////////////////////////////////////////
- Connection &Connection_Parser::build
- //////////////////////////////////////////////////////////////////////////
- (
-  const int argc,
-  const char * const * argv,
+  Arguments &arguments,
   Buffered_File *file
  ) const
  {
-  const char * connection_name;
-  int arg_index = 0;
+  std::string_view connection_name;
 
-  if (argc <= 0)
+  if (arguments.get_remaining_count() == 0)
    connection_name = builders[0]->get_name();
   else
-   connection_name = argv[arg_index++];
+   connection_name = arguments.get_next();
 
   std::cerr << "Creating connection (" << connection_name << ") ... ";
 
-  Connection &result = build
-  (
-   get_builder(connection_name),
-   argc - arg_index,
-   argv + arg_index,
-   file
-  );
+  Connection *result = get_builder(connection_name.data()).build(arguments, file);
 
   std::cerr << "OK\n";
 

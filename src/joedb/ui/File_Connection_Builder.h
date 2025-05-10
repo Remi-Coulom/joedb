@@ -20,37 +20,31 @@ namespace joedb
 
   public:
    const char *get_name() const override {return "file";}
-   int get_min_parameters() const override {return 1;}
-   int get_max_parameters() const override {return 100;}
 
    const char *get_parameters_description() const override
    {
     return "<file>";
    }
 
-   Connection &build
-   (
-    const int argc,
-    const char * const * const argv,
-    Buffered_File *file
-   ) override
+   Connection *build(Arguments &arguments, Buffered_File *file) override
    {
-    int arg_index = 0;
     std::ostream null_stream(nullptr);
-    file_parser.parse(null_stream, argc, argv, arg_index);
 
-    if (file_parser.get_file()->is_readonly())
+    if (file_parser.parse(null_stream, arguments))
     {
-     readonly_journal.emplace(*file_parser.get_file());
-     connection.reset(new Pullonly_Journal_Connection(*readonly_journal));
-    }
-    else
-    {
-     writable_journal.emplace(*file_parser.get_file());
-     connection.reset(new Journal_Connection(*writable_journal));
+     if (file_parser.get_file()->is_readonly())
+     {
+      readonly_journal.emplace(*file_parser.get_file());
+      connection.reset(new Pullonly_Journal_Connection(*readonly_journal));
+     }
+     else
+     {
+      writable_journal.emplace(*file_parser.get_file());
+      connection.reset(new Journal_Connection(*writable_journal));
+     }
     }
 
-    return *connection;
+    return connection.get();
    }
  };
 }

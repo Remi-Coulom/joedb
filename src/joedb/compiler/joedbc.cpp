@@ -61,7 +61,7 @@ namespace joedb
   const std::string_view joedbi_file_name = arguments.get_next("file.joedbi");
   const std::string_view joedbc_file_name = arguments.get_next("file.joedbc");
 
-  if (arguments.has_missing())
+  if (arguments.missing())
   {
    arguments.print_help(std::cerr);
    return 1;
