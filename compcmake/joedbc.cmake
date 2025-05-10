@@ -33,6 +33,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Table.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Arguments.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/base64.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Blob_Reader_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Command_Processor.cpp

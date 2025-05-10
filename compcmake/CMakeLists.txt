@@ -78,6 +78,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/Writable_Journal.cpp
+ ../src/joedb/ui/Arguments.cpp
  ../src/joedb/ui/joedb_convert.cpp
  ../src/joedb/ui/main_exception_catcher.cpp
  ../src/joedb/ui/process_journal_pair.cpp
@@ -278,6 +279,7 @@ add_executable(minimal_tutorial
  ../doc/source/tutorial/src/tutorial/writable.cpp
  ../doc/source/tutorial/src/tutorial_main.cpp
  ../src/joedb/compiler/minimal_runtime.cpp
+ ../src/joedb/ui/Arguments.cpp
  ../src/joedb/ui/main_exception_catcher.cpp
 )
 

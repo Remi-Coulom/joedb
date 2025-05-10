@@ -1,14 +1,14 @@
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 
 #include <iostream>
 
 namespace joedb
 {
- /// Catch exception from main
+ /// Process command-line arguments and catch exceptions from main
  ///
  /// This function is particularly necessary in Windows, because no
  /// exception information is printed by default there.
- int main_exception_catcher
+ int main_wrapper
  (
   int (*main)(Arguments &), int argc, char **argv
  )

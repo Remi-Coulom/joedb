@@ -7,7 +7,7 @@ namespace joedb
  TEST(Arguments, options)
  {
   const std::vector<const char *> v{"--follow", "--timeout", "1.23"};
-  Arguments arguments(v.size(), v.data());
+  Arguments arguments(int(v.size()), v.data());
   EXPECT_TRUE(arguments.has_option("follow"));
   EXPECT_FALSE(arguments.has_option("qsdf"));
   EXPECT_EQ(arguments.get_string_option("timeout", "seconds", "0"), "1.23");
