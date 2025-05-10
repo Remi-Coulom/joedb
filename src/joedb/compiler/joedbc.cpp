@@ -4,7 +4,7 @@
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/ui/Interpreter.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/generator/Database_cpp.h"
@@ -55,7 +55,7 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- static int joedbc_main(Arguments &arguments)
+ static int joedbc(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
   const std::string_view joedbi_file_name = arguments.get_next("file.joedbi");
@@ -155,5 +155,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::joedbc_main, argc, argv);
+ return joedb::main_wrapper(joedb::joedbc, argc, argv);
 }

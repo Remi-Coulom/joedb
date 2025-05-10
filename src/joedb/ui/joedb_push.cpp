@@ -1,4 +1,4 @@
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Arguments.h"
 #include "joedb/concurrency/Readonly_Client.h"
@@ -66,5 +66,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::push, argc, argv);
+ return joedb::main_wrapper(joedb::push, argc, argv);
 }

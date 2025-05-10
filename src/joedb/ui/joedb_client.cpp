@@ -1,4 +1,4 @@
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Client_Command_Processor.h"
 #include "joedb/concurrency/Client.h"
@@ -9,7 +9,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- static int joedb_client(Arguments &arguments)
+ static int client(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
   const Open_Mode default_mode = File::lockable
@@ -51,5 +51,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(joedb::joedb_client, argc, argv);
+ joedb::main_wrapper(joedb::client, argc, argv);
 }

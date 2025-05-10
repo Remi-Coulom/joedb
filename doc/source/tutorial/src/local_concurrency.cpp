@@ -1,6 +1,6 @@
 #include "tutorial/File_Client.h"
 
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 
 #include <chrono>
 #include <thread>
@@ -30,5 +30,5 @@ static int local_concurrency(joedb::Arguments &arguments)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(local_concurrency, argc, argv);
+ return joedb::main_wrapper(local_concurrency, argc, argv);
 }

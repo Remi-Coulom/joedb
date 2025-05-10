@@ -44,7 +44,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/ui/get_time_string.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Interpreter_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/json.cpp
- ${JOEDB_SRC_DIR}/joedb/ui/main_exception_catcher.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/main_wrapper.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Readable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Readable_Writable_Command_Processor.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/SQL_Dump_Writable.cpp

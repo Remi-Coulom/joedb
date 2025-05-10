@@ -1,4 +1,4 @@
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/concurrency/Local_Connector.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
@@ -9,11 +9,13 @@
 ///
 /// This demonstrates how to connect to a joedb server to read and write blobs,
 /// without downloading a full replica of the database.
-static int write_server_blob(int argc, char **argv)
+static int write_server_blob(joedb::Arguments &arguments)
 {
- if (argc < 2)
+ const std::string blob_string{arguments.get_next("blob_string")};
+
+ if (arguments.has_missing())
  {
-  std::cerr << "usage: " << argv[0] << " <blob_string>\n";
+  arguments.print_help(std::cerr);
   std::cerr << "This program will try to connect to a local server.\n";
   std::cerr << "Before running this program, start a joedb server with:\n";
   std::cerr << "joedb_server --socket blobs.sock blobs.joedb\n";
@@ -35,7 +37,7 @@ static int write_server_blob(int argc, char **argv)
 
   for (int i = 3; --i >= 0;)
   {
-   const joedb::Blob blob = lock.get_journal().write_blob(argv[1]);
+   const joedb::Blob blob = lock.get_journal().write_blob(blob_string);
    lock.checkpoint_and_push();
    std::cout << "wrote blob with lock: " << blob.get_position() << '\n';
    std::cout << "blob: " << server_file.read_blob(blob) << '\n';
@@ -47,9 +49,9 @@ static int write_server_blob(int argc, char **argv)
  // Write blobs with a transaction: lock and unlock for each write
  for (int i = 3; --i >= 0;)
  {
-  const auto blob = client.transaction([argv](joedb::Writable_Journal &journal)
+  const auto blob = client.transaction([&](joedb::Writable_Journal &journal)
   {
-   return journal.write_blob(argv[1]);
+   return journal.write_blob(blob_string);
   });
   std::cout << "wrote blob with transaction: " << blob.get_position() << '\n';
   std::cout << "blob: " << server_file.read_blob(blob) << '\n';
@@ -60,5 +62,5 @@ static int write_server_blob(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
- return joedb::main_exception_catcher(write_server_blob, argc, argv);
+ return joedb::main_wrapper(write_server_blob, argc, argv);
 }

@@ -1,5 +1,5 @@
 #include "joedb/journal/File.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Arguments.h"
 
 #include <iostream>
@@ -35,5 +35,5 @@ namespace joedb
 int main(int argc, char **argv)
 //////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(joedb::lock, argc, argv);
+ joedb::main_wrapper(joedb::lock, argc, argv);
 }

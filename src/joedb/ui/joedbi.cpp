@@ -1,5 +1,5 @@
 #include "joedb/ui/Interpreter.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/File_Parser.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/Writable_Journal.h"
@@ -88,5 +88,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::joedbi, argc, argv);
+ return joedb::main_wrapper(joedb::joedbi, argc, argv);
 }

@@ -2,18 +2,22 @@
 #include "joedb/concurrency/Writable_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/ssh/Forward_Channel.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 
 #include <iostream>
 
 namespace joedb
 {
  /// test how long we can wait without losing connection
- static int keepalive_test(int argc, char **argv)
+ static int keepalive_test(Arguments &arguments)
  {
-  if (argc < 4)
+  const std::string_view user = arguments.get_next("user");
+  const std::string_view host = arguments.get_next("host");
+  const std::string_view endpoint_path = arguments.get_next("endpoint_path");
+
+  if (arguments.has_missing())
   {
-   std::cerr << "usage: " << argv[0] << " <user> <host> <endpoint_path>\n";
+   arguments.print_help(std::cerr);
    return 1;
   }
 
@@ -25,8 +29,8 @@ namespace joedb
 
   while (true)
   {
-   ssh::Session session(argv[1], argv[2], 22, 0);
-   ssh::Forward_Channel channel(session, argv[3]);
+   ssh::Session session(user.data(), host.data(), 22, 0);
+   ssh::Forward_Channel channel(session, endpoint_path.data());
    Server_Connection connection(channel, &std::cerr);
    Writable_Client client(journal, connection, Content_Check::none);
 
@@ -50,5 +54,5 @@ namespace joedb
 
 int main(int argc, char **argv)
 {
- return joedb::main_exception_catcher(joedb::keepalive_test, argc, argv);
+ return joedb::main_wrapper(joedb::keepalive_test, argc, argv);
 }

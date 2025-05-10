@@ -1,4 +1,4 @@
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
@@ -92,5 +92,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::multi_server, argc, argv);
+ return joedb::main_wrapper(joedb::multi_server, argc, argv);
 }

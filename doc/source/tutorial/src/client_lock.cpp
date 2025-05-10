@@ -1,7 +1,7 @@
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "tutorial/File_Client.h"
 
-static int client_lock(int argc, char **argv)
+static int client_lock(joedb::Arguments &arguments)
 {
  tutorial::File_Client client("tutorial.joedb");
 
@@ -20,5 +20,5 @@ static int client_lock(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
- return joedb::main_exception_catcher(client_lock, argc, argv);
+ return joedb::main_wrapper(client_lock, argc, argv);
 }

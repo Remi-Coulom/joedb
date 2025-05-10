@@ -6,7 +6,7 @@
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/ui/Raw_Dump_Writable.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/interpreted/Database.h"
 
 #include <iostream>
@@ -32,7 +32,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- static int logdump_main(Arguments &arguments)
+ static int logdump(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
   const bool sql = arguments.has_option("sql");
@@ -116,5 +116,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::logdump_main, argc, argv);
+ return joedb::main_wrapper(joedb::logdump, argc, argv);
 }

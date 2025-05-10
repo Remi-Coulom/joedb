@@ -2,7 +2,7 @@
 #include "tutorial/File_Client.h"
 #include "tutorial/Readable.h"
 #include "tutorial/Multiplexer.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/Blob_Reader_Command_Processor.h"
 #include "joedb/ui/Data_Manipulation_Command_Processor.h"
@@ -14,10 +14,18 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- static int main(int argc, char **argv)
+ static int tutorial_interpreter(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
-  tutorial::File_Client client("tutorial.joedb");
+  const std::string_view file_name = arguments.get_next("file.joedb");
+
+  if (arguments.has_missing())
+  {
+   arguments.print_help(std::cerr);
+   return 1;
+  }
+
+  tutorial::File_Client client(file_name.data());
 
   client.transaction([](tutorial::Writable_Database &db){
    tutorial::Readable readable(db);
@@ -54,5 +62,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(joedb::main, argc, argv);
+ joedb::main_wrapper(joedb::tutorial_interpreter, argc, argv);
 }

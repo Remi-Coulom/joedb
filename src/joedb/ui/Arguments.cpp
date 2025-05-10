@@ -1,6 +1,5 @@
 #include "joedb/ui/Arguments.h"
 #include "joedb/error/assert.h"
-#include "joedb/get_version.h"
 
 #include <charconv>
 
@@ -190,7 +189,6 @@ namespace joedb
 
  std::ostream &Arguments::print_help(std::ostream &out)
  {
-  out << "joedb version: " << get_version() << '\n';
   out << "usage: " << args[0].s;
 
   for (const auto &option: options)

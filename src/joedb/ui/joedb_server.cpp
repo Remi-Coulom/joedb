@@ -2,7 +2,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/IO_Context_Wrapper.h"
 #include "joedb/ui/Client_Parser.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Arguments.h"
 
 #include <iostream>
@@ -12,7 +12,7 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
- static int joedb_server(Arguments &arguments)
+ static int server(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
   std::string default_endpoint_path = "joedb.sock";
@@ -77,5 +77,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::joedb_server, argc, argv);
+ return joedb::main_wrapper(joedb::server, argc, argv);
 }

@@ -1,5 +1,5 @@
 #include "tutorial/File_Database.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 
 #include <iostream>
 
@@ -74,5 +74,5 @@ static int tutorial_main(joedb::Arguments &arguments)
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::main_exception_catcher(tutorial_main, argc, argv);
+ joedb::main_wrapper(tutorial_main, argc, argv);
 }

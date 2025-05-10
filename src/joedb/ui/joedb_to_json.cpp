@@ -1,5 +1,5 @@
 #include "joedb/ui/json.h"
-#include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/main_wrapper.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Readonly_Journal.h"
@@ -41,5 +41,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- return joedb::main_exception_catcher(joedb::joedb_to_json, argc, argv);
+ return joedb::main_wrapper(joedb::joedb_to_json, argc, argv);
 }
