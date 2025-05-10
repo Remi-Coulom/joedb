@@ -6,6 +6,7 @@ For next release
 
  - Improvements:
 
+   - default-initialization of Record_Id must be -1 (null) -> cannot be enum
    - Checkpoints:
 
      - do not write hard_checkpoint again if it is already written
