@@ -202,7 +202,7 @@ namespace joedb
   }
 #endif
 #ifdef JOEDB_HAS_BROTLI
-  else if (arg_index < argc + 1 && std::strcmp(argv[arg_index], "brotli") == 0)
+  else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "brotli") == 0)
   {
    arg_index++;
 
@@ -212,7 +212,7 @@ namespace joedb
    {
     readonly = default_open_mode == Open_Mode::read_existing;
    }
-   else if (arg_index < argc + 1 && std::strcmp(argv[arg_index], "--read") == 0)
+   else if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--read") == 0)
    {
     readonly = true;
     arg_index++;
