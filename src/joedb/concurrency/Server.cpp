@@ -503,7 +503,7 @@ namespace joedb
     LOGID
     (
      "waiting at checkpoint = " << session->pull_checkpoint <<
-     " for " << wait.count() << " milliseconds\n"
+     " for " << double(wait.count()) * 0.001 << "s\n"
     );
 
     session->state = Session::State::waiting_for_push_to_pull;
@@ -776,8 +776,8 @@ namespace joedb
    LOG
    (
     get_endpoint_path() <<
-    ": start. lock_timeout = " << lock_timeout.count() <<
-    "; protocol_version = " << protocol_version <<
+    ": start. lock_timeout = " << double(lock_timeout.count()) * 0.001 <<
+    "s; protocol_version = " << protocol_version <<
     "; shared = " << client.is_shared() << '\n'
    );
    write_status();

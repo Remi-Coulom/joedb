@@ -35,6 +35,7 @@ For next release
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
      - more efficient test for validity of a range of ids for vector insert/update/delete
+     - do not store passphrase in ssh::Connector
 
  - Tooling:
 
