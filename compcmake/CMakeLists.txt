@@ -126,6 +126,7 @@ if(GTest_FOUND)
 
  joedb_add_executable(joedb_test
   ../doc/source/tutorial/src/settings/writable.cpp
+  ../test/Arguments_Test.cpp
   ../test/Async_Test.cpp
   ../test/Buffer_Test.cpp
   ../test/endianness_Test.cpp

@@ -10,12 +10,13 @@ namespace joedb
  /// exception information is printed by default there.
  int main_exception_catcher
  (
-  int (*main)(int, char**), int argc, char **argv
+  int (*main)(Arguments &), int argc, char **argv
  )
  {
   try
   {
-   return main(argc, argv);
+   Arguments arguments(argc, argv);
+   return main(arguments);
   }
   catch (const std::exception &e)
   {

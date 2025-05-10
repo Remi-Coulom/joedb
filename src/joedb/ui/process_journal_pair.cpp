@@ -1,8 +1,8 @@
 #include "joedb/ui/process_journal_pair.h"
+#include "joedb/ui/Arguments.h"
 #include "joedb/journal/File.h"
 
 #include <iostream>
-#include <sstream>
 
 namespace joedb
 {
@@ -15,40 +15,32 @@ namespace joedb
   void (*process)(Readonly_Journal &, Writable_Journal &, int64_t checkpoint)
  )
  {
-  int arg_index = 1;
+  Arguments arguments(argc, argv);
 
-  bool ignore_errors = false;
-  if (arg_index + 2 < argc && std::string(argv[arg_index]) == "--ignore-errors")
-  {
-   ignore_errors = true;
-   arg_index++;
-  }
+  const bool ignore_errors = arguments.has_option("ignore_errors");
+  const int64_t until = arguments.get_option<int64_t>
+  (
+   "until",
+   "checkpoint",
+   0
+  );
+  const std::string_view input = arguments.get_next_arg("input.joedb");
+  const std::string_view output = arguments.get_next_arg("output.joedb");
 
-  int64_t until = 0;
-  if (arg_index + 3 < argc && std::string(argv[arg_index]) == "--until")
+  if (arguments.has_missing())
   {
-   std::istringstream(argv[arg_index + 1]) >> until;
-   arg_index += 2;
-  }
-
-  if (arg_index + 2 != argc)
-  {
-   std::cerr << "usage: " << argv[0];
-   std::cerr << " [--ignore-errors] [--until <checkpoint>] <input.joedb> <output.joedb> \n";
+   arguments.print_help(std::cerr);
    return 1;
   }
 
-  const char *input_file_name = argv[arg_index];
-  const char *output_file_name = argv[arg_index + 1];
-
-  File input_file(input_file_name, Open_Mode::read_existing);
+  File input_file(input.data(), Open_Mode::read_existing);
 
   Readonly_Journal input_journal
   (
    Journal_Construction_Lock(input_file, ignore_errors)
   );
 
-  File output_file(output_file_name, Open_Mode::create_new);
+  File output_file(output.data(), Open_Mode::create_new);
   Writable_Journal output_journal(output_file);
 
   process(input_journal, output_journal, until);

@@ -5,7 +5,6 @@
 #include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/concurrency/Client.h"
 
 #ifdef PERSISTENCE_TEST
 #include "joedb/journal/File.h"
@@ -74,102 +73,66 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Open_Mode default_open_mode,
-  DB_Type default_db_type
+  DB_Type default_db_type,
+  Arguments &arguments
  ):
-  file_parser(default_open_mode, default_open_mode == Open_Mode::read_existing, true, true),
+  file_parser
+  (
+   default_open_mode,
+   default_open_mode == Open_Mode::read_existing,
+   true,
+   true
+  ),
   default_open_mode(default_open_mode),
   default_db_type(default_db_type)
  {
- }
+  const bool hard_checkpoint = arguments.has_option("hard_checkpoint");
 
- ////////////////////////////////////////////////////////////////////////////
- void Client_Parser::print_help(std::ostream &out) const
- ////////////////////////////////////////////////////////////////////////////
- {
-  out << " [--hard_checkpoint] [--check ";
-
-  for (size_t i = 0; i < std::size(check_string); i++)
+  static std::vector<const char *> check_string
   {
-   if (i > 0)
-    out << '|';
-   out << check_string[i];
-   if (size_t(default_content_check) == i)
-    out << '*';
-  }
+   "none",
+   "quick",
+   "full"
+  };
 
-  out << "] [--db ";
-
-  for (size_t i = 0; i < std::size(db_string); i++)
-  {
-   if (i > 0)
-    out << '|';
-   out << db_string[i];
-   if (size_t(default_db_type) == i)
-    out << '*';
-  }
-
-
-  out << "] <file> <connection>\n\n";
-
-  file_parser.print_help(out);
-  connection_parser.print_help(out);
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Client &Client_Parser::parse
- ////////////////////////////////////////////////////////////////////////////
- (
-  const int argc,
-  const char * const * const argv
- )
- {
-  int arg_index = 0;
-
-  bool hard_checkpoint = false;
-  if (arg_index < argc && std::strcmp(argv[arg_index], "--hard_checkpoint") == 0)
-  {
-   arg_index++;
-   hard_checkpoint = true;
-  }
-
-  Content_Check content_check = default_content_check;
-  if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--check") == 0)
-  {
-   arg_index++;
-   for (size_t i = 0; i < std::size(check_string); i++)
-    if (std::strcmp(argv[arg_index], check_string[i]) == 0)
-     content_check = Content_Check(i);
-   arg_index++;
-  }
+  const Content_Check content_check = Content_Check
+  (
+   arguments.get_enum_option
+   (
+    "check",
+    check_string,
+    int(Content_Check::quick)
+   )
+  );
   std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
 
-  DB_Type db_type = default_db_type;
-  if (arg_index + 1 < argc && std::strcmp(argv[arg_index], "--db") == 0)
+  static std::vector<const char *> db_string
   {
-   arg_index++;
-   for (size_t i = 0; i < std::size(db_string); i++)
-    if (std::strcmp(argv[arg_index], db_string[i]) == 0)
-     db_type = DB_Type(i);
-   arg_index++;
-  }
+   "none",
+   "interpreted",
+   "dump",
+   "sql",
+#ifdef PERSISTENCE_TEST
+   "joedb"
+#endif
+  };
+
+  const DB_Type db_type = DB_Type
+  (
+   arguments.get_enum_option
+   (
+    "db",
+    db_string,
+    int(default_db_type)
+   )
+  );
   std::cerr << "db_type = " << db_string[int(db_type)] << '\n';
 
-  file_parser.parse
-  (
-   std::cerr,
-   argc,
-   argv,
-   arg_index
-  );
+  file_parser.parse(std::cerr, arguments);
 
   Buffered_File *client_file = file_parser.get_file();
 
-  Connection &connection = connection_parser.build
-  (
-   argc - arg_index,
-   argv + arg_index,
-   client_file
-  );
+  Connection &connection = connection_parser.build(arguments, client_file);
 
   if (!client_file)
    client_file = dynamic_cast<Buffered_File *>(&connection);
@@ -252,7 +215,5 @@ namespace joedb
   }
 
   std::cerr << "OK\n";
-
-  return *client;
  }
 }

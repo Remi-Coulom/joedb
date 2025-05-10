@@ -1,5 +1,6 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/File_Hasher.h"
+#include "joedb/ui/Arguments.h"
 
 #include <iostream>
 #include <iomanip>
@@ -11,22 +12,16 @@ int main(int argc, char **argv)
  std::cout << std::hex;
  std::cout << std::setfill('0');
 
- bool fast = false;
- int arg_start = 1;
+ joedb::Arguments arguments(argc, argv);
+ const bool fast = arguments.has_option("fast");
 
- if (argc > 1 && argv[1] == std::string("--fast"))
+ while (arguments.get_remaining_count())
  {
-  fast = true;
-  arg_start++;
- }
-
- for (int arg_index = arg_start; arg_index < argc; arg_index++)
- {
-  const char * const file_name = argv[arg_index];
+  const std::string_view file_name = arguments.get_next();
 
   try
   {
-   joedb::File file(file_name, joedb::Open_Mode::read_existing);
+   joedb::File file(file_name.data(), joedb::Open_Mode::read_existing);
 
    const joedb::SHA_256::Hash hash = fast ?
     joedb::File_Hasher::get_fast_hash(file, 0, file.get_size()) :

@@ -5,7 +5,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/main_exception_catcher.h"
-#include "joedb/get_version.h"
 
 #include "joedb/compiler/generator/Database_h.h"
 #include "joedb/compiler/generator/Database_cpp.h"
@@ -56,31 +55,26 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- static int joedbc_main(int argc, char **argv)
+ static int joedbc_main(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
-  //
-  // Open existing file from the command line
-  //
-  if (argc <= 2)
+  const auto joedbi_file_name = arguments.get_next_arg("file.joedbi");
+  const auto joedbc_file_name = arguments.get_next_arg("file.joedbc");
+
+  if (arguments.has_missing())
   {
-   std::cerr << "joedb compiler, version " << joedb::get_version() << '\n';
-   std::cerr << "Usage: " << argv[0] << " <file.joedbi> <file.joedbc>\n";
+   arguments.print_help(std::cerr);
    return 1;
   }
 
-  const char * const exe_path = argv[0];
-  const char * const joedbi_file_name = argv[1];
-  const char * const joedbc_file_name = argv[2];
-
   Compiler_Options options;
-  options.exe_path = std::string(exe_path);
+  options.exe_path = arguments[0];
 
   //
   // Read file.joedbi
   //
   {
-   std::ifstream joedbi_file(joedbi_file_name);
+   std::ifstream joedbi_file(joedbi_file_name.data());
    if (!joedbi_file)
    {
     std::cerr << "Error: could not open " << joedbi_file_name << '\n';
@@ -105,7 +99,7 @@ namespace joedb
   //
   // Read file.joedbc
   //
-  std::ifstream joedbc_file(joedbc_file_name);
+  std::ifstream joedbc_file(joedbc_file_name.data());
   if (!joedbc_file)
   {
    std::cerr << "Error: could not open " << joedbc_file_name << '\n';
@@ -118,7 +112,7 @@ namespace joedb
   }
   catch(...)
   {
-   std::cerr << "Error parsing .joedbc file: " << argv[2] << '\n';
+   std::cerr << "Error parsing .joedbc file: " << joedbc_file_name << '\n';
    throw;
   }
 

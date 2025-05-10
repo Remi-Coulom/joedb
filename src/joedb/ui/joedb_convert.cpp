@@ -12,7 +12,7 @@ namespace joedb
   int64_t checkpoint
  )
  {
-  if (checkpoint <= 0)
+  if (checkpoint > input.get_checkpoint())
    checkpoint = input.get_checkpoint();
   input.play_until(output, checkpoint);
   output.soft_checkpoint();

@@ -3,6 +3,7 @@
 #include "joedb/concurrency/IO_Context_Wrapper.h"
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/main_exception_catcher.h"
+#include "joedb/ui/Arguments.h"
 
 #include <iostream>
 #include <cstring>
@@ -14,63 +15,57 @@ namespace joedb
  static int joedb_server(int argc, char **argv)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new;
-
-  Client_Parser client_parser(default_open_mode, Client_Parser::DB_Type::none);
-
-  if (argc <= 1)
-  {
-   std::cerr << "usage: " << argv[0];
-   std::cerr << " [--socket <endpoint_path>] [--timeout t]";
-   client_parser.print_help(std::cerr);
-   std::cerr << R"RRR(
-The timeout is the time (in seconds) during which a client lock is kept.
-0 (the default) means there is no timeout, and the lock is kept until the
-client unlocks or is disconnected. A client that timed out is not disconnected,
-and can still push data: the push will succeed only if there is no conflict.
-)RRR";
-   return 1;
-  }
-
-  int32_t index = 1;
-
-  std::string endpoint_path = "joedb.sock";
+  std::string default_endpoint_path = "joedb.sock";
   for (int i = 1; i < argc; i++)
   {
    std::string_view v(argv[i]);
    if (v.size() > 6 && v.compare(v.size() - 6, 6, ".joedb") == 0)
    {
-    endpoint_path = std::string(v) + ".sock";
+    default_endpoint_path = std::string(v) + ".sock";
     break;
    }
   }
 
-  if (index + 1 < argc && std::strcmp(argv[index], "--socket") == 0)
+  Arguments arguments(argc, argv);
+
+  const std::string_view endpoint_path = arguments.get_string_option
+  (
+   "socket",
+   "endpoint_path",
+   default_endpoint_path
+  );
+
+  const float timeout_seconds = arguments.get_option<float>
+  (
+   "timeout",
+   "seconds",
+   0.0f
+  );
+
+  const Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new;
+
+  Client_Parser client_parser(default_open_mode, Client_Parser::DB_Type::none);
+
+  if (!arguments.get_remaining_count())
   {
-   endpoint_path = argv[index + 1];
-   index += 2;
+   arguments.print_help(std::cerr);
+   client_parser.print_help(std::cerr);
+   return 1;
   }
 
-  uint32_t timeout = 0;
-  if (index + 1 < argc && std::strcmp(argv[index], "--timeout") == 0)
-  {
-   timeout = uint32_t(std::atoi(argv[index + 1]));
-   index += 2;
-  }
-
-  Client &client = client_parser.parse(argc - index, argv + index);
+  Client &client = client_parser.parse(arguments);
 
   IO_Context_Wrapper io_context_wrapper;
 
   std::cout << "Creating server (endpoint_path = " << endpoint_path;
-  std::cout << "; timeout = " << timeout << ")\n";
+  std::cout << "; timeout = " << timeout_seconds << ")\n";
 
   Server server
   (
    client,
    io_context_wrapper.io_context,
-   endpoint_path,
-   std::chrono::seconds(timeout),
+   std::string(endpoint_path),
+   std::chrono::milliseconds(int(timeout_seconds * 1000)),
    &std::cerr
   );
 

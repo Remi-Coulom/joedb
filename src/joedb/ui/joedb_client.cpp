@@ -9,23 +9,27 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- static int joedb_client(int argc, char **argv)
+ static int joedb_client(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
   const Open_Mode default_mode = File::lockable
    ? Open_Mode::shared_write
    : Open_Mode::write_existing_or_create_new;
 
-  Client_Parser client_parser(default_mode, Client_Parser::DB_Type::interpreted);
+  Client_Parser client_parser
+  (
+   default_mode,
+   Client_Parser::DB_Type::interpreted,
+   arguments
+  );
 
-  if (argc <= 1)
+  if (!client_parser.get())
   {
-   std::cerr << "usage: " << argv[0];
-   client_parser.print_help(std::cerr);
+   arguments.print_help(std::cerr) << '\n';
    return 1;
   }
 
-  Client &client = client_parser.parse(argc - 1, argv + 1);
+  Client &client = *client_parser.get();
 
   std::unique_ptr<Client_Command_Processor> interpreter;
 
