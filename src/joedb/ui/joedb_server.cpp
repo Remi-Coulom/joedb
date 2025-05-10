@@ -16,9 +16,9 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   std::string default_endpoint_path = "joedb.sock";
-  for (int i = 1; i < arguments.get_argc(); i++)
+  for (size_t i = 1; i < arguments.size(); i++)
   {
-   const std::string_view v(arguments[i]);
+   const std::string_view v = arguments[i];
    if (v.size() > 6 && v.compare(v.size() - 6, 6, ".joedb") == 0)
    {
     default_endpoint_path = std::string(v) + ".sock";

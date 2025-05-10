@@ -99,16 +99,13 @@ namespace joedb
    std::string_view get_next(const char * parameter);
    bool peek(const char *s);
    void add_parameter(const char * parameter);
-   std::ostream &print_help(std::ostream &out);
+   std::ostream &print_help(std::ostream &out) const;
 
    int get_remaining_count() const {return int(args.size() - index);}
    int get_index() const {return int(index);}
    bool missing() const {return missing_arg;}
    size_t size() const {return args.size();}
    std::string_view operator[](size_t i) const {return args[i].s;}
-   int get_argc() const {return argc;}
-   const char * const *get_argv() const {return argv;}
-   int &get_index() {return index;}
  };
 }
 

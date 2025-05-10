@@ -18,7 +18,7 @@ namespace joedb
  static int merge(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (arguments.get_argc() < 2)
+  if (arguments.size() < 2)
   {
    std::cerr << "usage: " << arguments[0];
    std::cerr << " <db_1.joedb> ... <db_N.joedb> <output.joedb>\n";
@@ -39,7 +39,7 @@ namespace joedb
   //
   std::vector<std::string> file_names;
 
-  for (int i = 1; i < arguments.get_argc() - 1; i++)
+  for (size_t i = 1; i < arguments.size() - 1; i++)
    file_names.emplace_back(arguments[i]);
 
   if (file_names.empty())

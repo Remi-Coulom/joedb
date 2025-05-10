@@ -196,7 +196,7 @@ namespace joedb
   options.emplace_back(parameter);
  }
 
- std::ostream &Arguments::print_help(std::ostream &out)
+ std::ostream &Arguments::print_help(std::ostream &out) const
  {
   out << "usage: " << args[0].s;
 
