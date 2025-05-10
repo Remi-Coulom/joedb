@@ -7,6 +7,13 @@
 
 namespace joedb
 {
+ /// Class for conveniently parsing command-line arguments
+ ///
+ /// All strings passed as input to this class are zero-terminated, so all
+ /// the std::string_view returned by member functions are zero-terminated.
+ /// This way, it is safe to use view.data() as zero-terminated string.
+ ///
+ /// @ingroup ui
  class Arguments
  {
   private:
@@ -71,7 +78,7 @@ namespace joedb
    (
     const char * name,
     const char * description,
-    std::string_view default_string
+    const char * default_string
    );
 
    size_t get_enum_option

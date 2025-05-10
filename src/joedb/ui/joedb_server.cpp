@@ -30,7 +30,7 @@ namespace joedb
   (
    "socket",
    "endpoint_path",
-   default_endpoint_path
+   default_endpoint_path.c_str()
   );
 
   const float timeout_seconds = arguments.get_option<float>

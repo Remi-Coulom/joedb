@@ -7,7 +7,7 @@ namespace joedb
 {
  Arguments::Argument::Argument(const char *argv): s(argv), used(false)
  {
-  if (s.size() > 2 && s[0] == '-' && s[1] == '-')
+  if (s[0] == '-' && s[1] == '-')
    option = std::string_view(s.data() + 2, s.size() - 2);
  }
 
@@ -56,7 +56,7 @@ namespace joedb
  (
   const char * name,
   const char * description,
-  std::string_view default_string
+  const char * default_string
  )
  {
   options.emplace_back(name, description);
