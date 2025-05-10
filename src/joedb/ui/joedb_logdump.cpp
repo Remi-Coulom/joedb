@@ -73,7 +73,7 @@ namespace joedb
     else
     {
      std::cout << "Error opening journal file: " << e.what() << '\n';
-     std::cout << "run with the --ignore-errors flag to skip this check.\n";
+     std::cout << "run with the --ignore_errors flag to skip this check.\n";
      return 1;
     }
    }
