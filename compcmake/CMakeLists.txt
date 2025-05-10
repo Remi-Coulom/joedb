@@ -259,7 +259,7 @@ foreach(mode base64 ascii)
   OUTPUT
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_${mode}.h
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_${mode}.cpp
-  COMMAND joedb_embed --${mode} ../test.joedb my_namespace::is_nested::test dbname_${mode}
+  COMMAND joedb_embed --mode ${mode} ../test.joedb my_namespace::is_nested::test dbname_${mode}
   DEPENDS
    joedb_embed
    ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb

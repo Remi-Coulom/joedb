@@ -5,7 +5,7 @@ namespace joedb
  static const std::string scope_delimiter{"::"};
 
  ////////////////////////////////////////////////////////////////////////////
- std::vector<std::string> split_namespace(const std::string &s)
+ std::vector<std::string> split_namespace(std::string_view s)
  ////////////////////////////////////////////////////////////////////////////
  {
   std::vector<std::string> result;
