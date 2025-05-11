@@ -13,7 +13,9 @@ Client to Server
 Prefix Data              Description
 ====== ================= ======================================================
 joedb  client_version    first message, sent at connection time
-H      until             check SHA-256 hash code
+H      until             check SHA-256 hash code (fast)
+       hash (32 bytes)
+I      until             check SHA-256 hash code (full)
        hash (32 bytes)
 r      from until        read a range of bytes
 
@@ -39,7 +41,8 @@ joedb  | server_version | reply to joedb.
        | checkpoint     | 'R' is pull-only
        | 'R' or 'W'
 H                       reply to H, hash is matching
-h                       reply to H, hash mismatch
+I                       reply to I, hash is matching
+h                       reply to H or I, hash mismatch
 r      until data       reply to r (size may be shorter than what was asked)
 
 D      until            reply to D

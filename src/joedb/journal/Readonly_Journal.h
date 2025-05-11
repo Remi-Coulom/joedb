@@ -115,9 +115,9 @@ namespace joedb
    {
     file.set_position(position);
    }
-   bool equal_to(Readonly_Journal &journal, int64_t until) const
+   bool equal_to(Readonly_Journal &journal, int64_t from, int64_t until) const
    {
-    return file.equal_to(journal.file, Header::ssize, until);
+    return file.equal_to(journal.file, from, until);
    }
 
    Async_Reader get_async_tail_reader(int64_t start_position) const

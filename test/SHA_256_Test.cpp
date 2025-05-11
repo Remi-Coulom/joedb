@@ -108,7 +108,7 @@ TEST(SHA_256, journal)
  joedb::Readonly_Journal journal(file);
  EXPECT_EQ(41, journal.get_position());
 
- const joedb::SHA_256::Hash hash = joedb::Journal_Hasher::get_hash
+ const joedb::SHA_256::Hash hash = joedb::Journal_Hasher::get_fast_hash
  (
   journal,
   journal.get_checkpoint() - 123

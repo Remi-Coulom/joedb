@@ -70,7 +70,7 @@ namespace joedb::generator
    (
     joedb::Buffered_File &file,
     joedb::Connection &connection,
-    joedb::Content_Check content_check = joedb::Content_Check::quick
+    joedb::Content_Check content_check = joedb::Content_Check::fast
    ):
     detail::Client_Data(file),
     joedb::Writable_Client(db.journal, connection, content_check),

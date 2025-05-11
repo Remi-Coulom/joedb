@@ -22,7 +22,7 @@ namespace joedb
    mutable std::unique_ptr<Channel> channel;
 
    const Readonly_Journal *handshake_journal = nullptr;
-   Content_Check handshake_content_check = Content_Check::quick;
+   Content_Check handshake_content_check = Content_Check::fast;
 
    static constexpr auto period = std::chrono::seconds(5);
    mutable time_point last_connection_time = clock::now() - period;

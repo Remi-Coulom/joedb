@@ -113,7 +113,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash Journal_Hasher::get_hash
+ SHA_256::Hash Journal_Hasher::get_fast_hash
  ////////////////////////////////////////////////////////////////////////////
  (
   const Readonly_Journal &journal,
@@ -121,6 +121,22 @@ namespace joedb
  )
  {
   return File_Hasher::get_fast_hash
+  (
+   journal.file,
+   Header::size,
+   checkpoint - Header::ssize
+  );
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ SHA_256::Hash Journal_Hasher::get_full_hash
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const Readonly_Journal &journal,
+  int64_t checkpoint
+ )
+ {
+  return File_Hasher::get_hash
   (
    journal.file,
    Header::size,

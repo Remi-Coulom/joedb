@@ -12,38 +12,6 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- bool Server_Connection::check_matching_content
- ////////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &client_journal,
-  int64_t server_checkpoint
- )
- {
-  LOGID("checking_hash... ");
-
-  const int64_t checkpoint = std::min
-  (
-   server_checkpoint,
-   client_journal.get_checkpoint()
-  );
-
-  buffer.index = 0;
-  buffer.write<char>('H');
-  buffer.write<int64_t>(checkpoint);
-  buffer.write(Journal_Hasher::get_hash(client_journal, checkpoint));
-
-  {
-   Channel_Lock lock(channel);
-   lock.write(buffer.data, buffer.index);
-   lock.read(buffer.data, 1);
-  }
-
-  LOG(buffer.data[0] << '\n');
-
-  return (buffer.data[0] == 'H');
- }
-
- ////////////////////////////////////////////////////////////////////////////
  size_t Server_Connection::pread(char *data, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -78,9 +46,37 @@ namespace joedb
   Content_Check content_check
  )
  {
-  if (content_check != Content_Check::none)
-   if (!check_matching_content(client_journal, server_checkpoint))
-    content_mismatch();
+  if (content_check == Content_Check::none)
+   return server_checkpoint;
+
+  LOGID("checking_hash... ");
+
+  const int64_t checkpoint = std::min
+  (
+   server_checkpoint,
+   client_journal.get_checkpoint()
+  );
+
+  buffer.index = 0;
+  buffer.write<char>(content_check == Content_Check::fast ? 'H' : 'I');
+  buffer.write<int64_t>(checkpoint);
+  buffer.write
+  (
+   content_check == Content_Check::fast
+   ? Journal_Hasher::get_fast_hash(client_journal, checkpoint)
+   : Journal_Hasher::get_full_hash(client_journal, checkpoint)
+  );
+
+  {
+   Channel_Lock lock(channel);
+   lock.write(buffer.data, buffer.index);
+   lock.read(buffer.data, 1);
+  }
+
+  LOG(buffer.data[0] << '\n');
+
+  if (buffer.data[0] == 'h')
+   content_mismatch();
 
   return server_checkpoint;
  }

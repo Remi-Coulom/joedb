@@ -23,7 +23,7 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check = Content_Check::quick
+    Content_Check content_check = Content_Check::fast
    ):
     Readonly_Client(file, connection, content_check)
    {

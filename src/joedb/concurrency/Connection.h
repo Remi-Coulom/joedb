@@ -18,7 +18,7 @@ namespace joedb
  enum class Content_Check
  {
   none,
-  quick,
+  fast,
   full
  };
 

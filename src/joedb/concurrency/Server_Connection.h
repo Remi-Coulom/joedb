@@ -9,13 +9,6 @@ namespace joedb
  /// @ingroup concurrency
  class Server_Connection: public Server_Client, public Connection
  {
-  protected:
-   bool check_matching_content
-   (
-    const Readonly_Journal &client_journal,
-    int64_t server_checkpoint
-   );
-
   public:
    Server_Connection(Channel &channel, std::ostream *log = nullptr):
     Server_Client(channel, log)

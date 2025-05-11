@@ -572,12 +572,14 @@ namespace joedb
    const auto checkpoint = session->buffer.read<int64_t>();
    const auto hash = session->buffer.read<SHA_256::Hash>();
 
-   const Readonly_Journal &readonly_journal = client.get_journal();
+   const Readonly_Journal &journal = client.get_journal();
 
    if
    (
-    checkpoint > readonly_journal.get_checkpoint() ||
-    Journal_Hasher::get_hash(readonly_journal, checkpoint) != hash // ??? takes_time
+    checkpoint > journal.get_checkpoint() ||
+    hash != (session->buffer.data[0] == 'H' // ??? takes_time
+    ? Journal_Hasher::get_fast_hash(journal, checkpoint)
+    : Journal_Hasher::get_full_hash(journal, checkpoint))
    )
    {
     session->buffer.data[0] = 'h';
@@ -605,7 +607,7 @@ namespace joedb
 
    switch (session->buffer.data[0])
    {
-    case 'H':
+    case 'H': case 'I':
      async_read(session, 1, 40, &Server::check_hash_handler);
     break;
 

@@ -6,7 +6,6 @@ For next release
 
  - Improvements:
 
-   - SHA-256: full option in network protocol
    - joedbc:
 
      - Split Database with Database_Storage parent

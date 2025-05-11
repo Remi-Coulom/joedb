@@ -19,7 +19,7 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check = Content_Check::quick
+    Content_Check content_check = Content_Check::fast
    ):
     Readonly_Journal(file),
     Client(*this, connection, content_check)

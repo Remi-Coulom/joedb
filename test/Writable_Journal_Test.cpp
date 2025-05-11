@@ -156,6 +156,6 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Multiplexer multiplexer{db, journal_copy};
   journal.replay_log(multiplexer);
 
-  EXPECT_TRUE(journal_copy.equal_to(journal, journal.get_checkpoint()));
+  EXPECT_TRUE(journal_copy.equal_to(journal, Header::ssize, journal.get_checkpoint()));
  }
 }

@@ -436,7 +436,7 @@ namespace joedb
   int64_t server_checkpoint = connection.handshake
   (
    client_journal,
-   Content_Check::quick
+   Content_Check::fast
   );
 
   EXPECT_EQ(server_checkpoint, initial);

@@ -37,7 +37,12 @@ namespace joedb
  class Journal_Hasher
  {
  public:
-  static SHA_256::Hash get_hash
+  static SHA_256::Hash get_fast_hash
+  (
+   const Readonly_Journal &journal,
+   int64_t checkpoint
+  );
+  static SHA_256::Hash get_full_hash
   (
    const Readonly_Journal &journal,
    int64_t checkpoint

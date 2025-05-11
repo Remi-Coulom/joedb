@@ -1,5 +1,4 @@
 #include "joedb/concurrency/File_Connection.h"
-#include "joedb/journal/File_Hasher.h"
 
 namespace joedb
 {
@@ -19,24 +18,24 @@ namespace joedb
     client_journal.get_checkpoint()
    );
 
-   if (content_check == Content_Check::quick)
+   const int64_t fast_size = 1 << 11;
+
+   if (content_check == Content_Check::full || min <= 2 * fast_size)
+   {
+    if (!client_journal.equal_to(server_journal, Header::ssize, min))
+     content_mismatch();
+   }
+   else
    {
     if
     (
-     Journal_Hasher::get_hash(client_journal, min) !=
-     Journal_Hasher::get_hash(server_journal, min)
+     !client_journal.equal_to(server_journal, Header::ssize, fast_size) ||
+     !client_journal.equal_to(server_journal, min - fast_size, min)
     )
     {
      content_mismatch();
     }
    }
-   else if (content_check == Content_Check::full)
-   {
-    if (!client_journal.equal_to(server_journal, min))
-     content_mismatch();
-   }
-   else
-    JOEDB_RELEASE_ASSERT(false);
   }
 
   return server_journal.get_checkpoint();

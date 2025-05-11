@@ -100,7 +100,7 @@ namespace joedb
    (
     Writable_Journal &journal,
     Connection &connection,
-    Content_Check content_check = Content_Check::quick
+    Content_Check content_check = Content_Check::fast
    ): Client(journal, connection, content_check)
    {
    }

@@ -91,7 +91,7 @@ namespace joedb
   static std::vector<const char *> check_string
   {
    "none",
-   "quick",
+   "fast",
    "full"
   };
 
@@ -101,7 +101,7 @@ namespace joedb
    (
     "check",
     check_string,
-    int(Content_Check::quick)
+    int(Content_Check::fast)
    )
   );
 
