@@ -65,7 +65,6 @@ namespace joedb::generator
   max_record_id = size_t(journal.get_checkpoint());
   ready_to_write = false;
   journal.play_until_checkpoint(*this);
-  journal.switch_to_writing(); // necessary for overwriting dirty tail
   ready_to_write = true;
   max_record_id = 0;
  }

@@ -144,7 +144,7 @@ void joedb::Readonly_Journal::replay_with_checkpoint_comments
   writable.comment(std::to_string(get_position()));
  }
  writable.end_writing(get_position());
- file.flush();
+ file.flush_for_writing();
 }
 
 /////////////////////////////////////////////////////////////////////////////

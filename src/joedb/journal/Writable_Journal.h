@@ -41,7 +41,6 @@ namespace joedb
    int64_t ahead_of_checkpoint() const noexcept;
 
    void flush() override {file.flush();}
-   void switch_to_writing() {file.set_position(file.get_position());}
 
    int64_t get_position() const override {return file.get_position();}
    void start_writing(int64_t position) override;
