@@ -245,6 +245,8 @@ namespace joedb
 
   {
    Writable_Journal journal(file);
+   journal.comment("Hello");
+   journal.soft_checkpoint();
    journal.create_table("persan");;
    journal.flush();
   }
@@ -256,6 +258,8 @@ namespace joedb
    (
     Journal_Construction_Lock(file, Construction_Flags::overwrite)
    );
+   Writable writable;
+   journal.play_until_checkpoint(writable);
    journal.create_table("person");
    journal.soft_checkpoint();
   }
