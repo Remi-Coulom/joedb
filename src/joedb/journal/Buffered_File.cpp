@@ -56,7 +56,7 @@ namespace joedb
 
   while (done < size)
   {
-   const size_t asked = std::min(destination.buffer.size, size_t(size - done));
+   const size_t asked = std::min(destination.buffer.ssize, size - done);
    const size_t received = pread(destination.buffer.data, asked, start + done);
 
    if (received == 0)
@@ -80,12 +80,12 @@ namespace joedb
 
   for (int64_t current = from; current < until;)
   {
-   const size_t half_buffer_size = Buffered_File::buffer.size / 2;
+   const int64_t half_buffer_size = Buffered_File::buffer.ssize / 2;
 
    const size_t n0 = pread
    (
     destination.buffer.data,
-    half_buffer_size,
+    std::min(half_buffer_size, until - current),
     current
    );
 
