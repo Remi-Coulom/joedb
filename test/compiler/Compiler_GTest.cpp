@@ -998,3 +998,33 @@ TEST(Compiler, delete_vector)
    EXPECT_TRUE(db.is_valid(city));
  }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, construction_flags)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+
+ {
+  test::Writable_Database db(file);
+  const auto person = db.new_person();
+  db.set_name(person, "Joe");
+  db.flush();
+ }
+
+ EXPECT_ANY_THROW(test::Writable_Database{file});
+
+ {
+  test::Writable_Database db(file, joedb::Construction_Flags::overwrite);
+  EXPECT_EQ(db.get_person_table().get_size(), 0);
+  const auto person = db.new_person();
+  db.set_name(person, "Bob");
+  db.soft_checkpoint();
+ }
+
+ {
+  test::Writable_Database db(file);
+  EXPECT_EQ(db.get_person_table().get_size(), 1);
+  EXPECT_EQ(db.get_name(*db.get_person_table().begin()), "Bob");
+ }
+}

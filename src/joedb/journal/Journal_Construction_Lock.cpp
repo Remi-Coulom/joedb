@@ -7,7 +7,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Buffered_File &file,
-  Flags flags
+  Construction_Flags flags
  ):
   file(file),
   flags(flags),

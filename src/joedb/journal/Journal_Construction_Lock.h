@@ -6,6 +6,14 @@
 namespace joedb
 {
  /// @ingroup journal
+ enum class Construction_Flags
+ {
+  none = 0,
+  ignore_errors = 1,
+  overwrite = 2
+ };
+
+ /// @ingroup journal
  class Journal_Construction_Lock
  {
   friend class Writable_Journal;
@@ -20,25 +28,17 @@ namespace joedb
 
   public:
    Buffered_File &file;
-
-   const enum class Flags
-   {
-    none = 0,
-    ignore_errors = 1,
-    overwrite = 2
-   } flags;
-
+   const Construction_Flags flags;
    const int64_t size;
-
 
    bool ignore_errors() const
    {
-    return int(flags) & int(Flags::ignore_errors);
+    return int(flags) & int(Construction_Flags::ignore_errors);
    };
 
    bool overwrite() const
    {
-    return int(flags) & int(Flags::overwrite);
+    return int(flags) & int(Construction_Flags::overwrite);
    }
 
    bool is_for_writable_journal() const {return for_writable_journal;}
@@ -46,7 +46,7 @@ namespace joedb
    explicit Journal_Construction_Lock
    (
     Buffered_File &file,
-    Flags flags = Flags::none
+    Construction_Flags flags = Construction_Flags::none
    );
 
    Journal_Construction_Lock(const Journal_Construction_Lock &) = delete;

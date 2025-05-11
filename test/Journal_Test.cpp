@@ -145,11 +145,7 @@ namespace joedb
 
   Readonly_Journal journal
   (
-   Journal_Construction_Lock
-   (
-    file,
-    Journal_Construction_Lock::Flags::ignore_errors
-   )
+   Journal_Construction_Lock(file, Construction_Flags::ignore_errors)
   );
  }
 
@@ -258,11 +254,7 @@ namespace joedb
   {
    Writable_Journal journal
    (
-    Journal_Construction_Lock
-    (
-     file,
-     Journal_Construction_Lock::Flags::overwrite
-    )
+    Journal_Construction_Lock(file, Construction_Flags::overwrite)
    );
    journal.create_table("person");
    journal.soft_checkpoint();

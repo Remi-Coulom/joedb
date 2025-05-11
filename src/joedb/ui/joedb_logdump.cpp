@@ -67,8 +67,8 @@ namespace joedb
      (
       file,
       ignore_errors
-      ? Journal_Construction_Lock::Flags::ignore_errors
-      : Journal_Construction_Lock::Flags::none
+      ? Construction_Flags::ignore_errors
+      : Construction_Flags::none
      )
     );
    }

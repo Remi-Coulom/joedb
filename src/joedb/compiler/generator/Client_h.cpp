@@ -36,7 +36,8 @@ namespace joedb::generator
    protected:
     Writable_Database db;
 
-    Client_Data(joedb::Buffered_File &file): db(file, false)
+    Client_Data(joedb::Buffered_File &file):
+     db(file, joedb::Construction_Flags::none, false)
     {
     }
   };

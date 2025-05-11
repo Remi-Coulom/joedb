@@ -57,14 +57,7 @@ namespace joedb::generator
    void play_journal();
    void auto_upgrade();
    void check_single_row();
-
-   void initialize()
-   {
-    play_journal();
-    check_schema();
-    auto_upgrade();
-    check_single_row();
-   }
+   void initialize();
 )RRR";
 
 
@@ -114,11 +107,18 @@ namespace joedb::generator
    Writable_Database
    (
     joedb::Buffered_File &file,
+    joedb::Construction_Flags flags,
     bool perform_initialization
    );
 
   public:
    Writable_Database(joedb::Buffered_File &file);
+
+   Writable_Database
+   (
+    joedb::Buffered_File &file,
+    joedb::Construction_Flags flags
+   );
 
    const joedb::Readonly_Journal &get_journal() const {return journal;}
 
