@@ -34,7 +34,8 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
  file(lock.file),
  hard_index(0),
  soft_index(0),
- checkpoint_position(Header::size)
+ checkpoint_position(Header::size),
+ hard_checkpoint_position(Header::size)
 {
  if (lock.size != 0)
  {
@@ -50,7 +51,7 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
   if (header.version != format_version && !lock.ignore_errors)
    throw Exception("unsupported file format version");
 
-  read_checkpoint(header.checkpoint);
+  read_checkpoint(header.checkpoint, lock.size);
 
   if (lock.size > Header::ssize && lock.ignore_errors)
    checkpoint_position = lock.size;
@@ -68,36 +69,35 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 void joedb::Readonly_Journal::read_checkpoint
 /////////////////////////////////////////////////////////////////////////////
 (
- const std::array<int64_t, 4> &pos
+ const std::array<int64_t, 4> &pos,
+ int64_t file_size
 )
 {
- int64_t hard_checkpoint = 0;
- int64_t soft_checkpoint = 0;
-
  for (int i = 0; i < 2; i++)
  {
-  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] >= hard_checkpoint)
+  if (pos[2 * i] == pos[2 * i + 1] && pos[2 * i] >= hard_checkpoint_position)
   {
-   hard_checkpoint = pos[2 * i];
+   hard_checkpoint_position = pos[2 * i];
    hard_index = i;
   }
 
   for (int j = 0; j < 2; j++)
   {
-   if (-pos[2 * i + j] >= soft_checkpoint)
+   if
+   (
+    -pos[2 * i + j] >= checkpoint_position &&
+    (file_size < 0 || -pos[2 * i + j] <= file_size)
+   )
    {
-    soft_checkpoint = -pos[2 * i + j];
+    checkpoint_position = -pos[2 * i + j];
     hard_index = i ^ 1;
     soft_index = j;
    }
   }
  }
 
- if (hard_checkpoint > checkpoint_position)
-  checkpoint_position = hard_checkpoint;
-
- if (soft_checkpoint > checkpoint_position)
-  checkpoint_position = soft_checkpoint;
+ if (hard_checkpoint_position > checkpoint_position)
+  checkpoint_position = hard_checkpoint_position;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ void joedb::Readonly_Journal::pull_without_locking()
 {
  std::array<int64_t, 4> pos;
  file.pread((char *)&pos, sizeof(pos), 0);
- read_checkpoint(pos);
+ read_checkpoint(pos, -1);
 }
 
 /////////////////////////////////////////////////////////////////////////////

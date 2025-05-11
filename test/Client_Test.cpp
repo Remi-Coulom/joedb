@@ -306,7 +306,7 @@ namespace joedb
    //
    {
     Writable_Journal journal(client_file);
-    journal.append();
+    journal.skip_directly_to(journal.get_checkpoint());
     journal.create_table("city");
     journal.soft_checkpoint();
    }
@@ -358,7 +358,7 @@ namespace joedb
   //
   {
    Writable_Journal journal(client_file);
-   journal.append();
+   journal.skip_directly_to(journal.get_checkpoint());
    journal.create_table("city");
    journal.soft_checkpoint();
   }

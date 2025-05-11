@@ -6,14 +6,8 @@ For next release
 
  - Improvements:
 
-   - Checkpoints:
-
-     - do not write hard_checkpoint again if it is already written
-     - "--overwrite" option -> silently overwrite tail
-     - get_hard_checkpoint and get_soft_checkpoint member functions
-
+   - "--overwrite" option -> silently overwrite tail
    - SHA-256: full option in network protocol
-
    - joedbc:
 
      - Split Database with Database_Storage parent

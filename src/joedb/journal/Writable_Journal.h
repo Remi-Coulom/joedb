@@ -32,11 +32,6 @@ namespace joedb
    {
    }
 
-   void append()
-   {
-    file.set_position(checkpoint_position);
-   }
-
    int64_t pull_from(const Readonly_Journal &journal, int64_t until);
    int64_t pull_from(const Readonly_Journal &journal)
    {

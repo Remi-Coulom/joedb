@@ -15,20 +15,76 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File file;
+  std::array<int64_t, 4> checkpoints;
 
   {
    Writable_Journal journal(file);
+   EXPECT_EQ(journal.get_checkpoint(), 41);
+   EXPECT_EQ(journal.get_hard_checkpoint(), 41);
+
+   file.pread((char *)&checkpoints, sizeof(checkpoints), 0);
+   EXPECT_EQ(checkpoints[0], 41);
+   EXPECT_EQ(checkpoints[1], 41);
+   EXPECT_EQ(checkpoints[2], 41);
+   EXPECT_EQ(checkpoints[3], 41);
   }
 
   {
    Writable_Journal journal(file);
 
-   journal.append();
    journal.create_table("person");
    journal.soft_checkpoint();
+
+   file.pread((char *)&checkpoints, sizeof(checkpoints), 0);
+   EXPECT_EQ(checkpoints[0], 41);
+   EXPECT_EQ(checkpoints[1], -49);
+   EXPECT_EQ(checkpoints[2], 41);
+   EXPECT_EQ(checkpoints[3], 41);
+
+   journal.soft_checkpoint();
+
+   file.pread((char *)&checkpoints, sizeof(checkpoints), 0);
+   EXPECT_EQ(checkpoints[0], 41);
+   EXPECT_EQ(checkpoints[1], -49);
+   EXPECT_EQ(checkpoints[2], 41);
+   EXPECT_EQ(checkpoints[3], 41);
+
+   EXPECT_EQ(journal.get_checkpoint(), 49);
+   EXPECT_EQ(journal.get_hard_checkpoint(), 41);
+   journal.comment("Hello");
+   journal.soft_checkpoint();
+
+   file.pread((char *)&checkpoints, sizeof(checkpoints), 0);
+   EXPECT_EQ(checkpoints[0], -56);
+   EXPECT_EQ(checkpoints[1], -49);
+   EXPECT_EQ(checkpoints[2], 41);
+   EXPECT_EQ(checkpoints[3], 41);
+
+   EXPECT_EQ(journal.get_checkpoint(), 56);
+   EXPECT_EQ(journal.get_hard_checkpoint(), 41);
+   journal.hard_checkpoint();
+
+   file.pread((char *)&checkpoints, sizeof(checkpoints), 0);
+   EXPECT_EQ(checkpoints[0], 56);
+   EXPECT_EQ(checkpoints[1], 56);
+   EXPECT_EQ(checkpoints[2], 41);
+   EXPECT_EQ(checkpoints[3], 41);
+
+   journal.hard_checkpoint();
+
+   file.pread((char *)&checkpoints, sizeof(checkpoints), 0);
+   EXPECT_EQ(checkpoints[0], 56);
+   EXPECT_EQ(checkpoints[1], 56);
+   EXPECT_EQ(checkpoints[2], 41);
+   EXPECT_EQ(checkpoints[3], 41);
+
+   EXPECT_EQ(journal.get_checkpoint(), 56);
+   EXPECT_EQ(journal.get_hard_checkpoint(), 56);
   }
 
   Writable_Journal journal(file);
+  EXPECT_EQ(journal.get_checkpoint(), 56);
+  EXPECT_EQ(journal.get_hard_checkpoint(), 56);
  }
 
  ////////////////////////////////////////////////////////////////////////////

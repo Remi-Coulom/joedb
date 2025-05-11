@@ -62,7 +62,7 @@ namespace joedb
    if (blob_file_parser)
    {
     blob_journal.emplace(*blob_file);
-    blob_journal->append();
+    blob_journal->skip_directly_to(blob_journal->get_checkpoint());
    }
 
    client.transaction([blob_file, &blob_journal]

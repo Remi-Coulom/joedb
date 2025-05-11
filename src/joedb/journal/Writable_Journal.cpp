@@ -101,10 +101,13 @@ void joedb::Writable_Journal::soft_checkpoint_at(int64_t position)
 void joedb::Writable_Journal::hard_checkpoint_at(int64_t position)
 /////////////////////////////////////////////////////////////////////////////
 {
+ if (hard_checkpoint_position >= position)
+  return;
+
  file.flush();
 
  hard_index ^= 1;
- checkpoint_position = position;
+ hard_checkpoint_position = checkpoint_position = position;
 
  Buffered_File::Head_Exclusive_Lock lock(file);
 

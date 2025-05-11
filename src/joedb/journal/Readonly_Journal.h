@@ -19,7 +19,7 @@ namespace joedb
   friend class Journal_Hasher;
 
   private:
-   void read_checkpoint(const std::array<int64_t, 4> &pos);
+   void read_checkpoint(const std::array<int64_t, 4> &pos, int64_t file_size);
    void pull_without_locking();
 
    #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
@@ -31,6 +31,7 @@ namespace joedb
    int hard_index;
    int soft_index;
    int64_t checkpoint_position;
+   int64_t hard_checkpoint_position;
 
    Table_Id table_of_last_operation;
    Record_Id record_of_last_operation;
@@ -91,6 +92,7 @@ namespace joedb
 
    int64_t get_position() const {return file.get_position();}
    int64_t get_checkpoint() const {return checkpoint_position;}
+   int64_t get_hard_checkpoint() const {return hard_checkpoint_position;}
    bool is_empty() const {return file.get_size() == Header::ssize;}
    bool is_shared() const {return file.is_shared();}
    int64_t pull();
