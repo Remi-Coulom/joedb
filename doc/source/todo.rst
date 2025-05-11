@@ -6,7 +6,6 @@ For next release
 
  - Improvements:
 
-   - "--overwrite" option -> silently overwrite tail
    - SHA-256: full option in network protocol
    - joedbc:
 

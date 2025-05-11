@@ -143,7 +143,14 @@ namespace joedb
    EXPECT_STREQ(e.what(), "missing joedb signature");
   }
 
-  Readonly_Journal journal(Journal_Construction_Lock(file, true));
+  Readonly_Journal journal
+  (
+   Journal_Construction_Lock
+   (
+    file,
+    Journal_Construction_Lock::Flags::ignore_errors
+   )
+  );
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -232,6 +239,40 @@ namespace joedb
   {
    EXPECT_STREQ(e.what(), "Checkpoint (41) is smaller than file size (49). This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, overwrite)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+
+  {
+   Writable_Journal journal(file);
+   journal.create_table("persan");;
+   journal.flush();
+  }
+
+  EXPECT_ANY_THROW(Writable_Journal{file});
+
+  {
+   Writable_Journal journal
+   (
+    Journal_Construction_Lock
+    (
+     file,
+     Journal_Construction_Lock::Flags::overwrite
+    )
+   );
+   journal.create_table("person");
+   journal.soft_checkpoint();
+  }
+
+  Writable_Journal journal(file);
+  Database db;
+  journal.replay_log(db);
+  EXPECT_EQ(db.get_tables().size(), 1);
+  EXPECT_EQ(db.get_table_name(Table_Id{1}), "person");
  }
 
  ////////////////////////////////////////////////////////////////////////////

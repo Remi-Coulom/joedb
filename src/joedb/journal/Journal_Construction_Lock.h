@@ -20,15 +20,33 @@ namespace joedb
 
   public:
    Buffered_File &file;
-   const bool ignore_errors;
+
+   const enum class Flags
+   {
+    none = 0,
+    ignore_errors = 1,
+    overwrite = 2
+   } flags;
+
    const int64_t size;
+
+
+   bool ignore_errors() const
+   {
+    return int(flags) & int(Flags::ignore_errors);
+   };
+
+   bool overwrite() const
+   {
+    return int(flags) & int(Flags::overwrite);
+   }
 
    bool is_for_writable_journal() const {return for_writable_journal;}
 
    explicit Journal_Construction_Lock
    (
     Buffered_File &file,
-    bool ignore_errors = false
+    Flags flags = Flags::none
    );
 
    Journal_Construction_Lock(const Journal_Construction_Lock &) = delete;

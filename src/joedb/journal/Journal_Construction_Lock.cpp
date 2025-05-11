@@ -7,10 +7,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Buffered_File &file,
-  bool ignore_errors
+  Flags flags
  ):
   file(file),
-  ignore_errors(ignore_errors),
+  flags(flags),
   size(file.get_size())
  {
   if (file.is_readonly())

@@ -63,7 +63,13 @@ namespace joedb
    {
     journal.emplace
     (
-     Journal_Construction_Lock(file, ignore_errors)
+     Journal_Construction_Lock
+     (
+      file,
+      ignore_errors
+      ? Journal_Construction_Lock::Flags::ignore_errors
+      : Journal_Construction_Lock::Flags::none
+     )
     );
    }
    catch (const Exception &e)

@@ -33,7 +33,13 @@ namespace joedb
 
   Readonly_Journal input_journal
   (
-   Journal_Construction_Lock(input_file, ignore_errors)
+   Journal_Construction_Lock
+   (
+    input_file,
+    ignore_errors
+    ? Journal_Construction_Lock::Flags::ignore_errors
+    : Journal_Construction_Lock::Flags::none
+   )
   );
 
   File output_file(output.data(), Open_Mode::create_new);
