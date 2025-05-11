@@ -279,7 +279,7 @@ namespace joedb
  {
   write_update(table_id, field_id);
 
-  if (is_null(value))
+  if (value.is_null())
    out << "NULL";
   else
    out << value;

@@ -218,7 +218,7 @@ namespace joedb
 
    template<typename T> T read_strong_type()
    {
-    return T(compact_read<typename std::underlying_type<T>::type>());
+    return T(compact_read<typename underlying_type<T>::type>());
    }
 
    void write_reference(Record_Id id)

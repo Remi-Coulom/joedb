@@ -51,7 +51,7 @@ TEST(Merge_Test, merge_test)
  db[2].update_reference(person, Record_Id(0), person_home, Record_Id(0));
  db[2].insert_into(person, Record_Id(1));
  db[2].update_string(person, Record_Id(1), person_name, "Tutu");
- db[2].update_reference(person, Record_Id(1), person_home, null);
+ db[2].update_reference(person, Record_Id(1), person_home, Record_Id::null);
 
  merge(db[0], db[1]);
  merge(db[0], db[2]);
@@ -64,5 +64,5 @@ TEST(Merge_Test, merge_test)
  EXPECT_EQ(db[0].get_string(city, Record_Id(3), city_name), "Paris");
  EXPECT_EQ(db[0].get_reference(person, Record_Id(0), person_home), Record_Id(0));
  EXPECT_EQ(db[0].get_reference(person, Record_Id(1), person_home), Record_Id(3));
- EXPECT_EQ(db[0].get_reference(person, Record_Id(2), person_home), null);
+ EXPECT_EQ(db[0].get_reference(person, Record_Id(2), person_home), Record_Id::null);
 }

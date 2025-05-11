@@ -289,7 +289,7 @@ namespace joedb::generator
     {
      out << " = ";
      write_type(type, false, false);
-     out << "(joedb::null)";
+     out << "(joedb::Record_Id::null)";
     }
     else if (type.get_type_id() == Type::Type_Id::blob)
     {

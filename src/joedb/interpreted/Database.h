@@ -12,7 +12,7 @@ namespace joedb
    const Record_Id max_record_id;
 
   public:
-   Database(Record_Id max_record_id = null):
+   Database(Record_Id max_record_id = Record_Id::null):
     max_record_id(max_record_id)
    {
    }

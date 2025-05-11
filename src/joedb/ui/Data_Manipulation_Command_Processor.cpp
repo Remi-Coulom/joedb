@@ -72,10 +72,10 @@ namespace joedb
   else if (command == "insert_into") ///////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = null;
+   Record_Id record_id = Record_Id::null;
    parameters >> record_id;
 
-   if (record_id == null)
+   if (record_id.is_null())
     record_id = readable.get_size(table_id);
 
    writable.insert_into(table_id, record_id);
@@ -90,7 +90,7 @@ namespace joedb
   else if (command == "delete_from") ////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = null;
+   Record_Id record_id = Record_Id::null;
    parameters >> record_id;
 
    writable.delete_from(table_id, record_id);
@@ -98,7 +98,7 @@ namespace joedb
   else if (command == "insert_vector") /////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = null;
+   Record_Id record_id = Record_Id::null;
    size_t size = 0;
    parameters >> record_id >> size;
    writable.insert_vector(table_id, record_id, size);
@@ -106,7 +106,7 @@ namespace joedb
   else if (command == "delete_vector") /////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = null;
+   Record_Id record_id = Record_Id::null;
    size_t size = 0;
    parameters >> record_id >> size;
    writable.delete_vector(table_id, record_id, size);
@@ -114,7 +114,7 @@ namespace joedb
   else if (command == "update") ////////////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = null;
+   Record_Id record_id = Record_Id::null;
    parameters >> record_id;
    std::string field_name;
    parameters >> field_name;
@@ -124,7 +124,7 @@ namespace joedb
   else if (command == "update_vector") /////////////////////////////////////
   {
    const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = null;
+   Record_Id record_id = Record_Id::null;
    parameters >> record_id;
    std::string field_name;
    parameters >> field_name;

@@ -68,7 +68,7 @@ void joedb::merge(Database &merged, const Database &db)
      );
 
      for (size_t i = 0; i < size_t(size); i++)
-      if (reference[i] != null)
+      if (reference[i].is_not_null())
        reference[i] = reference[i] + to_underlying(reference_offset);
     }
    }
@@ -94,7 +94,7 @@ void joedb::merge(Database &merged, const Database &db)
        case Type::Type_Id::reference:
        {
         Record_Id referenced = db.get_reference(tid, record_id, fid);
-        if (referenced != null)
+        if (referenced.is_not_null())
          referenced = referenced + to_underlying(offset[type.get_table_id()]);
         merged.update_reference
         (
