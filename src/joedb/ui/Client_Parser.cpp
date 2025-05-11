@@ -126,8 +126,8 @@ namespace joedb
    )
   );
 
-  arguments.add_parameter("file");
-  arguments.add_parameter("connection");
+  arguments.add_parameter("<file>");
+  arguments.add_parameter("<connection>");
 
   if (arguments.get_remaining_count() == 0)
    return;

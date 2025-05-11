@@ -53,8 +53,7 @@ namespace joedb
    0.0f
   );
 
-  arguments.add_parameter("file.joedb");
-  arguments.add_parameter("...");
+  arguments.add_parameter("<file.joedb>+");
 
   if (arguments.get_remaining_count() == 0)
   {

@@ -14,6 +14,9 @@ namespace joedb
  static int joedbi(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
+  arguments.add_parameter("<file>");
+  arguments.add_parameter("[<blob_file>]");
+
   const bool default_only = false;
   const bool include_shared = false;
 
@@ -40,7 +43,7 @@ namespace joedb
 
   if (!file)
   {
-   std::cerr << "usage: " << arguments[0] << " <file> [<blob_file>]\n\n";
+   arguments.print_help(std::cerr);
    file_parser.print_help(std::cerr);
    return 1;
   }
@@ -59,7 +62,7 @@ namespace joedb
    Writable_Database_Client client(*file, connection);
 
    std::optional<Writable_Journal> blob_journal;
-   if (blob_file_parser)
+   if (blob_file_parser && blob_file)
    {
     blob_journal.emplace(*blob_file);
     blob_journal->skip_directly_to(blob_journal->get_checkpoint());

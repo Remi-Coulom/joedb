@@ -221,7 +221,7 @@ namespace joedb
     out << ']';
    }
    else if (option.parameter.data())
-    out << " <" << option.parameter << '>';
+    out << ' ' << option.parameter;
   }
 
   out << '\n';
