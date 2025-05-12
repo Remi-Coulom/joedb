@@ -16,9 +16,7 @@ int main(int argc, char **argv)
   std::printf("usage: %s <number of rows>\n", argv[0]);
  else
  {
-  joedb::index_t N = 0;
-  std::sscanf(argv[1], "%zu", &N);
-  std::printf("N = %zu\n", N);
+  joedb::index_t N = joedb::index_t(std::stoll(argv[1]));
 
   File file(file_name, Open_Mode::create_new);
   Writable_Journal journal_file(file);
@@ -39,7 +37,7 @@ int main(int argc, char **argv)
   {
    multiplexer.insert_into(table_id, i);
    multiplexer.update_string(table_id, i, name_id, name_string);
-   multiplexer.update_int64(table_id, i, value_id, int64_t(i));
+   multiplexer.update_int64(table_id, i, value_id, joedb::index_t(i));
   }
 #else
   multiplexer.insert_vector(table_id, 1, N);

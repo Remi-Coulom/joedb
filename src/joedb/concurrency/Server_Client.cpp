@@ -125,7 +125,7 @@ namespace joedb
   for (int64_t read = 0; read < size;)
   {
    const int64_t remaining = size - read;
-   const size_t read_size = size_t(std::min(buffer.ssize, remaining));
+   const size_t read_size = size_t(std::min(int64_t(buffer.size), remaining));
    const size_t n = lock.read_some(buffer.data, read_size);
    writer.write(buffer.data, n);
    read += int64_t(n);

@@ -5,7 +5,7 @@
 #include "joedb/Blob.h"
 
 #include <iostream>
-#include <cstdint>
+#include <stdint.h>
 
 namespace joedb
 {

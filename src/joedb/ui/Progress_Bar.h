@@ -1,7 +1,7 @@
 #ifndef joedb_io_Progress_Bar_declared
 #define joedb_io_Progress_Bar_declared
 
-#include <cstdint>
+#include <stdint.h>
 #include <iosfwd>
 
 namespace joedb

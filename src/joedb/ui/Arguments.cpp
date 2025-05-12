@@ -8,6 +8,8 @@
 #include <sstream>
 #endif
 
+#include <stdint.h>
+
 namespace joedb
 {
  Arguments::Argument::Argument(const char *argv): s(argv), used(false)
@@ -155,6 +157,13 @@ namespace joedb
   }
   return default_value;
  }
+
+ template int32_t Arguments::get_option<int32_t>
+ (
+  const char * name,
+  const char * description,
+  int32_t default_value
+ );
 
  template int64_t Arguments::get_option<int64_t>
  (

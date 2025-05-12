@@ -32,7 +32,7 @@ namespace joedb::generator
 #include "Database.h"
 
 #include <string>
-#include <cstdint>
+#include <stdint.h>
 #include <cstring>
 #include <vector>
 
