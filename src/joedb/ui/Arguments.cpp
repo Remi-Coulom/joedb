@@ -1,7 +1,12 @@
 #include "joedb/ui/Arguments.h"
 #include "joedb/error/assert.h"
 
+//#define JOEDB_USE_CHARCONV
+#ifdef JOEDB_USE_CHARCONV
 #include <charconv>
+#else
+#include <sstream>
+#endif
 
 namespace joedb
 {
@@ -124,7 +129,8 @@ namespace joedb
     args[i].used = true;
     args[i + 1].used = true;
     update_index();
-    T result;
+    T result{};
+#ifdef JOEDB_USE_CHARCONV
     if
     (
      std::from_chars
@@ -141,6 +147,9 @@ namespace joedb
       std::string("Error parsing option value for ") + std::string(args[i].s)
      );
     }
+#else
+    std::istringstream(args[i + 1].s.data()) >> result;
+#endif
     return result;
    }
   }
