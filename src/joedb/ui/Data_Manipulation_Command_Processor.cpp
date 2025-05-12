@@ -80,12 +80,14 @@ namespace joedb
 
    writable.insert_into(table_id, record_id);
    if (parameters.good())
+   {
     for (const auto &[fid, fname]: readable.get_fields(table_id))
     {
      update_value(parameters, table_id, record_id, fid);
      if (parameters.fail())
       throw Exception("failed parsing value");
     }
+   }
   }
   else if (command == "delete_from") ////////////////////////////////////////
   {

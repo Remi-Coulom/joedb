@@ -17,8 +17,9 @@ namespace joedb
     Multiplexer multiplexer;
 
    public:
-    Writable_Database_Client_Data(Buffered_File &file):
+    Writable_Database_Client_Data(Buffered_File &file, Record_Id max_record_id):
      data_journal(file),
+     database(max_record_id),
      multiplexer{database, data_journal}
     {
     }
@@ -43,9 +44,10 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check = Content_Check::fast
+    Content_Check content_check = Content_Check::fast,
+    Record_Id max_record_id = Record_Id::null
    ):
-    Writable_Database_Client_Data(file),
+    Writable_Database_Client_Data(file, max_record_id),
     Writable_Client(data_journal, connection, content_check)
    {
     read_journal();

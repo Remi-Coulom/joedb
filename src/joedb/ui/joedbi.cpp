@@ -14,6 +14,11 @@ namespace joedb
  static int joedbi(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
+  const Record_Id max_record_id
+  (
+   arguments.get_option<index_t>("max_record_id", "n", -1)
+  );
+
   arguments.add_parameter("<file>");
   arguments.add_parameter("[<blob_file>]");
 
@@ -43,14 +48,14 @@ namespace joedb
 
   if (!file)
   {
-   arguments.print_help(std::cerr);
+   arguments.print_help(std::cerr) << '\n';
    file_parser.print_help(std::cerr);
    return 1;
   }
 
   if (file->is_readonly() || (blob_file && blob_file->is_readonly()))
   {
-   Database db;
+   Database db(max_record_id);
    Readonly_Journal journal(*file);
    journal.replay_log(db);
    Readable_Interpreter interpreter(db, blob_file);
@@ -59,7 +64,7 @@ namespace joedb
   else
   {
    Connection connection;
-   Writable_Database_Client client(*file, connection);
+   Writable_Database_Client client(*file, connection, Content_Check::fast, max_record_id);
 
    std::optional<Writable_Journal> blob_journal;
    if (blob_file_parser && blob_file)
