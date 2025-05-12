@@ -80,11 +80,11 @@ namespace joedb
    Record_Id get_first_used() const {return next_f(used_list);}
    Record_Id get_next(const Record_Id index) const {return next_f(index);}
    Record_Id get_previous(const Record_Id index) const {return previous_f(index);}
-   bool is_free(Record_Id index) const {return is_free_f(index);}
    bool is_used(Record_Id index) const
    {
     return index.is_not_null() && index < freedom_size && !is_free_f(index);
    }
+
    bool is_compact() const {return freedom_size == used_count;}
 
    //////////////////////////////////////////////////////////////////////////
@@ -248,8 +248,11 @@ namespace joedb
     return result;
    }
 
-   bool is_free(Record_Id index) const {return index >= used_size;}
-   bool is_used(Record_Id index) const {return index < used_size;}
+   bool is_used(Record_Id index) const
+   {
+    return index.is_not_null() && index < used_size;
+   }
+
    bool is_compact() const {return true;}
 
    Record_Id get_free_record()
@@ -333,8 +336,8 @@ namespace joedb
    Record_Id get_first_used() const {return SWITCH(get_first_used());}
    Record_Id get_next(Record_Id index) const {return SWITCH(get_next(index));}
    Record_Id get_previous(Record_Id index) const {return SWITCH(get_previous(index));}
-   bool is_free(Record_Id index) const {return SWITCH(is_free(index));}
    bool is_used(Record_Id index) const {return SWITCH(is_used(index));}
+   bool is_free(Record_Id index) const {return !is_used(index);}
    bool is_compact() const {return SWITCH(is_compact());}
 
    Record_Id get_free_record() {return SWITCH(get_free_record());}
