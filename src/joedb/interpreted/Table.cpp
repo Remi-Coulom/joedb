@@ -74,7 +74,7 @@ namespace joedb
    freedom.resize(freedom.size() + size);
    for (auto &field: fields)
     field.second.resize(freedom.size());
-   freedom.use_vector(record_id, Record_Id(size));
+   freedom.use_vector(record_id, Record_Id(index_t(size)));
   }
   else
   {

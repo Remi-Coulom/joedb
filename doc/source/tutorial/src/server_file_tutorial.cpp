@@ -6,7 +6,7 @@
 
 int main()
 {
- joedb::Local_Connector connector("blobs.sock");
+ joedb::Local_Connector connector("blobs.joedb.sock");
  joedb::Server_File server_file(connector);
  joedb::Writable_Journal_Client client(server_file, server_file);
 
