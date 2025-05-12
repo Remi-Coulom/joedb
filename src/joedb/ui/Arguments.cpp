@@ -1,15 +1,6 @@
 #include "joedb/ui/Arguments.h"
 #include "joedb/error/assert.h"
 
-//#define JOEDB_USE_CHARCONV
-#ifdef JOEDB_USE_CHARCONV
-#include <charconv>
-#else
-#include <sstream>
-#endif
-
-#include <stdint.h>
-
 namespace joedb
 {
  Arguments::Argument::Argument(const char *argv): s(argv), used(false)
@@ -113,71 +104,6 @@ namespace joedb
 
   return default_index;
  }
-
- template<typename T>
- T Arguments::get_option
- (
-  const char * name,
-  const char * description,
-  T default_value
- )
- {
-  options.emplace_back(name, description);
-
-  for (size_t i = 0; i < args.size() - 1; i++)
-  {
-   if (args[i].option == name)
-   {
-    args[i].used = true;
-    args[i + 1].used = true;
-    update_index();
-    T result{};
-#ifdef JOEDB_USE_CHARCONV
-    if
-    (
-     std::from_chars
-     (
-      args[i + 1].s.data(),
-      args[i + 1].s.data() + args[i +1].s.size(),
-      result
-     )
-     .ec != std::errc{}
-    )
-    {
-     throw Exception
-     (
-      std::string("Error parsing option value for ") + std::string(args[i].s)
-     );
-    }
-#else
-    std::istringstream(args[i + 1].s.data()) >> result;
-#endif
-    return result;
-   }
-  }
-  return default_value;
- }
-
- template int32_t Arguments::get_option<int32_t>
- (
-  const char * name,
-  const char * description,
-  int32_t default_value
- );
-
- template int64_t Arguments::get_option<int64_t>
- (
-  const char * name,
-  const char * description,
-  int64_t default_value
- );
-
- template float Arguments::get_option<float>
- (
-  const char * name,
-  const char * description,
-  float default_value
- );
 
  std::string_view Arguments::get_next()
  {

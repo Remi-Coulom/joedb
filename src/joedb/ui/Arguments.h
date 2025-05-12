@@ -4,6 +4,7 @@
 #include <string_view>
 #include <vector>
 #include <ostream>
+#include <sstream>
 
 namespace joedb
 {
@@ -93,7 +94,24 @@ namespace joedb
     const char * name,
     const char * description,
     T default_value
-   );
+   )
+   {
+    options.emplace_back(name, description);
+
+    for (size_t i = 0; i < args.size() - 1; i++)
+    {
+     if (args[i].option == name)
+     {
+      args[i].used = true;
+      args[i + 1].used = true;
+      update_index();
+      T result{};
+      std::istringstream(args[i + 1].s.data()) >> result;
+      return result;
+     }
+    }
+    return default_value;
+   }
 
    std::string_view get_next();
    std::string_view get_next(const char * parameter);
