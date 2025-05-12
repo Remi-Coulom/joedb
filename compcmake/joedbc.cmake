@@ -79,7 +79,8 @@ ipo_add_executable(joedbc
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generator.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_h.cpp
- ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_cpp.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_Writable_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_Writable_cpp.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Types_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readable_h.cpp

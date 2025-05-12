@@ -20,7 +20,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Readonly_Database", options.get_name_space());
 
   out << R"RRR(
-#include "Database.h"
+#include "Database_Writable.h"
 #include "joedb/journal/File.h"
 
 )RRR";
@@ -29,7 +29,7 @@ namespace joedb::generator
 
  out << R"RRR(
  /// Load a database from a read-only file
- class Readonly_Database: public Database
+ class Readonly_Database: public Database_Writable
  {
   public:
    Readonly_Database(joedb::Readonly_Journal &journal)

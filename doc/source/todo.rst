@@ -8,7 +8,6 @@ For next release
 
    - joedbc:
 
-     - Split Database with Database_Storage parent
      - unique indexes:
 
        - encapsulate multi-column update (cannot write column individually)

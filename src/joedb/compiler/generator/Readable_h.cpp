@@ -24,7 +24,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Readable", options.get_name_space());
 
   out << R"RRR(
-#include "Database.h"
+#include "Database_Writable.h"
 
 #include "joedb/interpreted/Database_Schema.h"
 #include "joedb/journal/Readonly_Memory_File.h"

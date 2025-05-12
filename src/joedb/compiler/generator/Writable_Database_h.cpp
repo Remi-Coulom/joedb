@@ -24,7 +24,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Writable_Database", options.get_name_space());
 
   out << R"RRR(
-#include "Database.h"
+#include "Database_Writable.h"
 #include "joedb/Span.h"
 
 )RRR";
@@ -44,7 +44,7 @@ namespace joedb::generator
  class Multiplexer;
 
  /// A writable @ref Database constructed from a writable @ref joedb::Buffered_File
- class Writable_Database: public Database
+ class Writable_Database: public Database_Writable
  {
   friend class detail::Client_Data;
   friend class Client;
@@ -66,7 +66,7 @@ namespace joedb::generator
    out << R"RRR(
    void custom(const std::string &name) override
    {
-    Database::custom(name);
+    Database_Writable::custom(name);
 
     if (upgrading_schema)
     {

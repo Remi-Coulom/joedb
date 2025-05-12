@@ -165,7 +165,7 @@ namespace joedb::generator
  void Writable_Database::create_table(const std::string &name)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Database::create_table(name);
+  Database_Writable::create_table(name);
 
   if (upgrading_schema)
   {
@@ -195,7 +195,7 @@ namespace joedb::generator
   joedb::Type type
  )
  {
-  Database::add_field(table_id, name, type);
+  Database_Writable::add_field(table_id, name, type);
  )RRR";
 
    for (const auto &[tid, tname]: tables)

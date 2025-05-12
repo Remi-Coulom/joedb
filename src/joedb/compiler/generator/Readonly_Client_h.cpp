@@ -20,7 +20,7 @@ namespace joedb::generator
   namespace_include_guard(out, "Readonly_Client", options.get_name_space());
 
   out << R"RRR(
-#include "Database.h"
+#include "Database_Writable.h"
 #include "joedb/concurrency/Readonly_Client.h"
 
 )RRR";
@@ -32,7 +32,7 @@ namespace joedb::generator
  class Readonly_Client: private joedb::Connection, public joedb::Readonly_Client
  {
   private:
-   Database db;
+   Database_Writable db;
    int64_t schema_checkpoint;
 
   protected:

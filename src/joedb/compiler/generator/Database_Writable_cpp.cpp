@@ -1,24 +1,24 @@
-#include "joedb/compiler/generator/Database_cpp.h"
+#include "joedb/compiler/generator/Database_Writable_cpp.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/ui/type_io.h"
 
 namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
- Database_cpp::Database_cpp
+ Database_Writable_cpp::Database_Writable_cpp
  ////////////////////////////////////////////////////////////////////////////
  (
   const Compiler_Options &options
  ):
-  Generator(".", "Database.cpp", options)
+  Generator(".", "Database_Writable.cpp", options)
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Database_cpp::generate()
+ void Database_Writable_cpp::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "#include \"Database.h\"\n\n";
+  out << "#include \"Database_Writable.h\"\n\n";
 
   auto name_space = options.get_name_space();
   name_space.emplace_back("detail");

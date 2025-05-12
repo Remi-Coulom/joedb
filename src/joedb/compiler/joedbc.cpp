@@ -7,7 +7,8 @@
 #include "joedb/ui/main_wrapper.h"
 
 #include "joedb/compiler/generator/Database_h.h"
-#include "joedb/compiler/generator/Database_cpp.h"
+#include "joedb/compiler/generator/Database_Writable_h.h"
+#include "joedb/compiler/generator/Database_Writable_cpp.h"
 #include "joedb/compiler/generator/Readonly_Database_h.h"
 #include "joedb/compiler/generator/Types_h.h"
 #include "joedb/compiler/generator/Readable_h.h"
@@ -120,7 +121,8 @@ namespace joedb
   // Generate code
   //
   generator::Database_h(options).generate();
-  generator::Database_cpp(options).generate();
+  generator::Database_Writable_h(options).generate();
+  generator::Database_Writable_cpp(options).generate();
   generator::Readonly_Database_h(options).generate();
   generator::Types_h(options).generate();
   generator::Readable_h(options).generate();

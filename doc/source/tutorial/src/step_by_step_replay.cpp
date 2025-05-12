@@ -1,4 +1,4 @@
-#include "tutorial/Database.h"
+#include "tutorial/Database_Writable.h"
 #include "joedb/journal/File.h"
 
 #include <iostream>
@@ -7,7 +7,7 @@
 namespace example
 {
  ////////////////////////////////////////////////////////////////////////////
- class My_Database: public tutorial::Database
+ class My_Database: public tutorial::Database_Writable
  ////////////////////////////////////////////////////////////////////////////
  {
   void comment(const std::string &comment) override
