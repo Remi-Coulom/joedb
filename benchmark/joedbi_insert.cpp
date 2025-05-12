@@ -16,7 +16,7 @@ int main(int argc, char **argv)
   std::printf("usage: %s <number of rows>\n", argv[0]);
  else
  {
-  size_t N = 0;
+  joedb::index_t N = 0;
   std::sscanf(argv[1], "%zu", &N);
   std::printf("N = %zu\n", N);
 
@@ -35,11 +35,11 @@ int main(int argc, char **argv)
   const std::string name_string("TOTO");
 
 #if 1
-  for (size_t i = 1; i <= N; i++)
+  for (joedb::Record_Id i{0}; index_t(i) < N; ++i)
   {
-   multiplexer.insert_into(table_id, joedb::Record_Id(i));
-   multiplexer.update_string(table_id, joedb::Record_Id(i), name_id, name_string);
-   multiplexer.update_int64(table_id, joedb::Record_Id(i), value_id, int64_t(i));
+   multiplexer.insert_into(table_id, i);
+   multiplexer.update_string(table_id, i, name_id, name_string);
+   multiplexer.update_int64(table_id, i, value_id, int64_t(i));
   }
 #else
   multiplexer.insert_vector(table_id, 1, N);
