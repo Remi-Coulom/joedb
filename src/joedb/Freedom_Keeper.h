@@ -84,6 +84,7 @@ namespace joedb
    {
     return index.is_not_null() && index < freedom_size && !is_free_f(index);
    }
+   bool is_free(Record_Id index) const {return !is_used(index);}
 
    bool is_compact() const {return freedom_size == used_count;}
 
@@ -252,6 +253,7 @@ namespace joedb
    {
     return index.is_not_null() && index < used_size;
    }
+   bool is_free(Record_Id index) const {return !is_used(index);}
 
    bool is_compact() const {return true;}
 
