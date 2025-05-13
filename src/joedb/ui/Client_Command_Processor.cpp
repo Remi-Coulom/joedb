@@ -52,18 +52,24 @@ namespace joedb
  {
   const int64_t byte_count = client.pull(wait);
   if (byte_count > 0)
-   out << "pulled " << byte_count << " bytes\n";
+  {
+   out << "pulled " << byte_count << " bytes, checkpoint = ";
+   out << client.get_journal_checkpoint() << '\n';
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Client_Command_Processor::sleep(int seconds, std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << get_time_string_of_now();
-  out << ". Sleeping for " << seconds << " seconds...\n";
-  out.flush();
-  for (int i = seconds; Signal::get_signal() != SIGINT && --i >= 0;)
-   std::this_thread::sleep_for(std::chrono::seconds(1));
+  if (seconds > 0)
+  {
+   out << get_time_string_of_now();
+   out << ". Sleeping for " << seconds << " seconds...\n";
+   out.flush();
+   for (int i = seconds; Signal::get_signal() != SIGINT && --i >= 0;)
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -132,7 +138,7 @@ namespace joedb
   else if (command == "pull_every") /////////////////////////////////////////
   {
    float wait_seconds = 1;
-   int sleep_seconds = 1;
+   int sleep_seconds = 0;
    parameters >> wait_seconds >> sleep_seconds;
 
    Signal::set_signal(Signal::no_signal);
