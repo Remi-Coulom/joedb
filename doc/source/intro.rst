@@ -117,9 +117,20 @@ Concurrent access to a remote server
 Asynchronous real-time backup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The joedb server can notify a client as soon as new data is available, so that
+a client can perform backups without polling.
+
+.. asciinema:: ./asciinema/asynchronous_backup.cast
+   :poster: npt:0:01
+   :speed: 1.5
+
 Synchronous real-time backup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+With synchronous real-time backup, the client has to wait for the data to be
+written to the backup before a transaction can complete. So it is safer than
+asynchronous backup, at the cost of latency.
+
 .. asciinema:: ./asciinema/synchronous_backup.cast
    :poster: npt:0:01
-   :speed: 2
+   :speed: 1.5
