@@ -21,7 +21,7 @@ tmp_joedbi="$tmp_joedb"i
 
 echo tmp_joedbi=$tmp_joedbi
 
-joedb_push "$1" dump >$tmp_joedbi || exit 1
+joedb_push --db dump "$1" >$tmp_joedbi || exit 1
 
 while true; do
  echo running editor: $editor
