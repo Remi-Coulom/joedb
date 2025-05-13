@@ -49,7 +49,8 @@ namespace joedb
   out << server.get_time_stamp().count() << ' ';
 #endif
 
-  out << server.endpoint_path << '(' << id << "): ";
+  out << server.endpoint_path << '('
+      << server.client.get_journal_checkpoint() << "): " << id << ": ";
 
   return out;
  }
@@ -133,12 +134,10 @@ namespace joedb
  {
   log([this](std::ostream &out)
   {
-   out << endpoint_path;
-   out << ": pid = " << joedb::get_pid();
+   out << endpoint_path << '(' << client.get_journal_checkpoint();
+   out << "): pid = " << joedb::get_pid();
    out << "; " << get_time_string_of_now();
-   out << "; sessions = " << sessions.size();
-   out << "; checkpoint = ";
-   out << client.get_journal_checkpoint() << '\n';
+   out << "; sessions = " << sessions.size() << '\n';
   });
  }
 
@@ -319,7 +318,7 @@ namespace joedb
    session->progress_bar.reset();
 
    session->buffer.data[0] = session->push_status;
-   LOGID("returning '" << session->push_status << "'\n");
+   LOGID("returning " << session->push_status << '\n');
    write_buffer_and_next_command(session, 1);
 
    if (session->unlock_after_push)
