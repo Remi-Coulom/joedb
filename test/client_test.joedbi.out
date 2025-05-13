@@ -1,4 +1,4 @@
-writable_client(41)> 
+[36mwritable_client(41)> [0m
 General commands
 ~~~~~~~~~~~~~~~~
  about
@@ -24,24 +24,24 @@ Writable Client
  set_hard_checkpoint <true|false>
 
 OK: help
-writable_client(41)> writable_client(41)/joedbi> OK:  create_table person
-writable_client(41)/joedbi> OK:  add_field person name string
-writable_client(41)/joedbi> OK:  insert_into person 1
-writable_client(41)/joedbi> OK:  update person 1 name "Joe"
-writable_client(41)/joedbi> -------
+[36mwritable_client(41)> [0m[36mwritable_client(41)/transaction> [0mOK:  create_table person
+[36mwritable_client(41)/transaction> [0mOK:  add_field person name string
+[36mwritable_client(41)/transaction> [0mOK:  insert_into person 1
+[36mwritable_client(41)/transaction> [0mOK:  update person 1 name "Joe"
+[36mwritable_client(41)/transaction> [0m-------
   name 
 -------
 1 "Joe"
 OK:  table person
-writable_client(41)/joedbi> OK: quit
+[36mwritable_client(41)/transaction> [0mOK: quit
 OK: transaction
-writable_client(66)> OK: push
-writable_client(66)> OK: pull
-writable_client(66)> writable_client(66)/joedbi> -------
+[36mwritable_client(66)> [0mOK: push
+[36mwritable_client(66)> [0mOK: pull
+[36mwritable_client(66)> [0m[36mwritable_client(66)/db> [0m-------
   name 
 -------
 1 "Joe"
 OK:  table person
-writable_client(66)/joedbi> OK: quit
+[36mwritable_client(66)/db> [0mOK: quit
 OK: db
-writable_client(66)> 
+[36mwritable_client(66)> [0m
