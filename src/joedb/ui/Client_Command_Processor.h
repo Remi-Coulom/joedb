@@ -21,7 +21,7 @@ namespace joedb
    Client &client;
 
    static void sleep(int seconds, std::ostream &out);
-   virtual std::string get_name() const {return "client";}
+   virtual std::string get_name() const {return "readonly_client";}
 
   public:
    Client_Command_Processor(Client &client): client(client) {}

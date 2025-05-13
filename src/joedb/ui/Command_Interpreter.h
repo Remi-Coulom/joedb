@@ -16,6 +16,7 @@ namespace joedb
   private:
    std::vector<std::reference_wrapper<Command_Processor>> processors;
    const Command_Interpreter *parent = nullptr;
+   std::string prompt_string = "joedbi";
 
    bool echo = true;
    bool rethrow = false;
@@ -42,6 +43,7 @@ namespace joedb
    Command_Interpreter();
    void add_processor(Command_Processor &processor);
    void set_parent(const Command_Interpreter *new_parent);
+   void set_prompt_string(std::string s) {prompt_string = std::move(s);}
    virtual void write_prompt(std::ostream &out) const;
    void write_whole_prompt(std::ostream &out) const;
    void set_echo(bool new_echo) {echo = new_echo;}

@@ -110,6 +110,7 @@ namespace joedb
    {
     Readable_Interpreter interpreter(*database, &client.get_journal().get_file());
     interpreter.set_parent(this);
+    interpreter.set_prompt_string("db");
     interpreter.main_loop(in, out);
    }
    else
@@ -118,6 +119,7 @@ namespace joedb
     Blob_Reader_Command_Processor processor(client.get_journal().get_file());
     interpreter.add_processor(processor);
     interpreter.set_parent(this);
+    interpreter.set_prompt_string("db(blobs)");
     interpreter.main_loop(in, out);
    }
   }
@@ -209,6 +211,7 @@ namespace joedb
       0
      );
      interpreter.set_parent(this);
+     interpreter.set_prompt_string("transaction");
      interpreter.main_loop(in, out);
     });
    }
@@ -220,6 +223,7 @@ namespace joedb
      Blob_Reader_Command_Processor processor(journal.get_file());
      interpreter.add_processor(processor);
      interpreter.set_parent(this);
+     interpreter.set_prompt_string("transaction(journal)");
      interpreter.main_loop(in, out);
     });
    }

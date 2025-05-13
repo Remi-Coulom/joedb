@@ -125,13 +125,15 @@ General commands
  void Command_Interpreter::write_prompt(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "joedbi";
+  out << prompt_string;
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Command_Interpreter::write_whole_prompt(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
+  out << "\x1b[36m";
+
   if (parent)
   {
    parent->write_prompt(out);
@@ -139,7 +141,7 @@ General commands
   }
 
   write_prompt(out);
-  out << "> ";
+  out << "> \x1b[0m";
   out.flush();
  }
 

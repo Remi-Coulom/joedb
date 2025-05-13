@@ -12,6 +12,9 @@ set -e
 # https://stackoverflow.com/questions/29753909/tmux-borders-has-two-colors-on-mac-terminal
 # tmux set-option -g pane-border-style fg=green
 
+# https://unix.stackexchange.com/questions/32986/how-do-i-equally-balance-tmux1-split-panes
+# tmux select-layout even-vertical
+
 sudo apt install python3-venv
 mkdir -p ~/.venvs
 python3 -m venv ~/.venvs/sphinx
