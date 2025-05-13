@@ -15,6 +15,23 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
+ const std::map<char, const char *> Server::request_description
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  {'H', "get fast SHA-256 hash code"},
+  {'I', "get full SHA-256 hash code"},
+  {'r', "read a range of bytes"},
+  {'D', "get checkpoint"},
+  {'E', "lock"},
+  {'F', "pull"},
+  {'G', "lock_pull"},
+  {'L', "lock"},
+  {'M', "unlock"},
+  {'N', "lock_push"},
+  {'O', "push_unlock"}
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
  std::chrono::milliseconds Server::get_time_stamp() const
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -150,7 +167,7 @@ namespace joedb
     {
      if (!writable_journal_client)
      {
-      LOGID("Error: locking pull-only server\n");
+      LOGID("error: locking pull-only server\n");
       session->buffer.data[0] = 'R';
      }
      else
@@ -181,7 +198,7 @@ namespace joedb
    lock_dequeue();
   }
   else
-   LOGID("Error: locking an already locked session\n");
+   LOGID("error: locking an already locked session\n");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -299,11 +316,10 @@ namespace joedb
     session->push_writer.reset();
    }
 
-   session->buffer.data[0] = session->push_status;
-
    session->progress_bar.reset();
-   LOGID("Returning '" << session->push_status << "'\n");
 
+   session->buffer.data[0] = session->push_status;
+   LOGID("returning '" << session->push_status << "'\n");
    write_buffer_and_next_command(session, 1);
 
    if (session->unlock_after_push)
@@ -345,7 +361,7 @@ namespace joedb
    }
    else if (!locked)
    {
-    LOGID("Taking the lock for push attempt.\n");
+    LOGID("taking the lock for push attempt.\n");
     lock(session, Session::State::waiting_for_lock_to_push);
    }
 
@@ -603,9 +619,18 @@ namespace joedb
  {
   if (!error)
   {
-   LOGID(session->buffer.data[0] << '\n');
+   const char code = session->buffer.data[0];
 
-   switch (session->buffer.data[0])
+   if (log_pointer)
+   {
+    const auto i = request_description.find(code);
+    if (i != request_description.end())
+     LOGID("received request " << code << ": " << i->second << '\n');
+    else
+     LOGID("unknown code: " << code << '\n');
+   }
+
+   switch (code)
    {
     case 'H': case 'I':
      async_read(session, 1, 40, &Server::check_hash_handler);
@@ -616,8 +641,8 @@ namespace joedb
     break;
 
     case 'D': case 'E': case 'F': case 'G':
-     session->lock_before_pulling = session->buffer.data[0] & 1;
-     session->send_pull_data = session->buffer.data[0] & 2;
+     session->lock_before_pulling = code & 1;
+     session->send_pull_data = code & 2;
      async_read(session, 1, 16, &Server::pull_handler);
     break;
 
@@ -627,13 +652,9 @@ namespace joedb
     break;
 
     case 'N': case 'O':
-     session->unlock_after_push = (session->buffer.data[0] == 'O');
-     session->push_status = session->buffer.data[0];
+     session->unlock_after_push = (code == 'O');
+     session->push_status = code;
      async_read(session, 0, 16, &Server::push_handler);
-    break;
-
-    default:
-     LOGID("unexpected command\n");
     break;
    }
   }
