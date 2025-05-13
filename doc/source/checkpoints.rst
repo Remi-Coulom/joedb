@@ -70,8 +70,8 @@ when writing checkpoints, and a shared lock when reading them (see
 :doc:`concurrency`, and :doc:`file_format` for more details). This allows
 proper synchronization of simultaneous access to the same database.
 
-File System Support for Concurrency and Durability
---------------------------------------------------
+File System Support
+-------------------
 
 Joedb relies on locks and fsync to handle concurrency and durability, but
 those features are not available for all file systems. This is particularly

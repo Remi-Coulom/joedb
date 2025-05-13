@@ -119,3 +119,7 @@ Asynchronous real-time backup
 
 Synchronous real-time backup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. asciinema:: ./asciinema/synchronous_backup.cast
+   :poster: npt:0:01
+   :speed: 2
