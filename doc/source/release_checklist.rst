@@ -13,6 +13,7 @@ Code Tests
 - run the 3 fuzzers for a while
 - upgrade in rc3, and compile_everything.sh
 - make sure compilation works without precompiled headers
+- test scripts
 
 Documentation
 -------------

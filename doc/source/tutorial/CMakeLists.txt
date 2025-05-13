@@ -89,3 +89,8 @@ joedb_add_executable(server_file_tutorial
 joedb_add_executable(keepalive_test
  src/keepalive_test.cpp
 )
+
+joedb_add_executable(hello_concurrency
+ src/hello_concurrency.cpp
+ src/tutorial/writable.cpp
+)

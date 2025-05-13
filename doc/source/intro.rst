@@ -106,15 +106,36 @@ binary file, so it is not convenient to inspect it directly. The
 Concurrency Examples
 --------------------
 
-TODO: asciinema for each
+Here is a minimal C++ example of writing to a file with a joedb client:
 
-Concurrent access to a local file
+.. literalinclude:: ./tutorial/src/hello_concurrency.cpp
+   :language: c++
+
+All writes to the database are done via this transaction function, which
+automatically handles locking, checkpointing, and unlocking. A joedb client can
+also connect to a remote database via the joedb network protocol. For more
+details, check the :doc:`concurrency` section of the User Guide.
+
+The subsections below illustrate concurrency features using joedb's interactive
+command-line tools.
+
+Concurrent Access to a Local File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Concurrent access to a remote server
+Write transactions to the same file with a joedb client are mutually exclusive:
+
+.. asciinema:: ./asciinema/local_concurrency_interpreted.cast
+   :poster: npt:0:01
+   :speed: 1.5
+
+Concurrent Access to a Remote Server
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Asynchronous real-time backup
+.. asciinema:: ./asciinema/remote_concurrency.cast
+   :poster: npt:0:01
+   :speed: 1.5
+
+Asynchronous Real-Time Backup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The joedb server can notify a client as soon as new data is available, so that
@@ -124,7 +145,7 @@ a client can perform backups without polling.
    :poster: npt:0:01
    :speed: 1.5
 
-Synchronous real-time backup
+Synchronous Real-Time Backup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 With synchronous real-time backup, the client has to wait for the data to be

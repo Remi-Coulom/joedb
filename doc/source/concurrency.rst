@@ -72,7 +72,7 @@ is an example:
 Multiple instances of this program can safely write to the same database
 concurrently.
 
-.. asciinema:: ./asciinema/local_concurrency.cast
+.. asciinema:: ./asciinema/local_concurrency_compiled.cast
    :poster: npt:0:12
 
 :joedb:`File_Connection`
