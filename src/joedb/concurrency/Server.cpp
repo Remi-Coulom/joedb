@@ -655,6 +655,9 @@ namespace joedb
      session->push_status = code;
      async_read(session, 0, 16, &Server::push_handler);
     break;
+
+    default:
+    break;
    }
   }
  }
