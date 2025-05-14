@@ -44,8 +44,6 @@ namespace joedb
 
     index.unique = (command == "create_unique_index");
 
-    std::vector<std::string> index_columns;
-
     iss >> index.name;
 
     index.table_id = Readable_Command_Processor::parse_table(iss, db);
@@ -54,11 +52,17 @@ namespace joedb
      std::string s;
      iss >> s;
      std::istringstream column_ss(s);
+
      while (true)
      {
-      std::string column;
-      if (std::getline(column_ss, column, ','))
-       index_columns.emplace_back(std::move(column));
+      std::string field_name;
+      if (std::getline(column_ss, field_name, ','))
+      {
+       const Field_Id field_id = db.find_field(index.table_id, field_name);
+       if (field_id == Field_Id(0))
+        throw Exception("Field not found: " + field_name);
+       index.field_ids.emplace_back(field_id);
+      }
       else
        break;
      }
@@ -66,14 +70,6 @@ namespace joedb
 
     if (!joedb::is_identifier(index.name))
      throw Exception("Invalid index identifier: " + index.name);
-
-    for (auto field_name: index_columns)
-    {
-     const Field_Id field_id = db.find_field(index.table_id, field_name);
-     if (field_id == Field_Id(0))
-      throw Exception("Field not found: " + field_name);
-     index.field_ids.emplace_back(field_id);
-    }
 
     compiler_options.add_index(std::move(index));
    }

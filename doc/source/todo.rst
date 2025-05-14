@@ -9,7 +9,6 @@ For next release
    - joedb::Construction_Flags in constructor of Writable_Client as well
    - joedbc:
 
-     - store compiler option in joedb format, use interpreted database?
      - unique indexes:
 
        - encapsulate multi-column update (cannot write column individually)
@@ -28,8 +27,6 @@ For next release
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
      - more efficient test for validity of a range of ids for vector insert/update/delete
-
-   - do not store passphrase in ssh::Connector
 
  - Tooling:
 
@@ -108,13 +105,13 @@ Concurrency
   - support for log rotation: https://stackoverflow.com/questions/53188731/logging-compatibly-with-logrotate
   - write log as joedb file?
 
-- restart very large download from where it stopped (use hash to check before continuing?)
-
 - Do not crash on write error, continue to allow reading?
 - Asynchronous client code:
 
   - Robust_Connection to synchronous backup should not block reads in Server
   - Connection_Multiplexer for multiple parallel synchronous backup servers
+  - it is difficult to do in practice, because libssh is not very asynchronous
+  - best way might be to use threads
 
 Use case: log with safe real-time remote backup
 -----------------------------------------------

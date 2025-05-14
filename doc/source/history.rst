@@ -8,7 +8,6 @@ History
 
   - New features:
 
-    - ``joedb_server`` uses unix domain sockets instead of tcp/ip sockets
     - new ``delete_vector`` operation
     - Transactions can return a value.
     - :joedb:`Robust_Connection` automatically reconnects after an error.
@@ -50,6 +49,7 @@ History
 
   - Incompatibilities with previous version:
 
+    - ``joedb_server`` uses unix domain sockets instead of tcp/ip sockets
     - File format changed: ``joedb_convert`` from branch ``convert_4_to_5``
       can upgrade old file to the new format.
     - Checkpoints changed: use either ``soft_checkpoint`` or
