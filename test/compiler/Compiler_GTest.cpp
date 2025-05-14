@@ -726,7 +726,7 @@ TEST(Compiler, client_hash_error)
 TEST(Compiler, vector_of_size_zero)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::File file("vector_test.joedb", joedb::Open_Mode::create_new);
+ joedb::Memory_File file;
 
  vector_test::id_of_point v;
 
@@ -755,10 +755,10 @@ TEST(Compiler, vector_of_size_zero)
   vector_test::Readonly_Database db(file);
   EXPECT_EQ(db.get_point_table().get_size(), 0ULL);
  }
-// {
-//  joedb::Database db;
-//  joedb::Readonly_Journal(file).replay_log(db);
-// }
+ {
+  joedb::Database db;
+  joedb::Readonly_Journal(file).replay_log(db);
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

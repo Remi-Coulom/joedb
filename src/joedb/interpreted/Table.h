@@ -24,7 +24,7 @@ namespace joedb
 
    Freedom_Keeper freedom;
 
-   auto find_field_from_id(Field_Id field_id)
+   decltype(fields)::iterator find_field_from_id(Field_Id field_id)
    {
     const auto it = fields.find(field_id);
     if (it == fields.end())
@@ -32,7 +32,7 @@ namespace joedb
     return it;
    }
 
-   auto find_field_from_id(Field_Id field_id) const
+   decltype(fields)::const_iterator find_field_from_id(Field_Id field_id) const
    {
     return const_cast<Table *>(this)->find_field_from_id(field_id);
    }
@@ -83,7 +83,6 @@ namespace joedb
    type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id)\
    {\
     const auto it = find_field_from_id(field_id);\
-    check_record_id(record_id);\
     return it->second.get_own_##type_id##_storage(record_id);\
    }\
    const type *get_own_##type_id##_storage(Record_Id record_id, Field_Id field_id) const\

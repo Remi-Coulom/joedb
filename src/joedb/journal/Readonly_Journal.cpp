@@ -306,6 +306,8 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    record_of_last_operation = file.read_reference();\
    field_of_last_update = file.read_strong_type<Field_Id>();\
    const size_t size = file.compact_read<size_t>();\
+   if (size == 0)\
+    break;\
    if (int64_t(size) > checkpoint_position)\
     throw Exception("update_vector too big");\
    size_t capacity;\
