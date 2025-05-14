@@ -723,6 +723,45 @@ TEST(Compiler, client_hash_error)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, vector_of_size_zero)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::File file("vector_test.joedb", joedb::Open_Mode::create_new);
+
+ vector_test::id_of_point v;
+
+ {
+  vector_test::Writable_Database db(file);
+  v = db.new_vector_of_point(0);
+  db.soft_checkpoint();
+ }
+ {
+  vector_test::Readonly_Database db(file);
+  EXPECT_EQ(db.get_point_table().get_size(), 0ULL);
+ }
+ {
+  joedb::Database db;
+  joedb::Readonly_Journal(file).replay_log(db);
+ }
+
+ {
+  vector_test::Writable_Database db(file);
+  db.update_vector_of_x(v, 0, [](joedb::Span<float> x)
+  {
+  });
+  db.soft_checkpoint();
+ }
+ {
+  vector_test::Readonly_Database db(file);
+  EXPECT_EQ(db.get_point_table().get_size(), 0ULL);
+ }
+// {
+//  joedb::Database db;
+//  joedb::Readonly_Journal(file).replay_log(db);
+// }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, vector)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -747,23 +786,6 @@ TEST(Compiler, vector)
    test::Readonly_Database db(file);
    for (size_t i = 0; i < n; i++)
     EXPECT_FLOAT_EQ(db.get_value(v[i]), 0.1f * float(i));
-  }
- }
-
- //
- // Allocating empty vectors works
- //
- {
-  joedb::Memory_File file;
-
-  {
-   vector_test::Writable_Database db(file);
-   db.new_vector_of_point(0);
-   db.soft_checkpoint();
-  }
-  {
-   vector_test::Readonly_Database db(file);
-   EXPECT_EQ(db.get_point_table().get_size(), 0ULL);
   }
  }
 

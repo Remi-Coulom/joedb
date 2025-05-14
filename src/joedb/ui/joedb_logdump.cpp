@@ -107,7 +107,7 @@ namespace joedb
    else if (load)
    {
     Database db;
-    Multiplexer multiplexer{db, *writable};
+    Multiplexer multiplexer{*writable, db};
     dump(*journal, multiplexer, print_checkpoint);
    }
    else
