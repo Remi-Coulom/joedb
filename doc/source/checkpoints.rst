@@ -59,7 +59,7 @@ performed with the :ref:`joedb_push` tool.
 
 If you do not wish to manually recover from a crash, you can also tell joedb to
 automatically recover from the most recent valid checkpoint, and silently
-overwrite the uncheckpointed tail.
+overwrite the uncheckpointed tail with :joedb:`Construction_Flags`::overwrite.
 
 Checkpoints and Concurrency
 ---------------------------

@@ -8,9 +8,9 @@ namespace joedb
  /// @ingroup journal
  enum class Construction_Flags
  {
-  none = 0,
-  ignore_errors = 1,
-  overwrite = 2
+  none = 0,          ///< default
+  ignore_errors = 1, ///< set checkpoint to file size, and ignore all errors
+  overwrite = 2      ///< allow overwriting an uncheckpointed tail
  };
 
  /// @ingroup journal

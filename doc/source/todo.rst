@@ -6,9 +6,10 @@ For next release
 
  - Improvements:
 
+   - joedb::Construction_Flags in constructor of Writable_Client as well
    - joedbc:
 
-     - store compiler option in joedb format, use interpreted database
+     - store compiler option in joedb format, use interpreted database?
      - unique indexes:
 
        - encapsulate multi-column update (cannot write column individually)
