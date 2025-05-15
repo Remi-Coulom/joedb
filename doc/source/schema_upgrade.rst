@@ -61,3 +61,11 @@ custom function.
 
 Creating a new file works like upgrading from an empty schema, and will also
 invoke the custom functions.
+
+If a field is dropped, any prior custom function that refers to that field will
+not compile any more. So upgrades from an old format before the custom function
+to a new format after the field is dropped have to be performed in two steps:
+
+ - first, upgrade until the custom function, and before the field drop
+ - then remove references to the dropped field from the custom function (throw
+   an exception instead), and upgrade with the field drop.

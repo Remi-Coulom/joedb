@@ -19,7 +19,6 @@ For next release
        - in case of unique index failure, throw before actually inserting
        - use struct (with field names) instead of tuple for index key
 
-     - private access to dropped fields (for old custom functions), cleared at the time of drop
      - option to make some member functions private (->private: private_new_person)
      - option to add custom member functions
 
