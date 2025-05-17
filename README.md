@@ -19,7 +19,7 @@ crash-safe updates. Joedb can offer all these features by storing data as a
 journal of transactions. The whole data history is stored, so it is possible to
 re-create any past state of the database. Joedb also has a network protocol,
 and can operate a bit like [git for
-data](https://www.remi-coulom.fr/joedb/concurrency.html).
+data](https://www.joedb.org/concurrency.html).
 
 To give an indication of joedb's simplicity, the table below shows the size of
 joedb's source code compared to some other libraries. Lines of code are counted
