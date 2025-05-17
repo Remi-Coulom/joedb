@@ -201,7 +201,7 @@ namespace joedb::generator
    out << ".insert\n    (\n     ";
    write_index_type(index);
    out << "::value_type\n     (\n      ";
-   write_tuple_type(index);
+   write_tuple_type(index, true);
    out << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
@@ -481,6 +481,7 @@ namespace joedb::generator
   // find_index
   //
   for (const auto &index: options.get_indices())
+  {
    if (index.unique)
    {
     const std::string &tname = db.get_table_name(index.table_id);
@@ -522,7 +523,7 @@ namespace joedb::generator
     out << ") const\n";
     out << "   {\n";
     out << "    const auto i = index_of_" << index.name << ".find(";
-    write_tuple_type(index);
+    write_tuple_type(index, true);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {
@@ -552,6 +553,7 @@ namespace joedb::generator
     }
     out << ") const;\n";
    }
+  }
 
   out << " };\n";
 
@@ -658,7 +660,7 @@ namespace joedb::generator
     out << ")\n";
     out << "   {\n";
     out << "    range = db.index_of_" << index.name << ".equal_range(";
-    write_tuple_type(index);
+    write_tuple_type(index, true);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {

@@ -18,7 +18,7 @@ namespace joedb::generator
 
    void write_initial_comment();
    void write_type(Type type, bool return_type, bool setter_type);
-   void write_tuple_type(const Compiler_Options::Index &index);
+   void write_tuple_type(const Compiler_Options::Index &index, bool reference);
    void write_index_type(const Compiler_Options::Index &index);
 
    static const char *get_type_string(Type type);

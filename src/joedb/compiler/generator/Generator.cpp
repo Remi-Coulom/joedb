@@ -68,7 +68,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generator::write_tuple_type(const Compiler_Options::Index &index)
+ void Generator::write_tuple_type(const Compiler_Options::Index &index, bool reference)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (index.field_ids.size() > 1)
@@ -93,12 +93,15 @@ namespace joedb::generator
   }
   else
   {
-   write_type
-   (
-    options.db.get_field_type(index.table_id, index.field_ids[0]),
-    false,
-    false
-   );
+   if (!reference)
+   {
+    write_type
+    (
+     options.db.get_field_type(index.table_id, index.field_ids[0]),
+     false,
+     false
+    );
+   }
   }
  }
 
@@ -113,7 +116,7 @@ namespace joedb::generator
    out << "multimap";
   out << '<';
 
-  write_tuple_type(index);
+  write_tuple_type(index, false);
 
   out << ", id_of_" << options.db.get_table_name(index.table_id) << ">";
  }
