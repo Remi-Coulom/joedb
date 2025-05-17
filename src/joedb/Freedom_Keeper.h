@@ -114,7 +114,7 @@ namespace joedb
     return true;
    }
 
-   bool is_compact() const {return freedom_size == used_count;}
+   bool is_dense() const {return freedom_size == used_count;}
 
    //////////////////////////////////////////////////////////////////////////
    Record_Id get_free_record()
@@ -297,7 +297,7 @@ namespace joedb
     return index.is_not_null() && index + size <= used_size;
    }
 
-   bool is_compact() const {return true;}
+   bool is_dense() const {return true;}
 
    Record_Id get_free_record()
    {
@@ -382,7 +382,7 @@ namespace joedb
    Record_Id get_previous(Record_Id index) const {return SWITCH(get_previous(index));}
    bool is_used(Record_Id index) const {return SWITCH(is_used(index));}
    bool is_free(Record_Id index) const {return !is_used(index);}
-   bool is_compact() const {return SWITCH(is_compact());}
+   bool is_dense() const {return SWITCH(is_dense());}
 
    bool is_used_vector(Record_Id index, size_t size) const
    {

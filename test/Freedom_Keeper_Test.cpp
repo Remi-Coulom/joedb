@@ -57,7 +57,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   auto &fk = this->fk;
-  EXPECT_TRUE(fk.is_compact());
+  EXPECT_TRUE(fk.is_dense());
 
   EXPECT_EQ(0, fk.size());
   EXPECT_EQ(Record_Id{0}, fk.push_back());
@@ -65,7 +65,7 @@ namespace joedb
   EXPECT_EQ(1, fk.size());
   fk.use(Record_Id{0});
   EXPECT_FALSE(fk.is_free(Record_Id{0}));
-  EXPECT_TRUE(fk.is_compact());
+  EXPECT_TRUE(fk.is_dense());
 
   fk.use(fk.push_back()); // 1
   fk.use(fk.push_back()); // 2
@@ -85,7 +85,7 @@ namespace joedb
   }
 
   fk.free(Record_Id{3});
-  EXPECT_FALSE(fk.is_compact());
+  EXPECT_FALSE(fk.is_dense());
 
   EXPECT_EQ(8, fk.size());
 
@@ -182,15 +182,15 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Freedom_Keeper fk;
-  EXPECT_TRUE(fk.is_compact());
+  EXPECT_TRUE(fk.is_dense());
 
   for (int i = 8; --i >= 0;)
    fk.use(fk.push_back());
 
-  EXPECT_TRUE(fk.is_compact());
+  EXPECT_TRUE(fk.is_dense());
   fk.free(Record_Id{7});
-  EXPECT_TRUE(fk.is_compact());
+  EXPECT_TRUE(fk.is_dense());
   fk.free(Record_Id{4});
-  EXPECT_FALSE(fk.is_compact());
+  EXPECT_FALSE(fk.is_dense());
  }
 }

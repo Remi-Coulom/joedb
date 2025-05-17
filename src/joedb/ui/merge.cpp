@@ -25,7 +25,7 @@ void joedb::merge(Database &merged, const Database &db)
   {
    // do nothing, table is empty
   }
-  else if (freedom_keeper.is_compact())
+  else if (freedom_keeper.is_dense())
   {
    merged.insert_vector(tid, offset[tid], size_t(size));
 
