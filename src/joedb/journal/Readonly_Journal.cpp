@@ -45,15 +45,15 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 
   file.set_position(Header::size);
 
-  if (header.signature != Header::joedb && !lock.ignore_errors())
+  if (header.signature != Header::joedb && !lock.ignore_header())
    throw Exception("missing joedb signature");
 
-  if (header.version != format_version && !lock.ignore_errors())
+  if (header.version != format_version && !lock.ignore_header())
    throw Exception("unsupported file format version");
 
   read_checkpoint(header.checkpoint, lock.size);
 
-  if (lock.size > Header::ssize && lock.ignore_errors())
+  if (lock.size > Header::ssize && lock.ignore_header())
    checkpoint_position = lock.size;
 
   if (lock.size > 0 && lock.size < checkpoint_position)

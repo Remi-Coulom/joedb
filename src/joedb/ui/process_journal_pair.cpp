@@ -13,7 +13,7 @@ namespace joedb
   void (*process)(Readonly_Journal &, Writable_Journal &, int64_t checkpoint)
  )
  {
-  const bool ignore_errors = arguments.has_flag("ignore_errors");
+  const bool ignore_header = arguments.has_flag("ignore_header");
   const int64_t until = arguments.get_option<int64_t>
   (
    "until",
@@ -36,8 +36,8 @@ namespace joedb
    Journal_Construction_Lock
    (
     input_file,
-    ignore_errors
-    ? Construction_Flags::ignore_errors
+    ignore_header
+    ? Construction_Flags::ignore_header
     : Construction_Flags::none
    )
   );

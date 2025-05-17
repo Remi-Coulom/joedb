@@ -39,7 +39,7 @@ namespace joedb
   const bool raw = arguments.has_flag("raw");
   const bool header = arguments.has_flag("header");
   const bool schema_only = arguments.has_flag("schema_only");
-  const bool ignore_errors = arguments.has_flag("ignore_errors");
+  const bool ignore_header = arguments.has_flag("ignore_header");
   const bool load = arguments.has_flag("load");
   const bool print_checkpoint = arguments.has_flag("print_checkpoint");
   const bool blob = arguments.has_flag("blob");
@@ -59,30 +59,16 @@ namespace joedb
   {
    std::optional<Readonly_Journal> journal;
 
-   try
-   {
-    journal.emplace
+   journal.emplace
+   (
+    Journal_Construction_Lock
     (
-     Journal_Construction_Lock
-     (
-      file,
-      ignore_errors
-      ? Construction_Flags::ignore_errors
-      : Construction_Flags::none
-     )
-    );
-   }
-   catch (const Exception &e)
-   {
-    if (ignore_errors)
-     throw;
-    else
-    {
-     std::cout << "Error opening journal file: " << e.what() << '\n';
-     std::cout << "run with the --ignore_errors flag to skip this check.\n";
-     return 1;
-    }
-   }
+     file,
+     ignore_header
+     ? Construction_Flags::ignore_header
+     : Construction_Flags::none
+    )
+   );
 
    std::unique_ptr<Writable> writable;
 

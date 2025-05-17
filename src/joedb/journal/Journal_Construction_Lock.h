@@ -9,7 +9,7 @@ namespace joedb
  enum class Construction_Flags
  {
   none = 0,          ///< default
-  ignore_errors = 1, ///< set checkpoint to file size, and ignore all errors
+  ignore_header = 1, ///< use file size as checkpoint
   overwrite = 2      ///< allow overwriting an uncheckpointed tail
  };
 
@@ -31,9 +31,9 @@ namespace joedb
    const Construction_Flags flags;
    const int64_t size;
 
-   bool ignore_errors() const
+   bool ignore_header() const
    {
-    return int(flags) & int(Construction_Flags::ignore_errors);
+    return int(flags) & int(Construction_Flags::ignore_header);
    };
 
    bool overwrite() const
