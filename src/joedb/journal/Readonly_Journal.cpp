@@ -45,19 +45,24 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 
   file.set_position(Header::size);
 
-  if (header.signature != Header::joedb && !lock.ignore_header())
-   throw Exception("missing joedb signature");
+  if (lock.ignore_header())
+  {
+   if (lock.size > checkpoint_position)
+    checkpoint_position = lock.size;
+  }
+  else
+  {
+   if (header.signature != Header::joedb)
+    throw Exception("missing joedb signature");
 
-  if (header.version != format_version && !lock.ignore_header())
-   throw Exception("unsupported file format version");
+   if (header.version != format_version)
+    throw Exception("unsupported file format version");
 
-  read_checkpoint(header.checkpoint, lock.size);
+   read_checkpoint(header.checkpoint, lock.size);
 
-  if (lock.size > Header::ssize && lock.ignore_header())
-   checkpoint_position = lock.size;
-
-  if (lock.size > 0 && lock.size < checkpoint_position)
-   throw Exception("Checkpoint is bigger than file size");
+   if (lock.size > 0 && lock.size < checkpoint_position)
+    throw Exception("Checkpoint is bigger than file size");
+  }
  }
  else if (!lock.is_for_writable_journal())
   throw Exception("file is empty");
