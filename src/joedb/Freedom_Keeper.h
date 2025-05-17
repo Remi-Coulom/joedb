@@ -88,17 +88,29 @@ namespace joedb
 
    bool is_free_vector(Record_Id index, size_t size) const
    {
+    if (index.is_null())
+     return false;
+
     for (size_t i = 0; i < size; i++)
-     if (is_used(index + i))
+    {
+     if (index + i >= freedom_size)
+      return true;
+     else if (!is_free_f(index + i))
       return false;
+    }
+
     return true;
    }
 
    bool is_used_vector(Record_Id index, size_t size) const
    {
+    if (index.is_null() || index + size > freedom_size)
+     return false;
+
     for (size_t i = 0; i < size; i++)
-     if (!is_used(index + i))
+     if (is_free_f(index + i))
       return false;
+
     return true;
    }
 
@@ -269,16 +281,20 @@ namespace joedb
    {
     return index.is_not_null() && index < used_size;
    }
-   bool is_free(Record_Id index) const {return !is_used(index);}
+
+   bool is_free(Record_Id index) const
+   {
+    return index >= used_size;
+   }
 
    bool is_free_vector(Record_Id index, size_t size) const
    {
-    return size == 0 || is_free(index);
+    return index >= used_size;
    }
 
    bool is_used_vector(Record_Id index, size_t size) const
    {
-    return size == 0 || is_used(index + size - 1);
+    return index.is_not_null() && index + size <= used_size;
    }
 
    bool is_compact() const {return true;}
