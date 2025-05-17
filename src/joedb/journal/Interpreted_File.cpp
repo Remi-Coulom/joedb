@@ -33,8 +33,8 @@ namespace joedb
   readonly_journal(file_view)
  {
   stream.clear(); // clears eof flag after reading, get ready to write
-  Writable writable;
-  readonly_journal.play_until_checkpoint(writable);
+  Dummy_Writable dummy_writable;
+  readonly_journal.play_until_checkpoint(dummy_writable);
  }
 
  ////////////////////////////////////////////////////////////////////////////

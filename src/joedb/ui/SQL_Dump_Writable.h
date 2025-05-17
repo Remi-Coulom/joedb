@@ -9,7 +9,7 @@ namespace joedb
  class Buffered_File;
 
  /// @ingroup ui
- class SQL_Writable: public Writable
+ class SQL_Writable: public Loop_Writable
  {
   private:
    static constexpr const char *id_field_name = "\"__id\"";

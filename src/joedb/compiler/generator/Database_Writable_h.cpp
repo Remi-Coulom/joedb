@@ -116,6 +116,16 @@ namespace joedb::generator
   //
   out << R"RRR(
 
+   void delete_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) override
+   {
+    joedb::Writable::delete_vector(table_id, record_id, size); // TODO
+   }
+
    void insert_vector
    (
     Table_Id table_id,

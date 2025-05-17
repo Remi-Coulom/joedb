@@ -131,7 +131,7 @@ TEST_F(Writable_Journal_Test, interpreter_test)
   Writable_Journal journal(file);
 
   Database db;
-  Writable dummy_writable;
+  Dummy_Writable dummy_writable;
   Multiplexer multiplexer{db, journal, dummy_writable};
 
   Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);

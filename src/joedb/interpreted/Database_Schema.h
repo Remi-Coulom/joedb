@@ -10,7 +10,7 @@
 namespace joedb
 {
  /// @ingroup interpreted
- class Database_Schema: public Readable, public Writable
+ class Database_Schema: public Readable, public Dummy_Writable
  {
   protected:
    std::map<Table_Id, Table> tables;

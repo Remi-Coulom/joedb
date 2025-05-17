@@ -172,7 +172,7 @@ void joedb::Readonly_Journal::play_until(Writable &writable, int64_t end)
   const int64_t writable_position = writable.get_position();
   if (get_position() < writable_position)
   {
-   Writable dummy_writable;
+   Dummy_Writable dummy_writable;
    raw_play_until(dummy_writable, writable_position);
   }
   writable.start_writing(get_position());

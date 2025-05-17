@@ -7,6 +7,11 @@
 
 namespace joedb
 {
+ /// Superclass with all joedb journal event listeners as virtual functions
+ ///
+ /// insert_vector and delete_vector are pure virtual because they do not
+ /// check size limits, so they can be dangerously slow.
+ ///
  /// @ingroup joedb
  class Writable
  {
@@ -50,14 +55,14 @@ namespace joedb
     Table_Id table_id,
     Record_Id record_id,
     size_t size
-   );
+   ) = 0;
 
    virtual void delete_vector
    (
     Table_Id table_id,
     Record_Id record_id,
     size_t size
-   );
+   ) = 0;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    virtual void update_##type_id\
@@ -106,6 +111,58 @@ namespace joedb
    virtual Blob write_blob(const std::string &data) {return Blob();}
 
    virtual ~Writable() = default;
+ };
+
+ /// Writable with empty insert_vector and delete_vector
+ ///
+ /// @ingroup joedb
+ class Dummy_Writable: public Writable
+ {
+  public:
+   void insert_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) override
+   {
+   }
+
+   void delete_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) override
+   {
+   }
+ };
+
+ /// Writable with looping insert_vector and delete_vector
+ ///
+ /// @ingroup joedb
+ class Loop_Writable: public Writable
+ {
+  public:
+   void insert_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) override
+   {
+    Writable::insert_vector(table_id, record_id, size);
+   }
+
+   void delete_vector
+   (
+    Table_Id table_id,
+    Record_Id record_id,
+    size_t size
+   ) override
+   {
+    Writable::delete_vector(table_id, record_id, size);
+   }
  };
 }
 

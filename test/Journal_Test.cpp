@@ -258,7 +258,7 @@ namespace joedb
    (
     Journal_Construction_Lock(file, Construction_Flags::overwrite)
    );
-   Writable writable;
+   Dummy_Writable writable;
    journal.play_until_checkpoint(writable);
    journal.create_table("person");
    journal.soft_checkpoint();
@@ -668,7 +668,7 @@ namespace joedb
    }
    {
     Readonly_Journal journal(file);
-    Writable writable;
+    Dummy_Writable writable;
     journal.replay_log(writable);
    }
   }
@@ -686,7 +686,7 @@ namespace joedb
    }
    {
     Readonly_Journal journal(file);
-    Writable writable;
+    Dummy_Writable writable;
     journal.replay_log(writable);
    }
    {
@@ -709,7 +709,7 @@ namespace joedb
    }
    {
     Readonly_Journal journal(file);
-    Writable writable;
+    Dummy_Writable writable;
     journal.replay_log(writable);
    }
    {
