@@ -15,7 +15,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
    joedb::Journal_Construction_Lock
    (
     file,
-    joedb::Construction_Flags::ignore_errors
+    joedb::Construction_Flags::ignore_header
    )
   );
 

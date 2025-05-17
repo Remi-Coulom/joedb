@@ -145,7 +145,7 @@ namespace joedb
 
   Readonly_Journal journal
   (
-   Journal_Construction_Lock(file, Construction_Flags::ignore_errors)
+   Journal_Construction_Lock(file, Construction_Flags::ignore_header)
   );
  }
 
