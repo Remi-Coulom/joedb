@@ -146,9 +146,6 @@ TEST(Compiler, file_test)
   EXPECT_STREQ(e.what(), "my_namespace::is_nested::test: city_by_name unique index failure: (\"Paris\") at id = 1 was already at id = 2");
  }
 
- // This would be nice to have
- // EXPECT_EQ(db.get_name(New_York), "New York");
-
  //
  // Validity + get_at
  //

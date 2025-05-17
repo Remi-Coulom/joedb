@@ -7,32 +7,16 @@ For next release
  - Improvements:
 
    - joedb::Construction_Flags in constructor of Writable_Client as well
-   - joedbc:
-
-     - unique indexes:
-
-       - encapsulate multi-column update (cannot write column individually)
-       - do not allow column to be in more than one unique index
-       - find_or_new_<index>(cols)
-       - delete_<index>(cols)
-       - update_<index>(id, cols)
-       - in case of unique index failure, throw before actually inserting
-       - use struct (with field names) instead of tuple for index key
-
-     - option to make some member functions private (->private: private_new_person)
-     - option to add custom member functions
-
    - joedbc_fuzzer must work without debug assertions: check input in release mode as well
 
      - replace JOEDB_ASSERT by JOEDB_RELEASE_ASSERT in compiled code
-     - more efficient test for validity of a range of ids for vector insert/update/delete
+     - more efficient test for validity of a range of ids for vector insert/update/delete: check for first and last only, if non-zero size.
 
  - Tooling:
 
    - Add support for vcpkg
    - FetchContent and find_package
    - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
-   - Use clang-format (try to customize it, use tabs)
 
 On-disk Storage
 ---------------
@@ -46,6 +30,8 @@ On-disk Storage
 
 Compiler
 --------
+- option to make some member functions private (->private: private_new_person)
+- option to add custom member functions
 - Differentiate between "storage type" and "usage type":
 
   - remove bool type and use int8 instead, with bool usage
@@ -132,6 +118,8 @@ Use case: log with safe real-time remote backup
 Performance
 -----------
 
+- Use C++17 std::map::extract for more efficient index update
+- use reference to string instead of copy in index key
 - Memory-mapped specialization of Abstract_File using llfio
 - use async_write_some and async_read_some during pull and push
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
@@ -143,6 +131,7 @@ joedb_admin
 
 Other Ideas
 -----------
+- Use clang-format (try to customize it, use tabs)
 - Android logcat (custom std::streambuf, not part of joedb)
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - ability to indicate minimum joedb version in .joedbc file (and .joedbi?)
