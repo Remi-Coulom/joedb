@@ -28,7 +28,6 @@ namespace joedb::generator
 #include "joedb/error/Exception.h"
 #include "joedb/error/assert.h"
 #include "joedb/get_version.h"
-#include "joedb/Blob.h"
 #include "ids.h"
 
 #include <string>
@@ -39,16 +38,19 @@ namespace joedb::generator
 
 )RRR";
 
-  if (options.has_index())
-   out << "#include <map>\n\n";
+  if (options.has_blob())
+   out << "#include \"joedb/Blob.h\"\n";
 
   if (options.has_unique_index())
   {
    out << "#include \"joedb/ui/type_io.h\"\n";
-   out << "#include <sstream>\n\n";
+   out << "#include <sstream>\n";
   }
 
-  out << "static_assert(std::string_view(joedb::get_version()) == \"";
+  if (options.has_index())
+   out << "#include <map>\n";
+
+  out << "\nstatic_assert(std::string_view(joedb::get_version()) == \"";
   out << joedb::get_version() << "\");\n\n";
 
   namespace_open(out, options.get_name_space());

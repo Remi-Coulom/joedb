@@ -63,6 +63,15 @@ namespace joedb
     return indices.size() > 0;
    }
 
+   bool has_blob() const
+   {
+    for (auto &[table_id, table_name]: db.get_tables())
+     for (auto &[field_id, field_name]: db.get_fields(table_id))
+      if (db.get_field_type(table_id, field_id).get_type_id() == Type::Type_Id::blob)
+       return true;
+    return false;
+   }
+
    bool has_unique_index() const
    {
     for (const auto &index: indices)
