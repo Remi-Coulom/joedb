@@ -86,6 +86,22 @@ namespace joedb
    }
    bool is_free(Record_Id index) const {return !is_used(index);}
 
+   bool is_free_vector(Record_Id index, size_t size) const
+   {
+    for (size_t i = 0; i < size; i++)
+     if (is_used(index + i))
+      return false;
+    return true;
+   }
+
+   bool is_used_vector(Record_Id index, size_t size) const
+   {
+    for (size_t i = 0; i < size; i++)
+     if (!is_used(index + i))
+      return false;
+    return true;
+   }
+
    bool is_compact() const {return freedom_size == used_count;}
 
    //////////////////////////////////////////////////////////////////////////
@@ -255,6 +271,16 @@ namespace joedb
    }
    bool is_free(Record_Id index) const {return !is_used(index);}
 
+   bool is_free_vector(Record_Id index, size_t size) const
+   {
+    return size == 0 || is_free(index);
+   }
+
+   bool is_used_vector(Record_Id index, size_t size) const
+   {
+    return size == 0 || is_used(index + size - 1);
+   }
+
    bool is_compact() const {return true;}
 
    Record_Id get_free_record()
@@ -341,6 +367,16 @@ namespace joedb
    bool is_used(Record_Id index) const {return SWITCH(is_used(index));}
    bool is_free(Record_Id index) const {return !is_used(index);}
    bool is_compact() const {return SWITCH(is_compact());}
+
+   bool is_used_vector(Record_Id index, size_t size) const
+   {
+    return SWITCH(is_used_vector(index, size));
+   }
+
+   bool is_free_vector(Record_Id index, size_t size) const
+   {
+    return SWITCH(is_free_vector(index, size));
+   }
 
    Record_Id get_free_record() {return SWITCH(get_free_record());}
    Record_Id push_back() {return SWITCH(push_back());}
