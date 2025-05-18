@@ -21,7 +21,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  (
   client,
   io_context,
-  "fuzzer.sock",
+  "server_fuzzer.sock",
   std::chrono::milliseconds{100},
   nullptr
  );
