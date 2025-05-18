@@ -3,6 +3,7 @@
 #include "joedb/error/Exception.h"
 
 #include <stdexcept>
+#include <string>
 
 #define JOEDB_CHECK(x,e) do\
 {\
