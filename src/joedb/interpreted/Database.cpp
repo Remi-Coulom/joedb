@@ -28,6 +28,8 @@ namespace joedb
   size_t size
  )
  {
+  if (max_record_id >= Record_Id{0})
+   JOEDB_RELEASE_ASSERT(record_id < max_record_id && size < size_t(max_record_id));
   get_table(table_id).insert_vector(record_id, size);
  }
 

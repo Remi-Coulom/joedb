@@ -30,7 +30,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  {
   try
   {
-   joedb::Local_Channel channel("fuzzer.sock");
+   joedb::Local_Channel channel("server_fuzzer.sock");
    channel.write((const char *)Data, Size);
    io_context.post([&server](){server.stop_after_sessions();});
   }
