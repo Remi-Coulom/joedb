@@ -311,7 +311,7 @@ namespace joedb::generator
    out << "   void internal_vector_insert_" << tname << "(Record_Id record_id, size_t size)\n";
    out << "   {\n";
    out << "    JOEDB_RELEASE_ASSERT(storage_of_" << tname << ".freedom_keeper.is_free_vector(record_id, size));\n";
-   out << "    storage_of_" << tname << ".freedom_keeper.use_vector(record_id, Record_Id(size));\n";
+   out << "    storage_of_" << tname << ".freedom_keeper.use_vector(record_id, size);\n";
 
    for (const auto &index: options.get_indices())
     if (index.table_id == tid)

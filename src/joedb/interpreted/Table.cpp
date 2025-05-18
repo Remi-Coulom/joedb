@@ -40,15 +40,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Table::delete_record(Record_Id record_id)
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (!freedom.is_used(record_id))
-   throw Exception("delete_record: bad record_id");
-  freedom.free(record_id);
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Table::insert_record(Record_Id record_id)
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -66,20 +57,37 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Table::delete_record(Record_Id record_id)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  JOEDB_RELEASE_ASSERT(freedom.is_used(record_id));
+  freedom.free(record_id);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Table::insert_vector(Record_Id record_id, size_t size)
  ////////////////////////////////////////////////////////////////////////////
  {
+  JOEDB_RELEASE_ASSERT(freedom.is_free_vector(record_id, size));
   if (record_id == freedom.get_size())
   {
    freedom.resize(freedom.size() + size);
    for (auto &field: fields)
     field.second.resize(freedom.size());
-   freedom.use_vector(record_id, Record_Id(index_t(size)));
+   freedom.use_vector(record_id, size);
   }
   else
   {
    for (size_t i = 0; i < size; i++)
     insert_record(record_id + i);
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Table::delete_vector(Record_Id record_id, size_t size)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  JOEDB_RELEASE_ASSERT(freedom.is_used_vector(record_id, size));
+  freedom.free_vector(record_id, size);
  }
 }

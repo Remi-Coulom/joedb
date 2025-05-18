@@ -194,10 +194,17 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   void use_vector(Record_Id index, Record_Id size)
+   void use_vector(Record_Id index, size_t size)
    {
-    for (Record_Id i{0}; i < size; ++i)
-     use(index + to_underlying(i));
+    for (size_t i = 0; i < size; ++i)
+     use(index + i);
+   }
+
+   //////////////////////////////////////////////////////////////////////////
+   void free_vector(Record_Id index, size_t size)
+   {
+    for (size_t i = 0; i < size; ++i)
+     free(index + i);
    }
  };
 
@@ -336,11 +343,22 @@ namespace joedb
      return false;
    }
 
-   bool use_vector(Record_Id index, Record_Id size)
+   bool use_vector(Record_Id index, size_t size)
    {
-    if (index == used_size && used_size + to_underlying(size) <= free_size)
+    if (index == used_size && used_size + size <= free_size)
     {
-     used_size = used_size + to_underlying(size);
+     used_size = used_size + size;
+     return true;
+    }
+    else
+     return false;
+   }
+
+   bool free_vector(Record_Id index, size_t size)
+   {
+    if (index + size == used_size)
+    {
+     used_size = used_size - size;
      return true;
     }
     else
@@ -428,7 +446,7 @@ namespace joedb
      lfk.free(index);
    }
 
-   void use_vector(Record_Id index, Record_Id size)
+   void use_vector(Record_Id index, size_t size)
    {
     if (dense)
     {
@@ -440,6 +458,20 @@ namespace joedb
     }
     else
      lfk.use_vector(index, size);
+   }
+
+   void free_vector(Record_Id index, size_t size)
+   {
+    if (dense)
+    {
+     if (!dfk.free_vector(index, size))
+     {
+      lose_compactness();
+      lfk.free_vector(index, size);
+     }
+    }
+    else
+     lfk.free_vector(index, size);
    }
  };
 }

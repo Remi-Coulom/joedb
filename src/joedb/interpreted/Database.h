@@ -30,10 +30,7 @@ namespace joedb
     Table_Id table_id,
     Record_Id record_id,
     size_t size
-   ) override
-   {
-    Writable::delete_vector(table_id, record_id, size); // TODO
-   }
+   ) override;
 
    #define TYPE_MACRO(type, return_type, type_id, R, W)\
    void update_##type_id\

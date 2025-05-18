@@ -51,9 +51,10 @@ namespace joedb
    void add_field(const std::string &name, const Type &type);
    void drop_field(Field_Id field_id);
 
-   void delete_record(Record_Id record_id);
    void insert_record(Record_Id record_id);
+   void delete_record(Record_Id record_id);
    void insert_vector(Record_Id record_id, size_t size);
+   void delete_vector(Record_Id record_id, size_t size);
 
    size_t get_storage_capacity() const {return freedom.size();}
 

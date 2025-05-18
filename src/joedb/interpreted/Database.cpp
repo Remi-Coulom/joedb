@@ -1,8 +1,6 @@
 #include "joedb/interpreted/Database.h"
 #include "joedb/error/Exception.h"
 
-#include <sstream>
-
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -30,26 +28,6 @@ namespace joedb
   size_t size
  )
  {
-  if
-  (
-   to_underlying(record_id) < 0 ||
-   (
-    max_record_id >= Record_Id{0} &&
-    (
-     record_id > max_record_id ||
-     size > size_t(max_record_id)
-    )
-   )
-  )
-  {
-   std::ostringstream error_message;
-   error_message << "insert_vector: record_id = ";
-   error_message << to_underlying(record_id);
-   error_message << "; size = " << size;
-   error_message << "; max = " << to_underlying(max_record_id);
-   throw Exception(error_message.str());
-  }
-
   get_table(table_id).insert_vector(record_id, size);
  }
 
@@ -62,6 +40,18 @@ namespace joedb
  )
  {
   get_table(table_id).delete_record(record_id);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Database::delete_vector
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  Table_Id table_id,
+  Record_Id record_id,
+  size_t size
+ )
+ {
+  get_table(table_id).delete_vector(record_id, size);
  }
 
  ////////////////////////////////////////////////////////////////////////////
