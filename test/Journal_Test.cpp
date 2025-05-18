@@ -247,7 +247,7 @@ namespace joedb
    Writable_Journal journal(file);
    journal.comment("Hello");
    journal.soft_checkpoint();
-   journal.create_table("persan");;
+   journal.create_table("persan");
    journal.flush();
   }
 
