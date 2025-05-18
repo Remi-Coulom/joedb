@@ -6,8 +6,6 @@ For next release
 
  - Improvements:
 
-   - delete_vector specializations
-   - internal_delete_vector in compiled database
    - joedb::Construction_Flags in constructor of Writable_Client as well
 
  - Tooling:

@@ -115,7 +115,6 @@ namespace joedb::generator
   // insert_vector
   //
   out << R"RRR(
-
    void delete_vector
    (
     Table_Id table_id,
@@ -123,7 +122,31 @@ namespace joedb::generator
     size_t size
    ) override
    {
-    joedb::Writable::delete_vector(table_id, record_id, size); // TODO
+    joedb::Freedom_Keeper *fk = nullptr;
+
+)RRR";
+
+  {
+   bool first = true;
+   for (const auto &[tid, tname]: tables)
+   {
+    out << "    ";
+    if (first)
+     first = false;
+    else
+     out << "else ";
+
+    out << "if (table_id == Table_Id(" << tid << "))\n";
+    out << "     fk = &storage_of_" << tname << ".freedom_keeper;\n";
+   }
+  }
+
+  out << R"RRR(
+    if (fk)
+    {
+     JOEDB_RELEASE_ASSERT(fk->is_used_vector(record_id, size));
+     joedb::Writable::delete_vector(table_id, record_id, size);
+    }
    }
 
    void insert_vector
