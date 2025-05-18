@@ -287,7 +287,7 @@ namespace joedb
    (
     session,
     0,
-    size_t(std::min(session->push_remaining_size, session->buffer.ssize)),
+    size_t(std::min(session->push_remaining_size, int64_t(session->buffer.size))),
     &Server::push_transfer_handler
    );
   }

@@ -69,6 +69,7 @@ joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/Writable.cpp
+ ../src/joedb/error/assert.cpp
  ../src/joedb/error/Destructor_Logger.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp

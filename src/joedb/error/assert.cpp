@@ -1,6 +1,8 @@
 #include "joedb/error/assert.h"
 
-#include <cstring>
+#include <algorithm>
+#include <string>
+#include <string_view>
 
 namespace joedb
 {
@@ -12,8 +14,12 @@ namespace joedb
   int line
  )
  {
-  const char *p = std::strstr(full_file, "joedb/src/joedb");
-  const char *file = p ? p + 10 : full_file;
-  return std::string(file) + ":" + std::to_string(line) + ":" + std::string(function) + ":!(" + std::string(condition) + ")";
+  std::string cpp_file(full_file);
+  std::replace(cpp_file.begin(), cpp_file.end(), '\\', '/');
+  size_t pos = cpp_file.find("joedb/src/joedb");
+  std::string_view file(cpp_file);
+  if (pos != std::string::npos)
+   file.remove_prefix(pos + 10);
+  return std::string(file) + ":" + std::to_string(line) + ":" + function + ":!(" + condition + ")";
  }
 }
