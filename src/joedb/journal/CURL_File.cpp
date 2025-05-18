@@ -7,7 +7,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   if (code != CURLE_OK)
-   throw Exception(curl_easy_strerror(code));
+   throw Exception(std::string("CURL_File: ") + curl_easy_strerror(code));
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ namespace joedb
   error_check(curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code));
 
   if (code != 0 && code != 206)
-   throw Exception("unexpected response code: " + std::to_string(code));
+   throw Exception("CURL_FIle: unexpected response code: " + std::to_string(code));
  }
 
  ////////////////////////////////////////////////////////////////////////////

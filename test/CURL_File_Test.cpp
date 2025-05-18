@@ -13,17 +13,13 @@ namespace joedb
  {
   const bool verbose = false;
 
-  CURL_File file
-  (
-   "https://github.com/Remi-Coulom/joedb/raw/refs/heads/dev/test/endianness.joedb",
-   verbose
-  );
+  CURL_File file("https://www.joedb.org/test/v10/endianness.joedb", verbose);
 
   Readonly_Journal journal(file);
   Pullonly_Journal_Connection connection(journal);
 
   Memory_File memory_file;
-  Writable_Database_Client client(memory_file, connection, Content_Check::none);
+  Writable_Database_Client client(memory_file, connection);
 
   client.pull();
 

@@ -104,7 +104,7 @@ namespace joedb
   {
    "test",
    "curl",
-   "https://github.com/Remi-Coulom/joedb/raw/refs/heads/dev/test/endianness.joedb"
+   "https://www.joedb.org/test/v10/endianness.joedb"
   };
   Arguments arguments(argv.size(), argv.data());
   ASSERT_TRUE(parser.parse(out, arguments));
