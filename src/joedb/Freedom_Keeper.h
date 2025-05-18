@@ -104,8 +104,15 @@ namespace joedb
 
    bool is_used_vector(Record_Id index, size_t size) const
    {
-    if (index.is_null() || index + size > freedom_size)
+    if
+    (
+     index.is_null() ||
+     (index + size).is_null() ||
+     index + size > freedom_size
+    )
+    {
      return false;
+    }
 
     for (size_t i = 0; i < size; i++)
      if (is_free_f(index + i))
@@ -301,7 +308,10 @@ namespace joedb
 
    bool is_used_vector(Record_Id index, size_t size) const
    {
-    return index.is_not_null() && index + size <= used_size;
+    return
+     index.is_not_null() &&
+     (index + size).is_not_null() &&
+     index + size <= used_size;
    }
 
    bool is_dense() const {return true;}
