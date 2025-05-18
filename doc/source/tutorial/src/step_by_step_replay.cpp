@@ -13,12 +13,12 @@ namespace example
   void comment(const std::string &comment) override
   {
    std::cout << "Comment: " << comment << '\n';
-  };
+  }
 
   void timestamp(int64_t timestamp) override
   {
    std::cout << "Timestamp: " << timestamp << '\n';
-  };
+  }
  };
 }
 
@@ -40,7 +40,7 @@ int main()
   std::cout << std::setw(3) << counter << ' ';
   std::cout << "Number of persons: ";
   std::cout << db.get_person_table().get_size();
-  std::cout << '\n';;
+  std::cout << '\n';
  }
 
  return 0;

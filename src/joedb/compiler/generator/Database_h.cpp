@@ -276,7 +276,7 @@ namespace joedb::generator
     }
     else if (type.get_type_id() == Type::Type_Id::blob)
     {
-     out << " = joedb::Blob();";
+     out << " = joedb::Blob()";
     }
     else
     {

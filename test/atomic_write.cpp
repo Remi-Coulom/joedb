@@ -22,4 +22,4 @@ int main()
   file.pwrite(s[i].data(), s[i].size(), offset);
 
  return 0;
-};
+}
