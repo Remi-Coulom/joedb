@@ -368,7 +368,7 @@ namespace joedb::generator
     out << "    ";
     write_type(type, false, false);
     out << " *target = &storage_of_" << tname;
-    out << ".field_value_of_" << fname << "[to_underlying(record_id)];\n";
+    out << ".field_value_of_" << fname << ".data()[to_underlying(record_id)];\n";
     out << "    if (target != value)\n";
     out << "     std::copy_n(value, size, target);\n";
 

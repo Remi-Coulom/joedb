@@ -301,7 +301,7 @@ namespace joedb::generator
     out << "    joedb::Span<";
     write_type(type, false, false);
     out << "> span(&storage_of_" << tname;
-    out << ".field_value_of_" << fname << "[record.get_id()], size);\n";
+    out << ".field_value_of_" << fname << ".data()[record.get_id()], size);\n";
     out << "    try {f(span);}\n";
     out << "    catch (...) {exception = std::current_exception();}\n";
     out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_record_id(), size, span.begin());\n";
