@@ -29,6 +29,7 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/assert.cpp
  ${JOEDB_SRC_DIR}/joedb/error/Destructor_Logger.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp

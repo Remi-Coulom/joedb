@@ -90,6 +90,7 @@ if(GTest_FOUND)
 
  add_executable(joedb_file_test
   ../test/Test_Main.cpp
+  ../src/joedb/error/assert.cpp
   ../src/joedb/error/String_Logger.cpp
   ../src/joedb/error/Destructor_Logger.cpp
 

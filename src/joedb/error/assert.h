@@ -4,12 +4,10 @@
 
 #include <stdexcept>
 
-#define JOEDB_ASSERT_STRINGIFY(x) #x
-#define JOEDB_ASSERT_TO_STRING(x) JOEDB_ASSERT_STRINGIFY(x)
 #define JOEDB_CHECK(x,e) do\
 {\
  if (!(x))\
-  throw e("!("#x ")\n  File: " __FILE__ "\n  Line: " JOEDB_ASSERT_TO_STRING(__LINE__));\
+  throw e(joedb::get_error_message(#x, __FILE__, __func__, __LINE__).c_str());\
 } while(0)
 
 /// assertion tested in debug mode
@@ -26,6 +24,14 @@
 
 namespace joedb
 {
+ std::string get_error_message
+ (
+  const char *condition,
+  const char *file,
+  const char *function,
+  int line
+ );
+
  using Release_Assertion_Failure = Exception;
  /// Indicates a bug in the code, thrown by @ref JOEDB_DEBUG_ASSERT when NDEBUG not defined
  /// @ingroup error

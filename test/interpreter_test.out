@@ -220,9 +220,7 @@ Line 54: drop_field test qsdfqsdf
 OK: drop_field test a
 OK: insert_into test 1 3 "4" false
 OK: delete_from test 1
-Exception caught: !(freedom.is_used(record_id))
-  File: /home/rcoulom/repos/joedb/src/joedb/interpreted/Table.cpp
-  Line: 63
+Exception caught: joedb/interpreted/Table.cpp:63:delete_record:!(freedom.is_used(record_id))
 Line 58: delete_from test 123
 Exception caught: bad field
 Line 59: update test 0 a 56789
