@@ -107,7 +107,7 @@ namespace joedb
     if
     (
      index.is_null() ||
-     (index + size).is_null() ||
+     index + size < index ||
      index + size > freedom_size
     )
     {
@@ -310,7 +310,7 @@ namespace joedb
    {
     return
      index.is_not_null() &&
-     (index + size).is_not_null() &&
+     index + size >= index &&
      index + size <= used_size;
    }
 
