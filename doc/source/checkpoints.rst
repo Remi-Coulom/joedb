@@ -84,10 +84,7 @@ WSL is another source of major file-locking pitfalls: locks applied from within
 WSL and from the Windows host ignore each other
 (`<https://github.com/microsoft/WSL/issues/5762>`_). It seems that the 9P file
 server used by WSL does not support file locking. A workaround for this problem
-consists in `using samba
-<https://documentation.ubuntu.com/server/how-to/samba/mount-cifs-shares-permanently/index.html>`_
-to mount Windows drives in WSL (or, conversely, launch a samba server in WSL2,
-and mount the drive in Windows).
+consists in using samba to share files between WSL and its Windows host.
 
 Even when properly configured for concurrency and durability, the performance
 of file locking over NFS can be very bad in case of contention: on Ubuntu 24.04
