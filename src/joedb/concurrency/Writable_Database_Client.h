@@ -17,14 +17,19 @@ namespace joedb
     Multiplexer multiplexer;
 
    public:
-    Writable_Database_Client_Data(Buffered_File &file, Record_Id max_record_id):
-     data_journal(file),
+    Writable_Database_Client_Data
+    (
+     Buffered_File &file,
+     Record_Id max_record_id,
+     Recovery recovery
+    ):
+     data_journal(Journal_Construction_Lock(file, recovery)),
      database(max_record_id),
      multiplexer{database, data_journal}
     {
     }
   };
- };
+ }
 
  /// @ingroup concurrency
  class Writable_Database_Client:
@@ -45,9 +50,10 @@ namespace joedb
     Buffered_File &file,
     Connection &connection,
     Content_Check content_check = Content_Check::fast,
-    Record_Id max_record_id = Record_Id::null
+    Record_Id max_record_id = Record_Id::null,
+    Recovery recovery = Recovery::none
    ):
-    Writable_Database_Client_Data(file, max_record_id),
+    Writable_Database_Client_Data(file, max_record_id, recovery),
     Writable_Client(data_journal, connection, content_check)
    {
     read_journal();

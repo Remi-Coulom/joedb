@@ -64,9 +64,7 @@ namespace joedb
     Journal_Construction_Lock
     (
      file,
-     ignore_header
-     ? Construction_Flags::ignore_header
-     : Construction_Flags::none
+     ignore_header ? Recovery::ignore_header : Recovery::none
     )
    );
 

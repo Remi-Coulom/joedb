@@ -38,6 +38,7 @@ extensions = [
     'sphinxcontrib.doxylink',
     'joedbi_lexer',
     'joedbc_lexer',
+    'joedb_console_lexer',
     'sphinx_favicon',
     'sphinx_sitemap'
 ]

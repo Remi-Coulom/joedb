@@ -23,9 +23,10 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check = Content_Check::fast
+    Content_Check content_check = Content_Check::fast,
+    Recovery recovery = Recovery::none
    ):
-    Readonly_Client(file, connection, content_check)
+    Readonly_Client(file, connection, content_check, recovery)
    {
     read_journal();
    }

@@ -107,7 +107,7 @@ namespace joedb::generator
    Writable_Database
    (
     joedb::Buffered_File &file,
-    joedb::Construction_Flags flags,
+    joedb::Recovery recovery,
     bool perform_initialization
    );
 
@@ -117,7 +117,7 @@ namespace joedb::generator
    Writable_Database
    (
     joedb::Buffered_File &file,
-    joedb::Construction_Flags flags
+    joedb::Recovery recovery
    );
 
    const joedb::Readonly_Journal &get_journal() const {return journal;}

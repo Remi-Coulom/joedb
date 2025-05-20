@@ -6,9 +6,9 @@ User Guide
 
    getting_started
    opening_files
-   vectors
    checkpoints
-   schema_upgrade
-   indexes
    concurrency
+   schema_upgrade
+   vectors
+   indexes
    blobs

@@ -19,9 +19,10 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check = Content_Check::fast
+    Content_Check content_check = Content_Check::fast,
+    Recovery recovery = Recovery::none
    ):
-    Readonly_Journal(file),
+    Readonly_Journal(Journal_Construction_Lock(file, recovery)),
     Client(*this, connection, content_check)
    {
     Client::push(Unlock_Action::keep_locked);

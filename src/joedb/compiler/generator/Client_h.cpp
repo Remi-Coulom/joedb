@@ -36,8 +36,12 @@ namespace joedb::generator
    protected:
     Writable_Database db;
 
-    Client_Data(joedb::Buffered_File &file):
-     db(file, joedb::Construction_Flags::none, false)
+    Client_Data
+    (
+     joedb::Buffered_File &file,
+     joedb::Recovery recovery
+    ):
+     db(file, recovery, false)
     {
     }
   };
@@ -70,9 +74,10 @@ namespace joedb::generator
    (
     joedb::Buffered_File &file,
     joedb::Connection &connection,
-    joedb::Content_Check content_check = joedb::Content_Check::fast
+    joedb::Content_Check content_check = joedb::Content_Check::fast,
+    joedb::Recovery recovery = joedb::Recovery::none
    ):
-    detail::Client_Data(file),
+    detail::Client_Data(file, recovery),
     joedb::Writable_Client(db.journal, connection, content_check),
     schema_checkpoint(0)
    {
