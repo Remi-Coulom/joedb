@@ -8,39 +8,43 @@
 
 namespace joedb
 {
- /// @ingroup journal
- class File_Slice: public Readonly_Memory_File
+ namespace detail
  {
-  private:
-   const size_t mapped_size;
+  class Memory_Mapping
+  {
+   private:
+    void * const data;
+    const size_t size;
 
+   public:
+    Memory_Mapping(int fd, size_t size):
+     data(mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0)),
+     size(size)
+    {
+     if (data == MAP_FAILED)
+      Posix_File::throw_last_error("mapping", "file");
+    }
+
+    Memory_Mapping(const Memory_Mapping &) = delete;
+    Memory_Mapping &operator=(const Memory_Mapping &) = delete;
+
+    const char *get() const {return (const char *)data;}
+
+    ~Memory_Mapping()
+    {
+     munmap(data, size);
+    }
+  };
+ }
+
+ /// @ingroup journal
+ class File_Slice: public detail::Memory_Mapping, public Readonly_Memory_File
+ {
   public:
    File_Slice(int fd, size_t offset, size_t size):
-    Readonly_Memory_File
-    (
-     (char *)mmap
-     (
-      nullptr,
-      offset + size,
-      PROT_READ,
-      MAP_PRIVATE,
-      fd,
-      0
-     ) + offset,
-     size
-    ),
-    mapped_size(offset + size)
+    detail::Memory_Mapping(fd, offset + size),
+    Readonly_Memory_File(detail::Memory_Mapping::get() + offset, size)
    {
-    if (data - offset == MAP_FAILED)
-     Posix_File::throw_last_error("mapping", "file");
-   }
-
-   File_Slice(const File_Slice &) = delete;
-   File_Slice &operator=(const File_Slice &) = delete;
-
-   ~File_Slice()
-   {
-    munmap(const_cast<void *>(static_cast<const void *>(data)), mapped_size);
    }
  }; 
 }
