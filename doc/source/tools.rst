@@ -144,7 +144,7 @@ Pushes a local file to a connection. For example:
 .. code-block:: bash
 
     # Dump content of a file
-    joedb_push file.joedb dump
+    joedb_push file.joedb --db dump
 
 .. code-block:: bash
 
@@ -154,17 +154,17 @@ Pushes a local file to a connection. For example:
 .. code-block:: bash
 
     # Follow additions to the end of a file
-    joedb_push --follow file.joedb dump tail
+    joedb_push --follow file.joedb --db dump
 
 .. code-block:: bash
 
     # Keep a backup server updated
-    joedb_push --follow database.joedb network backup_server 1234
+    joedb_push --follow database.joedb ssh user host ~/backup.joedb.sock
 
 .. code-block:: bash
 
     # Export a joedb file to sqlite
-    joedb_push database.joedb sql | sqlite3 database.sqlite
+    joedb_push database.joedb --db sql | sqlite3 database.sqlite
 
 .. code-block:: bash
 
