@@ -28,15 +28,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 
  std::thread thread([Data, Size, &io_context, &server]()
  {
-  try
-  {
-   joedb::Local_Channel channel("server_fuzzer.sock");
-   channel.write((const char *)Data, Size);
-   io_context.post([&server](){server.stop_after_sessions();});
-  }
-  catch (const joedb::Exception &)
-  {
-  }
+  joedb::Local_Channel channel("server_fuzzer.sock");
+  channel.write((const char *)Data, Size);
+  io_context.post([&server](){server.stop_after_sessions();});
  });
 
  try

@@ -4,15 +4,11 @@ TODO
 For next release
 ----------------
 
- - Improvements:
-
-   - joedb::Construction_Flags in constructor of Writable_Client as well
-
- - Tooling:
-
-   - Add support for vcpkg
-   - FetchContent and find_package
-   - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
+- DLL in Windows (export classes explicitly)
+- one single dll, statically linked joedbc_bootstrap
+- Add support for vcpkg
+- FetchContent and find_package, minimal tutorial
+- vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
 
 On-disk Storage
 ---------------

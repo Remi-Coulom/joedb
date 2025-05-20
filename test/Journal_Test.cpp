@@ -145,7 +145,7 @@ namespace joedb
 
   Readonly_Journal journal
   (
-   Journal_Construction_Lock(file, Construction_Flags::ignore_header)
+   Journal_Construction_Lock(file, Recovery::ignore_header)
   );
  }
 
@@ -256,7 +256,7 @@ namespace joedb
   {
    Writable_Journal journal
    (
-    Journal_Construction_Lock(file, Construction_Flags::overwrite)
+    Journal_Construction_Lock(file, Recovery::overwrite)
    );
    Dummy_Writable writable;
    journal.play_until_checkpoint(writable);

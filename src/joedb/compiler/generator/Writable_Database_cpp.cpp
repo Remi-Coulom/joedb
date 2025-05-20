@@ -110,10 +110,10 @@ namespace joedb::generator
  ////////////////////////////////////////////////////////////////////////////
  (
   joedb::Buffered_File &file,
-  joedb::Construction_Flags flags,
+  joedb::Recovery recovery,
   bool perform_initialization
  ):
-  journal(joedb::Journal_Construction_Lock(file, flags))
+  journal(joedb::Journal_Construction_Lock(file, recovery))
  {
   journal.rewind();
 
@@ -124,7 +124,7 @@ namespace joedb::generator
  ////////////////////////////////////////////////////////////////////////////
  Writable_Database::Writable_Database(joedb::Buffered_File &file):
  ////////////////////////////////////////////////////////////////////////////
-  Writable_Database(file, joedb::Construction_Flags::none, true)
+  Writable_Database(file, joedb::Recovery::none, true)
  {
  }
 
@@ -133,9 +133,9 @@ namespace joedb::generator
  ////////////////////////////////////////////////////////////////////////////
  (
   joedb::Buffered_File &file,
-  joedb::Construction_Flags flags
+  joedb::Recovery recovery
  ):
-  Writable_Database(file, flags, true)
+  Writable_Database(file, recovery, true)
  {
  }
 

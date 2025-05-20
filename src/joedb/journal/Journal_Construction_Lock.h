@@ -6,7 +6,7 @@
 namespace joedb
 {
  /// @ingroup journal
- enum class Construction_Flags
+ enum class Recovery
  {
   none = 0,          ///< default
   ignore_header = 1, ///< use file size as checkpoint
@@ -28,17 +28,17 @@ namespace joedb
 
   public:
    Buffered_File &file;
-   const Construction_Flags flags;
+   const Recovery recovery;
    const int64_t size;
 
    bool ignore_header() const
    {
-    return int(flags) & int(Construction_Flags::ignore_header);
-   };
+    return int(recovery) & int(Recovery::ignore_header);
+   }
 
    bool overwrite() const
    {
-    return int(flags) & int(Construction_Flags::overwrite);
+    return int(recovery) & int(Recovery::overwrite);
    }
 
    bool is_for_writable_journal() const {return for_writable_journal;}
@@ -46,7 +46,7 @@ namespace joedb
    explicit Journal_Construction_Lock
    (
     Buffered_File &file,
-    Construction_Flags flags = Construction_Flags::none
+    Recovery recovery = Recovery::none
    );
 
    Journal_Construction_Lock(const Journal_Construction_Lock &) = delete;

@@ -42,25 +42,6 @@ written, by either executing it manually, or setting an option for
 
 .. _crash:
 
-Recovering from a Crash
------------------------
-
-If a crash occurs in the middle of a transaction, then the file may end up
-containing a dirty uncheckpointed tail. In such a situation, in order to
-prevent any risk of data loss, joedb will refuse to open the file for writing.
-
-If an error is detected, ``joedb_logdump --header`` provides detailed
-information about the size of the file, and the values of the soft and hard
-checkpoints. Recovering the journal until the hard checkpoint should be
-completely safe. Recovering until the soft checkpoint is very likely to be safe
-if it is shorter than the file size. It is also possible to recover until the
-very end of the file, but that is much more risky. Journal truncation can be
-performed with the :ref:`joedb_push` tool.
-
-If you do not wish to manually recover from a crash, you can also tell joedb to
-automatically recover from the most recent valid checkpoint, and silently
-overwrite the uncheckpointed tail with :joedb:`Construction_Flags`::overwrite.
-
 Checkpoints and Concurrency
 ---------------------------
 
@@ -80,6 +61,12 @@ locking or fsync at all. Depending on its version and how it is configured,
 NFS may or may not properly support file locking and fsync. Samba, on the
 other hand, seems to handle concurrency rather well.
 
+WSL is another source of major file-locking pitfalls: locks applied from within
+WSL and from the Windows host ignore each other
+(`<https://github.com/microsoft/WSL/issues/5762>`_). It seems that the 9P file
+server used by WSL does not support file locking. A workaround for this problem
+consists in using samba to share files between WSL and its Windows host.
+
 Even when properly configured for concurrency and durability, the performance
 of file locking over NFS can be very bad in case of contention: on Ubuntu 24.04
 with nfsv4, it takes 30 seconds for a client to find out that a lock it is
@@ -91,6 +78,107 @@ is very inefficient.
 
 For distributed access to a database, :ref:`joedb_server` provides considerably
 better reliability and performance.
+
+Recovering from a Crash
+-----------------------
+
+If a crash occurs in the middle of a transaction, then the file may end up
+containing a dirty uncheckpointed tail. In such a situation, in order to
+prevent any risk of data loss, joedb will refuse to open the file for writing.
+
+.. code-block:: joedb_console
+
+   joedb@localhost$ joedb_client test.joedb
+   hard_checkpoint = 0
+   content_check = fast
+   db_type = interpreted
+   recovery = none
+   Opening local file (open_mode = shared) ... Creating connection (dummy) ... OK
+   Creating client... OK
+   writable_client(41)> transaction
+   writable_client(41)/transaction> comment "Successful transaction"
+   OK: comment "Successful transaction"
+   writable_client(41)/transaction> quit
+   OK: quit
+   OK: transaction
+   writable_client(65)> transaction
+   writable_client(65)/transaction> comment "Aborted transaction"
+   OK: comment "Aborted transaction"
+   writable_client(65)/transaction> abort
+   OK: abort
+   Exception caught: aborted
+   Line 2: transaction
+   writable_client(65)> quit
+   OK: quit
+   joedb: Ahead_of_checkpoint in Writable_Journal destructor
+   joedb: warning: an unflushed file is being destroyed
+
+   joedb@localhost$ joedb_client test.joedb
+   hard_checkpoint = 0
+   content_check = fast
+   db_type = interpreted
+   recovery = none
+   Opening local file (open_mode = shared) ... Creating connection (dummy) ... OK
+   Creating client... Exception caught: Checkpoint (65) is smaller than file
+   size (86). This file may contain an aborted transaction. 'joedb_push
+   file.joedb file fixed.joedb' can be used to truncate it.
+
+If an error is detected, ``joedb_logdump --header`` provides detailed
+information about the size of the file, and the values of the soft and hard
+checkpoints.
+
+.. code-block:: joedb_console
+
+   joedb@localhost$ joedb_logdump --header test.joedb
+       file size: 86
+   checkpoint[0]: 41
+   checkpoint[1]: -65
+   checkpoint[2]: 41
+   checkpoint[3]: 41
+   format version: 5
+   signature: "joedb"
+
+Recovering the journal until the hard checkpoint should be
+completely safe. Recovering until the soft checkpoint is very likely to be safe
+if it is shorter than the file size. It is also possible to recover until the
+very end of the file, but that is much more risky. Journal truncation can be
+performed with the :ref:`joedb_push` tool.
+
+.. code-block:: joedb_console
+
+   joedb@localhost$ joedb_push test.joedb --db dump 2>/dev/null
+   comment "Successful transaction"
+
+   joedb@localhost$ joedb_push --recovery ignore_header test.joedb --db dump 2>/dev/null
+   comment "Successful transaction"
+   comment "Aborted transaction"
+
+
+If you do not wish to manually recover from a crash, you can also tell joedb to
+automatically recover from the most recent valid checkpoint, and silently
+overwrite the uncheckpointed tail with :joedb:`Recovery`::overwrite.
+
+.. code-block:: joedb_console
+
+   joedb@localhost$ joedb_client --recovery overwrite test.joedb
+   hard_checkpoint = 0
+   content_check = fast
+   db_type = interpreted
+   recovery = overwrite
+   Opening local file (open_mode = shared) ... Creating connection (dummy) ... OK
+   Creating client... OK
+   writable_client(65)> transaction
+   writable_client(65)/transaction> comment "This overwrites the aborted transaction"
+   OK: comment "This overwrites the aborted transaction"
+   writable_client(65)/transaction> quit
+   OK: quit
+   OK: transaction
+   writable_client(107)> quit
+   OK: quit
+
+   joedb@localhost$ joedb_logdump test.joedb
+   comment "Successful transaction"
+   comment "This overwrites the aborted transaction"
 
 Benchmarks
 ----------

@@ -26,9 +26,10 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check
+    Content_Check content_check,
+    Recovery recovery
    ):
-    Readonly_Client(file, connection, content_check),
+    Readonly_Client(file, connection, content_check, recovery),
     writable(std::cout)
    {
     read_journal();
@@ -52,9 +53,10 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check
+    Content_Check content_check,
+    Recovery recovery
    ):
-    Readonly_Client(file, connection, content_check),
+    Readonly_Client(file, connection, content_check, recovery),
     data_file("joedb.joedb", Open_Mode::write_existing_or_create_new),
     writable(data_file)
    {
@@ -105,6 +107,23 @@ namespace joedb
    )
   );
 
+  static std::vector<const char *> recovery_string
+  {
+   "none",
+   "ignore_header",
+   "overwrite"
+  };
+
+  const Recovery recovery = Recovery
+  (
+   arguments.get_enum_option
+   (
+    "recovery",
+    recovery_string,
+    int(Recovery::none)
+   )
+  );
+
   static std::vector<const char *> db_string
   {
    "none",
@@ -132,7 +151,9 @@ namespace joedb
   if (arguments.get_remaining_count() == 0)
    return;
 
+  std::cerr << "hard_checkpoint = " << hard_checkpoint << '\n';
   std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
+  std::cerr << "recovery = " << recovery_string[int(recovery)] << '\n';
   std::cerr << "db_type = " << db_string[int(db_type)] << '\n';
 
   Buffered_File *client_file = file_parser.parse(std::cerr, arguments);
@@ -155,14 +176,20 @@ namespace joedb
    {
     client.reset
     (
-     new Readonly_Client(*client_file, *connection, content_check)
+     new Readonly_Client(*client_file, *connection, content_check, recovery)
     );
    }
    else
    {
     client.reset
     (
-     new Writable_Journal_Client(*client_file, *connection, content_check)
+     new Writable_Journal_Client
+     (
+      *client_file,
+      *connection,
+      content_check,
+      recovery
+     )
     );
    }
   }
@@ -172,14 +199,27 @@ namespace joedb
    {
     client.reset
     (
-     new Readonly_Database_Client(*client_file, *connection, content_check)
+     new Readonly_Database_Client
+     (
+      *client_file,
+      *connection,
+      content_check,
+      recovery
+     )
     );
    }
    else
    {
     client.reset
     (
-     new Writable_Database_Client(*client_file, *connection, content_check)
+     new Writable_Database_Client
+     (
+      *client_file,
+      *connection,
+      content_check,
+      Record_Id::null,
+      recovery
+     )
     );
    }
   }
@@ -189,7 +229,8 @@ namespace joedb
    (
     *client_file,
     *connection,
-    content_check
+    content_check,
+    recovery
    ));
   }
   else if (db_type == DB_Type::dump)
@@ -198,7 +239,8 @@ namespace joedb
    (
     *client_file,
     *connection,
-    content_check
+    content_check,
+    recovery
    ));
   }
 #ifdef PERSISTENCE_TEST
@@ -208,7 +250,8 @@ namespace joedb
    (
     *client_file,
     connection,
-    content_check
+    content_check,
+    recovery
    ));
   }
 #endif

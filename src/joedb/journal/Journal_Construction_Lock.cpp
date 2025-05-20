@@ -7,10 +7,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Buffered_File &file,
-  Construction_Flags flags
+  Recovery recovery
  ):
   file(file),
-  flags(flags),
+  recovery(recovery),
   size(file.get_size())
  {
   if (file.is_readonly())

@@ -1,0 +1,4 @@
+create_table test
+insert_into test 
+table test
+delete_vector test 1 32222222222222222222222222222222222222222222

@@ -13,7 +13,14 @@ namespace joedb
     Writable_Journal data_journal;
 
    public:
-    Writable_Journal_Client_Data(Buffered_File &file): data_journal(file) {}
+    Writable_Journal_Client_Data
+    (
+     Buffered_File &file,
+     Recovery recovery
+    ):
+     data_journal(Journal_Construction_Lock(file, recovery))
+    {
+    }
   };
  }
 
@@ -35,9 +42,10 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
-    Content_Check content_check = Content_Check::fast
+    Content_Check content_check = Content_Check::fast,
+    Recovery recovery = Recovery::none
    ):
-    Writable_Journal_Client_Data(file),
+    Writable_Journal_Client_Data(file, recovery),
     Writable_Client(data_journal, connection, content_check)
    {
     read_journal();
