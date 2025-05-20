@@ -30,14 +30,11 @@ namespace joedb::generator
 
   out << R"RRR(
  /// @ref Readonly_Database for a .joedbi text file
- class Readonly_Interpreted_File_Database:
-  private joedb::Readonly_Interpreted_File,
-  public Readonly_Database
+ class Readonly_Interpreted_File_Database: public Readonly_Database
  {
   public:
    Readonly_Interpreted_File_Database(const char *file_name):
-    joedb::Readonly_Interpreted_File(file_name),
-    Readonly_Database(*static_cast<joedb::Readonly_Interpreted_File *>(this))
+    Readonly_Database(joedb::Readonly_Interpreted_File(file_name))
    {
    }
 
