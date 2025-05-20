@@ -43,7 +43,7 @@ namespace joedb::generator
  class Client;
  class Multiplexer;
 
- /// A writable @ref Database constructed from a writable @ref joedb::Buffered_File
+ /// A @ref Database that contains a @ref joedb::Writable_Journal and keeps them in sync
  class Writable_Database: public Database_Writable
  {
   friend class detail::Client_Data;

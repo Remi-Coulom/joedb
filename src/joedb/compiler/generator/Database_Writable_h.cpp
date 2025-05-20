@@ -52,6 +52,7 @@ namespace joedb::generator
    out << " class container_of_" << tname << ";\n";
 
   out << R"RRR(
+ /// implement @ref joedb::Writable in a @ref Database
  class Database_Writable: public Database, public joedb::Writable
  {
   protected:

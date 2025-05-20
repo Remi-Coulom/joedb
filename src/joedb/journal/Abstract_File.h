@@ -22,10 +22,10 @@ namespace joedb
    /// Write a range of bytes. Extend file size if necessary.
    virtual void pwrite(const char *data, size_t size, int64_t offset) {}
 
-   /// Write data and meta-data (such as file size) durably to permanent storage
+   /// Write data durably (including file-size change)
    virtual void sync() {}
 
-   /// Write data durably to permanent storage
+   /// Write data durably (no file-size change)
    virtual void datasync() {sync();}
 
    /// Lock a range of bytes for reading (prevents writes, not reads)

@@ -49,6 +49,7 @@ History
 
   - Incompatibilities with previous version:
 
+    - Record ids start at 0 instead of 1. The null reference is -1.
     - ``joedb_server`` uses unix domain sockets instead of tcp/ip sockets
     - File format changed: ``joedb_convert`` from branch ``convert_4_to_5``
       can upgrade old file to the new format.
