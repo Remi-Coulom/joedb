@@ -18,7 +18,12 @@ joedb::Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
   header.signature = Header::joedb;
   file.sequential_write((const char *)(&header), Header::size);
  }
- else if (lock.size > 0 && lock.size > checkpoint_position && !lock.overwrite())
+ else if
+ (
+  lock.size > 0 &&
+  lock.size > checkpoint_position &&
+  lock.recovery != Recovery::overwrite
+ )
  {
   throw Exception
   (

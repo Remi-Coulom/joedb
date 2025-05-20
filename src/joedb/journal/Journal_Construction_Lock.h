@@ -31,16 +31,6 @@ namespace joedb
    const Recovery recovery;
    const int64_t size;
 
-   bool ignore_header() const
-   {
-    return int(recovery) & int(Recovery::ignore_header);
-   }
-
-   bool overwrite() const
-   {
-    return int(recovery) & int(Recovery::overwrite);
-   }
-
    bool is_for_writable_journal() const {return for_writable_journal;}
 
    explicit Journal_Construction_Lock

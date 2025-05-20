@@ -45,7 +45,7 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 
   file.set_position(Header::size);
 
-  if (lock.ignore_header())
+  if (lock.recovery == Recovery::ignore_header)
   {
    if (lock.size > checkpoint_position)
     checkpoint_position = lock.size;

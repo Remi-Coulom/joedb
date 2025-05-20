@@ -8,10 +8,14 @@ class JoedbConsoleLexer(RegexLexer):
 
     tokens = {
         'root': [
-            (r'^.*\$', Keyword.Type),
-            (r'^.*\>', Name.Class),
+            (r'^.*\$\s+', Keyword.Type, 'command'),
+            (r'^.*\>\s+', Name.Class, 'command'),
             (r'.+', Literal)
-        ]
+        ],
+
+        'command': [
+            (r'\w.*$', Keyword, 'root'),
+        ],
     }
 
 def setup(app):

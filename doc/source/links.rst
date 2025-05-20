@@ -35,6 +35,7 @@ Using SQL from C++
 
 - https://sqlite.org/ (non-durable transactions: https://www.sqlite.org/wal.html#fast)
 - https://github.com/rbock/sqlpp11
+- https://github.com/getml/sqlgen
 - https://www.webtoolkit.eu/wt/doc/tutorial/dbo.html
 - https://codesynthesis.com/products/odb/
 - https://sourceforge.net/projects/litesql/
