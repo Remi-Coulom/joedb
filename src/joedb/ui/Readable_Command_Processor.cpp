@@ -170,28 +170,39 @@ namespace joedb
    const Table_Id table_id = parse_table(parameters, readable);
    Record_Id record_id;
    if (!(parameters >> record_id))
-    record_id = Record_Id{0};
-   if (!readable.is_used(table_id, record_id))
-    throw Exception("no such record");
+    record_id = Record_Id::null;
 
-   const auto &fields = readable.get_fields(table_id);
-   size_t max_field_size = 0;
-   for (const auto &[fid, fname]: fields)
-    if (fname.size() > max_field_size)
-     max_field_size = fname.size();
-
-   for (const auto &[fid, fname]: fields)
-   {
-    out << std::setw(int(max_field_size)) << fname << ": ";
-    write_value(out, table_id, record_id, fid);
-    out << '\n';
-   }
-  }
-  else if (command == "table_size") /////////////////////////////////////////
-  {
-   const Table_Id table_id = parse_table(parameters, readable);
    const auto &freedom = readable.get_freedom(table_id);
-   out << freedom.get_used_count() << '\n';
+
+   if (!readable.is_used(table_id, record_id))
+   {
+    if (record_id.is_not_null())
+     out << record_id << " is not used.\n";
+    out << "first_used: " << freedom.get_first_used() << '\n';
+    out << "last_used: " << freedom.get_last_used() << '\n';
+    out << "used_count: " << freedom.get_used_count() << '\n';
+    out << "size: " << freedom.get_size() << '\n';
+    out << "dense: " << freedom.is_dense() << '\n';
+   }
+   else
+   {
+    out << "id = " << record_id;
+    out << "; next = " << freedom.get_next(record_id);
+    out << "; previous = " << freedom.get_previous(record_id) << '\n';
+
+    const auto &fields = readable.get_fields(table_id);
+    size_t max_field_size = 0;
+    for (const auto &[fid, fname]: fields)
+     if (fname.size() > max_field_size)
+      max_field_size = fname.size();
+
+    for (const auto &[fid, fname]: fields)
+    {
+     out << std::setw(int(max_field_size)) << fname << ": ";
+     write_value(out, table_id, record_id, fid);
+     out << '\n';
+    }
+   }
   }
   else if (command == "schema") /////////////////////////////////////////////
   {
@@ -220,7 +231,6 @@ namespace joedb
 ~~~~~~~~~~~~~~~
  table <table_name> [<max_column_width>] [start] [length]
  record <table_name> [<record_id>]
- table_size <table_name>
  schema
  dump
  sql

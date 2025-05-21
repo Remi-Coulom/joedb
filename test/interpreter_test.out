@@ -8,10 +8,18 @@ OK: read_blob 43,15
 OK: read_blob 43,15 bio.txt.tmp
 OK: create_table city
 OK: create_table person
-0
-OK: table_size city
-0
-OK: table_size person
+first_used: -2
+last_used: -2
+used_count: 0
+size: 0
+dense: 1
+OK: record city
+first_used: -2
+last_used: -2
+used_count: 0
+size: 0
+dense: 1
+OK: record person
 OK: add_field city name string
 OK: add_field person name string
 OK: add_field person city references city
@@ -29,10 +37,18 @@ OK: insert_into city 14 "Pétaouchnok"
 OK: insert_into person 0 "Rémi" 1 43,15
 OK: insert_into person 1 "Norbert" -1 43,15
 OK: insert_into person 2 "Alexandre" 14 43,15
-3
-OK: table_size city
-3
-OK: table_size person
+first_used: 0
+last_used: 14
+used_count: 3
+size: 15
+dense: 0
+OK: record city
+first_used: 0
+last_used: 2
+used_count: 3
+size: 3
+dense: 1
+OK: record person
 create_table city
 create_table person
 add_field city name string
@@ -102,15 +118,23 @@ OK: json 1
 1 "Norbert"     -1 43,15
 2 "Alexandre"   14 43,15
 OK: table person
+id = 0; next = 1; previous = -2
 name: "Rémi"
 city: 1
  bio: 43,15
 OK: record person 0
-Exception caught: no such record
-Line 29: record person 12345
-name: "Rémi"
-city: 1
- bio: 43,15
+12345 is not used.
+first_used: 0
+last_used: 2
+used_count: 3
+size: 3
+dense: 1
+OK: record person 12345
+first_used: 0
+last_used: 2
+used_count: 3
+size: 3
+dense: 1
 OK: record person
 
 General commands
@@ -140,7 +164,6 @@ Displaying data
 ~~~~~~~~~~~~~~~
  table <table_name> [<max_column_width>] [start] [length]
  record <table_name> [<record_id>]
- table_size <table_name>
  schema
  dump
  sql

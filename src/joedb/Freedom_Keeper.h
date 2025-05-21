@@ -377,7 +377,7 @@ namespace joedb
  };
 
  /// @ingroup joedb
- class Freedom_Keeper
+ class Freedom_Keeper: public Freedom_Keeper_Constants
  {
   private:
    List_Freedom_Keeper lfk;
@@ -404,13 +404,16 @@ namespace joedb
    Record_Id get_size() const {return SWITCH(get_size());}
    size_t size() const {return SWITCH(size());}
 
-   Record_Id get_first_free() const {return SWITCH(get_first_free());}
-   Record_Id get_first_used() const {return SWITCH(get_first_used());}
+   Record_Id get_first_free() const {return get_next(free_list);}
+   Record_Id get_first_used() const {return get_next(used_list);}
+   Record_Id get_last_free() const {return get_previous(free_list);}
+   Record_Id get_last_used() const {return get_previous(used_list);}
+
    Record_Id get_next(Record_Id index) const {return SWITCH(get_next(index));}
    Record_Id get_previous(Record_Id index) const {return SWITCH(get_previous(index));}
    bool is_used(Record_Id index) const {return SWITCH(is_used(index));}
    bool is_free(Record_Id index) const {return !is_used(index);}
-   bool is_dense() const {return SWITCH(is_dense());}
+   bool is_dense() const {return dense;}
 
    bool is_used_vector(Record_Id index, size_t size) const
    {
