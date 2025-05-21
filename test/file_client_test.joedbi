@@ -1,0 +1,12 @@
+transaction
+ create_table person
+ add_field person name string
+ insert_into person 0 "toto"
+ insert_into person 0 "titi"
+ insert_into person 1 "titi"
+ table person
+quit
+db
+ schema
+ table person
+quit
