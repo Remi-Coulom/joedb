@@ -11,3 +11,6 @@ cmake -GNinja -S runtimes -B build -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libu
 ninja -C build cxx cxxabi unwind
 ninja -C build check-cxx check-cxxabi check-unwind
 
+Ubuntu 24.04.2 LTS: need clang packages:
+sudo apt install clang clang++ clang-format libllvmlibc-dev libclang-dev
+FAILED: libcxxabi/test/CMakeFiles/check-cxxabi
