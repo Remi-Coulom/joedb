@@ -11,7 +11,7 @@ namespace joedb
  class Readonly_Encoded_File: public Buffered_File
  {
   private:
-   db::encoded_file::Database &db;
+   const db::encoded_file::Database &db;
    const Buffered_File &blob_reader;
 
    mutable std::vector<char> read_buffer;
@@ -25,7 +25,7 @@ namespace joedb
    Readonly_Encoded_File
    (
     Decoder &decoder,
-    db::encoded_file::Database &db,
+    const db::encoded_file::Database &db,
     const Buffered_File &blob_reader,
     Open_Mode mode
    );
@@ -34,7 +34,7 @@ namespace joedb
    Readonly_Encoded_File
    (
     Decoder &decoder,
-    db::encoded_file::Database &db,
+    const db::encoded_file::Database &db,
     const Buffered_File &blob_reader
    );
 
