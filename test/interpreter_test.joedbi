@@ -6,8 +6,8 @@ read_blob 43,15
 read_blob 43,15 bio.txt.tmp
 create_table city
 create_table person
-table_size city
-table_size person
+record city
+record person
 add_field city name string
 add_field person name string
 add_field person city references city
@@ -19,8 +19,8 @@ insert_into city 14 "Pétaouchnok"
 insert_into person 0 "Rémi" 1 43,15
 insert_into person 1 "Norbert" -1 43,15
 insert_into person 2 "Alexandre" 14 43,15
-table_size city
-table_size person
+record city
+record person
 dump
 sql
 json 1

@@ -1,0 +1,26 @@
+[36mwritable_client(41)> [0m[36mwritable_client(41)/transaction> [0mOK:  create_table person
+[36mwritable_client(41)/transaction> [0mOK:  add_field person name string
+[36mwritable_client(41)/transaction> [0mOK:  insert_into person 0 "toto"
+[36mwritable_client(41)/transaction> [0mException caught: insert: record_id already in use
+Line 4:  insert_into person 0 "titi"
+[36mwritable_client(41)/transaction> [0mOK:  insert_into person 1 "titi"
+[36mwritable_client(41)/transaction> [0m--------
+  name  
+--------
+0 "toto"
+1 "titi"
+OK:  table person
+[36mwritable_client(41)/transaction> [0mOK: quit
+OK: transaction
+[36mwritable_client(75)> [0m[36mwritable_client(75)/db> [0mcreate_table person
+add_field person name string
+OK:  schema
+[36mwritable_client(75)/db> [0m--------
+  name  
+--------
+0 "toto"
+1 "titi"
+OK:  table person
+[36mwritable_client(75)/db> [0mOK: quit
+OK: db
+[36mwritable_client(75)> [0m

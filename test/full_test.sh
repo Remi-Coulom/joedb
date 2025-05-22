@@ -8,7 +8,7 @@ if [ "$1" == "" ]; then
  cd -
 else
  if [ "$1" == "usual" ]; then
-  configurations="gcc_asan gcc_debug gcc_debug32 gcc_portable clang_release arm_release"
+  configurations="gcc_asan gcc_debug gcc_portable clang_release arm_release"
  else
   configurations=$*
  fi
