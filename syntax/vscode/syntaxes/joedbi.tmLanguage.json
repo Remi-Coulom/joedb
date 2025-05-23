@@ -1,20 +1,220 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "joedbi",
-	"patterns":
-	    [
-		    {
-			    "name": "keyword.control",
-			    "match": "\\b(create_table|delete_table|add_field|delete_field|write_blob|read_blob|table_size|schema|insert_into|dump|sql|json|table|record|help|rename_table|drop_table|drop_field|rename_field|delete_from|update|timestamp|comment|valid_data|insert_vector|update_vector|custom|quit)\\b"
-		    },
-		    {
-			    "name": "storage.type",
-			    "match": "\\b(int8|int16|int32|int64|float32|string|references)\\b"
-		    },
-		    {
-			    "name": "comment.line.number-sign",
-			    "match": "#.*$"
-		    }
-	    ],
+	"patterns": [
+        {
+			"include": "#comment"
+		},
+		{
+        	"include": "#single-command"
+        },
+		{
+			"include": "#command-with-constant-parameter"
+		},
+		{
+			"include": "#update"
+		},
+		{
+			"include": "#operator_vector"
+		},
+		{
+			"include": "#rename_field"
+		},
+		{
+			"include": "#rename_table"
+		},
+		{
+			"include": "#table"
+		}
+    ],
+    "repository": {
+        "single-command": 
+		{
+			"match": "\\b(valid_data|flush|checkpoint|soft_checkpoint|hard_checkpoint|schema|dump|sql|help|about|quit|transaction|push|pull|db)\\b",
+			"name": "keyword.control.single.joedbi"
+		},
+		"command-with-constant-parameter":
+		{
+			"patterns": [
+				{
+					"match": "\\b(json|echo|write_blob|read_blob)\\b",
+					"name": "keyword.control.constant.parameter.joedbi"
+				},
+				{
+					"include": "#joedbi_constant"
+				}
+			]
+		},
+		"update":
+		{
+			"patterns": [
+				{
+					"match": "\\b(update|update_vector)\\b",
+					"name": "keyword.control.update.joedbi"
+				},
+				{
+					"include": "#joedbi_table_integer_field_constant"
+				}
+			]
+		},
+		"operator_vector":
+		{
+			"patterns": [
+				{
+					"match": "\\b(insert_vector|delete_vector)\\b",
+					"name": "keyword.control.vector.joedbi"
+				},
+				{
+					"include": "#joedbi_table_integer_integer"
+				}
+			]
+		},
+		"rename_field":
+		{
+			"patterns": [
+				{
+					"match": "\\b(rename_field)\\b",
+					"name": "keyword.control.rename_field.joedbi"
+				},
+				{
+					"include": "#joedbi_table_field_field"
+				}
+			]
+		},
+		"rename_table":
+		{
+			"patterns": [
+				{
+					"match": "\\b(rename_table)\\b",
+					"name": "keyword.control.rename_table.joedbi"
+				},
+				{
+					"include": "#joedbi_table_table"
+				}
+			]
+		},
+		"table":
+		{
+			"patterns": [
+				{
+					"match": "\\b(table|create_table|table_size|drop_table)\\b",
+					"name": "keyword.control.table.joedbi"
+				},
+				{
+					"include": "#joedbi_table"
+				}
+			]
+		},
+
+		"joedbi_table":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				}
+			]
+		},
+		"joedbi_table_table":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#word"
+				}
+			]
+		},
+		"joedbi_table_field_field":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#word"
+				}
+			]
+		},
+
+		"joedbi_table_integer_integer":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#numeric"
+				},
+				{
+					"include": "#numeric"
+				}
+			]
+		},
+
+		"joedbi_table_integer_field_constant":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#numeric"
+				},
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#joedbi_constant"
+				}
+			]
+		},
+
+		"joedbi_constant":
+		{
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.joedbi"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.joedbi"
+				}
+			},
+			"name": "string.quoted.double.joedbi",
+			"patterns": [
+				{
+					"include": "#word"
+				}
+			]
+		},
+		"joedbi_type":
+		{
+		    "match": "\\b(int8|int16|int32|int64|float32|string|references)\\b",
+		    "name": "storage.type.joedbi"
+		},
+		"word":
+		{
+			"match": "[a-zA-Z_]\\w*",
+			"name": "variable.other.joedbi"
+		},
+		"numeric":
+		{
+			"match": "\\d\\+",
+			"name": "constant.numeric.joedbi"
+		},
+		"comment":
+		{
+			"match": "#.*$",
+			"name": "comment.line.joedbi"
+		}
+
+    },
 	"scopeName": "source.joedbi"
 }
