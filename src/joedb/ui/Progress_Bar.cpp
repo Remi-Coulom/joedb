@@ -19,10 +19,9 @@ namespace joedb
  {
   if (out)
   {
+   *out << ": size = " << total << '\n';
    if (total > threshold)
-    *out << '\n' << std::string(length, '.') << '\r';
-   else
-    *out << ": size = " << total << '\n';
+    *out << std::string(length, '.') << '\r';
 
    out->flush();
   }
