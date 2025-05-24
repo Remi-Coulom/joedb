@@ -14,6 +14,8 @@ Code Tests
 - upgrade in rc3, and compile_everything.sh
 - make sure compilation works without precompiled headers
 - test scripts
+- compile with most recent clang, gcc, msvc
+- also try newer version of C++ standard: C++20, C++23
 
 Documentation
 -------------
