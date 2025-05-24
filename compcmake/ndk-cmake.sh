@@ -39,7 +39,6 @@ cmake \
 # redfin:/data/local/tmp/joedb $
 
 # upload binaries with adb:
-# adb push libjoedb_for_joedbc.so /data/local/tmp/joedb
 # adb push libjoedb.so /data/local/tmp/joedb
 # adb push joedbi /data/local/tmp/joedb
 

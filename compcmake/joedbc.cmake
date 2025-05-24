@@ -21,7 +21,7 @@ endif()
 #############################################################################
 # Part of joedb sources necessary to build joedbc
 #############################################################################
-set(JOEDB_BOOTSTRAP_SOURCES
+add_library(joedb_for_joedbc OBJECT
  ${JOEDB_SRC_DIR}/external/wide_char_display_width.cpp
  ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
  ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
@@ -62,19 +62,10 @@ set(JOEDB_BOOTSTRAP_SOURCES
  ${JOEDB_SRC_DIR}/joedb/journal/Writable_Journal.cpp
 )
 
-if (UNIX)
- add_library(joedb_for_joedbc SHARED ${JOEDB_BOOTSTRAP_SOURCES})
- set_target_properties(joedb_for_joedbc PROPERTIES SOVERSION ${JOEDB_VERSION})
- target_uses_ipo(joedb_for_joedbc)
-else()
- add_library(joedb_for_joedbc STATIC ${JOEDB_BOOTSTRAP_SOURCES})
-endif()
-target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
-
 #############################################################################
 # Joedbc executable
 #############################################################################
-ipo_add_executable(joedbc
+add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/joedbc.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
 
@@ -100,7 +91,13 @@ ipo_add_executable(joedbc
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
 )
-target_link_libraries(joedbc joedb_for_joedbc)
+
+ipo_add_executable(joedbc_bootstrap
+ $<TARGET_OBJECTS:joedbc_objects>
+ $<TARGET_OBJECTS:joedb_for_joedbc>
+)
+
+target_link_libraries(joedbc_bootstrap ${JOEDB_EXTERNAL_LIBS})
 
 #############################################################################
 # Functions to create dependencies for joedbc
@@ -111,15 +108,21 @@ add_custom_target(all_joedbc)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ set(compiler ${ARGN})
+
+ if (NOT compiler)
+  set(compiler "joedbc")
+ endif()
+
  add_custom_command(
   OUTPUT
    ${dir}/${namespace}/readonly.cpp
    ${dir}/${namespace}/readonly.h
    ${dir}/${namespace}/writable.cpp
    ${dir}/${namespace}/writable.h
-  COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc
+  COMMAND ${compiler} ${namespace}.joedbi ${namespace}.joedbc
   DEPENDS
-   joedbc
+   ${compiler}
    ${dir}/${namespace}.joedbi
    ${dir}/${namespace}.joedbc
   WORKING_DIRECTORY ${dir}
@@ -148,7 +151,7 @@ function(target_uses_joedb target)
  get_target_property(target_type ${target} TYPE)
 
  if (NOT "${target_type}" STREQUAL "OBJECT_LIBRARY")
-  target_link_libraries(${target} joedb joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
+  target_link_libraries(${target} joedb ${JOEDB_EXTERNAL_LIBS})
  endif()
 endfunction()
 

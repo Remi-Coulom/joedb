@@ -55,6 +55,8 @@ include_directories(../test/compiler)
 #############################################################################
 # Build Targets
 #############################################################################
+ipo_add_executable(joedbc $<TARGET_OBJECTS:joedbc_objects>)
+target_link_libraries(joedbc joedb)
 joedb_add_executable(joedbi ../src/joedb/ui/joedbi.cpp)
 joedb_add_executable(joedb_logdump ../src/joedb/ui/joedb_logdump.cpp)
 joedb_add_executable(joedb_pack ../src/joedb/ui/joedb_pack.cpp)
@@ -426,7 +428,7 @@ endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_for_joedbc joedb
+install(TARGETS joedb
  ARCHIVE DESTINATION lib COMPONENT bin
  LIBRARY DESTINATION lib COMPONENT bin
  RUNTIME DESTINATION bin COMPONENT bin

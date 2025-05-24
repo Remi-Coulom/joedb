@@ -5,7 +5,6 @@ For next release
 ----------------
 
 - DLL in Windows (export classes explicitly)
-- one single dll, statically linked joedbc_bootstrap
 - Add support for vcpkg
 - FetchContent and find_package, minimal tutorial
 - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide

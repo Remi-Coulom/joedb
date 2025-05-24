@@ -35,6 +35,17 @@ set(JOEDB_DATABASES
  ${JOEDB_SRC_DIR}/joedb/ui/Client_Parser.cpp
 )
 
+if(unofficial-brotli_FOUND)
+ set(JOEDB_SOURCES ${JOEDB_SOURCES}
+  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Decoder.cpp
+  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
+ )
+ set(JOEDB_DATABASES ${JOEDB_DATABASES}
+  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Brotli_File.cpp
+  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_File.cpp
+ )
+endif()
+
 if(libssh_FOUND)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/ssh/Forward_Channel.cpp
@@ -58,34 +69,26 @@ if (asio_FOUND)
  add_definitions(-DJOEDB_HAS_NETWORKING)
 endif()
 
-if(unofficial-brotli_FOUND)
- set(JOEDB_SOURCES ${JOEDB_SOURCES}
-  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Decoder.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
- )
- set(JOEDB_DATABASES ${JOEDB_DATABASES}
-  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Brotli_File.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Brotli_File.cpp
- )
-endif()
+add_library(joedb_databases OBJECT ${JOEDB_DATABASES})
+joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file joedbc_bootstrap)
+add_dependencies(joedb_databases compile_encoded_file_with_joedbc)
 
 if (UNIX)
  add_library(joedb SHARED
   ${JOEDB_SOURCES}
-  ${JOEDB_DATABASES}
+  $<TARGET_OBJECTS:joedb_for_joedbc>
+  $<TARGET_OBJECTS:joedb_databases>
  )
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
  target_uses_ipo(joedb)
 else()
  add_library(joedb STATIC
   ${JOEDB_SOURCES}
-  ${JOEDB_DATABASES}
+  $<TARGET_OBJECTS:joedb_databases>
+  $<TARGET_OBJECTS:joedb_for_joedbc>
  )
 endif()
 
-target_link_libraries(joedb joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
+target_link_libraries(joedb ${JOEDB_EXTERNAL_LIBS})
 
 message("-- JOEDB_SRC_DIR = ${JOEDB_SRC_DIR}")
-
-joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file)
-add_dependencies(joedb all_joedbc)
