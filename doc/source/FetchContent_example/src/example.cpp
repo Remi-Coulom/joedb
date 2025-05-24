@@ -1,9 +1,17 @@
-#include "joedb/ui/diagnostics.h"
+#include "population/File_Client.h"
 
 #include <iostream>
 
 int main()
 {
- joedb::about_joedb(std::cout);
+ population::File_Client client("population.joedb");
+
+ const auto person = client.transaction([](population::Writable_Database &db)
+ {
+  return db.new_person("Joe");
+ });
+
+ std::cout << "Hello " << client.get_database().get_name(person) << "!\n";
+
  return 0;
 }

@@ -21,6 +21,8 @@ Documentation
 -------------
 
 - update VERSION with the new version number
+- run joedb_for_FetchContent.sh, update doc/source/FetchContent_example, and
+  test it.
 - update doc/source/history.rst
 - build and upload documentation
 

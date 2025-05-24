@@ -35,7 +35,7 @@ with this command:
 
 .. code-block:: bash
 
-    sudo apt install git g++ clang clang-tidy cmake make ninja-build libssh-dev libbrotli-dev libcurl4-openssl-dev libgtest-dev lcov python3-sphinx python3-sphinx-rtd-theme python3-sphinxcontrib.spelling sqlite3 libsqlite3-dev sqlitebrowser
+    sudo apt install git g++ clang clang-tidy cmake make ninja-build libssh-dev libbrotli-dev libcurl4-openssl-dev libgtest-dev lcov sqlite3 libsqlite3-dev sqlitebrowser
 
 When the necessary packages are installed, the following commands should
 compile everything:
@@ -76,3 +76,15 @@ contains an example:
 
 .. literalinclude:: ./tutorial/CMakeLists.txt
    :language: cmake
+
+Using FetchContent
+------------------
+
+As an alternative to checking out the whole git repository, joedb provides a
+small source archive that can be used more efficiently with FetchContent:
+
+.. literalinclude:: ./FetchContent_example/CMakeLists.txt
+   :language: cmake
+
+You can test this project in the ``doc/source/FetchContent_example``
+directory.

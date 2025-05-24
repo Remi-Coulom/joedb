@@ -1,0 +1,2 @@
+create_table person
+add_field person name string
