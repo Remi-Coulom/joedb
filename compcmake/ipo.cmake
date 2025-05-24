@@ -3,12 +3,10 @@ include_guard(GLOBAL)
 #############################################################################
 # IPO
 #############################################################################
-if (POLICY CMP0069)
- if (CMAKE_BUILD_TYPE MATCHES "Release")
-  if (NOT CMAKE_CROSSCOMPILING)
-   include(CheckIPOSupported)
-   check_ipo_supported(RESULT ipo_supported)
-  endif()
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+ if (NOT CMAKE_CROSSCOMPILING)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT ipo_supported)
  endif()
 endif()
 

@@ -1,7 +1,4 @@
 cmake_minimum_required(VERSION 3.10)
-if (POLICY CMP0069)
- cmake_policy(SET CMP0069 NEW)
-endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/joedb_version.cmake")
 
@@ -20,6 +17,7 @@ add_test(NAME build_all
  COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config "$<CONFIG>"
 )
 
+include("${CMAKE_CURRENT_LIST_DIR}/compiler_flags.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 
 #############################################################################
@@ -55,8 +53,6 @@ include_directories(../test/compiler)
 #############################################################################
 # Build Targets
 #############################################################################
-ipo_add_executable(joedbc $<TARGET_OBJECTS:joedbc_objects>)
-target_link_libraries(joedbc joedb)
 joedb_add_executable(joedbi ../src/joedb/ui/joedbi.cpp)
 joedb_add_executable(joedb_logdump ../src/joedb/ui/joedb_logdump.cpp)
 joedb_add_executable(joedb_pack ../src/joedb/ui/joedb_pack.cpp)
@@ -223,16 +219,16 @@ endif()
 joedb_add_executable(atomic_read ../test/atomic_read.cpp)
 joedb_add_executable(atomic_write ../test/atomic_write.cpp)
 
-joedbc_build(../test/compiler/db empty joedbc_bootstrap)
-joedbc_build(../test/compiler/db blob joedbc_bootstrap)
-joedbc_build(../test/compiler/db multi_index joedbc_bootstrap)
-joedbc_build(../test/compiler/db schema_v1 joedbc_bootstrap)
-joedbc_build(../test/compiler/db schema_v2 joedbc_bootstrap)
-joedbc_build(../test/compiler/db test joedbc_bootstrap)
-joedbc_build(../test/compiler/db vector_test joedbc_bootstrap)
-joedbc_build(../benchmark benchmarkdb joedbc_bootstrap)
-joedbc_build(../doc/source/tutorial/src tutorial joedbc_bootstrap)
-joedbc_build(../doc/source/tutorial/src settings joedbc_bootstrap)
+joedbc_build(../test/compiler/db empty)
+joedbc_build(../test/compiler/db blob)
+joedbc_build(../test/compiler/db multi_index)
+joedbc_build(../test/compiler/db schema_v1)
+joedbc_build(../test/compiler/db schema_v2)
+joedbc_build(../test/compiler/db test)
+joedbc_build(../test/compiler/db vector_test)
+joedbc_build(../benchmark benchmarkdb)
+joedbc_build(../doc/source/tutorial/src tutorial)
+joedbc_build(../doc/source/tutorial/src settings)
 
 add_custom_command(
  OUTPUT

@@ -70,7 +70,7 @@ if (asio_FOUND)
 endif()
 
 add_library(joedb_databases OBJECT ${JOEDB_DATABASES})
-joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file joedbc_bootstrap)
+joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file)
 add_dependencies(joedb_databases compile_encoded_file_with_joedbc)
 
 add_library(joedb_sources OBJECT ${JOEDB_SOURCES})

@@ -7,7 +7,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include_directories(BEFORE SYSTEM ${JOEDB_SRC_DIR})
 
-include("${JOEDB_DIR}/compiler_flags.cmake")
 include("${JOEDB_DIR}/dependencies.cmake")
 include("${JOEDB_DIR}/ipo.cmake")
 include("${JOEDB_DIR}/joedb_version.cmake")
@@ -92,12 +91,12 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
 )
 
-ipo_add_executable(joedbc_bootstrap
+ipo_add_executable(joedbc
  $<TARGET_OBJECTS:joedbc_objects>
  $<TARGET_OBJECTS:joedb_for_joedbc>
 )
 
-target_link_libraries(joedbc_bootstrap ${JOEDB_EXTERNAL_LIBS})
+target_link_libraries(joedbc ${JOEDB_EXTERNAL_LIBS})
 
 #############################################################################
 # Functions to create dependencies for joedbc
@@ -108,21 +107,15 @@ add_custom_target(all_joedbc)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- set(compiler ${ARGN})
-
- if (NOT compiler)
-  set(compiler "joedbc")
- endif()
-
  add_custom_command(
   OUTPUT
    ${dir}/${namespace}/readonly.cpp
    ${dir}/${namespace}/readonly.h
    ${dir}/${namespace}/writable.cpp
    ${dir}/${namespace}/writable.h
-  COMMAND ${compiler} ${namespace}.joedbi ${namespace}.joedbc
+  COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc
   DEPENDS
-   ${compiler}
+   joedbc
    ${dir}/${namespace}.joedbi
    ${dir}/${namespace}.joedbc
   WORKING_DIRECTORY ${dir}
