@@ -4,7 +4,6 @@ TODO
 For next release
 ----------------
 
-- DLL in Windows (export classes explicitly)
 - vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
 
 On-disk Storage
