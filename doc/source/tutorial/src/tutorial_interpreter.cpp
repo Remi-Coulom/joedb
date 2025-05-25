@@ -42,10 +42,10 @@ namespace joedb
    (
     readable,
     multiplexer,
-    0
+    Record_Id::null
    );
 
-   Writable_Command_Processor writable_processor(multiplexer, db);
+   Writable_Command_Processor writable_processor(multiplexer);
 
    interpreter.add_processor(blob_reader_processor);
    interpreter.add_processor(data_manipulation_processor);
