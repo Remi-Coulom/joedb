@@ -144,7 +144,7 @@ Pushes a local file to a connection. For example:
 .. code-block:: bash
 
     # Dump content of a file
-    joedb_push file.joedb --db dump
+    joedb_push file.joedb --db dump 2>/dev/null
 
 .. code-block:: bash
 
@@ -154,7 +154,7 @@ Pushes a local file to a connection. For example:
 .. code-block:: bash
 
     # Follow additions to the end of a file
-    joedb_push --follow file.joedb --db dump
+    joedb_push --follow file.joedb --db dump_tail
 
 .. code-block:: bash
 
