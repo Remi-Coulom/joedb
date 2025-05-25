@@ -88,3 +88,10 @@ small source archive that can be used more efficiently with FetchContent:
 
 You can test this project in the ``doc/source/FetchContent_example``
 directory.
+
+Syntax Highlighting
+-------------------
+
+The `syntax <https://github.com/Remi-Coulom/joedb/tree/master/syntax>`_
+directory of the joedb repository contains syntax-highlighting grammars for
+pygments, vim, and vscode.

@@ -21,7 +21,7 @@ namespace joedb
  };
 
  /// @ingroup journal
- class CURL_File: public CURL_Easy, public Buffered_File
+ class CURL_File: private CURL_Easy, public Buffered_File
  {
   private:
    static void error_check(CURLcode code);

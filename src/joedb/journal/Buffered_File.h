@@ -77,13 +77,12 @@ namespace joedb
    void destructor_flush() noexcept;
    void make_readonly() {mode = Open_Mode::read_existing;}
    void make_writable() {mode = Open_Mode::write_existing;}
+   static constexpr int64_t last_position = (1ULL << 63) - 1;
 
   public:
    Buffered_File(Open_Mode mode);
    void flush();
    void flush_for_writing();
-
-   static constexpr int64_t last_position = (1ULL << 63) - 1;
 
    void exclusive_lock_tail()
    {
