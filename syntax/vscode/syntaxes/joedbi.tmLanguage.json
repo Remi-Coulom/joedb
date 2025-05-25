@@ -2,12 +2,10 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "joedbi",
 	"patterns": [
-        {
-			"include": "#comment"
-		},
+
 		{
-        	"include": "#single-command"
-        },
+			"include": "#single-command"
+		},
 		{
 			"include": "#command-with-constant-parameter"
 		},
@@ -15,13 +13,13 @@
 			"include": "#update"
 		},
 		{
-			"include": "#operator_vector"
+			"include": "#operator-vector"
 		},
 		{
-			"include": "#rename_field"
+			"include": "#rename-field"
 		},
 		{
-			"include": "#rename_table"
+			"include": "#rename-table"
 		},
 		{
 			"include": "#table"
@@ -35,11 +33,9 @@
 		},
 		"command-with-constant-parameter":
 		{
+			"match": "\\b(json|echo|write_blob|read_blob)\\b",
+			"name": "keyword.control.constant.parameter.joedbi",
 			"patterns": [
-				{
-					"match": "\\b(json|echo|write_blob|read_blob)\\b",
-					"name": "keyword.control.constant.parameter.joedbi"
-				},
 				{
 					"include": "#joedbi_constant"
 				}
@@ -47,47 +43,43 @@
 		},
 		"update":
 		{
+			"begin": "\\b(update|update_vector)\\b",
+			"end": "^",
+			"name": "keyword.control.update.joedbi",
 			"patterns": [
-				{
-					"match": "\\b(update|update_vector)\\b",
-					"name": "keyword.control.update.joedbi"
-				},
 				{
 					"include": "#joedbi_table_integer_field_constant"
 				}
 			]
 		},
-		"operator_vector":
+		"operator-vector":
 		{
+			"begin": "\\b(insert_vector|delete_vector)\\b",
+			"end": "^",
+			"name": "keyword.control.vector.joedbi",
 			"patterns": [
-				{
-					"match": "\\b(insert_vector|delete_vector)\\b",
-					"name": "keyword.control.vector.joedbi"
-				},
 				{
 					"include": "#joedbi_table_integer_integer"
 				}
 			]
 		},
-		"rename_field":
+		"rename-field":
 		{
+			"begin": "\\b(rename_field)\\b",
+			"end": "^",
+			"name": "keyword.control.rename-field.joedbi",
 			"patterns": [
-				{
-					"match": "\\b(rename_field)\\b",
-					"name": "keyword.control.rename_field.joedbi"
-				},
 				{
 					"include": "#joedbi_table_field_field"
 				}
 			]
 		},
-		"rename_table":
+		"rename-table":
 		{
+			"begin": "\\b(rename_table)\\b",
+			"end": "^",
+			"name": "keyword.control.rename-table.joedbi",
 			"patterns": [
-				{
-					"match": "\\b(rename_table)\\b",
-					"name": "keyword.control.rename_table.joedbi"
-				},
 				{
 					"include": "#joedbi_table_table"
 				}
@@ -95,11 +87,10 @@
 		},
 		"table":
 		{
+			"begin": "\\b(table|create_table|table_size|drop_table)\\b",
+			"end": "^",
+			"name": "keyword.control.table.joedbi",
 			"patterns": [
-				{
-					"match": "\\b(table|create_table|table_size|drop_table)\\b",
-					"name": "keyword.control.table.joedbi"
-				},
 				{
 					"include": "#joedbi_table"
 				}
@@ -206,7 +197,7 @@
 		},
 		"numeric":
 		{
-			"match": "\\d\\+",
+			"match": "[0-9]+",
 			"name": "constant.numeric.joedbi"
 		},
 		"comment":
