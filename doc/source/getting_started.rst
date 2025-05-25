@@ -77,6 +77,10 @@ contains an example:
 .. literalinclude:: ./tutorial/CMakeLists.txt
    :language: cmake
 
+In case of cross-compilation, :ref:`joedbc` must be already installed in the
+path of the host machine. Otherwise, joedbc will be compiled, and the compiled
+version will be used to generate the code.
+
 Using FetchContent
 ------------------
 
