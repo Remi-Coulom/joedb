@@ -25,7 +25,7 @@ namespace joedb
    (
     const Readable &readable,
     Writable &writable,
-    size_t max_record_id
+    Record_Id max_record_id
    ):
     Data_Manipulation_Command_Processor(readable, writable, max_record_id)
    {

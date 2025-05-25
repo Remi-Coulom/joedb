@@ -51,7 +51,7 @@ update_vector float 6 value 2 0.8 9\n\
    std::istringstream joedbi_iss(joedbi);
    std::ostringstream joedbi_oss;
 
-   Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+   Interpreter interpreter(db, multiplexer, Record_Id::null);
    interpreter.main_loop(joedbi_iss, joedbi_oss);
    multiplexer.soft_checkpoint();
   }

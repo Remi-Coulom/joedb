@@ -134,7 +134,7 @@ namespace joedb
    size_t size = 0;
    parameters >> size;
 
-   if (max_record_id != 0 && size >= max_record_id)
+   if (max_record_id.is_not_null() && size >= size_t(index_t(max_record_id)))
     throw Exception("vector is too big");
    else
    {

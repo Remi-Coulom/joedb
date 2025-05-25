@@ -64,7 +64,7 @@ namespace joedb
   else if (command == "write_blob") ////////////////////////////////////////
   {
    const std::string value = read_string(parameters);
-   const Blob blob = blob_writer.write_blob(value);
+   const Blob blob = writable.write_blob(value);
    write_blob(out, blob);
    out << '\n';
   }

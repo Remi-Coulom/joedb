@@ -5,9 +5,6 @@
 #include "joedb/ui/Readable_Command_Processor.h"
 #include "joedb/ui/Writable_Command_Processor.h"
 #include "joedb/ui/Readable_Writable_Command_Processor.h"
-#include "joedb/ui/Blob_Reader_Command_Processor.h"
-
-#include <memory>
 
 namespace joedb
 {
@@ -16,22 +13,12 @@ namespace joedb
  {
   protected:
    Readable_Command_Processor readable_command_processor;
-   std::unique_ptr<Blob_Reader_Command_Processor> blob_reader_command_processor;
 
   public:
-   Readable_Interpreter
-   (
-    const Readable &readable,
-    const Buffered_File *blob_reader
-   ):
+   Readable_Interpreter(const Readable &readable):
     readable_command_processor(readable)
    {
     add_processor(readable_command_processor);
-    if (blob_reader)
-    {
-     blob_reader_command_processor = std::make_unique<Blob_Reader_Command_Processor>(*blob_reader);
-     add_processor(*blob_reader_command_processor);
-    }
    }
  };
 
@@ -42,8 +29,8 @@ namespace joedb
    Writable_Command_Processor writable_command_processor;
 
   public:
-   Writable_Interpreter(Writable &writable, Writable &blob_writer):
-    writable_command_processor(writable, blob_writer)
+   Writable_Interpreter(Writable &writable):
+    writable_command_processor(writable)
    {
     add_processor(writable_command_processor);
    }
@@ -53,7 +40,6 @@ namespace joedb
  class Interpreter: public Command_Interpreter
  {
   private:
-   std::unique_ptr<Blob_Reader_Command_Processor> blob_reader_command_processor;
    Writable_Command_Processor writable_command_processor;
    Readable_Writable_Command_Processor readable_writable_command_processor;
 
@@ -62,11 +48,9 @@ namespace joedb
    (
     const Readable &readable,
     Writable &writable,
-    const Buffered_File *blob_reader,
-    Writable &blob_writer,
-    size_t max_record_id
+    Record_Id max_record_id
    ):
-    writable_command_processor(writable, blob_writer),
+    writable_command_processor(writable),
     readable_writable_command_processor
     (
      readable,
@@ -74,11 +58,6 @@ namespace joedb
      max_record_id
     )
    {
-    if (blob_reader)
-    {
-     blob_reader_command_processor = std::make_unique<Blob_Reader_Command_Processor>(*blob_reader);
-     add_processor(*blob_reader_command_processor);
-    }
     add_processor(writable_command_processor);
     add_processor(readable_writable_command_processor);
    }

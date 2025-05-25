@@ -114,19 +114,15 @@ namespace joedb
 
    if (database)
    {
-    Readable_Interpreter interpreter(*database, &client.get_journal().get_file());
-    interpreter.set_parent(this);
+    Readable_Interpreter interpreter(*database);
     interpreter.set_prompt_string("db");
-    interpreter.main_loop(in, out);
+    run_interpreter(interpreter, in, out);
    }
    else
    {
     Command_Interpreter interpreter;
-    Blob_Reader_Command_Processor processor(client.get_journal().get_file());
-    interpreter.add_processor(processor);
-    interpreter.set_parent(this);
     interpreter.set_prompt_string("db(blobs)");
-    interpreter.main_loop(in, out);
+    run_interpreter(interpreter, in, out);
    }
   }
   else if (command == "pull") ///////////////////////////////////////////////
@@ -208,29 +204,18 @@ namespace joedb
    {
     wdc->transaction([&](const Readable &readable, Writable &writable)
     {
-     Interpreter interpreter
-     (
-      readable,
-      writable,
-      &client.get_journal().get_file(),
-      writable,
-      0
-     );
-     interpreter.set_parent(this);
+     Interpreter interpreter(readable, writable, Record_Id::null);
      interpreter.set_prompt_string("transaction");
-     interpreter.main_loop(in, out);
+     run_interpreter(interpreter, in, out);
     });
    }
    else if (wjc)
    {
     wjc->transaction([&](Writable_Journal &journal)
     {
-     Writable_Interpreter interpreter(journal, journal);
-     Blob_Reader_Command_Processor processor(journal.get_file());
-     interpreter.add_processor(processor);
-     interpreter.set_parent(this);
+     Writable_Interpreter interpreter(journal);
      interpreter.set_prompt_string("transaction(journal)");
-     interpreter.main_loop(in, out);
+     run_interpreter(interpreter, in, out);
     });
    }
    else

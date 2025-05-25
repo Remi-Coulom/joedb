@@ -14,7 +14,6 @@ namespace joedb
 
   private:
    Writable &writable;
-   Writable &blob_writer;
 
    Status process_command
    (
@@ -25,14 +24,7 @@ namespace joedb
    ) override;
 
   public:
-   Writable_Command_Processor
-   (
-    Writable &writable,
-    Writable &blob_writer
-   ):
-    writable(writable),
-    blob_writer(blob_writer)
-   {}
+   Writable_Command_Processor(Writable &writable): writable(writable) {}
  };
 }
 

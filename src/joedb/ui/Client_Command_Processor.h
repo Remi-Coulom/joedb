@@ -2,6 +2,7 @@
 #define joedb_Client_Command_Processor_declared
 
 #include "joedb/ui/Command_Interpreter.h"
+#include "joedb/ui/Blob_Reader_Command_Processor.h"
 #include "joedb/concurrency/Writable_Client.h"
 
 #include <chrono>
@@ -14,6 +15,8 @@ namespace joedb
  class Client_Command_Processor: public Command_Interpreter
  {
   private:
+   Blob_Reader_Command_Processor blob_processor;
+
    void pull(std::ostream &out, std::chrono::milliseconds wait);
    void print_status(std::ostream &out);
 
@@ -24,9 +27,24 @@ namespace joedb
    virtual std::string get_name() const {return "readonly_client";}
 
   public:
-   Client_Command_Processor(Client &client): client(client) {}
+   Client_Command_Processor(Client &client):
+    blob_processor(client.get_journal().get_file()),
+    client(client)
+   {}
 
    void write_prompt(std::ostream &out) const override;
+
+   void run_interpreter
+   (
+    Command_Interpreter &interpreter,
+    std::istream &in,
+    std::ostream &out
+   )
+   {
+    interpreter.add_processor(blob_processor);
+    interpreter.set_parent(this);
+    interpreter.main_loop(in, out);
+   }
 
    Status process_command
    (

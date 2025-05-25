@@ -2,6 +2,7 @@
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 #include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/ui/Raw_Dump_Writable.h"
+#include "joedb/ui/Blob_Reader_Command_Processor.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
@@ -27,7 +28,9 @@ namespace joedb
    Writable_Journal journal(file);
    Database db;
    Multiplexer multiplexer{db, journal};
-   Interpreter interpreter(db, multiplexer, &file, multiplexer, 0);
+   Interpreter interpreter(db, multiplexer, Record_Id::null);
+   Blob_Reader_Command_Processor blob_processor(file);
+   interpreter.add_processor(blob_processor);
 
    std::ifstream in_file("interpreter_test.joedbi");
    ASSERT_TRUE(in_file);
@@ -56,7 +59,7 @@ namespace joedb
   const bool blob_wanted = true;
   Interpreter_Dump_Writable writable(dump_string, blob_wanted);
   Multiplexer multiplexer{db, journal, writable};
-  Interpreter interpreter(db, multiplexer, &file, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, Record_Id::null);
 
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file);
@@ -84,7 +87,7 @@ namespace joedb
   SQL_Dump_Writable writable(dump_string, &file);
   writable.on_blob(Blob());
   Multiplexer multiplexer{db, journal, writable};
-  Interpreter interpreter(db, multiplexer, &file, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, Record_Id::null);
 
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file);
@@ -109,7 +112,7 @@ namespace joedb
   std::ostringstream dump_string;
   Raw_Dump_Writable writable(dump_string);
   Multiplexer multiplexer{db, writable};
-  Interpreter interpreter(db, multiplexer, nullptr, multiplexer, 0);
+  Interpreter interpreter(db, multiplexer, Record_Id::null);
 
   std::ifstream in_file("interpreter_test.joedbi");
   ASSERT_TRUE(in_file);
@@ -190,7 +193,7 @@ namespace joedb
   Connection connection;
   Writable_Database_Client client(file, connection);
   client.transaction([](const Readable &readable, Writable &writable){
-   Interpreter interpreter(readable, writable, nullptr, writable, 0);
+   Interpreter interpreter(readable, writable, Record_Id::null);
    std::fstream null_stream;
    std::istringstream iss
    (

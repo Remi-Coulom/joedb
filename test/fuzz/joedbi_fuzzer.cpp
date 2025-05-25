@@ -11,8 +11,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  std::istringstream in(std::string(reinterpret_cast<const char *>(Data), Size));
  std::ostringstream out;
 
- joedb::Database db(joedb::Record_Id{10000});
- joedb::Interpreter interpreter(db, db, nullptr, db, 10000);
+ const joedb::Record_Id max_record_id{10000};
+ joedb::Database db(max_record_id);
+ joedb::Interpreter interpreter(db, db, max_record_id);
 
  try
  {

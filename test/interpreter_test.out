@@ -146,10 +146,6 @@ General commands
  echo on|off
  prompt on|off
 
-Blob Reader
-~~~~~~~~~~~
- read_blob <blob> [<output_file_name>]
-
 Journal
 ~~~~~~~
  timestamp [<stamp>] (if no value is given, use current time)
@@ -195,6 +191,10 @@ Data definition
   float32, float64,
   boolean,
   references <table_name>
+
+Blob Reader
+~~~~~~~~~~~
+ read_blob <blob> [<output_file_name>]
 
 OK: help
 Exception caught: create_table: name already used: city

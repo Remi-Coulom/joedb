@@ -29,14 +29,14 @@ namespace joedb
    ) override;
 
    Writable &writable;
-   size_t max_record_id;
+   Record_Id max_record_id;
 
   public:
    Data_Manipulation_Command_Processor
    (
     const Readable &readable,
     Writable &writable,
-    size_t max_record_id
+    Record_Id max_record_id
    ):
     Readable_Command_Processor(readable),
     writable(writable),
