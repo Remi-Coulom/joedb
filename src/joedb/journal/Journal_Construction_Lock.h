@@ -8,7 +8,7 @@ namespace joedb
  /// @ingroup journal
  enum class Recovery
  {
-  none = 0,          ///< default
+  none = 0,          ///< default: fail if file size > checkpoint
   ignore_header = 1, ///< use file size as checkpoint
   overwrite = 2      ///< allow overwriting an uncheckpointed tail
  };
