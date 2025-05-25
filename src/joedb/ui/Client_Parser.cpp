@@ -26,13 +26,20 @@ namespace joedb
    (
     Buffered_File &file,
     Connection &connection,
+    bool tail,
     Content_Check content_check,
     Recovery recovery
    ):
     Readonly_Client(file, connection, content_check, recovery),
     writable(std::cout)
    {
+    if (tail)
+     writable.set_start_index(1);
+
     read_journal();
+
+    if (tail)
+     writable.set_start_index(0);
    }
 
   void read_journal() override
@@ -129,7 +136,9 @@ namespace joedb
    "none",
    "interpreted",
    "dump",
+   "dump_tail",
    "sql",
+   "sql_tail",
 #ifdef PERSISTENCE_TEST
    "joedb"
 #endif
@@ -223,22 +232,24 @@ namespace joedb
     );
    }
   }
-  else if (db_type == DB_Type::sql)
+  else if (db_type == DB_Type::sql || db_type == DB_Type::sql_tail)
   {
    client.reset(new Readonly_Writable_Client<joedb::SQL_Dump_Writable>
    (
     *client_file,
     *connection,
+    db_type == DB_Type::sql_tail,
     content_check,
     recovery
    ));
   }
-  else if (db_type == DB_Type::dump)
+  else if (db_type == DB_Type::dump || db_type == DB_Type::dump_tail)
   {
    client.reset(new Readonly_Writable_Client<joedb::Interpreter_Dump_Writable>
    (
     *client_file,
     *connection,
+    db_type == DB_Type::dump_tail,
     content_check,
     recovery
    ));

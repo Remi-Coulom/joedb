@@ -18,7 +18,9 @@ namespace joedb
     none,
     interpreted,
     dump,
+    dump_tail,
     sql,
+    sql_tail,
 #ifdef PERSISTENCE_TEST
     joedb
 #endif
