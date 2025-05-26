@@ -60,6 +60,7 @@ add_library(joedb_for_joedbc OBJECT
  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Journal.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Writable_Journal.cpp
 )
+target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 
 #############################################################################
 # Joedbc executable
@@ -90,6 +91,7 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
 )
+target_link_libraries(joedbc_objects ${JOEDB_EXTERNAL_LIBS})
 
 ipo_add_executable(joedbc
  $<TARGET_OBJECTS:joedbc_objects>

@@ -72,8 +72,10 @@ endif()
 add_library(joedb_databases OBJECT ${JOEDB_DATABASES})
 joedbc_build_absolute(${JOEDB_SRC_DIR}/joedb/db encoded_file)
 add_dependencies(joedb_databases compile_encoded_file_with_joedbc)
+target_link_libraries(joedb_databases ${JOEDB_EXTERNAL_LIBS})
 
 add_library(joedb_sources OBJECT ${JOEDB_SOURCES})
+target_link_libraries(joedb_sources ${JOEDB_EXTERNAL_LIBS})
 
 if (UNIX)
  add_library(joedb SHARED
