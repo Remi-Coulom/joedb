@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
+if (POLICY CMP0135)
+ cmake_policy(SET CMP0135 NEW)
+endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/joedb_version.cmake")
 
@@ -11,6 +14,7 @@ message("== CMAKE_TOOLCHAIN_FILE = ${CMAKE_TOOLCHAIN_FILE}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
 add_test(NAME build_all
@@ -24,14 +28,19 @@ include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 # Dependencies
 #############################################################################
 
+include(FetchContent)
+Set(FETCHCONTENT_QUIET FALSE)
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(GTest CONFIG)
+# googletest
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (GTest_FOUND)
- message("-- GTest found")
-else()
- message("## GTest not found")
-endif()
+FetchContent_Declare(googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+set(GTest_FOUND TRUE)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(SQLite3)
