@@ -202,7 +202,7 @@ This is the json output of the tutorial database:
 .. _joedb_edit:
 
 ``joedb_edit``
------------------
+--------------
 
 ``joedb_edit`` is a bash script that dumps a joedb file to a temporary text
 file and opens the default text editor to modify it. Modifications will be

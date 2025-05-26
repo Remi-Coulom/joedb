@@ -1,11 +1,6 @@
 TODO
 ====
 
-For next release
-----------------
-
-- vscode syntax highlighting: https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide
-
 On-disk Storage
 ---------------
 - In a directory
@@ -86,7 +81,7 @@ Concurrency
   - it is difficult to do in practice, because libssh is not very asynchronous
   - best way might be to use threads
 
-Use case: log with safe real-time remote backup
+Use Case: Log with Safe Real-Time Remote Backup
 -----------------------------------------------
 
 - log rotation, ability to delete or compress early part of the log:

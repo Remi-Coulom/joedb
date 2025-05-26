@@ -26,7 +26,7 @@ Documentation
 - update doc/source/history.rst
 - build and upload documentation
 
-New release on github
+New Release on github
 ---------------------
 
 - Commit and push to github

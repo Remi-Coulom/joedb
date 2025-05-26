@@ -3,7 +3,7 @@ Getting Started
 
 This explains how to install and use joedb.
 
-Compiling from source
+Compiling from Source
 ---------------------
 
 The source code of joedb can be found on `joedb's github page
@@ -77,10 +77,6 @@ contains an example:
 .. literalinclude:: ./tutorial/CMakeLists.txt
    :language: cmake
 
-In case of cross-compilation, :ref:`joedbc` must be already installed in the
-path of the host machine. Otherwise, joedbc will be compiled, and the compiled
-version will be used to generate the code.
-
 Using FetchContent
 ------------------
 
@@ -92,6 +88,12 @@ small source archive that can be used more efficiently with FetchContent:
 
 You can test this project in the ``doc/source/FetchContent_example``
 directory.
+
+Cross-Compilation
+-----------------
+
+In case of cross-compilation, :ref:`joedbc` must be already installed in the
+path of the host machine. This is not necessary when not cross-compiling.
 
 Syntax Highlighting
 -------------------

@@ -149,7 +149,7 @@ machine to share a connection to the same remote server, and also share the
 same local file. For this to work, the local file must be opened with
 :joedb:`Open_Mode`::shared_write.
 
-Using a :joedb:`Client_Lock` instead of a Lambda
+Using a :joedb:`Client_Lock` Instead of a Lambda
 ------------------------------------------------
 
 The transaction function is a simple way to handle the

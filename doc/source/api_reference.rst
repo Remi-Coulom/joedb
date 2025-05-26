@@ -1,7 +1,7 @@
 API reference
 =============
 
-Joedb classes
+Joedb Classes
 -------------
 
 The reference documentation of the joedb library can be found on the

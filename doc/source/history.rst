@@ -1,7 +1,7 @@
 History
 =======
 
-- 2025-??-?? 10.0.0 LTS
+- 2025-05-26 10.0.0 LTS
 
   This a long-term support release: it will be updated with bug fixes, without
   breaking compatibility.
@@ -173,7 +173,7 @@ History
 
 - 2023-08-15: 7.1.1
 
-  - Bug fix of previous version: large pulls (>256kb) from a
+  - Bug fix of previous version: large pulls (>256kB) from a
     ``Readonly_File_Connection`` to an ``SFTP_File`` could fail.
 
 - 2023-07-07: 7.1

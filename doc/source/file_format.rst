@@ -1,7 +1,7 @@
 File Format
 ===========
 
-Global File structure
+Global File Structure
 ---------------------
 
 ===================== ========= ======================= ================
@@ -52,7 +52,7 @@ file, then it is necessary to perform crash recovery.
 
 More information can be found in the :doc:`checkpoints` section.
 
-Compact number format
+Compact Number Format
 ---------------------
 
 Log entries use a compact number format for string length, record id, table id,
