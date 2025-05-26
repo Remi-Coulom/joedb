@@ -38,6 +38,7 @@ FetchContent_Declare(GTest
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(GTest)
+set(GTest_FOUND TRUE)
 message("-- GTest_FOUND = ${GTest_FOUND}")
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -322,9 +323,20 @@ joedb_add_executable(settings
  ../doc/source/tutorial/src/settings/writable.cpp
 )
 
-joedb_add_executable(write_server_blob
- ../doc/source/tutorial/src/write_server_blob.cpp
-)
+if (asio_FOUND)
+ joedb_add_executable(write_server_blob
+  ../doc/source/tutorial/src/write_server_blob.cpp
+ )
+ joedb_add_executable(server_file_tutorial
+  ../doc/source/tutorial/src/server_file_tutorial.cpp
+ )
+endif()
+
+if (libssh_FOUND)
+ joedb_add_executable(keepalive_test
+  ../doc/source/tutorial/src/keepalive_test.cpp
+ )
+endif()
 
 joedb_add_executable(client_lock
  ../doc/source/tutorial/src/client_lock.cpp
@@ -334,14 +346,6 @@ joedb_add_executable(client_lock
 joedb_add_executable(step_by_step_replay
  ../doc/source/tutorial/src/tutorial/writable.cpp
  ../doc/source/tutorial/src/step_by_step_replay.cpp
-)
-
-joedb_add_executable(server_file_tutorial
- ../doc/source/tutorial/src/server_file_tutorial.cpp
-)
-
-joedb_add_executable(keepalive_test
- ../doc/source/tutorial/src/keepalive_test.cpp
 )
 
 joedb_add_executable(joedb_generate_translation_header
@@ -450,9 +454,7 @@ install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
 if (asio_FOUND)
  install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
- if (libssh_FOUND)
-  install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)
- endif()
+ install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)
 endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)
