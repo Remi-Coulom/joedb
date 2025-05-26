@@ -2,6 +2,7 @@
 	"name": "joedb",
 	"displayName": "joedb",
 	"description": "The Journal-Only Embedded Database",
+	"icon": "logo_128x128.png",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.95.0"
