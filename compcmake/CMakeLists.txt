@@ -38,6 +38,7 @@ FetchContent_Declare(GTest
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(GTest)
+message("-- GTest_FOUND = ${GTest_FOUND}")
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(SQLite3)
@@ -277,8 +278,8 @@ endforeach(mode)
 # Targets below require databases to be compiled
 #############################################################################
 joedb_add_executable(tutorial
- ../doc/source/tutorial/src/tutorial/writable.cpp
  ../doc/source/tutorial/src/tutorial_main.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
 )
 
 add_executable(minimal_tutorial
@@ -289,6 +290,10 @@ add_executable(minimal_tutorial
  ../src/joedb/ui/main_wrapper.cpp
 )
 
+joedb_add_executable(tutorial_interpreter
+ ../doc/source/tutorial/src/tutorial_interpreter.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+)
 
 if (NOT JOEDB_PORTABLE)
  joedb_add_executable(local_concurrency
@@ -297,9 +302,33 @@ if (NOT JOEDB_PORTABLE)
  )
 endif()
 
-joedb_add_executable(concurrency_tutorial
+joedb_add_executable(file_tutorial
+ ../doc/source/tutorial/src/file_tutorial.cpp
  ../doc/source/tutorial/src/tutorial/writable.cpp
+)
+
+joedb_add_executable(concurrency_tutorial
  ../doc/source/tutorial/src/concurrency_tutorial.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+)
+
+joedb_add_executable(index_tutorial
+ ../doc/source/tutorial/src/index_tutorial.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+)
+
+joedb_add_executable(settings
+ ../doc/source/tutorial/src/settings_main.cpp
+ ../doc/source/tutorial/src/settings/writable.cpp
+)
+
+joedb_add_executable(write_server_blob
+ ../doc/source/tutorial/src/write_server_blob.cpp
+)
+
+joedb_add_executable(client_lock
+ ../doc/source/tutorial/src/client_lock.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
 )
 
 joedb_add_executable(step_by_step_replay
@@ -307,14 +336,12 @@ joedb_add_executable(step_by_step_replay
  ../doc/source/tutorial/src/step_by_step_replay.cpp
 )
 
-joedb_add_executable(file_tutorial
- ../doc/source/tutorial/src/tutorial/writable.cpp
- ../doc/source/tutorial/src/file_tutorial.cpp
+joedb_add_executable(server_file_tutorial
+ ../doc/source/tutorial/src/server_file_tutorial.cpp
 )
 
-joedb_add_executable(index_tutorial
- ../doc/source/tutorial/src/tutorial/writable.cpp
- ../doc/source/tutorial/src/index_tutorial.cpp
+joedb_add_executable(keepalive_test
+ ../doc/source/tutorial/src/keepalive_test.cpp
 )
 
 joedb_add_executable(joedb_generate_translation_header
