@@ -2,7 +2,9 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "joedbi",
 	"patterns": [
-
+		{
+			"include": "#comment"
+		},
 		{
 			"include": "#single-command"
 		},
@@ -26,6 +28,9 @@
 		},
 		{
 			"include": "#add-field"
+		},
+		{
+			"include": "#drop-field"
 		},
 		{
 			"include": "#record"
@@ -278,24 +283,8 @@
 
 		"joedbi_constant":
 		{
-			"begin": "\"",
-			"beginCaptures": {
-				"0": {
-					"name": "punctuation.definition.string.begin.joedbi"
-				}
-			},
-			"end": "\"",
-			"endCaptures": {
-				"0": {
-					"name": "punctuation.definition.string.end.joedbi"
-				}
-			},
-			"name": "string.quoted.double.joedbi",
-			"patterns": [
-				{
-					"include": "#word"
-				}
-			]
+			"match": ".*",
+			"name": "constant.other.joedbi"
 		},
 		"joedbi_type":
 		{
