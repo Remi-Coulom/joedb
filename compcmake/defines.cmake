@@ -17,5 +17,7 @@ if(UNIX)
  if (CMAKE_CROSSCOMPILING_EMULATOR)
   # This is necessary for qemu to work, although OFD macros are defined
   add_definitions(-DJOEDB_HAS_BROKEN_POSIX_LOCKING)
+  # This will be used to disable file-locking tests (don't work with qemu)
+  add_definitions(-DJOEDB_NO_FILE_LOCKING)
  endif()
 endif()

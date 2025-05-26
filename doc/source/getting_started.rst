@@ -100,4 +100,5 @@ Syntax Highlighting
 
 The `syntax <https://github.com/Remi-Coulom/joedb/tree/master/syntax>`_
 directory of the joedb repository contains syntax-highlighting grammars for
-pygments, vim, and vscode.
+pygments, vim, and `a vscode extension
+<https://marketplace.visualstudio.com/items?itemName=Kayufu.joedb>`_.

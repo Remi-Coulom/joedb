@@ -57,7 +57,7 @@ TEST_F(File_Test, open_failure)
  );
 }
 
-#ifndef JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
+#ifndef JOEDB_NO_FILE_LOCKING
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
@@ -156,8 +156,7 @@ TEST_F(File_Test, partial_exclusive_lock)
 }
 #endif
 #endif
-
-#endif // JOEDB_HAS_BRAINDEAD_POSIX_LOCKING
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, reopen_locked)
