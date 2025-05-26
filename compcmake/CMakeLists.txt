@@ -1,7 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
-if (POLICY CMP0135)
- cmake_policy(SET CMP0135 NEW)
-endif()
+cmake_minimum_required(VERSION 3.24)
 
 include("${CMAKE_CURRENT_LIST_DIR}/joedb_version.cmake")
 
@@ -32,15 +29,15 @@ include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# googletest
+# GTest
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-FetchContent_Declare(googletest
+FetchContent_Declare(GTest
   URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+  FIND_PACKAGE_ARGS NAMES GTest
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-set(GTest_FOUND TRUE)
+FetchContent_MakeAvailable(GTest)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(SQLite3)
