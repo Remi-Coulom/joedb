@@ -23,6 +23,18 @@
 		},
 		{
 			"include": "#table"
+		},
+		{
+			"include": "#add-field"
+		},
+		{
+			"include": "#record"
+		},
+		{
+			"include": "#insert-into"
+		},
+		{
+			"include": "#delete-from"
 		}
     ],
     "repository": {
@@ -33,7 +45,7 @@
 		},
 		"command-with-constant-parameter":
 		{
-			"match": "\\b(json|echo|write_blob|read_blob)\\b",
+			"match": "\\b(json|echo|write_blob|read_blob|comment|timestamp)\\b",
 			"name": "keyword.control.constant.parameter.joedbi",
 			"patterns": [
 				{
@@ -96,6 +108,61 @@
 				}
 			]
 		},
+		"add-field":
+		{
+			"begin": "\\b(add_field)\\b",
+			"end": "^",
+			"name": "keyword.control.add-field.joedbi",
+			"patterns": [
+				{
+					"include": "#joedbi_table_field_type"
+				}
+			]
+		},
+		"drop-field":
+		{
+			"begin": "\\b(drop_field)\\b",
+			"end": "^",
+			"name": "keyword.control.drop-field.joedbi",
+			"patterns": [
+				{
+					"include": "#joedbi_table_field"
+				}
+			]
+		},
+		"record":
+		{
+			"begin": "\\b(record)\\b",
+			"end": "^",
+			"name": "keyword.control.record.joedbi",
+			"patterns": [
+				{
+					"include": "#joedbi_table_constant"
+				}
+			]
+		},
+		"insert-into":
+		{
+			"begin": "\\b(insert_into)\\b",
+			"end": "^",
+			"name": "keyword.control.insert-into.joedbi",
+			"patterns": [
+				{
+					"include": "#joedbi_table_constant"
+				}
+			]
+		},
+		"delete-from":
+		{
+			"begin": "\\b(delete_from)\\b",
+			"end": "^",
+			"name": "keyword.control.delete-from.joedbi",
+			"patterns": [
+				{
+					"include": "#joedbi_table_integer"
+				}
+			]
+		},
 
 		"joedbi_table":
 		{
@@ -116,6 +183,39 @@
 				}
 			]
 		},
+		"joedbi_table_field":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#word"
+				}
+			]
+		},
+		"joedbi_table_constant":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#joedbi_constant"
+				}
+			]
+		},
+		"joedbi_table_integer":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#numeric"
+				}
+			]
+		},
 		"joedbi_table_field_field":
 		{
 			"patterns": [
@@ -130,7 +230,6 @@
 				}
 			]
 		},
-
 		"joedbi_table_integer_integer":
 		{
 			"patterns": [
@@ -145,7 +244,6 @@
 				}
 			]
 		},
-
 		"joedbi_table_integer_field_constant":
 		{
 			"patterns": [
@@ -160,6 +258,20 @@
 				},
 				{
 					"include": "#joedbi_constant"
+				}
+			]
+		},
+		"joedbi_table_field_type":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#joedbi_type"
 				}
 			]
 		},
@@ -187,7 +299,7 @@
 		},
 		"joedbi_type":
 		{
-		    "match": "\\b(int8|int16|int32|int64|float32|string|references)\\b",
+		    "match": "\\b(int8|int16|int32|int64|float32|string|blob|references)\\b",
 		    "name": "storage.type.joedbi"
 		},
 		"word":
