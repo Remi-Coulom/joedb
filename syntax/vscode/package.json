@@ -1,7 +1,10 @@
 {
 	"name": "joedb",
+	"publisher": "Kayufu",
+	"repository": "https://github.com/Remi-Coulom/joedb",
 	"displayName": "joedb",
 	"description": "The Journal-Only Embedded Database",
+	"homepage": "https://www.joedb.org/index.html",
 	"icon": "logo_128x128.png",
 	"version": "0.0.1",
 	"engines": {
