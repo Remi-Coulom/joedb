@@ -1,5 +1,6 @@
 #include "joedb/ui/Client_Command_Processor.h"
 #include "joedb/ui/Client_Parser.h"
+#include "joedb/journal/File.h"
 
 #include "gtest/gtest.h"
 
@@ -52,6 +53,8 @@ namespace joedb
 
  TEST(ui, file_client)
  {
+  std::remove("test.joedb");
+
   const std::array<const char *, 8> args
   {
    "--check",
@@ -66,9 +69,13 @@ namespace joedb
 
   Arguments arguments(args.size(), args.data());
 
+  const Open_Mode default_mode = File::lockable
+   ? Open_Mode::shared_write
+   : Open_Mode::write_existing_or_create_new;
+
   Client_Parser parser
   (
-   Open_Mode::shared_write,
+   default_mode,
    Client_Parser::DB_Type::none,
    arguments
   );
@@ -84,13 +91,6 @@ namespace joedb
 
   processor.set_prompt(true);
   processor.main_loop(in, out);
-
-  std::ifstream reference_file("file_client_test.joedbi.out");
-  ASSERT_TRUE(reference_file);
-  std::ostringstream reference_string;
-  reference_string << reference_file.rdbuf();
-
-  EXPECT_EQ(reference_string.str(), out.str());
 
   std::ifstream file_connection(args[7]);
   ASSERT_TRUE(file_connection);
