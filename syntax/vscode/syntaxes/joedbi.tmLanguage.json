@@ -53,7 +53,8 @@
 		},
 		"command-with-constant-parameter":
 		{
-			"match": "\\b(json|echo|write_blob|read_blob|comment|timestamp)\\b",
+			"begin": "\\b(json|echo|write_blob|read_blob|comment|timestamp)\\b",
+			"end": "^",
 			"name": "keyword.control.constant.parameter.joedbi",
 			"patterns": [
 				{
