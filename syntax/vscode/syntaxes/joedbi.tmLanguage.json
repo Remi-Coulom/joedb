@@ -40,6 +40,9 @@
 		},
 		{
 			"include": "#delete-from"
+		},
+		{
+			"include": "#custom"
 		}
     ],
     "repository": {
@@ -168,7 +171,26 @@
 				}
 			]
 		},
+		"custom":
+		{
+			"begin": "\\b(custom)\\b",
+			"end": "^",
+			"name": "keyword.control.custom.joedbi",
+			"patterns": [
+				{
+					"include": "#joedbi_function"
+				}
+			]
+		},
 
+		"joedbi_function":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				}
+			]
+		},
 		"joedbi_table":
 		{
 			"patterns": [
