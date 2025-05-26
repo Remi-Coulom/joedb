@@ -1,9 +1,9 @@
 # Change Log
 
-All notable changes to the "joedbi" extension will be documented in this file.
+## v0.0.2
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+- More colors
 
-## [Unreleased]
+## v0.0.1
 
 - Initial release
