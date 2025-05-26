@@ -1,16 +1,151 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "joedbc",
-	"patterns":
-	    [
-		    {
-			    "name": "keyword.control",
-			    "match": "\\b(namespace|create_unique_index|create_index)\\b"
-		    },
-		    {
-			    "name": "comment.line.number-sign",
-			    "match": "#.*$"
-		    }
-	    ],
+	"patterns": [
+		{
+			"include": "#comment"
+		},
+		{
+			"include": "#namespace"
+		},
+		{
+			"include": "#create_index"
+		},
+		{
+			"include": "#set"
+		}
+	],
+	"repository":{
+		"comment":
+	    {
+		    "name": "comment.line.number-sign",
+		    "match": "#.*$"
+	    },
+
+		"namespace":
+		{
+			"begin": "\\b(namespace)\\b",
+			"end": "^",
+			"name": "keyword.control.namespace.joedbc",
+			"patterns": [
+				{
+					"include": "#namespace_continuation"
+				}
+			]
+		},
+		"namespace_continuation":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#namespace_separator"
+				}
+			]
+		},
+		"namespace_separator":
+		{
+			"begin": "::",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.separator.namespace.joedbc"
+				}
+			},
+			"end": "^",
+			"patterns": [
+				{
+					"include": "#namespace_continuation"
+				}
+			]
+		},
+
+		"create_index":
+		{
+			"begin": "\\b(create_index|create_unique_index)\\b",
+			"end": "^",
+			"name": "keyword.control.create_index.joedbc",
+			"patterns": [
+				{
+					"include": "#joedbc_index_table_fields"
+				}
+			]
+		},
+		"joedbc_index_table_fields":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#joedbc_fields"
+				}
+			]
+		},
+		"joedbc_fields":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#joedbc_field_continuation"
+				}
+			]
+		},
+		"joedbc_field_continuation":
+		{
+			"begin": ",",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.separator.fields.joedbc"
+				}
+			},
+			"end": "^",
+			"patterns": [
+				{
+					"include": "#joedbc_fields"
+				}
+			]
+		},
+
+		"set":
+		{
+			"begin": "\\b(set_table_null_initialization|set_single_row)\\b",
+			"end": "^",
+			"name": "keyword.control.set.joedbc",
+			"patterns": [
+				{
+					"include": "#joedbc_table_bool"
+				}
+			]
+		},
+		"joedbc_table_bool":
+		{
+			"patterns": [
+				{
+					"include": "#word"
+				},
+				{
+					"include": "#joedbc_bool"
+				}
+			]
+		},
+
+		"word":
+		{
+			"match": "[a-zA-Z_]\\w*",
+			"name": "variable.other.joedbc"
+		},
+		"joedbc_bool":
+		{
+			"match": "\\b(true|false)\\b",
+			"name": "constant.language.boolean.joedbc"
+		}
+	},
+
 	"scopeName": "source.joedbc"
 }
