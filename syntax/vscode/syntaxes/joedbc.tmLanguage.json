@@ -18,15 +18,15 @@
 	"repository":{
 		"comment":
 	    {
-		    "name": "comment.line.number-sign",
-		    "match": "#.*$"
+		    "match": "#.*$",
+		    "name": "comment.line.joedbc"
 	    },
 
 		"namespace":
 		{
-			"begin": "\\b(namespace)\\b",
-			"end": "^",
-			"name": "keyword.control.namespace.joedbc",
+			"begin": "\\b(namespace)\\b[ \t]+",
+			"end": "$",
+			"beginCaptures": { "1": {"name":"keyword.control.namespace.joedbc"}},
 			"patterns": [
 				{
 					"include": "#namespace_continuation"
@@ -35,10 +35,14 @@
 		},
 		"namespace_continuation":
 		{
+			"begin": "[a-zA-Z_]\\w*",
+			"end": "$",
+			"beginCaptures": {
+				"0": {
+					"name": "variable.other.namespace.joedbc"
+				}
+			},
 			"patterns": [
-				{
-					"include": "#word"
-				},
 				{
 					"include": "#namespace_separator"
 				}
@@ -52,7 +56,7 @@
 					"name": "punctuation.separator.namespace.joedbc"
 				}
 			},
-			"end": "^",
+			"end": "$",
 			"patterns": [
 				{
 					"include": "#namespace_continuation"
@@ -63,8 +67,8 @@
 		"create_index":
 		{
 			"begin": "\\b(create_index|create_unique_index)\\b",
-			"end": "^",
-			"name": "keyword.control.create_index.joedbc",
+			"beginCaptures": { "1": {"name":"keyword.control.create_index.joedbc"}},
+			"end": "$",
 			"patterns": [
 				{
 					"include": "#joedbc_index_table_fields"
@@ -73,13 +77,21 @@
 		},
 		"joedbc_index_table_fields":
 		{
+			"begin": "[ \t]+([a-zA-Z_]\\w*)",
+			"beginCaptures": { "1": {"name":"variable.other.index.joedbc"}},
+			"end": "$",
 			"patterns": [
 				{
-					"include": "#word"
-				},
-				{
-					"include": "#word"
-				},
+					"include": "#joedbc_table_fields"
+				}
+			]
+		},
+		"joedbc_table_fields":
+		{
+			"begin": "[ \t]+([a-zA-Z_]\\w*)[ \t]+",
+			"beginCaptures": { "1": {"name":"entity.name.class.table.joedbc"}},
+			"end": "$",
+			"patterns": [
 				{
 					"include": "#joedbc_fields"
 				}
@@ -87,10 +99,10 @@
 		},
 		"joedbc_fields":
 		{
+			"begin": "([a-zA-Z_]\\w*)",
+			"beginCaptures": { "1": {"name":"variable.name.field.joedbc"}},
+			"end": "$",
 			"patterns": [
-				{
-					"include": "#word"
-				},
 				{
 					"include": "#joedbc_field_continuation"
 				}
@@ -104,7 +116,7 @@
 					"name": "punctuation.separator.fields.joedbc"
 				}
 			},
-			"end": "^",
+			"end": "$",
 			"patterns": [
 				{
 					"include": "#joedbc_fields"
@@ -115,8 +127,8 @@
 		"set":
 		{
 			"begin": "\\b(set_table_null_initialization|set_single_row)\\b",
-			"end": "^",
-			"name": "keyword.control.set.joedbc",
+			"beginCaptures": { "1": {"name":"keyword.control.set.joedbc"}},
+			"end": "$",
 			"patterns": [
 				{
 					"include": "#joedbc_table_bool"
@@ -125,25 +137,19 @@
 		},
 		"joedbc_table_bool":
 		{
+			"begin": "[ \t]+([a-zA-Z_]\\w*)",
+			"beginCaptures": { "1": {"name":"entity.name.class.table.joedbc"}},
+			"end": "$",
 			"patterns": [
-				{
-					"include": "#word"
-				},
 				{
 					"include": "#joedbc_bool"
 				}
 			]
 		},
-
-		"word":
-		{
-			"match": "[a-zA-Z_]\\w*",
-			"name": "variable.other.joedbc"
-		},
 		"joedbc_bool":
 		{
-			"match": "\\b(true|false)\\b",
-			"name": "constant.language.boolean.joedbc"
+			"match": "[ \t](true|false)",
+			"captures": { "1": {"name":"constant.language.boolean.joedbc"}}
 		}
 	},
 
