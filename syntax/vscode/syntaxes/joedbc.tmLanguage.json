@@ -35,7 +35,7 @@
 		},
 		"namespace_continuation":
 		{
-			"begin": "[a-zA-Z_]\\w*",
+			"begin": "[a-zA-Z_][a-zA-Z0-9_]*",
 			"end": "$",
 			"beginCaptures": {
 				"0": {
