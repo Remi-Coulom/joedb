@@ -52,19 +52,21 @@ namespace joedb::generator
    File_Database
    (
     const char *file_name,
-    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new
+    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
+    joedb::Recovery recovery = joedb::Recovery::none
    ):
     File_Database_Data(file_name, mode),
-    Writable_Database(file)
+    Writable_Database(file, recovery)
    {
    }
 
    File_Database
    (
     const std::string &file_name,
-    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new
+    joedb::Open_Mode mode = joedb::Open_Mode::write_existing_or_create_new,
+    joedb::Recovery recovery = joedb::Recovery::none
    ):
-    File_Database(file_name.c_str(), mode)
+    File_Database(file_name.c_str(), mode, recovery)
    {
    }
  };
