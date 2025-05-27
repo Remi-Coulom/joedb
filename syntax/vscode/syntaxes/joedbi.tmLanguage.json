@@ -395,7 +395,7 @@
 		"joedbi_constant":
 		{
 			"match": "[ \t]+(.*)",
-			"captures": { "1": {"name": "constant.other.joedbi"} }
+			"captures": { "1": {"name": "string.quoted.constant.joedbi"} }
 		},
 		"joedbi_type":
 		{
