@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.0.3
+
+- Words differenciation
+
 ## v0.0.2
 
 - More colors
