@@ -190,7 +190,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -221,7 +221,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -236,7 +236,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -251,7 +251,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -267,7 +267,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -282,7 +282,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -297,7 +297,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -312,7 +312,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "variable.name.table.joedbi"
+					"name": "entity.name.class.table.joedbi"
 				}
 			},
 			"patterns": [
@@ -327,7 +327,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "entity.name.field.joedbi"
+					"name": "variable.name.field.joedbi"
 				}
 			},
 			"patterns": [
@@ -342,7 +342,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "entity.name.field.joedbi"
+					"name": "variable.name.field.joedbi"
 				}
 			},
 			"patterns": [
@@ -357,7 +357,7 @@
 			"end": "$",
 			"beginCaptures": {
 				"1": {
-					"name": "entity.name.field.joedbi"
+					"name": "variable.name.field.joedbi"
 				}
 			},
 			"patterns": [
@@ -385,12 +385,12 @@
 		"joedbi_table":
 		{
 			"match": "[ \t]+([a-zA-Z_]\\w*)",
-			"captures": { "1": {"name": "variable.name.table.joedbi"} }
+			"captures": { "1": {"name": "entity.name.class.table.joedbi"} }
 		},
 		"joedbi_field":
 		{
 			"match": "[ \t]+([a-zA-Z_]\\w*)",
-			"captures": { "1": {"name": "entity.name.field.joedbi"} }
+			"captures": { "1": {"name": "variable.name.field.joedbi"} }
 		},
 		"joedbi_constant":
 		{
@@ -402,7 +402,7 @@
 			"match": "[ \t]\\b(boolean|int8|int16|int32|int64|float32|float64|string|blob|references[ \t]+([a-zA-Z_]\\w*))\\b",
 			"captures": {
 				"1": {"name": "storage.type.joedbi"},
-				"2": {"name": "variable.name.table.joedbi"}
+				"2": {"name": "support.class.table.joedbi"}
 			}
 		},
 		"joedbi_function":
