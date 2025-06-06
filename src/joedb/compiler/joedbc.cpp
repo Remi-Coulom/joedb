@@ -181,7 +181,6 @@ namespace joedb
     {
      auto path = dir_entry.path();
      const std::string procedure_name = path.replace_extension("");
-     std::cerr << "found procedure: " << procedure_name << '\n';
      const std::string output_path = std::string(base_name) + "/procedures";
      compile(exe_path, output_path, procedure_name);
     }
