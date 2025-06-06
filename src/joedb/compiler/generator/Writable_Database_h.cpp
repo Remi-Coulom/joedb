@@ -287,8 +287,19 @@ namespace joedb::generator
     if (type.get_type_id() == Type::Type_Id::reference)
      out << ".get_record_id()";
     out << ");\n";
-
     out << "   }\n\n";
+
+    if (single_row && options.is_unique_field_name(fname))
+    {
+     out << "   void set_" << fname;
+     out << "(";
+     write_type(type, false, true);
+     out << " field_value_of_" << fname << ")\n";
+     out << "   {\n";
+     out << "    set_" << fname << "(the_" << tname;
+     out << "(), field_value_of_" << fname << ");\n";
+     out << "   }\n\n";
+    }
 
     //
     // Vector update

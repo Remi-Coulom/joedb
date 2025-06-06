@@ -82,10 +82,23 @@ namespace joedb
 
    bool has_single_row() const
    {
-    for (const auto &options: table_options)
-     if (options.second.single_row)
+    for (auto &[table_id, options]: table_options)
+     if (options.single_row)
       return true;
     return false;
+   }
+
+   bool is_unique_field_name(const std::string &field_name) const
+   {
+    int count = 0;
+
+    for (auto &[table_id, options]: table_options)
+     for (auto &[field_id, name]: db.get_fields(table_id))
+      if (name == field_name)
+       if (++count > 1)
+        break;
+
+    return count == 1;
    }
 
    void set_name_space(std::vector<std::string> v)
