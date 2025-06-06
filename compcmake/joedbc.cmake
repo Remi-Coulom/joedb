@@ -80,6 +80,7 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_cpp.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Memory_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Interpreted_File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Interpreted_File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Multiplexer_h.cpp

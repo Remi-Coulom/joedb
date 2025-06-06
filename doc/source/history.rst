@@ -1,6 +1,12 @@
 History
 =======
 
+- 2025-??-?? 10.1.0
+
+  - New features:
+
+    - :joedb:`tutorial::Memory_Database`
+
 - 2025-05-26 10.0.0 LTS
 
   This a long-term support release: it will be updated with bug fixes, without

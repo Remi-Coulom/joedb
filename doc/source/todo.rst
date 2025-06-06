@@ -56,6 +56,11 @@ Compiler
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
 
+Stored Procedure
+----------------
+ - serialize input and output with a joedb database
+ - network protocol: send buffer after schema_string as input, continuation as output
+
 Concurrency
 -----------
 - asynchronous hard checkpoint: add wait_for_hard_checkpoint(int64_t) function
