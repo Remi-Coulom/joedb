@@ -137,6 +137,14 @@ namespace joedb
 
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();
+
+  //
+  // .gitignore
+  //
+  {
+   std::ofstream ofs(output_path + "/" + options.get_name_space().back() + "/.gitignore", std::ios::trunc);
+   ofs << "*\n";
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
