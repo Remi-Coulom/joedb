@@ -9,12 +9,10 @@ namespace joedb
  class File_View: public Buffered_File
  {
   private:
-   const Abstract_File &file;
+   Abstract_File &file;
 
   public:
-   File_View(const Abstract_File &file):
-    Buffered_File(Open_Mode::read_existing),
-    file(file)
+   File_View(Buffered_File &file): Buffered_File(file.get_mode()), file(file)
    {
    }
 
@@ -26,6 +24,11 @@ namespace joedb
    size_t pread(char *data, size_t size, int64_t offset) const override
    {
     return file.pread(data, size, offset);
+   }
+
+   void pwrite(const char *data, size_t size, int64_t offset) override
+   {
+    return file.pwrite(data, size, offset);
    }
  };
 }

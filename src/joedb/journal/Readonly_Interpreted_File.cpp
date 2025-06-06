@@ -11,14 +11,15 @@ namespace joedb
  (
   std::istream &stream,
   bool readonly
- )
+ ):
+  file_view(*this),
+  journal(file_view)
  {
   if (!stream)
    throw Exception("opening interpreted file: !stream");
 
   stream.exceptions(std::ios::badbit);
 
-  Writable_Journal journal(*this);
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, Record_Id::null);
   interpreter.set_echo(false);
