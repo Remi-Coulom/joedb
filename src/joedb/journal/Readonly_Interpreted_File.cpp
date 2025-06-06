@@ -1,4 +1,5 @@
 #include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/ui/Interpreter.h"
 
@@ -10,14 +11,14 @@ namespace joedb
  (
   std::istream &stream,
   bool readonly
- ):
-  journal(*this)
+ )
  {
   if (!stream)
    throw Exception("opening interpreted file: !stream");
 
   stream.exceptions(std::ios::badbit);
 
+  Writable_Journal journal(*this);
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, Record_Id::null);
   interpreter.set_echo(false);

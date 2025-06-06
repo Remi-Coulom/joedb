@@ -2,6 +2,7 @@
 #define joedb_Interpreted_File_declared
 
 #include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/File_View.h"
 
 namespace joedb

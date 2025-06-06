@@ -7,6 +7,10 @@ History
 
     - :joedb:`tutorial::Memory_Database`
 
+  - Fixes and improvements:
+
+    - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
+
 - 2025-05-26 10.0.0 LTS
 
   This a long-term support release: it will be updated with bug fixes, without
