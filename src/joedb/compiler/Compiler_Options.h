@@ -49,6 +49,7 @@ namespace joedb
 
   public:
    std::string exe_path;
+   std::string output_path;
    Database db;
    Memory_File schema_file;
    std::vector<std::string> custom_names;
@@ -65,8 +66,8 @@ namespace joedb
 
    bool has_blob() const
    {
-    for (auto &[table_id, table_name]: db.get_tables())
-     for (auto &[field_id, field_name]: db.get_fields(table_id))
+    for (const auto &[table_id, table_name]: db.get_tables())
+     for (const auto &[field_id, field_name]: db.get_fields(table_id))
       if (db.get_field_type(table_id, field_id).get_type_id() == Type::Type_Id::blob)
        return true;
     return false;
@@ -82,7 +83,7 @@ namespace joedb
 
    bool has_single_row() const
    {
-    for (auto &[table_id, options]: table_options)
+    for (const auto &[table_id, options]: table_options)
      if (options.single_row)
       return true;
     return false;
@@ -92,8 +93,8 @@ namespace joedb
    {
     int count = 0;
 
-    for (auto &[table_id, options]: table_options)
-     for (auto &[field_id, name]: db.get_fields(table_id))
+    for (const auto &[table_id, options]: table_options)
+     for (const auto &[field_id, name]: db.get_fields(table_id))
       if (name == field_name)
        if (++count > 1)
         break;

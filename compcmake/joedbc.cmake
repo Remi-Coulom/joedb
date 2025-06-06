@@ -116,7 +116,7 @@ function(joedbc_build_absolute dir namespace)
    ${dir}/${namespace}/readonly.h
    ${dir}/${namespace}/writable.cpp
    ${dir}/${namespace}/writable.h
-  COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc
+  COMMAND joedbc ${namespace}
   DEPENDS
    joedbc
    ${dir}/${namespace}.joedbi

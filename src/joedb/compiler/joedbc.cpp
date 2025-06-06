@@ -33,6 +33,7 @@
 #include "joedb/compiler/generator/introspection_h.h"
 
 #include <iostream>
+#include <filesystem>
 
 namespace joedb
 {
@@ -57,20 +58,20 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- static int joedbc(Arguments &arguments)
+ static void compile
  ////////////////////////////////////////////////////////////////////////////
+ (
+  const std::string &exe_path,
+  const std::string &output_path,
+  const std::string &base_name
+ )
  {
-  const std::string_view joedbi_file_name = arguments.get_next("file.joedbi");
-  const std::string_view joedbc_file_name = arguments.get_next("file.joedbc");
-
-  if (arguments.missing())
-  {
-   arguments.print_help(std::cerr);
-   return 1;
-  }
-
   Compiler_Options options;
-  options.exe_path = arguments[0];
+  options.exe_path = exe_path;
+  options.output_path = output_path;
+
+  const std::string joedbi_file_name = std::string(base_name) + ".joedbi";
+  const std::string joedbc_file_name = std::string(base_name) + ".joedbc";
 
   //
   // Read file.joedbi
@@ -78,10 +79,7 @@ namespace joedb
   {
    std::ifstream joedbi_file(joedbi_file_name.data());
    if (!joedbi_file)
-   {
-    std::cerr << "Error: could not open " << joedbi_file_name << '\n';
-    return 1;
-   }
+    throw Exception("could not open " + joedbi_file_name);
 
    Writable_Journal journal(options.schema_file);
    Selective_Writable schema_writable(journal, Selective_Writable::schema);
@@ -103,20 +101,9 @@ namespace joedb
   //
   std::ifstream joedbc_file(joedbc_file_name.data());
   if (!joedbc_file)
-  {
-   std::cerr << "Error: could not open " << joedbc_file_name << '\n';
-   return 1;
-  }
+   throw Exception("Error: could not open " + joedbc_file_name);
 
-  try
-  {
-   parse_compiler_options(joedbc_file, options);
-  }
-  catch(...)
-  {
-   std::cerr << "Error parsing .joedbc file: " << joedbc_file_name << '\n';
-   throw;
-  }
+  parse_compiler_options(joedbc_file, options);
 
   //
   // Generate code
@@ -150,6 +137,48 @@ namespace joedb
 
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ static int joedbc(Arguments &arguments)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const std::string_view base_name = arguments.get_next("<base_name>");
+
+  if (arguments.missing())
+  {
+   arguments.print_help(std::cerr);
+   std::cerr << "joedbc will read:\n";
+   std::cerr << " <base_name>.joedbi for the schema definition\n";
+   std::cerr << " <base_name>.joedbc for compiler options\n";
+   std::cerr << " <base_name>.procedures (optional) directory of procedures\n";
+   return 1;
+  }
+
+  const std::string exe_path(arguments[0]);
+  compile(exe_path, ".", std::string(base_name));
+
+  {
+   std::error_code ec;
+
+   std::filesystem::directory_iterator iterator
+   (
+    std::string(base_name) + ".procedures",
+    ec
+   );
+
+   for (const auto &dir_entry: iterator)
+   {
+    if (dir_entry.path().extension() == ".joedbi")
+    {
+     auto path = dir_entry.path();
+     const std::string procedure_name = path.replace_extension("");
+     std::cerr << "found procedure: " << procedure_name << '\n';
+     const std::string output_path = std::string(base_name) + "/procedures";
+     compile(exe_path, output_path, procedure_name);
+    }
+   }
+  }
 
   return 0;
  }
