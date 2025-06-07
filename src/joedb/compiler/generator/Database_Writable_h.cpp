@@ -445,8 +445,8 @@ namespace joedb::generator
      schema_file_size > detail::schema_string_size ||
      std::memcmp
      (
-      schema_file.get_data().data() + pos,
       detail::schema_string + pos,
+      schema_file.get_data().data() + pos,
       schema_file_size - pos
      ) != 0
     )

@@ -5,8 +5,9 @@ Stored Procedures
 -----------------
  - procedures::Server
  - procedures::Client
- - error handling
- - const/non-const procedures
+ - check matching procedure schemas between client and server at handshake
+ - error handling: catch exception, and send description via protocol
+ - allow having procedures without any main database
 
 On-disk Storage
 ---------------

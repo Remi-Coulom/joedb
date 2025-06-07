@@ -1,7 +1,6 @@
 # "city" is the name of a table in the main schema
 # The line below allows refering to the main schema from the procedure schema
 create_table city
-
 create_table data
 
 # input
