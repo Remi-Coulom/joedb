@@ -110,6 +110,12 @@ add_custom_target(all_joedbc)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ file(GLOB deps CONFIGURE_DEPENDS
+  ${dir}/${namespace}.joedbi
+  ${dir}/${namespace}.joedbc
+  ${dir}/${namespace}.procedures/*.joedbi
+  ${dir}/${namespace}.procedures/*.joedbc
+ )
  add_custom_command(
   OUTPUT
    ${dir}/${namespace}/readonly.cpp
@@ -117,10 +123,7 @@ function(joedbc_build_absolute dir namespace)
    ${dir}/${namespace}/writable.cpp
    ${dir}/${namespace}/writable.h
   COMMAND joedbc ${namespace}
-  DEPENDS
-   joedbc
-   ${dir}/${namespace}.joedbi
-   ${dir}/${namespace}.joedbc
+  DEPENDS joedbc ${deps}
   WORKING_DIRECTORY ${dir}
  )
  add_custom_target(compile_${namespace}_with_joedbc

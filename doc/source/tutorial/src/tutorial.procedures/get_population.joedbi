@@ -1,0 +1,8 @@
+create_table city
+
+create_table input
+add_field input city_name string
+
+create_table output
+add_field output city references city
+add_field output population int64
