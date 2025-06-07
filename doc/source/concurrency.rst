@@ -167,9 +167,3 @@ explicitly call either :joedb:`Client_Lock::checkpoint_and_push_unlock` or
 
 .. literalinclude:: ./tutorial/src/client_lock.cpp
    :language: c++
-
-..
-   TODO: ascinema animation of synchronous backup
-
-..
-   TODO: ascinema animation of asynchronous backup

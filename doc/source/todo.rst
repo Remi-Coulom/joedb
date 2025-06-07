@@ -1,6 +1,13 @@
 TODO
 ====
 
+Stored Procedures
+-----------------
+ - procedures::Server
+ - procedures::Client
+ - error handling
+ - const/non-const procedures
+
 On-disk Storage
 ---------------
 - In a directory
@@ -55,11 +62,6 @@ Compiler
   - referential integrity
   - queries (SQL compiler?)
   - incrementally-updated group-by queries (OLAP, hypercube, ...)
-
-Stored Procedure
-----------------
- - serialize input and output with a joedb database
- - network protocol: send buffer after schema_string as input, continuation as output
 
 Concurrency
 -----------

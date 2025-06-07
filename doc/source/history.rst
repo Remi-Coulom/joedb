@@ -5,7 +5,8 @@ History
 
   - New features:
 
-    - :joedb:`tutorial::Memory_Database`
+    - :doc:`Stored Procedures <stored_procedures>`
+    - joedbc generates a ``Memory_Database``
     - joedbc generates a .gitignore
 
   - Fixes:
