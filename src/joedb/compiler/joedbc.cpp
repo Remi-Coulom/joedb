@@ -142,7 +142,7 @@ namespace joedb
   // .gitignore
   //
   {
-   std::ofstream ofs(output_path + "/" + options.get_name_space().back() + "/.gitignore", std::ios::trunc);
+   std::ofstream ofs(output_path + "/" + options.get_name_space_back() + "/.gitignore", std::ios::trunc);
    ofs << "*\n";
   }
  }

@@ -19,6 +19,12 @@ namespace joedb
   EXPECT_EQ(arguments.get_option<float>("timeout", "seconds", 0.0f), 1.23f);
  }
 
+ TEST(Arguments, empty)
+ {
+  const std::vector<const char *> v{"", "", ""};
+  Arguments arguments(int(v.size()), v.data());
+ }
+
  TEST(Arguments, print_help)
  {
   const std::vector<const char *> v
