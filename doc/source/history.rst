@@ -8,8 +8,9 @@ History
     - :joedb:`tutorial::Memory_Database`
     - joedbc generates a .gitignore
 
-  - Fixes and improvements:
+  - Fixes:
 
+    - Fix joedbc crash when no namespace is provided
     - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
 
 - 2025-05-26 10.0.0 LTS
