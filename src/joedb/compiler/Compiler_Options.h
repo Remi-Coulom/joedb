@@ -50,6 +50,8 @@ namespace joedb
   public:
    std::string exe_path;
    std::string output_path;
+   std::string base_name;
+
    Database db;
    Memory_File schema_file;
    std::vector<std::string> custom_names;

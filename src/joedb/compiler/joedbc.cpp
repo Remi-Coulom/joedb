@@ -32,6 +32,8 @@
 #include "joedb/compiler/generator/ids_h.h"
 #include "joedb/compiler/generator/introspection_h.h"
 
+#include "joedb/compiler/generator/procedure_h.h"
+
 #include <iostream>
 #include <filesystem>
 
@@ -61,17 +63,12 @@ namespace joedb
  static void compile
  ////////////////////////////////////////////////////////////////////////////
  (
-  const std::string &exe_path,
-  const std::string &output_path,
-  const std::string &base_name
+  Compiler_Options &options,
+  Compiler_Options *parent_options
  )
  {
-  Compiler_Options options;
-  options.exe_path = exe_path;
-  options.output_path = output_path;
-
-  const std::string joedbi_file_name = std::string(base_name) + ".joedbi";
-  const std::string joedbc_file_name = std::string(base_name) + ".joedbc";
+  const std::string joedbi_file_name = options.base_name + ".joedbi";
+  const std::string joedbc_file_name = options.base_name + ".joedbc";
 
   //
   // Read file.joedbi
@@ -138,11 +135,17 @@ namespace joedb
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();
 
+  if (parent_options)
+  {
+   std::cerr << options.output_path + "/" + options.base_name + ".h\n";
+   generator::procedure_h(options, *parent_options).generate();
+  }
+
   //
   // .gitignore
   //
   {
-   std::ofstream ofs(output_path + "/" + options.get_name_space_back() + "/.gitignore", std::ios::trunc);
+   std::ofstream ofs(options.output_path + "/" + options.get_name_space_back() + "/.gitignore", std::ios::trunc);
    ofs << "*\n";
   }
  }
@@ -163,8 +166,12 @@ namespace joedb
    return 1;
   }
 
-  const std::string exe_path(arguments[0]);
-  compile(exe_path, ".", std::string(base_name));
+  Compiler_Options options;
+  options.exe_path = arguments[0];
+  options.output_path = ".";
+  options.base_name = std::string(base_name);
+
+  compile(options, nullptr);
 
   {
    std::error_code ec;
@@ -181,8 +188,13 @@ namespace joedb
     {
      auto path = dir_entry.path();
      const std::string procedure_name = path.replace_extension("");
-     const std::string output_path = std::string(base_name) + "/procedures";
-     compile(exe_path, output_path, procedure_name);
+
+     Compiler_Options procedure_options;
+     procedure_options.exe_path = arguments[0];
+     procedure_options.output_path = std::string(base_name) + "/procedures";
+     procedure_options.base_name = procedure_name;
+
+     compile(procedure_options, &options);
     }
    }
   }

@@ -363,6 +363,13 @@ joedb_add_executable(update_large_string
  ../test/compiler/update_large_string.cpp
 )
 
+joedb_add_executable(procedure
+ ../doc/source/tutorial/src/procedure.cpp
+ ../doc/source/tutorial/src/tutorial.procedures/get_population.cpp
+ ../doc/source/tutorial/src/tutorial/procedures/get_population/writable.cpp
+ ../doc/source/tutorial/src/tutorial/writable.cpp
+)
+
 #############################################################################
 # Fuzzers
 #############################################################################
