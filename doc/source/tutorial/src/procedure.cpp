@@ -1,12 +1,14 @@
 #include "tutorial/procedures/get_population.h"
+#include "tutorial/procedures/get_population/Readable.h"
 #include "tutorial/File_Client.h"
 #include "joedb/ui/main_wrapper.h"
+#include "joedb/ui/Readable_Command_Processor.h"
 
 static int procedure(joedb::Arguments &arguments)
 {
- const std::string_view city_name = arguments.get_next("<city_name>");
+ arguments.add_parameter("<city_name>*");
 
- if (arguments.missing())
+ if (arguments.size() < 2)
  {
   arguments.print_help(std::cerr);
   return 1;
@@ -15,10 +17,26 @@ static int procedure(joedb::Arguments &arguments)
  tutorial::File_Client client("tutorial.joedb");
 
  tutorial::procedures::get_population::Memory_Database get_population;
- get_population.set_city_name(std::string(city_name));
+
+ for (size_t i = 1; i < arguments.size(); i++)
+ {
+  get_population.set_city_name
+  (
+   get_population.new_data(),
+   std::string(arguments[i])
+  );
+ }
+
  tutorial::procedures::execute(client, get_population);
- std::cout << "population = " << get_population.get_population() << '\n';
- std::cout << "city_id = " << get_population.get_city().get_id() << '\n';
+
+ tutorial::procedures::get_population::Readable readable(get_population);
+ joedb::Readable_Command_Processor processor(readable);
+ processor.print_table
+ (
+  std::cout,
+  tutorial::procedures::get_population::interpreted_data::table_id
+ );
+
  get_population.soft_checkpoint();
 
  return 0;

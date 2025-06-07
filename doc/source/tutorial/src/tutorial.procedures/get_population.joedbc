@@ -1,3 +1,1 @@
 namespace tutorial::procedures::get_population
-set_single_row input true
-set_single_row output true

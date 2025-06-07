@@ -29,6 +29,129 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Readable_Command_Processor::print_table
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  Table_Id table_id,
+  size_t max_column_width,
+  Record_Id start,
+  size_t length
+ )
+ {
+  if (table_id != Table_Id(0))
+  {
+   const auto &fields = readable.get_fields(table_id);
+   std::map<Field_Id, size_t> column_width;
+
+   for (const auto &[fid, fname]: fields)
+    column_width[fid] = fname.size();
+
+   //
+   // Store values in strings to determine column widths
+   //
+   std::map<Field_Id, std::vector<std::string>> columns;
+   std::vector<Record_Id> id_column;
+
+   size_t rows = 0;
+   const Record_Id size = readable.get_size(table_id);
+   for (Record_Id record_id{0}; record_id < size; ++record_id)
+   {
+    if
+    (
+     readable.is_used(table_id, record_id) &&
+     (length == 0 || (record_id >= start && record_id < start + length))
+    )
+    {
+     rows++;
+     id_column.emplace_back(record_id);
+
+     for (const auto &[fid, fname]: fields)
+     {
+      std::ostringstream ss;
+      write_value(ss, table_id, record_id, fid);
+      ss.flush();
+      const std::string &s = ss.str();
+      const size_t width = utf8_display_size(s);
+      if (column_width[fid] < width)
+       column_width[fid] = width;
+      columns[fid].emplace_back(s);
+     }
+    }
+   }
+
+   //
+   // Determine table width
+   //
+   size_t id_width = 0;
+   {
+    std::ostringstream ss;
+    ss << size - 1;
+    ss.flush();
+    id_width = ss.str().size();
+   }
+   size_t table_width = id_width;
+   for (const auto &[fid, fname]: fields)
+   {
+    if (max_column_width && column_width[fid] > max_column_width)
+     column_width[fid] = max_column_width;
+    table_width += column_width[fid] + 1;
+   }
+
+   //
+   // Table header
+   //
+   out << std::string(table_width, '-') << '\n';
+   out << std::string(id_width, ' ');
+   for (const auto &[fid, fname]: fields)
+   {
+    const Type::Type_Id type_id = readable.get_field_type
+    (
+     table_id,
+     fid
+    ).get_type_id();
+    out << ' ';
+    write_justified
+    (
+     out,
+     fname,
+     column_width[fid],
+     type_id == Type::Type_Id::string
+    );
+   }
+   out << '\n';
+   out << std::string(table_width, '-') << '\n';
+
+   //
+   // Table data
+   //
+   for (size_t i = 0; i < rows; i++)
+   {
+    out << std::setw(int(id_width)) << id_column[i];
+
+    for (const auto &[fid, fname]: fields)
+    {
+     const Type::Type_Id type_id = readable.get_field_type
+     (
+      table_id,
+      fid
+     ).get_type_id();
+
+     out << ' ';
+     write_justified
+     (
+      out,
+      columns[fid][i],
+      column_width[fid],
+      type_id == Type::Type_Id::string
+     );
+    }
+    out << '\n';
+   }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Readable_Command_Processor::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -54,116 +177,7 @@ namespace joedb
 
    parameters >> start >> length;
 
-   if (table_id != Table_Id(0))
-   {
-    const auto &fields = readable.get_fields(table_id);
-    std::map<Field_Id, size_t> column_width;
-
-    for (const auto &[fid, fname]: fields)
-     column_width[fid] = fname.size();
-
-    //
-    // Store values in strings to determine column widths
-    //
-    std::map<Field_Id, std::vector<std::string>> columns;
-    std::vector<Record_Id> id_column;
-
-    size_t rows = 0;
-    const Record_Id size = readable.get_size(table_id);
-    for (Record_Id record_id{0}; record_id < size; ++record_id)
-    {
-     if
-     (
-      readable.is_used(table_id, record_id) &&
-      (length == 0 || (record_id >= start && record_id < start + length))
-     )
-     {
-      rows++;
-      id_column.emplace_back(record_id);
-
-      for (const auto &[fid, fname]: fields)
-      {
-       std::ostringstream ss;
-       write_value(ss, table_id, record_id, fid);
-       ss.flush();
-       const std::string &s = ss.str();
-       const size_t width = utf8_display_size(s);
-       if (column_width[fid] < width)
-        column_width[fid] = width;
-       columns[fid].emplace_back(s);
-      }
-     }
-    }
-
-    //
-    // Determine table width
-    //
-    size_t id_width = 0;
-    {
-     std::ostringstream ss;
-     ss << size - 1;
-     ss.flush();
-     id_width = ss.str().size();
-    }
-    size_t table_width = id_width;
-    for (const auto &[fid, fname]: fields)
-    {
-     if (max_column_width && column_width[fid] > max_column_width)
-      column_width[fid] = max_column_width;
-     table_width += column_width[fid] + 1;
-    }
-
-    //
-    // Table header
-    //
-    out << std::string(table_width, '-') << '\n';
-    out << std::string(id_width, ' ');
-    for (const auto &[fid, fname]: fields)
-    {
-     const Type::Type_Id type_id = readable.get_field_type
-     (
-      table_id,
-      fid
-     ).get_type_id();
-     out << ' ';
-     write_justified
-     (
-      out,
-      fname,
-      column_width[fid],
-      type_id == Type::Type_Id::string
-     );
-    }
-    out << '\n';
-    out << std::string(table_width, '-') << '\n';
-
-    //
-    // Table data
-    //
-    for (size_t i = 0; i < rows; i++)
-    {
-     out << std::setw(int(id_width)) << id_column[i];
-
-     for (const auto &[fid, fname]: fields)
-     {
-      const Type::Type_Id type_id = readable.get_field_type
-      (
-       table_id,
-       fid
-      ).get_type_id();
-
-      out << ' ';
-      write_justified
-      (
-       out,
-       columns[fid][i],
-       column_width[fid],
-       type_id == Type::Type_Id::string
-      );
-     }
-     out << '\n';
-    }
-   }
+   print_table(out, table_id, max_column_width, start, length);
   }
   else if (command == "record") /////////////////////////////////////////////
   {

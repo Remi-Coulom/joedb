@@ -9,17 +9,21 @@ namespace tutorial::procedures
  )
  {
   const Database &db = client.get_database();
-  const std::string &city_name = get_population.get_city_name();
-  const id_of_city city = db.find_city_by_name(city_name);
 
-  int64_t population = 0;
+  for (const auto data: get_population.get_data_table())
+  {
+   const std::string &city_name = get_population.get_city_name(data);
+   const id_of_city city = db.find_city_by_name(city_name);
 
-  if (city.is_not_null())
-   for (const auto person: db.get_person_table())
-    if (db.get_home(person) == city)
-     population++;
+   int64_t population = 0;
 
-  get_population.set_population(population);
-  get_population.set_city(city);
+   if (city.is_not_null())
+    for (const auto person: db.get_person_table())
+     if (db.get_home(person) == city)
+      population++;
+
+   get_population.set_population(data, population);
+   get_population.set_city(data, city);
+  }
  }
 }

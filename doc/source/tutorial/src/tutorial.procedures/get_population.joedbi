@@ -1,10 +1,12 @@
-create_table input
-add_field input city_name string
-
 # "city" is the name of a table in the main schema
 # The line below allows refering to the main schema from the procedure schema
 create_table city
 
-create_table output
-add_field output city references city
-add_field output population int64
+create_table data
+
+# input
+add_field data city_name string
+
+# output
+add_field data city references city
+add_field data population int64
