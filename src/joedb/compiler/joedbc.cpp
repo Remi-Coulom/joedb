@@ -130,7 +130,7 @@ namespace joedb
   generator::File_Client_h(options).generate();
   generator::Readonly_Client_h(options).generate();
 
-  generator::ids_h(options).generate();
+  generator::ids_h(options, parent_options).generate();
 
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();

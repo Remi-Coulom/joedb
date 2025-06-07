@@ -14,11 +14,12 @@ namespace tutorial::procedures
 
   int64_t population = 0;
 
-  for (const auto person: db.get_person_table())
-   if (db.get_home(person) == city)
-    population++;
+  if (city.is_not_null())
+   for (const auto person: db.get_person_table())
+    if (db.get_home(person) == city)
+     population++;
 
   get_population.set_population(population);
-  // get_population.set_city(city);
+  get_population.set_city(city);
  }
 }

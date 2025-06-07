@@ -130,10 +130,7 @@ namespace joedb::generator
   out << "  friend class Readable;\n";
 
   for (const auto &[tid, tname]: tables)
-  {
-   out << "  friend class id_of_"  << tname << ";\n";
    out << "  friend class container_of_"  << tname << ";\n";
-  }
 
   for (const auto &index: options.get_indices())
    if (!index.unique)

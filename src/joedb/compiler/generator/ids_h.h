@@ -8,8 +8,15 @@ namespace joedb::generator
  /// @ingroup compiler
  class ids_h: public Generator
  {
+  private:
+   const Compiler_Options *parent_options;
+
   public:
-   ids_h(const Compiler_Options &options);
+   ids_h
+   (
+    const Compiler_Options &options,
+    const Compiler_Options *parent_options
+   );
    void generate() override;
  };
 }

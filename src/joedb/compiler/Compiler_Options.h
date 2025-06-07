@@ -104,6 +104,14 @@ namespace joedb
     return count == 1;
    }
 
+   bool has_table(const std::string &table_name) const
+   {
+    for (const auto &[table_id, name]: db.get_tables())
+     if (name == table_name)
+      return true;
+    return false;
+   }
+
    void set_name_space(std::vector<std::string> v)
    {
     name_space = std::move(v);
