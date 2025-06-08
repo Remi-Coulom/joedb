@@ -1,13 +1,16 @@
-Network Protocol
-================
+Network Protocols
+=================
 
 The interaction between a client and a server is a simple iterative dialog
 where the client sends a query, and waits for an answer from the server.
 
 All values are sent as 64-bit little-endian numbers.
 
+joedb_server
+------------
+
 Client to Server
-----------------
+~~~~~~~~~~~~~~~~
 
 ====== ================== ======================================================
 Prefix Data               Description
@@ -28,12 +31,10 @@ L                         lock
 M                         unlock
 N      from until data    push, keep locked
 O      from until data    push, unlock
-
-P      id from until data remote procedure call
 ====== ================== ======================================================
 
 Server to Client
-----------------
+~~~~~~~~~~~~~~~~
 
 ====== ================ ======================================================
 Prefix Data             Description
@@ -60,6 +61,30 @@ O                       reply to O
 R                       reply to E, G, L, M, N, O when the server is read-only
 C                       reply to N, O in case of conflict
 t                       reply to N, O in case of time out
+====== ================ ======================================================
+
+Remote Procedure Call
+---------------------
+
+Client to Server
+~~~~~~~~~~~~~~~~
+
+====== ================== ======================================================
+Prefix Data               Description
+====== ================== ======================================================
+joedb  client_version     first message, sent at connection time
+
+P      id from until data remote procedure call
+====== ================== ======================================================
+
+Server to Client
+~~~~~~~~~~~~~~~~
+
+====== ================ ======================================================
+Prefix Data             Description
+====== ================ ======================================================
+joedb  | server_version | reply to joedb.
+       | session_id     | server_version = 0 means client_version is rejected.
 
 P      until data       reply to P (success)
 p      size data        reply to P (error message)
