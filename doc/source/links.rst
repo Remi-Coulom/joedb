@@ -71,6 +71,12 @@ File Locking, atomicity, durability:
 - https://danluu.com/deconstruct-files/
 - https://danluu.com/file-consistency/
 
+Authentication and Encryption of Network Communications:
+
+- https://www.wolfssl.com/tls-vs-ssh-when-to-use-which/
+- https://goteleport.com/blog/improving-ssh-speeds/
+- https://think-async.com/Asio/asio-1.30.2/doc/asio/overview/ssl.html
+
 Crash resistance:
 
 .. [Rosenblum-1991] `The Design and Implementation of a Log-Structured File System <https://people.eecs.berkeley.edu/~brewer/cs262/LFS.pdf>`_

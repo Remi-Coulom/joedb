@@ -57,6 +57,7 @@ endif()
 # Includes
 #############################################################################
 include_directories(../test/compiler)
+include_directories(../doc/source/tutorial/src)
 
 #############################################################################
 # Build Targets

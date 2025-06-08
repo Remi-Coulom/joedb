@@ -6,8 +6,12 @@ Stored Procedures
  - procedures::Server
  - procedures::Client
  - check matching procedure schemas between client and server at handshake
- - error handling: catch exception, and send description via protocol
- - allow having procedures without any main database
+ - error handling: catch exception, and rollback if necessary.
+ - server must be locked in order to execute a procedure: use a lock instead of
+   a client transaction inside the procedure?
+ - Generate list of procedures by grepping header files -> compile procedure
+   collection for client and server. Also compute collection signature at
+   compile time.
 
 On-disk Storage
 ---------------

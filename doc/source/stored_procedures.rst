@@ -17,8 +17,9 @@ over a network connection, but it has drawbacks:
    timeouts gracefully is difficult.
 
 So journal sharing is a great way to handle backups, caching, or local
-concurrency, but is not efficient when a large number of clients are writing
-independent parts of the database over an unreliable network connection.
+concurrency, but is not efficient when a large number of remote clients are
+writing independent parts of the database over an unreliable network
+connection.
 
 Joedb offers an alternative to journal replication by allowing clients to
 execute stored procedures on the server. With this mechanism, a disconnection
@@ -29,18 +30,17 @@ server, and cannot be interrupted by a disconnection.
 
 A stored procedure is defined by a schema that is used to serialize data for
 communication between the client and the server, and a C++ function that will
-be executed on the server. For example, this is a stored procedure that takes a
-city name as input, and returns the number of persons living in this city,
-along with the id of the city:
+be executed on the server. For example, this is a stored procedure that inserts
+a new city:
 
-.. literalinclude:: ./tutorial/src/tutorial.procedures/get_population.joedbi
+.. literalinclude:: ./tutorial/src/tutorial.procedures/city.joedbi
    :language: joedbi
    :caption:
 
-.. literalinclude:: ./tutorial/src/tutorial.procedures/get_population.joedbc
+.. literalinclude:: ./tutorial/src/tutorial.procedures/city.joedbc
    :language: joedbc
    :caption:
 
-.. literalinclude:: ./tutorial/src/tutorial.procedures/get_population.cpp
+.. literalinclude:: ./tutorial/src/tutorial.procedures/Insert_City.h
    :language: c++
    :caption:

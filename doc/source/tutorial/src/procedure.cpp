@@ -1,7 +1,7 @@
 #include "tutorial.procedures/Get_Population.h"
 #include "tutorial/procedures/population/Client.h"
 #include "tutorial/procedures/population/Readable.h"
-#include "tutorial/Readonly_Database.h"
+#include "tutorial/File_Client.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Readable_Command_Processor.h"
 #include "joedb/journal/File_View.h"
@@ -18,8 +18,8 @@ static int procedure(joedb::Arguments &arguments)
   return 1;
  }
 
- tutorial::Readonly_Database db("tutorial.joedb");
- tutorial::procedures::Get_Population get_population(db);
+ tutorial::File_Client tutorial_client("tutorial.joedb");
+ tutorial::procedures::Get_Population get_population(tutorial_client);
 
  joedb::Memory_File file;
  joedb::Connection connection;

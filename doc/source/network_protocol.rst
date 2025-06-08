@@ -9,26 +9,28 @@ All values are sent as 64-bit little-endian numbers.
 Client to Server
 ----------------
 
-====== ================= ======================================================
-Prefix Data              Description
-====== ================= ======================================================
-joedb  client_version    first message, sent at connection time
-H      until             check SHA-256 hash code (fast)
+====== ================== ======================================================
+Prefix Data               Description
+====== ================== ======================================================
+joedb  client_version     first message, sent at connection time
+H      until              check SHA-256 hash code (fast)
        hash (32 bytes)
-I      until             check SHA-256 hash code (full)
+I      until              check SHA-256 hash code (full)
        hash (32 bytes)
-r      from until        read a range of bytes
+r      from until         read a range of bytes
 
-D      wait from         pull, no lock, no data
-E      wait from         pull, lock, no data
-F      wait from         pull, no lock, data
-G      wait from         pull, lock, data
+D      wait from          pull, no lock, no data
+E      wait from          pull, lock, no data
+F      wait from          pull, no lock, data
+G      wait from          pull, lock, data
 
-L                        lock
-M                        unlock
-N      from until data   push, keep locked
-O      from until data   push, unlock
-====== ================= ======================================================
+L                         lock
+M                         unlock
+N      from until data    push, keep locked
+O      from until data    push, unlock
+
+P      id from until data remote procedure call
+====== ================== ======================================================
 
 Server to Client
 ----------------
@@ -59,4 +61,6 @@ R                       reply to E, G, L, M, N, O when the server is read-only
 C                       reply to N, O in case of conflict
 t                       reply to N, O in case of time out
 
+P      until data       reply to P (success)
+p      size data        reply to P (error message)
 ====== ================ ======================================================

@@ -10,22 +10,11 @@ namespace joedb::rpc
  class Procedure
  {
   private:
-   const std::string_view name;
    const std::string_view schema;
 
   public:
-   Procedure
-   (
-    std::string_view name,
-    std::string_view schema
-   ):
-    name(name),
-    schema(schema)
-   {
-   }
-
+   Procedure(std::string_view schema): schema(schema) {}
    virtual void execute(joedb::Buffered_File &file) = 0;
-
    virtual ~Procedure() = default;
  };
 }

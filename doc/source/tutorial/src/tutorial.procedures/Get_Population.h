@@ -1,25 +1,25 @@
 #ifndef tutorial_procedures_Get_Population_declared
 #define tutorial_procedures_Get_Population_declared
 
-#include "../tutorial/procedures/population/Procedure.h"
-#include "../tutorial/Database.h"
+#include "tutorial/procedures/population/Procedure.h"
+#include "tutorial/Client.h"
 
 namespace tutorial::procedures
 {
  class Get_Population: public population::Procedure
  {
   private:
-   const tutorial::Database &db;
+   const tutorial::Client &client;
 
   public:
-   Get_Population(tutorial::Database &db):
-    population::Procedure("get_population"),
-    db(db)
+   Get_Population(const tutorial::Client &client): client(client)
    {
    }
 
    void execute(population::Writable_Database &population) override
    {
+    const auto &db = client.get_database();
+
     for (const auto data: population.get_data_table())
     {
      const std::string &city_name = population.get_city_name(data);
