@@ -29,10 +29,7 @@ namespace joedb::generator
 
   out << R"RRR(
  /// Shortcut to directly build a @ref Client from a file name
- class File_Client:
-  private joedb::File,
-  private joedb::Connection,
-  public Client
+ class File_Client: private joedb::File, public Client
  {
   public:
    File_Client(const char *file_name):
@@ -43,7 +40,7 @@ namespace joedb::generator
      ? joedb::Open_Mode::shared_write
      : joedb::Open_Mode::write_existing_or_create_new
     ),
-    Client(*this, *this)
+    Client(*this, joedb::Connection::dummy)
    {
    }
 

@@ -73,7 +73,7 @@ namespace joedb::generator
    Client
    (
     joedb::Buffered_File &file,
-    joedb::Connection &connection,
+    joedb::Connection &connection = joedb::Connection::dummy,
     joedb::Content_Check content_check = joedb::Content_Check::fast,
     joedb::Recovery recovery = joedb::Recovery::none
    ):

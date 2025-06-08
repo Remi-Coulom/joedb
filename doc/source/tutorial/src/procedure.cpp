@@ -22,8 +22,7 @@ static int procedure(joedb::Arguments &arguments)
  tutorial::procedures::Get_Population get_population(tutorial_client);
 
  joedb::Memory_File file;
- joedb::Connection connection;
- population::Client client(file, connection);
+ population::Client client(file);
 
  client.transaction([&arguments](population::Writable_Database &population)
  {

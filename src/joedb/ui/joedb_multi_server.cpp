@@ -16,7 +16,6 @@ namespace joedb
  {
   private:
    File file;
-   Connection connection;
    Writable_Journal_Client client;
    Server server;
 
@@ -29,7 +28,7 @@ namespace joedb
     std::chrono::milliseconds timeout
    ):
     file(file_name, Open_Mode::write_existing_or_create_new),
-    client(file, connection),
+    client(file),
     server
     (
      client,

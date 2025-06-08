@@ -54,5 +54,7 @@ namespace joedb
   return false;
  }
 
+ Connection Connection::dummy;
+
  Connection::~Connection() = default;
 }

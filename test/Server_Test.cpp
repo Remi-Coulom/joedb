@@ -33,8 +33,7 @@ namespace joedb
    static constexpr std::string_view default_endpoint_path{"joedb_test.sock"};
    std::vector<char> data;
    Shared_Memory_File file{data};
-   Connection connection;
-   Writable_Journal_Client client{file, connection};
+   Writable_Journal_Client client{file};
    IO_Context_Wrapper io_context;
 
    Server server;
@@ -218,8 +217,7 @@ namespace joedb
   }
 
   File server_file(file_name, Open_Mode::read_existing);
-  Connection connection;
-  Readonly_Client server_client{server_file, connection};
+  Readonly_Client server_client{server_file};
   IO_Context_Wrapper io_context;
 
   Server server
@@ -237,7 +235,7 @@ namespace joedb
    Test_Local_Channel channel(server.get_endpoint_path());
    Server_Connection server_connection(channel);
    Memory_File client_file;
-   Writable_Journal_Client client(client_file, connection);
+   Writable_Journal_Client client(client_file);
    client.pull();
   }
 
@@ -595,9 +593,8 @@ namespace joedb
   Memory_File client_file;
   Test_Client client(client_file, server);
 
-  Connection connection;
   Shared_Memory_File file{server.data};
-  Writable_Database_Client shared_client{file, connection};
+  Writable_Database_Client shared_client{file};
 
   client.transaction
   (

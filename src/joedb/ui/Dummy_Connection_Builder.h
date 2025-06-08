@@ -9,9 +9,6 @@ namespace joedb
  /// @ingroup ui
  class Dummy_Connection_Builder: public Connection_Builder
  {
-  private:
-   Connection connection;
-
   public:
    const char *get_name() const override
    {
@@ -20,7 +17,7 @@ namespace joedb
 
    Connection *build(Arguments &arguments, Buffered_File *file) override
    {
-    return &connection;
+    return &Connection::dummy;
    }
  };
 }

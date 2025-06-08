@@ -29,7 +29,7 @@ namespace joedb::generator
 
   out << R"RRR(
  /// Client for a read-only file (allows pulling, unlike @ref Readonly_Database)
- class Readonly_Client: private joedb::Connection, public joedb::Readonly_Client
+ class Readonly_Client: public joedb::Readonly_Client
  {
   private:
    Database_Writable db;
@@ -48,7 +48,7 @@ namespace joedb::generator
     joedb::Readonly_Client
     (
      file,
-     *static_cast<joedb::Connection *>(this),
+     joedb::Connection::dummy,
      joedb::Content_Check::none
     )
    {

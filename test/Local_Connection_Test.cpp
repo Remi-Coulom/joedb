@@ -1,24 +1,30 @@
 #include "joedb/concurrency/Writable_Journal_Client.h"
+#include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/File.h"
+#include "joedb/error/String_Logger.h"
+#include "joedb/error/Destructor_Logger.h"
 
 #include "gtest/gtest.h"
 
 namespace joedb
 {
- #ifdef JOEDB_FILE_IS_LOCKABLE
+ static const char *file_name = "test.joedb";
+
  ////////////////////////////////////////////////////////////////////////////
  TEST(Local_Connection, simple_operation)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (!File::lockable)
+   GTEST_SKIP();
+
   std::remove(file_name);
 
   File file_1(file_name, Open_Mode::shared_write);
   File file_2(file_name, Open_Mode::shared_write);
 
-  Connection connection;
-
-  Interpreted_Client client1(connection, file_1);
-  Interpreted_Client client2(connection, file_2);
+  Writable_Database_Client client1(file_1);
+  Writable_Database_Client client2(file_2);
 
   client1.transaction
   (
@@ -51,8 +57,11 @@ namespace joedb
  TEST(Local_Connection, size_check)
  ////////////////////////////////////////////////////////////////////////////
  {
-  ::Destructor_Logger::write("Toto");
-  EXPECT_EQ(::String_Logger::the_logger.get_message(), "Toto");
+  if (!File::lockable)
+   GTEST_SKIP();
+
+  Destructor_Logger::write("Toto");
+  EXPECT_EQ(String_Logger::the_logger.get_message(), "Toto");
 
   std::remove(file_name);
 
@@ -65,25 +74,23 @@ namespace joedb
 
   EXPECT_EQ
   (
-   ::String_Logger::the_logger.get_message(),
+   String_Logger::the_logger.get_message(),
    "Ahead_of_checkpoint in Writable_Journal destructor"
   );
 
   try
   {
    File file(file_name, Open_Mode::shared_write);
-   Connection connection;
-   Interpreted_Client client(connection, file);
+   Writable_Database_Client client(file);
    FAIL() << "Expected an exception\n";
   }
   catch(const Exception &e)
   {
-   EXPECT_STREQ(e.what(), "Checkpoint is smaller than file size. This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
+   EXPECT_STREQ(e.what(), "Checkpoint (41) is smaller than file size (50). This file may contain an aborted transaction. 'joedb_push file.joedb file fixed.joedb' can be used to truncate it.");
   }
 
   std::remove(file_name);
  }
- #endif
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Local_Connection, dummy_connection)
@@ -92,8 +99,7 @@ namespace joedb
   Memory_File file;
 
   {
-   Connection connection;
-   Writable_Journal_Client client(file, connection);
+   Writable_Journal_Client client(file);
 
    client.transaction([](Writable_Journal &journal)
    {
@@ -104,11 +110,13 @@ namespace joedb
   EXPECT_TRUE(file.get_size() > 0);
  }
 
- #ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////
  TEST(Local_Connection, transaction_frequency)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (!File::lockable)
+   GTEST_SKIP();
+
   std::remove("test.joedb");
 
   {
@@ -124,6 +132,5 @@ namespace joedb
 
   std::remove("test.joedb");
  }
- #endif
 }
 

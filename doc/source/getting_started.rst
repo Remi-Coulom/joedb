@@ -62,9 +62,9 @@ After downloading joedb, you might wish to look at examples located in the
 - ``index_tutorial.cpp`` illustrates how to use :doc:`indexes`,
 - and ``generate.sh`` is a bash script that will compile all the code and run the programs.
 
-It might be a good idea to also look at the :doc:`tools` provided by joedb, and
-also read the rest of this User's Guide: it presents the most significant
-features of joedb in more details than the Introduction.
+It might be a good idea to also look at the :doc:`tools <tools>` provided by
+joedb, and also read the rest of this User's Guide: it presents the most
+significant features of joedb in more details than the Introduction.
 
 Using joedb with cmake
 ----------------------

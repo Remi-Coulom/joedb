@@ -50,6 +50,8 @@ namespace joedb
    /// Called by @ref handshake when the file and the connection do not match
    static void content_mismatch();
 
+   // Connection() = default; // Force using Connection::dummy
+
   public:
    /// Called during Client construction
    ///
@@ -97,6 +99,8 @@ namespace joedb
    virtual bool is_pullonly() const;
 
    virtual ~Connection();
+
+   static Connection dummy;
  };
 }
 

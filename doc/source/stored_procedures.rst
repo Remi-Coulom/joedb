@@ -25,8 +25,8 @@ Joedb offers an alternative to journal replication by allowing clients to
 execute stored procedures on the server. With this mechanism, a disconnection
 can never cause a lock timeout, and there is no need for clients to download
 the whole database. Each client can upload new data to the server in a very
-minimal single round-trip. The write transaction will be executed on the
-server, and cannot be interrupted by a disconnection.
+minimal single round-trip. The write transaction will be executed entirely on
+the server, and cannot be interrupted by a disconnection.
 
 A stored procedure is defined by a schema that is used to serialize data for
 communication between the client and the server, and a C++ function that will
@@ -42,5 +42,22 @@ a new city:
    :caption:
 
 .. literalinclude:: ./tutorial/src/tutorial.procedures/Insert_City.h
+   :language: c++
+   :caption:
+
+The procedure schema can be used to return values from the server as well. It
+can contain any number of tables, and even refer to tables of the main
+database. Here is an example of a stored procedure that will count the number
+of persons for each city name given as input. It will also return each city id.
+
+.. literalinclude:: ./tutorial/src/tutorial.procedures/population.joedbi
+   :language: joedbi
+   :caption:
+
+.. literalinclude:: ./tutorial/src/tutorial.procedures/population.joedbc
+   :language: joedbc
+   :caption:
+
+.. literalinclude:: ./tutorial/src/tutorial.procedures/Get_Population.h
    :language: c++
    :caption:

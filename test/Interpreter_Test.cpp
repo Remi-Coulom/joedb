@@ -190,8 +190,7 @@ namespace joedb
  {
   // Use the interpreter to write a double "insert_into person 1"
   Memory_File file;
-  Connection connection;
-  Writable_Database_Client client(file, connection);
+  Writable_Database_Client client(file);
   client.transaction([](const Readable &readable, Writable &writable){
    Interpreter interpreter(readable, writable, Record_Id::null);
    std::fstream null_stream;

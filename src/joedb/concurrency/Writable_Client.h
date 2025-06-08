@@ -99,7 +99,7 @@ namespace joedb
    Writable_Client
    (
     Writable_Journal &journal,
-    Connection &connection,
+    Connection &connection = Connection::dummy,
     Content_Check content_check = Content_Check::fast
    ): Client(journal, connection, content_check)
    {
