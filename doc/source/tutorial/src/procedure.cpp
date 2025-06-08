@@ -1,8 +1,10 @@
-#include "tutorial/procedures/get_population.h"
-#include "tutorial/procedures/get_population/Readable.h"
-#include "tutorial/File_Client.h"
+#include "tutorial.procedures/Get_Population.h"
+#include "tutorial/procedures/population/Client.h"
+#include "tutorial/procedures/population/Readable.h"
+#include "tutorial/Readonly_Database.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Readable_Command_Processor.h"
+#include "joedb/journal/File_View.h"
 
 static int procedure(joedb::Arguments &arguments)
 {
@@ -14,30 +16,46 @@ static int procedure(joedb::Arguments &arguments)
   return 1;
  }
 
- tutorial::procedures::get_population::Memory_Database get_population;
+ tutorial::Readonly_Database db("tutorial.joedb");
+ tutorial::procedures::population::Get_Population get_population(db);
 
- for (size_t i = 1; i < arguments.size(); i++)
- {
-  get_population.set_city_name
+ joedb::Memory_File file;
+ joedb::Connection connection;
+ tutorial::procedures::population::Client client(file, connection);
+
+ client.transaction
+ (
+  [&arguments]
   (
-   get_population.new_data(),
-   std::string(arguments[i])
+   tutorial::procedures::population::Writable_Database &population
+  )
+  {
+   for (size_t i = 1; i < arguments.size(); i++)
+   {
+    const auto data = population.new_data();
+    population.set_city_name(data, std::string(arguments[i]));
+   }
+  }
+ );
+
+ {
+  joedb::File_View file_view(file);
+  ((joedb::rpc::Procedure *)&get_population)->execute(file_view);
+ }
+
+ client.pull();
+
+ {
+  const auto &population = client.get_database();
+
+  tutorial::procedures::population::Readable readable(population);
+  joedb::Readable_Command_Processor processor(readable);
+  processor.print_table
+  (
+   std::cout,
+   tutorial::procedures::population::data_table::id
   );
  }
-
- {
-  tutorial::File_Client client("tutorial.joedb");
-  tutorial::procedures::execute(client, get_population);
-  get_population.soft_checkpoint();
- }
-
- tutorial::procedures::get_population::Readable readable(get_population);
- joedb::Readable_Command_Processor processor(readable);
- processor.print_table
- (
-  std::cout,
-  tutorial::procedures::get_population::data_table::id
- );
 
  return 0;
 }

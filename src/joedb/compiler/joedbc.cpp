@@ -32,7 +32,7 @@
 #include "joedb/compiler/generator/ids_h.h"
 #include "joedb/compiler/generator/introspection_h.h"
 
-#include "joedb/compiler/generator/procedure_h.h"
+#include "joedb/compiler/generator/Procedure_h.h"
 
 #include <iostream>
 #include <filesystem>
@@ -131,15 +131,10 @@ namespace joedb
   generator::Readonly_Client_h(options).generate();
 
   generator::ids_h(options, parent_options).generate();
+  generator::Procedure_h(options).generate();
 
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();
-
-  if (parent_options)
-  {
-   std::cerr << options.output_path + "/" + options.base_name + ".h\n";
-   generator::procedure_h(options, *parent_options).generate();
-  }
 
   //
   // .gitignore

@@ -21,6 +21,8 @@ On-disk Storage
 
 Compiler
 --------
+- generate print_table functions
+- string setters that takes a string_view as parameter
 - option to make some member functions private (->private: private_new_person)
 - option to add custom member functions
 - Differentiate between "storage type" and "usage type":

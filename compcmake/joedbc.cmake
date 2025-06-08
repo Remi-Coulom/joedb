@@ -88,10 +88,10 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Client_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedure_h.cpp
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
- ${JOEDB_SRC_DIR}/joedb/compiler/generator/procedure_h.cpp
 )
 target_link_libraries(joedbc_objects ${JOEDB_EXTERNAL_LIBS})
 
@@ -111,29 +111,43 @@ add_custom_target(all_joedbc)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- file(GLOB deps CONFIGURE_DEPENDS
+ file(GLOB joedbis CONFIGURE_DEPENDS
   ${dir}/${namespace}.joedbi
-  ${dir}/${namespace}.joedbc
   ${dir}/${namespace}.procedures/*.joedbi
+ )
+
+ file(GLOB joedbcs CONFIGURE_DEPENDS
+  ${dir}/${namespace}.joedbc
   ${dir}/${namespace}.procedures/*.joedbc
  )
+
+ set(slash_list ${joedbis})
+ list(TRANSFORM slash_list REPLACE
+  "${namespace}\.procedures"
+  "${namespace}/procedures"
+ )
+
+ set(readonly_cpp ${slash_list})
+ set(readonly_h   ${slash_list})
+ set(writable_cpp ${slash_list})
+ set(writable_h   ${slash_list})
+
+ list(TRANSFORM readonly_cpp REPLACE "\.joedbi$" "/readonly.cpp")
+ list(TRANSFORM readonly_h   REPLACE "\.joedbi$" "/readonly.h"  )
+ list(TRANSFORM writable_cpp REPLACE "\.joedbi$" "/writable.cpp")
+ list(TRANSFORM writable_h   REPLACE "\.joedbi$" "/writable.h"  )
+
  add_custom_command(
-  OUTPUT
-   ${dir}/${namespace}/readonly.cpp
-   ${dir}/${namespace}/readonly.h
-   ${dir}/${namespace}/writable.cpp
-   ${dir}/${namespace}/writable.h
+  OUTPUT ${readonly_cpp} ${readonly_h} ${writable_cpp} ${writable_h}
   COMMAND joedbc ${namespace}
-  DEPENDS joedbc ${deps}
+  DEPENDS joedbc ${joedbis} ${joedbcs}
   WORKING_DIRECTORY ${dir}
  )
+
  add_custom_target(compile_${namespace}_with_joedbc
-  DEPENDS
-   ${dir}/${namespace}/readonly.cpp
-   ${dir}/${namespace}/readonly.h
-   ${dir}/${namespace}/writable.cpp
-   ${dir}/${namespace}/writable.h
+  DEPENDS ${readonly_cpp} ${readonly_h} ${writable_cpp} ${writable_h}
  )
+
  add_dependencies(all_joedbc compile_${namespace}_with_joedbc)
 endfunction()
 

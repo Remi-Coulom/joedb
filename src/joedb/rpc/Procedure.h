@@ -1,7 +1,7 @@
 #ifndef joedb_rpc_Procedure_declared
 #define joedb_rpc_Procedure_declared
 
-#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <string_view>
 
@@ -24,7 +24,7 @@ namespace joedb::rpc
    {
    }
 
-   virtual void execute(joedb::Memory_File &file);
+   virtual void execute(joedb::Buffered_File &file) = 0;
 
    virtual ~Procedure() = default;
  };
