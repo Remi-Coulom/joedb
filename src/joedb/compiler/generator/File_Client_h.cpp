@@ -28,30 +28,22 @@ namespace joedb::generator
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
- namespace detail
- {
-  ///////////////////////////////////////////////////////////////////////////
-  class File_Client_Data
-  ///////////////////////////////////////////////////////////////////////////
-  {
-   protected:
-    joedb::File file;
-    joedb::Connection connection;
-
-    File_Client_Data(const char *file_name):
-     file(file_name, joedb::File::lockable ? joedb::Open_Mode::shared_write : joedb::Open_Mode::write_existing_or_create_new)
-    {
-    }
-  };
- }
-
  /// Shortcut to directly build a @ref Client from a file name
- class File_Client: private detail::File_Client_Data, public Client
+ class File_Client:
+  private joedb::File,
+  private joedb::Connection,
+  public Client
  {
   public:
    File_Client(const char *file_name):
-    detail::File_Client_Data(file_name),
-    Client(File_Client_Data::file, File_Client_Data::connection)
+    joedb::File
+    (
+     file_name,
+     joedb::File::lockable
+     ? joedb::Open_Mode::shared_write
+     : joedb::Open_Mode::write_existing_or_create_new
+    ),
+    Client(*this, *this)
    {
    }
 
