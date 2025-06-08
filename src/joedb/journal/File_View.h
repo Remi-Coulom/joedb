@@ -30,6 +30,31 @@ namespace joedb
    {
     return file.pwrite(data, size, offset);
    }
+
+   void sync() override
+   {
+    file.sync();
+   }
+
+   void datasync() override
+   {
+    file.datasync();
+   }
+
+   void shared_lock(int64_t start, int64_t size) override
+   {
+    file.shared_lock(start, size);
+   }
+
+   void exclusive_lock(int64_t start, int64_t size) override
+   {
+    file.exclusive_lock(start, size);
+   }
+
+   void unlock(int64_t start, int64_t size) noexcept override
+   {
+    file.unlock(start, size);
+   }
  };
 }
 
