@@ -70,6 +70,7 @@ File Locking, atomicity, durability:
 - https://stackoverflow.com/questions/35595685/write2-read2-atomicity-between-processes-in-linux
 - https://danluu.com/deconstruct-files/
 - https://danluu.com/file-consistency/
+- https://transactional.blog/blog/2022-darwins-deceptive-durability
 
 Authentication and Encryption of Network Communications:
 

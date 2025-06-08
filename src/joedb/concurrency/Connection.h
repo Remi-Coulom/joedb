@@ -100,6 +100,8 @@ namespace joedb
 
    virtual ~Connection();
 
+   /// Since this class has no internal state, this global variable
+   /// can be used instead of creating an instance.
    static Connection dummy;
  };
 }

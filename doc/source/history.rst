@@ -3,7 +3,7 @@ History
 
 - 2025-??-?? 10.1.0
 
-  - New major features:
+  - New major feature:
 
     - :doc:`stored_procedures`
 
@@ -12,6 +12,7 @@ History
     - joedbc generates a .gitignore
     - joedbc generates a :joedb:`tutorial::Memory_Database`
     - :joedb:`Connection::dummy` used as default :joedb:`Client::Client` constructor parameter
+    - :joedb:`File_View` can now be writable
 
   - Fixes:
 
