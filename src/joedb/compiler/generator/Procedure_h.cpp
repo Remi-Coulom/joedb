@@ -23,12 +23,11 @@ namespace joedb::generator
  class Procedure: public joedb::rpc::Procedure
  {
   public:
-   Procedure():
+   Procedure(std::string_view name):
     joedb::rpc::Procedure
     (
-)RRR";
-  out << "     \"" << options.get_name_space_back() << "\",\n";
-  out << R"RRR(     std::string_view(detail::schema_string, detail::schema_string_size)
+     name,
+     std::string_view(detail::schema_string, detail::schema_string_size)
     )
    {
    }

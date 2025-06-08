@@ -12,7 +12,11 @@ namespace tutorial::procedures
    const tutorial::Database &db;
 
   public:
-   Get_Population(tutorial::Database &db): db(db) {}
+   Get_Population(tutorial::Database &db):
+    population::Procedure("get_population"),
+    db(db)
+   {
+   }
 
    void execute(population::Writable_Database &population) override
    {
