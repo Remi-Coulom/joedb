@@ -4,9 +4,9 @@
 #include "../tutorial/procedures/population/Procedure.h"
 #include "../tutorial/Database.h"
 
-namespace tutorial::procedures::population
+namespace tutorial::procedures
 {
- class Get_Population: public Procedure
+ class Get_Population: public population::Procedure
  {
   private:
    const tutorial::Database &db;
@@ -14,7 +14,7 @@ namespace tutorial::procedures::population
   public:
    Get_Population(tutorial::Database &db): db(db) {}
 
-   void execute(Writable_Database &population) override
+   void execute(population::Writable_Database &population) override
    {
     for (const auto data: population.get_data_table())
     {

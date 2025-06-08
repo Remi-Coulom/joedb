@@ -6,6 +6,8 @@
 #include "joedb/ui/Readable_Command_Processor.h"
 #include "joedb/journal/File_View.h"
 
+namespace population = tutorial::procedures::population;
+
 static int procedure(joedb::Arguments &arguments)
 {
  arguments.add_parameter("<city_name>*");
@@ -17,26 +19,20 @@ static int procedure(joedb::Arguments &arguments)
  }
 
  tutorial::Readonly_Database db("tutorial.joedb");
- tutorial::procedures::population::Get_Population get_population(db);
+ tutorial::procedures::Get_Population get_population(db);
 
  joedb::Memory_File file;
  joedb::Connection connection;
- tutorial::procedures::population::Client client(file, connection);
+ population::Client client(file, connection);
 
- client.transaction
- (
-  [&arguments]
-  (
-   tutorial::procedures::population::Writable_Database &population
-  )
+ client.transaction([&arguments](population::Writable_Database &population)
+ {
+  for (size_t i = 1; i < arguments.size(); i++)
   {
-   for (size_t i = 1; i < arguments.size(); i++)
-   {
-    const auto data = population.new_data();
-    population.set_city_name(data, std::string(arguments[i]));
-   }
+   const auto data = population.new_data();
+   population.set_city_name(data, std::string(arguments[i]));
   }
- );
+ });
 
  {
   joedb::File_View file_view(file);
@@ -48,12 +44,12 @@ static int procedure(joedb::Arguments &arguments)
  {
   const auto &population = client.get_database();
 
-  tutorial::procedures::population::Readable readable(population);
+  population::Readable readable(population);
   joedb::Readable_Command_Processor processor(readable);
   processor.print_table
   (
    std::cout,
-   tutorial::procedures::population::data_table::id
+   population::data_table::id
   );
  }
 
