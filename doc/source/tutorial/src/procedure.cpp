@@ -1,6 +1,6 @@
-#include "tutorial.procedures/Get_Population.h"
-#include "tutorial/procedures/population/Readable.h"
+#include "tutorial.procedures/get_population.h"
 #include "tutorial/procedures/population/Memory_Database.h"
+#include "tutorial/procedures/population/Readable.h"
 #include "tutorial/File_Client.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Readable_Command_Processor.h"
@@ -24,37 +24,36 @@ static int procedure(joedb::Arguments &arguments)
  }
 
  //
- // Setup the Get_Population procedure
+ // Setup the get_population procedure
  //
- tutorial::File_Client tutorial_client("tutorial.joedb");
- tutorial::procedures::Get_Population get_population;
- tutorial::procedures::population::detail::Erased_Procedure procedure
+ tutorial::File_Client client("tutorial.joedb");
+ tutorial::procedures::population::Read_Procedure procedure
  (
-  tutorial_client,
-  get_population
+  client,
+  tutorial::procedures::get_population
  );
 
  //
  // Set input
  //
- population::Memory_Database population;
+ population::Memory_Database db;
  for (size_t i = 1; i < arguments.size(); i++)
-  population.set_city_name(population.new_data(), std::string(arguments[i]));
+  db.set_city_name(db.new_data(), std::string(arguments[i]));
 
  //
  // This will be executed by the RPC system
  //
  {
-  population.Writable_Database::flush();
-  joedb::File_View file_view(population.get_file_view());
-  procedure.execute(file_view);
-  population.pull();
+  db.Writable_Database::flush();
+  joedb::File_View file_view(db.get_file_view());
+  ((joedb::rpc::Procedure *)&procedure)->execute(file_view);
+  db.pull();
  }
 
  //
  // Print output
  //
- population::Readable readable(population);
+ population::Readable readable(db);
  joedb::Readable_Command_Processor processor(readable);
  processor.print_table
  (

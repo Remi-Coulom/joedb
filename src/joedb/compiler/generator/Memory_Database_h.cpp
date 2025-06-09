@@ -44,6 +44,7 @@ namespace joedb::generator
 
    void pull()
    {
+    journal.pull();
     play_journal();
    }
  };

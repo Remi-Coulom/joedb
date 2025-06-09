@@ -25,51 +25,91 @@ namespace joedb::generator
 
   namespace_open(out, options.get_name_space());
 
-  const std::string ns = namespace_string(options.get_name_space());
-  const std::string parent_ns = namespace_string
+  const std::string ns = namespace_string
   (
    parent_options.get_name_space()
   );
 
   out << R"RRR(
- class Procedure
+ class Procedure: public joedb::rpc::Procedure
  {
+  private:
+   virtual void execute(Writable_Database &population) = 0;
+
+   void execute(joedb::Buffered_File &file) override
+   {
+    Writable_Database db(file, joedb::Recovery::ignore_header);
+    execute(db);
+    db.soft_checkpoint();
+   }
+
   public:
-   virtual void execute()RRR" << parent_ns << R"RRR(::Client &client, Writable_Database &db) = 0;
-   virtual ~Procedure() = default;
+   Procedure(): joedb::rpc::Procedure
+   (
+    std::string_view(detail::schema_string, detail::schema_string_size)
+   )
+   {
+   }
  };
 
- namespace detail
+ typedef void (*Write_Function)
+ (
+  )RRR" << ns << R"RRR(::Client &client,
+  Writable_Database &population
+ );
+
+ class Write_Procedure: public Procedure
  {
-  class Erased_Procedure: public joedb::rpc::Procedure
-  {
-   private:
-    )RRR" << parent_ns << R"RRR(::Client &client;
-    )RRR" << ns << R"RRR(::Procedure &procedure;
+  private:
+   )RRR" << ns << R"RRR(::Client &client;
+   const Write_Function function;
 
-   public:
-    Erased_Procedure
-    (
-     )RRR" << parent_ns << R"RRR(::Client &client,
-     )RRR" << ns << R"RRR(::Procedure &procedure
-    ):
-     joedb::rpc::Procedure
-     (
-      std::string_view(detail::schema_string, detail::schema_string_size)
-     ),
-     client(client),
-     procedure(procedure)
-    {
-    }
+   void execute(Writable_Database &population) override
+   {
+    function(client, population);
+   }
 
-    void execute(joedb::Buffered_File &file) override
-    {
-     Writable_Database db(file, joedb::Recovery::ignore_header);
-     procedure.execute(client, db);
-     db.soft_checkpoint();
-    }
-  };
- }
+  public:
+   Write_Procedure
+   (
+    )RRR" << ns << R"RRR(::Client &client,
+    Write_Function function
+   ):
+    client(client),
+    function(function)
+   {
+   }
+ };
+
+ typedef void (*Read_Function)
+ (
+  const )RRR" << ns << R"RRR(::Database &db,
+  Writable_Database &population
+ );
+
+ class Read_Procedure: public Procedure
+ {
+  private:
+   )RRR" << ns << R"RRR(::Client &client;
+   const Read_Function function;
+
+   void execute(Writable_Database &population) override
+   {
+    client.pull();
+    function(client.get_database(), population);
+   }
+
+  public:
+   Read_Procedure
+   (
+    )RRR" << ns << R"RRR(::Client &client,
+    Read_Function function
+   ):
+    client(client),
+    function(function)
+   {
+   }
+ };
 )RRR";
 
   namespace_close(out, options.get_name_space());

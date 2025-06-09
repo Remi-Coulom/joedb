@@ -17,4 +17,4 @@ add_field data city_name string
 
 # output
 add_field data city references city
-add_field data inhabitant_count int64
+add_field data population int64

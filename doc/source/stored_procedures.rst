@@ -41,7 +41,7 @@ a new city:
    :language: joedbc
    :caption:
 
-.. literalinclude:: ./tutorial/src/tutorial.procedures/Insert_City.h
+.. literalinclude:: ./tutorial/src/tutorial.procedures/insert_city.h
    :language: c++
    :caption:
 
@@ -58,6 +58,6 @@ of persons for each city name given as input. It will also return each city id.
    :language: joedbc
    :caption:
 
-.. literalinclude:: ./tutorial/src/tutorial.procedures/Get_Population.h
+.. literalinclude:: ./tutorial/src/tutorial.procedures/get_population.h
    :language: c++
    :caption:
