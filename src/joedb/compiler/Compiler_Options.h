@@ -91,6 +91,14 @@ namespace joedb
     return false;
    }
 
+   bool has_multi_row() const
+   {
+    for (const auto &[table_id, options]: table_options)
+     if (!options.single_row)
+      return true;
+    return false;
+   }
+
    bool is_unique_field_name(const std::string &field_name) const
    {
     int count = 0;

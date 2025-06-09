@@ -23,9 +23,11 @@ namespace joedb::generator
 
   namespace_include_guard(out, "Writable_Database", options.get_name_space());
 
+  if (options.has_multi_row())
+   out << "\n#include \"joedb/Span.h\"\n";
+
   out << R"RRR(
 #include "Database_Writable.h"
-#include "joedb/Span.h"
 
 )RRR";
 
@@ -305,28 +307,26 @@ namespace joedb::generator
 
     //
     // Vector update
-    // Note: write even if exception, to keep memory and file in sync
     //
-    out << "   template<typename F> void update_vector_of_" << fname;
-    out << "(id_of_" << tname << " record, size_t size, F f)\n";
-    out << "   {\n";
-    out << "    std::exception_ptr exception;\n";
-    out << "    joedb::Span<";
-    write_type(type, false, false);
-    out << "> span(&storage_of_" << tname;
-    out << ".field_value_of_" << fname << ".data()[record.get_id()], size);\n";
-    out << "    try {f(span);}\n";
-    out << "    catch (...) {exception = std::current_exception();}\n";
-    out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_record_id(), size, span.begin());\n";
-    out << "    journal.update_vector_" << get_type_string(type) << "(Table_Id(" << tid << "), record.get_record_id(), Field_Id(" << fid << "), size, ";
+    if (!single_row)
+    {
+     out << "   template<typename F> void update_vector_of_" << fname;
+     out << "(id_of_" << tname << " record, size_t size, F f)\n";
+     out << "   {\n";
+     out << "    joedb::Span<";
+     write_type(type, false, false);
+     out << "> span(&storage_of_" << tname;
+     out << ".field_value_of_" << fname << ".data()[record.get_id()], size);\n";
+     out << "    f(span);\n";
+     out << "    internal_update_vector_" << tname << "__" << fname << "(record.get_record_id(), size, span.begin());\n";
+     out << "    journal.update_vector_" << get_type_string(type) << "(Table_Id(" << tid << "), record.get_record_id(), Field_Id(" << fid << "), size, ";
 
-    if (type.get_type_id() == Type::Type_Id::reference)
-     out << "reinterpret_cast<Record_Id *>";
+     if (type.get_type_id() == Type::Type_Id::reference)
+      out << "reinterpret_cast<Record_Id *>";
 
-    out << "(span.begin()));\n";
-    out << "    if (exception)\n";
-    out << "     std::rethrow_exception(exception);\n";
-    out << "   }\n\n";
+     out << "(span.begin()));\n";
+     out << "   }\n\n";
+    }
    }
   }
 
