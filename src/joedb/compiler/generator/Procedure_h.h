@@ -7,8 +7,15 @@ namespace joedb::generator
 {
  class Procedure_h: public Generator
  {
+  private:
+   const Compiler_Options &parent_options;
+
   public:
-   Procedure_h(const Compiler_Options &options);
+   Procedure_h
+   (
+    const Compiler_Options &options,
+    const Compiler_Options &parent_options
+   );
 
    void generate() override;
  };

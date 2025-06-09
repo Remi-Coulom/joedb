@@ -22,6 +22,7 @@ namespace joedb::generator
   out << R"RRR(
 #include "Writable_Database.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/File_View.h"
 
 )RRR";
 
@@ -34,6 +35,16 @@ namespace joedb::generator
   public:
    Memory_Database(): Writable_Database(*this, joedb::Recovery::none)
    {
+   }
+
+   joedb::File_View get_file_view()
+   {
+    return joedb::File_View(*this);
+   }
+
+   void pull()
+   {
+    play_journal();
    }
  };
 )RRR";

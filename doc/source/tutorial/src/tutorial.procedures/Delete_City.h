@@ -2,29 +2,20 @@
 #define tutorial_procedures_Delete_City_declared
 
 #include "tutorial/procedures/city/Procedure.h"
-#include "tutorial/Client.h"
 
 namespace tutorial::procedures
 {
  class Delete_City: public city::Procedure
  {
-  private:
-   tutorial::Client &client;
-
-  public:
-   Delete_City(tutorial::Client &client): client(client)
+  void execute(Client &client, city::Writable_Database &city) override
+  {
+   client.transaction([&city](Writable_Database &db)
    {
-   }
-
-   void execute(city::Writable_Database &city) override
-   {
-    client.transaction([&city](tutorial::Writable_Database &db)
-    {
-     const auto city_id = db.find_city_by_name(city.get_name());
-     if (city_id.is_not_null())
-      db.delete_city(city_id);
-    });
-   }
+    const auto city_id = db.find_city_by_name(city.get_name());
+    if (city_id.is_not_null())
+     db.delete_city(city_id);
+   });
+  }
  };
 }
 

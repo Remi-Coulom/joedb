@@ -9,7 +9,6 @@ Stored Procedures
    collection for client and server. Also compute collection signature at
    compile time.
  - check matching procedure schemas between client and server at handshake
- - rpc server must be separate from joedb_server
  - error handling: catch exception, and rollback if necessary.
 
 On-disk Storage
@@ -24,6 +23,7 @@ On-disk Storage
 
 Compiler
 --------
+- error if namespace different from file name
 - generate print_table functions
 - string setters that takes a string_view as parameter
 - option to make some member functions private (->private: private_new_person)

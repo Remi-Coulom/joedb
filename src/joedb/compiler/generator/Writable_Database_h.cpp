@@ -42,6 +42,7 @@ namespace joedb::generator
 
  class Client;
  class Multiplexer;
+ class Memory_Database;
 
  /// A @ref Database that contains a @ref joedb::Writable_Journal and keeps them in sync
  class Writable_Database: public Database_Writable
@@ -49,6 +50,7 @@ namespace joedb::generator
   friend class detail::Client_Data;
   friend class Client;
   friend class Multiplexer;
+  friend class Memory_Database;
 
   private:
    joedb::Writable_Journal journal;

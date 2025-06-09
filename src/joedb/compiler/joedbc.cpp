@@ -131,7 +131,9 @@ namespace joedb
   generator::Readonly_Client_h(options).generate();
 
   generator::ids_h(options, parent_options).generate();
-  generator::Procedure_h(options).generate();
+
+  if (parent_options)
+   generator::Procedure_h(options, *parent_options).generate();
 
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();
