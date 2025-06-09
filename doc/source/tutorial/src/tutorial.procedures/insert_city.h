@@ -6,12 +6,9 @@
 namespace tutorial::procedures
 {
  inline city::Write_Function insert_city =
- [](Client &client, city::Writable_Database &city)
+ [](Writable_Database &db, city::Writable_Database &city)
  {
-  client.transaction([&city](Writable_Database &db)
-  {
-   db.new_city(city.get_name());
-  });
+  db.new_city(city.get_name());
  };
 }
 

@@ -92,6 +92,7 @@ add_library(joedbc_objects OBJECT
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/print_table_h.cpp
 )
 target_link_libraries(joedbc_objects ${JOEDB_EXTERNAL_LIBS})
 

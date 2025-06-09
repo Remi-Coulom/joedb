@@ -367,6 +367,7 @@ joedb_add_executable(update_large_string
 joedb_add_executable(procedure
  ../doc/source/tutorial/src/procedure.cpp
  ../doc/source/tutorial/src/tutorial/procedures/population/writable.cpp
+ ../doc/source/tutorial/src/tutorial/procedures/city/writable.cpp
  ../doc/source/tutorial/src/tutorial/writable.cpp
 )
 

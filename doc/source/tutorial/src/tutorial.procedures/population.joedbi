@@ -2,7 +2,7 @@
 # joedbc will generate code so that id_of_city is the same type for both, ie:
 # using id_of_city = tutorial::id_of_city;
 # instead of definining a new different population::id_of_city type.
-# This allows easily referring to the main database from procedure schemas.
+# This allows easily referring to the main schema from procedure schemas.
 create_table city
 
 # This is the table for exchaning data between the client and the server.

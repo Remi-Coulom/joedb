@@ -10,11 +10,13 @@ History
   - Minor quality-of-life improvements:
 
     - joedbc generates a .gitignore
-    - joedbc generates a :joedb:`tutorial::Memory_Database` for RPC messages
+    - joedbc generates a Memory_Database for RPC messages
     - joedbc does not generate irrelevant functions for single-row tables
       (sorting, vector updates)
-    - :joedb:`Connection::dummy`, used as default :joedb:`Client::Client` constructor parameter
-    - writable :joedb:`File_View`
+    - joedbc generates functions to print tables
+    - :joedb:`Connection::dummy`, used as default constructor parameter for clients.
+    - writable :joedb:`File_View`, built from a :joedb:`Buffered_Files`, now
+      overriding all :joedb:`Abstract_File` functions.
 
   - Fixes:
 

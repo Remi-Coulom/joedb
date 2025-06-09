@@ -17,11 +17,13 @@ namespace joedb::generator
  {
   namespace_include_guard(out, "Procedure", options.get_name_space());
 
-  out << '\n';
-  out << "#include \"joedb/rpc/Procedure.h\"\n";
-  out << "#include \"Writable_Database.h\"\n";
-  out << "#include \"../../Client.h\"\n";
-  out << '\n';
+  out << R"RRR(
+#include "joedb/rpc/Procedure.h"
+#include "Writable_Database.h"
+#include "Memory_Database.h"
+#include "../../Client.h"
+
+)RRR";
 
   namespace_open(out, options.get_name_space());
 
@@ -31,10 +33,11 @@ namespace joedb::generator
   );
 
   out << R"RRR(
+ /// Class for all procedures based on this message schema
  class Procedure: public joedb::rpc::Procedure
  {
   private:
-   virtual void execute(Writable_Database &population) = 0;
+   virtual void execute(Writable_Database &message) = 0;
 
    void execute(joedb::Buffered_File &file) override
    {
@@ -50,23 +53,36 @@ namespace joedb::generator
    )
    {
    }
+
+   void execute_locally(Memory_Database &message)
+   {
+    message.soft_checkpoint();
+    joedb::File_View file_view(message.get_file_view());
+    execute(file_view);
+    message.pull();
+   }
  };
 
+ /// Function type for procedures that write to the database
  typedef void (*Write_Function)
  (
-  )RRR" << ns << R"RRR(::Client &client,
-  Writable_Database &population
+  )RRR" << ns << R"RRR(::Writable_Database &db,
+  Writable_Database &message
  );
 
+ /// Wrapper for procedures that write to the database
  class Write_Procedure: public Procedure
  {
   private:
    )RRR" << ns << R"RRR(::Client &client;
    const Write_Function function;
 
-   void execute(Writable_Database &population) override
+   void execute(Writable_Database &message) override
    {
-    function(client, population);
+    client.transaction([&]()RRR" << ns << R"RRR(::Writable_Database &db)
+    {
+     function(db, message);
+    });
    }
 
   public:
@@ -81,31 +97,32 @@ namespace joedb::generator
    }
  };
 
+ /// Function type for const procedures
  typedef void (*Read_Function)
  (
   const )RRR" << ns << R"RRR(::Database &db,
-  Writable_Database &population
+  Writable_Database &message
  );
 
+ /// Wrapper for const procedures
  class Read_Procedure: public Procedure
  {
   private:
-   )RRR" << ns << R"RRR(::Client &client;
+   const )RRR" << ns << R"RRR(::Database &db;
    const Read_Function function;
 
-   void execute(Writable_Database &population) override
+   void execute(Writable_Database &message) override
    {
-    client.pull();
-    function(client.get_database(), population);
+    function(db, message);
    }
 
   public:
    Read_Procedure
    (
-    )RRR" << ns << R"RRR(::Client &client,
+    const )RRR" << ns << R"RRR(::Database &db,
     Read_Function function
    ):
-    client(client),
+    db(db),
     function(function)
    {
    }

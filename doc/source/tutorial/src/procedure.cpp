@@ -1,12 +1,9 @@
 #include "tutorial.procedures/get_population.h"
-#include "tutorial/procedures/population/Memory_Database.h"
-#include "tutorial/procedures/population/Readable.h"
+#include "tutorial.procedures/insert_city.h"
+#include "tutorial.procedures/delete_city.h"
+#include "tutorial/procedures/population/print_table.h"
 #include "tutorial/File_Client.h"
 #include "joedb/ui/main_wrapper.h"
-#include "joedb/ui/Readable_Command_Processor.h"
-#include "joedb/journal/File_View.h"
-
-namespace population = tutorial::procedures::population;
 
 /////////////////////////////////////////////////////////////////////////////
 static int procedure(joedb::Arguments &arguments)
@@ -24,42 +21,44 @@ static int procedure(joedb::Arguments &arguments)
  }
 
  //
- // Setup the get_population procedure
+ // Procedure Setup (RPC server side)
  //
  tutorial::File_Client client("tutorial.joedb");
- tutorial::procedures::population::Read_Procedure procedure
+
+ tutorial::procedures::population::Read_Procedure get_population
  (
-  client,
+  client.get_database(),
   tutorial::procedures::get_population
  );
 
- //
- // Set input
- //
- population::Memory_Database db;
- for (size_t i = 1; i < arguments.size(); i++)
-  db.set_city_name(db.new_data(), std::string(arguments[i]));
+ tutorial::procedures::city::Write_Procedure insert_city
+ (
+  client,
+  tutorial::procedures::insert_city
+ );
 
- //
- // This will be executed by the RPC system
- //
+ tutorial::procedures::city::Write_Procedure delete_city
+ (
+  client,
+  tutorial::procedures::delete_city
+ );
+
  {
-  db.Writable_Database::flush();
-  joedb::File_View file_view(db.get_file_view());
-  ((joedb::rpc::Procedure *)&procedure)->execute(file_view);
-  db.pull();
+  tutorial::procedures::population::Memory_Database population;
+
+  for (size_t i = 1; i < arguments.size(); i++)
+   population.set_city_name(population.new_data(), std::string(arguments[i]));
+
+  get_population.execute_locally(population);
+  tutorial::procedures::population::print_data_table(std::cout, population);
  }
 
- //
- // Print output
- //
- population::Readable readable(db);
- joedb::Readable_Command_Processor processor(readable);
- processor.print_table
- (
-  std::cout,
-  population::data_table::id
- );
+ {
+  tutorial::procedures::city::Memory_Database city;
+  city.set_name("Tombouctou");
+  insert_city.execute_locally(city);
+  delete_city.execute_locally(city);
+ }
 
  return 0;
 }

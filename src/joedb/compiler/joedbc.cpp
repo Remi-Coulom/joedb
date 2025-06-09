@@ -31,6 +31,7 @@
 
 #include "joedb/compiler/generator/ids_h.h"
 #include "joedb/compiler/generator/introspection_h.h"
+#include "joedb/compiler/generator/print_table_h.h"
 
 #include "joedb/compiler/generator/Procedure_h.h"
 
@@ -131,6 +132,7 @@ namespace joedb
   generator::Readonly_Client_h(options).generate();
 
   generator::ids_h(options, parent_options).generate();
+  generator::print_table_h(options).generate();
 
   if (parent_options)
    generator::Procedure_h(options, *parent_options).generate();
