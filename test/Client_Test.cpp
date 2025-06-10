@@ -467,31 +467,40 @@ namespace joedb
  TEST(Client, pull_from_memory)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Memory_File file;
-  Writable_Database_Client client(file);
-  client.transaction([](Readable &readable, Writable &writable)
+  for (int shared = 2; --shared >= 0;)
   {
-   writable.create_table("person");
-  });
-
-  EXPECT_EQ(client.get_database().get_tables().size(), 1);
-
-  {
-   File_View file_view(file);
-   Writable_Database_Client client2(file_view);
-   client2.transaction([](Readable &readable, Writable &writable)
+   Memory_File file
+   (
+    shared
+    ? joedb::Open_Mode::shared_write
+    : joedb::Open_Mode::create_new
+   );
+   Writable_Database_Client client(file);
+   client.transaction([](Readable &readable, Writable &writable)
    {
-    writable.create_table("city");
+    writable.create_table("person");
    });
-   EXPECT_EQ(client2.get_database().get_tables().size(), 2);
-  }
 
-  EXPECT_EQ(client.get_database().get_tables().size(), 1);
-  client.pull();
-#if 0
-  EXPECT_EQ(client.get_database().get_tables().size(), 2);
-#else
-  EXPECT_EQ(client.get_database().get_tables().size(), 1);
-#endif
+   EXPECT_EQ(client.get_database().get_tables().size(), 1);
+
+   {
+    File_View file_view(file);
+    Writable_Database_Client client2(file_view);
+    client2.transaction([](Readable &readable, Writable &writable)
+    {
+     writable.create_table("city");
+    });
+    EXPECT_EQ(client2.get_database().get_tables().size(), 2);
+   }
+
+   EXPECT_EQ(client.get_database().get_tables().size(), 1);
+
+   client.pull();
+
+   if (shared)
+    EXPECT_EQ(client.get_database().get_tables().size(), 2);
+   else
+    EXPECT_EQ(client.get_database().get_tables().size(), 1);
+  }
  }
 }
