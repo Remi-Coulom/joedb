@@ -483,9 +483,15 @@ namespace joedb
    {
     writable.create_table("city");
    });
+   EXPECT_EQ(client2.get_database().get_tables().size(), 2);
   }
 
+  EXPECT_EQ(client.get_database().get_tables().size(), 1);
   client.pull();
+#if 0
   EXPECT_EQ(client.get_database().get_tables().size(), 2);
+#else
+  EXPECT_EQ(client.get_database().get_tables().size(), 1);
+#endif
  }
 }

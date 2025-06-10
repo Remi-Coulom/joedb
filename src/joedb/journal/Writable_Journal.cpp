@@ -443,8 +443,6 @@ void joedb::Writable_Journal::lock_pull()
   file.exclusive_lock_tail();
   pull_without_locking();
  }
- else
-  Readonly_Journal::pull(); // for Memory_File in a joedb::rpc::Procedure
 }
 
 /////////////////////////////////////////////////////////////////////////////

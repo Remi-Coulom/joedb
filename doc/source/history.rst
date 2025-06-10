@@ -22,7 +22,6 @@ History
 
     - Fix joedbc crash when no namespace is provided
     - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
-    - :joedb:`Writable_Journal::lock_pull` always updates the checkpoint by reading from the file, even if it is not shared.
 
 - 2025-05-26 10.0.0 LTS
 
