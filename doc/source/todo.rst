@@ -3,13 +3,17 @@ TODO
 
 Stored Procedures
 -----------------
- - procedures::Server
- - procedures::Client
  - Generate list of procedures by grepping header files -> compile procedure
    collection for client and server. Also compute collection signature at
    compile time.
  - check matching procedure schemas between client and server at handshake
  - error handling: catch exception, and rollback if necessary.
+ - use C++ 20 + coroutines for rpc server
+ - multi threaded server: use a mutex with the client (Thread_Safe_Client with Client_Read_Lock, Client_Write_Lock)
+ - keep the rest of the library C++ 17: C++ level should be a toolchain parameter, use cmake presets for each C++ version.
+ - use http connection to rpc server via nginx
+ - allow asynchronous procedure call. use asio + beast, both for client and server.
+ - store whole joedbi as message prefix (not schema only)
 
 On-disk Storage
 ---------------
