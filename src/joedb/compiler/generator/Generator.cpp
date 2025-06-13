@@ -182,8 +182,8 @@ namespace joedb::generator
  ):
   options(options)
  {
-  std::filesystem::create_directory(options.get_name_space().back());
-  std::string dir_string = options.get_name_space().back() + "/" + std::string(dir_name);
+  std::filesystem::create_directory(options.get_name_space_back());
+  std::string dir_string = options.get_name_space_back() + "/" + std::string(dir_name);
   std::filesystem::create_directory(dir_string);
   std::string file_string = dir_string + "/" + std::string(file_name);
 

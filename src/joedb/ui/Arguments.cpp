@@ -5,7 +5,7 @@ namespace joedb
 {
  Arguments::Argument::Argument(const char *argv): s(argv), used(false)
  {
-  if (s[0] == '-' && s[1] == '-')
+  if (argv[0] == '-' && argv[1] == '-')
    option = std::string_view(s.data() + 2, s.size() - 2);
  }
 
