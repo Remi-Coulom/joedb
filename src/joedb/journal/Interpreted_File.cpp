@@ -15,11 +15,11 @@ namespace joedb
  {
   Memory_File::pwrite(buffer, size, offset);
 
-  if (offset < Header::ssize && readonly_journal.pull())
+  if (offset < Header::ssize && journal.pull())
   {
    Interpreter_Writable writable(stream, db);
    Multiplexer multiplexer{writable, db};
-   readonly_journal.play_until_checkpoint(multiplexer);
+   journal.play_until_checkpoint(multiplexer);
    stream.flush();
   }
  }
@@ -28,13 +28,9 @@ namespace joedb
  Interpreted_Stream_File::Interpreted_Stream_File(std::iostream &stream):
  ////////////////////////////////////////////////////////////////////////////
   Readonly_Interpreted_File(stream, false),
-  stream(stream),
-  file_view(*this),
-  readonly_journal(file_view)
+  stream(stream)
  {
   stream.clear(); // clears eof flag after reading, get ready to write
-  Dummy_Writable dummy_writable;
-  readonly_journal.play_until_checkpoint(dummy_writable);
  }
 
  ////////////////////////////////////////////////////////////////////////////
