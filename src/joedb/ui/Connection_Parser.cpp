@@ -12,6 +12,10 @@
 #include "joedb/ui/SSH_Connection_Builder.h"
 #endif
 
+#ifdef JOEDB_HAS_BEAST
+#include "joedb/ui/Websocket_Connection_Builder.h"
+#endif
+
 #include <cstring>
 #include <sstream>
 
@@ -30,6 +34,10 @@ namespace joedb
 
 #ifdef JOEDB_HAS_SSH
   builders.emplace_back(new SSH_Connection_Builder());
+#endif
+
+#ifdef JOEDB_HAS_BEAST
+  builders.emplace_back(new Websocket_Connection_Builder());
 #endif
  }
 

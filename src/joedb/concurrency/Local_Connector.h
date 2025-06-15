@@ -24,7 +24,7 @@ namespace joedb
    }
 
    Local_Connector(const char *endpoint_path):
-    Local_Connector(std::string_view(endpoint_path))
+    Local_Connector(std::string(endpoint_path))
    {
    }
 
