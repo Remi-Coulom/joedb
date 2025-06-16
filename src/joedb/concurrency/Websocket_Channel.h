@@ -30,6 +30,8 @@ namespace joedb
      boost::asio::ip::tcp::resolver(io_context).resolve(host, port)
     );
 
+    ws.binary(true);
+
     ws.handshake
     (
      host + ":" + std::to_string(endpoint.port()),
