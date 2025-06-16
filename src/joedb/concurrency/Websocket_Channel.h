@@ -4,8 +4,10 @@
 #include "joedb/concurrency/Channel.h"
 
 #include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/connect.hpp>
+#include <boost/asio/ssl.hpp>
 
 namespace joedb
 {
@@ -13,7 +15,16 @@ namespace joedb
  {
   private:
    boost::asio::io_context io_context;
-   boost::beast::websocket::stream<boost::asio::ip::tcp::socket> ws;
+   boost::asio::ssl::context ssl_context;
+
+   boost::beast::websocket::stream
+   <
+    boost::asio::ssl::stream
+    <
+     boost::asio::ip::tcp::socket
+    >
+   >
+   ws;
 
   public:
    Websocket_Channel
@@ -22,13 +33,23 @@ namespace joedb
     const std::string &port,
     const std::string &path
    ):
-    ws(io_context)
+    ssl_context(boost::asio::ssl::context::tlsv12_client),
+    ws(io_context, ssl_context)
    {
+    // ssl_context.set_verify_mode(boost::asio::ssl::verify_peer);
+    // peer verification is complicated
+    // https://github.com/boostorg/beast/issues/2194
+    // https://github.com/djarek/certify
+    // https://www.reddit.com/r/cpp/comments/1ef6eje/alternatives_to_djarekcertify/
+    // or manually verify from pem?
+
     const auto endpoint = boost::asio::connect
     (
-     ws.next_layer(),
+     boost::beast::get_lowest_layer(ws),
      boost::asio::ip::tcp::resolver(io_context).resolve(host, port)
     );
+
+    ws.next_layer().handshake(boost::asio::ssl::stream_base::client);
 
     ws.binary(true);
 
