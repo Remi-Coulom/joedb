@@ -24,7 +24,7 @@ if (Boost_FOUND)
  message("-- boost found")
 else()
  message("## boost not found")
-endif(Boost_FOUND)
+endif()
 
 # TODO: use asio from boost if boost is found
 # TODO: handle dependency to boost::certify properly
