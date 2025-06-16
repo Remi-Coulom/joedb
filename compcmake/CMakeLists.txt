@@ -174,6 +174,7 @@ if(GTest_FOUND)
   ../test/File_Parser_Test.cpp
   ../test/Writable_Persistence_Test.cpp
   ../test/ui_Test.cpp
+  ../test/Websocket_Test.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
