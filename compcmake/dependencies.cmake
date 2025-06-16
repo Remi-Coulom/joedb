@@ -20,7 +20,7 @@ find_package(Boost COMPONENTS system)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if (Boost_FOUND)
  add_definitions(-DJOEDB_HAS_BEAST)
- include_directories(${Boost_INCLUDE_DIRS})
+ include_directories(${Boost_INCLUDE_DIRS} ../../certify/include)
  message("-- boost found")
 else()
  message("## boost not found")

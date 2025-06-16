@@ -3,11 +3,13 @@
 
 #include "joedb/concurrency/Channel.h"
 
-#include <boost/beast/websocket.hpp>
-#include <boost/beast/websocket/ssl.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ssl.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
+#include <boost/certify/https_verification.hpp>
+#include <boost/certify/extensions.hpp>
 
 namespace joedb
 {
@@ -36,12 +38,17 @@ namespace joedb
     ssl_context(boost::asio::ssl::context::tlsv12_client),
     ws(io_context, ssl_context)
    {
-    // ssl_context.set_verify_mode(boost::asio::ssl::verify_peer);
-    // peer verification is complicated
-    // https://github.com/boostorg/beast/issues/2194
-    // https://github.com/djarek/certify
-    // https://www.reddit.com/r/cpp/comments/1ef6eje/alternatives_to_djarekcertify/
-    // or manually verify from pem?
+    ssl_context.set_verify_mode
+    (
+     boost::asio::ssl::context::verify_peer |
+     boost::asio::ssl::context::verify_fail_if_no_peer_cert
+    );
+
+    ssl_context.set_default_verify_paths();
+
+    boost::certify::enable_native_https_server_verification(ssl_context);
+    boost::certify::set_server_hostname(ws.next_layer(), host);
+    boost::certify::sni_hostname(ws.next_layer(), host);
 
     const auto endpoint = boost::asio::connect
     (
