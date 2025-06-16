@@ -26,7 +26,8 @@ else()
  message("## boost not found")
 endif(Boost_FOUND)
 
-# TODO: use asio from boost
+# TODO: use asio from boost if boost is found
+# TODO: handle dependency to boost::certify properly
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(asio CONFIG)

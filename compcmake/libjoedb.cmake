@@ -67,6 +67,13 @@ if (asio_FOUND)
   ${JOEDB_SOURCES}
  )
  add_definitions(-DJOEDB_HAS_NETWORKING)
+
+ if (Boost_FOUND)
+  set(JOEDB_SOURCES
+   ${JOEDB_SRC_DIR}/joedb/concurrency/Websocket_Channel.cpp
+   ${JOEDB_SOURCES}
+  )
+ endif()
 endif()
 
 add_library(joedb_databases OBJECT ${JOEDB_DATABASES})
