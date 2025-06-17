@@ -1,3 +1,4 @@
+#ifdef JOEDB_HAS_WEBSOCKETS
 #ifndef joedb_Websocket_Channel_declared
 #define joedb_Websocket_Channel_declared
 
@@ -34,4 +35,5 @@ namespace joedb
  };
 }
 
+#endif
 #endif

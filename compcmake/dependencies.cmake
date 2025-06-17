@@ -19,37 +19,38 @@ find_package(Threads REQUIRED)
 find_package(Boost COMPONENTS system)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if (Boost_FOUND)
- add_definitions(-DJOEDB_HAS_BEAST)
- include_directories(${Boost_INCLUDE_DIRS} ../../certify/include)
  message("-- boost found")
-else()
- message("## boost not found")
-endif()
+ add_definitions(-DJOEDB_HAS_BOOST)
 
-# TODO: use asio from boost if boost is found
-# TODO: handle dependency to boost::certify properly
+ find_path(
+  CERTIFY_INCLUDES boost/certify/https_verification.hpp
+  HINTS ${CMAKE_CURRENT_LIST_DIR}/../../certify/include
+ )
+ if (CERTIFY_INCLUDES)
+  message("-- certify found: ${CERTIFY_INCLUDES}")
+  add_definitions(-DJOEDB_HAS_WEBSOCKETS)
+  include_directories(${CERTIFY_INCLUDES})
+ else()
+  message("## boost::certify not found, disabling websockets")
+  message("## Fix: next to joedb, git clone https://github.com/djarek/certify.git")
+ endif()
+ include_directories(${Boost_INCLUDE_DIRS} ../../certify/include)
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(asio CONFIG)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (asio_FOUND)
- list(APPEND JOEDB_EXTERNAL_LIBS asio::asio)
-else()
- find_path(ASIO_INCLUDES asio.hpp)
+ find_path(ASIO_INCLUDES boost/asio.hpp)
  if (ASIO_INCLUDES)
+  message("-- asio found: ${ASIO_INCLUDES}")
   set(asio_FOUND TRUE)
   include_directories(${ASIO_INCLUDES})
+  add_definitions(-DJOEDB_HAS_ASIO)
+  if (WIN32)
+   list(APPEND JOEDB_EXTERNAL_LIBS wsock32 ws2_32)
+  endif()
+ else()
+  message("## asio not found")
  endif()
-endif()
 
-if (asio_FOUND)
- message("-- asio found")
- add_definitions(-DJOEDB_HAS_ASIO)
- if (WIN32)
-  list(APPEND JOEDB_EXTERNAL_LIBS wsock32 ws2_32)
- endif()
 else()
- message("## asio not found")
+ message("## boost not found. Fix: sudo apt install libboost-system-dev")
 endif()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

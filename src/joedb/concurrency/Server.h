@@ -12,9 +12,9 @@
 #include <optional>
 #include <map>
 
-#include <asio/local/stream_protocol.hpp>
-#include <asio/steady_timer.hpp>
-#include <asio/signal_set.hpp>
+#include <boost/asio/local/stream_protocol.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/signal_set.hpp>
 
 namespace joedb
 {
@@ -26,12 +26,12 @@ namespace joedb
    Client &client;
    Writable_Journal_Client *writable_journal_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
-   asio::io_context &io_context;
+   boost::asio::io_context &io_context;
    std::string endpoint_path;
-   asio::local::stream_protocol::endpoint endpoint;
-   asio::local::stream_protocol::acceptor acceptor;
+   boost::asio::local::stream_protocol::endpoint endpoint;
+   boost::asio::local::stream_protocol::acceptor acceptor;
    bool stopped;
-   asio::signal_set interrupt_signals;
+   boost::asio::signal_set interrupt_signals;
 
    int64_t session_id;
 
@@ -39,7 +39,7 @@ namespace joedb
    {
     const int64_t id;
     Server &server;
-    asio::local::stream_protocol::socket socket;
+    boost::asio::local::stream_protocol::socket socket;
     Buffer<13> buffer;
     enum class State
     {
@@ -56,7 +56,7 @@ namespace joedb
     std::optional<Async_Writer> push_writer;
     bool unlock_after_push;
 
-    std::optional<asio::steady_timer> pull_timer;
+    std::optional<boost::asio::steady_timer> pull_timer;
     bool lock_before_pulling;
     bool send_pull_data;
     int64_t pull_checkpoint;
@@ -64,7 +64,7 @@ namespace joedb
     std::ostream &write_id(std::ostream &out) const;
     std::optional<Progress_Bar> progress_bar;
 
-    Session(Server &server, asio::local::stream_protocol::socket &&socket);
+    Session(Server &server, boost::asio::local::stream_protocol::socket &&socket);
     ~Session();
    };
 
@@ -88,7 +88,7 @@ namespace joedb
    void write_status();
 
    const std::chrono::milliseconds lock_timeout;
-   asio::steady_timer lock_timeout_timer;
+   boost::asio::steady_timer lock_timeout_timer;
    bool locked;
    std::queue<std::shared_ptr<Session>> lock_queue;
    void lock_dequeue();
@@ -197,7 +197,7 @@ namespace joedb
    Server
    (
     Client &client,
-    asio::io_context &io_context,
+    boost::asio::io_context &io_context,
     std::string endpoint_path,
     std::chrono::milliseconds lock_timeout,
     std::ostream *log_pointer

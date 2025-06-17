@@ -1,3 +1,4 @@
+#ifdef JOEDB_HAS_WEBSOCKETS
 #include "joedb/concurrency/Websocket_Channel.h"
 
 #include <boost/asio/ip/tcp.hpp>
@@ -106,3 +107,4 @@ namespace joedb
 
  Websocket_Channel::~Websocket_Channel() = default;
 }
+#endif

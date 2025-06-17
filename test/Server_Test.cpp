@@ -61,7 +61,7 @@ namespace joedb
    {
     if (!paused)
     {
-     io_context.io_context.post([&](){server.stop();});
+     boost::asio::post(io_context.io_context.get_executor(), [&](){server.stop();});
      thread.join();
      paused = true;
     }
@@ -71,7 +71,7 @@ namespace joedb
    {
     if (paused)
     {
-     io_context.io_context.post([this](){server.start();});
+     boost::asio::post(io_context.io_context.get_executor(), [this](){server.start();});
      io_context.io_context.restart();
      thread = std::thread(
       [&io_context_reference = io_context]()
@@ -239,7 +239,7 @@ namespace joedb
    client.pull();
   }
 
-  io_context.io_context.post([&](){server.stop();});
+  boost::asio::post(io_context.io_context.get_executor(), [&](){server.stop();});
   thread.join();
   std::remove(file_name);
  }
@@ -789,7 +789,7 @@ namespace joedb
    }
   }
 
-  io_context.io_context.post([&](){server.stop();});
+  boost::asio::post(io_context.io_context.get_executor(), [&](){server.stop();});
   thread.join();
  }
 

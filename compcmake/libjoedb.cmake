@@ -25,6 +25,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Client.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/concurrency/Websocket_Channel.cpp
 )
 
 set(JOEDB_DATABASES
@@ -66,14 +67,6 @@ if (asio_FOUND)
   ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}
  )
- add_definitions(-DJOEDB_HAS_NETWORKING)
-
- if (Boost_FOUND)
-  set(JOEDB_SOURCES
-   ${JOEDB_SRC_DIR}/joedb/concurrency/Websocket_Channel.cpp
-   ${JOEDB_SOURCES}
-  )
- endif()
 endif()
 
 add_library(joedb_databases OBJECT ${JOEDB_DATABASES})

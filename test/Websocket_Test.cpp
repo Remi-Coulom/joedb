@@ -1,4 +1,4 @@
-#ifdef JOEDB_HAS_BEAST
+#ifdef JOEDB_HAS_WEBSOCKETS
 #include "joedb/concurrency/Websocket_Channel.h"
 
 #include "gtest/gtest.h"

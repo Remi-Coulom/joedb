@@ -8,8 +8,8 @@
 #define LOG(x) log([&](std::ostream &out){out << x;})
 #define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
 
-#include <asio/read.hpp>
-#include <asio/write.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/write.hpp>
 #include <cstdio>
 
 namespace joedb
@@ -60,7 +60,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Server &server,
-  asio::local::stream_protocol::socket &&socket
+  boost::asio::local::stream_protocol::socket &&socket
  ):
   id(++server.session_id),
   server(server),
@@ -117,10 +117,10 @@ namespace joedb
   Transfer_Handler handler
  )
  {
-  asio::async_read
+  boost::asio::async_read
   (
    session->socket,
-   asio::buffer(session->buffer.data + offset, size),
+   boost::asio::buffer(session->buffer.data + offset, size),
    [this, handler, session](std::error_code e, size_t s)
    {
     (this->*handler)(session, e, s);
@@ -423,10 +423,10 @@ namespace joedb
     {
      refresh_lock_timeout(session);
 
-     asio::async_write
+     boost::asio::async_write
      (
       session->socket,
-      asio::buffer(session->buffer.data, size + offset),
+      boost::asio::buffer(session->buffer.data, size + offset),
       [this, session, reader](std::error_code e, size_t s)
       {
        read_transfer_handler(session, reader, e, s, 0);
@@ -677,10 +677,10 @@ namespace joedb
   const size_t size
  )
  {
-  asio::async_write
+  boost::asio::async_write
   (
    session->socket,
-   asio::buffer(session->buffer.data, size),
+   boost::asio::buffer(session->buffer.data, size),
    [this, session](std::error_code e, size_t s)
    {
     if (!e)
@@ -733,7 +733,7 @@ namespace joedb
    acceptor.async_accept
    (
     io_context,
-    [this](std::error_code error, asio::local::stream_protocol::socket socket)
+    [this](std::error_code error, boost::asio::local::stream_protocol::socket socket)
     {
      if (!error && !stopped)
      {
@@ -752,7 +752,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Client &client,
-  asio::io_context &io_context,
+  boost::asio::io_context &io_context,
   std::string endpoint_path,
   const std::chrono::milliseconds lock_timeout,
   std::ostream * const log_pointer
@@ -789,7 +789,7 @@ namespace joedb
    if (!client.is_shared() && writable_journal_client)
     client_lock.emplace(*writable_journal_client);
 
-   interrupt_signals.async_wait([this](const asio::error_code &error, int)
+   interrupt_signals.async_wait([this](const boost::system::error_code &error, int)
    {
     if (!error)
      stop();

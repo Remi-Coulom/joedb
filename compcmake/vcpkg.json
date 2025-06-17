@@ -8,7 +8,7 @@
     "libssh",
     "curl",
     "brotli",
-    "asio",
+    "boost-asio",
     "gtest",
     "sqlite3"
   ],

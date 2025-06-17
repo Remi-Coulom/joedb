@@ -80,6 +80,7 @@ Concurrency
   in Connection.
 - joedb_server:
 
+  - polymorphic socket: tcp/ip, unix, or websocket
   - use coroutines
   - stress-test tool
   - support running on multiple threads (requires mutex?)

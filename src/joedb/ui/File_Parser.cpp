@@ -71,7 +71,7 @@ namespace joedb
   out << "<file_name>\n";
 #endif
 
-#if defined(JOEDB_HAS_NETWORKING) || defined(JOEDB_HAS_SSH)
+#if defined(JOEDB_HAS_ASIO) || defined(JOEDB_HAS_SSH) || defined(JOEDB_HAS_WEBSOCKETS)
   if (include_server)
    out << " server (client must use a connection to a server)\n";
 #endif
