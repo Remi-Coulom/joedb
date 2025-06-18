@@ -8,13 +8,11 @@ Stored Procedures
    compile time.
  - check matching procedure schemas between client and server at handshake
  - error handling: catch exception, and rollback if necessary.
- - use C++ 20 + coroutines for rpc server
  - multi threaded server: use a mutex with the client (Thread_Safe_Client with Client_Read_Lock, Client_Write_Lock)
- - keep the rest of the library C++ 17: C++ level should be a toolchain parameter, use cmake presets for each C++ version.
- - use http connection to rpc server via nginx + websockify
  - store whole joedbi as message prefix (not schema only)
+ - allow procedures to be "stateful": keep state on the server during session
  - generate wasm interface with joebc -> web site
- - generate java/kotlin interface with jeodbc -> Android app
+ - generate java/kotlin interface with joedbc -> Android app
 
 On-disk Storage
 ---------------
