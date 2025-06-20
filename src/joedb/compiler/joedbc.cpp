@@ -37,6 +37,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <regex>
 
 namespace joedb
 {
@@ -172,28 +173,82 @@ namespace joedb
 
   compile(options, nullptr);
 
+  //
+  // Procedures
+  //
+  struct Procedure
   {
-   std::error_code ec;
+   std::string name;
+   std::string schema;
+   enum {read, write} type;
+  };
+
+  std::vector<Procedure> procedures;
+
+  {
+   std::error_code error_code;
 
    std::filesystem::directory_iterator iterator
    (
     std::string(base_name) + ".procedures",
-    ec
+    error_code
    );
 
-   for (const auto &dir_entry: iterator)
+   if (!error_code)
    {
-    if (dir_entry.path().extension() == ".joedbi")
+    const std::regex pattern("(\\w+)::(Read|Write)_Function\\s+(\\w+)");
+
+    //
+    // Generate code for each message schema
+    //
+    for (const auto &dir_entry: iterator)
     {
-     auto path = dir_entry.path();
-     const std::string procedure_name = path.replace_extension("");
+     if (dir_entry.path().extension() == ".joedbi")
+     {
+      auto path = dir_entry.path();
+      const std::string procedure_name = path.replace_extension("");
 
-     Compiler_Options procedure_options;
-     procedure_options.exe_path = arguments[0];
-     procedure_options.output_path = std::string(base_name) + "/procedures";
-     procedure_options.base_name = procedure_name;
+      Compiler_Options procedure_options;
+      procedure_options.exe_path = arguments[0];
+      procedure_options.output_path = std::string(base_name) + "/procedures";
+      procedure_options.base_name = procedure_name;
 
-     compile(procedure_options, &options);
+      compile(procedure_options, &options);
+     }
+
+     //
+     // Collect the list of all procedures by parsing header files
+     //
+     else if
+     (
+      dir_entry.path().extension() == ".h" ||
+      dir_entry.path().extension() == ".hpp"
+     )
+     {
+      std::string s(dir_entry.file_size(), 0);
+      {
+       std::ifstream file(dir_entry.path());
+       file.read(s.data(), s.size());
+      }
+
+      for
+      (
+       std::sregex_iterator i{s.begin(), s.end(), pattern};
+       i != std::sregex_iterator();
+       ++i
+      )
+      {
+       procedures.emplace_back
+       (
+        Procedure
+        {
+         (*i)[3],
+         (*i)[1],
+         (*i)[2].str()[0] == 'W' ? Procedure::write : Procedure::read
+        }
+       );
+      }
+     }
     }
    }
   }
