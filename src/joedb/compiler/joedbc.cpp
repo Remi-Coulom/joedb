@@ -34,6 +34,8 @@
 #include "joedb/compiler/generator/print_table_h.h"
 
 #include "joedb/compiler/generator/Procedure_h.h"
+#include "joedb/compiler/generator/Procedures_h.h"
+#include "joedb/compiler/generator/Procedures_cpp.h"
 
 #include <iostream>
 #include <filesystem>
@@ -176,14 +178,7 @@ namespace joedb
   //
   // Procedures
   //
-  struct Procedure
-  {
-   std::string name;
-   std::string schema;
-   enum {read, write} type;
-  };
-
-  std::vector<Procedure> procedures;
+  std::vector<generator::Procedure> procedures;
 
   {
    std::error_code error_code;
@@ -240,17 +235,23 @@ namespace joedb
       {
        procedures.emplace_back
        (
-        Procedure
+        generator::Procedure
         {
          (*i)[3],
          (*i)[1],
-         (*i)[2].str()[0] == 'W' ? Procedure::write : Procedure::read
+         dir_entry.path(),
+         (*i)[2].str()[0] == 'W'
+         ? generator::Procedure::write
+         : generator::Procedure::read
         }
        );
       }
      }
     }
    }
+
+   generator::Procedures_h(options, procedures).generate();
+   generator::Procedures_cpp(options, procedures).generate();
   }
 
   return 0;

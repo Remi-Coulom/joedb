@@ -1,8 +1,6 @@
-#include "tutorial.procedures/get_population.h"
-#include "tutorial.procedures/insert_city.h"
-#include "tutorial.procedures/delete_city.h"
-#include "tutorial/procedures/population/print_table.h"
 #include "tutorial/File_Client.h"
+#include "tutorial/Procedures.h"
+#include "tutorial/procedures/population/print_table.h"
 #include "joedb/ui/main_wrapper.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,40 +22,29 @@ static int procedure(joedb::Arguments &arguments)
  // Procedure Setup (RPC server side)
  //
  tutorial::File_Client client("tutorial.joedb");
+ tutorial::Procedures procedures(client);
 
- tutorial::procedures::population::Read_Procedure get_population
- (
-  client.get_database(),
-  tutorial::procedures::get_population
- );
-
- tutorial::procedures::city::Write_Procedure insert_city
- (
-  client,
-  tutorial::procedures::insert_city
- );
-
- tutorial::procedures::city::Write_Procedure delete_city
- (
-  client,
-  tutorial::procedures::delete_city
- );
-
+ //
+ // Execute get_population and print result table
+ //
  {
   tutorial::procedures::population::Memory_Database population;
 
   for (size_t i = 1; i < arguments.size(); i++)
    population.set_city_name(population.new_data(), std::string(arguments[i]));
 
-  get_population.execute_locally(population);
+  procedures.get_population.execute_locally(population);
   tutorial::procedures::population::print_data_table(std::cout, population);
  }
 
+ //
+ // Also try insert_city and delete_city
+ //
  {
   tutorial::procedures::city::Memory_Database city;
   city.set_name("Tombouctou");
-  insert_city.execute_locally(city);
-  delete_city.execute_locally(city);
+  procedures.insert_city.execute_locally(city);
+  procedures.delete_city.execute_locally(city);
  }
 
  return 0;

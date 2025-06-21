@@ -3,15 +3,14 @@ TODO
 
 Stored Procedures
 -----------------
- - Generate list of procedures by grepping header files -> compile procedure
-   collection for client and server. Also compute collection signature at
-   compile time.
+ - Implement simple RPC client/server
+ - Compute collection signature at compile time.
  - check matching procedure schemas between client and server at handshake
  - error handling: catch exception, and rollback if necessary.
  - multi threaded server: use a mutex with the client (Thread_Safe_Client with Client_Read_Lock, Client_Write_Lock)
  - store whole joedbi as message prefix (not schema only)
- - allow procedures to be "stateful": keep state on the server during session
- - generate wasm interface with joebc -> web site
+ - allow procedures to be "stateful": keep state on the server during session?
+ - generate wasm interface with joedbc -> web site
  - generate java/kotlin interface with joedbc -> Android app
 
 On-disk Storage
