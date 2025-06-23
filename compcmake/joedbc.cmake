@@ -131,17 +131,15 @@ function(joedbc_build_absolute dir namespace)
  )
 
  set(readonly_cpp ${slash_list})
- set(readonly_h   ${slash_list})
  set(writable_cpp ${slash_list})
- set(writable_h   ${slash_list})
+ set(Procedures_cpp ${slash_list})
 
  list(TRANSFORM readonly_cpp REPLACE "\.joedbi$" "/readonly.cpp")
- list(TRANSFORM readonly_h   REPLACE "\.joedbi$" "/readonly.h"  )
  list(TRANSFORM writable_cpp REPLACE "\.joedbi$" "/writable.cpp")
- list(TRANSFORM writable_h   REPLACE "\.joedbi$" "/writable.h"  )
+ list(TRANSFORM Procedures_cpp REPLACE "\.joedbi$" "/Procedures.cpp")
 
  add_custom_command(
-  OUTPUT ${readonly_cpp} ${readonly_h} ${writable_cpp} ${writable_h}
+  OUTPUT ${readonly_cpp} ${writable_cpp} ${Procedures_cpp}
   COMMAND joedbc ${namespace}
   DEPENDS joedbc ${joedbis} ${joedbcs}
   WORKING_DIRECTORY ${dir}
