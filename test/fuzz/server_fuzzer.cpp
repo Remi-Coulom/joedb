@@ -15,7 +15,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
  joedb::Connection connection;
  joedb::Writable_Journal_Client client(file, connection);
 
- asio::io_context io_context;
+ boost::asio::io_context io_context;
 
  joedb::Server server
  (

@@ -223,7 +223,7 @@ namespace joedb
       std::string s(dir_entry.file_size(), 0);
       {
        std::ifstream file(dir_entry.path());
-       file.read(s.data(), s.size());
+       file.read(s.data(), static_cast<std::streamsize>(s.size()));
       }
 
       for
