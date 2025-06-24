@@ -12,6 +12,7 @@ Stored Procedures
  - allow procedures to be "stateful": keep state on the server during session?
  - generate wasm interface with joedbc -> web site
  - generate java/kotlin interface with joedbc -> Android app
+ - Implement monitor app as example. Monitor db backups.
 
 On-disk Storage
 ---------------
