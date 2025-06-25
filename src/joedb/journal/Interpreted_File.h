@@ -30,6 +30,10 @@ namespace joedb
   };
  }
 
+ /// Read or write to a text file in joedbi format
+ ///
+ /// This class does not provide any handling of concurrency or durability
+ ///
  /// @ingroup journal
  class Interpreted_File:
   private detail::Interpreted_File_Data,

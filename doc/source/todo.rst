@@ -91,6 +91,7 @@ Concurrency
   - write log as joedb file?
 
 - Do not crash on write error, continue to allow reading?
+- joedb::streambuf -> concurrency and durability for joedb::Interpreted_File?
 - Asynchronous client code:
 
   - Robust_Connection to synchronous backup should not block reads in Server

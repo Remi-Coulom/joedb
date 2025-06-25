@@ -10,6 +10,8 @@
 
 namespace joedb
 {
+ /// Read a text file in joedbi format
+ ///
  /// @ingroup journal
  class Readonly_Interpreted_File: public Memory_File
  {

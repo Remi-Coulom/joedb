@@ -7,6 +7,9 @@
 
 namespace joedb::rpc
 {
+ /// Procedure to be executed by joedb::rpc::Server
+ ///
+ /// @ingroup RPC
  class Procedure
  {
   private:

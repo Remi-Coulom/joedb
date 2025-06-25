@@ -23,15 +23,16 @@ namespace joedb
  {
   private:
    const std::chrono::time_point<std::chrono::steady_clock> start_time;
-   Client &client;
-   Writable_Journal_Client *writable_journal_client;
-   std::optional<Writable_Journal_Client_Lock> client_lock;
    boost::asio::io_context &io_context;
    const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;
    boost::asio::local::stream_protocol::acceptor acceptor;
    bool stopped;
    boost::asio::signal_set interrupt_signals;
+
+   Client &client;
+   Writable_Journal_Client *writable_journal_client;
+   std::optional<Writable_Journal_Client_Lock> client_lock;
 
    int64_t session_id;
 

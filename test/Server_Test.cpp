@@ -5,7 +5,7 @@
 #include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Server_File.h"
-#include "joedb/concurrency/IO_Context_Wrapper.h"
+#include "joedb/asio/io_context.h"
 #include "joedb/concurrency/Local_Connector.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
@@ -34,7 +34,7 @@ namespace joedb
    std::vector<char> data;
    Shared_Memory_File file{data};
    Writable_Journal_Client client{file};
-   IO_Context_Wrapper io_context;
+   joedb::asio::io_context io_context;
 
    Server server;
    std::thread thread;
@@ -48,7 +48,7 @@ namespace joedb
     server
     {
      client,
-     io_context.io_context,
+     *io_context,
      std::string(endpoint_path),
      lock_timeout,
      log_to_cerr ? &std::cerr : &log_stream
@@ -61,7 +61,7 @@ namespace joedb
    {
     if (!paused)
     {
-     boost::asio::post(io_context.io_context.get_executor(), [&](){server.stop();});
+     boost::asio::post(io_context->get_executor(), [&](){server.stop();});
      thread.join();
      paused = true;
     }
@@ -71,8 +71,8 @@ namespace joedb
    {
     if (paused)
     {
-     boost::asio::post(io_context.io_context.get_executor(), [this](){server.start();});
-     io_context.io_context.restart();
+     boost::asio::post(io_context->get_executor(), [this](){server.start();});
+     io_context->restart();
      thread = std::thread(
       [&io_context_reference = io_context]()
       {
@@ -218,12 +218,12 @@ namespace joedb
 
   File server_file(file_name, Open_Mode::read_existing);
   Readonly_Client server_client{server_file};
-  IO_Context_Wrapper io_context;
+  joedb::asio::io_context io_context;
 
   Server server
   (
    server_client,
-   io_context.io_context,
+   *io_context,
    "big_read.sock",
    std::chrono::seconds(0),
    log_to_cerr ? &std::cerr : &log_stream
@@ -239,7 +239,7 @@ namespace joedb
    client.pull();
   }
 
-  boost::asio::post(io_context.io_context.get_executor(), [&](){server.stop();});
+  boost::asio::post(io_context->get_executor(), [&](){server.stop();});
   thread.join();
   std::remove(file_name);
  }
@@ -710,14 +710,14 @@ namespace joedb
 
   File_Connection connection(connection_file);
   Writable_Journal_Client client{file, connection};
-  IO_Context_Wrapper io_context;
+  joedb::asio::io_context io_context;
 
   EXPECT_TRUE(file.get_size() > connection_file.get_size());
 
   Server server
   {
    client,
-   io_context.io_context,
+   *io_context,
    std::string(Test_Server::default_endpoint_path),
    std::chrono::seconds(0),
    log_to_cerr ? &std::cerr : &log_stream
@@ -737,12 +737,12 @@ namespace joedb
   Server_Connection backup_server_connection(channel);
   Writable_Journal_Client backup_client(file, backup_server_connection);
 
-  IO_Context_Wrapper io_context;
+  joedb::asio::io_context io_context;
 
   Server server
   {
    backup_client,
-   io_context.io_context,
+   *io_context,
    "another_server.sock",
    std::chrono::seconds(0),
    nullptr
@@ -789,7 +789,7 @@ namespace joedb
    }
   }
 
-  boost::asio::post(io_context.io_context.get_executor(), [&](){server.stop();});
+  boost::asio::post(io_context->get_executor(), [&](){server.stop();});
   thread.join();
  }
 
@@ -1072,7 +1072,7 @@ namespace joedb
   {
   }
 
-  server.io_context.io_context.poll();
+  server.io_context->poll();
   EXPECT_FALSE(server.server.has_client_lock());
  }
 }

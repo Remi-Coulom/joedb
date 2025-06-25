@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/IO_Context_Wrapper.h"
+#include "joedb/asio/io_context.h"
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Arguments.h"
@@ -53,7 +53,7 @@ namespace joedb
 
   Client &client = *client_parser.get();
 
-  IO_Context_Wrapper io_context_wrapper;
+  joedb::asio::io_context io_context;
 
   std::cout << "Creating server (endpoint_path = " << endpoint_path;
   std::cout << "; timeout = " << timeout_seconds << ")\n";
@@ -61,13 +61,13 @@ namespace joedb
   Server server
   (
    client,
-   io_context_wrapper.io_context,
+   *io_context,
    std::string(endpoint_path),
    std::chrono::milliseconds(int(timeout_seconds * 1000)),
    &std::cerr
   );
 
-  io_context_wrapper.run();
+  io_context.run();
 
   return 0;
  }

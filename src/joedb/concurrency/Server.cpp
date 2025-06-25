@@ -758,14 +758,14 @@ namespace joedb
   std::ostream * const log_pointer
  ):
   start_time(std::chrono::steady_clock::now()),
-  client(client),
-  writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   io_context(io_context),
   endpoint_path(std::move(endpoint_path)),
   endpoint(this->endpoint_path),
   acceptor(io_context, endpoint, false),
   stopped(true),
   interrupt_signals(io_context, SIGINT, SIGTERM),
+  client(client),
+  writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   session_id(0),
   lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),

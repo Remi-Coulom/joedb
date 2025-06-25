@@ -2,7 +2,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/concurrency/IO_Context_Wrapper.h"
+#include "joedb/asio/io_context.h"
 
 #include <iostream>
 #include <list>
@@ -60,7 +60,7 @@ namespace joedb
    return 1;
   }
 
-  IO_Context_Wrapper io_context_wrapper;
+  joedb::asio::io_context io_context;
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
@@ -72,7 +72,7 @@ namespace joedb
    (
     new Server_Data
     (
-     io_context_wrapper.io_context,
+     *io_context,
      file_name,
      file_name + ".sock",
      std::chrono::milliseconds(int(timeout_seconds * 1000))
@@ -80,7 +80,7 @@ namespace joedb
    );
   }
 
-  io_context_wrapper.run();
+  io_context.run();
 
   return 0;
  }
