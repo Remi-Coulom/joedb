@@ -27,7 +27,7 @@ namespace joedb
    Writable_Journal_Client *writable_journal_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
    boost::asio::io_context &io_context;
-   std::string endpoint_path;
+   const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;
    boost::asio::local::stream_protocol::acceptor acceptor;
    bool stopped;
