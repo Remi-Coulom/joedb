@@ -13,7 +13,6 @@ namespace joedb::asio
  class Server
  { 
   protected:
-   const std::chrono::time_point<std::chrono::steady_clock> start_time;
    boost::asio::io_context &io_context;
    const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;

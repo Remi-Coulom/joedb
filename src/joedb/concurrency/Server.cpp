@@ -32,23 +32,9 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- std::chrono::milliseconds Server::get_time_stamp() const
- ////////////////////////////////////////////////////////////////////////////
- {
-  return std::chrono::duration_cast<std::chrono::milliseconds>
-  (
-   std::chrono::steady_clock::now() - start_time
-  );
- }
-
- ////////////////////////////////////////////////////////////////////////////
  std::ostream &Server::Session::write_id(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-#if 0
-  out << server.get_time_stamp().count() << ' ';
-#endif
-
   out << server.endpoint_path << '('
       << server.client.get_journal_checkpoint() << "): " << id << ": ";
 
