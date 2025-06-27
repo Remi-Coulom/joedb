@@ -18,10 +18,10 @@ History
     - writable :joedb:`File_View`, now built from a :joedb:`Buffered_File`, and
       overriding all :joedb:`Abstract_File` functions.
 
-  - Fixes:
+- 2025-06-13 10.0.1 LTS Minor Bug Fixes
 
-    - Fix joedbc crash when no namespace is provided
-    - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
+  - Fix joedbc crash when no namespace is provided
+  - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
 
 - 2025-05-26 10.0.0 LTS
 
