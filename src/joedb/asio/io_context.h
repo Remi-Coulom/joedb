@@ -8,13 +8,13 @@ namespace joedb::asio
  struct io_context
  {
   private:
-   boost::asio::io_context value;
+   boost::asio::io_context context;
 
   public:
    io_context();
 
-   boost::asio::io_context &operator*() {return value;}
-   boost::asio::io_context *operator->() {return &value;}
+   boost::asio::io_context &operator*() {return context;}
+   boost::asio::io_context *operator->() {return &context;}
 
    void run();
 
