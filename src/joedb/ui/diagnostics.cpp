@@ -80,6 +80,7 @@ namespace joedb
 #endif
 
   out << "\ncompiled: " << __DATE__ << ' ' << __TIME__;
+  out << "\n__cplusplus = " << __cplusplus;
   out << "\nsizeof(bool) = " << sizeof(bool);
   out << "\nsizeof(size_t) = " << sizeof(size_t);
   out << "\nsizeof(long) = " << sizeof(long);
