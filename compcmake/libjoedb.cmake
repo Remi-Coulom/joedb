@@ -63,6 +63,7 @@ endif()
 if (asio_FOUND)
  set(JOEDB_SOURCES
   ${JOEDB_SRC_DIR}/joedb/asio/io_context.cpp
+  ${JOEDB_SRC_DIR}/joedb/asio/Server.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}

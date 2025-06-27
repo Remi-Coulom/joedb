@@ -757,13 +757,7 @@ namespace joedb
   const std::chrono::milliseconds lock_timeout,
   std::ostream * const log_pointer
  ):
-  start_time(std::chrono::steady_clock::now()),
-  io_context(io_context),
-  endpoint_path(std::move(endpoint_path)),
-  endpoint(this->endpoint_path),
-  acceptor(io_context, endpoint, false),
-  stopped(true),
-  interrupt_signals(io_context, SIGINT, SIGTERM),
+  joedb::asio::Server(io_context, endpoint_path),
   client(client),
   writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   session_id(0),
@@ -850,7 +844,6 @@ namespace joedb
   {
    if (!sessions.empty())
     LOG("Destroying server before sessions.\n");
-   std::remove(endpoint_path.c_str());
   }
   catch (...)
   {

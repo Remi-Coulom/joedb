@@ -4,6 +4,7 @@
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/ui/Progress_Bar.h"
+#include "joedb/asio/Server.h"
 
 #include <queue>
 #include <iosfwd>
@@ -12,24 +13,12 @@
 #include <optional>
 #include <map>
 
-#include <boost/asio/local/stream_protocol.hpp>
-#include <boost/asio/steady_timer.hpp>
-#include <boost/asio/signal_set.hpp>
-
 namespace joedb
 {
  /// @ingroup concurrency
- class Server
+ class Server: public joedb::asio::Server
  {
   private:
-   const std::chrono::time_point<std::chrono::steady_clock> start_time;
-   boost::asio::io_context &io_context;
-   const std::string endpoint_path;
-   boost::asio::local::stream_protocol::endpoint endpoint;
-   boost::asio::local::stream_protocol::acceptor acceptor;
-   bool stopped;
-   boost::asio::signal_set interrupt_signals;
-
    Client &client;
    Writable_Journal_Client *writable_journal_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
