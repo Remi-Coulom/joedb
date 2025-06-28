@@ -5,6 +5,8 @@
 
 namespace joedb::asio
 {
+ /// wrapper around boost::asio::io_context
+ /// @ingroup asio
  struct io_context
  {
   private:
