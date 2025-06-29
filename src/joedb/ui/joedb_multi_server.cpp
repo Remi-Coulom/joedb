@@ -60,7 +60,7 @@ namespace joedb
    return 1;
   }
 
-  joedb::asio::io_context io_context;
+  joedb::asio::io_context io_context(1);
 
   std::list<std::unique_ptr<Server_Data>> servers;
 

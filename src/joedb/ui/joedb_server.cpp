@@ -53,7 +53,7 @@ namespace joedb
 
   Client &client = *client_parser.get();
 
-  joedb::asio::io_context io_context;
+  joedb::asio::io_context io_context(1);
 
   std::cout << "Creating server (endpoint_path = " << endpoint_path;
   std::cout << "; timeout = " << timeout_seconds << ")\n";

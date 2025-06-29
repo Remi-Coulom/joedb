@@ -14,6 +14,7 @@ namespace joedb::asio
 
   public:
    io_context();
+   io_context(int concurrency_hint);
 
    boost::asio::io_context &operator*() {return context;}
    boost::asio::io_context *operator->() {return &context;}

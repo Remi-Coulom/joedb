@@ -127,8 +127,8 @@ reconnect when it accepts connections again.
 When the database is very big, downloading a local copy may not be possible or
 convenient. :joedb:`Server_File` solves this problem by reading the body of the
 file from the remote server directly. The head and tail of the file are stored
-locally in memory, which allows writing. This is particularly convenient for
-large blob databases.
+locally in memory, which allows writing. This is particularly useful for large
+blob databases.
 
 :joedb:`Server_File` is both a :joedb:`Connection` and a
 :joedb:`Buffered_File`. When constructing a :joedb:`Client`, it must be used as
