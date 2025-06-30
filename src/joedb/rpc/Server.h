@@ -26,64 +26,72 @@ namespace joedb::rpc
 
    boost::asio::strand<boost::asio::io_context::executor_type> main_strand;
 
-   // TODO: Thread_Safe_Sockets wrapper (make a generic template)
-   std::mutex sockets_mutex;
-   std::set<boost::asio::local::stream_protocol::socket *> sockets;
-
-   class Socket_Tracker
+   struct Session
    {
-    private:
-     Server &server;
-     boost::asio::local::stream_protocol::socket &socket;
+    Server &server;
+    boost::asio::local::stream_protocol::socket socket;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand;
 
-    public:
-     Socket_Tracker
-     (
-      Server &server,
-      boost::asio::local::stream_protocol::socket &socket
-     ): server(server), socket(socket)
-     {
-      std::unique_lock lock(server.sockets_mutex);
-      server.sockets.insert(&socket);
-     }
-
-     ~Socket_Tracker()
-     {
-      std::unique_lock lock(server.sockets_mutex);
-      server.sockets.erase(&socket);
-     }
+    Session
+    (
+     Server &server,
+     boost::asio::local::stream_protocol::socket &&socket
+    ):
+     server(server),
+     socket(std::move(socket)),
+     strand(server.io_context.get_executor())
+    {
+     std::lock_guard lock(server.sessions_mutex);
+     server.sessions.insert(this);
+    }
    };
 
-   boost::asio::awaitable<void> session
+   std::mutex sessions_mutex;
+   std::set<Session *> sessions;
+
+   boost::asio::awaitable<void> run_session // session->strand
    (
-    boost::asio::local::stream_protocol::socket socket
+    std::unique_ptr<Session> session
    )
    {
-    Socket_Tracker socket_tracker(*this, socket);
-
-    std::array<char, 1024> buffer;
-
-    while (true)
+    try
     {
-     size_t n = co_await socket.async_read_some
-     (
-      boost::asio::buffer(buffer),
-      boost::asio::use_awaitable
-     );
+     std::array<char, 1024> buffer;
 
-     if (n < procedures.size())
+     while (true)
      {
-      co_await boost::asio::async_write
+      size_t n = co_await session->socket.async_read_some
       (
-       socket,
-       boost::asio::buffer(buffer, n),
+       boost::asio::buffer(buffer),
        boost::asio::use_awaitable
       );
+
+      if (n < procedures.size())
+      {
+       co_await boost::asio::async_write
+       (
+        session->socket,
+        boost::asio::buffer(buffer, n),
+        boost::asio::use_awaitable
+       );
+      }
      }
     }
+    catch (...)
+    {
+    }
+
+    {
+     std::lock_guard lock(sessions_mutex);
+     sessions.erase(session.get());
+    }
+
+    // TODO: completion handler
+    // https://stackoverflow.com/questions/68041906/boostasioco-spawn-does-not-propagate-exception
+    // -> stop the server in case of exception
    }
 
-   boost::asio::awaitable<void> listener()
+   boost::asio::awaitable<void> listener() // main_strand
    {
     while (true)
     {
@@ -92,17 +100,18 @@ namespace joedb::rpc
 
      if (!stopped)
      {
+      auto session = std::make_unique<Session>(*this, std::move(socket));
       boost::asio::co_spawn
       (
-       io_context,
-       session(std::move(socket)),
+       session->strand,
+       run_session(std::move(session)),
        boost::asio::detached
       );
      }
     }
    }
 
-   void start()
+   void start() // main_strand
    {
     if (stopped)
     {
@@ -126,7 +135,7 @@ namespace joedb::rpc
     }
    }
 
-   void stop()
+   void stop() // main_strand
    {
     if (!stopped)
     {
@@ -136,9 +145,15 @@ namespace joedb::rpc
      acceptor.cancel();
 
      {
-      std::unique_lock lock(sockets_mutex);
-      for (auto *socket: sockets)
-       socket->close();
+      std::lock_guard lock(sessions_mutex);
+      for (auto *session: sessions)
+      {
+       boost::asio::post
+       (
+        session->strand,
+        [session](){session->socket.close();}
+       );
+      }
      }
     }
    }
