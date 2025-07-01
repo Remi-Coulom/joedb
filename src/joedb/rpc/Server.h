@@ -9,6 +9,7 @@
 #include "boost/asio/co_spawn.hpp"
 #include "boost/asio/write.hpp"
 #include "boost/asio/strand.hpp"
+#include "boost/asio/bind_executor.hpp"
 
 #include <vector>
 #include <functional>
@@ -41,54 +42,36 @@ namespace joedb::rpc
      socket(std::move(socket)),
      strand(server.io_context.get_executor())
     {
-     std::lock_guard lock(server.sessions_mutex);
-     server.sessions.insert(this);
     }
    };
 
-   std::mutex sessions_mutex;
-   std::set<Session *> sessions;
+   std::set<std::shared_ptr<Session>> sessions;
 
    boost::asio::awaitable<void> run_session // session->strand
    (
-    std::unique_ptr<Session> session
+    std::shared_ptr<Session> session
    )
    {
-    try
-    {
-     std::array<char, 1024> buffer;
+    std::array<char, 1024> buffer;
 
-     while (true)
+    while (true)
+    {
+     size_t n = co_await session->socket.async_read_some
+     (
+      boost::asio::buffer(buffer),
+      boost::asio::use_awaitable
+     );
+
+     if (n < procedures.size())
      {
-      size_t n = co_await session->socket.async_read_some
+      co_await boost::asio::async_write
       (
-       boost::asio::buffer(buffer),
+       session->socket,
+       boost::asio::buffer(buffer, n),
        boost::asio::use_awaitable
       );
-
-      if (n < procedures.size())
-      {
-       co_await boost::asio::async_write
-       (
-        session->socket,
-        boost::asio::buffer(buffer, n),
-        boost::asio::use_awaitable
-       );
-      }
      }
     }
-    catch (...)
-    {
-    }
-
-    {
-     std::lock_guard lock(sessions_mutex);
-     sessions.erase(session.get());
-    }
-
-    // TODO: completion handler
-    // https://stackoverflow.com/questions/68041906/boostasioco-spawn-does-not-propagate-exception
-    // -> stop the server in case of exception
    }
 
    boost::asio::awaitable<void> listener() // main_strand
@@ -100,12 +83,23 @@ namespace joedb::rpc
 
      if (!stopped)
      {
-      auto session = std::make_unique<Session>(*this, std::move(socket));
+      auto session_iterator = sessions.emplace
+      (
+       new Session(*this, std::move(socket))
+      ).first;
+
       boost::asio::co_spawn
       (
-       session->strand,
-       run_session(std::move(session)),
-       boost::asio::detached
+       (*session_iterator)->strand,
+       run_session(*session_iterator),
+       boost::asio::bind_executor
+       (
+        main_strand,
+        [this, session_iterator](std::exception_ptr exception_ptr)
+        {
+         sessions.erase(session_iterator);
+        }
+       )
       );
      }
     }
@@ -119,11 +113,14 @@ namespace joedb::rpc
 
      interrupt_signals.async_wait
      (
-      [this](const boost::system::error_code &error, int)
-      {
-       if (!error)
-        async_stop();
-      }
+      boost::asio::bind_executor
+      (
+       main_strand,
+       [this](const boost::system::error_code &error, int)
+       {
+        stop();
+       }
+      )
      );
 
      boost::asio::co_spawn
@@ -144,16 +141,13 @@ namespace joedb::rpc
      interrupt_signals.cancel();
      acceptor.cancel();
 
+     for (auto &session: sessions)
      {
-      std::lock_guard lock(sessions_mutex);
-      for (auto *session: sessions)
-      {
-       boost::asio::post
-       (
-        session->strand,
-        [session](){session->socket.close();}
-       );
-      }
+      boost::asio::post
+      (
+       session->strand,
+       [session](){session->socket.close();}
+      );
      }
     }
    }
