@@ -79,8 +79,14 @@ namespace joedb
    
     ~Websocket_Channel()
     {
-     boost::system::error_code ec;
-     ws.close(boost::beast::websocket::close_code::normal, ec);
+     try
+     {
+      boost::system::error_code ec;
+      ws.close(boost::beast::websocket::close_code::normal, ec);
+     }
+     catch (...)
+     {
+     }
     }
   };
  }
