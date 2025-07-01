@@ -1,7 +1,6 @@
 #ifndef joedb_rpc_Server_declared
 #define joedb_rpc_Server_declared
 
-#include "joedb/rpc/Procedure.h"
 #include "joedb/asio/Server.h"
 
 #include "boost/asio/awaitable.hpp"
@@ -11,8 +10,6 @@
 #include "boost/asio/strand.hpp"
 #include "boost/asio/bind_executor.hpp"
 
-#include <vector>
-#include <functional>
 #include <set>
 
 namespace joedb::rpc
@@ -23,11 +20,9 @@ namespace joedb::rpc
  class Server: public joedb::asio::Server
  {
   private:
-   const std::vector<std::reference_wrapper<Procedure>> &procedures;
-
    boost::asio::strand<boost::asio::io_context::executor_type> main_strand;
 
-   struct Session
+   struct Session: public std::enable_shared_from_this<Session>
    {
     Server &server;
     boost::asio::local::stream_protocol::socket socket;
@@ -43,35 +38,48 @@ namespace joedb::rpc
      strand(server.io_context.get_executor())
     {
     }
-   };
 
-   std::set<std::shared_ptr<Session>> sessions;
-
-   boost::asio::awaitable<void> run_session // session->strand
-   (
-    std::shared_ptr<Session> session
-   )
-   {
-    std::array<char, 1024> buffer;
-
-    while (true)
+    virtual boost::asio::awaitable<void> run() // session strand
     {
-     size_t n = co_await session->socket.async_read_some
-     (
-      boost::asio::buffer(buffer),
-      boost::asio::use_awaitable
-     );
+     std::array<char, 1024> buffer;
 
-     if (n < procedures.size())
+     while (true)
      {
+      size_t n = co_await socket.async_read_some
+      (
+       boost::asio::buffer(buffer),
+       boost::asio::use_awaitable
+      );
+
       co_await boost::asio::async_write
       (
-       session->socket,
+       socket,
        boost::asio::buffer(buffer, n),
        boost::asio::use_awaitable
       );
      }
     }
+
+    virtual void cancel()
+    {
+     boost::asio::post
+     (
+      strand,
+      [session = shared_from_this()](){session->socket.close();}
+     );
+    }
+
+    virtual ~Session() = default;
+   };
+
+   std::set<std::shared_ptr<Session>> sessions;
+
+   virtual std::shared_ptr<Session> new_session
+   (
+    boost::asio::local::stream_protocol::socket &socket
+   )
+   {
+    return std::make_shared<Session>(*this, std::move(socket));
    }
 
    boost::asio::awaitable<void> listener() // main_strand
@@ -83,15 +91,12 @@ namespace joedb::rpc
 
      if (!stopped)
      {
-      auto session_iterator = sessions.emplace
-      (
-       new Session(*this, std::move(socket))
-      ).first;
+      auto session_iterator = sessions.emplace(new_session(socket)).first;
 
       boost::asio::co_spawn
       (
        (*session_iterator)->strand,
-       run_session(*session_iterator),
+       (*session_iterator)->run(),
        boost::asio::bind_executor
        (
         main_strand,
@@ -141,26 +146,18 @@ namespace joedb::rpc
      interrupt_signals.cancel();
      acceptor.cancel();
 
-     for (auto &session: sessions)
-     {
-      boost::asio::post
-      (
-       session->strand,
-       [session](){session->socket.close();}
-      );
-     }
+     for (const auto &session: sessions)
+      session->cancel();
     }
    }
 
   public:
    Server
    (
-    const std::vector<std::reference_wrapper<Procedure>> &procedures,
     boost::asio::io_context &io_context,
     std::string endpoint_path
    ):
     joedb::asio::Server(io_context, endpoint_path),
-    procedures(procedures),
     main_strand(io_context.get_executor())
    {
     async_start();
@@ -175,6 +172,8 @@ namespace joedb::rpc
    {
     boost::asio::post(main_strand, [this](){stop();});
    }
+
+   virtual ~Server() = default;
  };
 }
 

@@ -170,9 +170,9 @@ namespace joedb
 
    void start_accept();
 
-   std::ostream *log_pointer;
-
    static const std::map<char, const char *> request_description;
+
+   std::ostream *log_pointer;
 
    template<typename F> void log(F f)
    {

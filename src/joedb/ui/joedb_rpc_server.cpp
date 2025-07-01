@@ -28,9 +28,10 @@ namespace joedb
   std::cout << "endpoint_path = " << endpoint_path << '\n';
 
   const int thread_count = int(std::thread::hardware_concurrency());
-  std::vector<std::reference_wrapper<rpc::Procedure>> procedures;
+//  std::vector<std::reference_wrapper<rpc::Procedure>> procedures;
   joedb::asio::io_context io_context(thread_count);
-  rpc::Server server(procedures, *io_context, std::string(endpoint_path));
+//  rpc::Server server(procedures, *io_context, std::string(endpoint_path));
+  rpc::Server server(*io_context, std::string(endpoint_path));
 
   std::vector<std::thread> threads;
 
