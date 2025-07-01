@@ -1,8 +1,9 @@
 #ifndef joedb_rpc_Server_declared
 #define joedb_rpc_Server_declared
 
-#include "joedb/asio/Server.h"
-
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/local/stream_protocol.hpp>
+#include <boost/asio/signal_set.hpp>
 #include "boost/asio/awaitable.hpp"
 #include "boost/asio/detached.hpp"
 #include "boost/asio/co_spawn.hpp"
@@ -10,29 +11,38 @@
 #include "boost/asio/strand.hpp"
 #include "boost/asio/bind_executor.hpp"
 
-#include <set>
-
 namespace joedb::rpc
 {
  /// RPC Server
  ///
  /// @ingroup RPC
- class Server: public joedb::asio::Server
+ class Server
  {
-  private:
+  protected:
+   const std::string endpoint_path;
+   boost::asio::local::stream_protocol::endpoint endpoint;
+   boost::asio::local::stream_protocol::acceptor acceptor;
+   boost::asio::signal_set interrupt_signals;
+
+   boost::asio::io_context io_context;
    boost::asio::strand<boost::asio::io_context::executor_type> main_strand;
 
-   struct Session: public std::enable_shared_from_this<Session>
+   // TODO: add logging
+
+   struct Session
    {
+    const int64_t id;
     Server &server;
     boost::asio::local::stream_protocol::socket socket;
     boost::asio::strand<boost::asio::io_context::executor_type> strand;
 
     Session
     (
+     int64_t id,
      Server &server,
      boost::asio::local::stream_protocol::socket &&socket
     ):
+     id(id),
      server(server),
      socket(std::move(socket)),
      strand(server.io_context.get_executor())
@@ -51,6 +61,8 @@ namespace joedb::rpc
        boost::asio::use_awaitable
       );
 
+      // TODO: log received n bytes
+
       co_await boost::asio::async_write
       (
        socket,
@@ -60,117 +72,84 @@ namespace joedb::rpc
      }
     }
 
-    virtual void cancel()
-    {
-     boost::asio::post
-     (
-      strand,
-      [session = shared_from_this()](){session->socket.close();}
-     );
-    }
-
     virtual ~Session() = default;
    };
 
-   std::set<std::shared_ptr<Session>> sessions;
-
-   virtual std::shared_ptr<Session> new_session
+   virtual std::unique_ptr<Session> new_session // main_strand
    (
-    boost::asio::local::stream_protocol::socket &socket
+    int64_t id,
+    boost::asio::local::stream_protocol::socket &&socket
    )
    {
-    return std::make_shared<Session>(*this, std::move(socket));
+    return std::make_unique<Session>(id, *this, std::move(socket));
    }
+
+  private:
+   int64_t session_id = 0;
 
    boost::asio::awaitable<void> listener() // main_strand
    {
     while (true)
     {
-     boost::asio::local::stream_protocol::socket socket =
-      co_await acceptor.async_accept(boost::asio::use_awaitable);
-
-     if (!stopped)
-     {
-      auto session_iterator = sessions.emplace(new_session(socket)).first;
-
-      boost::asio::co_spawn
-      (
-       (*session_iterator)->strand,
-       (*session_iterator)->run(),
-       boost::asio::bind_executor
-       (
-        main_strand,
-        [this, session_iterator](std::exception_ptr exception_ptr)
-        {
-         sessions.erase(session_iterator);
-        }
-       )
-      );
-     }
-    }
-   }
-
-   void start() // main_strand
-   {
-    if (stopped)
-    {
-     stopped = false;
-
-     interrupt_signals.async_wait
+     auto session = new_session
      (
-      boost::asio::bind_executor
-      (
-       main_strand,
-       [this](const boost::system::error_code &error, int)
-       {
-        stop();
-       }
-      )
+      session_id++,
+      co_await acceptor.async_accept(boost::asio::use_awaitable)
      );
+
+     // TODO: log session creation
+
+     const auto session_ptr = session.get();
 
      boost::asio::co_spawn
      (
-      main_strand,
-      listener(),
-      boost::asio::detached
+      session_ptr->strand,
+      session_ptr->run(),
+      boost::asio::bind_executor
+      (
+       main_strand,
+       [ending_session = std::move(session)](std::exception_ptr exception_ptr)
+       {
+        // TODO: log session destruction
+       }
+      )
      );
-    }
-   }
-
-   void stop() // main_strand
-   {
-    if (!stopped)
-    {
-     stopped = true;
-
-     interrupt_signals.cancel();
-     acceptor.cancel();
-
-     for (const auto &session: sessions)
-      session->cancel();
     }
    }
 
   public:
-   Server
-   (
-    boost::asio::io_context &io_context,
-    std::string endpoint_path
-   ):
-    joedb::asio::Server(io_context, endpoint_path),
+   Server(std::string endpoint_path):
+    endpoint_path(std::move(endpoint_path)),
+    endpoint(this->endpoint_path),
+    acceptor(io_context, endpoint, false),
+    interrupt_signals(io_context, SIGINT, SIGTERM),
     main_strand(io_context.get_executor())
    {
-    async_start();
+    // TODO: log server creation
+    interrupt_signals.async_wait
+    (
+     boost::asio::bind_executor
+     (
+      main_strand,
+      [this](const boost::system::error_code &error, int)
+      {
+       // TODO: log interruption
+       this->io_context.stop();
+      }
+     )
+    );
+
+    boost::asio::co_spawn
+    (
+     main_strand,
+     listener(),
+     boost::asio::detached
+    );
    }
 
-   void async_start()
+   boost::asio::io_context &get_io_context()
    {
-    boost::asio::post(main_strand, [this](){start();});
-   }
-
-   void async_stop()
-   {
-    boost::asio::post(main_strand, [this](){stop();});
+    return io_context;
    }
 
    virtual ~Server() = default;
