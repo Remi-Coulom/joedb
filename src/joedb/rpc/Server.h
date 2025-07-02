@@ -1,6 +1,8 @@
 #ifndef joedb_rpc_Server_declared
 #define joedb_rpc_Server_declared
 
+#include "joedb/error/Logger.h"
+
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/local/stream_protocol.hpp>
 #include <boost/asio/signal_set.hpp>
@@ -11,6 +13,8 @@
 #include "boost/asio/strand.hpp"
 #include "boost/asio/bind_executor.hpp"
 
+#include <thread>
+
 namespace joedb::rpc
 {
  /// RPC Server
@@ -19,22 +23,33 @@ namespace joedb::rpc
  class Server
  {
   protected:
+   Logger &logger;
+   const int log_level;
+   void log(std::string_view s)
+   {
+    logger.write(endpoint_path + ": " + std::string(s) + '\n');
+   }
+
+   const int thread_count;
+   boost::asio::io_context io_context;
+   boost::asio::strand<boost::asio::io_context::executor_type> main_strand;
+
    const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;
    boost::asio::local::stream_protocol::acceptor acceptor;
    boost::asio::signal_set interrupt_signals;
-
-   boost::asio::io_context io_context;
-   boost::asio::strand<boost::asio::io_context::executor_type> main_strand;
-
-   // TODO: add logging
 
    struct Session
    {
     const int64_t id;
     Server &server;
     boost::asio::local::stream_protocol::socket socket;
-    boost::asio::strand<boost::asio::io_context::executor_type> strand;
+    const boost::asio::strand<boost::asio::io_context::executor_type> strand;
+
+    void log(std::string_view s)
+    {
+     server.log(std::to_string(id) + ": " + std::string(s));
+    }
 
     Session
     (
@@ -47,6 +62,8 @@ namespace joedb::rpc
      socket(std::move(socket)),
      strand(server.io_context.get_executor())
     {
+     if (server.log_level > 1)
+      log("start");
     }
 
     virtual boost::asio::awaitable<void> run() // session strand
@@ -61,7 +78,10 @@ namespace joedb::rpc
        boost::asio::use_awaitable
       );
 
-      // TODO: log received n bytes
+      if (server.log_level > 2)
+       log(std::to_string(n) + " bytes");
+
+      std::this_thread::sleep_for(std::chrono::seconds(10));
 
       co_await boost::asio::async_write
       (
@@ -97,8 +117,6 @@ namespace joedb::rpc
       co_await acceptor.async_accept(boost::asio::use_awaitable)
      );
 
-     // TODO: log session creation
-
      const auto session_ptr = session.get();
 
      boost::asio::co_spawn
@@ -108,9 +126,13 @@ namespace joedb::rpc
       boost::asio::bind_executor
       (
        main_strand,
-       [ending_session = std::move(session)](std::exception_ptr exception_ptr)
+       [ending_session = std::move(session), this]
+       (
+        std::exception_ptr exception_ptr
+       )
        {
-        // TODO: log session destruction
+        if (log_level > 1)
+         ending_session->log("stop");
        }
       )
      );
@@ -118,14 +140,26 @@ namespace joedb::rpc
    }
 
   public:
-   Server(std::string endpoint_path):
+   Server
+   (
+    Logger &logger,
+    int log_level,
+    int thread_count,
+    std::string endpoint_path
+   ):
+    logger(logger),
+    log_level(log_level),
+    thread_count(thread_count),
+    io_context(thread_count),
+    main_strand(io_context.get_executor()),
     endpoint_path(std::move(endpoint_path)),
     endpoint(this->endpoint_path),
     acceptor(io_context, endpoint, false),
-    interrupt_signals(io_context, SIGINT, SIGTERM),
-    main_strand(io_context.get_executor())
+    interrupt_signals(io_context, SIGINT, SIGTERM)
    {
-    // TODO: log server creation
+    if (log_level > 0)
+     log("start");
+
     interrupt_signals.async_wait
     (
      boost::asio::bind_executor
@@ -133,7 +167,8 @@ namespace joedb::rpc
       main_strand,
       [this](const boost::system::error_code &error, int)
       {
-       // TODO: log interruption
+       if (this->log_level > 0)
+        this->log("interrupting...");
        this->io_context.stop();
       }
      )
@@ -147,12 +182,45 @@ namespace joedb::rpc
     );
    }
 
-   boost::asio::io_context &get_io_context()
+   void run()
    {
-    return io_context;
+    log("run, thread_count = " + std::to_string(thread_count));
+    std::vector<std::thread> threads;
+    threads.reserve(thread_count);
+
+    for (int i = thread_count; --i >= 0;)
+    {
+     threads.emplace_back
+     (
+      [this]()
+      {
+       try
+       {
+        io_context.run();
+       }
+       catch (...)
+       {
+       }
+      }
+     );
+    }
+
+    for (auto &thread: threads)
+     thread.join();
+
+    log("stop");
    }
 
-   virtual ~Server() = default;
+   virtual ~Server()
+   {
+    try
+    {
+     std::remove(endpoint_path.c_str());
+    }
+    catch (...)
+    {
+    }
+   }
  };
 }
 

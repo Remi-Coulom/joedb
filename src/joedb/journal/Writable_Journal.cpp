@@ -458,5 +458,5 @@ joedb::Writable_Journal::~Writable_Journal()
 /////////////////////////////////////////////////////////////////////////////
 {
  if (ahead_of_checkpoint() > 0)
-  Destructor_Logger::write("Ahead_of_checkpoint in Writable_Journal destructor");
+  Destructor_Logger::warning("Writable_Journal: ahead of checkpoint");
 }

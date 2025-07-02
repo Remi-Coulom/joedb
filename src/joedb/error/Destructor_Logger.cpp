@@ -9,11 +9,11 @@ namespace joedb
  Logger *Destructor_Logger::the_logger = &default_logger;
 
  ////////////////////////////////////////////////////////////////////////////
- void Destructor_Logger::write(const char * message) noexcept
+ void Destructor_Logger::warning(std::string_view message) noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
   if (the_logger)
-   the_logger->write(message);
+   the_logger->write("joedb: destructor warning: " + std::string(message) + '\n');
  }
 
  ////////////////////////////////////////////////////////////////////////////

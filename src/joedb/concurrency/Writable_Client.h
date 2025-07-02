@@ -242,7 +242,7 @@ namespace joedb
    {
     if (locked)
     {
-     Destructor_Logger::write("locked in destructor, cancelling transaction");
+     Destructor_Logger::warning("Client_Lock: locked, cancelling transaction");
      try { unlock(); } catch (...) {}
     }
    }

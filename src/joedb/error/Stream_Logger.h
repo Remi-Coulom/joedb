@@ -4,6 +4,7 @@
 #include "joedb/error/Logger.h"
 
 #include <ostream>
+#include <mutex>
 
 namespace joedb
 {
@@ -12,12 +13,14 @@ namespace joedb
  {
   private:
    std::ostream &out;
+   std::mutex mutex;
 
-   void write(const char *message) noexcept override
+   void write(std::string_view message) noexcept override
    {
     try
     {
-     out << "joedb: " << message << '\n';
+     std::lock_guard lock(mutex);
+     out << message;
     }
     catch (...)
     {

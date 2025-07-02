@@ -60,8 +60,8 @@ namespace joedb
   if (!File::lockable)
    GTEST_SKIP();
 
-  Destructor_Logger::write("Toto");
-  EXPECT_EQ(String_Logger::the_logger.get_message(), "Toto");
+  Destructor_Logger::warning("Toto");
+  EXPECT_EQ(String_Logger::the_logger.get_message(), "joedb: destructor warning: Toto\n");
 
   std::remove(file_name);
 
@@ -75,7 +75,7 @@ namespace joedb
   EXPECT_EQ
   (
    String_Logger::the_logger.get_message(),
-   "Ahead_of_checkpoint in Writable_Journal destructor"
+   "joedb: destructor warning: Writable_Journal: ahead of checkpoint\n"
   );
 
   try

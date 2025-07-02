@@ -1,19 +1,21 @@
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/rpc/Server.h"
+#include "joedb/error/Stream_Logger.h"
 
 #include <iostream>
-#include <thread>
 
 namespace joedb
 {
  static int rpc_server(Arguments &arguments)
  {
-  const std::string_view endpoint_path = arguments.get_string_option
+  const std::string_view endpoint_option = arguments.get_string_option
   (
    "socket",
    "endpoint_path",
-   "joedb_rpc_server.sock"
+   ""
   );
+
+  const int log_level = arguments.get_option<int>("log_level", "level", 100);
 
   const std::string_view file = arguments.get_next("<file.joedb>");
 
@@ -23,18 +25,21 @@ namespace joedb
    return 1;
   }
 
-  std::cout << "file = " << file << '\n';
-  std::cout << "endpoint_path = " << endpoint_path << '\n';
+  const std::string endpoint_path = endpoint_option.empty()
+   ? std::string(file) + ".sock"
+   : std::string(endpoint_option);
 
-  rpc::Server server((std::string(endpoint_path)));
+  Stream_Logger logger(std::cerr);
 
-  std::vector<std::thread> threads;
+  rpc::Server server
+  (
+   logger,
+   log_level,
+   std::thread::hardware_concurrency(),
+   std::string(endpoint_path)
+  );
 
-  for (int i = int(std::thread::hardware_concurrency()); --i >= 0;)
-   threads.emplace_back([&server](){server.get_io_context().run();});
-
-  for (auto &thread: threads)
-   thread.join();
+  server.run();
 
   return 0;
  }
