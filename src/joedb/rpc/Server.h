@@ -10,8 +10,6 @@
 #include "boost/asio/detached.hpp"
 #include "boost/asio/co_spawn.hpp"
 #include "boost/asio/write.hpp"
-#include "boost/asio/strand.hpp"
-#include "boost/asio/bind_executor.hpp"
 
 #include <thread>
 
@@ -32,7 +30,6 @@ namespace joedb::rpc
 
    const int thread_count;
    boost::asio::io_context io_context;
-   boost::asio::strand<boost::asio::io_context::executor_type> main_strand;
 
    const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;
@@ -44,7 +41,6 @@ namespace joedb::rpc
     const int64_t id;
     Server &server;
     boost::asio::local::stream_protocol::socket socket;
-    const boost::asio::strand<boost::asio::io_context::executor_type> strand;
 
     void log(std::string_view s)
     {
@@ -59,14 +55,13 @@ namespace joedb::rpc
     ):
      id(id),
      server(server),
-     socket(std::move(socket)),
-     strand(server.io_context.get_executor())
+     socket(std::move(socket))
     {
      if (server.log_level > 1)
       log("start");
     }
 
-    virtual boost::asio::awaitable<void> run() // session strand
+    virtual boost::asio::awaitable<void> run()
     {
      std::array<char, 1024> buffer;
 
@@ -95,7 +90,7 @@ namespace joedb::rpc
     virtual ~Session() = default;
    };
 
-   virtual std::unique_ptr<Session> new_session // main_strand
+   virtual std::unique_ptr<Session> new_session
    (
     int64_t id,
     boost::asio::local::stream_protocol::socket &&socket
@@ -107,7 +102,7 @@ namespace joedb::rpc
   private:
    int64_t session_id = 0;
 
-   boost::asio::awaitable<void> listener() // main_strand
+   boost::asio::awaitable<void> listener()
    {
     while (true)
     {
@@ -121,20 +116,16 @@ namespace joedb::rpc
 
      boost::asio::co_spawn
      (
-      session_ptr->strand,
+      io_context,
       session_ptr->run(),
-      boost::asio::bind_executor
+      [ending_session = std::move(session), this]
       (
-       main_strand,
-       [ending_session = std::move(session), this]
-       (
-        std::exception_ptr exception_ptr
-       )
-       {
-        if (log_level > 1)
-         ending_session->log("stop");
-       }
+       std::exception_ptr exception_ptr
       )
+      {
+       if (log_level > 1)
+        ending_session->log("stop");
+      }
      );
     }
    }
@@ -151,7 +142,6 @@ namespace joedb::rpc
     log_level(log_level),
     thread_count(thread_count),
     io_context(thread_count),
-    main_strand(io_context.get_executor()),
     endpoint_path(std::move(endpoint_path)),
     endpoint(this->endpoint_path),
     acceptor(io_context, endpoint, false),
@@ -162,21 +152,25 @@ namespace joedb::rpc
 
     interrupt_signals.async_wait
     (
-     boost::asio::bind_executor
-     (
-      main_strand,
-      [this](const boost::system::error_code &error, int)
+     [this](const boost::system::error_code &error, int signal)
+     {
+      if (!error)
       {
        if (this->log_level > 0)
-        this->log("interrupting...");
+       {
+        if (signal == SIGINT)
+         this->log("interrupted by SIGINT");
+        else if (signal == SIGTERM)
+         this->log("interrupted by SIGTERM");
+       }
        this->io_context.stop();
       }
-     )
+     }
     );
 
     boost::asio::co_spawn
     (
-     main_strand,
+     io_context,
      listener(),
      boost::asio::detached
     );
