@@ -1,15 +1,12 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/get_pid.h"
 #include "joedb/concurrency/protocol_version.h"
-#include "joedb/ui/get_time_string.h"
 #include "joedb/journal/File_Hasher.h"
-
-#define LOG(x) log([&](std::ostream &out){out << x;})
-#define LOGID(x) log([&](std::ostream &out){session->write_id(out) << x;})
 
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
+#include <boost/asio/co_spawn.hpp>
+
 #include <cstdio>
 
 namespace joedb
@@ -35,8 +32,8 @@ namespace joedb
  std::ostream &Server::Session::write_id(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << server.endpoint_path << '('
-      << server.client.get_journal_checkpoint() << "): " << id << ": ";
+  out << server.get_endpoint_path() << '('
+      << get_server().client.get_journal_checkpoint() << "): " << id << ": ";
 
   return out;
  }
@@ -48,17 +45,9 @@ namespace joedb
   Server &server,
   boost::asio::local::stream_protocol::socket &&socket
  ):
-  id(++server.session_id),
-  server(server),
-  socket(std::move(socket)),
+  joedb::asio::Server::Session(server, std::move(socket)),
   state(State::not_locking)
  {
-  server.log([this](std::ostream &out)
-  {
-   write_id(out) << "new session created\n";}
-  );
-  server.sessions.insert(this);
-  server.write_status();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -67,24 +56,11 @@ namespace joedb
  {
   try
   {
-   server.sessions.erase(this);
-
    if (state == State::locking)
    {
-    server.log([this](std::ostream &out)
-    {
-     write_id(out) << "removing lock held by dying session.\n";
-    });
-
-    server.unlock(*this);
+    log("removing lock held by dying session.\n");
+    get_server().unlock(*this);
    }
-
-   server.log([this](std::ostream &out)
-   {
-    write_id(out) << "deleted\n";
-   });
-
-   server.write_status();
   }
   catch (...)
   {
@@ -115,19 +91,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::write_status()
- ////////////////////////////////////////////////////////////////////////////
- {
-  log([this](std::ostream &out)
-  {
-   out << endpoint_path << '(' << client.get_journal_checkpoint();
-   out << "): pid = " << joedb::get_pid();
-   out << "; " << get_time_string_of_now();
-   out << "; sessions = " << sessions.size() << '\n';
-  });
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Server::lock_dequeue()
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -146,13 +109,13 @@ namespace joedb
     locked = true;
     const std::shared_ptr<Session> session = lock_queue.front();
     lock_queue.pop();
-    LOGID("locking\n");
+    session->log("locking");
 
     if (!client_lock)
     {
      if (!writable_journal_client)
      {
-      LOGID("error: locking pull-only server\n");
+      session->log("error: locking pull-only server");
       session->buffer.data[0] = 'R';
      }
      else
@@ -183,7 +146,7 @@ namespace joedb
    lock_dequeue();
   }
   else
-   LOGID("error: locking an already locked session\n");
+   session->log("error: locking an already locked session");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -192,10 +155,7 @@ namespace joedb
  {
   if (session.state == Session::State::locking)
   {
-   log([&session](std::ostream &out)
-   {
-    session.write_id(out) << "unlocking\n";
-   });
+   session.log("unlocking");
    session.state = Session::State::not_locking;
    locked = false;
    lock_timeout_timer.cancel();
@@ -214,7 +174,7 @@ namespace joedb
  {
   if (!error)
   {
-   LOGID("timeout\n");
+   session->log("timeout");
 
    if (session->push_writer)
    {
@@ -304,24 +264,26 @@ namespace joedb
    session->progress_bar.reset();
 
    session->buffer.data[0] = session->push_status;
-   LOGID("returning " << session->push_status << '\n');
+   session->log("returning " + std::to_string(session->push_status));
    write_buffer_and_next_command(session, 1);
 
    if (session->unlock_after_push)
     unlock(*session);
 
-   for (auto *other_session: sessions)
+   for (auto &waiting_session: waiting_sessions)
    {
     if
     (
-     other_session->state == Session::State::waiting_for_push_to_pull &&
-     other_session->pull_checkpoint < client.get_journal_checkpoint()
+     waiting_session->state == Session::State::waiting_for_push_to_pull &&
+     waiting_session->pull_checkpoint < client.get_journal_checkpoint()
     )
     {
-     other_session->state = Session::State::not_locking;
-     start_pulling(other_session->shared_from_this());
+     waiting_session->state = Session::State::not_locking;
+     start_pulling(waiting_session);
     }
    }
+
+   waiting_sessions.clear();
   }
  }
 
@@ -342,11 +304,11 @@ namespace joedb
 
    if (locked && session->state != Session::State::locking)
    {
-    LOGID("trying to push while someone else is locking\n");
+    session->log("trying to push while someone else is locking");
    }
    else if (!locked)
    {
-    LOGID("taking the lock for push attempt.\n");
+    session->log("taking the lock for push attempt.");
     lock(session, Session::State::waiting_for_lock_to_push);
    }
 
@@ -356,8 +318,9 @@ namespace joedb
     from != client.get_journal().get_checkpoint()
    );
 
-   LOGID("pushing, from = " << from << ", until = " << until);
-   session->progress_bar.emplace(until - from, log_pointer);
+   session->log("pushing, from = " + std::to_string(from) + ", until = " + std::to_string(until));
+
+   session->progress_bar.emplace(until - from, nullptr);
 
    if (!writable_journal_client)
     session->push_status = 'R';
@@ -404,7 +367,7 @@ namespace joedb
     );
 
     if (reader.is_end_of_file())
-     LOG("error: unexpected end of file\n");
+     session->log("error: unexpected end of file");
     else
     {
      refresh_lock_timeout(session);
@@ -437,8 +400,8 @@ namespace joedb
   Async_Reader reader
  )
  {
-  LOGID("reading from = " << reader.get_current() << ", until = " << reader.get_end());
-  session->progress_bar.emplace(reader.get_remaining(), log_pointer);
+  session->log("reading from = " + std::to_string(reader.get_current()) + ", until = " + std::to_string(reader.get_end()));
+  session->progress_bar.emplace(reader.get_remaining(), nullptr);
 
   session->buffer.index = 1;
   session->buffer.write<int64_t>(reader.get_end());
@@ -501,10 +464,10 @@ namespace joedb
     session->pull_checkpoint == client.get_journal_checkpoint()
    )
    {
-    LOGID
+    session->log
     (
-     "waiting at checkpoint = " << session->pull_checkpoint <<
-     " for " << double(wait.count()) * 0.001 << "s\n"
+     "waiting at checkpoint = " + std::to_string(session->pull_checkpoint) +
+     " for " + std::to_string(double(wait.count()) * 0.001) + 's'
     );
 
     session->state = Session::State::waiting_for_push_to_pull;
@@ -559,100 +522,151 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::check_hash_handler
+ boost::asio::awaitable<void> Server::Session::check_hash()
  ///////////////////////////////////////////////////////////////////////////
- (
-  const std::shared_ptr<Session> session,
-  const std::error_code error,
-  const size_t bytes_transferred
- )
  {
-  if (!error)
+  co_await boost::asio::async_read
+  (
+   socket,
+   boost::asio::buffer(buffer.data + 1, 40),
+   boost::asio::use_awaitable
+  );
+
+  buffer.index = 1;
+  const auto checkpoint = buffer.read<int64_t>();
+  const auto hash = buffer.read<SHA_256::Hash>();
+
+  const Readonly_Journal &journal = get_server().client.get_journal();
+
+  if
+  (
+   checkpoint > journal.get_checkpoint() ||
+   hash != (buffer.data[0] == 'H' // ??? takes_time
+   ? Journal_Hasher::get_fast_hash(journal, checkpoint)
+   : Journal_Hasher::get_full_hash(journal, checkpoint))
+  )
   {
-   session->buffer.index = 1;
-   const auto checkpoint = session->buffer.read<int64_t>();
-   const auto hash = session->buffer.read<SHA_256::Hash>();
-
-   const Readonly_Journal &journal = client.get_journal();
-
-   if
-   (
-    checkpoint > journal.get_checkpoint() ||
-    hash != (session->buffer.data[0] == 'H' // ??? takes_time
-    ? Journal_Hasher::get_fast_hash(journal, checkpoint)
-    : Journal_Hasher::get_full_hash(journal, checkpoint))
-   )
-   {
-    session->buffer.data[0] = 'h';
-   }
-
-   LOGID("hash for checkpoint = " << checkpoint << ", result = "
-    << session->buffer.data[0] << '\n');
-
-   write_buffer_and_next_command(session, 1);
+   buffer.data[0] = 'h';
   }
+
+  log
+  (
+   "hash for checkpoint = " + std::to_string(checkpoint) +
+   ", result = " + std::to_string(buffer.data[0])
+  );
+
+  co_await boost::asio::async_write
+  (
+   socket,
+   boost::asio::buffer(buffer.data, buffer.index),
+   boost::asio::use_awaitable
+  );
  }
 
  ///////////////////////////////////////////////////////////////////////////
- void Server::read_command_handler
+ boost::asio::awaitable<void> Server::Session::handshake()
  ///////////////////////////////////////////////////////////////////////////
- (
-  const std::shared_ptr<Session> session,
-  const std::error_code error,
-  const size_t bytes_transferred
- )
  {
-  if (!error)
-  {
-   const char code = session->buffer.data[0];
+  co_await boost::asio::async_read
+  (
+   socket,
+   boost::asio::buffer(buffer.data, 13),
+   boost::asio::use_awaitable
+  );
 
-   if (log_pointer)
+  buffer.index = 0;
+
+  if (buffer.read<std::array<char, 5>>() != Header::joedb)
+   throw Exception("handshake does not start by joedb");
+
+  const int64_t client_version = buffer.read<int64_t>();
+  log("client_version = " + std::to_string(client_version));
+
+  const int64_t version =
+   client_version < protocol_version ? 0 : protocol_version;
+
+  const bool writable =
+   get_server().writable_journal_client &&
+   !get_server().client.is_pullonly();
+
+  buffer.index = 5;
+  buffer.write<int64_t>(version);
+  buffer.write<int64_t>(id);
+  buffer.write<int64_t>(get_server().client.get_journal_checkpoint());
+  buffer.write<char>(writable ? 'W' : 'R');
+
+  co_await boost::asio::async_write
+  (
+   socket,
+   boost::asio::buffer(buffer.data, buffer.index),
+   boost::asio::use_awaitable
+  );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ boost::asio::awaitable<void> Server::Session::run()
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  co_await handshake();
+
+  while (true)
+  {
+   co_await boost::asio::async_read
+   (
+    socket,
+    boost::asio::buffer(buffer.data, 1),
+    boost::asio::use_awaitable
+   );
+
+   const char code = buffer.data[0];
+
+   if (server.get_log_level() > 1)
    {
     const auto i = request_description.find(code);
     if (i != request_description.end())
-     LOGID("received request " << code << ": " << i->second << '\n');
+     log(std::string("received request ") + code + ": " + i->second);
     else
-     LOGID("unknown code: " << code << '\n');
+     log(std::string("unknown code: ") + code);
    }
 
    switch (code)
    {
     case 'H': case 'I':
-     async_read(session, 1, 40, &Server::check_hash_handler);
-    break;
-
-    case 'r':
-     async_read(session, 1, 16, &Server::read_handler);
-    break;
-
-    case 'D': case 'E': case 'F': case 'G':
-     session->lock_before_pulling = code & 1;
-     session->send_pull_data = code & 2;
-     async_read(session, 1, 16, &Server::pull_handler);
-    break;
-
-    case 'M':
-     unlock(*session);
-     write_buffer_and_next_command(session, 1);
-    break;
-
-    case 'N': case 'O':
-     session->unlock_after_push = (code == 'O');
-     session->push_status = code;
-     async_read(session, 0, 16, &Server::push_handler);
+     co_await check_hash();
     break;
 
     default:
+     co_return;
     break;
    }
-  }
- }
 
- ///////////////////////////////////////////////////////////////////////////
- void Server::read_command(const std::shared_ptr<Session> session)
- ///////////////////////////////////////////////////////////////////////////
- {
-  async_read(session, 0, 1, &Server::read_command_handler);
+#if 0
+     case 'r':
+      async_read(session, 1, 16, &Server::read_handler);
+     break;
+
+     case 'D': case 'E': case 'F': case 'G':
+      lock_before_pulling = code & 1;
+      send_pull_data = code & 2;
+      async_read(session, 1, 16, &Server::pull_handler);
+     break;
+
+     case 'M':
+      server.unlock(*this);
+      write_buffer_and_next_command(session, 1);
+     break;
+
+     case 'N': case 'O':
+      unlock_after_push = (code == 'O');
+      push_status = code;
+      async_read(session, 0, 16, &Server::push_handler);
+     break;
+
+     default:
+     break;
+    }
+#endif
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -675,170 +689,26 @@ namespace joedb
   );
  }
 
- ///////////////////////////////////////////////////////////////////////////
- void Server::handshake_handler
- ///////////////////////////////////////////////////////////////////////////
- (
-  const std::shared_ptr<Session> session,
-  const std::error_code error,
-  const size_t bytes_transferred
- )
- {
-  if (!error)
-  {
-   session->buffer.index = 0;
-
-   if (session->buffer.read<std::array<char, 5>>() == Header::joedb)
-   {
-    const int64_t client_version = session->buffer.read<int64_t>();
-    LOGID("client_version = " << client_version << '\n');
-
-    session->buffer.index = 5;
-    session->buffer.write<int64_t>(client_version < protocol_version ? 0 : protocol_version);
-    session->buffer.write<int64_t>(session->id);
-    session->buffer.write<int64_t>(client.get_journal_checkpoint());
-    session->buffer.write<char>
-    (
-     (writable_journal_client && !client.is_pullonly()) ? 'W' : 'R'
-    );
-
-    write_buffer_and_next_command(session, session->buffer.index);
-    return;
-   }
-
-   LOGID("bad handshake\n");
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::start_accept()
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (!stopped)
-  {
-   acceptor.async_accept
-   (
-    io_context,
-    [this](std::error_code error, boost::asio::local::stream_protocol::socket socket)
-    {
-     if (!error && !stopped)
-     {
-      std::shared_ptr<Session> session(new Session(*this, std::move(socket)));
-      async_read(session, 0, 13, &Server::handshake_handler);
-
-      start_accept();
-     }
-    }
-   );
-  }
- }
-
  ////////////////////////////////////////////////////////////////////////////
  Server::Server
  ////////////////////////////////////////////////////////////////////////////
  (
-  Client &client,
-  boost::asio::io_context &io_context,
+  Logger &logger,
+  int log_level,
+  int thread_count,
   std::string endpoint_path,
-  const std::chrono::milliseconds lock_timeout,
-  std::ostream * const log_pointer
+  Client &client,
+  std::chrono::milliseconds lock_timeout
  ):
-  io_context(io_context),
-  endpoint_path(std::move(endpoint_path)),
-  endpoint(this->endpoint_path),
-  acceptor(io_context, endpoint, false),
-  stopped(true),
-  interrupt_signals(io_context, SIGINT, SIGTERM),
+  joedb::asio::Server(logger, log_level, thread_count, std::move(endpoint_path)),
   client(client),
   writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
-  session_id(0),
   lock_timeout(lock_timeout),
   lock_timeout_timer(io_context),
-  locked(false),
-  log_pointer(log_pointer)
+  locked(false)
  {
   if (writable_journal_client)
    writable_journal_client->push_if_ahead();
-
-  start();
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::start()
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (stopped)
-  {
-   stopped = false;
-
-   if (!client.is_shared() && writable_journal_client)
-    client_lock.emplace(*writable_journal_client);
-
-   interrupt_signals.async_wait([this](const boost::system::error_code &error, int)
-   {
-    if (!error)
-     stop();
-   });
-
-   start_accept();
-
-   // Note: C++20 has operator<< for durations
-   LOG
-   (
-    get_endpoint_path() <<
-    ": start. lock_timeout = " << double(lock_timeout.count()) * 0.001 <<
-    "s; protocol_version = " << protocol_version <<
-    "; shared = " << client.is_shared() << '\n'
-   );
-   write_status();
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::stop_after_sessions()
- ////////////////////////////////////////////////////////////////////////////
- {
-  acceptor.cancel();
-  interrupt_signals.cancel();
-  stopped = true;
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server::stop()
- ////////////////////////////////////////////////////////////////////////////
- {
-  if (!stopped)
-  {
-   LOG(get_endpoint_path() << ": stop\n");
-
-   for (Session *session: sessions)
-   {
-    session->socket.close();
-    session->pull_timer.reset();
-   }
-
-   if (client_lock)
-   {
-    client_lock->unlock();
-    client_lock.reset();
-   }
-
-   stop_after_sessions();
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Server::~Server()
- ////////////////////////////////////////////////////////////////////////////
- {
-  try
-  {
-   if (!sessions.empty())
-    LOG("Destroying server before sessions.\n");
-  }
-  catch (...)
-  {
-  }
  }
 }
 

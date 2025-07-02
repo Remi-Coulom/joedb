@@ -1,72 +1,77 @@
 #ifndef joedb_Server_declared
 #define joedb_Server_declared
 
+#include "joedb/asio/Server.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/ui/Progress_Bar.h"
 
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/local/stream_protocol.hpp>
-#include <boost/asio/signal_set.hpp>
-
 #include <queue>
-#include <iosfwd>
-#include <set>
-#include <chrono>
-#include <optional>
 #include <map>
 
 namespace joedb
 {
  /// @ingroup concurrency
- class Server
+ class Server: public joedb::asio::Server
  {
   private:
-   boost::asio::io_context &io_context;
-   const std::string endpoint_path;
-   boost::asio::local::stream_protocol::endpoint endpoint;
-   boost::asio::local::stream_protocol::acceptor acceptor;
-   bool stopped;
-   boost::asio::signal_set interrupt_signals;
-
    Client &client;
    Writable_Journal_Client *writable_journal_client;
    std::optional<Writable_Journal_Client_Lock> client_lock;
 
-   int64_t session_id;
-
-   struct Session: public std::enable_shared_from_this<Session>
+   class Session: public joedb::asio::Server::Session
    {
-    const int64_t id;
-    Server &server;
-    boost::asio::local::stream_protocol::socket socket;
-    Buffer<13> buffer;
-    enum class State
-    {
-     not_locking,
-     waiting_for_push_to_pull,
-     waiting_for_lock_to_pull,
-     waiting_for_lock_to_push,
-     locking
-    };
-    State state;
+    private:
+     const Server &get_server() const {return *(Server *)&server;}
+     Server &get_server() {return *(Server *)&server;}
 
-    char push_status;
-    int64_t push_remaining_size;
-    std::optional<Async_Writer> push_writer;
-    bool unlock_after_push;
+    public:
+     Buffer<13> buffer;
+     enum class State
+     {
+      not_locking,
+      waiting_for_push_to_pull,
+      waiting_for_lock_to_pull,
+      waiting_for_lock_to_push,
+      locking
+     };
+     State state;
 
-    std::optional<boost::asio::steady_timer> pull_timer;
-    bool lock_before_pulling;
-    bool send_pull_data;
-    int64_t pull_checkpoint;
+     char push_status;
+     int64_t push_remaining_size;
+     std::optional<Async_Writer> push_writer;
+     bool unlock_after_push;
 
-    std::ostream &write_id(std::ostream &out) const;
-    std::optional<Progress_Bar> progress_bar;
+     std::optional<boost::asio::steady_timer> pull_timer;
+     bool lock_before_pulling;
+     bool send_pull_data;
+     int64_t pull_checkpoint;
 
-    Session(Server &server, boost::asio::local::stream_protocol::socket &&socket);
-    ~Session();
+     std::ostream &write_id(std::ostream &out) const;
+     std::optional<Progress_Bar> progress_bar;
+
+     Session
+     (
+      Server &server,
+      boost::asio::local::stream_protocol::socket &&socket
+     );
+
+     boost::asio::awaitable<void> handshake();
+     boost::asio::awaitable<void> check_hash();
+     boost::asio::awaitable<void> run() override;
+
+     ~Session();
    };
+
+   std::unique_ptr<joedb::asio::Server::Session> new_session
+   (
+    boost::asio::local::stream_protocol::socket &&socket
+   ) override
+   {
+    return std::make_unique<Session>(*this, std::move(socket));
+   }
+
+   std::vector<std::shared_ptr<Session>> waiting_sessions;
 
    typedef void (Server::*Transfer_Handler)
    (
@@ -82,10 +87,6 @@ namespace joedb
     size_t size,
     Transfer_Handler handler
    );
-
-   std::set<Session *> sessions;
-
-   void write_status();
 
    const std::chrono::milliseconds lock_timeout;
    boost::asio::steady_timer lock_timeout_timer;
@@ -149,70 +150,28 @@ namespace joedb
     size_t bytes_transferred
    );
 
-   void check_hash_handler
-   (
-    std::shared_ptr<Session> session,
-    std::error_code error,
-    size_t bytes_transferred
-   );
-
-   void read_command_handler
-   (
-    std::shared_ptr<Session> session,
-    std::error_code error,
-    size_t bytes_transferred
-   );
-
-   void read_command(std::shared_ptr<Session> session);
-
    void write_buffer_and_next_command
    (
     std::shared_ptr<Session> session,
     size_t size
    );
 
-   void handshake_handler
-   (
-    std::shared_ptr<Session> session,
-    std::error_code error,
-    size_t bytes_transferred
-   );
-
-   void start_accept();
-
    static const std::map<char, const char *> request_description;
 
-   std::ostream *log_pointer;
-
-   template<typename F> void log(F f)
-   {
-    if (log_pointer)
-    {
-     f(*log_pointer);
-     log_pointer->flush();
-    }
-   }
+   void read_command(std::shared_ptr<Session> session) {}
 
   public:
    Server
    (
-    Client &client,
-    boost::asio::io_context &io_context,
+    Logger &logger,
+    int log_level,
+    int thread_count,
     std::string endpoint_path,
-    std::chrono::milliseconds lock_timeout,
-    std::ostream *log_pointer
+    Client &client,
+    std::chrono::milliseconds lock_timeout
    );
 
-   const std::string &get_endpoint_path() const {return endpoint_path;}
    bool has_client_lock() const {return bool(client_lock);}
-
-   // Note: must be run on thread of io_context:
-   // asio::post(io_context->get_executor(), [&](){server.stop();});
-   void start();
-   void stop_after_sessions();
-   void stop();
-
-   ~Server();
  };
 }
 

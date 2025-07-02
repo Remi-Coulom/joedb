@@ -30,7 +30,7 @@ namespace joedb::asio
 
    class Session
    {
-    protected:
+    public: // TODO -> protected
      const int64_t id;
      Server &server;
      boost::asio::local::stream_protocol::socket socket;

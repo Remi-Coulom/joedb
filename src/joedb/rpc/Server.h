@@ -71,7 +71,13 @@ namespace joedb::rpc
     int thread_count,
     std::string endpoint_path
    ):
-    joedb::asio::Server(logger, log_level, thread_count, endpoint_path)
+    joedb::asio::Server
+    (
+     logger,
+     log_level,
+     thread_count,
+     std::move(endpoint_path)
+    )
    {
    }
  };
