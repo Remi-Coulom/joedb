@@ -12,23 +12,22 @@ namespace joedb::asio
   logger.write(endpoint_path + ": " + std::string(s) + '\n');
  }
 
- void Server::Session::log(std::string_view s)
- {
-  server.log(std::to_string(id) + ": " + std::string(s));
- }
-
  Server::Session::Session
  (
-  int64_t id,
   Server &server,
   boost::asio::local::stream_protocol::socket &&socket
  ):
-  id(id),
+  id(server.session_id++),
   server(server),
   socket(std::move(socket))
  {
   if (server.log_level > 1)
    log("start");
+ }
+
+ void Server::Session::log(std::string_view s)
+ {
+  server.log(std::to_string(id) + ": " + std::string(s));
  }
 
  Server::Session::~Session() = default;
@@ -39,7 +38,6 @@ namespace joedb::asio
   {
    auto session = new_session
    (
-    session_id++,
     co_await acceptor.async_accept(boost::asio::use_awaitable)
    );
 

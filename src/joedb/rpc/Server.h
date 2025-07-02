@@ -21,11 +21,10 @@ namespace joedb::rpc
     public:
      Session
      (
-      int64_t id,
       Server &server,
       boost::asio::local::stream_protocol::socket &&socket
      ):
-      joedb::asio::Server::Session(id, server, std::move(socket))
+      joedb::asio::Server::Session(server, std::move(socket))
      {
      }
 
@@ -58,11 +57,10 @@ namespace joedb::rpc
 
    std::unique_ptr<joedb::asio::Server::Session> new_session
    (
-    int64_t id,
     boost::asio::local::stream_protocol::socket &&socket
    ) override
    {
-    return std::make_unique<Session>(id, *this, std::move(socket));
+    return std::make_unique<Session>(*this, std::move(socket));
    }
 
   public:

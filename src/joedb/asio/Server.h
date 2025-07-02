@@ -35,15 +35,14 @@ namespace joedb::asio
      Server &server;
      boost::asio::local::stream_protocol::socket socket;
 
-     void log(std::string_view s);
-
     public:
      Session
      (
-      int64_t id,
       Server &server,
       boost::asio::local::stream_protocol::socket &&socket
      );
+
+     void log(std::string_view s);
 
      virtual boost::asio::awaitable<void> run() = 0;
 
@@ -52,7 +51,6 @@ namespace joedb::asio
 
    virtual std::unique_ptr<Session> new_session
    (
-    int64_t id,
     boost::asio::local::stream_protocol::socket &&socket
    ) = 0;
 
@@ -73,6 +71,11 @@ namespace joedb::asio
    int get_log_level() const
    {
     return log_level;
+   }
+
+   const std::string &get_endpoint_path() const
+   {
+    return endpoint_path;
    }
 
    void run();
