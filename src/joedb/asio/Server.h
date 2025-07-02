@@ -1,28 +1,83 @@
-#ifndef joedb_asio_Server
-#define joedb_asio_Server
+#ifndef joedb_asio_Server_declared
+#define joedb_asio_Server_declared
+
+#include "joedb/error/Logger.h"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/local/stream_protocol.hpp>
 #include <boost/asio/signal_set.hpp>
+#include <boost/asio/awaitable.hpp>
 
 namespace joedb::asio
 {
- /// Superclass for joedb servers
+ /// Superclass for asio servers
  ///
- /// @ingroup asio
+ /// @ingroup RPC
  class Server
- { 
+ {
   protected:
-   boost::asio::io_context &io_context;
+   Logger &logger;
+   const int log_level;
+   void log(std::string_view s);
+
+   const int thread_count;
+   boost::asio::io_context io_context;
+
    const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;
    boost::asio::local::stream_protocol::acceptor acceptor;
-   bool stopped;
    boost::asio::signal_set interrupt_signals;
 
+   class Session
+   {
+    protected:
+     const int64_t id;
+     Server &server;
+     boost::asio::local::stream_protocol::socket socket;
+
+     void log(std::string_view s);
+
+    public:
+     Session
+     (
+      int64_t id,
+      Server &server,
+      boost::asio::local::stream_protocol::socket &&socket
+     );
+
+     virtual boost::asio::awaitable<void> run() = 0;
+
+     virtual ~Session();
+   };
+
+   virtual std::unique_ptr<Session> new_session
+   (
+    int64_t id,
+    boost::asio::local::stream_protocol::socket &&socket
+   ) = 0;
+
+  private:
+   int64_t session_id = 0;
+
+   boost::asio::awaitable<void> listener();
+
   public:
-   Server(boost::asio::io_context &io_context, std::string endpoint_path);
-   ~Server();
+   Server
+   (
+    Logger &logger,
+    int log_level,
+    int thread_count,
+    std::string endpoint_path
+   );
+
+   int get_log_level() const
+   {
+    return log_level;
+   }
+
+   void run();
+
+   virtual ~Server();
  };
 }
 

@@ -743,7 +743,12 @@ namespace joedb
   const std::chrono::milliseconds lock_timeout,
   std::ostream * const log_pointer
  ):
-  joedb::asio::Server(io_context, endpoint_path),
+  io_context(io_context),
+  endpoint_path(std::move(endpoint_path)),
+  endpoint(this->endpoint_path),
+  acceptor(io_context, endpoint, false),
+  stopped(true),
+  interrupt_signals(io_context, SIGINT, SIGTERM),
   client(client),
   writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   session_id(0),
