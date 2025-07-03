@@ -144,12 +144,6 @@ namespace joedb
     size_t bytes_transferred
    );
 
-   void write_buffer_and_next_command
-   (
-    std::shared_ptr<Session> session,
-    size_t size
-   );
-
    static const std::map<char, const char *> request_description;
 
   public:

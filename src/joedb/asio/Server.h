@@ -3,7 +3,7 @@
 
 #include "joedb/error/Logger.h"
 
-#include <boost/asio/io_context.hpp>
+#include <boost/asio/thread_pool.hpp>
 #include <boost/asio/local/stream_protocol.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/asio/awaitable.hpp>
@@ -21,7 +21,7 @@ namespace joedb::asio
    void log(std::string_view s);
 
    const int thread_count;
-   boost::asio::io_context io_context;
+   boost::asio::thread_pool thread_pool;
 
    const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;

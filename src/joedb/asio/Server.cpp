@@ -3,8 +3,6 @@
 #include <boost/asio/detached.hpp>
 #include <boost/asio/co_spawn.hpp>
 
-#include <thread>
-
 namespace joedb::asio
 {
  void Server::log(std::string_view s)
@@ -45,7 +43,7 @@ namespace joedb::asio
 
    boost::asio::co_spawn
    (
-    io_context,
+    thread_pool,
     session_ptr->run(),
     [ending_session = std::move(session), this]
     (
@@ -69,11 +67,11 @@ namespace joedb::asio
   logger(logger),
   log_level(log_level),
   thread_count(thread_count),
-  io_context(thread_count),
+  thread_pool(thread_count),
   endpoint_path(std::move(endpoint_path)),
   endpoint(this->endpoint_path),
-  acceptor(io_context, endpoint, false),
-  interrupt_signals(io_context, SIGINT, SIGTERM)
+  acceptor(thread_pool, endpoint, false),
+  interrupt_signals(thread_pool, SIGINT, SIGTERM)
  {
   if (log_level > 0)
    log("start");
@@ -91,14 +89,14 @@ namespace joedb::asio
       else if (signal == SIGTERM)
        this->log("interrupted by SIGTERM");
      }
-     this->io_context.stop();
+     this->thread_pool.stop();
     }
    }
   );
 
   boost::asio::co_spawn
   (
-   io_context,
+   thread_pool,
    listener(),
    boost::asio::detached
   );
@@ -107,29 +105,7 @@ namespace joedb::asio
  void Server::run()
  {
   log("run, thread_count = " + std::to_string(thread_count));
-  std::vector<std::thread> threads;
-  threads.reserve(thread_count);
-
-  for (int i = thread_count; --i >= 0;)
-  {
-   threads.emplace_back
-   (
-    [this]()
-    {
-     try
-     {
-      io_context.run();
-     }
-     catch (...)
-     {
-     }
-    }
-   );
-  }
-
-  for (auto &thread: threads)
-   thread.join();
-
+  thread_pool.stop();
   log("stop");
  }
 

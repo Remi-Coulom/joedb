@@ -485,7 +485,7 @@ namespace joedb
     );
 
     session->state = Session::State::waiting_for_push_to_pull;
-    session->pull_timer.emplace(io_context);
+    session->pull_timer.emplace(thread_pool);
     session->pull_timer->expires_after(wait);
     session->pull_timer->async_wait
     (
@@ -832,26 +832,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server::write_buffer_and_next_command
- ////////////////////////////////////////////////////////////////////////////
- (
-  const std::shared_ptr<Session> session,
-  const size_t size
- )
- {
-  boost::asio::async_write
-  (
-   session->socket,
-   boost::asio::buffer(session->buffer.data, size),
-   [this, session](std::error_code e, size_t s)
-   {
-    if (!e)
-     read_command(session);
-   }
-  );
- }
-
- ////////////////////////////////////////////////////////////////////////////
  Server::Server
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -866,7 +846,7 @@ namespace joedb
   client(client),
   writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   lock_timeout(lock_timeout),
-  lock_timeout_timer(io_context),
+  lock_timeout_timer(thread_pool),
   locked(false)
  {
   if (writable_journal_client)
