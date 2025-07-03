@@ -3,8 +3,9 @@ History
 
 - 2025-??-?? 10.1.0
 
-  - New major feature:
+  - New major features:
 
+    - websocket support
     - :doc:`stored_procedures`
 
   - Minor quality-of-life improvements:
