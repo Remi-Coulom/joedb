@@ -4,7 +4,6 @@
 #include "joedb/asio/Server.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/ui/Progress_Bar.h"
 
 #include <queue>
 #include <map>
@@ -27,6 +26,7 @@ namespace joedb
 
     public:
      Buffer<13> buffer;
+
      enum class State
      {
       not_locking,
@@ -37,18 +37,7 @@ namespace joedb
      };
      State state;
 
-     char push_status;
-     int64_t push_remaining_size;
-     std::optional<Async_Writer> push_writer;
-     bool unlock_after_push;
-
-     std::optional<boost::asio::steady_timer> pull_timer;
-     bool lock_before_pulling;
-     bool send_pull_data;
-     int64_t pull_checkpoint;
-
      std::ostream &write_id(std::ostream &out) const;
-     std::optional<Progress_Bar> progress_bar;
 
      Session
      (
@@ -56,8 +45,13 @@ namespace joedb
       boost::asio::local::stream_protocol::socket &&socket
      );
 
+     boost::asio::awaitable<void> read_buffer(size_t offset, size_t size);
+     boost::asio::awaitable<void> write_buffer();
+     boost::asio::awaitable<void> send(Async_Reader reader);
      boost::asio::awaitable<void> handshake();
      boost::asio::awaitable<void> check_hash();
+     boost::asio::awaitable<void> pull(bool lock_before, bool send_data);
+     boost::asio::awaitable<void> push(bool unlock_after);
      boost::asio::awaitable<void> run() override;
 
      ~Session();
@@ -157,8 +151,6 @@ namespace joedb
    );
 
    static const std::map<char, const char *> request_description;
-
-   void read_command(std::shared_ptr<Session> session) {}
 
   public:
    Server

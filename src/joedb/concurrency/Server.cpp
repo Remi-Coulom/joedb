@@ -2,6 +2,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/journal/File_Hasher.h"
+#include "joedb/ui/Progress_Bar.h"
 
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
@@ -172,6 +173,7 @@ namespace joedb
   const std::error_code error
  )
  {
+#if 0
   if (!error)
   {
    session->log("timeout");
@@ -184,6 +186,7 @@ namespace joedb
 
    unlock(*session);
   }
+#endif
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -209,22 +212,25 @@ namespace joedb
   const size_t bytes_transferred
  )
  {
+#if 0
   if (!error)
   {
    if (session->push_writer)
     session->push_writer->write(session->buffer.data, bytes_transferred); // ??? takes_time
 
    session->push_remaining_size -= int64_t(bytes_transferred);
-   session->progress_bar->print_remaining(session->push_remaining_size);
+//   session->progress_bar->print_remaining(session->push_remaining_size);
 
    push_transfer(session);
   }
+#endif
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::push_transfer(const std::shared_ptr<Session> session)
  ////////////////////////////////////////////////////////////////////////////
  {
+#if 0
   if (session->push_remaining_size > 0)
   {
    refresh_lock_timeout(session);
@@ -261,7 +267,7 @@ namespace joedb
     session->push_writer.reset();
    }
 
-   session->progress_bar.reset();
+//   session->progress_bar.reset();
 
    session->buffer.data[0] = session->push_status;
    session->log("returning " + std::to_string(session->push_status));
@@ -270,6 +276,7 @@ namespace joedb
    if (session->unlock_after_push)
     unlock(*session);
 
+#if 0
    for (auto &waiting_session: waiting_sessions)
    {
     if
@@ -282,9 +289,11 @@ namespace joedb
      start_pulling(waiting_session);
     }
    }
+#endif
 
    waiting_sessions.clear();
   }
+#endif
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -296,6 +305,7 @@ namespace joedb
   const size_t bytes_transferred
  )
  {
+#if 0
   if (!error)
   {
    session->buffer.index = 0;
@@ -320,7 +330,7 @@ namespace joedb
 
    session->log("pushing, from = " + std::to_string(from) + ", until = " + std::to_string(until));
 
-   session->progress_bar.emplace(until - from, nullptr);
+//   session->progress_bar.emplace(until - from, nullptr);
 
    if (!writable_journal_client)
     session->push_status = 'R';
@@ -341,6 +351,7 @@ namespace joedb
 
    push_transfer(session);
   }
+#endif
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -356,7 +367,7 @@ namespace joedb
  {
   if (!error)
   {
-   session->progress_bar->print_remaining(reader.get_remaining());
+//   session->progress_bar->print_remaining(reader.get_remaining());
 
    if (offset + reader.get_remaining() > 0)
    {
@@ -385,9 +396,9 @@ namespace joedb
    }
    else
    {
-    session->pull_timer.reset();
-    session->progress_bar.reset();
-    read_command(session);
+//    session->pull_timer.reset();
+//    session->progress_bar.reset();
+//    read_command(session);
    }
   }
  }
@@ -401,7 +412,7 @@ namespace joedb
  )
  {
   session->log("reading from = " + std::to_string(reader.get_current()) + ", until = " + std::to_string(reader.get_end()));
-  session->progress_bar.emplace(reader.get_remaining(), nullptr);
+//  session->progress_bar.emplace(reader.get_remaining(), nullptr);
 
   session->buffer.index = 1;
   session->buffer.write<int64_t>(reader.get_end());
@@ -420,6 +431,7 @@ namespace joedb
  void Server::start_pulling(std::shared_ptr<Session> session)
  ///////////////////////////////////////////////////////////////////////////
  {
+#if 0
   if
   (
    session->lock_before_pulling &&
@@ -438,6 +450,7 @@ namespace joedb
    session,
    client.get_journal().get_async_tail_reader(session->pull_checkpoint)
   );
+#endif
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -449,6 +462,7 @@ namespace joedb
   const size_t bytes_transferred
  )
  {
+#if 0
   if (!error)
   {
    session->buffer.index = 1;
@@ -491,6 +505,7 @@ namespace joedb
    else
     start_pulling(session);
   }
+#endif
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -522,17 +537,75 @@ namespace joedb
  }
 
  ///////////////////////////////////////////////////////////////////////////
- boost::asio::awaitable<void> Server::Session::check_hash()
+ boost::asio::awaitable<void> Server::Session::read_buffer
  ///////////////////////////////////////////////////////////////////////////
+ (
+  const size_t offset,
+  const size_t size
+ )
  {
   co_await boost::asio::async_read
   (
    socket,
-   boost::asio::buffer(buffer.data + 1, 40),
+   boost::asio::buffer(buffer.data + offset, size),
    boost::asio::use_awaitable
   );
 
+  buffer.index = offset;
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ boost::asio::awaitable<void> Server::Session::write_buffer()
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  co_await boost::asio::async_write
+  (
+   socket,
+   boost::asio::buffer(buffer.data, buffer.index),
+   boost::asio::use_awaitable
+  );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ boost::asio::awaitable<void> Server::Session::send(Async_Reader reader)
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  log
+  (
+   "sending to client, from = " + std::to_string(reader.get_current()) +
+   ", until = " + std::to_string(reader.get_end())
+  );
+
+  Progress_Bar progress_bar(reader.get_remaining(), nullptr);
+
   buffer.index = 1;
+  buffer.write<int64_t>(reader.get_end());
+
+  while (buffer.index + reader.get_remaining() > 0)
+  {
+   buffer.index += reader.read
+   (
+    buffer.data + buffer.index,
+    buffer.size - buffer.index
+   );
+
+   if (reader.is_end_of_file())
+    throw Exception("unexpected end of file");
+
+   // refresh_lock_timeout(session);
+   co_await write_buffer();
+   buffer.index = 0;
+
+   progress_bar.print_remaining(reader.get_remaining());
+  }
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ boost::asio::awaitable<void> Server::Session::check_hash()
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  co_await read_buffer(1, 40);
+
   const auto checkpoint = buffer.read<int64_t>();
   const auto hash = buffer.read<SHA_256::Hash>();
 
@@ -552,29 +625,18 @@ namespace joedb
   log
   (
    "hash for checkpoint = " + std::to_string(checkpoint) +
-   ", result = " + std::to_string(buffer.data[0])
+   ", result = " + buffer.data[0]
   );
 
-  co_await boost::asio::async_write
-  (
-   socket,
-   boost::asio::buffer(buffer.data, buffer.index),
-   boost::asio::use_awaitable
-  );
+  buffer.index = 1;
+  co_await write_buffer();
  }
 
  ///////////////////////////////////////////////////////////////////////////
  boost::asio::awaitable<void> Server::Session::handshake()
  ///////////////////////////////////////////////////////////////////////////
  {
-  co_await boost::asio::async_read
-  (
-   socket,
-   boost::asio::buffer(buffer.data, 13),
-   boost::asio::use_awaitable
-  );
-
-  buffer.index = 0;
+  co_await read_buffer(0, 13);
 
   if (buffer.read<std::array<char, 5>>() != Header::joedb)
    throw Exception("handshake does not start by joedb");
@@ -595,12 +657,106 @@ namespace joedb
   buffer.write<int64_t>(get_server().client.get_journal_checkpoint());
   buffer.write<char>(writable ? 'W' : 'R');
 
-  co_await boost::asio::async_write
+  co_await write_buffer();
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ boost::asio::awaitable<void> Server::Session::pull
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  bool lock_before,
+  bool send_data
+ )
+ {
+  co_await read_buffer(1, 16);
+
+  const std::chrono::milliseconds wait{buffer.read<int64_t>()};
+  int64_t pull_checkpoint = buffer.read<int64_t>();
+
+  if (!get_server().client_lock)
+   get_server().client.pull(); // ??? takes_time
+
+  if
   (
-   socket,
-   boost::asio::buffer(buffer.data, buffer.index),
-   boost::asio::use_awaitable
+   wait.count() > 0 &&
+   pull_checkpoint == get_server().client.get_journal_checkpoint()
+  )
+  {
+   // TODO: wait for time or new data
+  }
+
+  if (lock_before)
+  {
+   // TODO: wait for lock
+  }
+
+  if (!send_data)
+   pull_checkpoint = get_server().client.get_journal_checkpoint();
+
+  co_await send
+  (
+   get_server().client.get_journal().get_async_tail_reader(pull_checkpoint)
   );
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ boost::asio::awaitable<void> Server::Session::push
+ ///////////////////////////////////////////////////////////////////////////
+ (
+  bool unlock_after
+ )
+ {
+  co_await read_buffer(1, 16);
+
+  const int64_t from = buffer.read<int64_t>();
+  const int64_t until = buffer.read<int64_t>();
+
+  if (get_server().locked && state != Session::State::locking)
+   throw Exception("trying to push while someone else is locking");
+  else if (!get_server().locked)
+  {
+   log("taking the lock for push attempt.");
+//   lock(session, Session::State::waiting_for_lock_to_push);
+  }
+
+  const bool conflict =
+  (
+   state != Session::State::locking ||
+   from != get_server().client.get_journal().get_checkpoint()
+  );
+
+  log
+  (
+   "receiving from client, from = " + std::to_string(from) +
+   ", until = " + std::to_string(until)
+  );
+
+//  session->progress_bar.emplace(until - from, nullptr);
+
+  char push_status;
+  std::optional<Async_Writer> writer;
+
+  if (!get_server().writable_journal_client)
+   push_status = 'R';
+  else if (conflict)
+   push_status = 'C';
+  else
+  {
+   push_status = buffer.data[0];
+   if (get_server().client_lock)
+   {
+    writer.emplace
+    (
+     get_server().client_lock->get_journal().get_async_tail_writer()
+    );
+   }
+  }
+
+
+  int64_t push_remaining_size = until - from;
+  while (push_remaining_size > 0)
+  {
+  }
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -611,12 +767,7 @@ namespace joedb
 
   while (true)
   {
-   co_await boost::asio::async_read
-   (
-    socket,
-    boost::asio::buffer(buffer.data, 1),
-    boost::asio::use_awaitable
-   );
+   co_await read_buffer(0, 1);
 
    const char code = buffer.data[0];
 
@@ -635,35 +786,46 @@ namespace joedb
      co_await check_hash();
     break;
 
+    case 'r':
+    {
+     co_await read_buffer(1, 16);
+
+     int64_t from = buffer.read<int64_t>();
+     int64_t until = buffer.read<int64_t>();
+
+     if (until > get_server().client.get_journal_checkpoint())
+      until = get_server().client.get_journal_checkpoint();
+     if (from > until)
+      from = until;
+
+     co_await send
+     (
+      get_server().client.get_journal().get_async_reader(from, until)
+     );
+    }
+    break;
+
+    case 'D': case 'E': case 'F': case 'G':
+     co_await pull(code & 1, code & 2);
+    break;
+
+    case 'N': case 'O':
+     co_await push(code == 'O');
+    break;
+
     default:
      co_return;
     break;
    }
 
 #if 0
-     case 'r':
-      async_read(session, 1, 16, &Server::read_handler);
-     break;
 
-     case 'D': case 'E': case 'F': case 'G':
-      lock_before_pulling = code & 1;
-      send_pull_data = code & 2;
-      async_read(session, 1, 16, &Server::pull_handler);
-     break;
 
      case 'M':
       server.unlock(*this);
       write_buffer_and_next_command(session, 1);
      break;
 
-     case 'N': case 'O':
-      unlock_after_push = (code == 'O');
-      push_status = code;
-      async_read(session, 0, 16, &Server::push_handler);
-     break;
-
-     default:
-     break;
     }
 #endif
   }
