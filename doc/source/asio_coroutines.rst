@@ -39,9 +39,9 @@ Coroutines
 Coroutines are a C++ language feature introduced in C++20 that allow writing
 asynchronous code almost as conveniently as synchronous code: instead of ending
 an operation in a separate callback, the code before and after the operation
-can be written sequentially, in the same scope.
+can be written sequentially, in the same local scope.
 
-A good starting point is the `coroutine page of cppreference.com
+Coroutines are described in `coroutine page of cppreference.com
 <https://en.cppreference.com/w/cpp/language/coroutines.html>`_.
 
 Using Coroutines with asio
@@ -61,8 +61,8 @@ ways, but has two major drawbacks:
  - compilation is very slow
  - compilation generates a lot of code, and can result in large binaries
 
-For instance, the secure websocket tutorial example of boost::beast takes 13
-seconds to compile, and produces a 800kB binary. Adding websocket support to
-joedb_client doubled the size of the library, and tripled the compilation time
-of the whole project.
-
+For instance, the `secure websocket tutorial example of boost::beast
+<https://github.com/boostorg/beast/blob/develop/example/websocket/client/sync-ssl/websocket_client_sync_ssl.cpp>`_
+takes 13 seconds to compile, and produces a 800kB binary. Adding websocket
+support to joedb doubled the size of the library, and tripled the compilation
+time.
