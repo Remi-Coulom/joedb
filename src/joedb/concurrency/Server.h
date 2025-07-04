@@ -84,6 +84,8 @@ namespace joedb
    );
 
    bool has_client_lock() const {return bool(client_lock);}
+
+   ~Server();
  };
 }
 

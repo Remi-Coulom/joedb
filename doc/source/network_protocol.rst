@@ -29,6 +29,7 @@ L                         lock
 M                         unlock
 N      from until data    push, keep locked
 O      from until data    push, unlock
+Q                         quit
 ====== ================== ===================================================
 
 Server to Client
@@ -69,6 +70,7 @@ Prefix Data               Description
 ====== ================== ===================================================
 H      hash (32 bytes)    handshake, SHA-256 hash of procedures + version
 P      id until data      remote procedure call
+Q                         quit
 ====== ================== ===================================================
 
 Server to Client

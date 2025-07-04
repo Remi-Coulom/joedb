@@ -11,6 +11,9 @@
 
 #include <cstdio>
 
+// TODO: lock timeout
+// TODO: early pull
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -27,7 +30,8 @@ namespace joedb
   {'L', "lock"},
   {'M', "unlock"},
   {'N', "lock_push"},
-  {'O', "push_unlock"}
+  {'O', "push_unlock"},
+  {'Q', "quit"}
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -465,7 +469,7 @@ namespace joedb
      co_await push(code == 'O');
     break;
 
-    default:
+    case 'Q': default:
      co_return;
     break;
    }
@@ -493,7 +497,8 @@ namespace joedb
   if (writable_journal_client)
    writable_journal_client->push_if_ahead();
  }
-}
 
-#undef LOGID
-#undef LOG
+ ////////////////////////////////////////////////////////////////////////////
+ Server::~Server() = default;
+ ////////////////////////////////////////////////////////////////////////////
+}

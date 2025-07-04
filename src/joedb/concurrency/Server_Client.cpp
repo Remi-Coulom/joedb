@@ -151,6 +151,8 @@ namespace joedb
  {
   {
    Channel_Lock lock(channel);
+   buffer.data[0] = 'Q';
+   lock.write(buffer.data, 1);
    keep_alive_thread_must_stop = true;
   }
 
