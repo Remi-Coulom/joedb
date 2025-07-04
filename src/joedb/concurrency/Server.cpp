@@ -12,7 +12,6 @@
 #include <cstdio>
 
 // TODO
-// - lock timeout
 // - get tests to work again
 // - less noisy progress logging
 // - thread-safe server:
@@ -47,7 +46,8 @@ namespace joedb
   boost::asio::local::stream_protocol::socket &&socket
  ):
   joedb::asio::Server::Session(server, std::move(socket)),
-  timer(server.thread_pool)
+  timer(strand),
+  lock_timeout_timer(strand)
  {
  }
 
@@ -92,6 +92,7 @@ namespace joedb
 
   get_server().locked = true;
   locking = true;
+  refresh_lock_timeout();
 
   if (!get_server().client_lock)
   {
@@ -109,15 +110,48 @@ namespace joedb
  void Server::Session::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (get_server().log_level > 2)
-   log("unlock");
+  if (locking)
+  {
+   if (get_server().log_level > 2)
+    log("unlock");
 
-  locking = false;
+   locking = false;
+   lock_timeout_timer.cancel();
 
-  if (get_server().lock_waiters.empty())
-   get_server().locked = false;
-  else
-   get_server().lock_waiters.front()->timer.cancel();
+   if (get_server().lock_waiters.empty())
+    get_server().locked = false;
+   else
+    get_server().lock_waiters.front()->timer.cancel();
+  }
+ }
+
+ ///////////////////////////////////////////////////////////////////////////
+ void Server::Session::refresh_lock_timeout()
+ ///////////////////////////////////////////////////////////////////////////
+ {
+  if (locking)
+  {
+   lock_timeout_timer.expires_after(get_server().lock_timeout);
+   lock_timeout_timer.async_wait
+   (
+    [this](std::error_code error)
+    {
+     if (!error)
+     {
+      if (get_server().log_level > 2)
+       log("timeout");
+
+      if (push_writer)
+      {
+       push_writer.reset();
+       push_status = 't';
+      }
+
+      unlock();
+     }
+    }
+   );
+  }
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -176,7 +210,7 @@ namespace joedb
    if (reader.is_end_of_file())
     throw Exception("unexpected end of file");
 
-   // refresh_lock_timeout(session);
+   refresh_lock_timeout();
    co_await write_buffer();
    buffer.index = 0;
 
@@ -347,18 +381,17 @@ namespace joedb
    from != get_server().client.get_journal().get_checkpoint()
   );
 
-  char status = buffer.data[0];
-  std::optional<Async_Writer> writer;
+  push_status = buffer.data[0];
 
   if (!get_server().writable_journal_client)
-   status = 'R';
+   push_status = 'R';
   else if (conflict)
-   status = 'C';
+   push_status = 'C';
   else
   {
    if (get_server().client_lock)
    {
-    writer.emplace
+    push_writer.emplace
     (
      get_server().client_lock->get_journal().get_async_tail_writer()
     );
@@ -378,14 +411,16 @@ namespace joedb
 
   while (remaining_size > 0)
   {
+   refresh_lock_timeout();
+
    const size_t size = co_await read_buffer
    (
     0,
     size_t(std::min(remaining_size, int64_t(buffer.size)))
    );
 
-   if (writer)
-    writer->write(buffer.data, size); // ??? takes_time
+   if (push_writer)
+    push_writer->write(buffer.data, size); // ??? takes_time
 
    remaining_size -= int64_t(size);
    if (get_server().log_level > 3 && remaining_size > 0)
@@ -394,13 +429,13 @@ namespace joedb
 
   if (until > from)
   { 
-   if (writer)
+   if (push_writer)
    {
     if (get_server().client_lock)
     {
      get_server().client_lock->get_journal().soft_checkpoint_at
      (
-      writer->get_position()
+      push_writer->get_position()
      );
 
      if (get_server().client.is_shared() && unlock_after)
@@ -415,7 +450,7 @@ namespace joedb
   }
 
   if (get_server().log_level > 2)
-   log(std::string("done pushing, status = ") + status);
+   log(std::string("done pushing, status = ") + push_status);
 
   if (unlock_after)
    unlock();
@@ -424,7 +459,7 @@ namespace joedb
    waiter->timer.cancel();
   get_server().pull_waiters.clear();
 
-  buffer.data[0] = status;
+  buffer.data[0] = push_status;
   buffer.index = 1;
   co_await write_buffer();
  }
@@ -494,9 +529,9 @@ namespace joedb
   client(client),
   writable_journal_client(dynamic_cast<Writable_Journal_Client*>(&client)),
   lock_timeout(lock_timeout),
-  lock_timeout_timer(thread_pool),
   locked(false)
  {
+  JOEDB_RELEASE_ASSERT(thread_count == 1);
   if (writable_journal_client)
    writable_journal_client->push_if_ahead();
  }

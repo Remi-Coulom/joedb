@@ -28,8 +28,13 @@ namespace joedb
      bool locking = false;
      Buffer<13> buffer;
 
+     boost::asio::steady_timer lock_timeout_timer;
      boost::asio::awaitable<void> lock();
      void unlock();
+     void refresh_lock_timeout();
+
+     char push_status;
+     std::optional<joedb::Async_Writer> push_writer;
 
      boost::asio::awaitable<size_t> read_buffer(size_t offset, size_t size);
      boost::asio::awaitable<void> write_buffer();
@@ -60,7 +65,6 @@ namespace joedb
    }
 
    const std::chrono::milliseconds lock_timeout;
-   boost::asio::steady_timer lock_timeout_timer;
 
    bool locked;
    std::deque<Session *> lock_waiters;
