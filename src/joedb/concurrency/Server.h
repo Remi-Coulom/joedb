@@ -20,22 +20,15 @@ namespace joedb
 
    class Session: public joedb::asio::Server::Session
    {
-    public:
+    private:
      const Server &get_server() const {return *(Server *)&server;}
      Server &get_server() {return *(Server *)&server;}
 
      boost::asio::steady_timer timer;
      bool locking = false;
-
-    public:
      Buffer<13> buffer;
 
-     Session
-     (
-      Server &server,
-      boost::asio::local::stream_protocol::socket &&socket
-     );
-
+     boost::asio::awaitable<void> lock();
      void unlock();
 
      boost::asio::awaitable<size_t> read_buffer(size_t offset, size_t size);
@@ -46,8 +39,15 @@ namespace joedb
      boost::asio::awaitable<void> read();
      boost::asio::awaitable<void> pull(bool lock_before, bool send_data);
      boost::asio::awaitable<void> push(bool unlock_after);
-     boost::asio::awaitable<void> run() override;
 
+    public:
+     Session
+     (
+      Server &server,
+      boost::asio::local::stream_protocol::socket &&socket
+     );
+
+     boost::asio::awaitable<void> run() override;
      void cleanup() override;
    };
 
@@ -58,8 +58,6 @@ namespace joedb
    {
     return std::make_unique<Session>(*this, std::move(socket));
    }
-
-   boost::asio::awaitable<void> lock(Session &session);
 
    const std::chrono::milliseconds lock_timeout;
    boost::asio::steady_timer lock_timeout_timer;

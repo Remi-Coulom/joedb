@@ -18,7 +18,8 @@ namespace joedb::asio
  ):
   id(server.session_id++),
   server(server),
-  socket(std::move(socket))
+  socket(std::move(socket)),
+  strand(server.thread_pool.get_executor())
  {
   if (server.log_level > 1)
    log("start");
@@ -44,7 +45,7 @@ namespace joedb::asio
 
    boost::asio::co_spawn
    (
-    thread_pool,
+    session_ptr->strand,
     session_ptr->run(),
     [ending_session = std::move(session), this]
     (
@@ -62,7 +63,8 @@ namespace joedb::asio
       }
       catch (const std::exception &e)
       {
-       ending_session->log(std::string("exception: ") + e.what());
+       if (log_level > 1)
+        ending_session->log(std::string("exception: ") + e.what());
       }
      }
     }
@@ -117,9 +119,13 @@ namespace joedb::asio
 
  void Server::run()
  {
-  log("run, thread_count = " + std::to_string(thread_count));
+  if (log_level > 0)
+   log("run, thread_count = " + std::to_string(thread_count));
+
   thread_pool.join();
-  log("stop");
+
+  if (log_level > 0)
+   log("stop");
  }
 
  Server::~Server()

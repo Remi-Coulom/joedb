@@ -11,8 +11,13 @@
 
 #include <cstdio>
 
-// TODO: lock timeout
-// TODO: less noisy progress logging
+// TODO
+// - lock timeout
+// - get tests to work again
+// - less noisy progress logging
+// - thread-safe server:
+//   - cancelling a timer must take place on the strand of the timer (post an event)
+//   - a mutex for global server variables (OK because never waiting)
 
 namespace joedb
 {
@@ -59,44 +64,44 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- boost::asio::awaitable<void> Server::lock(Session &session)
+ boost::asio::awaitable<void> Server::Session::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!locked)
+  if (!get_server().locked)
   {
-   if (log_level > 2)
-    session.log("obtained lock immediately");
+   if (get_server().log_level > 2)
+    log("obtained lock immediately");
   }
   else
   {
-   if (log_level > 2)
-    session.log("waiting for lock");
+   if (get_server().log_level > 2)
+    log("waiting for lock");
 
-   lock_waiters.emplace_back(&session);
-   session.timer.expires_after(boost::asio::steady_timer::duration::max());
-   co_await session.timer.async_wait
+   get_server().lock_waiters.emplace_back(this);
+   timer.expires_after(boost::asio::steady_timer::duration::max());
+   co_await timer.async_wait
    (
     boost::asio::as_tuple(boost::asio::use_awaitable)
    );
 
-   if (log_level > 2)
-    session.log("obtained lock after waiting");
+   if (get_server().log_level > 2)
+    log("obtained lock after waiting");
 
-   lock_waiters.pop_front();
+   get_server().lock_waiters.pop_front();
   }
 
-  locked = true;
-  session.locking = true;
+  get_server().locked = true;
+  locking = true;
 
-  if (!client_lock)
+  if (!get_server().client_lock)
   {
-   if (!writable_journal_client)
+   if (!get_server().writable_journal_client)
    {
-    session.log("error: locking pull-only server");
-    session.buffer.data[0] = 'R';
+    log("error: locking pull-only server");
+    buffer.data[0] = 'R';
    }
    else
-    client_lock.emplace(*writable_journal_client);
+    get_server().client_lock.emplace(*get_server().writable_journal_client);
   }
  }
 
@@ -202,11 +207,14 @@ namespace joedb
    buffer.data[0] = 'h';
   }
 
-  log
-  (
-   "hash for checkpoint = " + std::to_string(checkpoint) +
-   ", result = " + buffer.data[0]
-  );
+  if (get_server().log_level > 2)
+  {
+   log
+   (
+    "hash for checkpoint = " + std::to_string(checkpoint) +
+    ", result = " + buffer.data[0]
+   );
+  }
 
   buffer.index = 1;
   co_await write_buffer();
@@ -301,7 +309,7 @@ namespace joedb
   }
 
   if (lock_before)
-   co_await get_server().lock(*this);
+   co_await lock();
 
   if (!send_data)
    pull_checkpoint = get_server().client.get_journal_checkpoint();
@@ -330,7 +338,7 @@ namespace joedb
   {
    if (get_server().log_level > 2)
     log("taking the lock for push attempt.");
-   co_await get_server().lock(*this);
+   co_await lock();
   }
 
   const bool conflict =

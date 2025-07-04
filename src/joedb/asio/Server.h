@@ -7,6 +7,7 @@
 #include <boost/asio/local/stream_protocol.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/asio/awaitable.hpp>
+#include <boost/asio/strand.hpp>
 
 namespace joedb::asio
 {
@@ -34,6 +35,7 @@ namespace joedb::asio
      const int64_t id;
      Server &server;
      boost::asio::local::stream_protocol::socket socket;
+     boost::asio::strand<boost::asio::thread_pool::executor_type> strand;
 
     public:
      Session
