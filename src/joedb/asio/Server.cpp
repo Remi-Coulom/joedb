@@ -1,4 +1,5 @@
 #include "joedb/asio/Server.h"
+#include "joedb/ui/get_time_string.h"
 
 #include <boost/asio/detached.hpp>
 #include <boost/asio/co_spawn.hpp>
@@ -7,7 +8,7 @@ namespace joedb::asio
 {
  void Server::log(std::string_view s)
  {
-  logger.write(endpoint_path + ": " + std::string(s) + '\n');
+  logger.write(joedb::get_time_string_of_now() + ' ' + endpoint_path + ": " + std::string(s) + '\n');
  }
 
  Server::Session::Session

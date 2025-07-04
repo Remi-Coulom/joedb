@@ -2,17 +2,17 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/journal/File_Hasher.h"
-#include "joedb/ui/Progress_Bar.h"
 
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/compose.hpp>
+#include <boost/asio/as_tuple.hpp>
 
 #include <cstdio>
 
 // TODO: lock timeout
-// TODO: early pull
+// TODO: less noisy progress logging
 
 namespace joedb
 {
@@ -42,7 +42,7 @@ namespace joedb
   boost::asio::local::stream_protocol::socket &&socket
  ):
   joedb::asio::Server::Session(server, std::move(socket)),
-  channel(server.thread_pool)
+  timer(server.thread_pool)
  {
  }
 
@@ -72,13 +72,17 @@ namespace joedb
    if (log_level > 2)
     session.log("waiting for lock");
 
-   lock_waiters.emplace(&session);
-   co_await session.channel.async_receive(boost::asio::use_awaitable);
+   lock_waiters.emplace_back(&session);
+   session.timer.expires_after(boost::asio::steady_timer::duration::max());
+   co_await session.timer.async_wait
+   (
+    boost::asio::as_tuple(boost::asio::use_awaitable)
+   );
 
    if (log_level > 2)
     session.log("obtained lock after waiting");
 
-   lock_waiters.pop();
+   lock_waiters.pop_front();
   }
 
   locked = true;
@@ -108,7 +112,7 @@ namespace joedb
   if (get_server().lock_waiters.empty())
    get_server().locked = false;
   else
-   get_server().lock_waiters.front()->channel.try_send(boost::system::error_code{});
+   get_server().lock_waiters.front()->timer.cancel();
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -153,8 +157,6 @@ namespace joedb
    ", until = " + std::to_string(reader.get_end())
   );
 
-  Progress_Bar progress_bar(reader.get_remaining(), nullptr);
-
   buffer.index = 1;
   buffer.write<int64_t>(reader.get_end());
 
@@ -173,7 +175,8 @@ namespace joedb
    co_await write_buffer();
    buffer.index = 0;
 
-   progress_bar.print_remaining(reader.get_remaining());
+   if (get_server().log_level > 3 && reader.get_remaining() > 0)
+    log("remaining_size = " + std::to_string(reader.get_remaining()));
   }
  }
 
@@ -289,11 +292,12 @@ namespace joedb
     );
    }
 
-   get_server().pull_waiters.emplace(this);
-   boost::asio::steady_timer timer(co_await boost::asio::this_coro::executor);
    timer.expires_after(wait);
-   co_await timer.async_wait(boost::asio::use_awaitable);
-   // TODO use channel to trigger early interruption
+   get_server().pull_waiters.emplace_back(this);
+   co_await timer.async_wait
+   (
+    boost::asio::as_tuple(boost::asio::use_awaitable)
+   );
   }
 
   if (lock_before)
@@ -333,12 +337,6 @@ namespace joedb
   (
    !locking ||
    from != get_server().client.get_journal().get_checkpoint()
-  );
-
-  log
-  (
-   "receiving from client, from = " + std::to_string(from) +
-   ", until = " + std::to_string(until)
   );
 
   char status = buffer.data[0];
@@ -414,12 +412,9 @@ namespace joedb
   if (unlock_after)
    unlock();
 
-  auto &waiters = get_server().pull_waiters;
-  while (!waiters.empty())
-  {
-   waiters.front()->channel.try_send(boost::system::error_code{});
-   waiters.pop();
-  }
+  for (auto *waiter: get_server().pull_waiters)
+   waiter->timer.cancel();
+  get_server().pull_waiters.clear();
 
   buffer.data[0] = status;
   buffer.index = 1;

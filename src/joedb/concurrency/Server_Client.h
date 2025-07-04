@@ -25,7 +25,7 @@ namespace joedb
    std::thread keep_alive_thread;
    void keep_alive();
    void connect();
-   void disconnect();
+   void disconnect() noexcept;
 
   protected:
    mutable Thread_Safe_Channel channel;

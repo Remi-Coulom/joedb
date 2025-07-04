@@ -5,9 +5,7 @@
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
-#include <boost/asio/experimental/channel.hpp>
-
-#include <queue>
+#include <deque>
 #include <map>
 
 namespace joedb
@@ -26,7 +24,7 @@ namespace joedb
      const Server &get_server() const {return *(Server *)&server;}
      Server &get_server() {return *(Server *)&server;}
 
-     boost::asio::experimental::channel<void(boost::system::error_code)> channel;
+     boost::asio::steady_timer timer;
      bool locking = false;
 
     public:
@@ -67,8 +65,8 @@ namespace joedb
    boost::asio::steady_timer lock_timeout_timer;
 
    bool locked;
-   std::queue<Session *> lock_waiters;
-   std::queue<Session *> pull_waiters;
+   std::deque<Session *> lock_waiters;
+   std::deque<Session *> pull_waiters;
 
    static const std::map<char, const char *> request_description;
 

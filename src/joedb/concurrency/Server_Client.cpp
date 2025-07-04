@@ -146,26 +146,36 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Client::disconnect()
+ void Server_Client::disconnect() noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
+  try
   {
    Channel_Lock lock(channel);
+   keep_alive_thread_must_stop = true;
    buffer.data[0] = 'Q';
    lock.write(buffer.data, 1);
-   keep_alive_thread_must_stop = true;
+  }
+  catch (...)
+  {
   }
 
-  condition.notify_one();
-  if (keep_alive_thread.joinable())
-   keep_alive_thread.join();
+  try
+  {
+   condition.notify_one();
+   if (keep_alive_thread.joinable())
+    keep_alive_thread.join();
+  }
+  catch (...)
+  {
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  Server_Client::~Server_Client()
  ////////////////////////////////////////////////////////////////////////////
  {
-  try { disconnect(); } catch (...) {}
+  disconnect();
  }
 }
 
