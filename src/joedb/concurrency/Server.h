@@ -5,6 +5,8 @@
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
+#include <boost/asio/experimental/channel.hpp>
+
 #include <queue>
 #include <map>
 
@@ -20,12 +22,11 @@ namespace joedb
 
    class Session: public joedb::asio::Server::Session
    {
-    private:
+    public:
      const Server &get_server() const {return *(Server *)&server;}
      Server &get_server() {return *(Server *)&server;}
 
-     boost::asio::steady_timer timer;
-
+     boost::asio::experimental::channel<void(boost::system::error_code)> channel;
      bool locking = false;
 
     public:
@@ -37,10 +38,9 @@ namespace joedb
       boost::asio::local::stream_protocol::socket &&socket
      );
 
-     boost::asio::awaitable<void> lock();
      void unlock();
 
-     boost::asio::awaitable<void> read_buffer(size_t offset, size_t size);
+     boost::asio::awaitable<size_t> read_buffer(size_t offset, size_t size);
      boost::asio::awaitable<void> write_buffer();
      boost::asio::awaitable<void> send(Async_Reader reader);
      boost::asio::awaitable<void> handshake();
@@ -60,6 +60,8 @@ namespace joedb
    {
     return std::make_unique<Session>(*this, std::move(socket));
    }
+
+   boost::asio::awaitable<void> lock(Session &session);
 
    const std::chrono::milliseconds lock_timeout;
    boost::asio::steady_timer lock_timeout_timer;

@@ -38,7 +38,7 @@ namespace joedb
   boost::asio::local::stream_protocol::socket &&socket
  ):
   joedb::asio::Server::Session(server, std::move(socket)),
-  timer(server.thread_pool)
+  channel(server.thread_pool)
  {
  }
 
@@ -55,30 +55,41 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- boost::asio::awaitable<void> Server::Session::lock()
+ boost::asio::awaitable<void> Server::lock(Session &session)
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!get_server().locked)
+  if (!locked)
   {
-   if (get_server().log_level > 2)
-    log("obtained lock immediately");
-   get_server().locked = true;
-   locking = true;
-   co_return;
+   if (log_level > 2)
+    session.log("obtained lock immediately");
+  }
+  else
+  {
+   if (log_level > 2)
+    session.log("waiting for lock");
+
+   lock_waiters.emplace(&session);
+   co_await session.channel.async_receive(boost::asio::use_awaitable);
+
+   if (log_level > 2)
+    session.log("obtained lock after waiting");
+
+   lock_waiters.pop();
   }
 
-  if (get_server().log_level > 2)
-   log("waiting for lock");
+  locked = true;
+  session.locking = true;
 
-  get_server().lock_waiters.emplace(this);
-  timer.expires_after(boost::asio::steady_timer::duration::max());
-  co_await timer.async_wait(boost::asio::use_awaitable);
-
-  if (get_server().log_level > 2)
-   log("obtained lock after waiting");
-
-  locking = true;
-  get_server().lock_waiters.pop();
+  if (!client_lock)
+  {
+   if (!writable_journal_client)
+   {
+    session.log("error: locking pull-only server");
+    session.buffer.data[0] = 'R';
+   }
+   else
+    client_lock.emplace(*writable_journal_client);
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -93,18 +104,18 @@ namespace joedb
   if (get_server().lock_waiters.empty())
    get_server().locked = false;
   else
-   get_server().lock_waiters.front()->timer.cancel();
+   get_server().lock_waiters.front()->channel.try_send(boost::system::error_code{});
  }
 
  ///////////////////////////////////////////////////////////////////////////
- boost::asio::awaitable<void> Server::Session::read_buffer
+ boost::asio::awaitable<size_t> Server::Session::read_buffer
  ///////////////////////////////////////////////////////////////////////////
  (
   const size_t offset,
   const size_t size
  )
  {
-  co_await boost::asio::async_read
+  const size_t result = co_await boost::asio::async_read
   (
    socket,
    boost::asio::buffer(buffer.data + offset, size),
@@ -112,6 +123,8 @@ namespace joedb
   );
 
   buffer.index = offset;
+
+  co_return result;
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -273,12 +286,14 @@ namespace joedb
    }
 
    get_server().pull_waiters.emplace(this);
+   boost::asio::steady_timer timer(co_await boost::asio::this_coro::executor);
    timer.expires_after(wait);
    co_await timer.async_wait(boost::asio::use_awaitable);
+   // TODO use channel to trigger early interruption
   }
 
   if (lock_before)
-   co_await lock();
+   co_await get_server().lock(*this);
 
   if (!send_data)
    pull_checkpoint = get_server().client.get_journal_checkpoint();
@@ -307,7 +322,7 @@ namespace joedb
   {
    if (get_server().log_level > 2)
     log("taking the lock for push attempt.");
-   co_await lock();
+   co_await get_server().lock(*this);
   }
 
   const bool conflict =
@@ -353,18 +368,18 @@ namespace joedb
 
   while (remaining_size > 0)
   {
-   co_await read_buffer
+   const size_t size = co_await read_buffer
    (
     0,
     size_t(std::min(remaining_size, int64_t(buffer.size)))
    );
 
    if (writer)
-    writer->write(buffer.data, buffer.index); // ??? takes_time
+    writer->write(buffer.data, size); // ??? takes_time
 
-   remaining_size -= int64_t(buffer.index);
+   remaining_size -= int64_t(size);
    if (get_server().log_level > 3 && remaining_size > 0)
-    log("reamaining_size = " + std::to_string(remaining_size));
+    log("remaining_size = " + std::to_string(remaining_size));
   }
 
   if (until > from)
@@ -398,7 +413,7 @@ namespace joedb
   auto &waiters = get_server().pull_waiters;
   while (!waiters.empty())
   {
-   waiters.front()->timer.cancel();
+   waiters.front()->channel.try_send(boost::system::error_code{});
    waiters.pop();
   }
 
