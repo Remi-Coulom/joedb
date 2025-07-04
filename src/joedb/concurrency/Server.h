@@ -5,7 +5,7 @@
 #include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
-#include <queue>
+#include <deque>
 #include <map>
 
 namespace joedb
@@ -84,11 +84,11 @@ namespace joedb
 
    const std::chrono::milliseconds lock_timeout;
    boost::asio::steady_timer lock_timeout_timer;
+
    bool locked;
-   std::queue<std::shared_ptr<Session>> lock_queue;
-   void lock_dequeue();
-   void lock(std::shared_ptr<Session> session, Session::State state);
-   void unlock(Session &session);
+   std::deque<std::function<void>> lock_queue;
+   boost::asio::awaitable<void> lock();
+   void unlock();
 
    void lock_timeout_handler
    (

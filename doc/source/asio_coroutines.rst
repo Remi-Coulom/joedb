@@ -61,7 +61,7 @@ ways, but has two major drawbacks:
  - compilation is very slow
  - compilation generates a lot of code, and can result in large binaries
 
-For instance, the `secure websocket tutorial example of boost::beast
+For instance, the `secure websocket client example of boost::beast
 <https://github.com/boostorg/beast/blob/develop/example/websocket/client/sync-ssl/websocket_client_sync_ssl.cpp>`_
 takes 13 seconds to compile, and produces a 800kB binary. Adding websocket
 support to joedb doubled the size of the library, and tripled the compilation

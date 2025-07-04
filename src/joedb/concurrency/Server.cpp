@@ -7,6 +7,7 @@
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/co_spawn.hpp>
+#include <boost/asio/compose.hpp>
 
 #include <cstdio>
 
@@ -60,7 +61,7 @@ namespace joedb
    if (state == State::locking)
    {
     log("removing lock held by dying session.\n");
-    get_server().unlock(*this);
+    get_server().unlock();
    }
   }
   catch (...)
@@ -91,6 +92,36 @@ namespace joedb
   );
  }
 
+ boost::asio::awaitable<void> Server::lock()
+ {
+  if (!locked)
+  {
+   locked = true;
+   co_return;
+  }
+
+  boost::asio::async_compose<boost::asio::use_awaitable_t<>, void()>
+  (
+   [this](auto &self) mutable
+   {
+    lock_queue.emplace_back(std::move(self));
+   },
+   boost::asio::use_awaitable
+  );
+ }
+
+ void Server::unlock()
+ {
+  if (lock_queue.empty())
+   locked = false;
+  else
+  {
+   boost::asio::dispatch(thread_pool, std::move(lock_queue.front()));
+   lock_queue.pop_front();
+  }
+ }
+
+#if 0
  ////////////////////////////////////////////////////////////////////////////
  void Server::lock_dequeue()
  ////////////////////////////////////////////////////////////////////////////
@@ -164,6 +195,7 @@ namespace joedb
    lock_dequeue();
   }
  }
+#endif
 
  ////////////////////////////////////////////////////////////////////////////
  void Server::lock_timeout_handler
@@ -752,6 +784,7 @@ namespace joedb
    }
   }
 
+  log(std::string(push_status, 1));
 
   int64_t push_remaining_size = until - from;
   while (push_remaining_size > 0)
