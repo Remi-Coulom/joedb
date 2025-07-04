@@ -45,6 +45,7 @@ namespace joedb::asio
      void log(std::string_view s);
 
      virtual boost::asio::awaitable<void> run() = 0;
+     virtual void cleanup() {}
 
      virtual ~Session();
    };

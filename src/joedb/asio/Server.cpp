@@ -50,8 +50,20 @@ namespace joedb::asio
      std::exception_ptr exception_ptr
     )
     {
+     ending_session->cleanup();
      if (log_level > 1)
       ending_session->log("stop");
+     if (exception_ptr && log_level > 1)
+     {
+      try
+      {
+       std::rethrow_exception(exception_ptr);
+      }
+      catch (const std::exception &e)
+      {
+       ending_session->log(std::string("exception: ") + e.what());
+      }
+     }
     }
    );
   }
@@ -105,7 +117,7 @@ namespace joedb::asio
  void Server::run()
  {
   log("run, thread_count = " + std::to_string(thread_count));
-  thread_pool.stop();
+  thread_pool.join();
   log("stop");
  }
 
