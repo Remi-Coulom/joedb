@@ -53,6 +53,9 @@ namespace joedb::generator
   out << "\n {\n";
   for (const auto &procedure: procedures)
    out << "  procedures.emplace_back(&" << procedure.name << ");\n";
+  out << '\n';
+  for (const auto &procedure: procedures)
+   out << "  names.emplace_back(\"" << procedure.name << "\");\n";
 
   out << " }\n";
 

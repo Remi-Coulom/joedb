@@ -47,10 +47,7 @@ namespace joedb::generator
    }
 
   public:
-   Procedure(): joedb::rpc::Procedure
-   (
-    std::string(detail::schema_string, detail::schema_string_size)
-   )
+   Procedure(): joedb::rpc::Procedure(Memory_Database().get_data())
    {
    }
 

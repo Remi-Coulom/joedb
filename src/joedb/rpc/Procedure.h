@@ -13,11 +13,11 @@ namespace joedb::rpc
  class Procedure
  {
   private:
-   const std::string schema;
+   const std::string prolog;
 
   public:
-   Procedure(std::string schema): schema(std::move(schema)) {}
-   const std::string &get_schema() const {return schema;}
+   Procedure(std::string prolog): prolog(std::move(prolog)) {}
+   const std::string &get_prolog() const {return prolog;}
    virtual void execute(joedb::Buffered_File &file) = 0;
    virtual ~Procedure() = default;
  };

@@ -12,10 +12,12 @@ namespace joedb::rpc
  {
   protected:
    std::vector<Procedure *> procedures;
+   std::vector<std::string> names;
 
   public:
    SHA_256::Hash get_hash() const;
-   const std::vector<Procedure *> &get_procedures() {return procedures;}
+   const std::vector<Procedure *> &get_procedures() const {return procedures;}
+   const std::vector<std::string> &get_names() const {return names;}
    size_t size() const {return procedures.size();}
  };
 }

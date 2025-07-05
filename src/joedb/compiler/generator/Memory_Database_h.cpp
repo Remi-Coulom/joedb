@@ -42,6 +42,16 @@ namespace joedb::generator
     return joedb::File_View(*this);
    }
 
+   const std::string &get_data() const
+   {
+    return joedb::Memory_File::get_data();
+   }
+
+   const char *data() const
+   {
+    return joedb::Memory_File::get_data().data();
+   }
+
    void pull()
    {
     journal.pull();
