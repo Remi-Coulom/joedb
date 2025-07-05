@@ -8,4 +8,3 @@ Joedb, the Journal-Only Embedded Database
    intro
    user_guide
    reference
-   blog
