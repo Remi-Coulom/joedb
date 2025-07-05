@@ -2,7 +2,6 @@
 #define joedb_Server_declared
 
 #include "joedb/asio/Server.h"
-#include "joedb/journal/Buffer.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
 #include <deque>
@@ -26,7 +25,6 @@ namespace joedb
 
      boost::asio::steady_timer timer;
      bool locking = false;
-     Buffer<13> buffer;
 
      boost::asio::steady_timer lock_timeout_timer;
      boost::asio::awaitable<void> lock();
@@ -36,8 +34,6 @@ namespace joedb
      char push_status;
      std::optional<joedb::Async_Writer> push_writer;
 
-     boost::asio::awaitable<size_t> read_buffer(size_t offset, size_t size);
-     boost::asio::awaitable<void> write_buffer();
      boost::asio::awaitable<void> send(Async_Reader reader);
      boost::asio::awaitable<void> handshake();
      boost::asio::awaitable<void> check_hash();

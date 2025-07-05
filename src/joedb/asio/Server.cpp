@@ -3,12 +3,19 @@
 
 #include <boost/asio/detached.hpp>
 #include <boost/asio/co_spawn.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/write.hpp>
 
 namespace joedb::asio
 {
  void Server::log(std::string_view s)
  {
-  logger.write(joedb::get_time_string_of_now() + ' ' + endpoint_path + ": " + std::string(s) + '\n');
+  logger.write
+  (
+   joedb::get_time_string_of_now() + ' ' +
+   endpoint_path + ": " +
+   std::string(s) + '\n'
+  );
  }
 
  Server::Session::Session
@@ -24,6 +31,35 @@ namespace joedb::asio
   if (server.log_level > 1)
    log("start");
  }
+
+ boost::asio::awaitable<size_t> Server::Session::read_buffer
+ (
+  const size_t offset,
+  const size_t size
+ )
+ {
+  const size_t result = co_await boost::asio::async_read
+  (
+   socket,
+   boost::asio::buffer(buffer.data + offset, size),
+   boost::asio::use_awaitable
+  );
+
+  buffer.index = offset;
+
+  co_return result;
+ }
+
+ boost::asio::awaitable<void> Server::Session::write_buffer()
+ {
+  co_await boost::asio::async_write
+  (
+   socket,
+   boost::asio::buffer(buffer.data, buffer.index),
+   boost::asio::use_awaitable
+  );
+ }
+
 
  void Server::Session::log(std::string_view s)
  {

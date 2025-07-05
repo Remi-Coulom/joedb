@@ -2,6 +2,7 @@
 #define joedb_asio_Server_declared
 
 #include "joedb/error/Logger.h"
+#include "joedb/journal/Buffer.h"
 
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/local/stream_protocol.hpp>
@@ -36,6 +37,10 @@ namespace joedb::asio
      const int64_t id;
      boost::asio::local::stream_protocol::socket socket;
      boost::asio::strand<boost::asio::thread_pool::executor_type> strand;
+     Buffer<13> buffer;
+
+     boost::asio::awaitable<size_t> read_buffer(size_t offset, size_t size);
+     boost::asio::awaitable<void> write_buffer();
 
     public:
      Session

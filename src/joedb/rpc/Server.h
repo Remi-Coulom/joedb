@@ -2,11 +2,7 @@
 #define joedb_rpc_Server_declared
 
 #include "joedb/asio/Server.h"
-
-#include <boost/asio/write.hpp>
-#include <boost/asio/co_spawn.hpp>
-
-#include <thread>
+#include "joedb/rpc/Procedure.h"
 
 namespace joedb::rpc
 {
@@ -15,9 +11,45 @@ namespace joedb::rpc
  /// @ingroup RPC
  class Server: public joedb::asio::Server
  {
+  private:
+   std::vector<std::reference_wrapper<Procedure>> &procedures;
+
   protected:
    class Session: public joedb::asio::Server::Session
    {
+    private:
+     Server &get_server() {return *(Server *)&server;}
+
+     boost::asio::awaitable<void> handshake()
+     {
+      co_await read_buffer(0, 32);
+
+      // TODO: check correct hash
+
+      buffer.index = 1;
+      buffer.write<int64_t>(id);
+
+      co_await write_buffer();
+     }
+
+     boost::asio::awaitable<void> procedure()
+     {
+      co_await read_buffer(1, 16);
+
+      const int64_t id = buffer.read<int64_t>();
+      const int64_t until = buffer.read<int64_t>();
+
+      if (id < 0 || size_t(id) >= get_server().procedures.size())
+       throw Exception("bad procedure id");
+
+      // TODO: execute procedure
+
+      buffer.index = 1;
+      buffer.write<int64_t>(until);
+
+      co_await write_buffer();
+     }
+
     public:
      Session
      (
@@ -30,27 +62,19 @@ namespace joedb::rpc
 
      boost::asio::awaitable<void> run() override
      {
-      std::array<char, 1024> buffer;
-
       while (true)
       {
-       size_t n = co_await socket.async_read_some
-       (
-        boost::asio::buffer(buffer),
-        boost::asio::use_awaitable
-       );
+       co_await read_buffer(0, 1);
 
        if (server.get_log_level() > 2)
-        log(std::to_string(n) + " bytes");
+        log(std::string("received command: ") + buffer.data[0]);
 
-       std::this_thread::sleep_for(std::chrono::seconds(10));
-
-       co_await boost::asio::async_write
-       (
-        socket,
-        boost::asio::buffer(buffer, n),
-        boost::asio::use_awaitable
-       );
+       switch (buffer.data[0])
+       {
+        case 'H': co_await handshake(); break;
+        case 'P': co_await procedure(); break;
+        default: co_return; break;
+       }
       }
      }
    };
@@ -69,7 +93,8 @@ namespace joedb::rpc
     Logger &logger,
     int log_level,
     int thread_count,
-    std::string endpoint_path
+    std::string endpoint_path,
+    std::vector<std::reference_wrapper<Procedure>> &procedures
    ):
     joedb::asio::Server
     (
@@ -77,7 +102,8 @@ namespace joedb::rpc
      log_level,
      thread_count,
      std::move(endpoint_path)
-    )
+    ),
+    procedures(procedures)
    {
    }
  };

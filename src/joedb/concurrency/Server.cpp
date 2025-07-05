@@ -3,11 +3,8 @@
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/journal/File_Hasher.h"
 
-#include <boost/asio/read.hpp>
-#include <boost/asio/write.hpp>
-#include <boost/asio/co_spawn.hpp>
-#include <boost/asio/compose.hpp>
 #include <boost/asio/as_tuple.hpp>
+#include <boost/asio/use_awaitable.hpp>
 
 #include <cstdio>
 #include <algorithm>
@@ -75,17 +72,17 @@ namespace joedb
     if (get_server().log_level > 2)
      log("waiting for lock");
 
-    get_server().lock_waiters.emplace_back(this);
     timer.expires_after(boost::asio::steady_timer::duration::max());
-    co_await timer.async_wait
+
+    get_server().lock_waiters.emplace_back(this);
+    co_await timer.async_wait // must not throw
     (
      boost::asio::as_tuple(boost::asio::use_awaitable)
     );
+    get_server().lock_waiters.pop_front();
 
     if (get_server().log_level > 2)
      log("obtained lock after waiting");
-
-    get_server().lock_waiters.pop_front();
    }
 
    get_server().locked = true;
@@ -158,38 +155,6 @@ namespace joedb
     }
    );
   }
- }
-
- ///////////////////////////////////////////////////////////////////////////
- boost::asio::awaitable<size_t> Server::Session::read_buffer
- ///////////////////////////////////////////////////////////////////////////
- (
-  const size_t offset,
-  const size_t size
- )
- {
-  const size_t result = co_await boost::asio::async_read
-  (
-   socket,
-   boost::asio::buffer(buffer.data + offset, size),
-   boost::asio::use_awaitable
-  );
-
-  buffer.index = offset;
-
-  co_return result;
- }
-
- ///////////////////////////////////////////////////////////////////////////
- boost::asio::awaitable<void> Server::Session::write_buffer()
- ///////////////////////////////////////////////////////////////////////////
- {
-  co_await boost::asio::async_write
-  (
-   socket,
-   boost::asio::buffer(buffer.data, buffer.index),
-   boost::asio::use_awaitable
-  );
  }
 
  ///////////////////////////////////////////////////////////////////////////
@@ -357,10 +322,11 @@ namespace joedb
 
    timer.expires_after(wait);
    get_server().pull_waiters.emplace_back(this);
-   co_await timer.async_wait
+   co_await timer.async_wait // must not throw
    (
     boost::asio::as_tuple(boost::asio::use_awaitable)
    );
+   // bug: remove from pull_waiters
   }
 
   if (lock_before)

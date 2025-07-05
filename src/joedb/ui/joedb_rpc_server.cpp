@@ -3,6 +3,7 @@
 #include "joedb/error/Stream_Logger.h"
 
 #include <iostream>
+#include <thread>
 
 namespace joedb
 {
@@ -31,12 +32,15 @@ namespace joedb
 
   Stream_Logger logger(std::cerr);
 
+  std::vector<std::reference_wrapper<rpc::Procedure>> procedures;
+
   rpc::Server server
   (
    logger,
    log_level,
    std::thread::hardware_concurrency(),
-   std::string(endpoint_path)
+   std::string(endpoint_path),
+   procedures
   );
 
   server.run();
