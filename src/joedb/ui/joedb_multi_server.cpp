@@ -1,12 +1,13 @@
 #include "joedb/ui/main_wrapper.h"
+#include "joedb/error/Stream_Logger.h"
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/asio/io_context.h"
 
 #include <iostream>
 #include <list>
 #include <memory>
+#include <thread>
 
 namespace joedb
 {
@@ -18,11 +19,13 @@ namespace joedb
    File file;
    Writable_Journal_Client client;
    Server server;
+   std::thread thread;
 
   public:
    Server_Data
    (
-    boost::asio::io_context &io_context,
+    Logger &logger,
+    int log_level,
     const std::string &file_name,
     const std::string &endpoint_path,
     std::chrono::milliseconds timeout
@@ -31,14 +34,18 @@ namespace joedb
     client(file),
     server
     (
-     client,
-     io_context,
+     logger,
+     log_level,
+     1,
      endpoint_path,
-     timeout,
-     &std::cerr
-    )
+     client,
+     timeout
+    ),
+    thread([this](){server.run();})
    {
    }
+
+   void join() {thread.join();}
  };
 
  ////////////////////////////////////////////////////////////////////////////
@@ -52,6 +59,8 @@ namespace joedb
    0.0f
   );
 
+  const int log_level = arguments.get_option<int>("log_level", "level", 100);
+
   arguments.add_parameter("<file.joedb>+");
 
   if (arguments.get_remaining_count() == 0)
@@ -60,9 +69,9 @@ namespace joedb
    return 1;
   }
 
-  joedb::asio::io_context io_context(1);
-
   std::list<std::unique_ptr<Server_Data>> servers;
+
+  Stream_Logger logger(std::cerr);
 
   while (arguments.get_remaining_count())
   {
@@ -72,7 +81,8 @@ namespace joedb
    (
     new Server_Data
     (
-     *io_context,
+     logger,
+     log_level,
      file_name,
      file_name + ".sock",
      std::chrono::milliseconds(int(timeout_seconds * 1000))
@@ -80,7 +90,8 @@ namespace joedb
    );
   }
 
-  io_context.run();
+  for (auto &server: servers)
+   server->join();
 
   return 0;
  }

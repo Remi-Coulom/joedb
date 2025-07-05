@@ -16,8 +16,8 @@ namespace joedb::asio
   Server &server,
   boost::asio::local::stream_protocol::socket &&socket
  ):
-  id(server.session_id++),
   server(server),
+  id(server.session_id++),
   socket(std::move(socket)),
   strand(server.thread_pool.get_executor())
  {
@@ -65,6 +65,9 @@ namespace joedb::asio
       {
        if (log_level > 1)
         ending_session->log(std::string("exception: ") + e.what());
+      }
+      catch (...)
+      {
       }
      }
     }
@@ -126,6 +129,11 @@ namespace joedb::asio
 
   if (log_level > 0)
    log("stop");
+ }
+
+ void Server::stop()
+ {
+  thread_pool.stop();
  }
 
  Server::~Server()

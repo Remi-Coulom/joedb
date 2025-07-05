@@ -5,10 +5,10 @@
 #include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/concurrency/Server_File.h"
-#include "joedb/asio/io_context.h"
 #include "joedb/concurrency/Local_Connector.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
+#include "joedb/error/Stream_Logger.h"
 
 #include "Test_Sequence.h"
 #include "Test_Local_Channel.h"
@@ -24,6 +24,7 @@ namespace joedb
 {
  static constexpr bool log_to_cerr = false;
  static std::ostringstream log_stream;
+ static Stream_Logger logger(log_to_cerr ? std::cerr : log_stream);
 
  ////////////////////////////////////////////////////////////////////////////
  class Test_Server
@@ -34,7 +35,6 @@ namespace joedb
    std::vector<char> data;
    Shared_Memory_File file{data};
    Writable_Journal_Client client{file};
-   joedb::asio::io_context io_context;
 
    Server server;
    std::thread thread;
@@ -47,47 +47,28 @@ namespace joedb
    ):
     server
     {
-     client,
-     *io_context,
+     logger,
+     100,
+     1,
      std::string(endpoint_path),
-     lock_timeout,
-     log_to_cerr ? &std::cerr : &log_stream
-    }
+     client,
+     lock_timeout
+    },
+    thread([this](){server.run();})
    {
-    restart();
    }
 
-   void pause()
+   void stop()
    {
-    if (!paused)
-    {
-     boost::asio::post(io_context->get_executor(), [&](){server.stop();});
-     thread.join();
-     paused = true;
-    }
-   }
-
-   void restart()
-   {
-    if (paused)
-    {
-     boost::asio::post(io_context->get_executor(), [this](){server.start();});
-     io_context->restart();
-     thread = std::thread(
-      [&io_context_reference = io_context]()
-      {
-       io_context_reference.run();
-      }
-     );
-     paused = false;
-    }
+    server.stop();
+    thread.join();
    }
 
    ~Test_Server()
    {
     try
     {
-     pause();
+     stop();
     }
     catch(...)
     {
@@ -218,18 +199,18 @@ namespace joedb
 
   File server_file(file_name, Open_Mode::read_existing);
   Readonly_Client server_client{server_file};
-  joedb::asio::io_context io_context;
 
   Server server
   (
-   server_client,
-   *io_context,
+   logger,
+   100,
+   1,
    "big_read.sock",
-   std::chrono::seconds(0),
-   log_to_cerr ? &std::cerr : &log_stream
+   server_client,
+   std::chrono::seconds(0)
   );
 
-  std::thread thread([&io_context](){io_context.run();});
+  std::thread thread([&server](){server.run();});
 
   {
    Test_Local_Channel channel(server.get_endpoint_path());
@@ -239,7 +220,7 @@ namespace joedb
    client.pull();
   }
 
-  boost::asio::post(io_context->get_executor(), [&](){server.stop();});
+  server.stop();
   thread.join();
   std::remove(file_name);
  }
@@ -448,22 +429,12 @@ namespace joedb
    EXPECT_EQ(client.get_journal().get_checkpoint(), 262189);
   }
 
-  server.pause();
+  server.stop();
 
   EXPECT_EQ(server.client.get_journal().get_checkpoint(), 41);
 
   EXPECT_TRUE(server.file.get_size() > 1000);
   EXPECT_TRUE(server.file.get_size() < 262189);
-
-  //
-  // Connect again to complete the push
-  //
-  server.restart();
-  {
-   Test_Client client(client_file, server);
-   client.push_unlock();
-   EXPECT_EQ(server.client.get_journal().get_checkpoint(), 262189);
-  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -498,15 +469,12 @@ namespace joedb
   {
   }
 
+  server.stop();
+
   EXPECT_EQ(client.get_journal().get_checkpoint(), 262189);
   EXPECT_EQ(server.client.get_journal().get_checkpoint(), 41);
   EXPECT_TRUE(server.file.get_size() > 1000);
   EXPECT_TRUE(server.file.get_size() < 262189);
-
-  server.restart();
-
-  client.push_unlock();
-  EXPECT_EQ(server.client.get_journal().get_checkpoint(), 262189);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -710,17 +678,17 @@ namespace joedb
 
   File_Connection connection(connection_file);
   Writable_Journal_Client client{file, connection};
-  joedb::asio::io_context io_context;
 
   EXPECT_TRUE(file.get_size() > connection_file.get_size());
 
   Server server
   {
-   client,
-   *io_context,
+   logger,
+   100,
+   1,
    std::string(Test_Server::default_endpoint_path),
-   std::chrono::seconds(0),
-   log_to_cerr ? &std::cerr : &log_stream
+   client,
+   std::chrono::seconds(0)
   };
 
   EXPECT_EQ(file.get_size(), connection_file.get_size());
@@ -737,18 +705,15 @@ namespace joedb
   Server_Connection backup_server_connection(channel);
   Writable_Journal_Client backup_client(file, backup_server_connection);
 
-  joedb::asio::io_context io_context;
-
   Server server
   {
-   backup_client,
-   *io_context,
+   logger,
+   100,
+   1,
    "another_server.sock",
-   std::chrono::seconds(0),
-   nullptr
+   backup_client,
+   std::chrono::seconds(0)
   };
-
-  std::thread thread([&io_context](){io_context.run();});
 
   {
    Memory_File client_file;
@@ -788,9 +753,6 @@ namespace joedb
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
   }
-
-  boost::asio::post(io_context->get_executor(), [&](){server.stop();});
-  thread.join();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -1072,7 +1034,7 @@ namespace joedb
   {
   }
 
-  server.io_context->poll();
+  server.stop();
   EXPECT_FALSE(server.server.has_client_lock());
  }
 }

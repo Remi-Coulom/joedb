@@ -63,11 +63,16 @@ endif()
 if (asio_FOUND)
  set(JOEDB_SOURCES
   ${JOEDB_SRC_DIR}/joedb/asio/io_context.cpp
-  ${JOEDB_SRC_DIR}/joedb/asio/Server.cpp
-  ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}
  )
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set(JOEDB_SOURCES
+   ${JOEDB_SRC_DIR}/joedb/asio/Server.cpp
+   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
+   ${JOEDB_SOURCES}
+  )
+ endif()
 endif()
 
 add_library(joedb_databases OBJECT ${JOEDB_DATABASES})

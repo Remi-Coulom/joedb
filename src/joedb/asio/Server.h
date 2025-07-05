@@ -31,9 +31,9 @@ namespace joedb::asio
 
    class Session
    {
-    public: // TODO -> protected
-     const int64_t id;
+    public:
      Server &server;
+     const int64_t id;
      boost::asio::local::stream_protocol::socket socket;
      boost::asio::strand<boost::asio::thread_pool::executor_type> strand;
 
@@ -82,6 +82,7 @@ namespace joedb::asio
    }
 
    void run();
+   void stop();
 
    virtual ~Server();
  };

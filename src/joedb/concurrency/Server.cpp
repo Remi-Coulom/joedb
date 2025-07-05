@@ -10,13 +10,7 @@
 #include <boost/asio/as_tuple.hpp>
 
 #include <cstdio>
-
-// TODO
-// - get tests to work again
-// - less noisy progress logging
-// - thread-safe server:
-//   - cancelling a timer must take place on the strand of the timer (post an event)
-//   - a mutex for global server variables (OK because never waiting)
+#include <algorithm>
 
 namespace joedb
 {
@@ -67,42 +61,47 @@ namespace joedb
  boost::asio::awaitable<void> Server::Session::lock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  if (!get_server().locked)
-  {
-   if (get_server().log_level > 2)
-    log("obtained lock immediately");
-  }
+  if (locking)
+   throw Exception("error: locking an already locked session");
   else
   {
-   if (get_server().log_level > 2)
-    log("waiting for lock");
-
-   get_server().lock_waiters.emplace_back(this);
-   timer.expires_after(boost::asio::steady_timer::duration::max());
-   co_await timer.async_wait
-   (
-    boost::asio::as_tuple(boost::asio::use_awaitable)
-   );
-
-   if (get_server().log_level > 2)
-    log("obtained lock after waiting");
-
-   get_server().lock_waiters.pop_front();
-  }
-
-  get_server().locked = true;
-  locking = true;
-  refresh_lock_timeout();
-
-  if (!get_server().client_lock)
-  {
-   if (!get_server().writable_journal_client)
+   if (!get_server().locked)
    {
-    log("error: locking pull-only server");
-    buffer.data[0] = 'R';
+    if (get_server().log_level > 2)
+     log("obtained lock immediately");
    }
    else
-    get_server().client_lock.emplace(*get_server().writable_journal_client);
+   {
+    if (get_server().log_level > 2)
+     log("waiting for lock");
+
+    get_server().lock_waiters.emplace_back(this);
+    timer.expires_after(boost::asio::steady_timer::duration::max());
+    co_await timer.async_wait
+    (
+     boost::asio::as_tuple(boost::asio::use_awaitable)
+    );
+
+    if (get_server().log_level > 2)
+     log("obtained lock after waiting");
+
+    get_server().lock_waiters.pop_front();
+   }
+
+   get_server().locked = true;
+   locking = true;
+   refresh_lock_timeout();
+
+   if (!get_server().client_lock)
+   {
+    if (!get_server().writable_journal_client)
+    {
+     log("error: locking pull-only server");
+     buffer.data[0] = 'R';
+    }
+    else
+     get_server().client_lock.emplace(*get_server().writable_journal_client);
+   }
   }
  }
 
@@ -119,7 +118,14 @@ namespace joedb
    lock_timeout_timer.cancel();
 
    if (get_server().lock_waiters.empty())
+   {
     get_server().locked = false;
+    if (get_server().client.is_shared() && get_server().client_lock)
+    {
+     get_server().client_lock->unlock();
+     get_server().client_lock.reset();
+    }
+   }
    else
     get_server().lock_waiters.front()->timer.cancel();
   }
@@ -129,7 +135,7 @@ namespace joedb
  void Server::Session::refresh_lock_timeout()
  ///////////////////////////////////////////////////////////////////////////
  {
-  if (locking)
+  if (locking && get_server().lock_timeout.count() > 0)
   {
    lock_timeout_timer.expires_after(get_server().lock_timeout);
    lock_timeout_timer.async_wait
@@ -199,8 +205,26 @@ namespace joedb
   buffer.index = 1;
   buffer.write<int64_t>(reader.get_end());
 
+  const int64_t display_step = std::max
+  (
+   int64_t(1000000),
+   reader.get_remaining() >> 6
+  );
+  int64_t next_display = reader.get_remaining() - display_step;
+
   while (buffer.index + reader.get_remaining() > 0)
   {
+   if
+   (
+    get_server().log_level > 3 &&
+    reader.get_remaining() > 0 &&
+    reader.get_remaining() <= next_display
+   )
+   {
+    next_display -= display_step;
+    log("remaining_size = " + std::to_string(reader.get_remaining()));
+   }
+
    buffer.index += reader.read
    (
     buffer.data + buffer.index,
@@ -213,9 +237,6 @@ namespace joedb
    refresh_lock_timeout();
    co_await write_buffer();
    buffer.index = 0;
-
-   if (get_server().log_level > 3 && reader.get_remaining() > 0)
-    log("remaining_size = " + std::to_string(reader.get_remaining()));
   }
  }
 
@@ -428,7 +449,7 @@ namespace joedb
   }
 
   if (until > from)
-  { 
+  {
    if (push_writer)
    {
     if (get_server().client_lock)
@@ -474,7 +495,7 @@ namespace joedb
   {
    co_await read_buffer(0, 1);
 
-   const char code = buffer.data[0];
+   const char code = buffer.read<char>();
 
    if (server.get_log_level() > 2)
    {
@@ -501,6 +522,7 @@ namespace joedb
 
     case 'M':
      unlock();
+     co_await write_buffer();
     break;
 
     case 'N': case 'O':

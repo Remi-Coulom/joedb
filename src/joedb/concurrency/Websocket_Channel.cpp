@@ -76,7 +76,7 @@ namespace joedb
     {
      return ws.read_some(boost::asio::buffer(data, size));
     }
-   
+
     ~Websocket_Channel()
     {
      try

@@ -12,9 +12,9 @@ over a network connection, but it has drawbacks:
    each-other's writes is quadratic in the number of clients, which does not
    scale.
  - When connecting over an unreliable network connection, a write transaction
-   may leave the server locked. This can be handled by setting the server's
-   timeout, but it will be a source of bad performance, and trying to handle
-   timeouts gracefully is difficult.
+   may leave the server locked. The server timeout can get rid of stale locks
+   after a while, but it will halt all processing for the duration of the
+   timeout. This is not acceptable when the server has to remain available.
 
 So journal sharing is a great way to handle backups, caching, or local
 concurrency, but is not efficient when many remote clients are writing
@@ -22,7 +22,7 @@ independent parts of the database over an unreliable network connection.
 
 Joedb offers an alternative to journal replication by allowing clients to
 execute stored procedures on the server. With this mechanism, a disconnection
-can never cause a lock timeout, and there is no need for clients to download
+can never leave a stale lock, and there is no need for clients to download
 the whole database. Each client can upload new data to the server in a very
 minimal single round-trip. The write transaction will be executed entirely on
 the server, and cannot be interrupted by a disconnection, so lock-timeout

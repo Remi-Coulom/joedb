@@ -79,14 +79,8 @@ Concurrency
 - joedb_server:
 
   - polymorphic socket: tcp/ip, unix, or websocket
-  - use coroutines
   - stress-test tool
-  - support running on multiple threads (requires mutex?)
-
-    - OK to keep one thread busy when waiting for a lock, or computing SHA 256, ...
-    - thread_count = max(core_count, 2 * server_count)
-    - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
-
+  - support running on multiple threads
   - support for log rotation: https://stackoverflow.com/questions/53188731/logging-compatibly-with-logrotate
   - write log as joedb file?
 
@@ -133,7 +127,6 @@ joedb_admin
 Other Ideas
 -----------
 - Use clang-format (try to customize it, use tabs)
-- Android logcat (custom std::streambuf, not part of joedb)
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - ability to indicate minimum joedb version in .joedbc file (and .joedbi?)
 - better readable interface:
