@@ -1037,4 +1037,26 @@ namespace joedb
   server.stop();
   EXPECT_FALSE(server.server.has_client_lock());
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, pull_waiters)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server;
+
+  Memory_File file;
+
+  {
+   Test_Client client(file, server);
+   client.pull(std::chrono::milliseconds(1));
+  }
+
+  {
+   Test_Client client(file, server);
+   client.transaction([](Readable &readable, Writable &writable)
+   {
+    writable.comment("Hello");
+   });
+  }
+ }
 }
