@@ -41,6 +41,8 @@ namespace joedb
      boost::asio::awaitable<void> pull(bool lock_before, bool send_data);
      boost::asio::awaitable<void> push(bool unlock_after);
 
+     void remove_from_queue(std::deque<Session *> &queue);
+
     public:
      Session
      (

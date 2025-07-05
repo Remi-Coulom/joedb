@@ -43,15 +43,23 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Server::Session::remove_from_queue(std::deque<Session *> &queue)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const auto it = std::find(queue.begin(), queue.end(), this);
+  if (it != queue.end())
+   queue.erase(it);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Server::Session::cleanup()
  ////////////////////////////////////////////////////////////////////////////
  {
   if (locking)
-  {
-   if (get_server().log_level > 2)
-    log("removing lock held by dying session.");
    unlock();
-  }
+
+  remove_from_queue(get_server().lock_waiters);
+  remove_from_queue(get_server().pull_waiters);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -72,10 +80,11 @@ namespace joedb
     if (get_server().log_level > 2)
      log("waiting for lock");
 
+    // dirty, using asio::experimental::channel is probably better
     timer.expires_after(boost::asio::steady_timer::duration::max());
 
     get_server().lock_waiters.emplace_back(this);
-    co_await timer.async_wait // must not throw
+    co_await timer.async_wait
     (
      boost::asio::as_tuple(boost::asio::use_awaitable)
     );
@@ -321,12 +330,13 @@ namespace joedb
    }
 
    timer.expires_after(wait);
+
    get_server().pull_waiters.emplace_back(this);
-   co_await timer.async_wait // must not throw
+   co_await timer.async_wait
    (
     boost::asio::as_tuple(boost::asio::use_awaitable)
    );
-   // bug: remove from pull_waiters
+   remove_from_queue(get_server().pull_waiters);
   }
 
   if (lock_before)
