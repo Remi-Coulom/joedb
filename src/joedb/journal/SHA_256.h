@@ -5,17 +5,16 @@
 #include <stdint.h>
 #include <cstring>
 
-// https://en.wikipedia.org/wiki/SHA-2
-
 namespace joedb
 {
- ////////////////////////////////////////////////////////////////////////////
+ /// Rotate x n bits to the right
  constexpr uint32_t rotr(uint32_t x, uint8_t n)
- ////////////////////////////////////////////////////////////////////////////
  {
   return (x >> n) | (x << ((-n) & 31));
  }
 
+ /// Compute SHA 256 hash code: https://en.wikipedia.org/wiki/SHA-2
+ ///
  /// @ingroup journal
  class SHA_256
  {
@@ -112,7 +111,7 @@ namespace joedb
      x[2] = x[1];
      x[1] = x[0];
      x[0] = temp1 + temp2;
-    };
+    }
 
     for (uint32_t i = 0; i < 8; i++)
      hash[i] += x[i];

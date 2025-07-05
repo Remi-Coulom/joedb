@@ -2,6 +2,9 @@
 #include "joedb/rpc/Server.h"
 #include "joedb/error/Stream_Logger.h"
 
+#include "../../doc/source/tutorial/src/tutorial/File_Client.h"
+#include "../../doc/source/tutorial/src/tutorial/Procedures.h"
+
 #include <iostream>
 #include <thread>
 
@@ -27,12 +30,14 @@ namespace joedb
   }
 
   const std::string endpoint_path = endpoint_option.empty()
-   ? std::string(file) + ".sock"
+   ? std::string(file) + ".rpc.sock"
    : std::string(endpoint_option);
 
   Stream_Logger logger(std::cerr);
 
-  std::vector<std::reference_wrapper<rpc::Procedure>> procedures;
+  tutorial::File_Client client(file.data());
+
+  tutorial::Procedures procedures(client);
 
   rpc::Server server
   (

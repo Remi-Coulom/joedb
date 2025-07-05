@@ -49,7 +49,7 @@ namespace joedb::generator
   public:
    Procedure(): joedb::rpc::Procedure
    (
-    std::string_view(detail::schema_string, detail::schema_string_size)
+    std::string(detail::schema_string, detail::schema_string_size)
    )
    {
    }

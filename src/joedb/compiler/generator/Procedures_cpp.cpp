@@ -33,7 +33,6 @@ namespace joedb::generator
 
   namespace_open(out, options.get_name_space());
 
-
   out << "\n Procedures::Procedures(Client &client):\n";
 
   {
@@ -52,6 +51,9 @@ namespace joedb::generator
   }
 
   out << "\n {\n";
+  for (const auto &procedure: procedures)
+   out << "  procedures.emplace_back(&" << procedure.name << ");\n";
+
   out << " }\n";
 
   namespace_close(out, options.get_name_space());

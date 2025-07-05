@@ -3,7 +3,7 @@
 
 #include "joedb/journal/Buffered_File.h"
 
-#include <string_view>
+#include <string>
 
 namespace joedb::rpc
 {
@@ -13,10 +13,11 @@ namespace joedb::rpc
  class Procedure
  {
   private:
-   const std::string_view schema;
+   const std::string schema;
 
   public:
-   Procedure(std::string_view schema): schema(schema) {}
+   Procedure(std::string schema): schema(std::move(schema)) {}
+   const std::string &get_schema() const {return schema;}
    virtual void execute(joedb::Buffered_File &file) = 0;
    virtual ~Procedure() = default;
  };

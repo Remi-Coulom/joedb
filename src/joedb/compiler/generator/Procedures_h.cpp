@@ -30,14 +30,16 @@ namespace joedb::generator
    for (const auto &schema: schemas)
     out << "#include \"procedures/" << schema << "/Procedure.h\"\n";
 
-   out << '\n';
+   out << "\n#include \"joedb/rpc/Procedures.h\"\n\n";
   }
 
   namespace_open(out, options.get_name_space());
 
-  out << "\n class Procedures\n";
-  out << " {\n";
-  out << "  public:\n";
+  out << R"RRR(
+ class Procedures: public joedb::rpc::Procedures
+ {
+  public:
+)RRR";
 
   for (const auto &procedure: procedures)
   {
@@ -46,10 +48,12 @@ namespace joedb::generator
    out << "_Procedure " << procedure.name << ";\n";
   }
 
-  out << '\n';
+  out << R"RRR(
 
-  out << "   Procedures(Client &client);\n";
-  out << " };\n";
+   Procedures(Client &client);
+  };
+)RRR";
+
 
   namespace_close(out, options.get_name_space());
   out << "\n#endif\n";

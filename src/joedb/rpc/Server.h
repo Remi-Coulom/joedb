@@ -2,7 +2,7 @@
 #define joedb_rpc_Server_declared
 
 #include "joedb/asio/Server.h"
-#include "joedb/rpc/Procedure.h"
+#include "joedb/rpc/Procedures.h"
 
 namespace joedb::rpc
 {
@@ -12,7 +12,7 @@ namespace joedb::rpc
  class Server: public joedb::asio::Server
  {
   private:
-   std::vector<std::reference_wrapper<Procedure>> &procedures;
+   const Procedures &procedures;
 
   protected:
    class Session: public joedb::asio::Server::Session
@@ -23,11 +23,15 @@ namespace joedb::rpc
      boost::asio::awaitable<void> handshake()
      {
       co_await read_buffer(0, 32);
+      const auto hash = buffer.read<SHA_256::Hash>();
+      const bool correct_hash = hash == get_server().procedures.get_hash();
 
-      // TODO: check correct hash
-
-      buffer.index = 1;
+      buffer.index = 0;
+      buffer.write<char>(correct_hash ? 'H': 'h');
       buffer.write<int64_t>(id);
+
+      if (get_server().log_level > 2)
+       log(correct_hash ? "correct hash" : "incorrect hash");
 
       co_await write_buffer();
      }
@@ -62,6 +66,8 @@ namespace joedb::rpc
 
      boost::asio::awaitable<void> run() override
      {
+      co_await handshake();
+
       while (true)
       {
        co_await read_buffer(0, 1);
@@ -71,7 +77,6 @@ namespace joedb::rpc
 
        switch (buffer.data[0])
        {
-        case 'H': co_await handshake(); break;
         case 'P': co_await procedure(); break;
         default: co_return; break;
        }
@@ -94,7 +99,7 @@ namespace joedb::rpc
     int log_level,
     int thread_count,
     std::string endpoint_path,
-    std::vector<std::reference_wrapper<Procedure>> &procedures
+    const Procedures &procedures
    ):
     joedb::asio::Server
     (
