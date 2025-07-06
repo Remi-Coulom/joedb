@@ -19,6 +19,7 @@ namespace joedb::generator
 
   out << R"RRR(
 #include "joedb/rpc/Procedure.h"
+#include "joedb/journal/File_View.h"
 #include "Writable_Database.h"
 #include "Memory_Database.h"
 #include "../../Client.h"

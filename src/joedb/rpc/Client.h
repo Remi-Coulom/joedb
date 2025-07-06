@@ -6,8 +6,6 @@
 #include "joedb/Thread_Safe.h"
 #include "joedb/journal/Memory_File.h"
 
-#include <iostream>
-
 namespace joedb::rpc
 {
  class Client
@@ -33,8 +31,6 @@ namespace joedb::rpc
     if (buffer.read<char>() != 'H')
      throw Exception("failed handshake");
     session_id = buffer.read<int64_t>();
-
-    std::cerr << "session_id = " << session_id << '\n';
    }
 
    void ping(Lock<Channel&> &lock)
@@ -56,40 +52,42 @@ namespace joedb::rpc
 
    void call(int64_t procedure_id, Memory_File &file)
    {
+    Lock<Channel&> lock(channel);
+
     auto &procedure = *procedures.get_procedures()[procedure_id];
 
-    const int64_t from = int64_t(procedure.get_prolog().size());
-    const int64_t until = file.get_size();
+    {
+     const int64_t from = int64_t(procedure.get_prolog().size());
+     const int64_t until = file.get_size();
 
-    std::cerr << "from = " << from << '\n';
-    std::cerr << "until = " << until << '\n';
+     buffer.index = 0;
+     buffer.write<char>('C');
+     buffer.write<int64_t>(procedure_id);
+     buffer.write<int64_t>(until);
 
-    buffer.index = 0;
-    buffer.write<char>('C');
-    buffer.write<int64_t>(procedure_id);
-    buffer.write<int64_t>(until);
-
-    Lock<Channel&> lock(channel);
-    lock->write(buffer.data, buffer.index);
-    lock->write(file.get_data().data() + from, until - from);
-    std::cerr << "wrote " << until - from << " bytes\n";
-    lock->read(buffer.data, 9);
-    std::cerr << "read reply\n";
+     lock->write(buffer.data, buffer.index);
+     lock->write(file.get_data().data() + from, until - from);
+     lock->read(buffer.data, 9);
+    }
 
     buffer.index = 0;
     const char reply = buffer.read<char>();
 
     if (reply == 'C')
     {
-     const int64_t reply_until = buffer.read<int64_t>();
-     std::cerr << "reply_until = " << reply_until << '\n';
-     // TODO: read reply
+     const size_t from = file.get_data().size();
+     const size_t until = static_cast<size_t>(buffer.read<int64_t>());
+     file.get_data().resize(until);
+     lock->read(file.get_data().data() + from, until - from);
+     file.set_position(0);
+     file.write<int64_t>(until);
+     file.write<int64_t>(until);
+     file.set_position(from);
     }
     else
     {
      const int64_t n = buffer.read<int64_t>();
      lock->read(buffer.data, n);
-     std::cerr << "error: " << std::string_view(buffer.data, n) << '\n';
     }
    }
 

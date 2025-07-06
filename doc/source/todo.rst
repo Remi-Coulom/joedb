@@ -3,16 +3,12 @@ TODO
 
 Stored Procedures
 -----------------
- - Implement simple RPC client/server
- - Compute collection signature at compile time.
- - check matching procedure schemas between client and server at handshake
- - error handling: catch exception, and rollback if necessary.
- - multi threaded server: use a mutex with the client (Thread_Safe_Client with Client_Read_Lock, Client_Write_Lock)
- - store whole joedbi as message prefix (not schema only)
- - allow procedures to be "stateful": keep state on the server during session?
- - generate wasm interface with joedbc -> web site
- - generate java/kotlin interface with joedbc -> Android app
- - Implement monitor app as example. Monitor db backups.
+ - procedure collection should be able to exist without a parent database
+    - the client part must never depend on parent at all
+    - Read_Function, Write_Function, Function
+    - If all functions are "Function" -> no client in Procedures
+ - thread safety of Client access on the server
+ - rollback after failed transaction
 
 On-disk Storage
 ---------------

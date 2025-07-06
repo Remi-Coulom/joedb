@@ -22,7 +22,6 @@ namespace joedb::generator
   out << R"RRR(
 #include "Writable_Database.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/File_View.h"
 
 )RRR";
 
