@@ -48,7 +48,7 @@ namespace joedb
    procedures
   );
 
-  server.run();
+  server.join();
 
   return 0;
  }

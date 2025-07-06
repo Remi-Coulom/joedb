@@ -37,7 +37,6 @@ namespace joedb
    Writable_Journal_Client client{file};
 
    Server server;
-   std::thread thread;
    bool paused = true;
 
    Test_Server
@@ -53,15 +52,13 @@ namespace joedb
      std::string(endpoint_path),
      client,
      lock_timeout
-    },
-    thread([this](){server.run();})
+    }
    {
    }
 
    void stop()
    {
     server.stop();
-    thread.join();
    }
 
    ~Test_Server()
@@ -210,8 +207,6 @@ namespace joedb
    std::chrono::seconds(0)
   );
 
-  std::thread thread([&server](){server.run();});
-
   {
    Test_Local_Channel channel(server.get_endpoint_path());
    Server_Connection server_connection(channel);
@@ -221,7 +216,6 @@ namespace joedb
   }
 
   server.stop();
-  thread.join();
   std::remove(file_name);
  }
 
@@ -761,7 +755,7 @@ namespace joedb
  {
   Test_Server server;
   std::raise(SIGINT);
-  server.thread.join();
+  server.server.join();
  }
 
  ////////////////////////////////////////////////////////////////////////////

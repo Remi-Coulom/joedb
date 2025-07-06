@@ -128,7 +128,7 @@ namespace joedb::asio
   interrupt_signals(thread_pool, SIGINT, SIGTERM)
  {
   if (log_level > 0)
-   log("start");
+   log("start, thread_count = " + std::to_string(thread_count));
 
   interrupt_signals.async_wait
   (
@@ -156,20 +156,14 @@ namespace joedb::asio
   );
  }
 
- void Server::run()
- {
-  if (log_level > 0)
-   log("run, thread_count = " + std::to_string(thread_count));
-
-  thread_pool.join();
-
-  if (log_level > 0)
-   log("stop");
- }
-
  void Server::stop()
  {
   thread_pool.stop();
+ }
+
+ void Server::join()
+ {
+  thread_pool.join();
  }
 
  Server::~Server()

@@ -77,7 +77,7 @@ namespace joedb
    std::chrono::milliseconds(int(timeout_seconds * 1000))
   );
 
-  server.run();
+  server.join();
 
   return 0;
  }

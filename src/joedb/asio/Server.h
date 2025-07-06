@@ -86,8 +86,8 @@ namespace joedb::asio
     return endpoint_path;
    }
 
-   void run();
    void stop();
+   void join();
 
    virtual ~Server();
  };

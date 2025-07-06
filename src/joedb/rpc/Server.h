@@ -127,7 +127,7 @@ namespace joedb::rpc
 
        size_t offset = size_t(until);
        size_t remaining = file.get_data().size() - offset;
-       while (remaining > 0)
+       while (remaining + buffer.index > 0)
        {
         const size_t n = std::min(remaining, buffer.size - buffer.index);
         file.pread(buffer.data + buffer.index, n, offset);

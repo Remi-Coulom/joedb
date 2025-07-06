@@ -7,7 +7,6 @@
 #include <iostream>
 #include <list>
 #include <memory>
-#include <thread>
 
 namespace joedb
 {
@@ -19,7 +18,6 @@ namespace joedb
    File file;
    Writable_Journal_Client client;
    Server server;
-   std::thread thread;
 
   public:
    Server_Data
@@ -40,12 +38,11 @@ namespace joedb
      endpoint_path,
      client,
      timeout
-    ),
-    thread([this](){server.run();})
+    )
    {
    }
 
-   void join() {thread.join();}
+   void join() {server.join();}
  };
 
  ////////////////////////////////////////////////////////////////////////////
