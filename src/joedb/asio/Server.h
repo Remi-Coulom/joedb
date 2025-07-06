@@ -14,7 +14,7 @@ namespace joedb::asio
 {
  /// Superclass for asio servers
  ///
- /// @ingroup RPC
+ /// @ingroup asio
  class Server
  {
   protected:

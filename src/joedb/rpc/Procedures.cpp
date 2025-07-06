@@ -10,7 +10,7 @@ namespace joedb::rpc
  {
   std::ostringstream out;
 
-  for (const auto procedure: procedures)
+  for (const Procedure * const procedure: procedures)
    write_string(out, procedure->get_prolog());
 
   return File_Hasher::get_hash(out.str());

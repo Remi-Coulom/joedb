@@ -7,7 +7,9 @@ namespace joedb
  /// Process command-line arguments and catch exceptions from main
  ///
  /// This function is particularly necessary in Windows, because no
- /// exception information is printed by default there.
+ /// exception information is printed when main throws.
+ ///
+ /// @ingroup ui
  int main_wrapper
  (
   int (*main)(Arguments &), int argc, char **argv

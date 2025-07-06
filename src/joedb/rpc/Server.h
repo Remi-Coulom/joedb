@@ -4,7 +4,6 @@
 #include "joedb/asio/Server.h"
 #include "joedb/rpc/Procedures.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/Writable_Journal.h"
 
 #include <algorithm>
 
@@ -29,7 +28,8 @@ namespace joedb::rpc
      ////////////////////////////////////////////////////////////////////////
      {
       co_await read_buffer(0, 32);
-      const auto hash = buffer.read<SHA_256::Hash>();
+
+      const SHA_256::Hash hash = buffer.read<SHA_256::Hash>();
       const bool correct_hash = hash == get_server().procedures.get_hash();
 
       buffer.index = 0;
@@ -48,10 +48,13 @@ namespace joedb::rpc
      {
       co_await read_buffer(1, 16);
 
-      const int64_t id = buffer.read<int64_t>();
+      const size_t id = static_cast<size_t>(buffer.read<int64_t>());
       const int64_t until = buffer.read<int64_t>();
 
-      if (id < 0 || size_t(id) >= get_server().procedures.size())
+      //
+      // Get procedure from id
+      //
+      if (id >= get_server().procedures.size())
        throw Exception("bad procedure id");
 
       if (get_server().log_level > 2)
@@ -64,54 +67,45 @@ namespace joedb::rpc
       }
 
       auto &procedure = *get_server().procedures.get_procedures()[id];
+
+      //
+      // Read input message into a Memory_File
+      //
       Memory_File file;
-      const std::string &prolog = procedure.get_prolog();
-      file.write_data(prolog.data(), prolog.size());
-
-      int64_t remaining = until - file.get_position();
-      log("remaining = " + std::to_string(remaining));
-
-      while (remaining > 0)
-      {
-       const size_t n = co_await read_buffer
-       (
-        0,
-        std::min(remaining, int64_t(buffer.size))
-       );
-
-       file.write_data(buffer.data, n);
-
-       remaining -= n;
-      }
-
-      file.flush();
 
       {
-       Writable_Journal journal
-       (
-        Journal_Construction_Lock{file, Recovery::ignore_header}
-       );
-       journal.soft_checkpoint();
+       std::string &data = file.get_data();
+       data.reserve(size_t(until));
+       data = procedure.get_prolog();
+
+       int64_t remaining = until - file.get_size();
+       while (remaining > 0)
+       {
+        const size_t n = co_await read_buffer
+        (
+         0,
+         std::min(remaining, int64_t(buffer.size))
+        );
+        data.append(buffer.data, n);
+        remaining -= n;
+       }
       }
 
+      //
+      // Execute procedure
+      //
       buffer.index = 0;
 
       try
       {
        procedure.execute(file);
-       buffer.write<char>('P');
-       buffer.write<int64_t>(until);
-
-       // TODO: send reply data
       }
       catch (const std::exception &e)
       {
-       // TODO: transaction roll-back
-
-       const std::string message(e.what());
+       const std::string_view message(e.what());
 
        if (get_server().log_level > 2)
-        log("error: " + message);
+        log("error: " + std::string(message));
 
        const size_t n = std::min(message.size(), buffer.size - 9);
        buffer.write<char>('p');
@@ -120,7 +114,30 @@ namespace joedb::rpc
        buffer.index += n;
       }
 
-      co_await write_buffer();
+      //
+      // Return either an error message or the procedure output
+      //
+      if (buffer.index > 0)
+       co_await write_buffer();
+      else
+      {
+       buffer.index = 0;
+       buffer.write<char>('P');
+       buffer.write<int64_t>(file.get_size());
+
+       size_t offset = size_t(until);
+       size_t remaining = file.get_data().size() - offset;
+       while (remaining > 0)
+       {
+        const size_t n = std::min(remaining, buffer.size - buffer.index);
+        file.pread(buffer.data + buffer.index, n, offset);
+        buffer.index += n;
+        offset += n;
+        remaining -= n;
+        co_await write_buffer();
+        buffer.index = 0;
+       }
+      }
      }
 
     public:
