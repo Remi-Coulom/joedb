@@ -69,7 +69,8 @@ Client to Server
 Prefix Data               Description
 ====== ================== ===================================================
        hash (32 bytes)    handshake, SHA-256 hash of procedures + version
-P      id until data      remote procedure call
+C      id until data      call a procedure
+P                         ping
 Q                         quit
 ====== ================== ===================================================
 
@@ -81,6 +82,7 @@ Prefix Data               Description
 ====== ================== ===================================================
 H      session_id         reply to H, hash is matching
 h      session_id         reply to h, hash mismatch
-P      until data         reply to P (success)
-p      size data          reply to P (error message)
+C      until data         reply to C (success)
+c      size data          reply to C (error message)
+P                         reply to P
 ====== ================== ===================================================

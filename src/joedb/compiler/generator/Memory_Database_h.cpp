@@ -30,26 +30,11 @@ namespace joedb::generator
 
   out << R"RRR(
  /// Shortcut to directly build a @ref Writable_Database with a Memory_File
- class Memory_Database: private joedb::Memory_File, public Writable_Database
+ class Memory_Database: public joedb::Memory_File, public Writable_Database
  {
   public:
    Memory_Database(): Writable_Database(*this, joedb::Recovery::none)
    {
-   }
-
-   joedb::File_View get_file_view()
-   {
-    return joedb::File_View(*this);
-   }
-
-   const std::string &get_data() const
-   {
-    return joedb::Memory_File::get_data();
-   }
-
-   const char *data() const
-   {
-    return joedb::Memory_File::get_data().data();
    }
 
    void pull()

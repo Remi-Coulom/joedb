@@ -49,7 +49,6 @@ namespace joedb::generator
   }
 
   out << R"RRR(
-
    Procedures(Client &client);
   };
 )RRR";

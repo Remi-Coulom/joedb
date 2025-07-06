@@ -24,7 +24,7 @@ namespace joedb::rpc
      Server &get_server() {return *(Server *)&server;}
 
      ////////////////////////////////////////////////////////////////////////
-     boost::asio::awaitable<void> handshake()
+     boost::asio::awaitable<bool> handshake()
      ////////////////////////////////////////////////////////////////////////
      {
       co_await read_buffer(0, 32);
@@ -40,10 +40,11 @@ namespace joedb::rpc
        log(correct_hash ? "correct hash" : "incorrect hash");
 
       co_await write_buffer();
+      co_return correct_hash;
      }
 
      ////////////////////////////////////////////////////////////////////////
-     boost::asio::awaitable<void> procedure()
+     boost::asio::awaitable<void> call()
      ////////////////////////////////////////////////////////////////////////
      {
       co_await read_buffer(1, 16);
@@ -108,7 +109,7 @@ namespace joedb::rpc
         log("error: " + std::string(message));
 
        const size_t n = std::min(message.size(), buffer.size - 9);
-       buffer.write<char>('p');
+       buffer.write<char>('c');
        buffer.write<int64_t>(int64_t(n));
        std::strncpy(buffer.data + buffer.index, message.data(), n);
        buffer.index += n;
@@ -122,7 +123,7 @@ namespace joedb::rpc
       else
       {
        buffer.index = 0;
-       buffer.write<char>('P');
+       buffer.write<char>('C');
        buffer.write<int64_t>(file.get_size());
 
        size_t offset = size_t(until);
@@ -156,7 +157,8 @@ namespace joedb::rpc
      boost::asio::awaitable<void> run() override
      ////////////////////////////////////////////////////////////////////////
      {
-      co_await handshake();
+      if (!co_await handshake())
+       co_return;
 
       while (true)
       {
@@ -167,8 +169,18 @@ namespace joedb::rpc
 
        switch (buffer.data[0])
        {
-        case 'P': co_await procedure(); break;
-        default: co_return; break;
+        case 'C':
+         co_await call();
+        break;
+
+        case 'P':
+         buffer.index = 1;
+         co_await write_buffer();
+        break;
+
+        default:
+         co_return;
+        break;
        }
       }
      }

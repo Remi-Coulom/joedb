@@ -54,7 +54,7 @@ namespace joedb::generator
    void execute_locally(Memory_Database &message)
    {
     message.soft_checkpoint();
-    joedb::File_View file_view(message.get_file_view());
+    joedb::File_View file_view(message);
     execute(file_view);
     message.pull();
    }
