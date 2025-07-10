@@ -19,12 +19,7 @@ namespace joedb::generator
    if (schema > procedure.schema)
     return false;
 
-   if (name < procedure.name)
-    return true;
-   if (name > procedure.name)
-    return false;
-
-   return false;
+   return name < procedure.name;
   }
  };
 }
