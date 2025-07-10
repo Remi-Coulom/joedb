@@ -89,6 +89,8 @@ namespace joedb::asio
    void stop();
    void join();
 
+   virtual void cleanup_after_join();
+
    virtual ~Server();
  };
 }

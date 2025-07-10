@@ -530,8 +530,21 @@ namespace joedb
   locked(false)
  {
   JOEDB_RELEASE_ASSERT(thread_count == 1);
+
   if (writable_journal_client)
+  {
+   if (!client.is_shared())
+    client_lock.emplace(*writable_journal_client);
    writable_journal_client->push_if_ahead();
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server::cleanup_after_join()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  if (client_lock)
+   client_lock->unlock();
  }
 
  ////////////////////////////////////////////////////////////////////////////
