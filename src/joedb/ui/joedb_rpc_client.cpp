@@ -29,16 +29,16 @@ namespace joedb
    tutorial::procedures::city::Memory_Database city;
    city.set_name("Tombouctou");
 
+   std::cerr << procedures.get_names()[1] << '\n';
+   {
+    city.soft_checkpoint();
+    rpc_client.call(1, city);
+   }
+
    std::cerr << procedures.get_names()[0] << '\n';
    {
     city.soft_checkpoint();
     rpc_client.call(0, city);
-   }
-
-   std::cerr << procedures.get_names()[2] << '\n';
-   {
-    city.soft_checkpoint();
-    rpc_client.call(2, city);
    }
   }
 
@@ -47,10 +47,10 @@ namespace joedb
    population.set_city_name(population.new_data(), "Paris");
    population.set_city_name(population.new_data(), "Tokyo");
 
-   std::cerr << procedures.get_names()[1] << '\n';
+   std::cerr << procedures.get_names()[2] << '\n';
    {
     population.soft_checkpoint();
-    rpc_client.call(1, population);
+    rpc_client.call(2, population);
     population.pull();
    }
 

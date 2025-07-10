@@ -8,7 +8,7 @@ namespace joedb::generator
  Procedures_h::Procedures_h
  (
   const Compiler_Options &options,
-  const std::vector<Procedure> &procedures
+  const std::set<Procedure> &procedures
  ):
   Generator(".", "Procedures.h", options),
   procedures(procedures)

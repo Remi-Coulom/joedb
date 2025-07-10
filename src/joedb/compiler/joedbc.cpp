@@ -40,6 +40,7 @@
 #include <iostream>
 #include <filesystem>
 #include <regex>
+#include <set>
 
 namespace joedb
 {
@@ -178,7 +179,7 @@ namespace joedb
   //
   // Procedures
   //
-  std::vector<generator::Procedure> procedures;
+  std::set<generator::Procedure> procedures;
 
   {
    std::error_code error_code;
@@ -233,7 +234,7 @@ namespace joedb
        ++i
       )
       {
-       procedures.emplace_back
+       procedures.emplace
        (
         generator::Procedure
         {

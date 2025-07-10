@@ -1,14 +1,12 @@
 #include "joedb/compiler/generator/Procedures_cpp.h"
 #include "joedb/compiler/nested_namespace.h"
 
-#include <set>
-
 namespace joedb::generator
 {
  Procedures_cpp::Procedures_cpp
  (
   const Compiler_Options &options,
-  const std::vector<Procedure> &procedures
+  const std::set<Procedure> &procedures
  ):
   Generator(".", "Procedures.cpp", options),
   procedures(procedures)

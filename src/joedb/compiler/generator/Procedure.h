@@ -11,6 +11,21 @@ namespace joedb::generator
   std::string schema;
   std::string include;
   enum {read, write} type;
+
+  bool operator<(const Procedure &procedure) const
+  {
+   if (schema < procedure.schema)
+    return true;
+   if (schema > procedure.schema)
+    return false;
+
+   if (name < procedure.name)
+    return true;
+   if (name > procedure.name)
+    return false;
+
+   return false;
+  }
  };
 }
 
