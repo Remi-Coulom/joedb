@@ -65,6 +65,7 @@ namespace joedb::rpc
      buffer.write<int64_t>(procedure_id);
      buffer.write<int64_t>(until);
 
+     // Could be optimized into one single write?
      lock->write(buffer.data, buffer.index);
      lock->write(file.get_data().data() + from, until - from);
      lock->read(buffer.data, 9);

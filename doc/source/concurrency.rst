@@ -156,8 +156,11 @@ The transaction function is a simple way to handle the
 lock-pull-write-push-unlock sequence, but may not be flexible enough to handle
 some more complex use cases. The :joedb:`Client_Lock` object allows:
 
- - starting the transaction in one function, and finishing it in another one,
- - pushing multiple times in the middle of a transaction, without unlocking the connection,
+ - starting the transaction in one function, and finishing it in another one
+   (which is often necessary when writing asynchronous code, either with
+   callbacks or coroutines),
+ - pushing multiple times in the middle of a transaction, without unlocking the
+   connection,
  - writing data in one thread, and asynchronously pushing from time to time
    in another one (use a mutex).
 
