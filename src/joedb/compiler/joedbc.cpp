@@ -36,7 +36,7 @@
 
 #include "joedb/compiler/generator/Procedure_h.h"
 #include "joedb/compiler/generator/Procedures_h.h"
-#include "joedb/compiler/generator/Procedures_cpp.h"
+#include "joedb/compiler/generator/Signatures_h.h"
 
 #include <iostream>
 #include <filesystem>
@@ -165,7 +165,7 @@ namespace joedb
    std::cerr << "joedbc will read:\n";
    std::cerr << " <base_name>.joedbi for the schema definition\n";
    std::cerr << " <base_name>.joedbc for compiler options\n";
-   std::cerr << " <base_name>.procedures (optional) directory of procedures\n";
+   std::cerr << " <base_name>.rpc (optional) directory for RPC\n";
    return 1;
   }
 
@@ -184,7 +184,7 @@ namespace joedb
 
    std::filesystem::directory_iterator iterator
    (
-    std::string(base_name) + ".procedures",
+    std::string(base_name) + ".rpc",
     error_code
    );
 
@@ -199,7 +199,7 @@ namespace joedb
 
       Compiler_Options procedure_options;
       procedure_options.exe_path = arguments[0];
-      procedure_options.output_path = std::string(base_name) + "/procedures";
+      procedure_options.output_path = std::string(base_name) + "/rpc";
       procedure_options.base_name = procedure_name;
 
       compile(procedure_options, &options);
@@ -217,7 +217,7 @@ namespace joedb
   {
    joedb::File file
    (
-    options.base_name + ".procedures/Service.h",
+    options.base_name + ".rpc/Service.h",
     joedb::Open_Mode::read_existing
    );
    file.copy_to(memory_file);
@@ -230,8 +230,8 @@ namespace joedb
   {
    std::filesystem::copy
    (
-    options.base_name + ".procedures/Service.h",
-    options.base_name + "/procedures/Service.h",
+    options.base_name + ".rpc/Service.h",
+    options.base_name + "/rpc/Service.h",
     std::filesystem::copy_options::overwrite_existing
    );
 
@@ -256,7 +256,7 @@ namespace joedb
    if (!procedures.empty())
    {
     generator::Procedures_h(options, procedures).generate();
-    generator::Procedures_cpp(options, procedures).generate();
+    generator::Signatures_h(options, procedures).generate();
    }
   }
 

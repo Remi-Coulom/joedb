@@ -1,0 +1,2 @@
+namespace tutorial::rpc::city
+set_single_row city true

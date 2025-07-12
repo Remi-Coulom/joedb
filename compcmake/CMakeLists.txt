@@ -229,18 +229,16 @@ if (asio_FOUND)
   joedb_add_executable(joedb_multi_server ../src/joedb/ui/joedb_multi_server.cpp)
   joedb_add_executable(joedb_rpc_client
    ../src/joedb/ui/joedb_rpc_client.cpp
-   ../doc/source/tutorial/src/tutorial/procedures/population/writable.cpp
-   ../doc/source/tutorial/src/tutorial/procedures/city/writable.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/population/writable.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/city/writable.cpp
    ../doc/source/tutorial/src/tutorial/writable.cpp
-   ../doc/source/tutorial/src/tutorial/procedures/Procedures.cpp
   )
 
   joedb_add_executable(joedb_rpc_server
    ../src/joedb/ui/joedb_rpc_server.cpp
-   ../doc/source/tutorial/src/tutorial/procedures/population/writable.cpp
-   ../doc/source/tutorial/src/tutorial/procedures/city/writable.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/population/writable.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/city/writable.cpp
    ../doc/source/tutorial/src/tutorial/writable.cpp
-   ../doc/source/tutorial/src/tutorial/procedures/Procedures.cpp
   )
  else()
   message("## no C++20, no coroutines, no servers")

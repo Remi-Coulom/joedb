@@ -1,8 +1,10 @@
 #ifndef joedb_rpc_Server_declared
 #define joedb_rpc_Server_declared
 
+#include "joedb/rpc/Procedure.h"
+#include "joedb/rpc/Signature.h"
+#include "joedb/rpc/get_hash.h"
 #include "joedb/asio/Server.h"
-#include "joedb/rpc/Procedures.h"
 #include "joedb/journal/Memory_File.h"
 
 #include <algorithm>
@@ -11,11 +13,12 @@ namespace joedb::rpc
 {
  /// RPC Server
  ///
- /// @ingroup RPC
+ /// @ingroup rpc
  class Server: public joedb::asio::Server
  {
   private:
-   const Procedures &procedures;
+   const std::vector<Signature> &signatures;
+   const std::vector<Procedure *> &procedures;
 
   protected:
    class Session: public joedb::asio::Server::Session
@@ -30,7 +33,7 @@ namespace joedb::rpc
       co_await read_buffer(0, 32);
 
       const SHA_256::Hash hash = buffer.read<SHA_256::Hash>();
-      const bool correct_hash = hash == get_server().procedures.get_hash();
+      const bool correct_hash = hash == get_hash(get_server().signatures);
 
       buffer.index = 0;
       buffer.write<char>(correct_hash ? 'H': 'h');
@@ -58,16 +61,11 @@ namespace joedb::rpc
       if (id >= get_server().procedures.size())
        throw Exception("bad procedure id");
 
-      if (get_server().log_level > 2)
-      {
-       log
-       (
-        "procedure[" + std::to_string(id) +
-        "]: " + get_server().procedures.get_names()[id]
-       );
-      }
+      auto &signature = get_server().signatures[id];
+      auto &procedure = *get_server().procedures[id];
 
-      auto &procedure = *get_server().procedures.get_procedures()[id];
+      if (get_server().log_level > 2)
+       log("procedure[" + std::to_string(id) + "]: " + signature.name);
 
       //
       // Read input message into a Memory_File
@@ -77,7 +75,7 @@ namespace joedb::rpc
       {
        std::string &data = file.get_data();
        data.reserve(size_t(until));
-       data = procedure.get_prolog();
+       data = signature.prolog;
 
        int64_t remaining = until - file.get_size();
        while (remaining > 0)
@@ -205,7 +203,8 @@ namespace joedb::rpc
     int log_level,
     int thread_count,
     std::string endpoint_path,
-    const Procedures &procedures
+    const std::vector<Signature> &signatures,
+    const std::vector<Procedure *> &procedures
    ):
     joedb::asio::Server
     (
@@ -214,6 +213,7 @@ namespace joedb::rpc
      thread_count,
      std::move(endpoint_path)
     ),
+    signatures(signatures),
     procedures(procedures)
    {
    }

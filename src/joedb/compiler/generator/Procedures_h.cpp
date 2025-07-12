@@ -10,7 +10,7 @@ namespace joedb::generator
   const Compiler_Options &options,
   const std::vector<Procedure> &procedures
  ):
-  Generator(".", "procedures/Procedures.h", options),
+  Generator(".", "rpc/Procedures.h", options),
   procedures(procedures)
  {
  }
@@ -18,7 +18,7 @@ namespace joedb::generator
  void Procedures_h::generate()
  {
   auto name_space = options.get_name_space();
-  name_space.emplace_back("procedures");
+  name_space.emplace_back("rpc");
 
   namespace_include_guard(out, "Procedures", name_space);
   out << '\n';
@@ -31,14 +31,13 @@ namespace joedb::generator
 
    for (const auto &schema: schemas)
     out << "#include \"" << schema << "/Procedure.h\"\n";
-
-   out << "\n#include \"joedb/rpc/Procedures.h\"\n\n";
   }
 
+  out << '\n';
   namespace_open(out, name_space);
 
   out << R"RRR(
- class Procedures: public joedb::rpc::Procedures
+ class Procedures
  {
   public:)RRR";
 
@@ -51,11 +50,7 @@ namespace joedb::generator
    class )RRR" << name << R"RRR(: public )RRR" << schema << R"RRR(::Procedure
    {
     private:
-     void execute
-     (
-      Service &service,
-      )RRR" << schema << R"RRR(::Writable_Database &message
-     ) override
+     void execute()RRR" << schema << R"RRR(::Writable_Database &message) const override
      {
       service.)RRR" << name << R"RRR((message);
      }
@@ -66,11 +61,31 @@ namespace joedb::generator
 )RRR";
   }
 
-  out << R"RRR(
-   Procedures(Service &service);
-  };
-)RRR";
+  out << "\n   const std::vector<joedb::rpc::Procedure *> procedures\n";
+  out << "   {\n";
 
+  for (const auto &procedure: procedures)
+   out << "    &" << procedure.name << ",\n";
+
+  out << "   };\n\n";
+
+  out << "   Procedures(Service &service):\n";
+
+  {
+   bool first = true;
+   for (const auto &procedure: procedures)
+   {
+    if (first)
+     first = false;
+    else
+     out << ",\n";
+    out << "    " << procedure.name << "(service)";
+   }
+  }
+
+  out << "\n   {\n";
+  out << "   }\n";
+  out << " };\n";
 
   namespace_close(out, name_space);
   out << "\n#endif\n";

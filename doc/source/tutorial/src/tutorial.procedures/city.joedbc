@@ -1,2 +1,0 @@
-namespace tutorial::procedures::city
-set_single_row city true

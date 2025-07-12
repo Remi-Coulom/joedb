@@ -1,7 +1,8 @@
-#include "joedb/rpc/Client.h"
 #include "joedb/concurrency/Local_Channel.h"
 #include "joedb/ui/main_wrapper.h"
-#include "../../doc/source/tutorial/src/tutorial/procedures/population/print_table.h"
+#include "joedb/rpc/Client.h"
+#include "../../doc/source/tutorial/src/tutorial/rpc/population/print_table.h"
+#include "../../doc/source/tutorial/src/tutorial/rpc/Signatures.h"
 
 #include <iostream>
 
@@ -18,38 +19,39 @@ namespace joedb
 
   Local_Channel channel((std::string(endpoint_path)));
 
-  rpc::Client rpc_client(channel, procedures);
+  const auto &signatures = tutorial::rpc::get_signatures();
+  rpc::Client rpc_client(channel, tutorial::rpc::get_signatures());
 
   {
-   tutorial::procedures::city::Memory_Database city;
+   tutorial::rpc::city::Memory_Database city;
    city.set_name("Tombouctou");
 
-   std::cerr << procedures.get_names()[1] << '\n';
-   {
-    city.soft_checkpoint();
-    rpc_client.call(1, city);
-   }
-
-   std::cerr << procedures.get_names()[0] << '\n';
+   std::cerr << signatures[0].name << '\n';
    {
     city.soft_checkpoint();
     rpc_client.call(0, city);
    }
+
+   std::cerr << signatures[1].name << '\n';
+   {
+    city.soft_checkpoint();
+    rpc_client.call(1, city);
+   }
   }
 
   {
-   tutorial::procedures::population::Memory_Database population;
+   tutorial::rpc::population::Memory_Database population;
    population.set_city_name(population.new_data(), "Paris");
    population.set_city_name(population.new_data(), "Tokyo");
 
-   std::cerr << procedures.get_names()[2] << '\n';
+   std::cerr << signatures[2].name << '\n';
    {
     population.soft_checkpoint();
     rpc_client.call(2, population);
     population.pull();
    }
 
-   tutorial::procedures::population::print_data_table(std::cout, population);
+   tutorial::rpc::population::print_data_table(std::cout, population);
   }
 
   return 0;

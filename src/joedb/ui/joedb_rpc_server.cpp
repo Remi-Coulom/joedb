@@ -3,10 +3,10 @@
 #include "joedb/error/Stream_Logger.h"
 
 #include "../../doc/source/tutorial/src/tutorial/File_Client.h"
-#include "../../doc/source/tutorial/src/tutorial/procedures/Procedures.h"
+#include "../../doc/source/tutorial/src/tutorial/rpc/Procedures.h"
+#include "../../doc/source/tutorial/src/tutorial/rpc/Signatures.h"
 
 #include <iostream>
-#include <thread>
 
 namespace joedb
 {
@@ -36,17 +36,18 @@ namespace joedb
   Stream_Logger logger(std::cerr);
 
   tutorial::File_Client client(file.data());
-  tutorial::procedures::Service service(client);
+  tutorial::rpc::Service service(client);
 
-  tutorial::procedures::Procedures procedures(service);
+  tutorial::rpc::Procedures procedures(service);
 
   rpc::Server server
   (
    logger,
    log_level,
-   std::thread::hardware_concurrency(),
+   1,
    std::string(endpoint_path),
-   procedures
+   tutorial::rpc::get_signatures(),
+   procedures.procedures
   );
 
   server.join();

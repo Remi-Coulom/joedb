@@ -1,10 +1,13 @@
 #ifndef joedb_rpc_Client_declared
 #define joedb_rpc_Client_declared
 
-#include "joedb/rpc/Procedures.h"
+#include "joedb/rpc/Signature.h"
+#include "joedb/rpc/get_hash.h"
 #include "joedb/concurrency/Channel.h"
 #include "joedb/Thread_Safe.h"
 #include "joedb/journal/Memory_File.h"
+
+#include <vector>
 
 namespace joedb::rpc
 {
@@ -13,13 +16,13 @@ namespace joedb::rpc
   private:
    Buffer<13> buffer;
    Thread_Safe<Channel&> channel;
-   Procedures procedures;
+   const std::vector<Signature> &signatures;
 
    int64_t session_id;
 
    void handshake()
    {
-    const SHA_256::Hash h = procedures.get_hash();
+    const SHA_256::Hash h = get_hash(signatures);
 
     {
      Lock<Channel&> lock(channel);
@@ -43,9 +46,9 @@ namespace joedb::rpc
    // TODO: ping thread
 
   public:
-   Client(Channel &channel, Procedures &procedures):
+   Client(Channel &channel, const std::vector<Signature> &signatures):
     channel(channel),
-    procedures(procedures)
+    signatures(signatures)
    {
     handshake();
    }
@@ -54,10 +57,11 @@ namespace joedb::rpc
    {
     Lock<Channel&> lock(channel);
 
-    auto &procedure = *procedures.get_procedures()[procedure_id];
+    auto &signature = signatures[procedure_id];
 
     {
-     const int64_t from = int64_t(procedure.get_prolog().size());
+     // Check that the prolog is matching?
+     const int64_t from = int64_t(signature.prolog.size());
      const int64_t until = file.get_size();
 
      buffer.index = 0;

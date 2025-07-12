@@ -20,7 +20,6 @@ namespace joedb::generator
   out << R"RRR(
 #include "joedb/rpc/Procedure.h"
 #include "Writable_Database.h"
-#include "Memory_Database.h"
 #include "../Service.h"
 
 )RRR";
@@ -36,22 +35,20 @@ namespace joedb::generator
  /// Class for all procedures based on this message schema
  class Procedure: public joedb::rpc::Procedure
  {
-  private:
+  protected:
    Service &service;
 
-   virtual void execute(Service &service, Writable_Database &message) = 0;
+   virtual void execute(Writable_Database &message) const = 0;
 
-   void execute(joedb::Buffered_File &file) override
+   void execute(joedb::Buffered_File &file) const override
    {
     Writable_Database db(file, joedb::Recovery::ignore_header);
-    execute(service, db);
+    execute(db);
     db.soft_checkpoint();
    }
 
   public:
-   Procedure(Service &service):
-    joedb::rpc::Procedure(Memory_Database().get_data()),
-    service(service)
+   Procedure(Service &service): service(service)
    {
    }
  };

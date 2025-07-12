@@ -1,17 +1,16 @@
-#ifndef tutorial_procedures_Service_declared
-#define tutorial_procedures_Service_declared
+#ifndef tutorial_rpc_Service_declared
+#define tutorial_rpc_Service_declared
 
-#include "joedb/Thread_Safe.h"
 #include "tutorial/Client.h"
-#include "tutorial/procedures/city/Writable_Database.h"
-#include "tutorial/procedures/population/Writable_Database.h"
+#include "tutorial/rpc/city/Writable_Database.h"
+#include "tutorial/rpc/population/Writable_Database.h"
 
-namespace tutorial::procedures
+namespace tutorial::rpc
 {
  class Service
  {
   private:
-   joedb::Thread_Safe<Client&> client;
+   Client &client;
 
   public:
    Service(Client &client): client(client)
@@ -20,7 +19,7 @@ namespace tutorial::procedures
 
    void insert_city(city::Writable_Database &city) 
    {
-    joedb::Lock<Client&>(client)->transaction
+    client.transaction
     (
      [&city](Writable_Database &db)
      {
@@ -31,7 +30,7 @@ namespace tutorial::procedures
 
    void delete_city(city::Writable_Database &city) 
    {
-    joedb::Lock<Client&>(client)->transaction
+    client.transaction
     (
      [&city](Writable_Database &db)
      {
@@ -44,9 +43,8 @@ namespace tutorial::procedures
 
    void get_population(population::Writable_Database &population)
    {
-    joedb::Lock<Client&> lock(client);
-    lock->pull();
-    const auto &db = lock->get_database();
+    client.pull();
+    const auto &db = client.get_database();
 
     for (const auto data: population.get_data_table())
     {

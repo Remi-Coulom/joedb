@@ -90,7 +90,7 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedure_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedures_h.cpp
- ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedures_cpp.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Signatures_h.cpp
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
@@ -116,18 +116,18 @@ function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  file(GLOB joedbis CONFIGURE_DEPENDS
   ${dir}/${namespace}.joedbi
-  ${dir}/${namespace}.procedures/*.joedbi
+  ${dir}/${namespace}.rpc/*.joedbi
  )
 
  file(GLOB joedbcs CONFIGURE_DEPENDS
   ${dir}/${namespace}.joedbc
-  ${dir}/${namespace}.procedures/*.joedbc
+  ${dir}/${namespace}.rpc/*.joedbc
  )
 
  set(slash_list ${joedbis})
  list(TRANSFORM slash_list REPLACE
-  "${namespace}\.procedures"
-  "${namespace}/procedures"
+  "${namespace}\.rpc"
+  "${namespace}/rpc"
  )
 
  set(readonly_cpp ${slash_list})
@@ -137,7 +137,7 @@ function(joedbc_build_absolute dir namespace)
  list(TRANSFORM writable_cpp REPLACE "\.joedbi$" "/writable.cpp")
 
  add_custom_command(
-  OUTPUT ${readonly_cpp} ${writable_cpp} ${dir}/${namespace}/procedures/Procedures.cpp
+  OUTPUT ${readonly_cpp} ${writable_cpp} ${dir}/${namespace}/rpc/Procedures.cpp
   COMMAND joedbc ${namespace}
   DEPENDS joedbc ${joedbis} ${joedbcs}
   WORKING_DIRECTORY ${dir}
