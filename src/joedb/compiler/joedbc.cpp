@@ -37,6 +37,7 @@
 #include "joedb/compiler/generator/Procedure_h.h"
 #include "joedb/compiler/generator/Procedures_h.h"
 #include "joedb/compiler/generator/Signatures_h.h"
+#include "joedb/compiler/generator/RPC_Client_h.h"
 
 #include <iostream>
 #include <filesystem>
@@ -257,6 +258,7 @@ namespace joedb
    {
     generator::Procedures_h(options, procedures).generate();
     generator::Signatures_h(options, procedures).generate();
+    generator::RPC_Client_h(options, procedures).generate();
    }
   }
 

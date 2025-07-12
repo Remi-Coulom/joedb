@@ -91,6 +91,7 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedure_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedures_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Signatures_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/RPC_Client_h.cpp
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
