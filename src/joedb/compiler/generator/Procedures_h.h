@@ -4,20 +4,20 @@
 #include "joedb/compiler/generator/Generator.h"
 #include "joedb/compiler/generator/Procedure.h"
 
-#include <set>
+#include <vector>
 
 namespace joedb::generator
 {
  class Procedures_h: public Generator
  {
   private:
-   const std::set<Procedure> &procedures;
+   const std::vector<Procedure> &procedures;
 
   public:
    Procedures_h
    (
     const Compiler_Options &options,
-    const std::set<Procedure> &procedures
+    const std::vector<Procedure> &procedures
    );
 
    void generate() override;

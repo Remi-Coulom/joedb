@@ -6,32 +6,23 @@ namespace joedb::generator
  Procedures_cpp::Procedures_cpp
  (
   const Compiler_Options &options,
-  const std::set<Procedure> &procedures
+  const std::vector<Procedure> &procedures
  ):
-  Generator(".", "Procedures.cpp", options),
+  Generator(".", "procedures/Procedures.cpp", options),
   procedures(procedures)
  {
  }
 
  void Procedures_cpp::generate()
  {
-  out << "#include \"Procedures.h\"\n\n";
+  auto name_space = options.get_name_space();
+  name_space.emplace_back("procedures");
 
-  {
-   std::set<std::string> includes;
+  out << "\n#include \"Procedures.h\"\n\n";
 
-   for (const auto &procedure: procedures)
-    includes.insert(procedure.include);
+  namespace_open(out, name_space);
 
-   for (const auto &include: includes)
-    out << "#include \"" << include << "\"\n";
-
-   out << '\n';
-  }
-
-  namespace_open(out, options.get_name_space());
-
-  out << "\n Procedures::Procedures(Client &client):\n";
+  out << "\n Procedures::Procedures(Service &service):\n";
 
   {
    bool first = true;
@@ -41,10 +32,7 @@ namespace joedb::generator
      out << ",\n";
     else
      first = false;
-    out << "  " << procedure.name << "(client";
-    if (procedure.type == Procedure::read)
-     out << ".get_database()";
-    out << ", procedures::" << procedure.name << ')';
+    out << "  " << procedure.name << "(service)";
    }
   }
 
@@ -57,6 +45,6 @@ namespace joedb::generator
 
   out << " }\n";
 
-  namespace_close(out, options.get_name_space());
+  namespace_close(out, name_space);
  }
 }

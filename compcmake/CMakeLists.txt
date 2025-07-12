@@ -232,7 +232,7 @@ if (asio_FOUND)
    ../doc/source/tutorial/src/tutorial/procedures/population/writable.cpp
    ../doc/source/tutorial/src/tutorial/procedures/city/writable.cpp
    ../doc/source/tutorial/src/tutorial/writable.cpp
-   ../doc/source/tutorial/src/tutorial/Procedures.cpp
+   ../doc/source/tutorial/src/tutorial/procedures/Procedures.cpp
   )
 
   joedb_add_executable(joedb_rpc_server
@@ -240,7 +240,7 @@ if (asio_FOUND)
    ../doc/source/tutorial/src/tutorial/procedures/population/writable.cpp
    ../doc/source/tutorial/src/tutorial/procedures/city/writable.cpp
    ../doc/source/tutorial/src/tutorial/writable.cpp
-   ../doc/source/tutorial/src/tutorial/Procedures.cpp
+   ../doc/source/tutorial/src/tutorial/procedures/Procedures.cpp
   )
  else()
   message("## no C++20, no coroutines, no servers")
@@ -384,14 +384,6 @@ joedb_add_executable(joedbc_insert
 joedb_add_executable(update_large_string
  ../test/compiler/db/schema_v1/writable.cpp
  ../test/compiler/update_large_string.cpp
-)
-
-joedb_add_executable(procedure
- ../doc/source/tutorial/src/procedure.cpp
- ../doc/source/tutorial/src/tutorial/procedures/population/writable.cpp
- ../doc/source/tutorial/src/tutorial/procedures/city/writable.cpp
- ../doc/source/tutorial/src/tutorial/writable.cpp
- ../doc/source/tutorial/src/tutorial/Procedures.cpp
 )
 
 #############################################################################

@@ -8,18 +8,20 @@ namespace joedb::generator
  Procedures_h::Procedures_h
  (
   const Compiler_Options &options,
-  const std::set<Procedure> &procedures
+  const std::vector<Procedure> &procedures
  ):
-  Generator(".", "Procedures.h", options),
+  Generator(".", "procedures/Procedures.h", options),
   procedures(procedures)
  {
  }
 
  void Procedures_h::generate()
  {
-  namespace_include_guard(out, "Procedures", options.get_name_space());
+  auto name_space = options.get_name_space();
+  name_space.emplace_back("procedures");
 
-  out << "\n#include \"Client.h\"\n\n";
+  namespace_include_guard(out, "Procedures", name_space);
+  out << '\n';
 
   {
    std::set<std::string> schemas;
@@ -28,33 +30,49 @@ namespace joedb::generator
     schemas.insert(procedure.schema);
 
    for (const auto &schema: schemas)
-    out << "#include \"procedures/" << schema << "/Procedure.h\"\n";
+    out << "#include \"" << schema << "/Procedure.h\"\n";
 
    out << "\n#include \"joedb/rpc/Procedures.h\"\n\n";
   }
 
-  namespace_open(out, options.get_name_space());
+  namespace_open(out, name_space);
 
   out << R"RRR(
  class Procedures: public joedb::rpc::Procedures
  {
-  public:
-)RRR";
+  public:)RRR";
 
   for (const auto &procedure: procedures)
   {
-   out << "   procedures::" << procedure.schema << "::";
-   out << (procedure.type == Procedure::read ? "Read" : "Write");
-   out << "_Procedure " << procedure.name << ";\n";
+   const auto &name = procedure.name;
+   const auto &schema = procedure.schema;
+
+   out << R"RRR(
+   class )RRR" << name << R"RRR(: public )RRR" << schema << R"RRR(::Procedure
+   {
+    private:
+     void execute
+     (
+      Service &service,
+      )RRR" << schema << R"RRR(::Writable_Database &message
+     ) override
+     {
+      service.)RRR" << name << R"RRR((message);
+     }
+
+    public:
+     )RRR" << name << R"RRR((Service &service): )RRR" << schema << R"RRR(::Procedure(service) {}
+   } )RRR" << name << R"RRR(;
+)RRR";
   }
 
   out << R"RRR(
-   Procedures(Client &client);
+   Procedures(Service &service);
   };
 )RRR";
 
 
-  namespace_close(out, options.get_name_space());
+  namespace_close(out, name_space);
   out << "\n#endif\n";
  }
 }

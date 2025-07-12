@@ -3,11 +3,7 @@ TODO
 
 Stored Procedures
 -----------------
- - procedure collection should be able to exist without a parent database
-    - the client part must never depend on parent at all
-    - Read_Function, Write_Function, Function
-    - If all functions are "Function" -> no client in Procedures
- - thread safety of Client access on the server
+ - allow one client per thread (ie, do not use asio::thread_pool?)
  - rollback after failed transaction
 
 On-disk Storage

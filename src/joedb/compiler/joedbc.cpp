@@ -3,6 +3,7 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/File.h"
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/main_wrapper.h"
 
@@ -40,7 +41,6 @@
 #include <iostream>
 #include <filesystem>
 #include <regex>
-#include <set>
 
 namespace joedb
 {
@@ -177,10 +177,8 @@ namespace joedb
   compile(options, nullptr);
 
   //
-  // Procedures
+  // Generate code for procedure message schemas
   //
-  std::set<generator::Procedure> procedures;
-
   {
    std::error_code error_code;
 
@@ -192,11 +190,6 @@ namespace joedb
 
    if (!error_code)
    {
-    const std::regex pattern("(\\w+)::(Read|Write)_Function\\s+(\\w+)");
-
-    //
-    // Generate code for each message schema
-    //
     for (const auto &dir_entry: iterator)
     {
      if (dir_entry.path().extension() == ".joedbi")
@@ -211,48 +204,60 @@ namespace joedb
 
       compile(procedure_options, &options);
      }
+    }
+   }
+  }
 
-     //
-     // Collect the list of all procedures by parsing header files
-     //
-     else if
-     (
-      dir_entry.path().extension() == ".h" ||
-      dir_entry.path().extension() == ".hpp"
-     )
-     {
-      std::string s(dir_entry.file_size(), 0);
-      {
-       std::ifstream file(dir_entry.path());
-       file.read(s.data(), static_cast<std::streamsize>(s.size()));
-      }
+  //
+  // Find list of procedures in Service.h
+  //
+  joedb::Memory_File memory_file;
 
-      for
-      (
-       std::sregex_iterator i{s.begin(), s.end(), pattern};
-       i != std::sregex_iterator();
-       ++i
-      )
-      {
-       procedures.emplace
-       (
-        generator::Procedure
-        {
-         (*i)[3],
-         (*i)[1],
-         dir_entry.path(),
-         (*i)[2].str()[0] == 'W'
-         ? generator::Procedure::write
-         : generator::Procedure::read
-        }
-       );
-      }
-     }
+  try
+  {
+   joedb::File file
+   (
+    options.base_name + ".procedures/Service.h",
+    joedb::Open_Mode::read_existing
+   );
+   file.copy_to(memory_file);
+  }
+  catch (...)
+  {
+  }
+
+  if (memory_file.get_size())
+  {
+   std::filesystem::copy
+   (
+    options.base_name + ".procedures/Service.h",
+    options.base_name + "/procedures/Service.h",
+    std::filesystem::copy_options::overwrite_existing
+   );
+
+   const std::string &s = memory_file.get_data();
+
+   std::vector<generator::Procedure> procedures;
+
+   {
+    const std::regex pattern("void\\s+(\\w+)\\((\\w+)::Writable_Database");
+
+    for
+    (
+     std::sregex_iterator i{s.begin(), s.end(), pattern};
+     i != std::sregex_iterator();
+     ++i
+    )
+    {
+     procedures.emplace_back((*i)[1], (*i)[2]);
     }
    }
 
-   generator::Procedures_h(options, procedures).generate();
-   generator::Procedures_cpp(options, procedures).generate();
+   if (!procedures.empty())
+   {
+    generator::Procedures_h(options, procedures).generate();
+    generator::Procedures_cpp(options, procedures).generate();
+   }
   }
 
   return 0;

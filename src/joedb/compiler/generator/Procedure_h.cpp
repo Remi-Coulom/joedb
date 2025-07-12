@@ -19,10 +19,9 @@ namespace joedb::generator
 
   out << R"RRR(
 #include "joedb/rpc/Procedure.h"
-#include "joedb/journal/File_View.h"
 #include "Writable_Database.h"
 #include "Memory_Database.h"
-#include "../../Client.h"
+#include "../Service.h"
 
 )RRR";
 
@@ -38,90 +37,21 @@ namespace joedb::generator
  class Procedure: public joedb::rpc::Procedure
  {
   private:
-   virtual void execute(Writable_Database &message) = 0;
+   Service &service;
+
+   virtual void execute(Service &service, Writable_Database &message) = 0;
 
    void execute(joedb::Buffered_File &file) override
    {
     Writable_Database db(file, joedb::Recovery::ignore_header);
-    execute(db);
+    execute(service, db);
     db.soft_checkpoint();
    }
 
   public:
-   Procedure(): joedb::rpc::Procedure(Memory_Database().get_data())
-   {
-   }
-
-   void execute_locally(Memory_Database &message)
-   {
-    message.soft_checkpoint();
-    joedb::File_View file_view(message);
-    execute(file_view);
-    message.pull();
-   }
- };
-
- /// Function type for procedures that write to the database
- typedef void (*Write_Function)
- (
-  )RRR" << ns << R"RRR(::Writable_Database &db,
-  Writable_Database &message
- );
-
- /// Wrapper for procedures that write to the database
- class Write_Procedure: public Procedure
- {
-  private:
-   )RRR" << ns << R"RRR(::Client &client;
-   const Write_Function function;
-
-   void execute(Writable_Database &message) override
-   {
-    client.transaction([&]()RRR" << ns << R"RRR(::Writable_Database &db)
-    {
-     function(db, message);
-    });
-   }
-
-  public:
-   Write_Procedure
-   (
-    )RRR" << ns << R"RRR(::Client &client,
-    Write_Function function
-   ):
-    client(client),
-    function(function)
-   {
-   }
- };
-
- /// Function type for const procedures
- typedef void (*Read_Function)
- (
-  const )RRR" << ns << R"RRR(::Database &db,
-  Writable_Database &message
- );
-
- /// Wrapper for const procedures
- class Read_Procedure: public Procedure
- {
-  private:
-   const )RRR" << ns << R"RRR(::Database &db;
-   const Read_Function function;
-
-   void execute(Writable_Database &message) override
-   {
-    function(db, message);
-   }
-
-  public:
-   Read_Procedure
-   (
-    const )RRR" << ns << R"RRR(::Database &db,
-    Read_Function function
-   ):
-    db(db),
-    function(function)
+   Procedure(Service &service):
+    joedb::rpc::Procedure(Memory_Database().get_data()),
+    service(service)
    {
    }
  };
