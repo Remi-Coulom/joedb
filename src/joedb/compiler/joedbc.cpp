@@ -250,7 +250,7 @@ namespace joedb
      ++i
     )
     {
-     procedures.emplace_back((*i)[1], (*i)[2]);
+     procedures.push_back({(*i)[1], (*i)[2]});
     }
    }
 

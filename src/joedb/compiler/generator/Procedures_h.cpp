@@ -37,6 +37,7 @@ namespace joedb::generator
   namespace_open(out, name_space);
 
   out << R"RRR(
+ /// A collection of procedures to used by joedb::rpc::Server
  class Procedures
  {
   public:)RRR";

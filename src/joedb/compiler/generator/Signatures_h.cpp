@@ -37,6 +37,7 @@ namespace joedb::generator
   namespace_open(out, name_space);
 
   out << R"RRR(
+ /// Get the list of procedure signatures. Used by RPC client and server.
  inline const auto &get_signatures()
  {
   static const std::vector<joedb::rpc::Signature> signatures

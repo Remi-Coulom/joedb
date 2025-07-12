@@ -227,15 +227,15 @@ if (asio_FOUND)
   message("-- using C++20 coroutines for servers")
   joedb_add_executable(joedb_server ../src/joedb/ui/joedb_server.cpp)
   joedb_add_executable(joedb_multi_server ../src/joedb/ui/joedb_multi_server.cpp)
-  joedb_add_executable(joedb_rpc_client
-   ../src/joedb/ui/joedb_rpc_client.cpp
+  joedb_add_executable(tutorial_rpc_client
+   ../doc/source/tutorial/src/rpc_client.cpp
    ../doc/source/tutorial/src/tutorial/rpc/population/writable.cpp
    ../doc/source/tutorial/src/tutorial/rpc/city/writable.cpp
    ../doc/source/tutorial/src/tutorial/writable.cpp
   )
 
-  joedb_add_executable(joedb_rpc_server
-   ../src/joedb/ui/joedb_rpc_server.cpp
+  joedb_add_executable(tutorial_rpc_server
+   ../doc/source/tutorial/src/rpc_server.cpp
    ../doc/source/tutorial/src/tutorial/rpc/population/writable.cpp
    ../doc/source/tutorial/src/tutorial/rpc/city/writable.cpp
    ../doc/source/tutorial/src/tutorial/writable.cpp

@@ -164,7 +164,6 @@ namespace joedb::asio
  void Server::join()
  {
   thread_pool.join();
-  std::remove(endpoint_path.c_str());
   cleanup_after_join();
  }
 
@@ -172,5 +171,14 @@ namespace joedb::asio
  {
  }
 
- Server::~Server() = default;
+ Server::~Server()
+ {
+  try
+  {
+   std::remove(endpoint_path.c_str());
+  }
+  catch (...)
+  {
+  }
+ }
 }

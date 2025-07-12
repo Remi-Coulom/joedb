@@ -7,6 +7,7 @@
 
 namespace tutorial::rpc
 {
+ /// A collection of procedures that will be executed in the rpc server
  class Service
  {
   private:

@@ -138,7 +138,7 @@ function(joedbc_build_absolute dir namespace)
  list(TRANSFORM writable_cpp REPLACE "\.joedbi$" "/writable.cpp")
 
  add_custom_command(
-  OUTPUT ${readonly_cpp} ${writable_cpp} ${dir}/${namespace}/rpc/Procedures.cpp
+  OUTPUT ${readonly_cpp} ${writable_cpp}
   COMMAND joedbc ${namespace}
   DEPENDS joedbc ${joedbis} ${joedbcs}
   WORKING_DIRECTORY ${dir}

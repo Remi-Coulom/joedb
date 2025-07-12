@@ -6,7 +6,7 @@ History
   - New major features:
 
     - websocket support
-    - :doc:`stored_procedures`
+    - :doc:`rpc`
 
   - Minor quality-of-life improvements:
 

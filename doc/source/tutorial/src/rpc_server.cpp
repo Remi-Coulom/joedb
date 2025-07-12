@@ -2,9 +2,9 @@
 #include "joedb/rpc/Server.h"
 #include "joedb/error/Stream_Logger.h"
 
-#include "../../doc/source/tutorial/src/tutorial/File_Client.h"
-#include "../../doc/source/tutorial/src/tutorial/rpc/Procedures.h"
-#include "../../doc/source/tutorial/src/tutorial/rpc/Signatures.h"
+#include "tutorial/File_Client.h"
+#include "tutorial/rpc/Procedures.h"
+#include "tutorial/rpc/Signatures.h"
 
 #include <iostream>
 

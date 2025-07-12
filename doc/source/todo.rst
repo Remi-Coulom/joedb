@@ -3,7 +3,8 @@ TODO
 
 Stored Procedures
 -----------------
- - allow one client per thread (ie, do not use asio::thread_pool?)
+ - unit tests
+ - logcat-like logger class with specializations: cerr, logcat, joedb
  - rollback after failed transaction
 
 On-disk Storage
@@ -19,7 +20,6 @@ On-disk Storage
 Compiler
 --------
 - error if namespace different from file name
-- generate print_table functions
 - string setters that takes a string_view as parameter
 - option to make some member functions private (->private: private_new_person)
 - option to add custom member functions

@@ -25,6 +25,7 @@ namespace joedb::generator
   namespace_open(out, name_space);
 
   out << R"RRR(
+ /// Specialization of joedb::rpc::Client
  class Client: public joedb::rpc::Client
  {
   public:
