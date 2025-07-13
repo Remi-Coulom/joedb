@@ -241,7 +241,7 @@ namespace joedb
    std::vector<generator::Procedure> procedures;
 
    {
-    const std::regex pattern("void\\s+(\\w+)\\((\\w+)::Writable_Database");
+    const std::regex pattern("void\\s+(\\w+)\\s*\\(\\s*(\\w+)\\s*::\\s*Writable_Database\\s*&\\s*\\w+\\s*\\)");
 
     for
     (
