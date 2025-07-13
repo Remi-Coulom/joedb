@@ -4,7 +4,9 @@ Remote Procedure Call
 =====================
 
 Joedb can be used as a binary message serialization format for remote procedure
-calls.
+calls. From a list of functions that take a writable database as parameter, the
+joedb compiler can generate code for a client and a server that allow executing
+these functions remotely.
 
 Motivation
 ----------
@@ -30,8 +32,9 @@ These scalability and reliability issues can be solved by using remote
 procedure calls. With this mechanism, a disconnection can never leave a stale
 lock, and there is no need for clients to download the whole database. Each
 client can upload new data to the server in a very minimal single round-trip.
-The write transaction will be executed entirely on the server, and cannot be
-interrupted by a disconnection, so lock-timeout stalls cannot occur.
+The write transaction will be executed entirely on the server, so its duration
+is not affected by network latency, and it cannot be stalled by a
+disconnection.
 
 Tutorial Example
 ----------------
@@ -40,8 +43,8 @@ This example implements 3 procedures for the joedb tutorial database:
 
  - ``insert_city`` takes a string parameter and inserts it as a city name in
    the city table.
- - ``delete_city`` takes a string parameter and deletes the city with this
-   name.
+ - ``delete_city`` takes a string parameter and deletes the city from the city
+   table.
  - ``get_population`` takes a list of cities as parameter, and returns the
    number of persons for each city.
 
