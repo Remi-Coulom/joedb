@@ -125,7 +125,12 @@ function(joedbc_build_absolute dir namespace)
   ${dir}/${namespace}.rpc/*.joedbc
  )
 
+ file(GLOB Service_h CONFIGURE_DEPENDS
+  ${dir}/${namespace}.rpc/Service.h
+ )
+
  set(slash_list ${joedbis})
+
  list(TRANSFORM slash_list REPLACE
   "${namespace}\.rpc"
   "${namespace}/rpc"
@@ -140,7 +145,7 @@ function(joedbc_build_absolute dir namespace)
  add_custom_command(
   OUTPUT ${readonly_cpp} ${writable_cpp}
   COMMAND joedbc ${namespace}
-  DEPENDS joedbc ${joedbis} ${joedbcs}
+  DEPENDS joedbc ${joedbis} ${joedbcs} ${Service_h}
   WORKING_DIRECTORY ${dir}
  )
 
