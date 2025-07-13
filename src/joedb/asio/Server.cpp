@@ -60,7 +60,6 @@ namespace joedb::asio
   );
  }
 
-
  void Server::Session::log(std::string_view s)
  {
   server.log(std::to_string(id) + ": " + std::string(s));
