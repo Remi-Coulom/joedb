@@ -8,6 +8,11 @@
 namespace tutorial::rpc
 {
  /// A collection of procedures that will be executed in the rpc server
+ ///
+ /// joedbc uses a regular expression to find procedures in the file.
+ /// The constructor is not called from compiled code, so it can have any
+ /// signature. In particular, a Service does not necessarily have to
+ /// access a database at all.
  class Service
  {
   private:
@@ -44,7 +49,6 @@ namespace tutorial::rpc
 
    void get_population(population::Writable_Database &population)
    {
-    client.pull();
     const auto &db = client.get_database();
 
     for (const auto data: population.get_data_table())
