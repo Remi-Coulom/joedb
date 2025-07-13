@@ -26,7 +26,7 @@ namespace joedb::generator
 
   out << R"RRR(
  /// Specialization of joedb::rpc::Client
- class Client: public joedb::rpc::Client
+ class Client: private joedb::rpc::Client
  {
   public:
    Client(joedb::Channel &channel):
