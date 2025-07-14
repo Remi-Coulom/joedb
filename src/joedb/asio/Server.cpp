@@ -1,5 +1,6 @@
 #include "joedb/asio/Server.h"
 #include "joedb/ui/get_time_string.h"
+#include "joedb/error/Destructor_Logger.h"
 
 #include <boost/asio/detached.hpp>
 #include <boost/asio/co_spawn.hpp>
@@ -121,6 +122,7 @@ namespace joedb::asio
   log_level(log_level),
   thread_count(thread_count),
   thread_pool(thread_count),
+  joined(false),
   endpoint_path(std::move(endpoint_path)),
   endpoint(this->endpoint_path),
   acceptor(thread_pool, endpoint, false),
@@ -158,12 +160,15 @@ namespace joedb::asio
  void Server::stop()
  {
   thread_pool.stop();
+  join();
  }
 
  void Server::join()
  {
   thread_pool.join();
   cleanup_after_join();
+  std::remove(endpoint_path.c_str());
+  joined = true;
  }
 
  void Server::cleanup_after_join()
@@ -172,12 +177,10 @@ namespace joedb::asio
 
  Server::~Server()
  {
-  try
+  if (!joined)
   {
-   std::remove(endpoint_path.c_str());
-  }
-  catch (...)
-  {
+   Destructor_Logger::warning("Server: not joined. This is a bug.");
+   std::terminate(); // it is too late to call join, since child was destroyed already
   }
  }
 }

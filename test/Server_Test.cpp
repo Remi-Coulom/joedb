@@ -685,6 +685,8 @@ namespace joedb
    std::chrono::seconds(0)
   };
 
+  server.stop();
+
   EXPECT_EQ(file.get_size(), connection_file.get_size());
  }
 
@@ -747,6 +749,8 @@ namespace joedb
     EXPECT_EQ(db.get_tables().begin()->second, "person");
    }
   }
+
+  server.stop();
  }
 
  ////////////////////////////////////////////////////////////////////////////
