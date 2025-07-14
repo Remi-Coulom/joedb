@@ -81,7 +81,10 @@ void joedb::Writable_Journal::soft_checkpoint_at(int64_t position)
 /////////////////////////////////////////////////////////////////////////////
 {
  if (checkpoint_position >= position)
+ {
+  file.touch();
   return;
+ }
 
  file.flush();
 

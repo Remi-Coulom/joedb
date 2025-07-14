@@ -68,7 +68,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (lock(JOEDB_SETLKW, F_RDLCK, start, size) < 0)
-   throw_last_error("Read-locking", "file");
+   throw_last_error("read-locking", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (lock(JOEDB_SETLKW, F_WRLCK, start, size) < 0)
-   throw_last_error("Write-locking", "file");
+   throw_last_error("write-locking", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ namespace joedb
   const ssize_t result = ::pread(fd, buffer, size, offset);
 
   if (result < 0)
-   throw_last_error("Reading", "file");
+   throw_last_error("reading", "file");
 
   return size_t(result);
  }
@@ -115,7 +115,7 @@ namespace joedb
    );
 
    if (result < 0)
-    throw_last_error("Writing", "file");
+    throw_last_error("writing", "file");
    else
     written += size_t(result);
   }
@@ -148,6 +148,14 @@ namespace joedb
 #endif
 
  /////////////////////////////////////////////////////////////////////////////
+ void Posix_FD::touch()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  if (futimens(fd, nullptr) < 0)
+   throw_last_error("touching", "file");
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  Posix_FD::Posix_FD(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
   Buffered_File(mode)
@@ -171,7 +179,7 @@ namespace joedb
   }
 
   if (fd < 0)
-   throw_last_error("Opening", file_name);
+   throw_last_error("opening", file_name);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -184,7 +192,7 @@ namespace joedb
    if (mode == Open_Mode::write_lock)
     exclusive_lock_tail();
    else if (!try_exclusive_lock(last_position, 1))
-    throw_last_error("Locking", file_name);
+    throw_last_error("locking", file_name);
   }
  }
 
@@ -195,7 +203,7 @@ namespace joedb
   struct stat s;
 
   if (fstat(fd, &s) < 0)
-   throw_last_error("Getting size of", "file");
+   throw_last_error("getting size of", "file");
 
   return int64_t(s.st_size);
  }

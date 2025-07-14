@@ -25,6 +25,9 @@ namespace joedb
    /// Write data durably (including file-size change)
    virtual void sync() {}
 
+   /// Set the modification time of the file to now
+   virtual void touch() {}
+
    /// Write data durably (no file-size change)
    virtual void datasync() {sync();}
 
