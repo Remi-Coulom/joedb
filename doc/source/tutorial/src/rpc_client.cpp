@@ -29,8 +29,9 @@ namespace joedb
 
   {
    tutorial::rpc::population::Memory_Database population;
-   population.set_city_name(population.new_data(), "Paris");
    population.set_city_name(population.new_data(), "Tokyo");
+   population.set_city_name(population.new_data(), "Tombouctou");
+   population.set_city_name(population.new_data(), "Lille");
    rpc_client.get_population(population);
    tutorial::rpc::population::print_data_table(std::cout, population);
   }

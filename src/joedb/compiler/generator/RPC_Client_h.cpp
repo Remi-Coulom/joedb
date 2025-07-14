@@ -42,6 +42,7 @@ namespace joedb::generator
    out << "   {\n";
    out << "    db.soft_checkpoint();\n";
    out << "    call(" << i << ", db);\n";
+   out << "    db.pull();\n";
    out << "   }\n";
   }
 
