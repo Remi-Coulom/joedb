@@ -12,6 +12,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (NOT CMAKE_CXX_STANDARD)
+ message("## CMAKE_CXX_STANDARD not defined, using C++20")
+ set(CMAKE_CXX_STANDARD 20)
+endif()
+
 enable_testing()
 add_test(NAME build_all
  COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config "$<CONFIG>"

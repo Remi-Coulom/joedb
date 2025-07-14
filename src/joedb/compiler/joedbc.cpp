@@ -196,7 +196,7 @@ namespace joedb
      if (dir_entry.path().extension() == ".joedbi")
      {
       auto path = dir_entry.path();
-      const std::string procedure_name = path.replace_extension("");
+      const std::string procedure_name = path.replace_extension("").string();
 
       Compiler_Options procedure_options;
       procedure_options.exe_path = arguments[0];

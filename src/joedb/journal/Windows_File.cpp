@@ -235,7 +235,7 @@ namespace joedb
   FILETIME ft;
   SystemTimeToFileTime(&st, &ft);
 
-  if (!SetFileTime(hFile, nullptr, &ft, &ft))
+  if (!SetFileTime(file, nullptr, &ft, &ft))
    throw_last_error("touching", "file");
  }
 
