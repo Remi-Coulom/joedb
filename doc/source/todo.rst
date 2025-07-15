@@ -4,10 +4,10 @@ TODO
 Stored Procedures
 -----------------
  - allow using parent schema as message schema
- - allow coroutines
  - unit tests
  - logcat-like logger class with specializations: cerr, logcat, joedb
  - rollback after failed transaction
+ - need a separate server to send notifications to clients
 
 On-disk Storage
 ---------------

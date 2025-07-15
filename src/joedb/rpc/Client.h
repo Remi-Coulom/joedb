@@ -91,6 +91,7 @@ namespace joedb::rpc
     }
     else
     {
+     // TODO: throw exception with error message
      const int64_t n = buffer.read<int64_t>();
      lock->read(buffer.data, n);
     }
