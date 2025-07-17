@@ -14,19 +14,19 @@ namespace joedb
   friend class Client_Lock;
 
   protected:
-   template<typename F> auto transaction(F transaction)
+   template<typename F> auto transaction_without_rollback(F &&f)
    {
     const Journal_Lock lock(get_writable_journal());
 
     start_transaction();
 
-    using T = decltype(transaction());
+    using T = decltype(f());
 
     if constexpr (std::is_void<T>::value)
     {
      try
      {
-      transaction();
+      f();
       do_checkpoint();
      }
      catch (...)
@@ -43,7 +43,7 @@ namespace joedb
      {
       try
       {
-       const T inner_result = transaction();
+       const T inner_result = f();
        do_checkpoint();
        return inner_result;
       }
@@ -56,6 +56,19 @@ namespace joedb
 
      push_unlock();
      return result;
+    }
+   }
+
+   template<typename F> auto transaction(F f)
+   {
+    try
+    {
+     return transaction_without_rollback<F&>(f);
+    }
+    catch (...)
+    {
+     rollback();
+     throw;
     }
    }
 
