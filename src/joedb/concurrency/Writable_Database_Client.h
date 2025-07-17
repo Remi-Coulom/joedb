@@ -13,7 +13,7 @@ namespace joedb
   {
    protected:
     Writable_Journal data_journal;
-    Database database;
+    std::unique_ptr<Database> database;
     Multiplexer multiplexer;
 
    public:
@@ -24,8 +24,8 @@ namespace joedb
      Recovery recovery
     ):
      data_journal(Journal_Construction_Lock(file, recovery)),
-     database(max_record_id),
-     multiplexer{database, data_journal}
+     database(std::make_unique<Database>(max_record_id)),
+     multiplexer{*database, data_journal}
     {
     }
   };
@@ -41,14 +41,14 @@ namespace joedb
   protected:
    void reset_db() override
    {
-    const Record_Id max_record_id = database.get_max_record_id();
-    database.~Database();
-    new(&database) Database(max_record_id);
+    const Record_Id max_record_id = database->get_max_record_id();
+    database.reset();
+    database = std::make_unique<Database>(max_record_id);
    }
 
    void read_journal() override
    {
-    data_journal.play_until_checkpoint(database);
+    data_journal.play_until_checkpoint(*database);
    }
 
   public:
@@ -68,14 +68,14 @@ namespace joedb
 
    const Database &get_database() const
    {
-    return database;
+    return *database;
    }
 
    template<typename F> auto transaction(F transaction)
    {
     return Writable_Client::transaction([this, &transaction]()
     {
-     return transaction(database, multiplexer);
+     return transaction(*database, multiplexer);
     });
    }
  };
@@ -91,7 +91,7 @@ namespace joedb
 
    const Readable &get_readable() const
    {
-    return static_cast<Writable_Database_Client &>(client).database;
+    return *static_cast<Writable_Database_Client &>(client).database;
    }
 
    Writable &get_writable()
