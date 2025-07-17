@@ -32,10 +32,6 @@ namespace joedb
   friend class Writable_Journal_Client_Lock;
 
   protected:
-   void reset_db() override
-   {
-   }
-
    void read_journal() override
    {
     data_journal.skip_directly_to(data_journal.get_checkpoint());

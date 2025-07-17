@@ -191,7 +191,6 @@ namespace joedb
    out << R"RRR(Writable Client
 ~~~~~~~~~~~~~~~
  transaction
- rollback
  set_valid_data <true|false>
  set_timestamp <true|false>
  set_hard_checkpoint <true|false>
@@ -225,10 +224,6 @@ namespace joedb
    }
    else
     out << "Client is not writable, cannot run transaction\n";
-  }
-  else if (command == "rollback") ///////////////////////////////////////////
-  {
-   client.rollback();
   }
   else if (command == "set_valid_data") /////////////////////////////////////
   {
