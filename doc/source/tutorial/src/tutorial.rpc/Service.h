@@ -30,7 +30,11 @@ namespace tutorial::rpc
     (
      [&city](Writable_Database &db)
      {
-      db.new_city(city.get_name());
+      const auto city_id = db.find_city_by_name(city.get_name());
+      if (city_id.is_null())
+       db.new_city(city.get_name());
+      else
+       throw joedb::Exception("city already exists");
      }
     );
    }
@@ -45,6 +49,8 @@ namespace tutorial::rpc
       const auto city_id = db.find_city_by_name(city.get_name());
       if (city_id.is_not_null())
        db.delete_city(city_id);
+      else
+       throw joedb::Exception("city does not exist");
      }
     );
    }
