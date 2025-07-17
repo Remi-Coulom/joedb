@@ -4,8 +4,8 @@ TODO
 Stored Procedures
 -----------------
  - unit tests
+ - ping thread
  - logcat-like logger class with specializations: cerr, logcat, joedb
- - rollback after failed transaction
  - need a separate server to send notifications to clients
 
 On-disk Storage

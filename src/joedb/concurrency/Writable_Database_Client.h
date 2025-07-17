@@ -39,6 +39,13 @@ namespace joedb
   friend class Writable_Database_Client_Lock;
 
   protected:
+   void reset_db() override
+   {
+    const Record_Id max_record_id = database.get_max_record_id();
+    database.~Database();
+    new(&database) Database(max_record_id);
+   }
+
    void read_journal() override
    {
     data_journal.play_until_checkpoint(database);

@@ -25,6 +25,16 @@ namespace joedb
    tutorial::rpc::city::Memory_Database city;
    city.set_name("Tombouctou");
    rpc_client.insert_city(city);
+
+   try
+   {
+    rpc_client.insert_city(city);
+   }
+   catch (std::exception &e)
+   {
+    std::cout << "Caught exception: " << e.what() << '\n';
+   }
+
    rpc_client.delete_city(city);
   }
 

@@ -11,6 +11,11 @@ namespace joedb
  class Client
  {
   protected:
+   virtual void reset_db()
+   {
+    throw Exception("reset_db not supported, cannot roll back");
+   }
+
    virtual void read_journal() {}
    Readonly_Journal &journal;
    Connection &connection;
@@ -84,6 +89,16 @@ namespace joedb
    (
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    ) = 0;
+
+   void rollback()
+   {
+    if (journal.get_position() > journal.get_checkpoint())
+    {
+     reset_db();
+     journal.rewind();
+     read_journal();
+    }
+   }
 
    virtual ~Client();
  };
