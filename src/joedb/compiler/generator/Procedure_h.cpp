@@ -20,7 +20,7 @@ namespace joedb::generator
   out << R"RRR(
 #include "joedb/rpc/Procedure.h"
 #include "Writable_Database.h"
-#include "../Service.h"
+#include ")RRR" << parent_options.name_space.back() << R"RRR(/rpc/Service.h"
 
 )RRR";
 
@@ -36,7 +36,7 @@ namespace joedb::generator
  class Procedure: public joedb::rpc::Procedure
  {
   protected:
-   Service &service;
+   rpc::Service &service;
 
    virtual void execute(Writable_Database &message) const = 0;
 
@@ -48,7 +48,7 @@ namespace joedb::generator
    }
 
   public:
-   Procedure(Service &service): service(service)
+   Procedure(rpc::Service &service): service(service)
    {
    }
  };

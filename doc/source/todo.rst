@@ -3,7 +3,6 @@ TODO
 
 Stored Procedures
 -----------------
- - allow using parent schema as message schema
  - unit tests
  - logcat-like logger class with specializations: cerr, logcat, joedb
  - rollback after failed transaction

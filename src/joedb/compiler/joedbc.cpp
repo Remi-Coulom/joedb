@@ -141,6 +141,8 @@ namespace joedb
 
   if (parent_options)
    generator::Procedure_h(options, *parent_options).generate();
+  else
+   generator::Procedure_h(options, options).generate();
 
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();

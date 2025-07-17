@@ -2,6 +2,7 @@
 #include "joedb/ui/main_wrapper.h"
 #include "tutorial/rpc/Client.h"
 #include "tutorial/rpc/population/print_table.h"
+#include "tutorial/print_table.h"
 
 #include <iostream>
 
@@ -34,6 +35,13 @@ namespace joedb
    population.set_city_name(population.new_data(), "Lille");
    rpc_client.get_population(population);
    tutorial::rpc::population::print_data_table(std::cout, population);
+  }
+
+  {
+   tutorial::Memory_Database db;
+   db.set_name(db.new_city(), "Lille");
+   rpc_client.get_inhabitants(db);
+   tutorial::print_person_table(std::cout, db);
   }
 
   return 0;

@@ -23,6 +23,7 @@ namespace tutorial::rpc
    {
    }
 
+   /// Insert a city from a name string
    void insert_city(city::Writable_Database &city) 
    {
     client.transaction
@@ -34,6 +35,7 @@ namespace tutorial::rpc
     );
    }
 
+   /// Delete a city from a name string
    void delete_city(city::Writable_Database &city) 
    {
     client.transaction
@@ -47,6 +49,7 @@ namespace tutorial::rpc
     );
    }
 
+   /// A procedure can return values by writing them to the message database
    void get_population(population::Writable_Database &population)
    {
     const auto &db = client.get_database();
@@ -65,6 +68,34 @@ namespace tutorial::rpc
   
      population.set_city(data, city);
      population.set_population(data, N);
+    }
+   }
+
+   /// A message can have the same schema as the main database
+   void get_inhabitants(tutorial::Writable_Database &message)
+   {
+    const auto message_city = message.get_city_table().first();
+
+    if (message_city.is_not_null())
+    {
+     const auto &db = client.get_database();
+
+     const auto city = db.find_city_by_name(message.get_name(message_city));
+     if (city.is_not_null())
+     {
+      for (const auto person: db.get_person_table())
+      {
+       if (db.get_home(person) == city)
+       {
+        message.new_person
+        (
+         db.get_first_name(person),
+         db.get_last_name(person),
+         db.get_home(person)
+        );
+       }
+      }
+     }
     }
    }
  };
