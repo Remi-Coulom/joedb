@@ -77,7 +77,7 @@ namespace joedb::asio
     co_await acceptor.async_accept(boost::asio::use_awaitable)
    );
 
-   const auto session_ptr = session.get();
+   auto* const session_ptr = session.get();
 
    boost::asio::co_spawn
    (

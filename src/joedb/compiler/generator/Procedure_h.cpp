@@ -26,11 +26,6 @@ namespace joedb::generator
 
   namespace_open(out, options.get_name_space());
 
-  const std::string ns = namespace_string
-  (
-   parent_options.get_name_space()
-  );
-
   out << R"RRR(
  /// Class for all procedures based on this message schema
  class Procedure: public joedb::rpc::Procedure
