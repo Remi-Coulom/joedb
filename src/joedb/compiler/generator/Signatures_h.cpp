@@ -30,7 +30,7 @@ namespace joedb::generator
     schemas.insert(procedure.schema);
 
    for (const auto &schema: schemas)
-    out << "#include \"" << schema << "/Memory_Database.h\"\n";
+    out << "#include \"" << options.get_path(schema) << "/Memory_Database.h\"\n";
   }
 
   out << '\n';

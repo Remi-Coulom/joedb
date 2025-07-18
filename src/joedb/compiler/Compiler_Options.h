@@ -156,6 +156,13 @@ namespace joedb
    {
     return table_options.find(table_id)->second;
    }
+   std::string get_path(const std::string &schema) const
+   {
+    if (schema == name_space.back())
+     return std::string("..");
+    else
+     return schema;
+   }
  };
 }
 
