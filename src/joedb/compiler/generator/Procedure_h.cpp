@@ -17,12 +17,17 @@ namespace joedb::generator
  {
   namespace_include_guard(out, "Procedure", options.get_name_space());
 
+  out << '\n';
+  if (&options == &parent_options)
+   out << "#include \"rpc/Service.h\"";
+  else
+   out << "#include \"../Service.h\"";
   out << R"RRR(
 #include "joedb/rpc/Procedure.h"
 #include "Writable_Database.h"
-#include ")RRR" << parent_options.name_space.back() << R"RRR(/rpc/Service.h"
 
 )RRR";
+
 
   namespace_open(out, options.get_name_space());
 
