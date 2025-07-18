@@ -130,8 +130,14 @@ function(joedbc_build_absolute dir namespace)
  )
 
  set(slash_list ${joedbis})
+ set(slash_Service ${Service_h})
 
  list(TRANSFORM slash_list REPLACE
+  "${namespace}\.rpc"
+  "${namespace}/rpc"
+ )
+
+ list(TRANSFORM slash_Service REPLACE
   "${namespace}\.rpc"
   "${namespace}/rpc"
  )
@@ -139,11 +145,11 @@ function(joedbc_build_absolute dir namespace)
  set(readonly_cpp ${slash_list})
  set(writable_cpp ${slash_list})
 
- list(TRANSFORM readonly_cpp REPLACE "\.joedbi$" "/readonly.cpp")
- list(TRANSFORM writable_cpp REPLACE "\.joedbi$" "/writable.cpp")
+ list(TRANSFORM readonly_cpp REPLACE "\\.joedbi$" "/readonly.cpp")
+ list(TRANSFORM writable_cpp REPLACE "\\.joedbi$" "/writable.cpp")
 
  add_custom_command(
-  OUTPUT ${readonly_cpp} ${writable_cpp}
+  OUTPUT ${readonly_cpp} ${writable_cpp} ${dir}/${namespace}/Database.h ${slash_Service}
   COMMAND joedbc ${namespace}
   DEPENDS joedbc ${joedbis} ${joedbcs} ${Service_h}
   WORKING_DIRECTORY ${dir}
