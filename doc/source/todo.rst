@@ -1,12 +1,20 @@
 TODO
 ====
 
+Notifications
+-------------
+ - joedbc: trigger, eg after_city__name__updated(id_of_city) -> Listener class
+ - listener should be passed to constructor? built-in? separate database from journal?
+   - allow adding listeners before client construction
+   - allow implementing rollback more easily
+   - implement compiled database as listener?
+ - subscription server to send custom notifications to clients (with filter)
+
 Stored Procedures
 -----------------
  - unit tests
  - ping thread
  - logcat-like logger class with specializations: cerr, logcat, joedb
- - need a separate server to send notifications to clients
 
 On-disk Storage
 ---------------
