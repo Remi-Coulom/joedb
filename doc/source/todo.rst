@@ -3,18 +3,22 @@ TODO
 
 Notifications
 -------------
- - joedbc: trigger, eg after_city__name__updated(id_of_city) -> Listener class
- - listener should be passed to constructor? built-in? separate database from journal?
-   - allow adding listeners before client construction
-   - allow implementing rollback more easily
-   - implement compiled database as listener?
- - subscription server to send custom notifications to clients (with filter)
+ - Create a "Compiled_Writable" with virtual functions such as "delete_from_city, ..."
+ - A Compiled_Multiplexer to handle a collection of Compiled_Writables
+ - Implement default storage with such a Compiled_Writable
+ - Allow custom data-structure construction
+ - This will allow:
+    - implementing a server to get notifications when a part of the database has changed
+    - rollback implementation (easily reset table storage when replaying from scratch)
 
 Stored Procedures
 -----------------
  - unit tests
  - ping thread
  - logcat-like logger class with specializations: cerr, logcat, joedb
+ - allow keeping a database for duration of a session: if "session.joedbi" exists,
+   keep it in memory in the client and server.
+ - allow implementing and compiling multiple different rpc services on the same database
 
 On-disk Storage
 ---------------
