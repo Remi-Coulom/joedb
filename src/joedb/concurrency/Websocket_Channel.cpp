@@ -60,6 +60,16 @@ namespace joedb
 
      ws.binary(true);
 
+     boost::beast::get_lowest_layer(ws).set_option
+     (
+      boost::asio::ip::tcp::no_delay(true)
+     );
+
+     boost::beast::get_lowest_layer(ws).set_option
+     (
+      boost::asio::socket_base::keep_alive(true)
+     );
+
      ws.handshake
      (
       host + ":" + std::to_string(endpoint.port()),
