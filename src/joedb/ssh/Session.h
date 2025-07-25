@@ -60,6 +60,11 @@ namespace joedb
      ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
 
      {
+      const long timeout = 300;
+      ssh_options_set(session, SSH_OPTIONS_TIMEOUT, &timeout);
+     }
+
+     {
       const int no_delay = 1;
       ssh_options_set(session, SSH_OPTIONS_NODELAY, &no_delay);
      }
