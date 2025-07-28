@@ -1,6 +1,13 @@
 History
 =======
 
+- 2025-07-27 10.0.2 LTS Set libssh timeout
+
+  By default, libssh does not use a timeout, which can cause infinite waiting
+  in rare conditions. It could happen when a :joedb:`Robust_Connection` would
+  try to immediately reconnect during reboot of the remote server. This version
+  of joedb uses a 5 minute timeout, which should prevent this problem.
+
 - 2025-06-13 10.0.1 LTS Minor Bug Fixes
 
   - joedbc prints an error message instead of crashing when no namespace is provided.
