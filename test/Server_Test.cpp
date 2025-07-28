@@ -423,7 +423,7 @@ namespace joedb
    EXPECT_EQ(client.get_journal().get_checkpoint(), 262189);
   }
 
-  server.stop();
+  server.stop(); // racy
 
   EXPECT_EQ(server.client.get_journal().get_checkpoint(), 41);
 

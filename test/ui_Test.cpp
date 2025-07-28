@@ -48,6 +48,9 @@ namespace joedb
   std::ostringstream reference_string;
   reference_string << reference_file.rdbuf();
 
+  std::ofstream tmp("client_test.joedbi.tmp");
+  tmp << out.str();
+
   EXPECT_EQ(reference_string.str(), out.str());
  }
 

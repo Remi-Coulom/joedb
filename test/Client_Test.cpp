@@ -133,7 +133,7 @@ namespace joedb
    }
    catch (const Exception &e)
    {
-    EXPECT_STREQ(e.what(), "locking journal with uncheckpointed data");
+    EXPECT_STREQ(e.what(), "locking journal with uncheckpointed data (try rollback?)");
    }
 
    EXPECT_ANY_THROW(client1.pull());
