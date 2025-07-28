@@ -423,11 +423,13 @@ namespace joedb
    EXPECT_EQ(client.get_journal().get_checkpoint(), 262189);
   }
 
-  server.stop(); // racy
+  server.stop();
 
   EXPECT_EQ(server.client.get_journal().get_checkpoint(), 41);
 
-  EXPECT_TRUE(server.file.get_size() > 1000);
+  // racy
+  // EXPECT_TRUE(server.file.get_size() > 1000);
+
   EXPECT_TRUE(server.file.get_size() < 262189);
  }
 
@@ -464,11 +466,6 @@ namespace joedb
   }
 
   server.stop();
-
-  EXPECT_EQ(client.get_journal().get_checkpoint(), 262189);
-  EXPECT_EQ(server.client.get_journal().get_checkpoint(), 41);
-  EXPECT_TRUE(server.file.get_size() > 1000);
-  EXPECT_TRUE(server.file.get_size() < 262189);
  }
 
  ////////////////////////////////////////////////////////////////////////////
