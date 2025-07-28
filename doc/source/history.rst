@@ -1,7 +1,7 @@
 History
 =======
 
-- 2025-07-27 10.0.2 LTS Set libssh timeout
+- 2025-07-28 10.0.2 LTS Set libssh timeout
 
   By default, libssh does not use a timeout, which can cause infinite waiting
   in rare conditions. It could happen when a :joedb:`Robust_Connection` would
