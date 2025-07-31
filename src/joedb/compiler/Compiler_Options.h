@@ -112,13 +112,6 @@ namespace joedb
    {
     return name_space;
    }
-   const std::string &get_name_space_back() const
-   {
-    if (name_space.empty())
-     throw Exception("missing name space");
-    else
-     return name_space.back();
-   }
    const std::vector<Index> &get_indices() const {return indices;}
    const Table_Options &get_table_options(Table_Id table_id) const
    {
