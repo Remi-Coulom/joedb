@@ -21,6 +21,7 @@ class JoedbiLexer(RegexLexer):
             (r'valid_data\s+', Keyword),
             (r'soft_checkpoint\s+', Keyword),
             (r'hard_checkpoint\s+', Keyword),
+            (r'#.*$', Comment),
             (r'.+', Literal)
         ],
         'table': [

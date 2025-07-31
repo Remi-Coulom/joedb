@@ -48,7 +48,7 @@ namespace joedb
    Writable_Database_Client
    (
     Buffered_File &file,
-    Connection &connection,
+    Connection &connection = Connection::dummy,
     Content_Check content_check = Content_Check::fast,
     Record_Id max_record_id = Record_Id::null,
     Recovery recovery = Recovery::none

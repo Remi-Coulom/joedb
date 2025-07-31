@@ -1,7 +1,8 @@
 #ifndef joedb_Server_Client_declared
 #define joedb_Server_Client_declared
 
-#include "joedb/concurrency/Thread_Safe_Channel.h"
+#include "joedb/concurrency/Channel.h"
+#include "joedb/Thread_Safe.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/journal/Async_Writer.h"
 
@@ -20,15 +21,15 @@ namespace joedb
   private:
    std::chrono::seconds keep_alive_interval;
    std::condition_variable condition;
-   void ping(Channel_Lock &lock);
+   void ping(Lock<Channel&> &lock);
    bool keep_alive_thread_must_stop;
    std::thread keep_alive_thread;
    void keep_alive();
    void connect();
-   void disconnect();
+   void disconnect() noexcept;
 
   protected:
-   mutable Thread_Safe_Channel channel;
+   mutable Thread_Safe<Channel&> channel;
    std::ostream *log;
    bool connected;
 
@@ -38,7 +39,12 @@ namespace joedb
    bool pullonly_server;
    int64_t server_checkpoint;
 
-   void download(Async_Writer &writer, Channel_Lock &lock, int64_t size) const;
+   void download
+   (
+    Async_Writer &writer,
+    Lock<Channel&> &lock,
+    int64_t size
+   ) const;
 
   public:
    Server_Client(Channel &channel, std::ostream *log = nullptr);
@@ -49,7 +55,7 @@ namespace joedb
    }
 
    int64_t get_session_id() const {return session_id;}
-   Thread_Safe_Channel &get_channel() {return channel;}
+   Thread_Safe<Channel&> &get_channel() {return channel;}
    void ping();
 
    ~Server_Client();

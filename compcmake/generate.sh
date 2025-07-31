@@ -15,8 +15,13 @@ if [ "$1" == "--vcpkg" ]; then
 fi
 
 config="$1"
+cpp_standard="$2"
+if [ "$cpp_standard" == "" ]; then
+ cpp_standard=17
+fi
 
 echo "config = $config"
+echo "cpp_standard = $cpp_standard"
 
 echo
 echo =======================================================================
@@ -27,10 +32,13 @@ echo build_system=$build_system
 function generate {
  if [[ "$config" == "" ]] || [[ "$config" == "$1" ]]; then
 
+  target_dir=$1
+  if [ "$cpp_standard" != "17" ]; then
+   target_dir="$target_dir"_"$cpp_standard"
+  fi
+
   if [ "$vcpkg" != "" ]; then
-   target_dir=vcpkg_$1
-  else
-   target_dir=$1
+   target_dir=vcpkg_$target_dir
   fi
 
   echo
@@ -39,7 +47,7 @@ function generate {
   cd $target_dir
   shift
   echo "$@"
-  "$@" $vcpkg ..
+  "$@" -DCMAKE_CXX_STANDARD=$cpp_standard $vcpkg ..
   cd ..
  fi
 }

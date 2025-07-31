@@ -1,4 +1,5 @@
 #include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/Writable_Journal.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/ui/Interpreter.h"
 
@@ -11,7 +12,8 @@ namespace joedb
   std::istream &stream,
   bool readonly
  ):
-  journal(*this)
+  file_view(*this),
+  journal(file_view)
  {
   if (!stream)
    throw Exception("opening interpreted file: !stream");

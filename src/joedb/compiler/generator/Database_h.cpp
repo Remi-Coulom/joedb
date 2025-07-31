@@ -130,10 +130,7 @@ namespace joedb::generator
   out << "  friend class Readable;\n";
 
   for (const auto &[tid, tname]: tables)
-  {
-   out << "  friend class id_of_"  << tname << ";\n";
    out << "  friend class container_of_"  << tname << ";\n";
-  }
 
   for (const auto &index: options.get_indices())
    if (!index.unique)
@@ -394,8 +391,9 @@ namespace joedb::generator
 
   for (const auto &[tid, tname]: tables)
   {
-   out << '\n';
    const bool single_row = options.get_table_options(tid).single_row;
+
+   out << '\n';
 
    //
    // Declaration of container access
@@ -412,9 +410,12 @@ namespace joedb::generator
    out << "    return id_of_" << tname << "\n    (\n     Record_Id(storage_of_" << tname << ".freedom_keeper.get_previous(id.get_record_id()))\n    );\n";
    out << "   }\n\n";
 
-   out << "   template<class Comparator>\n";
-   out << "   std::vector<id_of_" << tname << "> sorted_" << tname;
-   out << "(Comparator comparator) const;\n\n";
+   if (!single_row)
+   {
+    out << "   template<class Comparator>\n";
+    out << "   std::vector<id_of_" << tname << "> sorted_" << tname;
+    out << "(Comparator comparator) const;\n\n";
+   }
 
    //
    // Easy access to null
@@ -562,6 +563,8 @@ namespace joedb::generator
   //
   for (const auto &[tid, tname]: tables)
   {
+   const bool single_row = options.get_table_options(tid).single_row;
+
    out << " /// returned by @ref Database::get_" << tname << "_table\n";
    out << " class container_of_" << tname << "\n";
    out << " {\n";
@@ -620,16 +623,19 @@ namespace joedb::generator
    out << " }\n";
    out << '\n';
 
-   out << " template<class Comparator>\n";
-   out << " std::vector<id_of_" << tname << "> Database::sorted_" << tname;
-   out << "(Comparator comparator) const\n";
-   out << " {\n";
-   out << "  std::vector<id_of_" << tname << "> result;\n";
-   out << "  for (auto x: get_" << tname << "_table())\n";
-   out << "   result.emplace_back(x);\n";
-   out << "  std::sort(result.begin(), result.end(), comparator);\n";
-   out << "  return result;\n";
-   out << " }\n";
+   if (!single_row)
+   {
+    out << " template<class Comparator>\n";
+    out << " std::vector<id_of_" << tname << "> Database::sorted_" << tname;
+    out << "(Comparator comparator) const\n";
+    out << " {\n";
+    out << "  std::vector<id_of_" << tname << "> result;\n";
+    out << "  for (auto x: get_" << tname << "_table())\n";
+    out << "   result.emplace_back(x);\n";
+    out << "  std::sort(result.begin(), result.end(), comparator);\n";
+    out << "  return result;\n";
+    out << " }\n";
+   }
   }
 
   //

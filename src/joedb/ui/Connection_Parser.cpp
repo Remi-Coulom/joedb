@@ -4,12 +4,16 @@
 #include "joedb/ui/File_Connection_Builder.h"
 #include "joedb/ui/SQL_Dump_Writable.h"
 
-#ifdef JOEDB_HAS_NETWORKING
+#ifdef JOEDB_HAS_ASIO
 #include "joedb/ui/Local_Connection_Builder.h"
 #endif
 
 #ifdef JOEDB_HAS_SSH
 #include "joedb/ui/SSH_Connection_Builder.h"
+#endif
+
+#ifdef JOEDB_HAS_WEBSOCKETS
+#include "joedb/ui/Websocket_Connection_Builder.h"
 #endif
 
 #include <cstring>
@@ -24,12 +28,16 @@ namespace joedb
   builders.emplace_back(new Dummy_Connection_Builder());
   builders.emplace_back(new File_Connection_Builder());
 
-#ifdef JOEDB_HAS_NETWORKING
+#ifdef JOEDB_HAS_ASIO
   builders.emplace_back(new Local_Connection_Builder());
 #endif
 
 #ifdef JOEDB_HAS_SSH
   builders.emplace_back(new SSH_Connection_Builder());
+#endif
+
+#ifdef JOEDB_HAS_WEBSOCKETS
+  builders.emplace_back(new Websocket_Connection_Builder());
 #endif
  }
 

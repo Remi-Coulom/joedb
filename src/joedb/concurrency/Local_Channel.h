@@ -3,8 +3,8 @@
 
 #include "joedb/concurrency/Channel.h"
 
-#include <asio/io_context.hpp>
-#include <asio/local/stream_protocol.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/local/stream_protocol.hpp>
 
 namespace joedb
 {
@@ -12,8 +12,8 @@ namespace joedb
  class Local_Channel: public Channel
  {
   protected:
-   asio::io_context io_context;
-   asio::local::stream_protocol::socket socket;
+   boost::asio::io_context io_context;
+   boost::asio::local::stream_protocol::socket socket;
 
    size_t write_some(const char *data, size_t size) override;
    size_t read_some(char *data, size_t size) override;

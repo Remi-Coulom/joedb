@@ -7,7 +7,7 @@ if [ "$1" == "" ]; then
  cd -
 fi
 
-build_dir=../compcmake/gcc_asan
+build_dir=../compcmake/gcc_asan_20
 cmake --build $build_dir --target joedb_test
 rm -vf *.tmp
 

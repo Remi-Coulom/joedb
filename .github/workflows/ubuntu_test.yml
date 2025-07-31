@@ -19,40 +19,46 @@ jobs:
        sudo apt-get update
        sudo apt-get -y install cmake ninja-build libssh-dev clang clang-tidy gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-system-arm qemu-user libcurl4-openssl-dev libasio-dev libbrotli-dev libgtest-dev
 
-    - name: Configure CMake
+    - name: Configure CMake for gcc_release_20
       working-directory: ${{github.workspace}}/compcmake
-      run: ./generate.sh
+      run: ./generate.sh gcc_release 20
 
-      # This does not work because somehow clang-11 is the default at github for Ubuntu 20,
-      # and it does not match with clang-tidy's default version (still 10)
-      #    - name: Test with clang in release mode
-      #      working-directory: ${{github.workspace}}/compcmake/clang_release
-      #      run: ctest -V
-
-    - name: Test gcc_release
-      working-directory: ${{github.workspace}}/compcmake/gcc_release
+    - name: Test gcc_release_20
+      working-directory: ${{github.workspace}}/compcmake/gcc_release_20
       run: ctest -V
 
-    - name: Test cross-compiled ARM version
+    - name: Configure CMake for arm_release
+      working-directory: ${{github.workspace}}/compcmake
+      run: ./generate.sh arm_release
+
+    - name: Compile ARM version (test has locking errors)
       working-directory: ${{github.workspace}}/compcmake/arm_release
-      run: ctest -V
+      run: ninja
+
+    - name: Configure CMake for gcc_asan_20
+      working-directory: ${{github.workspace}}/compcmake
+      run: ./generate.sh gcc_asan 20
 
     - name: Test with gcc in asan mode
-      working-directory: ${{github.workspace}}/compcmake/gcc_asan
+      working-directory: ${{github.workspace}}/compcmake/gcc_asan_20
       run: ctest -V
+
+    - name: Configure CMake for gcc_portable
+      working-directory: ${{github.workspace}}/compcmake
+      run: ./generate.sh gcc_portable
 
     - name: Test with gcc with joedb::File = joedb::Portable_File
       working-directory: ${{github.workspace}}/compcmake/gcc_portable
       run: ctest -V
 
-    - name: deb packaging
-      working-directory: ${{github.workspace}}/compcmake/gcc_release
-      run: cpack -G DEB
-
-    - name: deb install
-      working-directory: ${{github.workspace}}/compcmake/gcc_release
-      run: sudo apt-get --yes install ./joedb*.deb
-
-    - name: about
-      working-directory: /
-      run: echo "about" | joedbi memory
+        #    - name: deb packaging
+        #      working-directory: ${{github.workspace}}/compcmake/gcc_release
+        #      run: cpack -G DEB
+        #
+        #    - name: deb install
+        #      working-directory: ${{github.workspace}}/compcmake/gcc_release
+        #      run: sudo apt-get --yes install ./joedb*.deb
+        #
+        #    - name: about
+        #      working-directory: /
+        #      run: echo "about" | joedbi memory

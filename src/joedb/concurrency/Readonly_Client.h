@@ -18,7 +18,7 @@ namespace joedb
    Readonly_Client
    (
     Buffered_File &file,
-    Connection &connection,
+    Connection &connection = Connection::dummy,
     Content_Check content_check = Content_Check::fast,
     Recovery recovery = Recovery::none
    ):

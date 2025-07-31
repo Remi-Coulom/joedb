@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Local_Channel.h"
 
-#include <asio/connect.hpp>
+#include <boost/asio/connect.hpp>
 
 namespace joedb
 {
@@ -16,14 +16,14 @@ namespace joedb
  size_t Local_Channel::write_some(const char *data, size_t size)
  //////////////////////////////////////////////////////////////////////////
  {
-  return socket.write_some(asio::buffer(data, size));
+  return socket.write_some(boost::asio::buffer(data, size));
  }
 
  //////////////////////////////////////////////////////////////////////////
  size_t Local_Channel::read_some(char *data, size_t size)
  //////////////////////////////////////////////////////////////////////////
  {
-  return socket.read_some(asio::buffer(data, size));
+  return socket.read_some(boost::asio::buffer(data, size));
  }
 
  //////////////////////////////////////////////////////////////////////////

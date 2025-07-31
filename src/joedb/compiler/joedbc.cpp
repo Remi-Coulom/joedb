@@ -3,6 +3,7 @@
 #include "joedb/Selective_Writable.h"
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/File.h"
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/main_wrapper.h"
 
@@ -18,6 +19,7 @@
 #include "joedb/compiler/generator/Writable_Database_h.h"
 #include "joedb/compiler/generator/Writable_Database_cpp.h"
 #include "joedb/compiler/generator/File_Database_h.h"
+#include "joedb/compiler/generator/Memory_Database_h.h"
 #include "joedb/compiler/generator/Interpreted_File_Database_h.h"
 #include "joedb/compiler/generator/Multiplexer_h.h"
 #include "joedb/compiler/generator/Readonly_Interpreted_File_Database_h.h"
@@ -30,8 +32,16 @@
 
 #include "joedb/compiler/generator/ids_h.h"
 #include "joedb/compiler/generator/introspection_h.h"
+#include "joedb/compiler/generator/print_table_h.h"
+
+#include "joedb/compiler/generator/Procedure_h.h"
+#include "joedb/compiler/generator/Procedures_h.h"
+#include "joedb/compiler/generator/Signatures_h.h"
+#include "joedb/compiler/generator/RPC_Client_h.h"
 
 #include <iostream>
+#include <filesystem>
+#include <regex>
 
 namespace joedb
 {
@@ -56,20 +66,15 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
- static int joedbc(Arguments &arguments)
+ static void compile
  ////////////////////////////////////////////////////////////////////////////
+ (
+  Compiler_Options &options,
+  Compiler_Options *parent_options
+ )
  {
-  const std::string_view joedbi_file_name = arguments.get_next("file.joedbi");
-  const std::string_view joedbc_file_name = arguments.get_next("file.joedbc");
-
-  if (arguments.missing())
-  {
-   arguments.print_help(std::cerr);
-   return 1;
-  }
-
-  Compiler_Options options;
-  options.exe_path = arguments[0];
+  const std::string joedbi_file_name = options.base_name + ".joedbi";
+  const std::string joedbc_file_name = options.base_name + ".joedbc";
 
   //
   // Read file.joedbi
@@ -77,10 +82,7 @@ namespace joedb
   {
    std::ifstream joedbi_file(joedbi_file_name.data());
    if (!joedbi_file)
-   {
-    std::cerr << "Error: could not open " << joedbi_file_name << '\n';
-    return 1;
-   }
+    throw Exception("could not open " + joedbi_file_name);
 
    Writable_Journal journal(options.schema_file);
    Selective_Writable schema_writable(journal, Selective_Writable::schema);
@@ -102,20 +104,9 @@ namespace joedb
   //
   std::ifstream joedbc_file(joedbc_file_name.data());
   if (!joedbc_file)
-  {
-   std::cerr << "Error: could not open " << joedbc_file_name << '\n';
-   return 1;
-  }
+   throw Exception("Error: could not open " + joedbc_file_name);
 
-  try
-  {
-   parse_compiler_options(joedbc_file, options);
-  }
-  catch(...)
-  {
-   std::cerr << "Error parsing .joedbc file: " << joedbc_file_name << '\n';
-   throw;
-  }
+  parse_compiler_options(joedbc_file, options);
 
   //
   // Generate code
@@ -133,6 +124,7 @@ namespace joedb
   generator::Writable_Database_h(options).generate();
   generator::Writable_Database_cpp(options).generate();
   generator::File_Database_h(options).generate();
+  generator::Memory_Database_h(options).generate();
   generator::Readonly_Interpreted_File_Database_h(options).generate();
   generator::Interpreted_File_Database_h(options).generate();
   generator::Multiplexer_h(options).generate();
@@ -144,10 +136,133 @@ namespace joedb
   generator::File_Client_h(options).generate();
   generator::Readonly_Client_h(options).generate();
 
-  generator::ids_h(options).generate();
+  generator::ids_h(options, parent_options).generate();
+  generator::print_table_h(options).generate();
+
+  if (parent_options)
+   generator::Procedure_h(options, *parent_options).generate();
+  else
+   generator::Procedure_h(options, options).generate();
 
   for (const auto &table: options.db.get_tables())
    generator::introspection_h(options, table).generate();
+
+  //
+  // .gitignore
+  //
+  {
+   std::ofstream ofs(options.output_path + "/" + options.get_name_space_back() + "/.gitignore", std::ios::trunc);
+   ofs << "*\n";
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ static int joedbc(Arguments &arguments)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const std::string_view base_name = arguments.get_next("<base_name>");
+
+  if (arguments.missing())
+  {
+   arguments.print_help(std::cerr);
+   std::cerr << "joedbc will read:\n";
+   std::cerr << " <base_name>.joedbi for the schema definition\n";
+   std::cerr << " <base_name>.joedbc for compiler options\n";
+   std::cerr << " <base_name>.rpc (optional) directory for RPC\n";
+   return 1;
+  }
+
+  Compiler_Options options;
+  options.exe_path = arguments[0];
+  options.output_path = ".";
+  options.base_name = std::string(base_name);
+
+  compile(options, nullptr);
+
+  //
+  // Generate code for procedure message schemas
+  //
+  {
+   std::error_code error_code;
+
+   std::filesystem::directory_iterator iterator
+   (
+    std::string(base_name) + ".rpc",
+    error_code
+   );
+
+   if (!error_code)
+   {
+    for (const auto &dir_entry: iterator)
+    {
+     if (dir_entry.path().extension() == ".joedbi")
+     {
+      auto path = dir_entry.path();
+      const std::string procedure_name = path.replace_extension("").string();
+
+      Compiler_Options procedure_options;
+      procedure_options.exe_path = arguments[0];
+      procedure_options.output_path = std::string(base_name) + "/rpc";
+      procedure_options.base_name = procedure_name;
+
+      compile(procedure_options, &options);
+     }
+    }
+   }
+  }
+
+  //
+  // Find list of procedures in Service.h
+  //
+  joedb::Memory_File memory_file;
+
+  try
+  {
+   joedb::File file
+   (
+    options.base_name + ".rpc/Service.h",
+    joedb::Open_Mode::read_existing
+   );
+   file.copy_to(memory_file);
+  }
+  catch (...)
+  {
+  }
+
+  if (memory_file.get_size())
+  {
+   std::filesystem::copy
+   (
+    options.base_name + ".rpc/Service.h",
+    options.base_name + "/rpc/Service.h",
+    std::filesystem::copy_options::overwrite_existing
+   );
+
+   const std::string &s = memory_file.get_data();
+
+   std::vector<generator::Procedure> procedures;
+
+   {
+    const std::regex pattern("void\\s+(\\w+)\\s*\\(\\s*(\\w+)\\s*::\\s*Writable_Database\\s*&\\s*\\w+\\s*\\)");
+
+    for
+    (
+     std::sregex_iterator i{s.begin(), s.end(), pattern};
+     i != std::sregex_iterator();
+     ++i
+    )
+    {
+     procedures.push_back({(*i)[1], (*i)[2]});
+    }
+   }
+
+   if (!procedures.empty())
+   {
+    generator::Procedures_h(options, procedures).generate();
+    generator::Signatures_h(options, procedures).generate();
+    generator::RPC_Client_h(options, procedures).generate();
+   }
+  }
 
   return 0;
  }

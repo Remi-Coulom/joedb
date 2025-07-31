@@ -19,18 +19,19 @@ namespace joedb
   (
    arguments.get_enum_option("mode", labels, int(Mode::ascii))
   );
-  const std::string_view joedb_file_name = arguments.get_next("file.joedb");
-  const std::string_view namespace_string = arguments.get_next("namespace");
-  const std::string_view identifier = arguments.get_next("identifier");
+  const std::string_view joedb_file_name = arguments.get_next("<file.joedb>");
+  const std::string_view namespace_string = arguments.get_next("<namespace>");
+  const std::string_view identifier = arguments.get_next("<identifier>");
 
-  if (arguments.missing())
+  const std::vector<std::string> name_space = split_namespace(namespace_string);
+
+  if (arguments.missing() || name_space.empty())
   {
    arguments.print_help(std::cerr);
    std::cerr << "output: <namespace>_<identifer>.{h,cpp}\n";
    return 1;
   }
 
-  const std::vector<std::string> name_space = split_namespace(namespace_string);
   const std::string file_name = name_space.back() + '_' + std::string(identifier);
 
   {

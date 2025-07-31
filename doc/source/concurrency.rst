@@ -127,8 +127,8 @@ reconnect when it accepts connections again.
 When the database is very big, downloading a local copy may not be possible or
 convenient. :joedb:`Server_File` solves this problem by reading the body of the
 file from the remote server directly. The head and tail of the file are stored
-locally in memory, which allows writing. This is particularly convenient for
-large blob databases.
+locally in memory, which allows writing. This is particularly useful for large
+blob databases.
 
 :joedb:`Server_File` is both a :joedb:`Connection` and a
 :joedb:`Buffered_File`. When constructing a :joedb:`Client`, it must be used as
@@ -156,8 +156,11 @@ The transaction function is a simple way to handle the
 lock-pull-write-push-unlock sequence, but may not be flexible enough to handle
 some more complex use cases. The :joedb:`Client_Lock` object allows:
 
- - starting the transaction in one function, and finishing it in another one,
- - pushing multiple times in the middle of a transaction, without unlocking the connection,
+ - starting the transaction in one function, and finishing it in another one
+   (which is often necessary when writing asynchronous code, either with
+   callbacks or coroutines),
+ - pushing multiple times in the middle of a transaction, without unlocking the
+   connection,
  - writing data in one thread, and asynchronously pushing from time to time
    in another one (use a mutex).
 
@@ -167,9 +170,3 @@ explicitly call either :joedb:`Client_Lock::checkpoint_and_push_unlock` or
 
 .. literalinclude:: ./tutorial/src/client_lock.cpp
    :language: c++
-
-..
-   TODO: ascinema animation of synchronous backup
-
-..
-   TODO: ascinema animation of asynchronous backup

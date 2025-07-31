@@ -1,0 +1,2 @@
+create_table city
+add_field city name string

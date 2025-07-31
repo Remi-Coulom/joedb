@@ -17,6 +17,8 @@ namespace joedb
    {
    }
 
+   Record_Id get_max_record_id() const {return max_record_id;}
+
    void insert_into(Table_Id table_id, Record_Id record_id) override;
    void insert_vector
    (

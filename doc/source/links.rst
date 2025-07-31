@@ -70,6 +70,13 @@ File Locking, atomicity, durability:
 - https://stackoverflow.com/questions/35595685/write2-read2-atomicity-between-processes-in-linux
 - https://danluu.com/deconstruct-files/
 - https://danluu.com/file-consistency/
+- https://transactional.blog/blog/2022-darwins-deceptive-durability
+
+Authentication and Encryption of Network Communications:
+
+- https://www.wolfssl.com/tls-vs-ssh-when-to-use-which/
+- https://goteleport.com/blog/improving-ssh-speeds/
+- https://think-async.com/Asio/asio-1.30.2/doc/asio/overview/ssl.html
 
 Crash resistance:
 
@@ -115,3 +122,4 @@ Data Loss Stories
 - https://about.gitlab.com/blog/2017/02/10/postmortem-of-database-outage-of-january-31/
 - https://www.reddit.com/r/ExperiencedDevs/comments/1j2wrdv/wiped_my_companys_production_db_last_week/
 - https://www.brentozar.com/archive/2015/02/9-ways-to-lose-your-data/
+- https://matrix.org/blog/2025/07/postgres-corruption-postmortem/

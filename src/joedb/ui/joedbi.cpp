@@ -53,12 +53,10 @@ namespace joedb
   }
   else
   {
-   Connection connection;
-
    Writable_Database_Client client
    (
     *file,
-    connection,
+    Connection::dummy,
     Content_Check::fast,
     max_record_id
    );

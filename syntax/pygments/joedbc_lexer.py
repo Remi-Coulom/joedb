@@ -11,7 +11,7 @@ class JoedbcLexer(RegexLexer):
             (r'namespace\s+', Keyword, 'namespace'),
             (r'create_unique_index\s+', Keyword, 'index_table_fields'),
             (r'create_index\s+', Keyword, 'index_table_fields'),
-            (r'set_table_null_initialization\s+', Keyword, 'table_constant'),
+            (r'set_single_row\s+', Keyword, 'table_bool'),
             (r'generate_c_wrapper', Keyword)
         ],
         'namespace': [
@@ -32,7 +32,11 @@ class JoedbcLexer(RegexLexer):
         'fields_continuation': [
             (r',', Operator, 'fields')
         ],
-        'table_constant' : [
+        'table_bool' : [
+            (r'[a-zA-Z_]\w*\s+', Name.Class, 'bool')
+        ],
+        'bool' : [
+            (r'true|false', Literal)
         ]
     }
 

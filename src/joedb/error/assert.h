@@ -33,7 +33,10 @@ namespace joedb
   int line
  );
 
+ /// Indicates a bug in the code, thrown by @ref JOEDB_RELEASE_ASSERT
+ /// @ingroup error
  using Release_Assertion_Failure = Exception;
+
  /// Indicates a bug in the code, thrown by @ref JOEDB_DEBUG_ASSERT when NDEBUG not defined
  /// @ingroup error
  class Assertion_Failure: public std::logic_error

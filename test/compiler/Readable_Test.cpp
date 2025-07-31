@@ -19,9 +19,9 @@ TEST(Compiler, Readable)
 
  const std::string name = readable.get_string
  (
-  test::interpreted_person::table_id,
+  test::person_table::id,
   joe.get_record_id(),
-  test::interpreted_person::name_field_id
+  test::person_table::name_field::id
  );
 
  EXPECT_EQ("Joe", name);

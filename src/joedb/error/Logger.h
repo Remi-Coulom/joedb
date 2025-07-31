@@ -1,13 +1,15 @@
 #ifndef joedb_Logger
 #define joedb_Logger
 
+#include <string_view>
+
 namespace joedb
 {
  /// @ingroup error
  class Logger
  {
   public:
-   virtual void write(const char *message) noexcept = 0;
+   virtual void write(std::string_view message) noexcept = 0;
    virtual ~Logger() = default;
  };
 }

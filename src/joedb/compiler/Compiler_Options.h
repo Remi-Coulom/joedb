@@ -49,6 +49,9 @@ namespace joedb
 
   public:
    std::string exe_path;
+   std::string output_path;
+   std::string base_name;
+
    Database db;
    Memory_File schema_file;
    std::vector<std::string> custom_names;
@@ -65,8 +68,8 @@ namespace joedb
 
    bool has_blob() const
    {
-    for (auto &[table_id, table_name]: db.get_tables())
-     for (auto &[field_id, field_name]: db.get_fields(table_id))
+    for (const auto &[table_id, table_name]: db.get_tables())
+     for (const auto &[field_id, field_name]: db.get_fields(table_id))
       if (db.get_field_type(table_id, field_id).get_type_id() == Type::Type_Id::blob)
        return true;
     return false;
@@ -82,8 +85,37 @@ namespace joedb
 
    bool has_single_row() const
    {
-    for (const auto &options: table_options)
-     if (options.second.single_row)
+    for (const auto &[table_id, options]: table_options)
+     if (options.single_row)
+      return true;
+    return false;
+   }
+
+   bool has_multi_row() const
+   {
+    for (const auto &[table_id, options]: table_options)
+     if (!options.single_row)
+      return true;
+    return false;
+   }
+
+   bool is_unique_field_name(const std::string &field_name) const
+   {
+    int count = 0;
+
+    for (const auto &[table_id, options]: table_options)
+     for (const auto &[field_id, name]: db.get_fields(table_id))
+      if (name == field_name)
+       if (++count > 1)
+        break;
+
+    return count == 1;
+   }
+
+   bool has_table(const std::string &table_name) const
+   {
+    for (const auto &[table_id, name]: db.get_tables())
+     if (name == table_name)
       return true;
     return false;
    }
@@ -112,10 +144,24 @@ namespace joedb
    {
     return name_space;
    }
+   const std::string &get_name_space_back() const
+   {
+    if (name_space.empty())
+     throw Exception("missing name space");
+    else
+     return name_space.back();
+   }
    const std::vector<Index> &get_indices() const {return indices;}
    const Table_Options &get_table_options(Table_Id table_id) const
    {
     return table_options.find(table_id)->second;
+   }
+   std::string get_path(const std::string &schema) const
+   {
+    if (schema == name_space.back())
+     return std::string("..");
+    else
+     return schema;
    }
  };
 }

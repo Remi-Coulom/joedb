@@ -14,7 +14,10 @@ namespace joedb
    std::string data;
 
   public:
-   Memory_File(): Buffered_File(Open_Mode::create_new) {}
+   Memory_File(Open_Mode mode = Open_Mode::create_new):
+    Buffered_File(mode)
+   {
+   }
 
    void resize(size_t size) {data.resize(size);}
    std::string &get_data() {return data;}

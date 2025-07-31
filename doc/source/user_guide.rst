@@ -8,6 +8,7 @@ User Guide
    opening_files
    checkpoints
    concurrency
+   rpc
    schema_upgrade
    vectors
    indexes

@@ -20,9 +20,9 @@ namespace joedb
   buffer.write<int64_t>(offset);
   buffer.write<int64_t>(offset + int64_t(size));
 
-  Channel_Lock lock(channel);
-  lock.write(buffer.data, buffer.index);
-  lock.read(buffer.data, 9);
+  Lock<Channel&> lock(channel);
+  lock->write(buffer.data, buffer.index);
+  lock->read(buffer.data, 9);
 
   buffer.index = 1;
   const int64_t until = buffer.read<int64_t>();
@@ -33,7 +33,7 @@ namespace joedb
   const size_t returned_size = size_t(until - offset);
 
   for (size_t read = 0; read < returned_size;)
-   read += lock.read_some(data + read, returned_size - read);
+   read += lock->read_some(data + read, returned_size - read);
 
   return returned_size;
  }
@@ -68,9 +68,9 @@ namespace joedb
   );
 
   {
-   Channel_Lock lock(channel);
-   lock.write(buffer.data, buffer.index);
-   lock.read(buffer.data, 1);
+   Lock<Channel&> lock(channel);
+   lock->write(buffer.data, buffer.index);
+   lock->read(buffer.data, 1);
   }
 
   LOG(buffer.data[0] << '\n');
@@ -91,7 +91,7 @@ namespace joedb
   std::chrono::milliseconds wait
  )
  {
-  Channel_Lock lock(channel);
+  Lock<Channel&> lock(channel);
 
   const char pull_type = char('D' + int(lock_action) + 2*int(data_transfer));
 
@@ -102,10 +102,10 @@ namespace joedb
   buffer.write<char>(pull_type);
   buffer.write<int64_t>(wait.count());
   buffer.write<int64_t>(client_journal.get_checkpoint());
-  lock.write(buffer.data, buffer.index);
+  lock->write(buffer.data, buffer.index);
 
   buffer.index = 0;
-  lock.read(buffer.data, 9);
+  lock->read(buffer.data, 9);
   {
    const char reply = buffer.read<char>();
    if (reply == 'R')
@@ -140,7 +140,7 @@ namespace joedb
   Unlock_Action unlock_action
  )
  {
-  Channel_Lock lock(channel);
+  Lock<Channel&> lock(channel);
 
   const char push_type = char('N' + int(unlock_action));
   buffer.index = 0;
@@ -161,13 +161,13 @@ namespace joedb
     const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
     if (reader.is_end_of_file())
      throw Exception("push error: unexpected end of file");
-    lock.write(buffer.data, size + offset);
+    lock->write(buffer.data, size + offset);
     offset = 0;
     progress_bar.print_remaining(reader.get_remaining());
    }
   }
 
-  lock.read(buffer.data, 1);
+  lock->read(buffer.data, 1);
 
   if (buffer.data[0] == 'R')
    throw Exception("push error: server is pull-only");
@@ -190,10 +190,10 @@ namespace joedb
   LOGID("releasing lock... ");
 
   {
-   Channel_Lock lock(channel);
+   Lock<Channel&> lock(channel);
    buffer.data[0] = 'M';
-   lock.write(buffer.data, 1);
-   lock.read(buffer.data, 1);
+   lock->write(buffer.data, 1);
+   lock->read(buffer.data, 1);
   }
 
   LOG(buffer.data[0] << '\n');

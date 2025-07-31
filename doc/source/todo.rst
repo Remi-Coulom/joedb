@@ -1,6 +1,25 @@
 TODO
 ====
 
+Notifications
+-------------
+ - Create a "Compiled_Writable" with virtual functions such as "delete_from_city, ..."
+ - A Compiled_Multiplexer to handle a collection of Compiled_Writables
+ - Implement default storage with such a Compiled_Writable
+ - Allow custom data-structure construction
+ - This will allow:
+    - implementing a server to get notifications when a part of the database has changed
+    - rollback implementation (easily reset table storage when replaying from scratch)
+
+Stored Procedures
+-----------------
+ - unit tests
+ - ping thread
+ - logcat-like logger class with specializations: cerr, logcat, joedb
+ - allow keeping a database for duration of a session: if "session.joedbi" exists,
+   keep it in memory in the client and server.
+ - allow implementing and compiling multiple different rpc services on the same database
+
 On-disk Storage
 ---------------
 - In a directory
@@ -13,6 +32,8 @@ On-disk Storage
 
 Compiler
 --------
+- error if namespace different from file name
+- string setters that takes a string_view as parameter
 - option to make some member functions private (->private: private_new_person)
 - option to add custom member functions
 - Differentiate between "storage type" and "usage type":
@@ -62,18 +83,14 @@ Concurrency
   in Connection.
 - joedb_server:
 
-  - use coroutines
+  - polymorphic socket: tcp/ip, unix, or websocket
   - stress-test tool
-  - support running on multiple threads (requires mutex?)
-
-    - OK to keep one thread busy when waiting for a lock, or computing SHA 256, ...
-    - thread_count = max(core_count, 2 * server_count)
-    - Requires synchronization. Mutex for global stuff (connection, disconnection, interrupt, ...)
-
+  - support running on multiple threads
   - support for log rotation: https://stackoverflow.com/questions/53188731/logging-compatibly-with-logrotate
   - write log as joedb file?
 
 - Do not crash on write error, continue to allow reading?
+- joedb::streambuf -> concurrency and durability for joedb::Interpreted_File?
 - Asynchronous client code:
 
   - Robust_Connection to synchronous backup should not block reads in Server
@@ -115,7 +132,6 @@ joedb_admin
 Other Ideas
 -----------
 - Use clang-format (try to customize it, use tabs)
-- Android logcat (custom std::streambuf, not part of joedb)
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - ability to indicate minimum joedb version in .joedbc file (and .joedbi?)
 - better readable interface:

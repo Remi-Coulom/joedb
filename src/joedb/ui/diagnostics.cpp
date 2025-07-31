@@ -10,7 +10,7 @@
 #endif
 
 #ifdef JOEDB_HAS_ASIO
-#include <asio/version.hpp>
+#include <boost/asio/version.hpp>
 #endif
 
 #ifdef JOEDB_HAS_CURL
@@ -62,9 +62,9 @@ namespace joedb
 
 #ifdef JOEDB_HAS_ASIO
   out << "\nasio version: ";
-  out << ASIO_VERSION / 100000 << '.';
-  out << ASIO_VERSION / 100 % 1000 << '.';
-  out << ASIO_VERSION % 100;
+  out << BOOST_ASIO_VERSION / 100000 << '.';
+  out << BOOST_ASIO_VERSION / 100 % 1000 << '.';
+  out << BOOST_ASIO_VERSION % 100;
   out << " https://think-async.com/Asio/";
 #endif
 
@@ -80,6 +80,7 @@ namespace joedb
 #endif
 
   out << "\ncompiled: " << __DATE__ << ' ' << __TIME__;
+  out << "\n__cplusplus = " << __cplusplus;
   out << "\nsizeof(bool) = " << sizeof(bool);
   out << "\nsizeof(size_t) = " << sizeof(size_t);
   out << "\nsizeof(long) = " << sizeof(long);

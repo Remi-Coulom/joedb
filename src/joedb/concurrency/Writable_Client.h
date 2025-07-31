@@ -14,19 +14,19 @@ namespace joedb
   friend class Client_Lock;
 
   protected:
-   template<typename F> auto transaction(F transaction)
+   template<typename F> auto transaction(F f)
    {
     const Journal_Lock lock(get_writable_journal());
 
     start_transaction();
 
-    using T = decltype(transaction());
+    using T = decltype(f());
 
     if constexpr (std::is_void<T>::value)
     {
      try
      {
-      transaction();
+      f();
       do_checkpoint();
      }
      catch (...)
@@ -43,7 +43,7 @@ namespace joedb
      {
       try
       {
-       const T inner_result = transaction();
+       const T inner_result = f();
        do_checkpoint();
        return inner_result;
       }
@@ -99,7 +99,7 @@ namespace joedb
    Writable_Client
    (
     Writable_Journal &journal,
-    Connection &connection,
+    Connection &connection = Connection::dummy,
     Content_Check content_check = Content_Check::fast
    ): Client(journal, connection, content_check)
    {
@@ -242,7 +242,7 @@ namespace joedb
    {
     if (locked)
     {
-     Destructor_Logger::write("locked in destructor, cancelling transaction");
+     Destructor_Logger::warning("Client_Lock: locked, cancelling transaction");
      try { unlock(); } catch (...) {}
     }
    }

@@ -10,8 +10,12 @@ message("== CMAKE_TOOLCHAIN_FILE = ${CMAKE_TOOLCHAIN_FILE}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for YouCompleteMe
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if (NOT CMAKE_CXX_STANDARD)
+ message("## CMAKE_CXX_STANDARD not defined, using C++20")
+ set(CMAKE_CXX_STANDARD 20)
+endif()
 
 enable_testing()
 add_test(NAME build_all
@@ -57,6 +61,7 @@ endif()
 # Includes
 #############################################################################
 include_directories(../test/compiler)
+include_directories(../doc/source/tutorial/src)
 
 #############################################################################
 # Build Targets
@@ -173,6 +178,7 @@ if(GTest_FOUND)
   ../test/File_Parser_Test.cpp
   ../test/Writable_Persistence_Test.cpp
   ../test/ui_Test.cpp
+  ../test/Websocket_Test.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
@@ -198,7 +204,9 @@ if(GTest_FOUND)
  target_link_libraries(joedb_test ${GTest_LIBRARIES})
 
  if (asio_FOUND)
-  target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
+  if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+   target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
+  endif()
  endif()
 
  if (CURL_FOUND)
@@ -220,8 +228,26 @@ endif()
 joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 
 if (asio_FOUND)
- joedb_add_executable(joedb_server ../src/joedb/ui/joedb_server.cpp)
- joedb_add_executable(joedb_multi_server ../src/joedb/ui/joedb_multi_server.cpp)
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  message("-- using C++20 coroutines for servers")
+  joedb_add_executable(joedb_server ../src/joedb/ui/joedb_server.cpp)
+  joedb_add_executable(joedb_multi_server ../src/joedb/ui/joedb_multi_server.cpp)
+  joedb_add_executable(tutorial_rpc_client
+   ../doc/source/tutorial/src/rpc_client.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/population/writable.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/city/writable.cpp
+   ../doc/source/tutorial/src/tutorial/writable.cpp
+  )
+
+  joedb_add_executable(tutorial_rpc_server
+   ../doc/source/tutorial/src/rpc_server.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/population/writable.cpp
+   ../doc/source/tutorial/src/tutorial/rpc/city/writable.cpp
+   ../doc/source/tutorial/src/tutorial/writable.cpp
+  )
+ else()
+  message("## no C++20, no coroutines, no servers")
+ endif()
 endif()
 
 joedb_add_executable(atomic_read ../test/atomic_read.cpp)
@@ -454,8 +480,10 @@ install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPON
 install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
 if (asio_FOUND)
- install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
- install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
+  install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)
+ endif()
 endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)

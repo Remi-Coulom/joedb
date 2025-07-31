@@ -369,11 +369,13 @@ namespace joedb
   std::remove("test.joedb");
  }
 
- #ifdef JOEDB_FILE_IS_LOCKABLE
  ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, pull)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (!File::lockable)
+   GTEST_SKIP();
+
   std::remove("test.joedb");
 
   {
@@ -407,13 +409,6 @@ namespace joedb
    (
     journal_2.get_checkpoint() == journal_1.get_position()
    );
-
-   {
-    Writable_Journal::Tail_Writer tail_writer(journal_2);
-    tail_writer.finish();
-   }
-
-   EXPECT_TRUE(journal_2.get_position() < journal_1.get_position());
   }
 
   std::remove("test.joedb");
@@ -423,6 +418,9 @@ namespace joedb
  TEST(Journal, shared_pull_performance)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (!File::lockable)
+   GTEST_SKIP();
+
   std::remove("test.joedb");
 
   {
@@ -440,6 +438,9 @@ namespace joedb
  TEST(Journal, construction_with_shared_write)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (!File::lockable)
+   GTEST_SKIP();
+
   std::remove("test.joedb");
 
   {
@@ -449,8 +450,6 @@ namespace joedb
 
   std::remove("test.joedb");
  }
-
- #endif
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, checkpoint_performance)

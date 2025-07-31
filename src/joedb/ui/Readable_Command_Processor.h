@@ -36,6 +36,15 @@ namespace joedb
   public:
    static Table_Id parse_table(std::istream &in, const Readable &readable);
 
+   void print_table
+   (
+    std::ostream &out,
+    Table_Id table_id,
+    size_t max_column_width = 0,
+    Record_Id start = Record_Id::null,
+    size_t length = 0
+   );
+
    Readable_Command_Processor(const Readable &readable): readable(readable)
    {
    }

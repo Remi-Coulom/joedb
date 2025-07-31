@@ -45,6 +45,7 @@ namespace joedb
    void pwrite(const char* data, size_t size, int64_t offset) override;
 
    void sync() override;
+   void touch() override;
 
    void shared_lock(int64_t start, int64_t size) override;
    void exclusive_lock(int64_t start, int64_t size) override;

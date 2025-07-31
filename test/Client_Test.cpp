@@ -3,6 +3,7 @@
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/File_View.h"
 
 #include "Shared_Memory_File.h"
 
@@ -53,11 +54,9 @@ namespace joedb
   Shared_Memory_File file2(data);
   Shared_Memory_File file3(data);
 
-  Connection connection;
-
-  Writable_Database_Client writable_client(file1, connection);
-  Readonly_Database_Client database_client(file2, connection);
-  Readonly_Client journal_client(file3, connection);
+  Writable_Database_Client writable_client(file1);
+  Readonly_Database_Client database_client(file2);
+  Readonly_Client journal_client(file3);
 
   writable_client.transaction([](const Readable &readable, Writable &writable)
   {
@@ -134,7 +133,7 @@ namespace joedb
    }
    catch (const Exception &e)
    {
-    EXPECT_STREQ(e.what(), "locking journal with uncheckpointed data");
+    EXPECT_STREQ(e.what(), "locking journal with uncheckpointed data (try rollback?)");
    }
 
    EXPECT_ANY_THROW(client1.pull());
@@ -462,5 +461,46 @@ namespace joedb
 
   EXPECT_EQ(server_file.get_size(), after_city);
   EXPECT_EQ(server_checkpoint, after_city);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Client, pull_from_memory)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (int shared = 2; --shared >= 0;)
+  {
+   Memory_File file
+   (
+    shared
+    ? joedb::Open_Mode::shared_write
+    : joedb::Open_Mode::create_new
+   );
+   Writable_Database_Client client(file);
+   client.transaction([](Readable &readable, Writable &writable)
+   {
+    writable.create_table("person");
+   });
+
+   EXPECT_EQ(client.get_database().get_tables().size(), 1);
+
+   {
+    File_View file_view(file);
+    Writable_Database_Client client2(file_view);
+    client2.transaction([](Readable &readable, Writable &writable)
+    {
+     writable.create_table("city");
+    });
+    EXPECT_EQ(client2.get_database().get_tables().size(), 2);
+   }
+
+   EXPECT_EQ(client.get_database().get_tables().size(), 1);
+
+   client.pull();
+
+   if (shared)
+    EXPECT_EQ(client.get_database().get_tables().size(), 2);
+   else
+    EXPECT_EQ(client.get_database().get_tables().size(), 1);
+  }
  }
 }

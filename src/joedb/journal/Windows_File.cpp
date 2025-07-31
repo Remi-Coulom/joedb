@@ -140,7 +140,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (!lock(Lock_Operation::shared_lock, start, size))
-   throw_last_error("Read-locking", "file");
+   throw_last_error("read-locking", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (!lock(Lock_Operation::exclusive_lock, start, size))
-   throw_last_error("Write-locking", "file");
+   throw_last_error("write-locking", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ namespace joedb
    if (GetLastError() == ERROR_HANDLE_EOF)
     return 0;
    else
-    throw_last_error("Reading", "file");
+    throw_last_error("reading", "file");
   }
 
   return 0;
@@ -210,7 +210,7 @@ namespace joedb
     )
    )
    {
-    throw_last_error("Writing", "file");
+    throw_last_error("writing", "file");
    }
 
    written += actually_written;
@@ -223,6 +223,20 @@ namespace joedb
  {
   if (FlushFileBuffers(file) == 0)
    throw_last_error("syncing", "file");
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Windows_Handle::touch()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  SYSTEMTIME st;
+  GetSystemTime(&st);
+
+  FILETIME ft;
+  SystemTimeToFileTime(&st, &ft);
+
+  if (!SetFileTime(file, nullptr, &ft, &ft))
+   throw_last_error("touching", "file");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -244,7 +258,7 @@ namespace joedb
   )
  {
   if (file == INVALID_HANDLE_VALUE)
-   throw_last_error("Opening", file_name);
+   throw_last_error("opening", file_name);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -265,7 +279,7 @@ namespace joedb
   if (GetFileSizeEx(file, &result))
    return int64_t(result.QuadPart);
   else
-   throw_last_error("Getting size of", "file");
+   throw_last_error("getting size of", "file");
 
   return -1;
  }

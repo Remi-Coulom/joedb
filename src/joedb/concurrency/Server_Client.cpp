@@ -11,22 +11,22 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Server_Client::ping(Channel_Lock &lock)
+ void Server_Client::ping(Lock<Channel&> &lock)
  ////////////////////////////////////////////////////////////////////////////
  {
   buffer.index = 0;
   buffer.write<char>('D');
   buffer.write<int64_t>(0);
   buffer.write<int64_t>(0);
-  lock.write(buffer.data, buffer.index);
-  lock.read(buffer.data, 9);
+  lock->write(buffer.data, buffer.index);
+  lock->read(buffer.data, 9);
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Server_Client::ping()
  ////////////////////////////////////////////////////////////////////////////
  {
-  Channel_Lock lock(channel);
+  Lock<Channel&> lock(channel);
   ping(lock);
  }
 
@@ -36,7 +36,7 @@ namespace joedb
  {
   try
   {
-   Channel_Lock lock(channel);
+   Lock<Channel&> lock(channel);
 
    while (!keep_alive_thread_must_stop)
    {
@@ -64,9 +64,9 @@ namespace joedb
   buffer.write<int64_t>(protocol_version);
 
   {
-   Channel_Lock lock(channel);
-   lock.write(buffer.data, buffer.index);
-   lock.read(buffer.data, 5 + 8 + 8 + 8 + 1);
+   Lock<Channel&> lock(channel);
+   lock->write(buffer.data, buffer.index);
+   lock->read(buffer.data, 5 + 8 + 8 + 8 + 1);
   }
 
   buffer.index = 0;
@@ -115,7 +115,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Async_Writer &writer,
-  Channel_Lock &lock,
+  Lock<Channel&> &lock,
   int64_t size
  ) const
  {
@@ -126,7 +126,7 @@ namespace joedb
   {
    const int64_t remaining = size - read;
    const size_t read_size = size_t(std::min(int64_t(buffer.size), remaining));
-   const size_t n = lock.read_some(buffer.data, read_size);
+   const size_t n = lock->read_some(buffer.data, read_size);
    writer.write(buffer.data, n);
    read += int64_t(n);
    progress_bar.print(read);
@@ -146,24 +146,36 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Client::disconnect()
+ void Server_Client::disconnect() noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
+  try
   {
-   Channel_Lock lock(channel);
+   Lock<Channel&> lock(channel);
    keep_alive_thread_must_stop = true;
+   buffer.data[0] = 'Q';
+   lock->write(buffer.data, 1);
+  }
+  catch (...)
+  {
   }
 
-  condition.notify_one();
-  if (keep_alive_thread.joinable())
-   keep_alive_thread.join();
+  try
+  {
+   condition.notify_one();
+   if (keep_alive_thread.joinable())
+    keep_alive_thread.join();
+  }
+  catch (...)
+  {
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
  Server_Client::~Server_Client()
  ////////////////////////////////////////////////////////////////////////////
  {
-  try { disconnect(); } catch (...) {}
+  disconnect();
  }
 }
 

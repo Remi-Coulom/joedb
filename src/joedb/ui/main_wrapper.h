@@ -5,7 +5,6 @@
 
 namespace joedb
 {
- /// @ingroup ui
  int main_wrapper(int (*main)(Arguments &), int argc, char **argv);
 }
 

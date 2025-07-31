@@ -1,0 +1,20 @@
+# "city" is the name of a table in the main schema.
+# joedbc will generate code so that id_of_city is the same type for both, ie:
+# using id_of_city = tutorial::id_of_city;
+# instead of definining a new different population::id_of_city type.
+# This allows easily referring to the main schema from procedure schemas.
+create_table city
+
+# This is the table for exchaning data between the client and the server.
+# It will be used both for input and output.
+# The client will fill input fields and push these changes to the server,
+# then the server will push output fields to the client.
+# A procedure can use any arbitrarily complex schema: multiple tables, etc.
+create_table data
+
+# input
+add_field data city_name string
+
+# output
+add_field data city references city
+add_field data population int64

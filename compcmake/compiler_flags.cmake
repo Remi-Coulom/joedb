@@ -28,7 +28,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
 
- set(CMAKE_CXX_FLAGS_ASAN "-g -fsanitize=address -O1 -D_GLIBCXX_DEBUG")
+ set(CMAKE_CXX_FLAGS_ASAN "-g -fsanitize=address -Wno-maybe-uninitialized -O1 -D_GLIBCXX_DEBUG")
  set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN}")
 
  set(CMAKE_CXX_FLAGS_TSAN "-g -fsanitize=thread -O2")

@@ -32,15 +32,13 @@ namespace joedb
   }
 
   {
-   joedb::Connection connection;
-   settings::Client client(file, connection);
+   settings::Client client(file);
    EXPECT_EQ(client.get_database().get_host(), "new.host.com");
   }
 
   {
    joedb::Memory_File new_file;
-   joedb::Connection connection;
-   settings::Client client(new_file, connection);
+   settings::Client client(new_file);
    EXPECT_EQ(client.get_database().get_host(), "www.kayufu.com");
   }
  }

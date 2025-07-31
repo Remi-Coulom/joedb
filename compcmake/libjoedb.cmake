@@ -25,6 +25,8 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Client.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_Connection.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/concurrency/Websocket_Channel.cpp
+ ${JOEDB_SRC_DIR}/joedb/rpc/get_hash.cpp
 )
 
 set(JOEDB_DATABASES
@@ -61,12 +63,17 @@ endif()
 
 if (asio_FOUND)
  set(JOEDB_SOURCES
-  ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
-  ${JOEDB_SRC_DIR}/joedb/concurrency/IO_Context_Wrapper.cpp
+  ${JOEDB_SRC_DIR}/joedb/asio/io_context.cpp
   ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}
  )
- add_definitions(-DJOEDB_HAS_NETWORKING)
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set(JOEDB_SOURCES
+   ${JOEDB_SRC_DIR}/joedb/asio/Server.cpp
+   ${JOEDB_SRC_DIR}/joedb/concurrency/Server.cpp
+   ${JOEDB_SOURCES}
+  )
+ endif()
 endif()
 
 add_library(joedb_databases OBJECT ${JOEDB_DATABASES})

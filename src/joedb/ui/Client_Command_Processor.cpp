@@ -39,7 +39,11 @@ namespace joedb
     out << "(push to sync)";
   }
   else
+  {
    out << ')';
+   if (client.get_journal().get_position() > journal_checkpoint)
+    out << '*';
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

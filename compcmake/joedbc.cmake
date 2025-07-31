@@ -80,6 +80,7 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_cpp.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Memory_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Interpreted_File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Interpreted_File_Database_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Multiplexer_h.cpp
@@ -87,9 +88,14 @@ add_library(joedbc_objects OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Client_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Client_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedure_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedures_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Signatures_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/RPC_Client_h.cpp
 
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/print_table_h.cpp
 )
 target_link_libraries(joedbc_objects ${JOEDB_EXTERNAL_LIBS})
 
@@ -109,26 +115,50 @@ add_custom_target(all_joedbc)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function(joedbc_build_absolute dir namespace)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ file(GLOB joedbis CONFIGURE_DEPENDS
+  ${dir}/${namespace}.joedbi
+  ${dir}/${namespace}.rpc/*.joedbi
+ )
+
+ file(GLOB joedbcs CONFIGURE_DEPENDS
+  ${dir}/${namespace}.joedbc
+  ${dir}/${namespace}.rpc/*.joedbc
+ )
+
+ file(GLOB Service_h CONFIGURE_DEPENDS
+  ${dir}/${namespace}.rpc/Service.h
+ )
+
+ set(slash_list ${joedbis})
+ set(slash_Service ${Service_h})
+
+ list(TRANSFORM slash_list REPLACE
+  "${namespace}\.rpc"
+  "${namespace}/rpc"
+ )
+
+ list(TRANSFORM slash_Service REPLACE
+  "${namespace}\.rpc"
+  "${namespace}/rpc"
+ )
+
+ set(readonly_cpp ${slash_list})
+ set(writable_cpp ${slash_list})
+
+ list(TRANSFORM readonly_cpp REPLACE "\\.joedbi$" "/readonly.cpp")
+ list(TRANSFORM writable_cpp REPLACE "\\.joedbi$" "/writable.cpp")
+
  add_custom_command(
-  OUTPUT
-   ${dir}/${namespace}/readonly.cpp
-   ${dir}/${namespace}/readonly.h
-   ${dir}/${namespace}/writable.cpp
-   ${dir}/${namespace}/writable.h
-  COMMAND joedbc ${namespace}.joedbi ${namespace}.joedbc
-  DEPENDS
-   joedbc
-   ${dir}/${namespace}.joedbi
-   ${dir}/${namespace}.joedbc
+  OUTPUT ${readonly_cpp} ${writable_cpp} ${dir}/${namespace}/Database.h ${slash_Service}
+  COMMAND joedbc ${namespace}
+  DEPENDS joedbc ${joedbis} ${joedbcs} ${Service_h}
   WORKING_DIRECTORY ${dir}
  )
+
  add_custom_target(compile_${namespace}_with_joedbc
-  DEPENDS
-   ${dir}/${namespace}/readonly.cpp
-   ${dir}/${namespace}/readonly.h
-   ${dir}/${namespace}/writable.cpp
-   ${dir}/${namespace}/writable.h
+  DEPENDS ${readonly_cpp} ${readonly_h} ${writable_cpp} ${writable_h}
  )
+
  add_dependencies(all_joedbc compile_${namespace}_with_joedbc)
 endfunction()
 

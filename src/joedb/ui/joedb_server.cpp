@@ -1,9 +1,9 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/concurrency/IO_Context_Wrapper.h"
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Arguments.h"
+#include "joedb/error/Stream_Logger.h"
 
 #include <iostream>
 #include <cstring>
@@ -26,6 +26,8 @@ namespace joedb
    }
   }
 
+  const int log_level = arguments.get_option<int>("log_level", "level", 100);
+
   const std::string_view endpoint_path = arguments.get_string_option
   (
    "socket",
@@ -42,7 +44,12 @@ namespace joedb
 
   const Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new;
 
-  Client_Parser client_parser(default_open_mode, Client_Parser::DB_Type::none, arguments);
+  Client_Parser client_parser
+  (
+   default_open_mode,
+   Client_Parser::DB_Type::none,
+   arguments
+  );
 
   if (!client_parser.get())
   {
@@ -53,21 +60,24 @@ namespace joedb
 
   Client &client = *client_parser.get();
 
-  IO_Context_Wrapper io_context_wrapper;
-
   std::cout << "Creating server (endpoint_path = " << endpoint_path;
   std::cout << "; timeout = " << timeout_seconds << ")\n";
 
+  Stream_Logger logger(std::cerr);
+
+  const int thread_count = 1;
+
   Server server
   (
-   client,
-   io_context_wrapper.io_context,
+   logger,
+   log_level,
+   thread_count,
    std::string(endpoint_path),
-   std::chrono::milliseconds(int(timeout_seconds * 1000)),
-   &std::cerr
+   client,
+   std::chrono::milliseconds(int(timeout_seconds * 1000))
   );
 
-  io_context_wrapper.run();
+  server.join();
 
   return 0;
  }

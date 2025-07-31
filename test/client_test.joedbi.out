@@ -25,15 +25,15 @@ Writable Client
 
 OK: help
 [36mwritable_client(41)> [0m[36mwritable_client(41)/transaction> [0mOK:  create_table person
-[36mwritable_client(41)/transaction> [0mOK:  add_field person name string
-[36mwritable_client(41)/transaction> [0mOK:  insert_into person 1
-[36mwritable_client(41)/transaction> [0mOK:  update person 1 name "Joe"
-[36mwritable_client(41)/transaction> [0m-------
+[36mwritable_client(41)*/transaction> [0mOK:  add_field person name string
+[36mwritable_client(41)*/transaction> [0mOK:  insert_into person 1
+[36mwritable_client(41)*/transaction> [0mOK:  update person 1 name "Joe"
+[36mwritable_client(41)*/transaction> [0m-------
   name 
 -------
 1 "Joe"
 OK:  table person
-[36mwritable_client(41)/transaction> [0mOK: quit
+[36mwritable_client(41)*/transaction> [0mOK: quit
 OK: transaction
 [36mwritable_client(66)> [0mOK: push
 [36mwritable_client(66)> [0mOK: pull
