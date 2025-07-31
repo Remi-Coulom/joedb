@@ -1,11 +1,6 @@
 History
 =======
 
-- 2025-06-13 10.0.1 LTS Minor Bug Fixes
-
-  - joedbc prints an error message instead of crashing when no namespace is provided.
-  - Silence irrelevant "Ahead of checkpoint" warning when writing to an Interpreted_File.
-
 - 2025-05-26 10.0.0 LTS
 
   This a long-term support release: it will be updated with bug fixes, without
