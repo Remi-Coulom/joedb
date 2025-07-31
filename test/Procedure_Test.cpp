@@ -65,4 +65,28 @@ namespace joedb
 
   server.stop();
  }
+
+ TEST(Procedure, exception)
+ {
+  Test_Procedure_Server server;
+  Local_Channel channel(endpoint_path);
+  tutorial::rpc::Client rpc_client(channel);
+
+  {
+   tutorial::rpc::city::Memory_Database city;
+   city.set_name("Paris");
+   rpc_client.insert_city(city);
+   try
+   {
+    rpc_client.insert_city(city);
+    FAIL() << "This should have thrown";
+   }
+   catch (joedb::Exception &e)
+   {
+    EXPECT_EQ(e.what(), std::string("city already exists"));
+   }
+  }
+
+  server.stop();
+ }
 }
