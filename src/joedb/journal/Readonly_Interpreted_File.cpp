@@ -11,8 +11,7 @@ namespace joedb
   std::istream &stream,
   bool readonly
  ):
-  file_view(*this),
-  journal(file_view)
+  journal(*this)
  {
   if (!stream)
    throw Exception("opening interpreted file: !stream");

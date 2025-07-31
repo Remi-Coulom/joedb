@@ -133,7 +133,6 @@ namespace joedb
 
    bool is_shared() const noexcept {return mode == Open_Mode::shared_write;}
    bool is_readonly() const noexcept {return mode == Open_Mode::read_existing;}
-   Open_Mode get_mode() const noexcept {return mode;}
 
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
