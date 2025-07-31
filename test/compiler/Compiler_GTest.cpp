@@ -884,7 +884,8 @@ TEST(Compiler, vector)
  // Vector of strings with a unique index
  //
  {
-  vector_test::Memory_Database db;
+  joedb::Memory_File file;
+  vector_test::Writable_Database db(file);
 
   {
    constexpr int n = 3;
@@ -897,10 +898,13 @@ TEST(Compiler, vector)
    });
   }
 
+  db.soft_checkpoint();
+
   {
-   auto remi = db.find_person_by_name("Rémi");
+   vector_test::Readonly_Database rdb(file);
+   const auto remi = rdb.find_person_by_name("Rémi");
    if (remi.is_not_null())
-    EXPECT_EQ(db.get_name(remi), "Rémi");
+    EXPECT_EQ(rdb.get_name(remi), "Rémi");
    else
     ADD_FAILURE() << "Rémi not found";
   }

@@ -193,4 +193,36 @@ namespace joedb
   fk.free(Record_Id{4});
   EXPECT_FALSE(fk.is_dense());
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Freedom_Keeper, vector_functions)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  {
+   Freedom_Keeper fk;
+   EXPECT_TRUE(fk.is_free_vector(Record_Id{0}, 3));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{0}, 3));
+   fk.resize(3);
+   fk.use(Record_Id{1});
+   EXPECT_FALSE(fk.is_free_vector(Record_Id{0}, 3));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{0}, 3));
+
+   EXPECT_EQ(fk.get_free_record(), Record_Id{2});
+   fk.use(Record_Id{2});
+   EXPECT_EQ(fk.get_free_record(), Record_Id{0});
+   fk.use(Record_Id{0});
+   EXPECT_EQ(fk.get_free_record(), Record_Id{3});
+
+   EXPECT_FALSE(fk.is_free_vector(Record_Id{0}, 3));
+   EXPECT_TRUE(fk.is_used_vector(Record_Id{0}, 3));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{0}, 4));
+  }
+
+  {
+   Freedom_Keeper fk;
+   fk.use(fk.push_back());
+   EXPECT_TRUE(fk.is_used_vector(Record_Id{0}, 1));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{0}, 2));
+  }
+ }
 }

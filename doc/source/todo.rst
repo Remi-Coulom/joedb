@@ -13,7 +13,6 @@ Notifications
 
 Stored Procedures
 -----------------
- - unit tests
  - ping thread
  - logcat-like logger class with specializations: cerr, logcat, joedb
  - allow keeping a database for duration of a session: if "session.joedbi" exists,
