@@ -1,6 +1,10 @@
 History
 =======
 
+- 2025-08-12 10.0.3 LTS Fix joedb_push --until <checkpoint>
+
+  The until checkpoint parameter of joedb_push was ignored.
+
 - 2025-07-28 10.0.2 LTS Set libssh timeout
 
   By default, libssh does not use a timeout, which can cause infinite waiting
