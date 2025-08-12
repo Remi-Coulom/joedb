@@ -8,4 +8,5 @@ oprofile_data
 perf.data
 perf.data.old
 .vscode
+.vs
 joedb_*.tar.gz
