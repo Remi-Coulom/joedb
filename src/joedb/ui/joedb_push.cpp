@@ -54,9 +54,11 @@ namespace joedb
    )
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    client.push_if_ahead();
+    readonly_client->push_if_ahead(until_checkpoint);
    }
   }
+  else
+   readonly_client->push_if_ahead(until_checkpoint);
 
   return 0;
  }
