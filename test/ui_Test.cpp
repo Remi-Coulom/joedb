@@ -70,47 +70,49 @@ namespace joedb
    "connection_file.joedbi"
   };
 
-  Arguments arguments(args.size(), args.data());
+  {
+   Arguments arguments(args.size(), args.data());
 
-  const Open_Mode default_mode = File::lockable
-   ? Open_Mode::shared_write
-   : Open_Mode::write_existing_or_create_new;
+   const Open_Mode default_mode = File::lockable
+    ? Open_Mode::shared_write
+    : Open_Mode::write_existing_or_create_new;
 
-  Client_Parser parser
-  (
-   default_mode,
-   Client_Parser::DB_Type::none,
-   arguments
-  );
+   Client_Parser parser
+   (
+    default_mode,
+    Client_Parser::DB_Type::none,
+    arguments
+   );
 
-  ASSERT_TRUE(parser.has_file());
+   ASSERT_TRUE(parser.has_file());
 
-  auto *writable_client = dynamic_cast<Writable_Client *>(parser.get());
-  ASSERT_TRUE(writable_client);
-  Writable_Client_Command_Processor processor(*writable_client);
+   auto *writable_client = dynamic_cast<Writable_Client *>(parser.get());
+   ASSERT_TRUE(writable_client);
+   Writable_Client_Command_Processor processor(*writable_client);
 
-  std::ostringstream out;
-  std::ifstream in("file_client_test.joedbi");
+   std::ostringstream out;
+   std::ifstream in("file_client_test.joedbi");
 
-  processor.set_prompt(true);
-  processor.main_loop(in, out);
+   processor.set_prompt(true);
+   processor.main_loop(in, out);
 
-  std::ifstream file_connection(args[7]);
-  ASSERT_TRUE(file_connection);
-  std::ostringstream file_connection_string;
-  file_connection_string << file_connection.rdbuf();
+   std::ifstream file_connection(args[7]);
+   ASSERT_TRUE(file_connection);
+   std::ostringstream file_connection_string;
+   file_connection_string << file_connection.rdbuf();
 
-  ASSERT_EQ
-  (
-   file_connection_string.str(),
-   "create_table person\n"
-   "add_field person name string\n"
-   "insert_into person 0\n"
-   "update person 0 name \"toto\"\n"
-   "insert_into person 1\n"
-   "update person 1 name \"titi\"\n"
-   "\n"
-  );
+   ASSERT_EQ
+   (
+    file_connection_string.str(),
+    "create_table person\n"
+    "add_field person name string\n"
+    "insert_into person 0\n"
+    "update person 0 name \"toto\"\n"
+    "insert_into person 1\n"
+    "update person 1 name \"titi\"\n"
+    "\n"
+   );
+  }
 
   std::remove(args[4]);
   std::remove(args[7]);
