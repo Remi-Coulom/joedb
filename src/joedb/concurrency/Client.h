@@ -16,17 +16,22 @@ namespace joedb
    Connection &connection;
    int64_t connection_checkpoint;
 
-   int64_t push(Unlock_Action unlock_action)
+   int64_t push(int64_t until, Unlock_Action unlock_action)
    {
     connection_checkpoint = connection.push
     (
      journal,
      connection_checkpoint,
-     journal.get_checkpoint(),
+     until,
      unlock_action
     );
 
     return connection_checkpoint;
+   }
+
+   int64_t push(Unlock_Action unlock_action)
+   {
+    return push(journal.get_checkpoint(), unlock_action);
    }
 
   public:

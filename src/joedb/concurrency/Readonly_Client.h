@@ -25,7 +25,6 @@ namespace joedb
     Readonly_Journal(Journal_Construction_Lock(file, recovery)),
     Client(*this, connection, content_check)
    {
-    Client::push(Unlock_Action::keep_locked);
     read_journal();
    }
 
@@ -40,13 +39,18 @@ namespace joedb
     return result;
    }
 
-   int64_t push_if_ahead() override
+   int64_t push_if_ahead(int64_t until)
    {
     pull();
     if (Readonly_Journal::get_checkpoint() > get_connection_checkpoint())
-     return Client::push(Unlock_Action::keep_locked);
+     return Client::push(until, Unlock_Action::keep_locked);
     else
      return get_connection_checkpoint();
+   }
+
+   int64_t push_if_ahead() override
+   {
+    return push_if_ahead(Readonly_Journal::get_checkpoint());
    }
 
    ~Readonly_Client() override
