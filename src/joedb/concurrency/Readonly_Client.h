@@ -39,18 +39,13 @@ namespace joedb
     return result;
    }
 
-   int64_t push_if_ahead(int64_t until)
+   int64_t push_if_ahead(int64_t until) override
    {
     pull();
     if (Readonly_Journal::get_checkpoint() > get_connection_checkpoint())
      return Client::push(until, Unlock_Action::keep_locked);
     else
      return get_connection_checkpoint();
-   }
-
-   int64_t push_if_ahead() override
-   {
-    return push_if_ahead(Readonly_Journal::get_checkpoint());
    }
 
    ~Readonly_Client() override

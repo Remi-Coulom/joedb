@@ -1,7 +1,6 @@
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Arguments.h"
-#include "joedb/concurrency/Readonly_Client.h"
 #include "joedb/Signal.h"
 
 #include <iostream>
@@ -40,8 +39,7 @@ namespace joedb
   }
 
   Client &client = *client_parser.get();
-  Readonly_Client *readonly_client = dynamic_cast<Readonly_Client*>(&client);
-  JOEDB_RELEASE_ASSERT(readonly_client);
+  client.push_if_ahead(until_checkpoint);
 
   if (follow)
   {
@@ -54,11 +52,9 @@ namespace joedb
    )
    {
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    readonly_client->push_if_ahead(until_checkpoint);
+    client.push_if_ahead(until_checkpoint);
    }
   }
-  else
-   readonly_client->push_if_ahead(until_checkpoint);
 
   return 0;
  }
