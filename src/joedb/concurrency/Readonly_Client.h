@@ -25,6 +25,7 @@ namespace joedb
     Readonly_Journal(Journal_Construction_Lock(file, recovery)),
     Client(*this, connection, content_check)
    {
+    Client::push(get_connection_checkpoint(), Unlock_Action::keep_locked);
     read_journal();
    }
 
