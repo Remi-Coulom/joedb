@@ -122,6 +122,9 @@ Performance
 - Memory-mapped specialization of Abstract_File using llfio
 - use async_write_some and async_read_some during pull and push
 - FILE_FLAG_SEQUENTIAL_SCAN or explicit asynchronous prefetch: https://devblogs.microsoft.com/oldnewthing/20221130-00/?p=107505
+- Remove one useless round-trip in the constructor of Readonly_Client (empty
+  push_and_keep_locked). This operation could be fused with hash checking. Also
+  fail if the connection is ahead of the file.
 
 joedb_admin
 -----------

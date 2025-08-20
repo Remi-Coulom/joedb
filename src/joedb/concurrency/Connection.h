@@ -50,7 +50,7 @@ namespace joedb
    /// Called by @ref handshake when the file and the connection do not match
    static void content_mismatch();
 
-   // Connection() = default; // Force using Connection::dummy
+   Connection() = default; // Force using Connection::dummy
 
   public:
    /// Called during Client construction
@@ -102,6 +102,7 @@ namespace joedb
 
    /// Since this class has no internal state, this global variable
    /// can be used instead of creating an instance.
+   /// The default constructor is protected to force using it.
    static Connection dummy;
  };
 }
