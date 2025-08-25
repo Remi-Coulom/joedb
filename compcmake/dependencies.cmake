@@ -22,19 +22,31 @@ if (Boost_FOUND)
  message("-- boost found")
  add_definitions(-DJOEDB_HAS_BOOST)
 
- find_path(
-  CERTIFY_INCLUDES boost/certify/https_verification.hpp
-  HINTS ${CMAKE_CURRENT_LIST_DIR}/../../certify/include
- )
- if (CERTIFY_INCLUDES)
-  message("-- certify found: ${CERTIFY_INCLUDES}")
-  add_definitions(-DJOEDB_HAS_WEBSOCKETS)
-  include_directories(${CERTIFY_INCLUDES})
+ find_package(OpenSSL)
+ if (OpenSSL_FOUND)
+  find_path(
+   CERTIFY_INCLUDES boost/certify/https_verification.hpp
+   HINTS ${CMAKE_CURRENT_LIST_DIR}/../../certify/include
+  )
+  if (CERTIFY_INCLUDES)
+   message("-- certify found: ${CERTIFY_INCLUDES}")
+   add_definitions(-DJOEDB_HAS_WEBSOCKETS)
+   include_directories(${CERTIFY_INCLUDES})
+   list(APPEND JOEDB_EXTERNAL_LIBS OpenSSL::SSL OpenSSL::Crypto)
+   if(MSVC)
+    list(APPEND JOEDB_EXTERNAL_LIBS Crypt32.lib)
+   endif()
+   if(APPLE)
+    list(APPEND JOEDB_EXTERNAL_LIBS "-framework CoreFoundation" "-framework Security")
+   endif()
+  else()
+   message("## boost::certify not found, disabling websockets")
+   message("## Fix: next to joedb, git clone https://github.com/djarek/certify.git")
+  endif()
+  include_directories(${Boost_INCLUDE_DIRS} ../../certify/include)
  else()
-  message("## boost::certify not found, disabling websockets")
-  message("## Fix: next to joedb, git clone https://github.com/djarek/certify.git")
+  message("## OpenSSL not found, no web socket")
  endif()
- include_directories(${Boost_INCLUDE_DIRS} ../../certify/include)
 
  find_path(ASIO_INCLUDES boost/asio.hpp)
  if (ASIO_INCLUDES)
