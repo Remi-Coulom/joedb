@@ -104,7 +104,7 @@ ipo_add_executable(joedb_convert
 
 if(GTest_FOUND)
 
- set(GTest_LIBRARIES GTest::gtest GTest::gtest_main)
+ set(GTest_LIBRARIES GTest::gtest_main)
 
  add_executable(joedb_file_test
   ../test/Test_Main.cpp
