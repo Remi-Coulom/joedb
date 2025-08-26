@@ -45,7 +45,7 @@ namespace joedb
    Type(Type_Id type_id): type_id(type_id), table_id{0} {}
 
    #define TYPE_MACRO(type, return_type, type_id, read, write)\
-   static Type type_id() {return Type(Type_Id::type_id);};
+   static Type type_id() {return Type(Type_Id::type_id);}
    #define TYPE_MACRO_NO_REFERENCE
    #include "joedb/TYPE_MACRO.h"
 
