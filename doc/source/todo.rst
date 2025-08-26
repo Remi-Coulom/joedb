@@ -1,6 +1,10 @@
 TODO
 ====
 
+ - Robust_Connection incident: network disconnected after sending the data,
+   correctly checkpointed on the server, but client tries to push again, and it
+   fails as a conflict. Must find a solution.
+
 Notifications
 -------------
  - Create a "Compiled_Writable" with virtual functions such as "delete_from_city, ..."
