@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+if [ "$1" == "" ]; then
+ echo "Usage: $0 <file.joedb>"
+ exit 1
+fi
+
+cat <(joedb_push --db sql "$1" 2>/dev/null) - | sqlite3
