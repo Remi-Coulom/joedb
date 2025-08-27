@@ -84,7 +84,13 @@ namespace joedb
     return get_journal_checkpoint() - connection_checkpoint;
    }
 
-   virtual int64_t push_if_ahead() = 0;
+   virtual int64_t push_if_ahead(int64_t until) = 0;
+
+   int64_t push_if_ahead()
+   {
+    return push_if_ahead(journal.get_checkpoint());
+   }
+
    virtual int64_t pull
    (
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)

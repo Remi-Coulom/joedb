@@ -6,7 +6,7 @@ namespace joedb
  void Server_File::write_to_body_error()
  ////////////////////////////////////////////////////////////////////////////
  {
-  throw Exception("Cannot write to Server_File body");
+  throw Disconnection("Cannot write to Server_File body");
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ namespace joedb
  )
  {
   if (tail.get_size() > 0)
-   throw Exception("Server_File: pulling with non-empty tail");
+   throw Disconnection("Server_File: pulling with non-empty tail");
 
   Robust_Connection::pull
   (
@@ -67,7 +67,7 @@ namespace joedb
  )
  {
   if (&client_journal.get_file() != this)
-   throw Exception("Server_File: wrong file");
+   throw Disconnection("Server_File: wrong file");
   return connection->server_checkpoint;
  }
 
@@ -95,7 +95,7 @@ namespace joedb
    tail.resize(0);
   }
   else
-   throw Exception("Server_File could not truncate tail after push");
+   throw Disconnection("Server_File could not truncate tail after push");
 
   return connection->server_checkpoint;
  }

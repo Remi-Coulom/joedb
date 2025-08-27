@@ -3,6 +3,7 @@
 
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/concurrency/Connector.h"
+#include "joedb/error/Disconnection.h"
 
 #include <ostream>
 
@@ -42,7 +43,11 @@ namespace joedb
      {
       return f();
      }
-     catch (const std::exception &e)
+     catch (const Disconnection &e)
+     {
+      throw;
+     }
+     catch (std::exception &e)
      {
       reconnect(&e);
      }

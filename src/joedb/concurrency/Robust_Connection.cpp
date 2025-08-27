@@ -27,6 +27,10 @@ namespace joedb
      connection->handshake(*handshake_journal, handshake_content_check);
     return;
    }
+   catch (const Disconnection &disconnection_exception)
+   {
+    throw;
+   }
    catch (std::exception &reconnect_exception)
    {
     log_exception(&reconnect_exception);

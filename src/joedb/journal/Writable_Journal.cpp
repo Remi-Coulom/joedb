@@ -83,10 +83,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (checkpoint_position >= position)
-  {
-   file.touch();
    return;
-  }
 
   file.flush();
 

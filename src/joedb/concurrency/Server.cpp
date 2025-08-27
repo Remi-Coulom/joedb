@@ -3,7 +3,7 @@
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/journal/File_Hasher.h"
 
-#include <boost/asio/as_tuple.hpp>
+#include <boost/asio/redirect_error.hpp>
 #include <boost/asio/use_awaitable.hpp>
 
 #include <cstdio>
@@ -84,10 +84,13 @@ namespace joedb
     timer.expires_after(boost::asio::steady_timer::duration::max());
 
     get_server().lock_waiters.emplace_back(this);
-    co_await timer.async_wait
-    (
-     boost::asio::as_tuple(boost::asio::use_awaitable)
-    );
+    {
+     boost::system::error_code ec;
+     co_await timer.async_wait
+     (
+      boost::asio::redirect_error(boost::asio::use_awaitable, ec)
+     );
+    }
     get_server().lock_waiters.pop_front();
 
     if (get_server().log_level > 2)
@@ -332,10 +335,13 @@ namespace joedb
    timer.expires_after(wait);
 
    get_server().pull_waiters.emplace_back(this);
-   co_await timer.async_wait
-   (
-    boost::asio::as_tuple(boost::asio::use_awaitable)
-   );
+   {
+    boost::system::error_code ec;
+    co_await timer.async_wait
+    (
+     boost::asio::redirect_error(boost::asio::use_awaitable, ec)
+    );
+   }
    remove_from_queue(get_server().pull_waiters);
   }
 

@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/journal/File_Hasher.h"
-#include "joedb/error/Exception.h"
+#include "joedb/error/Disconnection.h"
 #include "joedb/ui/Progress_Bar.h"
 #include "joedb/ui/get_time_string.h"
 
@@ -28,7 +28,7 @@ namespace joedb
   const int64_t until = buffer.read<int64_t>();
 
   if (until < offset || until > offset + int64_t(size))
-   throw Exception("bad pread size from server");
+   throw Disconnection("bad pread size from server");
 
   const size_t returned_size = size_t(until - offset);
 
@@ -109,9 +109,9 @@ namespace joedb
   {
    const char reply = buffer.read<char>();
    if (reply == 'R')
-    throw Exception("pull error: server is pull-only, cannot lock");
+    throw Disconnection("pull error: server is pull-only, cannot lock");
    else if (reply != pull_type)
-    throw Exception("pull error: unexpected server reply");
+    throw Disconnection("pull error: unexpected server reply");
   }
   server_checkpoint = buffer.read<int64_t>();
 
@@ -160,7 +160,7 @@ namespace joedb
    {
     const size_t size = reader.read(buffer.data + offset, buffer.size - offset);
     if (reader.is_end_of_file())
-     throw Exception("push error: unexpected end of file");
+     throw Disconnection("push error: unexpected end of file");
     lock->write(buffer.data, size + offset);
     offset = 0;
     progress_bar.print_remaining(reader.get_remaining());
@@ -170,13 +170,13 @@ namespace joedb
   lock->read(buffer.data, 1);
 
   if (buffer.data[0] == 'R')
-   throw Exception("push error: server is pull-only");
+   throw Disconnection("push error: server is pull-only");
   else if (buffer.data[0] == 'C')
-   throw Exception("push error: conflict");
+   throw Disconnection("push error: conflict");
   else if (buffer.data[0] == 't')
    throw Exception("push error: time out");
   else if (buffer.data[0] != push_type)
-   throw Exception("push error: unexpected reply");
+   throw Disconnection("push error: unexpected reply");
 
   server_checkpoint = until;
 
@@ -199,7 +199,7 @@ namespace joedb
   LOG(buffer.data[0] << '\n');
 
   if (buffer.data[0] != 'M')
-   throw Exception("unlock error: unexpected reply");
+   throw Disconnection("unlock error: unexpected reply");
  }
 }
 

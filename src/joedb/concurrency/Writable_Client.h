@@ -149,13 +149,15 @@ namespace joedb
     return Client::push(Unlock_Action::unlock_after);
    }
 
-   int64_t push_if_ahead() override
+   int64_t push_if_ahead(int64_t until) override
    {
     if (get_journal_checkpoint() > get_connection_checkpoint())
-     return push_unlock();
+     return Client::push(until, Unlock_Action::unlock_after);
     else
      return get_connection_checkpoint();
    }
+
+   using Client::push_if_ahead;
  };
 
  /// Lock object that allows writing to a database managed by a joedb::Client

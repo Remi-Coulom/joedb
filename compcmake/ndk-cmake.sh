@@ -1,9 +1,9 @@
 #!/bin/bash
-NDK=~/android-ndk-r27b
 ABI=arm64-v8a
+#ABI=armeabi-v7a
 MINSDKVERSION=29
 cmake \
-    -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
     -DANDROID_ABI=$ABI \
     -DANDROID_PLATFORM=android-$MINSDKVERSION \
     -DCMAKE_BUILD_TYPE=Release \
@@ -28,6 +28,7 @@ cmake \
 # path to adb:
 # Windows: C:\Users\rcoulom\AppData\Local\Android\Sdk\platform-tools\adb.exe
 # wsl: /mnt/c/Users/rcoulom/AppData/Local/Android/Sdk/platform-tools/adb.exe
+# linux: $ANDROID_HOME/platform-tools/adb
 
 # running a binary on the device:
 

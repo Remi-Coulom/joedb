@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <map>
+#include <optional>
 
 namespace joedb
 {
