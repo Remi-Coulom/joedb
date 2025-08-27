@@ -2,13 +2,14 @@
 #define joedb_Connection_declared
 
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/error/Disconnection.h"
 
 #include <chrono>
 
 namespace joedb
 {
  /// @ingroup concurrency
- class Content_Mismatch: public Exception
+ class Content_Mismatch: public Disconnection
  {
   public:
    Content_Mismatch();

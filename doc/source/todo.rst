@@ -1,9 +1,8 @@
 TODO
 ====
 
- - Robust_Connection incident: network disconnected after sending the data,
-   correctly checkpointed on the server, but client tries to push again, and it
-   fails as a conflict. Must find a solution.
+- remove File_View and Buffered_File. Create a File_Buffer instead. Stored by
+  value in Journal: nicer design, better performance (one less indirection).
 
 Notifications
 -------------

@@ -2,7 +2,7 @@
 
 namespace joedb
 {
- Content_Mismatch::Content_Mismatch(): Exception
+ Content_Mismatch::Content_Mismatch(): Disconnection
  (
   "Content mismatch: the file and the connection have diverged"
  )

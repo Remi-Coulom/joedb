@@ -8,8 +8,11 @@ History
     - websocket support
     - :doc:`rpc`
 
-  - Minor quality-of-life improvements:
+  - Minor improvements:
 
+    - :joedb:`Robust_Connection` does not try to reconnect for every exception.
+      Errors such as writing to a read-only server will not cause a retry,
+      which prevents pointless infinite retry loops.
     - joedbc generates a .gitignore
     - joedbc does not generate irrelevant functions for single-row tables
       (sorting, vector updates)
