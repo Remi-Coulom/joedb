@@ -3,6 +3,7 @@ TODO
 
 - remove File_View and Buffered_File. Create a File_Buffer instead. Stored by
   value in Journal: nicer design, better performance (one less indirection).
+- joedb_client: ssh and sftp should use the same syntax
 
 Notifications
 -------------
