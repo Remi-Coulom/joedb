@@ -1,6 +1,11 @@
 History
 =======
 
+- 2025-08-28 10.0.4 LTS
+
+  - Fix installation on MacOS (set RPATH)
+  - Other minor changes (see git log for details)
+
 - 2025-08-12 10.0.3 LTS Fix joedb_push --until <checkpoint>
 
   The until checkpoint parameter of joedb_push was ignored.

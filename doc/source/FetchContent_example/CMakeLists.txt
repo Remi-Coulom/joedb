@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 project(FetchContent_example)
 
 include(FetchContent)
-FetchContent_Declare(joedb URL https://www.joedb.org/joedb_10.0.3.tar.gz)
+FetchContent_Declare(joedb URL https://www.joedb.org/joedb_10.0.4.tar.gz)
 FetchContent_MakeAvailable(joedb)
 include(${joedb_SOURCE_DIR}/compcmake/joedbc.cmake)
 
