@@ -490,7 +490,7 @@ if (asio_FOUND)
  endif()
 endif()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_sql DESTINATION bin COMPONENT bin)
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_sqlite DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
 install(TARGETS joedb

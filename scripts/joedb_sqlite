@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+ echo "Usage: $0 <file.joedb> <sqlite_option>*"
+ exit 1
+fi
+
+tmp=$(mktemp /tmp/joedb.XXXXXX.sql)
+joedb_push --db sql "$1" >$tmp && sqlite3 -init $tmp -box ${@:2}
+rm $tmp
