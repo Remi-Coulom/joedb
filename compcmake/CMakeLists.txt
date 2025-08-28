@@ -26,6 +26,17 @@ include("${CMAKE_CURRENT_LIST_DIR}/compiler_flags.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 
 #############################################################################
+# MacOS: make installed executables find shared libs in "<prefix>/lib"
+#############################################################################
+if (APPLE)
+ set(CMAKE_MACOSX_RPATH TRUE)
+ set(CMAKE_SKIP_BUILD_RPATH FALSE)
+ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+ set(CMAKE_INSTALL_RPATH "@loader_path/../lib")
+ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
+
+#############################################################################
 # Dependencies
 #############################################################################
 
