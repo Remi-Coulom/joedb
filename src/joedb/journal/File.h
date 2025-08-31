@@ -22,7 +22,7 @@
 
 namespace joedb
 {
- typedef JOEDB_FILE File;
+ using File = JOEDB_FILE;
 }
 
 #endif

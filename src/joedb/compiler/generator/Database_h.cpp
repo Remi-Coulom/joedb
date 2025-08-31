@@ -585,11 +585,11 @@ namespace joedb::generator
    out << "     Record_Id index;\n";
    out << "     iterator(const detail::data_of_" << tname << " &data): fk(&data.freedom_keeper), index(joedb::Freedom_Keeper_Constants::used_list) {}\n";
    out << "    public:\n";
-   out << "     typedef std::forward_iterator_tag iterator_category;\n";
-   out << "     typedef id_of_" << tname << " value_type;\n";
-   out << "     typedef std::ptrdiff_t difference_type;\n";
-   out << "     typedef value_type* pointer;\n";
-   out << "     typedef value_type& reference;\n";
+   out << "     using iterator_category = std::forward_iterator_tag;\n";
+   out << "     using value_type = id_of_" << tname << ";\n";
+   out << "     using difference_type = std::ptrdiff_t;\n";
+   out << "     using pointer = value_type*;\n";
+   out << "     using reference = value_type&;\n";
    out << '\n';
    out << "     bool operator==(const iterator &i) const {return index == i.index;}\n";
    out << "     bool operator!=(const iterator &i) const {return index != i.index;}\n";

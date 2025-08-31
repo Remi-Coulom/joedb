@@ -56,7 +56,7 @@ namespace joedb
    };
 
   public:
-   typedef std::array<uint32_t, 8> Hash;
+   using Hash = std::array<uint32_t, 8>;
 
   private:
    Hash hash;
