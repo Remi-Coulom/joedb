@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# increase number of open files
+ulimit -n 2048
+
 if [ "$1" == "" ]; then
  cd ../doc/source/tutorial
  ./generate.sh
