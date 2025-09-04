@@ -82,7 +82,6 @@ namespace joedb
   public:
    Buffered_File(Open_Mode mode);
    void flush();
-   void flush_for_writing();
 
    void exclusive_lock_tail()
    {
