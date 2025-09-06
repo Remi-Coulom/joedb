@@ -159,10 +159,12 @@ namespace joedb
  TEST(Interpreter, Writable_Interpreted_File)
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::stringstream ss;
+  Memory_File memory_file;
+  streambuf buf(memory_file);
+  std::iostream stream(&buf);
 
   {
-   Interpreted_Stream_File file(ss);
+   Interpreted_Stream_File file(stream);
    Writable_Journal journal(file);
    journal.rewind();
    journal.create_table("person");
@@ -172,9 +174,20 @@ namespace joedb
    journal.soft_checkpoint();
   }
 
-  EXPECT_EQ(ss.str(), "create_table person\ncreate_table city\n\ninsert_into person 0\n\n");
+  EXPECT_EQ(memory_file.get_data(), "create_table person\ncreate_table city\n\ninsert_into person 0\n\n");
 
-  Readonly_Interpreted_File file(ss);
+  {
+   Interpreted_Stream_File file(stream);
+   Writable_Journal journal(file);
+   Database writable;
+   journal.play_until_checkpoint(writable);
+   journal.comment("Hello");
+   journal.soft_checkpoint();
+  }
+
+  EXPECT_EQ(memory_file.get_data(), "create_table person\ncreate_table city\n\ninsert_into person 0\n\ncomment \"Hello\"\n\n");
+
+  Readonly_Interpreted_File file(stream);
   Readonly_Journal journal(file);
   Database db;
   journal.play_until_checkpoint(db);

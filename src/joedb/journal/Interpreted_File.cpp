@@ -30,7 +30,8 @@ namespace joedb
   Readonly_Interpreted_File(stream, false),
   stream(stream)
  {
-  stream.clear(); // clears eof flag after reading, get ready to write
+  stream.clear(); // clears eof flag after reading
+  stream.seekp(0, std::ios::end); // get ready to write
  }
 
  ////////////////////////////////////////////////////////////////////////////

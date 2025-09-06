@@ -193,4 +193,58 @@ namespace joedb
   EXPECT_EQ(buf.sbumpc(), 'c');
   EXPECT_EQ(buf.sbumpc(), std::char_traits<char>::eof());
  }
+
+ TEST(streambuf, read_then_write)
+ {
+  joedb::Memory_File file;
+
+#ifdef TEST_STD_STRINGBUF
+  std::stringbuf buf(file.get_data());
+#else
+  joedb::streambuf buf(file);
+#endif
+
+  std::iostream ios(&buf);
+
+  ios.write("123", 3);
+  ios.flush();
+  ios.seekg(0);
+  ios.seekp(0);
+
+  int n;
+  ios >> n;
+  EXPECT_EQ(n, 123);
+  EXPECT_TRUE(ios.eof());
+  ios.clear();
+  EXPECT_FALSE(ios.eof());
+  EXPECT_EQ(ios.tellg(), 3);
+  EXPECT_EQ(ios.tellp(), 0);
+  ios << 456;
+  ios.flush();
+  ios.seekg(0);
+  std::string s;
+  ios >> s;
+  EXPECT_EQ("456", s);
+ }
+
+ TEST(streambuf, write_at_the_end)
+ {
+  joedb::Memory_File file;
+  file.get_data() = "Hi!";
+
+#ifdef TEST_STD_STRINGBUF
+  std::stringbuf buf(file.get_data());
+#else
+  joedb::streambuf buf(file);
+#endif
+
+  std::iostream ios(&buf);
+  ios.seekp(0, std::ios::end);
+  ios << "Joe";
+  ios.flush();
+  ios.seekg(0);
+  std::string s;
+  ios >> s;
+  EXPECT_EQ("Hi!Joe", s);
+ }
 }

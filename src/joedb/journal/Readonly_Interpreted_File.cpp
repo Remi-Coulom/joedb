@@ -19,6 +19,7 @@ namespace joedb
    throw Exception("opening interpreted file: !stream");
 
   stream.exceptions(std::ios::badbit);
+  stream.seekg(0);
 
   Multiplexer multiplexer{db, journal};
   Interpreter interpreter(db, multiplexer, Record_Id::null);
