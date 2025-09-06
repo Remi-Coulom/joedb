@@ -86,6 +86,7 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 #############################################################################
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /w34265 /permissive- /Zc:__cplusplus") # C4265 virtual destructor
+ add_definitions(-D_WIN32_WINNT=0x0601) # silence boost::asio warning
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/defines.cmake")

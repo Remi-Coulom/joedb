@@ -9,6 +9,7 @@
     "curl",
     "brotli",
     "boost-asio",
+    "boost-beast",
     "gtest",
     "sqlite3"
   ],

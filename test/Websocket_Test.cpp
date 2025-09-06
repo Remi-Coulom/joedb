@@ -3,6 +3,8 @@
 
 #include "gtest/gtest.h"
 
+#include <array>
+
 namespace joedb
 {
  TEST(Websocket, basic)
