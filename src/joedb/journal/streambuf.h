@@ -200,8 +200,12 @@ namespace joedb
      gbump(-1);
      if (!traits_type::eq_int_type(c, traits_type::eof()))
      {
-      *gptr() = traits_type::to_char_type(c);
-      file.pwrite(gptr(), 1, in_pos + gptr() - eback());
+      const char cc = traits_type::to_char_type(c);
+      if (*gptr() != cc)
+      {
+       *gptr() = cc;
+       file.pwrite(gptr(), 1, in_pos + gptr() - eback());
+      }
      }
      return *gptr();
     }
