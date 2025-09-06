@@ -17,7 +17,7 @@ namespace joedb::generator
  void Readonly_Interpreted_File_Database_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  namespace_include_guard(out, "Readonly_Interpreted_File_Database", options.get_name_space());
+  namespace_include_guard_open(out, "Readonly_Interpreted_File_Database", options.get_name_space());
 
   out << R"RRR(
 #include "Readonly_Database.h"
@@ -46,6 +46,6 @@ namespace joedb::generator
 )RRR";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

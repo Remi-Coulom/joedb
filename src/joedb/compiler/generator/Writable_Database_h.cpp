@@ -21,7 +21,7 @@ namespace joedb::generator
   const Database &db = options.get_db();
   auto tables = db.get_tables();
 
-  namespace_include_guard(out, "Writable_Database", options.get_name_space());
+  namespace_include_guard_open(out, "Writable_Database", options.get_name_space());
 
   if (options.has_multi_row())
    out << "\n#include \"joedb/Span.h\"\n";
@@ -333,6 +333,6 @@ namespace joedb::generator
   out << "\n };";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

@@ -23,7 +23,7 @@ namespace joedb::generator
   const Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
-  namespace_include_guard(out, "Database_Writable", options.get_name_space());
+  namespace_include_guard_open(out, "Database_Writable", options.get_name_space());
 
   out << R"RRR(
 #include "joedb/journal/Writable_Journal.h"
@@ -548,6 +548,6 @@ namespace joedb::generator
 )RRR";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

@@ -2,7 +2,6 @@
 #include "joedb/get_version.h"
 #include "joedb/ui/get_time_string.h"
 
-#include <iostream>
 #include <filesystem>
 
 namespace joedb::generator
@@ -173,6 +172,24 @@ namespace joedb::generator
  #undef STRINGIFY
 
  ////////////////////////////////////////////////////////////////////////////
+ std::string Generator::get_file_string
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const char *dir_name,
+  const char *file_name
+ )
+ {
+  const std::string dir_string =
+   options.output_path + "/" +
+   options.get_name_space_back() + "/" +
+   std::string(dir_name);
+
+  std::filesystem::create_directories(dir_string);
+
+  return dir_string + "/" + std::string(file_name);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Generator::Generator
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -180,14 +197,9 @@ namespace joedb::generator
   const char *file_name,
   const Compiler_Options &options
  ):
-  options(options)
+  options(options),
+  out(get_file_string(dir_name, file_name), Open_Mode::truncate)
  {
-  std::string dir_string = options.output_path + "/" + options.get_name_space_back() + "/" + std::string(dir_name);
-  std::filesystem::create_directories(dir_string);
-  std::string file_string = dir_string + "/" + std::string(file_name);
-
-  out.exceptions(std::ios::badbit | std::ios::failbit);
-  out.open(file_string, std::ios::trunc);
   write_initial_comment();
  }
 

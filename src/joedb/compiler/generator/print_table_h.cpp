@@ -17,7 +17,7 @@ namespace joedb::generator
  void print_table_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  namespace_include_guard(out, "print_table", options.get_name_space());
+  namespace_include_guard_open(out, "print_table", options.get_name_space());
 
   out << R"RRR(
 #include "Readable.h"
@@ -54,6 +54,6 @@ namespace joedb::generator
   }
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

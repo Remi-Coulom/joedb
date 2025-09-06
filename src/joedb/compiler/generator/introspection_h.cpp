@@ -62,5 +62,6 @@ namespace joedb::generator
   }
 
   out << "\n#undef JOEDB_INTROSPECTION\n";
+  out.flush();
  }
 }

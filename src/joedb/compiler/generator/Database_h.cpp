@@ -21,7 +21,7 @@ namespace joedb::generator
   const Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
-  namespace_include_guard(out, "Database", options.get_name_space());
+  namespace_include_guard_open(out, "Database", options.get_name_space());
 
   out << R"RRR(
 #include "joedb/Freedom_Keeper.h"
@@ -727,6 +727,6 @@ namespace joedb::generator
   }
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

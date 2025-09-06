@@ -17,7 +17,7 @@ namespace joedb::generator
  void Readonly_Client_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  namespace_include_guard(out, "Readonly_Client", options.get_name_space());
+  namespace_include_guard_open(out, "Readonly_Client", options.get_name_space());
 
   out << R"RRR(
 #include "Database_Writable.h"
@@ -64,6 +64,6 @@ namespace joedb::generator
 
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

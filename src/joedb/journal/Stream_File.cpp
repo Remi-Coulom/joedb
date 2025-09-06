@@ -14,9 +14,6 @@ namespace joedb
   streambuf(streambuf),
   pos(0)
  {
-  if (is_shared())
-   throw Exception("Stream_File does not support shared_write");
-
   streambuf.pubseekoff
   (
    pos,

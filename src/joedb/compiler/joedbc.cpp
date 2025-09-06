@@ -4,6 +4,7 @@
 #include "joedb/compiler/Compiler_Options_io.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/fstream.h"
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/main_wrapper.h"
 
@@ -77,13 +78,11 @@ namespace joedb
   const std::string joedbc_file_name = options.base_name + ".joedbc";
 
   //
-  // Read file.joedbi
+  // Read file.joedbi (write_lock to block concurrent invocations)
   //
-  {
-   std::ifstream joedbi_file(joedbi_file_name.data());
-   if (!joedbi_file)
-    throw Exception("could not open " + joedbi_file_name);
+  joedb::ifstream joedbi_file(joedbi_file_name, Open_Mode::write_lock);
 
+  {
    Writable_Journal journal(options.schema_file);
    Selective_Writable schema_writable(journal, Selective_Writable::schema);
    Custom_Collector custom_collector(options.custom_names);
@@ -102,11 +101,10 @@ namespace joedb
   //
   // Read file.joedbc
   //
-  std::ifstream joedbc_file(joedbc_file_name.data());
-  if (!joedbc_file)
-   throw Exception("Error: could not open " + joedbc_file_name);
-
-  parse_compiler_options(joedbc_file, options);
+  {
+   joedb::ifstream joedbc_file(joedbc_file_name, Open_Mode::read_existing);
+   parse_compiler_options(joedbc_file, options);
+  }
 
   //
   // Generate code
@@ -151,8 +149,13 @@ namespace joedb
   // .gitignore
   //
   {
-   std::ofstream ofs(options.output_path + "/" + options.get_name_space_back() + "/.gitignore", std::ios::trunc);
+   joedb::ofstream ofs
+   (
+    options.output_path + "/" + options.get_name_space_back() + "/.gitignore",
+    Open_Mode::truncate
+   );
    ofs << "*\n";
+   ofs.flush();
   }
  }
 

@@ -61,7 +61,7 @@ namespace joedb::compiler
  {
   auto n = split_namespace("split::this::name");
   std::ostringstream out;
-  namespace_include_guard(out, "X", n);
+  namespace_include_guard_open(out, "X", n);
   EXPECT_EQ
   (
    "#ifndef split_this_name_X_declared\n#define split_this_name_X_declared\n",

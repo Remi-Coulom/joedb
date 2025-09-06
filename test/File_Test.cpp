@@ -617,12 +617,12 @@ TEST(File, portable)
   joedb::Portable_File("test.joedb", joedb::Open_Mode::write_existing);
  );
 
- EXPECT_ANY_THROW
+ EXPECT_NO_THROW
  (
   joedb::Portable_File("test.joedb", joedb::Open_Mode::shared_write)
  );
 
- EXPECT_ANY_THROW
+ EXPECT_NO_THROW
  (
   joedb::Portable_File("test.joedb", joedb::Open_Mode::write_lock)
  );

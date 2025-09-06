@@ -2,8 +2,7 @@
 #define joedb_generator_Generator_declared
 
 #include "joedb/compiler/Compiler_Options.h"
-
-#include <fstream>
+#include "joedb/journal/fstream.h"
 
 namespace joedb::generator
 {
@@ -12,7 +11,7 @@ namespace joedb::generator
  {
   protected:
    const Compiler_Options &options;
-   std::ofstream out;
+   joedb::ofstream out;
 
    bool db_has_values() const;
 
@@ -24,6 +23,12 @@ namespace joedb::generator
    static const char *get_type_string(Type type);
    static const char *get_cpp_type_string(Type type);
    static const char *get_storage_type_string(Type type);
+
+   std::string get_file_string
+   (
+    const char *dir_name,
+    const char *file_name
+   );
 
   public:
    Generator

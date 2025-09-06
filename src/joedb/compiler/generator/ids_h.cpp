@@ -22,7 +22,7 @@ namespace joedb::generator
   const Database_Schema &db = options.get_db();
   auto tables = db.get_tables();
 
-  namespace_include_guard(out, "ids", options.get_name_space());
+  namespace_include_guard_open(out, "ids", options.get_name_space());
 
   if (parent_options)
    out << R"RRR(
@@ -78,6 +78,6 @@ namespace joedb::generator
   }
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

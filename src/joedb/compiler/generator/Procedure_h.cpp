@@ -15,7 +15,7 @@ namespace joedb::generator
 
  void Procedure_h::generate()
  {
-  namespace_include_guard(out, "Procedure", options.get_name_space());
+  namespace_include_guard_open(out, "Procedure", options.get_name_space());
 
   out << '\n';
   if (&options == &parent_options)
@@ -55,7 +55,6 @@ namespace joedb::generator
 )RRR";
 
   namespace_close(out, options.get_name_space());
-
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

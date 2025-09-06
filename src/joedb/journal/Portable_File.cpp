@@ -14,24 +14,27 @@ namespace joedb::detail
   constexpr auto in = std::ios::binary | std::ios::in;
 
   if (mode == Open_Mode::read_existing)
-  {
    filebuf.open(file_name, in);
-  }
   else if (mode == Open_Mode::write_existing)
-  {
    filebuf.open(file_name, in | std::ios::out);
-  }
   else if (mode == Open_Mode::create_new)
   {
    if (filebuf.open(file_name, in))
     throw Exception("File already exists: " + std::string(file_name));
    filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
   }
-  else if (mode == Open_Mode::write_existing_or_create_new)
+  else if
+  (
+   mode == Open_Mode::write_existing_or_create_new ||
+   mode == Open_Mode::shared_write ||
+   mode == Open_Mode::write_lock
+  )
   {
    filebuf.open(file_name, in | std::ios::out) ||
    filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
   }
+  else if (mode == Open_Mode::truncate)
+   filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
   else
   {
    throw Exception

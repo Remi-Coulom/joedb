@@ -106,10 +106,10 @@ binary file, so it is not convenient to inspect it directly. The
 Concurrency Examples
 --------------------
 
-The example in the previous section opens a joedb database directly, and
-prevents concurrent writes. In order to share write access to the database with
-other processes, it is also possible to use write transactions with a
-:joedb:`Client` instead:
+The example in the previous section opens a joedb database directly, which
+prevents concurrent writes. In order to share write access with other
+processes, it is also possible to use write transactions with a :joedb:`Client`
+instead:
 
 .. literalinclude:: ./tutorial/src/hello_concurrency.cpp
    :language: c++

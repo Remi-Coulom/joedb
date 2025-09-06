@@ -479,7 +479,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
  add_fuzzer(binary_journal_fuzzer)
  add_fuzzer(joedbc_fuzzer)
  add_fuzzer(joedbi_fuzzer)
- add_fuzzer(server_fuzzer)
+# add_fuzzer(server_fuzzer)
 endif()
 
 #############################################################################

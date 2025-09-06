@@ -17,7 +17,7 @@ namespace joedb::generator
  void File_Client_h::generate()
  ////////////////////////////////////////////////////////////////////////////
  {
-  namespace_include_guard(out, "File_Client", options.get_name_space());
+  namespace_include_guard_open(out, "File_Client", options.get_name_space());
 
   out << R"RRR(
 #include "Client.h"
@@ -52,6 +52,6 @@ namespace joedb::generator
 )RRR";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

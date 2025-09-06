@@ -28,11 +28,16 @@ namespace joedb
   const char *delimiter = "::"
  );
 
- void namespace_include_guard
+ void namespace_include_guard_open
  (
   std::ostream &out,
   const char *name,
   const std::vector<std::string> &n
+ );
+
+ void namespace_include_guard_close
+ (
+  std::ostream &out
  );
 
  /// @}

@@ -20,7 +20,7 @@ namespace joedb::generator
   const Database &db = options.get_db();
   auto tables = db.get_tables();
 
-  namespace_include_guard(out, "Types", options.get_name_space());
+  namespace_include_guard_open(out, "Types", options.get_name_space());
 
   out << R"RRR(
 #include "Database.h"
@@ -71,6 +71,6 @@ namespace joedb::generator
   out << " };\n";
 
   namespace_close(out, options.get_name_space());
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

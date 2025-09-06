@@ -20,7 +20,7 @@ namespace joedb::generator
   auto name_space = options.get_name_space();
   name_space.emplace_back("rpc");
 
-  namespace_include_guard(out, "Signatures", name_space);
+  namespace_include_guard_open(out, "Signatures", name_space);
   out << "\n#include \"joedb/rpc/Signature.h\"\n";
 
   {
@@ -55,6 +55,6 @@ namespace joedb::generator
   out << " }\n";
 
   namespace_close(out, name_space);
-  out << "\n#endif\n";
+  namespace_include_guard_close(out);
  }
 }

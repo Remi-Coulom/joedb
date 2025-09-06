@@ -9,7 +9,7 @@ namespace joedb
  class Logger
  {
   public:
-   virtual void write(std::string_view message) noexcept = 0;
+   virtual void write(std::string_view message) noexcept {}
    virtual ~Logger() = default;
  };
 }

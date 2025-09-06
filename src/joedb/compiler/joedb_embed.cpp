@@ -116,7 +116,7 @@ namespace joedb
   {
    std::ofstream h(file_name + ".h", std::ios::binary | std::ios::out);
 
-   namespace_include_guard(h, identifier.data(), name_space);
+   namespace_include_guard_open(h, identifier.data(), name_space);
 
    h << "\n#include <stddef.h>\n\n";
 
@@ -132,8 +132,7 @@ namespace joedb
    }
 
    namespace_close(h, name_space);
-
-   h << "#endif\n";
+   namespace_include_guard_close(h);
   }
 
   return 0;
