@@ -68,17 +68,13 @@ namespace joedb
 
    pos_type seekpos(pos_type pos, std::ios_base::openmode which) override
    {
+    sync();
+
     if (which & std::ios_base::in)
-    {
-     syncg();
      in_pos = pos;
-    }
 
     if (which & std::ios_base::out)
-    {
-     syncp();
      out_pos = pos;
-    }
 
     return pos;
    }
@@ -192,13 +188,24 @@ namespace joedb
 
    int_type pbackfail(int_type c) override
    {
+    if (gptr() == eback() && in_pos > 0)
+    {
+     in_pos -= 1;
+     setg(buffer.data(), buffer.data() + 1, buffer.data() + 1);
+     file.pread(buffer.data(), 1, in_pos);
+    }
+
     if (gptr() > eback())
     {
      gbump(-1);
      if (!traits_type::eq_int_type(c, traits_type::eof()))
+     {
       *gptr() = traits_type::to_char_type(c);
-     return traits_type::not_eof(c);
+      file.pwrite(gptr(), 1, in_pos + gptr() - eback());
+     }
+     return *gptr();
     }
+
     return traits_type::eof();
    }
 

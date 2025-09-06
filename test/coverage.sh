@@ -16,6 +16,6 @@ cmake --build . --target joedb_test || exit 1
 cd -
 
 rm -vf *.tmp
-../compcmake/gcc_coverage_20/joedb_test || exit 1
+../compcmake/gcc_coverage_20/joedb_test $* || exit 1
 
 ./generate-gcov-html.sh
