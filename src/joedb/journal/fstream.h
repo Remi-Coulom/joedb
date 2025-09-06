@@ -16,12 +16,12 @@ namespace joedb
   {
    protected:
     File file;
-    streambuf streambuf;
+    streambuf buf;
 
    public:
     fstream_Parent(const char *file_name, Open_Mode mode):
      file(file_name, mode),
-     streambuf(file)
+     buf(file)
     {
     }
   };
@@ -33,7 +33,7 @@ namespace joedb
   public:
    fstream(const char *file_name, Open_Mode mode):
     fstream_Parent(file_name, mode),
-    std::iostream(&streambuf)
+    std::iostream(&buf)
    {
    }
 
@@ -49,7 +49,7 @@ namespace joedb
   public:
    ifstream(const char *file_name, Open_Mode mode):
     fstream_Parent(file_name, mode),
-    std::istream(&streambuf)
+    std::istream(&buf)
    {
    }
 
@@ -65,7 +65,7 @@ namespace joedb
   public:
    ofstream(const char *file_name, Open_Mode mode):
     fstream_Parent(file_name, mode),
-    std::ostream(&streambuf)
+    std::ostream(&buf)
    {
    }
 
