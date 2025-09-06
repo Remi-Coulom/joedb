@@ -27,6 +27,7 @@ namespace joedb
   };
  }
 
+ /// @ingroup journal
  class fstream: private detail::fstream_Parent, public std::iostream
  {
   public:
@@ -42,6 +43,7 @@ namespace joedb
    }
  };
 
+ /// @ingroup journal
  class ifstream: private detail::fstream_Parent, public std::istream
  {
   public:
@@ -57,6 +59,7 @@ namespace joedb
    }
  };
 
+ /// @ingroup journal
  class ofstream: private detail::fstream_Parent, public std::ostream
  {
   public:

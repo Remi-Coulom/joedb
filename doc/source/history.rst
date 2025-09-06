@@ -5,8 +5,9 @@ History
 
   - New major features:
 
-    - websocket support
     - :doc:`rpc`
+    - :joedb:`joedb::streambuf`
+    - websocket support
 
   - Minor improvements:
 
@@ -16,16 +17,18 @@ History
     - joedbc generates a .gitignore
     - joedbc does not generate irrelevant functions for single-row tables
       (sorting, vector updates)
-    - joedbc generates functions to print tables
+    - joedbc generates functions to print tables (see :joedb:`print_city_table`)
     - :joedb:`Memory_File` can be opened with :joedb:`Open_Mode`::shared_write.
     - :joedb:`Connection::dummy`, used as default constructor parameter for clients.
     - writable :joedb:`File_View`, now built from a :joedb:`Buffered_File`, and
       overriding all :joedb:`Abstract_File` functions.
 
-- 2025-06-13 10.0.1 LTS Minor Bug Fixes
+  - Fixes (also available on 10.0.0 LTS branch):
 
-  - Fix joedbc crash when no namespace is provided
-  - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
+    - Fix MacOS installation (set RPATH)
+    - Add a timeout to ssh session (could get infinite waiting without it)
+    - Fix joedbc crash when no namespace is provided
+    - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
 
 - 2025-05-26 10.0.0 LTS
 

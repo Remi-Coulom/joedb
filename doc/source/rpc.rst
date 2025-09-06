@@ -39,7 +39,7 @@ disconnection.
 Tutorial Example
 ----------------
 
-This example implements 3 procedures for the joedb tutorial database:
+This example implements 4 procedures for the joedb tutorial database:
 
  - ``insert_city`` takes a string parameter and inserts it as a city name in
    the city table.
@@ -47,6 +47,8 @@ This example implements 3 procedures for the joedb tutorial database:
    table.
  - ``get_population`` takes a list of cities as parameter, and returns the
    number of persons for each city.
+ - ``get_inhabitants`` takes a city name as parameter, and returns the list of
+   persons living in this city
 
 First a ``Service`` class has to be implemented to run the procedures on the
 server:

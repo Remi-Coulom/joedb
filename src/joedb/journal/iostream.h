@@ -7,6 +7,7 @@
 
 namespace joedb
 {
+ /// @ingroup journal
  class iostream: private joedb::streambuf, public std::iostream
  {
   public:
