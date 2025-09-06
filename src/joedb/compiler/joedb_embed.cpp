@@ -3,9 +3,9 @@
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/fstream.h"
 
 #include <iostream>
-#include <fstream>
 #include <string>
 
 namespace joedb
@@ -34,9 +34,19 @@ namespace joedb
 
   const std::string file_name = name_space.back() + '_' + std::string(identifier);
 
-  {
-   std::ofstream cpp(file_name + ".cpp", std::ios::binary | std::ios::out);
+  joedb::ofstream cpp(file_name + ".cpp", Open_Mode::truncate);
 
+  cpp << "#include \"" << file_name << ".h\"\n";
+  cpp << "#include \"" << name_space.back() << "/Readonly_Database.h\"\n";
+  cpp << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
+  if (mode == Mode::base64)
+   cpp << "#include \"joedb/ui/base64.h\"\n";
+  cpp << '\n';
+
+  namespace_open(cpp, name_space);
+  cpp << '\n';
+
+  {
    std::string file_content;
 
    {
@@ -44,16 +54,6 @@ namespace joedb
     file_content.resize(size_t(in.get_size()));
     in.pread(file_content.data(), file_content.size(), 0);
    }
-
-   cpp << "#include \"" << file_name << ".h\"\n";
-   cpp << "#include \"" << name_space.back() << "/Readonly_Database.h\"\n";
-   cpp << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
-   if (mode == Mode::base64)
-    cpp << "#include \"joedb/ui/base64.h\"\n";
-   cpp << '\n';
-
-   namespace_open(cpp, name_space);
-   cpp << '\n';
 
    if (mode != Mode::base64)
    {
@@ -85,36 +85,36 @@ namespace joedb
      write_octal_character(cpp, c);
     cpp << '"';
    }
-
-   cpp << ";\n\n";
-
-   cpp << " const Database &get_embedded_" << identifier << "()\n";
-   cpp << " {\n";
-   cpp << "  static const Readonly_Database db(joedb::Readonly_Memory_File(";
-
-   if (mode == Mode::base64)
-    cpp << "joedb::base64_decode(" << identifier << "_data)";
-   else
-    cpp << identifier << "_data, " << identifier << "_size";
-
-   cpp << "));\n";
-   cpp << "  return db;\n";
-   cpp << " }\n";
-
-   if (mode != Mode::base64)
-   {
-    cpp << "\n size_t get_embedded_" << identifier;
-    cpp << "_size() {return " << identifier << "_size;}\n";
-
-    cpp << " char const *get_embedded_" << identifier;
-    cpp << "_data() {return " << identifier << "_data;}\n";
-   }
-
-   namespace_close(cpp, name_space);
   }
 
+  cpp << ";\n\n";
+
+  cpp << " const Database &get_embedded_" << identifier << "()\n";
+  cpp << " {\n";
+  cpp << "  static const Readonly_Database db(joedb::Readonly_Memory_File(";
+
+  if (mode == Mode::base64)
+   cpp << "joedb::base64_decode(" << identifier << "_data)";
+  else
+   cpp << identifier << "_data, " << identifier << "_size";
+
+  cpp << "));\n";
+  cpp << "  return db;\n";
+  cpp << " }\n";
+
+  if (mode != Mode::base64)
   {
-   std::ofstream h(file_name + ".h", std::ios::binary | std::ios::out);
+   cpp << "\n size_t get_embedded_" << identifier;
+   cpp << "_size() {return " << identifier << "_size;}\n";
+
+   cpp << " char const *get_embedded_" << identifier;
+   cpp << "_data() {return " << identifier << "_data;}\n";
+  }
+
+  namespace_close(cpp, name_space);
+
+  {
+   joedb::ofstream h(file_name + ".h", Open_Mode::truncate);
 
    namespace_include_guard_open(h, identifier.data(), name_space);
 
