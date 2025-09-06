@@ -34,13 +34,13 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- detail::Interpreted_File_Data::Interpreted_File_Data(const char *file_name)
+ detail::Interpreted_File_Data::Interpreted_File_Data
  ////////////////////////////////////////////////////////////////////////////
+ (
+  const char *file_name,
+  Open_Mode mode
+ ) : file_stream(file_name, mode)
  {
-  constexpr auto in = std::ios::binary | std::ios::in;
-  file_stream.open(file_name, in | std::ios::out);
-  if (!file_stream)
-   file_stream.open(file_name, in | std::ios::out | std::ios::trunc);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -48,9 +48,9 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
 
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_File::Interpreted_File(const char *file_name):
+ Interpreted_File::Interpreted_File(const char *file_name, Open_Mode mode):
  ////////////////////////////////////////////////////////////////////////////
-  Interpreted_File_Data(file_name),
+  Interpreted_File_Data(file_name, mode),
   Interpreted_Stream_File(file_stream)
  {
  }

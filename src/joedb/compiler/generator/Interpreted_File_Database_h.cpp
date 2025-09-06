@@ -36,7 +36,7 @@ namespace joedb::generator
  {
   public:
    Interpreted_File_Database(const char *file_name):
-    joedb::Interpreted_File(file_name),
+    joedb::Interpreted_File(file_name, joedb::Open_Mode::write_existing_or_create_new),
     Writable_Database(*static_cast<joedb::Interpreted_File *>(this))
    {
    }

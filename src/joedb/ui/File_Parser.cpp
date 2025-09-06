@@ -104,7 +104,7 @@ namespace joedb
    if (readonly)
     file.reset(new Readonly_Interpreted_File(file_name.data()));
    else
-    file.reset(new Interpreted_File(file_name.data()));
+    file.reset(new Interpreted_File(file_name.data(), Open_Mode::write_existing_or_create_new));
 
    out << "OK\n";
   }

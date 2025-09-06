@@ -4,9 +4,8 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File_View.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/fstream.h"
 #include "joedb/interpreted/Database.h"
-
-#include <fstream>
 
 namespace joedb
 {
@@ -34,7 +33,15 @@ namespace joedb
    }
 
    Readonly_Interpreted_File(const char *file_name):
-    Readonly_Interpreted_File(std::ifstream(file_name))
+    Readonly_Interpreted_File
+    (
+     joedb::ifstream(file_name, Open_Mode::read_existing)
+    )
+   {
+   }
+
+   Readonly_Interpreted_File(const std::string &file_name):
+    Readonly_Interpreted_File(file_name.data())
    {
    }
 
