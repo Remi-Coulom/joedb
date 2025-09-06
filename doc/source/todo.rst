@@ -3,6 +3,8 @@ TODO
 
 - remove File_View and Buffered_File. Create a File_Buffer instead. Stored by
   value in Journal: nicer design, better performance (one less indirection).
+- joedb::streambuf -> concurrency and durability for joedb::Interpreted_File.
+  Use valid_data event for ACID transactions.
 - joedb_client: ssh and sftp should use the same syntax
 
 Notifications
@@ -93,7 +95,6 @@ Concurrency
   - write log as joedb file?
 
 - Do not crash on write error, continue to allow reading?
-- joedb::streambuf -> concurrency and durability for joedb::Interpreted_File?
 - Asynchronous client code:
 
   - Robust_Connection to synchronous backup should not block reads in Server
