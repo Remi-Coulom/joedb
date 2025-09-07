@@ -15,8 +15,8 @@ namespace joedb
   struct fstream_Parent
   {
    protected:
-    File file;
-    streambuf buf;
+    joedb::File file;
+    joedb::streambuf buf;
 
    public:
     fstream_Parent(const char *file_name, Open_Mode mode):
@@ -33,7 +33,7 @@ namespace joedb
   public:
    fstream(const char *file_name, Open_Mode mode):
     fstream_Parent(file_name, mode),
-    std::iostream(&buf)
+    std::iostream(&(detail::fstream_Parent::buf))
    {
    }
 
@@ -49,7 +49,7 @@ namespace joedb
   public:
    ifstream(const char *file_name, Open_Mode mode = Open_Mode::read_existing):
     fstream_Parent(file_name, mode),
-    std::istream(&buf)
+    std::istream(&(detail::fstream_Parent::buf))
    {
    }
 
@@ -65,7 +65,7 @@ namespace joedb
   public:
    ofstream(const char *file_name, Open_Mode mode):
     fstream_Parent(file_name, mode),
-    std::ostream(&buf)
+    std::ostream(&(detail::fstream_Parent::buf))
    {
    }
 
