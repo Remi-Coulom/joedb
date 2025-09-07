@@ -47,13 +47,13 @@ namespace joedb
  class ifstream: private detail::fstream_Parent, public std::istream
  {
   public:
-   ifstream(const char *file_name, Open_Mode mode):
+   ifstream(const char *file_name, Open_Mode mode = Open_Mode::read_existing):
     fstream_Parent(file_name, mode),
     std::istream(&buf)
    {
    }
 
-   ifstream(const std::string &file_name, Open_Mode mode):
+   ifstream(const std::string &file_name, Open_Mode mode = Open_Mode::read_existing):
     ifstream(file_name.c_str(), mode)
    {
    }

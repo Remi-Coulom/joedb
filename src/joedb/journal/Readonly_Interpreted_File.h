@@ -33,10 +33,7 @@ namespace joedb
    }
 
    Readonly_Interpreted_File(const char *file_name):
-    Readonly_Interpreted_File
-    (
-     joedb::ifstream(file_name, Open_Mode::read_existing)
-    )
+    Readonly_Interpreted_File(joedb::ifstream(file_name))
    {
    }
 

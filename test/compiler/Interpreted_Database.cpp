@@ -42,11 +42,13 @@ TEST(Compiler, Interpreted_Stream_Error_Alternative)
 {
  try
  {
-  joedb::ifstream stream
+  joedb::File file
   (
    "this_file_does_not_exist.joedbi",
    joedb::Open_Mode::read_existing
   );
+  joedb::streambuf buf(file);
+  std::istream is(&buf);
   FAIL() << "Expected exception";
  }
  catch (...)
@@ -60,7 +62,7 @@ TEST(Compiler, Interpreted_Stream_Error)
 {
  EXPECT_ANY_THROW
  (
-  joedb::ifstream("this_file_does_not_exist.joedbi", joedb::Open_Mode::read_existing)
+  joedb::ifstream("this_file_does_not_exist.joedbi")
  );
 }
 
