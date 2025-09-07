@@ -58,6 +58,11 @@ namespace joedb
  {
   public:
    static constexpr bool lockable = true;
+#ifdef JOEDB_HAS_BROKEN_POSIX_LOCKING
+   static constexpr bool has_broken_posix_locking = true;
+#else
+   static constexpr bool has_broken_posix_locking = false;;
+#endif
 
    Posix_File(int fd, Open_Mode mode):
     Posix_FD(fd, mode)

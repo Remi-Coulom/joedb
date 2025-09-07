@@ -58,6 +58,7 @@ namespace joedb
  {
   public:
    static constexpr bool lockable = true;
+   static constexpr bool has_broken_posix_locking = false;
 
    Windows_File(const char *file_name, Open_Mode mode);
    Windows_File(const std::string &file_name, Open_Mode mode):

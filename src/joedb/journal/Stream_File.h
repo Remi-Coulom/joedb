@@ -17,6 +17,7 @@ namespace joedb
 
   public:
    static constexpr bool lockable = false;
+   static constexpr bool has_broken_posix_locking = false;
 
    Stream_File(std::streambuf &streambuf, Open_Mode mode);
 

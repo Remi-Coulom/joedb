@@ -60,7 +60,7 @@ TEST_F(File_Test, open_failure)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, open_lock)
 {
- if (!joedb::File::lockable)
+ if (!joedb::File::lockable || joedb::File::has_broken_posix_locking)
   GTEST_SKIP();
 
  {
@@ -86,7 +86,7 @@ TEST_F(File_Test, open_lock)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, write_locked)
 {
- if (!joedb::File::lockable)
+ if (!joedb::File::lockable || joedb::File::has_broken_posix_locking)
   GTEST_SKIP();
 
  File locked_file("locked.tmp", Open_Mode::write_lock);
@@ -128,7 +128,7 @@ TEST_F(File_Test, shared_lock_head)
 /////////////////////////////////////////////////////////////////////////////
 TEST_F(File_Test, partial_exclusive_lock)
 {
- if (!joedb::File::lockable)
+ if (!joedb::File::lockable || joedb::File::has_broken_posix_locking)
   GTEST_SKIP();
 
  File file_1("locked.tmp", Open_Mode::shared_write);
