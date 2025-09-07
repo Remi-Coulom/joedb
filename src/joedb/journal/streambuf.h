@@ -39,7 +39,6 @@ namespace joedb
    int sync() override;
    std::streamsize showmanyc() override;
    int_type underflow() override;
-   int_type uflow() override;
    std::streamsize xsgetn(char_type* s, std::streamsize count) override;
    std::streamsize xsputn(const char_type* s, std::streamsize count) override;
    int_type overflow(int_type ch) override;
