@@ -6,6 +6,7 @@ TODO
 - joedb::streambuf -> concurrency and durability for joedb::Interpreted_File.
   Use valid_data event for ACID transactions.
 - joedb_client: ssh and sftp should use the same syntax
+- joedbc should atomically swap generated source code
 
 Notifications
 -------------
