@@ -44,18 +44,13 @@ namespace joedb
  };
 
  /// @ingroup journal
- class ifstream: public std::istream
+ class ifstream: private detail::fstream_Parent, public std::istream
  {
-  private:
-   File file;
-   streambuf buf;
-
   public:
    ifstream(const char *file_name, Open_Mode mode):
-    file(file_name, mode),
-    buf(file)
+    fstream_Parent(file_name, mode),
+    std::istream(&buf)
    {
-    std::istream::set_rdbuf(&buf);
    }
 
    ifstream(const std::string &file_name, Open_Mode mode):
