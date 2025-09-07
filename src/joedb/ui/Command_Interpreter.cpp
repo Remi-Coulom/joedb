@@ -2,6 +2,7 @@
 #include "joedb/ui/diagnostics.h"
 
 #include <sstream>
+#include <ctype.h>
 
 namespace joedb
 {
@@ -160,6 +161,8 @@ General commands
    std::string line;
    if (!std::getline(in, line))
     break;
+   while (!line.empty() && isspace(line.back()))
+    line.pop_back();
 
    line_number++;
    std::istringstream iss(line);

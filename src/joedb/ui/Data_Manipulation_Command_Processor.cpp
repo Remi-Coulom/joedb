@@ -79,6 +79,7 @@ namespace joedb
     record_id = readable.get_size(table_id);
 
    writable.insert_into(table_id, record_id);
+
    if (parameters.good())
    {
     for (const auto &[fid, fname]: readable.get_fields(table_id))
