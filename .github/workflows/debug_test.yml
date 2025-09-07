@@ -1,4 +1,4 @@
-name: Universal test
+name: Debug
 
 on:
   workflow_dispatch:
