@@ -27,7 +27,7 @@ namespace joedb
      connection->handshake(*handshake_journal, handshake_content_check);
     return;
    }
-   catch (const Disconnection &disconnection_exception)
+   catch (const Disconnection &)
    {
     throw;
    }

@@ -12,7 +12,7 @@ namespace joedb
    int64_t position = 0;
 
   public:
-   void sequential_seek(int64_t new_position)
+   void sequential_seek(int64_t new_position) noexcept
    {
     position = new_position;
    }
@@ -30,7 +30,7 @@ namespace joedb
     position += size;
    }
 
-   int64_t get_position() const {return position;}
+   int64_t get_position() const noexcept {return position;}
  };
 }
 
