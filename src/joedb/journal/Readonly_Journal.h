@@ -131,7 +131,7 @@ namespace joedb
     (
      file,
      start_position,
-     std::min(until_position, get_checkpoint())
+     until_position
     );
    }
 

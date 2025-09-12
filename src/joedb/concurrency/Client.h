@@ -22,7 +22,7 @@ namespace joedb
     (
      journal,
      connection_checkpoint,
-     until,
+     std::min(until, journal.get_checkpoint()),
      unlock_action
     );
 
