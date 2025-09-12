@@ -57,7 +57,7 @@ namespace joedb
   out << " interpreted [--read] <file_name>\n";
 
 #ifdef JOEDB_HAS_SSH
-  out << " sftp [--port p] [--verbosity v] <user> <host> <file_name>\n";
+  out << " sftp [--port p] [--verbosity v] <user> <host> <path>\n";
 #endif
 
 #ifdef JOEDB_HAS_CURL
