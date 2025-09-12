@@ -57,4 +57,19 @@ namespace joedb
    "--follow\n"
   );
  }
+
+ TEST(Arguments, next_option)
+ {
+  const std::vector<const char *> v{"prog", "--keep_alive", "1.23"};
+  Arguments arguments(int(v.size()), v.data());
+  EXPECT_EQ(1.23f, arguments.next_option<float>("keep_alive", "", 2.0f));
+  EXPECT_EQ(2.0f, arguments.next_option<float>("keep_alive", "", 2.0f));
+ }
+
+ TEST(Arguments, next_option_order)
+ {
+  const std::vector<const char *> v{"prog", "azerty", "--keep_alive", "1.23"};
+  Arguments arguments(int(v.size()), v.data());
+  EXPECT_EQ(2.0f, arguments.next_option<float>("keep_alive", "", 2.0f));
+ }
 } // namespace joedb

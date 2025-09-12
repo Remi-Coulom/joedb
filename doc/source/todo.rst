@@ -4,8 +4,8 @@ TODO
 - remove File_View and Buffered_File. Create a File_Buffer instead. Stored by
   value in Journal: nicer design, better performance (one less indirection).
 - joedb::streambuf -> concurrency and durability for joedb::Interpreted_File.
-  Use valid_data event for ACID transactions.
-- joedb_client: ssh and sftp should use the same syntax
+  Use empty line as checkpoint indicator.
+  investigate macos github action crash.
 - joedbc should atomically swap generated source code
 
 Notifications

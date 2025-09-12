@@ -22,7 +22,12 @@ namespace joedb
     connection.reset();
     channel.reset();
     channel = connector.new_channel();
-    connection = std::make_unique<Server_Connection>(*channel, log);
+    connection = std::make_unique<Server_Connection>
+    (
+     *channel,
+     log,
+     connector.get_keep_alive_interval()
+    );
     if (handshake_journal)
      connection->handshake(*handshake_journal, handshake_content_check);
     return;

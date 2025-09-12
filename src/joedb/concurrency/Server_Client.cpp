@@ -134,9 +134,14 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_Client::Server_Client(Channel &channel, std::ostream *log):
+ Server_Client::Server_Client
  ////////////////////////////////////////////////////////////////////////////
-  keep_alive_interval(std::chrono::seconds{240}),
+ (
+  Channel &channel,
+  std::ostream *log,
+  std::chrono::milliseconds keep_alive_interval
+ ):
+  keep_alive_interval(keep_alive_interval),
   channel(channel),
   log(log),
   session_id(-1),

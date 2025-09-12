@@ -111,28 +111,14 @@ namespace joedb
 #ifdef JOEDB_HAS_SSH
   else if (arguments.peek("sftp"))
   {
-   std::string_view port_string;
-   if (arguments.peek("--port"))
-    port_string = arguments.get_next();
-
-   std::string_view verbosity_string;
-   if (arguments.peek("--verbosity"))
-    verbosity_string = arguments.get_next();
-
+   const auto port = arguments.next_option<unsigned>("port", "p", 22);
+   const auto verbosity = arguments.next_option<int>("verbosity", "v", 0);
    const std::string_view user = arguments.get_next();
    const std::string_view host = arguments.get_next();
-   const std::string_view file_name = arguments.get_next();
+   const std::string_view path = arguments.get_next();
 
    if (arguments.missing())
     return nullptr;
-
-   unsigned port = 22;
-   if (port_string.data())
-    port = uint16_t(std::atoi(port_string.data()));
-
-   int verbosity = 0;
-   if (verbosity_string.data())
-    verbosity = std::atoi(verbosity_string.data());
 
    out << "Creating ssh Session... ";
    out.flush();
@@ -144,7 +130,7 @@ namespace joedb
 
    out << "OK\nOpening file... ";
    out.flush();
-   file.reset(new SFTP_File(*sftp, file_name.data()));
+   file.reset(new SFTP_File(*sftp, path.data()));
 
    out << "OK\n";
   }

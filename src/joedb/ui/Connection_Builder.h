@@ -12,10 +12,9 @@ namespace joedb
  class Connection_Builder
  {
   public:
-   virtual bool has_sharing_option() const {return false;}
    virtual bool get_default_sharing() const {return false;}
    virtual const char *get_name() const {return "";}
-   virtual const char *get_parameters_description() const {return "";}
+   virtual std::string get_parameters_description() const {return "";}
 
    virtual Connection *build(Arguments &arguments, Buffered_File *file) = 0;
 

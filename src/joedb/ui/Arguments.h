@@ -113,6 +113,28 @@ namespace joedb
     return default_value;
    }
 
+   template<typename T> T next_option
+   (
+    const char * name,
+    const char * description,
+    T default_value
+   )
+   {
+    if (index < argc && args[index].option == name)
+    {
+     use_index();
+     if (index < argc)
+     {
+      T result{};
+      std::istringstream(args[index].s.data()) >> result;
+      use_index();
+      return result;
+     }
+    }
+
+    return default_value;
+   }
+
    std::string_view get_next();
    std::string_view get_next(const char * parameter);
    bool peek(const char *s);

@@ -94,7 +94,11 @@ namespace joedb
 
   std::cerr << "Creating connection (" << connection_name << ") ... ";
 
-  Connection *result = get_builder(connection_name.data()).build(arguments, file);
+  Connection *result = get_builder(connection_name.data()).build
+  (
+   arguments,
+   file
+  );
 
   std::cerr << "OK\n";
 

@@ -12,8 +12,10 @@ History
   - Minor improvements:
 
     - :joedb:`Robust_Connection` does not try to reconnect for every exception.
-      Errors such as writing to a read-only server will not cause a retry,
-      which prevents pointless infinite retry loops.
+      Errors such as conflicts, or writing to a read-only server will not cause
+      a retry any more, which prevents pointless infinite retry loops.
+    - joedb_client option to set the keep-alive interval when connecting to a
+      server. Warning: there is no keep-alive by default any more.
     - joedbc generates a .gitignore
     - joedbc does not generate irrelevant functions for single-row tables
       (sorting, vector updates)

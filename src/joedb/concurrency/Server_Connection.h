@@ -10,8 +10,13 @@ namespace joedb
  class Server_Connection: public Server_Client, public Connection
  {
   public:
-   Server_Connection(Channel &channel, std::ostream *log = nullptr):
-    Server_Client(channel, log)
+   Server_Connection
+   (
+    Channel &channel,
+    std::ostream *log = nullptr,
+    std::chrono::milliseconds keep_alive_interval = std::chrono::seconds(0)
+   ):
+    Server_Client(channel, log, keep_alive_interval)
    {
    }
 

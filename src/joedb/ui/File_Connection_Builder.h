@@ -21,7 +21,7 @@ namespace joedb
   public:
    const char *get_name() const override {return "file";}
 
-   const char *get_parameters_description() const override
+   std::string get_parameters_description() const override
    {
     return "<file>";
    }
