@@ -1,6 +1,10 @@
 History
 =======
 
+- 2025-09-12 10.0.5 LTS
+
+  - Fix joedb_push to a file connection
+
 - 2025-08-28 10.0.4 LTS
 
   - Fix installation on MacOS (set RPATH)
