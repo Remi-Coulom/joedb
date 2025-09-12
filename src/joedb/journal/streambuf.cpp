@@ -15,7 +15,7 @@ namespace joedb
  void streambuf::syncp()
  ////////////////////////////////////////////////////////////////////////////
  {
-  const size_t n = pptr() - pbase();
+  const ptrdiff_t n = pptr() - pbase();
   if (n)
   {
    file.pwrite(buffer.data(), n, out_pos);
@@ -128,7 +128,7 @@ namespace joedb
 
    do
    {
-    const size_t n = file.pread(s, count, in_pos);
+    const std::streamsize n = std::streamsize(file.pread(s, count, in_pos));
     if (n > 0)
     {
      in_pos += n;
