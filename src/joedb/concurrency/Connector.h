@@ -25,9 +25,10 @@ namespace joedb
     return keep_alive_interval;
    }
 
-   void set_keep_alive_interval(std::chrono::milliseconds interval)
+   Connector &set_keep_alive_interval(std::chrono::milliseconds interval)
    {
     keep_alive_interval = interval;
+    return *this;
    }
  };
 }
