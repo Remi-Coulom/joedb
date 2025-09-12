@@ -7,6 +7,7 @@ TODO
   Use empty line as checkpoint indicator.
   investigate macos github action crash.
 - joedbc should atomically swap generated source code
+- testing of user-interface code -> (test for joedb_push to file bug)
 
 Notifications
 -------------
