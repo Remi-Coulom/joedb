@@ -1,20 +1,12 @@
 #include "joedb/journal/Buffered_File.h"
-#include "joedb/journal/Async_Reader.h"
 #include "joedb/error/Destructor_Logger.h"
-
-#include <algorithm>
 
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Buffered_File::Buffered_File(Open_Mode mode):
+ Buffered_File::Buffered_File(Abstract_File &file):
  //////////////////////////////////////////////////////////////////////////
-  mode(mode),
-  locked_tail
-  (
-   mode != Open_Mode::shared_write &&
-   mode != Open_Mode::read_existing
-  )
+  Sequential_File(file)
  {
   read_buffer_size = 0;
   buffer.index = 0;
@@ -40,91 +32,6 @@ namespace joedb
  {
   flush();
   sequential_seek(new_position);
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Buffered_File::copy_to
- ////////////////////////////////////////////////////////////////////////////
- (
-  Buffered_File &destination,
-  const int64_t start,
-  const int64_t size
- ) const
- {
-  int64_t done = 0;
-
-  while (done < size)
-  {
-   const size_t asked = size_t(std::min(int64_t(destination.buffer.size), size - done));
-   const size_t received = pread(destination.buffer.data, asked, start + done);
-
-   if (received == 0)
-    reading_past_end_of_file();
-
-   destination.pwrite(destination.buffer.data, received, start + done);
-   done += int64_t(received);
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- bool Buffered_File::equal_to
- ////////////////////////////////////////////////////////////////////////////
- (
-  Buffered_File &destination,
-  const int64_t from,
-  const int64_t until
- ) const
- {
-  destination.flush();
-
-  for (int64_t current = from; current < until;)
-  {
-   const int64_t half_buffer_size = Buffered_File::buffer.ssize / 2;
-
-   const size_t n0 = pread
-   (
-    destination.buffer.data,
-    size_t(std::min(half_buffer_size, until - current)),
-    current
-   );
-
-   size_t n1 = 0;
-
-   while (n1 < n0)
-   {
-    const size_t n = destination.pread
-    (
-     destination.buffer.data + half_buffer_size + n1,
-     n0 - n1,
-     current
-    );
-
-    if (n == 0)
-     break;
-
-    n1 += n;
-   }
-
-   if (n1 != n0)
-    return false;
-
-   if (n0 == 0)
-    reading_past_end_of_file();
-
-   const int diff = std::memcmp
-   (
-    destination.buffer.data,
-    destination.buffer.data + half_buffer_size,
-    n0
-   );
-
-   if (diff)
-    return false;
-
-   current += int64_t(n0);
-  }
-
-  return true;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -160,7 +67,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Buffered_File::destructor_flush() noexcept
+ Buffered_File::~Buffered_File()
  ////////////////////////////////////////////////////////////////////////////
  {
   if (buffer_has_write_data())
@@ -168,17 +75,5 @@ namespace joedb
    Destructor_Logger::warning("Buffered_File: flushing buffer");
    try { write_buffer(); } catch (...) {}
   }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- std::string Buffered_File::read_blob(Blob blob) const
- ////////////////////////////////////////////////////////////////////////////
- {
-  Async_Reader reader(*this, blob.get_position(), blob.get_end());
-  std::string result(size_t(blob.get_size()), 0);
-  reader.read(result.data(), result.size());
-  if (reader.is_end_of_file())
-   reading_past_end_of_file();
-  return result;
  }
 }

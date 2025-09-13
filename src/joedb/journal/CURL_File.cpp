@@ -1,4 +1,8 @@
 #include "joedb/journal/CURL_File.h"
+#include "joedb/journal/Sequential_File.h"
+#include "joedb/error/Exception.h"
+
+#include <cstring>
 
 namespace joedb
 {
@@ -81,8 +85,8 @@ namespace joedb
  )
  {
   const size_t real_size = size * nmemb;
-  Buffered_File &destination = *((Buffered_File *)p);
-  destination.sequential_write((const char *)contents, real_size);
+  Sequential_File &cursor = *((Sequential_File *)p);
+  cursor.sequential_write((const char *)contents, real_size);
   return real_size;
  }
 
@@ -90,19 +94,15 @@ namespace joedb
  void CURL_File::copy_to
  ////////////////////////////////////////////////////////////////////////////
  (
-  Buffered_File &destination,
+  Abstract_File &destination,
   const int64_t start,
   const int64_t size
  ) const
  {
-  const int64_t old_position = destination.get_position();
-  destination.set_position(start);
-
-  error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &destination));
+  Sequential_File cursor(destination);
+  error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &cursor));
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, copy_callback));
-
   perform_range(start, size);
-  destination.set_position(old_position);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  CURL_File::CURL_File(const char *url, bool verbose):
  ////////////////////////////////////////////////////////////////////////////
-  Buffered_File(Open_Mode::read_existing)
+  Abstract_File(Open_Mode::read_existing)
  {
   error_check(curl_easy_setopt(curl, CURLOPT_VERBOSE, verbose));
   error_check(curl_easy_setopt(curl, CURLOPT_URL, url));

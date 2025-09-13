@@ -27,7 +27,7 @@ namespace joedb
    {
    }
 
-   explicit Writable_Journal(Buffered_File &file):
+   explicit Writable_Journal(Abstract_File &file):
     Writable_Journal(Journal_Construction_Lock(file))
    {
    }
@@ -40,9 +40,9 @@ namespace joedb
 
    int64_t ahead_of_checkpoint() const noexcept;
 
-   void flush() override {file.flush();}
+   void flush() override {buffered_file.flush();}
 
-   int64_t get_position() const override {return file.get_position();}
+   int64_t get_position() const override {return buffered_file.get_position();}
    void start_writing(int64_t position) override;
    void end_writing(int64_t position) override;
 
@@ -126,11 +126,11 @@ namespace joedb
 
    Async_Writer get_async_tail_writer()
    {
-    return Async_Writer(file, get_checkpoint());
+    return Async_Writer(abstract_file, get_checkpoint());
    }
 
    void lock_pull();
-   bool is_locked() const {return file.tail_is_locked();}
+   bool is_locked() const {return abstract_file.tail_is_locked();}
    void unlock() noexcept;
 
    ~Writable_Journal() override;

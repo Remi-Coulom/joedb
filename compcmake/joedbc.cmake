@@ -54,6 +54,7 @@ add_library(joedb_for_joedbc OBJECT
  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Async_Reader.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Buffered_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Journal_Construction_Lock.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp

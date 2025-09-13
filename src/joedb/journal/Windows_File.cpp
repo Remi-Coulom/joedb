@@ -277,7 +277,6 @@ namespace joedb
  Windows_Handle::~Windows_Handle()
  /////////////////////////////////////////////////////////////////////////////
  {
-  destructor_flush();
   CloseHandle(file);
  }
 }

@@ -32,8 +32,7 @@ namespace joedb
     else
     {
      File file(file_name, joedb::Open_Mode::create_new);
-     file.write_data(s.data(), s.size());
-     file.flush();
+     file.pwrite(s.data(), s.size(), 0);
     }
    }
   }

@@ -63,10 +63,10 @@ namespace joedb
  (
   Decoder &decoder,
   const db::encoded_file::Database &db,
-  const Buffered_File &blob_reader,
+  const Abstract_File &blob_reader,
   Open_Mode mode
  ):
-  Buffered_File(mode),
+  Abstract_File(mode),
   db(db),
   blob_reader(blob_reader),
   decoded_buffer{Record_Id::null},
@@ -80,7 +80,7 @@ namespace joedb
  (
   Decoder &decoder,
   const db::encoded_file::Database &db,
-  const Buffered_File &blob_reader
+  const Abstract_File &blob_reader
  ):
   Readonly_Encoded_File(decoder, db, blob_reader, Open_Mode::read_existing)
  {

@@ -1,7 +1,7 @@
 #ifndef joedb_Journal_Construction_Lock_declared
 #define joedb_Journal_Construction_Lock_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 namespace joedb
 {
@@ -27,7 +27,7 @@ namespace joedb
    }
 
   public:
-   Buffered_File &file;
+   Abstract_File &file;
    const Recovery recovery;
    const int64_t size;
 
@@ -35,7 +35,7 @@ namespace joedb
 
    explicit Journal_Construction_Lock
    (
-    Buffered_File &file,
+    Abstract_File &file,
     Recovery recovery = Recovery::none
    );
 

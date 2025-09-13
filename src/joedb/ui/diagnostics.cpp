@@ -1,5 +1,5 @@
 #include "joedb/ui/diagnostics.h"
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/File.h"
 #include "joedb/ui/type_io.h"
@@ -27,7 +27,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void dump_header(std::ostream &out, Buffered_File &file)
+ void dump_header(std::ostream &out, Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   Header header;

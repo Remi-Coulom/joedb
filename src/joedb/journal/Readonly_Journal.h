@@ -5,6 +5,7 @@
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Journal_Construction_Lock.h"
 #include "joedb/journal/Header.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include <array>
 
@@ -27,7 +28,9 @@ namespace joedb
    #include "joedb/TYPE_MACRO.h"
 
   protected:
-   Buffered_File &file;
+   Abstract_File &abstract_file;
+   Buffered_File buffered_file;
+
    int hard_index;
    int soft_index;
    int64_t checkpoint_position;
@@ -85,18 +88,18 @@ namespace joedb
    {
    }
 
-   explicit Readonly_Journal(Buffered_File &file):
+   explicit Readonly_Journal(Abstract_File &file):
     Readonly_Journal(Journal_Construction_Lock(file))
    {
    }
 
-   int64_t get_position() const {return file.get_position();}
+   int64_t get_position() const {return buffered_file.get_position();}
    int64_t get_checkpoint() const {return checkpoint_position;}
    int64_t get_hard_checkpoint() const {return hard_checkpoint_position;}
-   bool is_empty() const {return file.get_size() == Header::ssize;}
-   bool is_shared() const {return file.is_shared();}
+   bool is_empty() const {return abstract_file.get_size() == Header::ssize;}
+   bool is_shared() const {return abstract_file.is_shared();}
    int64_t pull();
-   const Buffered_File &get_file() const {return file;}
+   const Abstract_File &get_file() const {return abstract_file;}
    void replay_log(Writable &writable);
    void replay_with_checkpoint_comments(Writable &writable);
    void rewind();
@@ -113,23 +116,23 @@ namespace joedb
    }
    void skip_directly_to(int64_t position)
    {
-    file.set_position(position);
+    buffered_file.set_position(position);
    }
    bool equal_to(Readonly_Journal &journal, int64_t from, int64_t until) const
    {
-    return file.equal_to(journal.file, from, until);
+    return abstract_file.equal_to(journal.abstract_file, from, until);
    }
 
    Async_Reader get_async_tail_reader(int64_t start_position) const
    {
-    return Async_Reader(file, start_position, get_checkpoint());
+    return Async_Reader(abstract_file, start_position, get_checkpoint());
    }
 
    Async_Reader get_async_reader(int64_t start_position, int64_t until_position) const
    {
     return Async_Reader
     (
-     file,
+     abstract_file,
      start_position,
      until_position
     );

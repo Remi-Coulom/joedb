@@ -1,14 +1,14 @@
 #ifndef joedb_Stream_File_declared
 #define joedb_Stream_File_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 #include <streambuf>
 
 namespace joedb
 {
  /// @ingroup journal
- class Stream_File: public Buffered_File
+ class Stream_File: public Abstract_File
  {
   private:
    std::streambuf &streambuf;
@@ -24,8 +24,6 @@ namespace joedb
    size_t pread(char *data, size_t size, int64_t offset) const override;
    void pwrite(const char *data, size_t size, int64_t offset) override;
    int64_t get_size() const override;
-
-   ~Stream_File() override;
  };
 }
 

@@ -21,7 +21,7 @@ namespace joedb
  Server_File::Server_File(const Connector &connector, std::ostream *log):
  ////////////////////////////////////////////////////////////////////////////
   Robust_Connection(connector, log),
-  Buffered_File(Open_Mode::write_existing),
+  Abstract_File(Open_Mode::write_existing),
   tail_offset(connection->server_checkpoint)
  {
   {

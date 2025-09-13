@@ -1,7 +1,7 @@
 #ifndef joedb_CURL_File_declared
 #define joedb_CURL_File_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 #define CURL_NO_OLDIES
 #include <curl/curl.h>
@@ -21,7 +21,7 @@ namespace joedb
  };
 
  /// @ingroup journal
- class CURL_File: private CURL_Easy, public Buffered_File
+ class CURL_File: private CURL_Easy, public Abstract_File
  {
   private:
    static void error_check(CURLcode code);
@@ -51,10 +51,11 @@ namespace joedb
     void *p
    );
 
+   void copy_to(Abstract_File &destination, int64_t start, int64_t size) const override;
+
    void perform_range(int64_t start, int64_t size) const;
 
    size_t pread(char *buffer, size_t size, int64_t offset) const override;
-   void copy_to(Buffered_File &destination, int64_t start, int64_t size) const override;
 
   public:
    CURL_File(const char *url, bool verbose);

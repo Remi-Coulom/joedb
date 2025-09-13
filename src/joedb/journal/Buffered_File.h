@@ -2,9 +2,6 @@
 #define joedb_Buffered_File_declared
 
 #include "joedb/error/assert.h"
-#include "joedb/error/Exception.h"
-#include "joedb/Blob.h"
-#include "joedb/journal/Open_Mode.h"
 #include "joedb/journal/Sequential_File.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/index_types.h"
@@ -47,7 +44,7 @@ namespace joedb
     buffer.index = 0;
     read_buffer_size = sequential_read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
-     reading_past_end_of_file();
+     file.reading_past_end_of_file();
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -70,69 +67,9 @@ namespace joedb
      write_buffer();
    }
 
-   Open_Mode mode;
-   bool locked_tail;
-
-  protected:
-   void destructor_flush() noexcept;
-   void make_readonly() {mode = Open_Mode::read_existing;}
-   void make_writable() {mode = Open_Mode::write_existing;}
-   static constexpr int64_t last_position = (1ULL << 63) - 1;
-
   public:
-   Buffered_File(Open_Mode mode);
+   Buffered_File(Abstract_File &file);
    void flush();
-
-   void exclusive_lock_tail()
-   {
-    exclusive_lock(last_position, 1);
-    locked_tail = true;
-   }
-
-   void unlock_tail() noexcept
-   {
-    unlock(last_position, 1);
-    locked_tail = false;
-   }
-
-   bool tail_is_locked() const noexcept {return locked_tail;}
-   void shared_lock_head() {shared_lock(0, 1);}
-   void exclusive_lock_head() {exclusive_lock(0, 1);}
-   void unlock_head() noexcept {unlock(0, 1);}
-
-   class Head_Shared_Lock
-   {
-    private:
-     Buffered_File &file;
-    public:
-     Head_Shared_Lock(Buffered_File &file): file(file)
-     {
-      file.shared_lock_head();
-     }
-     ~Head_Shared_Lock()
-     {
-      file.unlock_head();
-     }
-   };
-
-   class Head_Exclusive_Lock
-   {
-    private:
-     Buffered_File &file;
-    public:
-     Head_Exclusive_Lock(Buffered_File &file): file(file)
-     {
-      file.exclusive_lock_head();
-     }
-     ~Head_Exclusive_Lock()
-     {
-      file.unlock_head();
-     }
-   };
-
-   bool is_shared() const noexcept {return mode == Open_Mode::shared_write;}
-   bool is_readonly() const noexcept {return mode == Open_Mode::read_existing;}
-   Open_Mode get_mode() const noexcept {return mode;}
 
    // set_position must be called when switching between write and read
    void set_position(int64_t position);
@@ -140,38 +77,6 @@ namespace joedb
    int64_t get_position() const noexcept
    {
     return Sequential_File::get_position() - read_buffer_size + buffer.index;
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   static void reading_past_end_of_file()
-   //////////////////////////////////////////////////////////////////////////
-   {
-    throw Exception("Trying to read past the end of file");
-   }
-
-   //////////////////////////////////////////////////////////////////////////
-   virtual void copy_to
-   //////////////////////////////////////////////////////////////////////////
-   (
-    Buffered_File &destination,
-    int64_t start,
-    int64_t size
-   ) const;
-
-   //////////////////////////////////////////////////////////////////////////
-   virtual bool equal_to
-   //////////////////////////////////////////////////////////////////////////
-   (
-    Buffered_File &destination,
-    int64_t from,
-    int64_t until
-   ) const;
-
-   //////////////////////////////////////////////////////////////////////////
-   void copy_to(Buffered_File &destination) const
-   //////////////////////////////////////////////////////////////////////////
-   {
-    copy_to(destination, 0, get_size());
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -309,7 +214,7 @@ namespace joedb
       const size_t actually_read = sequential_read(data + n0, n - n0);
       if (actually_read == 0)
       {
-       reading_past_end_of_file();
+       file.reading_past_end_of_file();
        break;
       }
       n0 += actually_read;
@@ -329,7 +234,7 @@ namespace joedb
      set_position(get_position() + n);
    }
 
-   std::string read_blob(Blob blob) const;
+   ~Buffered_File();
  };
 }
 

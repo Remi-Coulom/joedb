@@ -10,7 +10,7 @@ namespace joedb
   std::streambuf &streambuf,
   Open_Mode mode
  ):
-  Buffered_File(mode),
+  Abstract_File(mode),
   streambuf(streambuf),
   pos(0)
  {
@@ -88,12 +88,5 @@ namespace joedb
 
   if (streambuf.pubsync() < 0)
    throw Exception("sync error");
- }
-
- /////////////////////////////////////////////////////////////////////////////
- Stream_File::~Stream_File()
- /////////////////////////////////////////////////////////////////////////////
- {
-  destructor_flush();
  }
 }

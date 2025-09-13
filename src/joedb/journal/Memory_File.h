@@ -1,21 +1,21 @@
 #ifndef joedb_Memory_File_declared
 #define joedb_Memory_File_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 #include <string>
 
 namespace joedb
 {
  /// @ingroup journal
- class Memory_File: public Buffered_File
+ class Memory_File: public Abstract_File
  {
   protected:
    std::string data;
 
   public:
    Memory_File(Open_Mode mode = Open_Mode::create_new):
-    Buffered_File(mode)
+    Abstract_File(mode)
    {
    }
 
@@ -27,8 +27,6 @@ namespace joedb
    int64_t get_size() const override {return int64_t(data.size());}
    size_t pread(char *buffer, size_t size, int64_t offset) const override;
    void pwrite(const char *buffer, size_t size, int64_t offset) override;
-
-   ~Memory_File() override;
  };
 }
 

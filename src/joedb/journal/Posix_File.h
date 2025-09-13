@@ -1,10 +1,11 @@
 #ifndef joedb_Posix_File_declared
 #define joedb_Posix_File_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <string>
 
 #ifndef F_OFD_SETLK
 #define JOEDB_HAS_BROKEN_POSIX_LOCKING
@@ -13,7 +14,7 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- class Posix_FD: public Buffered_File
+ class Posix_FD: public Abstract_File
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
@@ -27,7 +28,7 @@ namespace joedb
    static void throw_last_error(const char *action, const char *file_name);
 
    Posix_FD(int fd, Open_Mode mode):
-    Buffered_File(mode),
+    Abstract_File(mode),
     fd(fd)
    {
    }

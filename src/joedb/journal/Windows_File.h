@@ -1,14 +1,14 @@
 #ifndef joedb_Windows_File_declared
 #define joedb_Windows_File_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 #include <windows.h>
 #include <array>
 
 namespace joedb
 {
- class Windows_Handle: public Buffered_File
+ class Windows_Handle: public Abstract_File
  {
   private:
    static constexpr size_t mode_count = static_cast<size_t>(joedb::Open_Mode::mode_count);

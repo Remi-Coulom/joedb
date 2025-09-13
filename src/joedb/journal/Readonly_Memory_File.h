@@ -1,14 +1,15 @@
 #ifndef joedb_Readonly_Memory_File_declared
 #define joedb_Readonly_Memory_File_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 #include <vector>
+#include <cstring>
 
 namespace joedb
 {
  /// @ingroup journal
- class Readonly_Memory_File: public Buffered_File
+ class Readonly_Memory_File: public Abstract_File
  {
   protected:
    const char * data;
@@ -30,7 +31,7 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    Readonly_Memory_File(const void *memory, size_t size):
    //////////////////////////////////////////////////////////////////////////
-    Buffered_File(joedb::Open_Mode::read_existing),
+    Abstract_File(joedb::Open_Mode::read_existing),
     data((const char *)memory),
     data_size(size)
    {

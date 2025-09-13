@@ -2,7 +2,7 @@
 #define joedb_Server_File_declared
 
 #include "joedb/concurrency/Robust_Connection.h"
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Memory_File.h"
 
 namespace joedb
@@ -18,7 +18,7 @@ namespace joedb
  /// @include server_file_tutorial.cpp
  ///
  /// @ingroup concurrency
- class Server_File: public Robust_Connection, public Buffered_File
+ class Server_File: public Robust_Connection, public Abstract_File
  {
   private:
    int64_t tail_offset;
