@@ -92,17 +92,20 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File file;
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(0);
-  file.write<uint64_t>(41);
-  file.write<uint64_t>(41);
-  file.write<uint32_t>(Readonly_Journal::format_version);
-  file.write<char>('j');
-  file.write<char>('o');
-  file.write<char>('e');
-  file.write<char>('d');
-  file.write<char>('b');
-  file.set_position(0);
+  {
+   Buffered_File file_buffer(file);
+   file_buffer.write<uint64_t>(0);
+   file_buffer.write<uint64_t>(0);
+   file_buffer.write<uint64_t>(41);
+   file_buffer.write<uint64_t>(41);
+   file_buffer.write<uint32_t>(Readonly_Journal::format_version);
+   file_buffer.write<char>('j');
+   file_buffer.write<char>('o');
+   file_buffer.write<char>('e');
+   file_buffer.write<char>('d');
+   file_buffer.write<char>('b');
+   file_buffer.set_position(0);
+  }
 
   {
    Readonly_Memory_File readonly_file
@@ -219,8 +222,13 @@ namespace joedb
 
   header.checkpoint = {0, 0, 41, 41};
   file.pwrite((const char *)&header, Header::size, 0);
-  file.set_position(41);
-  file.write<uint64_t>(0);
+
+  {
+   Buffered_File file_buffer(file);
+   file_buffer.set_position(41);
+   file_buffer.write<uint64_t>(0);
+   file_buffer.flush();
+  }
 
   {
    Readonly_Journal journal(file);
@@ -290,12 +298,14 @@ namespace joedb
    journal.soft_checkpoint();
   }
 
-  file.set_position(0);
-  file.write<int64_t>(correct_checkpoint);
-  file.write<int64_t>(correct_checkpoint);
-  file.write<int64_t>(1234);
-  file.write<int64_t>(5678);
-  file.flush();
+  {
+   Buffered_File file_buffer(file);
+   file_buffer.write<int64_t>(correct_checkpoint);
+   file_buffer.write<int64_t>(correct_checkpoint);
+   file_buffer.write<int64_t>(1234);
+   file_buffer.write<int64_t>(5678);
+   file_buffer.flush();
+  }
 
   {
    Database db;
@@ -317,8 +327,13 @@ namespace joedb
 
   {
    Writable_Journal journal(file);
-   file.write<uint8_t>(255);
+   journal.comment("Hello");
    journal.soft_checkpoint();
+  }
+
+  {
+   const char bug = -1;
+   file.pwrite(&bug, 1, Header::size);
   }
 
   Readonly_Journal journal(file);

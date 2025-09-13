@@ -46,9 +46,14 @@ TEST(SHA_256, file)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- file.write<char>('a');
- file.write<char>('b');
- file.write<char>('c');
+
+ {
+  joedb::Buffered_File file_buffer(file);
+  file_buffer.write<char>('a');
+  file_buffer.write<char>('b');
+  file_buffer.write<char>('c');
+  file_buffer.flush();
+ }
 
  EXPECT_EQ(joedb::File_Hasher::get_hash(file), abc_hash);
 }
@@ -58,13 +63,17 @@ TEST(SHA_256, file_slice)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- file.write<char>('x');
- file.write<char>('x');
- file.write<char>('a');
- file.write<char>('b');
- file.write<char>('c');
- file.write<char>('d');
- file.write<char>('e');
+ {
+  joedb::Buffered_File file_buffer(file);
+  file_buffer.write<char>('x');
+  file_buffer.write<char>('x');
+  file_buffer.write<char>('a');
+  file_buffer.write<char>('b');
+  file_buffer.write<char>('c');
+  file_buffer.write<char>('d');
+  file_buffer.write<char>('e');
+  file_buffer.flush();
+ }
 
  EXPECT_EQ(joedb::File_Hasher::get_hash(file, 2, 3), abc_hash);
  EXPECT_EQ(joedb::File_Hasher::get_fast_hash(file, 2, 3), abc_hash);
@@ -75,9 +84,13 @@ TEST(SHA_256, fast_hash_coverage)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- const size_t size = 1 << 20;
- for (size_t i = 0; i < size; i++)
-  file.write<uint32_t>(uint32_t(i));
+ {
+  joedb::Buffered_File file_buffer(file);
+  const size_t size = 1 << 20;
+  for (size_t i = 0; i < size; i++)
+   file_buffer.write<uint32_t>(uint32_t(i));
+  file_buffer.flush();
+ }
  joedb::File_Hasher::get_fast_hash(file, 0, file.get_size());
 }
 

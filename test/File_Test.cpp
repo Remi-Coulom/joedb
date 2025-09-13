@@ -1,6 +1,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Portable_File.h"
+#include "joedb/journal/Buffered_File.h"
 
 #include "Test_Sequence.h"
 
@@ -24,10 +25,11 @@ class File_Test: public::testing::Test
    TearDown();
 
    File file("existing.tmp", Open_Mode::create_new);
-   file.write<uint64_t>(joedb_magic);
-   file.write<bool>(false);
-   file.write<bool>(true);
-   file.flush();
+   Buffered_File file_buffer(file);
+   file_buffer.write<uint64_t>(joedb_magic);
+   file_buffer.write<bool>(false);
+   file_buffer.write<bool>(true);
+   file_buffer.flush();
   }
 
   void TearDown() override
@@ -65,8 +67,9 @@ TEST_F(File_Test, open_lock)
 
  {
   File locked_file_1("locked.tmp", Open_Mode::create_new);
-  locked_file_1.write<int>(1234);
-  locked_file_1.flush();
+  Buffered_File file_buffer(locked_file_1);
+  file_buffer.write<int>(1234);
+  file_buffer.flush();
 
   EXPECT_ANY_THROW
   (
@@ -218,11 +221,17 @@ TEST_F(File_Test, read_locked_area)
 {
  File file_1("locked.tmp", Open_Mode::shared_write);
  file_1.exclusive_lock(0, 4);
- file_1.write<int>(1234);
- file_1.flush();
+ {
+  Buffered_File file_buffer(file_1);
+  file_buffer.write<int>(1234);
+  file_buffer.flush();
+ }
 
  File file_2("locked.tmp", Open_Mode::read_existing);
- EXPECT_EQ(file_2.read<int32_t>(), 1234);
+ {
+  Buffered_File file_buffer(file_2);
+  EXPECT_EQ(file_buffer.read<int32_t>(), 1234);
+ }
 
  // Note: this works in Wine, but not in Windows
 	// Windows fails with: The process cannot access the file because another
@@ -274,7 +283,6 @@ TEST_F(File_Test, open_success)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  new_file.flush();
   EXPECT_FALSE(new_file.is_readonly());
   EXPECT_FALSE(new_file.is_shared());
  }
@@ -282,14 +290,12 @@ TEST_F(File_Test, open_success)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::write_existing_or_create_new);
-  new_file.flush();
   EXPECT_FALSE(new_file.is_readonly());
   EXPECT_FALSE(new_file.is_shared());
  }
 
  {
   File new_file("new.tmp", Open_Mode::write_existing_or_create_new);
-  new_file.flush();
   EXPECT_FALSE(new_file.is_readonly());
   EXPECT_FALSE(new_file.is_shared());
  }
@@ -299,9 +305,10 @@ TEST_F(File_Test, open_success)
 TEST_F(File_Test, read_existing)
 {
  File existing("existing.tmp", Open_Mode::read_existing);
- EXPECT_EQ(existing.read<uint64_t>(), joedb_magic);
- EXPECT_EQ(existing.read<bool>(), false);
- EXPECT_EQ(existing.read<bool>(), true);
+ Buffered_File file_buffer(existing);
+ EXPECT_EQ(file_buffer.read<uint64_t>(), joedb_magic);
+ EXPECT_EQ(file_buffer.read<bool>(), false);
+ EXPECT_EQ(file_buffer.read<bool>(), true);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -312,14 +319,15 @@ TEST_F(File_Test, long_consecutive_read_and_writes)
 
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
+ Buffered_File file_buffer(file);
 
  for (int64_t i = 0; i < N; i++)
-  file.write<int64_t>(i);
+  file_buffer.write<int64_t>(i);
 
- file.set_position(0);
+ file_buffer.set_position(0);
  for (int64_t i = 0; i < N; i++)
  {
-  const int64_t x = file.read<int64_t>();
+  const int64_t x = file_buffer.read<int64_t>();
   EXPECT_EQ(i, x);
  }
 }
@@ -330,9 +338,10 @@ TEST_F(File_Test, read_write_integer_joedb_magic)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  new_file.write<uint64_t>(joedb_magic);
-  new_file.set_position(0);
-  EXPECT_EQ(joedb_magic, new_file.read<uint64_t>());
+  Buffered_File file_buffer(new_file);
+  file_buffer.write<uint64_t>(joedb_magic);
+  file_buffer.set_position(0);
+  EXPECT_EQ(joedb_magic, file_buffer.read<uint64_t>());
  }
 }
 
@@ -342,9 +351,10 @@ TEST_F(File_Test, read_write_integer_compact_joedb_magic)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  new_file.compact_write<uint64_t>(joedb_magic);
-  new_file.set_position(0);
-  EXPECT_EQ(joedb_magic, new_file.compact_read<uint64_t>());
+  Buffered_File file_buffer(new_file);
+  file_buffer.compact_write<uint64_t>(joedb_magic);
+  file_buffer.set_position(0);
+  EXPECT_EQ(joedb_magic, file_buffer.compact_read<uint64_t>());
  }
 }
 
@@ -362,37 +372,40 @@ TEST_F(File_Test, read_write_integer_loop)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
+  Buffered_File file_buffer(new_file);
   for (int i = 0; i < N; i++)
   {
    uint16_t value = uint16_t(gen() & 0x1fff);
-   new_file.set_position(i);
-   new_file.compact_write<uint16_t>(value);
-   new_file.set_position(i);
-   EXPECT_EQ(value, new_file.compact_read<uint16_t>());
+   file_buffer.set_position(i);
+   file_buffer.compact_write<uint16_t>(value);
+   file_buffer.set_position(i);
+   EXPECT_EQ(value, file_buffer.compact_read<uint16_t>());
   }
  }
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
+  Buffered_File file_buffer(new_file);
   for (int i = 0; i < N; i++)
   {
    uint32_t value = uint32_t(gen() & 0x1fffffff);
-   new_file.set_position(i);
-   new_file.compact_write<uint32_t>(value);
-   new_file.set_position(i);
-   EXPECT_EQ(value, new_file.compact_read<uint32_t>());
+   file_buffer.set_position(i);
+   file_buffer.compact_write<uint32_t>(value);
+   file_buffer.set_position(i);
+   EXPECT_EQ(value, file_buffer.compact_read<uint32_t>());
   }
  }
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
+  Buffered_File file_buffer(new_file);
   for (int i = 0; i < N; i++)
   {
    uint64_t value = uint64_t(gen()) & 0x1fffffffffffffffULL;
-   new_file.set_position(i);
-   new_file.compact_write<uint64_t>(value);
-   new_file.set_position(i);
-   EXPECT_EQ(value, new_file.compact_read<uint64_t>());
+   file_buffer.set_position(i);
+   file_buffer.compact_write<uint64_t>(value);
+   file_buffer.set_position(i);
+   EXPECT_EQ(value, file_buffer.compact_read<uint64_t>());
   }
  }
 }
@@ -402,10 +415,11 @@ TEST_F(File_Test, read_write_string)
 {
  std::remove("new.tmp");
  File new_file("new.tmp", Open_Mode::create_new);
+ Buffered_File file_buffer(new_file);
  const std::string s("joedb!!!");
- new_file.write_string(s);
- new_file.set_position(0);
- EXPECT_EQ(new_file.read_string(), s);
+ file_buffer.write_string(s);
+ file_buffer.set_position(0);
+ EXPECT_EQ(file_buffer.read_string(), s);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -413,34 +427,35 @@ TEST_F(File_Test, position_test)
 {
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
- EXPECT_EQ(0LL, file.get_position());
+ Buffered_File file_buffer(file);
+ EXPECT_EQ(0LL, file_buffer.get_position());
 
 // That test was not correct
 // https://en.cppreference.com/w/cpp/io/c/fseek
 // "POSIX allows seeking beyond the existing end of file..."
-// file.set_position(size_t(-1));
-// EXPECT_EQ(0LL, file.get_position());
+// file_buffer.set_position(size_t(-1));
+// EXPECT_EQ(0LL, file_buffer.get_position());
 
  const int64_t N = 100;
  for (int i = N; --i >= 0;)
-  file.write<uint8_t>('x');
- EXPECT_EQ(N, file.get_position());
+  file_buffer.write<uint8_t>('x');
+ EXPECT_EQ(N, file_buffer.get_position());
 
  const int64_t pos = 12;
- file.set_position(pos);
- EXPECT_EQ(pos, file.get_position());
+ file_buffer.set_position(pos);
+ EXPECT_EQ(pos, file_buffer.get_position());
 
- const uint8_t x = file.read<uint8_t>();
+ const uint8_t x = file_buffer.read<uint8_t>();
  EXPECT_EQ('x', x);
- EXPECT_EQ(pos + 1, file.get_position());
+ EXPECT_EQ(pos + 1, file_buffer.get_position());
 
- file.set_position(N + 2);
- EXPECT_EQ(N + 2, file.get_position());
- file.write<uint8_t>('x');
- file.set_position(N + 1);
- const uint8_t c = file.read<uint8_t>();
+ file_buffer.set_position(N + 2);
+ EXPECT_EQ(N + 2, file_buffer.get_position());
+ file_buffer.write<uint8_t>('x');
+ file_buffer.set_position(N + 1);
+ const uint8_t c = file_buffer.read<uint8_t>();
  EXPECT_EQ(0, c);
- EXPECT_EQ(N + 2, file.get_position());
+ EXPECT_EQ(N + 2, file_buffer.get_position());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -448,20 +463,21 @@ TEST_F(File_Test, eof)
 {
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
+ Buffered_File file_buffer(file);
 
- EXPECT_ANY_THROW(file.read<uint8_t>());
+ EXPECT_ANY_THROW(file_buffer.read<uint8_t>());
 
- file.set_position(0);
+ file_buffer.set_position(0);
  const int N = 100000;
  for (int i = N; --i >= 0;)
-  file.write<uint8_t>('x');
+  file_buffer.write<uint8_t>('x');
 
- file.set_position(N - 1);
+ file_buffer.set_position(N - 1);
 
- uint8_t c = file.read<uint8_t>();
+ uint8_t c = file_buffer.read<uint8_t>();
  EXPECT_EQ('x', c);
 
- EXPECT_ANY_THROW(file.read<uint8_t>());
+ EXPECT_ANY_THROW(file_buffer.read<uint8_t>());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -469,19 +485,21 @@ TEST_F(File_Test, flush)
 /////////////////////////////////////////////////////////////////////////////
 {
  File file1("new.tmp", Open_Mode::create_new);
- file1.write<int32_t>(1234);
- file1.flush();
+ Buffered_File file1_buffer(file1);
+ file1_buffer.write<int32_t>(1234);
+ file1_buffer.flush();
 
  File file2("new.tmp", Open_Mode::read_existing);
- file2.set_position(0);
- EXPECT_EQ(1234, file2.read<int32_t>());
+ Buffered_File file2_buffer(file2);
+ file2_buffer.set_position(0);
+ EXPECT_EQ(1234, file2_buffer.read<int32_t>());
 
- file1.set_position(0);
- file1.write<int32_t>(5678);
- file1.flush();
+ file1_buffer.set_position(0);
+ file1_buffer.write<int32_t>(5678);
+ file1_buffer.flush();
 
- file2.set_position(0);
- EXPECT_EQ(5678, file2.read<int32_t>());
+ file2_buffer.set_position(0);
+ EXPECT_EQ(5678, file2_buffer.read<int32_t>());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -491,9 +509,11 @@ TEST_F(File_Test, double_pread)
  File file1("new.tmp", Open_Mode::create_new);
  File file2("new.tmp", Open_Mode::read_existing);
 
- file1.set_position(0);
- file1.write<int32_t>(1234);
- file1.flush();
+ Buffered_File file1_buffer(file1);
+
+ file1_buffer.set_position(0);
+ file1_buffer.write<int32_t>(1234);
+ file1_buffer.flush();
 
  {
   int32_t value;
@@ -501,9 +521,9 @@ TEST_F(File_Test, double_pread)
   EXPECT_EQ(1234, value);
  }
 
- file1.set_position(0);
- file1.write<int32_t>(5678);
- file1.flush();
+ file1_buffer.set_position(0);
+ file1_buffer.write<int32_t>(5678);
+ file1_buffer.flush();
 
  {
   int32_t value;
@@ -517,14 +537,15 @@ static void perf(size_t size)
 /////////////////////////////////////////////////////////////////////////////
 {
  File file("new.tmp", Open_Mode::create_new);
+ Buffered_File file_buffer(file);
  const size_t total_size = 10000000;
  const int N = int(total_size / (size + 1));
  std::string s(size, ' ');
 
  for (int i = N; --i >= 0;)
-  file.write_string(s);
+  file_buffer.write_string(s);
 
- file.flush();
+ file_buffer.flush();
 }
 
 TEST_F(File_Test, write_data_perf100000) {perf(100000);}
@@ -553,13 +574,14 @@ TEST(File, write_data)
  for (size_t n = 1; n <= input.size(); n++)
  {
   Memory_File file;
+  Buffered_File file_buffer(file);
 
   size_t offset = size_t(gen()) & 0x7ffULL;
-  file.write_data(&input[1], offset);
-  file.write_data(&input[0], n);
-  file.set_position(int64_t(offset));
+  file_buffer.write_data(&input[1], offset);
+  file_buffer.write_data(&input[0], n);
+  file_buffer.set_position(int64_t(offset));
   std::string output(n, 0);
-  file.read_data(&output[0], n);
+  file_buffer.read_data(&output[0], n);
   ASSERT_EQ(0, std::memcmp(&input[0], &output[0], n)) << "n = " << n;
  }
 }
@@ -587,8 +609,9 @@ TEST(File, portable)
    "test.joedb",
    joedb::Open_Mode::write_existing_or_create_new
   );
-  file.write<int32_t>(1234);
-  file.flush();
+  Buffered_File file_buffer(file);
+  file_buffer.write<int32_t>(1234);
+  file_buffer.flush();
  );
 
  {
@@ -597,9 +620,10 @@ TEST(File, portable)
    "test.joedb",
    joedb::Open_Mode::write_existing_or_create_new
   );
-  file.write<int32_t>(5678);
-  file.set_position(0);
-  EXPECT_EQ(file.read<int32_t>(), 5678);
+  Buffered_File file_buffer(file);
+  file_buffer.write<int32_t>(5678);
+  file_buffer.set_position(0);
+  EXPECT_EQ(file_buffer.read<int32_t>(), 5678);
  }
 
  EXPECT_ANY_THROW
@@ -634,10 +658,11 @@ TEST(File, sync)
 {
  std::remove("test.joedb");
  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
+ joedb::Buffered_File file_buffer(file);
  for (int i = 10; --i >= 0;)
  {
-  file.write<int>(42);
-  file.flush();
+  file_buffer.write<int>(42);
+  file_buffer.flush();
   file.sync();
  }
 }

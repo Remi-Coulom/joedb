@@ -12,8 +12,7 @@ namespace joedb
   std::istream &stream,
   bool readonly
  ):
-  file_view(*this),
-  journal(file_view)
+  journal(*this)
  {
   if (!stream)
    throw Exception("opening interpreted file: !stream");
@@ -26,7 +25,7 @@ namespace joedb
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);
   {
-   joedb::Abstract_File null_file;
+   Abstract_File null_file(Open_Mode::create_new);
    joedb::streambuf null_streambuf(null_file);
    std::ostream null_stream(&null_streambuf);
    interpreter.main_loop(stream, null_stream);

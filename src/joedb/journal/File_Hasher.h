@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- class Buffered_File;
+ class Abstract_File;
 
  /// @ingroup journal
  class File_Hasher
@@ -15,17 +15,17 @@ namespace joedb
  public:
   static SHA_256::Hash get_hash
   (
-   Buffered_File &file,
+   const Abstract_File &file,
    int64_t start,
    int64_t size
   );
 
-  static SHA_256::Hash get_hash(Buffered_File &file);
+  static SHA_256::Hash get_hash(const Abstract_File &file);
   static SHA_256::Hash get_hash(const std::string &s);
 
   static SHA_256::Hash get_fast_hash
   (
-   Buffered_File &file,
+   const Abstract_File &file,
    int64_t start,
    int64_t size
   );

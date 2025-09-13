@@ -10,14 +10,12 @@ namespace joedb
  SHA_256::Hash File_Hasher::get_hash
  ////////////////////////////////////////////////////////////////////////////
  (
-  Buffered_File &file,
+  const Abstract_File &file,
   int64_t start,
   int64_t size
  )
  {
   SHA_256 sha_256;
-  int64_t old_position = file.get_position();
-  file.set_position(start);
 
   constexpr uint32_t chunks = 2048;
   std::vector<char> hashing_buffer(SHA_256::chunk_size * chunks);
@@ -30,7 +28,7 @@ namespace joedb
    if (current_size + int64_t(block_size) > size)
     block_size = size_t(size - current_size);
 
-   const size_t read_count = file.read_data(&hashing_buffer[0], block_size);
+   const size_t read_count = file.pread(hashing_buffer.data(), block_size, start + current_size);
    current_size += int64_t(read_count);
    const uint32_t full_chunks = uint32_t(read_count / SHA_256::chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
@@ -48,15 +46,13 @@ namespace joedb
    }
   }
 
-  file.set_position(old_position);
   return sha_256.get_hash();
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash File_Hasher::get_hash(Buffered_File &file)
+ SHA_256::Hash File_Hasher::get_hash(const Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
-  file.flush(); // necessary, to get correct file.get_size() on next line
   return File_Hasher::get_hash(file, 0, file.get_size());
  }
 
@@ -72,19 +68,19 @@ namespace joedb
  SHA_256::Hash File_Hasher::get_fast_hash
  ////////////////////////////////////////////////////////////////////////////
  (
-  Buffered_File &file,
+  const Abstract_File &file,
   int64_t start,
   int64_t size
  )
  {
+  Buffer<12> buffer;
+
   constexpr int buffer_count = 256;
 
-  if (size < 4 * file.buffer.ssize * buffer_count)
+  if (size < 4 * buffer.ssize * buffer_count)
    return get_hash(file, start, size);
 
   SHA_256 sha_256;
-  const int64_t old_position = file.get_position();
-  file.flush();
 
   for (int i = 0; i < buffer_count; i++)
   {
@@ -93,22 +89,21 @@ namespace joedb
    if (i == 0)
     buffer_position = start;
    else if (i == buffer_count - 1)
-    buffer_position = start + size - file.buffer.ssize;
+    buffer_position = start + size - buffer.ssize;
    else
    {
-    buffer_position = file.buffer.ssize *
+    buffer_position = buffer.ssize *
     (
-     (start + i * size) / (file.buffer.ssize * (buffer_count - 1))
+     (start + i * size) / (buffer.ssize * (buffer_count - 1))
     );
    }
 
-   file.pread(file.buffer.data, file.buffer.size, buffer_position);
+   file.pread(buffer.data, buffer.size, buffer_position);
 
-   for (size_t j = 0; j < file.buffer.size; j += SHA_256::chunk_size)
-    sha_256.process_chunk(file.buffer.data + j);
+   for (size_t j = 0; j < buffer.size; j += SHA_256::chunk_size)
+    sha_256.process_chunk(buffer.data + j);
   }
 
-  file.set_position(old_position);
   return sha_256.get_hash();
  }
 
@@ -122,7 +117,7 @@ namespace joedb
  {
   return File_Hasher::get_fast_hash
   (
-   journal.file,
+   journal.abstract_file,
    Header::size,
    checkpoint - Header::ssize
   );
@@ -138,7 +133,7 @@ namespace joedb
  {
   return File_Hasher::get_hash
   (
-   journal.file,
+   journal.abstract_file,
    Header::size,
    checkpoint - Header::ssize
   );

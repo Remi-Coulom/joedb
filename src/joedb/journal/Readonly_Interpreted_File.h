@@ -2,7 +2,6 @@
 #define joedb_Readonly_Interpreted_File_declared
 
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/File_View.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/fstream.h"
 #include "joedb/interpreted/Database.h"
@@ -16,7 +15,6 @@ namespace joedb
  {
   protected:
    Database db;
-   File_View file_view;
    Writable_Journal journal;
 
    Readonly_Interpreted_File(std::istream &stream, bool readonly);
