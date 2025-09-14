@@ -6,15 +6,17 @@ History
   - New major features:
 
     - :doc:`rpc`
-    - websocket support
+    - websocket support based on `boost::beast <https://www.boost.org/doc/libs/latest/libs/beast/doc/html/index.html>`_
     - :joedb:`joedb::filebuf`
-    - Files are unbuffered, and a separate :joedb:`File_Buffer` can be used
-      instead:
+    - Files are not buffered any more. An independent :joedb:`File_Buffer` can
+      be used instead. This new design has many advantages:
 
-      - removes the bug-prone need for `File_View`: each journal has its own
-        buffer, and more than one journal can operate on the same file safely,
-      - removes a pointer indirection when accessing the buffer from journals,
-      - saves memory when the buffer is not needed.
+      - it removes the bug-prone need for ``File_View``: each journal has its
+        own buffer, and more than one journal can operate on the same file
+        safely,
+      - it saves memory when the buffer is not needed,
+      - it removes a pointer indirection when accessing the buffer from
+        journals.
 
   - Minor improvements:
 
