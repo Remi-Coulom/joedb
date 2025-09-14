@@ -26,7 +26,7 @@ namespace joedb
     return "<file>";
    }
 
-   Connection *build(Arguments &arguments, Buffered_File *file) override
+   Connection *build(Arguments &arguments, Abstract_File *file) override
    {
     std::ostream null_stream(nullptr);
 

@@ -1,8 +1,6 @@
 TODO
 ====
 
-- remove File_View and Buffered_File. Create a File_Buffer instead. Stored by
-  value in Journal: nicer design, better performance (one less indirection).
 - joedb::streambuf -> concurrency and durability for joedb::Interpreted_File.
   Use empty line as checkpoint indicator.
   investigate macos github action crash.

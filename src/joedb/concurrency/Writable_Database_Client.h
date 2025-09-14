@@ -19,7 +19,7 @@ namespace joedb
    public:
     Writable_Database_Client_Data
     (
-     Buffered_File &file,
+     Abstract_File &file,
      Record_Id max_record_id,
      Recovery recovery
     ):
@@ -47,7 +47,7 @@ namespace joedb
   public:
    Writable_Database_Client
    (
-    Buffered_File &file,
+    Abstract_File &file,
     Connection &connection = Connection::dummy,
     Content_Check content_check = Content_Check::fast,
     Record_Id max_record_id = Record_Id::null,

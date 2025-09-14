@@ -38,7 +38,7 @@ namespace joedb::generator
 
     Client_Data
     (
-     joedb::Buffered_File &file,
+     joedb::Abstract_File &file,
      joedb::Recovery recovery
     ):
      db(file, recovery, false)
@@ -47,7 +47,7 @@ namespace joedb::generator
   };
  }
 
- /// Handle concurrent access to a @ref joedb::Buffered_File using a @ref joedb::Connection
+ /// Handle concurrent access to a @ref joedb::Abstract_File using a @ref joedb::Connection
  class Client:
   protected detail::Client_Data,
   public joedb::Writable_Client
@@ -72,7 +72,7 @@ namespace joedb::generator
   public:
    Client
    (
-    joedb::Buffered_File &file,
+    joedb::Abstract_File &file,
     joedb::Connection &connection = joedb::Connection::dummy,
     joedb::Content_Check content_check = joedb::Content_Check::fast,
     joedb::Recovery recovery = joedb::Recovery::none

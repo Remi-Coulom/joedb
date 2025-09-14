@@ -3,7 +3,6 @@
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/journal/File_View.h"
 
 #include "Shared_Memory_File.h"
 
@@ -215,8 +214,7 @@ namespace joedb
   {
   }
 
-  client_file.flush();
-  EXPECT_EQ(client_file.get_size(), 57);
+  EXPECT_EQ(client.get_journal().get_position(), 57);
   EXPECT_EQ(client.get_journal_checkpoint(), 52);
   EXPECT_EQ(server_file.get_size(), 52);
  }
@@ -484,8 +482,7 @@ namespace joedb
    EXPECT_EQ(client.get_database().get_tables().size(), 1);
 
    {
-    File_View file_view(file);
-    Writable_Database_Client client2(file_view);
+    Writable_Database_Client client2(file);
     client2.transaction([](Readable &readable, Writable &writable)
     {
      writable.create_table("city");

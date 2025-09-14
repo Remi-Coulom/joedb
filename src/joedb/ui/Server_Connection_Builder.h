@@ -24,7 +24,7 @@ namespace joedb
     return "[--keep_alive <seconds>] " + get_connection_parameters();
    }
 
-   Connection *build(Arguments &arguments, Buffered_File *file) override
+   Connection *build(Arguments &arguments, Abstract_File *file) override
    {
     const float keep_alive_interval = arguments.next_option<float>
     (

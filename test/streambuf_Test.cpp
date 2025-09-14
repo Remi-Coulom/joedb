@@ -38,8 +38,7 @@ namespace joedb
  TEST(streambuf, read)
  {
   joedb::Memory_File file;
-  file.write_data("123", 3);
-  file.flush();
+  file.get_data() = "123";
   int n;
   joedb::iostream(file) >> n;
   EXPECT_EQ(123, n);
@@ -48,8 +47,7 @@ namespace joedb
  TEST(streambuf, showmanyc)
  {
   joedb::Memory_File file;
-  file.write_data("123 456", 7);
-  file.flush();
+  file.get_data() = "123 456";
 
 #ifdef TEST_STD_STRINGBUF
   std::stringbuf buf(file.get_data());
@@ -147,7 +145,7 @@ namespace joedb
 
  TEST(streambuf, unknown_size)
  {
-  joedb::Abstract_File file;
+  joedb::Abstract_File file(Open_Mode::create_new);
   joedb::streambuf buf(file);
   EXPECT_EQ(-1, buf.pubseekoff(0, std::ios::end));
  }

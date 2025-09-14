@@ -32,6 +32,7 @@ TEST(File_Buffer, copy)
 
  EXPECT_FALSE(file.equal_to(not_copy, 0, 8));
 
+ copy_buffer.flush();
  copy_buffer.write<uint64_t>(magic + 1);
 
  EXPECT_FALSE(file.equal_to(not_copy, 0, 8));

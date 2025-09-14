@@ -15,7 +15,7 @@ namespace joedb
     return "dummy";
    }
 
-   Connection *build(Arguments &arguments, Buffered_File *file) override
+   Connection *build(Arguments &arguments, Abstract_File *file) override
    {
     return &Connection::dummy;
    }

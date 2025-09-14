@@ -97,6 +97,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
  ../src/joedb/journal/Async_Reader.cpp
+ ../src/joedb/journal/Abstract_File.cpp
  ../src/joedb/journal/File_Buffer.cpp
  ../src/joedb/journal/Memory_File.cpp
  ../src/joedb/journal/Readonly_Journal.cpp

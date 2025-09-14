@@ -82,7 +82,7 @@ namespace joedb
  //////////////////////////////////////////////////////////////////////////
  (
   Arguments &arguments,
-  Buffered_File *file
+  Abstract_File *file
  ) const
  {
   std::string_view connection_name;

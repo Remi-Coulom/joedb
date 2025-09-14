@@ -110,17 +110,17 @@ namespace joedb::generator
   out << R"RRR(
    Writable_Database
    (
-    joedb::Buffered_File &file,
+    joedb::Abstract_File &file,
     joedb::Recovery recovery,
     bool perform_initialization
    );
 
   public:
-   Writable_Database(joedb::Buffered_File &file);
+   Writable_Database(joedb::Abstract_File &file);
 
    Writable_Database
    (
-    joedb::Buffered_File &file,
+    joedb::Abstract_File &file,
     joedb::Recovery recovery
    );
 

@@ -2,6 +2,7 @@
 #include "joedb/journal/Async_Writer.h"
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/File_Iterator.h"
 
 #include "gtest/gtest.h"
 
@@ -52,7 +53,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Async, perf_with_pread)
+ TEST(Async, perf)
  ////////////////////////////////////////////////////////////////////////////
  {
   std::remove(file_name);
@@ -60,8 +61,9 @@ namespace joedb
   std::vector<char> buffer(block_size);
 
   File file(file_name, Open_Mode::create_new);
+  File_Iterator file_iterator(file);
   for (size_t i = 0; i < blocks; i++)
-   file.write_data(buffer.data(), buffer.size());
+   file_iterator.write(buffer.data(), buffer.size());
 
   Async_Reader reader(file, 0, blocks * block_size);
 
@@ -69,30 +71,6 @@ namespace joedb
   {
    const int64_t offset = block_size * ((i * step) % blocks);
    file.pread(buffer.data(), buffer.size(), offset);
-  }
-
-  std::remove(file_name);
- }
-
- ////////////////////////////////////////////////////////////////////////////
- TEST(Async, perf_with_seek_and_read) // This has become identical to pread
- ////////////////////////////////////////////////////////////////////////////
- {
-  std::remove(file_name);
-
-  std::vector<char> buffer(block_size);
-
-  File file (file_name, Open_Mode::create_new);
-  for (size_t i = 0; i < blocks; i++)
-   file.write_data(buffer.data(), buffer.size());
-
-  Async_Reader reader(file, 0, blocks * block_size);
-
-  for (int64_t i = 0; i < reads; i++)
-  {
-   const int64_t offset = block_size * ((i * step) % blocks);
-   file.sequential_seek(offset);
-   file.sequential_read(buffer.data(), buffer.size());
   }
 
   std::remove(file_name);

@@ -31,7 +31,7 @@ namespace joedb
   );
 
   std::ostream null_stream(nullptr);
-  Buffered_File *file = file_parser.parse(null_stream, arguments);
+  Abstract_File *file = file_parser.parse(null_stream, arguments);
 
   if (!file)
   {

@@ -79,7 +79,7 @@ namespace joedb
    Test_Local_Channel channel;
    Server_Connection server_connection;
 
-   Test_Client_Data(Buffered_File &file, Server &server):
+   Test_Client_Data(Abstract_File &file, Server &server):
     channel(server.get_endpoint_path()),
     server_connection(channel, log_to_cerr ? &std::cerr : nullptr)
    {
@@ -91,13 +91,13 @@ namespace joedb
   public Writable_Database_Client
  {
   public:
-   Test_Client(Buffered_File &file, Server &server):
+   Test_Client(Abstract_File &file, Server &server):
     Test_Client_Data(file, server),
     Writable_Database_Client(file, server_connection)
    {
    }
 
-   Test_Client(Buffered_File &file, Test_Server &server):
+   Test_Client(Abstract_File &file, Test_Server &server):
     Test_Client(file, server.server)
    {
    }

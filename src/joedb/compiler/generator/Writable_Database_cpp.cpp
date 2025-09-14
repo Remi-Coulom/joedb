@@ -109,7 +109,7 @@ namespace joedb::generator
  Writable_Database::Writable_Database
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Buffered_File &file,
+  joedb::Abstract_File &file,
   joedb::Recovery recovery,
   bool perform_initialization
  ):
@@ -122,7 +122,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Writable_Database::Writable_Database(joedb::Buffered_File &file):
+ Writable_Database::Writable_Database(joedb::Abstract_File &file):
  ////////////////////////////////////////////////////////////////////////////
   Writable_Database(file, joedb::Recovery::none, true)
  {
@@ -132,7 +132,7 @@ namespace joedb::generator
  Writable_Database::Writable_Database
  ////////////////////////////////////////////////////////////////////////////
  (
-  joedb::Buffered_File &file,
+  joedb::Abstract_File &file,
   joedb::Recovery recovery
  ):
   Writable_Database(file, recovery, true)

@@ -24,7 +24,7 @@ namespace joedb
   public:
    Readonly_Writable_Client
    (
-    Buffered_File &file,
+    Abstract_File &file,
     Connection &connection,
     bool tail,
     Content_Check content_check,
@@ -58,7 +58,7 @@ namespace joedb
   public:
    Joedb_Client
    (
-    Buffered_File &file,
+    Abstract_File &file,
     Connection &connection,
     Content_Check content_check,
     Recovery recovery
@@ -165,11 +165,11 @@ namespace joedb
   std::cerr << "recovery = " << recovery_string[int(recovery)] << '\n';
   std::cerr << "db_type = " << db_string[int(db_type)] << '\n';
 
-  Buffered_File *client_file = file_parser.parse(std::cerr, arguments);
+  Abstract_File *client_file = file_parser.parse(std::cerr, arguments);
   Connection *connection = connection_parser.build(arguments, client_file);
 
   if (!client_file)
-   client_file = dynamic_cast<Buffered_File *>(connection);
+   client_file = dynamic_cast<Abstract_File *>(connection);
 
   if (!client_file)
    throw Exception("could not create file");

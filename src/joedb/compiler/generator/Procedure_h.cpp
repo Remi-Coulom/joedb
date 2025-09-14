@@ -40,7 +40,7 @@ namespace joedb::generator
 
    virtual void execute(Writable_Database &message) const = 0;
 
-   void execute(joedb::Buffered_File &file) const override
+   void execute(joedb::Abstract_File &file) const override
    {
     Writable_Database db(file, joedb::Recovery::ignore_header);
     execute(db);

@@ -1,4 +1,4 @@
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/Readonly_Memory_File.h"
@@ -17,32 +17,37 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_readonly_test(Buffered_File &file)
+ static void polymorphic_readonly_test(Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   EXPECT_EQ(file.get_size(), 8);
-  EXPECT_EQ(file.read<int32_t>(), 1234);
-  EXPECT_EQ(file.read<int32_t>(), 5678);
-  file.set_position(2);
-  EXPECT_EQ(file.read<int16_t>(), 0);
-  file.set_position(0);
-  EXPECT_EQ(file.read<int16_t>(), 1234);
-  file.flush();
+
+  File_Buffer file_buffer(file);
+
+  EXPECT_EQ(file_buffer.read<int32_t>(), 1234);
+  EXPECT_EQ(file_buffer.read<int32_t>(), 5678);
+  file_buffer.set_position(2);
+  EXPECT_EQ(file_buffer.read<int16_t>(), 0);
+  file_buffer.set_position(0);
+  EXPECT_EQ(file_buffer.read<int16_t>(), 1234);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_test(Buffered_File &file)
+ static void polymorphic_test(Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
-  file.write<int32_t>(1234);
-  file.write<int32_t>(5678);
-  file.set_position(0);
-  file.flush();
+  File_Buffer file_buffer(file);
+
+  file_buffer.write<int32_t>(1234);
+  file_buffer.write<int32_t>(5678);
+  file_buffer.set_position(0);
+  file_buffer.flush();
+
   polymorphic_readonly_test(file);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_journal_readonly_test(Buffered_File &file)
+ static void polymorphic_journal_readonly_test(Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   Readonly_Journal journal(file);
@@ -51,7 +56,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void polymorphic_journal_test(Buffered_File &file)
+ static void polymorphic_journal_test(Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
   {
@@ -63,7 +68,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- static void large_write_test(Buffered_File &file)
+ static void large_write_test(Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
 #if 0

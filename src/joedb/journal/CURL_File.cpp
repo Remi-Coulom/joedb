@@ -1,5 +1,5 @@
 #include "joedb/journal/CURL_File.h"
-#include "joedb/journal/Sequential_File.h"
+#include "joedb/journal/File_Iterator.h"
 #include "joedb/error/Exception.h"
 
 #include <cstring>
@@ -85,8 +85,8 @@ namespace joedb
  )
  {
   const size_t real_size = size * nmemb;
-  Sequential_File &cursor = *((Sequential_File *)p);
-  cursor.sequential_write((const char *)contents, real_size);
+  File_Iterator &file_iterator = *((File_Iterator *)p);
+  file_iterator.write((const char *)contents, real_size);
   return real_size;
  }
 
@@ -99,8 +99,9 @@ namespace joedb
   const int64_t size
  ) const
  {
-  Sequential_File cursor(destination);
-  error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &cursor));
+  File_Iterator file_iterator(destination);
+  file_iterator.seek(start);
+  error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file_iterator));
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, copy_callback));
   perform_range(start, size);
  }

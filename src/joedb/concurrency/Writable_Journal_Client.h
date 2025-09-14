@@ -15,7 +15,7 @@ namespace joedb
    public:
     Writable_Journal_Client_Data
     (
-     Buffered_File &file,
+     Abstract_File &file,
      Recovery recovery
     ):
      data_journal(Journal_Construction_Lock(file, recovery))
@@ -40,7 +40,7 @@ namespace joedb
   public:
    Writable_Journal_Client
    (
-    Buffered_File &file,
+    Abstract_File &file,
     Connection &connection = Connection::dummy,
     Content_Check content_check = Content_Check::fast,
     Recovery recovery = Recovery::none

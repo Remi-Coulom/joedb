@@ -44,7 +44,7 @@ namespace joedb::generator
    }
 
   public:
-   Readonly_Client(joedb::Buffered_File &file):
+   Readonly_Client(joedb::Abstract_File &file):
     joedb::Readonly_Client
     (
      file,

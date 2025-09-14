@@ -6,7 +6,7 @@
 namespace joedb
 {
  class Connection;
- class Buffered_File;
+ class Abstract_File;
 
  /// @ingroup ui
  class Connection_Builder
@@ -16,7 +16,7 @@ namespace joedb
    virtual const char *get_name() const {return "";}
    virtual std::string get_parameters_description() const {return "";}
 
-   virtual Connection *build(Arguments &arguments, Buffered_File *file) = 0;
+   virtual Connection *build(Arguments &arguments, Abstract_File *file) = 0;
 
    virtual ~Connection_Builder() = default;
  };

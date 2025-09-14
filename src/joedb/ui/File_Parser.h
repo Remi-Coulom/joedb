@@ -1,7 +1,7 @@
 #ifndef joedb_File_Parser_declared
 #define joedb_File_Parser_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 #include "joedb/ui/Arguments.h"
 
 #ifdef JOEDB_HAS_SSH
@@ -15,7 +15,7 @@
 
 namespace joedb
 {
- /// Create an instance of a @ref Buffered_File by parsing command-line arguments
+ /// Create an instance of a @ref Abstract_File by parsing command-line arguments
  /// @ingroup ui
  class File_Parser
  {
@@ -29,7 +29,7 @@ namespace joedb
    std::optional<ssh::Session> ssh_session;
    std::optional<ssh::SFTP> sftp;
 #endif
-   std::unique_ptr<Buffered_File> file;
+   std::unique_ptr<Abstract_File> file;
 
   public:
    File_Parser
@@ -46,8 +46,8 @@ namespace joedb
    {
    }
 
-   Buffered_File *parse(std::ostream &out, Arguments &arguments);
-   Buffered_File *get_file() const {return file.get();}
+   Abstract_File *parse(std::ostream &out, Arguments &arguments);
+   Abstract_File *get_file() const {return file.get();}
    void print_help(std::ostream &out) const;
  };
 }

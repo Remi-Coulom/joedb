@@ -8,6 +8,12 @@ History
     - :doc:`rpc`
     - :joedb:`joedb::streambuf`
     - websocket support
+    - Files are unbuffered, and a separate File_Buffer can be used instead:
+
+      - removes the bug-prone need for `File_View`: each journal has its own
+        buffer, and more than one journal can operate on the same file safely,
+      - removes a pointer indirection when accessing the buffer from journals,
+      - saves memory when the buffer is not needed.
 
   - Minor improvements:
 

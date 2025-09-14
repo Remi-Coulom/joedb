@@ -87,7 +87,7 @@ namespace joedb
 
    public:
     /////////////////////////////////////////////////////////////////////////
-    File_Connection_Data(Buffered_File &server_file):
+    File_Connection_Data(Abstract_File &server_file):
     /////////////////////////////////////////////////////////////////////////
      server_journal(server_file)
     {
@@ -102,7 +102,7 @@ namespace joedb
  {
   public:
    //////////////////////////////////////////////////////////////////////////
-   File_Connection(Buffered_File &server_file):
+   File_Connection(Abstract_File &server_file):
    //////////////////////////////////////////////////////////////////////////
     File_Connection_Data(server_file),
     Journal_Connection(File_Connection_Data::server_journal)

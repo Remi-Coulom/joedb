@@ -1,4 +1,5 @@
 #include "joedb/journal/File.h"
+#include "joedb/journal/File_Buffer.h"
 
 #include <cstdio>
 
@@ -22,16 +23,21 @@ int main(int argc, char **argv)
   {
    std::remove(file_name);
    joedb::File file(file_name, joedb::Open_Mode::create_new);
+   joedb::File_Buffer file_buffer(file);
 
    for (int i = N; --i >= 0;)
-    file.write<int64_t>(i);
+    file_buffer.write<int64_t>(i);
+
+   file_buffer.flush();
   }
 
   {
    joedb::File file(file_name, joedb::Open_Mode::read_existing);
+   joedb::File_Buffer file_buffer(file);
+
    for (int i = N; --i >= 0;)
    {
-    const int64_t n = file.read<int64_t>();
+    const int64_t n = file_buffer.read<int64_t>();
     if (n != i)
     {
      std::printf("Error!\n");

@@ -1,5 +1,6 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/File_Hasher.h"
+#include "joedb/error/Exception.h"
 #include "joedb/ui/Arguments.h"
 
 #include <iostream>

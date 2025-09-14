@@ -70,7 +70,7 @@ namespace joedb
 
    std::unique_ptr<Writable> writable;
 
-   const Buffered_File *blob_reader = blob ? &file : nullptr;
+   const Abstract_File *blob_reader = blob ? &file : nullptr;
 
    if (sql)
     writable.reset(new SQL_Dump_Writable(std::cout, blob_reader));

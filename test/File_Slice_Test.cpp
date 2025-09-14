@@ -1,4 +1,5 @@
 #include "joedb/journal/File.h"
+#include "joedb/journal/File_Buffer.h"
 
 #ifdef JOEDB_FILE_IS_POSIX_FILE
 
@@ -15,19 +16,21 @@ namespace joedb
 
   {
    File file(file_name, Open_Mode::create_new);
-   file.write<int32_t>(1234);
-   file.write<int32_t>(5678);
-   file.write<int32_t>(9999);
-   file.write<int32_t>(8765);
-   file.flush();
+   File_Buffer file_buffer(file);
+   file_buffer.write<int32_t>(1234);
+   file_buffer.write<int32_t>(5678);
+   file_buffer.write<int32_t>(9999);
+   file_buffer.write<int32_t>(8765);
+   file_buffer.flush();
   }
 
   {
    const int fd = open(file_name, O_RDONLY);
    EXPECT_TRUE(fd >= 0);
    File_Slice file(fd, 8, 4);
-   EXPECT_EQ(file.read<int32_t>(), 9999);
-   EXPECT_ANY_THROW(file.read<int32_t>()); // end of file
+   File_Buffer file_buffer(file);
+   EXPECT_EQ(file_buffer.read<int32_t>(), 9999);
+   EXPECT_ANY_THROW(file_buffer.read<int32_t>()); // end of file
    close(fd);
   }
 

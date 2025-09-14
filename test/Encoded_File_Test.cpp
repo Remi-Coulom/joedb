@@ -28,7 +28,6 @@ namespace joedb
    EXPECT_EQ(data[0], 'y');
    EXPECT_EQ(data[1], 'y');
    EXPECT_EQ(data[2], 'y');
-   file.flush();
   }
  }
 
@@ -46,33 +45,42 @@ namespace joedb
 
    EXPECT_EQ(file.get_size(), 0);
 
-   file.write<int32_t>(value);
-   file.write<int32_t>(value);
-   file.set_position(0);
+   {
+    File_Buffer file_buffer(file);
+    file_buffer.write<int32_t>(value);
+    file_buffer.write<int32_t>(value);
+    file_buffer.flush();
+   }
 
    EXPECT_EQ(file.get_size(), 8);
 
-   EXPECT_EQ(file.read<int32_t>(), value);
-   file.set_position(0);
+   {
+    File_Buffer file_buffer(file);
+    EXPECT_EQ(file_buffer.read<int32_t>(), value);
+   }
 
    EXPECT_EQ(file.get_size(), 8);
 
-   EXPECT_EQ(file.read<int8_t>(), 0x04);
-   EXPECT_EQ(file.read<int8_t>(), 0x03);
-   EXPECT_EQ(file.read<int8_t>(), 0x02);
-   EXPECT_EQ(file.read<int8_t>(), 0x01);
-   EXPECT_EQ(file.read<int32_t>(), value);
+   {
+    File_Buffer file_buffer(file);
+    EXPECT_EQ(file_buffer.read<int8_t>(), 0x04);
+    EXPECT_EQ(file_buffer.read<int8_t>(), 0x03);
+    EXPECT_EQ(file_buffer.read<int8_t>(), 0x02);
+    EXPECT_EQ(file_buffer.read<int8_t>(), 0x01);
+    EXPECT_EQ(file_buffer.read<int32_t>(), value);
+   }
   }
 
   {
    db::encoded_file::Writable_Database db(db_file);
    Encoded_File file(codec, db);
    EXPECT_EQ(file.get_size(), 8);
-   EXPECT_EQ(file.read<int8_t>(), 0x04);
-   EXPECT_EQ(file.read<int8_t>(), 0x03);
-   EXPECT_EQ(file.read<int8_t>(), 0x02);
-   EXPECT_EQ(file.read<int8_t>(), 0x01);
-   EXPECT_EQ(file.read<int32_t>(), value);
+   File_Buffer file_buffer(file);
+   EXPECT_EQ(file_buffer.read<int8_t>(), 0x04);
+   EXPECT_EQ(file_buffer.read<int8_t>(), 0x03);
+   EXPECT_EQ(file_buffer.read<int8_t>(), 0x02);
+   EXPECT_EQ(file_buffer.read<int8_t>(), 0x01);
+   EXPECT_EQ(file_buffer.read<int32_t>(), value);
   }
  }
 

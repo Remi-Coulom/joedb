@@ -78,7 +78,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Buffered_File *File_Parser::parse(std::ostream &out, Arguments &arguments)
+ Abstract_File *File_Parser::parse(std::ostream &out, Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (arguments.peek("memory"))

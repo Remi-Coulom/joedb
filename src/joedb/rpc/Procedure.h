@@ -1,7 +1,7 @@
 #ifndef joedb_rpc_Procedure_declared
 #define joedb_rpc_Procedure_declared
 
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/Abstract_File.h"
 
 namespace joedb::rpc
 {
@@ -11,7 +11,7 @@ namespace joedb::rpc
  class Procedure
  {
   public:
-   virtual void execute(joedb::Buffered_File &file) const = 0;
+   virtual void execute(joedb::Abstract_File &file) const = 0;
    virtual ~Procedure() = default;
  };
 }

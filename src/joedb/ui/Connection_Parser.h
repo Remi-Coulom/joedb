@@ -23,7 +23,7 @@ namespace joedb
 
    void print_help(std::ostream &out) const;
 
-   Connection *build(Arguments &arguments, Buffered_File *file) const;
+   Connection *build(Arguments &arguments, Abstract_File *file) const;
  };
 }
 

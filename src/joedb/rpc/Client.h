@@ -6,6 +6,8 @@
 #include "joedb/concurrency/Channel.h"
 #include "joedb/Thread_Safe.h"
 #include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Buffer.h"
+#include "joedb/error/Exception.h"
 
 #include <vector>
 
@@ -81,13 +83,11 @@ namespace joedb::rpc
     if (reply == 'C')
     {
      const size_t from = file.get_data().size();
-     const size_t until = static_cast<size_t>(buffer.read<int64_t>());
-     file.get_data().resize(until);
-     lock->read(file.get_data().data() + from, until - from);
-     file.set_position(0);
-     file.write<int64_t>(until);
-     file.write<int64_t>(until);
-     file.set_position(from);
+     const int64_t until = buffer.read<int64_t>();
+     file.get_data().resize(size_t(until));
+     lock->read(file.get_data().data() + from, size_t(until) - from);
+     file.pwrite((const char *)&until, 8, 0);
+     file.pwrite((const char *)&until, 8, 8);
     }
     else
     {
