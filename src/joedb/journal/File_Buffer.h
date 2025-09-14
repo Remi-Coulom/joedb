@@ -13,8 +13,6 @@ namespace joedb
  /// @ingroup journal
  class File_Buffer: public File_Iterator
  {
-  friend class File_Hasher;
-
   private:
    Buffer<12> buffer;
 

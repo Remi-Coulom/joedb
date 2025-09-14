@@ -117,7 +117,7 @@ namespace joedb
  {
   return File_Hasher::get_fast_hash
   (
-   journal.file,
+   journal.get_file(),
    Header::size,
    checkpoint - Header::ssize
   );
@@ -133,7 +133,7 @@ namespace joedb
  {
   return File_Hasher::get_hash
   (
-   journal.file,
+   journal.get_file(),
    Header::size,
    checkpoint - Header::ssize
   );

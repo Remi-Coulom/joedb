@@ -17,7 +17,6 @@ namespace joedb
  class Readonly_Journal
  {
   friend class Writable_Journal;
-  friend class Journal_Hasher;
 
   private:
    void read_checkpoint(const std::array<int64_t, 4> &pos, int64_t file_size);
