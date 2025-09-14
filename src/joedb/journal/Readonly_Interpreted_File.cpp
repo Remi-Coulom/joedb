@@ -26,8 +26,8 @@ namespace joedb
   interpreter.set_rethrow(true);
   {
    Abstract_File null_file(Open_Mode::create_new);
-   joedb::streambuf null_streambuf(null_file);
-   std::ostream null_stream(&null_streambuf);
+   joedb::filebuf null_filebuf(null_file);
+   std::ostream null_stream(&null_filebuf);
    interpreter.main_loop(stream, null_stream);
   }
   journal.soft_checkpoint();

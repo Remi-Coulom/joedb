@@ -10,7 +10,7 @@
 
 namespace joedb
 {
- TEST(streambuf, hello)
+ TEST(filebuf, hello)
  {
   joedb::Memory_File file;
 
@@ -23,7 +23,7 @@ namespace joedb
   EXPECT_EQ("Hello 123", file.get_data());
  }
 
- TEST(streambuf, destructor)
+ TEST(filebuf, destructor)
  {
   joedb::Memory_File file;
 
@@ -32,10 +32,10 @@ namespace joedb
    ios << 123;
   }
 
-  EXPECT_EQ("joedb: destructor warning: streambuf: flushing buffer\n", String_Logger::the_logger.get_message());
+  EXPECT_EQ("joedb: destructor warning: filebuf: flushing buffer\n", String_Logger::the_logger.get_message());
  }
 
- TEST(streambuf, read)
+ TEST(filebuf, read)
  {
   joedb::Memory_File file;
   file.get_data() = "123";
@@ -44,7 +44,7 @@ namespace joedb
   EXPECT_EQ(123, n);
  }
 
- TEST(streambuf, showmanyc)
+ TEST(filebuf, showmanyc)
  {
   joedb::Memory_File file;
   file.get_data() = "123 456";
@@ -52,7 +52,7 @@ namespace joedb
 #ifdef TEST_STD_STRINGBUF
   std::stringbuf buf(file.get_data());
 #else
-  joedb::streambuf buf(file);
+  joedb::filebuf buf(file);
 #endif
 
   std::iostream ios(&buf);
@@ -84,14 +84,14 @@ namespace joedb
   EXPECT_EQ(x, 23.456);
  }
 
- TEST(streambuf, over_and_under_flow)
+ TEST(filebuf, over_and_under_flow)
  {
   joedb::Memory_File file;
 
 #ifdef TEST_STD_STRINGBUF
   std::stringbuf buf(file.get_data());
 #else
-  joedb::streambuf buf(file);
+  joedb::filebuf buf(file);
 #endif
 
   std::iostream ios(&buf);
@@ -143,21 +143,21 @@ namespace joedb
   EXPECT_EQ(buffer[3], 'y');
  }
 
- TEST(streambuf, unknown_size)
+ TEST(filebuf, unknown_size)
  {
   joedb::Abstract_File file(Open_Mode::create_new);
-  joedb::streambuf buf(file);
+  joedb::filebuf buf(file);
   EXPECT_EQ(-1, buf.pubseekoff(0, std::ios::end));
  }
 
- TEST(streambuf, pbackfail)
+ TEST(filebuf, pbackfail)
  {
   joedb::Memory_File file;
 
 #ifdef TEST_STD_STRINGBUF
   std::stringbuf buf(file.get_data());
 #else
-  joedb::streambuf buf(file);
+  joedb::filebuf buf(file);
 #endif
 
   buf.sputc('a');
@@ -192,14 +192,14 @@ namespace joedb
   EXPECT_EQ(buf.sbumpc(), std::char_traits<char>::eof());
  }
 
- TEST(streambuf, read_then_write)
+ TEST(filebuf, read_then_write)
  {
   joedb::Memory_File file;
 
 #ifdef TEST_STD_STRINGBUF
   std::stringbuf buf(file.get_data());
 #else
-  joedb::streambuf buf(file);
+  joedb::filebuf buf(file);
 #endif
 
   std::iostream ios(&buf);
@@ -225,7 +225,7 @@ namespace joedb
   EXPECT_EQ("456", s);
  }
 
- TEST(streambuf, write_at_the_end)
+ TEST(filebuf, write_at_the_end)
  {
   joedb::Memory_File file;
   file.get_data() = "Hi!";
@@ -233,7 +233,7 @@ namespace joedb
 #ifdef TEST_STD_STRINGBUF
   std::stringbuf buf(file.get_data());
 #else
-  joedb::streambuf buf(file);
+  joedb::filebuf buf(file);
 #endif
 
   std::iostream ios(&buf);

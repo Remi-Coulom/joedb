@@ -1,7 +1,7 @@
 TODO
 ====
 
-- joedb::streambuf -> concurrency and durability for joedb::Interpreted_File.
+- joedb::filebuf -> concurrency and durability for joedb::Interpreted_File.
   Use empty line as checkpoint indicator.
   investigate macos github action crash.
 - joedbc should atomically swap generated source code

@@ -160,7 +160,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File memory_file;
-  streambuf buf(memory_file);
+  joedb::filebuf buf(memory_file);
   std::iostream stream(&buf);
 
   {

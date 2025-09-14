@@ -1,5 +1,5 @@
-#ifndef joedb_streambuf_declared
-#define joedb_streambuf_declared
+#ifndef joedb_filebuf_declared
+#define joedb_filebuf_declared
 
 #include "joedb/journal/Abstract_File.h"
 
@@ -13,7 +13,7 @@ namespace joedb
  /// https://en.cppreference.com/w/cpp/io/basic_streambuf.html
  ///
  /// @ingroup journal
- class streambuf: public std::streambuf
+ class filebuf: public std::streambuf
  {
   private:
    Abstract_File &file;
@@ -45,8 +45,8 @@ namespace joedb
    int_type pbackfail(int_type c) override;
 
   public:
-   streambuf(Abstract_File &file);
-   ~streambuf() override;
+   filebuf(Abstract_File &file);
+   ~filebuf() override;
  };
 }
 

@@ -6,8 +6,8 @@ History
   - New major features:
 
     - :doc:`rpc`
-    - :joedb:`joedb::streambuf`
     - websocket support
+    - :joedb:`joedb::filebuf`
     - Files are unbuffered, and a separate File_Buffer can be used instead:
 
       - removes the bug-prone need for `File_View`: each journal has its own

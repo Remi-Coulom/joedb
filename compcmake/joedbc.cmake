@@ -60,7 +60,7 @@ add_library(joedb_for_joedbc OBJECT
  ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Journal.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Writable_Journal.cpp
- ${JOEDB_SRC_DIR}/joedb/journal/streambuf.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/filebuf.cpp
 )
 target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 

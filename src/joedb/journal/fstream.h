@@ -2,7 +2,7 @@
 #define joedb_fstream_declared
 
 #include "joedb/journal/File.h"
-#include "joedb/journal/streambuf.h"
+#include "joedb/journal/filebuf.h"
 
 #include <iostream>
 #include <istream>
@@ -16,7 +16,7 @@ namespace joedb
   {
    protected:
     joedb::File file;
-    joedb::streambuf buf;
+    joedb::filebuf buf;
 
    public:
     fstream_Parent(const char *file_name, Open_Mode mode):
