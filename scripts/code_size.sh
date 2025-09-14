@@ -5,7 +5,7 @@ if [ -d db ]; then
  cd db
  for i in *.joedbi; do
   b=$(basename $i .joedbi)
-  rm -vf $b*.{h,cpp}
+  rm -vf $b
  done
  cd -
 fi
