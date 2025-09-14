@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-for i in db/*.joedbi; do
+for i in $(find -name "*.joedbi"); do
  b=${i%.joedbi}
  echo "will remove $b"
  read
