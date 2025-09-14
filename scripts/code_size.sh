@@ -1,14 +1,12 @@
 #!/bin/bash
 set -e
 
-if [ -d db ]; then
- cd db
- for i in *.joedbi; do
-  b=$(basename $i .joedbi)
-  rm -vf $b
- done
- cd -
-fi
+for i in db/*.joedbi; do
+ b=${i%.joedbi}
+ echo "will remove $b"
+ read
+ rm -rvf $b
+done
 
 sources="$(find -name "*.h") $(find -name "*.c") $(find -name "*.hpp") $(find -name "*.cpp")"
 echo $sources
