@@ -73,11 +73,11 @@ namespace joedb
   int64_t size
  )
  {
-  Buffer<12> buffer;
+  std::array<char, 1 << 12> buffer;
 
   constexpr int buffer_count = 256;
 
-  if (size < 4 * buffer.ssize * buffer_count)
+  if (size < 4 * int64_t(buffer.size()) * buffer_count)
    return get_hash(file, start, size);
 
   SHA_256 sha_256;
@@ -89,19 +89,19 @@ namespace joedb
    if (i == 0)
     buffer_position = start;
    else if (i == buffer_count - 1)
-    buffer_position = start + size - buffer.ssize;
+    buffer_position = start + size - int64_t(buffer.size());
    else
    {
-    buffer_position = buffer.ssize *
+    buffer_position = int64_t(buffer.size()) *
     (
-     (start + i * size) / (buffer.ssize * (buffer_count - 1))
+     (start + i * size) / (int64_t(buffer.size()) * (buffer_count - 1))
     );
    }
 
-   file.pread(buffer.data, buffer.size, buffer_position);
+   file.pread(buffer.data(), buffer.size(), buffer_position);
 
-   for (size_t j = 0; j < buffer.size; j += SHA_256::chunk_size)
-    sha_256.process_chunk(buffer.data + j);
+   for (size_t j = 0; j < buffer.size(); j += SHA_256::chunk_size)
+    sha_256.process_chunk(buffer.data() + j);
   }
 
   return sha_256.get_hash();
