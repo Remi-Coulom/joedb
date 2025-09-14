@@ -1,10 +1,14 @@
 #include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Async_Reader.h"
-#include "joedb/journal/Buffer.h"
 #include "joedb/error/Exception.h"
+
+#include <array>
+#include <cstring>
 
 namespace joedb
 {
+ using Default_Buffer = std::array<char, 1 << 12>;
+
  ////////////////////////////////////////////////////////////////////////////
  void Abstract_File::copy_to
  ////////////////////////////////////////////////////////////////////////////
@@ -14,19 +18,19 @@ namespace joedb
   const int64_t size
  ) const
  {
-  Buffer<12> buffer;
+  Default_Buffer buffer;
 
   int64_t done = 0;
 
   while (done < size)
   {
-   const size_t asked = size_t(std::min(int64_t(buffer.size), size - done));
-   const size_t received = pread(buffer.data, asked, start + done);
+   const size_t asked = size_t(std::min(int64_t(buffer.size()), size - done));
+   const size_t received = pread(buffer.data(), asked, start + done);
 
    if (received == 0)
     reading_past_end_of_file();
 
-   destination.pwrite(buffer.data, received, start + done);
+   destination.pwrite(buffer.data(), received, start + done);
    done += int64_t(received);
   }
  }
@@ -40,15 +44,15 @@ namespace joedb
   const int64_t until
  ) const
  {
-  Buffer<12> buffer;
-  Buffer<12> destination_buffer;
+  Default_Buffer buffer;
+  Default_Buffer destination_buffer;
 
   for (int64_t current = from; current < until;)
   {
    const size_t n0 = pread
    (
-    buffer.data,
-    size_t(std::min(buffer.ssize, until - current)),
+    buffer.data(),
+    size_t(std::min(int64_t(buffer.size()), until - current)),
     current
    );
 
@@ -58,7 +62,7 @@ namespace joedb
    {
     const size_t n = destination.pread
     (
-     destination_buffer.data + n1,
+     destination_buffer.data() + n1,
      n0 - n1,
      current
     );
@@ -77,8 +81,8 @@ namespace joedb
 
    const int diff = std::memcmp
    (
-    buffer.data,
-    destination_buffer.data,
+    buffer.data(),
+    destination_buffer.data(),
     n0
    );
 
