@@ -29,8 +29,6 @@ History
     - joedbc generates functions to print tables (see :joedb:`print_city_table`)
     - :joedb:`Memory_File` can be opened with :joedb:`Open_Mode`::shared_write.
     - :joedb:`Connection::dummy`, used as default constructor parameter for clients.
-    - writable `File_View`, now built from a `Buffered_File`, and
-      overriding all :joedb:`Abstract_File` functions.
 
   - Fixes (also available on 10.0.0 LTS branch):
 

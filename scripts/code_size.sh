@@ -3,9 +3,11 @@ set -e
 
 for i in $(find -name "*.joedbi"); do
  b=${i%.joedbi}
- echo "will remove $b"
- read
- rm -rvf $b
+ if [ -d "$b" ]; then
+  echo "will remove $b"
+  read
+  rm -rvf $b
+ fi
 done
 
 sources="$(find -name "*.h") $(find -name "*.c") $(find -name "*.hpp") $(find -name "*.cpp")"
