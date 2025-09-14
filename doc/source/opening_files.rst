@@ -41,17 +41,17 @@ which is not very convenient. You can avoid having to explicitly checkpoint
 your writes by using :ref:`transactions <file_client>` with a
 :joedb:`tutorial::File_Client` instead.
 
-:joedb:`Buffered_File`
+:joedb:`Abstract_File`
 ----------------------
 
 :joedb:`tutorial::File_Database` is a shortcut that allows opening a database
 directly with a file name. Its more generic superclass
 :joedb:`tutorial::Writable_Database` can access data stored in the various
-specializations of the :joedb:`Buffered_File` class.
+specializations of the :joedb:`Abstract_File` class.
 :joedb:`tutorial::Readonly_Database` can also take a read-only
-:joedb:`Buffered_File` as constructor parameter.
+:joedb:`Abstract_File` as constructor parameter.
 
-Here are some specializations of :joedb:`Buffered_File`:
+Here are some specializations of :joedb:`Abstract_File`:
 
  - :joedb:`Stream_File` uses a ``std::streambuf``.
  - :joedb:`Memory_File` writes to a ``std::string``.
@@ -77,5 +77,5 @@ Here are some specializations of :joedb:`Buffered_File`:
    :doc:`automatic schema upgrades <schema_upgrade>` to a read-only file.
  - :joedb:`Server_File` allows accessing a file served by a :ref:`joedb_server`.
 
-You can also create your own file class by subclassing :joedb:`Buffered_File`
+You can also create your own file class by subclassing :joedb:`Abstract_File`
 and implementing the virtual functions of the :joedb:`Abstract_File` superclass.

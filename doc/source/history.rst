@@ -28,7 +28,7 @@ History
     - joedbc generates functions to print tables (see :joedb:`print_city_table`)
     - :joedb:`Memory_File` can be opened with :joedb:`Open_Mode`::shared_write.
     - :joedb:`Connection::dummy`, used as default constructor parameter for clients.
-    - writable :joedb:`File_View`, now built from a :joedb:`Buffered_File`, and
+    - writable `File_View`, now built from a `Buffered_File`, and
       overriding all :joedb:`Abstract_File` functions.
 
   - Fixes (also available on 10.0.0 LTS branch):
@@ -93,7 +93,7 @@ History
       can upgrade old file to the new format.
     - Checkpoints changed: use either ``soft_checkpoint`` or
       ``hard_checkpoint``. See :doc:`checkpoints` for details
-    - ``Generic_File`` was renamed to :joedb:`Buffered_File`
+    - ``Generic_File`` was renamed to `Buffered_File`
     - ``Generic_File_Database`` was renamed to :joedb:`Writable_Database`
     - ``Local_Client`` was renamed to :joedb:`File_Client`
     - ``read_blob_data`` was renamed to ``read_blob``

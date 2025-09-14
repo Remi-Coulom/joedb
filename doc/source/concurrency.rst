@@ -130,8 +130,8 @@ file from the remote server directly. The head and tail of the file are stored
 locally in memory, which allows writing. This is particularly useful for large
 blob databases.
 
-:joedb:`Server_File` is both a :joedb:`Connection` and a
-:joedb:`Buffered_File`. When constructing a :joedb:`Client`, it must be used as
+:joedb:`Server_File` is both a :joedb:`Connection` and an
+:joedb:`Abstract_File`. When constructing a :joedb:`Client`, it must be used as
 file and connection:
 
 .. literalinclude:: ./tutorial/src/server_file_tutorial.cpp
