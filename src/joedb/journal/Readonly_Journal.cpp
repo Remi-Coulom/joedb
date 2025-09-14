@@ -30,8 +30,8 @@ void joedb::Readonly_Journal::reset_context()
 /////////////////////////////////////////////////////////////////////////////
 joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 /////////////////////////////////////////////////////////////////////////////
- abstract_file(lock.file),
- buffered_file(abstract_file),
+ file(lock.file),
+ file_buffer(file),
  hard_index(0),
  soft_index(0),
  checkpoint_position(Header::size),
@@ -40,10 +40,10 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
  if (lock.size != 0)
  {
   Header header;
-  if (abstract_file.pread((char *)(&header), Header::size, 0) < Header::size)
-   abstract_file.reading_past_end_of_file();
+  if (file.pread((char *)(&header), Header::size, 0) < Header::size)
+   file.reading_past_end_of_file();
 
-  buffered_file.set_position(Header::size);
+  file_buffer.set_position(Header::size);
 
   if (lock.recovery == Recovery::ignore_header)
   {
@@ -110,7 +110,7 @@ void joedb::Readonly_Journal::pull_without_locking()
 /////////////////////////////////////////////////////////////////////////////
 {
  std::array<int64_t, 4> pos;
- abstract_file.pread((char *)&pos, sizeof(pos), 0);
+ file.pread((char *)&pos, sizeof(pos), 0);
  read_checkpoint(pos, -1);
 }
 
@@ -120,7 +120,7 @@ int64_t joedb::Readonly_Journal::pull()
 {
  const int64_t old_checkpoint = checkpoint_position;
 
- Abstract_File::Head_Shared_Lock lock(abstract_file);
+ Abstract_File::Head_Shared_Lock lock(file);
  pull_without_locking();
 
  return checkpoint_position - old_checkpoint;
@@ -149,14 +149,14 @@ void joedb::Readonly_Journal::replay_with_checkpoint_comments
   writable.comment(std::to_string(get_position()));
  }
  writable.end_writing(get_position());
- buffered_file.flush();
+ file_buffer.flush();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::rewind()
 /////////////////////////////////////////////////////////////////////////////
 {
- buffered_file.set_position(Header::size);
+ file_buffer.set_position(Header::size);
  reset_context();
 }
 
@@ -186,14 +186,14 @@ void joedb::Readonly_Journal::play_until(Writable &writable, int64_t end)
   writable.soft_checkpoint();
  }
 
- buffered_file.flush();
+ file_buffer.flush();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void joedb::Readonly_Journal::one_step(Writable &writable)
 /////////////////////////////////////////////////////////////////////////////
 {
- switch(buffered_file.read<operation_t>())
+ switch(file_buffer.read<operation_t>())
  {
   case operation_t::create_table:
   {
@@ -204,14 +204,14 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::drop_table:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
    writable.drop_table(table_id);
   }
   break;
 
   case operation_t::rename_table:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
    const std::string name = safe_read_string();
    writable.rename_table(table_id, name);
   }
@@ -219,7 +219,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::add_field:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
    const std::string name = safe_read_string();
    const Type type = read_type();
    writable.add_field(table_id, name, type);
@@ -228,16 +228,16 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::drop_field:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
-   const Field_Id field_id = buffered_file.read_strong_type<Field_Id>();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
+   const Field_Id field_id = file_buffer.read_strong_type<Field_Id>();
    writable.drop_field(table_id, field_id);
   }
   break;
 
   case operation_t::rename_field:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
-   const Field_Id field_id = buffered_file.read_strong_type<Field_Id>();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
+   const Field_Id field_id = file_buffer.read_strong_type<Field_Id>();
    const std::string name = safe_read_string();
    writable.rename_field(table_id, field_id, name);
   }
@@ -245,8 +245,8 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::insert_into:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
-   const Record_Id record_id = buffered_file.read_reference();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
+   const Record_Id record_id = file_buffer.read_reference();
    writable.insert_into(table_id, record_id);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
@@ -255,17 +255,17 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::delete_from:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
-   const Record_Id record_id = buffered_file.read_reference();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
+   const Record_Id record_id = file_buffer.read_reference();
    writable.delete_from(table_id, record_id);
   }
   break;
 
   case operation_t::insert_vector:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
-   const Record_Id record_id = buffered_file.read_reference();
-   const size_t size = buffered_file.compact_read<size_t>();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
+   const Record_Id record_id = file_buffer.read_reference();
+   const size_t size = file_buffer.compact_read<size_t>();
    writable.insert_vector(table_id, record_id, size);
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
@@ -274,9 +274,9 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::delete_vector:
   {
-   const Table_Id table_id = buffered_file.read_strong_type<Table_Id>();
-   const Record_Id record_id = buffered_file.read_reference();
-   const size_t size = buffered_file.compact_read<size_t>();
+   const Table_Id table_id = file_buffer.read_strong_type<Table_Id>();
+   const Record_Id record_id = file_buffer.read_reference();
+   const size_t size = file_buffer.compact_read<size_t>();
    writable.delete_vector(table_id, record_id, size);
   }
   break;
@@ -287,14 +287,14 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
   case operation_t::update_##type_id:\
-   table_of_last_operation = buffered_file.read_strong_type<Table_Id>();\
-   record_of_last_operation = buffered_file.read_reference();\
-   field_of_last_update = buffered_file.read_strong_type<Field_Id>();\
+   table_of_last_operation = file_buffer.read_strong_type<Table_Id>();\
+   record_of_last_operation = file_buffer.read_reference();\
+   field_of_last_update = file_buffer.read_strong_type<Field_Id>();\
    perform_update_##type_id(writable);\
   break;\
 \
   case operation_t::update_last_##type_id:\
-   field_of_last_update = buffered_file.read_strong_type<Field_Id>();\
+   field_of_last_update = file_buffer.read_strong_type<Field_Id>();\
    perform_update_##type_id(writable);\
   break;\
 \
@@ -307,10 +307,10 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
   #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
   case operation_t::update_vector_##type_id:\
   {\
-   table_of_last_operation = buffered_file.read_strong_type<Table_Id>();\
-   record_of_last_operation = buffered_file.read_reference();\
-   field_of_last_update = buffered_file.read_strong_type<Field_Id>();\
-   const size_t size = buffered_file.compact_read<size_t>();\
+   table_of_last_operation = file_buffer.read_strong_type<Table_Id>();\
+   record_of_last_operation = file_buffer.read_reference();\
+   field_of_last_update = file_buffer.read_strong_type<Field_Id>();\
+   const size_t size = file_buffer.compact_read<size_t>();\
    if (size == 0)\
     break;\
    if (int64_t(size) > checkpoint_position)\
@@ -360,7 +360,7 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::timestamp:
   {
-   const int64_t timestamp = buffered_file.read<int64_t>();
+   const int64_t timestamp = file_buffer.read<int64_t>();
    writable.timestamp(timestamp);
   }
   break;
@@ -371,18 +371,18 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
   case operation_t::blob:
   {
-   const int64_t size = buffered_file.compact_read<int64_t>();
+   const int64_t size = file_buffer.compact_read<int64_t>();
    writable.on_blob(Blob(get_position(), size));
 
    if (writable.wants_blob_data() && size < checkpoint_position)
    {
     std::string s(size_t(size), 0);
     if (size > 0)
-     buffered_file.read_data(s.data(), s.size());
+     file_buffer.read_data(s.data(), s.size());
     writable.write_blob(s);
    }
    else
-    buffered_file.ignore(size);
+    file_buffer.ignore(size);
   }
   break;
 
@@ -397,9 +397,9 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 joedb::Type joedb::Readonly_Journal::read_type()
 /////////////////////////////////////////////////////////////////////////////
 {
- const Type::Type_Id type_id = Type::Type_Id(buffered_file.read<Type_Id_Storage>());
+ const Type::Type_Id type_id = Type::Type_Id(file_buffer.read<Type_Id_Storage>());
  if (type_id == Type::Type_Id::reference)
-  return Type::reference(buffered_file.read_strong_type<Table_Id>());
+  return Type::reference(file_buffer.read_strong_type<Table_Id>());
  else
   return Type(type_id);
 }
@@ -408,7 +408,7 @@ joedb::Type joedb::Readonly_Journal::read_type()
 std::string joedb::Readonly_Journal::safe_read_string()
 /////////////////////////////////////////////////////////////////////////////
 {
- return buffered_file.safe_read_string(checkpoint_position);
+ return file_buffer.safe_read_string(checkpoint_position);
 }
 
 #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
@@ -424,7 +424,7 @@ void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t si
 #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
 void joedb::Readonly_Journal::read_vector_of_##type_id(cpp_type *data, size_t size)\
 {\
- buffered_file.read_data((char *)data, size * sizeof(cpp_type));\
+ file_buffer.read_data((char *)data, size * sizeof(cpp_type));\
 }
 #define TYPE_MACRO_NO_STRING
 #define TYPE_MACRO_NO_REFERENCE

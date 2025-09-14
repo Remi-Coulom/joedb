@@ -1,5 +1,5 @@
 #include "joedb/journal/Writable_Journal.h"
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/File_Buffer.h"
 #include "joedb/error/Exception.h"
 #include "joedb/error/Destructor_Logger.h"
 
@@ -10,7 +10,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
   Readonly_Journal(lock.set_for_writable_journal())
  {
-  if (abstract_file.is_readonly())
+  if (file.is_readonly())
    throw Exception("Cannot create Writable_Journal with read-only file");
   else if (lock.size == 0)
   {
@@ -18,7 +18,7 @@ namespace joedb
    header.checkpoint.fill(Header::size);
    header.version = format_version;
    header.signature = Header::joedb;
-   buffered_file.sequential_write((const char *)(&header), Header::size);
+   file_buffer.File_Iterator::write((const char *)(&header), Header::size);
   }
   else if
   (
@@ -48,7 +48,7 @@ namespace joedb
   if (checkpoint_position < until)
   {
    const int64_t size = until - checkpoint_position;
-   journal.get_file().copy_to(abstract_file, checkpoint_position, size);
+   journal.get_file().copy_to(file, checkpoint_position, size);
    soft_checkpoint_at(until);
   }
 
@@ -59,7 +59,7 @@ namespace joedb
  int64_t Writable_Journal::ahead_of_checkpoint() const noexcept
  /////////////////////////////////////////////////////////////////////////////
  {
-  return buffered_file.get_position() - checkpoint_position;
+  return file_buffer.get_position() - checkpoint_position;
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ namespace joedb
  void Writable_Journal::end_writing(int64_t position)
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (position != buffered_file.get_position())
+  if (position != file_buffer.get_position())
    throw Exception("end_writing position is not matching file position");
  }
 
@@ -85,18 +85,18 @@ namespace joedb
   if (checkpoint_position >= position)
    return;
 
-  buffered_file.flush();
+  file_buffer.flush();
 
   JOEDB_DEBUG_ASSERT(file.get_size() < 0 || position <= file.get_size());
 
   soft_index ^= 1;
   checkpoint_position = position;
 
-  Abstract_File::Head_Exclusive_Lock lock(abstract_file);
+  Abstract_File::Head_Exclusive_Lock lock(file);
 
   const int64_t neg = -checkpoint_position;
 
-  abstract_file.pwrite
+  file.pwrite
   (
    reinterpret_cast<const char *>(&neg),
    sizeof(neg),
@@ -111,60 +111,60 @@ namespace joedb
   if (hard_checkpoint_position >= position)
    return;
 
-  buffered_file.flush();
+  file_buffer.flush();
 
   hard_index ^= 1;
   hard_checkpoint_position = checkpoint_position = position;
 
-  Abstract_File::Head_Exclusive_Lock lock(abstract_file);
+  Abstract_File::Head_Exclusive_Lock lock(file);
 
-  abstract_file.pwrite
+  file.pwrite
   (
    reinterpret_cast<const char *>(&checkpoint_position),
    sizeof(checkpoint_position),
    int64_t(sizeof(checkpoint_position)) * (2 * hard_index)
   );
 
-  abstract_file.sync();
+  file.sync();
 
-  abstract_file.pwrite
+  file.pwrite
   (
    reinterpret_cast<const char *>(&checkpoint_position),
    sizeof(checkpoint_position),
    int64_t(sizeof(checkpoint_position)) * (2 * hard_index + 1)
   );
 
-  abstract_file.datasync();
+  file.datasync();
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::soft_checkpoint()
  /////////////////////////////////////////////////////////////////////////////
  {
-  soft_checkpoint_at(buffered_file.get_position());
+  soft_checkpoint_at(file_buffer.get_position());
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::hard_checkpoint()
  /////////////////////////////////////////////////////////////////////////////
  {
-  hard_checkpoint_at(buffered_file.get_position());
+  hard_checkpoint_at(file_buffer.get_position());
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::create_table(const std::string &name)
  /////////////////////////////////////////////////////////////////////////////
  {
-  buffered_file.write<operation_t>(operation_t::create_table);
-  buffered_file.write_string(name);
+  file_buffer.write<operation_t>(operation_t::create_table);
+  file_buffer.write_string(name);
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::drop_table(Table_Id table_id)
  /////////////////////////////////////////////////////////////////////////////
  {
-  buffered_file.write<operation_t>(operation_t::drop_table);
-  buffered_file.compact_write<>(to_underlying(table_id));
+  file_buffer.write<operation_t>(operation_t::drop_table);
+  file_buffer.compact_write<>(to_underlying(table_id));
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -175,9 +175,9 @@ namespace joedb
   const std::string &name
  )
  {
-  buffered_file.write<operation_t>(operation_t::rename_table);
-  buffered_file.compact_write<>(to_underlying(table_id));
-  buffered_file.write_string(name);
+  file_buffer.write<operation_t>(operation_t::rename_table);
+  file_buffer.compact_write<>(to_underlying(table_id));
+  file_buffer.write_string(name);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -189,12 +189,12 @@ namespace joedb
   Type type
  )
  {
-  buffered_file.write<operation_t>(operation_t::add_field);
-  buffered_file.compact_write<>(to_underlying(table_id));
-  buffered_file.write_string(name);
-  buffered_file.write<Type_Id_Storage>(Type_Id_Storage(type.get_type_id()));
+  file_buffer.write<operation_t>(operation_t::add_field);
+  file_buffer.compact_write<>(to_underlying(table_id));
+  file_buffer.write_string(name);
+  file_buffer.write<Type_Id_Storage>(Type_Id_Storage(type.get_type_id()));
   if (type.get_type_id() == Type::Type_Id::reference)
-   buffered_file.compact_write<>(to_underlying(type.get_table_id()));
+   file_buffer.compact_write<>(to_underlying(type.get_table_id()));
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -205,9 +205,9 @@ namespace joedb
   Field_Id field_id
  )
  {
-  buffered_file.write<operation_t>(operation_t::drop_field);
-  buffered_file.compact_write<>(to_underlying(table_id));
-  buffered_file.compact_write<>(to_underlying(field_id));
+  file_buffer.write<operation_t>(operation_t::drop_field);
+  file_buffer.compact_write<>(to_underlying(table_id));
+  file_buffer.compact_write<>(to_underlying(field_id));
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -219,41 +219,41 @@ namespace joedb
   const std::string &name
  )
  {
-  buffered_file.write<operation_t>(operation_t::rename_field);
-  buffered_file.compact_write<>(to_underlying(table_id));
-  buffered_file.compact_write<>(to_underlying(field_id));
-  buffered_file.write_string(name);
+  file_buffer.write<operation_t>(operation_t::rename_field);
+  file_buffer.compact_write<>(to_underlying(table_id));
+  file_buffer.compact_write<>(to_underlying(field_id));
+  file_buffer.write_string(name);
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::custom(const std::string &name)
  /////////////////////////////////////////////////////////////////////////////
  {
-  buffered_file.write<operation_t>(operation_t::custom);
-  buffered_file.write_string(name);
+  file_buffer.write<operation_t>(operation_t::custom);
+  file_buffer.write_string(name);
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::comment(const std::string &comment)
  /////////////////////////////////////////////////////////////////////////////
  {
-  buffered_file.write<operation_t>(operation_t::comment);
-  buffered_file.write_string(comment);
+  file_buffer.write<operation_t>(operation_t::comment);
+  file_buffer.write_string(comment);
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::timestamp(int64_t timestamp)
  /////////////////////////////////////////////////////////////////////////////
  {
-  buffered_file.write<operation_t>(operation_t::timestamp);
-  buffered_file.write<int64_t>(timestamp);
+  file_buffer.write<operation_t>(operation_t::timestamp);
+  file_buffer.write<int64_t>(timestamp);
  }
 
  /////////////////////////////////////////////////////////////////////////////
  void Writable_Journal::valid_data()
  /////////////////////////////////////////////////////////////////////////////
  {
-  buffered_file.write<operation_t>(operation_t::valid_data);
+  file_buffer.write<operation_t>(operation_t::valid_data);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -267,13 +267,13 @@ namespace joedb
   if (table_id == table_of_last_operation &&
       record_id == record_of_last_operation + 1)
   {
-   buffered_file.write<operation_t>(operation_t::append);
+   file_buffer.write<operation_t>(operation_t::append);
   }
   else
   {
-   buffered_file.write<operation_t>(operation_t::insert_into);
-   buffered_file.compact_write<>(to_underlying(table_id));
-   buffered_file.write_reference(record_id);
+   file_buffer.write<operation_t>(operation_t::insert_into);
+   file_buffer.compact_write<>(to_underlying(table_id));
+   file_buffer.write_reference(record_id);
   }
 
   table_of_last_operation = table_id;
@@ -288,9 +288,9 @@ namespace joedb
   Record_Id record_id
  )
  {
-  buffered_file.write<operation_t>(operation_t::delete_from);
-  buffered_file.compact_write<>(to_underlying(table_id));
-  buffered_file.write_reference(record_id);
+  file_buffer.write<operation_t>(operation_t::delete_from);
+  file_buffer.compact_write<>(to_underlying(table_id));
+  file_buffer.write_reference(record_id);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -302,10 +302,10 @@ namespace joedb
   size_t size
  )
  {
-  buffered_file.write<operation_t>(operation_t::insert_vector);
-  buffered_file.compact_write<>(to_underlying(table_id));
-  buffered_file.write_reference(record_id);
-  buffered_file.compact_write<>(size);
+  file_buffer.write<operation_t>(operation_t::insert_vector);
+  file_buffer.compact_write<>(to_underlying(table_id));
+  file_buffer.write_reference(record_id);
+  file_buffer.compact_write<>(size);
 
   table_of_last_operation = table_id;
   record_of_last_operation = record_id;
@@ -320,10 +320,10 @@ namespace joedb
   size_t size
  )
  {
-  buffered_file.write<operation_t>(operation_t::delete_vector);
-  buffered_file.compact_write<>(to_underlying(table_id));
-  buffered_file.write_reference(record_id);
-  buffered_file.compact_write<>(size);
+  file_buffer.write<operation_t>(operation_t::delete_vector);
+  file_buffer.compact_write<>(to_underlying(table_id));
+  file_buffer.write_reference(record_id);
+  file_buffer.compact_write<>(size);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -346,8 +346,8 @@ namespace joedb
     int(operation_t::update_last_int8) -
     int(operation_t::update_int8);
 
-   buffered_file.write<operation_t>(operation_t(int(operation) + last));
-   buffered_file.compact_write<>(to_underlying(field_id));
+   file_buffer.write<operation_t>(operation_t(int(operation) + last));
+   file_buffer.compact_write<>(to_underlying(field_id));
    field_of_last_update = field_id;
   }
   else if
@@ -360,15 +360,15 @@ namespace joedb
    constexpr int next =
     int(operation_t::update_next_int8) -
     int(operation_t::update_int8);
-   buffered_file.write<operation_t>(operation_t(int(operation) + next));
+   file_buffer.write<operation_t>(operation_t(int(operation) + next));
    ++record_of_last_operation;
   }
   else
   {
-   buffered_file.write<operation_t>(operation);
-   buffered_file.compact_write<>(to_underlying(table_id));
-   buffered_file.write_reference(record_id);
-   buffered_file.compact_write<>(to_underlying(field_id));
+   file_buffer.write<operation_t>(operation);
+   file_buffer.compact_write<>(to_underlying(table_id));
+   file_buffer.write_reference(record_id);
+   file_buffer.compact_write<>(to_underlying(field_id));
    table_of_last_operation = table_id;
    record_of_last_operation = record_id;
    field_of_last_update = field_id;
@@ -386,7 +386,7 @@ namespace joedb
  )\
  {\
   generic_update(table_id, record_id, field_id, operation_t::update_##type_id);\
-  buffered_file.write_method(value);\
+  file_buffer.write_method(value);\
  }\
  void Writable_Journal::update_vector_##type_id\
  (\
@@ -397,11 +397,11 @@ namespace joedb
   const type *value\
  )\
  {\
-  buffered_file.write<operation_t>(operation_t::update_vector_##type_id);\
-  buffered_file.compact_write<>(to_underlying(table_id));\
-  buffered_file.write_reference(record_id);\
-  buffered_file.compact_write<>(to_underlying(field_id));\
-  buffered_file.compact_write<>(size);\
+  file_buffer.write<operation_t>(operation_t::update_vector_##type_id);\
+  file_buffer.compact_write<>(to_underlying(table_id));\
+  file_buffer.write_reference(record_id);\
+  file_buffer.compact_write<>(to_underlying(field_id));\
+  file_buffer.compact_write<>(size);\
   table_of_last_operation = table_id;\
   record_of_last_operation = record_id;\
   field_of_last_update = field_id;\
@@ -414,10 +414,10 @@ namespace joedb
   )\
   {\
    for (size_t i = 0; i < size; i++)\
-    buffered_file.write_method(value[i]);\
+    file_buffer.write_method(value[i]);\
   }\
   else\
-   buffered_file.write_data((const char *)value, size * sizeof(type));\
+   file_buffer.write_data((const char *)value, size * sizeof(type));\
  }
  #include "joedb/TYPE_MACRO.h"
 
@@ -428,11 +428,11 @@ namespace joedb
   const std::string &data
  )
  {
-  buffered_file.write<operation_t>(operation_t::blob);
-  buffered_file.compact_write<size_t>(data.size());
+  file_buffer.write<operation_t>(operation_t::blob);
+  file_buffer.compact_write<size_t>(data.size());
   const int64_t blob_position = get_position();
-  buffered_file.flush();
-  buffered_file.sequential_write(data.data(), data.size());
+  file_buffer.flush();
+  file_buffer.File_Iterator::write(data.data(), data.size());
   return Blob(blob_position, int64_t(data.size()));
  }
 
@@ -440,9 +440,9 @@ namespace joedb
  void Writable_Journal::lock_pull()
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (abstract_file.is_shared())
+  if (file.is_shared())
   {
-   abstract_file.exclusive_lock_tail();
+   file.exclusive_lock_tail();
    pull_without_locking();
   }
  }
@@ -451,8 +451,8 @@ namespace joedb
  void Writable_Journal::unlock() noexcept
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (abstract_file.is_shared())
-   abstract_file.unlock_tail();
+  if (file.is_shared())
+   file.unlock_tail();
  }
 
  /////////////////////////////////////////////////////////////////////////////

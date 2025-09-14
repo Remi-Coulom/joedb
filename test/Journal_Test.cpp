@@ -93,7 +93,7 @@ namespace joedb
  {
   Memory_File file;
   {
-   Buffered_File file_buffer(file);
+   File_Buffer file_buffer(file);
    file_buffer.write<uint64_t>(0);
    file_buffer.write<uint64_t>(0);
    file_buffer.write<uint64_t>(41);
@@ -224,7 +224,7 @@ namespace joedb
   file.pwrite((const char *)&header, Header::size, 0);
 
   {
-   Buffered_File file_buffer(file);
+   File_Buffer file_buffer(file);
    file_buffer.set_position(41);
    file_buffer.write<uint64_t>(0);
    file_buffer.flush();
@@ -299,7 +299,7 @@ namespace joedb
   }
 
   {
-   Buffered_File file_buffer(file);
+   File_Buffer file_buffer(file);
    file_buffer.write<int64_t>(correct_checkpoint);
    file_buffer.write<int64_t>(correct_checkpoint);
    file_buffer.write<int64_t>(1234);

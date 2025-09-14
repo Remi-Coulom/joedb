@@ -1,8 +1,8 @@
-#ifndef joedb_Buffered_File_declared
-#define joedb_Buffered_File_declared
+#ifndef joedb_File_Buffer_declared
+#define joedb_File_Buffer_declared
 
 #include "joedb/error/assert.h"
-#include "joedb/journal/Sequential_File.h"
+#include "joedb/journal/File_Iterator.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/index_types.h"
 
@@ -11,7 +11,7 @@
 namespace joedb
 {
  /// @ingroup journal
- class Buffered_File: public Sequential_File
+ class File_Buffer: public File_Iterator
  {
   friend class File_Hasher;
 
@@ -42,7 +42,7 @@ namespace joedb
     JOEDB_DEBUG_ASSERT(buffer.index <= read_buffer_size);
 
     buffer.index = 0;
-    read_buffer_size = sequential_read(buffer.data, buffer.size);
+    read_buffer_size = File_Iterator::read(buffer.data, buffer.size);
     if (read_buffer_size == 0)
      file.reading_past_end_of_file();
    }
@@ -53,7 +53,7 @@ namespace joedb
    {
     JOEDB_DEBUG_ASSERT(!buffer_has_read_data());
 
-    sequential_write(buffer.data, buffer.index);
+    File_Iterator::write(buffer.data, buffer.index);
     buffer.index = 0;
    }
 
@@ -68,7 +68,7 @@ namespace joedb
    }
 
   public:
-   Buffered_File(Abstract_File &file);
+   File_Buffer(Abstract_File &file);
    void flush();
 
    // set_position must be called when switching between write and read
@@ -76,7 +76,7 @@ namespace joedb
 
    int64_t get_position() const noexcept
    {
-    return Sequential_File::get_position() - read_buffer_size + buffer.index;
+    return File_Iterator::get_position() - read_buffer_size + buffer.index;
    }
 
    //////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ namespace joedb
      else
      {
       flush();
-      sequential_write(data, n);
+      File_Iterator::write(data, n);
      }
     }
    }
@@ -211,7 +211,7 @@ namespace joedb
 
      while (n0 < n)
      {
-      const size_t actually_read = sequential_read(data + n0, n - n0);
+      const size_t actually_read = File_Iterator::read(data + n0, n - n0);
       if (actually_read == 0)
       {
        file.reading_past_end_of_file();
@@ -234,7 +234,7 @@ namespace joedb
      set_position(get_position() + n);
    }
 
-   ~Buffered_File();
+   ~File_Buffer();
  };
 }
 

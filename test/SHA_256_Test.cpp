@@ -48,7 +48,7 @@ TEST(SHA_256, file)
  joedb::Memory_File file;
 
  {
-  joedb::Buffered_File file_buffer(file);
+  joedb::File_Buffer file_buffer(file);
   file_buffer.write<char>('a');
   file_buffer.write<char>('b');
   file_buffer.write<char>('c');
@@ -64,7 +64,7 @@ TEST(SHA_256, file_slice)
 {
  joedb::Memory_File file;
  {
-  joedb::Buffered_File file_buffer(file);
+  joedb::File_Buffer file_buffer(file);
   file_buffer.write<char>('x');
   file_buffer.write<char>('x');
   file_buffer.write<char>('a');
@@ -85,7 +85,7 @@ TEST(SHA_256, fast_hash_coverage)
 {
  joedb::Memory_File file;
  {
-  joedb::Buffered_File file_buffer(file);
+  joedb::File_Buffer file_buffer(file);
   const size_t size = 1 << 20;
   for (size_t i = 0; i < size; i++)
    file_buffer.write<uint32_t>(uint32_t(i));

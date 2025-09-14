@@ -3,26 +3,26 @@
 #include "joedb/journal/Async_Reader.h"
 #include "joedb/journal/Async_Writer.h"
 #include "joedb/journal/Stream_File.h"
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/File_Buffer.h"
 
 #include "gtest/gtest.h"
 
 #include <sstream>
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, copy)
+TEST(File_Buffer, copy)
 /////////////////////////////////////////////////////////////////////////////
 {
  const uint64_t magic = 1234567;
 
  joedb::Test_File file;
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
  file_buffer.write<uint64_t>(magic);
  file_buffer.flush();
 
  joedb::Test_File copy;
  file.copy_to(copy, 0, sizeof(uint64_t));
- joedb::Buffered_File copy_buffer(file);
+ joedb::File_Buffer copy_buffer(file);
 
  EXPECT_EQ(copy_buffer.read<uint64_t>(), magic);
 
@@ -38,7 +38,7 @@ TEST(Buffered_File, copy)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, large_copy)
+TEST(File_Buffer, large_copy)
 /////////////////////////////////////////////////////////////////////////////
 {
  const uint64_t magic = 1234567;
@@ -46,7 +46,7 @@ TEST(Buffered_File, large_copy)
 
  joedb::Memory_File file;
  {
-  joedb::Buffered_File file_buffer(file);
+  joedb::File_Buffer file_buffer(file);
   for (size_t i = 0; i < 1 + 2 * count; i++)
    file_buffer.write<uint64_t>(magic);
   file_buffer.flush();
@@ -54,13 +54,13 @@ TEST(Buffered_File, large_copy)
 
  joedb::Memory_File copy;
  {
-  joedb::Buffered_File file_buffer(copy);
+  joedb::File_Buffer file_buffer(copy);
   file_buffer.write<uint64_t>(~magic);
   file_buffer.flush();
  }
 
  file.copy_to(copy, sizeof(uint64_t), sizeof(uint64_t) * count);
- joedb::Buffered_File file_buffer(copy);
+ joedb::File_Buffer file_buffer(copy);
  EXPECT_EQ(file_buffer.read<uint64_t>(), ~magic);
 
  for (size_t i = 0; i < count; i++)
@@ -68,14 +68,14 @@ TEST(Buffered_File, large_copy)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, readonly_memory_file)
+TEST(File_Buffer, readonly_memory_file)
 /////////////////////////////////////////////////////////////////////////////
 {
  const char data[] = {0, 1, 2, 3};
  const size_t size = sizeof(data);
 
  joedb::Readonly_Memory_File file(data, size);
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
 
  EXPECT_EQ(file_buffer.read<uint32_t>(), 0x03020100UL);
  EXPECT_EQ(4, file_buffer.get_position());
@@ -103,14 +103,14 @@ static void check_data(int32_t *data, int32_t start, int32_t count)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, read_data)
+TEST(File_Buffer, read_data)
 /////////////////////////////////////////////////////////////////////////////
 {
  const size_t buffer_size = (1 << 10);
  const int32_t file_size = int32_t(buffer_size) * 10;
 
  joedb::Test_File file;
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
  for (int32_t i = 0; i < file_size; i++)
   file_buffer.write<int32_t>(i);
 
@@ -135,7 +135,7 @@ TEST(Buffered_File, read_data)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, async)
+TEST(File_Buffer, async)
 /////////////////////////////////////////////////////////////////////////////
 {
 #if 1
@@ -144,7 +144,7 @@ TEST(Buffered_File, async)
  joedb::File file("file.joedb", joedb::Open_Mode::create_new);
 #endif
 
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
  for (int32_t i = 0; i < 10000; i++)
   file_buffer.write<int32_t>(i);
  file_buffer.flush();
@@ -185,8 +185,8 @@ TEST(Buffered_File, async)
  }
 
  file_buffer.set_position(0);
- joedb::Buffered_File file1_buffer(file1);
- joedb::Buffered_File file2_buffer(file2);
+ joedb::File_Buffer file1_buffer(file1);
+ joedb::File_Buffer file2_buffer(file2);
 
  for (int i = 0; i < 32; i++)
  {
@@ -201,12 +201,12 @@ TEST(Buffered_File, async)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, async_more_capacity)
+TEST(File_Buffer, async_more_capacity)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Test_File file;
  {
-  joedb::Buffered_File file_buffer(file);
+  joedb::File_Buffer file_buffer(file);
   for (int32_t i = 0; i < 10000; i++)
    file_buffer.write<int32_t>(i);
   file_buffer.flush();
@@ -220,11 +220,11 @@ TEST(Buffered_File, async_more_capacity)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, flush_and_position)
+TEST(File_Buffer, flush_and_position)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
  file_buffer.write<int>(1234);
  file_buffer.write<int>(5678);
  file_buffer.flush();
@@ -237,11 +237,11 @@ TEST(Buffered_File, flush_and_position)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, compact_read_bug)
+TEST(File_Buffer, compact_read_bug)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
  file_buffer.write<uint8_t>(0x12);
  file_buffer.write<uint8_t>(0xc0);
  file_buffer.write<uint8_t>(0x00);
@@ -252,12 +252,12 @@ TEST(Buffered_File, compact_read_bug)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, position)
+TEST(File_Buffer, position)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::stringbuf sb;
  joedb::Stream_File file(sb, joedb::Open_Mode::write_existing);
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
 
  file_buffer.write<char>(0);
  file_buffer.write<char>(1);
@@ -275,11 +275,11 @@ TEST(Buffered_File, position)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, get_position)
+TEST(File_Buffer, get_position)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
 
  EXPECT_EQ(file_buffer.get_position(), 0);
  file_buffer.write<char>(0);
@@ -296,11 +296,11 @@ TEST(Buffered_File, get_position)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TEST(Buffered_File, blob_io)
+TEST(File_Buffer, blob_io)
 /////////////////////////////////////////////////////////////////////////////
 {
  joedb::Memory_File file;
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
  file_buffer.write_blob(joedb::Blob(123, 456));
  file_buffer.set_position(0);
  const joedb::Blob blob = file_buffer.read_blob();

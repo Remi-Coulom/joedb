@@ -1,5 +1,5 @@
 #include "joedb/journal/Stream_File.h"
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/File_Buffer.h"
 
 #include "gtest/gtest.h"
 
@@ -13,7 +13,7 @@ TEST(Stream_File_Test, position_test)
  std::stringbuf stringbuf;
 
  Stream_File file(stringbuf, Open_Mode::create_new);
- Buffered_File file_buffer(file);
+ File_Buffer file_buffer(file);
  EXPECT_EQ(0LL, file_buffer.get_position());
 
  const int64_t N = 100;

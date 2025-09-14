@@ -5,10 +5,10 @@
 
 namespace joedb
 {
- class Buffered_File;
+ class Abstract_File;
 
  /// @ingroup journal
- void dump_header(std::ostream &out, Buffered_File &file);
+ void dump_header(std::ostream &out, Abstract_File &file);
  /// @ingroup journal
  void about_joedb(std::ostream &out);
 }

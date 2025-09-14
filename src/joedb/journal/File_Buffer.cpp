@@ -1,41 +1,41 @@
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/File_Buffer.h"
 #include "joedb/error/Destructor_Logger.h"
 
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- Buffered_File::Buffered_File(Abstract_File &file):
+ File_Buffer::File_Buffer(Abstract_File &file):
  //////////////////////////////////////////////////////////////////////////
-  Sequential_File(file)
+  File_Iterator(file)
  {
   read_buffer_size = 0;
   buffer.index = 0;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Buffered_File::flush()
+ void File_Buffer::flush()
  ////////////////////////////////////////////////////////////////////////////
  {
   if (buffer_has_write_data())
    write_buffer();
   else
   {
-   sequential_seek(get_position());
+   File_Iterator::seek(get_position());
    read_buffer_size = 0;
   }
   buffer.index = 0;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Buffered_File::set_position(int64_t new_position)
+ void File_Buffer::set_position(int64_t new_position)
  ////////////////////////////////////////////////////////////////////////////
  {
   flush();
-  sequential_seek(new_position);
+  File_Iterator::seek(new_position);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Buffered_File::write_string(const std::string &s)
+ void File_Buffer::write_string(const std::string &s)
  ////////////////////////////////////////////////////////////////////////////
  {
   compact_write<size_t>(s.size());
@@ -43,7 +43,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- std::string Buffered_File::read_string()
+ std::string File_Buffer::read_string()
  ////////////////////////////////////////////////////////////////////////////
  {
   const size_t size = compact_read<size_t>();
@@ -53,7 +53,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- std::string Buffered_File::safe_read_string(int64_t max_size)
+ std::string File_Buffer::safe_read_string(int64_t max_size)
  ////////////////////////////////////////////////////////////////////////////
  {
   std::string s;
@@ -67,12 +67,12 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Buffered_File::~Buffered_File()
+ File_Buffer::~File_Buffer()
  ////////////////////////////////////////////////////////////////////////////
  {
   if (buffer_has_write_data())
   {
-   Destructor_Logger::warning("Buffered_File: flushing buffer");
+   Destructor_Logger::warning("flusing File_Buffer");
    try { write_buffer(); } catch (...) {}
   }
  }

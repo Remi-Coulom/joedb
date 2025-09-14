@@ -6,27 +6,27 @@
 TYPE_MACRO(std::string, const std::string&, string, safe_read_string, write_string)
 #endif
 #ifndef TYPE_MACRO_NO_INT
-TYPE_MACRO(int32_t, int32_t, int32, buffered_file.read<int32_t>, write<int32_t>)
-TYPE_MACRO(int64_t, int64_t, int64, buffered_file.read<int64_t>, write<int64_t>)
+TYPE_MACRO(int32_t, int32_t, int32, file_buffer.read<int32_t>, write<int32_t>)
+TYPE_MACRO(int64_t, int64_t, int64, file_buffer.read<int64_t>, write<int64_t>)
 #endif
 #ifndef TYPE_MACRO_NO_REFERENCE
-TYPE_MACRO(joedb::Record_Id, joedb::Record_Id, reference, buffered_file.read_reference, write_reference)
+TYPE_MACRO(joedb::Record_Id, joedb::Record_Id, reference, file_buffer.read_reference, write_reference)
 #endif
 #ifndef TYPE_MACRO_NO_BOOL
 #ifndef TYPE_MACRO_NO_INT
-TYPE_MACRO(char, bool, boolean, buffered_file.read<char>, write<char>)
+TYPE_MACRO(char, bool, boolean, file_buffer.read<char>, write<char>)
 #endif
 #endif
 #ifndef TYPE_MACRO_NO_FLOAT
-TYPE_MACRO(float, float, float32, buffered_file.read<float>, write<float>)
-TYPE_MACRO(double, double, float64, buffered_file.read<double>, write<double>)
+TYPE_MACRO(float, float, float32, file_buffer.read<float>, write<float>)
+TYPE_MACRO(double, double, float64, file_buffer.read<double>, write<double>)
 #endif
 #ifndef TYPE_MACRO_NO_INT
-TYPE_MACRO(int8_t, int8_t, int8, buffered_file.read<int8_t>, write<int8_t>)
-TYPE_MACRO(int16_t, int16_t, int16, buffered_file.read<int16_t>, write<int16_t>)
+TYPE_MACRO(int8_t, int8_t, int8, file_buffer.read<int8_t>, write<int8_t>)
+TYPE_MACRO(int16_t, int16_t, int16, file_buffer.read<int16_t>, write<int16_t>)
 #endif
 #ifndef TYPE_MACRO_NO_BLOB
-TYPE_MACRO(joedb::Blob, joedb::Blob, blob, buffered_file.read_blob, write_blob)
+TYPE_MACRO(joedb::Blob, joedb::Blob, blob, file_buffer.read_blob, write_blob)
 #endif
 
 // Warning: only add at the bottom to keep compatibility with previous versions

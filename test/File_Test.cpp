@@ -1,7 +1,7 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Portable_File.h"
-#include "joedb/journal/Buffered_File.h"
+#include "joedb/journal/File_Buffer.h"
 
 #include "Test_Sequence.h"
 
@@ -25,7 +25,7 @@ class File_Test: public::testing::Test
    TearDown();
 
    File file("existing.tmp", Open_Mode::create_new);
-   Buffered_File file_buffer(file);
+   File_Buffer file_buffer(file);
    file_buffer.write<uint64_t>(joedb_magic);
    file_buffer.write<bool>(false);
    file_buffer.write<bool>(true);
@@ -67,7 +67,7 @@ TEST_F(File_Test, open_lock)
 
  {
   File locked_file_1("locked.tmp", Open_Mode::create_new);
-  Buffered_File file_buffer(locked_file_1);
+  File_Buffer file_buffer(locked_file_1);
   file_buffer.write<int>(1234);
   file_buffer.flush();
 
@@ -222,14 +222,14 @@ TEST_F(File_Test, read_locked_area)
  File file_1("locked.tmp", Open_Mode::shared_write);
  file_1.exclusive_lock(0, 4);
  {
-  Buffered_File file_buffer(file_1);
+  File_Buffer file_buffer(file_1);
   file_buffer.write<int>(1234);
   file_buffer.flush();
  }
 
  File file_2("locked.tmp", Open_Mode::read_existing);
  {
-  Buffered_File file_buffer(file_2);
+  File_Buffer file_buffer(file_2);
   EXPECT_EQ(file_buffer.read<int32_t>(), 1234);
  }
 
@@ -305,7 +305,7 @@ TEST_F(File_Test, open_success)
 TEST_F(File_Test, read_existing)
 {
  File existing("existing.tmp", Open_Mode::read_existing);
- Buffered_File file_buffer(existing);
+ File_Buffer file_buffer(existing);
  EXPECT_EQ(file_buffer.read<uint64_t>(), joedb_magic);
  EXPECT_EQ(file_buffer.read<bool>(), false);
  EXPECT_EQ(file_buffer.read<bool>(), true);
@@ -319,7 +319,7 @@ TEST_F(File_Test, long_consecutive_read_and_writes)
 
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
- Buffered_File file_buffer(file);
+ File_Buffer file_buffer(file);
 
  for (int64_t i = 0; i < N; i++)
   file_buffer.write<int64_t>(i);
@@ -338,7 +338,7 @@ TEST_F(File_Test, read_write_integer_joedb_magic)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  Buffered_File file_buffer(new_file);
+  File_Buffer file_buffer(new_file);
   file_buffer.write<uint64_t>(joedb_magic);
   file_buffer.set_position(0);
   EXPECT_EQ(joedb_magic, file_buffer.read<uint64_t>());
@@ -351,7 +351,7 @@ TEST_F(File_Test, read_write_integer_compact_joedb_magic)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  Buffered_File file_buffer(new_file);
+  File_Buffer file_buffer(new_file);
   file_buffer.compact_write<uint64_t>(joedb_magic);
   file_buffer.set_position(0);
   EXPECT_EQ(joedb_magic, file_buffer.compact_read<uint64_t>());
@@ -372,7 +372,7 @@ TEST_F(File_Test, read_write_integer_loop)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  Buffered_File file_buffer(new_file);
+  File_Buffer file_buffer(new_file);
   for (int i = 0; i < N; i++)
   {
    uint16_t value = uint16_t(gen() & 0x1fff);
@@ -385,7 +385,7 @@ TEST_F(File_Test, read_write_integer_loop)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  Buffered_File file_buffer(new_file);
+  File_Buffer file_buffer(new_file);
   for (int i = 0; i < N; i++)
   {
    uint32_t value = uint32_t(gen() & 0x1fffffff);
@@ -398,7 +398,7 @@ TEST_F(File_Test, read_write_integer_loop)
  {
   std::remove("new.tmp");
   File new_file("new.tmp", Open_Mode::create_new);
-  Buffered_File file_buffer(new_file);
+  File_Buffer file_buffer(new_file);
   for (int i = 0; i < N; i++)
   {
    uint64_t value = uint64_t(gen()) & 0x1fffffffffffffffULL;
@@ -415,7 +415,7 @@ TEST_F(File_Test, read_write_string)
 {
  std::remove("new.tmp");
  File new_file("new.tmp", Open_Mode::create_new);
- Buffered_File file_buffer(new_file);
+ File_Buffer file_buffer(new_file);
  const std::string s("joedb!!!");
  file_buffer.write_string(s);
  file_buffer.set_position(0);
@@ -427,7 +427,7 @@ TEST_F(File_Test, position_test)
 {
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
- Buffered_File file_buffer(file);
+ File_Buffer file_buffer(file);
  EXPECT_EQ(0LL, file_buffer.get_position());
 
 // That test was not correct
@@ -463,7 +463,7 @@ TEST_F(File_Test, eof)
 {
  std::remove("new.tmp");
  File file("new.tmp", Open_Mode::create_new);
- Buffered_File file_buffer(file);
+ File_Buffer file_buffer(file);
 
  EXPECT_ANY_THROW(file_buffer.read<uint8_t>());
 
@@ -485,12 +485,12 @@ TEST_F(File_Test, flush)
 /////////////////////////////////////////////////////////////////////////////
 {
  File file1("new.tmp", Open_Mode::create_new);
- Buffered_File file1_buffer(file1);
+ File_Buffer file1_buffer(file1);
  file1_buffer.write<int32_t>(1234);
  file1_buffer.flush();
 
  File file2("new.tmp", Open_Mode::read_existing);
- Buffered_File file2_buffer(file2);
+ File_Buffer file2_buffer(file2);
  file2_buffer.set_position(0);
  EXPECT_EQ(1234, file2_buffer.read<int32_t>());
 
@@ -509,7 +509,7 @@ TEST_F(File_Test, double_pread)
  File file1("new.tmp", Open_Mode::create_new);
  File file2("new.tmp", Open_Mode::read_existing);
 
- Buffered_File file1_buffer(file1);
+ File_Buffer file1_buffer(file1);
 
  file1_buffer.set_position(0);
  file1_buffer.write<int32_t>(1234);
@@ -537,7 +537,7 @@ static void perf(size_t size)
 /////////////////////////////////////////////////////////////////////////////
 {
  File file("new.tmp", Open_Mode::create_new);
- Buffered_File file_buffer(file);
+ File_Buffer file_buffer(file);
  const size_t total_size = 10000000;
  const int N = int(total_size / (size + 1));
  std::string s(size, ' ');
@@ -574,7 +574,7 @@ TEST(File, write_data)
  for (size_t n = 1; n <= input.size(); n++)
  {
   Memory_File file;
-  Buffered_File file_buffer(file);
+  File_Buffer file_buffer(file);
 
   size_t offset = size_t(gen()) & 0x7ffULL;
   file_buffer.write_data(&input[1], offset);
@@ -609,7 +609,7 @@ TEST(File, portable)
    "test.joedb",
    joedb::Open_Mode::write_existing_or_create_new
   );
-  Buffered_File file_buffer(file);
+  File_Buffer file_buffer(file);
   file_buffer.write<int32_t>(1234);
   file_buffer.flush();
  );
@@ -620,7 +620,7 @@ TEST(File, portable)
    "test.joedb",
    joedb::Open_Mode::write_existing_or_create_new
   );
-  Buffered_File file_buffer(file);
+  File_Buffer file_buffer(file);
   file_buffer.write<int32_t>(5678);
   file_buffer.set_position(0);
   EXPECT_EQ(file_buffer.read<int32_t>(), 5678);
@@ -658,7 +658,7 @@ TEST(File, sync)
 {
  std::remove("test.joedb");
  joedb::File file("test.joedb", joedb::Open_Mode::create_new);
- joedb::Buffered_File file_buffer(file);
+ joedb::File_Buffer file_buffer(file);
  for (int i = 10; --i >= 0;)
  {
   file_buffer.write<int>(42);
