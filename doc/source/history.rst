@@ -7,7 +7,9 @@ History
 
     - :doc:`rpc`
     - websocket support based on `boost::beast <https://www.boost.org/doc/libs/latest/libs/beast/doc/html/index.html>`_
-    - :joedb:`joedb::filebuf`
+    - :joedb:`joedb::filebuf` is a `̀`std::streambuf`` for a joedb file. It
+      allows writing to a :joedb:`Interpreted_File` with proper handling of
+      concurrency.
     - Files are not buffered any more. An independent :joedb:`File_Buffer` can
       be used instead. This new design has many advantages:
 

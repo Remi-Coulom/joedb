@@ -462,7 +462,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
-  ../src/joedb/journal/Readonly_Interpreted_File.cpp
   ../src/joedb/journal/File_Hasher.cpp
  )
 

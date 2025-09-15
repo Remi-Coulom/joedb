@@ -1,51 +1,51 @@
 #ifndef joedb_Interpreted_File_declared
 #define joedb_Interpreted_File_declared
 
-#include "joedb/journal/Readonly_Interpreted_File.h"
-#include "joedb/journal/fstream.h"
+#include "joedb/journal/File.h"
+#include "joedb/journal/filebuf.h"
+#include "joedb/journal/Memory_File.h"
+#include "joedb/journal/Writable_Journal.h"
+#include "joedb/interpreted/Database.h"
+#include "joedb/Multiplexer.h"
+#include "joedb/ui/Interpreter.h"
+
+#include <iostream>
 
 namespace joedb
 {
+ /// Store a file in joedbi format
+ ///
  /// @ingroup journal
- class Interpreted_Stream_File: public Readonly_Interpreted_File
+ class Interpreted_File: public Abstract_File
  {
   private:
-   std::iostream &stream;
+   void read_data();
 
-   void pwrite(const char *buffer, size_t size, int64_t offset) override;
+  protected:
+   File file;
+   joedb::filebuf filebuf;
+   std::iostream ios;
 
-  public:
-   Interpreted_Stream_File(std::iostream &stream);
- };
+   Memory_File memory_file;
+   Writable_Journal journal;
 
- namespace detail
- {
-  class Interpreted_File_Data
-  {
-   protected:
-    joedb::fstream file_stream;
+   Database db;
+   Multiplexer multiplexer;
+   Interpreter interpreter;
 
-   public:
-    Interpreted_File_Data(const char *file_name, Open_Mode mode);
-    ~Interpreted_File_Data();
-  };
- }
+   Abstract_File null_file;
+   joedb::filebuf null_filebuf;
+   std::ostream null_stream;
 
- /// Read or write to a text file in joedbi format
- ///
- /// This class does not provide any handling of concurrency or durability
- ///
- /// @ingroup journal
- class Interpreted_File:
-  private detail::Interpreted_File_Data,
-  public Interpreted_Stream_File
- {
   public:
    Interpreted_File(const char *file_name, Open_Mode mode);
-   Interpreted_File(const std::string &file_name, Open_Mode mode):
-    Interpreted_File(file_name.data(), mode)
-   {
-   }
+
+   void sync() override;
+   void shared_lock(int64_t start, int64_t size) override;
+   void exclusive_lock(int64_t start, int64_t size) override;
+   void unlock(int64_t start, int64_t size) noexcept override;
+   void pwrite(const char *buffer, size_t size, int64_t offset) override;
+   size_t pread(char *data, size_t size, int64_t offset) const override;
  };
 }
 

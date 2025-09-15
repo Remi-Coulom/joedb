@@ -37,7 +37,7 @@ namespace joedb
   }
   else
   {
-   out << " [file] [--<open_mode>] <file_name>\n";
+   out << " [interpreted] [file] [--<open_mode>] <file_name>\n";
    out << " <open_mode> is one of:\n";
 
    for (size_t i = 0; i < open_modes; i++)
@@ -53,8 +53,6 @@ namespace joedb
 
    out << " memory\n";
   }
-
-  out << " interpreted [--read] <file_name>\n";
 
 #ifdef JOEDB_HAS_SSH
   out << " sftp [--port p] [--verbosity v] <user> <host> <path>\n";
@@ -85,29 +83,6 @@ namespace joedb
    file.reset(new Memory_File());
   else if (arguments.peek("server"))
    file.reset();
-  else if (arguments.peek("interpreted"))
-  {
-   bool readonly = false;
-
-   if (default_only)
-    readonly = default_open_mode == Open_Mode::read_existing;
-   else if (arguments.peek("--read"))
-    readonly = true;
-
-   const std::string_view file_name = arguments.get_next();
-   if (arguments.missing())
-    return nullptr;
-
-   out << "Opening interpreted file... ";
-   out.flush();
-
-   if (readonly)
-    file.reset(new Readonly_Interpreted_File(file_name.data()));
-   else
-    file.reset(new Interpreted_File(file_name.data(), Open_Mode::write_existing_or_create_new));
-
-   out << "OK\n";
-  }
 #ifdef JOEDB_HAS_SSH
   else if (arguments.peek("sftp"))
   {
@@ -175,6 +150,7 @@ namespace joedb
 #endif
   else
   {
+   const bool interpreted = arguments.peek("interpreted");
    arguments.peek("file");
 
    Open_Mode open_mode = default_open_mode;
@@ -200,7 +176,11 @@ namespace joedb
    out << "Opening local file (open_mode = ";
    out << open_mode_strings[size_t(open_mode)] << ") ... ";
    out.flush();
-   file.reset(new File(file_name.data(), open_mode));
+
+   if (interpreted)
+    file.reset(new Interpreted_File(file_name.data(), open_mode));
+   else
+    file.reset(new File(file_name.data(), open_mode));
   }
 
   return file.get();

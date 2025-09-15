@@ -1,11 +1,70 @@
 #include "joedb/journal/Interpreted_File.h"
-#include "joedb/Multiplexer.h"
 #include "joedb/ui/Interpreter_Dump_Writable.h"
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Interpreted_Stream_File::pwrite
+ void Interpreted_File::read_data()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  interpreter.main_loop(ios, null_stream);
+  // TODO: error if last line not empty
+  journal.soft_checkpoint();
+  ios.clear(); // clears eof flag after reading
+  ios.seekp(0, std::ios::end); // get ready to read or write
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ Interpreted_File::Interpreted_File(const char *file_name, Open_Mode mode):
+ ////////////////////////////////////////////////////////////////////////////
+  Abstract_File(mode),
+  file(file_name, mode),
+  filebuf(file),
+  ios(&filebuf),
+  journal(memory_file),
+  multiplexer{db, journal},
+  interpreter(db, multiplexer, Record_Id::null),
+  null_file(Open_Mode::create_new),
+  null_filebuf(null_file),
+  null_stream(&null_filebuf)
+ {
+  interpreter.set_echo(false);
+  interpreter.set_rethrow(true);
+  read_data();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreted_File::sync()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  file.sync();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreted_File::shared_lock(int64_t start, int64_t size)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  file.shared_lock(start, size);
+  read_data();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreted_File::exclusive_lock(int64_t start, int64_t size)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  file.exclusive_lock(start, size);
+  read_data();
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreted_File::unlock(int64_t start, int64_t size) noexcept
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  file.unlock(start, size);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Interpreted_File::pwrite
  ////////////////////////////////////////////////////////////////////////////
  (
   const char *buffer,
@@ -13,46 +72,26 @@ namespace joedb
   int64_t offset
  )
  {
-  Memory_File::pwrite(buffer, size, offset);
+  memory_file.pwrite(buffer, size, offset);
 
   if (offset < Header::ssize && journal.pull())
   {
-   Interpreter_Writable writable(stream, db);
-   Multiplexer multiplexer{writable, db};
-   journal.play_until_checkpoint(multiplexer);
-   stream.flush();
+   Interpreter_Writable writable(ios, db);
+   Multiplexer dump_multiplexer{writable, db};
+   journal.play_until_checkpoint(dump_multiplexer);
+   ios.flush();
   }
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Interpreted_Stream_File::Interpreted_Stream_File(std::iostream &stream):
- ////////////////////////////////////////////////////////////////////////////
-  Readonly_Interpreted_File(stream, false),
-  stream(stream)
- {
-  stream.clear(); // clears eof flag after reading
-  stream.seekp(0, std::ios::end); // get ready to write
- }
-
- ////////////////////////////////////////////////////////////////////////////
- detail::Interpreted_File_Data::Interpreted_File_Data
+ size_t Interpreted_File::pread
  ////////////////////////////////////////////////////////////////////////////
  (
-  const char *file_name,
-  Open_Mode mode
- ) : file_stream(file_name, mode)
+  char *data,
+  size_t size,
+  int64_t offset
+ ) const
  {
- }
-
- ////////////////////////////////////////////////////////////////////////////
- detail::Interpreted_File_Data::~Interpreted_File_Data() = default;
- ////////////////////////////////////////////////////////////////////////////
-
- ////////////////////////////////////////////////////////////////////////////
- Interpreted_File::Interpreted_File(const char *file_name, Open_Mode mode):
- ////////////////////////////////////////////////////////////////////////////
-  Interpreted_File_Data(file_name, mode),
-  Interpreted_Stream_File(file_stream)
- {
+  return memory_file.pread(data, size, offset);
  }
 }
