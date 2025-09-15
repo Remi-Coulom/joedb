@@ -21,6 +21,7 @@ namespace joedb
    bool echo = true;
    bool rethrow = false;
    bool prompt = false;
+   bool last_line_empty = true;
 
    void after_command
    (
@@ -50,6 +51,7 @@ namespace joedb
    void set_rethrow(bool new_rethrow) {rethrow = new_rethrow;}
    void set_prompt(bool new_prompt) {prompt = new_prompt;}
    void main_loop(std::istream &in, std::ostream &out);
+   bool is_last_line_empty() const {return last_line_empty;}
  };
 }
 

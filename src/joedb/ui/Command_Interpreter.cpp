@@ -164,6 +164,8 @@ General commands
    while (!line.empty() && isspace(line.back()))
     line.pop_back();
 
+   last_line_empty = line.empty();
+
    line_number++;
    std::istringstream iss(line);
    std::string command;

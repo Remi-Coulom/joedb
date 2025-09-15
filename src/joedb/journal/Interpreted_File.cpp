@@ -8,10 +8,18 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   interpreter.main_loop(ios, null_stream);
-  // TODO: error if last line not empty
+  ios.clear();
+  ios.seekp(0, std::ios::end);
+
+  if (!interpreter.is_last_line_empty())
+  {
+   throw joedb::Exception
+   (
+    "Interpreted_File: last line of joedbi file must be empty"
+   );
+  }
+
   journal.soft_checkpoint();
-  ios.clear(); // clears eof flag after reading
-  ios.seekp(0, std::ios::end); // get ready to read or write
  }
 
  ////////////////////////////////////////////////////////////////////////////
