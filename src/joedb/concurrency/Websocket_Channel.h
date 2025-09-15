@@ -15,6 +15,8 @@ namespace joedb
  }
 
  /// Channel to communicate with a (secure) Websocket
+ ///
+ /// @ingroup concurrency
  class Websocket_Channel: public Channel
  {
   private:

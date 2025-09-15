@@ -105,10 +105,11 @@ concurrently.
 using the joedb :doc:`network protocol <network_protocol>`.
 
 The constructor of :joedb:`Server_Connection` takes a :joedb:`Channel`
-parameter. Two channel classes are provided:
+parameter. Three channel classes are provided:
 
- * :joedb:`Local_Channel` opens a local socket to the server directly.
- * :joedb:`ssh::Forward_Channel` connects to the server with ssh encryption and authentication.
+ * :joedb:`Local_Channel` opens a local socket to the server directly,
+ * :joedb:`ssh::Forward_Channel` connects to the server with ssh encryption and authentication,
+ * :joedb:`Websocket_Channel` connects to a `websocket <https://en.wikipedia.org/wiki/WebSocket>`_.
 
 :joedb:`Robust_Connection`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

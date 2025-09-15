@@ -6,6 +6,7 @@
 
 namespace joedb
 {
+ /// @ingroup concurrency
  class Websocket_Connector: public Connector
  {
   private:

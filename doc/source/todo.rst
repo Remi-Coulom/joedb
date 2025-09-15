@@ -3,7 +3,6 @@ TODO
 
 - joedb::filebuf -> concurrency and durability for joedb::Interpreted_File.
   Use empty line as checkpoint indicator.
-  investigate macos github action crash.
 - joedbc should atomically swap generated source code
 - testing of user-interface code -> (test for joedb_push to file bug)
 
