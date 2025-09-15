@@ -72,7 +72,7 @@ namespace joedb
  {
   if (buffer_has_write_data())
   {
-   Destructor_Logger::warning("flusing File_Buffer");
+   Destructor_Logger::warning("flushing File_Buffer");
    try { write_buffer(); } catch (...) {}
   }
  }
