@@ -14,7 +14,11 @@
 
 namespace joedb
 {
- /// Store a file in joedbi format
+ ///
+ /// This class allows accessing a file in joedbi text format. It works by
+ /// keeping a binary version of the file in memory, and keeping it in sync
+ /// with the text file. An empty new line is written at each checkpoint.
+ /// Opening the text file fails if it does not end with an empty new line.
  ///
  /// @ingroup journal
  class Abstract_Interpreted_File: public Abstract_File
@@ -66,6 +70,7 @@ namespace joedb
   };
  }
 
+ /// @ingroup journal
  class Interpreted_File:
   private detail::Interpreted_File_Parent,
   public Abstract_Interpreted_File
