@@ -8,6 +8,7 @@
 #include "joedb/interpreted/Database.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/ui/Interpreter.h"
+#include "joedb/ui/Interpreter_Dump_Writable.h"
 
 #include <iostream>
 
@@ -28,8 +29,12 @@ namespace joedb
    Writable_Journal journal;
 
    Database db;
-   Multiplexer multiplexer;
+
+   Multiplexer reading_multiplexer;
    Interpreter interpreter;
+
+   Interpreter_Writable interpreter_writable;
+   Multiplexer writing_multiplexer;
 
    Abstract_File null_file;
    joedb::filebuf null_filebuf;

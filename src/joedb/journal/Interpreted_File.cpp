@@ -1,5 +1,4 @@
 #include "joedb/journal/Interpreted_File.h"
-#include "joedb/ui/Interpreter_Dump_Writable.h"
 
 namespace joedb
 {
@@ -29,8 +28,10 @@ namespace joedb
   filebuf(file),
   ios(&filebuf),
   journal(memory_file),
-  multiplexer{db, journal},
-  interpreter(db, multiplexer, Record_Id::null),
+  reading_multiplexer{db, journal},
+  interpreter(db, reading_multiplexer, Record_Id::null),
+  interpreter_writable(ios, db),
+  writing_multiplexer{interpreter_writable, db},
   null_file(Open_Mode::create_new),
   null_filebuf(null_file),
   null_stream(&null_filebuf)
@@ -72,9 +73,7 @@ namespace joedb
 
   if (offset < Header::ssize && journal.pull())
   {
-   Interpreter_Writable writable(ios, db);
-   Multiplexer dump_multiplexer{writable, db};
-   journal.play_until_checkpoint(dump_multiplexer);
+   journal.play_until_checkpoint(writing_multiplexer);
    ios.flush();
    ios.seekg(0, std::ios::end);
   }
