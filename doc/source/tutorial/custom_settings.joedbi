@@ -3,3 +3,4 @@ insert_into settings 0
 add_field settings dark_mode boolean = false
 add_field settings host string = "www.joedb.org"
 add_field settings user string = "joe"
+

@@ -46,6 +46,10 @@ namespace joedb
 
   public:
    filebuf(Abstract_File &file);
+
+   Abstract_File &get_file() {return file;}
+   const Abstract_File &get_file() const {return file;}
+
    ~filebuf() override;
  };
 }

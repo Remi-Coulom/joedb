@@ -42,3 +42,4 @@ add_field delete for int32
 add_field delete while int32
 
 create_table table_with_no_field
+

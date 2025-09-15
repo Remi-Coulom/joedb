@@ -21,7 +21,7 @@ namespace joedb::generator
 
   out << R"RRR(
 #include "Readonly_Database.h"
-#include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/Interpreted_File.h"
 
 )RRR";
 
@@ -34,7 +34,7 @@ namespace joedb::generator
  {
   public:
    Readonly_Interpreted_File_Database(const char *file_name):
-    Readonly_Database(joedb::Readonly_Interpreted_File(file_name))
+    Readonly_Database(joedb::Interpreted_File(file_name, joedb::Open_Mode::read_existing))
    {
    }
 

@@ -1,4 +1,5 @@
 #include "../../doc/source/tutorial/src/settings/Readonly_Interpreted_File_Database.h"
+#include "joedb/journal/fstream.h"
 
 #include "gtest/gtest.h"
 
@@ -72,6 +73,6 @@ TEST(Compiler, Interpreted_Database_Error)
 {
  EXPECT_ANY_THROW
  (
-  joedb::Readonly_Interpreted_File("this_file_does_not_exist.joedbi")
+  joedb::Interpreted_File("this_file_does_not_exist.joedbi", joedb::Open_Mode::read_existing)
  );
 }

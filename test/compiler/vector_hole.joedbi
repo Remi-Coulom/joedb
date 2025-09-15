@@ -3,3 +3,4 @@ add_field point x float32
 add_field point y float32
 insert_into point 0
 insert_into point 2
+

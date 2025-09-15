@@ -10,7 +10,7 @@
 #include "db/vector_test/Readonly_Database.h"
 #include "db/vector_test/Memory_Database.h"
 #include "translation.h"
-#include "joedb/journal/Readonly_Interpreted_File.h"
+#include "joedb/journal/Interpreted_File.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/Upgradable_File.h"
@@ -95,7 +95,7 @@ TEST(Compiler, file_test)
  // First, try to open the database
  //
  joedb::Memory_File file;
- joedb::Readonly_Interpreted_File("compiler/db/test.joedbi").copy_to(file);
+ joedb::Interpreted_File("compiler/db/test.joedbi", joedb::Open_Mode::read_existing).copy_to(file);
  test::Writable_Database db(file);
 
  //
@@ -476,7 +476,7 @@ TEST(Compiler, iterators)
 {
  test::Readonly_Database db
  (
-  joedb::Readonly_Interpreted_File("compiler/db/test.joedbi")
+  joedb::Interpreted_File("compiler/db/test.joedbi", joedb::Open_Mode::read_existing)
  );
 
  {
@@ -836,7 +836,7 @@ TEST(Compiler, vector)
  try
  {
   joedb::Memory_File file;
-  joedb::Readonly_Interpreted_File("compiler/vector_hole.joedbi").copy_to(file);
+  joedb::Interpreted_File("compiler/vector_hole.joedbi", joedb::Open_Mode::read_existing).copy_to(file);
   vector_test::Writable_Database db(file);
  }
  catch (const joedb::Exception &e)
@@ -847,7 +847,7 @@ TEST(Compiler, vector)
  try
  {
   joedb::Memory_File file;
-  joedb::Readonly_Interpreted_File("compiler/vector_hole_by_vector_insert.joedbi").copy_to(file);
+  joedb::Interpreted_File("compiler/vector_hole_by_vector_insert.joedbi", joedb::Open_Mode::read_existing).copy_to(file);
 
   {
    vector_test::Writable_Database db(file);
@@ -872,7 +872,7 @@ TEST(Compiler, vector)
  try
  {
   joedb::Memory_File file;
-  joedb::Readonly_Interpreted_File("compiler/vector_delete.joedbi").copy_to(file);
+  joedb::Interpreted_File("compiler/vector_delete.joedbi", joedb::Open_Mode::read_existing).copy_to(file);
   vector_test::Writable_Database db(file);
  }
  catch (const joedb::Exception &e)

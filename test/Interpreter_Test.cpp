@@ -132,8 +132,8 @@ namespace joedb
  TEST(Interpreter, Readonly_Interpreted_File)
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::stringstream ss;
-  Readonly_Interpreted_File file(ss);
+  Memory_File memory_file(Open_Mode::read_existing);
+  Abstract_Interpreted_File file(memory_file);
   EXPECT_ANY_THROW(Writable_Journal{file});
  }
 
@@ -141,14 +141,15 @@ namespace joedb
  TEST(Interpreter, Interpreted_File)
  ////////////////////////////////////////////////////////////////////////////
  {
-  std::stringstream ss;
-  ss << "create_table person\n";
-  ss << "insert_into person -1\n";
-  ss << "insert_into person -1\n";
-  ss << "insert_into person -1\n";
-  ss << "create_table city\n";
+  Memory_File memory_file;
+  memory_file.get_data() =
+  "create_table person\n"
+  "insert_into person -1\n"
+  "insert_into person -1\n"
+  "insert_into person -1\n"
+  "create_table city\n\n";
 
-  Readonly_Interpreted_File file(ss);
+  Abstract_Interpreted_File file(memory_file);
   Readonly_Journal journal(file);
   Database db;
   journal.play_until_checkpoint(db);
@@ -160,12 +161,10 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File memory_file;
-  joedb::filebuf buf(memory_file);
-  std::iostream stream(&buf);
 
   {
-   Interpreted_Stream_File file(stream);
-   Writable_Journal journal(file);
+   Abstract_Interpreted_File interpreted_file(memory_file);
+   Writable_Journal journal(interpreted_file);
    journal.rewind();
    journal.create_table("person");
    journal.create_table("city");
@@ -177,8 +176,8 @@ namespace joedb
   EXPECT_EQ(memory_file.get_data(), "create_table person\ncreate_table city\n\ninsert_into person 0\n\n");
 
   {
-   Interpreted_Stream_File file(stream);
-   Writable_Journal journal(file);
+   Abstract_Interpreted_File interpreted_file(memory_file);
+   Writable_Journal journal(interpreted_file);
    Database writable;
    journal.play_until_checkpoint(writable);
    journal.comment("Hello");
@@ -187,7 +186,7 @@ namespace joedb
 
   EXPECT_EQ(memory_file.get_data(), "create_table person\ncreate_table city\n\ninsert_into person 0\n\ncomment \"Hello\"\n\n");
 
-  Readonly_Interpreted_File file(stream);
+  Abstract_Interpreted_File file(memory_file);
   Readonly_Journal journal(file);
   Database db;
   journal.play_until_checkpoint(db);

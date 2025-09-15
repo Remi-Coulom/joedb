@@ -14,3 +14,4 @@ delete_from vector 0
 delete_from vector 4
 delete_from vector 8
 dump
+
