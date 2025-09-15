@@ -22,13 +22,18 @@ namespace joedb
 
   int64_t done = 0;
 
-  while (done < size)
+  while (size < 0 || done < size)
   {
    const size_t asked = size_t(std::min(int64_t(buffer.size()), size - done));
    const size_t received = pread(buffer.data(), asked, start + done);
 
    if (received == 0)
-    reading_past_end_of_file();
+   {
+    if (size < 0)
+     return;
+    else
+     reading_past_end_of_file();
+   }
 
    destination.pwrite(buffer.data(), received, start + done);
    done += int64_t(received);
