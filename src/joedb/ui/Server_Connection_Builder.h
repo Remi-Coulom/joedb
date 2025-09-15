@@ -5,6 +5,7 @@
 #include "joedb/concurrency/Server_File.h"
 
 #include <iostream>
+#include <cmath>
 
 namespace joedb
 {
@@ -40,7 +41,7 @@ namespace joedb
 
     connector->set_keep_alive_interval
     (
-     std::chrono::milliseconds(int(keep_alive_interval * 1000.0f))
+     std::chrono::milliseconds(std::lround(keep_alive_interval * 1000.0f))
     );
 
     if (file)

@@ -74,7 +74,7 @@ namespace joedb
    thread_count,
    std::string(endpoint_path),
    client,
-   std::chrono::milliseconds(int(timeout_seconds * 1000))
+   std::chrono::milliseconds(std::lround(timeout_seconds * 1000))
   );
 
   server.join();

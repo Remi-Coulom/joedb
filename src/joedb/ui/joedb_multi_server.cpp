@@ -82,7 +82,7 @@ namespace joedb
      log_level,
      file_name,
      file_name + ".sock",
-     std::chrono::milliseconds(int(timeout_seconds * 1000))
+     std::chrono::milliseconds(std::lround(timeout_seconds * 1000))
     )
    );
   }
