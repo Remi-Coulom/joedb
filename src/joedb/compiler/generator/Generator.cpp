@@ -1,5 +1,5 @@
 #include "joedb/compiler/generator/Generator.h"
-#include "joedb/compiler/write_atomically.h"
+#include "joedb/compiler/write_source_code.h"
 #include "joedb/get_version.h"
 #include "joedb/ui/get_time_string.h"
 
@@ -206,7 +206,7 @@ namespace joedb::generator
    options.get_name_space_back() + "/" +
    std::string(dir_name);
 
-  write_atomically(dir_string, file_name, [&](std::ostream &out)
+  write_source_code(dir_string, file_name, [&](std::ostream &out)
   {
    write_initial_comment(out);
    write(out);

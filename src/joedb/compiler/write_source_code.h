@@ -1,5 +1,5 @@
-#ifndef joedb_write_atomically_declared
-#define joedb_write_atomically_declared
+#ifndef joedb_write_source_code_declared
+#define joedb_write_source_code_declared
 
 #include <string>
 #include <stddef.h>
@@ -7,7 +7,7 @@
 
 namespace joedb
 {
- void write_atomically
+ void write_source_code
  (
   const std::string &dir_name,
   const std::string &file_name,

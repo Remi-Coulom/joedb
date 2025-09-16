@@ -2,7 +2,7 @@
 #include "joedb/ui/base64.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/compiler/write_atomically.h"
+#include "joedb/compiler/write_source_code.h"
 #include "joedb/journal/File.h"
 
 #include <iostream>
@@ -34,7 +34,7 @@ namespace joedb
 
   const std::string file_name = name_space.back() + '_' + std::string(identifier);
 
-  joedb::write_atomically(".", file_name + ".cpp", [&](std::ostream &cpp)
+  joedb::write_source_code(".", file_name + ".cpp", [&](std::ostream &cpp)
   {
    cpp << "#include \"" << file_name << ".h\"\n";
    cpp << "#include \"" << name_space.back() << "/Readonly_Database.h\"\n";
@@ -114,7 +114,7 @@ namespace joedb
    namespace_close(cpp, name_space);
   });
 
-  joedb::write_atomically(".", file_name + ".h", [&](std::ostream &h)
+  joedb::write_source_code(".", file_name + ".h", [&](std::ostream &h)
   {
    namespace_include_guard_open(h, identifier.data(), name_space);
 
