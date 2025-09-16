@@ -1,7 +1,8 @@
 #include "joedb/compiler/write_atomically.h"
-#include "joedb/ui/main_wrapper.cpp"
+#include "joedb/ui/main_wrapper.h"
 
 #include <thread>
+#include <iostream>
 
 namespace joedb
 {
