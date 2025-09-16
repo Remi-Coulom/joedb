@@ -99,6 +99,7 @@ ipo_add_executable(atomic_test
  ../src/joedb/journal/filebuf.cpp
  ../src/joedb/journal/Async_Reader.cpp
  ../src/joedb/error/Destructor_Logger.cpp
+ ../src/joedb/error/assert.cpp
 )
 
 ipo_add_executable(joedb_convert
