@@ -14,7 +14,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Readonly_Client_h::generate()
+ void Readonly_Client_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   namespace_include_guard_open(out, "Readonly_Client", options.get_name_space());

@@ -13,7 +13,7 @@ namespace joedb::generator
  {
  }
 
- void Procedure_h::generate()
+ void Procedure_h::write(std::ostream &out)
  {
   namespace_include_guard_open(out, "Procedure", options.get_name_space());
 

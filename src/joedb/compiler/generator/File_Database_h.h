@@ -10,7 +10,7 @@ namespace joedb::generator
  {
   public:
    File_Database_h(const Compiler_Options &options);
-   void generate() override;
+   void write(std::ostream &out) override;
  };
 }
 

@@ -13,7 +13,7 @@ namespace joedb::generator
  {
  }
 
- void RPC_Client_h::generate()
+ void RPC_Client_h::write(std::ostream &out)
  {
   auto name_space = options.get_name_space();
   name_space.emplace_back("rpc");

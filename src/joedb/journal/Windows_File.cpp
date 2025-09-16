@@ -13,7 +13,6 @@ namespace joedb
   GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE,
-  GENERIC_READ | GENERIC_WRITE,
   GENERIC_READ | GENERIC_WRITE
  };
 
@@ -24,8 +23,7 @@ namespace joedb
   FILE_SHARE_READ,
   FILE_SHARE_READ,
   FILE_SHARE_READ | FILE_SHARE_WRITE,
-  FILE_SHARE_READ | FILE_SHARE_WRITE,
-  FILE_SHARE_READ,
+  FILE_SHARE_READ | FILE_SHARE_WRITE
  };
 
  const std::array<DWORD, Windows_Handle::mode_count> Windows_Handle::creation_disposition
@@ -35,8 +33,7 @@ namespace joedb
   CREATE_NEW,
   OPEN_ALWAYS,
   OPEN_ALWAYS,
-  OPEN_ALWAYS,
-  CREATE_ALWAYS
+  OPEN_ALWAYS
  };
 
  /////////////////////////////////////////////////////////////////////////////

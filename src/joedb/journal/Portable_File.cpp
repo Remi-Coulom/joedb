@@ -33,8 +33,6 @@ namespace joedb::detail
    filebuf.open(file_name, in | std::ios::out) ||
    filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
   }
-  else if (mode == Open_Mode::truncate)
-   filebuf.open(file_name, in | std::ios::out | std::ios::trunc);
   else
   {
    throw Exception

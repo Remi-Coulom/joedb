@@ -14,7 +14,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Interpreted_File_Database_h::generate()
+ void Interpreted_File_Database_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   namespace_include_guard_open(out, "Interpreted_File_Database", options.get_name_space());

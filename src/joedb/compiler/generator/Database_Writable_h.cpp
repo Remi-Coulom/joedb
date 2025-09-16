@@ -17,7 +17,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Database_Writable_h::generate()
+ void Database_Writable_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   const Database_Schema &db = options.get_db();
@@ -323,7 +323,7 @@ namespace joedb::generator
         else
         {
          out << "reinterpret_cast<const ";
-         write_type(type, false, false);
+         write_type(out, type, false, false);
          out << "*>(value)";
         }
 

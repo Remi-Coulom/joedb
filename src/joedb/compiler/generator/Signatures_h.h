@@ -20,7 +20,7 @@ namespace joedb::generator
     const std::vector<Procedure> &procedures
    );
 
-   void generate() override;
+   void write(std::ostream &out) override;
  };
 }
 

@@ -15,7 +15,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Writable_Database_h::generate()
+ void Writable_Database_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   const Database &db = options.get_db();
@@ -226,7 +226,7 @@ namespace joedb::generator
        out << ",\n    ";
 
       const Type &type = db.get_field_type(tid, fid);
-      write_type(type, false, true);
+      write_type(out, type, false, true);
       out << " field_value_of_" << fname;
      }
 
@@ -277,7 +277,7 @@ namespace joedb::generator
     //
     out << "   void set_" << fname;
     out << "(id_of_" << tname << " record, ";
-    write_type(type, false, true);
+    write_type(out, type, false, true);
     out << " field_value_of_" << fname << ")\n";
     out << "   {\n";
     out << "    internal_update_" << tname << "__" << fname;
@@ -297,7 +297,7 @@ namespace joedb::generator
     {
      out << "   void set_" << fname;
      out << "(";
-     write_type(type, false, true);
+     write_type(out, type, false, true);
      out << " field_value_of_" << fname << ")\n";
      out << "   {\n";
      out << "    set_" << fname << "(the_" << tname;
@@ -314,7 +314,7 @@ namespace joedb::generator
      out << "(id_of_" << tname << " record, size_t size, F f)\n";
      out << "   {\n";
      out << "    joedb::Span<";
-     write_type(type, false, false);
+     write_type(out, type, false, false);
      out << "> span(&storage_of_" << tname;
      out << ".field_value_of_" << fname << ".data()[record.get_id()], size);\n";
      out << "    f(span);\n";

@@ -1,8 +1,9 @@
 #include "joedb/compiler/generator/Generator.h"
+#include "joedb/compiler/write_atomically.h"
 #include "joedb/get_version.h"
 #include "joedb/ui/get_time_string.h"
 
-#include <filesystem>
+#include <iostream>
 
 namespace joedb::generator
 {
@@ -19,7 +20,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generator::write_initial_comment()
+ void Generator::write_initial_comment(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   out << "/////////////////////////////////////////////////////////////////////////////\n";
@@ -39,6 +40,7 @@ namespace joedb::generator
  void Generator::write_type
  ////////////////////////////////////////////////////////////////////////////
  (
+  std::ostream &out,
   Type type,
   bool return_type,
   bool setter_type
@@ -67,8 +69,13 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generator::write_tuple_type(const Compiler_Options::Index &index, bool reference)
+ void Generator::write_tuple_type
  ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  const Compiler_Options::Index &index,
+  bool reference
+ )
  {
   if (index.field_ids.size() > 1)
   {
@@ -85,7 +92,7 @@ namespace joedb::generator
      index.field_ids[i]
     );
 
-    write_type(type, false, false);
+    write_type(out, type, false, false);
    }
 
    out << ">";
@@ -96,6 +103,7 @@ namespace joedb::generator
    {
     write_type
     (
+     out,
      options.db.get_field_type(index.table_id, index.field_ids[0]),
      false,
      false
@@ -105,8 +113,12 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generator::write_index_type(const Compiler_Options::Index &index)
+ void Generator::write_index_type
  ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  const Compiler_Options::Index &index
+ )
  {
   out << "std::";
   if (index.unique)
@@ -115,7 +127,7 @@ namespace joedb::generator
    out << "multimap";
   out << '<';
 
-  write_tuple_type(index, false);
+  write_tuple_type(out, index, false);
 
   out << ", id_of_" << options.db.get_table_name(index.table_id) << ">";
  }
@@ -172,35 +184,33 @@ namespace joedb::generator
  #undef STRINGIFY
 
  ////////////////////////////////////////////////////////////////////////////
- std::string Generator::get_file_string
+ Generator::Generator
  ////////////////////////////////////////////////////////////////////////////
  (
-  const char *dir_name,
-  const char *file_name
- )
+  std::string dir_name,
+  std::string file_name,
+  const Compiler_Options &options
+ ):
+  dir_name(std::move(dir_name)),
+  file_name(std::move(file_name)),
+  options(options)
+ {
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Generator::generate()
+ ////////////////////////////////////////////////////////////////////////////
  {
   const std::string dir_string =
    options.output_path + "/" +
    options.get_name_space_back() + "/" +
    std::string(dir_name);
 
-  std::filesystem::create_directories(dir_string);
-
-  return dir_string + "/" + std::string(file_name);
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Generator::Generator
- ////////////////////////////////////////////////////////////////////////////
- (
-  const char *dir_name,
-  const char *file_name,
-  const Compiler_Options &options
- ):
-  options(options),
-  out(get_file_string(dir_name, file_name), Open_Mode::truncate)
- {
-  write_initial_comment();
+  write_atomically(dir_string, file_name, [&](std::ostream &out)
+  {
+   write_initial_comment(out);
+   write(out);
+  });
  }
 
  ////////////////////////////////////////////////////////////////////////////

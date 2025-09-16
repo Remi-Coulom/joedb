@@ -15,7 +15,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Database_h::generate()
+ void Database_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   const Database_Schema &db = options.get_db();
@@ -89,7 +89,7 @@ namespace joedb::generator
     const joedb::Type &type = db.get_field_type(tid, fid);
 
     out << "   std::vector<";
-    write_type(type, false, false);
+    write_type(out, type, false, false);
     out << "> " << fields.back() << ";\n";
    }
 
@@ -97,7 +97,7 @@ namespace joedb::generator
     if (index.table_id == tid)
     {
      out << "   std::vector<";
-     write_index_type(index);
+     write_index_type(out, index);
      out << "::iterator> ";
      fields.emplace_back("iterator_over_" + index.name);
      out << fields.back() << ";\n";
@@ -178,7 +178,7 @@ namespace joedb::generator
    const std::string &tname = db.get_table_name(index.table_id);
 
    out << "   ";
-   write_index_type(index);
+   write_index_type(out, index);
    out << " index_of_" << index.name << ";\n";
 
    out << "   void remove_index_of_" << index.name << "(Record_Id record_id)\n";
@@ -196,9 +196,9 @@ namespace joedb::generator
    out << "   {\n";
    out << "    auto result = index_of_" << index.name;
    out << ".insert\n    (\n     ";
-   write_index_type(index);
+   write_index_type(out, index);
    out << "::value_type\n     (\n      ";
-   write_tuple_type(index, true);
+   write_tuple_type(out, index, true);
    out << '(';
    for (size_t i = 0; i < index.field_ids.size(); i++)
    {
@@ -268,7 +268,7 @@ namespace joedb::generator
     else if (type.get_type_id() == Type::Type_Id::reference)
     {
      out << " = ";
-     write_type(type, false, false);
+     write_type(out, type, false, false);
      out << "(joedb::Record_Id::null)";
     }
     else if (type.get_type_id() == Type::Type_Id::blob)
@@ -333,7 +333,7 @@ namespace joedb::generator
 
     out << "   void internal_update_" << tname << "__" << fname;
     out << "\n   (\n    Record_Id record_id,\n    ";
-    write_type(type, true, false);
+    write_type(out, type, true, false);
     out << " field_value_of_" << fname << "\n   )\n";
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
@@ -357,13 +357,13 @@ namespace joedb::generator
     out << "    Record_Id record_id,\n";
     out << "    size_t size,\n";
     out << "    const ";
-    write_type(type, false, false);
+    write_type(out, type, false, false);
     out << " *value\n";
     out << "   )\n";
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(storage_of_" << tname << ".freedom_keeper.is_used_vector(record_id, size));\n";
     out << "    ";
-    write_type(type, false, false);
+    write_type(out, type, false, false);
     out << " *target = &storage_of_" << tname;
     out << ".field_value_of_" << fname << ".data()[to_underlying(record_id)];\n";
     out << "    if (target != value)\n";
@@ -449,7 +449,7 @@ namespace joedb::generator
     // Getter
     //
     out << "   ";
-    write_type(type, true, false);
+    write_type(out, type, true, false);
     out << " get_" << fname << "(id_of_" << tname << " record";
     if (single_row)
      out << " = id_of_" << tname << "{0}";
@@ -457,7 +457,7 @@ namespace joedb::generator
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(record.get_record_id()));\n";
     out << "    return (";
-    write_type(type, true, false);
+    write_type(out, type, true, false);
     out << ")(storage_of_" << tname;
     out << ".field_value_of_" << fname << "[record.get_id()]);\n";
     out << "   }\n";
@@ -471,7 +471,7 @@ namespace joedb::generator
   {
    out << '\n';
    out << "   const ";
-   write_index_type(index);
+   write_index_type(out, index);
    out << " &get_index_of_" << index.name << "()\n";
    out << "   {\n";
    out << "    return index_of_" << index.name << ";\n";
@@ -517,14 +517,14 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(type, true, false);
+     write_type(out, type, true, false);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ") const\n";
     out << "   {\n";
     out << "    const auto i = index_of_" << index.name << ".find(";
-    write_tuple_type(index, true);
+    write_tuple_type(out, index, true);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {
@@ -548,7 +548,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(type, true, false);
+     write_type(out, type, true, false);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
@@ -651,22 +651,22 @@ namespace joedb::generator
     out << "  friend class Database;\n";
     out << "  private:\n";
     out << "   std::pair<";
-    write_index_type(index);
+    write_index_type(out, index);
     out << "::const_iterator, ";
-    write_index_type(index);
+    write_index_type(out, index);
     out << "::const_iterator> range;\n";
     out << "   range_of_" << index.name << "(const Database &db";
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {
      out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(type, true, false);
+     write_type(out, type, true, false);
      out << ' ' << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ")\n";
     out << "   {\n";
     out << "    range = db.index_of_" << index.name << ".equal_range(";
-    write_tuple_type(index, true);
+    write_tuple_type(out, index, true);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {
@@ -682,10 +682,10 @@ namespace joedb::generator
     out << "    friend class range_of_" << index.name << ";\n";
     out << "    private:\n";
     out << "     ";
-    write_index_type(index);
+    write_index_type(out, index);
     out << "::const_iterator map_iterator;\n";
     out << "     iterator(";
-    write_index_type(index);
+    write_index_type(out, index);
     out << "::const_iterator map_iterator): map_iterator(map_iterator) {}\n"
         << "    public:\n"
         << "     bool operator !=(const iterator &i) const\n"
@@ -708,7 +708,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(type, true, false);
+     write_type(out, type, true, false);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }

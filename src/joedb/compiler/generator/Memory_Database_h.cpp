@@ -14,7 +14,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Memory_Database_h::generate()
+ void Memory_Database_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   namespace_include_guard_open(out, "Memory_Database", options.get_name_space());

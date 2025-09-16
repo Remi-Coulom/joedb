@@ -170,8 +170,6 @@ namespace joedb
    if (fd < 0)
     fd = open(file_name, O_RDWR);
   }
-  else if (mode == Open_Mode::truncate)
-   fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 00644);
 
   if (fd < 0)
    throw_last_error("opening", file_name);

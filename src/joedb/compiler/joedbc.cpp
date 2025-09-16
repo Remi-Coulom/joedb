@@ -149,13 +149,12 @@ namespace joedb
   // .gitignore
   //
   {
-   joedb::ofstream ofs
+   joedb::File file
    (
     options.output_path + "/" + options.get_name_space_back() + "/.gitignore",
-    Open_Mode::truncate
+    Open_Mode::write_lock
    );
-   ofs << "*\n";
-   ofs.flush();
+   file.pwrite("*\n", 2, 0);
   }
  }
 

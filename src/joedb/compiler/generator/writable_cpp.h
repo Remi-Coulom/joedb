@@ -14,7 +14,7 @@ namespace joedb::generator
    {
    }
 
-   void generate() override
+   void write(std::ostream &out) override
    {
     out << "#include \"readonly.cpp\"\n";
     out << "#include \"Writable_Database.cpp\"\n";

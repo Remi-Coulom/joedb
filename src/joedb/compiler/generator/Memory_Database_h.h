@@ -10,7 +10,7 @@ namespace joedb::generator
  {
   public:
    Memory_Database_h(const Compiler_Options &options);
-   void generate() override;
+   void write(std::ostream &out) override;
  };
 }
 

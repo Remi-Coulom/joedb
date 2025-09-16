@@ -9,7 +9,6 @@ namespace joedb
   "new",
   "write_or_new",
   "shared",
-  "lock",
-  "truncate",
+  "lock"
  };
 }

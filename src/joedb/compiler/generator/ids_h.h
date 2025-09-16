@@ -17,7 +17,7 @@ namespace joedb::generator
     const Compiler_Options &options,
     const Compiler_Options *parent_options
    );
-   void generate() override;
+   void write(std::ostream &out) override;
  };
 }
 

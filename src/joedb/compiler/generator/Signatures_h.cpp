@@ -15,7 +15,7 @@ namespace joedb::generator
  {
  }
 
- void Signatures_h::generate()
+ void Signatures_h::write(std::ostream &out)
  {
   auto name_space = options.get_name_space();
   name_space.emplace_back("rpc");

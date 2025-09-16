@@ -18,7 +18,7 @@ namespace joedb::generator
     const std::pair<Table_Id, std::string> &table
    );
 
-   void generate() override;
+   void write(std::ostream &out) override;
  };
 }
 

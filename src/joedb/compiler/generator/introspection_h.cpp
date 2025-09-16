@@ -17,7 +17,7 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void introspection_h::generate()
+ void introspection_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   const Table_Id tid = table.first;
@@ -47,7 +47,7 @@ namespace joedb::generator
      namespace_write(out, options.get_name_space());
      out << "::";
     }
-    write_type(type, false, false);
+    write_type(out, type, false, false);
    }
 
    out << ", " << fname;
