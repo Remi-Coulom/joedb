@@ -88,6 +88,7 @@ joedb_add_executable(joedb_sha256sum ../src/joedb/ui/joedb_sha256sum.cpp)
 joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
 joedb_add_executable(joedb_client ../src/joedb/ui/joedb_client.cpp)
 joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
+joedb_add_executable(atomic_test ../../test/write_atomically.cpp)
 
 ipo_add_executable(joedb_convert
  ../src/joedb/Writable.cpp
