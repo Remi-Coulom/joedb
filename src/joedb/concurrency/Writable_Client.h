@@ -105,6 +105,11 @@ namespace joedb
    {
    }
 
+   void touch()
+   {
+    get_writable_journal().touch();
+   }
+
    /// Automatically write valid_data at every checkpoint (default = false)
    void set_valid_data(bool b) {use_valid_data = b;}
 

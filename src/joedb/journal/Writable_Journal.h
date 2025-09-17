@@ -133,6 +133,8 @@ namespace joedb
    bool is_locked() const {return file.tail_is_locked();}
    void unlock() noexcept;
 
+   void touch();
+
    ~Writable_Journal() override;
  };
 

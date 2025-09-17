@@ -17,7 +17,6 @@ namespace joedb
   private:
    Blob_Reader_Command_Processor blob_processor;
 
-   void pull(std::ostream &out, std::chrono::milliseconds wait);
    void print_status(std::ostream &out);
 
   protected:
@@ -25,6 +24,7 @@ namespace joedb
 
    static void sleep(int seconds, std::ostream &out);
    virtual std::string get_name() const {return "readonly_client";}
+   virtual int64_t pull(std::ostream &out, std::chrono::milliseconds wait);
 
   public:
    Client_Command_Processor(Client &client):
@@ -65,6 +65,7 @@ namespace joedb
    }
 
    std::string get_name() const override {return "writable_client";}
+   int64_t pull(std::ostream &out, std::chrono::milliseconds wait) override;
 
   public:
    Writable_Client_Command_Processor(Writable_Client &client):

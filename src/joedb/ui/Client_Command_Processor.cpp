@@ -47,7 +47,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::pull
+ int64_t Client_Command_Processor::pull
  ////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
@@ -60,6 +60,24 @@ namespace joedb
    out << "pulled " << byte_count << " bytes, checkpoint = ";
    out << client.get_journal_checkpoint() << '\n';
   }
+
+  return byte_count;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ int64_t Writable_Client_Command_Processor::pull
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  std::chrono::milliseconds wait
+ )
+ {
+  const int64_t byte_count = Client_Command_Processor::pull(out, wait);
+
+  if (byte_count == 0)
+   get_writable_client().touch();
+
+  return byte_count;
  }
 
  ////////////////////////////////////////////////////////////////////////////
