@@ -1,5 +1,5 @@
-#ifndef joedb_Logger
-#define joedb_Logger
+#ifndef joedb_Logger_declared
+#define joedb_Logger_declared
 
 #include <string_view>
 
