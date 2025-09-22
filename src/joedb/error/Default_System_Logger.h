@@ -4,6 +4,7 @@
 #include "joedb/error/Logger.h"
 
 #include <string>
+#include <mutex>
 
 namespace joedb
 {
@@ -11,6 +12,7 @@ namespace joedb
  class Default_System_Logger: public Logger
  {
   private:
+   std::mutex mutex;
    std::string tag;
 
   public:

@@ -15,6 +15,7 @@ namespace joedb
  {
   try
   {
+   std::unique_lock lock(mutex);
    std::cerr << joedb::get_time_string_of_now();
    std::cerr << ' ' << tag << ": " << message << '\n';
    std::cerr.flush();
