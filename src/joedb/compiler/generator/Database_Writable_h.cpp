@@ -535,7 +535,7 @@ namespace joedb::generator
 
    void initialize_with_readonly_journal(joedb::Readonly_Journal &journal)
    {
-    max_record_id = size_t(journal.get_checkpoint());
+    max_record_id = journal.get_checkpoint();
     journal.replay_log(*this);
     max_record_id = 0;
 
