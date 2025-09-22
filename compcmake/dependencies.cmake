@@ -123,4 +123,6 @@ endif()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if (ANDROID)
  list(APPEND JOEDB_EXTERNAL_LIBS log)
+elseif (APPLE)
+ list(APPEND JOEDB_EXTERNAL_LIBS "-framework OSLog")
 endif()

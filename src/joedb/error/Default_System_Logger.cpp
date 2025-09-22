@@ -9,6 +9,7 @@ namespace joedb
  Default_System_Logger::Default_System_Logger(std::string_view tag): tag(tag)
  {
  }
+
  ////////////////////////////////////////////////////////////////////////////
  void Default_System_Logger::write(std::string_view message) noexcept
  {
