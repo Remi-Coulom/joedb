@@ -11,7 +11,7 @@ namespace joedb::generator
   const Compiler_Options &options,
   const std::pair<Table_Id, std::string> &table
  ):
-  Generator("tables", (table.second + "_introspection.h").c_str(), options),
+  Generator("tables", table.second + "_introspection.h", options),
   table(table)
  {
  }
