@@ -97,7 +97,7 @@ namespace joedb
   std::iostream ios(&buf);
 
   std::vector<char> data(123456, 'x');
-  ios.write(data.data(), data.size());
+  ios.write(data.data(), std::streamsize(data.size()));
   ios.seekp(0, std::ios::beg);
   EXPECT_EQ(buf.in_avail(), 123456);
   EXPECT_EQ(ios.get(), 'x');
@@ -127,14 +127,14 @@ namespace joedb
   EXPECT_EQ(buffer[0], 'y');
   EXPECT_EQ(buffer[1], 'y');
   EXPECT_EQ(buffer[2], 'y');
-  ios.read(buffer.data(), buffer.size());
+  ios.read(buffer.data(), std::streamsize(buffer.size()));
   EXPECT_EQ(buffer[0], 'y');
   EXPECT_EQ(buffer[9999], 'x');
 
   ios.seekg(0, std::ios::beg);
-  ios.read(buffer.data(), buffer.size());
+  ios.read(buffer.data(), std::streamsize(buffer.size()));
   ios.seekp(1, std::ios::beg);
-  ios.write(buffer.data(), buffer.size());
+  ios.write(buffer.data(), std::streamsize(buffer.size()));
   ios.seekg(0, std::ios::beg);
   ios.read(buffer.data(), 4);
   EXPECT_EQ(buffer[0], 'x');
