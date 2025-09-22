@@ -7,8 +7,12 @@ namespace joedb
 {
  using System_Logger = Android_System_Logger;
 }
-#elif defined(APPLE)
 #else
+#include "joedb/error/Default_System_Logger.h"
+namespace joedb
+{
+ using System_Logger = Default_System_Logger;
+}
 #endif
 
 #endif

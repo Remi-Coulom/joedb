@@ -26,6 +26,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/concurrency/Server_File.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Websocket_Channel.cpp
  ${JOEDB_SRC_DIR}/joedb/rpc/get_hash.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/System_Logger.cpp
 )
 
 set(JOEDB_DATABASES

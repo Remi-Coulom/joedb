@@ -117,3 +117,10 @@ if (unofficial-brotli_FOUND)
 else()
  message("## Brotli not found")
 endif()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# log
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if (ANDROID)
+ list(APPEND JOEDB_EXTERNAL_LIBS log)
+endif()

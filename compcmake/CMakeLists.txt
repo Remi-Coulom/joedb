@@ -405,6 +405,10 @@ joedb_add_executable(update_large_string
  ../test/compiler/update_large_string.cpp
 )
 
+joedb_add_executable(logger_test
+ ../test/logger_test.cpp
+)
+
 #############################################################################
 # Fuzzers
 #############################################################################

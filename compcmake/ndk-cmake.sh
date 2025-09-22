@@ -46,4 +46,4 @@ cmake \
 # configure and run in adb shell:
 # redfin:/data/local/tmp/joedb $ chmod a+x ./joedbi ./*.so
 # redfin:/data/local/tmp/joedb $ export LD_LIBRARY_PATH=.
-# redfin:/data/local/tmp/joedb $ echo "about" | ./joedbi
+# redfin:/data/local/tmp/joedb $ echo "about" | ./joedbi memory
