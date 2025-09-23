@@ -2,6 +2,7 @@
 #include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/File.h"
+#include "joedb/error/System_Logger.h"
 #include "joedb/ui/type_io.h"
 #include "joedb/get_version.h"
 
@@ -89,6 +90,7 @@ namespace joedb
   out << "\nsizeof(off_t) = " << sizeof(off_t);
 #endif
   out << "\nFile = " << JOEDB_INCLUDE(JOEDB_FILE, h);
+  out << "\nSystem log = " << JOEDB_INCLUDE(JOEDB_SYSTEM_LOG, h);
 #ifdef JOEDB_HAS_BROKEN_POSIX_LOCKING
   out << "\nbroken_posix_locking = true";
 #else

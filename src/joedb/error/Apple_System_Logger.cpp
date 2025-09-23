@@ -5,7 +5,7 @@
 namespace joedb
 {
  Apple_System_Logger::Apple_System_Logger(std::string_view tag):
-  log(os_log_create("com.kayufu.joedb", tag.data()))
+  log(os_log_create("org.joedb", std::string(tag).c_str())
  {
  }
 
