@@ -132,6 +132,10 @@ function(joedbc_build_absolute dir namespace)
   ${dir}/${namespace}.rpc/Service.h
  )
 
+ if (NOT joedbis OR NOT joedbcs)
+  message(FATAL_ERROR "Cannot find joedbi or joedbc for joedbc_build ${dir} ${namespace}")
+ endif()
+
  set(slash_list ${joedbis})
  set(slash_Service ${Service_h})
 
