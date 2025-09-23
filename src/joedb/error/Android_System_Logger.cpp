@@ -1,15 +1,15 @@
-#include "joedb/error/Android_System_Log.h"
+#include "joedb/error/Android_System_Logger.h"
 #include <android/log.h>
 
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Android_System_Log::Android_System_Log(std::string_view tag): tag(tag)
+ Android_System_Logger::Android_System_Logger(std::string_view tag): tag(tag)
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Android_System_Log::write(std::string_view message) noexcept
+ void Android_System_Logger::write(std::string_view message) noexcept
  {
   try
   {

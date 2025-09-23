@@ -1,5 +1,5 @@
-#ifndef joedb_Android_System_Log_declared
-#define joedb_Android_System_Log_declared
+#ifndef joedb_Android_System_Logger_declared
+#define joedb_Android_System_Logger_declared
 
 #include "joedb/error/Logger.h"
 
@@ -8,13 +8,13 @@
 namespace joedb
 {
  /// @ingroup error
- class Android_System_Log: public Logger
+ class Android_System_Logger: public Logger
  {
   private:
    std::string tag;
 
   public:
-   Android_System_Log(std::string_view tag);
+   Android_System_Logger(std::string_view tag);
    void write(std::string_view message) noexcept override;
  };
 }

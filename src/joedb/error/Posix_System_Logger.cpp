@@ -1,17 +1,17 @@
-#include "joedb/error/Posix_System_Log.h"
+#include "joedb/error/Posix_System_Logger.h"
 
 #include <string>
 
 namespace joedb
 {
- Posix_System_Log::Posix_System_Log(std::string_view tag)
+ Posix_System_Logger::Posix_System_Logger(std::string_view tag)
  {
   static std::string tag_storage;
   tag_storage = std::string(tag);
   openlog(tag_storage.c_str(), LOG_PID, LOG_USER);
  }
 
- void Posix_System_Log::write(std::string_view message) noexcept
+ void Posix_System_Logger::write(std::string_view message) noexcept
  {
   try
   {

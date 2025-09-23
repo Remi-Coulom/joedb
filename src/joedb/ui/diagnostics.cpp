@@ -2,7 +2,7 @@
 #include "joedb/journal/Abstract_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/File.h"
-#include "joedb/error/System_Log.h"
+#include "joedb/error/System_Logger.h"
 #include "joedb/ui/type_io.h"
 #include "joedb/get_version.h"
 

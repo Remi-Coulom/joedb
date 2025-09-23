@@ -1,4 +1,4 @@
-#include "joedb/error/Default_System_Log.h"
+#include "joedb/error/Default_System_Logger.h"
 #include "joedb/ui/get_time_string.h"
 
 #include <iostream>
@@ -6,12 +6,12 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Default_System_Log::Default_System_Log(std::string_view tag): tag(tag)
+ Default_System_Logger::Default_System_Logger(std::string_view tag): tag(tag)
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Default_System_Log::write(std::string_view message) noexcept
+ void Default_System_Logger::write(std::string_view message) noexcept
  {
   try
   {
