@@ -155,10 +155,14 @@ function(joedbc_build_absolute dir namespace)
  list(TRANSFORM readonly_cpp REPLACE "\\.joedbi$" "/readonly.cpp")
  list(TRANSFORM writable_cpp REPLACE "\\.joedbi$" "/writable.cpp")
 
+ if (NOT DEFINED JOEDBC_EXECUTABLE)
+  set(JOEDBC_EXECUTABLE joedbc)
+ endif()
+
  add_custom_command(
   OUTPUT ${readonly_cpp} ${writable_cpp} ${dir}/${namespace}/Database.h ${slash_Service}
-  COMMAND joedbc ${namespace}
-  DEPENDS joedbc ${joedbis} ${joedbcs} ${Service_h}
+  COMMAND ${JOEDBC_EXECUTABLE} ${namespace}
+  DEPENDS ${JOEDBC_EXECUTABLE} ${joedbis} ${joedbcs} ${Service_h}
   WORKING_DIRECTORY ${dir}
  )
 
