@@ -39,6 +39,7 @@
    "binaryDir": "./${presetName}",
    "cacheVariables":
    {
+    "CMAKE_C_COMPILER": "gcc",
     "CMAKE_CXX_COMPILER": "g++",
     "CMAKE_BUILD_TYPE": "Debug"
    }
@@ -49,6 +50,7 @@
    "binaryDir": "./${presetName}",
    "cacheVariables":
    {
+    "CMAKE_C_COMPILER": "gcc",
     "CMAKE_CXX_COMPILER": "g++",
     "CMAKE_BUILD_TYPE": "Dev"
    }
@@ -59,6 +61,7 @@
    "binaryDir": "./${presetName}",
    "cacheVariables":
    {
+    "CMAKE_C_COMPILER": "gcc",
     "CMAKE_CXX_COMPILER": "g++",
     "CMAKE_BUILD_TYPE": "Release"
    }
@@ -69,6 +72,7 @@
    "binaryDir": "./${presetName}",
    "cacheVariables":
    {
+    "CMAKE_C_COMPILER": "clang",
     "CMAKE_CXX_COMPILER": "clang++",
     "CMAKE_BUILD_TYPE": "Release"
    }
