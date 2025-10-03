@@ -56,8 +56,8 @@ Here are some specializations of :joedb:`Abstract_File`:
  - :joedb:`Stream_File` uses a ``std::streambuf``.
  - :joedb:`Memory_File` writes to a ``std::string``.
  - :joedb:`Readonly_Memory_File` reads from ``const char *``.
-   :ref:`joedb_embed` can be used to embed a joedb database into a C++ string
-   literal.
+   :ref:`joedb_to_string` can be used to embed a joedb database into a C++
+   string literal.
  - :joedb:`File_Slice` is a specialization of :joedb:`Readonly_Memory_File`
    that reads a range of bytes from a Posix file by memory-mapping it. It can
    be used to read Android assets (`Documentation

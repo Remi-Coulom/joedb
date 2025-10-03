@@ -1,7 +1,7 @@
 History
 =======
 
-- 2025-??-?? 10.1.0
+- 2025-??-?? 11.?.?
 
   - New major features:
 
@@ -42,6 +42,10 @@ History
     - Add a timeout to ssh session (could get infinite waiting without it)
     - Fix joedbc crash when no namespace is provided
     - Silence irrelevant "Ahead of checkpoint" warning when writing to an :joedb:`Interpreted_File`.
+
+  - Incompatibilities with previous version:
+
+    - ``joedb_embed`` was replaced by simpler :ref:`joedb_to_string`
 
 - 2025-05-26 10.0.0 LTS
 
@@ -298,7 +302,7 @@ History
   - File sharing now works in Windows (one process can read a file while
     another is writing it, but two processes cannot open the same file for
     writing).
-  - :ref:`joedb_embed` compiles the content of a database into a C++ string
+  - ``joedb_embed`` compiles the content of a database into a C++ string
     literal.
   - support for generating code inside a nested namespace (``namespace
     deeply::nested::tutorial`` in the .joedbc file).

@@ -171,15 +171,15 @@ Pushes a local file to a connection. For example:
     # Compress a database
     joedb_push database.joedb file brotli compressed.joedb
 
-.. _joedb_embed:
+.. _joedb_to_string:
 
-``joedb_embed``
----------------
+``joedb_to_string``
+-------------------
 
-.. literalinclude:: ./tutorial/joedb_embed.out
+.. literalinclude:: ./tutorial/joedb_to_string.out
    :language: none
 
-``joedb_embed`` compiles a joedb database file into a C++ string literal, and a function to open it as a ``Database``.
+``joedb_to_string`` produces a C++ string literal from the content of any file.
 
 .. _joedb_to_json:
 

@@ -9,6 +9,7 @@ Reference
    network_protocol
    tools
    testing
+   logging
    todo
    links
    release_checklist

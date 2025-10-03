@@ -37,7 +37,7 @@ $dir/joedb_to_json merged.joedb >merged.json
 set +e
 ( cd $dir && PATH="." && joedbi ) 2>joedbi.out
 ( cd $dir && PATH="." && joedb_merge ) 2>joedb_merge.out
-( cd $dir && PATH="." && joedb_embed ) 2>joedb_embed.out
+( cd $dir && PATH="." && joedb_to_string ) 2>joedb_to_string.out
 ( cd $dir && PATH="." && joedb_logdump ) 2>joedb_logdump.out
 ( cd $dir && PATH="." && joedbc ) 2>joedbc.out
 ( cd $dir && PATH="." && joedb_convert ) 2>joedb_convert.out

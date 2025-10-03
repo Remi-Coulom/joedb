@@ -85,7 +85,7 @@ joedb_add_executable(joedb_to_json ../src/joedb/ui/joedb_to_json.cpp)
 joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
 joedb_add_executable(write_lock ../src/joedb/ui/write_lock.cpp)
 joedb_add_executable(joedb_sha256sum ../src/joedb/ui/joedb_sha256sum.cpp)
-joedb_add_executable(joedb_embed ../src/joedb/compiler/joedb_embed.cpp)
+joedb_add_executable(joedb_to_string ../src/joedb/compiler/joedb_to_string.cpp)
 joedb_add_executable(joedb_client ../src/joedb/ui/joedb_client.cpp)
 joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
 
@@ -192,7 +192,6 @@ if(GTest_FOUND)
   ../test/Websocket_Test.cpp
   ../test/filebuf_Test.cpp
   ../test/compiler/Compiler_GTest.cpp
-  ../test/compiler/embedded_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp
   ../test/compiler/Readable_Test.cpp
   ../test/compiler/Readonly_Client.cpp
@@ -206,8 +205,6 @@ if(GTest_FOUND)
   ../test/compiler/db/schema_v2/writable.cpp
   ../test/compiler/db/test/writable.cpp
   ../test/compiler/db/vector_test/writable.cpp
-  ../test/compiler/db/test_dbname_base64.cpp
-  ../test/compiler/db/test_dbname_ascii.cpp
   ../src/joedb/ui/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
   ../src/joedb/error/String_Logger.cpp
@@ -300,22 +297,6 @@ add_custom_command(
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.joedbi
  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
 )
-
-#############################################################################
-# joedb_embed test
-#############################################################################
-foreach(mode base64 ascii)
- add_custom_command(
-  OUTPUT
-   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_${mode}.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test_dbname_${mode}.cpp
-  COMMAND joedb_embed --mode ${mode} ../test.joedb my_namespace::is_nested::test dbname_${mode}
-  DEPENDS
-   joedb_embed
-   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db
- )
-endforeach(mode)
 
 #############################################################################
 # Targets below require databases to be compiled
@@ -493,8 +474,8 @@ install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT bin)
+install(TARGETS joedb_to_string RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_embed RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
