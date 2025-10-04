@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <cstring>
+#include <string_view>
 
 namespace joedb
 {
@@ -38,7 +39,7 @@ namespace joedb
    }
 
    //////////////////////////////////////////////////////////////////////////
-   Readonly_Memory_File(const std::string &s):
+   Readonly_Memory_File(const std::string_view s):
    //////////////////////////////////////////////////////////////////////////
     Readonly_Memory_File(s.data(), s.size())
    {
