@@ -24,11 +24,11 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Encoded_File::write_blob(const char *buffer, size_t size, int64_t offset) const
+ void Encoded_File::write_blob(const std::string_view buffer, int64_t offset) const
  //////////////////////////////////////////////////////////////////////////
  {
-  const Blob blob = db.write_blob(codec.encode(buffer, size));
-  db.new_buffer(blob, int64_t(size), offset);
+  const Blob blob = db.write_blob(codec.encode(buffer));
+  db.new_buffer(blob, int64_t(buffer.size()), offset);
   db.soft_checkpoint();
  }
 
@@ -38,7 +38,7 @@ namespace joedb
  {
   if (write_buffer_size > 0)
   {
-   write_blob(write_buffer.data(), write_buffer_size, write_buffer_offset);
+   write_blob(std::string_view(write_buffer.data(), write_buffer_size), write_buffer_offset);
    write_buffer_size = 0;
   }
  }
@@ -50,7 +50,7 @@ namespace joedb
   if (size > write_buffer_total_size)
   {
    flush_write_buffer();
-   write_blob(buffer, size, offset);
+   write_blob(std::string_view(buffer, size), offset);
    return;
   }
 

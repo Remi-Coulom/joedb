@@ -10,7 +10,7 @@ namespace joedb
  {
   void decode
   (
-   const std::string &encoded,
+   std::string_view encoded,
    char *decoded,
    size_t decoded_size
   )

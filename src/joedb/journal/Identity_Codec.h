@@ -12,14 +12,14 @@ namespace joedb
  class Identity_Codec: public Codec
  {
   public:
-   std::string encode(const char *decoded, size_t decoded_size) override
+   std::string encode(std::string_view decoded) override
    {
-    return std::string(decoded, decoded_size);
+    return std::string(decoded);
    }
 
    void decode
    (
-    const std::string &encoded,
+    std::string_view encoded,
     char *decoded,
     size_t decoded_size
    ) override

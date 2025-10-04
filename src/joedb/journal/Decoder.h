@@ -1,7 +1,7 @@
 #ifndef joedb_Decoder_declared
 #define joedb_Decoder_declared
 
-#include <string>
+#include <string_view>
 
 namespace joedb
 {
@@ -11,7 +11,7 @@ namespace joedb
   public:
    virtual void decode
    (
-    const std::string &encoded,
+    const std::string_view encoded,
     char *decoded,
     size_t decoded_size
    ) = 0;

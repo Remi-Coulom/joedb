@@ -19,7 +19,7 @@ namespace joedb
    int64_t write_buffer_offset;
    mutable size_t write_buffer_size;
 
-   void write_blob(const char *buffer, size_t size, int64_t offset) const;
+   void write_blob(std::string_view buffer, int64_t offset) const;
    void flush_write_buffer() const;
 
   public:

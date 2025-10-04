@@ -10,7 +10,7 @@ namespace joedb
  void Brotli_Decoder::decode
  ////////////////////////////////////////////////////////////////////////////
  (
-  const std::string &encoded,
+  const std::string_view encoded,
   char *decoded,
   size_t decoded_size
  )

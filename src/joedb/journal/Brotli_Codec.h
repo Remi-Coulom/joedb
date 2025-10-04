@@ -10,11 +10,7 @@ namespace joedb
  class Brotli_Codec: public Codec, public Brotli_Decoder
  {
   public:
-   std::string encode
-   (
-    const char *decoded,
-    size_t decoded_size
-   )
+   std::string encode(std::string_view decoded)
    override;
  };
 }
