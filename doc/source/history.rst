@@ -45,7 +45,7 @@ History
 
   - Incompatibilities with previous version:
 
-    - ``joedb_embed`` was replaced by simpler :ref:`joedb_to_string`
+    - ``joedb_embed`` was removed (use ``#embed`` instead)
 
 - 2025-05-26 10.0.0 LTS
 
