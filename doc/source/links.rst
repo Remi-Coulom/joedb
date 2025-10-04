@@ -89,6 +89,7 @@ Crash resistance:
 .. [PG-2018] `PostgreSQL's fsync() surprise <https://lwn.net/Articles/752063/>`_
 .. [PG-2019] `How is it possible that PostgreSQL used fsync incorrectly for 20 years, and what we'll do about it <https://archive.fosdem.org/2019/schedule/event/postgresql_fsync/>`_
 .. [Miller-2024] `Userland Disk I/O <https://transactional.blog/how-to-learn/disk-io>`_
+.. [ThanuPillaiEtAl14-OSDI] `All File Systems Are Not Created Equal: On the Complexity of Crafting Crash-Consistent Applications <https://research.cs.wisc.edu/adsl/Publications/alice-osdi14.html>`_
 
 Other links:
 
