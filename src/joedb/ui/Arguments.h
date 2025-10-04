@@ -140,6 +140,7 @@ namespace joedb
    bool peek(const char *s);
    void add_parameter(const char * parameter);
    std::ostream &print_help(std::ostream &out) const;
+   bool has_error() const {return missing() || get_remaining_count();}
 
    int get_remaining_count() const {return int(args.size() - index);}
    int get_index() const {return int(index);}
