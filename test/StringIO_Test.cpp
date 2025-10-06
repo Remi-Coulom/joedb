@@ -317,6 +317,6 @@ TEST(StringIO_Test, trigraphs)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::ostringstream out;
- joedb::write_string(out, "?""?!");
- EXPECT_EQ(out.str(), "\"?\\077!\"");
+ joedb::write_string(out, "?\?!");
+ EXPECT_EQ(out.str(), "\"?\\?!\"");
 }

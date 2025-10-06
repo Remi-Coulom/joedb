@@ -48,12 +48,7 @@ namespace joedb
  #if 0
    write_octal_character(out, c);
  #else
-   if
-   (
-    c < 0x20 ||
-    c == 0x7f ||
-    (c == '?' && i > 0 && s[i - 1] == '?') // avoid C++ trigraphs
-   )
+   if (c < 0x20 || c == 0x7f)
    {
     if (json)
     {
@@ -67,6 +62,8 @@ namespace joedb
     else
      write_octal_character(out, c);
    }
+   else if (c == '?' && i > 0 && s[i - 1] == '?' && !json) // C++ trigraphs
+    out.put('\\').put('?');
    else if (c == '"')
     out.put('\\').put('"');
    else if (c == '\\')
