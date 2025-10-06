@@ -311,3 +311,12 @@ TEST(StringIO_Test, utf8_validation)
  joedb::write_string(out, s);
  EXPECT_TRUE(check_utf8(out.str()));
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, trigraphs)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::ostringstream out;
+ joedb::write_string(out, "?""?!");
+ EXPECT_EQ(out.str(), "\"?\\077!\"");
+}

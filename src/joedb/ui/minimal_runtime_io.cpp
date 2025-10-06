@@ -48,7 +48,12 @@ namespace joedb
  #if 0
    write_octal_character(out, c);
  #else
-   if (c < 0x20 || c == 0x7f)
+   if
+   (
+    c < 0x20 ||
+    c == 0x7f ||
+    (c == '?' && i > 0 && s[i - 1] == '?') // avoid C++ trigraphs
+   )
    {
     if (json)
     {
