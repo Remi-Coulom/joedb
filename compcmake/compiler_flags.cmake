@@ -55,7 +55,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
  endif()
 
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor -Wsuggest-override -Wextra-semi-stmt -Wextra-semi")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wno-overlength-strings -Wno-invalid-source-encoding -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor -Wsuggest-override -Wextra-semi-stmt -Wextra-semi")
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")
