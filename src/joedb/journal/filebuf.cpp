@@ -39,7 +39,7 @@ namespace joedb
    base = 0;
   else if (dir == std::ios_base::cur)
   {
-   base = (which & std::ios_base::in)
+   base = bool(which & std::ios_base::in)
     ? in_pos + gptr() - eback()
     : out_pos + pptr() - pbase();
   }
