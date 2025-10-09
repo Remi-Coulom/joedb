@@ -20,7 +20,7 @@ namespace joedb
     try
     {
      std::lock_guard lock(mutex);
-     out << message;
+     out << message << '\n';
     }
     catch (...)
     {
