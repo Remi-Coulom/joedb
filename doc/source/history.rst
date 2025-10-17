@@ -37,7 +37,6 @@ History
 
   - Fixes (also available on 10.0.0 LTS branch):
 
-    - Fix joedb_push to a file connection
     - Fix MacOS installation (set RPATH)
     - Add a timeout to ssh session (could get infinite waiting without it)
     - Fix joedbc crash when no namespace is provided
