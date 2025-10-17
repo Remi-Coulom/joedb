@@ -15,7 +15,6 @@ namespace joedb
  {
   private:
    Open_Mode mode;
-   bool locked_tail;
 
   protected:
    void make_readonly() {mode = Open_Mode::read_existing;}
@@ -24,12 +23,7 @@ namespace joedb
 
   public:
    Abstract_File(Open_Mode mode):
-    mode(mode),
-    locked_tail
-    (
-     mode != Open_Mode::shared_write &&
-     mode != Open_Mode::read_existing
-    )
+    mode(mode)
    {
    }
 
@@ -75,25 +69,11 @@ namespace joedb
    /// Remove a lock. The range should match the range of a corresponding lock
    virtual void unlock(int64_t start, int64_t size) noexcept {}
 
-   void exclusive_lock_tail()
-   {
-    exclusive_lock(last_position, 1);
-    locked_tail = true;
-   }
+   void exclusive_lock_tail() {exclusive_lock(last_position, 1);}
+   void unlock_tail() noexcept {unlock(last_position, 1);}
 
-   void unlock_tail() noexcept
-   {
-    locked_tail = false;
-    unlock(last_position, 1);
-   }
-
-   bool tail_is_locked() const noexcept
-   {
-    return locked_tail;
-   }
-
-   void shared_lock_head() {shared_lock(0, 1);}
    void exclusive_lock_head() {exclusive_lock(0, 1);}
+   void shared_lock_head() {shared_lock(0, 1);}
    void unlock_head() noexcept {unlock(0, 1);}
 
    class Head_Shared_Lock

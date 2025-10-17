@@ -130,7 +130,6 @@ namespace joedb
    }
 
    void lock_pull();
-   bool is_locked() const {return file.tail_is_locked();}
    void unlock() noexcept;
 
    void touch();

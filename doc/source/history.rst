@@ -44,7 +44,8 @@ History
 
   - Incompatibilities with previous version:
 
-    - ``joedb_embed`` was removed (use ``#embed`` instead)
+    - ``joedb_embed`` was removed (use ``#embed`` instead, with a :joedb:`Readonly_Memory_File`)
+    - ``File_Connection`` to a shared file is not supported any more
 
 - 2025-05-26 10.0.0 LTS
 

@@ -53,6 +53,7 @@ namespace joedb
    Journal_Connection(Writable_Journal &server_journal):
     Pullonly_Journal_Connection(server_journal)
    {
+    JOEDB_RELEASE_ASSERT(!server_journal.is_shared());
    }
 
    int64_t pull

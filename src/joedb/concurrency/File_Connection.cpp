@@ -106,16 +106,9 @@ namespace joedb
   Unlock_Action unlock_action
  )
  {
-  if (!get_journal().is_locked())
-   get_journal().lock_pull();
-
   if (from != server_journal.get_checkpoint())
    throw Exception("push error: conflict");
   get_journal().pull_from(client_journal, until);
-
-  if (bool(unlock_action))
-   get_journal().unlock();
-
   return server_journal.get_checkpoint();
  }
 
