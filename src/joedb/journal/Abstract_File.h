@@ -83,8 +83,8 @@ namespace joedb
 
    void unlock_tail() noexcept
    {
-    unlock(last_position, 1);
     locked_tail = false;
+    unlock(last_position, 1);
    }
 
    bool tail_is_locked() const noexcept
