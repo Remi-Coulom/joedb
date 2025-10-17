@@ -464,7 +464,7 @@ namespace joedb
  {
   if (file.is_shared())
   {
-   file.exclusive_lock(file.last_position, 1);
+   file.exclusive_lock_tail();
    pull_without_locking();
   }
  }
@@ -474,7 +474,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (file.is_shared())
-   file.unlock(file.last_position, 1);
+   file.unlock_tail();
  }
 
  /////////////////////////////////////////////////////////////////////////////
