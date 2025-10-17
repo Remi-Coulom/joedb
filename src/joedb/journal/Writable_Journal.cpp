@@ -476,8 +476,9 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Journal_Lock::Journal_Lock(Writable_Journal &journal): journal(journal)
+ Tail_Exclusive_Lock::Tail_Exclusive_Lock(Writable_Journal &journal):
  /////////////////////////////////////////////////////////////////////////////
+  journal(journal)
  {
   if (journal.get_position() > journal.get_checkpoint())
    throw Exception("locking journal with uncheckpointed data (try rollback?)");
@@ -485,7 +486,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- Journal_Lock::~Journal_Lock()
+ Tail_Exclusive_Lock::~Tail_Exclusive_Lock()
  /////////////////////////////////////////////////////////////////////////////
  {
   journal.unlock();

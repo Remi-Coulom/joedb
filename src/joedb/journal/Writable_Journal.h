@@ -137,16 +137,16 @@ namespace joedb
    ~Writable_Journal() override;
  };
 
- class Journal_Lock
+ class Tail_Exclusive_Lock
  {
   private:
    Writable_Journal &journal;
 
   public:
-   Journal_Lock(Writable_Journal &journal);
-   Journal_Lock(const Journal_Lock &lock) = delete;
-   Journal_Lock &operator=(const Journal_Lock &lock) = delete;
-   ~Journal_Lock();
+   Tail_Exclusive_Lock(Writable_Journal &journal);
+   Tail_Exclusive_Lock(const Tail_Exclusive_Lock &lock) = delete;
+   Tail_Exclusive_Lock &operator=(const Tail_Exclusive_Lock &lock) = delete;
+   ~Tail_Exclusive_Lock();
  };
 }
 

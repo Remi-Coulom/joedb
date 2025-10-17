@@ -16,7 +16,7 @@ namespace joedb
   protected:
    template<typename F> auto transaction(F f)
    {
-    const Journal_Lock lock(get_writable_journal());
+    const Tail_Exclusive_Lock lock(get_writable_journal());
 
     start_transaction();
 
@@ -129,7 +129,7 @@ namespace joedb
    {
     const int64_t old_checkpoint = get_journal_checkpoint();
 
-    const Journal_Lock lock(get_writable_journal());
+    const Tail_Exclusive_Lock lock(get_writable_journal());
 
     connection_checkpoint = connection.pull
     (
@@ -178,7 +178,7 @@ namespace joedb
  {
   protected:
    Writable_Client &client;
-   const Journal_Lock journal_lock;
+   const Tail_Exclusive_Lock journal_lock;
    bool locked;
 
   public:
