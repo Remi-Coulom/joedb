@@ -89,6 +89,9 @@ namespace joedb
       file.shared_lock_head();
      }
 
+     Head_Shared_Lock(const Head_Shared_Lock &) = delete;
+     Head_Shared_Lock &operator=(const Head_Shared_Lock &) = delete;
+
      ~Head_Shared_Lock()
      {
       file.unlock_head();
@@ -105,6 +108,10 @@ namespace joedb
      {
       file.exclusive_lock_head();
      }
+
+     Head_Exclusive_Lock(const Head_Exclusive_Lock &) = delete;
+     Head_Exclusive_Lock &operator=(const Head_Exclusive_Lock &) = delete;
+
      ~Head_Exclusive_Lock()
      {
       file.unlock_head();

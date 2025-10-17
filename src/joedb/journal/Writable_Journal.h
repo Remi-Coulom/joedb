@@ -144,8 +144,8 @@ namespace joedb
 
   public:
    Tail_Exclusive_Lock(Writable_Journal &journal);
-   Tail_Exclusive_Lock(const Tail_Exclusive_Lock &lock) = delete;
-   Tail_Exclusive_Lock &operator=(const Tail_Exclusive_Lock &lock) = delete;
+   Tail_Exclusive_Lock(const Tail_Exclusive_Lock &) = delete;
+   Tail_Exclusive_Lock &operator=(const Tail_Exclusive_Lock &) = delete;
    ~Tail_Exclusive_Lock();
  };
 }
