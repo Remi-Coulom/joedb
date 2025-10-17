@@ -69,6 +69,8 @@ namespace joedb
    /// Remove a lock. The range should match the range of a corresponding lock
    virtual void unlock(int64_t start, int64_t size) noexcept {}
 
+   /// TODO: all the functions below should be outside of the Abstract_File class
+
    void exclusive_lock_tail() {exclusive_lock(last_position, 1);}
    void unlock_tail() noexcept {unlock(last_position, 1);}
 
