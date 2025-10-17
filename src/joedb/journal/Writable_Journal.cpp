@@ -6,6 +6,28 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
+ class Head_Exclusive_Lock
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  private:
+   Abstract_File &file;
+
+  public:
+   Head_Exclusive_Lock(Abstract_File &file): file(file)
+   {
+    file.exclusive_lock(0, 1);
+   }
+
+   Head_Exclusive_Lock(const Head_Exclusive_Lock &) = delete;
+   Head_Exclusive_Lock &operator=(const Head_Exclusive_Lock &) = delete;
+
+   ~Head_Exclusive_Lock()
+   {
+    file.unlock(0, 1);
+   }
+ };
+
+ /////////////////////////////////////////////////////////////////////////////
  Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
  /////////////////////////////////////////////////////////////////////////////
   Readonly_Journal(lock.set_for_writable_journal())
@@ -92,7 +114,7 @@ namespace joedb
   soft_index ^= 1;
   checkpoint_position = position;
 
-  Abstract_File::Head_Exclusive_Lock lock(file);
+  Head_Exclusive_Lock lock(file);
 
   const int64_t neg = -checkpoint_position;
 
@@ -116,7 +138,7 @@ namespace joedb
   hard_index ^= 1;
   hard_checkpoint_position = checkpoint_position = position;
 
-  Abstract_File::Head_Exclusive_Lock lock(file);
+  Head_Exclusive_Lock lock(file);
 
   file.pwrite
   (
@@ -442,7 +464,7 @@ namespace joedb
  {
   if (file.is_shared())
   {
-   file.exclusive_lock_tail();
+   file.exclusive_lock(file.last_position, 1);
    pull_without_locking();
   }
  }
@@ -452,7 +474,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (file.is_shared())
-   file.unlock_tail();
+   file.unlock(file.last_position, 1);
  }
 
  /////////////////////////////////////////////////////////////////////////////

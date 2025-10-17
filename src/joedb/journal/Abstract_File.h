@@ -78,46 +78,6 @@ namespace joedb
    void shared_lock_head() {shared_lock(0, 1);}
    void unlock_head() noexcept {unlock(0, 1);}
 
-   class Head_Shared_Lock
-   {
-    private:
-     Abstract_File &file;
-
-    public:
-     Head_Shared_Lock(Abstract_File &file): file(file)
-     {
-      file.shared_lock_head();
-     }
-
-     Head_Shared_Lock(const Head_Shared_Lock &) = delete;
-     Head_Shared_Lock &operator=(const Head_Shared_Lock &) = delete;
-
-     ~Head_Shared_Lock()
-     {
-      file.unlock_head();
-     }
-   };
-
-   class Head_Exclusive_Lock
-   {
-    private:
-     Abstract_File &file;
-
-    public:
-     Head_Exclusive_Lock(Abstract_File &file): file(file)
-     {
-      file.exclusive_lock_head();
-     }
-
-     Head_Exclusive_Lock(const Head_Exclusive_Lock &) = delete;
-     Head_Exclusive_Lock &operator=(const Head_Exclusive_Lock &) = delete;
-
-     ~Head_Exclusive_Lock()
-     {
-      file.unlock_head();
-     }
-   };
-
    std::string read_blob(Blob blob) const;
 
    static void reading_past_end_of_file();
