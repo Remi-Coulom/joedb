@@ -3,38 +3,26 @@
 Remote Procedure Call
 =====================
 
+:doc:`Journal replication <concurrency>` can be used to
+implement concurrency over a network connection, but it has drawbacks:
+
+ - All clients have to download the whole database, which does not scale to a
+   large number of writing clients.
+ - The server may have to wait for a disconnected client to time out, which
+   hurts availability.
+
+These scalability and availability issues can be solved by using remote
+procedure calls instead. With this mechanism, a disconnection can never leave a
+stale lock, and there is no need for clients to download the whole database.
+Each client can upload new data to the server in a very minimal single
+round-trip. A write transaction will be executed entirely on the server, so its
+duration is not affected by network latency, and it cannot be stalled by a
+disconnection.
+
 Joedb can be used as a binary message serialization format for remote procedure
 calls. From a list of functions that take a writable database as parameter, the
 joedb compiler can generate code for a client and a server that allow executing
 these functions remotely.
-
-Motivation
-----------
-
-:doc:`Journal replication <concurrency>` can be used to implement concurrency
-over a network connection, but it has drawbacks:
-
- - All clients have to download the whole database. It is OK for a small number
-   of clients or a small database, but it is a problem for a large number of
-   concurrently writing clients: the cost of all clients downloading
-   each-other's writes is quadratic in the number of clients, which does not
-   scale.
- - When connecting over an unreliable network connection, a write transaction
-   may leave the server locked. The server timeout can get rid of stale locks
-   after a while, but it will halt all processing for the duration of the
-   timeout. This is not acceptable when the server has to remain available.
-
-So journal sharing is a great way to handle backups, caching, or local
-concurrency, but is not efficient when many remote clients are writing
-independent parts of the database over an unreliable network connection.
-
-These scalability and reliability issues can be solved by using remote
-procedure calls. With this mechanism, a disconnection can never leave a stale
-lock, and there is no need for clients to download the whole database. Each
-client can upload new data to the server in a very minimal single round-trip.
-The write transaction will be executed entirely on the server, so its duration
-is not affected by network latency, and it cannot be stalled by a
-disconnection.
 
 Tutorial Example
 ----------------
