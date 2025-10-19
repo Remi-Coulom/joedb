@@ -2,6 +2,7 @@ TODO
 ====
 
 - testing of user-interface code -> (test for joedb_push to file bug)
+- always exit cleanly after SIGINT or SIGTERM
 
 Notifications
 -------------
