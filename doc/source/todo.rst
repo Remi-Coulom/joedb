@@ -2,38 +2,45 @@ TODO
 ====
 
 - testing of user-interface code -> (test for joedb_push to file bug)
-- always exit cleanly after SIGINT or SIGTERM
+- always exit cleanly and rapidly after SIGINT or SIGTERM
+- channel read timeout should be settable
 
 Notifications
 -------------
- - Create a "Compiled_Writable" with virtual functions such as "delete_from_city, ..."
- - A Compiled_Multiplexer to handle a collection of Compiled_Writables
- - Implement default storage with such a Compiled_Writable
- - Allow custom data-structure construction
- - This will allow:
-    - implementing a server to get notifications when a part of the database has changed
-    - rollback implementation (easily reset table storage when replaying from scratch)
+
+- Create a "Compiled_Writable" with virtual functions such as "delete_from_city, ..."
+- A Compiled_Multiplexer to handle a collection of Compiled_Writables
+- Implement default storage with such a Compiled_Writable
+- Allow custom data-structure construction
+- This will allow:
+
+   - implementing a server to get notifications when a part of the database has changed
+   - rollback implementation (easily reset table storage when replaying from scratch)
 
 Stored Procedures
 -----------------
- - ping thread
- - logcat-like logger class with specializations: cerr, logcat, joedb
- - allow keeping a database for duration of a session: if "session.joedbi" exists,
-   keep it in memory in the client and server.
- - allow implementing and compiling multiple different rpc services on the same database
+
+- ping thread
+- allow keeping a database for duration of a session: if "session.joedbi" exists,
+  keep it in memory in the client and server.
+- allow implementing and compiling multiple different rpc services on the same database
 
 On-disk Storage
 ---------------
-- In a directory
-- A checkpoint file (2 copies, valid if identical)
-- A subdirectory for each table
-- One file per column vector
-- One file for string data (string column = size + start_index)
-- Use memory-mapped files (llfio)
-- SQLite Writable?
+
+- Simplest (but inefficient) solution: SQLite
+- Home-made efficient solution:
+
+  - In a directory
+  - A checkpoint file (2 copies, valid if identical)
+  - A subdirectory for each table
+  - One file per column vector
+  - One file for string data (string column = size + start_index)
+  - Use memory-mapped files (llfio)
 
 Compiler
 --------
+
 - error if namespace different from file name
 - string setters that takes a string_view as parameter
 - option to make some member functions private (->private: private_new_person)
@@ -81,6 +88,7 @@ Compiler
 
 Concurrency
 -----------
+
 - asynchronous hard checkpoint: add wait_for_hard_checkpoint(int64_t) function
   in Connection.
 - joedb_server:
@@ -130,11 +138,13 @@ Performance
 
 joedb_admin
 -----------
+
 - work as a client to a joedb_server.
 - customizable GUI, similar to the icga database editor.
 
 Other Ideas
 -----------
+
 - Use clang-format (try to customize it, use tabs)
 - One separate class for each exception, like ``joedb::exception::Out_Of_Date``.
 - ability to indicate minimum joedb version in .joedbc file (and .joedbi?)
@@ -145,6 +155,4 @@ Other Ideas
 
 - Deal properly with inf and nan everywhere (logdump, joedb_admin, ...)
 - Note that SQL does not support inf and nan. Use NULL instead.
-- Raw commands in interpreter?
-- import from SQL
 - joedb_pack: option to fill holes left by deleted elements

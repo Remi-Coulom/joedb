@@ -6,8 +6,7 @@ Remote Procedure Call
 :doc:`Journal replication <concurrency>` can be used to
 implement concurrency over a network connection, but it has drawbacks:
 
- - All clients have to download the whole database, which does not scale to a
-   large number of writing clients.
+ - All clients have to download the whole database, which does not scale.
  - The server may have to wait for a disconnected client to time out, which
    hurts availability.
 
