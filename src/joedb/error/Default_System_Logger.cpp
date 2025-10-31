@@ -6,12 +6,12 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Default_System_Logger::Default_System_Logger(std::string_view tag): tag(tag)
+ Default_System_Logger::Default_System_Logger(std::string tag): tag(std::move(tag))
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Default_System_Logger::write(std::string_view message) noexcept
+ void Default_System_Logger::write(const std::string &message) noexcept
  {
   try
   {

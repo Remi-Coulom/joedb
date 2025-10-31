@@ -14,8 +14,8 @@ namespace joedb
    os_log_t log;
 
   public:
-   Apple_System_Logger(std::string_view tag);
-   void write(std::string_view message) noexcept override;
+   Apple_System_Logger(const std::string &tag);
+   void write(const std::string &message) noexcept override;
  };
 }
 

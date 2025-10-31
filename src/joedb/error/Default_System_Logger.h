@@ -16,8 +16,8 @@ namespace joedb
    std::string tag;
 
   public:
-   Default_System_Logger(std::string_view tag);
-   void write(std::string_view message) noexcept override;
+   Default_System_Logger(std::string tag);
+   void write(const std::string &message) noexcept override;
  };
 }
 

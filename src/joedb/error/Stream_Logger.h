@@ -15,7 +15,7 @@ namespace joedb
    std::ostream &out;
    std::mutex mutex;
 
-   void write(std::string_view message) noexcept override
+   void write(const std::string &message) noexcept override
    {
     try
     {

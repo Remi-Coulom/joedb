@@ -4,16 +4,16 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- Android_System_Logger::Android_System_Logger(std::string_view tag): tag(tag)
+ Android_System_Logger::Android_System_Logger(std::string tag): tag(std::move(tag))
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Android_System_Logger::write(std::string_view message) noexcept
+ void Android_System_Logger::write(const std::string &message) noexcept
  {
   try
   {
-   __android_log_print(ANDROID_LOG_INFO, tag.c_str(), "%s", std::string(message).c_str());
+   __android_log_print(ANDROID_LOG_INFO, tag.c_str(), "%s", message.c_str());
   }
   catch (...)
   {

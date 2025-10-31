@@ -1,7 +1,7 @@
 #ifndef joedb_Logger_declared
 #define joedb_Logger_declared
 
-#include <string_view>
+#include <string>
 
 namespace joedb
 {
@@ -9,7 +9,7 @@ namespace joedb
  class Logger
  {
   public:
-   virtual void write(std::string_view message) noexcept {}
+   virtual void write(const std::string &message) noexcept {}
    virtual ~Logger() = default;
  };
 }

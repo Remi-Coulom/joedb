@@ -3,19 +3,17 @@
 
 #include "joedb/error/Logger.h"
 
-#include <string>
-
 namespace joedb
 {
  /// @ingroup error
  class Android_System_Logger: public Logger
  {
   private:
-   std::string tag;
+   const std::string tag;
 
   public:
-   Android_System_Logger(std::string_view tag);
-   void write(std::string_view message) noexcept override;
+   Android_System_Logger(std::string tag);
+   void write(const std::string &message) noexcept override;
  };
 }
 

@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <syslog.h>
+
 namespace joedb
 {
  Posix_System_Logger::Posix_System_Logger(std::string_view tag)
@@ -11,11 +13,11 @@ namespace joedb
   openlog(tag_storage.c_str(), LOG_PID, LOG_USER);
  }
 
- void Posix_System_Logger::write(std::string_view message) noexcept
+ void Posix_System_Logger::write(const std::string &message) noexcept
  {
   try
   {
-   syslog(LOG_INFO, "%s", std::string(message).c_str());
+   syslog(LOG_INFO, "%s", message.c_str());
   }
   catch (...)
   {
