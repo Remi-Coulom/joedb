@@ -32,7 +32,7 @@ namespace joedb
    ios << 123;
   }
 
-  EXPECT_EQ("joedb: destructor warning: filebuf: flushing buffer\n", String_Logger::the_logger.get_message());
+  EXPECT_EQ("joedb: destructor warning: filebuf: flushing buffer", String_Logger::the_logger.get_message());
  }
 
  TEST(filebuf, read)
