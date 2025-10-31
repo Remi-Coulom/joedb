@@ -18,11 +18,11 @@ namespace joedb
   try
   {
    std::unique_lock lock(mutex);
-   std::cerr << joedb::get_time_string_of_now() << ' ';
+   std::clog << joedb::get_time_string_of_now() << ' ';
    if (!tag.empty())
-    std::cerr << tag << ": ";
-   std::cerr << message << '\n';
-   std::cerr.flush();
+    std::clog << tag << ": ";
+   std::clog << message << '\n';
+   std::clog.flush();
   }
   catch (...)
   {
