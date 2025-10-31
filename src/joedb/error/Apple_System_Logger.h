@@ -11,11 +11,16 @@ namespace joedb
  class Apple_System_Logger: public Logger
  {
   private:
-   os_log_t log;
+   const os_log_t log;
 
   public:
-   Apple_System_Logger(const std::string &tag);
+   Apple_System_Logger(const char *tag);
+   Apple_System_Logger(const Apple_System_Logger &) = delete;
+   Apple_System_Logger&operator=(const Apple_System_Logger &) = delete;
+
    void write(const std::string &message) noexcept override;
+
+   ~Apple_System_Logger();
  };
 }
 
