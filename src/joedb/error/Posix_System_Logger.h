@@ -8,8 +8,11 @@ namespace joedb
  /// @ingroup error
  class Posix_System_Logger: public Logger
  {
+  private:
+   const std::string tag;
+
   public:
-   Posix_System_Logger(std::string_view tag);
+   Posix_System_Logger(std::string tag);
    void write(const std::string &message) noexcept override;
  };
 }
