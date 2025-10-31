@@ -12,8 +12,8 @@ namespace joedb
  class Default_System_Logger: public Logger
  {
   private:
+   const std::string tag;
    std::mutex mutex;
-   std::string tag;
 
   public:
    Default_System_Logger(std::string tag);

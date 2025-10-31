@@ -20,7 +20,7 @@ namespace joedb
 
    void write(const std::string &message) noexcept override;
 
-   ~Apple_System_Logger();
+   ~Apple_System_Logger() override;
  };
 }
 
