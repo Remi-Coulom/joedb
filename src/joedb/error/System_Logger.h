@@ -9,6 +9,7 @@
 #define JOEDB_SYSTEM_LOG Posix_System_Logger
 #else
 #define JOEDB_SYSTEM_LOG Default_System_Logger
+#define JOEDB_SYSTEM_LOG_NO_CPP
 #endif
 
 #include "joedb/JOEDB_INCLUDE.h"
