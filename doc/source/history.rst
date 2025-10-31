@@ -44,6 +44,7 @@ History
 
   - Incompatibilities with previous version:
 
+    - ``joedb::Logger`` is used everywhere for logging instead of ``std::ostream`̀`
     - ``joedb_embed`` was removed (use ``#embed`` instead, with a :joedb:`Readonly_Memory_File`)
     - ``File_Connection`` to a shared file is not supported any more
 

@@ -4,7 +4,7 @@ TODO
 - logging:
    - rename logger -> log
    - replace all writes to cerr by logging in parsers
-   - replace progress bars by log messages (x of y done every 3 seconds + estimate remaining time)
+   - replace progress bars by log messages (x of y done every 3 seconds + estimate remaining time and rate per second)
    - remove Progress_Bar, create a Progress_Logger class instead
    - Default_System_Logger -> std_System_Logger
    - don't include it twice in Windows
