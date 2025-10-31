@@ -3,7 +3,7 @@
 
 #include "joedb/ui/Connection_Builder.h"
 #include "joedb/concurrency/Server_File.h"
-#include "joedb/error/Default_System_Logger.h"
+#include "joedb/error/CLog_System_Logger.h"
 
 #include <cmath>
 
@@ -13,7 +13,7 @@ namespace joedb
  class Server_Connection_Builder: public Connection_Builder
  {
   protected:
-   joedb::Default_System_Logger logger;
+   joedb::CLog_System_Logger logger;
    std::unique_ptr<Connector> connector;
    std::unique_ptr<Connection> connection;
 

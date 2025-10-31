@@ -1,19 +1,19 @@
-#include "joedb/error/Default_System_Logger.h"
+#include "joedb/error/CLog_System_Logger.h"
 #include "joedb/ui/get_time_string.h"
 
 #include <iostream>
 
 namespace joedb
 {
- std::mutex Default_System_Logger::mutex;
+ std::mutex CLog_System_Logger::mutex;
 
  ////////////////////////////////////////////////////////////////////////////
- Default_System_Logger::Default_System_Logger(std::string tag): tag(std::move(tag))
+ CLog_System_Logger::CLog_System_Logger(std::string tag): tag(std::move(tag))
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Default_System_Logger::write(const std::string &message) noexcept
+ void CLog_System_Logger::write(const std::string &message) noexcept
  {
   try
   {

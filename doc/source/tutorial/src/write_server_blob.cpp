@@ -3,7 +3,7 @@
 #include "joedb/concurrency/Local_Connector.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/error/Default_System_Logger.h"
+#include "joedb/error/CLog_System_Logger.h"
 
 #include <iostream>
 
@@ -28,7 +28,7 @@ static int write_server_blob(joedb::Arguments &arguments)
 
  // Connect to the server
  joedb::Local_Connector connector("blobs.joedb.sock");
- joedb::Default_System_Logger logger("write_server_blob");
+ joedb::CLog_System_Logger logger("write_server_blob");
  joedb::Server_File server_file(connector, &logger);
 
  // Creating the client: server file serves both as file and connection
