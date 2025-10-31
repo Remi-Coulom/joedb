@@ -7,6 +7,7 @@
 #include "joedb/journal/Interpreted_File.h"
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/iostream.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/Multiplexer.h"
 #include "gtest/gtest.h"
@@ -205,7 +206,7 @@ namespace joedb
   Writable_Database_Client client(file);
   client.transaction([](const Readable &readable, Writable &writable){
    Interpreter interpreter(readable, writable, Record_Id::null);
-   std::fstream null_stream;
+   joedb::null_iostream null_stream;
    std::istringstream iss
    (
     "create_table person\n"

@@ -31,10 +31,7 @@ namespace joedb
   reading_multiplexer{db, journal},
   interpreter(db, reading_multiplexer, Record_Id::null),
   interpreter_writable(ios, db),
-  writing_multiplexer{interpreter_writable, db},
-  null_file(Open_Mode::create_new),
-  null_filebuf(null_file),
-  null_stream(&null_filebuf)
+  writing_multiplexer{interpreter_writable, db}
  {
   interpreter.set_echo(false);
   interpreter.set_rethrow(true);

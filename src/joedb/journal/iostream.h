@@ -17,6 +17,16 @@ namespace joedb
    {
    }
  };
+
+ class null_iostream: private joedb::Abstract_File, public joedb::iostream
+ {
+  public:
+   null_iostream():
+    Abstract_File(Open_Mode::create_new),
+    iostream(*static_cast<joedb::Abstract_File *>(this))
+   {
+   }
+ };
 }
 
 #endif

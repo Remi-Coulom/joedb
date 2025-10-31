@@ -1,10 +1,9 @@
 #include "joedb/ui/File_Parser.h"
 #include "joedb/journal/Writable_Journal.h"
+#include "joedb/journal/iostream.h"
 #include "joedb/interpreted/Database.h"
 
 #include "gtest/gtest.h"
-
-#include <fstream>
 
 namespace joedb
 {
@@ -13,7 +12,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  std::ofstream out;
+  joedb::null_iostream out;
   parser.print_help(out);
  }
 
@@ -22,11 +21,11 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  std::ofstream out;
+  Logger logger;
 
   std::array argv{"test", "memory"};
   Arguments arguments(argv.size(), argv.data());
-  ASSERT_TRUE(parser.parse(out, arguments));
+  ASSERT_TRUE(parser.parse(logger, arguments));
   Writable_Journal journal(*parser.get_file());
   journal.comment("Hello");
   journal.soft_checkpoint();
@@ -37,18 +36,18 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  std::ofstream out;
+  Logger logger;
 
   {
    std::array argv{"test", "interpreted", "dump_test.joedbi"};
    Arguments arguments(argv.size(), argv.data());
-   parser.parse(out, arguments);
+   parser.parse(logger, arguments);
   }
 
   {
    std::array argv{"test", "interpreted", "--read", "dump_test.joedbi"};
    Arguments arguments(argv.size(), argv.data());
-   parser.parse(out, arguments);
+   parser.parse(logger, arguments);
   }
  }
 
@@ -63,11 +62,11 @@ namespace joedb
 
   {
    File_Parser parser;
-   std::ofstream out;
+   Logger logger;
 
    std::array argv{"test", "brotli", file_name};
    Arguments arguments(argv.size(), argv.data());
-   ASSERT_TRUE(parser.parse(out, arguments));
+   ASSERT_TRUE(parser.parse(logger, arguments));
    Writable_Journal journal(*parser.get_file());
    journal.create_table(table_name);
    journal.soft_checkpoint();
@@ -75,11 +74,11 @@ namespace joedb
 
   {
    File_Parser parser;
-   std::ofstream out;
+   Logger logger;
 
    std::array argv{"test", "brotli", "--read", file_name};
    Arguments arguments(argv.size(), argv.data());
-   ASSERT_TRUE(parser.parse(out, arguments));
+   ASSERT_TRUE(parser.parse(logger, arguments));
    EXPECT_ANY_THROW(Writable_Journal{*parser.get_file()});
    Readonly_Journal journal{*parser.get_file()};
    Database db;
@@ -98,7 +97,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   File_Parser parser;
-  std::ofstream out;
+  Logger logger;
 
   std::array argv
   {
@@ -107,7 +106,7 @@ namespace joedb
    "https://www.joedb.org/test/v10/endianness.joedb"
   };
   Arguments arguments(argv.size(), argv.data());
-  ASSERT_TRUE(parser.parse(out, arguments));
+  ASSERT_TRUE(parser.parse(logger, arguments));
   Readonly_Journal journal(*parser.get_file());
   Database db;
   journal.replay_log(db);

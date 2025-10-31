@@ -3,6 +3,7 @@
 
 #include "joedb/journal/Abstract_File.h"
 #include "joedb/ui/Arguments.h"
+#include "joedb/error/Logger.h"
 
 #ifdef JOEDB_HAS_SSH
 #include "joedb/ssh/Session.h"
@@ -46,7 +47,7 @@ namespace joedb
    {
    }
 
-   Abstract_File *parse(std::ostream &out, Arguments &arguments);
+   Abstract_File *parse(joedb::Logger &log, Arguments &arguments);
    Abstract_File *get_file() const {return file.get();}
    void print_help(std::ostream &out) const;
  };

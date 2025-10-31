@@ -92,6 +92,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/Writable.cpp
  ../src/joedb/error/assert.cpp
  ../src/joedb/error/Destructor_Logger.cpp
+ ../src/joedb/error/CLog_System_Logger.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
@@ -105,6 +106,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/ui/joedb_convert.cpp
  ../src/joedb/ui/main_wrapper.cpp
  ../src/joedb/ui/process_journal_pair.cpp
+ ../src/joedb/ui/get_time_string.cpp
 )
 
 if(GTest_FOUND)
@@ -138,6 +140,8 @@ if(GTest_FOUND)
   ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/interpreted/Table.cpp
   ../src/joedb/is_identifier.cpp
+  ../src/joedb/error/CLog_System_Logger.cpp
+  ../src/joedb/ui/get_time_string.cpp
 
   ../test/Buffer_Test.cpp
   ../test/Stream_File_Test.cpp

@@ -5,8 +5,6 @@
 #include "joedb/ui/File_Parser.h"
 #include "joedb/concurrency/File_Connection.h"
 
-#include <iostream>
-
 namespace joedb
 {
  /// @ingroup ui
@@ -26,11 +24,14 @@ namespace joedb
     return "<file>";
    }
 
-   Connection *build(Arguments &arguments, Abstract_File *file) override
+   Connection *build
+   (
+    Logger &logger,
+    Arguments &arguments,
+    Abstract_File *file
+   ) override
    {
-    std::ostream null_stream(nullptr);
-
-    if (file_parser.parse(null_stream, arguments))
+    if (file_parser.parse(logger, arguments))
     {
      if (file_parser.get_file()->is_readonly())
      {

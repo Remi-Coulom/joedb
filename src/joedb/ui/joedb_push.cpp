@@ -2,6 +2,7 @@
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/Arguments.h"
 #include "joedb/Signal.h"
+#include "joedb/error/CLog_System_Logger.h"
 
 #include <iostream>
 #include <limits>
@@ -16,6 +17,8 @@ namespace joedb
  static int push(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
+  CLog_System_Logger logger;
+
   const bool follow = arguments.has_flag("follow");
   const int64_t until_checkpoint = arguments.get_option<int64_t>
   (
@@ -26,6 +29,7 @@ namespace joedb
 
   Client_Parser client_parser
   (
+   logger,
    Open_Mode::read_existing,
    Client_Parser::DB_Type::none,
    arguments

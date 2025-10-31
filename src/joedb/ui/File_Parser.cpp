@@ -76,7 +76,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Abstract_File *File_Parser::parse(std::ostream &out, Arguments &arguments)
+ Abstract_File *File_Parser::parse(Logger &logger, Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (arguments.peek("memory"))
@@ -95,19 +95,14 @@ namespace joedb
    if (arguments.missing())
     return nullptr;
 
-   out << "Creating ssh Session... ";
-   out.flush();
+   logger.write("creating ssh session");
    ssh_session.emplace(user.data(), host.data(), port, verbosity);
 
-   out << "OK\nInitializing sftp... ";
-   out.flush();
+   logger.write("initializing sftp");
    sftp.emplace(*ssh_session);
 
-   out << "OK\nOpening file... ";
-   out.flush();
+   logger.write("opening file");
    file.reset(new SFTP_File(*sftp, path.data()));
-
-   out << "OK\n";
   }
 #endif
 #ifdef JOEDB_HAS_CURL
@@ -137,15 +132,12 @@ namespace joedb
    if (arguments.missing())
     return nullptr;
 
-   out << "Opening brotli file... ";
-   out.flush();
+   logger.write("opening brotli file");
 
    if (readonly)
     file.reset(new Readonly_Brotli_File(file_name.data()));
    else
     file.reset(new Brotli_File(file_name.data()));
-
-   out << "OK\n";
   }
 #endif
   else
@@ -173,9 +165,11 @@ namespace joedb
    if (arguments.missing())
     return nullptr;
 
-   out << "Opening local file (open_mode = ";
-   out << open_mode_strings[size_t(open_mode)] << ") ... ";
-   out.flush();
+   logger.write
+   (
+    "opening local file, open_mode = " +
+    std::string(open_mode_strings[size_t(open_mode)])
+   );
 
    if (interpreted)
     file.reset(new Interpreted_File(file_name.data(), open_mode));

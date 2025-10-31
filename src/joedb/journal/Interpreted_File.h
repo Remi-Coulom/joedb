@@ -2,7 +2,7 @@
 #define joedb_Interpreted_File_declared
 
 #include "joedb/journal/File.h"
-#include "joedb/journal/filebuf.h"
+#include "joedb/journal/iostream.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreted/Database.h"
@@ -40,9 +40,7 @@ namespace joedb
    Interpreter_Writable interpreter_writable;
    Multiplexer writing_multiplexer;
 
-   Abstract_File null_file;
-   joedb::filebuf null_filebuf;
-   std::ostream null_stream;
+   null_iostream null_stream;
 
   public:
    Abstract_Interpreted_File(Abstract_File &file);

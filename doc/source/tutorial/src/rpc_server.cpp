@@ -1,6 +1,6 @@
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/rpc/Server.h"
-#include "joedb/error/Stream_Logger.h"
+#include "joedb/error/CLog_System_Logger.h"
 
 #include "tutorial/File_Client.h"
 #include "tutorial/rpc/Procedures.h"
@@ -33,7 +33,7 @@ namespace joedb
    ? std::string(file) + ".rpc.sock"
    : std::string(endpoint_option);
 
-  Stream_Logger logger(std::cerr);
+  CLog_System_Logger logger;
 
   tutorial::File_Client client(file.data());
   tutorial::rpc::Service service(client);

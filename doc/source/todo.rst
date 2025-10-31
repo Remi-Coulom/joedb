@@ -2,7 +2,6 @@ TODO
 ====
 
 - logging:
-   - replace all writes to cerr by logging in parsers
    - replace progress bars by log messages (x of y done every 3 seconds + estimate remaining time and rate per second)
    - remove Progress_Bar, create a Progress_Logger class instead
 - testing of user-interface code -> (test for joedb_push to file bug)

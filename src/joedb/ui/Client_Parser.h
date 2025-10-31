@@ -38,6 +38,7 @@ namespace joedb
   public:
    Client_Parser
    (
+    Logger &logger,
     Open_Mode default_open_mode,
     DB_Type default_db_type,
     Arguments &arguments

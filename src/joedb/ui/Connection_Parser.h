@@ -2,6 +2,7 @@
 #define joedb_Connection_Parser_declared
 
 #include "joedb/ui/Connection_Builder.h"
+#include "joedb/error/Logger.h"
 
 #include <vector>
 #include <memory>
@@ -23,7 +24,12 @@ namespace joedb
 
    void print_help(std::ostream &out) const;
 
-   Connection *build(Arguments &arguments, Abstract_File *file) const;
+   Connection *build
+   (
+    Logger &logger,
+    Arguments &arguments,
+    Abstract_File *file
+   ) const;
  };
 }
 

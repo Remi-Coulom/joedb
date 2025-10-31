@@ -81,6 +81,7 @@ namespace joedb
  Client_Parser::Client_Parser
  ////////////////////////////////////////////////////////////////////////////
  (
+  Logger &logger,
   Open_Mode default_open_mode,
   DB_Type default_db_type,
   Arguments &arguments
@@ -160,13 +161,13 @@ namespace joedb
   if (arguments.get_remaining_count() == 0)
    return;
 
-  std::cerr << "hard_checkpoint = " << hard_checkpoint << '\n';
-  std::cerr << "content_check = " << check_string[int(content_check)] << '\n';
-  std::cerr << "recovery = " << recovery_string[int(recovery)] << '\n';
-  std::cerr << "db_type = " << db_string[int(db_type)] << '\n';
+  logger.write("hard_checkpoint = " + std::to_string(hard_checkpoint));
+  logger.write("content_check = " + std::string(check_string[int(content_check)]));
+  logger.write("recovery = " + std::string(recovery_string[int(recovery)]));
+  logger.write("db_type = " + std::string(db_string[int(db_type)]));
 
-  Abstract_File *client_file = file_parser.parse(std::cerr, arguments);
-  Connection *connection = connection_parser.build(arguments, client_file);
+  Abstract_File *client_file = file_parser.parse(logger, arguments);
+  Connection *connection = connection_parser.build(logger, arguments, client_file);
 
   if (!client_file)
    client_file = dynamic_cast<Abstract_File *>(connection);
@@ -177,7 +178,7 @@ namespace joedb
   if (!connection)
    throw Exception("could not create connection");
 
-  std::cerr << "Creating client... ";
+  logger.write("creating client");
 
   if (db_type == DB_Type::none)
   {
@@ -274,7 +275,5 @@ namespace joedb
    if (writable_client)
     writable_client->set_hard_checkpoint(hard_checkpoint);
   }
-
-  std::cerr << "OK\n";
  }
 }

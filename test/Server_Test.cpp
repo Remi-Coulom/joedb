@@ -8,7 +8,7 @@
 #include "joedb/concurrency/Local_Connector.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
-#include "joedb/error/Stream_Logger.h"
+#include "joedb/error/CLog_System_Logger.h"
 
 #include "Test_Sequence.h"
 #include "Test_Local_Channel.h"
@@ -23,8 +23,9 @@
 namespace joedb
 {
  static constexpr bool log_to_cerr = false;
- static std::ostringstream log_stream;
- static Stream_Logger logger(log_to_cerr ? std::cerr : log_stream);
+ static Logger dummy_logger;
+ static CLog_System_Logger clog_logger;
+ static Logger &logger(log_to_cerr ? clog_logger : dummy_logger);
 
  ////////////////////////////////////////////////////////////////////////////
  class Test_Server

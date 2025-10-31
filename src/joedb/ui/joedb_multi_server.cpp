@@ -1,5 +1,5 @@
 #include "joedb/ui/main_wrapper.h"
-#include "joedb/error/Stream_Logger.h"
+#include "joedb/error/CLog_System_Logger.h"
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
@@ -68,12 +68,12 @@ namespace joedb
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
-  Stream_Logger logger(std::cerr);
+  CLog_System_Logger logger;
 
   while (arguments.get_remaining_count())
   {
    const std::string file_name(arguments.get_next());
-   std::cerr << "Creating server for: " << file_name << '\n';
+   logger.write("creating server for: " + file_name);
    servers.emplace_back
    (
     new Server_Data

@@ -3,6 +3,7 @@
 #include "joedb/ui/Client_Command_Processor.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/journal/File.h"
+#include "joedb/error/CLog_System_Logger.h"
 
 #include <iostream>
 
@@ -12,12 +13,15 @@ namespace joedb
  static int client(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
+  CLog_System_Logger logger;
+
   const Open_Mode default_mode = File::lockable
    ? Open_Mode::shared_write
    : Open_Mode::write_existing_or_create_new;
 
   Client_Parser client_parser
   (
+   logger,
    default_mode,
    Client_Parser::DB_Type::interpreted,
    arguments

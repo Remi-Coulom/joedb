@@ -81,6 +81,7 @@ namespace joedb
  Connection *Connection_Parser::build
  //////////////////////////////////////////////////////////////////////////
  (
+  Logger &logger,
   Arguments &arguments,
   Abstract_File *file
  ) const
@@ -92,15 +93,14 @@ namespace joedb
   else
    connection_name = arguments.get_next();
 
-  std::cerr << "Creating connection (" << connection_name << ") ... ";
+  logger.write("Creating connection: " + std::string(connection_name));
 
   Connection *result = get_builder(connection_name.data()).build
   (
+   logger,
    arguments,
    file
   );
-
-  std::cerr << "OK\n";
 
   return result;
  }

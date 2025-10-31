@@ -21,8 +21,11 @@ namespace joedb
 
   Arguments arguments(args.size(), args.data());
 
+  Logger logger;
+
   Client_Parser parser
   (
+   logger,
    Open_Mode::shared_write,
    Client_Parser::DB_Type::none,
    arguments
@@ -73,12 +76,15 @@ namespace joedb
   {
    Arguments arguments(args.size(), args.data());
 
+   Logger logger;
+
    const Open_Mode default_mode = File::lockable
     ? Open_Mode::shared_write
     : Open_Mode::write_existing_or_create_new;
 
    Client_Parser parser
    (
+    logger,
     default_mode,
     Client_Parser::DB_Type::none,
     arguments

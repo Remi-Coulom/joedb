@@ -1,5 +1,4 @@
 #include "joedb/asio/Server.h"
-#include "joedb/ui/get_time_string.h"
 #include "joedb/error/Destructor_Logger.h"
 
 #include <boost/asio/detached.hpp>
@@ -11,12 +10,7 @@ namespace joedb::asio
 {
  void Server::log(std::string_view s)
  {
-  logger.write
-  (
-   joedb::get_time_string_of_now() + ' ' +
-   endpoint_path + ": " +
-   std::string(s) + '\n'
-  );
+  logger.write(endpoint_path + ": " + std::string(s));
  }
 
  Server::Session::Session

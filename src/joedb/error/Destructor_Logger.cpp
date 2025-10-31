@@ -1,11 +1,9 @@
 #include "joedb/error/Destructor_Logger.h"
-#include "joedb/error/Stream_Logger.h"
-
-#include <iostream>
+#include "joedb/error/CLog_System_Logger.h"
 
 namespace joedb
 {
- static Stream_Logger default_logger(std::cerr);
+ static CLog_System_Logger default_logger("joedb destructor warning");
  Logger *Destructor_Logger::the_logger = &default_logger;
 
  ////////////////////////////////////////////////////////////////////////////
@@ -13,15 +11,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   if (the_logger)
-  {
-   try
-   {
-    the_logger->write("joedb: destructor warning: " + message);
-   }
-   catch (...)
-   {
-   }
-  }
+   the_logger->write(message);
  }
 
  ////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,7 @@
 #include "joedb/ui/Blob_Reader_Command_Processor.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
+#include "joedb/error/CLog_System_Logger.h"
 
 #include <iostream>
 
@@ -30,8 +31,8 @@ namespace joedb
    include_shared
   );
 
-  std::ostream null_stream(nullptr);
-  Abstract_File *file = file_parser.parse(null_stream, arguments);
+  CLog_System_Logger logger;
+  Abstract_File *file = file_parser.parse(logger, arguments);
 
   if (!file)
   {

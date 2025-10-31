@@ -3,7 +3,6 @@
 
 #include "joedb/ui/Connection_Builder.h"
 #include "joedb/concurrency/Server_File.h"
-#include "joedb/error/CLog_System_Logger.h"
 
 #include <cmath>
 
@@ -13,7 +12,6 @@ namespace joedb
  class Server_Connection_Builder: public Connection_Builder
  {
   protected:
-   joedb::CLog_System_Logger logger;
    std::unique_ptr<Connector> connector;
    std::unique_ptr<Connection> connection;
 
@@ -26,7 +24,12 @@ namespace joedb
     return "[--keep_alive <seconds>] " + get_connection_parameters();
    }
 
-   Connection *build(Arguments &arguments, Abstract_File *file) override
+   Connection *build
+   (
+    Logger &logger,
+    Arguments &arguments,
+    Abstract_File *file
+   ) override
    {
     const float keep_alive_interval = arguments.next_option<float>
     (
