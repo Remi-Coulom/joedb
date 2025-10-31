@@ -3,8 +3,8 @@
 
 #include "joedb/ui/Connection_Builder.h"
 #include "joedb/concurrency/Server_File.h"
+#include "joedb/error/Default_System_Logger.h"
 
-#include <iostream>
 #include <cmath>
 
 namespace joedb
@@ -13,6 +13,7 @@ namespace joedb
  class Server_Connection_Builder: public Connection_Builder
  {
   protected:
+   joedb::Default_System_Logger logger;
    std::unique_ptr<Connector> connector;
    std::unique_ptr<Connection> connection;
 
@@ -45,9 +46,9 @@ namespace joedb
     );
 
     if (file)
-     connection = std::make_unique<Robust_Connection>(*connector, &std::cerr);
+     connection = std::make_unique<Robust_Connection>(*connector, &logger);
     else
-     connection = std::make_unique<Server_File>(*connector, &std::cerr);
+     connection = std::make_unique<Server_File>(*connector, &logger);
 
     return connection.get();
    }

@@ -3,6 +3,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/ssh/Forward_Channel.h"
 #include "joedb/ui/main_wrapper.h"
+#include "joedb/error/Default_System_Logger.h"
 
 #include <iostream>
 
@@ -31,7 +32,8 @@ namespace joedb
   {
    ssh::Session session(user.data(), host.data(), 22, 0);
    ssh::Forward_Channel channel(session, endpoint_path.data());
-   Server_Connection connection(channel, &std::cerr);
+   Default_System_Logger logger("keepalive_test");
+   Server_Connection connection(channel, &logger);
    Writable_Client client(journal, connection, Content_Check::none);
 
    try

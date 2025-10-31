@@ -5,8 +5,6 @@
 #include "joedb/concurrency/Connector.h"
 #include "joedb/error/Disconnection.h"
 
-#include <ostream>
-
 namespace joedb
 {
  /// @ref Server_Connection that automatically reconnects on error
@@ -19,7 +17,7 @@ namespace joedb
 
   private:
    const Connector &connector;
-   std::ostream *log;
+   joedb::Logger *logger;
    mutable std::unique_ptr<Channel> channel;
 
    const Readonly_Journal *handshake_journal = nullptr;
@@ -55,9 +53,9 @@ namespace joedb
    }
 
   public:
-   Robust_Connection(const Connector &connector, std::ostream *log):
+   Robust_Connection(const Connector &connector, joedb::Logger *logger):
     connector(connector),
-    log(log)
+    logger(logger)
    {
     reconnect(nullptr);
    }

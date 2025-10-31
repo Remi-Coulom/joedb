@@ -1,6 +1,13 @@
 TODO
 ====
 
+- logging:
+   - rename logger -> log
+   - replace all writes to cerr by logging in parsers
+   - replace progress bars by log messages (x of y done every 3 seconds + estimate remaining time)
+   - remove Progress_Bar, create a Progress_Logger class instead
+   - Default_System_Logger -> Error_System_Logger
+   - don't include it twice in Windows
 - testing of user-interface code -> (test for joedb_push to file bug)
 - always exit cleanly and rapidly after SIGINT or SIGTERM
 - channel read timeout should be settable

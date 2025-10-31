@@ -18,9 +18,9 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_File::Server_File(const Connector &connector, std::ostream *log):
+ Server_File::Server_File(const Connector &connector, joedb::Logger *logger):
  ////////////////////////////////////////////////////////////////////////////
-  Robust_Connection(connector, log),
+  Robust_Connection(connector, logger),
   Abstract_File(Open_Mode::write_existing),
   tail_offset(connection->server_checkpoint)
  {

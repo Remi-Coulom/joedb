@@ -13,7 +13,15 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   if (the_logger)
-   the_logger->write("joedb: destructor warning: " + message + '\n');
+  {
+   try
+   {
+    the_logger->write("joedb: destructor warning: " + message);
+   }
+   catch (...)
+   {
+   }
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

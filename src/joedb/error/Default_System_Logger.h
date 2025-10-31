@@ -13,10 +13,10 @@ namespace joedb
  {
   private:
    const std::string tag;
-   std::mutex mutex;
+   static std::mutex mutex;
 
   public:
-   Default_System_Logger(std::string tag);
+   Default_System_Logger(std::string tag = "");
    void write(const std::string &message) noexcept override;
  };
 }

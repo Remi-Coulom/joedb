@@ -11,12 +11,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  void Android_System_Logger::write(const std::string &message) noexcept
  {
-  try
-  {
-   __android_log_print(ANDROID_LOG_INFO, tag.c_str(), "%s", message.c_str());
-  }
-  catch (...)
-  {
-  }
+  __android_log_print(ANDROID_LOG_INFO, tag.c_str(), "%s", message.c_str());
  }
 }

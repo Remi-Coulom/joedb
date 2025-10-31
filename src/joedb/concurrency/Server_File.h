@@ -30,7 +30,7 @@ namespace joedb
    void write_checkpoint();
 
   public:
-   Server_File(const Connector &connector, std::ostream *log = nullptr);
+   Server_File(const Connector &connector, joedb::Logger *logger = nullptr);
 
    //
    // Connection overrides

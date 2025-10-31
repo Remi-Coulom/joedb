@@ -15,12 +15,6 @@ namespace joedb
 
  void Posix_System_Logger::write(const std::string &message) noexcept
  {
-  try
-  {
-   syslog(LOG_INFO, "%s", message.c_str());
-  }
-  catch (...)
-  {
-  }
+  syslog(LOG_INFO, "%s", message.c_str());
  }
 }

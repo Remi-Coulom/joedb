@@ -5,10 +5,10 @@
 #include "joedb/Thread_Safe.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/journal/Async_Writer.h"
+#include "joedb/error/Logger.h"
 
 #include <condition_variable>
 #include <thread>
-#include <iosfwd>
 #include <chrono>
 
 namespace joedb
@@ -30,7 +30,7 @@ namespace joedb
 
   protected:
    mutable Thread_Safe<Channel&> channel;
-   std::ostream *log;
+   joedb::Logger *logger;
    bool connected;
 
    mutable Buffer<13> buffer;
@@ -55,7 +55,7 @@ namespace joedb
    Server_Client
    (
     Channel &channel,
-    std::ostream *log = nullptr,
+    joedb::Logger *logger = nullptr,
     std::chrono::milliseconds keep_alive_interval = std::chrono::seconds(0)
    );
 

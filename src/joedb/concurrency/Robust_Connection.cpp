@@ -4,8 +4,8 @@ namespace joedb
 {
  void Robust_Connection::log_exception(const std::exception *e) const
  {
-  if (e && log)
-   *log << "Robust_Connection: " << e->what() << std::endl;
+  if (e && logger)
+   logger->write("Robust_Connection: exception: " + std::string(e->what()));
  }
 
  void Robust_Connection::reconnect(const std::exception *e) const
@@ -25,7 +25,7 @@ namespace joedb
     connection = std::make_unique<Server_Connection>
     (
      *channel,
-     log,
+     logger,
      connector.get_keep_alive_interval()
     );
     if (handshake_journal)
@@ -110,8 +110,8 @@ namespace joedb
   }
   catch (const std::exception &e)
   {
-   if (log)
-    *log << "Robust_Connection::unlock() error: " << e.what() << '\n';
+   if (logger)
+    logger->write("Robust_Connection::unlock() error: " + std::string(e.what()));
   }
  }
 }

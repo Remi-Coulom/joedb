@@ -1,13 +1,8 @@
 #include "joedb/concurrency/Server_Connection.h"
 #include "joedb/journal/File_Hasher.h"
 #include "joedb/error/Disconnection.h"
-#include "joedb/ui/Progress_Bar.h"
-#include "joedb/ui/get_time_string.h"
 
-#include <iostream>
-
-#define LOG(x) do {if (log) *log << x;} while (false)
-#define LOGID(x) do {if (log) *log << get_time_string_of_now() << ' ' << get_session_id() << ": " << x;} while (false)
+#define LOGID(x) do {if (logger) logger->write(std::to_string(get_session_id()) + ": " + x);} while (false)
 
 namespace joedb
 {
@@ -73,7 +68,7 @@ namespace joedb
    lock->read(buffer.data, 1);
   }
 
-  LOG(buffer.data[0] << '\n');
+  LOGID(buffer.data[0]);
 
   if (buffer.data[0] == 'h')
    content_mismatch();
@@ -95,8 +90,9 @@ namespace joedb
 
   const char pull_type = char('D' + int(lock_action) + 2*int(data_transfer));
 
-  LOGID("pulling, lock = " << int(lock_action) << ", data = " <<
-   int(data_transfer) << ", wait = " << double(wait.count()) * 0.001 << "s\n");
+  LOGID("pulling, lock = " + std::to_string(int(lock_action)) +
+   ", data = " + std::to_string(int(data_transfer)) +
+   ", wait = " + std::to_string(double(wait.count()) * 0.001)  + 's');
 
   buffer.index = 0;
   buffer.write<char>(pull_type);
@@ -120,12 +116,12 @@ namespace joedb
    buffer.index = 0;
    const int64_t size = server_checkpoint - client_journal.get_checkpoint();
    Async_Writer writer = client_journal.get_async_tail_writer();
-   LOGID("data transfer: ");
+   LOGID("data transfer");
    download(writer, lock, size);
    client_journal.soft_checkpoint_at(writer.get_position());
   }
   else
-   LOG("no data\n");
+   LOGID("!data_transfer");
 
   return server_checkpoint;
  }
@@ -151,8 +147,7 @@ namespace joedb
   {
    Async_Reader reader = client_journal.get_async_reader(from, until);
 
-   LOGID("pushing(" << push_type << ")... from = " << from << ", until = " << until);
-   Progress_Bar progress_bar(reader.get_remaining(), log);
+   LOGID("pushing(" + push_type + ")... from = " + std::to_string(from) + ", until = " + std::to_string(until));
 
    size_t offset = buffer.index;
 
@@ -163,7 +158,6 @@ namespace joedb
      throw Disconnection("push error: unexpected end of file");
     lock->write(buffer.data, size + offset);
     offset = 0;
-    progress_bar.print_remaining(reader.get_remaining());
    }
   }
 
@@ -187,7 +181,7 @@ namespace joedb
  void Server_Connection::unlock()
  ////////////////////////////////////////////////////////////////////////////
  {
-  LOGID("releasing lock... ");
+  LOGID("joedb::Server_Connection::unlock");
 
   {
    Lock<Channel&> lock(channel);
@@ -196,7 +190,7 @@ namespace joedb
    lock->read(buffer.data, 1);
   }
 
-  LOG(buffer.data[0] << '\n');
+  LOGID(buffer.data[0]);
 
   if (buffer.data[0] != 'M')
    throw Disconnection("unlock error: unexpected reply");

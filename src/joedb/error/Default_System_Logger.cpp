@@ -5,6 +5,8 @@
 
 namespace joedb
 {
+ std::mutex Default_System_Logger::mutex;
+
  ////////////////////////////////////////////////////////////////////////////
  Default_System_Logger::Default_System_Logger(std::string tag): tag(std::move(tag))
  {
@@ -16,8 +18,10 @@ namespace joedb
   try
   {
    std::unique_lock lock(mutex);
-   std::cerr << joedb::get_time_string_of_now();
-   std::cerr << ' ' << tag << ": " << message << '\n';
+   std::cerr << joedb::get_time_string_of_now() << ' ';
+   if (!tag.empty())
+    std::cerr << tag << ": ";
+   std::cerr << message << '\n';
    std::cerr.flush();
   }
   catch (...)

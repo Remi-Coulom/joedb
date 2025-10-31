@@ -1,12 +1,9 @@
 #include "joedb/concurrency/Server_Client.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/error/Exception.h"
-#include "joedb/ui/Progress_Bar.h"
 #include "joedb/journal/Header.h"
 
-#include <iostream>
-
-#define LOG(x) do {if (log) *log << x;} while (false)
+#define LOG(x) do {if (logger) logger->write(x);} while (false)
 
 namespace joedb
 {
@@ -57,7 +54,7 @@ namespace joedb
  void Server_Client::connect()
  ////////////////////////////////////////////////////////////////////////////
  {
-  LOG("Connecting... ");
+  LOG("joedb::Server_Client::connect");
 
   buffer.index = 0;
   buffer.write<std::array<char, 5>>(Header::joedb);
@@ -79,7 +76,7 @@ namespace joedb
   if (server_version == 0)
    throw Exception("Client version rejected by server");
 
-  LOG("server_version = " << server_version << ". ");
+  LOG("server_version = " + std::to_string(server_version));
 
   if (server_version < protocol_version)
    throw Exception("Unsupported server version");
@@ -97,10 +94,9 @@ namespace joedb
 
   LOG
   (
-   "session_id = " << session_id <<
-   "; server_checkpoint = " << server_checkpoint <<
-   "; mode = " << mode <<
-   ". OK.\n"
+   "session_id = " + std::to_string(session_id) +
+   "; server_checkpoint = " + std::to_string(server_checkpoint) +
+   "; mode = " + mode
   );
 
   if (keep_alive_interval.count() > 0)
@@ -119,9 +115,6 @@ namespace joedb
   int64_t size
  ) const
  {
-  LOG("downloading");
-  Progress_Bar progress_bar(size, log);
-
   for (int64_t read = 0; read < size;)
   {
    const int64_t remaining = size - read;
@@ -129,7 +122,6 @@ namespace joedb
    const size_t n = lock->read_some(buffer.data, read_size);
    writer.write(buffer.data, n);
    read += int64_t(n);
-   progress_bar.print(read);
   }
  }
 
@@ -138,12 +130,12 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Channel &channel,
-  std::ostream *log,
+  joedb::Logger *logger,
   std::chrono::milliseconds keep_alive_interval
  ):
   keep_alive_interval(keep_alive_interval),
   channel(channel),
-  log(log),
+  logger(logger),
   session_id(-1),
   pullonly_server(false)
  {
