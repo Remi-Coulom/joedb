@@ -81,7 +81,7 @@ namespace joedb
 
    Test_Client_Data(Abstract_File &file, Server &server):
     channel(server.get_endpoint_path()),
-    server_connection(channel, log_to_cerr ? &std::cerr : nullptr)
+    server_connection(channel, log_to_cerr ? &logger : nullptr)
    {
    }
  };
