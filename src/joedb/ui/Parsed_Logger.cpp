@@ -1,5 +1,5 @@
 #include "joedb/ui/Parsed_Logger.h"
-#include "joedb/error/CLog_System_Logger.h"
+#include "joedb/error/CLog_Logger.h"
 #include "joedb/error/System_Logger.h"
 
 namespace joedb
@@ -29,7 +29,7 @@ namespace joedb
    break;
 
    case Type::clog:
-    logger = std::make_unique<CLog_System_Logger>(tag);
+    logger = std::make_unique<CLog_Logger>(tag);
    break;
 
    case Type::system:

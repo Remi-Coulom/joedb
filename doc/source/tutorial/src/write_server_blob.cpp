@@ -1,9 +1,9 @@
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/type_io.h"
+#include "joedb/ui/Parsed_Logger.h"
 #include "joedb/concurrency/Local_Connector.h"
 #include "joedb/concurrency/Server_File.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
-#include "joedb/error/CLog_System_Logger.h"
 
 #include <iostream>
 
@@ -13,6 +13,7 @@
 /// without downloading a full replica of the database.
 static int write_server_blob(joedb::Arguments &arguments)
 {
+ joedb::Parsed_Logger logger(arguments);
  const std::string blob_string{arguments.get_next("<blob_string>")};
 
  if (arguments.missing())
@@ -28,8 +29,7 @@ static int write_server_blob(joedb::Arguments &arguments)
 
  // Connect to the server
  joedb::Local_Connector connector("blobs.joedb.sock");
- joedb::CLog_System_Logger logger("write_server_blob");
- joedb::Server_File server_file(connector, &logger);
+ joedb::Server_File server_file(connector, &logger.get());
 
  // Creating the client: server file serves both as file and connection
  joedb::Writable_Journal_Client client(server_file, server_file);

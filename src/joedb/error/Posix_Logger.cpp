@@ -1,4 +1,4 @@
-#include "joedb/error/Posix_System_Logger.h"
+#include "joedb/error/Posix_Logger.h"
 
 #include <string>
 
@@ -6,11 +6,11 @@
 
 namespace joedb
 {
- Posix_System_Logger::Posix_System_Logger(std::string tag): tag(std::move(tag))
+ Posix_Logger::Posix_Logger(std::string tag): tag(std::move(tag))
  {
  }
 
- void Posix_System_Logger::write(const std::string &message) noexcept
+ void Posix_Logger::write(const std::string &message) noexcept
  {
   if (tag.empty())
    syslog(LOG_INFO, "%s", message.c_str());

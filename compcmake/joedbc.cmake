@@ -30,7 +30,7 @@ add_library(joedb_for_joedbc OBJECT
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/write_source_code.cpp
  ${JOEDB_SRC_DIR}/joedb/error/assert.cpp
- ${JOEDB_SRC_DIR}/joedb/error/CLog_System_Logger.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/CLog_Logger.cpp
  ${JOEDB_SRC_DIR}/joedb/error/Destructor_Logger.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp

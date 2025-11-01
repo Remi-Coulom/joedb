@@ -1,4 +1,4 @@
-#include "joedb/error/CLog_System_Logger.h"
+#include "joedb/error/CLog_Logger.h"
 #include "joedb/rpc/Server.h"
 #include "joedb/concurrency/Local_Channel.h"
 
@@ -11,7 +11,7 @@
 
 namespace joedb
 {
- static CLog_System_Logger logger;
+ static CLog_Logger logger;
  static constexpr int log_level = 0;
  static const char * const endpoint_path = "test.rpc.sock";
 

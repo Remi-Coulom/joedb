@@ -3,7 +3,7 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/ssh/Forward_Channel.h"
 #include "joedb/ui/main_wrapper.h"
-#include "joedb/error/CLog_System_Logger.h"
+#include "joedb/ui/Parsed_Logger.h"
 
 #include <iostream>
 
@@ -12,6 +12,8 @@ namespace joedb
  /// test how long we can wait without losing connection
  static int keepalive_test(Arguments &arguments)
  {
+  Parsed_Logger logger(arguments);
+
   const std::string_view user = arguments.get_next("user");
   const std::string_view host = arguments.get_next("host");
   const std::string_view endpoint_path = arguments.get_next("endpoint_path");
@@ -32,8 +34,7 @@ namespace joedb
   {
    ssh::Session session(user.data(), host.data(), 22, 0);
    ssh::Forward_Channel channel(session, endpoint_path.data());
-   CLog_System_Logger logger("keepalive_test");
-   Server_Connection connection(channel, &logger);
+   Server_Connection connection(channel, &logger.get());
    Writable_Client client(journal, connection, Content_Check::none);
 
    try

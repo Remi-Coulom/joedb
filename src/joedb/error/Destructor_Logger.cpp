@@ -1,9 +1,9 @@
 #include "joedb/error/Destructor_Logger.h"
-#include "joedb/error/CLog_System_Logger.h"
+#include "joedb/error/CLog_Logger.h"
 
 namespace joedb
 {
- static CLog_System_Logger default_logger("joedb destructor warning");
+ static CLog_Logger default_logger("joedb destructor warning");
  Logger *Destructor_Logger::the_logger = &default_logger;
 
  ////////////////////////////////////////////////////////////////////////////

@@ -11,7 +11,7 @@
 #include "joedb/journal/Memory_File.cpp"
 #include "joedb/journal/Readonly_Journal.cpp"
 #include "joedb/journal/Writable_Journal.cpp"
-#include "joedb/error/CLog_System_Logger.cpp"
+#include "joedb/error/CLog_Logger.cpp"
 #include "joedb/ui/get_time_string.cpp"
 #ifdef JOEDB_FILE_IS_PORTABLE_FILE
 #include "joedb/journal/Stream_File.cpp"

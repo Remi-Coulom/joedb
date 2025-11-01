@@ -2,13 +2,13 @@
 #define joedb_System_Logger_declared
 
 #ifdef __ANDROID__
-#define JOEDB_SYSTEM_LOG Android_System_Logger
+#define JOEDB_SYSTEM_LOG Android_Logger
 #elif defined(__APPLE__)
-#define JOEDB_SYSTEM_LOG Apple_System_Logger
+#define JOEDB_SYSTEM_LOG Apple_Logger
 #elif defined(__unix__)
-#define JOEDB_SYSTEM_LOG Posix_System_Logger
+#define JOEDB_SYSTEM_LOG Posix_Logger
 #else
-#define JOEDB_SYSTEM_LOG CLog_System_Logger
+#define JOEDB_SYSTEM_LOG CLog_Logger
 #define JOEDB_SYSTEM_LOG_NO_CPP
 #endif
 
