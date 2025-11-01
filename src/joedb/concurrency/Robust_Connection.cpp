@@ -4,8 +4,8 @@ namespace joedb
 {
  void Robust_Connection::log_exception(const std::exception *e) const
  {
-  if (e && logger)
-   logger->write("Robust_Connection: exception: " + std::string(e->what()));
+  if (e)
+   logger.log("Robust_Connection: exception: " + std::string(e->what()));
  }
 
  void Robust_Connection::reconnect(const std::exception *e) const
@@ -110,8 +110,7 @@ namespace joedb
   }
   catch (const std::exception &e)
   {
-   if (logger)
-    logger->write("Robust_Connection::unlock() error: " + std::string(e.what()));
+   logger.log("Robust_Connection::unlock() error: " + std::string(e.what()));
   }
  }
 }

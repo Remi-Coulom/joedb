@@ -18,7 +18,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- Server_File::Server_File(const Connector &connector, joedb::Logger *logger):
+ Server_File::Server_File(const Connector &connector, Logger &logger):
  ////////////////////////////////////////////////////////////////////////////
   Robust_Connection(connector, logger),
   Abstract_File(Open_Mode::write_existing),

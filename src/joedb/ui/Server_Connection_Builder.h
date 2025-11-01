@@ -49,9 +49,9 @@ namespace joedb
     );
 
     if (file)
-     connection = std::make_unique<Robust_Connection>(*connector, &logger);
+     connection = std::make_unique<Robust_Connection>(*connector, logger);
     else
-     connection = std::make_unique<Server_File>(*connector, &logger);
+     connection = std::make_unique<Server_File>(*connector, logger);
 
     return connection.get();
    }

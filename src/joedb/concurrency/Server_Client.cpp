@@ -2,11 +2,23 @@
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/error/Exception.h"
 #include "joedb/journal/Header.h"
-
-#define LOG(x) do {if (logger) logger->write(x);} while (false)
+#include "joedb/ui/Progress_Bar.h"
 
 namespace joedb
 {
+ ////////////////////////////////////////////////////////////////////////////
+ void Server_Client::log(const std::string &message) noexcept
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  try
+  {
+   logger.log(std::to_string(get_session_id()) + ": " + message);
+  }
+  catch (...)
+  {
+  }
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  void Server_Client::ping(Lock<Channel&> &lock)
  ////////////////////////////////////////////////////////////////////////////
@@ -54,7 +66,7 @@ namespace joedb
  void Server_Client::connect()
  ////////////////////////////////////////////////////////////////////////////
  {
-  LOG("joedb::Server_Client::connect");
+  logger.log("joedb::Server_Client::connect");
 
   buffer.index = 0;
   buffer.write<std::array<char, 5>>(Header::joedb);
@@ -76,7 +88,7 @@ namespace joedb
   if (server_version == 0)
    throw Exception("Client version rejected by server");
 
-  LOG("server_version = " + std::to_string(server_version));
+  logger.log("server_version = " + std::to_string(server_version));
 
   if (server_version < protocol_version)
    throw Exception("Unsupported server version");
@@ -92,10 +104,9 @@ namespace joedb
   else
    throw Exception("Unexpected server mode");
 
-  LOG
+  log
   (
-   "session_id = " + std::to_string(session_id) +
-   "; server_checkpoint = " + std::to_string(server_checkpoint) +
+   "server_checkpoint = " + std::to_string(server_checkpoint) +
    "; mode = " + mode
   );
 
@@ -115,6 +126,12 @@ namespace joedb
   int64_t size
  ) const
  {
+  Progress_Bar progress_bar
+  (
+   size,
+   *const_cast<Logger *>(static_cast<const Logger *>(this))
+  );
+
   for (int64_t read = 0; read < size;)
   {
    const int64_t remaining = size - read;
@@ -122,6 +139,7 @@ namespace joedb
    const size_t n = lock->read_some(buffer.data, read_size);
    writer.write(buffer.data, n);
    read += int64_t(n);
+   progress_bar.print(read);
   }
  }
 
@@ -130,7 +148,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Channel &channel,
-  joedb::Logger *logger,
+  Logger &logger,
   std::chrono::milliseconds keep_alive_interval
  ):
   keep_alive_interval(keep_alive_interval),
@@ -175,5 +193,3 @@ namespace joedb
   disconnect();
  }
 }
-
-#undef LOG

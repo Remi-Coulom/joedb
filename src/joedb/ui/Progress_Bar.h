@@ -1,8 +1,10 @@
 #ifndef joedb_io_Progress_Bar_declared
 #define joedb_io_Progress_Bar_declared
 
+#include "joedb/error/Logger.h"
+
 #include <stdint.h>
-#include <iosfwd>
+#include <chrono>
 
 namespace joedb
 {
@@ -10,16 +12,19 @@ namespace joedb
  class Progress_Bar
  {
   private:
-   static constexpr int length = 79;
-
    const int64_t total;
-   std::ostream * const out;
-   const int64_t threshold;
+   int64_t done;
+   int64_t printed;
+   double gap;
+   Logger &logger;
 
-   int current_display;
+   std::chrono::steady_clock::time_point start;
+   std::chrono::steady_clock::time_point last_print_time;
+
+   void print_progress() noexcept;
 
   public:
-   Progress_Bar(int64_t total, std::ostream *out, int64_t threshold = 16384);
+   Progress_Bar(int64_t total, Logger &logger);
    void print(int64_t current);
    void print_remaining(int64_t remaining) {print(total - remaining);}
    ~Progress_Bar();

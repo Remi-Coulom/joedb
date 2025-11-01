@@ -17,7 +17,7 @@ namespace joedb
 
   private:
    const Connector &connector;
-   joedb::Logger *logger;
+   Logger &logger;
    mutable std::unique_ptr<Channel> channel;
 
    const Readonly_Journal *handshake_journal = nullptr;
@@ -53,7 +53,7 @@ namespace joedb
    }
 
   public:
-   Robust_Connection(const Connector &connector, joedb::Logger *logger):
+   Robust_Connection(const Connector &connector, Logger &logger):
     connector(connector),
     logger(logger)
    {

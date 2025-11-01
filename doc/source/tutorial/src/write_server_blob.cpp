@@ -29,7 +29,7 @@ static int write_server_blob(joedb::Arguments &arguments)
 
  // Connect to the server
  joedb::Local_Connector connector("blobs.joedb.sock");
- joedb::Server_File server_file(connector, &logger.get());
+ joedb::Server_File server_file(connector, logger.get());
 
  // Creating the client: server file serves both as file and connection
  joedb::Writable_Journal_Client client(server_file, server_file);

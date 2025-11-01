@@ -14,6 +14,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/ui/Raw_Dump_Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Connection_Parser.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Parsed_Logger.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Progress_Bar.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/File_Hasher.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Interpreted_File.cpp
  ${JOEDB_SRC_DIR}/joedb/concurrency/Channel.cpp

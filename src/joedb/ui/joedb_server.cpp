@@ -61,7 +61,7 @@ namespace joedb
 
   Client &client = *client_parser.get();
 
-  logger.get().write
+  logger.get().log
   (
    "creating server, endpoint_path = " + std::string(endpoint_path) +
    "; timeout = " + std::to_string(timeout_seconds)

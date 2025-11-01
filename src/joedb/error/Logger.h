@@ -9,8 +9,9 @@ namespace joedb
  class Logger
  {
   public:
-   virtual void write(const std::string &message) noexcept {}
+   virtual void log(const std::string &message) noexcept {}
    virtual ~Logger() = default;
+   static Logger dummy_logger;
  };
 }
 

@@ -34,7 +34,7 @@ namespace joedb
   {
    ssh::Session session(user.data(), host.data(), 22, 0);
    ssh::Forward_Channel channel(session, endpoint_path.data());
-   Server_Connection connection(channel, &logger.get());
+   Server_Connection connection(channel, logger.get());
    Writable_Client client(journal, connection, Content_Check::none);
 
    try

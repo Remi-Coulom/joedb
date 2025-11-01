@@ -14,7 +14,7 @@
 namespace joedb
 {
  /// @ingroup concurrency
- class Server_Client
+ class Server_Client: public Logger
  {
   friend class Server_File;
 
@@ -30,7 +30,7 @@ namespace joedb
 
   protected:
    mutable Thread_Safe<Channel&> channel;
-   joedb::Logger *logger;
+   Logger &logger;
    bool connected;
 
    mutable Buffer<13> buffer;
@@ -46,6 +46,8 @@ namespace joedb
     int64_t size
    ) const;
 
+   void log(const std::string &message) noexcept override;
+
   public:
    ///
    /// @param keep_alive_interval: a background thread will send a ping
@@ -55,7 +57,7 @@ namespace joedb
    Server_Client
    (
     Channel &channel,
-    joedb::Logger *logger = nullptr,
+    Logger &logger = Logger::dummy_logger,
     std::chrono::milliseconds keep_alive_interval = std::chrono::seconds(0)
    );
 

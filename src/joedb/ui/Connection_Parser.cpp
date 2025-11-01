@@ -93,7 +93,7 @@ namespace joedb
   else
    connection_name = arguments.get_next();
 
-  logger.write("creating connection: " + std::string(connection_name));
+  logger.log("creating connection: " + std::string(connection_name));
 
   Connection *result = get_builder(connection_name.data()).build
   (

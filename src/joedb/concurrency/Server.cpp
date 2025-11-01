@@ -2,6 +2,7 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/protocol_version.h"
 #include "joedb/journal/File_Hasher.h"
+#include "joedb/ui/Progress_Bar.h"
 
 #include <boost/asio/redirect_error.hpp>
 #include <boost/asio/use_awaitable.hpp>
@@ -181,27 +182,10 @@ namespace joedb
 
   buffer.index = 1;
   buffer.write<int64_t>(reader.get_end());
-
-  const int64_t display_step = std::max
-  (
-   int64_t(1000000),
-   reader.get_remaining() >> 6
-  );
-  int64_t next_display = reader.get_remaining() - display_step;
+  Progress_Bar progress_bar(reader.get_remaining(), *this);
 
   while (buffer.index + reader.get_remaining() > 0)
   {
-   if
-   (
-    get_server().log_level > 3 &&
-    reader.get_remaining() > 0 &&
-    reader.get_remaining() <= next_display
-   )
-   {
-    next_display -= display_step;
-    log("remaining_size = " + std::to_string(reader.get_remaining()));
-   }
-
    buffer.index += reader.read
    (
     buffer.data + buffer.index,
@@ -214,6 +198,9 @@ namespace joedb
    refresh_lock_timeout();
    co_await write_buffer();
    buffer.index = 0;
+
+   if (get_server().log_level > 3)
+    progress_bar.print_remaining(reader.get_remaining());
   }
  }
 

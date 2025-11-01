@@ -18,7 +18,7 @@ namespace joedb
    Apple_Logger(const Apple_Logger &) = delete;
    Apple_Logger&operator=(const Apple_Logger &) = delete;
 
-   void write(const std::string &message) noexcept override;
+   void log(const std::string &message) noexcept override;
 
    ~Apple_Logger() override;
  };

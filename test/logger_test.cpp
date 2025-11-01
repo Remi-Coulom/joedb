@@ -3,6 +3,6 @@
 int main()
 {
  joedb::System_Logger logger("joedb_testing");
- logger.write("Hello, log");
+ logger.log("Hello, log");
  return 0;
 }

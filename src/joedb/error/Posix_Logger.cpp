@@ -10,7 +10,7 @@ namespace joedb
  {
  }
 
- void Posix_Logger::write(const std::string &message) noexcept
+ void Posix_Logger::log(const std::string &message) noexcept
  {
   if (tag.empty())
    syslog(LOG_INFO, "%s", message.c_str());

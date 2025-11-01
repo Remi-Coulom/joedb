@@ -161,10 +161,10 @@ namespace joedb
   if (arguments.get_remaining_count() == 0)
    return;
 
-  logger.write("hard_checkpoint = " + std::to_string(hard_checkpoint));
-  logger.write("content_check = " + std::string(check_string[int(content_check)]));
-  logger.write("recovery = " + std::string(recovery_string[int(recovery)]));
-  logger.write("db_type = " + std::string(db_string[int(db_type)]));
+  logger.log("hard_checkpoint = " + std::to_string(hard_checkpoint));
+  logger.log("content_check = " + std::string(check_string[int(content_check)]));
+  logger.log("recovery = " + std::string(recovery_string[int(recovery)]));
+  logger.log("db_type = " + std::string(db_string[int(db_type)]));
 
   Abstract_File *client_file = file_parser.parse(logger, arguments);
   Connection *connection = connection_parser.build(logger, arguments, client_file);
@@ -178,7 +178,7 @@ namespace joedb
   if (!connection)
    throw Exception("could not create connection");
 
-  logger.write("creating client");
+  logger.log("creating client");
 
   if (db_type == DB_Type::none)
   {

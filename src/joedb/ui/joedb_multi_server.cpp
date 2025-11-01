@@ -73,7 +73,7 @@ namespace joedb
   while (arguments.get_remaining_count())
   {
    const std::string file_name(arguments.get_next());
-   logger.get().write("creating server for: " + file_name);
+   logger.get().log("creating server for: " + file_name);
    servers.emplace_back
    (
     new Server_Data

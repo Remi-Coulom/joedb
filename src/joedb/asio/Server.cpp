@@ -8,9 +8,15 @@
 
 namespace joedb::asio
 {
- void Server::log(std::string_view s)
+ void Server::log(const std::string &message) noexcept
  {
-  logger.write(endpoint_path + ": " + std::string(s));
+  try
+  {
+   logger.log(endpoint_path + ": " + message);
+  }
+  catch (...)
+  {
+  }
  }
 
  Server::Session::Session
@@ -55,9 +61,15 @@ namespace joedb::asio
   );
  }
 
- void Server::Session::log(std::string_view s)
+ void Server::Session::log(const std::string &message) noexcept
  {
-  server.log(std::to_string(id) + ": " + std::string(s));
+  try
+  {
+   server.log(std::to_string(id) + ": " + message);
+  }
+  catch (...)
+  {
+  }
  }
 
  Server::Session::~Session() = default;

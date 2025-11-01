@@ -15,12 +15,12 @@ namespace joedb::asio
  /// Superclass for asio servers
  ///
  /// @ingroup asio
- class Server
+ class Server: public Logger
  {
   protected:
    Logger &logger;
    const int log_level;
-   void log(std::string_view s);
+   void log(const std::string &message) noexcept override;
 
    const int thread_count;
    boost::asio::thread_pool thread_pool;
@@ -31,7 +31,7 @@ namespace joedb::asio
    boost::asio::local::stream_protocol::acceptor acceptor;
    boost::asio::signal_set interrupt_signals;
 
-   class Session
+   class Session: public Logger
    {
     public:
      Server &server;
@@ -50,7 +50,7 @@ namespace joedb::asio
       boost::asio::local::stream_protocol::socket &&socket
      );
 
-     void log(std::string_view s);
+     void log(const std::string &message) noexcept override;
 
      virtual boost::asio::awaitable<void> run() = 0;
      virtual void cleanup() {}

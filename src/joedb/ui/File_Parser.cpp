@@ -95,13 +95,13 @@ namespace joedb
    if (arguments.missing())
     return nullptr;
 
-   logger.write("creating ssh session");
+   logger.log("creating ssh session");
    ssh_session.emplace(user.data(), host.data(), port, verbosity);
 
-   logger.write("initializing sftp");
+   logger.log("initializing sftp");
    sftp.emplace(*ssh_session);
 
-   logger.write("opening file");
+   logger.log("opening file");
    file.reset(new SFTP_File(*sftp, path.data()));
   }
 #endif
@@ -132,7 +132,7 @@ namespace joedb
    if (arguments.missing())
     return nullptr;
 
-   logger.write("opening brotli file");
+   logger.log("opening brotli file");
 
    if (readonly)
     file.reset(new Readonly_Brotli_File(file_name.data()));
@@ -165,7 +165,7 @@ namespace joedb
    if (arguments.missing())
     return nullptr;
 
-   logger.write
+   logger.log
    (
     "opening local file, open_mode = " +
     std::string(open_mode_strings[size_t(open_mode)])
@@ -177,7 +177,7 @@ namespace joedb
     file.reset(new File(file_name.data(), open_mode));
   }
 
-  logger.write("file is opened");
+  logger.log("file is opened");
   return file.get();
  }
 }

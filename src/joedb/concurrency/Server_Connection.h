@@ -13,7 +13,7 @@ namespace joedb
    Server_Connection
    (
     Channel &channel,
-    joedb::Logger *logger = nullptr,
+    Logger &logger = Logger::dummy_logger,
     std::chrono::milliseconds keep_alive_interval = std::chrono::seconds(0)
    ):
     Server_Client(channel, logger, keep_alive_interval)

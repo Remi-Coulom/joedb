@@ -8,7 +8,6 @@
 #include "joedb/concurrency/Local_Connector.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
-#include "joedb/error/CLog_Logger.h"
 
 #include "Test_Sequence.h"
 #include "Test_Local_Channel.h"
@@ -20,13 +19,21 @@
 #include <cstdio>
 #include <csignal>
 
+#if 0
+#include "joedb/error/CLog_Logger.h"
 namespace joedb
 {
- static constexpr bool log_to_cerr = false;
- static Logger dummy_logger;
- static CLog_Logger clog_logger;
- static Logger &logger(log_to_cerr ? clog_logger : dummy_logger);
+ static CLog_Logger logger;
+}
+#else
+namespace joedb
+{
+ static Logger &logger = Logger::dummy_logger;
+}
+#endif
 
+namespace joedb
+{
  ////////////////////////////////////////////////////////////////////////////
  class Test_Server
  ////////////////////////////////////////////////////////////////////////////
@@ -82,7 +89,7 @@ namespace joedb
 
    Test_Client_Data(Abstract_File &file, Server &server):
     channel(server.get_endpoint_path()),
-    server_connection(channel, log_to_cerr ? &logger : nullptr)
+    server_connection(channel, logger)
    {
    }
  };

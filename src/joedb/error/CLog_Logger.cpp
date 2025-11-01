@@ -13,7 +13,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void CLog_Logger::write(const std::string &message) noexcept
+ void CLog_Logger::log(const std::string &message) noexcept
  {
   try
   {
