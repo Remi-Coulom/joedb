@@ -398,6 +398,7 @@ namespace joedb
   }
 
   int64_t remaining_size = until - from;
+  Progress_Bar progress_bar(remaining_size, *this);
 
   while (remaining_size > 0)
   {
@@ -413,8 +414,8 @@ namespace joedb
     push_writer->write(buffer.data, size); // ??? takes_time
 
    remaining_size -= int64_t(size);
-   if (get_server().log_level > 3 && remaining_size > 0)
-    log("remaining_size = " + std::to_string(remaining_size));
+   if (get_server().log_level > 3)
+    progress_bar.print_remaining(remaining_size);
   }
 
   if (until > from)
