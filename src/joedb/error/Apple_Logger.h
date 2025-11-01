@@ -12,7 +12,7 @@ namespace joedb
  {
   private:
    const std::string tag;
-   const os_log_t os_log;
+   const os_log_t the_log;
 
   public:
    Apple_Logger(std::string tag);
