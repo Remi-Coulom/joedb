@@ -3,13 +3,22 @@
 
 namespace joedb
 {
- static CLog_Logger default_logger("joedb destructor warning");
- Logger *Destructor_Logger::the_logger = &default_logger;
+ ////////////////////////////////////////////////////////////////////////////
+ static Logger &get_default_logger()
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  static CLog_Logger logger("joedb destructor warning");
+  return logger;
+ }
+
+ Logger *Destructor_Logger::the_logger = &get_default_logger();
+ std::mutex Destructor_Logger::mutex;
 
  ////////////////////////////////////////////////////////////////////////////
  void Destructor_Logger::warning(const std::string &message) noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock lock(mutex);
   if (the_logger)
    the_logger->log(message);
  }
@@ -18,6 +27,7 @@ namespace joedb
  void Destructor_Logger::set_logger(Logger *new_logger)
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock lock(mutex);
   the_logger = new_logger;
  }
 
@@ -25,13 +35,15 @@ namespace joedb
  void Destructor_Logger::set_logger()
  ////////////////////////////////////////////////////////////////////////////
  {
-  the_logger = &default_logger;
+  std::unique_lock lock(mutex);
+  the_logger = &get_default_logger();
  }
 
  ////////////////////////////////////////////////////////////////////////////
  void Destructor_Logger::remove_logger()
  ////////////////////////////////////////////////////////////////////////////
  {
+  std::unique_lock lock(mutex);
   the_logger = nullptr;
  }
 }

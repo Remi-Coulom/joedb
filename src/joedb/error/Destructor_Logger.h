@@ -2,6 +2,7 @@
 #define joedb_Destructor_Logger
 
 #include <string>
+#include <mutex>
 
 namespace joedb
 {
@@ -12,6 +13,7 @@ namespace joedb
  {
   private:
    static Logger *the_logger;
+   static std::mutex mutex;
 
   public:
    static void warning(const std::string &message) noexcept;
