@@ -11,7 +11,7 @@ namespace joedb
  class Apple_Logger: public Logger
  {
   private:
-   const os_log_t log;
+   const os_log_t os_log;
 
   public:
    Apple_Logger(const char *tag);
