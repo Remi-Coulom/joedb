@@ -4,6 +4,7 @@ TODO
 - logging:
    - replace progress bars by log messages (x of y done every 3 seconds + estimate remaining time and rate per second)
    - remove Progress_Bar, create a Progress_Logger class instead
+   - Client_Parser -> Parsed_Client, File_Parser -> Parsed_File
 - testing of user-interface code -> (test for joedb_push to file bug)
 - always exit cleanly and rapidly after SIGINT or SIGTERM
 - channel read timeout should be settable

@@ -1,5 +1,5 @@
 #include "joedb/ui/main_wrapper.h"
-#include "joedb/error/CLog_System_Logger.h"
+#include "joedb/ui/Parsed_Logger.h"
 #include "joedb/journal/File.h"
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
@@ -49,6 +49,8 @@ namespace joedb
  static int multi_server(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
+  Parsed_Logger logger(arguments);
+
   const float timeout_seconds = arguments.get_option<float>
   (
    "timeout",
@@ -68,17 +70,15 @@ namespace joedb
 
   std::list<std::unique_ptr<Server_Data>> servers;
 
-  CLog_System_Logger logger;
-
   while (arguments.get_remaining_count())
   {
    const std::string file_name(arguments.get_next());
-   logger.write("creating server for: " + file_name);
+   logger.get().write("creating server for: " + file_name);
    servers.emplace_back
    (
     new Server_Data
     (
-     logger,
+     logger.get(),
      log_level,
      file_name,
      file_name + ".sock",

@@ -103,10 +103,10 @@ ipo_add_executable(joedb_convert
  ../src/joedb/journal/Readonly_Journal.cpp
  ../src/joedb/journal/Writable_Journal.cpp
  ../src/joedb/ui/Arguments.cpp
+ ../src/joedb/ui/get_time_string.cpp
  ../src/joedb/ui/joedb_convert.cpp
  ../src/joedb/ui/main_wrapper.cpp
  ../src/joedb/ui/process_journal_pair.cpp
- ../src/joedb/ui/get_time_string.cpp
 )
 
 if(GTest_FOUND)
@@ -294,7 +294,7 @@ add_custom_command(
  OUTPUT
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
  COMMAND ${CMAKE_COMMAND} -E remove test.joedb
- COMMAND joedbi --new test.joedb < db/test.joedbi
+ COMMAND joedbi --log none --new test.joedb < db/test.joedbi
  DEPENDS
   joedbi
   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.joedbi

@@ -177,6 +177,7 @@ namespace joedb
     file.reset(new File(file_name.data(), open_mode));
   }
 
+  logger.write("file is opened");
   return file.get();
  }
 }

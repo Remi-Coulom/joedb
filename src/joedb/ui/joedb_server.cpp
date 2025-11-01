@@ -3,7 +3,7 @@
 #include "joedb/ui/Client_Parser.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Arguments.h"
-#include "joedb/error/CLog_System_Logger.h"
+#include "joedb/ui/Parsed_Logger.h"
 
 #include <iostream>
 #include <cstring>
@@ -15,7 +15,7 @@ namespace joedb
  static int server(Arguments &arguments)
  /////////////////////////////////////////////////////////////////////////////
  {
-  CLog_System_Logger logger;
+  Parsed_Logger logger(arguments);
 
   std::string default_endpoint_path = "joedb.sock";
   for (size_t i = 1; i < arguments.size(); i++)
@@ -27,8 +27,6 @@ namespace joedb
     break;
    }
   }
-
-  const int log_level = arguments.get_option<int>("log_level", "level", 100);
 
   const std::string_view endpoint_path = arguments.get_string_option
   (
@@ -48,7 +46,7 @@ namespace joedb
 
   Client_Parser client_parser
   (
-   logger,
+   logger.get(),
    default_open_mode,
    Client_Parser::DB_Type::none,
    arguments
@@ -63,7 +61,7 @@ namespace joedb
 
   Client &client = *client_parser.get();
 
-  logger.write
+  logger.get().write
   (
    "creating server, endpoint_path = " + std::string(endpoint_path) +
    "; timeout = " + std::to_string(timeout_seconds)
@@ -73,8 +71,8 @@ namespace joedb
 
   Server server
   (
-   logger,
-   log_level,
+   logger.get(),
+   logger.get_log_level(),
    thread_count,
    std::string(endpoint_path),
    client,

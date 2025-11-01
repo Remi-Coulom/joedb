@@ -2,9 +2,9 @@
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/File_Parser.h"
 #include "joedb/ui/Blob_Reader_Command_Processor.h"
+#include "joedb/ui/Parsed_Logger.h"
 #include "joedb/interpreted/Database.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
-#include "joedb/error/CLog_System_Logger.h"
 
 #include <iostream>
 
@@ -14,6 +14,8 @@ namespace joedb
  static int joedbi(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
+  Parsed_Logger logger(arguments);
+
   const Record_Id max_record_id
   (
    arguments.get_option<index_t>("max_record_id", "n", -1)
@@ -31,8 +33,7 @@ namespace joedb
    include_shared
   );
 
-  CLog_System_Logger logger;
-  Abstract_File *file = file_parser.parse(logger, arguments);
+  Abstract_File *file = file_parser.parse(logger.get(), arguments);
 
   if (!file)
   {

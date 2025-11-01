@@ -15,11 +15,11 @@
 
 namespace joedb
 {
- template<typename Writable>
+ template<typename Writable_Multiplexer>
  class Readonly_Writable_Client: public Readonly_Client
  {
   private:
-   Writable writable;
+   Writable_Multiplexer writable_multiplexer;
 
   public:
    Readonly_Writable_Client
@@ -31,20 +31,20 @@ namespace joedb
     Recovery recovery
    ):
     Readonly_Client(file, connection, content_check, recovery),
-    writable(std::cout)
+    writable_multiplexer(std::cout)
    {
     if (tail)
-     writable.set_start_index(1);
+     writable_multiplexer.set_start_index(1);
 
     read_journal();
 
     if (tail)
-     writable.set_start_index(0);
+     writable_multiplexer.set_start_index(0);
    }
 
   void read_journal() override
   {
-   Readonly_Journal::play_until_checkpoint(writable);
+   Readonly_Journal::play_until_checkpoint(writable_multiplexer);
   }
  };
 
