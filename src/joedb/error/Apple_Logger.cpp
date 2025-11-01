@@ -4,8 +4,9 @@
 
 namespace joedb
 {
- Apple_Logger::Apple_Logger(const char *tag):
-  os_log(os_log_create("org.joedb", tag))
+ Apple_Logger::Apple_Logger(std::string tag):
+  tag(std::move(tag)),
+  os_log(os_log_create("org.joedb", this->tag.c_str()))
  {
  }
 
