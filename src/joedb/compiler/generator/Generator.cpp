@@ -30,7 +30,7 @@ namespace joedb::generator
   out << "//\n";
   out << "// Path to compiler: " << options.exe_path << '\n';
   out << "// Version: " << joedb::get_version() << '\n';
-  out << "// joedbc compilation time: " << __DATE__ << ' ' << __TIME__ << '\n';
+  out << "// joedbc compilation time: " << __DATE__ " " __TIME__ "\n";
   out << "// Generation of this file: " << get_time_string_of_now() << '\n';
   out << "//\n";
   out << "/////////////////////////////////////////////////////////////////////////////\n";

@@ -79,9 +79,9 @@ namespace joedb
   const std::string joedbc_file_name = options.base_name + ".joedbc";
 
   //
-  // Read file.joedbi (write_lock to block concurrent invocations)
+  // Read file.joedbi
   //
-  joedb::ifstream joedbi_file(joedbi_file_name, Open_Mode::write_lock);
+  joedb::ifstream joedbi_file(joedbi_file_name, Open_Mode::read_existing);
 
   {
    Writable_Journal journal(options.schema_file);
@@ -165,7 +165,8 @@ namespace joedb
  {
   if (arguments.has_flag("version"))
   {
-   std::cout << joedb::get_version() << '\n';
+   std::cout << joedb::get_version();
+   std::cout << ", compiled " << __DATE__ " " __TIME__ "\n";
    return 0;
   }
 
