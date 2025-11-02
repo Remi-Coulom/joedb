@@ -90,7 +90,7 @@ namespace joedb
   out << "\nsizeof(off_t) = " << sizeof(off_t);
 #endif
   out << "\nFile = " << JOEDB_INCLUDE(JOEDB_FILE, h);
-  out << "\nSystem log = " << JOEDB_INCLUDE(JOEDB_SYSTEM_LOG, h);
+  out << "\nSystem log = " << JOEDB_INCLUDE(JOEDB_SYSTEM_LOGGER, h);
 #ifdef JOEDB_HAS_BROKEN_POSIX_LOCKING
   out << "\nbroken_posix_locking = true";
 #else
