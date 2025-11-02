@@ -47,8 +47,10 @@ namespace joedb
 
    /// Read a range of bytes
    ///
-   /// The returned value may be less than size, even if the end of the file
-   /// is not reached. 0 is returned if the end of the file is reached.
+   /// For very large reads, the returned value may be less than size, even
+   /// if the end of the file is not reached. It is assumed that small reads
+   /// (such as the 41 bytes of the joedb header) will not be truncated.
+   /// 0 is returned if the end of the file is reached.
    virtual size_t pread(char *data, size_t size, int64_t offset) const {return 0;}
 
    /// Write a range of bytes. Extend file size if necessary.

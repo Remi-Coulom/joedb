@@ -66,7 +66,7 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
  {
   Header header;
   if (file.pread((char *)(&header), Header::size, 0) < Header::size)
-   file.reading_past_end_of_file(); // ??? may get a short read with eof ???
+   file.reading_past_end_of_file();
 
   file_buffer.set_position(Header::size);
 
