@@ -1,4 +1,5 @@
 #include "joedb/is_identifier.h"
+#include "joedb/get_version.h"
 #include "joedb/Multiplexer.h"
 #include "joedb/Selective_Writable.h"
 #include "joedb/compiler/Compiler_Options_io.h"
@@ -162,6 +163,12 @@ namespace joedb
  static int joedbc(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (arguments.has_flag("version"))
+  {
+   std::cout << joedb::get_version() << '\n';
+   return 0;
+  }
+
   const std::string_view base_name = arguments.get_next("<base_name>");
 
   if (arguments.missing())
