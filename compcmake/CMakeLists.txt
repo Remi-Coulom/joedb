@@ -423,6 +423,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/concurrency/Server.cpp
   ../src/joedb/error/assert.cpp
   ../src/joedb/error/Destructor_Logger.cpp
+  ../src/joedb/error/CLog_Logger.cpp
   ../src/joedb/interpreted/Table.cpp
   ../src/joedb/ui/Blob_Reader_Command_Processor.cpp
   ../src/joedb/ui/Command_Interpreter.cpp
@@ -441,6 +442,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/ui/Interpreter_Dump_Writable.cpp
   ../src/joedb/ui/get_time_string.cpp
   ../src/joedb/ui/Progress_Bar.cpp
+  ../src/joedb/journal/Abstract_File.cpp
   ../src/joedb/journal/Async_Reader.cpp
   ../src/joedb/journal/Interpreted_File.cpp
   ../src/joedb/journal/Journal_Construction_Lock.cpp
