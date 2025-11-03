@@ -241,6 +241,7 @@ namespace joedb
 
   if (memory_file.get_size())
   {
+   std::filesystem::create_directories(options.base_name + "/rpc");
    std::filesystem::copy
    (
     options.base_name + ".rpc/Service.h",
