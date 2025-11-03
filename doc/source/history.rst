@@ -32,6 +32,8 @@ History
     - joedbc does not generate irrelevant functions for single-row tables
       (sorting, vector updates)
     - joedbc generates functions to print tables (see :joedb:`print_city_table`)
+    - in addition to ``new_x()``, joedbc provides ``insert_x(id_of_x)``, which allows
+      choosing an id explicitly (often used in rpc messages).
     - :joedb:`Memory_File` can be opened with :joedb:`Open_Mode`::shared_write.
     - :joedb:`Connection::dummy`, used as default constructor parameter for clients.
 

@@ -1038,3 +1038,23 @@ TEST(Compiler, construction_flags)
   EXPECT_EQ(db.get_name(*db.get_person_table().begin()), "Bob");
  }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, insert)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ const test::id_of_person person{123};
+
+ {
+  test::Writable_Database db(file);
+  db.insert_person(person);
+  db.set_name(person, "Joe");
+  db.soft_checkpoint();
+ }
+
+ {
+  test::Readonly_Database db(file);
+  EXPECT_EQ("Joe", db.get_name(person));
+ }
+}

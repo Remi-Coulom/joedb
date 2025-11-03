@@ -186,8 +186,15 @@ namespace joedb::generator
    out << "    internal_insert_" << tname << "(result.get_record_id());\n\n";
    out << "    journal.insert_into(Table_Id(" << tid << "), result.get_record_id());\n";
    out << "    return result;\n";
-   out << "   }\n";
-   out << '\n';
+   out << "   }\n\n";
+
+   out << "   void insert_" << tname << "(id_of_" << tname << " id)\n";
+   out << "   {\n";
+   out << "    if (id.get_record_id() >= Record_Id(storage_of_" << tname << ".size()))\n";
+   out << "     storage_of_" << tname << ".resize(id.get_id() + 1);\n";
+   out << "    internal_insert_" << tname << "(id.get_record_id());\n";
+   out << "    journal.insert_into(Table_Id(" << tid << "), id.get_record_id());\n";
+   out << "   }\n\n";
 
    //
    // new uninitialized vector
