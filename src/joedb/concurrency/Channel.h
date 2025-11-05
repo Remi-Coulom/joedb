@@ -8,8 +8,6 @@ namespace joedb
  /// @ingroup concurrency
  class Channel
  {
-  friend class Channel_Lock;
-
   public:
    virtual size_t write_some(const char *data, size_t size) = 0;
    virtual size_t read_some(char *data, size_t size) = 0;

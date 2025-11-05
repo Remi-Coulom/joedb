@@ -2,31 +2,27 @@
 #define joedb_Server_Client_declared
 
 #include "joedb/concurrency/Channel.h"
+#include "joedb/concurrency/Keep_Alive_Thread.h"
 #include "joedb/Thread_Safe.h"
 #include "joedb/journal/Buffer.h"
 #include "joedb/journal/Async_Writer.h"
 #include "joedb/error/Logger.h"
 
-#include <condition_variable>
-#include <thread>
 #include <chrono>
 
 namespace joedb
 {
  /// @ingroup concurrency
- class Server_Client: public Logger
+ class Server_Client: public Logger, private Ping_Client
  {
   friend class Server_File;
 
   private:
-   std::chrono::milliseconds keep_alive_interval;
-   std::condition_variable condition;
-   void ping(Lock<Channel&> &lock);
-   bool keep_alive_thread_must_stop;
-   std::thread keep_alive_thread;
-   void keep_alive();
+   void ping(Lock<Channel&> &lock) override;
+   Keep_Alive_Thread keep_alive;
+
    void connect();
-   void disconnect() noexcept;
+   void disconnect();
 
   protected:
    mutable Thread_Safe<Channel&> channel;
@@ -58,12 +54,12 @@ namespace joedb
    (
     Channel &channel,
     Logger &logger = Logger::dummy_logger,
-    std::chrono::milliseconds keep_alive_interval = std::chrono::seconds(0)
+    std::chrono::milliseconds keep_alive_interval = std::chrono::milliseconds(0)
    );
 
+   void ping() {keep_alive.ping();}
    int64_t get_session_id() const {return session_id;}
-   Thread_Safe<Channel&> &get_channel() {return channel;}
-   void ping();
+   Thread_Safe<Channel&> &get_channel() override {return channel;}
 
    ~Server_Client();
  };

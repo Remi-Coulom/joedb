@@ -22,11 +22,9 @@ Notifications
 Stored Procedures
 -----------------
 
-- ping thread
 - allow keeping a database for duration of a session: if "session.joedbi" exists,
   keep it in memory in the client and server.
 - allow implementing and compiling multiple different rpc services on the same database
-- efficient sparse tables that allow creating new row at given id
 
 On-disk Storage
 ---------------

@@ -4,6 +4,7 @@
 #include "joedb/rpc/Signature.h"
 #include "joedb/rpc/get_hash.h"
 #include "joedb/concurrency/Channel.h"
+#include "joedb/concurrency/Keep_Alive_Thread.h"
 #include "joedb/Thread_Safe.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Buffer.h"
@@ -13,7 +14,7 @@
 
 namespace joedb::rpc
 {
- class Client
+ class Client: private Ping_Client
  {
   private:
    Buffer<13> buffer;
@@ -38,19 +39,25 @@ namespace joedb::rpc
     session_id = buffer.read<int64_t>();
    }
 
-   void ping(Lock<Channel&> &lock)
+   Thread_Safe<Channel&> &get_channel() override {return channel;}
+   void ping(Lock<Channel&> &lock) override
    {
     char c = 'P';
     lock->write(&c, 1);
     lock->read(&c, 1);
    }
-
-   // TODO: ping thread
+   Keep_Alive_Thread keep_alive;
 
   public:
-   Client(Channel &channel, const std::vector<Signature> &signatures):
+   Client
+   (
+    Channel &channel,
+    const std::vector<Signature> &signatures,
+    std::chrono::milliseconds keep_alive_interval = std::chrono::milliseconds(0)
+   ):
     channel(channel),
-    signatures(signatures)
+    signatures(signatures),
+    keep_alive(*this, keep_alive_interval)
    {
     handshake();
    }

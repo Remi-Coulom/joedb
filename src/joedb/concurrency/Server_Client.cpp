@@ -32,37 +32,6 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Client::ping()
- ////////////////////////////////////////////////////////////////////////////
- {
-  Lock<Channel&> lock(channel);
-  ping(lock);
- }
-
- ////////////////////////////////////////////////////////////////////////////
- void Server_Client::keep_alive()
- ////////////////////////////////////////////////////////////////////////////
- {
-  try
-  {
-   Lock<Channel&> lock(channel);
-
-   while (!keep_alive_thread_must_stop)
-   {
-    condition.wait_for(lock, keep_alive_interval);
-
-    if (keep_alive_thread_must_stop)
-     break;
-
-    ping(lock);
-   }
-  }
-  catch(...)
-  {
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
  void Server_Client::connect()
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -109,12 +78,6 @@ namespace joedb
    "server_checkpoint = " + std::to_string(server_checkpoint) +
    "; mode = " + mode
   );
-
-  if (keep_alive_interval.count() > 0)
-  {
-   keep_alive_thread_must_stop = false;
-   keep_alive_thread = std::thread([this](){keep_alive();});
-  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -151,7 +114,7 @@ namespace joedb
   Logger &logger,
   std::chrono::milliseconds keep_alive_interval
  ):
-  keep_alive_interval(keep_alive_interval),
+  keep_alive(*this, keep_alive_interval),
   channel(channel),
   logger(logger),
   session_id(-1),
@@ -161,35 +124,22 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Server_Client::disconnect() noexcept
+ void Server_Client::disconnect()
  ////////////////////////////////////////////////////////////////////////////
  {
-  try
   {
    Lock<Channel&> lock(channel);
-   keep_alive_thread_must_stop = true;
    buffer.data[0] = 'Q';
    lock->write(buffer.data, 1);
   }
-  catch (...)
-  {
-  }
 
-  try
-  {
-   condition.notify_one();
-   if (keep_alive_thread.joinable())
-    keep_alive_thread.join();
-  }
-  catch (...)
-  {
-  }
+  keep_alive.stop();
  }
 
  ////////////////////////////////////////////////////////////////////////////
  Server_Client::~Server_Client()
  ////////////////////////////////////////////////////////////////////////////
  {
-  disconnect();
+  try {disconnect();} catch (...) {}
  }
 }

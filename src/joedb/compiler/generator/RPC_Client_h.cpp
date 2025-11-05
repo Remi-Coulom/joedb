@@ -29,8 +29,8 @@ namespace joedb::generator
  class Client: private joedb::rpc::Client
  {
   public:
-   Client(joedb::Channel &channel):
-    joedb::rpc::Client(channel, get_signatures())
+   Client(joedb::Channel &channel, std::chrono::milliseconds keep_alive_interval = std::chrono::milliseconds{0}):
+    joedb::rpc::Client(channel, get_signatures(), keep_alive_interval)
    {
    }
 )RRR";

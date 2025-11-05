@@ -19,7 +19,8 @@ namespace joedb
   }
 
   Local_Channel channel((std::string(endpoint_path)));
-  tutorial::rpc::Client rpc_client(channel);
+  tutorial::rpc::Client rpc_client(channel, std::chrono::milliseconds{1000});
+  std::this_thread::sleep_for(std::chrono::seconds{3});
 
   {
    tutorial::rpc::city::Memory_Database city;
