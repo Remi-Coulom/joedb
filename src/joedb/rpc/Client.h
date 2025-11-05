@@ -14,7 +14,7 @@
 
 namespace joedb::rpc
 {
- class Client: private Ping_Client
+ class Client: public Ping_Client
  {
   private:
    Buffer<13> buffer;
@@ -40,7 +40,7 @@ namespace joedb::rpc
    }
 
    Thread_Safe<Channel&> &get_channel() override {return channel;}
-   void ping(Lock<Channel&> &lock) override
+   void locked_ping(Lock<Channel&> &lock) override
    {
     char c = 'P';
     lock->write(&c, 1);

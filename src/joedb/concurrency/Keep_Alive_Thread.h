@@ -11,9 +11,19 @@ namespace joedb
 {
  class Ping_Client
  {
-  public:
+  friend class Keep_Alive_Thread;
+
+  private:
    virtual Thread_Safe<Channel&> &get_channel() = 0;
-   virtual void ping(Lock<Channel&> &lock) = 0;
+   virtual void locked_ping(Lock<Channel&> &lock) = 0;
+
+  public:
+   void ping()
+   {
+    Lock<Channel&> lock(get_channel());
+    locked_ping(lock);
+   }
+
    virtual ~Ping_Client() = default;
  };
 
@@ -41,7 +51,7 @@ namespace joedb
       if (thread_must_stop)
        break;
 
-      client.ping(lock);
+      client.locked_ping(lock);
      }
     }
     catch(...)
@@ -58,15 +68,9 @@ namespace joedb
    {
     if (interval.count() > 0)
     {
-     thread = std::thread([this](){keep_alive();});
      stopped = false;
+     thread = std::thread([this](){keep_alive();});
     }
-   }
-
-   void ping()
-   {
-    Lock<Channel&> lock(client.get_channel());
-    client.ping(lock);
    }
 
    void stop()

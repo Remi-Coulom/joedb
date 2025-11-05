@@ -13,12 +13,12 @@
 namespace joedb
 {
  /// @ingroup concurrency
- class Server_Client: public Logger, private Ping_Client
+ class Server_Client: public Logger, public Ping_Client
  {
   friend class Server_File;
 
   private:
-   void ping(Lock<Channel&> &lock) override;
+   void locked_ping(Lock<Channel&> &lock) override;
    Keep_Alive_Thread keep_alive;
 
    void connect();
@@ -57,7 +57,6 @@ namespace joedb
     std::chrono::milliseconds keep_alive_interval = std::chrono::milliseconds(0)
    );
 
-   void ping() {keep_alive.ping();}
    int64_t get_session_id() const {return session_id;}
    Thread_Safe<Channel&> &get_channel() override {return channel;}
 
