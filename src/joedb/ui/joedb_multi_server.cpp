@@ -28,7 +28,7 @@ namespace joedb
     const std::string &endpoint_path,
     std::chrono::milliseconds timeout
    ):
-    file(file_name, Open_Mode::write_existing_or_create_new),
+    file(file_name, Open_Mode::shared_write),
     client(file),
     server
     (
