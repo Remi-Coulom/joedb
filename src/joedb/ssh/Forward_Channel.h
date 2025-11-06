@@ -28,7 +28,7 @@ namespace joedb::ssh
   private:
    size_t write_some(const char *data, size_t size) override;
    size_t read_some(char *data, size_t size) override;
-   std::chrono::milliseconds timeout = std::chrono::minutes{5};
+   std::chrono::milliseconds timeout = std::chrono::seconds{10};
 
   public:
    Forward_Channel
