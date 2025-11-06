@@ -50,7 +50,9 @@ namespace joedb
 
   {
    tutorial::Memory_Database db;
-   db.set_name(db.new_city(), "Lille");
+   const auto city = tutorial::id_of_city{12345};
+   db.insert_city(city);
+   db.set_name(city, "Lille");
    rpc_client.get_inhabitants(db);
    tutorial::print_person_table(std::cout, db);
   }

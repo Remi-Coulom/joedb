@@ -62,7 +62,7 @@ namespace joedb::generator
  void Writable_Database::play_journal()
  ////////////////////////////////////////////////////////////////////////////
  {
-  max_record_id = journal.get_checkpoint();
+  max_record_id = 0; // journal.get_checkpoint();
   ready_to_write = false;
   journal.play_until_checkpoint(*this);
   ready_to_write = true;
