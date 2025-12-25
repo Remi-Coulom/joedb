@@ -13,5 +13,5 @@
     "gtest",
     "sqlite3"
   ],
-  "builtin-baseline": "670f6dddaafc59c5dfe0587a130d59a35c48ea38"
+  "builtin-baseline": "64e1fbee7d9f40eab5d112aaff648c4dcffe9e47"
 }
