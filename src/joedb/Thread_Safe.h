@@ -25,7 +25,7 @@ namespace joedb
  {
   private:
    std::unique_lock<std::mutex> lock;
-   T t;
+   T &t;
 
   public:
    Lock(Thread_Safe<T> &t): lock(t.mutex), t(t.t)
