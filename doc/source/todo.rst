@@ -1,6 +1,7 @@
 TODO
 ====
 
+- std::string_view for write_blob
 - joedbc: move all virtual functions to .cpp
 - Client_Parser -> Parsed_Client, File_Parser -> Parsed_File
 - testing of user-interface code -> (test for joedb_push to file bug)
