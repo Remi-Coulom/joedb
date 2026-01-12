@@ -24,6 +24,7 @@ namespace joedb
    }
 
    bool is_null() const noexcept {return position == 0 && size == 0;}
+   bool is_not_null() const noexcept {return !is_null();}
    bool operator<(Blob blob) const noexcept {return position < blob.position;}
 
    int64_t get_position() const noexcept {return position;}
