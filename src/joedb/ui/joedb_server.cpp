@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
-#include "joedb/ui/Client_Parser.h"
+#include "joedb/ui/Parsed_Client.h"
 #include "joedb/ui/main_wrapper.h"
 #include "joedb/ui/Arguments.h"
 #include "joedb/ui/Parsed_Logger.h"
@@ -44,22 +44,22 @@ namespace joedb
 
   const Open_Mode default_open_mode = Open_Mode::write_existing_or_create_new;
 
-  Client_Parser client_parser
+  Parsed_Client parsed_client
   (
    logger.get(),
    default_open_mode,
-   Client_Parser::DB_Type::none,
+   Parsed_Client::DB_Type::none,
    arguments
   );
 
-  if (!client_parser.get())
+  if (!parsed_client.get())
   {
    arguments.print_help(std::cerr) << '\n';
-   client_parser.print_help(std::cerr);
+   parsed_client.print_help(std::cerr);
    return 1;
   }
 
-  Client &client = *client_parser.get();
+  Client &client = *parsed_client.get();
 
   logger.get().log
   (

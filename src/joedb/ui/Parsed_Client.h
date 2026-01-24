@@ -1,5 +1,5 @@
-#ifndef joedb_Client_Parser_declared
-#define joedb_Client_Parser_declared
+#ifndef joedb_Parsed_Client_declared
+#define joedb_Parsed_Client_declared
 
 #include "joedb/ui/File_Parser.h"
 #include "joedb/ui/Connection_Parser.h"
@@ -10,7 +10,7 @@ namespace joedb
 {
 //#define PERSISTENCE_TEST
  /// @ingroup ui
- class Client_Parser // TODO: rename into "parsed client"
+ class Parsed_Client
  {
   public:
    enum class DB_Type
@@ -36,7 +36,7 @@ namespace joedb
    std::unique_ptr<Client> client;
 
   public:
-   Client_Parser
+   Parsed_Client
    (
     Logger &logger,
     Open_Mode default_open_mode,

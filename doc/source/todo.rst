@@ -1,9 +1,8 @@
 TODO
 ====
 
-- std::string_view for write_blob
+- std::string_view instead of const std::string & for many functions
 - joedbc: move all virtual functions to .cpp
-- Client_Parser -> Parsed_Client, File_Parser -> Parsed_File
 - testing of user-interface code -> (test for joedb_push to file bug)
 - always exit cleanly and rapidly after SIGINT or SIGTERM
 - channel read timeout should be settable

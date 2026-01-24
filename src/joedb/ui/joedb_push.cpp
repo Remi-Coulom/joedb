@@ -1,5 +1,5 @@
 #include "joedb/ui/main_wrapper.h"
-#include "joedb/ui/Client_Parser.h"
+#include "joedb/ui/Parsed_Client.h"
 #include "joedb/ui/Arguments.h"
 #include "joedb/ui/Parsed_Logger.h"
 #include "joedb/Signal.h"
@@ -27,22 +27,22 @@ namespace joedb
    std::numeric_limits<int64_t>::max()
   );
 
-  Client_Parser client_parser
+  Parsed_Client parsed_client
   (
    logger.get(),
    Open_Mode::read_existing,
-   Client_Parser::DB_Type::none,
+   Parsed_Client::DB_Type::none,
    arguments
   );
 
-  if (!client_parser.get())
+  if (!parsed_client.get())
   {
    arguments.print_help(std::cerr) << '\n';
-   client_parser.print_help(std::cerr);
+   parsed_client.print_help(std::cerr);
    return 1;
   }
 
-  Client &client = *client_parser.get();
+  Client &client = *parsed_client.get();
   client.push_if_ahead(until_checkpoint);
 
   if (follow)

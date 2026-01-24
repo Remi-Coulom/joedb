@@ -1,5 +1,5 @@
 #include "joedb/ui/Client_Command_Processor.h"
-#include "joedb/ui/Client_Parser.h"
+#include "joedb/ui/Parsed_Client.h"
 #include "joedb/journal/File.h"
 
 #include "gtest/gtest.h"
@@ -23,20 +23,20 @@ namespace joedb
 
   Logger logger;
 
-  Client_Parser parser
+  Parsed_Client parsed_client
   (
    logger,
    Open_Mode::shared_write,
-   Client_Parser::DB_Type::none,
+   Parsed_Client::DB_Type::none,
    arguments
   );
 
   {
    std::ostringstream out;
-   parser.print_help(out);
+   parsed_client.print_help(out);
   }
 
-  auto *writable_client = dynamic_cast<Writable_Client *>(parser.get());
+  auto *writable_client = dynamic_cast<Writable_Client *>(parsed_client.get());
   ASSERT_TRUE(writable_client);
   Writable_Client_Command_Processor processor(*writable_client);
 
@@ -82,17 +82,17 @@ namespace joedb
     ? Open_Mode::shared_write
     : Open_Mode::write_existing_or_create_new;
 
-   Client_Parser parser
+   Parsed_Client parsed_client
    (
     logger,
     default_mode,
-    Client_Parser::DB_Type::none,
+    Parsed_Client::DB_Type::none,
     arguments
    );
 
-   ASSERT_TRUE(parser.has_file());
+   ASSERT_TRUE(parsed_client.has_file());
 
-   auto *writable_client = dynamic_cast<Writable_Client *>(parser.get());
+   auto *writable_client = dynamic_cast<Writable_Client *>(parsed_client.get());
    ASSERT_TRUE(writable_client);
    Writable_Client_Command_Processor processor(*writable_client);
 

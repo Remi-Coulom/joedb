@@ -35,7 +35,7 @@ set(JOEDB_DATABASES
  ${JOEDB_SRC_DIR}/joedb/journal/Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Encoded_File.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/File_Parser.cpp
- ${JOEDB_SRC_DIR}/joedb/ui/Client_Parser.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Parsed_Client.cpp
 )
 
 if(unofficial-brotli_FOUND)

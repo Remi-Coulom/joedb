@@ -1,4 +1,4 @@
-#include "joedb/ui/Client_Parser.h"
+#include "joedb/ui/Parsed_Client.h"
 #include "joedb/ui/Connection_Parser.h"
 #include "joedb/ui/SQL_Dump_Writable.h"
 #include "joedb/ui/Interpreter_Dump_Writable.h"
@@ -78,7 +78,7 @@ namespace joedb
 #endif
 
  ////////////////////////////////////////////////////////////////////////////
- Client_Parser::Client_Parser
+ Parsed_Client::Parsed_Client
  ////////////////////////////////////////////////////////////////////////////
  (
   Logger &logger,
