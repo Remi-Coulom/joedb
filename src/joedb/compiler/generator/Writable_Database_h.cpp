@@ -131,7 +131,7 @@ namespace joedb::generator
     return journal.get_file().read_blob(blob);
    }
 
-   joedb::Blob write_blob(const std::string &data) override
+   joedb::Blob write_blob(std::string_view data) override
    {
     return journal.write_blob(data);
    }

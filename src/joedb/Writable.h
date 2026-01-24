@@ -108,7 +108,7 @@ namespace joedb
 
    virtual void on_blob(Blob blob) {}
    virtual bool wants_blob_data() const {return false;}
-   virtual Blob write_blob(const std::string &data) {return Blob();}
+   virtual Blob write_blob(std::string_view data) {return Blob();}
 
    virtual ~Writable() = default;
  };

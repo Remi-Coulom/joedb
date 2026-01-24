@@ -93,7 +93,7 @@ namespace joedb
 
    bool wants_blob_data() const override {return blob_wanted;}
    void on_blob(Blob blob) override;
-   Blob write_blob(const std::string &data) override;
+   Blob write_blob(std::string_view data) override;
 
    ~Interpreter_Writable();
  };

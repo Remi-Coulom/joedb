@@ -96,7 +96,7 @@ namespace joedb
 
    void on_blob(Blob blob) override;
    bool wants_blob_data() const override;
-   Blob write_blob(const std::string &data) override;
+   Blob write_blob(std::string_view data) override;
 
    ~Multiplexer() override;
  };

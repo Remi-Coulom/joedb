@@ -444,11 +444,8 @@ namespace joedb
  #include "joedb/TYPE_MACRO.h"
 
  /////////////////////////////////////////////////////////////////////////////
- Blob Writable_Journal::write_blob
+ Blob Writable_Journal::write_blob(std::string_view data)
  /////////////////////////////////////////////////////////////////////////////
- (
-  const std::string &data
- )
  {
   file_buffer.write<operation_t>(operation_t::blob);
   file_buffer.compact_write<size_t>(data.size());
