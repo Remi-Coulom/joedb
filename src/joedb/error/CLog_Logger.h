@@ -1,23 +1,17 @@
 #ifndef joedb_CLog_Logger_declared
 #define joedb_CLog_Logger_declared
 
-#include "joedb/error/Logger.h"
+#include "joedb/error/Stream_Logger.h"
 
-#include <string>
-#include <mutex>
+#include <iostream>
 
 namespace joedb
 {
  /// @ingroup error
- class CLog_Logger: public Logger
+ class CLog_Logger: public Stream_Logger
  {
-  private:
-   const std::string tag;
-   static std::mutex mutex;
-
   public:
-   CLog_Logger(std::string tag = "");
-   void log(const std::string &message) noexcept override;
+   CLog_Logger(std::string tag = ""): Stream_Logger(std::clog, tag) {}
  };
 }
 

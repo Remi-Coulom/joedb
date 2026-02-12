@@ -97,7 +97,7 @@ ipo_add_executable(joedb_convert
  ../src/joedb/Writable.cpp
  ../src/joedb/error/assert.cpp
  ../src/joedb/error/Destructor_Logger.cpp
- ../src/joedb/error/CLog_Logger.cpp
+ ../src/joedb/error/Stream_Logger.cpp
  ../src/joedb/journal/File.cpp
  ../src/joedb/journal/Journal_Construction_Lock.cpp
  ../src/joedb/journal/Stream_File.cpp
@@ -145,7 +145,7 @@ if(GTest_FOUND)
   ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/interpreted/Table.cpp
   ../src/joedb/is_identifier.cpp
-  ../src/joedb/error/CLog_Logger.cpp
+  ../src/joedb/error/Stream_Logger.cpp
   ../src/joedb/ui/get_time_string.cpp
 
   ../test/Buffer_Test.cpp
@@ -428,7 +428,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
   ../src/joedb/concurrency/Server.cpp
   ../src/joedb/error/assert.cpp
   ../src/joedb/error/Destructor_Logger.cpp
-  ../src/joedb/error/CLog_Logger.cpp
+  ../src/joedb/error/Stream_Logger.cpp
   ../src/joedb/interpreted/Table.cpp
   ../src/joedb/ui/Blob_Reader_Command_Processor.cpp
   ../src/joedb/ui/Command_Interpreter.cpp

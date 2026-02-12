@@ -1,28 +1,28 @@
-#include "joedb/error/CLog_Logger.h"
+#include "joedb/error/Stream_Logger.h"
 #include "joedb/ui/get_time_string.h"
 
 #include <iostream>
 
 namespace joedb
 {
- std::mutex CLog_Logger::mutex;
-
  ////////////////////////////////////////////////////////////////////////////
- CLog_Logger::CLog_Logger(std::string tag): tag(std::move(tag))
+ Stream_Logger::Stream_Logger(std::ostream &out, std::string tag):
+  out(out),
+  tag(std::move(tag))
  {
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void CLog_Logger::log(const std::string &message) noexcept
+ void Stream_Logger::log(const std::string &message) noexcept
  {
   try
   {
    std::unique_lock lock(mutex);
-   std::clog << joedb::get_time_string_of_now() << ' ';
+   out << joedb::get_time_string_of_now() << ' ';
    if (!tag.empty())
-    std::clog << tag << ": ";
-   std::clog << message << '\n';
-   std::clog.flush();
+    out << tag << ": ";
+   out << message << '\n';
+   out.flush();
   }
   catch (...)
   {
