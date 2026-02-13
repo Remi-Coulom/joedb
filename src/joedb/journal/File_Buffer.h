@@ -111,6 +111,10 @@ namespace joedb
      return buffer.compact_read<T>();
 
     const uint8_t first_byte = read<uint8_t>();
+#ifdef JOEDB_DIRTY_WORKAROUND
+    if (first_byte == 0xff)
+     return 0;
+#endif
     int extra_bytes = first_byte >> 5;
     T result = first_byte & 0x1f;
     while (--extra_bytes >= 0)

@@ -46,7 +46,12 @@ namespace joedb
     JOEDB_DEBUG_ASSERT(x >= 0);
 
     if (x < 0x20)
-     write<uint8_t>(uint8_t(x));
+    {
+     if (x < 0)
+      write<uint8_t>(0);
+     else
+      write<uint8_t>(uint8_t(x));
+    }
     else if (x < 0x20 * 0x100)
     {
      write<uint8_t>(uint8_t(0x20 | (x >> 8)));
@@ -72,6 +77,10 @@ namespace joedb
    //////////////////////////////////////////////////////////////////////////
    {
     const uint8_t first_byte = read<uint8_t>();
+#ifdef JOEDB_DIRTY_WORKAROUND
+    if (first_byte == 0xff)
+     return 0;
+#endif
     int extra_bytes = first_byte >> 5;
     T result = first_byte & 0x1f;
     while (--extra_bytes >= 0)
