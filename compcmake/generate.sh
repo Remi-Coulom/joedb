@@ -16,8 +16,9 @@ fi
 
 config="$1"
 cpp_standard="$2"
+default_cpp_standard=20
 if [ "$cpp_standard" == "" ]; then
- cpp_standard=17
+ cpp_standard=$default_cpp_standard
 fi
 
 echo "config = $config"
@@ -33,7 +34,7 @@ function generate {
  if [[ "$config" == "" ]] || [[ "$config" == "$1" ]]; then
 
   target_dir=$1
-  if [ "$cpp_standard" != "17" ]; then
+  if [ "$cpp_standard" != "$default_cpp_standard" ]; then
    target_dir="$target_dir"_"$cpp_standard"
   fi
 
