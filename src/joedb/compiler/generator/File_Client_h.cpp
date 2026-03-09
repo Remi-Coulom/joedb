@@ -32,7 +32,7 @@ namespace joedb::generator
  class File_Client: private joedb::File, public Client
  {
   public:
-   File_Client(const char *file_name):
+   File_Client(const char *file_name, joedb::Recovery recovery = joedb::Recovery::none):
     joedb::File
     (
      file_name,
@@ -40,12 +40,12 @@ namespace joedb::generator
      ? joedb::Open_Mode::shared_write
      : joedb::Open_Mode::write_existing_or_create_new
     ),
-    Client(*this, joedb::Connection::dummy)
+    Client(*this, joedb::Connection::dummy, joedb::Content_Check::none, recovery)
    {
    }
 
-   File_Client(const std::string &file_name):
-    File_Client(file_name.c_str())
+   File_Client(const std::string &file_name, joedb::Recovery recovery = joedb::Recovery::none):
+    File_Client(file_name.c_str(), recovery)
    {
    }
  };
