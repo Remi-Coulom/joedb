@@ -47,7 +47,7 @@ These commands will install joedb system-wide:
 
 .. code-block:: bash
 
-    sudo cmake --build . install
+    sudo cmake --build . --target install
     sudo ldconfig
 
 First Steps
