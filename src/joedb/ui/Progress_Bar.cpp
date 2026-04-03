@@ -17,19 +17,48 @@ namespace joedb
      std::chrono::duration<double> duration_since_start = now - start;
      last_print_time = now;
 
-     const auto done_string = std::to_string(done);
-     const auto total_string = std::to_string(total);
-     const auto padding = std::string(total_string.size() - done_string.size(), ' ');
-     const int permil = int((1000.0 * double(done)) / double(total));
+     const double duration = duration_since_start.count();
 
-     // TODO: drop C++17, use std::format
+     {
+      std::ostringstream line;
 
-     logger.log
-     (
-      padding + done_string + " / " + total_string + " " +
-      std::to_string(permil / 10) + "." + std::to_string(permil % 10) +
-      "% in " + std::to_string(duration_since_start.count()) + "s"
-     );
+      line << std::fixed << std::setprecision(1);
+      const int width = int(std::to_string(total).size());
+      line << std::setw(width) << done << " / " << total << ' ';
+      line << std::setw(5) << 100.0f*float(done)/float(total) << '%';
+
+      if (done > 0)
+      {
+       line << "; ";
+
+       if (duration > 0.0)
+       {
+        double n = double(done) / duration;
+        char unit = ' ';
+
+        if (n > 1000000.0)
+        {
+         n /= 1000000.0;
+         unit = 'M';
+        }
+        else if (n > 1000.0)
+        {
+         n /= 1000.0;
+         unit = 'k';
+        }
+
+        line << std::fixed << std::setprecision(1) << n << unit << "/s";
+       }
+
+       if (done < total)
+       {
+        const double time_left = double(total - done) * duration / double(done);
+        line << "; " << time_left << "s left";
+       }
+      }
+
+      logger.log(line.str());
+     }
 
      printed = done;
      gap *= 1.1;
