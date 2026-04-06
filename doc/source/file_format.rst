@@ -7,7 +7,7 @@ Global File Structure
 ===================== ========= ======================= ================
 Range                 Name      Content                 Synchronization
 ===================== ========= ======================= ================
-0...                  Head      version + checkpoint    Shared lock when reading the checkpoint.
+0...                  Head      checkpoint + version    Shared lock when reading the checkpoint.
 
                                                         Exclusive lock when writing the checkpoint,
 
