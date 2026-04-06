@@ -1,5 +1,8 @@
 #include "joedb/ui/Progress_Bar.h"
 
+#include <sstream>
+#include <iomanip>
+
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
