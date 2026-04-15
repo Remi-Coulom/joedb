@@ -239,7 +239,7 @@ namespace joedb
   Table_Id table_id,
   Record_Id record_id,
   Field_Id field_id,
-  const std::string &value)
+  const std::string_view value)
  {
   write_update(table_id, field_id);
   write_sql_string(out, value);

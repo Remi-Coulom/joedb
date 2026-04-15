@@ -137,7 +137,7 @@ namespace joedb
     return Record_Id(read_strong_type<Record_Id>() - 1);
    }
 
-   void write_string(const std::string &s);
+   void write_string(std::string_view s);
    std::string read_string();
    std::string safe_read_string(int64_t max_size);
 

@@ -333,7 +333,7 @@ namespace joedb::generator
 
     out << "   void internal_update_" << tname << "__" << fname;
     out << "\n   (\n    Record_Id record_id,\n    ";
-    write_type(out, type, true, false);
+    write_type(out, type, false, true);
     out << " field_value_of_" << fname << "\n   )\n";
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
@@ -517,7 +517,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, true, false);
+     write_type(out, type, false, true);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
@@ -548,7 +548,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, true, false);
+     write_type(out, type, false, true);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
@@ -660,7 +660,7 @@ namespace joedb::generator
     {
      out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, true, false);
+     write_type(out, type, false, true);
      out << ' ' << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ")\n";
@@ -708,7 +708,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, true, false);
+     write_type(out, type, false, true);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }

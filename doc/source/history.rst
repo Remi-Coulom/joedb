@@ -21,6 +21,8 @@ History
       - it removes a pointer indirection when accessing the buffer from
         journals.
 
+    - Replace ``const std::string &`` by ``std::string_view``
+
   - Minor improvements:
 
     - :joedb:`Robust_Connection` does not try to reconnect for every exception.

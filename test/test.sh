@@ -10,9 +10,9 @@ if [ "$1" == "" ]; then
  cd -
 fi
 
-build_dir=../compcmake/gcc_asan_20
+build_dir=../compcmake/gcc_asan
 cmake --build $build_dir --target joedb_test
-rm -vf *.tmp
+rm -vf *.tmp *.sock
 
 if [ "$1" == "" ]; then
  filter='*'

@@ -14,7 +14,7 @@ namespace joedb
 
  std::string read_string(std::istream &in);
  void write_string(std::ostream &out, std::string_view s, bool json = false);
- void write_sql_string(std::ostream &out, const std::string &s);
+ void write_sql_string(std::ostream &out, std::string_view s);
 
  size_t utf8_display_size(const std::string &s);
  uint32_t read_utf8_char(size_t &i, const std::string &s);

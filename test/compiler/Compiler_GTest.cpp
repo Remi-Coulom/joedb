@@ -151,7 +151,7 @@ TEST(Compiler, file_test)
  //
  // Validity + get_at
  //
- EXPECT_EQ(db.get_name(db.find_city_by_name("Paris")), "Paris");
+ EXPECT_EQ(db.get_name(db.find_city_by_name(std::string_view("Paris"))), "Paris");
  db.delete_city(db.find_city_by_name("Paris"));
 
  EXPECT_FALSE(db.get_city_table().is_valid_at(-1));
@@ -173,7 +173,7 @@ TEST(Compiler, file_test)
 
  {
   int count = 0;
-  for (auto toto: db.find_person_by_name("Toto"))
+  for (auto toto: db.find_person_by_name(std::string_view("Toto")))
   {
    EXPECT_EQ(db.get_name(toto), "Toto");
    count++;

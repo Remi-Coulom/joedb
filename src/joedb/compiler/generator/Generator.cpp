@@ -56,6 +56,15 @@ namespace joedb::generator
     out << "id_of_" << options.db.get_table_name(type.get_table_id());
    break;
 
+   case Type::Type_Id::string:
+    if (return_type)
+     out << "const std::string &";
+    else if (setter_type)
+     out << "std::string_view";
+    else
+     out << "std::string";
+   break;
+
    #define TYPE_MACRO(storage_tt, return_tt, type_id, read, write)\
    case Type::Type_Id::type_id:\
     if (return_type || setter_type)\
@@ -64,6 +73,7 @@ namespace joedb::generator
      out << #storage_tt;\
    break;
    #define TYPE_MACRO_NO_REFERENCE
+   #define TYPE_MACRO_NO_STRING
    #include "joedb/TYPE_MACRO.h"
   }
  }
@@ -129,7 +139,7 @@ namespace joedb::generator
 
   write_tuple_type(out, index, false);
 
-  out << ", id_of_" << options.db.get_table_name(index.table_id) << ">";
+  out << ", id_of_" << options.db.get_table_name(index.table_id) << ", std::less<>>";
  }
 
  ////////////////////////////////////////////////////////////////////////////
