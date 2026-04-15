@@ -168,11 +168,17 @@ function(joedbc_build_absolute dir namespace)
   WORKING_DIRECTORY ${dir}
  )
 
- add_custom_target(compile_${namespace}_with_joedbc
-  DEPENDS ${readonly_cpp} ${readonly_h} ${writable_cpp} ${writable_h}
- )
+ set(target_name compile_${namespace}_with_joedbc)
 
- add_dependencies(all_joedbc compile_${namespace}_with_joedbc)
+ if (TARGET ${target_name})
+  message("== warning: target ${target_name} already exists")
+ else()
+  add_custom_target(${target_name}
+   DEPENDS ${readonly_cpp} ${readonly_h} ${writable_cpp} ${writable_h}
+  )
+  add_dependencies(all_joedbc ${target_name})
+ endif()
+
 endfunction()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
