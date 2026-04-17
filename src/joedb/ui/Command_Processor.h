@@ -1,7 +1,7 @@
 #ifndef joedb_Command_Processor_declared
 #define joedb_Command_Processor_declared
 
-#include <string>
+#include <string_view>
 #include <iostream>
 
 namespace joedb
@@ -14,7 +14,7 @@ namespace joedb
 
    virtual Status process_command
    (
-    const std::string &command,
+    std::string_view command,
     std::istream &parameters,
     std::istream &in,
     std::ostream &out

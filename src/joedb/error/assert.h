@@ -8,7 +8,7 @@
 #define JOEDB_CHECK(x,e) do\
 {\
  if (!(x))\
-  throw e(joedb::get_error_message(#x, __FILE__, __func__, __LINE__).c_str());\
+  throw e(joedb::get_error_message(#x, __FILE__, __func__, __LINE__));\
 } while(0)
 
 /// assertion tested in debug mode
@@ -42,7 +42,7 @@ namespace joedb
  class Assertion_Failure: public std::logic_error
  {
   public:
-   explicit Assertion_Failure(const char *what_arg):
+   explicit Assertion_Failure(const std::string &what_arg):
     std::logic_error(what_arg)
    {
    }

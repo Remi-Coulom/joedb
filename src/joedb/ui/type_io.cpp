@@ -101,7 +101,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t utf8_display_size(const std::string &s)
+ size_t utf8_display_size(const std::string_view s)
  /////////////////////////////////////////////////////////////////////////////
  {
   size_t result = 0;
@@ -118,10 +118,10 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- uint32_t read_utf8_char(size_t &i, const std::string &s)
+ uint32_t read_utf8_char(size_t &i, const std::string_view s)
  /////////////////////////////////////////////////////////////////////////////
  {
-  const uint8_t *p = (reinterpret_cast<const uint8_t *>(s.c_str()) + i);
+  const uint8_t *p = (reinterpret_cast<const uint8_t *>(s.data()) + i);
 
   uint32_t result;
 
@@ -160,7 +160,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
-  const std::string &s,
+  const std::string_view s,
   size_t width,
   bool flush_left
  )
@@ -168,14 +168,14 @@ namespace joedb
   size_t length = 0;
   std::string displayed;
 
-  for (size_t i = 0; s.c_str()[i];)
+  for (size_t i = 0; i < s.size();)
   {
    const size_t previous_i = i;
    const uint32_t wide_char = read_utf8_char(i, s);
    const size_t char_width = size_t(wide_char_display_width(wide_char));
 
    if (length + char_width < width ||
-       (length + char_width == width && s.c_str()[i] == 0))
+       (length + char_width == width && i >= s.size()))
    {
     length += char_width;
     for (size_t j = previous_i; j < i; j++)

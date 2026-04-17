@@ -10,7 +10,11 @@ namespace joedb
  class Out_Of_Date: public Exception
  {
   public:
-   Out_Of_Date(const std::string &message): Exception(message)
+   explicit Out_Of_Date(const char *message): Exception(message)
+   {
+   }
+
+   explicit Out_Of_Date(const std::string &message): Exception(message)
    {
    }
  };

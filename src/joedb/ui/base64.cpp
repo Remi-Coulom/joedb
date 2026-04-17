@@ -8,7 +8,7 @@ namespace joedb
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
  ////////////////////////////////////////////////////////////////////////////
- std::string base64_encode(const std::string &input)
+ std::string base64_encode(const std::string_view input)
  ////////////////////////////////////////////////////////////////////////////
  {
   const size_t N = input.size() / 3;

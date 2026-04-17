@@ -2,7 +2,7 @@
 #define joedb_json_declared
 
 #include <iosfwd>
-#include <string>
+#include <string_view>
 
 namespace joedb
 {
@@ -13,7 +13,7 @@ namespace joedb
  /// @ingroup ui
  int write_json(std::ostream &out, const Readable &db, bool base64);
  /// @ingroup ui
- int write_json_string(std::ostream &out, const std::string &s, bool base64);
+ int write_json_string(std::ostream &out, std::string_view s, bool base64);
 }
 
 #endif

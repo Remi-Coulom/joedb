@@ -139,11 +139,11 @@ namespace joedb::generator
   out << R"RRR(
   public:
    template<typename E = joedb::Exception>
-   static void throw_exception(const std::string &message)
+   static void throw_exception(std::string_view message)
    {
-    throw E(")RRR" <<
-    namespace_string(options.get_name_space())
-    << R"RRR(: " + message);
+    std::string s(")RRR" << namespace_string(options.get_name_space()) << R"RRR(: ");
+    s += message;
+    throw E(s);
    }
 
 )RRR";

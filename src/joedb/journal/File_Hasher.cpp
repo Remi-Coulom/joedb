@@ -57,10 +57,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash File_Hasher::get_hash(const std::string &s)
+ SHA_256::Hash File_Hasher::get_hash(const std::string_view s)
  ////////////////////////////////////////////////////////////////////////////
  {
-  Readonly_Memory_File file(s.data(), s.size());
+  Readonly_Memory_File file(s);
   return File_Hasher::get_hash(file);
  }
 

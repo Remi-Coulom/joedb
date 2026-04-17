@@ -165,7 +165,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  (
   std::ostream &out,
-  const std::string &s,
+  const std::string_view s,
   bool base64
  )
  {

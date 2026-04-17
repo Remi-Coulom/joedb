@@ -10,11 +10,11 @@
 #ifndef is_identifier_declared
 #define is_identifier_declared
 
-#include <string>
+#include <string_view>
 
 namespace joedb
 {
- bool is_identifier(const std::string &s);
+ bool is_identifier(std::string_view s);
 }
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "joedb/journal/SHA_256.h"
 
-#include <string>
+#include <string_view>
 
 namespace joedb
 {
@@ -21,7 +21,7 @@ namespace joedb
   );
 
   static SHA_256::Hash get_hash(const Abstract_File &file);
-  static SHA_256::Hash get_hash(const std::string &s);
+  static SHA_256::Hash get_hash(std::string_view s);
 
   static SHA_256::Hash get_fast_hash
   (

@@ -10,7 +10,11 @@ namespace joedb
  class Disconnection: public Exception
  {
   public:
-   Disconnection(const std::string &message): Exception(message)
+   explicit Disconnection(const char *what_arg): Exception(what_arg)
+   {
+   }
+
+   explicit Disconnection(const std::string &what_arg): Exception(what_arg)
    {
    }
  };

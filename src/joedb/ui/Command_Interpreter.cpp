@@ -12,7 +12,7 @@ namespace joedb
  (
   std::ostream &out,
   int64_t line_number,
-  const std::string &line,
+  const std::string_view line,
   const Exception *exception
  ) const
  {
@@ -35,7 +35,7 @@ namespace joedb
  Command_Processor::Status Command_Interpreter::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
-  const std::string &command,
+  const std::string_view command,
   std::istream &parameters,
   std::istream &in,
   std::ostream &out

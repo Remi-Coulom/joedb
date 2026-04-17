@@ -17,7 +17,7 @@ namespace joedb
 
    Status process_command
    (
-    const std::string &command,
+    std::string_view command,
     std::istream &parameters,
     std::istream &in,
     std::ostream &out

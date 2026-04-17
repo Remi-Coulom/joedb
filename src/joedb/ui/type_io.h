@@ -16,12 +16,12 @@ namespace joedb
  void write_string(std::ostream &out, std::string_view s, bool json = false);
  void write_sql_string(std::ostream &out, std::string_view s);
 
- size_t utf8_display_size(const std::string &s);
- uint32_t read_utf8_char(size_t &i, const std::string &s);
+ size_t utf8_display_size(std::string_view s);
+ uint32_t read_utf8_char(size_t &i, std::string_view s);
  void write_justified
  (
   std::ostream &out,
-  const std::string &s,
+  std::string_view s,
   size_t width,
   bool flush_left = true
  );

@@ -13,7 +13,7 @@ namespace joedb
  }
 
  /// @ingroup joedb
- bool is_identifier(const std::string &s)
+ bool is_identifier(const std::string_view s)
  {
   if (s.empty())
    return false;

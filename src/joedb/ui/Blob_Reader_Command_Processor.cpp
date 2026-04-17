@@ -9,7 +9,7 @@ namespace joedb
  Command_Processor::Status Blob_Reader_Command_Processor::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
-  const std::string &command,
+  const std::string_view command,
   std::istream &parameters,
   std::istream &in,
   std::ostream &out

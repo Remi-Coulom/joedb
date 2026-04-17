@@ -27,14 +27,14 @@ namespace joedb
    (
     std::ostream &out,
     int64_t line_number,
-    const std::string &line,
+    std::string_view line,
     const Exception *exception
    ) const;
 
   protected:
    Status process_command
    (
-    const std::string &command,
+    std::string_view command,
     std::istream &parameters,
     std::istream &in,
     std::ostream &out
