@@ -1,8 +1,9 @@
 #ifndef ZSTRING_VIEW_HPP
 #define ZSTRING_VIEW_HPP
 
+// https://github.com/jeremy-rifkin/zstring_view
+
 #include <cassert>
-#include <compare>
 #include <ranges>
 #include <stdexcept>
 #include <string_view>
@@ -102,8 +103,7 @@ namespace std {
 
         // [zstring.view.cons], construction and assignment
         constexpr basic_zstring_view() noexcept : size_() {
-            static const charT empty_string[1]{};
-            data_ = std::data(empty_string);
+            data_ = std::data("");
         }
         constexpr basic_zstring_view(const basic_zstring_view&) noexcept = default;
         constexpr basic_zstring_view& operator=(const basic_zstring_view&) noexcept = default;
@@ -387,6 +387,7 @@ namespace std {
         }
     };
 
+#if 0
     inline namespace literals {
         inline namespace zstring_view_literals {
             #pragma GCC diagnostic push
@@ -410,6 +411,7 @@ namespace std {
             #pragma GCC diagnostic pop
         }
     }
+#endif
 
     // [format.formatter.spec]
     template<class charT, class traits>
