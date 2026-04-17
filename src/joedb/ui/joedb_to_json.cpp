@@ -13,7 +13,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   const bool base64 = arguments.has_flag("base64");
-  const std::string_view file_name = arguments.get_next("file.joedb");
+  const beman::cstring_view file_name = arguments.get_next("file.joedb");
 
   if (arguments.missing())
   {
@@ -21,7 +21,7 @@ namespace joedb
    return 1;
   }
 
-  File file(file_name.data(), Open_Mode::read_existing);
+  File file(file_name.c_str(), Open_Mode::read_existing);
   Readonly_Journal journal(file);
   Database db;
   journal.replay_log(db);

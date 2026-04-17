@@ -25,7 +25,7 @@ namespace joedb
     Logger &logger,
     int log_level,
     const std::string &file_name,
-    const std::string &endpoint_path,
+    std::string endpoint_path,
     std::chrono::milliseconds timeout
    ):
     file(file_name, Open_Mode::shared_write),
@@ -35,7 +35,7 @@ namespace joedb
      logger,
      log_level,
      1,
-     endpoint_path,
+     std::move(endpoint_path),
      client,
      timeout
     )

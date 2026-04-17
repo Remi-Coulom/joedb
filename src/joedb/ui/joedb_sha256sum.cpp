@@ -18,11 +18,11 @@ int main(int argc, char **argv)
 
  while (arguments.get_remaining_count())
  {
-  const std::string_view file_name = arguments.get_next();
+  const beman::cstring_view file_name = arguments.get_next();
 
   try
   {
-   joedb::File file(file_name.data(), joedb::Open_Mode::read_existing);
+   joedb::File file(file_name.c_str(), joedb::Open_Mode::read_existing);
 
    const joedb::SHA_256::Hash hash = fast ?
     joedb::File_Hasher::get_fast_hash(file, 0, file.get_size()) :

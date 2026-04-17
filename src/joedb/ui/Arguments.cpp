@@ -6,7 +6,7 @@ namespace joedb
  Arguments::Argument::Argument(const char *argv): s(argv), used(false)
  {
   if (argv[0] == '-' && argv[1] == '-')
-   option = std::string_view(s.data() + 2, s.size() - 2);
+   option = beman::cstring_view(s.data() + 2, s.size() - 2);
  }
 
  void Arguments::update_index()
@@ -15,7 +15,7 @@ namespace joedb
    index++;
  }
 
- std::string_view Arguments::use_index()
+ beman::cstring_view Arguments::use_index()
  {
   JOEDB_DEBUG_ASSERT(index < argc);
   args[index].used = true;
@@ -35,7 +35,7 @@ namespace joedb
 
  bool Arguments::has_flag(const char * name)
  {
-  options.emplace_back(name, std::string_view{});
+  options.emplace_back(name, beman::cstring_view{});
 
   for (auto &arg: args)
   {
@@ -50,7 +50,7 @@ namespace joedb
   return false;
  }
 
- std::string_view Arguments::get_string_option
+ beman::cstring_view Arguments::get_string_option
  (
   const char * name,
   const char * description,
@@ -105,12 +105,12 @@ namespace joedb
   return default_index;
  }
 
- std::string_view Arguments::get_next()
+ beman::cstring_view Arguments::get_next()
  {
   return get_next(nullptr);
  }
 
- std::string_view Arguments::get_next(const char * parameter)
+ beman::cstring_view Arguments::get_next(const char * parameter)
  {
   if (parameter)
    options.emplace_back(parameter);
@@ -120,11 +120,11 @@ namespace joedb
   else
   {
    missing_arg = true;
-   return std::string_view{};
+   return beman::cstring_view{};
   }
  }
 
- bool Arguments::peek(const char *s)
+ bool Arguments::peek(beman::cstring_view s)
  {
   if (index < argc && args[index].s == s)
   {
@@ -146,11 +146,11 @@ namespace joedb
 
   for (const auto &option: options)
   {
-   if (option.name.data())
+   if (!option.name.empty())
    {
     out << " [--";
     out << option.name;
-    if (option.parameter.data())
+    if (!option.parameter.empty())
      out << " <" << option.parameter << '>';
     else if (option.labels)
     {
@@ -164,7 +164,7 @@ namespace joedb
     }
     out << ']';
    }
-   else if (option.parameter.data())
+   else if (!option.parameter.empty())
     out << ' ' << option.parameter;
   }
 

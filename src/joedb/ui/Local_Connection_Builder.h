@@ -19,12 +19,12 @@ namespace joedb
 
    void build_connector(Arguments &arguments) override
    {
-    const std::string_view endpoint_path = arguments.get_next();
+    const beman::cstring_view endpoint_path = arguments.get_next();
 
     if (arguments.missing())
      return;
 
-    connector = std::make_unique<Local_Connector>(endpoint_path.data());
+    connector = std::make_unique<Local_Connector>(endpoint_path.c_str());
    }
  };
 }

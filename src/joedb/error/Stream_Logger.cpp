@@ -13,7 +13,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Stream_Logger::log(const std::string &message) noexcept
+ void Stream_Logger::log(beman::cstring_view message) noexcept
  {
   try
   {

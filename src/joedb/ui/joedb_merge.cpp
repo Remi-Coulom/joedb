@@ -31,7 +31,7 @@ namespace joedb
   //
   // Create output file
   //
-  File output_file(arguments[arguments.size() - 1].data(), Open_Mode::create_new);
+  File output_file(arguments[arguments.size() - 1].c_str(), Open_Mode::create_new);
   Writable_Journal output_journal(output_file);
 
   //

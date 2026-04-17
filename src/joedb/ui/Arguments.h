@@ -1,7 +1,8 @@
 #ifndef joedb_Arguments_declared
 #define joedb_Arguments_declared
 
-#include <string_view>
+#include "external/cstring_view.hpp"
+
 #include <vector>
 #include <ostream>
 #include <sstream>
@@ -9,10 +10,6 @@
 namespace joedb
 {
  /// Class for conveniently parsing command-line arguments
- ///
- /// All strings passed as input to this class are zero-terminated, so all
- /// the std::string_view returned by member functions are zero-terminated.
- /// This way, it is safe to use view.data() as zero-terminated string.
  ///
  /// @ingroup ui
  class Arguments
@@ -23,8 +20,8 @@ namespace joedb
 
    struct Argument
    {
-    std::string_view s;
-    std::string_view option;
+    beman::cstring_view s;
+    beman::cstring_view option;
     bool used;
 
     Argument(const char *argv);
@@ -36,17 +33,17 @@ namespace joedb
 
    struct Option
    {
-    std::string_view name;
-    std::string_view parameter;
+    beman::cstring_view name;
+    beman::cstring_view parameter;
     const std::vector<const char *> *labels = nullptr;
     const size_t default_index = 0;
 
-    Option(std::string_view parameter):
+    Option(beman::cstring_view parameter):
      parameter(parameter)
     {
     }
 
-    Option(std::string_view name, std::string_view parameter):
+    Option(beman::cstring_view name, beman::cstring_view parameter):
      name(name),
      parameter(parameter)
     {
@@ -54,7 +51,7 @@ namespace joedb
 
     Option
     (
-     std::string_view name,
+     beman::cstring_view name,
      const std::vector<const char *> &labels,
      size_t default_index
     ):
@@ -68,14 +65,14 @@ namespace joedb
    std::vector<Option> options;
 
    void update_index();
-   std::string_view use_index();
+   beman::cstring_view use_index();
 
   public:
    Arguments(int argc, const char * const *argv);
 
    bool has_flag(const char * name);
 
-   std::string_view get_string_option
+   beman::cstring_view get_string_option
    (
     const char * name,
     const char * description,
@@ -106,7 +103,7 @@ namespace joedb
       args[i + 1].used = true;
       update_index();
       T result{};
-      std::istringstream(args[i + 1].s.data()) >> result;
+      std::istringstream(args[i + 1].s.c_str()) >> result;
       return result;
      }
     }
@@ -126,7 +123,7 @@ namespace joedb
      if (index < argc)
      {
       T result{};
-      std::istringstream(args[index].s.data()) >> result;
+      std::istringstream(args[index].s.c_str()) >> result;
       use_index();
       return result;
      }
@@ -135,9 +132,9 @@ namespace joedb
     return default_value;
    }
 
-   std::string_view get_next();
-   std::string_view get_next(const char * parameter);
-   bool peek(const char *s);
+   beman::cstring_view get_next();
+   beman::cstring_view get_next(const char * parameter);
+   bool peek(beman::cstring_view s);
    void add_parameter(const char * parameter);
    std::ostream &print_help(std::ostream &out) const;
    bool has_error() const {return missing() || get_remaining_count();}
@@ -146,7 +143,7 @@ namespace joedb
    int get_index() const {return int(index);}
    bool missing() const {return missing_arg;}
    size_t size() const {return args.size();}
-   std::string_view operator[](size_t i) const {return args[i].s;}
+   beman::cstring_view operator[](size_t i) const {return args[i].s;}
  };
 }
 

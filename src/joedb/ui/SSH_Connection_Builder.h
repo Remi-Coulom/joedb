@@ -20,22 +20,22 @@ namespace joedb
    {
     const auto port = arguments.next_option<unsigned>("port", "p", 22);
     const auto verbosity = arguments.next_option<int>("verbosity", "v", 0);
-    const std::string_view user = arguments.get_next();
-    const std::string_view host = arguments.get_next();
-    const std::string_view path = arguments.get_next();
+    const beman::cstring_view user = arguments.get_next();
+    const beman::cstring_view host = arguments.get_next();
+    const beman::cstring_view path = arguments.get_next();
 
     if (arguments.missing())
      return;
 
     connector = std::make_unique<ssh::Connector>
     (
-     user.data(),
-     host.data(),
+     user.c_str(),
+     host.c_str(),
      port,
      verbosity,
      nullptr,
      nullptr,
-     path.data()
+     path.c_str()
     );
    }
  };

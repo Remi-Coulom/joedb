@@ -88,33 +88,33 @@ namespace joedb
   {
    const auto port = arguments.next_option<unsigned>("port", "p", 22);
    const auto verbosity = arguments.next_option<int>("verbosity", "v", 0);
-   const std::string_view user = arguments.get_next();
-   const std::string_view host = arguments.get_next();
-   const std::string_view path = arguments.get_next();
+   const beman::cstring_view user = arguments.get_next();
+   const beman::cstring_view host = arguments.get_next();
+   const beman::cstring_view path = arguments.get_next();
 
    if (arguments.missing())
     return nullptr;
 
    logger.log("creating ssh session");
-   ssh_session.emplace(user.data(), host.data(), port, verbosity);
+   ssh_session.emplace(user.c_str(), host.c_str(), port, verbosity);
 
    logger.log("initializing sftp");
    sftp.emplace(*ssh_session);
 
    logger.log("opening file");
-   file.reset(new SFTP_File(*sftp, path.data()));
+   file.reset(new SFTP_File(*sftp, path.c_str()));
   }
 #endif
 #ifdef JOEDB_HAS_CURL
   else if (arguments.peek("curl"))
   {
    const bool verbose = arguments.peek("--verbose");
-   const std::string_view url = arguments.get_next();
+   const beman::cstring_view url = arguments.get_next();
 
    if (arguments.missing())
     return nullptr;
 
-   file.reset(new CURL_File(url.data(), verbose));
+   file.reset(new CURL_File(url.c_str(), verbose));
   }
 #endif
 #ifdef JOEDB_HAS_BROTLI
@@ -127,7 +127,7 @@ namespace joedb
    else if (arguments.peek("--read"))
     readonly = true;
 
-   const std::string_view file_name = arguments.get_next();
+   const beman::cstring_view file_name = arguments.get_next();
 
    if (arguments.missing())
     return nullptr;
@@ -135,9 +135,9 @@ namespace joedb
    logger.log("opening brotli file");
 
    if (readonly)
-    file.reset(new Readonly_Brotli_File(file_name.data()));
+    file.reset(new Readonly_Brotli_File(file_name.c_str()));
    else
-    file.reset(new Brotli_File(file_name.data()));
+    file.reset(new Brotli_File(file_name.c_str()));
   }
 #endif
   else
@@ -155,12 +155,12 @@ namespace joedb
      if (!include_shared && mode == Open_Mode::shared_write)
       continue;
      const std::string option = std::string("--") + open_mode_strings[i];
-     if (arguments.peek(option.data()))
+     if (arguments.peek(option))
       open_mode = mode;
     }
    }
 
-   const std::string_view file_name = arguments.get_next();
+   const beman::cstring_view file_name = arguments.get_next();
 
    if (arguments.missing())
     return nullptr;
@@ -172,9 +172,9 @@ namespace joedb
    );
 
    if (interpreted)
-    file.reset(new Interpreted_File(file_name.data(), open_mode));
+    file.reset(new Interpreted_File(file_name.c_str(), open_mode));
    else
-    file.reset(new File(file_name.data(), open_mode));
+    file.reset(new File(file_name.c_str(), open_mode));
   }
 
   logger.log("file is opened");

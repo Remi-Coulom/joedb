@@ -19,7 +19,7 @@ namespace joedb
    Apple_Logger(const Apple_Logger &) = delete;
    Apple_Logger&operator=(const Apple_Logger &) = delete;
 
-   void log(const std::string &message) noexcept override;
+   void log(beman::cstring_view message) noexcept override;
 
    ~Apple_Logger() override;
  };

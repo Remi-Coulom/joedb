@@ -8,11 +8,13 @@
 
 namespace joedb::asio
 {
- void Server::log(const std::string &message) noexcept
+ void Server::log(beman::cstring_view message) noexcept
  {
   try
   {
-   logger.log(endpoint_path + ": " + message);
+   std::string s = endpoint_path + ": ";
+   s += message;
+   logger.log(s);
   }
   catch (...)
   {
@@ -61,11 +63,13 @@ namespace joedb::asio
   );
  }
 
- void Server::Session::log(const std::string &message) noexcept
+ void Server::Session::log(beman::cstring_view message) noexcept
  {
   try
   {
-   server.log(std::to_string(id) + ": " + message);
+   std::string s = std::to_string(id) + ":  ";
+   s += message;
+   server.log(s);
   }
   catch (...)
   {

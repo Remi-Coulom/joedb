@@ -14,7 +14,7 @@ namespace joedb
    std::vector<std::unique_ptr<Logger>> loggers;
 
   public:
-   void log(const std::string &message) noexcept override
+   void log(beman::cstring_view message) noexcept override
    {
     for (const auto &logger: loggers)
      logger->log(message);

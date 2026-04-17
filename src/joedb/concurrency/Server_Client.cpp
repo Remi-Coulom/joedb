@@ -7,12 +7,14 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- void Server_Client::log(const std::string &message) noexcept
+ void Server_Client::log(beman::cstring_view message) noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
   try
   {
-   logger.log(std::to_string(get_session_id()) + ": " + message);
+   std::string s = std::to_string(get_session_id()) + ": ";
+   s += message;
+   logger.log(s);
   }
   catch (...)
   {

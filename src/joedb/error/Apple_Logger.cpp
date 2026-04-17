@@ -10,7 +10,7 @@ namespace joedb
  {
  }
 
- void Apple_Logger::log(const std::string &message) noexcept
+ void Apple_Logger::log(beman::cstring_view message) noexcept
  {
   os_log_with_type(the_log, OS_LOG_TYPE_INFO, "%{public}s", message.c_str());
  }

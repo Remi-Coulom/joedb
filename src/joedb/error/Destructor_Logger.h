@@ -1,7 +1,7 @@
 #ifndef joedb_Destructor_Logger
 #define joedb_Destructor_Logger
 
-#include <string>
+#include "external/cstring_view.hpp"
 #include <mutex>
 
 namespace joedb
@@ -16,7 +16,7 @@ namespace joedb
    static std::mutex mutex;
 
   public:
-   static void warning(const std::string &message) noexcept;
+   static void warning(beman::cstring_view message) noexcept;
    static void set_logger(Logger *new_logger);
    static void remove_logger();
    static void set_logger();

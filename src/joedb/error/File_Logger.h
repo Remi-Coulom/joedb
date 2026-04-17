@@ -13,8 +13,8 @@ namespace joedb
   {
    public:
     std::ofstream ofs;
-    File_Logger_Data(const std::string &file_name):
-     ofs(file_name, std::ios::out | std::ios::trunc)
+    File_Logger_Data(beman::cstring_view file_name):
+     ofs(file_name.c_str(), std::ios::out | std::ios::trunc)
     {
     }
   };
@@ -26,7 +26,7 @@ namespace joedb
   private:
 
   public:
-   File_Logger(const std::string &file_name):
+   File_Logger(beman::cstring_view file_name):
     File_Logger_Data(file_name),
     Stream_Logger(ofs)
    {

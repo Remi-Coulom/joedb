@@ -43,7 +43,7 @@ namespace joedb
   const bool load = arguments.has_flag("load");
   const bool print_checkpoint = arguments.has_flag("print_checkpoint");
   const bool blob = arguments.has_flag("blob");
-  const std::string_view file_name = arguments.get_next("file.joedb");
+  const beman::cstring_view file_name = arguments.get_next("file.joedb");
 
   if (arguments.missing())
   {
@@ -51,7 +51,7 @@ namespace joedb
    return 1;
   }
 
-  File file(file_name.data(), Open_Mode::read_existing);
+  File file(file_name.c_str(), Open_Mode::read_existing);
 
   if (header)
    dump_header(std::cout, file);

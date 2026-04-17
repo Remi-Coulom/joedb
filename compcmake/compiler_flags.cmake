@@ -51,7 +51,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
    set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY},-readability-avoid-unconditional-preprocessor-if,-bugprone-empty-catch,-modernize-type-traits,-bugprone-unchecked-optional-access)
   endif()
   if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 19.0)
-   set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY},-readability-math-missing-parentheses,-readability-use-std-min-max,-bugprone-suspicious-stringview-data-usage)
+   set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY},-readability-math-missing-parentheses,-readability-use-std-min-max)
   endif()
  endif()
 

@@ -44,7 +44,7 @@ namespace joedb
   write_string
   (
    out,
-   std::string(header.signature.data(), header.signature.size())
+   std::string_view(header.signature.data(), header.signature.size())
   );
   out << '\n';
  }

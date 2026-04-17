@@ -18,7 +18,7 @@ namespace joedb
 
   public:
    Stream_Logger(std::ostream &out, std::string tag = "");
-   void log(const std::string &message) noexcept override;
+   void log(beman::cstring_view message) noexcept override;
  };
 }
 

@@ -13,7 +13,7 @@ namespace joedb
 
   public:
    Android_Logger(std::string tag);
-   void log(const std::string &message) noexcept override;
+   void log(beman::cstring_view message) noexcept override;
  };
 }
 

@@ -20,8 +20,8 @@ namespace joedb
    "checkpoint",
    0
   );
-  const std::string_view input = arguments.get_next("input.joedb");
-  const std::string_view output = arguments.get_next("output.joedb");
+  const beman::cstring_view input = arguments.get_next("input.joedb");
+  const beman::cstring_view output = arguments.get_next("output.joedb");
 
   if (arguments.missing())
   {
@@ -29,7 +29,7 @@ namespace joedb
    return 1;
   }
 
-  File input_file(input.data(), Open_Mode::read_existing);
+  File input_file(input.c_str(), Open_Mode::read_existing);
 
   Readonly_Journal input_journal
   (
@@ -40,7 +40,7 @@ namespace joedb
    )
   );
 
-  File output_file(output.data(), Open_Mode::create_new);
+  File output_file(output.c_str(), Open_Mode::create_new);
   Writable_Journal output_journal(output_file);
 
   process(input_journal, output_journal, until);

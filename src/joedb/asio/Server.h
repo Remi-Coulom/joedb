@@ -20,7 +20,7 @@ namespace joedb::asio
   protected:
    Logger &logger;
    const int log_level;
-   void log(const std::string &message) noexcept override;
+   void log(beman::cstring_view message) noexcept override;
 
    const int thread_count;
    boost::asio::thread_pool thread_pool;
@@ -50,7 +50,7 @@ namespace joedb::asio
       boost::asio::local::stream_protocol::socket &&socket
      );
 
-     void log(const std::string &message) noexcept override;
+     void log(beman::cstring_view message) noexcept override;
 
      virtual boost::asio::awaitable<void> run() = 0;
      virtual void cleanup() {}

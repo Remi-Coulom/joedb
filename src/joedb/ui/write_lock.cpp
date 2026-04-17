@@ -10,7 +10,7 @@ namespace joedb
  static int lock(Arguments &arguments)
  /////////////////////////////////////////////////////////////////
  {
-  const std::string_view file_name = arguments.get_next("file_name");
+  const beman::cstring_view file_name = arguments.get_next("file_name");
 
   if (arguments.missing())
   {
@@ -21,7 +21,7 @@ namespace joedb
   std::cout << "Locking " << file_name << "...";
   std::cout.flush();
 
-  File lock(file_name.data(), Open_Mode::write_lock);
+  File lock(file_name.c_str(), Open_Mode::write_lock);
 
   std::cout << "\nLocked. Enter to stop.";
   std::cout.flush();

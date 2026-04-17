@@ -15,7 +15,7 @@ namespace joedb
  std::mutex Destructor_Logger::mutex;
 
  ////////////////////////////////////////////////////////////////////////////
- void Destructor_Logger::warning(const std::string &message) noexcept
+ void Destructor_Logger::warning(beman::cstring_view message) noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
   std::unique_lock lock(mutex);
