@@ -1,0 +1,4 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/compcmake",
+    "editor.formatOnSave": false
+}
