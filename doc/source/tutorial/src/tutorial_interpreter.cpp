@@ -17,7 +17,7 @@ namespace joedb
  static int tutorial_interpreter(Arguments &arguments)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const std::string_view file_name = arguments.get_next("file.joedb");
+  const auto file_name = arguments.get_next("file.joedb");
 
   if (arguments.missing())
   {
@@ -25,7 +25,7 @@ namespace joedb
    return 1;
   }
 
-  tutorial::File_Client client(file_name.data());
+  tutorial::File_Client client(file_name.c_str());
 
   client.transaction([](tutorial::Writable_Database &db){
    tutorial::Readable readable(db);
