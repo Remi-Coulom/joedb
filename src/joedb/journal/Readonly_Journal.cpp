@@ -110,8 +110,8 @@ void joedb::Readonly_Journal::pull_without_locking()
 /////////////////////////////////////////////////////////////////////////////
 {
  std::array<int64_t, 4> pos;
- file.pread((char *)&pos, sizeof(pos), 0);
- read_checkpoint(pos, -1);
+ if (file.pread((char *)&pos, sizeof(pos), 0) == sizeof(pos))
+  read_checkpoint(pos, -1);
 }
 
 /////////////////////////////////////////////////////////////////////////////
