@@ -2,7 +2,7 @@
 
 extern "C"
 {
- static sig_atomic_t signal_status;
+ static volatile sig_atomic_t signal_status;
 
  // Note: in C++11 signal handlers must have C linkage
  // making the function static triggers clang-tidy bugprone-signal-handler
