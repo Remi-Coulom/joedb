@@ -44,19 +44,30 @@ namespace joedb
  TEST(File_Buffer, copy_to_bug)
  ////////////////////////////////////////////////////////////////////////////
  {
-  const uint64_t magic = 1234567;
+  class Unknown_Size_File: public Memory_File
+  {
+   public:
+    int64_t get_size() const override
+    {
+     return -1;
+    }
+  };
 
-  Test_File file;
+  constexpr uint64_t magic = 1234567;
+  constexpr int N = 1000000;
+
+  Unknown_Size_File file;
   File_Buffer file_buffer(file);
-  for (int i = 1000000; --i >= 0;)
+  for (int i = N; --i >= 0;)
    file_buffer.write<uint64_t>(magic);
   file_buffer.flush();
 
-  Test_File copy;
+  Unknown_Size_File copy;
   file.copy_to(copy);
   File_Buffer copy_buffer(file);
 
   EXPECT_EQ(copy_buffer.read<uint64_t>(), magic);
+  EXPECT_TRUE(copy.equal_to(file, 0, N * sizeof(uint64_t)));
  }
 
  ////////////////////////////////////////////////////////////////////////////
