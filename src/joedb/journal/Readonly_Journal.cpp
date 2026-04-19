@@ -401,9 +401,12 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
 
    if (writable.wants_blob_data() && size < checkpoint_position)
    {
-    std::string s(size_t(size), 0);
+    std::string s;
     if (size > 0)
+    {
+     s.resize(size);
      file_buffer.read_data(s.data(), s.size());
+    }
     writable.write_blob(s);
    }
    else
