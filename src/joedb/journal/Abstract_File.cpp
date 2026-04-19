@@ -113,6 +113,20 @@ namespace joedb
  std::string Abstract_File::read_blob(Blob blob) const
  ////////////////////////////////////////////////////////////////////////////
  {
+  {
+   const int64_t file_size = get_size();
+
+   if
+   (
+    blob.get_position() < 0 ||
+    blob.get_size() < 0 ||
+    (file_size >= 0 && blob.get_size() >= file_size)
+   )
+   {
+    reading_past_end_of_file();
+   }
+  }
+
   Async_Reader reader(*this, blob.get_position(), blob.get_end());
   std::string result(size_t(blob.get_size()), 0);
   reader.read(result.data(), result.size());
