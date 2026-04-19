@@ -41,6 +41,8 @@ History
 
   - Fixes (also available on 10.0.0 LTS branch):
 
+    - add missing ``volatile`` to ``sig_atomic_t signal_status``
+    - Fix bug in ``copy_to`` for files of unknown size
     - Fix MacOS installation (set RPATH)
     - Add a timeout to ssh session (could get infinite waiting without it)
     - Fix joedbc crash when no namespace is provided
