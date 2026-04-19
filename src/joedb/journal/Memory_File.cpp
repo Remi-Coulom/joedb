@@ -1,4 +1,5 @@
 #include "joedb/journal/Memory_File.h"
+#include "joedb/error/assert.h"
 
 namespace joedb
 {
@@ -6,6 +7,7 @@ namespace joedb
  size_t Memory_File::pread(char *buffer, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
+  JOEDB_DEBUG_ASSERT(offset >= 0);
   if (size_t(offset) >= data.size())
    return 0;
   const size_t max_size = data.size() - size_t(offset);
@@ -18,6 +20,7 @@ namespace joedb
  void Memory_File::pwrite(const char *buffer, size_t size, int64_t offset)
  ////////////////////////////////////////////////////////////////////////////
  {
+  JOEDB_DEBUG_ASSERT(offset >= 0);
   const size_t end = size_t(offset) + size;
   if (end > data.size())
    data.resize(end);
