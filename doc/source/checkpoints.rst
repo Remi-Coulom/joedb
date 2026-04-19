@@ -56,7 +56,7 @@ File System Support
 
 Joedb relies on locks and fsync to handle concurrency and durability, but
 those features are not available for all file systems. This is particularly
-true when mounting a remote drive. Beware that sshfs, does not support file
+true when mounting a remote drive. Beware that sshfs does not support file
 locking or fsync at all. Depending on its version and how it is configured,
 NFS may or may not properly support file locking and fsync. Samba, on the
 other hand, seems to handle concurrency rather well.

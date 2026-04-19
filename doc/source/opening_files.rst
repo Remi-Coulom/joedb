@@ -61,11 +61,11 @@ Here are some specializations of :joedb:`Abstract_File`:
    be used to read Android assets (`Documentation
    <https://developer.android.com/ndk/reference/group/asset>`_).
  - :joedb:`File` is a typedef to either :joedb:`Windows_File`,
-   :joedb:`Posix_File`, or :joedb:`Portable_File`. System-specific version of
+   :joedb:`Posix_File`, or :joedb:`Portable_File`. System-specific versions of
    :joedb:`File` offer extra features, such as locking, which is necessary to
    handle :doc:`concurrent <concurrency>` access to a file.
- - :joedb:`SFTP_File` read-only access to a file via sftp (uses libssh).
- - :joedb:`CURL_File` read-only access to a file via any URL (uses libcurl).
+ - :joedb:`SFTP_File` provides read-only access to a file via sftp (uses libssh).
+ - :joedb:`CURL_File` provides read-only access to a file via any URL (uses libcurl).
  - :joedb:`Interpreted_File` can read joedbi commands directly.
  - :joedb:`Encoded_File` performs on-the-fly encoding and decoding of data.
    This can be used for transparent compression or encryption. Does not support

@@ -176,15 +176,15 @@ Pushes a local file to a connection. For example:
 ``joedb_to_json``
 -----------------
 
-``joedb_to_json`` takes a joedb file name as parameter, and produces json
+``joedb_to_json`` takes a joedb file name as parameter, and produces JSON
 output. Each column is represented as a vector, and references are indexes into
 the vector (-1 indicates the null reference). The ``--base64`` option encodes
 strings in `base64 <https://en.wikipedia.org/wiki/Base64>`_. Joedb considers a
-string as a vector of bytes that may take any value, but json strings are
+string as a vector of bytes that may take any value, but JSON strings are
 limited to UTF-8. So ``--base64`` might be necessary for binary data or other
 special characters.
 
-This is the json output of the tutorial database:
+This is the JSON output of the tutorial database:
 
 .. literalinclude:: ./tutorial/tutorial.json
    :language: json

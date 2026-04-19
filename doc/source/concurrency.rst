@@ -30,8 +30,8 @@ Example
 -------
 
 The compiler produces code that ensures that locks and unlocks are correctly
-paired, and modifications to the database can only occur during a lock.  This
-is done with transaction function that takes a lambda as parameter, and
+paired, and modifications to the database can only occur during a lock. This
+is done with a transaction function that takes a lambda as parameter, and
 executes it between a lock_pull and a push_unlock.
 
 .. literalinclude:: ./tutorial/src/concurrency_tutorial.cpp

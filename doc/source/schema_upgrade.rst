@@ -5,7 +5,7 @@ An important practical problem when storing structured data in files is schema
 upgrades. A new version of an application may change the data structure,
 typically by adding tables or fields. In order to allow the new version to use
 data produced by previous versions, it is necessary to upgrade the old data
-files. Joedb has convenient features that lets a database be easily upgraded in
+files. Joedb has convenient features that let a database be easily upgraded in
 a way that is automatic, transparent, and safe.
 
 Code compiled by joedbc will usually refuse to open joedb databases when the

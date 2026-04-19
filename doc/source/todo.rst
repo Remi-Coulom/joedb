@@ -43,7 +43,6 @@ Compiler
 --------
 
 - error if namespace different from file name
-- string setters that takes a string_view as parameter
 - option to make some member functions private (->private: private_new_person)
 - option to add custom member functions
 - Differentiate between "storage type" and "usage type":
@@ -52,7 +51,7 @@ Compiler
   - usages: bool(int8), date(int64).
   - uint8, uint16, uint32, uint64
   - custom usage label: ip address(int32), URL(string), PNG file(string),
-    UTF8(string) (use base64 instead for json output), ...?
+    UTF8(string) (use base64 instead for JSON output), ...?
 
 - check that vector range is OK in constructor of vector update
 - modularize code generation

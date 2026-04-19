@@ -42,7 +42,7 @@ And here is its output:
 Handling Unique-Index Errors
 ----------------------------
 
-If the update of an unique index fails because it would create a duplicate,
+If the update of a unique index fails because it would create a duplicate,
 then an exception is thrown. The invalid update is not written to the journal,
 or the index, but it is stored in memory. If you wish to keep the in-memory
 data consistent after such a failure, you must fix the invalid update by
