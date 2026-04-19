@@ -107,7 +107,6 @@ namespace joedb
     if
     (
      index.is_null() ||
-     index + size < index ||
      index + size > freedom_size
     )
     {
