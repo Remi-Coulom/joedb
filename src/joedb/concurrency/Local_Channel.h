@@ -2,6 +2,7 @@
 #define joedb_Local_Channel_declared
 
 #include "joedb/concurrency/Channel.h"
+#include "external/cstring_view.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/local/stream_protocol.hpp>
@@ -19,7 +20,7 @@ namespace joedb
    size_t read_some(char *data, size_t size) override;
 
   public:
-   Local_Channel(const std::string &endpoint_path);
+   Local_Channel(beman::cstring_view endpoint_path);
    ~Local_Channel() override;
  };
 }

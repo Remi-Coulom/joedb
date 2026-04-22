@@ -10,7 +10,7 @@ namespace joedb
 {
  static int rpc_client(Arguments &arguments)
  {
-  const std::string_view endpoint_path = arguments.get_next("<endpoint_path>");
+  const beman::cstring_view endpoint_path = arguments.get_next("<endpoint_path>");
 
   if (arguments.missing())
   {
@@ -18,7 +18,7 @@ namespace joedb
    return 1;
   }
 
-  Local_Channel channel((std::string(endpoint_path)));
+  Local_Channel channel(endpoint_path);
   tutorial::rpc::Client rpc_client(channel, std::chrono::milliseconds{1000});
   std::this_thread::sleep_for(std::chrono::seconds{3});
 
