@@ -142,7 +142,8 @@ namespace joedb
 
  std::ostream &Arguments::print_help(std::ostream &out) const
  {
-  out << "usage: " << args[0].s;
+  if (!args.empty())
+   out << "usage: " << args[0].s;
 
   for (const auto &option: options)
   {

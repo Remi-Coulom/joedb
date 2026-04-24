@@ -69,6 +69,7 @@ namespace joedb
 
   public:
    Arguments(int argc, const char * const *argv);
+   Arguments(): Arguments(0, nullptr) {missing_arg = true;}
 
    bool has_flag(const char * name);
 
@@ -117,6 +118,8 @@ namespace joedb
     T default_value
    )
    {
+    options.emplace_back(name, description);
+
     if (index < argc && args[index].option == name)
     {
      use_index();
