@@ -33,8 +33,8 @@ namespace joedb::ssh
    const std::string host;
    const unsigned port;
    const int verbosity;
-   const char * const b64_key;
-   const char * const passphrase;
+   const std::string b64_key;
+   const std::string passphrase;
    const std::string remote_path;
 
   public:
@@ -44,16 +44,16 @@ namespace joedb::ssh
     std::string host,
     const unsigned port,
     const int verbosity,
-    const char * const b64_key,
-    const char * const passphrase,
+    std::string b64_key,
+    std::string passphrase,
     std::string remote_path
    ):
     user(std::move(user)),
     host(std::move(host)),
     port(port),
     verbosity(verbosity),
-    b64_key(b64_key),
-    passphrase(passphrase),
+    b64_key(std::move(b64_key)),
+    passphrase(std::move(passphrase)),
     remote_path(std::move(remote_path))
    {
    }
@@ -66,8 +66,8 @@ namespace joedb::ssh
      host,
      port,
      verbosity,
-     b64_key,
-     passphrase,
+     b64_key.empty() ? nullptr : b64_key.c_str(),
+     passphrase.empty() ? nullptr : passphrase.c_str(),
      remote_path.c_str()
     );
    }

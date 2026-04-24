@@ -20,8 +20,8 @@ namespace joedb
    {
     const auto port = arguments.next_option<unsigned>("port", "p", 22);
     const auto verbosity = arguments.next_option<int>("verbosity", "v", 0);
-    const auto key = arguments.next_option<std::string>("key", "base64", "");
-    const auto passphrase = arguments.next_option<std::string>("passphrase", "secret", "");
+    const auto key = arguments.next_option<beman::cstring_view>("key", "base64", "");
+    const auto passphrase = arguments.next_option<beman::cstring_view>("passphrase", "secret", "");
 
     const beman::cstring_view user = arguments.get_next("user");
     const beman::cstring_view host = arguments.get_next("host");
@@ -32,12 +32,12 @@ namespace joedb
 
     connector = std::make_unique<ssh::Connector>
     (
-     user.c_str(),
-     host.c_str(),
+     std::string(user),
+     std::string(host),
      port,
      verbosity,
-     key.empty() ? nullptr : key.c_str(),
-     passphrase.empty() ? nullptr : passphrase.c_str(),
+     std::string(key),
+     std::string(passphrase),
      path.c_str()
     );
    }

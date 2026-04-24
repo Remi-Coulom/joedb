@@ -104,14 +104,19 @@ namespace joedb
       args[i + 1].used = true;
       update_index();
       T result{};
-      std::istringstream(args[i + 1].s.c_str()) >> result;
+
+      if constexpr (std::is_same<T, std::string>::value || std::is_same<T, beman::cstring_view>::value)
+       result = args[i + 1].s;
+      else
+       std::istringstream(args[i + 1].s.c_str()) >> result;
+
       return result;
      }
     }
     return default_value;
    }
 
-   template<typename T> T next_option
+   template<typename T = beman::cstring_view> T next_option
    (
     const char * name,
     const char * description,
@@ -126,7 +131,12 @@ namespace joedb
      if (index < argc)
      {
       T result{};
-      std::istringstream(args[index].s.c_str()) >> result;
+
+      if constexpr (std::is_same<T, std::string>::value || std::is_same<T, beman::cstring_view>::value)
+       result = args[index].s;
+      else
+       std::istringstream(args[index].s.c_str()) >> result;
+
       use_index();
       return result;
      }

@@ -72,4 +72,19 @@ namespace joedb
   Arguments arguments(int(v.size()), v.data());
   EXPECT_EQ(2.0f, arguments.next_option<float>("keep_alive", "", 2.0f));
  }
+
+ TEST(Arguments, string)
+ {
+  const std::vector<const char *> v{"prog", "--words", "hello words"};
+
+  {
+   Arguments arguments(int(v.size()), v.data());
+   EXPECT_EQ("hello words", arguments.get_option<std::string>("words", "description", "toto"));
+  }
+
+  {
+   Arguments arguments(int(v.size()), v.data());
+   EXPECT_EQ("hello words", arguments.next_option<std::string>("words", "description", "toto"));
+  }
+ }
 } // namespace joedb
