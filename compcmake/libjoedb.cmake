@@ -8,6 +8,7 @@ set(JOEDB_SOURCES
  ${JOEDB_SRC_DIR}/joedb/Signal.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/open_mode_strings.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/inplace_pack.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/interruptible_sleep.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/merge.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/process_journal_pair.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/Client_Command_Processor.cpp

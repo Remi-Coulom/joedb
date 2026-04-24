@@ -3,6 +3,7 @@
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/get_time_string.h"
 #include "joedb/ui/Interpreter.h"
+#include "joedb/ui/interruptible_sleep.h"
 #include "joedb/ui/type_io.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
@@ -10,12 +11,15 @@
 #include "joedb/concurrency/Readonly_Database_Client.h"
 #include "joedb/Signal.h"
 
-#include <thread>
-#include <chrono>
-#include <cmath>
-
 namespace joedb
 {
+ ////////////////////////////////////////////////////////////////////////////
+ static std::chrono::milliseconds to_milliseconds(float seconds)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  return std::chrono::milliseconds(int64_t(seconds * 1000.0f));
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  void Client_Command_Processor::write_prompt(std::ostream &out) const
  ////////////////////////////////////////////////////////////////////////////
@@ -81,7 +85,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Client_Command_Processor::sleep(int seconds, std::ostream &out)
+ bool Client_Command_Processor::sleep(float seconds, std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
   if (seconds > 0)
@@ -89,9 +93,10 @@ namespace joedb
    out << get_time_string_of_now();
    out << ". Sleeping for " << seconds << " seconds...\n";
    out.flush();
-   for (int i = seconds; Signal::get_signal() != SIGINT && --i >= 0;)
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+   return interruptible_sleep(to_milliseconds(seconds));
   }
+
+  return Signal::get_signal() != SIGINT;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -151,22 +156,19 @@ namespace joedb
   {
    float wait_seconds = 0;
    parameters >> wait_seconds;
-   pull(out, std::chrono::milliseconds(std::lround(wait_seconds * 1000)));
+   pull(out, to_milliseconds(wait_seconds));
   }
   else if (command == "pull_every") /////////////////////////////////////////
   {
    float wait_seconds = 1;
-   int sleep_seconds = 0;
+   float sleep_seconds = 0;
    parameters >> wait_seconds >> sleep_seconds;
 
-   Signal::set_signal(Signal::no_signal);
    Signal::start();
 
-   while (Signal::get_signal() != SIGINT)
-   {
-    pull(out, std::chrono::milliseconds(std::lround(wait_seconds * 1000)));
-    sleep(sleep_seconds, out);
-   }
+   do
+    pull(out, to_milliseconds(wait_seconds));
+   while (sleep(sleep_seconds, out));
   }
   else if (command == "push" && !client.is_pullonly()) //////////////////////
   {
@@ -174,17 +176,14 @@ namespace joedb
   }
   else if (command == "push_every" && !client.is_pullonly()) ////////////////
   {
-   int sleep_seconds = 1;
+   float sleep_seconds = 1.0f;
    parameters >> sleep_seconds;
 
-   Signal::set_signal(Signal::no_signal);
    Signal::start();
 
-   while (Signal::get_signal() != SIGINT)
-   {
+   do
     client.push_if_ahead();
-    sleep(sleep_seconds, out);
-   }
+   while (sleep(sleep_seconds, out));
   }
   else //////////////////////////////////////////////////////////////////////
    return Command_Interpreter::process_command(command, parameters, in, out);

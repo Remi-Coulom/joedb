@@ -22,7 +22,7 @@ namespace joedb
   protected:
    Client &client;
 
-   static void sleep(int seconds, std::ostream &out);
+   static bool sleep(float seconds, std::ostream &out);
    virtual std::string get_name() const {return "readonly_client";}
    virtual int64_t pull(std::ostream &out, std::chrono::milliseconds wait);
 

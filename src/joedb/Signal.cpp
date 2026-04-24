@@ -2,7 +2,7 @@
 
 extern "C"
 {
- static volatile sig_atomic_t signal_status;
+ static volatile sig_atomic_t signal_status = joedb::Signal::no_signal;
 
  // Note: in C++11 signal handlers must have C linkage
  // making the function static triggers clang-tidy bugprone-signal-handler
@@ -34,6 +34,7 @@ namespace joedb
  void Signal::start()
  ////////////////////////////////////////////////////////////////////////////
  {
+  signal_status = no_signal;
   std::signal(SIGINT, joedb_signal_handler);
  }
 
