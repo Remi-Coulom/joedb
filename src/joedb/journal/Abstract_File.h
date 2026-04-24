@@ -78,7 +78,7 @@ namespace joedb
    void shared_lock_head() {shared_lock(0, 1);}
    void unlock_head() noexcept {unlock(0, 1);}
 
-   std::string read_blob(Blob blob) const;
+   std::string read_blob(Blob blob, int64_t max_size = -1) const;
 
    static void reading_past_end_of_file();
 
