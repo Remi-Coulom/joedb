@@ -1,10 +1,6 @@
 TODO
 ====
 
-- ssh: add --passkey and --passphrase options to ssh connection (empty passphrase for interactive prompt)
-- Robust_Connection:
-  - interrupt while(true) with SIGINT/SIGTERM
-  - better SIGINT/SIGTERM handling: interruptible sleep
 - joedbc: move all virtual functions to .cpp
 - testing of user-interface code -> (test for joedb_push to file bug)
 - always exit cleanly and rapidly after SIGINT or SIGTERM
