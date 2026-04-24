@@ -1,7 +1,11 @@
 TODO
 ====
 
-- std::string_view instead of const std::string & for many functions
+- Robust_Connection:
+  - interrupt while(true) with SIGINT/SIGTERM
+  - better SIGINT/SIGTERM handling thanks to asio:
+    - interruptible sleep
+    - local interrupt detection instead of one global variable
 - joedbc: move all virtual functions to .cpp
 - testing of user-interface code -> (test for joedb_push to file bug)
 - always exit cleanly and rapidly after SIGINT or SIGTERM
