@@ -47,6 +47,7 @@ namespace joedb
 
   if (follow)
   {
+   logger.get().log("joedb_push invoked with --follow: waiting for data");
    Signal::start();
 
    while

@@ -73,7 +73,7 @@ namespace joedb
  void SQL_Writable::end_writing(int64_t position)
  ////////////////////////////////////////////////////////////////////////////
  {
-  out << "COMMIT; --checkpoint = " << position << '\n';
+  out << "COMMIT; --checkpoint = " << position << '\n' << '\n';
   out.flush();
  }
 
