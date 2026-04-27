@@ -2,11 +2,11 @@
 #include "joedb/ui/Parsed_Client.h"
 #include "joedb/ui/Arguments.h"
 #include "joedb/ui/Parsed_Logger.h"
+#include "joedb/ui/interruptible_sleep.h"
 #include "joedb/Signal.h"
 
 #include <iostream>
 #include <limits>
-#include <thread>
 #include <chrono>
 #include <cstring>
 #include <cstdlib>
@@ -47,16 +47,16 @@ namespace joedb
 
   if (follow)
   {
-   logger.get().log("joedb_push invoked with --follow: waiting for data");
    Signal::start();
+
+   logger.get().log("joedb_push invoked with --follow: waiting for data");
 
    while
    (
     client.get_connection_checkpoint() < until_checkpoint &&
-    Signal::get_signal() != SIGINT
+    interruptible_sleep(std::chrono::seconds(1))
    )
    {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
     client.push_if_ahead(until_checkpoint);
    }
   }
