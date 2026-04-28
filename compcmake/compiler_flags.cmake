@@ -7,7 +7,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 #############################################################################
  message("== gcc:")
  set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor -Wsuggest-override"
+  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor -Wsuggest-override"
  )
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)
@@ -46,7 +46,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  message("-- CLANG_TIDY = ${CLANG_TIDY} (compiler version: ${CMAKE_CXX_COMPILER_VERSION})")
 
  if (CLANG_TIDY)
-  set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY} --header-filter=* -checks=-*,readability-*,-readability-function-size,-readability-redundant-access-specifiers,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,-readability-static-accessed-through-instance,-readability-identifier-length,-readability-function-cognitive-complexity,-readability-container-data-pointer,-readability-use-anyofallof,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,-bugprone-string-constructor,-bugprone-suspicious-include,-bugprone-easily-swappable-parameters,-bugprone-implicit-widening-of-multiplication-result,concurrency-*,modernize-*,-modernize-use-nodiscard,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list,-modernize-use-default-member-init,-modernize-use-using,-modernize-concat-nested-namespaces,-modernize-make-unique)
+  set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY} --header-filter=* -checks=-*,readability-*,-readability-function-size,-readability-redundant-access-specifiers,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,-readability-static-accessed-through-instance,-readability-identifier-length,-readability-function-cognitive-complexity,-readability-container-data-pointer,-readability-use-anyofallof,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,-bugprone-string-constructor,-bugprone-suspicious-include,-bugprone-easily-swappable-parameters,-bugprone-implicit-widening-of-multiplication-result,concurrency-*,modernize-*,-modernize-use-nodiscard,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list,-modernize-use-default-member-init,-modernize-concat-nested-namespaces,-modernize-make-unique,-modernize-use-designated-initializers)
   if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 14.0)
    set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY},-readability-avoid-unconditional-preprocessor-if,-bugprone-empty-catch,-modernize-type-traits,-bugprone-unchecked-optional-access)
   endif()
@@ -55,7 +55,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
  endif()
 
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wno-overlength-strings -Wno-invalid-source-encoding -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor -Wsuggest-override -Wextra-semi-stmt -Wextra-semi")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wno-overlength-strings -Wno-invalid-source-encoding -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor -Wsuggest-override -Wextra-semi-stmt -Wextra-semi")
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")

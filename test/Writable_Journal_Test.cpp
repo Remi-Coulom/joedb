@@ -93,8 +93,8 @@ TEST_F(Writable_Journal_Test, basic_operations)
    multi.update_int64(table_id, Record_Id(1), int64_field_id, 123412341234LL);
    multi.update_reference(table_id, Record_Id(1), reference_field_id, Record_Id(1));
    multi.update_boolean(table_id, Record_Id(1), bool_field_id, true);
-   multi.update_float32(table_id, Record_Id(1), float32_field_id, 3.14f);
-   multi.update_float64(table_id, Record_Id(1), float64_field_id, 3.141592653589);
+   multi.update_float32(table_id, Record_Id(1), float32_field_id, 1.23f);
+   multi.update_float64(table_id, Record_Id(1), float64_field_id, 1.23456789012345);
   }
   journal.hard_checkpoint();
  }
