@@ -8,7 +8,7 @@
 
 namespace joedb
 {
- typedef uint8_t Type_Id_Storage;
+ using Type_Id_Storage = uint8_t;
 
  /// @ingroup joedb
  class Type
