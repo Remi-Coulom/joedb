@@ -42,7 +42,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 #############################################################################
  message("== clang")
 
- find_program(CLANG_TIDY clang-tidy)
+# find_program(CLANG_TIDY clang-tidy)
  message("-- CLANG_TIDY = ${CLANG_TIDY} (compiler version: ${CMAKE_CXX_COMPILER_VERSION})")
 
  if (CLANG_TIDY)
