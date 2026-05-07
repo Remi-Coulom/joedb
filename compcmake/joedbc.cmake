@@ -17,62 +17,62 @@ if (DEFINED JOEDB_PORTABLE)
  add_definitions(-DJOEDB_PORTABLE)
 endif()
 
+#############################################################################
+# Part of joedb sources necessary to build joedbc
+#############################################################################
+add_library(joedb_for_joedbc OBJECT
+ ${JOEDB_SRC_DIR}/external/wide_char_display_width.cpp
+ ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
+ ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
+ ${JOEDB_SRC_DIR}/joedb/Readable.cpp
+ ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
+ ${JOEDB_SRC_DIR}/joedb/Writable.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/write_source_code.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/assert.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/Logger.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/Stream_Logger.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/Destructor_Logger.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp
+ ${JOEDB_SRC_DIR}/joedb/interpreted/Table.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Arguments.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/base64.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Blob_Reader_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Command_Interpreter.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Data_Manipulation_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/diagnostics.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/dump.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/get_time_string.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Interpreter_Dump_Writable.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/json.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/main_wrapper.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Readable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Readable_Writable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/SQL_Dump_Writable.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/type_io.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/Writable_Command_Processor.cpp
+ ${JOEDB_SRC_DIR}/joedb/ui/write_value.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Async_Reader.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/File_Buffer.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Journal_Construction_Lock.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Journal.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/Writable_Journal.cpp
+ ${JOEDB_SRC_DIR}/joedb/journal/filebuf.cpp
+)
+target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
+ 
+#############################################################################
+# Joedbc executable
+#############################################################################
 if (NOT DEFINED JOEDBC_EXECUTABLE)
  set(JOEDBC_EXECUTABLE joedbc)
 
- ############################################################################
- # Part of joedb sources necessary to build joedbc
- ############################################################################
- add_library(joedb_for_joedbc OBJECT
-  ${JOEDB_SRC_DIR}/external/wide_char_display_width.cpp
-  ${JOEDB_SRC_DIR}/joedb/is_identifier.cpp
-  ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
-  ${JOEDB_SRC_DIR}/joedb/Readable.cpp
-  ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
-  ${JOEDB_SRC_DIR}/joedb/Writable.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/write_source_code.cpp
-  ${JOEDB_SRC_DIR}/joedb/error/assert.cpp
-  ${JOEDB_SRC_DIR}/joedb/error/Logger.cpp
-  ${JOEDB_SRC_DIR}/joedb/error/Stream_Logger.cpp
-  ${JOEDB_SRC_DIR}/joedb/error/Destructor_Logger.cpp
-  ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
-  ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp
-  ${JOEDB_SRC_DIR}/joedb/interpreted/Table.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Arguments.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/base64.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Blob_Reader_Command_Processor.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Command_Processor.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Command_Interpreter.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Data_Manipulation_Command_Processor.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/diagnostics.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/dump.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/get_time_string.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Interpreter_Dump_Writable.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/json.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/main_wrapper.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Readable_Command_Processor.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Readable_Writable_Command_Processor.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/SQL_Dump_Writable.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/type_io.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/Writable_Command_Processor.cpp
-  ${JOEDB_SRC_DIR}/joedb/ui/write_value.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/File.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Stream_File.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Async_Reader.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Abstract_File.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/File_Buffer.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Journal_Construction_Lock.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Memory_File.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Readonly_Journal.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/Writable_Journal.cpp
-  ${JOEDB_SRC_DIR}/joedb/journal/filebuf.cpp
- )
- target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
- 
- ############################################################################
- # Joedbc executable
- ############################################################################
  add_library(joedbc_objects OBJECT
   ${JOEDB_SRC_DIR}/joedb/compiler/joedbc.cpp
   ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
