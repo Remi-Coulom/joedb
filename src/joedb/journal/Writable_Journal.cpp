@@ -57,6 +57,13 @@ namespace joedb
     "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
    );
   }
+
+  // overwrite after-the-end-of-file soft checkpoint
+  if (lock.recovery == Recovery::overwrite && checkpoint_position == lock.size)
+  {
+   checkpoint_position = -1;
+   soft_checkpoint_at(lock.size);
+  }
  }
 
  /////////////////////////////////////////////////////////////////////////////

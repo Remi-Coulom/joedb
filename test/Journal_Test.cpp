@@ -280,6 +280,45 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, overwrite_checkpoint)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File file;
+
+  int64_t checkpoint;
+
+  {
+   Writable_Journal journal(file);
+   journal.comment("Hello");
+   journal.soft_checkpoint();
+   checkpoint = journal.get_checkpoint();
+   journal.comment("Hi");
+   journal.soft_checkpoint();
+   file.get_data().resize(checkpoint);
+   EXPECT_EQ(file.get_size(), checkpoint);
+  }
+
+  {
+   Writable_Journal journal(file);
+   EXPECT_EQ(journal.get_checkpoint(), checkpoint);
+  }
+
+  {
+   Writable_Journal journal(file);
+   journal.pull();
+   Database db;
+   EXPECT_ANY_THROW(journal.replay_log(db));
+  }
+
+  {
+   Writable_Journal journal(Journal_Construction_Lock(file, Recovery::overwrite));
+   journal.pull();
+   Database db;
+   journal.replay_log(db);
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, crash_simulation)
  ////////////////////////////////////////////////////////////////////////////
  {
