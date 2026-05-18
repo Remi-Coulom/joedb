@@ -1,6 +1,7 @@
 TODO
 ====
 
+- joedbc: do not change date of existing file if it is unchanged
 - joedb_push: --poll_every <seconds> option
 - joedbc: move all virtual functions to .cpp
 - testing of user-interface code -> (test for joedb_push to file bug)
