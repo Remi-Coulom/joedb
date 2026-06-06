@@ -33,7 +33,7 @@ namespace joedb
 
   if (default_only)
   {
-   out << " [file] <file_name>\n";
+   out << " [interpreted] [file] <file_name>\n";
   }
   else
   {
