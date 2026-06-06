@@ -1,4 +1,4 @@
-# joedbi README
+# joedb README
 
 #### [Repository](https://github.com/Remi-Coulom/joedb)&nbsp;&nbsp;|&nbsp;&nbsp;[Documentation](https://www.joedb.org/intro.html)&nbsp;&nbsp;
 

@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.0.4
+
+- append\_into
+
 ## v0.0.3
 
 - Words differenciation

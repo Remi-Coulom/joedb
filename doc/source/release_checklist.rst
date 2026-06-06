@@ -35,3 +35,20 @@ New Release on github
 - Title: "Version A.B.C"
 - Add binary packages
 - Then click "publish release"
+
+vscode extension
+----------------
+- increment version number in package.json
+- update CHANGELOG.md
+- login requires access token: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token
+
+.. code-block:: bash
+
+   sudo apt upgrade
+   sudo apt-get install -y curl ca-certificates gnupg
+   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+   npm install -g @vscode/vsce
+   vsce package
+   vsce login Kayufu
+   vsce publish
