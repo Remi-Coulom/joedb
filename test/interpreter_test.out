@@ -34,9 +34,9 @@ OK: schema
 OK: insert_into city 0 "Paris"
 OK: insert_into city 1 "Lille"
 OK: insert_into city 14 "Pétaouchnok"
-OK: insert_into person 0 "Rémi" 1 43,15
-OK: insert_into person 1 "Norbert" -1 43,15
-OK: insert_into person 2 "Alexandre" 14 43,15
+OK: append_into person "Rémi" 1 43,15
+OK: insert_into person -1 "Norbert" -1 43,15
+OK: append_into person "Alexandre" 14 43,15
 first_used: 0
 last_used: 14
 used_count: 3
@@ -167,7 +167,8 @@ Displaying data
 
 Data manipulation
 ~~~~~~~~~~~~~~~~~
- insert_into <table_name> <record_id>
+ append_into <table_name> [<field_value>*]
+ insert_into <table_name> <record_id> [<field_value>*]
  delete_from <table_name> <record_id>
  insert_vector <table_name> <record_id> <size>
  delete_vector <table_name> <record_id> <size>

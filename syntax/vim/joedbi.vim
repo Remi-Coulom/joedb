@@ -61,6 +61,7 @@ syn keyword joedbi_keyword comment nextgroup=joedbi_constant skipwhite
 syn keyword joedbi_keyword timestamp nextgroup=joedbi_constant skipwhite
 
 syn keyword joedbi_keyword record nextgroup=joedbi_table_constant skipwhite
+syn keyword joedbi_keyword append_into nextgroup=joedbi_table_constant skipwhite
 syn keyword joedbi_keyword insert_into nextgroup=joedbi_table_constant skipwhite
 syn match joedbi_table_constant '[a-zA-Z_]\w*' contained nextgroup=joedbi_constant skipwhite
 

@@ -150,6 +150,17 @@
 				}
 			]
 		},
+		"append-into":
+		{
+			"begin": "\\b(append_into)\\b",
+			"end": "$",
+			"beginCaptures": { "0": {"name":"keyword.control.append-into.joedbi"}},
+			"patterns": [
+				{
+					"include": "#joedbi_table_constant"
+				}
+			]
+		},
 		"insert-into":
 		{
 			"begin": "\\b(insert_into)\\b",

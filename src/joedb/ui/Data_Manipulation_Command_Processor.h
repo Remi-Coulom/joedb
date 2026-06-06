@@ -19,6 +19,8 @@ namespace joedb
     Field_Id field_id
    );
 
+   void insert_into(std::istream &parameters, bool append);
+
   protected:
    Status process_command
    (

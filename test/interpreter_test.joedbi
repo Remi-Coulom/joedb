@@ -16,9 +16,9 @@ schema
 insert_into city 0 "Paris"
 insert_into city 1 "Lille"
 insert_into city 14 "Pétaouchnok"
-insert_into person 0 "Rémi" 1 43,15
-insert_into person 1 "Norbert" -1 43,15
-insert_into person 2 "Alexandre" 14 43,15
+append_into person "Rémi" 1 43,15
+insert_into person -1 "Norbert" -1 43,15
+append_into person "Alexandre" 14 43,15
 record city
 record person
 dump

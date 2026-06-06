@@ -35,6 +35,36 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Data_Manipulation_Command_Processor::insert_into
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::istream &parameters,
+  bool append
+ )
+ {
+  const Table_Id table_id = parse_table(parameters, readable);
+  Record_Id record_id = Record_Id::null;
+
+  if (!append)
+   parameters >> record_id;
+
+  if (record_id.is_null())
+   record_id = readable.get_size(table_id);
+
+  writable.insert_into(table_id, record_id);
+
+  if (parameters.good())
+  {
+   for (const auto &[fid, fname]: readable.get_fields(table_id))
+   {
+    update_value(parameters, table_id, record_id, fid);
+    if (parameters.fail())
+     throw Exception("failed parsing value");
+   }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  Command_Processor::Status Data_Manipulation_Command_Processor::process_command
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -58,7 +88,8 @@ namespace joedb
   {
    out << R"RRR(Data manipulation
 ~~~~~~~~~~~~~~~~~
- insert_into <table_name> <record_id>
+ append_into <table_name> [<field_value>*]
+ insert_into <table_name> <record_id> [<field_value>*]
  delete_from <table_name> <record_id>
  insert_vector <table_name> <record_id> <size>
  delete_vector <table_name> <record_id> <size>
@@ -69,26 +100,13 @@ namespace joedb
 
    return Status::ok;
   }
+  else if (command == "append_into") ///////////////////////////////////////
+  {
+   insert_into(parameters, true);
+  }
   else if (command == "insert_into") ///////////////////////////////////////
   {
-   const Table_Id table_id = parse_table(parameters, readable);
-   Record_Id record_id = Record_Id::null;
-   parameters >> record_id;
-
-   if (record_id.is_null())
-    record_id = readable.get_size(table_id);
-
-   writable.insert_into(table_id, record_id);
-
-   if (parameters.good())
-   {
-    for (const auto &[fid, fname]: readable.get_fields(table_id))
-    {
-     update_value(parameters, table_id, record_id, fid);
-     if (parameters.fail())
-      throw Exception("failed parsing value");
-    }
-   }
+   insert_into(parameters, false);
   }
   else if (command == "delete_from") ////////////////////////////////////////
   {
