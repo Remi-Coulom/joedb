@@ -36,6 +36,9 @@
 			"include": "#record"
 		},
 		{
+			"include": "#append-into"
+		},
+		{
 			"include": "#insert-into"
 		},
 		{
@@ -53,7 +56,7 @@
 		},
 		"command-with-constant-parameter":
 		{
-			"begin": "\\b(json|echo|write_blob|read_blob|comment|timestamp)\\b",
+			"begin": "\\b(json|echo|write_blob|read_blob|comment|timestamp|include)\\b",
 			"end": "$",
 			"beginCaptures": { "0": {"name":"keyword.control.constant-parameter.joedbi"}},
 			"patterns": [

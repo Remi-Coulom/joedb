@@ -1,8 +1,10 @@
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/diagnostics.h"
+#include "joedb/ui/type_io.h"
 
 #include <sstream>
 #include <ctype.h>
+#include <fstream>
 
 namespace joedb
 {
@@ -79,10 +81,36 @@ General commands
  abort
  echo on|off
  prompt on|off
+ include "file_name"
 
 )RRR";
 
    return Status::ok;
+  }
+  else if (command == "include") ////////////////////////////////////////////
+  {
+   const std::string file_name = read_string(parameters);
+   std::ifstream ifs(file_name);
+
+   if (ifs)
+   {
+    struct Recursion
+    {
+     int &depth;
+     Recursion(int &depth_init): depth(depth_init) {++depth;}
+     ~Recursion() {--depth;}
+    }
+    recursion(recursion_depth);
+
+    constexpr int max_recursion_depth = 42;
+
+    if (recursion_depth > max_recursion_depth)
+     throw Exception("Reached max recursion depth");
+    else
+     main_loop(ifs, out);
+   }
+   else
+    throw Exception("error opening " + file_name);
   }
   else if (command == "quit") ///////////////////////////////////////////////
    return Status::quit;

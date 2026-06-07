@@ -24,6 +24,7 @@ History
   - Minor improvements:
 
     - new ``append_into`` interpreter command (``insert_into`` at the end of the table)
+    - new ``include`` interpreter command
     - :joedb:`Robust_Connection` does not try to reconnect for every exception.
       Errors such as conflicts, or writing to a read-only server will not cause
       a retry any more, which prevents pointless infinite retry loops.

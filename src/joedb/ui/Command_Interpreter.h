@@ -5,7 +5,6 @@
 #include "joedb/error/Exception.h"
 
 #include <vector>
-#include <functional>
 #include <stdint.h>
 
 namespace joedb
@@ -22,6 +21,8 @@ namespace joedb
    bool rethrow = false;
    bool prompt = false;
    bool last_line_empty = true;
+
+   int recursion_depth = 0;
 
    void after_command
    (

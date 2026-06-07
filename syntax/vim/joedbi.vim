@@ -12,7 +12,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syn keyword joedbi_keyword valid_data flush checkpoint soft_checkpoint hard_checkpoint schema dump sql help about quit transaction push pull db
 
-syn keyword joedbi_keyword json echo write_blob read_blob nextgroup=joedbi_constant skipwhite
+syn keyword joedbi_keyword timestamp comment json echo write_blob read_blob include nextgroup=joedbi_constant skipwhite
 
 syn keyword joedbi_keyword update_vector nextgroup=joedbi_table_integer_field_constant skipwhite
 
@@ -55,10 +55,6 @@ syn match joedbi_type 'references\s\+[a-zA-Z_]\w*' contained
 syn match joedbi_comment "#.*$"
 
 syn match joedbi_constant '.*' contained
-
-syn keyword joedbi_keyword comment nextgroup=joedbi_constant skipwhite
-
-syn keyword joedbi_keyword timestamp nextgroup=joedbi_constant skipwhite
 
 syn keyword joedbi_keyword record nextgroup=joedbi_table_constant skipwhite
 syn keyword joedbi_keyword append_into nextgroup=joedbi_table_constant skipwhite

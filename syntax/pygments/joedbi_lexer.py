@@ -12,6 +12,7 @@ class JoedbiLexer(RegexLexer):
             (r'add_field\s+', Keyword, 'table_field_type_init'),
             (r'custom\s+', Keyword, 'custom'),
             (r'comment\s+', Keyword, 'literal'),
+            (r'include\s+', Keyword, 'literal'),
             (r'append_into\s+', Keyword, 'table_literal'),
             (r'insert_into\s+', Keyword, 'table_literal'),
             (r'delete_from\s+', Keyword, 'table_integer'),
