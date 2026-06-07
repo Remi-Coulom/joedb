@@ -145,6 +145,7 @@ General commands
  abort
  echo on|off
  prompt on|off
+ include "file_name"
 
 Journal
 ~~~~~~~
