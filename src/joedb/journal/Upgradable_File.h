@@ -11,6 +11,7 @@ namespace joedb
  {
   private:
    void pwrite(const char *data, size_t size, int64_t offset) override {}
+   void exclusive_lock(int64_t start, int64_t size) override {}
    int64_t get_size() const override {return -1;}
 
   public:
