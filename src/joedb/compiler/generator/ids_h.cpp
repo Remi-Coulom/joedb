@@ -35,6 +35,8 @@ namespace joedb::generator
 
 )RRR";
 
+  out << "#include <functional>\n\n";
+
   namespace_open(out, options.get_name_space());
 
   out << R"RRR(
@@ -78,6 +80,32 @@ namespace joedb::generator
   }
 
   namespace_close(out, options.get_name_space());
+
+#if 1
+  out << "\nnamespace std\n{\n";
+
+  for (const auto &[tid, tname]: tables)
+  {
+   if (!(parent_options && parent_options->has_table(tname)))
+   {
+    out << " template<>\n";
+    out << " struct hash<";
+    namespace_write(out, options.get_name_space());
+    out << "::id_of_" << tname << ">\n";
+    out << " {\n";
+    out << "  size_t operator()(";
+    namespace_write(out, options.get_name_space());
+    out << "::id_of_" << tname << " x) const noexcept\n";
+    out << "  {\n";
+    out << "   return hash<joedb::index_t>{}(x.get_id());\n";
+    out << "  }\n";
+    out << " };\n";
+   }
+  }
+
+  out << "}\n";
+#endif
+
   namespace_include_guard_close(out);
  }
 }
