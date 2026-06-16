@@ -38,11 +38,17 @@ namespace joedb
     iss >> s;
     compiler_options.set_name_space(split_namespace(s));
    }
-   else if (command == "create_index" || command == "create_unique_index")
+   else if (
+    command == "create_index" ||
+    command == "create_unique_index" ||
+    command == "create_unordered_index" ||
+    command == "create_unordered_unique_index"
+   )
    {
     Compiler_Options::Index index;
 
-    index.unique = (command == "create_unique_index");
+    index.unique = (command.find("unique") != std::string::npos);
+    index.ordered = (command.find("unordered") == std::string::npos);
 
     iss >> index.name;
 

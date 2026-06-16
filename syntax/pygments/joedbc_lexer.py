@@ -11,6 +11,8 @@ class JoedbcLexer(RegexLexer):
             (r'namespace\s+', Keyword, 'namespace'),
             (r'create_unique_index\s+', Keyword, 'index_table_fields'),
             (r'create_index\s+', Keyword, 'index_table_fields'),
+            (r'create_unordered_unique_index\s+', Keyword, 'index_table_fields'),
+            (r'create_unordered_index\s+', Keyword, 'index_table_fields'),
             (r'set_single_row\s+', Keyword, 'table_bool'),
             (r'generate_c_wrapper', Keyword)
         ],

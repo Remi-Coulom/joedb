@@ -131,15 +131,25 @@ namespace joedb::generator
  )
  {
   out << "std::";
+
+  if (!index.ordered)
+   out << "unordered_";
+
   if (index.unique)
    out << "map";
   else
    out << "multimap";
+
   out << '<';
 
   write_tuple_type(out, index, false);
 
-  out << ", id_of_" << options.db.get_table_name(index.table_id) << ", std::less<>>";
+  out << ", id_of_" << options.db.get_table_name(index.table_id);
+
+  if (index.ordered)
+   out << ", std::less<>";
+
+  out << ">";
  }
 
  ////////////////////////////////////////////////////////////////////////////

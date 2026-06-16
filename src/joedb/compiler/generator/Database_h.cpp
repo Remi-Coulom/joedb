@@ -47,8 +47,11 @@ namespace joedb::generator
    out << "#include <sstream>\n";
   }
 
-  if (options.has_index())
+  if (options.has_ordered_index())
    out << "#include <map>\n";
+
+  if (options.has_unordered_index())
+   out << "#include <unordered_map>\n";
 
   out << "\nstatic_assert(std::string_view(joedb::get_version()) == \"";
   out << joedb::get_version() << "\");\n\n";
@@ -500,16 +503,19 @@ namespace joedb::generator
     out << "     return id_of_" << tname << "();\n";
     out << "   }\n";
 
-    out << "   id_of_" << tname << " previous_" << index.name << '(';
-    out << "id_of_" << tname << " id)\n";
-    out << "   {\n";
-    out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
-    out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id()];\n";
-    out << "    if (iterator != index_of_" << index.name << ".begin())\n";
-    out << "     return (--iterator)->second;\n";
-    out << "    else\n";
-    out << "     return id_of_" << tname << "();\n";
-    out << "   }\n";
+    if (index.ordered)
+    {
+     out << "   id_of_" << tname << " previous_" << index.name << '(';
+     out << "id_of_" << tname << " id)\n";
+     out << "   {\n";
+     out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
+     out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id()];\n";
+     out << "    if (iterator != index_of_" << index.name << ".begin())\n";
+     out << "     return (--iterator)->second;\n";
+     out << "    else\n";
+     out << "     return id_of_" << tname << "();\n";
+     out << "   }\n";
+    }
 
     out << "   id_of_" << tname << " find_" << index.name << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
@@ -517,7 +523,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, false, true);
+     write_type(out, type, !index.ordered, true);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }

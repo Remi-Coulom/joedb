@@ -1,4 +1,5 @@
 {
     "cmake.sourceDirectory": "${workspaceFolder}/compcmake",
-    "editor.formatOnSave": false
+    "editor.formatOnSave": false,
+    "cmake.options.statusBarVisibility": "visible"
 }

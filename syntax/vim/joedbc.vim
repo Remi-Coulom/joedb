@@ -11,8 +11,9 @@ syn match joedbc_namespace '[a-zA-Z_]\w*' contained nextgroup=joedbc_namespace_c
 syn match joedbc_namespace_continuation '::' contained nextgroup=joedbc_namespace
 
 syn keyword joedbc_keyword create_unique_index nextgroup=joedbc_index_table_fields skipwhite
-
 syn keyword joedbc_keyword create_index nextgroup=joedbc_index_table_fields skipwhite
+syn keyword joedbc_keyword create_unordered_unique_index nextgroup=joedbc_index_table_fields skipwhite
+syn keyword joedbc_keyword create_unordered_index nextgroup=joedbc_index_table_fields skipwhite
 
 syn match joedbc_index_table_fields '[a-zA-Z_]\w*' contained nextgroup=joedbc_table_fields skipwhite
 syn match joedbc_table_fields '[a-zA-Z_]\w*' contained nextgroup=joedbc_fields skipwhite

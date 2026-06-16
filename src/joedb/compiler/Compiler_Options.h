@@ -16,6 +16,7 @@ namespace joedb
    struct Index
    {
     bool unique;
+    bool ordered;
     std::string name;
     Table_Id table_id;
     std::vector<Field_Id> field_ids;
@@ -61,9 +62,20 @@ namespace joedb
    std::map<Table_Id, Table_Options> table_options;
 
   public:
-   bool has_index() const
+   bool has_ordered_index() const
    {
-    return indices.size() > 0;
+    for (const auto &index: indices)
+     if (index.ordered)
+      return true;
+    return false;
+   }
+
+   bool has_unordered_index() const
+   {
+    for (const auto &index: indices)
+     if (!index.ordered)
+      return true;
+    return false;
    }
 
    bool has_blob() const

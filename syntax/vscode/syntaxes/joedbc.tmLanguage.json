@@ -66,7 +66,7 @@
 
 		"create_index":
 		{
-			"begin": "\\b(create_index|create_unique_index)\\b",
+			"begin": "\\b(create_index|create_unique_index|create_unordered_index|create_unordered_unique_index)\\b",
 			"beginCaptures": { "1": {"name":"keyword.control.create_index.joedbc"}},
 			"end": "$",
 			"patterns": [
