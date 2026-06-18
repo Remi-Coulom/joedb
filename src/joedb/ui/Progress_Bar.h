@@ -21,12 +21,12 @@ namespace joedb
    std::chrono::steady_clock::time_point start;
    std::chrono::steady_clock::time_point last_print_time;
 
-   void print_progress() noexcept;
+   bool print_progress() noexcept;
 
   public:
    Progress_Bar(int64_t total, Logger &logger);
-   void print(int64_t current);
-   void print_remaining(int64_t remaining) {print(total - remaining);}
+   bool print(int64_t current);
+   bool print_remaining(int64_t remaining) {return print(total - remaining);}
    ~Progress_Bar();
  };
 }

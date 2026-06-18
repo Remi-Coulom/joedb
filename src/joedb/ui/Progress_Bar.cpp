@@ -6,9 +6,11 @@
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- void Progress_Bar::print_progress() noexcept
+ bool Progress_Bar::print_progress() noexcept
  //////////////////////////////////////////////////////////////////////////
  {
+  bool actually_printed = false;
+
   try
   {
    if (done > printed)
@@ -17,6 +19,7 @@ namespace joedb
     std::chrono::duration<double> duration_since_last = now - last_print_time;
     if (done == total || duration_since_last.count() >= gap)
     {
+     actually_printed = true;
      std::chrono::duration<double> duration_since_start = now - start;
      last_print_time = now;
 
@@ -73,6 +76,8 @@ namespace joedb
   catch (...)
   {
   }
+
+  return actually_printed;
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -93,11 +98,11 @@ namespace joedb
  }
 
  //////////////////////////////////////////////////////////////////////////
- void Progress_Bar::print(const int64_t current)
+ bool Progress_Bar::print(const int64_t current)
  //////////////////////////////////////////////////////////////////////////
  {
   done = current;
-  print_progress();
+  return print_progress();
  }
 
  //////////////////////////////////////////////////////////////////////////
