@@ -25,6 +25,10 @@ namespace joedb
  {
   public:
    Brotli_File(const char *file_name);
+
+   Brotli_File(const std::string &file_name): Brotli_File(file_name.c_str())
+   {
+   }
  };
 }
 
