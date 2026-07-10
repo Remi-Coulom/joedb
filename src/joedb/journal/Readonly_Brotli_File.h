@@ -28,6 +28,11 @@ namespace joedb
  {
   public:
    Readonly_Brotli_File(const char *file_name);
+
+   Readonly_Brotli_File(const std::string &file_name):
+    Readonly_Brotli_File(file_name.c_str())
+   {
+   }
  };
 }
 
