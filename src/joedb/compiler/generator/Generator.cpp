@@ -130,10 +130,10 @@ namespace joedb::generator
   const Compiler_Options::Index &index
  )
  {
-  out << "std::";
-
-  if (!index.ordered)
-   out << "unordered_";
+  if (index.ordered)
+   out << "std::";
+  else
+   out << "boost::unordered_";
 
   if (index.unique)
    out << "map";

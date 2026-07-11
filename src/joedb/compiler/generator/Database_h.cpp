@@ -51,7 +51,7 @@ namespace joedb::generator
    out << "#include <map>\n";
 
   if (options.has_unordered_index())
-   out << "#include <unordered_map>\n";
+   out << "#include <boost/unordered_map.hpp>\n";
 
   out << "\nstatic_assert(std::string_view(joedb::get_version()) == \"";
   out << joedb::get_version() << "\");\n\n";
