@@ -492,7 +492,7 @@ namespace joedb::generator
     out << '\n';
 
     out << "   id_of_" << tname << " next_" << index.name << '(';
-    out << "id_of_" << tname << " id)\n";
+    out << "id_of_" << tname << " id) const\n";
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
     out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id()];\n";
@@ -506,7 +506,7 @@ namespace joedb::generator
     if (index.ordered)
     {
      out << "   id_of_" << tname << " previous_" << index.name << '(';
-     out << "id_of_" << tname << " id)\n";
+     out << "id_of_" << tname << " id) const\n";
      out << "   {\n";
      out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(id.get_record_id()));\n";
      out << "    auto iterator = storage_of_" << tname << ".iterator_over_" << index.name << "[id.get_id()];\n";

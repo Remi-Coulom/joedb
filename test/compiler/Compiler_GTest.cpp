@@ -959,14 +959,16 @@ TEST(Compiler, index_iteration)
 
  db.soft_checkpoint();
 
- EXPECT_EQ(db.next_city_by_name(lille), paris);
- EXPECT_EQ(db.next_city_by_name(paris), tokyo);
- EXPECT_EQ(db.previous_city_by_name(lille), abidjan);
- EXPECT_EQ(db.previous_city_by_name(abidjan), db.null_city());
+ const test::Database &cdb(db);
 
- EXPECT_EQ(db.next(tokyo), lille);
- EXPECT_EQ(db.previous(lille), tokyo);
- EXPECT_EQ(db.next(paris), db.get_city_table().get_end());
+ EXPECT_EQ(cdb.next_city_by_name(lille), paris);
+ EXPECT_EQ(cdb.next_city_by_name(paris), tokyo);
+ EXPECT_EQ(cdb.previous_city_by_name(lille), abidjan);
+ EXPECT_EQ(cdb.previous_city_by_name(abidjan), db.null_city());
+
+ EXPECT_EQ(cdb.next(tokyo), lille);
+ EXPECT_EQ(cdb.previous(lille), tokyo);
+ EXPECT_EQ(cdb.next(paris), db.get_city_table().get_end());
 }
 
 #ifdef JOEDB_FILE_IS_LOCKABLE
