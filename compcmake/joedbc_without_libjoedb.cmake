@@ -7,7 +7,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include_directories(BEFORE SYSTEM ${JOEDB_SRC_DIR})
 
-include("${JOEDB_DIR}/dependencies.cmake")
+if (NOT JOEDB_NO_DEPENDENCIES)
+ include("${JOEDB_DIR}/dependencies.cmake")
+endif()
+
 include("${JOEDB_DIR}/ipo.cmake")
 include("${JOEDB_DIR}/joedb_version.cmake")
 include("${JOEDB_DIR}/defines.cmake")

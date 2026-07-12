@@ -22,6 +22,11 @@ using namespace my_namespace::is_nested;
 
 #include <unordered_map>
 
+#ifdef JOEDB_HAS_BOOST
+#include <boost/unordered_map.hpp>
+#include "db/unordered_index/Writable_Database.h"
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 static const std::string &get_translation
 /////////////////////////////////////////////////////////////////////////////
@@ -1068,4 +1073,28 @@ TEST(Compiler, id_hash)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::unordered_map<test::id_of_person, int> map;
+#ifdef JOEDB_HAS_BOOST
+ boost::unordered_map<test::id_of_person, int> bmap;
+ boost::unordered_map<std::tuple<int, int>, int> tmap;
+ boost::unordered_map<std::tuple<std::string, test::id_of_person>, int> ttmap;
+ const auto it = ttmap.find(std::tuple<std::string, test::id_of_person>("", 0));
+ EXPECT_EQ(it, ttmap.end());
+#endif
 }
+
+#ifdef JOEDB_HAS_BOOST
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, unordered_index)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ unordered_index::Writable_Database db(file);
+
+ const auto remi = db.new_person("Rémi", "Coulom", db.null_city());
+ const auto joe = db.new_person("Joe", "Le Taxi", db.null_city());
+
+ EXPECT_EQ(remi, db.find_person_by_full_name("Rémi", "Coulom", db.null_city()));
+ EXPECT_EQ(joe, db.find_person_by_full_name("Joe", "Le Taxi", db.null_city()));
+ EXPECT_EQ(db.null_person(), db.find_person_by_full_name("first", "last", db.null_city()));
+}
+#endif

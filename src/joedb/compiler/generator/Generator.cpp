@@ -123,36 +123,6 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Generator::write_index_type
- ////////////////////////////////////////////////////////////////////////////
- (
-  std::ostream &out,
-  const Compiler_Options::Index &index
- )
- {
-  if (index.ordered)
-   out << "std::";
-  else
-   out << "boost::unordered_";
-
-  if (index.unique)
-   out << "map";
-  else
-   out << "multimap";
-
-  out << '<';
-
-  write_tuple_type(out, index, false);
-
-  out << ", id_of_" << options.db.get_table_name(index.table_id);
-
-  if (index.ordered)
-   out << ", std::less<>";
-
-  out << ">";
- }
-
- ////////////////////////////////////////////////////////////////////////////
  // type arrays
  ////////////////////////////////////////////////////////////////////////////
  #define STRINGIFY(X) #X

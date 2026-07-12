@@ -51,7 +51,13 @@ namespace joedb::generator
    out << "#include <map>\n";
 
   if (options.has_unordered_index())
+  {
+   out << "#ifdef JOEDB_HAS_BOOST\n";
    out << "#include <boost/unordered_map.hpp>\n";
+   out << "#else\n";
+   out << "#include <unordered_map>\n";
+   out << "#endif\n";
+  }
 
   out << "\nstatic_assert(std::string_view(joedb::get_version()) == \"";
   out << joedb::get_version() << "\");\n\n";
@@ -73,6 +79,43 @@ namespace joedb::generator
 
   for (const auto &[tid, tname]: tables)
    out << " class container_of_" << tname << ";\n";
+
+  out << '\n';
+
+  for (const auto &index: options.get_indices())
+  {
+   out << " using type_of_index_of_" << index.name << " = ";
+
+   if (index.ordered)
+    out << "std::";
+   else
+   {
+    out << "\n#ifdef JOEDB_HAS_BOOST\n";
+    out << " boost::\n";
+    out << "#else\n";
+
+    if (index.field_ids.size() > 1)
+     out << "#error boost is required for multi-column unordered index\n";
+
+    out << " std::\n";
+    out << "#endif\n";
+    out << " unordered_";
+   }
+
+   if (!index.unique)
+    out << "multi";
+
+   out << "map<";
+
+   write_tuple_type(out, index, false);
+
+   out << ", id_of_" << options.db.get_table_name(index.table_id);
+
+   if (index.ordered)
+    out << ", std::less<>";
+
+   out << ">;\n";
+  }
 
   out << "\n namespace detail\n {";
   for (const auto &[tid, tname]: tables)
@@ -97,14 +140,15 @@ namespace joedb::generator
    }
 
    for (const auto &index: options.get_indices())
+   {
     if (index.table_id == tid)
     {
-     out << "   std::vector<";
-     write_index_type(out, index);
+     out << "   std::vector<type_of_index_of_" << index.name;
      out << "::iterator> ";
      fields.emplace_back("iterator_over_" + index.name);
      out << fields.back() << ";\n";
     }
+   }
 
   out << R"RRR(
    joedb::Freedom_Keeper freedom_keeper;
@@ -180,8 +224,7 @@ namespace joedb::generator
   {
    const std::string &tname = db.get_table_name(index.table_id);
 
-   out << "   ";
-   write_index_type(out, index);
+   out << "   type_of_index_of_" << index.name;
    out << " index_of_" << index.name << ";\n";
 
    out << "   void remove_index_of_" << index.name << "(Record_Id record_id)\n";
@@ -198,8 +241,7 @@ namespace joedb::generator
    out << "   void add_index_of_" << index.name << "(Record_Id record_id)\n";
    out << "   {\n";
    out << "    auto result = index_of_" << index.name;
-   out << ".insert\n    (\n     ";
-   write_index_type(out, index);
+   out << ".insert\n    (\n     type_of_index_of_" << index.name;
    out << "::value_type\n     (\n      ";
    write_tuple_type(out, index, true);
    out << '(';
@@ -473,8 +515,7 @@ namespace joedb::generator
   for (const auto &index: options.get_indices())
   {
    out << '\n';
-   out << "   const ";
-   write_index_type(out, index);
+   out << "   const type_of_index_of_" << index.name;
    out << " &get_index_of_" << index.name << "()\n";
    out << "   {\n";
    out << "    return index_of_" << index.name << ";\n";
@@ -656,10 +697,8 @@ namespace joedb::generator
     out << " {\n";
     out << "  friend class Database;\n";
     out << "  private:\n";
-    out << "   std::pair<";
-    write_index_type(out, index);
-    out << "::const_iterator, ";
-    write_index_type(out, index);
+    out << "   std::pair<type_of_index_of_" << index.name;
+    out << "::const_iterator, type_of_index_of_" << index.name;
     out << "::const_iterator> range;\n";
     out << "   range_of_" << index.name << "(const Database &db";
     for (size_t i = 0; i < index.field_ids.size(); i++)
@@ -687,11 +726,9 @@ namespace joedb::generator
     out << "   {\n";
     out << "    friend class range_of_" << index.name << ";\n";
     out << "    private:\n";
-    out << "     ";
-    write_index_type(out, index);
+    out << "     type_of_index_of_" << index.name;
     out << "::const_iterator map_iterator;\n";
-    out << "     iterator(";
-    write_index_type(out, index);
+    out << "     iterator(type_of_index_of_" << index.name;
     out << "::const_iterator map_iterator): map_iterator(map_iterator) {}\n"
         << "    public:\n"
         << "     bool operator !=(const iterator &i) const\n"

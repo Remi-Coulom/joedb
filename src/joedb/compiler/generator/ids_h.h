@@ -11,6 +11,8 @@ namespace joedb::generator
   private:
    const Compiler_Options *parent_options;
 
+   void write_hashing(std::ostream &out);
+
   public:
    ids_h
    (

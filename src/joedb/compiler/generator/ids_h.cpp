@@ -4,6 +4,33 @@
 namespace joedb::generator
 {
  ////////////////////////////////////////////////////////////////////////////
+ void ids_h::write_hashing(std::ostream &out)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const Database_Schema &db = options.get_db();
+  const auto &tables = db.get_tables();
+
+  for (const auto &[tid, tname]: tables)
+  {
+   if (!(parent_options && parent_options->has_table(tname)))
+   {
+    out << " template<>\n";
+    out << " struct hash<";
+    namespace_write(out, options.get_name_space());
+    out << "::id_of_" << tname << ">\n";
+    out << " {\n";
+    out << "  size_t operator()(";
+    namespace_write(out, options.get_name_space());
+    out << "::id_of_" << tname << " x) const noexcept\n";
+    out << "  {\n";
+    out << "   return hash<joedb::index_t>{}(x.get_id());\n";
+    out << "  }\n";
+    out << " };\n";
+   }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  ids_h::ids_h
  ////////////////////////////////////////////////////////////////////////////
  (
@@ -20,7 +47,7 @@ namespace joedb::generator
  ////////////////////////////////////////////////////////////////////////////
  {
   const Database_Schema &db = options.get_db();
-  auto tables = db.get_tables();
+  const auto &tables = db.get_tables();
 
   namespace_include_guard_open(out, "ids", options.get_name_space());
 
@@ -34,8 +61,6 @@ namespace joedb::generator
 #include "joedb/index_types.h"
 
 )RRR";
-
-  out << "#include <functional>\n\n";
 
   namespace_open(out, options.get_name_space());
 
@@ -81,30 +106,18 @@ namespace joedb::generator
 
   namespace_close(out, options.get_name_space());
 
-#if 1
-  out << "\nnamespace std\n{\n";
+  out << "\n#include <functional>\n\n";
+  out << "namespace std\n{\n";
+  write_hashing(out);
+  out << "}\n\n";
 
-  for (const auto &[tid, tname]: tables)
-  {
-   if (!(parent_options && parent_options->has_table(tname)))
-   {
-    out << " template<>\n";
-    out << " struct hash<";
-    namespace_write(out, options.get_name_space());
-    out << "::id_of_" << tname << ">\n";
-    out << " {\n";
-    out << "  size_t operator()(";
-    namespace_write(out, options.get_name_space());
-    out << "::id_of_" << tname << " x) const noexcept\n";
-    out << "  {\n";
-    out << "   return hash<joedb::index_t>{}(x.get_id());\n";
-    out << "  }\n";
-    out << " };\n";
-   }
-  }
+  out << "#ifdef JOEDB_HAS_BOOST\n\n";
+  out << "#include <boost/container_hash/hash.hpp>\n\n";
+  out << "namespace boost\n{\n";
+  write_hashing(out);
+  out << "}\n\n";
 
-  out << "}\n";
-#endif
+  out << "#endif\n";
 
   namespace_include_guard_close(out);
  }
