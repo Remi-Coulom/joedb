@@ -212,6 +212,7 @@ if(GTest_FOUND)
   ../test/compiler/db/schema_v1/writable.cpp
   ../test/compiler/db/schema_v2/writable.cpp
   ../test/compiler/db/test/writable.cpp
+  ../test/compiler/db/unordered_index/writable.cpp
   ../test/compiler/db/vector_test/writable.cpp
   ../src/joedb/ui/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
@@ -232,10 +233,6 @@ if(GTest_FOUND)
 
  if (CURL_FOUND)
   target_sources(joedb_test PRIVATE ../test/CURL_File_Test.cpp)
- endif()
-
- if (Boost_FOUND)
-  target_sources(joedb_test PRIVATE ../test/compiler/db/unordered_index/writable.cpp)
  endif()
 
  if (NOT CMAKE_SYSTEM_NAME STREQUAL "Android")

@@ -6,6 +6,7 @@
 #include "db/schema_v1/Readonly_Database.h"
 #include "db/schema_v2/Client.h"
 #include "db/schema_v2/Readonly_Database.h"
+#include "db/unordered_index/Writable_Database.h"
 #include "db/vector_test/Writable_Database.h"
 #include "db/vector_test/Readonly_Database.h"
 #include "db/vector_test/Memory_Database.h"
@@ -21,11 +22,6 @@ using namespace my_namespace::is_nested;
 #include "gtest/gtest.h"
 
 #include <unordered_map>
-
-#ifdef JOEDB_HAS_BOOST
-#include <boost/unordered_map.hpp>
-#include "db/unordered_index/Writable_Database.h"
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 static const std::string &get_translation
@@ -1073,16 +1069,8 @@ TEST(Compiler, id_hash)
 /////////////////////////////////////////////////////////////////////////////
 {
  std::unordered_map<test::id_of_person, int> map;
-#ifdef JOEDB_HAS_BOOST
- boost::unordered_map<test::id_of_person, int> bmap;
- boost::unordered_map<std::tuple<int, int>, int> tmap;
- boost::unordered_map<std::tuple<std::string, test::id_of_person>, int> ttmap;
- const auto it = ttmap.find(std::tuple<std::string, test::id_of_person>("", 0));
- EXPECT_EQ(it, ttmap.end());
-#endif
 }
 
-#ifdef JOEDB_HAS_BOOST
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, unordered_index)
 /////////////////////////////////////////////////////////////////////////////
@@ -1097,4 +1085,3 @@ TEST(Compiler, unordered_index)
  EXPECT_EQ(joe, db.find_person_by_full_name("Joe", "Le Taxi", db.null_city()));
  EXPECT_EQ(db.null_person(), db.find_person_by_full_name("first", "last", db.null_city()));
 }
-#endif

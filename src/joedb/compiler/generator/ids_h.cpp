@@ -111,14 +111,6 @@ namespace joedb::generator
   write_hashing(out);
   out << "}\n\n";
 
-  out << "#ifdef JOEDB_HAS_BOOST\n\n";
-  out << "#include <boost/container_hash/hash.hpp>\n\n";
-  out << "namespace boost\n{\n";
-  write_hashing(out);
-  out << "}\n\n";
-
-  out << "#endif\n";
-
   namespace_include_guard_close(out);
  }
 }

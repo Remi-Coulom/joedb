@@ -28,6 +28,7 @@ namespace joedb::generator
 #include "joedb/error/Exception.h"
 #include "joedb/error/assert.h"
 #include "joedb/get_version.h"
+#include "joedb/hash_combine.h"
 #include "ids.h"
 
 #include <string>
@@ -51,13 +52,7 @@ namespace joedb::generator
    out << "#include <map>\n";
 
   if (options.has_unordered_index())
-  {
-   out << "#ifdef JOEDB_HAS_BOOST\n";
-   out << "#include <boost/unordered_map.hpp>\n";
-   out << "#else\n";
    out << "#include <unordered_map>\n";
-   out << "#endif\n";
-  }
 
   out << "\nstatic_assert(std::string_view(joedb::get_version()) == \"";
   out << joedb::get_version() << "\");\n\n";
@@ -84,23 +79,57 @@ namespace joedb::generator
 
   for (const auto &index: options.get_indices())
   {
-   out << " using type_of_index_of_" << index.name << " = ";
+   const bool custom_hash = !index.ordered && index.field_ids.size() > 1;
 
-   if (index.ordered)
-    out << "std::";
-   else
+   if (custom_hash)
    {
-    out << "\n#ifdef JOEDB_HAS_BOOST\n";
-    out << " boost::\n";
-    out << "#else\n";
+    const int fields = int(index.field_ids.size());
 
-    if (index.field_ids.size() > 1)
-     out << "#error boost is required for multi-column unordered index\n";
+    out << " struct hash_of_index_of_" << index.name;
+    out << "\n {\n";
+    out << "  size_t operator()(const ";
+    write_tuple_type(out, index, false);
+    out << "&key) const noexcept\n";
+    out << "  {\n";
+    out << "   return ";
 
-    out << " std::\n";
-    out << "#endif\n";
-    out << " unordered_";
+    for (int i = 1; i < fields; i++)
+    {
+     out << "joedb::hash_combine\n";
+     out << std::string(i + 2, ' ') << "(\n";
+     out << std::string(i + 3, ' ');
+    }
+
+    for (int i = fields; --i >= 0;)
+    {
+     out << "std::hash<";
+
+     const Type &type = options.db.get_field_type
+     (
+      index.table_id,
+      index.field_ids[i]
+     );
+
+     write_type(out, type, false, false);
+
+     out << ">()(std::get<" << i << ">(key))\n";
+     out << std::string(i + 3, ' ' );
+     if (i < fields - 1)
+      out << ')';
+     if (i > 0)
+      out << ",\n" << std::string(i + 3, ' ');
+    }
+
+    out << ";\n";
+
+    out << "  }\n";
+    out << " };\n";
    }
+
+   out << " using type_of_index_of_" << index.name << " = std::";
+
+   if (!index.ordered)
+    out << "unordered_";
 
    if (!index.unique)
     out << "multi";
@@ -113,6 +142,8 @@ namespace joedb::generator
 
    if (index.ordered)
     out << ", std::less<>";
+   else if (custom_hash)
+    out << ", hash_of_index_of_" << index.name;
 
    out << ">;\n";
   }
