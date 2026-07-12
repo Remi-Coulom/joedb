@@ -351,6 +351,10 @@ TEST(Compiler, exceptions)
   multi_index::Memory_Database db;
   db.new_person("Chantal", "Dupont", db.null_city());
   db.new_person("Rémi", "Coulom", db.null_city());
+
+  for (const auto person: db.find_person_by_name("Coulom"))
+   EXPECT_EQ(db.get_first_name(person), "Rémi");
+
   db.new_person("Rémi", "Munos", db.null_city());
   db.new_person("Marcel", "Coulom", db.null_city());
   db.new_person("Albert", "Premier", db.null_city());
@@ -1084,4 +1088,7 @@ TEST(Compiler, unordered_index)
  EXPECT_EQ(remi, db.find_person_by_full_name("Rémi", "Coulom", db.null_city()));
  EXPECT_EQ(joe, db.find_person_by_full_name("Joe", "Le Taxi", db.null_city()));
  EXPECT_EQ(db.null_person(), db.find_person_by_full_name("first", "last", db.null_city()));
+
+ for (const auto person: db.find_person_by_name("Coulom"))
+  EXPECT_EQ(db.get_first_name(person), "Rémi");
 }

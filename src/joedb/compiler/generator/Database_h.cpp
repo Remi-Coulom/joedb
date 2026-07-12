@@ -626,7 +626,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, false, true);
+     write_type(out, type, !index.ordered, true);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }
@@ -736,7 +736,7 @@ namespace joedb::generator
     {
      out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, false, true);
+     write_type(out, type, !index.ordered, true);
      out << ' ' << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ")\n";
@@ -782,7 +782,7 @@ namespace joedb::generator
      if (i > 0)
       out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, false, true);
+     write_type(out, type, !index.ordered, true);
      out << " field_value_of_";
      out << db.get_field_name(index.table_id, index.field_ids[i]);
     }

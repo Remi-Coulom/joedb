@@ -1,4 +1,4 @@
 namespace unordered_index
 create_unordered_unique_index person_by_full_name person first_name,last_name,city
-create_index person_by_name person last_name
-create_index person_by_city person city
+create_unordered_index person_by_name person last_name
+create_unordered_index person_by_city person city
