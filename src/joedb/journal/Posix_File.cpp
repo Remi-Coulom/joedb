@@ -170,6 +170,8 @@ namespace joedb
    if (fd < 0)
     fd = open(file_name, O_RDWR);
   }
+  else
+   fd = -1;
 
   if (fd < 0)
    throw_last_error("opening", file_name);
