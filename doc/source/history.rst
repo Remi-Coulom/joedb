@@ -5,7 +5,8 @@ History
 
   - New major features:
 
-    - :doc:`rpc`
+    - :doc:`remote procedure call <rpc>`
+    - unordered :doc:`indexes <indexes>`
     - websocket support based on `boost::beast <https://www.boost.org/doc/libs/latest/libs/beast/doc/html/index.html>`_
     - :joedb:`joedb::filebuf` is a ``std::streambuf`` for a joedb file. It
       allows reading and writing a joedb database in text format (using joedbi
