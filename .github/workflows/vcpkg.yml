@@ -3,6 +3,9 @@ name: vcpkg test
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 

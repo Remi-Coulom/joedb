@@ -3,6 +3,9 @@ name: Test on ubuntus (nodeps)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ${{matrix.os}}
