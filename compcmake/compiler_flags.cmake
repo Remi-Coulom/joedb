@@ -10,10 +10,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor -Wsuggest-override"
  )
 
- if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wc++14-compat")
- endif()
-
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.4)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wduplicated-cond -Wshadow=local -Wc++17-compat")
  endif()
