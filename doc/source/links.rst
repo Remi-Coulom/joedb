@@ -35,6 +35,7 @@ Using SQL from C++
 
 - https://sqlite.org/
 - https://github.com/rbock/sqlpp11
+- https://github.com/rbock/sqlpp23
 - https://github.com/getml/sqlgen
 - https://www.webtoolkit.eu/wt/doc/tutorial/dbo.html
 - https://codesynthesis.com/products/odb/
