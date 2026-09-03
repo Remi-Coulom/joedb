@@ -53,17 +53,25 @@ namespace joedb
   return out << to_underlying(record_id);
  }
 
+ template<typename T> std::istream &read_underlying(std::istream &in, T &value)
+ {
+  typename underlying_type<T>::type underlying{};
+  if (in >> underlying)
+   value = T(underlying);
+  return in;
+ }
+
  inline std::istream &operator>>(std::istream &in, Table_Id &table_id)
  {
-  return in >> *(underlying_type<Table_Id>::type *)(&table_id);
+  return read_underlying(in, table_id);
  }
  inline std::istream &operator>>(std::istream &in, Field_Id &field_id)
  {
-  return in >> *(underlying_type<Field_Id>::type *)(&field_id);
+  return read_underlying(in, field_id);
  }
  inline std::istream &operator>>(std::istream &in, Record_Id &record_id)
  {
-  return in >> *(underlying_type<Record_Id>::type *)(&record_id);
+  return read_underlying(in, record_id);
  }
 
  #define PRIMITIVE_IO(type, type_id)\
