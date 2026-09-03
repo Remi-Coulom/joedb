@@ -113,13 +113,11 @@ void joedb::Readonly_Journal::read_checkpoint
 
   for (int j = 0; j < 2; j++)
   {
-   if
-   (
-    -pos[2 * i + j] >= checkpoint_position &&
-    (file_size < 0 || -pos[2 * i + j] <= file_size)
-   )
+   const int64_t p = pos[2 * i + j];
+   const int64_t neg = (p == INT64_MIN) ? INT64_MIN : -p; // avoid UB
+   if (neg >= checkpoint_position && (file_size < 0 || neg <= file_size))
    {
-    checkpoint_position = -pos[2 * i + j];
+    checkpoint_position = neg;
     hard_index = i ^ 1;
     soft_index = j;
    }
