@@ -155,7 +155,7 @@ namespace joedb
 
    if (max_record_id.is_not_null() && size >= size_t(index_t(max_record_id)))
     throw Exception("vector is too big");
-   else
+   else if (size > 0)
    {
     switch(readable.get_field_type(table_id, field_id).get_type_id())
     {
@@ -169,7 +169,7 @@ namespace joedb
       std::vector<type> v(size);\
       for (size_t i = 0; i < size; i++)\
        v[i] = joedb::read_##type_id(parameters);\
-      writable.update_vector_##type_id(table_id, record_id, field_id, size, &v[0]);\
+      writable.update_vector_##type_id(table_id, record_id, field_id, size, v.data());\
      }\
      break;
      #include "joedb/TYPE_MACRO.h"
