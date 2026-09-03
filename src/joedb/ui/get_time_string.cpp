@@ -11,7 +11,12 @@ namespace joedb
   const time_t stamp = time_t(timestamp);
   struct tm tm;
 
-#ifdef _WIN32
+#ifdef JOEDB_PORTABLE
+  const auto tm_ptr = std::gmtime(&stamp);
+  if (tm_ptr)
+    tm = *tm_ptr;
+  else
+#elif defined(_WIN32)
   if (gmtime_s(&tm, &stamp) != 0)
 #else
   if (gmtime_r(&stamp, &tm) == nullptr)
