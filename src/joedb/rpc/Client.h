@@ -17,6 +17,13 @@ namespace joedb::rpc
  class Client: public Ping_Client
  {
   private:
+   int64_t max_message_size = 1 << 30;
+
+   void throw_invalid_size()
+   {
+    throw Exception("invalid size");
+   }
+
    Buffer<13> buffer;
    Thread_Safe<Channel&> channel;
    const std::vector<Signature> &signatures;
@@ -62,6 +69,11 @@ namespace joedb::rpc
     handshake();
    }
 
+   void set_max_message_size(int64_t max_size)
+   {
+    max_message_size = max_size;
+   }
+
    void call(int64_t procedure_id, Memory_File &file)
    {
     Lock<Channel&> lock(channel);
@@ -91,6 +103,10 @@ namespace joedb::rpc
     {
      const size_t from = file.get_data().size();
      const int64_t until = buffer.read<int64_t>();
+
+     if (until < int64_t(from) || until > max_message_size)
+      throw_invalid_size();
+
      file.get_data().resize(size_t(until));
      lock->read(file.get_data().data() + from, size_t(until) - from);
      file.pwrite((const char *)&until, 8, 0);
@@ -99,6 +115,10 @@ namespace joedb::rpc
     else
     {
      const int64_t n = buffer.read<int64_t>();
+
+     if (n < 0 || n > max_message_size)
+      throw_invalid_size();
+
      std::string error_message;
      error_message.resize(n);
      lock->read(error_message.data(), n);
