@@ -73,7 +73,7 @@ namespace joedb::rpc
       //
       Memory_File file;
 
-      if (until < 0 || until > get_server().max_message_size)
+      if (until < int64_t(signature.prolog.size()) || until > get_server().max_message_size)
        throw Exception("invalid size");
 
       {
