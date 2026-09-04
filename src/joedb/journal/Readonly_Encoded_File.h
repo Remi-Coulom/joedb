@@ -18,7 +18,7 @@ namespace joedb
    mutable db::encoded_file::id_of_buffer decoded_buffer;
 
   protected:
-   static constexpr size_t max_buffer_size = 1 << 20;
+   static constexpr size_t max_buffer_size = 1 << 24;
 
    Decoder &decoder;
 
