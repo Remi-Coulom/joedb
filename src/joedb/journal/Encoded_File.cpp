@@ -47,31 +47,40 @@ namespace joedb
  void Encoded_File::pwrite(const char *buffer, size_t size, int64_t offset)
  //////////////////////////////////////////////////////////////////////////
  {
-  if (size > write_buffer_total_size)
+  if (write_buffer_size)
   {
-   flush_write_buffer();
-   write_blob(buffer, size, offset);
-   return;
+   if (write_buffer_offset + int64_t(write_buffer_size) != offset)
+    flush_write_buffer();
+   else
+   {
+    const size_t room = write_buffer_total_size - write_buffer_size;
+    const size_t s = std::min(room, size);
+    std::memcpy(write_buffer.data() + write_buffer_size, buffer, s);
+    write_buffer_size += s;
+    buffer += s;
+    offset += int64_t(s);
+    size -= s;
+   }
   }
 
-  if
-  (
-   write_buffer_size &&
-   (
-    write_buffer_offset + int64_t(write_buffer_size) != offset ||
-    write_buffer_size + size > write_buffer_total_size
-   )
-  )
+  if (size > 0)
   {
    flush_write_buffer();
+   while (size >= write_buffer_total_size)
+   {
+    write_blob(buffer, write_buffer_total_size, offset);
+    buffer += write_buffer_total_size;
+    offset += write_buffer_total_size;
+    size -= write_buffer_total_size;
+   }
   }
 
-  if (write_buffer_size == 0)
+  if (size > 0)
+  {
+   std::memcpy(write_buffer.data(), buffer, size);
    write_buffer_offset = offset;
-
-  std::memcpy(write_buffer.data() + write_buffer_size, buffer, size);
-
-  write_buffer_size += size;
+   write_buffer_size = size;
+  }
  }
 
  //////////////////////////////////////////////////////////////////////////

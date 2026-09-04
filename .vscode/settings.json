@@ -1,0 +1,15 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/compcmake",
+    "editor.formatOnSave": false,
+    "cmake.options.statusBarVisibility": "visible",
+    "github.copilot.enable": {
+        "*": false
+    },
+    "github.copilot.nextEditSuggestions.enabled": false,
+    "[cpp]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 1,
+        "editor.indentSize": 1,
+        "editor.detectIndentation": false
+    }
+}
