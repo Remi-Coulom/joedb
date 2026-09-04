@@ -53,7 +53,7 @@ namespace joedb
     flush_write_buffer();
    else
    {
-    const size_t room = write_buffer_total_size - write_buffer_size;
+    const size_t room = write_buffer_capacity - write_buffer_size;
     const size_t s = std::min(room, size);
     std::memcpy(write_buffer.data() + write_buffer_size, buffer, s);
     write_buffer_size += s;
@@ -66,12 +66,12 @@ namespace joedb
   if (size > 0)
   {
    flush_write_buffer();
-   while (size >= write_buffer_total_size)
+   while (size >= write_buffer_capacity)
    {
-    write_blob(std::string_view(buffer, write_buffer_total_size), offset);
-    buffer += write_buffer_total_size;
-    offset += write_buffer_total_size;
-    size -= write_buffer_total_size;
+    write_blob(std::string_view(buffer, write_buffer_capacity), offset);
+    buffer += write_buffer_capacity;
+    offset += write_buffer_capacity;
+    size -= write_buffer_capacity;
    }
   }
 
@@ -99,7 +99,7 @@ namespace joedb
   ),
   db(db),
   codec(codec),
-  write_buffer(write_buffer_total_size),
+  write_buffer(write_buffer_capacity),
   write_buffer_offset(0),
   write_buffer_size(0)
  {
