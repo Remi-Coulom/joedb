@@ -1,6 +1,15 @@
 History
 =======
 
+- 2026-09-04 10.0.7 LTS
+
+  - Various fixes after security review by Codex 5.6 Sol
+
+- 2026-04-19 10.0.6 LTS
+
+  - add missing volatile to sig_atomic_t
+  - added some asserts and safety checks
+
 - 2025-09-12 10.0.5 LTS
 
   - Fix joedb_push to a file connection
