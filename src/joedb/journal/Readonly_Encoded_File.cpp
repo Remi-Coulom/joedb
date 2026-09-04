@@ -1,4 +1,5 @@
 #include "joedb/journal/Readonly_Encoded_File.h"
+#include <joedb/error/Exception.h>
 
 namespace joedb
 {
@@ -14,7 +15,7 @@ namespace joedb
   const int64_t start = offset;
   const int64_t end = offset + int64_t(size);
 
-  int64_t global_end = start;
+  int64_t actual_end = start;
 
   for (auto b: db.get_buffer_table())
   {
@@ -29,15 +30,17 @@ namespace joedb
    const int64_t intersection_start = std::max(start, b_start);
    const int64_t intersection_end = std::min(end, b_end);
 
-   if (intersection_start < intersection_end && intersection_start <= global_end)
+   if (intersection_start < intersection_end && intersection_start <= actual_end)
    {
-    if (intersection_end > global_end)
-     global_end = intersection_end;
-
     if (b != decoded_buffer)
     {
-     if (int64_t(read_buffer.size()) < db.get_size(b))
-      read_buffer.resize(size_t(db.get_size(b)));
+     const size_t read_buffer_size = size_t(db.get_size(b));
+
+     if (read_buffer_size > max_buffer_size)
+      continue;
+
+     if (read_buffer.size() < read_buffer_size)
+      read_buffer.resize(read_buffer_size);
 
      decoder.decode
      (
@@ -55,10 +58,13 @@ namespace joedb
      read_buffer.data() + intersection_start - b_start,
      size_t(intersection_end - intersection_start)
     );
+
+    if (intersection_end > actual_end)
+     actual_end = intersection_end;
    }
   }
 
-  return size_t(global_end - start);
+  return size_t(actual_end - start);
  }
 
  //////////////////////////////////////////////////////////////////////////
