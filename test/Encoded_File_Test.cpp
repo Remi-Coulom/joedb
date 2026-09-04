@@ -1,8 +1,11 @@
 #include "joedb/journal/Encoded_File.h"
-#include "joedb/journal/Brotli_Codec.h"
 #include "joedb/journal/Identity_Codec.h"
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/interpreted/Database_Schema.h"
+
+#ifdef JOEDB_HAS_BROTLI
+#include "joedb/journal/Brotli_Codec.h"
+#endif
 
 #include "gtest/gtest.h"
 
@@ -103,10 +106,10 @@ namespace joedb
 
   if (is_compression)
   {
-   EXPECT_TRUE(size_t(db_file.get_size()) < N);
+   EXPECT_LT(size_t(db_file.get_size()),N);
   }
 
-  EXPECT_TRUE(size_t(file.get_size()) > N);
+  EXPECT_GT(size_t(file.get_size()), N);
 
   {
    Readonly_Journal journal(file);
