@@ -35,6 +35,29 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ TEST(Encoded_File, large_write)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Identity_Codec codec;
+  Memory_File db_file;
+  db::encoded_file::Writable_Database db(db_file);
+  Encoded_File file(codec, db);
+
+  const size_t large_size = (1 << 24) + 123;
+  std::string written(large_size, 0);
+  for (size_t i = 0; i < written.size(); i++)
+   written[i] = char(i & 0x7f);
+
+  file.pwrite(written.data(), written.size(), 0);
+
+  EXPECT_EQ(file.get_size(), int64_t(written.size()));
+
+  std::string read(written.size(), 0);
+  ASSERT_EQ(file.pread(read.data(), read.size(), 0), read.size());
+  EXPECT_EQ(read, written);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  static void encoded_file_test(Codec &codec)
  ////////////////////////////////////////////////////////////////////////////
  {

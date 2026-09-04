@@ -25,9 +25,9 @@ namespace joedb
    (uint8_t *)decoded
   );
 
-  JOEDB_RELEASE_ASSERT(brotli_decoded_size == decoded_size);
-
   if (result != BROTLI_DECODER_RESULT_SUCCESS)
    throw Exception("Brotli decompression failed");
+
+  JOEDB_RELEASE_ASSERT(brotli_decoded_size == decoded_size);
  }
 }

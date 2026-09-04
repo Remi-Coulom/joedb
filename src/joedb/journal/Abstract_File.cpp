@@ -117,7 +117,7 @@ namespace joedb
   (
    blob.get_position() < 0 ||
    blob.get_size() < 0 ||
-   (max_size >= 0 && blob.get_size() >= max_size)
+   (max_size >= 0 && blob.get_size() > max_size)
   )
   {
    reading_past_end_of_file();
