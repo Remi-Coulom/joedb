@@ -18,6 +18,8 @@ namespace joedb
    mutable db::encoded_file::id_of_buffer decoded_buffer;
 
   protected:
+   static constexpr size_t max_buffer_size = 1 << 20;
+
    Decoder &decoder;
 
    size_t pread(char * buffer, size_t size, int64_t offset) const override;

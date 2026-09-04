@@ -14,7 +14,8 @@ namespace joedb
    db::encoded_file::Writable_Database &db;
    Codec &codec;
 
-   static constexpr size_t write_buffer_total_size = 1 << 20;
+   static constexpr size_t write_buffer_total_size = max_buffer_size;
+   static_assert(write_buffer_total_size <= max_buffer_size);
    std::vector<char> write_buffer;
    int64_t write_buffer_offset;
    mutable size_t write_buffer_size;
