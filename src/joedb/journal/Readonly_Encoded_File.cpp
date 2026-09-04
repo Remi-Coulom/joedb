@@ -14,18 +14,22 @@ namespace joedb
   const int64_t start = offset;
   const int64_t end = offset + int64_t(size);
 
-  int64_t global_end = offset;
+  int64_t global_end = start;
 
   for (auto b: db.get_buffer_table())
   {
    const int64_t b_start = db.get_offset(b);
-   const int64_t b_end = b_start + db.get_size(b);
+   const int64_t b_size = db.get_size(b);
+
+   if (b_size <= 0)
+    continue;
+
+   const int64_t b_end = int64_t(uint64_t(b_start) + uint64_t(b_size));
 
    const int64_t intersection_start = std::max(start, b_start);
    const int64_t intersection_end = std::min(end, b_end);
-   const int64_t intersection_size = intersection_end - intersection_start;
 
-   if (intersection_size > 0 && intersection_start <= global_end)
+   if (intersection_start < intersection_end && intersection_start <= global_end)
    {
     if (intersection_end > global_end)
      global_end = intersection_end;
@@ -49,12 +53,12 @@ namespace joedb
     (
      buffer + intersection_start - start,
      read_buffer.data() + intersection_start - b_start,
-     size_t(intersection_size)
+     size_t(intersection_end - intersection_start)
     );
    }
   }
 
-  return size_t(global_end - offset);
+  return size_t(global_end - start);
  }
 
  //////////////////////////////////////////////////////////////////////////
@@ -90,15 +94,15 @@ namespace joedb
  int64_t Readonly_Encoded_File::get_size() const
  //////////////////////////////////////////////////////////////////////////
  {
-  int64_t result = 0;
+  uint64_t result = 0;
 
   for (const auto buffer: db.get_buffer_table())
   {
-   const int64_t end = db.get_offset(buffer) + db.get_size(buffer);
+   const uint64_t end = uint64_t(db.get_offset(buffer)) + uint64_t(db.get_size(buffer));
    if (end > result)
     result = end;
   }
 
-  return result;
+  return std::max<int64_t>(0, int64_t(result));
  }
 }
