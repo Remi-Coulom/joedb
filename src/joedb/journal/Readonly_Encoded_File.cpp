@@ -34,19 +34,19 @@ namespace joedb
    {
     if (b != decoded_buffer)
     {
-     const size_t read_buffer_size = size_t(db.get_size(b));
-
-     if (read_buffer_size > max_buffer_size)
+     if (uint64_t(b_size) > uint64_t(max_buffer_size))
       continue;
+
+     const size_t read_buffer_size = size_t(b_size);
 
      if (read_buffer.size() < read_buffer_size)
       read_buffer.resize(read_buffer_size);
 
      decoder.decode
      (
-      blob_reader.read_blob(db.get_data(b)),
+      blob_reader.read_blob(db.get_data(b), max_buffer_size),
       read_buffer.data(),
-      size_t(db.get_size(b))
+      read_buffer_size
      );
 
      decoded_buffer = b;

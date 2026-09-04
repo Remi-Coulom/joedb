@@ -29,7 +29,7 @@ namespace joedb
 
    int64_t get_position() const noexcept {return position;}
    int64_t get_size() const noexcept {return size;}
-   int64_t get_end() const noexcept {return position + size;}
+   int64_t get_end() const noexcept {return int64_t(uint64_t(position) + uint64_t(size));}
  };
 }
 
