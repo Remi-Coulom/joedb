@@ -14,7 +14,7 @@ namespace joedb
   const int64_t start = offset;
   const int64_t end = offset + int64_t(size);
 
-  int64_t global_end = 0;
+  int64_t global_end = offset;
 
   for (auto b: db.get_buffer_table())
   {
@@ -25,7 +25,7 @@ namespace joedb
    const int64_t intersection_end = std::min(end, b_end);
    const int64_t intersection_size = intersection_end - intersection_start;
 
-   if (intersection_size > 0)
+   if (intersection_size > 0 && intersection_start <= global_end)
    {
     if (intersection_end > global_end)
      global_end = intersection_end;
@@ -54,10 +54,7 @@ namespace joedb
    }
   }
 
-  if (global_end == 0)
-    return 0;
-  else
-    return size_t(global_end - offset);
+  return size_t(global_end - offset);
  }
 
  //////////////////////////////////////////////////////////////////////////
