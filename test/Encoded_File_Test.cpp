@@ -74,6 +74,15 @@ namespace joedb
    EXPECT_EQ(file.read<int8_t>(), 0x01);
    EXPECT_EQ(file.read<int32_t>(), value);
   }
+
+  {
+   db::encoded_file::Writable_Database db(db_file);
+   Encoded_File file(codec, db);
+   EXPECT_EQ(file.get_size(), 8);
+   char buffer[8];
+   EXPECT_EQ(file.pread(buffer, 8, 0), 8);
+   EXPECT_EQ(file.pread(buffer, 8, 8), 0);
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
