@@ -54,7 +54,10 @@ namespace joedb
    }
   }
 
-  return size_t(global_end - offset);
+  if (global_end == 0)
+    return 0;
+  else
+    return size_t(global_end - offset);
  }
 
  //////////////////////////////////////////////////////////////////////////
