@@ -17,13 +17,6 @@ namespace joedb::rpc
  class Client: public Ping_Client
  {
   private:
-   int64_t max_message_size = 1 << 30;
-
-   void throw_invalid_size()
-   {
-    throw Exception("invalid size");
-   }
-
    Buffer<13> buffer;
    Thread_Safe<Channel&> channel;
    const std::vector<Signature> &signatures;
@@ -55,23 +48,27 @@ namespace joedb::rpc
    }
    Keep_Alive_Thread keep_alive;
 
+   const int64_t max_message_size;
+
+   void throw_invalid_size()
+   {
+    throw Exception("invalid size");
+   }
+
   public:
    Client
    (
     Channel &channel,
     const std::vector<Signature> &signatures,
-    std::chrono::milliseconds keep_alive_interval = std::chrono::milliseconds(0)
+    std::chrono::milliseconds keep_alive_interval = std::chrono::milliseconds(0),
+    int64_t max_message_size = 1 << 24
    ):
     channel(channel),
     signatures(signatures),
-    keep_alive(*this, keep_alive_interval)
+    keep_alive(*this, keep_alive_interval),
+    max_message_size(max_message_size)
    {
     handshake();
-   }
-
-   void set_max_message_size(int64_t max_size)
-   {
-    max_message_size = max_size;
    }
 
    void call(int64_t procedure_id, Memory_File &file)

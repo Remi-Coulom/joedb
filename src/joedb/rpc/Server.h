@@ -19,6 +19,7 @@ namespace joedb::rpc
   private:
    const std::vector<Signature> &signatures;
    const std::vector<Procedure *> &procedures;
+   const int64_t max_message_size;
 
   protected:
    class Session: public joedb::asio::Server::Session
@@ -71,6 +72,9 @@ namespace joedb::rpc
       // Read input message into a Memory_File
       //
       Memory_File file;
+
+      if (until < 0 || until > get_server().max_message_size)
+       throw Exception("invalid size");
 
       {
        std::string &data = file.get_data();
@@ -204,7 +208,8 @@ namespace joedb::rpc
     int thread_count,
     std::string endpoint_path,
     const std::vector<Signature> &signatures,
-    const std::vector<Procedure *> &procedures
+    const std::vector<Procedure *> &procedures,
+    int64_t max_message_size = 1 << 24
    ):
     joedb::asio::Server
     (
@@ -214,7 +219,8 @@ namespace joedb::rpc
      std::move(endpoint_path)
     ),
     signatures(signatures),
-    procedures(procedures)
+    procedures(procedures),
+    max_message_size(max_message_size)
    {
    }
  };
