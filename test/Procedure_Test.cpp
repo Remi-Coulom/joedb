@@ -39,6 +39,7 @@ namespace joedb
      procedures.procedures
     )
    {
+    server.start();
    }
 
    void stop()

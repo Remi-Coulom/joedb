@@ -41,6 +41,7 @@ namespace joedb
      timeout
     )
    {
+    server.start();
    }
 
    void join() {server.join();}

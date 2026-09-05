@@ -77,6 +77,7 @@ namespace joedb::asio
     std::string endpoint_path
    );
 
+
    int get_log_level() const
    {
     return log_level;
@@ -88,8 +89,16 @@ namespace joedb::asio
    }
 
    bool is_joined() const {return joined;}
+
+   void start();
    void stop();
    void join();
+
+   void run()
+   {
+    start();
+    join();
+   }
 
    virtual void cleanup_after_join();
 

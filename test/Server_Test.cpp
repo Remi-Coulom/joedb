@@ -62,6 +62,7 @@ namespace joedb
      lock_timeout
     }
    {
+    server.start();
    }
 
    void stop()
@@ -214,6 +215,8 @@ namespace joedb
    server_client,
    std::chrono::seconds(0)
   );
+
+  server.start();
 
   {
    Test_Local_Channel channel(server.get_endpoint_path());
@@ -690,6 +693,7 @@ namespace joedb
    std::chrono::seconds(0)
   };
 
+  server.start();
   server.stop();
 
   EXPECT_EQ(file.get_size(), connection_file.get_size());
@@ -715,6 +719,8 @@ namespace joedb
    backup_client,
    std::chrono::seconds(0)
   };
+
+  server.start();
 
   {
    Memory_File client_file;

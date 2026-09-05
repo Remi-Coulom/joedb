@@ -80,7 +80,7 @@ namespace joedb
    std::chrono::milliseconds(std::lround(timeout_seconds * 1000))
   );
 
-  server.join();
+  server.run();
 
   return 0;
  }

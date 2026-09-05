@@ -158,7 +158,10 @@ namespace joedb::asio
     }
    }
   );
-
+ }
+ 
+ void Server::start()
+ {
   boost::asio::co_spawn
   (
    thread_pool,
