@@ -82,29 +82,6 @@ new format is first implemented in write functions. At this moment,
 ``joedb_convert`` is still able to read the old format, and writes the new
 format.
 
-.. _joedb_merge:
-
-``joedb_merge``
----------------
-
-.. literalinclude:: ./tutorial/joedb_merge.out
-   :language: none
-
-``joedb_merge`` merges multiple files with the same schema into a single file that contains the concatenation of all tables. References are translated. Duplicates are not eliminated.
-
-For instance, when merging those two databases:
-
-.. literalinclude:: ./tutorial/merge_1.json
-   :language: json
-
-.. literalinclude:: ./tutorial/merge_2.json
-   :language: json
-
-``joedb_merge`` produces this result:
-
-.. literalinclude:: ./tutorial/merged.json
-   :language: json
-
 .. _joedb_server:
 
 ``joedb_server``

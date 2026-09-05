@@ -85,7 +85,6 @@ include_directories(../doc/source/tutorial/src)
 joedb_add_executable(joedbi ../src/joedb/ui/joedbi.cpp)
 joedb_add_executable(joedb_logdump ../src/joedb/ui/joedb_logdump.cpp)
 joedb_add_executable(joedb_pack ../src/joedb/ui/joedb_pack.cpp)
-joedb_add_executable(joedb_merge ../src/joedb/ui/joedb_merge.cpp)
 joedb_add_executable(joedb_to_json ../src/joedb/ui/joedb_to_json.cpp)
 joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
 joedb_add_executable(write_lock ../src/joedb/ui/write_lock.cpp)
@@ -174,7 +173,6 @@ if(GTest_FOUND)
   ../test/Interpreter_Test.cpp
   ../test/is_identifier_Test.cpp
   ../test/Writable_Journal_Test.cpp
-  ../test/Merge_Test.cpp
   ../test/Multiplexer_Test.cpp
   ../test/nested_namespace_Test.cpp
   ../test/pack_Test.cpp
@@ -486,7 +484,6 @@ install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_merge RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
 install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
