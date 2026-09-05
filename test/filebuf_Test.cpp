@@ -192,6 +192,22 @@ namespace joedb
   EXPECT_EQ(buf.sbumpc(), std::char_traits<char>::eof());
  }
 
+ TEST(filebuf, unget_0xff)
+ {
+  joedb::Memory_File file;
+  file.get_data() = std::string(1, char(0xff));
+  joedb::iostream ios(file);
+
+  const auto value = std::char_traits<char>::to_int_type(char(0xff));
+  ASSERT_EQ(ios.get(), value);
+  ASSERT_EQ(ios.std::istream::sync(), 0);
+
+  ios.unget();
+
+  EXPECT_TRUE(ios.good());
+  EXPECT_EQ(ios.get(), value);
+ }
+
  TEST(filebuf, read_then_write)
  {
   joedb::Memory_File file;
