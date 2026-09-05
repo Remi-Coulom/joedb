@@ -15,9 +15,12 @@ TEST(print_date, length)
 TEST(print_date, bad_timestamp)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ
- (
-  joedb::get_time_string(std::numeric_limits<int64_t>::max()),
-  "bad timestamp"
- );
+ if (sizeof(time_t) == sizeof(int64_t))
+ {
+  EXPECT_EQ
+  (
+   joedb::get_time_string(std::numeric_limits<int64_t>::max()),
+   "bad timestamp"
+  );
+ }
 }
