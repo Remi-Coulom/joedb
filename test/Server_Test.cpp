@@ -445,6 +445,41 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, conflicting_push_does_not_use_previous_writer)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server;
+
+  Memory_File client_file;
+  Test_Client client(client_file, server);
+
+  client.transaction([](const Readable &, Writable &writable)
+  {
+   writable.comment("first push");
+  });
+
+  {
+   Memory_File other_client_file;
+   Test_Client other_client(other_client_file, server);
+   other_client.transaction([](const Readable &, Writable &writable)
+   {
+    writable.comment("advance server");
+   });
+  }
+
+  const auto server_data = server.file.get_data();
+
+  {
+   Tail_Exclusive_Lock lock(client.get_writable_journal());
+   client.get_writable_journal().comment("conflicting push");
+   client.get_writable_journal().soft_checkpoint();
+  }
+
+  EXPECT_THROW(client.push_if_ahead(), Disconnection);
+  EXPECT_EQ(server.file.get_data(), server_data);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Server, push_timeout)
  ////////////////////////////////////////////////////////////////////////////
  {
