@@ -372,6 +372,7 @@ namespace joedb
   );
 
   push_status = buffer.data[0];
+  push_writer.reset();
 
   if (!get_server().writable_journal_client)
    push_status = 'R';
@@ -439,6 +440,8 @@ namespace joedb
     }
    }
   }
+
+  push_writer.reset();
 
   if (get_server().log_level > 2)
    log(std::string("done pushing, status = ") + push_status);
