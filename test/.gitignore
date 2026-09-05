@@ -1,6 +1,7 @@
 html
 *.info
 *.tmp
+*.sock
 multi_server.joedb
 local_connection.joedb
 backup.joedb

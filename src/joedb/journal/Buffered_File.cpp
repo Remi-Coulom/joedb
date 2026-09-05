@@ -99,7 +99,7 @@ namespace joedb
     (
      destination.buffer.data + half_buffer_size + n1,
      n0 - n1,
-     current
+     current + int64_t(n1)
     );
 
     if (n == 0)
