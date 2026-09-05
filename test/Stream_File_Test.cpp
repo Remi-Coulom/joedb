@@ -8,6 +8,20 @@
 using namespace joedb;
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Stream_File_Test, append_after_get_size)
+/////////////////////////////////////////////////////////////////////////////
+{
+ std::stringbuf stringbuf("ABC", std::ios::in | std::ios::out);
+ Stream_File file(stringbuf, Open_Mode::write_existing);
+
+ const int64_t end = file.get_size();
+ ASSERT_EQ(end, 3);
+ file.pwrite("D", 1, end);
+
+ EXPECT_EQ("ABCD", stringbuf.str());
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Stream_File_Test, position_test)
 {
  std::stringbuf stringbuf;

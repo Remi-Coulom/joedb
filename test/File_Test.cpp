@@ -4,6 +4,7 @@
 #include "joedb/journal/File_Buffer.h"
 
 #include "Test_Sequence.h"
+#include "Test_File.h"
 
 #include "gtest/gtest.h"
 
@@ -16,6 +17,31 @@
 using namespace joedb;
 
 static const uint64_t joedb_magic = 0x0000620165646A6FULL;
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(File, equal_to_identical_files_with_short_reads)
+/////////////////////////////////////////////////////////////////////////////
+{
+ Memory_File file;
+ Test_File short_read_file;
+ file.get_data() = short_read_file.get_data() = "ABCD";
+
+ EXPECT_TRUE(file.equal_to(short_read_file, 0, file.get_size()));
+ EXPECT_TRUE(short_read_file.equal_to(file, 0, file.get_size()));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(File, equal_to_different_files_with_short_reads)
+/////////////////////////////////////////////////////////////////////////////
+{
+ Memory_File file;
+ Test_File short_read_file;
+ file.get_data() = "AAAA";
+ short_read_file.get_data() = "ABCD";
+
+ EXPECT_FALSE(file.equal_to(short_read_file, 0, file.get_size()));
+ EXPECT_FALSE(short_read_file.equal_to(file, 0, file.get_size()));
+}
 
 class File_Test: public::testing::Test
 {

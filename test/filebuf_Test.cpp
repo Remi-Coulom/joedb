@@ -225,6 +225,20 @@ namespace joedb
   EXPECT_EQ("456", s);
  }
 
+ TEST(filebuf, seek_to_end_with_pending_output)
+ {
+  joedb::Memory_File file;
+  joedb::iostream ios(file);
+
+  ios << "ABC";
+  ios.seekp(0, std::ios::end);
+  ios << "D";
+  ios.flush();
+
+  ASSERT_TRUE(ios.good());
+  EXPECT_EQ("ABCD", file.get_data());
+ }
+
  TEST(filebuf, write_at_the_end)
  {
   joedb::Memory_File file;
