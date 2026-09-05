@@ -1,6 +1,11 @@
 History
 =======
 
+- 2026-09-04 10.0.8 LTS GPT-6 Astra finds more bugs
+
+  - fix Buffered_File::equal_to bug
+  - fix Stream_File bug
+
 - 2026-09-04 10.0.7 LTS
 
   - Various fixes after security review by Codex 5.6 Sol
