@@ -32,7 +32,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   Header header;
-  file.pread((char *)(&header), Header::size, 0);
+  file.full_pread((char *)(&header), Header::size, 0);
 
   out << "    file size: " << file.get_size();
 
