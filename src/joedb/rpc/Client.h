@@ -40,7 +40,7 @@ namespace joedb::rpc
    }
 
    Thread_Safe<Channel&> &get_channel() override {return channel;}
-   void locked_ping(Lock<Channel&> &lock) override
+   void locked_ping(Lock<Channel&> &lock) override final
    {
     char c = 'P';
     lock->write(&c, 1);
@@ -69,6 +69,7 @@ namespace joedb::rpc
     max_message_size(max_message_size)
    {
     handshake();
+    keep_alive.start();
    }
 
    void call(int64_t procedure_id, Memory_File &file)

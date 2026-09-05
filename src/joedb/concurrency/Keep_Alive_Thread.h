@@ -66,10 +66,15 @@ namespace joedb
     thread_must_stop(false),
     stopped(true)
    {
-    if (interval.count() > 0)
+   }
+
+   void start()
+   {
+    if (stopped && interval.count() > 0)
     {
-     stopped = false;
+     thread_must_stop = false;
      thread = std::thread([this](){keep_alive();});
+     stopped = false;
     }
    }
 

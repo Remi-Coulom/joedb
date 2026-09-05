@@ -18,7 +18,7 @@ namespace joedb
   friend class Server_File;
 
   private:
-   void locked_ping(Lock<Channel&> &lock) override;
+   void locked_ping(Lock<Channel&> &lock) override final;
    Keep_Alive_Thread keep_alive;
 
    void connect();
