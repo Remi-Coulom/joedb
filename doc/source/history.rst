@@ -54,6 +54,7 @@ History
     - many ``const std::string &`` parameters are replaced by ``std::string_view`` or ``beman::cstring_view``
     - :joedb:`Logger` is used everywhere for logging instead of ``std::ostream``
     - ``joedb_embed`` was removed (use ``#embed`` instead, with a :joedb:`Readonly_Memory_File`)
+    - ``joedb_merge`` was removed
     - ``File_Connection`` to a shared file is not supported any more
 
 - 2025-05-26 10.0.0 LTS
