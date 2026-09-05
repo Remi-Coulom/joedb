@@ -12,8 +12,7 @@ namespace joedb
  {
   private:
    std::streambuf &streambuf;
-   mutable std::streambuf::pos_type pos;
-   void seek(int64_t offset) const;
+   void seek(int64_t offset, std::ios_base::openmode which) const;
 
   public:
    static constexpr bool lockable = false;

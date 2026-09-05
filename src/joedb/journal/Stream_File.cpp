@@ -11,12 +11,11 @@ namespace joedb
   Open_Mode mode
  ):
   Abstract_File(mode),
-  streambuf(streambuf),
-  pos(0)
+  streambuf(streambuf)
  {
   streambuf.pubseekoff
   (
-   pos,
+   0,
    std::ios_base::beg,
    std::ios_base::in
   );
@@ -26,26 +25,25 @@ namespace joedb
  int64_t Stream_File::get_size() const
  /////////////////////////////////////////////////////////////////////////////
  {
-  pos = streambuf.pubseekoff
+  return streambuf.pubseekoff
   (
    0,
    std::ios_base::end,
    std::ios_base::in
   );
-
-  return pos;
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Stream_File::seek(int64_t offset) const
+ void Stream_File::seek
  /////////////////////////////////////////////////////////////////////////////
+ (
+  int64_t offset,
+  std::ios_base::openmode which
+ ) const
  {
-  if (int64_t(pos) == offset)
-   return;
-
   if (offset >= 0)
   {
-   pos = streambuf.pubseekoff(offset, std::ios_base::beg);
+   const auto pos = streambuf.pubseekoff(offset, std::ios_base::beg, which);
    if (int64_t(pos) == offset)
     return;
   }
@@ -57,9 +55,8 @@ namespace joedb
  size_t Stream_File::pread(char *data, size_t size, int64_t offset) const
  /////////////////////////////////////////////////////////////////////////////
  {
-  seek(offset);
+  seek(offset, std::ios_base::in);
   const std::streamsize n = streambuf.sgetn(data, std::streamsize(size));
-  pos += n;
   return size_t(n);
  }
 
@@ -67,7 +64,7 @@ namespace joedb
  void Stream_File::pwrite(const char *data, size_t size, int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
-  seek(offset);
+  seek(offset, std::ios_base::out);
 
   size_t written = 0;
 
@@ -82,7 +79,6 @@ namespace joedb
    if (n <= 0)
     throw Exception("Could not write to stream");
 
-   pos += n;
    written += size_t(n);
   }
 
