@@ -39,7 +39,7 @@ namespace joedb::rpc
     session_id = buffer.read<int64_t>();
    }
 
-   Thread_Safe<Channel&> &get_channel() override {return channel;}
+   Thread_Safe<Channel&> &get_channel() override final {return channel;}
    void locked_ping(Lock<Channel&> &lock) override final
    {
     char c = 'P';
