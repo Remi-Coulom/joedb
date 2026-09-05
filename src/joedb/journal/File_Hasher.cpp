@@ -28,7 +28,7 @@ namespace joedb
    if (current_size + int64_t(block_size) > size)
     block_size = size_t(size - current_size);
 
-   const size_t read_count = file.pread(hashing_buffer.data(), block_size, start + current_size);
+   const size_t read_count = file.full_pread(hashing_buffer.data(), block_size, start + current_size);
    current_size += int64_t(read_count);
    const uint32_t full_chunks = uint32_t(read_count / SHA_256::chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
@@ -98,7 +98,7 @@ namespace joedb
     );
    }
 
-   file.pread(buffer.data(), buffer.size(), buffer_position);
+   file.full_pread(buffer.data(), buffer.size(), buffer_position);
 
    for (size_t j = 0; j < buffer.size(); j += SHA_256::chunk_size)
     sha_256.process_chunk(buffer.data() + j);

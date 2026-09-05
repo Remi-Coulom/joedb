@@ -2,9 +2,9 @@
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 
-#include "gtest/gtest.h"
+#include "Test_File.h"
 
-#include <algorithm>
+#include "gtest/gtest.h"
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(SHA_256, rotr)
@@ -85,16 +85,7 @@ TEST(SHA_256, file_slice)
 TEST(SHA_256, file_with_short_reads)
 /////////////////////////////////////////////////////////////////////////////
 {
- class Short_Read_File: public joedb::Memory_File
- {
-  public:
-   size_t pread(char *data, size_t size, int64_t offset) const override
-   {
-    return Memory_File::pread(data, std::min<size_t>(size, 1025), offset);
-   }
- };
-
- Short_Read_File file;
+ joedb::Test_File file;
  file.get_data() = std::string(2048, 'x');
  file.get_data().back() = 'y';
 
@@ -102,6 +93,29 @@ TEST(SHA_256, file_with_short_reads)
  (
   joedb::File_Hasher::get_hash(file),
   joedb::File_Hasher::get_hash(file.get_data())
+ );
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(SHA_256, fast_hash_with_short_reads)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Test_File short_read_file;
+ short_read_file.get_data() = std::string(4 << 20, 'x');
+ short_read_file.get_data().back() = 'y';
+
+ joedb::Memory_File file;
+ file.get_data() = short_read_file.get_data();
+
+ EXPECT_EQ
+ (
+  joedb::File_Hasher::get_fast_hash
+  (
+   short_read_file,
+   0,
+   short_read_file.get_size()
+  ),
+  joedb::File_Hasher::get_fast_hash(file, 0, file.get_size())
  );
 }
 

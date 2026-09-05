@@ -10,6 +10,35 @@ namespace joedb
  using Default_Buffer = std::array<char, 1 << 12>;
 
  ////////////////////////////////////////////////////////////////////////////
+ size_t Abstract_File::full_pread
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  char *data,
+  const size_t size,
+  const int64_t offset
+ ) const
+ {
+  size_t result = 0;
+
+  while (result < size)
+  {
+   const size_t read_count = pread
+   (
+    data + result,
+    size - result,
+    offset + int64_t(result)
+   );
+
+   if (read_count == 0)
+    break;
+
+   result += read_count;
+  }
+
+  return result;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Abstract_File::copy_to
  ////////////////////////////////////////////////////////////////////////////
  (
