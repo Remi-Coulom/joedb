@@ -1,7 +1,7 @@
 History
 =======
 
-- 2025-??-?? 11.?.?
+- 2026-??-?? 11.?.?
 
   - New major features:
 
@@ -42,6 +42,7 @@ History
 
   - Fixes (also available on 10.0.0 LTS branch):
 
+    - various fixes found by LLM review
     - add missing ``volatile`` to ``sig_atomic_t signal_status``
     - Fix MacOS installation (set RPATH)
     - Add a timeout to ssh session (could get infinite waiting without it)
