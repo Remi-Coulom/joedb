@@ -44,7 +44,10 @@ namespace joedb
     : out_pos + pptr() - pbase();
   }
   else if (dir == std::ios_base::end)
+  {
+   syncp();
    base = file.get_size();
+  }
 
   if (base < 0)
    return pos_type(off_type(-1));
