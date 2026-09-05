@@ -140,11 +140,9 @@ void joedb::Readonly_Journal::pull_without_locking()
 int64_t joedb::Readonly_Journal::pull()
 /////////////////////////////////////////////////////////////////////////////
 {
- const int64_t old_checkpoint = checkpoint_position;
-
  Head_Shared_Lock lock(file);
+ const int64_t old_checkpoint = checkpoint_position;
  pull_without_locking();
-
  return checkpoint_position - old_checkpoint;
 }
 
