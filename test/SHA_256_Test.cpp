@@ -4,6 +4,8 @@
 
 #include "gtest/gtest.h"
 
+#include <algorithm>
+
 /////////////////////////////////////////////////////////////////////////////
 TEST(SHA_256, rotr)
 /////////////////////////////////////////////////////////////////////////////
@@ -77,6 +79,30 @@ TEST(SHA_256, file_slice)
 
  EXPECT_EQ(joedb::File_Hasher::get_hash(file, 2, 3), abc_hash);
  EXPECT_EQ(joedb::File_Hasher::get_fast_hash(file, 2, 3), abc_hash);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(SHA_256, file_with_short_reads)
+/////////////////////////////////////////////////////////////////////////////
+{
+ class Short_Read_File: public joedb::Memory_File
+ {
+  public:
+   size_t pread(char *data, size_t size, int64_t offset) const override
+   {
+    return Memory_File::pread(data, std::min<size_t>(size, 1025), offset);
+   }
+ };
+
+ Short_Read_File file;
+ file.get_data() = std::string(2048, 'x');
+ file.get_data().back() = 'y';
+
+ EXPECT_EQ
+ (
+  joedb::File_Hasher::get_hash(file),
+  joedb::File_Hasher::get_hash(file.get_data())
+ );
 }
 
 /////////////////////////////////////////////////////////////////////////////
