@@ -208,7 +208,7 @@ namespace joedb
      file.pwrite(gptr(), 1, in_pos + gptr() - eback());
     }
    }
-   return *gptr();
+   return traits_type::to_int_type(*gptr());
   }
 
   return traits_type::eof();
