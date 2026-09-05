@@ -24,10 +24,12 @@ TEST(File, full_pread)
 {
  Test_File file;
  file.get_data() = "ABCD";
- char buffer[6] = {};
+ char buffer[4] = {};
 
- EXPECT_EQ(file.full_pread(buffer, sizeof(buffer), 0), 4);
+ EXPECT_NO_THROW(file.full_pread(buffer, sizeof(buffer), 0));
  EXPECT_EQ(std::string_view(buffer, 4), "ABCD");
+
+ EXPECT_ANY_THROW(file.full_pread(buffer, sizeof(buffer), 1));
 }
 
 /////////////////////////////////////////////////////////////////////////////

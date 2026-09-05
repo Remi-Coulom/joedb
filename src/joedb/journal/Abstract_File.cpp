@@ -10,7 +10,7 @@ namespace joedb
  using Default_Buffer = std::array<char, 1 << 12>;
 
  ////////////////////////////////////////////////////////////////////////////
- size_t Abstract_File::full_pread
+ void Abstract_File::full_pread
  ////////////////////////////////////////////////////////////////////////////
  (
   char *data,
@@ -30,12 +30,10 @@ namespace joedb
    );
 
    if (read_count == 0)
-    break;
+    reading_past_end_of_file();
 
    result += read_count;
   }
-
-  return result;
  }
 
  ////////////////////////////////////////////////////////////////////////////

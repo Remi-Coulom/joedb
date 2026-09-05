@@ -53,8 +53,8 @@ namespace joedb
    /// 0 is returned if the end of the file is reached.
    virtual size_t pread(char *data, size_t size, int64_t offset) const {return 0;}
 
-   /// Read until the buffer is full or the end of the file is reached.
-   size_t full_pread(char *data, size_t size, int64_t offset) const;
+   /// Fill the buffer, or throw if the end of the file is reached.
+   void full_pread(char *data, size_t size, int64_t offset) const;
 
    /// Write a range of bytes. Extend file size if necessary.
    virtual void pwrite(const char *data, size_t size, int64_t offset) {}
