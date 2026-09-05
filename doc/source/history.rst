@@ -1,7 +1,11 @@
 History
 =======
 
-- 2026-09-04 10.0.8 LTS GPT-6 Astra finds more bugs
+- 2026-09-06 10.0.9 LTS
+
+  - fix data race between Server_Client::ping, and Server_Connection::pread
+
+- 2026-09-05 10.0.8 LTS GPT-6 Astra finds more bugs
 
   - fix Buffered_File::equal_to bug
   - fix Stream_File bug
