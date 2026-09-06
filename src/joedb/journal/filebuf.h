@@ -5,7 +5,6 @@
 
 #include <streambuf>
 #include <array>
-#include <cstring>
 
 namespace joedb
 {

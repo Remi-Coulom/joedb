@@ -40,7 +40,7 @@ namespace joedb
    header.checkpoint.fill(Header::size);
    header.version = format_version;
    header.signature = Header::joedb;
-   file_buffer.File_Iterator::write((const char *)(&header), Header::size);
+   file_buffer.File_Iterator::write(reinterpret_cast<const char *>(&header), Header::size);
   }
   else if
   (
@@ -446,7 +446,7 @@ namespace joedb
     file_buffer.write_method(value[i]);\
   }\
   else\
-   file_buffer.write_data((const char *)value, size * sizeof(type));\
+   file_buffer.write_data(reinterpret_cast<const char *>(value), size * sizeof(type));\
  }
  #include "joedb/TYPE_MACRO.h"
 

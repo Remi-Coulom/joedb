@@ -1,6 +1,8 @@
 #include "joedb/journal/filebuf.h"
 #include "joedb/error/Destructor_Logger.h"
 
+#include <cstring>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -20,7 +22,7 @@ namespace joedb
   {
    file.pwrite(buffer.data(), n, out_pos);
    out_pos += n;
-   setp(buffer.data(), buffer.data() + buffer_size);
+   setp(buffer.data(), buffer.data() + buffer.size());
   }
  }
 
@@ -222,7 +224,7 @@ namespace joedb
   setg(buffer.data(), buffer.data(), buffer.data());
 
   out_pos = 0;
-  setp(buffer.data(), buffer.data() + buffer_size);
+  setp(buffer.data(), buffer.data() + buffer.size());
  }
 
  ////////////////////////////////////////////////////////////////////////////

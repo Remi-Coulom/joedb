@@ -111,7 +111,7 @@ namespace joedb
    const uint32_t wide_char = read_utf8_char(i, s);
    const int width = wide_char_display_width(uint32_t(wide_char));
    if (width > 0)
-    result += size_t(wide_char_display_width(uint32_t(wide_char)));
+    result += size_t(width);
   }
 
   return result;
