@@ -13,12 +13,6 @@ namespace joedb
   Abstract_File(mode),
   streambuf(streambuf)
  {
-  streambuf.pubseekoff
-  (
-   0,
-   std::ios_base::beg,
-   std::ios_base::in
-  );
  }
 
  /////////////////////////////////////////////////////////////////////////////
