@@ -25,6 +25,44 @@ namespace joedb
   Arguments arguments(int(v.size()), v.data());
  }
 
+ TEST(Arguments, option_defaults)
+ {
+  const std::vector<const char *> labels{"first", "second"};
+  Arguments empty(0, nullptr);
+  EXPECT_EQ(empty.get_string_option("name", "value", "default"), "default");
+  EXPECT_EQ(empty.get_option<int>("count", "value", 42), 42);
+  EXPECT_EQ(empty.get_enum_option("mode", labels, 1), 1);
+
+  const char *argv[] = {"prog", "--name"};
+  Arguments missing_value(2, argv);
+  EXPECT_EQ(missing_value.get_string_option("name", "value", "default"), "default");
+  EXPECT_EQ(missing_value.get_next(), "--name");
+ }
+
+ TEST(Arguments, option_values_and_positionals)
+ {
+  const char *argv[] = {"prog", "--name", "", "positional", "--mode", "second"};
+  const std::vector<const char *> labels{"first", "second"};
+  Arguments arguments(6, argv);
+  EXPECT_EQ(arguments.get_string_option("name", "value", "default"), "");
+  EXPECT_EQ(arguments.get_enum_option("mode", labels, 0), 1);
+  EXPECT_EQ(arguments.get_next(), "positional");
+  EXPECT_FALSE(arguments.missing());
+  EXPECT_EQ(arguments.get_remaining_count(), 0);
+
+  const char *invalid_argv[] = {"prog", "--mode", "invalid"};
+  Arguments invalid(3, invalid_argv);
+  try
+  {
+   invalid.get_enum_option("mode", labels, 0);
+   FAIL() << "Expected an invalid option value to throw";
+  }
+  catch (const std::exception &e)
+  {
+   EXPECT_STREQ(e.what(), "invalid value for option --mode: invalid");
+  }
+ }
+
  TEST(Arguments, print_help)
  {
   const std::vector<const char *> v
