@@ -32,8 +32,6 @@ namespace joedb
 
   std::string buffer(4, ' ');
 
-  Abstract_File &af(file);
-
   file.pread(&buffer[0], 4, 8);
   EXPECT_EQ(buffer, "zzzz");
   file.pread(&buffer[0], 4, 4);
@@ -43,7 +41,7 @@ namespace joedb
 
   writer.write("aaaabbbbcccc", 12);
 
-  af.pread(&buffer[0], 4, 16);
+  file.pread(&buffer[0], 4, 16);
   EXPECT_EQ(buffer, "bbbb");
 
   reader.read(&buffer[0], 4);
