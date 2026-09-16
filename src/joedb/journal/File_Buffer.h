@@ -160,7 +160,7 @@ namespace joedb
    {
     JOEDB_DEBUG_ASSERT(!buffer_has_read_data());
 
-    if (n <= buffer.extra_size)
+    if (n <= buffer.extra_size || n < buffer.size + buffer.extra_size - buffer.index)
     {
      std::memcpy(buffer.data + buffer.index, data, n);
      buffer.index += n;
@@ -168,19 +168,8 @@ namespace joedb
     }
     else
     {
-     const size_t remaining = buffer.size + buffer.extra_size - buffer.index;
-
-     if (n < remaining)
-     {
-      std::memcpy(buffer.data + buffer.index, data, n);
-      buffer.index += n;
-      check_write_buffer();
-     }
-     else
-     {
-      flush();
-      File_Iterator::write(data, n);
-     }
+     flush();
+     File_Iterator::write(data, n);
     }
    }
 
