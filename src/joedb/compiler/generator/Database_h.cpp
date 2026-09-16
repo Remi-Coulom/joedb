@@ -15,6 +15,25 @@ namespace joedb::generator
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ void Database_h::write_index_parameters
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  std::ostream &out,
+  const Compiler_Options::Index &index
+ )
+ {
+  const Database_Schema &db = options.get_db();
+  for (size_t i = 0; i < index.field_ids.size(); i++)
+  {
+   if (i > 0)
+    out << ", ";
+   const Field_Id fid = index.field_ids[i];
+   write_type(out, db.get_field_type(index.table_id, fid), !index.ordered, true);
+   out << " field_value_of_" << db.get_field_name(index.table_id, fid);
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  void Database_h::write(std::ostream &out)
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -590,15 +609,7 @@ namespace joedb::generator
     }
 
     out << "   id_of_" << tname << " find_" << index.name << '(';
-    for (size_t i = 0; i < index.field_ids.size(); i++)
-    {
-     if (i > 0)
-      out << ", ";
-     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, !index.ordered, true);
-     out << " field_value_of_";
-     out << db.get_field_name(index.table_id, index.field_ids[i]);
-    }
+    write_index_parameters(out, index);
     out << ") const\n";
     out << "   {\n";
     out << "    const auto i = index_of_" << index.name << ".find(";
@@ -621,15 +632,7 @@ namespace joedb::generator
    else
    {
     out << "   range_of_" << index.name << " find_" << index.name << '(';
-    for (size_t i = 0; i < index.field_ids.size(); i++)
-    {
-     if (i > 0)
-      out << ", ";
-     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, !index.ordered, true);
-     out << " field_value_of_";
-     out << db.get_field_name(index.table_id, index.field_ids[i]);
-    }
+    write_index_parameters(out, index);
     out << ") const;\n";
    }
   }
@@ -777,15 +780,7 @@ namespace joedb::generator
         << " };\n\n";
 
     out << " inline range_of_" << index.name << " Database::find_" << index.name << '(';
-    for (size_t i = 0; i < index.field_ids.size(); i++)
-    {
-     if (i > 0)
-      out << ", ";
-     const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, !index.ordered, true);
-     out << " field_value_of_";
-     out << db.get_field_name(index.table_id, index.field_ids[i]);
-    }
+    write_index_parameters(out, index);
     out << ") const\n";
     out << " {\n";
     out << "  return range_of_" << index.name << "(*this";
