@@ -59,7 +59,7 @@ namespace joedb
  {
   options.emplace_back(name, description);
 
-  for (size_t i = 0; i < args.size() - 1; i++)
+  for (size_t i = 0; i + 1 < args.size(); i++)
   {
    if (args[i].option == name)
    {
@@ -82,7 +82,7 @@ namespace joedb
  {
   options.emplace_back(name, labels, default_index);
 
-  for (size_t i = 0; i < args.size() - 1; i++)
+  for (size_t i = 0; i + 1 < args.size(); i++)
   {
    if (args[i].option == name)
    {
