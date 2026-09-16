@@ -23,6 +23,7 @@ insert_into float 1 0.23\n\
 insert_into float 2 0.7\n\
 insert_into float 6 0.8\n\
 insert_into float 7 9.0\n\
+insert_into float 9 1.5\n\
 create_table toto\n\
 drop_table toto\n\
 ";
@@ -36,6 +37,8 @@ insert_vector float 0 3\n\
 update_vector float 0 value 3 0.5 0.23 0.7\n\
 insert_vector float 6 2\n\
 update_vector float 6 value 2 0.8 9\n\
+insert_into float 9\n\
+update float 9 value 1.5\n\
 \n\
 ";
 

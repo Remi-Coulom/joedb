@@ -141,42 +141,12 @@ namespace joedb
     }
 
     if (size > 1)
-    {
      writable.insert_vector(tid, record_id, size);
-
-     for (const auto &[fid, fname]: db.get_fields(tid))
-     {
-      switch(db.get_field_type(tid, fid).get_type_id())
-      {
-       case Type::Type_Id::null:
-       break;
-
-       #define TYPE_MACRO(type, return_type, type_id, R, W)\
-       case Type::Type_Id::type_id:\
-       {\
-        writable.update_vector_##type_id\
-        (\
-         tid,\
-         record_id,\
-         fid,\
-         size,\
-         &db.get_##type_id\
-         (\
-          tid,\
-          record_id,\
-          fid\
-         )\
-        );\
-       }\
-       break;
-       #include "joedb/TYPE_MACRO.h"
-      }
-     }
-    }
     else if (size == 1)
-    {
      writable.insert_into(tid, record_id);
 
+    if (size > 0)
+    {
      for (const auto &[fid, fname]: db.get_fields(tid))
      {
       switch(db.get_field_type(tid, fid).get_type_id())
@@ -187,13 +157,11 @@ namespace joedb
        #define TYPE_MACRO(type, return_type, type_id, R, W)\
        case Type::Type_Id::type_id:\
        {\
-        writable.update_##type_id\
-        (\
-         tid,\
-         record_id,\
-         fid,\
-         db.get_##type_id(tid, record_id, fid)\
-        );\
+        const type &value = db.get_##type_id(tid, record_id, fid);\
+        if (size > 1)\
+         writable.update_vector_##type_id(tid, record_id, fid, size, &value);\
+        else\
+         writable.update_##type_id(tid, record_id, fid, value);\
        }\
        break;
        #include "joedb/TYPE_MACRO.h"
