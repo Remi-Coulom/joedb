@@ -193,9 +193,12 @@ namespace joedb
  {
   if (gptr() == eback() && in_pos > 0)
   {
-   in_pos -= 1;
-   setg(buffer.data(), buffer.data() + 1, buffer.data() + 1);
-   file.pread(buffer.data(), 1, in_pos);
+   const pos_type previous_position = in_pos - off_type(1);
+   if (file.pread(buffer.data(), 1, previous_position) == 1)
+   {
+    in_pos = previous_position;
+    setg(buffer.data(), buffer.data() + 1, buffer.data() + 1);
+   }
   }
 
   if (gptr() > eback())
