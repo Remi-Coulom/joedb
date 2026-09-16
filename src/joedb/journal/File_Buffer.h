@@ -211,18 +211,9 @@ namespace joedb
        data[n0++] = buffer.data[buffer.index++];
      }
 
-     while (n0 < n)
-     {
-      const size_t actually_read = File_Iterator::read(data + n0, n - n0);
-      if (actually_read == 0)
-      {
-       file.reading_past_end_of_file();
-       break;
-      }
-      n0 += actually_read;
-     }
+     File_Iterator::full_read(data + n0, n - n0);
 
-     return n0;
+     return n;
     }
    }
 

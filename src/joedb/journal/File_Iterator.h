@@ -31,6 +31,12 @@ namespace joedb
     return result;
    }
 
+   void full_read(char *data, size_t size)
+   {
+    file.full_pread(data, size, position);
+    position += size;
+   }
+
    void write(const char *data, size_t size)
    {
     file.pwrite(data, size, position);
