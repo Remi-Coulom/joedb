@@ -1,5 +1,4 @@
 #include "joedb/journal/Abstract_File.h"
-#include "joedb/journal/Async_Reader.h"
 #include "joedb/error/Exception.h"
 
 #include <array>
@@ -150,11 +149,8 @@ namespace joedb
    reading_past_end_of_file();
   }
 
-  Async_Reader reader(*this, blob.get_position(), blob.get_end());
   std::string result(size_t(blob.get_size()), 0);
-  reader.read(result.data(), result.size());
-  if (reader.is_end_of_file())
-   reading_past_end_of_file();
+  full_pread(result.data(), result.size(), blob.get_position());
   return result;
  }
 }
