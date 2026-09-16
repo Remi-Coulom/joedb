@@ -192,6 +192,20 @@ namespace joedb
   EXPECT_EQ(buf.sbumpc(), std::char_traits<char>::eof());
  }
 
+ TEST(filebuf, pbackfail_after_truncate)
+ {
+  joedb::Memory_File file;
+  file.get_data() = "a";
+  joedb::filebuf buf(file);
+
+  EXPECT_EQ(buf.sbumpc(), 'a');
+  EXPECT_EQ(buf.pubsync(), 0);
+
+  file.get_data().clear();
+
+  EXPECT_EQ(buf.sungetc(), std::char_traits<char>::eof());
+ }
+
  TEST(filebuf, unget_0xff)
  {
   joedb::Memory_File file;
