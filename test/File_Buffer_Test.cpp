@@ -136,6 +136,27 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ TEST(File_Buffer, write_data_boundaries)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (const size_t prefix: {size_t(0), size_t(4095)})
+  {
+   for (const size_t size: {size_t(0), size_t(8), size_t(9), size_t(4096), size_t(4104)})
+   {
+    Memory_File file;
+    File_Buffer buffer(file);
+    const std::string first(prefix, 'a');
+    const std::string second(size, 'b');
+    buffer.write_data(first.data(), first.size());
+    buffer.write_data(second.data(), second.size());
+    EXPECT_EQ(buffer.get_position(), int64_t(prefix + size));
+    buffer.flush();
+    EXPECT_EQ(file.get_data(), first + second);
+   }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  TEST(File_Buffer, read_data)
  ////////////////////////////////////////////////////////////////////////////
  {
