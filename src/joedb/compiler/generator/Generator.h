@@ -16,6 +16,7 @@ namespace joedb::generator
    const Compiler_Options &options;
 
    bool db_has_values() const;
+   bool table_has_field_type(Table_Id table_id, Type::Type_Id type_id) const;
 
    void write_initial_comment(std::ostream &out);
    void write_type(std::ostream &out, Type type, bool return_type, bool setter_type);

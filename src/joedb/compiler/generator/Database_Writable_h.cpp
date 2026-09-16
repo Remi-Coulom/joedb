@@ -219,19 +219,7 @@ namespace joedb::generator
 
     for (const auto &[tid, tname]: tables)
     {
-     bool has_typed_field = false;
-
-     for (const auto &[fid, fname]: db.get_fields(tid))
-     {
-      const Type &type = db.get_field_type(tid, fid);
-      if (type.get_type_id() == type_id)
-      {
-       has_typed_field = true;
-       break;
-      }
-     }
-
-     if (has_typed_field)
+     if (table_has_field_type(tid, type_id))
      {
       out << "    if (table_id == Table_Id(" << tid << "))\n";
       out << "    {\n";
@@ -291,19 +279,7 @@ namespace joedb::generator
 
     for (const auto &[tid, tname]: tables)
     {
-     bool has_typed_field = false;
-
-     for (const auto &[fid, fname]: db.get_fields(tid))
-     {
-      const Type &type = db.get_field_type(tid, fid);
-      if (type.get_type_id() == type_id)
-      {
-       has_typed_field = true;
-       break;
-      }
-     }
-
-     if (has_typed_field)
+     if (table_has_field_type(tid, type_id))
      {
       out << "    if (table_id == Table_Id(" << tid << "))\n";
       out << "    {\n";
@@ -366,19 +342,7 @@ namespace joedb::generator
 
     for (const auto &[tid, tname]: tables)
     {
-     bool has_typed_field = false;
-
-     for (const auto &[fid, fname]: db.get_fields(tid))
-     {
-      const Type &type = db.get_field_type(tid, fid);
-      if (type.get_type_id() == type_id)
-      {
-       has_typed_field = true;
-       break;
-      }
-     }
-
-     if (has_typed_field)
+     if (table_has_field_type(tid, type_id))
      {
       out << "    if (table_id == Table_Id(" << tid << "))\n";
       out << "    {\n";
