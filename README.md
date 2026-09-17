@@ -1,10 +1,12 @@
 # Joedb, the Journal-Only Embedded Database
 
-Joedb is a minimalist in-memory database, that allows directly manipulating
-tables stored in native type-safe C++ containers. It comes with a server and a
-network protocol that makes sharing data between machines as easy as sharing
-variables between threads. Joedb also allows writing data to files with proper
-crash-safe concurrent [ACID](https://en.wikipedia.org/wiki/ACID) transactions.
+Joedb is a light-weight C++ database that keeps tabular data in memory, and
+writes a journal to a file. The whole data history is stored, so it is possible
+to re-create any past state of the database. Joedb has a network protocol, and
+can operate in a distributed fashion, a bit like [git for
+data](https://www.joedb.org/concurrency.html). It provides
+[ACID](https://en.wikipedia.org/wiki/ACID) transactions for local and remote
+concurrent access to a file.
 
 The diagram below illustrates how the system works: `joedbc`, the joedb
 compiler, reads the database schema and produces classes that can be used to
@@ -16,10 +18,7 @@ Other systems such as [protocol buffers](https://protobuf.dev/) provide similar
 type-safe mechanisms for serializing structured data, but are missing key
 properties of a database, such as concurrency, transactions, and incremental
 crash-safe updates. Joedb can offer all these features by storing data as a
-journal of transactions. The whole data history is stored, so it is possible to
-re-create any past state of the database. Joedb also has a network protocol,
-and can operate a bit like [git for
-data](https://www.joedb.org/concurrency.html).
+journal of transactions.
 
 To give an indication of joedb's simplicity, the table below shows the size of
 joedb's source code compared to some other libraries. Lines of code are counted
