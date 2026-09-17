@@ -1,6 +1,10 @@
 History
 =======
 
+- 2026-09-17 10.0.10 LTS
+
+  - fix unsigned underflow in joedb::Arguments
+
 - 2026-09-06 10.0.9 LTS
 
   - fix data race between Server_Client::ping, and Server_Connection::pread
