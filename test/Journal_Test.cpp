@@ -299,19 +299,21 @@ namespace joedb
   }
 
   {
-   Writable_Journal journal(file);
+   Readonly_Journal journal(file);
    EXPECT_EQ(journal.get_checkpoint(), checkpoint);
-  }
-
-  {
-   Writable_Journal journal(file);
    journal.pull();
    Database db;
    EXPECT_ANY_THROW(journal.replay_log(db));
   }
 
   {
-   Writable_Journal journal(Journal_Construction_Lock(file, Recovery::overwrite));
+   Writable_Journal journal(file);
+   EXPECT_EQ(journal.get_checkpoint(), checkpoint);
+  }
+
+  {
+   Readonly_Journal journal(file);
+   EXPECT_EQ(journal.get_checkpoint(), checkpoint);
    journal.pull();
    Database db;
    journal.replay_log(db);
@@ -778,6 +780,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   const char * const file_name = "deadlock.joedb.tmp";
+  std::remove(file_name);
 
   {
    File file(file_name, Open_Mode::create_new);

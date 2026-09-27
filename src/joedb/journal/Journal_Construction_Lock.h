@@ -2,6 +2,7 @@
 #define joedb_Journal_Construction_Lock_declared
 
 #include "joedb/journal/Abstract_File.h"
+#include "joedb/journal/Header.h"
 
 namespace joedb
 {
@@ -30,6 +31,7 @@ namespace joedb
    Abstract_File &file;
    const Recovery recovery;
    const int64_t size;
+   Header header;
 
    bool is_for_writable_journal() const {return for_writable_journal;}
 

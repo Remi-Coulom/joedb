@@ -64,8 +64,7 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
 {
  if (lock.size != 0)
  {
-  Header header;
-  file.full_pread((char *)(&header), Header::size, 0);
+  file.full_pread((char *)(&lock.header), Header::size, 0);
 
   file_buffer.set_position(Header::size);
 
@@ -76,13 +75,13 @@ joedb::Readonly_Journal::Readonly_Journal(Journal_Construction_Lock &lock):
   }
   else
   {
-   if (header.signature != Header::joedb)
+   if (lock.header.signature != Header::joedb)
     throw Exception("missing joedb signature");
 
-   if (header.version != format_version)
+   if (lock.header.version != format_version)
     throw Exception("unsupported file format version");
 
-   read_checkpoint(header.checkpoint, lock.size);
+   read_checkpoint(lock.header.checkpoint, lock.size);
 
    if (lock.size > 0 && lock.size < checkpoint_position)
     throw Exception("Checkpoint is bigger than file size");
@@ -113,7 +112,7 @@ void joedb::Readonly_Journal::read_checkpoint
   for (int j = 0; j < 2; j++)
   {
    const int64_t p = pos[2 * i + j];
-   const int64_t neg = (p == INT64_MIN) ? INT64_MIN : -p; // avoid UB
+   const int64_t neg = int64_t(-uint64_t(p)); // avoid UB
    if (neg >= checkpoint_position && (file_size < 0 || neg <= file_size))
    {
     checkpoint_position = neg;

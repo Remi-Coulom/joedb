@@ -42,27 +42,41 @@ namespace joedb
    header.signature = Header::joedb;
    file_buffer.File_Iterator::write(reinterpret_cast<const char *>(&header), Header::size);
   }
-  else if
-  (
-   lock.size > 0 &&
-   lock.size > checkpoint_position &&
-   lock.recovery != Recovery::overwrite
-  )
+  else if (lock.size > 0)
   {
-   throw Exception
+   if
    (
-    "Checkpoint (" + std::to_string(checkpoint_position) +
-    ") is smaller than file size (" + std::to_string(lock.size) +
-    "). This file may contain an aborted transaction. "
-    "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
-   );
-  }
+    lock.size > checkpoint_position &&
+    lock.recovery != Recovery::overwrite
+   )
+   {
+    throw Exception
+    (
+     "Checkpoint (" + std::to_string(checkpoint_position) +
+     ") is smaller than file size (" + std::to_string(lock.size) +
+     "). This file may contain an aborted transaction. "
+     "'joedb_push file.joedb file fixed.joedb' can be used to truncate it."
+    );
+   }
 
-  // overwrite after-the-end-of-file soft checkpoint
-  if (lock.recovery == Recovery::overwrite && checkpoint_position == lock.size)
-  {
-   checkpoint_position = -1;
-   soft_checkpoint_at(lock.size);
+   // If we have a soft checkpoint that is bigger than file size,
+   // it must not become valid by appending uncheckpointed data to the file.
+   for (size_t i = 0; i < lock.header.checkpoint.size(); ++i)
+   {
+    if (int64_t(-uint64_t(lock.header.checkpoint[i])) > lock.size)
+    {
+     int64_t fixed = int64_t(-uint64_t(checkpoint_position));
+
+     file.pwrite
+     (
+      reinterpret_cast<const char *>(&fixed),
+      sizeof(fixed),
+      int64_t(sizeof(fixed)) * i
+     );
+
+     file.datasync();
+    }
+   }
   }
  }
 
