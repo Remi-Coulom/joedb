@@ -6,31 +6,31 @@ message("-- CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
 if(CMAKE_COMPILER_IS_GNUCXX)
 #############################################################################
  message("== gcc:")
- set(CMAKE_CXX_FLAGS
-  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor -Wsuggest-override"
- )
+ string(APPEND CMAKE_CXX_FLAGS
+	" -Wall -Wextra -Wno-unused-parameter -pedantic -Wconversion -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wnon-virtual-dtor -Wsuggest-override"
+	)
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.4)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wduplicated-cond -Wshadow=local -Wc++17-compat")
+  string(APPEND CMAKE_CXX_FLAGS " -Wduplicated-cond -Wshadow=local -Wc++17-compat")
  endif()
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 11.0)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overread -Wno-stringop-overflow -Wno-array-bounds") # produce false warnings, unfortunately
+  string(APPEND CMAKE_CXX_FLAGS " -Wno-stringop-overread -Wno-stringop-overflow -Wno-array-bounds") # produce false warnings, unfortunately
  endif()
 
- set(CMAKE_CXX_FLAGS_COVERAGE
-  "-g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
- )
+ string(APPEND CMAKE_CXX_FLAGS_COVERAGE
+	" -g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
+	)
 
- set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
+ string(APPEND CMAKE_CXX_FLAGS_DEBUG " -D_GLIBCXX_DEBUG")
 
- set(CMAKE_CXX_FLAGS_ASAN "-g -fsanitize=address -Wno-maybe-uninitialized -O1 -D_GLIBCXX_DEBUG")
- set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN}")
+ string(APPEND CMAKE_CXX_FLAGS_ASAN " -g -fsanitize=address -Wno-maybe-uninitialized -O1 -D_GLIBCXX_DEBUG")
+ string(APPEND CMAKE_LINKER_FLAGS_ASAN " ${CMAKE_CXX_FLAGS_ASAN}")
 
- set(CMAKE_CXX_FLAGS_TSAN "-g -fsanitize=thread -O2")
- set(CMAKE_LINKER_FLAGS_TSAN ${CMAKE_CXX_FLAGS_TSAN})
+ string(APPEND CMAKE_CXX_FLAGS_TSAN " -g -fsanitize=thread -O2")
+ string(APPEND CMAKE_LINKER_FLAGS_TSAN " ${CMAKE_CXX_FLAGS_TSAN}")
 
- set(CMAKE_CXX_FLAGS_DEV "-g -O1 -DNDEBUG")
+ string(APPEND CMAKE_CXX_FLAGS_DEV " -g -O1 -DNDEBUG")
 endif()
 
 #############################################################################
@@ -51,13 +51,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
  endif()
 
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wno-overlength-strings -Wno-invalid-source-encoding -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor -Wsuggest-override -Wextra-semi-stmt -Wextra-semi")
+ string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wno-overlength-strings -Wno-invalid-source-encoding -Wunused-macros -Wcast-qual -Wcast-align -Wparentheses -Wmissing-declarations -Wnon-virtual-dtor -Wsuggest-override -Wextra-semi-stmt -Wextra-semi")
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")
+  string(APPEND CMAKE_CXX_FLAGS " -Wshadow-field-in-constructor-modified -Wshadow-uncaptured-local -Wshadow -Wshadow-ivar")
  endif()
 
- set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+ string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O2 -DNDEBUG")
 
  # See doc/source/memsan.rst to build libc++ with memsan
  find_path(LLVM_PROJECT_DIR HINTS ${CMAKE_CURRENT_LIST_DIR}/../.. ${CMAKE_CURRENT_LIST_DIR}/../../../../../repos NAMES llvm-project)
@@ -66,22 +66,22 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  set(LLVM_PROJECT_BUILD ${LLVM_PROJECT_DIR}/llvm-project/build)
 
  set(MSAN_FLAGS "-g -fsanitize=memory -fPIE -pie -fno-omit-frame-pointer -fsanitize-memory-track-origins -O2 -stdlib=libc++ -nostdinc++ -isystem${LLVM_PROJECT_BUILD}/include/c++/v1 -L${LLVM_PROJECT_BUILD}/lib -Qunused-arguments -Wl,-rpath,${LLVM_PROJECT_BUILD}/lib")
- set(CMAKE_C_FLAGS_MSAN ${MSAN_FLAGS})
- set(CMAKE_CXX_FLAGS_MSAN ${MSAN_FLAGS})
- set(CMAKE_LINKER_FLAGS_MSAN "${MSAN_FLAGS} -lc++abi")
+ string(APPEND CMAKE_C_FLAGS_MSAN " ${MSAN_FLAGS}")
+ string(APPEND CMAKE_CXX_FLAGS_MSAN " ${MSAN_FLAGS}")
+ string(APPEND CMAKE_LINKER_FLAGS_MSAN " ${MSAN_FLAGS} -lc++abi")
 
- set(CMAKE_CXX_FLAGS_ASAN "-O2 -fsanitize=address")
- set(CMAKE_LINKER_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN}")
+ string(APPEND CMAKE_CXX_FLAGS_ASAN " -O2 -fsanitize=address")
+ string(APPEND CMAKE_LINKER_FLAGS_ASAN " -fsanitize=address")
 
  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 9.0)
-  set(CMAKE_CXX_FLAGS_ASAN "${CMAKE_CXX_FLAGS_ASAN} -mllvm -asan-force-dynamic-shadow")
+  string(APPEND CMAKE_CXX_FLAGS_ASAN " -mllvm -asan-force-dynamic-shadow")
  endif()
 endif()
 
 #############################################################################
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 #############################################################################
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /w34265 /permissive- /Zc:__cplusplus") # C4265 virtual destructor
+ string(APPEND CMAKE_CXX_FLAGS " /bigobj /w34265 /permissive- /Zc:__cplusplus") # C4265 virtual destructor
  add_definitions(-D_WIN32_WINNT=0x0601) # silence boost::asio warning
 endif()
 
