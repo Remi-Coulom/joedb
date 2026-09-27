@@ -43,6 +43,7 @@ History
   - Fixes (also available on 10.0.0 LTS branch):
 
     - various fixes found by LLM review
+    - fixed deadlock when opening a file with Recovery::overwrite in Windows
     - add missing ``volatile`` to ``sig_atomic_t signal_status``
     - Fix MacOS installation (set RPATH)
     - Add a timeout to ssh session (could get infinite waiting without it)
