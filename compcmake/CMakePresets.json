@@ -78,6 +78,18 @@
    }
   },
   {
+   "name": "clang_vcpkg_release",
+   "generator": "Ninja",
+   "binaryDir": "./${presetName}",
+   "cacheVariables":
+   {
+    "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+    "CMAKE_C_COMPILER": "clang",
+    "CMAKE_CXX_COMPILER": "clang++",
+    "CMAKE_BUILD_TYPE": "Release"
+   }
+  },
+  {
    "name": "ndk",
    "generator": "Ninja",
    "binaryDir": "./${presetName}",

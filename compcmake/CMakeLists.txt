@@ -17,8 +17,8 @@ if (NOT CMAKE_CXX_STANDARD)
  set(CMAKE_CXX_STANDARD 20)
 endif()
 
-# Set MSVC runtime library to static to match vcpkg x64-windows-static triplet
-if (MSVC)
+# Set the MSVC-compatible runtime library to static on Windows.
+if (WIN32)
  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
