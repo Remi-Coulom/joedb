@@ -719,4 +719,23 @@ namespace joedb
    }
   }
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, deadlock_in_Windows)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  const char * const file_name = "deadlock.joedb.tmp";
+
+  {
+   File file(file_name, Open_Mode::create_new);
+   Writable_Journal journal(file);
+  }
+
+  {
+   File file(file_name, Open_Mode::write_existing_or_create_new);
+   Writable_Journal journal(Journal_Construction_Lock{file, Recovery::overwrite});
+  }
+
+  std::remove(file_name);
+ }
 }
