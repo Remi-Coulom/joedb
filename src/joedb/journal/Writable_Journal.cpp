@@ -2,6 +2,7 @@
 #include "joedb/journal/File_Buffer.h"
 #include "joedb/error/Exception.h"
 #include "joedb/error/Destructor_Logger.h"
+#include "joedb/neg.h"
 
 namespace joedb
 {
@@ -63,9 +64,9 @@ namespace joedb
    // it must not become valid by appending uncheckpointed data to the file.
    for (size_t i = 0; i < lock.header.checkpoint.size(); ++i)
    {
-    if (int64_t(-uint64_t(lock.header.checkpoint[i])) > lock.size)
+    if (neg(lock.header.checkpoint[i]) > lock.size)
     {
-     int64_t fixed = int64_t(-uint64_t(checkpoint_position));
+     const int64_t fixed = neg(checkpoint_position);
 
      file.pwrite
      (
@@ -137,13 +138,13 @@ namespace joedb
 
   Head_Exclusive_Lock lock(file);
 
-  const int64_t neg = -checkpoint_position;
+  const int64_t soft = neg(checkpoint_position);
 
   file.pwrite
   (
-   reinterpret_cast<const char *>(&neg),
-   sizeof(neg),
-   int64_t(sizeof(neg)) * (2 * (hard_index ^ 1) + soft_index)
+   reinterpret_cast<const char *>(&soft),
+   sizeof(soft),
+   int64_t(sizeof(soft)) * (2 * (hard_index ^ 1) + soft_index)
   );
  }
 

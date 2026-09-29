@@ -1,5 +1,6 @@
 #include "joedb/journal/Readonly_Journal.h"
 #include "joedb/error/Exception.h"
+#include "joedb/neg.h"
 
 #include <vector>
 
@@ -111,11 +112,10 @@ void joedb::Readonly_Journal::read_checkpoint
 
   for (int j = 0; j < 2; j++)
   {
-   const int64_t p = pos[2 * i + j];
-   const int64_t neg = int64_t(-uint64_t(p)); // avoid UB
-   if (neg >= checkpoint_position && (file_size < 0 || neg <= file_size))
+   const int64_t soft = neg(pos[2 * i + j]);
+   if (soft >= checkpoint_position && (file_size < 0 || soft <= file_size))
    {
-    checkpoint_position = neg;
+    checkpoint_position = soft;
     hard_index = i ^ 1;
     soft_index = j;
    }

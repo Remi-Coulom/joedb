@@ -16,10 +16,7 @@ namespace joedb
  {
   private:
    Abstract_File &file;
-
-   static constexpr size_t buffer_size = (1 << 13);
-   std::array<char, buffer_size> buffer;
-
+   std::array<char, 1 << 13> buffer;
    pos_type in_pos;
    pos_type out_pos;
 
