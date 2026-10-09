@@ -8,7 +8,7 @@ include(CTest)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-option(JOEDB_BUILD_TOOLS "Build joedb command-line tools" ON)
+option(JOEDB_BUILD_TOOLS "Build optional joedb command-line tools (joedbc is always built)" ON)
 option(JOEDB_BUILD_EXAMPLES "Build joedb examples and tutorials" ON)
 option(JOEDB_BUILD_BENCHMARKS "Build joedb benchmarks" ON)
 option(JOEDB_BUILD_FUZZERS "Build joedb fuzzers when supported" ON)
@@ -238,7 +238,7 @@ if(BUILD_TESTING AND GTest_FOUND)
 
  target_link_libraries(joedb_test ${GTest_LIBRARIES})
 
- if (asio_FOUND)
+ if(JOEDB_HAS_ASIO)
   if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
    target_sources(joedb_test PRIVATE ../test/Server_Test.cpp)
    target_sources(joedb_test PRIVATE ../test/Procedure_Test.cpp)
@@ -248,7 +248,7 @@ if(BUILD_TESTING AND GTest_FOUND)
   endif()
  endif()
 
- if (CURL_FOUND)
+ if(JOEDB_HAS_CURL)
   target_sources(joedb_test PRIVATE ../test/CURL_File_Test.cpp)
  endif()
 
@@ -269,7 +269,7 @@ if(JOEDB_BUILD_BENCHMARKS)
  joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
 endif()
 
-if(JOEDB_BUILD_TOOLS AND asio_FOUND)
+if(JOEDB_BUILD_TOOLS AND JOEDB_HAS_ASIO)
  if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
   message("-- using C++20 coroutines for servers")
   joedb_add_executable(joedb_server ../src/joedb/ui/joedb_server.cpp)
@@ -279,7 +279,7 @@ if(JOEDB_BUILD_TOOLS AND asio_FOUND)
  endif()
 endif()
 
-if(JOEDB_BUILD_EXAMPLES AND asio_FOUND)
+if(JOEDB_BUILD_EXAMPLES AND JOEDB_HAS_ASIO)
  if(CMAKE_CXX_STANDARD GREATER_EQUAL 20)
   joedb_add_executable(tutorial_rpc_client
    ../doc/source/tutorial/src/rpc_client.cpp
@@ -410,7 +410,7 @@ if(JOEDB_BUILD_EXAMPLES)
   ../doc/source/tutorial/src/settings/writable.cpp
  )
 
- if(asio_FOUND)
+ if(JOEDB_HAS_ASIO)
   joedb_add_executable(write_server_blob
    ../doc/source/tutorial/src/write_server_blob.cpp
   )
@@ -419,7 +419,7 @@ if(JOEDB_BUILD_EXAMPLES)
   )
  endif()
 
- if(libssh_FOUND)
+ if(JOEDB_HAS_SSH)
   joedb_add_executable(keepalive_test
    ../doc/source/tutorial/src/keepalive_test.cpp
   )
@@ -439,7 +439,7 @@ endif()
 #############################################################################
 # Fuzzers
 #############################################################################
-if(JOEDB_BUILD_FUZZERS AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
+if(JOEDB_BUILD_FUZZERS AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND JOEDB_HAS_ASIO AND NOT ANDROID)
  message("-- clang, compiling fuzzers")
 
  function(set_fuzz_options target)
@@ -518,7 +518,6 @@ endif()
 # Packaging
 #############################################################################
 if(JOEDB_BUILD_TOOLS)
- install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT bin)
  install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
  install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
  install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
@@ -539,6 +538,15 @@ if(JOEDB_BUILD_TOOLS)
  install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)
  install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
 endif()
+
+if(TARGET joedbc)
+ install(TARGETS joedbc
+  EXPORT joedbTargets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  COMPONENT bin
+ )
+endif()
+
 install(TARGETS joedb
  EXPORT joedbTargets
  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT bin
@@ -554,17 +562,11 @@ endforeach()
 
 set(JOEDB_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/joedb")
 
-set(JOEDB_CONFIG_WITH_BOOST ${Boost_FOUND})
-set(JOEDB_CONFIG_WITH_LIBSSH ${libssh_FOUND})
-set(JOEDB_CONFIG_WITH_CURL ${CURL_FOUND})
-set(JOEDB_CONFIG_WITH_BROTLI FALSE)
-if(TARGET unofficial::brotli::brotlidec)
- set(JOEDB_CONFIG_WITH_BROTLI TRUE)
-endif()
-set(JOEDB_CONFIG_WITH_OPENSSL FALSE)
-if(OpenSSL_FOUND AND CERTIFY_INCLUDES)
- set(JOEDB_CONFIG_WITH_OPENSSL TRUE)
-endif()
+set(JOEDB_CONFIG_WITH_BOOST ${JOEDB_HAS_BOOST})
+set(JOEDB_CONFIG_WITH_LIBSSH ${JOEDB_HAS_SSH})
+set(JOEDB_CONFIG_WITH_CURL ${JOEDB_HAS_CURL})
+set(JOEDB_CONFIG_BROTLI_PROVIDER "${JOEDB_BROTLI_PROVIDER}")
+set(JOEDB_CONFIG_WITH_OPENSSL ${JOEDB_HAS_WEBSOCKETS})
 
 configure_package_config_file(
  joedbConfig.cmake.in
@@ -588,6 +590,7 @@ install(EXPORT joedbTargets
 install(FILES
  "${CMAKE_CURRENT_BINARY_DIR}/joedbConfig.cmake"
  "${CMAKE_CURRENT_BINARY_DIR}/joedbConfigVersion.cmake"
+ "${CMAKE_CURRENT_SOURCE_DIR}/FindBrotli.cmake"
  DESTINATION "${JOEDB_INSTALL_CMAKEDIR}"
  COMPONENT dev
 )

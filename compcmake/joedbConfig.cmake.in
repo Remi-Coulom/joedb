@@ -2,20 +2,28 @@
 
 include(CMakeFindDependencyMacro)
 
+find_dependency(Threads)
+
 if(@JOEDB_CONFIG_WITH_BOOST@)
  find_dependency(Boost CONFIG)
 endif()
 
 if(@JOEDB_CONFIG_WITH_LIBSSH@)
- find_dependency(libssh CONFIG)
+ find_dependency(libssh)
 endif()
 
 if(@JOEDB_CONFIG_WITH_CURL@)
  find_dependency(CURL)
 endif()
 
-if(@JOEDB_CONFIG_WITH_BROTLI@)
+if("@JOEDB_CONFIG_BROTLI_PROVIDER@" STREQUAL "unofficial-brotli")
  find_dependency(unofficial-brotli CONFIG)
+elseif("@JOEDB_CONFIG_BROTLI_PROVIDER@" STREQUAL "Brotli")
+ set(joedb_saved_module_path "${CMAKE_MODULE_PATH}")
+ list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+ find_dependency(Brotli MODULE)
+ set(CMAKE_MODULE_PATH "${joedb_saved_module_path}")
+ unset(joedb_saved_module_path)
 endif()
 
 if(@JOEDB_CONFIG_WITH_OPENSSL@)

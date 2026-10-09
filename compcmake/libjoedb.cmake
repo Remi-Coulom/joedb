@@ -40,7 +40,7 @@ set(JOEDB_DATABASES
  ${JOEDB_SRC_DIR}/joedb/ui/Parsed_Client.cpp
 )
 
-if(unofficial-brotli_FOUND)
+if(JOEDB_HAS_BROTLI)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Decoder.cpp
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
@@ -51,20 +51,20 @@ if(unofficial-brotli_FOUND)
  )
 endif()
 
-if(libssh_FOUND)
+if(JOEDB_HAS_SSH)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/ssh/Forward_Channel.cpp
   ${JOEDB_SRC_DIR}/joedb/ssh/SFTP.cpp
  )
 endif()
 
-if(CURL_FOUND)
+if(JOEDB_HAS_CURL)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/journal/CURL_File.cpp
  )
 endif()
 
-if (asio_FOUND)
+if(JOEDB_HAS_ASIO)
  set(JOEDB_SOURCES
   ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}
@@ -111,28 +111,27 @@ target_include_directories(joedb PUBLIC
 
 target_link_libraries(joedb PUBLIC ${JOEDB_EXTERNAL_LIBS})
 
-if(Boost_FOUND)
- target_link_libraries(joedb PUBLIC Boost::headers)
+if(JOEDB_HAS_BOOST)
  target_compile_definitions(joedb PUBLIC JOEDB_HAS_BOOST)
 endif()
 
-if(asio_FOUND)
+if(JOEDB_HAS_ASIO)
  target_compile_definitions(joedb PUBLIC JOEDB_HAS_ASIO)
 endif()
 
-if(libssh_FOUND)
+if(JOEDB_HAS_SSH)
  target_compile_definitions(joedb PUBLIC JOEDB_HAS_SSH)
 endif()
 
-if(CURL_FOUND)
+if(JOEDB_HAS_CURL)
  target_compile_definitions(joedb PUBLIC JOEDB_HAS_CURL)
 endif()
 
-if(unofficial-brotli_FOUND)
+if(JOEDB_HAS_BROTLI)
  target_compile_definitions(joedb PUBLIC JOEDB_HAS_BROTLI)
 endif()
 
-if(OpenSSL_FOUND AND CERTIFY_INCLUDES)
+if(JOEDB_HAS_WEBSOCKETS)
  target_compile_definitions(joedb PUBLIC JOEDB_HAS_WEBSOCKETS)
 endif()
 

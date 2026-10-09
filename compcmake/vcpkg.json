@@ -4,14 +4,51 @@
   "homepage": "https://github.com/Remi-Coulom/joedb",
   "description": "The Journal-Only Embedded Database",
   "license": "MIT",
-  "dependencies": [
-    "libssh",
-    "curl",
+  "default-features": [
+    "asio",
+    "benchmarks",
     "brotli",
-    "boost-asio",
-    "boost-beast",
-    "gtest",
-    "sqlite3"
+    "curl",
+    "ssh",
+    "tests"
   ],
+  "features": {
+    "asio": {
+      "description": "Build Boost.Asio networking support",
+      "dependencies": [
+        "boost-asio"
+      ]
+    },
+    "benchmarks": {
+      "description": "Build benchmarks",
+      "dependencies": [
+        "sqlite3"
+      ]
+    },
+    "brotli": {
+      "description": "Build Brotli compression support",
+      "dependencies": [
+        "brotli"
+      ]
+    },
+    "curl": {
+      "description": "Build URL-backed file support",
+      "dependencies": [
+        "curl"
+      ]
+    },
+    "ssh": {
+      "description": "Build SFTP and SSH support",
+      "dependencies": [
+        "libssh"
+      ]
+    },
+    "tests": {
+      "description": "Build tests",
+      "dependencies": [
+        "gtest"
+      ]
+    }
+  },
   "builtin-baseline": "64e1fbee7d9f40eab5d112aaff648c4dcffe9e47"
 }

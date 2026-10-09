@@ -50,6 +50,28 @@ These commands will install joedb system-wide:
     sudo cmake --build . --target install
     sudo ldconfig
 
+Optional Dependencies
+^^^^^^^^^^^^^^^^^^^^^
+
+Optional integrations are controlled independently with the following CMake
+cache variables:
+
+- ``JOEDB_WITH_ASIO``
+- ``JOEDB_WITH_WEBSOCKETS``
+- ``JOEDB_WITH_SSH``
+- ``JOEDB_WITH_CURL``
+- ``JOEDB_WITH_BROTLI``
+
+Each variable accepts ``AUTO``, ``ON``, or ``OFF``. ``AUTO`` preserves the
+traditional source-build behaviour by enabling an integration when its
+dependency is available. Package managers should pass ``ON`` or ``OFF``
+explicitly so that the feature set is reproducible. An integration requested
+with ``ON`` is required, and configuration fails if its dependency is missing.
+
+The ``joedbc`` schema compiler is always built and installed because it is
+required to generate database sources. Other command-line programs can be
+disabled with ``JOEDB_BUILD_TOOLS=OFF``.
+
 First Steps
 -----------
 
