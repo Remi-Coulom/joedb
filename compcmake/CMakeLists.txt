@@ -5,6 +5,8 @@ include("${CMAKE_CURRENT_LIST_DIR}/joedb_version.cmake")
 project(joedb VERSION ${JOEDB_VERSION})
 
 include(CTest)
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 
 option(JOEDB_BUILD_TOOLS "Build joedb command-line tools" ON)
 option(JOEDB_BUILD_EXAMPLES "Build joedb examples and tutorials" ON)
@@ -538,16 +540,57 @@ if(JOEDB_BUILD_TOOLS)
  install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
 endif()
 install(TARGETS joedb
- ARCHIVE DESTINATION lib COMPONENT bin
- LIBRARY DESTINATION lib COMPONENT bin
- RUNTIME DESTINATION bin COMPONENT bin
+ EXPORT joedbTargets
+ ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT bin
+ LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT bin
+ RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT bin
 )
 
 file(GLOB_RECURSE all_includes RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/../src/ ../src/joedb/*.h)
 foreach(file ${all_includes})
  get_filename_component(dir ${file} PATH)
- install(FILES ../src/${file} DESTINATION include/${dir} COMPONENT dev)
+ install(FILES ../src/${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${dir} COMPONENT dev)
 endforeach()
+
+set(JOEDB_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/joedb")
+
+set(JOEDB_CONFIG_WITH_BOOST ${Boost_FOUND})
+set(JOEDB_CONFIG_WITH_LIBSSH ${libssh_FOUND})
+set(JOEDB_CONFIG_WITH_CURL ${CURL_FOUND})
+set(JOEDB_CONFIG_WITH_BROTLI FALSE)
+if(TARGET unofficial::brotli::brotlidec)
+ set(JOEDB_CONFIG_WITH_BROTLI TRUE)
+endif()
+set(JOEDB_CONFIG_WITH_OPENSSL FALSE)
+if(OpenSSL_FOUND AND CERTIFY_INCLUDES)
+ set(JOEDB_CONFIG_WITH_OPENSSL TRUE)
+endif()
+
+configure_package_config_file(
+ joedbConfig.cmake.in
+ "${CMAKE_CURRENT_BINARY_DIR}/joedbConfig.cmake"
+ INSTALL_DESTINATION "${JOEDB_INSTALL_CMAKEDIR}"
+)
+
+write_basic_package_version_file(
+ "${CMAKE_CURRENT_BINARY_DIR}/joedbConfigVersion.cmake"
+ VERSION "${PROJECT_VERSION}"
+ COMPATIBILITY SameMajorVersion
+)
+
+install(EXPORT joedbTargets
+ FILE joedbTargets.cmake
+ NAMESPACE joedb::
+ DESTINATION "${JOEDB_INSTALL_CMAKEDIR}"
+ COMPONENT dev
+)
+
+install(FILES
+ "${CMAKE_CURRENT_BINARY_DIR}/joedbConfig.cmake"
+ "${CMAKE_CURRENT_BINARY_DIR}/joedbConfigVersion.cmake"
+ DESTINATION "${JOEDB_INSTALL_CMAKEDIR}"
+ COMPONENT dev
+)
 
 if(JOEDB_ENABLE_CPACK)
  if(CMAKE_SYSTEM_NAME MATCHES "Linux")

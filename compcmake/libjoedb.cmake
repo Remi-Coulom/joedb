@@ -1,5 +1,7 @@
 include_guard(GLOBAL)
 
+include(GNUInstallDirs)
+
 include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../src)
 
 include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
@@ -100,6 +102,42 @@ else()
  )
 endif()
 
-target_link_libraries(joedb ${JOEDB_EXTERNAL_LIBS})
+add_library(joedb::joedb ALIAS joedb)
+
+target_include_directories(joedb PUBLIC
+ $<BUILD_INTERFACE:${JOEDB_SRC_DIR}>
+ $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_link_libraries(joedb PUBLIC ${JOEDB_EXTERNAL_LIBS})
+
+if(Boost_FOUND)
+ target_link_libraries(joedb PUBLIC Boost::headers)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_BOOST)
+endif()
+
+if(asio_FOUND)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_ASIO)
+endif()
+
+if(libssh_FOUND)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_SSH)
+endif()
+
+if(CURL_FOUND)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_CURL)
+endif()
+
+if(unofficial-brotli_FOUND)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_BROTLI)
+endif()
+
+if(OpenSSL_FOUND AND CERTIFY_INCLUDES)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_WEBSOCKETS)
+endif()
+
+if(DEFINED JOEDB_PORTABLE)
+ target_compile_definitions(joedb PUBLIC JOEDB_PORTABLE)
+endif()
 
 message("-- JOEDB_SRC_DIR = ${JOEDB_SRC_DIR}")

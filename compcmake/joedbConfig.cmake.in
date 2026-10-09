@@ -1,0 +1,27 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+if(@JOEDB_CONFIG_WITH_BOOST@)
+ find_dependency(Boost CONFIG)
+endif()
+
+if(@JOEDB_CONFIG_WITH_LIBSSH@)
+ find_dependency(libssh CONFIG)
+endif()
+
+if(@JOEDB_CONFIG_WITH_CURL@)
+ find_dependency(CURL)
+endif()
+
+if(@JOEDB_CONFIG_WITH_BROTLI@)
+ find_dependency(unofficial-brotli CONFIG)
+endif()
+
+if(@JOEDB_CONFIG_WITH_OPENSSL@)
+ find_dependency(OpenSSL)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/joedbTargets.cmake")
+
+check_required_components(joedb)
