@@ -1,9 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "joedb",
-  "homepage": "https://github.com/Remi-Coulom/joedb",
   "description": "The Journal-Only Embedded Database",
+  "homepage": "https://github.com/Remi-Coulom/joedb",
   "license": "MIT",
+  "builtin-baseline": "64e1fbee7d9f40eab5d112aaff648c4dcffe9e47",
   "default-features": [
     "asio",
     "benchmarks",
@@ -49,6 +50,5 @@
         "gtest"
       ]
     }
-  },
-  "builtin-baseline": "64e1fbee7d9f40eab5d112aaff648c4dcffe9e47"
+  }
 }

@@ -1,0 +1,12 @@
+joedb provides CMake targets:
+
+    find_package(joedb CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE joedb::joedb)
+
+The joedbc schema compiler is available as an imported executable target:
+
+    add_custom_command(
+        OUTPUT generated.cpp
+        COMMAND joedb::joedbc database
+        DEPENDS joedb::joedbc database.joedbi database.joedbc
+    )

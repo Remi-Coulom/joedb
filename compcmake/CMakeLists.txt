@@ -8,6 +8,7 @@ include(CTest)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+option(BUILD_SHARED_LIBS "Build shared libraries" ${UNIX})
 option(JOEDB_BUILD_TOOLS "Build optional joedb command-line tools (joedbc is always built)" ON)
 option(JOEDB_BUILD_EXAMPLES "Build joedb examples and tutorials" ON)
 option(JOEDB_BUILD_BENCHMARKS "Build joedb benchmarks" ON)
@@ -555,10 +556,21 @@ install(TARGETS joedb
 )
 
 file(GLOB_RECURSE all_includes RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/../src/ ../src/joedb/*.h)
+list(REMOVE_ITEM all_includes joedb/get_version.h)
 foreach(file ${all_includes})
  get_filename_component(dir ${file} PATH)
  install(FILES ../src/${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${dir} COMPONENT dev)
 endforeach()
+
+configure_file(
+ get_version.h.in
+ "${CMAKE_CURRENT_BINARY_DIR}/get_version.h"
+ @ONLY
+)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/get_version.h"
+ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/joedb
+ COMPONENT dev
+)
 
 set(JOEDB_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/joedb")
 

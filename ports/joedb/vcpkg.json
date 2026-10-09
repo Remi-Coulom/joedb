@@ -1,0 +1,49 @@
+{
+  "name": "joedb",
+  "version-semver": "10.4.6",
+  "description": "Journal-Only Embedded Database",
+  "homepage": "https://www.joedb.org/",
+  "license": "MIT",
+  "supports": "!(windows & !static)",
+  "dependencies": [
+    {
+      "name": "joedb",
+      "host": true,
+      "default-features": false
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ],
+  "features": {
+    "asio": {
+      "description": "Build Boost.Asio networking support",
+      "dependencies": [
+        "boost-asio"
+      ]
+    },
+    "brotli": {
+      "description": "Build Brotli compression support",
+      "dependencies": [
+        "brotli"
+      ]
+    },
+    "curl": {
+      "description": "Build URL-backed file support",
+      "dependencies": [
+        "curl"
+      ]
+    },
+    "ssh": {
+      "description": "Build SFTP and SSH support",
+      "dependencies": [
+        "libssh"
+      ]
+    }
+  }
+}
