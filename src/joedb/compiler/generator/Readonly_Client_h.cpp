@@ -36,7 +36,7 @@ namespace joedb::generator
    int64_t schema_checkpoint;
 
   protected:
-   virtual void read_journal() override
+   void read_journal() override
    {
     Readonly_Journal::play_until_checkpoint(db);
     if (db.get_schema_checkpoint() > schema_checkpoint)
