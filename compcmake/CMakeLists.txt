@@ -4,6 +4,14 @@ include("${CMAKE_CURRENT_LIST_DIR}/joedb_version.cmake")
 
 project(joedb VERSION ${JOEDB_VERSION})
 
+include(CTest)
+
+option(JOEDB_BUILD_TOOLS "Build joedb command-line tools" ON)
+option(JOEDB_BUILD_EXAMPLES "Build joedb examples and tutorials" ON)
+option(JOEDB_BUILD_BENCHMARKS "Build joedb benchmarks" ON)
+option(JOEDB_BUILD_FUZZERS "Build joedb fuzzers when supported" ON)
+option(JOEDB_ENABLE_CPACK "Enable CPack packaging targets" ON)
+
 message("== JOEDB_VERSION = ${JOEDB_VERSION} ${JOEDB_VERSION_INT}")
 message("== CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
 message("== CMAKE_TOOLCHAIN_FILE = ${CMAKE_TOOLCHAIN_FILE}")
@@ -22,10 +30,11 @@ if (WIN32)
  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-enable_testing()
-add_test(NAME build_all
- COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config "$<CONFIG>"
-)
+if(BUILD_TESTING)
+ add_test(NAME build_all
+  COMMAND "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --config "$<CONFIG>"
+ )
+endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/compiler_flags.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
@@ -45,32 +54,36 @@ endif()
 # Dependencies
 #############################################################################
 
-include(FetchContent)
-Set(FETCHCONTENT_QUIET FALSE)
+if(BUILD_TESTING)
+ include(FetchContent)
+ set(FETCHCONTENT_QUIET FALSE)
+
+ # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ # GTest
+ # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ FetchContent_Declare(GTest
+   URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+   FIND_PACKAGE_ARGS NAMES GTest
+ )
+ # For Windows: Prevent overriding the parent project's compiler/linker settings
+ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+ FetchContent_MakeAvailable(GTest)
+ set(GTest_FOUND TRUE)
+ message("-- GTest_FOUND = ${GTest_FOUND}")
+endif()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# GTest
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-FetchContent_Declare(GTest
-  URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
-  FIND_PACKAGE_ARGS NAMES GTest
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(GTest)
-set(GTest_FOUND TRUE)
-message("-- GTest_FOUND = ${GTest_FOUND}")
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(SQLite3)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (SQLite3_FOUND)
- message("-- sqlite3 found")
- ipo_add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
- target_link_libraries(sqlite3_insert ${SQLite3_LIBRARIES})
- target_include_directories(sqlite3_insert PRIVATE ${SQLite3_INCLUDE_DIRS})
-else()
- message("## no sqlite3")
+if(JOEDB_BUILD_BENCHMARKS)
+ find_package(SQLite3)
+ # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ if(SQLite3_FOUND)
+  message("-- sqlite3 found")
+  ipo_add_executable(sqlite3_insert ../benchmark/sqlite3_insert.cpp)
+  target_link_libraries(sqlite3_insert ${SQLite3_LIBRARIES})
+  target_include_directories(sqlite3_insert PRIVATE ${SQLite3_INCLUDE_DIRS})
+ else()
+  message("## no sqlite3")
+ endif()
 endif()
 
 #############################################################################
@@ -82,38 +95,42 @@ include_directories(../doc/source/tutorial/src)
 #############################################################################
 # Build Targets
 #############################################################################
-joedb_add_executable(joedbi ../src/joedb/ui/joedbi.cpp)
-joedb_add_executable(joedb_logdump ../src/joedb/ui/joedb_logdump.cpp)
-joedb_add_executable(joedb_pack ../src/joedb/ui/joedb_pack.cpp)
-joedb_add_executable(joedb_to_json ../src/joedb/ui/joedb_to_json.cpp)
-joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
-joedb_add_executable(write_lock ../src/joedb/ui/write_lock.cpp)
-joedb_add_executable(joedb_sha256sum ../src/joedb/ui/joedb_sha256sum.cpp)
-joedb_add_executable(joedb_client ../src/joedb/ui/joedb_client.cpp)
-joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
+if(JOEDB_BUILD_TOOLS OR BUILD_TESTING)
+ joedb_add_executable(joedbi ../src/joedb/ui/joedbi.cpp)
+endif()
 
-ipo_add_executable(joedb_convert
- ../src/joedb/Writable.cpp
- ../src/joedb/error/assert.cpp
- ../src/joedb/error/Destructor_Logger.cpp
- ../src/joedb/error/Stream_Logger.cpp
- ../src/joedb/journal/File.cpp
- ../src/joedb/journal/Journal_Construction_Lock.cpp
- ../src/joedb/journal/Stream_File.cpp
- ../src/joedb/journal/Async_Reader.cpp
- ../src/joedb/journal/Abstract_File.cpp
- ../src/joedb/journal/File_Buffer.cpp
- ../src/joedb/journal/Memory_File.cpp
- ../src/joedb/journal/Readonly_Journal.cpp
- ../src/joedb/journal/Writable_Journal.cpp
- ../src/joedb/ui/Arguments.cpp
- ../src/joedb/ui/get_time_string.cpp
- ../src/joedb/ui/joedb_convert.cpp
- ../src/joedb/ui/main_wrapper.cpp
- ../src/joedb/ui/process_journal_pair.cpp
-)
+if(JOEDB_BUILD_TOOLS)
+ joedb_add_executable(joedb_logdump ../src/joedb/ui/joedb_logdump.cpp)
+ joedb_add_executable(joedb_pack ../src/joedb/ui/joedb_pack.cpp)
+ joedb_add_executable(joedb_to_json ../src/joedb/ui/joedb_to_json.cpp)
+ joedb_add_executable(write_lock ../src/joedb/ui/write_lock.cpp)
+ joedb_add_executable(joedb_sha256sum ../src/joedb/ui/joedb_sha256sum.cpp)
+ joedb_add_executable(joedb_client ../src/joedb/ui/joedb_client.cpp)
+ joedb_add_executable(joedb_push ../src/joedb/ui/joedb_push.cpp)
 
-if(GTest_FOUND)
+ ipo_add_executable(joedb_convert
+  ../src/joedb/Writable.cpp
+  ../src/joedb/error/assert.cpp
+  ../src/joedb/error/Destructor_Logger.cpp
+  ../src/joedb/error/Stream_Logger.cpp
+  ../src/joedb/journal/File.cpp
+  ../src/joedb/journal/Journal_Construction_Lock.cpp
+  ../src/joedb/journal/Stream_File.cpp
+  ../src/joedb/journal/Async_Reader.cpp
+  ../src/joedb/journal/Abstract_File.cpp
+  ../src/joedb/journal/File_Buffer.cpp
+  ../src/joedb/journal/Memory_File.cpp
+  ../src/joedb/journal/Readonly_Journal.cpp
+  ../src/joedb/journal/Writable_Journal.cpp
+  ../src/joedb/ui/Arguments.cpp
+  ../src/joedb/ui/get_time_string.cpp
+  ../src/joedb/ui/joedb_convert.cpp
+  ../src/joedb/ui/main_wrapper.cpp
+  ../src/joedb/ui/process_journal_pair.cpp
+ )
+endif()
+
+if(BUILD_TESTING AND GTest_FOUND)
 
  set(GTest_LIBRARIES GTest::gtest_main)
 
@@ -245,13 +262,23 @@ if(GTest_FOUND)
  SET_TESTS_PROPERTIES(joedb_test PROPERTIES DEPENDS build_all)
 endif()
 
-joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
+if(JOEDB_BUILD_BENCHMARKS)
+ joedb_add_executable(file_benchmark ../benchmark/file_benchmark.cpp)
+ joedb_add_executable(joedbi_insert ../benchmark/joedbi_insert.cpp)
+endif()
 
-if (asio_FOUND)
+if(JOEDB_BUILD_TOOLS AND asio_FOUND)
  if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
   message("-- using C++20 coroutines for servers")
   joedb_add_executable(joedb_server ../src/joedb/ui/joedb_server.cpp)
   joedb_add_executable(joedb_multi_server ../src/joedb/ui/joedb_multi_server.cpp)
+ else()
+  message("## no C++20, no coroutines, no servers")
+ endif()
+endif()
+
+if(JOEDB_BUILD_EXAMPLES AND asio_FOUND)
+ if(CMAKE_CXX_STANDARD GREATER_EQUAL 20)
   joedb_add_executable(tutorial_rpc_client
    ../doc/source/tutorial/src/rpc_client.cpp
    ../doc/source/tutorial/src/tutorial/rpc/population/writable.cpp
@@ -266,142 +293,151 @@ if (asio_FOUND)
    ../doc/source/tutorial/src/tutorial/writable.cpp
   )
  else()
-  message("## no C++20, no coroutines, no servers")
+  message("## no C++20, no coroutine examples")
  endif()
 endif()
 
-joedb_add_executable(atomic_read ../test/atomic_read.cpp)
-joedb_add_executable(atomic_write ../test/atomic_write.cpp)
+if(BUILD_TESTING)
+ joedb_add_executable(atomic_read ../test/atomic_read.cpp)
+ joedb_add_executable(atomic_write ../test/atomic_write.cpp)
 
-joedbc_build(../test/compiler/db empty)
-joedbc_build(../test/compiler/db blob)
-joedbc_build(../test/compiler/db multi_index)
-joedbc_build(../test/compiler/db schema_v1)
-joedbc_build(../test/compiler/db schema_v2)
-joedbc_build(../test/compiler/db test)
-joedbc_build(../test/compiler/db unordered_index)
-joedbc_build(../test/compiler/db vector_test)
-joedbc_build(../benchmark benchmarkdb)
-joedbc_build(../doc/source/tutorial/src tutorial)
-joedbc_build(../doc/source/tutorial/src settings)
+ joedbc_build(../test/compiler/db empty)
+ joedbc_build(../test/compiler/db blob)
+ joedbc_build(../test/compiler/db multi_index)
+ joedbc_build(../test/compiler/db schema_v1)
+ joedbc_build(../test/compiler/db schema_v2)
+ joedbc_build(../test/compiler/db test)
+ joedbc_build(../test/compiler/db unordered_index)
+ joedbc_build(../test/compiler/db vector_test)
 
-add_custom_command(
- OUTPUT
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
- COMMAND joedb_generate_translation_header > translation.h
- DEPENDS
-  joedb_generate_translation_header
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
- WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
-)
+ joedb_add_executable(joedb_generate_translation_header
+  ../test/compiler/db/test/writable.cpp
+  ../test/compiler/generate_translation_header.cpp
+ )
 
-add_custom_command(
- OUTPUT
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
- COMMAND ${CMAKE_COMMAND} -E remove test.joedb
- COMMAND joedbi --log none --new test.joedb < db/test.joedbi
- DEPENDS
-  joedbi
-  ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.joedbi
- WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
-)
+ joedb_add_executable(update_large_string
+  ../test/compiler/db/schema_v1/writable.cpp
+  ../test/compiler/update_large_string.cpp
+ )
+
+ joedb_add_executable(logger_test
+  ../test/logger_test.cpp
+ )
+
+ add_custom_command(
+  OUTPUT
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/translation.h
+  COMMAND joedb_generate_translation_header > translation.h
+  DEPENDS
+   joedb_generate_translation_header
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
+ )
+
+ add_custom_command(
+  OUTPUT
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/test.joedb
+  COMMAND ${CMAKE_COMMAND} -E remove test.joedb
+  COMMAND joedbi --log none --new test.joedb < db/test.joedbi
+  DEPENDS
+   joedbi
+   ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler/db/test.joedbi
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../test/compiler
+ )
+endif()
+
+if(JOEDB_BUILD_BENCHMARKS)
+ joedbc_build(../benchmark benchmarkdb)
+ joedb_add_executable(joedbc_insert
+  ../benchmark/benchmarkdb/writable.cpp
+  ../benchmark/joedbc_insert.cpp
+ )
+endif()
+
+if(JOEDB_BUILD_EXAMPLES OR BUILD_TESTING)
+ joedbc_build(../doc/source/tutorial/src tutorial)
+ joedbc_build(../doc/source/tutorial/src settings)
+endif()
 
 #############################################################################
 # Targets below require databases to be compiled
 #############################################################################
-joedb_add_executable(tutorial
- ../doc/source/tutorial/src/tutorial_main.cpp
- ../doc/source/tutorial/src/tutorial/writable.cpp
-)
-
-add_executable(minimal_tutorial
- ../doc/source/tutorial/src/tutorial/writable.cpp
- ../doc/source/tutorial/src/tutorial_main.cpp
- ../src/joedb/compiler/minimal_runtime.cpp
- ../src/joedb/ui/Arguments.cpp
- ../src/joedb/ui/main_wrapper.cpp
-)
-
-joedb_add_executable(tutorial_interpreter
- ../doc/source/tutorial/src/tutorial_interpreter.cpp
- ../doc/source/tutorial/src/tutorial/writable.cpp
-)
-
-if (NOT JOEDB_PORTABLE)
- joedb_add_executable(local_concurrency
+if(JOEDB_BUILD_EXAMPLES)
+ joedb_add_executable(tutorial
+  ../doc/source/tutorial/src/tutorial_main.cpp
   ../doc/source/tutorial/src/tutorial/writable.cpp
-  ../doc/source/tutorial/src/local_concurrency.cpp
+ )
+
+ add_executable(minimal_tutorial
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+  ../doc/source/tutorial/src/tutorial_main.cpp
+  ../src/joedb/compiler/minimal_runtime.cpp
+  ../src/joedb/ui/Arguments.cpp
+  ../src/joedb/ui/main_wrapper.cpp
+ )
+
+ joedb_add_executable(tutorial_interpreter
+  ../doc/source/tutorial/src/tutorial_interpreter.cpp
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+ )
+
+ if(NOT JOEDB_PORTABLE)
+  joedb_add_executable(local_concurrency
+   ../doc/source/tutorial/src/tutorial/writable.cpp
+   ../doc/source/tutorial/src/local_concurrency.cpp
+  )
+ endif()
+
+ joedb_add_executable(file_tutorial
+  ../doc/source/tutorial/src/file_tutorial.cpp
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+ )
+
+ joedb_add_executable(concurrency_tutorial
+  ../doc/source/tutorial/src/concurrency_tutorial.cpp
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+ )
+
+ joedb_add_executable(index_tutorial
+  ../doc/source/tutorial/src/index_tutorial.cpp
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+ )
+
+ joedb_add_executable(settings
+  ../doc/source/tutorial/src/settings_main.cpp
+  ../doc/source/tutorial/src/settings/writable.cpp
+ )
+
+ if(asio_FOUND)
+  joedb_add_executable(write_server_blob
+   ../doc/source/tutorial/src/write_server_blob.cpp
+  )
+  joedb_add_executable(server_file_tutorial
+   ../doc/source/tutorial/src/server_file_tutorial.cpp
+  )
+ endif()
+
+ if(libssh_FOUND)
+  joedb_add_executable(keepalive_test
+   ../doc/source/tutorial/src/keepalive_test.cpp
+  )
+ endif()
+
+ joedb_add_executable(client_lock
+  ../doc/source/tutorial/src/client_lock.cpp
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+ )
+
+ joedb_add_executable(step_by_step_replay
+  ../doc/source/tutorial/src/tutorial/writable.cpp
+  ../doc/source/tutorial/src/step_by_step_replay.cpp
  )
 endif()
-
-joedb_add_executable(file_tutorial
- ../doc/source/tutorial/src/file_tutorial.cpp
- ../doc/source/tutorial/src/tutorial/writable.cpp
-)
-
-joedb_add_executable(concurrency_tutorial
- ../doc/source/tutorial/src/concurrency_tutorial.cpp
- ../doc/source/tutorial/src/tutorial/writable.cpp
-)
-
-joedb_add_executable(index_tutorial
- ../doc/source/tutorial/src/index_tutorial.cpp
- ../doc/source/tutorial/src/tutorial/writable.cpp
-)
-
-joedb_add_executable(settings
- ../doc/source/tutorial/src/settings_main.cpp
- ../doc/source/tutorial/src/settings/writable.cpp
-)
-
-if (asio_FOUND)
- joedb_add_executable(write_server_blob
-  ../doc/source/tutorial/src/write_server_blob.cpp
- )
- joedb_add_executable(server_file_tutorial
-  ../doc/source/tutorial/src/server_file_tutorial.cpp
- )
-endif()
-
-if (libssh_FOUND)
- joedb_add_executable(keepalive_test
-  ../doc/source/tutorial/src/keepalive_test.cpp
- )
-endif()
-
-joedb_add_executable(client_lock
- ../doc/source/tutorial/src/client_lock.cpp
- ../doc/source/tutorial/src/tutorial/writable.cpp
-)
-
-joedb_add_executable(step_by_step_replay
- ../doc/source/tutorial/src/tutorial/writable.cpp
- ../doc/source/tutorial/src/step_by_step_replay.cpp
-)
-
-joedb_add_executable(joedb_generate_translation_header
- ../test/compiler/db/test/writable.cpp
- ../test/compiler/generate_translation_header.cpp
-)
-
-joedb_add_executable(joedbc_insert
- ../benchmark/benchmarkdb/writable.cpp
- ../benchmark/joedbc_insert.cpp
-)
-
-joedb_add_executable(update_large_string
- ../test/compiler/db/schema_v1/writable.cpp
- ../test/compiler/update_large_string.cpp
-)
-
-joedb_add_executable(logger_test
- ../test/logger_test.cpp
-)
 
 #############################################################################
 # Fuzzers
 #############################################################################
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
+if(JOEDB_BUILD_FUZZERS AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND asio_FOUND AND NOT ANDROID)
  message("-- clang, compiling fuzzers")
 
  function(set_fuzz_options target)
@@ -479,24 +515,28 @@ endif()
 #############################################################################
 # Packaging
 #############################################################################
-install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
-install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
-if (asio_FOUND)
- if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+if(JOEDB_BUILD_TOOLS)
+ install(TARGETS joedbc RUNTIME DESTINATION bin COMPONENT bin)
+ install(TARGETS joedbi RUNTIME DESTINATION bin COMPONENT bin)
+ install(TARGETS joedb_logdump RUNTIME DESTINATION bin COMPONENT bin)
+ install(TARGETS joedb_pack RUNTIME DESTINATION bin COMPONENT bin)
+ install(TARGETS joedb_to_json RUNTIME DESTINATION bin COMPONENT bin)
+ install(TARGETS joedb_client RUNTIME DESTINATION bin COMPONENT bin)
+ install(TARGETS joedb_push RUNTIME DESTINATION bin COMPONENT bin)
+ if(TARGET joedb_generate_translation_header)
+  install(TARGETS joedb_generate_translation_header RUNTIME DESTINATION bin COMPONENT bin)
+ endif()
+ if(TARGET joedb_server)
   install(TARGETS joedb_server RUNTIME DESTINATION bin COMPONENT bin)
+ endif()
+ if(TARGET joedb_multi_server)
   install(TARGETS joedb_multi_server RUNTIME DESTINATION bin COMPONENT bin)
  endif()
+ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
+ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_sqlite DESTINATION bin COMPONENT bin)
+ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)
+ install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
 endif()
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_browser DESTINATION bin COMPONENT bin)
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_sqlite DESTINATION bin COMPONENT bin)
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_edit DESTINATION bin COMPONENT bin)
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/joedb_inplace_pack DESTINATION bin COMPONENT bin)
 install(TARGETS joedb
  ARCHIVE DESTINATION lib COMPONENT bin
  LIBRARY DESTINATION lib COMPONENT bin
@@ -509,41 +549,43 @@ foreach(file ${all_includes})
  install(FILES ../src/${file} DESTINATION include/${dir} COMPONENT dev)
 endforeach()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
- execute_process(
-  COMMAND lsb_release -s -i
-  OUTPUT_VARIABLE CSN_SYSTEM
-  OUTPUT_STRIP_TRAILING_WHITESPACE
- )
- execute_process(
-  COMMAND lsb_release -s -r
-  OUTPUT_VARIABLE CSN_RELEASE
-  OUTPUT_STRIP_TRAILING_WHITESPACE
- )
- execute_process(
-  COMMAND dpkg --print-architecture
-  OUTPUT_VARIABLE CSN_ARCHI
-  OUTPUT_STRIP_TRAILING_WHITESPACE
- )
- set(CPACK_SYSTEM_NAME "${CSN_SYSTEM}-${CSN_RELEASE}-${CSN_ARCHI}")
+if(JOEDB_ENABLE_CPACK)
+ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  execute_process(
+   COMMAND lsb_release -s -i
+   OUTPUT_VARIABLE CSN_SYSTEM
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  execute_process(
+   COMMAND lsb_release -s -r
+   OUTPUT_VARIABLE CSN_RELEASE
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  execute_process(
+   COMMAND dpkg --print-architecture
+   OUTPUT_VARIABLE CSN_ARCHI
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  set(CPACK_SYSTEM_NAME "${CSN_SYSTEM}-${CSN_RELEASE}-${CSN_ARCHI}")
+ endif()
+ message("-- CPACK_SYSTEM_NAME = ${CPACK_SYSTEM_NAME}")
+
+ set(CPACK_PACKAGE_NAME "joedb")
+ set(CPACK_PACKAGE_VENDOR "Kayufu")
+ set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+ set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+ set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Journal-Only Embedded Database")
+ set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.joedb.org/")
+ set(CPACK_PACKAGE_CONTACT "Rémi Coulom")
+ set(CPACK_STRIP_FILES TRUE)
+ set(CPACK_DEB_COMPONENT_INSTALL ON)
+ set(CPACK_DEBIAN_PACKAGE_SECTION "database")
+ set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.joedb.org/")
+ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+ set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS "libssh-dev, libbrotli-dev, libcurl4-openssl-dev")
+ set(CPACK_DEBIAN_BIN_PACKAGE_DEPENDS "libssh-4, libbrotli1, libcurl4")
+ set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
+
+ include(CPack)
 endif()
-message("-- CPACK_SYSTEM_NAME = ${CPACK_SYSTEM_NAME}")
-
-set(CPACK_PACKAGE_NAME "joedb")
-set(CPACK_PACKAGE_VENDOR "Kayufu")
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Journal-Only Embedded Database")
-set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.joedb.org/")
-set(CPACK_PACKAGE_CONTACT "Rémi Coulom")
-set(CPACK_STRIP_FILES TRUE)
-set(CPACK_DEB_COMPONENT_INSTALL ON)
-set(CPACK_DEBIAN_PACKAGE_SECTION "database")
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://www.joedb.org/")
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_DEBIAN_DEV_PACKAGE_DEPENDS "libssh-dev, libbrotli-dev, libcurl4-openssl-dev")
-set(CPACK_DEBIAN_BIN_PACKAGE_DEPENDS "libssh-4, libbrotli1, libcurl4")
-set(CPACK_DEBIAN_COMPRESSION_TYPE xz)
-
-include(CPack)
