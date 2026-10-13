@@ -41,7 +41,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 # find_program(CLANG_TIDY clang-tidy)
  message("-- CLANG_TIDY = ${CLANG_TIDY} (compiler version: ${CMAKE_CXX_COMPILER_VERSION})")
 
- if (CLANG_TIDY)
+ if (CLANG_TIDY AND NOT CMAKE_BUILD_TYPE MATCHES "Dev")
   set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY} --header-filter=* -checks=-*,readability-*,-readability-function-size,-readability-redundant-access-specifiers,-readability-braces-around-statements,-readability-magic-numbers,-readability-implicit-bool-conversion,-readability-else-after-return,-readability-uppercase-literal-suffix,-readability-static-accessed-through-instance,-readability-identifier-length,-readability-function-cognitive-complexity,-readability-container-data-pointer,-readability-use-anyofallof,-readability-simplify-boolean-expr,bugprone-*,-bugprone-macro-parentheses,-bugprone-exception-escape,-bugprone-branch-clone,-bugprone-string-constructor,-bugprone-suspicious-include,-bugprone-easily-swappable-parameters,-bugprone-implicit-widening-of-multiplication-result,concurrency-*,modernize-*,-modernize-use-nodiscard,-modernize-use-trailing-return-type,-modernize-use-auto,-modernize-raw-string-literal,-modernize-avoid-c-arrays,-modernize-deprecated-headers,-modernize-loop-convert,-modernize-return-braced-init-list,-modernize-use-default-member-init,-modernize-concat-nested-namespaces,-modernize-make-unique,-modernize-use-designated-initializers,-modernize-use-integer-sign-comparison)
   if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 14.0)
    set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY},-readability-avoid-unconditional-preprocessor-if,-bugprone-empty-catch,-modernize-type-traits,-bugprone-unchecked-optional-access)
@@ -58,6 +58,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
  endif()
 
  string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O2 -DNDEBUG")
+ string(APPEND CMAKE_CXX_FLAGS_DEV " -g -O1 -DNDEBUG")
 
  # See doc/source/memsan.rst to build libc++ with memsan
  find_path(LLVM_PROJECT_DIR HINTS ${CMAKE_CURRENT_LIST_DIR}/../.. ${CMAKE_CURRENT_LIST_DIR}/../../../../../repos NAMES llvm-project)
