@@ -1,6 +1,10 @@
 History
 =======
 
+- 2026-10-15 10.0.11 LTS
+
+  - fix pull conflict
+
 - 2026-09-17 10.0.10 LTS
 
   - fix unsigned underflow in joedb::Arguments
