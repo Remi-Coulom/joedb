@@ -1,134 +1,210 @@
 include_guard(GLOBAL)
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Informative messages about system configuration
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Optional dependencies default to AUTO to preserve the traditional source-build
+# behaviour. Package managers should pass ON or OFF explicitly so that the
+# resulting joedb feature set does not depend on the build machine.
+function(joedb_dependency_option name description)
+ set(${name} "AUTO" CACHE STRING "${description} (AUTO, ON, or OFF)")
+ set_property(CACHE ${name} PROPERTY STRINGS AUTO ON OFF)
+ string(TOUPPER "${${name}}" value)
+ if(NOT value MATCHES "^(AUTO|ON|OFF)$")
+  message(FATAL_ERROR "${name} must be AUTO, ON, or OFF (got '${${name}}')")
+ endif()
+ set(${name} "${value}" CACHE STRING "${description} (AUTO, ON, or OFF)" FORCE)
+endfunction()
+
+joedb_dependency_option(JOEDB_WITH_ASIO "Build Boost.Asio support")
+joedb_dependency_option(JOEDB_WITH_WEBSOCKETS "Build WebSocket support")
+joedb_dependency_option(JOEDB_WITH_SSH "Build libssh support")
+
+if(JOEDB_NO_CURL AND NOT DEFINED JOEDB_WITH_CURL)
+ set(JOEDB_WITH_CURL OFF)
+endif()
+joedb_dependency_option(JOEDB_WITH_CURL "Build libcurl support")
+joedb_dependency_option(JOEDB_WITH_BROTLI "Build Brotli support")
+
 message("-- UNIX = \"${UNIX}\"")
 message("-- CMAKE_CROSSCOMPILING = \"${CMAKE_CROSSCOMPILING}\"")
 message("-- CMAKE_SYSTEM_NAME = \"${CMAKE_SYSTEM_NAME}\"")
 message("-- CMAKE_SIZEOF_VOID_P = \"${CMAKE_SIZEOF_VOID_P}\"")
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Threads
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set(JOEDB_HAS_BOOST FALSE)
+set(JOEDB_HAS_ASIO FALSE)
+set(JOEDB_HAS_WEBSOCKETS FALSE)
+set(JOEDB_HAS_SSH FALSE)
+set(JOEDB_HAS_CURL FALSE)
+set(JOEDB_HAS_BROTLI FALSE)
+set(JOEDB_BROTLI_PROVIDER "")
+
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
+set(JOEDB_EXTERNAL_LIBS Threads::Threads)
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(Boost CONFIG)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (Boost_FOUND)
- message("-- boost found")
- add_definitions(-DJOEDB_HAS_BOOST)
-
- find_path(WEBSOCKET_INCLUDES boost/beast/websocket.hpp)
-
- if (WEBSOCKET_INCLUDES)
-  find_package(OpenSSL)
-  if (OpenSSL_FOUND)
-   find_path(
-    CERTIFY_INCLUDES boost/certify/https_verification.hpp
-    HINTS ${CMAKE_CURRENT_LIST_DIR}/../../certify/include
-   )
-   if (CERTIFY_INCLUDES)
-    message("-- certify found: ${CERTIFY_INCLUDES}")
-    add_definitions(-DJOEDB_HAS_WEBSOCKETS)
-    include_directories(${CERTIFY_INCLUDES})
-    list(APPEND JOEDB_EXTERNAL_LIBS OpenSSL::SSL OpenSSL::Crypto)
-    if(WIN32)
-     list(APPEND JOEDB_EXTERNAL_LIBS Crypt32.lib)
-    endif()
-    if(APPLE)
-     list(APPEND JOEDB_EXTERNAL_LIBS "-framework CoreFoundation" "-framework Security")
-    endif()
-   else()
-    message("## boost::certify not found, disabling websockets")
-    message("## Fix: next to joedb, git clone https://github.com/djarek/certify.git")
-   endif()
-   include_directories(${Boost_INCLUDE_DIRS} ../../certify/include)
-  else()
-   message("## OpenSSL not found, no web socket")
-  endif()
+#############################################################################
+# Boost.Asio and WebSockets
+#############################################################################
+if(NOT "${JOEDB_WITH_ASIO}" STREQUAL "OFF" OR
+   NOT "${JOEDB_WITH_WEBSOCKETS}" STREQUAL "OFF")
+ if("${JOEDB_WITH_ASIO}" STREQUAL "ON" OR
+    "${JOEDB_WITH_WEBSOCKETS}" STREQUAL "ON")
+  find_package(Boost CONFIG REQUIRED)
  else()
-  message("## boost/beast/websocket.hpp not found")
+  find_package(Boost CONFIG QUIET)
+ endif()
+endif()
+
+if(NOT "${JOEDB_WITH_ASIO}" STREQUAL "OFF" AND Boost_FOUND)
+ find_path(JOEDB_ASIO_INCLUDE_DIR boost/asio.hpp HINTS ${Boost_INCLUDE_DIRS})
+ if(JOEDB_ASIO_INCLUDE_DIR)
+  set(JOEDB_HAS_ASIO TRUE)
+ elseif("${JOEDB_WITH_ASIO}" STREQUAL "ON")
+  message(FATAL_ERROR "JOEDB_WITH_ASIO=ON, but boost/asio.hpp was not found")
+ endif()
+endif()
+
+if(NOT "${JOEDB_WITH_WEBSOCKETS}" STREQUAL "OFF" AND Boost_FOUND)
+ find_path(JOEDB_BEAST_INCLUDE_DIR boost/beast/websocket.hpp HINTS ${Boost_INCLUDE_DIRS})
+ find_path(
+  JOEDB_CERTIFY_INCLUDE_DIR
+  boost/certify/https_verification.hpp
+  HINTS ${CMAKE_CURRENT_LIST_DIR}/../../certify/include
+ )
+
+ if("${JOEDB_WITH_WEBSOCKETS}" STREQUAL "ON")
+  find_package(OpenSSL REQUIRED)
+ else()
+  find_package(OpenSSL QUIET)
  endif()
 
- find_path(ASIO_INCLUDES boost/asio.hpp)
- if (ASIO_INCLUDES)
-  message("-- asio found: ${ASIO_INCLUDES}")
-  set(asio_FOUND TRUE)
-  include_directories(${ASIO_INCLUDES})
-  add_definitions(-DJOEDB_HAS_ASIO)
-  if (WIN32)
-   list(APPEND JOEDB_EXTERNAL_LIBS wsock32 ws2_32)
-  endif()
- else()
-  message("## asio not found")
+ if(JOEDB_BEAST_INCLUDE_DIR AND JOEDB_CERTIFY_INCLUDE_DIR AND OpenSSL_FOUND)
+  set(JOEDB_HAS_WEBSOCKETS TRUE)
+  include_directories(${JOEDB_CERTIFY_INCLUDE_DIR})
+ elseif("${JOEDB_WITH_WEBSOCKETS}" STREQUAL "ON")
+  message(FATAL_ERROR
+   "JOEDB_WITH_WEBSOCKETS=ON requires Boost.Beast, Boost.Certify, and OpenSSL"
+  )
  endif()
+endif()
 
+if(JOEDB_HAS_ASIO OR JOEDB_HAS_WEBSOCKETS)
+ set(JOEDB_HAS_BOOST TRUE)
+ list(APPEND JOEDB_EXTERNAL_LIBS Boost::headers)
+ add_compile_definitions(JOEDB_HAS_BOOST)
+endif()
+
+if(JOEDB_HAS_ASIO)
+ message("-- Boost.Asio support enabled")
+ add_compile_definitions(JOEDB_HAS_ASIO)
+ if(WIN32)
+  list(APPEND JOEDB_EXTERNAL_LIBS wsock32 ws2_32)
+ endif()
 else()
- message("## boost not found. Fix: sudo apt install libboost-system-dev")
+ message("-- Boost.Asio support disabled")
 endif()
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(libssh CONFIG)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (NOT libssh_FOUND)
- find_package(libssh QUIET)
+if(JOEDB_HAS_WEBSOCKETS)
+ message("-- WebSocket support enabled")
+ add_compile_definitions(JOEDB_HAS_WEBSOCKETS)
+ list(APPEND JOEDB_EXTERNAL_LIBS OpenSSL::SSL OpenSSL::Crypto)
+ if(WIN32)
+  list(APPEND JOEDB_EXTERNAL_LIBS Crypt32.lib)
+ endif()
+ if(APPLE)
+  list(APPEND JOEDB_EXTERNAL_LIBS "-framework CoreFoundation" "-framework Security")
+ endif()
+else()
+ message("-- WebSocket support disabled")
 endif()
 
-if (libssh_FOUND)
- message("-- ssh found")
- add_definitions(-DJOEDB_HAS_SSH)
+#############################################################################
+# libssh
+#############################################################################
+if(NOT "${JOEDB_WITH_SSH}" STREQUAL "OFF")
+ find_package(libssh CONFIG QUIET)
+ if(NOT libssh_FOUND)
+  find_package(libssh QUIET)
+ endif()
+
+ if(libssh_FOUND)
+  set(JOEDB_HAS_SSH TRUE)
+ elseif("${JOEDB_WITH_SSH}" STREQUAL "ON")
+  message(FATAL_ERROR "JOEDB_WITH_SSH=ON, but libssh was not found")
+ endif()
+endif()
+
+if(JOEDB_HAS_SSH)
+ message("-- libssh support enabled")
+ add_compile_definitions(JOEDB_HAS_SSH)
  list(APPEND JOEDB_EXTERNAL_LIBS ssh)
 else()
- message("## ssh not found")
+ message("-- libssh support disabled")
 endif()
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (NOT JOEDB_NO_CURL)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- find_package(CURL QUIET)
-endif()
+#############################################################################
+# libcurl
+#############################################################################
+if(NOT "${JOEDB_WITH_CURL}" STREQUAL "OFF")
+ if("${JOEDB_WITH_CURL}" STREQUAL "ON")
+  find_package(CURL REQUIRED)
+ else()
+  find_package(CURL QUIET)
+ endif()
 
-if (CURL_FOUND)
- message("-- CURL found")
- add_definitions(-DJOEDB_HAS_CURL)
- list(APPEND JOEDB_EXTERNAL_LIBS CURL::libcurl)
-else()
- message("## CURL not found")
-endif()
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-find_package(unofficial-brotli CONFIG)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (unofficial-brotli_FOUND)
- list(APPEND JOEDB_EXTERNAL_LIBS unofficial::brotli::brotlidec)
- list(APPEND JOEDB_EXTERNAL_LIBS unofficial::brotli::brotlienc)
-else()
- find_path(brotli_encode_include_path "brotli/encode.h")
- find_library(brotli_decode_lib NAMES brotlidec)
- find_library(brotli_encode_lib NAMES brotlienc)
- if (brotli_encode_include_path AND brotli_decode_lib AND brotli_encode_lib)
-  set(unofficial-brotli_FOUND TRUE)
-  include_directories(${brotli_encode_include_path})
-  list(APPEND JOEDB_EXTERNAL_LIBS ${brotli_decode_lib} ${brotli_encode_lib})
+ if(CURL_FOUND)
+  set(JOEDB_HAS_CURL TRUE)
  endif()
 endif()
 
-if (unofficial-brotli_FOUND)
- message("-- Brotli found")
- add_definitions(-DJOEDB_HAS_BROTLI)
+if(JOEDB_HAS_CURL)
+ message("-- libcurl support enabled")
+ add_compile_definitions(JOEDB_HAS_CURL)
+ list(APPEND JOEDB_EXTERNAL_LIBS CURL::libcurl)
 else()
- message("## Brotli not found")
+ message("-- libcurl support disabled")
 endif()
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# log
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (ANDROID)
+#############################################################################
+# Brotli
+#############################################################################
+if(NOT "${JOEDB_WITH_BROTLI}" STREQUAL "OFF")
+ find_package(unofficial-brotli CONFIG QUIET)
+ if(unofficial-brotli_FOUND)
+  set(JOEDB_HAS_BROTLI TRUE)
+  set(JOEDB_BROTLI_PROVIDER "unofficial-brotli")
+  list(APPEND JOEDB_EXTERNAL_LIBS
+   unofficial::brotli::brotlidec
+   unofficial::brotli::brotlienc
+  )
+ else()
+  set(joedb_saved_module_path "${CMAKE_MODULE_PATH}")
+  list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+  find_package(Brotli QUIET)
+  set(CMAKE_MODULE_PATH "${joedb_saved_module_path}")
+  unset(joedb_saved_module_path)
+
+  if(Brotli_FOUND)
+   set(JOEDB_HAS_BROTLI TRUE)
+   set(JOEDB_BROTLI_PROVIDER "Brotli")
+   list(APPEND JOEDB_EXTERNAL_LIBS Brotli::decoder Brotli::encoder)
+  elseif("${JOEDB_WITH_BROTLI}" STREQUAL "ON")
+   message(FATAL_ERROR "JOEDB_WITH_BROTLI=ON, but Brotli was not found")
+  endif()
+ endif()
+endif()
+
+if(JOEDB_HAS_BROTLI)
+ message("-- Brotli support enabled (${JOEDB_BROTLI_PROVIDER})")
+ add_compile_definitions(JOEDB_HAS_BROTLI)
+else()
+ message("-- Brotli support disabled")
+endif()
+
+#############################################################################
+# Platform libraries
+#############################################################################
+if(ANDROID)
  list(APPEND JOEDB_EXTERNAL_LIBS log)
-elseif (APPLE)
+elseif(APPLE)
  list(APPEND JOEDB_EXTERNAL_LIBS "-framework OSLog")
 endif()

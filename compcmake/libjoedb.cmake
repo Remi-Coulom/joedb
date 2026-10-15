@@ -1,5 +1,7 @@
 include_guard(GLOBAL)
 
+include(GNUInstallDirs)
+
 include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../src)
 
 include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
@@ -38,7 +40,7 @@ set(JOEDB_DATABASES
  ${JOEDB_SRC_DIR}/joedb/ui/Parsed_Client.cpp
 )
 
-if(unofficial-brotli_FOUND)
+if(JOEDB_HAS_BROTLI)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Decoder.cpp
   ${JOEDB_SRC_DIR}/joedb/journal/Brotli_Codec.cpp
@@ -49,20 +51,20 @@ if(unofficial-brotli_FOUND)
  )
 endif()
 
-if(libssh_FOUND)
+if(JOEDB_HAS_SSH)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/ssh/Forward_Channel.cpp
   ${JOEDB_SRC_DIR}/joedb/ssh/SFTP.cpp
  )
 endif()
 
-if(CURL_FOUND)
+if(JOEDB_HAS_CURL)
  set(JOEDB_SOURCES ${JOEDB_SOURCES}
   ${JOEDB_SRC_DIR}/joedb/journal/CURL_File.cpp
  )
 endif()
 
-if (asio_FOUND)
+if(JOEDB_HAS_ASIO)
  set(JOEDB_SOURCES
   ${JOEDB_SRC_DIR}/joedb/concurrency/Local_Channel.cpp
   ${JOEDB_SOURCES}
@@ -84,22 +86,53 @@ target_link_libraries(joedb_databases ${JOEDB_EXTERNAL_LIBS})
 add_library(joedb_sources OBJECT ${JOEDB_SOURCES})
 target_link_libraries(joedb_sources ${JOEDB_EXTERNAL_LIBS})
 
-if (UNIX)
- add_library(joedb SHARED
-  $<TARGET_OBJECTS:joedb_sources>
-  $<TARGET_OBJECTS:joedb_for_joedbc>
-  $<TARGET_OBJECTS:joedb_databases>
- )
+add_library(joedb
+ $<TARGET_OBJECTS:joedb_sources>
+ $<TARGET_OBJECTS:joedb_for_joedbc>
+ $<TARGET_OBJECTS:joedb_databases>
+)
+
+if(BUILD_SHARED_LIBS)
  set_target_properties(joedb PROPERTIES SOVERSION ${JOEDB_VERSION})
  target_uses_ipo(joedb)
-else()
- add_library(joedb STATIC
-  $<TARGET_OBJECTS:joedb_sources>
-  $<TARGET_OBJECTS:joedb_databases>
-  $<TARGET_OBJECTS:joedb_for_joedbc>
- )
 endif()
 
-target_link_libraries(joedb ${JOEDB_EXTERNAL_LIBS})
+add_library(joedb::joedb ALIAS joedb)
+
+target_include_directories(joedb PUBLIC
+ $<BUILD_INTERFACE:${JOEDB_SRC_DIR}>
+ $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+target_compile_features(joedb PUBLIC cxx_std_17)
+
+target_link_libraries(joedb PUBLIC ${JOEDB_EXTERNAL_LIBS})
+
+if(JOEDB_HAS_BOOST)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_BOOST)
+endif()
+
+if(JOEDB_HAS_ASIO)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_ASIO)
+endif()
+
+if(JOEDB_HAS_SSH)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_SSH)
+endif()
+
+if(JOEDB_HAS_CURL)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_CURL)
+endif()
+
+if(JOEDB_HAS_BROTLI)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_BROTLI)
+endif()
+
+if(JOEDB_HAS_WEBSOCKETS)
+ target_compile_definitions(joedb PUBLIC JOEDB_HAS_WEBSOCKETS)
+endif()
+
+if(DEFINED JOEDB_PORTABLE)
+ target_compile_definitions(joedb PUBLIC JOEDB_PORTABLE)
+endif()
 
 message("-- JOEDB_SRC_DIR = ${JOEDB_SRC_DIR}")
