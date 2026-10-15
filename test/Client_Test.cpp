@@ -500,4 +500,39 @@ namespace joedb
     EXPECT_EQ(client.get_database().get_tables().size(), 1);
   }
  }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Client, pull_conflict)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File server_file;
+  Memory_File client1_file;
+  Memory_File client2_file;
+
+  {
+   Writable_Journal journal(client1_file);
+   journal.comment("client1");
+   journal.soft_checkpoint();
+  }
+
+  {
+   Writable_Journal journal(client2_file);
+   journal.comment("client2");
+   journal.soft_checkpoint();
+  }
+
+  File_Connection connection(server_file);
+
+  Writable_Journal_Client client1(client1_file, connection);
+  Writable_Journal_Client client2(client2_file, connection);
+
+  EXPECT_NE(server_file.get_size(), client1_file.get_size());
+
+  client1.transaction([](Writable_Journal &journal){});
+
+  EXPECT_EQ(server_file.get_size(), client1_file.get_size());
+  EXPECT_EQ(server_file.get_size(), client2_file.get_size());
+
+  EXPECT_ANY_THROW(client2.pull());
+ }
 }
