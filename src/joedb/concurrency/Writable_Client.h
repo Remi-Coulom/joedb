@@ -83,9 +83,15 @@ namespace joedb
      get_writable_journal().hard_checkpoint();
    }
 
+   void push_before_pulling()
+   {
+    if (get_journal_checkpoint() > connection_checkpoint)
+     push_unlock();
+   }
+
    void start_transaction()
    {
-    // TODO: same as pull
+    push_before_pulling();
 
     connection_checkpoint = connection.pull
     (
@@ -129,17 +135,17 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    ) override
    {
+    push_before_pulling();
+
+    const int64_t old_checkpoint = get_journal_checkpoint();
+
+    const Tail_Exclusive_Lock lock(get_writable_journal());
+
     // TODO: check matching hash in case new content appeared simultaneously
     // in the local and remote journal.
     // connection.pull function must take an extra connection_checkpoint parameter
     // network protocol must change: send hash code of new data.
     // Maybe too complicated. At least, document the risk.
-
-    // Less safe simple alternative: refuse to pull if get_journal_checkpoint() > connection_checkpoint (before lock)
-
-    const int64_t old_checkpoint = get_journal_checkpoint();
-
-    const Tail_Exclusive_Lock lock(get_writable_journal());
 
     connection_checkpoint = connection.pull
     (
