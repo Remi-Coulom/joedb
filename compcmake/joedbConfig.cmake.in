@@ -30,6 +30,10 @@ if(@JOEDB_CONFIG_WITH_OPENSSL@)
  find_dependency(OpenSSL)
 endif()
 
+if(@JOEDB_CONFIG_WITH_CERTIFY@)
+ find_dependency(certify CONFIG)
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/joedbTargets.cmake")
 
 check_required_components(joedb)

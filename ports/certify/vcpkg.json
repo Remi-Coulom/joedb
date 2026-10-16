@@ -1,0 +1,11 @@
+{
+  "name": "certify",
+  "version-string": "0.1.0",
+  "description": "Header-only TLS certificate verification for Boost.Asio and OpenSSL",
+  "homepage": "https://github.com/djarek/certify",
+  "license": "BSL-1.0",
+  "dependencies": [
+    "boost-asio",
+    "openssl"
+  ]
+}
