@@ -16,7 +16,7 @@ namespace joedb
   protected:
    template<typename F> auto transaction(F f)
    {
-    const Tail_Exclusive_Lock lock(get_writable_journal());
+    const Tail_Exclusive_Lock lock(get_tail_lock());
 
     start_transaction();
 
@@ -83,16 +83,15 @@ namespace joedb
      get_writable_journal().hard_checkpoint();
    }
 
-   void push_before_pulling()
+   Tail_Exclusive_Lock get_tail_lock()
    {
     if (get_journal_checkpoint() > connection_checkpoint)
-     push_unlock();
+     push_unlock(); // TODO: throw
+    return Tail_Exclusive_Lock(get_writable_journal());
    }
 
    void start_transaction()
    {
-    push_before_pulling();
-
     connection_checkpoint = connection.pull
     (
      Lock_Action::lock_before,
@@ -135,11 +134,9 @@ namespace joedb
     std::chrono::milliseconds wait = std::chrono::milliseconds(0)
    ) override
    {
-    push_before_pulling();
-
     const int64_t old_checkpoint = get_journal_checkpoint();
 
-    const Tail_Exclusive_Lock lock(get_writable_journal());
+    const Tail_Exclusive_Lock lock(get_tail_lock());
 
     // TODO: check matching hash in case new content appeared simultaneously
     // in the local and remote journal.
@@ -200,7 +197,7 @@ namespace joedb
   public:
    Client_Lock(Writable_Client &client):
     client(client),
-    journal_lock(client.get_writable_journal()),
+    journal_lock(client.get_tail_lock()),
     locked(true)
    {
     client.start_transaction();
