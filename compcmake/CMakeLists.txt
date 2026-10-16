@@ -603,6 +603,7 @@ install(EXPORT joedbTargets
 install(FILES
  "${CMAKE_CURRENT_BINARY_DIR}/joedbConfig.cmake"
  "${CMAKE_CURRENT_BINARY_DIR}/joedbConfigVersion.cmake"
+ "${CMAKE_CURRENT_SOURCE_DIR}/joedbc_build.cmake"
  "${CMAKE_CURRENT_SOURCE_DIR}/FindBrotli.cmake"
  DESTINATION "${JOEDB_INSTALL_CMAKEDIR}"
  COMPONENT dev
