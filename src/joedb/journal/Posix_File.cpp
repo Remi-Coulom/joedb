@@ -166,9 +166,7 @@ namespace joedb
    mode == Open_Mode::write_lock
   )
   {
-   fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
-   if (fd < 0)
-    fd = open(file_name, O_RDWR);
+   fd = open(file_name, O_RDWR | O_CREAT, 00644);
   }
   else
    fd = -1;
