@@ -150,6 +150,11 @@ machine to share a connection to the same remote server, and also share the
 same local file. For this to work, the local file must be opened with
 :joedb:`Open_Mode`::shared_write.
 
+.. danger::
+  In order to share a file safely between multiple clients, they must all use
+  the same connection. If one client writes data to the file, the other clients
+  will accept it without checking that it matches the connection.
+
 Using a :joedb:`Client_Lock` Instead of a Lambda
 ------------------------------------------------
 

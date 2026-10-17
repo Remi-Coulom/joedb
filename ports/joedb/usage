@@ -3,10 +3,20 @@ joedb provides CMake targets:
     find_package(joedb CONFIG REQUIRED)
     target_link_libraries(main PRIVATE joedb::joedb)
 
-The joedbc schema compiler is available as an imported executable target:
+The `joedbc_build` helpers compile database schemas as part of your build.
+Call `joedbc_build` with a schema directory relative to the current source
+directory, then add the generated source file to your target:
 
-    add_custom_command(
-        OUTPUT generated.cpp
-        COMMAND joedb::joedbc database
-        DEPENDS joedb::joedbc database.joedbi database.joedbc
-    )
+    find_package(joedb CONFIG REQUIRED)
+    include("${joedb_DIR}/joedbc_build.cmake")
+
+    joedbc_build("src" database)
+
+    add_executable(my_app main.cpp src/database/writable.cpp)
+    target_include_directories(my_app PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    target_link_libraries(my_app PRIVATE joedb::joedb)
+
+Use `joedbc_build_absolute` when the schema directory is an absolute path.
+
+The schema directory should contain `database.joedbi` and `database.joedbc`.
+The helper also handles schema inputs in a `database.rpc` subdirectory.

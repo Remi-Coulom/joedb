@@ -166,9 +166,7 @@ namespace joedb
    mode == Open_Mode::write_lock
   )
   {
-   fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
-   if (fd < 0)
-    fd = open(file_name, O_RDWR);
+   fd = open(file_name, O_RDWR | O_CREAT, 00644);
   }
   else
    fd = -1;
@@ -182,11 +180,14 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
   Posix_FD(file_name, mode)
  {
-  if (mode != Open_Mode::read_existing && mode != Open_Mode::shared_write)
+  if (mode == Open_Mode::write_lock)
+   exclusive_lock_tail();
+  else if (
+   mode == Open_Mode::write_existing ||
+   mode == Open_Mode::create_new ||
+   mode == Open_Mode::write_existing_or_create_new)
   {
-   if (mode == Open_Mode::write_lock)
-    exclusive_lock_tail();
-   else if (!try_exclusive_lock(last_position, 1))
+   if (!try_exclusive_lock(last_position, 1))
     throw_last_error("locking", file_name);
   }
  }

@@ -44,6 +44,14 @@
       "dependencies": [
         "libssh"
       ]
+    },
+    "websockets": {
+      "description": "Build secure WebSocket support",
+      "dependencies": [
+        "boost-beast",
+        "certify",
+        "openssl"
+      ]
     }
   }
 }

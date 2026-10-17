@@ -6,6 +6,7 @@ TODO
 - testing of user-interface code -> (test for joedb_push to file bug)
 - always exit cleanly and rapidly after SIGINT or SIGTERM
 - channel read timeout should be settable
+- in a client, check that content matches the connection when new data is pulled from the file
 
 Notifications
 -------------

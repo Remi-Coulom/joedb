@@ -65,24 +65,22 @@ endif()
 
 if(NOT "${JOEDB_WITH_WEBSOCKETS}" STREQUAL "OFF" AND Boost_FOUND)
  find_path(JOEDB_BEAST_INCLUDE_DIR boost/beast/websocket.hpp HINTS ${Boost_INCLUDE_DIRS})
- find_path(
-  JOEDB_CERTIFY_INCLUDE_DIR
-  boost/certify/https_verification.hpp
-  HINTS ${CMAKE_CURRENT_LIST_DIR}/../../certify/include
- )
 
  if("${JOEDB_WITH_WEBSOCKETS}" STREQUAL "ON")
   find_package(OpenSSL REQUIRED)
+  find_package(certify CONFIG REQUIRED)
  else()
   find_package(OpenSSL QUIET)
+  if(OpenSSL_FOUND)
+   find_package(certify CONFIG QUIET)
+  endif()
  endif()
 
- if(JOEDB_BEAST_INCLUDE_DIR AND JOEDB_CERTIFY_INCLUDE_DIR AND OpenSSL_FOUND)
+ if(JOEDB_BEAST_INCLUDE_DIR AND OpenSSL_FOUND AND certify_FOUND)
   set(JOEDB_HAS_WEBSOCKETS TRUE)
-  include_directories(${JOEDB_CERTIFY_INCLUDE_DIR})
  elseif("${JOEDB_WITH_WEBSOCKETS}" STREQUAL "ON")
   message(FATAL_ERROR
-   "JOEDB_WITH_WEBSOCKETS=ON requires Boost.Beast, Boost.Certify, and OpenSSL"
+   "JOEDB_WITH_WEBSOCKETS=ON requires Boost.Beast, Certify, and OpenSSL"
   )
  endif()
 endif()
@@ -106,13 +104,7 @@ endif()
 if(JOEDB_HAS_WEBSOCKETS)
  message("-- WebSocket support enabled")
  add_compile_definitions(JOEDB_HAS_WEBSOCKETS)
- list(APPEND JOEDB_EXTERNAL_LIBS OpenSSL::SSL OpenSSL::Crypto)
- if(WIN32)
-  list(APPEND JOEDB_EXTERNAL_LIBS Crypt32.lib)
- endif()
- if(APPLE)
-  list(APPEND JOEDB_EXTERNAL_LIBS "-framework CoreFoundation" "-framework Security")
- endif()
+ list(APPEND JOEDB_EXTERNAL_LIBS certify::core OpenSSL::SSL OpenSSL::Crypto)
 else()
  message("-- WebSocket support disabled")
 endif()
