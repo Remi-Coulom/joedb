@@ -7,6 +7,8 @@ TODO
 - always exit cleanly and rapidly after SIGINT or SIGTERM
 - channel read timeout should be settable
 - in a client, check that content matches the connection when new data is pulled from the file
+- fsync of parent directory in linux, to make file creation durable. Call at the time of first
+  file fsync. This means that file name must be memorized in file object.
 
 Notifications
 -------------
