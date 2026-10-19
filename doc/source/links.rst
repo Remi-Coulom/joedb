@@ -72,6 +72,7 @@ File Locking, atomicity, durability:
 - https://danluu.com/deconstruct-files/
 - https://danluu.com/file-consistency/
 - https://transactional.blog/blog/2022-darwins-deceptive-durability
+- https://www.youtube.com/watch?v=LMe7hf2G1po (slides: https://www.slideshare.net/slideshow/eat-my-data/9002060#2)
 
 Authentication and Encryption of Network Communications:
 
