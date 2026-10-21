@@ -233,10 +233,11 @@ General commands
 
     if (!found)
     {
-     throw Exception
-     (
-      "Unknown command. For a list of available commands, try \"help\"."
-     );
+     std::stringstream message;
+     message << "Unknown command: ";
+     write_string(message, command);
+     message << ". For a list of available commands, try \"help\".";
+     throw Exception(message.str());
     }
 
     after_command(out, line_number, line, nullptr);
