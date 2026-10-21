@@ -31,7 +31,7 @@ namespace joedb
 #endif
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::throw_last_error(const char *action) const
+ void Posix_File::throw_last_error(const char *action) const
  /////////////////////////////////////////////////////////////////////////////
  {
   throw Exception
@@ -42,7 +42,7 @@ namespace joedb
 
  /////////////////////////////////////////////////////////////////////////////
  // NOLINTNEXTLINE(readability-make-member-function-const)
- int Posix_FD::lock(int command, short type, int64_t start, int64_t size)
+ int Posix_File::lock(int command, short type, int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   struct flock lock;
@@ -52,18 +52,18 @@ namespace joedb
   lock.l_len = off_t(size);
   lock.l_pid = 0;
 
-  return ::fcntl(fd, command, &lock);
+  return ::fcntl(posix_fd.get_fd(), command, &lock);
  }
 
  /////////////////////////////////////////////////////////////////////////////
- bool Posix_FD::try_exclusive_lock(int64_t start, int64_t size)
+ bool Posix_File::try_exclusive_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   return lock(JOEDB_SETLK, F_WRLCK, start, size) == 0;
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::shared_lock(int64_t start, int64_t size)
+ void Posix_File::shared_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (lock(JOEDB_SETLKW, F_RDLCK, start, size) < 0)
@@ -71,7 +71,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::exclusive_lock(int64_t start, int64_t size)
+ void Posix_File::exclusive_lock(int64_t start, int64_t size)
  /////////////////////////////////////////////////////////////////////////////
  {
   if (lock(JOEDB_SETLKW, F_WRLCK, start, size) < 0)
@@ -79,17 +79,17 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::unlock(int64_t start, int64_t size) noexcept
+ void Posix_File::unlock(int64_t start, int64_t size) noexcept
  /////////////////////////////////////////////////////////////////////////////
  {
   lock(JOEDB_SETLK, F_UNLCK, start, size);
  }
 
  /////////////////////////////////////////////////////////////////////////////
- size_t Posix_FD::pread(char *buffer, size_t size, int64_t offset) const
+ size_t Posix_File::pread(char *buffer, size_t size, int64_t offset) const
  /////////////////////////////////////////////////////////////////////////////
  {
-  const ssize_t result = ::pread(fd, buffer, size, offset);
+  const ssize_t result = ::pread(posix_fd.get_fd(), buffer, size, offset);
 
   if (result < 0)
    throw_last_error("reading");
@@ -98,7 +98,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::pwrite(const char *buffer, size_t size, int64_t offset)
+ void Posix_File::pwrite(const char *buffer, size_t size, int64_t offset)
  /////////////////////////////////////////////////////////////////////////////
  {
   size_t written = 0;
@@ -107,7 +107,7 @@ namespace joedb
   {
    const ssize_t result = ::pwrite
    (
-    fd,
+    posix_fd.get_fd(),
     buffer + written,
     size - written,
     offset + written
@@ -121,7 +121,7 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- int Posix_FD::fullsync(int fd)
+ int Posix_FD::fullsync()
  /////////////////////////////////////////////////////////////////////////////
  {
 #ifdef __APPLE__
@@ -132,27 +132,28 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::sync()
+ void Posix_File::sync()
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (fullsync(fd) == -1)
+  if (posix_fd.fullsync() == -1)
    throw_last_error("syncing");
 
-  if (!created_durably)
+  if (!created_durably && !file_name.empty())
   {
    auto directory = std::filesystem::path(file_name).parent_path();
    if (directory.empty())
     directory = ".";
 
-   const int dir_fd = ::open(directory.c_str(), O_RDONLY | O_DIRECTORY);
-   if (dir_fd < 0)
+   Posix_FD dir_fd(::open(directory.c_str(), O_RDONLY | O_DIRECTORY));
+
+   if (dir_fd.get_fd() < 0)
    {
     // ignore errors (OK if the directory was moved, ...)
     Global_Logger::warning("could not open parent directory for fsync: " + file_name);
    }
    else
    {
-    if (fullsync(dir_fd) < 0)
+    if (dir_fd.fullsync() < 0)
     {
      // also ignore errors (do like sqlite)
      Global_Logger::warning("fsync failed on parent directory: " + file_name);
@@ -165,10 +166,10 @@ namespace joedb
 
 #if _POSIX_SYNCHRONIZED_IO > 0
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::datasync()
+ void Posix_File::datasync()
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (fdatasync(fd) == -1)
+  if (fdatasync(posix_fd.get_fd()) == -1)
   {
    throw_last_error("syncing");
   }
@@ -176,10 +177,8 @@ namespace joedb
 #endif
 
  /////////////////////////////////////////////////////////////////////////////
- Posix_FD::Posix_FD(const char *file_name, const Open_Mode mode):
+ Posix_FD::Posix_FD(const char *file_name, const Open_Mode mode)
  /////////////////////////////////////////////////////////////////////////////
-  Abstract_File(mode),
-  file_name(file_name)
  {
   if (mode == Open_Mode::read_existing)
    fd = ::open(file_name, O_RDONLY);
@@ -198,16 +197,18 @@ namespace joedb
   }
   else
    fd = -1;
-
-  if (fd < 0)
-   throw_last_error("opening");
  }
 
  /////////////////////////////////////////////////////////////////////////////
  Posix_File::Posix_File(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
-  Posix_FD(file_name, mode)
+  Abstract_File(mode),
+  posix_fd(file_name, mode),
+  file_name(file_name)
  {
+  if (posix_fd.get_fd() < 0)
+   throw_last_error("opening");
+
   if (mode == Open_Mode::write_lock)
    exclusive_lock_tail();
   else if (
@@ -221,12 +222,12 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- int64_t Posix_FD::get_size() const
+ int64_t Posix_File::get_size() const
  /////////////////////////////////////////////////////////////////////////////
  {
   struct stat s;
 
-  if (fstat(fd, &s) < 0)
+  if (fstat(posix_fd.get_fd(), &s) < 0)
    throw_last_error("getting size of");
 
   return int64_t(s.st_size);
@@ -236,6 +237,6 @@ namespace joedb
  Posix_FD::~Posix_FD()
  /////////////////////////////////////////////////////////////////////////////
  {
-  close(fd);
+  ::close(fd);
  }
 }
