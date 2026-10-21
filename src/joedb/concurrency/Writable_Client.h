@@ -2,7 +2,7 @@
 #define joedb_Writable_Client_declared
 
 #include "joedb/concurrency/Client.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 
 namespace joedb
 {
@@ -262,7 +262,7 @@ namespace joedb
    {
     if (locked)
     {
-     Destructor_Logger::warning("Client_Lock: locked, cancelling transaction");
+     Global_Logger::warning("Client_Lock destructor: locked, cancelling transaction");
      try { unlock(); } catch (...) {}
     }
    }

@@ -1,7 +1,7 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File_Buffer.h"
 #include "joedb/error/Exception.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 #include "joedb/neg.h"
 
 namespace joedb
@@ -513,7 +513,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (ahead_of_checkpoint() > 0)
-   Destructor_Logger::warning("Writable_Journal: ahead of checkpoint");
+   Global_Logger::warning("Writable_Journal destructor: ahead of checkpoint");
  }
 
  /////////////////////////////////////////////////////////////////////////////

@@ -20,7 +20,10 @@ namespace joedb
   private:
    std::string file_name;
    int fd;
+   bool created_durably = false;
+
    int lock(int command, short type, int64_t start, int64_t size);
+   static int fullsync(int fd);
 
   protected:
    bool try_exclusive_lock(int64_t start, int64_t size);

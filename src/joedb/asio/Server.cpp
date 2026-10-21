@@ -1,5 +1,5 @@
 #include "joedb/asio/Server.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 
 #include <boost/asio/detached.hpp>
 #include <boost/asio/co_spawn.hpp>
@@ -192,7 +192,7 @@ namespace joedb::asio
  {
   if (!joined)
   {
-   Destructor_Logger::warning("Server: not joined. This is a bug.");
+   Global_Logger::warning("Server destructor: not joined. This is a bug.");
    std::terminate(); // it is too late to call join, since child was destroyed already
   }
  }

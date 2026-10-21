@@ -1,4 +1,4 @@
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 #include "joedb/error/CLog_Logger.h"
 
 namespace joedb
@@ -7,15 +7,15 @@ namespace joedb
  static Logger &get_default_logger()
  ////////////////////////////////////////////////////////////////////////////
  {
-  static CLog_Logger logger("joedb destructor warning");
+  static CLog_Logger logger("joedb");
   return logger;
  }
 
- Logger *Destructor_Logger::the_logger = &get_default_logger();
- std::mutex Destructor_Logger::mutex;
+ Logger *Global_Logger::the_logger = &get_default_logger();
+ std::mutex Global_Logger::mutex;
 
  ////////////////////////////////////////////////////////////////////////////
- void Destructor_Logger::warning(beman::cstring_view message) noexcept
+ void Global_Logger::warning(beman::cstring_view message) noexcept
  ////////////////////////////////////////////////////////////////////////////
  {
   std::unique_lock lock(mutex);
@@ -24,7 +24,7 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Destructor_Logger::set_logger(Logger *new_logger)
+ void Global_Logger::set_logger(Logger *new_logger)
  ////////////////////////////////////////////////////////////////////////////
  {
   std::unique_lock lock(mutex);
@@ -32,14 +32,14 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Destructor_Logger::set_logger()
+ void Global_Logger::set_logger()
  ////////////////////////////////////////////////////////////////////////////
  {
   set_logger(&get_default_logger());
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void Destructor_Logger::remove_logger()
+ void Global_Logger::remove_logger()
  ////////////////////////////////////////////////////////////////////////////
  {
   set_logger(nullptr);

@@ -1,5 +1,5 @@
 #include "joedb/journal/filebuf.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 
 #include <cstring>
 
@@ -236,7 +236,7 @@ namespace joedb
  {
   if (pptr() > pbase())
   {
-   Destructor_Logger::warning("filebuf: flushing buffer");
+   Global_Logger::warning("filebuf destructor: flushing buffer");
    try {syncp();} catch (...) {}
   }
  }

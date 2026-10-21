@@ -1,5 +1,6 @@
 #include "joedb/journal/Posix_File.h"
 #include "joedb/error/Exception.h"
+#include "joedb/error/Global_Logger.h"
 
 #include <sys/file.h>
 #include <sys/types.h>
@@ -7,6 +8,7 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <string.h>
+#include <filesystem>
 
 #ifdef JOEDB_HAS_BROKEN_POSIX_LOCKING
 #define JOEDB_SETLK F_SETLK
@@ -50,7 +52,7 @@ namespace joedb
   lock.l_len = off_t(size);
   lock.l_pid = 0;
 
-  return fcntl(fd, command, &lock);
+  return ::fcntl(fd, command, &lock);
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -119,16 +121,45 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::sync()
+ int Posix_FD::fullsync(int fd)
  /////////////////////////////////////////////////////////////////////////////
  {
 #ifdef __APPLE__
-  if (fcntl(fd, F_FULLFSYNC) == -1)
+  return ::fcntl(fd, F_FULLFSYNC);
 #else
-  if (fsync(fd) == -1)
+  return ::fsync(fd);
 #endif
-  {
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ void Posix_FD::sync()
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  if (fullsync(fd) == -1)
    throw_last_error("syncing");
+
+  if (!created_durably)
+  {
+   auto directory = std::filesystem::path(file_name).parent_path();
+   if (directory.empty())
+    directory = ".";
+
+   const int dir_fd = ::open(directory.c_str(), O_RDONLY | O_DIRECTORY);
+   if (dir_fd < 0)
+   {
+    // ignore errors (OK if the directory was moved, ...)
+    Global_Logger::warning("could not open parent directory for fsync: " + file_name);
+   }
+   else
+   {
+    if (fullsync(dir_fd) < 0)
+    {
+     // also ignore errors (do like sqlite)
+     Global_Logger::warning("fsync failed on parent directory: " + file_name);
+    }
+   }
+
+   created_durably = true;
   }
  }
 
@@ -151,11 +182,11 @@ namespace joedb
   file_name(file_name)
  {
   if (mode == Open_Mode::read_existing)
-   fd = open(file_name, O_RDONLY);
+   fd = ::open(file_name, O_RDONLY);
   else if (mode == Open_Mode::write_existing)
-   fd = open(file_name, O_RDWR);
+   fd = ::open(file_name, O_RDWR);
   else if (mode == Open_Mode::create_new)
-   fd = open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
+   fd = ::open(file_name, O_RDWR | O_CREAT | O_EXCL, 00644);
   else if
   (
    mode == Open_Mode::write_existing_or_create_new ||
@@ -163,7 +194,7 @@ namespace joedb
    mode == Open_Mode::write_lock
   )
   {
-   fd = open(file_name, O_RDWR | O_CREAT, 00644);
+   fd = ::open(file_name, O_RDWR | O_CREAT, 00644);
   }
   else
    fd = -1;

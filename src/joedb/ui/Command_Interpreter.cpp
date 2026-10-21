@@ -171,7 +171,6 @@ General commands
 
   write_prompt(out);
   out << "> \x1b[0m";
-  out.flush();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -185,6 +184,8 @@ General commands
   {
    if (prompt)
     write_whole_prompt(out);
+
+   out.flush();
 
    std::string line;
    if (!std::getline(in, line))

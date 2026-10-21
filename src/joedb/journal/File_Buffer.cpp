@@ -1,5 +1,5 @@
 #include "joedb/journal/File_Buffer.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 
 namespace joedb
 {
@@ -72,7 +72,7 @@ namespace joedb
  {
   if (buffer_has_write_data())
   {
-   Destructor_Logger::warning("flushing File_Buffer");
+   Global_Logger::warning("File_Buffer destructor: buffer_has_write_data()");
    try { write_buffer(); } catch (...) {}
   }
  }
