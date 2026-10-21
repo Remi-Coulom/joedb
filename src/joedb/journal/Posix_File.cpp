@@ -36,7 +36,7 @@ namespace joedb
  {
   throw Exception
   (
-   std::string(action) + ' ' + file_name + ": " + strerror(errno)
+   std::string(action) + ' ' + file_name + ": " + ::strerror(errno)
   );
  }
 
@@ -169,7 +169,7 @@ namespace joedb
  void Posix_File::datasync()
  /////////////////////////////////////////////////////////////////////////////
  {
-  if (fdatasync(posix_fd.get_fd()) == -1)
+  if (::fdatasync(posix_fd.get_fd()) == -1)
   {
    throw_last_error("syncing");
   }
@@ -227,7 +227,7 @@ namespace joedb
  {
   struct stat s;
 
-  if (fstat(posix_fd.get_fd(), &s) < 0)
+  if (::fstat(posix_fd.get_fd(), &s) < 0)
    throw_last_error("getting size of");
 
   return int64_t(s.st_size);
