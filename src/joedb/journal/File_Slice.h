@@ -2,7 +2,7 @@
 #define joedb_File_Slice_declared
 
 #include "joedb/journal/Readonly_Memory_File.h"
-#include "joedb/journal/Posix_File.h"
+#include "joedb/error/Exception.h"
 
 #include <sys/mman.h>
 
@@ -22,7 +22,7 @@ namespace joedb
      size(size)
     {
      if (data == MAP_FAILED)
-      Posix_File::throw_last_error("mapping", "file");
+      throw Exception("MAP_FAILED: " + std::string(strerror(errno)));
     }
 
     Memory_Mapping(const Memory_Mapping &) = delete;

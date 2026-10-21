@@ -29,12 +29,8 @@ namespace joedb
 #endif
 
  /////////////////////////////////////////////////////////////////////////////
- void Posix_FD::throw_last_error
+ void Posix_FD::throw_last_error(const char *action) const
  /////////////////////////////////////////////////////////////////////////////
- (
-  const char *action,
-  const char *file_name
- )
  {
   throw Exception
   (
@@ -69,7 +65,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (lock(JOEDB_SETLKW, F_RDLCK, start, size) < 0)
-   throw_last_error("read-locking", "file");
+   throw_last_error("read-locking");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -77,7 +73,7 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (lock(JOEDB_SETLKW, F_WRLCK, start, size) < 0)
-   throw_last_error("write-locking", "file");
+   throw_last_error("write-locking");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -94,7 +90,7 @@ namespace joedb
   const ssize_t result = ::pread(fd, buffer, size, offset);
 
   if (result < 0)
-   throw_last_error("reading", "file");
+   throw_last_error("reading");
 
   return size_t(result);
  }
@@ -116,7 +112,7 @@ namespace joedb
    );
 
    if (result < 0)
-    throw_last_error("writing", "file");
+    throw_last_error("writing");
    else
     written += size_t(result);
   }
@@ -132,7 +128,7 @@ namespace joedb
   if (fsync(fd) == -1)
 #endif
   {
-   throw_last_error("syncing", "file");
+   throw_last_error("syncing");
   }
  }
 
@@ -143,7 +139,7 @@ namespace joedb
  {
   if (fdatasync(fd) == -1)
   {
-   throw_last_error("syncing", "file");
+   throw_last_error("syncing");
   }
  }
 #endif
@@ -151,7 +147,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  Posix_FD::Posix_FD(const char *file_name, const Open_Mode mode):
  /////////////////////////////////////////////////////////////////////////////
-  Abstract_File(mode)
+  Abstract_File(mode),
+  file_name(file_name)
  {
   if (mode == Open_Mode::read_existing)
    fd = open(file_name, O_RDONLY);
@@ -172,7 +169,7 @@ namespace joedb
    fd = -1;
 
   if (fd < 0)
-   throw_last_error("opening", file_name);
+   throw_last_error("opening");
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -188,7 +185,7 @@ namespace joedb
    mode == Open_Mode::write_existing_or_create_new)
   {
    if (!try_exclusive_lock(last_position, 1))
-    throw_last_error("locking", file_name);
+    throw_last_error("locking");
   }
  }
 
@@ -199,7 +196,7 @@ namespace joedb
   struct stat s;
 
   if (fstat(fd, &s) < 0)
-   throw_last_error("getting size of", "file");
+   throw_last_error("getting size of");
 
   return int64_t(s.st_size);
  }

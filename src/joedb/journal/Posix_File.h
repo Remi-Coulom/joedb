@@ -18,6 +18,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   private:
+   std::string file_name;
    int fd;
    int lock(int command, short type, int64_t start, int64_t size);
 
@@ -25,7 +26,7 @@ namespace joedb
    bool try_exclusive_lock(int64_t start, int64_t size);
 
   public:
-   static void throw_last_error(const char *action, const char *file_name);
+   void throw_last_error(const char *action) const;
 
    Posix_FD(int fd, Open_Mode mode):
     Abstract_File(mode),
