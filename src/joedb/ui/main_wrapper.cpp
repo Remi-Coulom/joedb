@@ -18,11 +18,15 @@ namespace joedb
  {
   // necessary for fast console output in Windows
   std::setvbuf(stdout, nullptr, _IOFBF, 8192);
+  std::setvbuf(stderr, nullptr, _IOFBF, 8192);
+  std::cerr.unsetf(std::ios_base::unitbuf);
 
   try
   {
    Arguments arguments(argc, argv);
-   return main(arguments);
+   const int result = main(arguments);
+   std::cerr.flush();
+   return result;
   }
   catch (const std::exception &e)
   {
