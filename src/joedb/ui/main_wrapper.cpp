@@ -25,7 +25,6 @@ namespace joedb
   {
    Arguments arguments(argc, argv);
    const int result = main(arguments);
-   std::cerr.flush();
    return result;
   }
   catch (const std::exception &e)

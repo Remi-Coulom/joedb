@@ -1,5 +1,4 @@
 #include "joedb/journal/Readonly_Encoded_File.h"
-#include <joedb/error/Exception.h>
 
 namespace joedb
 {

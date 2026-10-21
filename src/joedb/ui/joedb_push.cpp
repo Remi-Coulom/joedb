@@ -8,8 +8,6 @@
 #include <iostream>
 #include <limits>
 #include <chrono>
-#include <cstring>
-#include <cstdlib>
 
 namespace joedb
 {

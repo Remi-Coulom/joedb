@@ -11,7 +11,6 @@
 #endif
 
 #include <iostream>
-#include <cstring>
 
 namespace joedb
 {

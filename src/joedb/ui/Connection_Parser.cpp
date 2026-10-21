@@ -2,7 +2,6 @@
 #include "joedb/ui/Connection_Builder.h"
 #include "joedb/ui/Dummy_Connection_Builder.h"
 #include "joedb/ui/File_Connection_Builder.h"
-#include "joedb/ui/SQL_Dump_Writable.h"
 
 #ifdef JOEDB_HAS_ASIO
 #include "joedb/ui/Local_Connection_Builder.h"

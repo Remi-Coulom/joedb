@@ -17,7 +17,6 @@ namespace joedb::generator
    void write(std::ostream &out) override
    {
     out << "#include \"Database_Writable.cpp\"\n";
-    out.flush();
    }
  };
 }

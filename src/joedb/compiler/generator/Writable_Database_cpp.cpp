@@ -262,6 +262,5 @@ namespace joedb::generator
   }
 
   namespace_close(out, options.get_name_space());
-  out.flush();
  }
 }
