@@ -532,9 +532,9 @@ namespace joedb
 
   if (writable_journal_client)
   {
+   writable_journal_client->push_if_ahead();
    if (!client.is_shared())
     client_lock.emplace(*writable_journal_client);
-   writable_journal_client->push_if_ahead();
   }
  }
 

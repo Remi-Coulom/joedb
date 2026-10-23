@@ -2,10 +2,7 @@
 
 namespace joedb
 {
- Content_Mismatch::Content_Mismatch(): Disconnection
- (
-  "Content mismatch: the file and the connection have diverged"
- )
+ Content_Mismatch::Content_Mismatch(): Disconnection("Content mismatch")
  {
  }
 
@@ -23,7 +20,7 @@ namespace joedb
   return client_journal.get_checkpoint();
  }
 
- bool Connection::check_matching_content
+ void Connection::check_matching_content
  (
   const Readonly_Journal &client_journal,
   Content_Check content_check,
@@ -31,7 +28,6 @@ namespace joedb
   int64_t until
  )
  {
-  return true;
  }
 
  int64_t Connection::pull

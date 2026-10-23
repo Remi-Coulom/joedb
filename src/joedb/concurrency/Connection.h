@@ -66,10 +66,8 @@ namespace joedb
     Content_Check content_check
    );
 
-   /// Compare content of file and connection. May use hashing.
-   ///
-   /// @return true if the journal and connection contents match
-   virtual bool check_matching_content
+   /// Compare content of file and connection. Throw if mismatch.
+   virtual void check_matching_content
    (
     const Readonly_Journal &client_journal,
     Content_Check content_check,

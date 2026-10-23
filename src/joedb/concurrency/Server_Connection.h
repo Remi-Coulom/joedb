@@ -28,7 +28,7 @@ namespace joedb
     Content_Check content_check
    ) override;
 
-   bool check_matching_content
+   void check_matching_content
    (
     const Readonly_Journal &client_journal,
     Content_Check content_check,

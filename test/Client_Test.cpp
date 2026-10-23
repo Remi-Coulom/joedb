@@ -144,28 +144,6 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_when_ahead)
- /////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File client_file;
-
-  {
-   Writable_Journal journal(client_file);
-   journal.comment("Hello");
-   journal.soft_checkpoint();
-  }
-
-  Memory_File server_file;
-  File_Connection connection(server_file);
-  Writable_Database_Client client(client_file, connection);
-
-  client.pull();
-  client.push_unlock();
-
-  EXPECT_EQ(server_file.get_size(), client_file.get_size());
- }
-
- /////////////////////////////////////////////////////////////////////////////
  TEST(Client, Client_Lock)
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -502,110 +480,26 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_conflict)
+ TEST(Client, pull_when_ahead)
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File server_file;
-  Memory_File client1_file;
-  Memory_File client2_file;
+  Memory_File client_file;
 
   {
-   Writable_Journal journal(client1_file);
-   journal.comment("client1");
-   journal.soft_checkpoint();
-  }
-
-  {
-   Writable_Journal journal(client2_file);
-   journal.comment("client2");
+   Writable_Journal journal(client_file);
+   journal.comment("client");
    journal.soft_checkpoint();
   }
 
   File_Connection connection(server_file);
+  Writable_Journal_Client client(client_file, connection);
+  EXPECT_NE(server_file.get_size(), client_file.get_size());
 
-  Writable_Journal_Client client1(client1_file, connection);
-  Writable_Journal_Client client2(client2_file, connection);
-
-  EXPECT_NE(server_file.get_size(), client1_file.get_size());
-
-  client1.transaction([](Writable_Journal &journal){});
-
-  EXPECT_EQ(server_file.get_size(), client1_file.get_size());
-  EXPECT_EQ(server_file.get_size(), client2_file.get_size());
-
-  EXPECT_ANY_THROW(client2.pull());
+  EXPECT_ANY_THROW(client.pull());
+  EXPECT_ANY_THROW(client.transaction([](Writable_Journal &journal){}));
+  EXPECT_ANY_THROW(Client_Lock(client).checkpoint_and_push_unlock());
  }
-
- ////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_conflict_with_transaction)
- ////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File server_file;
-  Memory_File client1_file;
-  Memory_File client2_file;
-
-  {
-   Writable_Journal journal(client1_file);
-   journal.comment("client1");
-   journal.soft_checkpoint();
-  }
-
-  {
-   Writable_Journal journal(client2_file);
-   journal.comment("client2");
-   journal.soft_checkpoint();
-  }
-
-  File_Connection connection(server_file);
-
-  Writable_Journal_Client client1(client1_file, connection);
-  Writable_Journal_Client client2(client2_file, connection);
-
-  EXPECT_NE(server_file.get_size(), client1_file.get_size());
-
-  client1.transaction([](Writable_Journal &journal){});
-
-  EXPECT_EQ(server_file.get_size(), client1_file.get_size());
-  EXPECT_EQ(server_file.get_size(), client2_file.get_size());
-
-  EXPECT_ANY_THROW(client2.transaction([](Writable_Journal &journal){}));
- }
-
- ////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_conflict_with_lock)
- ////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File server_file;
-  Memory_File client1_file;
-  Memory_File client2_file;
-
-  {
-   Writable_Journal journal(client1_file);
-   journal.comment("client1");
-   journal.soft_checkpoint();
-  }
-
-  {
-   Writable_Journal journal(client2_file);
-   journal.comment("client2");
-   journal.soft_checkpoint();
-  }
-
-  File_Connection connection(server_file);
-
-  Writable_Journal_Client client1(client1_file, connection);
-  Writable_Journal_Client client2(client2_file, connection);
-
-  EXPECT_NE(server_file.get_size(), client1_file.get_size());
-
-  client1.transaction([](Writable_Journal &journal){});
-
-  EXPECT_EQ(server_file.get_size(), client1_file.get_size());
-  EXPECT_EQ(server_file.get_size(), client2_file.get_size());
-
-  EXPECT_ANY_THROW(Client_Lock(client2).checkpoint_and_push_unlock());
- }
-
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Client, no_conflict_when_shared)
@@ -633,6 +527,39 @@ namespace joedb
     EXPECT_EQ(journal.get_checkpoint(), 46);
     journal.comment("Ha!");
    }
+  );
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Client, conflict_when_shared)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File server_file;
+  Memory_File client_file(Open_Mode::shared_write);
+
+  File_Connection connection(server_file);
+
+  Writable_Journal_Client client1(client_file, Connection::dummy);
+  Writable_Journal_Client client2(client_file, connection);
+
+  client1.transaction(
+   [](Writable_Journal &journal)
+   {
+    EXPECT_EQ(journal.get_checkpoint(), 41);
+    journal.comment("Hi!");
+   }
+  );
+
+  EXPECT_THROW
+  (
+   client2.transaction(
+    [](Writable_Journal &journal)
+    {
+     EXPECT_EQ(journal.get_checkpoint(), 46);
+     journal.comment("Ha!");
+    }
+   ),
+   Content_Mismatch
   );
  }
 }

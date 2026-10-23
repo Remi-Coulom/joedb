@@ -177,14 +177,7 @@ namespace joedb
     journal.soft_checkpoint();
    }
 
-   try
-   {
-    Test_Client client(mismatched_file, server);
-    FAIL() << "This should not work";
-   }
-   catch (const Content_Mismatch &)
-   {
-   }
+   EXPECT_THROW(Test_Client(mismatched_file, server), Content_Mismatch);
   }
  }
 

@@ -40,25 +40,19 @@ namespace joedb
   Content_Check content_check
  )
  {
-  if
+  check_matching_content
   (
-   !check_matching_content
-   (
-    client_journal,
-    content_check,
-    Header::ssize,
-    std::min(server_checkpoint, client_journal.get_checkpoint())
-   )
-  )
-  {
-   content_mismatch();
-  }
+   client_journal,
+   content_check,
+   Header::ssize,
+   std::min(server_checkpoint, client_journal.get_checkpoint())
+  );
 
   return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////
- bool Server_Connection::check_matching_content
+ void Server_Connection::check_matching_content
  ////////////////////////////////////////////////////////////////////////////
  (
   const Readonly_Journal &client_journal,
@@ -70,7 +64,7 @@ namespace joedb
   log("checking hash, from = " + std::to_string(from) + ", until = " + std::to_string(until));
 
   if (content_check == Content_Check::none || from >= until)
-   return true;
+   return;
 
   buffer.index = 0;
   buffer.write<char>(content_check == Content_Check::fast ? 'H' : 'I');
@@ -92,7 +86,8 @@ namespace joedb
 
   log(std::string("hash result: ") + buffer.data[0]);
 
-  return buffer.data[0] != 'h';
+  if (buffer.data[0] == 'h')
+   content_mismatch();
  }
 
  ////////////////////////////////////////////////////////////////////////////

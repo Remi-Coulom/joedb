@@ -65,6 +65,7 @@ namespace joedb
     return static_cast<Writable_Journal&>(Client::journal);
    }
 
+   const Content_Check content_check;
    bool use_valid_data = false;
    bool use_timestamp = false;
    bool use_hard_checkpoint = false;
@@ -86,8 +87,19 @@ namespace joedb
    Tail_Exclusive_Lock get_tail_lock()
    {
     if (get_journal_checkpoint() > connection_checkpoint)
-     push_unlock(); // TODO: throw
-    return Tail_Exclusive_Lock(get_writable_journal());
+     throw Exception("pulling when ahead of connection");
+
+    Tail_Exclusive_Lock lock(get_writable_journal());
+
+    connection.check_matching_content
+    (
+     get_writable_journal(),
+     content_check,
+     connection_checkpoint,
+     get_journal_checkpoint()
+    );
+
+    return lock;
    }
 
    void start_transaction()
@@ -108,7 +120,9 @@ namespace joedb
     Writable_Journal &journal,
     Connection &connection = Connection::dummy,
     Content_Check content_check = Content_Check::fast
-   ): Client(journal, connection, content_check)
+   ):
+    Client(journal, connection, content_check),
+    content_check(content_check)
    {
    }
 
@@ -138,12 +152,6 @@ namespace joedb
 
     const Tail_Exclusive_Lock lock(get_tail_lock());
 
-    // TODO: check matching hash in case new content appeared simultaneously
-    // in the local and remote journal.
-    // connection.pull function must take an extra connection_checkpoint parameter
-    // network protocol must change: send hash code of new data.
-    // Maybe too complicated. At least, document the risk.
-
     connection_checkpoint = connection.pull
     (
      Lock_Action::no_locking,
@@ -155,11 +163,6 @@ namespace joedb
     read_journal();
 
     return get_journal_checkpoint() - old_checkpoint;
-   }
-
-   void pull_push()
-   {
-    transaction([](){});
    }
 
    int64_t push_unlock()
