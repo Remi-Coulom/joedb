@@ -1,5 +1,5 @@
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/journal/File_Hasher.h"
+#include "joedb/journal/get_hash.h"
 #include "joedb/error/Disconnection.h"
 #include "joedb/ui/Progress_Bar.h"
 
@@ -43,8 +43,6 @@ namespace joedb
   if (content_check == Content_Check::none)
    return server_checkpoint;
 
-  log("checking hash... ");
-
   const int64_t checkpoint = std::min
   (
    server_checkpoint,
@@ -53,12 +51,16 @@ namespace joedb
 
   buffer.index = 0;
   buffer.write<char>(content_check == Content_Check::fast ? 'H' : 'I');
+  buffer.write<int64_t>(Header::ssize);
   buffer.write<int64_t>(checkpoint);
+
+  log("checking hash, from = " + std::to_string(Header::ssize) + ", until = " + std::to_string(checkpoint));
+
   buffer.write
   (
    content_check == Content_Check::fast
-   ? Journal_Hasher::get_fast_hash(client_journal, checkpoint)
-   : Journal_Hasher::get_full_hash(client_journal, checkpoint)
+   ? get_fast_hash(client_journal.get_file(), Header::ssize, checkpoint)
+   : get_full_hash(client_journal.get_file(), Header::ssize, checkpoint)
   );
 
   {

@@ -1,5 +1,4 @@
-#include "joedb/journal/File_Hasher.h"
-#include "joedb/journal/Readonly_Journal.h"
+#include "joedb/journal/get_hash.h"
 #include "joedb/journal/Readonly_Memory_File.h"
 
 #include <vector>
@@ -7,12 +6,12 @@
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash File_Hasher::get_hash
+ SHA_256::Hash get_full_hash
  ////////////////////////////////////////////////////////////////////////////
  (
   const Abstract_File &file,
-  int64_t start,
-  int64_t size
+  int64_t from,
+  int64_t until
  )
  {
   SHA_256 sha_256;
@@ -20,27 +19,27 @@ namespace joedb
   constexpr uint32_t chunks = 2048;
   std::vector<char> hashing_buffer(SHA_256::chunk_size * chunks);
 
-  int64_t current_size = 0;
+  int64_t current = from;
 
   while (true)
   {
    size_t block_size = SHA_256::chunk_size * chunks;
-   if (current_size + int64_t(block_size) > size)
-    block_size = size_t(size - current_size);
+   if (current + int64_t(block_size) > until)
+    block_size = size_t(until - current);
 
-   file.full_pread(hashing_buffer.data(), block_size, start + current_size);
-   current_size += int64_t(block_size);
+   file.full_pread(hashing_buffer.data(), block_size, current);
+   current += int64_t(block_size);
    const uint32_t full_chunks = uint32_t(block_size / SHA_256::chunk_size);
    for (uint32_t i = 0; i < full_chunks; i++)
     sha_256.process_chunk(&hashing_buffer[i * SHA_256::chunk_size]);
 
    const uint32_t remainder = uint32_t(block_size % SHA_256::chunk_size);
-   if (remainder || current_size >= size)
+   if (remainder || current >= until)
    {
     sha_256.process_final_chunk
     (
      &hashing_buffer[full_chunks * SHA_256::chunk_size],
-     uint64_t(current_size)
+     uint64_t(current - from)
     );
     break;
    }
@@ -50,35 +49,36 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash File_Hasher::get_hash(const Abstract_File &file)
+ SHA_256::Hash get_full_hash(const Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////
  {
-  return File_Hasher::get_hash(file, 0, file.get_size());
+  return get_full_hash(file, 0, file.get_size());
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash File_Hasher::get_hash(const std::string_view s)
+ SHA_256::Hash get_full_hash(const std::string_view s)
  ////////////////////////////////////////////////////////////////////////////
  {
   Readonly_Memory_File file(s);
-  return File_Hasher::get_hash(file);
+  return get_full_hash(file);
  }
 
  ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash File_Hasher::get_fast_hash
+ SHA_256::Hash get_fast_hash
  ////////////////////////////////////////////////////////////////////////////
  (
   const Abstract_File &file,
-  int64_t start,
-  int64_t size
+  int64_t from,
+  int64_t until
  )
  {
   std::array<char, 1 << 12> buffer;
 
   constexpr int buffer_count = 256;
+  const int64_t size = until - from;
 
   if (size < 4 * int64_t(buffer.size()) * buffer_count)
-   return get_hash(file, start, size);
+   return get_full_hash(file, from, until);
 
   SHA_256 sha_256;
 
@@ -87,14 +87,14 @@ namespace joedb
    int64_t buffer_position;
 
    if (i == 0)
-    buffer_position = start;
+    buffer_position = from;
    else if (i == buffer_count - 1)
-    buffer_position = start + size - int64_t(buffer.size());
+    buffer_position = until - int64_t(buffer.size());
    else
    {
     buffer_position = int64_t(buffer.size()) *
     (
-     (start + i * size) / (int64_t(buffer.size()) * (buffer_count - 1))
+     (from + i * size) / (int64_t(buffer.size()) * (buffer_count - 1))
     );
    }
 
@@ -105,37 +105,5 @@ namespace joedb
   }
 
   return sha_256.get_hash();
- }
-
- ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash Journal_Hasher::get_fast_hash
- ////////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &journal,
-  int64_t checkpoint
- )
- {
-  return File_Hasher::get_fast_hash
-  (
-   journal.get_file(),
-   Header::size,
-   checkpoint - Header::ssize
-  );
- }
-
- ////////////////////////////////////////////////////////////////////////////
- SHA_256::Hash Journal_Hasher::get_full_hash
- ////////////////////////////////////////////////////////////////////////////
- (
-  const Readonly_Journal &journal,
-  int64_t checkpoint
- )
- {
-  return File_Hasher::get_hash
-  (
-   journal.get_file(),
-   Header::size,
-   checkpoint - Header::ssize
-  );
  }
 }

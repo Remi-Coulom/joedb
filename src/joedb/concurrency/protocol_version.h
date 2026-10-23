@@ -4,7 +4,7 @@
 namespace joedb
 {
  /// @ingroup concurrency
- constexpr int protocol_version = 19;
+ constexpr int protocol_version = 20;
 }
 
 #endif

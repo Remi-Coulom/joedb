@@ -497,7 +497,7 @@ if(JOEDB_BUILD_FUZZERS AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND JOEDB_HAS_
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
-  ../src/joedb/journal/File_Hasher.cpp
+  ../src/joedb/journal/get_hash.cpp
  )
 
  set_fuzz_options(joedb_fuzz)

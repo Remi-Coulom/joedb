@@ -1,5 +1,5 @@
 #include "joedb/journal/File.h"
-#include "joedb/journal/File_Hasher.h"
+#include "joedb/journal/get_hash.h"
 #include "joedb/error/Exception.h"
 #include "joedb/ui/Arguments.h"
 
@@ -25,8 +25,8 @@ int main(int argc, char **argv)
    joedb::File file(file_name.c_str(), joedb::Open_Mode::read_existing);
 
    const joedb::SHA_256::Hash hash = fast ?
-    joedb::File_Hasher::get_fast_hash(file, 0, file.get_size()) :
-    joedb::File_Hasher::get_hash(file);
+    joedb::get_fast_hash(file, 0, file.get_size()) :
+    joedb::get_full_hash(file);
 
    for (uint32_t i = 0; i < 8; i++)
     std::cout << std::setw(8) << hash[i];
