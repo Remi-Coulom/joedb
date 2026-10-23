@@ -10,35 +10,57 @@ namespace joedb
   Content_Check content_check
  )
  {
-  if (content_check != Content_Check::none)
-  {
-   const int64_t min = std::min
+  if
+  (
+   !check_matching_content
    (
-    server_journal.get_checkpoint(),
-    client_journal.get_checkpoint()
-   );
-
-   const int64_t fast_size = 1 << 11;
-
-   if (content_check == Content_Check::full || min <= 2 * fast_size)
-   {
-    if (!client_journal.equal_to(server_journal, Header::ssize, min))
-     content_mismatch();
-   }
-   else
-   {
-    if
-    (
-     !client_journal.equal_to(server_journal, Header::ssize, fast_size) ||
-     !client_journal.equal_to(server_journal, min - fast_size, min)
-    )
-    {
-     content_mismatch();
-    }
-   }
+    client_journal,
+    content_check,
+    Header::ssize,
+    std::min(server_journal.get_checkpoint(), client_journal.get_checkpoint())
+   )
+  )
+  {
+   content_mismatch();
   }
 
   return server_journal.get_checkpoint();
+ }
+
+ //////////////////////////////////////////////////////////////////////////
+ bool Pullonly_Journal_Connection::check_matching_content
+ //////////////////////////////////////////////////////////////////////////
+ (
+  const Readonly_Journal &client_journal,
+  Content_Check content_check,
+  int64_t from,
+  int64_t until
+ )
+ {
+  if (content_check == Content_Check::none || from >= until)
+   return true;
+
+  const int64_t fast_size = 1 << 11;
+  const int64_t size = until - from;
+
+  if (content_check == Content_Check::full || size <= 2 * fast_size)
+  {
+   if (!client_journal.equal_to(server_journal, from, until))
+    return false;
+  }
+  else
+  {
+   if
+   (
+    !client_journal.equal_to(server_journal, from, from + fast_size) ||
+    !client_journal.equal_to(server_journal, until - fast_size, until)
+   )
+   {
+    return false;
+   }
+  }
+
+  return true;
  }
 
  //////////////////////////////////////////////////////////////////////////

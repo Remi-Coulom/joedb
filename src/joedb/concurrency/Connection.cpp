@@ -23,6 +23,17 @@ namespace joedb
   return client_journal.get_checkpoint();
  }
 
+ bool Connection::check_matching_content
+ (
+  const Readonly_Journal &client_journal,
+  Content_Check content_check,
+  int64_t from,
+  int64_t until
+ )
+ {
+  return true;
+ }
+
  int64_t Connection::pull
  (
   Lock_Action lock_action,

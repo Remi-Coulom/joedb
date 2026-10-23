@@ -23,6 +23,14 @@ namespace joedb
     Content_Check content_check
    ) override;
 
+   bool check_matching_content
+   (
+    const Readonly_Journal &client_journal,
+    Content_Check content_check,
+    int64_t from,
+    int64_t until
+   ) override;
+
    int64_t pull
    (
     Lock_Action lock_action,

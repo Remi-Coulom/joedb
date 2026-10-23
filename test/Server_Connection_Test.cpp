@@ -14,8 +14,7 @@ namespace joedb
    size_t write_some(const char *data, size_t size) override {return size;}
    size_t read_some(char *data, size_t size) override
    {
-    read_data(data, 1);
-    return 1;
+    return File_Buffer::read_data(data, 1);
    }
 
   public:
@@ -59,7 +58,6 @@ namespace joedb
   channel.File_Buffer::write<int64_t>(1234);
   channel.File_Buffer::write<int64_t>(41);
   channel.File_Buffer::write<char>('W');
-  channel.File_Buffer::write<char>('H');
   channel.File_Buffer::write<char>('F');
   channel.File_Buffer::write<int64_t>(41);
   channel.File_Buffer::write<char>('G');
