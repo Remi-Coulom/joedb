@@ -140,10 +140,11 @@ namespace joedb
  class Tail_Exclusive_Lock
  {
   private:
-   Writable_Journal &journal;
+   Writable_Journal *journal;
 
   public:
    Tail_Exclusive_Lock(Writable_Journal &journal);
+   Tail_Exclusive_Lock(Tail_Exclusive_Lock &&other) noexcept;
    Tail_Exclusive_Lock(const Tail_Exclusive_Lock &) = delete;
    Tail_Exclusive_Lock &operator=(const Tail_Exclusive_Lock &) = delete;
    ~Tail_Exclusive_Lock();
