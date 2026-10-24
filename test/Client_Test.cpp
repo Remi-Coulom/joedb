@@ -11,6 +11,129 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
+ TEST(Client, read_journal_failure_unlocks_connection)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  class Tracking_Connection: public Connection
+  {
+   public:
+    bool locked = false;
+    bool fail_unlock = false;
+    int unlock_count = 0;
+
+    int64_t pull
+    (
+     Lock_Action lock_action,
+     Data_Transfer,
+     Writable_Journal &journal,
+     std::chrono::milliseconds
+    ) override
+    {
+     locked = bool(lock_action);
+     return journal.get_checkpoint();
+    }
+
+    void unlock() override
+    {
+     ++unlock_count;
+     locked = false;
+     if (fail_unlock)
+      throw Exception("unlock failed");
+    }
+  };
+
+  class Failing_Client: public Writable_Journal_Client
+  {
+   public:
+    using Writable_Journal_Client::Writable_Journal_Client;
+
+    void read_journal() override
+    {
+     throw Exception("replay failed");
+    }
+  };
+
+  for (bool fail_unlock: {false, true})
+  {
+   for (int operation = 0; operation < 3; ++operation)
+   {
+    SCOPED_TRACE(fail_unlock);
+    SCOPED_TRACE(operation);
+    Memory_File file;
+    Tracking_Connection connection;
+    connection.fail_unlock = fail_unlock;
+    Failing_Client client(file, connection);
+
+    try
+    {
+     if (operation == 0)
+      client.transaction([](Writable_Journal &) {FAIL() << "callback executed";});
+     else if (operation == 1)
+      client.transaction([](Writable_Journal &) {ADD_FAILURE() << "callback executed"; return 1;});
+     else
+     {
+      Client_Lock lock(client);
+     }
+     ADD_FAILURE() << "replay should have thrown";
+    }
+    catch (const Exception &e)
+    {
+     EXPECT_STREQ(e.what(), "replay failed");
+    }
+
+    EXPECT_EQ(connection.unlock_count, 1);
+    EXPECT_FALSE(connection.locked);
+   }
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Client, transaction_preserves_exception_when_unlock_fails)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  class Failing_Connection: public Connection
+  {
+   public:
+    int unlock_count = 0;
+
+    void unlock() override
+    {
+     ++unlock_count;
+     throw Exception("unlock failed");
+    }
+  };
+
+  for (bool returns_value: {false, true})
+  {
+   SCOPED_TRACE(returns_value);
+   Memory_File file;
+   Failing_Connection connection;
+   Writable_Journal_Client client(file, connection);
+
+   try
+   {
+    if (returns_value)
+     client.transaction([](Writable_Journal &) -> int
+     {
+      throw Exception("transaction failed");
+     });
+    else
+     client.transaction([](Writable_Journal &)
+     {
+      throw Exception("transaction failed");
+     });
+    ADD_FAILURE() << "transaction should have thrown";
+   }
+   catch (const Exception &e)
+   {
+    EXPECT_STREQ(e.what(), "transaction failed");
+   }
+
+   EXPECT_EQ(connection.unlock_count, 1);
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  TEST(Client, Writable_Database_Client)
  /////////////////////////////////////////////////////////////////////////////
  {

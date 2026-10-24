@@ -31,7 +31,7 @@ namespace joedb
      }
      catch (...)
      {
-      connection.unlock();
+      emergency_unlock();
       throw;
      }
 
@@ -49,7 +49,7 @@ namespace joedb
       }
       catch (...)
       {
-       connection.unlock();
+       emergency_unlock();
        throw;
       }
      } ();
@@ -60,6 +60,11 @@ namespace joedb
    }
 
   private:
+   void emergency_unlock() noexcept
+   {
+    try {connection.unlock();} catch (...) {}
+   }
+
    Writable_Journal &get_writable_journal()
    {
     return static_cast<Writable_Journal&>(Client::journal);
@@ -111,7 +116,15 @@ namespace joedb
      get_writable_journal()
     );
 
-    read_journal();
+    try
+    {
+     read_journal();
+    }
+    catch (...)
+    {
+     emergency_unlock();
+     throw;
+    }
    }
 
   public:
