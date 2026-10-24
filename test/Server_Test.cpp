@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/Robust_Connection.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Readonly_Client.h"
@@ -911,6 +912,49 @@ namespace joedb
   sequence.send(2);
   thread.join();
   EXPECT_EQ(sequence.get(), 3);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, conflict_when_shared)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (const bool robust: {false, true})
+  {
+   for (const auto content_check: {Content_Check::fast, Content_Check::full})
+   {
+    SCOPED_TRACE(robust);
+    SCOPED_TRACE(int(content_check));
+
+    Test_Server server;
+    Local_Connector connector(server.server.get_endpoint_path());
+    Test_Local_Channel channel(server.server.get_endpoint_path());
+    std::unique_ptr<Connection> connection;
+
+    if (robust)
+     connection = std::make_unique<Robust_Connection>(connector, logger);
+    else
+     connection = std::make_unique<Server_Connection>(channel, logger);
+
+    Memory_File file(Open_Mode::shared_write);
+    Writable_Journal_Client local_client(file);
+    Writable_Journal_Client client(file, *connection, content_check);
+    Writable_Journal_Client transaction_client(file, *connection, content_check);
+    Writable_Journal_Client lock_client(file, *connection, content_check);
+
+    local_client.transaction([](Writable_Journal &journal)
+    {
+     journal.comment("local change");
+    });
+
+    EXPECT_THROW(client.pull(), Content_Mismatch);
+    EXPECT_THROW
+    (
+     transaction_client.transaction([](Writable_Journal &journal) {}),
+     Content_Mismatch
+    );
+    EXPECT_THROW(Client_Lock(lock_client).unlock(), Content_Mismatch);
+   }
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////
