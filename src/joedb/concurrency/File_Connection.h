@@ -17,6 +17,8 @@ namespace joedb
    {
    }
 
+   bool is_pullonly() const override {return true;}
+
    int64_t handshake
    (
     const Readonly_Journal &client_journal,
@@ -59,6 +61,8 @@ namespace joedb
 
   public:
    Journal_Connection(Writable_Journal &server_journal);
+
+   bool is_pullonly() const override {return false;}
 
    int64_t pull
    (
