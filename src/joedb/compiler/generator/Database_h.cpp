@@ -566,7 +566,7 @@ namespace joedb::generator
   {
    out << '\n';
    out << "   const type_of_index_of_" << index.name;
-   out << " &get_index_of_" << index.name << "()\n";
+   out << " &get_index_of_" << index.name << "() const\n";
    out << "   {\n";
    out << "    return index_of_" << index.name << ";\n";
    out << "   }\n";
