@@ -129,13 +129,13 @@ namespace joedb
  void Server_Client::disconnect()
  ////////////////////////////////////////////////////////////////////////////
  {
+  keep_alive.stop();
+
   {
    Lock<Channel&> lock(channel);
    buffer.data[0] = 'Q';
    lock->write(buffer.data, 1);
   }
-
-  keep_alive.stop();
  }
 
  ////////////////////////////////////////////////////////////////////////////
