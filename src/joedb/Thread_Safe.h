@@ -2,6 +2,7 @@
 #define joedb_Thread_Safe_declared
 
 #include <mutex>
+#include <utility>
 
 namespace joedb
 {
@@ -16,7 +17,8 @@ namespace joedb
    T t;
 
   public:
-   template<class... Arguments> Thread_Safe(Arguments &&... a): t(a...)
+   template<class... Arguments> Thread_Safe(Arguments &&... a):
+    t(std::forward<Arguments>(a)...)
    {
    }
  };
