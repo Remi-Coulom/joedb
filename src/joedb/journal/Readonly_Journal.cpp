@@ -4,31 +4,6 @@
 
 #include <vector>
 
-namespace joedb
-{
- /////////////////////////////////////////////////////////////////////////////
- class Head_Shared_Lock
- /////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Abstract_File &file;
-
-  public:
-   Head_Shared_Lock(Abstract_File &file): file(file)
-   {
-    file.shared_lock_head();
-   }
-
-   Head_Shared_Lock(const Head_Shared_Lock &) = delete;
-   Head_Shared_Lock &operator=(const Head_Shared_Lock &) = delete;
-
-   ~Head_Shared_Lock()
-   {
-    file.unlock_head();
-   }
- };
-}
-
 /////////////////////////////////////////////////////////////////////////////
 #define TYPE_MACRO(cpp_type, return_type, type_id, read_method, W)\
 void joedb::Readonly_Journal::perform_update_##type_id(Writable &writable)\
@@ -139,7 +114,7 @@ void joedb::Readonly_Journal::pull_without_locking()
 int64_t joedb::Readonly_Journal::pull()
 /////////////////////////////////////////////////////////////////////////////
 {
- Head_Shared_Lock lock(file);
+ File_Head_Lock lock(file, File_Head_Lock::Mode::shared);
  const int64_t old_checkpoint = checkpoint_position;
  pull_without_locking();
  return checkpoint_position - old_checkpoint;

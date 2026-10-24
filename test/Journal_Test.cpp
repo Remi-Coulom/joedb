@@ -13,12 +13,19 @@ namespace joedb
  class Lock_Failure_File: public Memory_File
  {
   public:
+   bool head_locked = false;
    bool tail_locked = false;
    bool fail_head_lock = false;
    bool fail_read = false;
+   bool fail_size = false;
    int tail_unlock_count = 0;
 
-   Lock_Failure_File(): Memory_File(Open_Mode::shared_write) {}
+   explicit Lock_Failure_File(Open_Mode mode = Open_Mode::shared_write): Memory_File(mode) {}
+
+   void shared_lock(int64_t, int64_t) override
+   {
+    head_locked = true;
+   }
 
    void exclusive_lock(int64_t start, int64_t) override
    {
@@ -26,6 +33,7 @@ namespace joedb
     {
      if (fail_head_lock)
       throw Exception("head lock failed");
+     head_locked = true;
     }
     else
      tail_locked = true;
@@ -33,11 +41,20 @@ namespace joedb
 
    void unlock(int64_t start, int64_t) noexcept override
    {
-    if (start != 0)
+    if (start == 0)
+     head_locked = false;
+    else
     {
      tail_locked = false;
      ++tail_unlock_count;
     }
+   }
+
+   int64_t get_size() const override
+   {
+    if (fail_size)
+     throw Exception("size read failed");
+    return Memory_File::get_size();
    }
 
    size_t pread(char *data, size_t size, int64_t offset) const override
@@ -94,6 +111,74 @@ namespace joedb
   }
   EXPECT_FALSE(file.tail_locked);
   EXPECT_EQ(file.tail_unlock_count, 2);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, construction_size_failure_releases_locks)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (Open_Mode mode: {Open_Mode::read_existing, Open_Mode::shared_write, Open_Mode::write_existing})
+  {
+   SCOPED_TRACE(int(mode));
+   Lock_Failure_File file(mode);
+   file.fail_size = true;
+   EXPECT_THROW(Journal_Construction_Lock{file}, Exception);
+   EXPECT_FALSE(file.head_locked);
+   EXPECT_FALSE(file.tail_locked);
+   EXPECT_EQ(file.tail_unlock_count, mode == Open_Mode::shared_write ? 1 : 0);
+
+   file.fail_size = false;
+   {
+    Journal_Construction_Lock lock(file);
+    EXPECT_TRUE(file.head_locked);
+    EXPECT_EQ(file.tail_locked, mode == Open_Mode::shared_write);
+   }
+   EXPECT_FALSE(file.head_locked);
+   EXPECT_FALSE(file.tail_locked);
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, construction_reads_size_after_locking)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  class Growing_File: public Lock_Failure_File
+  {
+   public:
+    std::string committed_data;
+
+    void exclusive_lock(int64_t start, int64_t size) override
+    {
+     Lock_Failure_File::exclusive_lock(start, size);
+     if (start != 0 && !committed_data.empty())
+     {
+      get_data() = std::move(committed_data);
+      committed_data.clear();
+     }
+    }
+  } file;
+
+  {
+   Writable_Journal journal(file);
+  }
+
+  Memory_File writer_file;
+  writer_file.get_data() = file.get_data();
+  int64_t committed_checkpoint;
+  {
+   Writable_Journal writer(writer_file);
+   writer.comment("committed before lock acquisition completed");
+   writer.soft_checkpoint();
+   committed_checkpoint = writer.get_checkpoint();
+  }
+  file.committed_data = writer_file.get_data();
+
+  {
+   Writable_Journal opener(file);
+   EXPECT_EQ(opener.get_checkpoint(), committed_checkpoint);
+  }
+  Readonly_Journal reopened(file);
+  EXPECT_EQ(reopened.get_checkpoint(), committed_checkpoint);
  }
 
  ////////////////////////////////////////////////////////////////////////////
