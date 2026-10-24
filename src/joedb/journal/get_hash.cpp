@@ -92,9 +92,9 @@ namespace joedb
     buffer_position = until - int64_t(buffer.size());
    else
    {
-    buffer_position = from + int64_t(buffer.size()) *
+    buffer_position = int64_t(buffer.size()) *
     (
-     (i * size) / (int64_t(buffer.size()) * (buffer_count - 1))
+     (from + (i * size) / (buffer_count - 1)) / int64_t(buffer.size())
     );
    }
 
