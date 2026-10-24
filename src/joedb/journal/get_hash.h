@@ -29,9 +29,6 @@ namespace joedb
  SHA_256::Hash get_full_hash(const Abstract_File &file);
 
  /// @ingroup journal
- SHA_256::Hash get_fast_hash(const Abstract_File &file);
-
- /// @ingroup journal
  SHA_256::Hash get_full_hash(std::string_view s);
 }
 
