@@ -13,7 +13,6 @@ namespace joedb
  class Connection_Builder
  {
   public:
-   virtual bool get_default_sharing() const {return false;}
    virtual const char *get_name() const {return "";}
    virtual std::string get_parameters_description() const {return "";}
 
