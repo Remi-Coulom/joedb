@@ -56,5 +56,5 @@ namespace joedb
 int main(int argc, char **argv)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::main_wrapper(joedb::client, argc, argv);
+ return joedb::main_wrapper(joedb::client, argc, argv);
 }
