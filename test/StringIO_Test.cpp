@@ -1,5 +1,6 @@
 #include "joedb/ui/type_io.h"
 #include "joedb/ui/base64.h"
+#include "joedb/error/Exception.h"
 #include "external/wide_char_display_width.h"
 
 #include "gtest/gtest.h"
@@ -310,6 +311,63 @@ TEST(StringIO_Test, utf8_validation)
  std::ostringstream out;
  joedb::write_string(out, s);
  EXPECT_TRUE(check_utf8(out.str()));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, json_rejects_invalid_utf8)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const struct
+ {
+  const char *name;
+  const char *bytes;
+ } cases[] =
+ {
+  {"overlong two-byte NUL", "\xc0\x80"},
+  {"overlong two-byte ASCII", "\xc1\xbf"},
+  {"overlong three-byte NUL", "\xe0\x80\x80"},
+  {"overlong three-byte character", "\xe0\x9f\xbf"},
+  {"overlong four-byte NUL", "\xf0\x80\x80\x80"},
+  {"overlong four-byte character", "\xf0\x8f\xbf\xbf"},
+  {"first surrogate", "\xed\xa0\x80"},
+  {"last surrogate", "\xed\xbf\xbf"},
+  {"above U+10FFFF", "\xf4\x90\x80\x80"},
+  {"invalid leading byte", "\xf5\x80\x80\x80"},
+  {"stray continuation byte", "\x80"},
+  {"truncated character", "\xf0\x90\x80"}
+ };
+
+ for (const auto &c: cases)
+ {
+  SCOPED_TRACE(c.name);
+  std::ostringstream out;
+  EXPECT_THROW(joedb::write_string(out, c.bytes, true), joedb::Exception);
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, json_accepts_utf8_boundaries)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const char * const cases[] =
+ {
+  "\xc2\x80",         // U+0080
+  "\xdf\xbf",         // U+07FF
+  "\xe0\xa0\x80",     // U+0800
+  "\xed\x9f\xbf",     // U+D7FF, before surrogates
+  "\xee\x80\x80",     // U+E000, after surrogates
+  "\xef\xbf\xbf",     // U+FFFF
+  "\xf0\x90\x80\x80", // U+10000
+  "\xf4\x8f\xbf\xbf"  // U+10FFFF
+ };
+
+ for (const char *s: cases)
+ {
+  SCOPED_TRACE(s);
+  std::ostringstream out;
+  EXPECT_NO_THROW(joedb::write_string(out, s, true));
+  EXPECT_EQ('"' + std::string(s) + '"', out.str());
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////
