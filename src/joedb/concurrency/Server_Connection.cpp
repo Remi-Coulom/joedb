@@ -26,9 +26,8 @@ namespace joedb
 
   const size_t returned_size = size_t(until - offset);
 
-  for (size_t read = 0; read < returned_size;)
-   read += lock->read_some(data + read, returned_size - read);
-
+  lock->read(data, returned_size);
+  
   return returned_size;
  }
 
