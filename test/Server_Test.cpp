@@ -119,6 +119,50 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, constructor_failure)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  class Failing_Connection: public Connection
+  {
+   public:
+    int64_t handshake(const Readonly_Journal &, Content_Check) override
+    {
+     return Header::ssize;
+    }
+
+    int64_t push
+    (
+     const Readonly_Journal &,
+     int64_t,
+     int64_t,
+     Unlock_Action
+    ) override
+    {
+     throw Exception("initial push failed");
+    }
+  } connection;
+
+  Memory_File file;
+  {
+   Writable_Journal journal(file);
+   journal.comment("ahead of connection");
+   journal.soft_checkpoint();
+  }
+
+  Writable_Journal_Client client(file, connection);
+  const char * const endpoint_path = "constructor_failure.sock";
+  std::remove(endpoint_path);
+
+  EXPECT_THROW
+  (
+   Server(logger, 0, 1, endpoint_path, client, std::chrono::milliseconds(0)),
+   Exception
+  );
+
+  std::remove(endpoint_path);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Server, basic)
  ////////////////////////////////////////////////////////////////////////////
  {
