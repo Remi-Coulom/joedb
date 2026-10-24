@@ -320,6 +320,7 @@ namespace joedb::generator
      out << "   template<typename F> void update_vector_of_" << fname;
      out << "(id_of_" << tname << " record, size_t size, F f)\n";
      out << "   {\n";
+     out << "    JOEDB_DEBUG_ASSERT(storage_of_" << tname << ".freedom_keeper.is_used_vector(record.get_record_id(), size));\n";
      out << "    joedb::Span<";
      write_type(out, type, false, false);
      out << "> span(&storage_of_" << tname;
