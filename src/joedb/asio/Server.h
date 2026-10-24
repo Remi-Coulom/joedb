@@ -88,6 +88,8 @@ namespace joedb::asio
     return endpoint_path;
    }
 
+   bool is_started() const noexcept {return started;}
+
    void start();
    void stop();
    void join();

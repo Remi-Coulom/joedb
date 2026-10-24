@@ -180,9 +180,9 @@ namespace joedb::asio
  void Server::join()
  {
   thread_pool.join();
+  started = false;
   cleanup_after_join();
   std::remove(endpoint_path.c_str());
-  started = false;
  }
 
  void Server::cleanup_after_join()
