@@ -29,6 +29,8 @@ namespace joedb::generator
   out << R"RRR(
 #include "Database_Writable.h"
 
+#include <utility>
+
 )RRR";
 
   namespace_open(out, options.get_name_space());
@@ -233,7 +235,7 @@ namespace joedb::generator
        out << ",\n    ";
 
       const Type &type = db.get_field_type(tid, fid);
-      write_type(out, type, false, true);
+      write_type(out, type, Type_Usage::setter_value);
       out << " field_value_of_" << fname;
      }
 
@@ -244,7 +246,16 @@ namespace joedb::generator
     out << "    auto result = new_" << tname << "();\n";
 
     for (const auto &[fid, fname]: db.get_fields(tid))
-     out << "    set_" << fname << "(result, field_value_of_" << fname << ");\n";
+    {
+     const bool is_string = db.get_field_type(tid, fid).get_type_id() == Type::Type_Id::string;
+     out << "    set_" << fname << "(result, ";
+     if (is_string)
+      out << "std::move(";
+     out << "field_value_of_" << fname;
+     if (is_string)
+      out << ')';
+     out << ");\n";
+    }
 
     out << "    return result;\n";
     out << "   }\n\n";
@@ -284,17 +295,25 @@ namespace joedb::generator
     //
     out << "   void set_" << fname;
     out << "(id_of_" << tname << " record, ";
-    write_type(out, type, false, true);
+    write_type(out, type, Type_Usage::setter_value);
     out << " field_value_of_" << fname << ")\n";
     out << "   {\n";
     out << "    internal_update_" << tname << "__" << fname;
 
     out <<  "(record.get_record_id(), ";
-    out << "field_value_of_" << fname << ");\n";
+    if (type.get_type_id() == Type::Type_Id::string)
+     out << "std::move(";
+    out << "field_value_of_" << fname;
+    if (type.get_type_id() == Type::Type_Id::string)
+     out << ')';
+    out << ");\n";
     out << "    journal.update_";
     out << get_type_string(type);
     out << "(Table_Id(" << tid << "), record.get_record_id(), Field_Id(" << fid << "), ";
-    out << "field_value_of_" << fname;
+    if (type.get_type_id() == Type::Type_Id::string)
+     out << "get_" << fname << "(record)";
+    else
+     out << "field_value_of_" << fname;
     if (type.get_type_id() == Type::Type_Id::reference)
      out << ".get_record_id()";
     out << ");\n";
@@ -304,11 +323,17 @@ namespace joedb::generator
     {
      out << "   void set_" << fname;
      out << "(";
-     write_type(out, type, false, true);
+     write_type(out, type, Type_Usage::setter_value);
      out << " field_value_of_" << fname << ")\n";
      out << "   {\n";
      out << "    set_" << fname << "(the_" << tname;
-     out << "(), field_value_of_" << fname << ");\n";
+     out << "(), ";
+     if (type.get_type_id() == Type::Type_Id::string)
+      out << "std::move(";
+     out << "field_value_of_" << fname;
+     if (type.get_type_id() == Type::Type_Id::string)
+      out << ')';
+     out << ");\n";
      out << "   }\n\n";
     }
 
@@ -322,7 +347,7 @@ namespace joedb::generator
      out << "   {\n";
      out << "    JOEDB_DEBUG_ASSERT(storage_of_" << tname << ".freedom_keeper.is_used_vector(record.get_record_id(), size));\n";
      out << "    joedb::Span<";
-     write_type(out, type, false, false);
+     write_type(out, type, Type_Usage::storage);
      out << "> span(&storage_of_" << tname;
      out << ".field_value_of_" << fname << ".data()[record.get_id()], size);\n";
      out << "    f(span);\n";

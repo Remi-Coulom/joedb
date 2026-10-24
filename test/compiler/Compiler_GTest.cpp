@@ -1119,3 +1119,42 @@ TEST(Compiler, unordered_index)
  for (const auto person: db.find_person_by_name("Coulom"))
   EXPECT_EQ(db.get_first_name(person), "Rémi");
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, unordered_index_string_view)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ unordered_index::Writable_Database db(file);
+
+ // Include an embedded null and leave a suffix outside each lookup view.
+ const std::string first_name("Jo\0e!", 5);
+ const std::string last_name("Smith!");
+ const std::string_view first(first_name.data(), 4);
+ const std::string_view last(last_name.data(), 5);
+ const auto person = db.new_person(std::string(first), std::string(last), db.null_city());
+
+ EXPECT_EQ(person, db.find_person_by_first_name(first));
+ EXPECT_EQ(person, db.find_person_by_full_name(first, last, db.null_city()));
+ EXPECT_EQ(db.null_person(), db.find_person_by_first_name(std::string_view(first_name)));
+ EXPECT_EQ(db.null_person(), db.find_person_by_full_name(first, std::string_view(last_name), db.null_city()));
+
+ size_t count = 0;
+ for (const auto match: db.find_person_by_name(last))
+ {
+  EXPECT_EQ(person, match);
+  ++count;
+ }
+ EXPECT_EQ(count, 1);
+
+ count = 0;
+ for (const auto match: db.find_people_by_full_name(first, last, db.null_city()))
+ {
+  EXPECT_EQ(person, match);
+  ++count;
+ }
+ EXPECT_EQ(count, 1);
+
+ for (const auto match: db.find_people_by_full_name(first, std::string_view(last_name), db.null_city()))
+  ADD_FAILURE() << "Unexpected match: " << match.get_record_id();
+}

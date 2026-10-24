@@ -52,8 +52,7 @@ namespace joedb::generator
  (
   std::ostream &out,
   Type type,
-  bool return_type,
-  bool setter_type
+  Type_Usage usage
  )
  {
   switch (type.get_type_id())
@@ -67,20 +66,29 @@ namespace joedb::generator
    break;
 
    case Type::Type_Id::string:
-    if (return_type)
-     out << "const std::string &";
-    else if (setter_type)
-     out << "std::string_view";
-    else
-     out << "std::string";
+    switch (usage)
+    {
+     case Type_Usage::return_value:
+      out << "const std::string &";
+     break;
+
+     case Type_Usage::lookup_value:
+      out << "std::string_view";
+     break;
+
+     case Type_Usage::storage:
+     case Type_Usage::setter_value:
+      out << "std::string";
+     break;
+    }
    break;
 
    #define TYPE_MACRO(storage_tt, return_tt, type_id, read, write)\
    case Type::Type_Id::type_id:\
-    if (return_type || setter_type)\
-     out << #return_tt;\
-    else\
+    if (usage == Type_Usage::storage)\
      out << #storage_tt;\
+    else\
+     out << #return_tt;\
    break;
    #define TYPE_MACRO_NO_REFERENCE
    #define TYPE_MACRO_NO_STRING
@@ -94,7 +102,8 @@ namespace joedb::generator
  (
   std::ostream &out,
   const Compiler_Options::Index &index,
-  bool reference
+  bool reference,
+  Type_Usage usage
  )
  {
   if (index.field_ids.size() > 1)
@@ -112,7 +121,7 @@ namespace joedb::generator
      index.field_ids[i]
     );
 
-    write_type(out, type, false, false);
+    write_type(out, type, usage);
    }
 
    out << ">";
@@ -125,8 +134,7 @@ namespace joedb::generator
     (
      out,
      options.db.get_field_type(index.table_id, index.field_ids[0]),
-     false,
-     false
+     usage
     );
    }
   }

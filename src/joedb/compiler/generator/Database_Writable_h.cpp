@@ -233,7 +233,9 @@ namespace joedb::generator
         out << "     {\n";
         out << "      internal_update_" << tname;
         out << "__" << fname << "(record_id, ";
-        if (type.get_type_id() != Type::Type_Id::reference)
+        if (type.get_type_id() == Type::Type_Id::string)
+         out << "std::string(value)";
+        else if (type.get_type_id() != Type::Type_Id::reference)
          out << "value";
         else
         {
@@ -299,7 +301,7 @@ namespace joedb::generator
         else
         {
          out << "reinterpret_cast<const ";
-         write_type(out, type, false, false);
+         write_type(out, type, Type_Usage::storage);
          out << "*>(value)";
         }
 
