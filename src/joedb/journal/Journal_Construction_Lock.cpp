@@ -15,12 +15,21 @@ namespace joedb
  {
   if (file.is_readonly())
    file.shared_lock_head();
-  else
+  else if (file.is_shared())
   {
-   if (file.is_shared())
-    file.exclusive_lock_tail();
-   file.exclusive_lock_head();
+   file.exclusive_lock_tail();
+   try
+   {
+    file.exclusive_lock_head();
+   }
+   catch (...)
+   {
+    file.unlock_tail();
+    throw;
+   }
   }
+  else
+   file.exclusive_lock_head();
  }
 
  ////////////////////////////////////////////////////////////////////////////

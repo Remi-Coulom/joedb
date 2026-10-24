@@ -10,6 +10,92 @@
 
 namespace joedb
 {
+ class Lock_Failure_File: public Memory_File
+ {
+  public:
+   bool tail_locked = false;
+   bool fail_head_lock = false;
+   bool fail_read = false;
+   int tail_unlock_count = 0;
+
+   Lock_Failure_File(): Memory_File(Open_Mode::shared_write) {}
+
+   void exclusive_lock(int64_t start, int64_t) override
+   {
+    if (start == 0)
+    {
+     if (fail_head_lock)
+      throw Exception("head lock failed");
+    }
+    else
+     tail_locked = true;
+   }
+
+   void unlock(int64_t start, int64_t) noexcept override
+   {
+    if (start != 0)
+    {
+     tail_locked = false;
+     ++tail_unlock_count;
+    }
+   }
+
+   size_t pread(char *data, size_t size, int64_t offset) const override
+   {
+    if (fail_read)
+     throw Exception("header read failed");
+    return Memory_File::pread(data, size, offset);
+   }
+ };
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, lock_pull_failure_releases_tail)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (bool use_lock_object: {false, true})
+  {
+   SCOPED_TRACE(use_lock_object);
+   Lock_Failure_File file;
+   Writable_Journal journal(file);
+   file.tail_unlock_count = 0;
+   file.fail_read = true;
+
+   if (use_lock_object)
+    EXPECT_THROW(Tail_Exclusive_Lock{journal}, Exception);
+   else
+    EXPECT_THROW(journal.lock_pull(), Exception);
+
+   EXPECT_FALSE(file.tail_locked);
+   EXPECT_EQ(file.tail_unlock_count, 1);
+
+   file.fail_read = false;
+   journal.lock_pull();
+   EXPECT_TRUE(file.tail_locked);
+   journal.unlock();
+   EXPECT_FALSE(file.tail_locked);
+   EXPECT_EQ(file.tail_unlock_count, 2);
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Journal, construction_head_lock_failure_releases_tail)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Lock_Failure_File file;
+  file.fail_head_lock = true;
+  EXPECT_THROW(Journal_Construction_Lock{file}, Exception);
+  EXPECT_FALSE(file.tail_locked);
+  EXPECT_EQ(file.tail_unlock_count, 1);
+
+  file.fail_head_lock = false;
+  {
+   Journal_Construction_Lock lock(file);
+   EXPECT_TRUE(file.tail_locked);
+  }
+  EXPECT_FALSE(file.tail_locked);
+  EXPECT_EQ(file.tail_unlock_count, 2);
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  TEST(Journal, checkpoint)
  ////////////////////////////////////////////////////////////////////////////

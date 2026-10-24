@@ -484,7 +484,15 @@ namespace joedb
   if (file.is_shared())
   {
    file.exclusive_lock_tail();
-   pull_without_locking();
+   try
+   {
+    pull_without_locking();
+   }
+   catch (...)
+   {
+    file.unlock_tail();
+    throw;
+   }
   }
  }
 
