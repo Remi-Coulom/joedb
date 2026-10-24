@@ -45,9 +45,6 @@ namespace joedb
   {
    const uint8_t c = uint8_t(s[i]);
 
- #if 0
-   write_octal_character(out, c);
- #else
    if (c < 0x20 || c == 0x7f)
    {
     if (json)
@@ -68,24 +65,17 @@ namespace joedb
     out.put('\\').put('"');
    else if (c == '\\')
     out.put('\\').put('\\');
-   else if ((c & 0xe0) == 0xc0 &&
+   else if (c >= 0xc2 && c <= 0xdf &&
             i + 1 < s.size() &&
             (s[i + 1] & 0xc0) == 0x80)
    {
     out.put(c);
     out.put(s[++i]);
    }
-   else if // UTF-16 surrogate halves
-   (
-    c == 0xed &&
-    i + 1 < s.size() &&
-    (uint8_t(s[i + 1]) & 0xa0) == 0xa0
-   )
-   {
-    write_octal_character(out, c, json);
-   }
    else if ((c & 0xf0) == 0xe0 &&
             i + 2 < s.size() &&
+            (c != 0xe0 || uint8_t(s[i + 1]) >= 0xa0) &&
+            (c != 0xed || uint8_t(s[i + 1]) < 0xa0) &&
             (s[i + 1] & 0xc0) == 0x80 &&
             (s[i + 2] & 0xc0) == 0x80)
    {
@@ -93,8 +83,10 @@ namespace joedb
     out.put(s[++i]);
     out.put(s[++i]);
    }
-   else if ((c & 0xf8) == 0xf0 &&
+   else if (c >= 0xf0 && c <= 0xf4 &&
             i + 3 < s.size() &&
+            (c != 0xf0 || uint8_t(s[i + 1]) >= 0x90) &&
+            (c != 0xf4 || uint8_t(s[i + 1]) < 0x90) &&
             (s[i + 1] & 0xc0) == 0x80 &&
             (s[i + 2] & 0xc0) == 0x80 &&
             (s[i + 3] & 0xc0) == 0x80)
@@ -112,7 +104,6 @@ namespace joedb
    {
     out.put(char(c));
    }
- #endif
   }
 
   out.put('"');
