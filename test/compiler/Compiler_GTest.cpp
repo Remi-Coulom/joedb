@@ -757,6 +757,29 @@ TEST(Compiler, vector_of_size_zero)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, vector_update_rejects_invalid_range_before_callback)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ vector_test::Writable_Database db(file);
+ const auto v = db.new_vector_of_point(1);
+ db.soft_checkpoint();
+
+ bool callback_called = false;
+ EXPECT_THROW
+ (
+  db.update_vector_of_x(v, 2, [&](joedb::Span<float>)
+  {
+   callback_called = true;
+  }),
+  joedb::Release_Assertion_Failure
+ );
+
+ EXPECT_FALSE(callback_called);
+ EXPECT_EQ(db.ahead_of_checkpoint(), 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, vector)
 /////////////////////////////////////////////////////////////////////////////
 {
