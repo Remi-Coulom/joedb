@@ -132,7 +132,7 @@ namespace joedb::asio
   log_level(log_level),
   thread_count(thread_count),
   thread_pool(thread_count),
-  joined(false),
+  started(false),
   endpoint_path(std::move(endpoint_path)),
   endpoint(this->endpoint_path),
   acceptor(thread_pool, endpoint, false),
@@ -168,6 +168,7 @@ namespace joedb::asio
    listener(),
    boost::asio::detached
   );
+  started = true;
  }
 
  void Server::stop()
@@ -181,7 +182,7 @@ namespace joedb::asio
   thread_pool.join();
   cleanup_after_join();
   std::remove(endpoint_path.c_str());
-  joined = true;
+  started = false;
  }
 
  void Server::cleanup_after_join()
@@ -190,7 +191,7 @@ namespace joedb::asio
 
  Server::~Server()
  {
-  if (!joined)
+  if (started)
   {
    Global_Logger::warning("Server destructor: not joined. This is a bug.");
    std::terminate(); // it is too late to call join, since child was destroyed already
