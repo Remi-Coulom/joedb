@@ -39,11 +39,11 @@ namespace joedb
     }
     else
     {
-     const T result = [&]()
+     T result = [&]()
      {
       try
       {
-       const T inner_result = f();
+       T inner_result = f();
        do_checkpoint();
        return inner_result;
       }
