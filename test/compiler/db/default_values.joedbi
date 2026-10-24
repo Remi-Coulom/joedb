@@ -1,0 +1,10 @@
+create_table target
+create_table item
+insert_into item 0
+add_field item text string = "a\000b"
+add_field item single float32 = 1.23456789
+add_field item double_precision float64 = 1.2345678901234567
+add_field item data blob = 0,0
+add_field item reference references target = -1
+add_field item integer int32 = 42
+add_field item boolean boolean = true

@@ -1,4 +1,5 @@
 #include "db/test/Client.h"
+#include "db/default_values/Writable_Database.h"
 #include "db/test/Readonly_Database.h"
 #include "db/test/Memory_Database.h"
 #include "db/multi_index/Memory_Database.h"
@@ -22,6 +23,30 @@ using namespace my_namespace::is_nested;
 #include "gtest/gtest.h"
 
 #include <unordered_map>
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, default_values)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ {
+  joedb::Writable_Journal journal(file);
+  journal.create_table("target");
+  journal.create_table("item");
+  journal.insert_into(joedb::Table_Id{2}, joedb::Record_Id{0});
+  journal.soft_checkpoint();
+ }
+
+ default_values::Writable_Database db(file);
+ const auto item = db.get_item_table().first();
+ EXPECT_EQ(db.get_text(item), std::string("a\0b", 3));
+ EXPECT_EQ(db.get_single(item), 1.23456789f);
+ EXPECT_EQ(db.get_double_precision(item), 1.2345678901234567);
+ EXPECT_TRUE(db.get_data(item).is_null());
+ EXPECT_TRUE(db.get_reference(item).is_null());
+ EXPECT_EQ(db.get_integer(item), 42);
+ EXPECT_TRUE(db.get_boolean(item));
+}
 
 /////////////////////////////////////////////////////////////////////////////
 static const std::string &get_translation

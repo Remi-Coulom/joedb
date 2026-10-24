@@ -25,7 +25,8 @@ namespace joedb::generator
   out << "#include \"Writable_Database.h\"\n";
   out << "#include \"joedb/journal/Readonly_Memory_File.h\"\n";
   out << '\n';
-  out << "#include <ctime>\n\n";
+  out << "#include <ctime>\n";
+  out << "#include <limits>\n\n";
 
   namespace_open(out, options.get_name_space());
 
@@ -217,21 +218,7 @@ namespace joedb::generator
       out << "     for (const auto record: get_" << tname << "_table())\n";
       out << "      set_" << fname << "(record, ";
 
-      const auto &type = db.get_field_type(tid, fid);
-      const bool reference = type.get_type_id() == joedb::Type::Type_Id::reference;
-
-      if (reference)
-      {
-       const auto it = tables.find(type.get_table_id());
-       if (it != tables.end())
-        out << "id_of_" << it->second;
-       out << "(";
-      }
-
-      joedb::write_value(out, db, tid, record_id, fid);
-
-      if (reference)
-       out << ")";
+      joedb::write_cpp_value(out, db, tid, record_id, fid);
 
       out <<");\n";
       out << "    }\n";

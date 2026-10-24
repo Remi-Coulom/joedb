@@ -227,6 +227,7 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../test/compiler/translation.h
   ../test/compiler/unique_index.cpp
   ../test/compiler/db/blob/writable.cpp
+  ../test/compiler/db/default_values/writable.cpp
   ../test/compiler/db/empty/writable.cpp
   ../test/compiler/db/multi_index/writable.cpp
   ../test/compiler/db/schema_v1/writable.cpp
@@ -307,6 +308,7 @@ if(BUILD_TESTING)
 
  joedbc_build(../test/compiler/db empty)
  joedbc_build(../test/compiler/db blob)
+ joedbc_build(../test/compiler/db default_values)
  joedbc_build(../test/compiler/db multi_index)
  joedbc_build(../test/compiler/db schema_v1)
  joedbc_build(../test/compiler/db schema_v2)
