@@ -22,6 +22,11 @@ Structured data storage (no history, no durable incremental update):
 - https://developers.google.com/protocol-buffers/
 - https://google.github.io/flatbuffers/
 - https://www.json.org/
+
+  - https://stephenberry.github.io/glaze/
+  - https://www.boost.org/doc/libs/latest/libs/json/doc/html/index.html
+  - https://github.com/nlohmann/json
+
 - https://en.wikipedia.org/wiki/XML
 - https://www.boost.org/doc/libs/1_85_0/libs/serialization/doc/index.html
 - http://www.garret.ru/post/readme.htm
