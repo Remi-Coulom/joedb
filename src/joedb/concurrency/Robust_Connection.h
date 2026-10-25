@@ -60,6 +60,8 @@ namespace joedb
     reconnect(nullptr);
    }
 
+   Channel &get_channel() {return *channel;}
+
    size_t pread(char *data, size_t size, int64_t offset) const;
 
    int64_t handshake
@@ -91,6 +93,8 @@ namespace joedb
     int64_t until_checkpoint,
     Unlock_Action unlock_action
    ) override;
+
+   void ping();
 
    void unlock() override;
    bool is_pullonly() const override {return connection->is_pullonly();}

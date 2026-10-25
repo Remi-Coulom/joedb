@@ -116,6 +116,11 @@ namespace joedb
   });
  }
 
+ void Robust_Connection::ping()
+ {
+  try_until_success([&](){connection->ping();});
+ }
+
  void Robust_Connection::unlock()
  {
   try
