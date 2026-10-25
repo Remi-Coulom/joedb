@@ -173,17 +173,6 @@ namespace joedb::generator
     out << ", joedb::Transparent_String_Hash, std::equal_to<>";
 
    out << ">;\n";
-
-   if (!index.ordered)
-   {
-    out << "#if defined(__cpp_lib_generic_unordered_lookup) && __cpp_lib_generic_unordered_lookup >= 201811L\n";
-    out << " using lookup_type_of_index_of_" << index.name << " = ";
-    write_tuple_type(out, index, false, Type_Usage::lookup_value);
-    out << ";\n#else\n";
-    out << " using lookup_type_of_index_of_" << index.name;
-    out << " = type_of_index_of_" << index.name << "::key_type;\n";
-    out << "#endif\n";
-   }
   }
 
   out << "\n namespace detail\n {";
@@ -637,10 +626,7 @@ namespace joedb::generator
     out << ") const\n";
     out << "   {\n";
     out << "    const auto i = index_of_" << index.name << ".find(";
-    if (index.ordered)
-     write_tuple_type(out, index, true, Type_Usage::lookup_value);
-    else
-     out << "lookup_type_of_index_of_" << index.name;
+    write_tuple_type(out, index, true, Type_Usage::lookup_value);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {
@@ -772,10 +758,7 @@ namespace joedb::generator
     out << ")\n";
     out << "   {\n";
     out << "    range = db.index_of_" << index.name << ".equal_range(";
-    if (index.ordered)
-     write_tuple_type(out, index, true, Type_Usage::lookup_value);
-    else
-     out << "lookup_type_of_index_of_" << index.name;
+    write_tuple_type(out, index, true, Type_Usage::lookup_value);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {

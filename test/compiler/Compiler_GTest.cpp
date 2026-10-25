@@ -7,7 +7,9 @@
 #include "db/schema_v1/Readonly_Database.h"
 #include "db/schema_v2/Client.h"
 #include "db/schema_v2/Readonly_Database.h"
-#include "db/unordered_index/Writable_Database.h"
+#if __cplusplus >= 202002L
+ #include "db/unordered_index/Writable_Database.h"
+#endif
 #include "db/vector_test/Writable_Database.h"
 #include "db/vector_test/Readonly_Database.h"
 #include "db/vector_test/Memory_Database.h"
@@ -1128,6 +1130,7 @@ TEST(Compiler, id_hash)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+#if __cplusplus >= 202002L
 TEST(Compiler, unordered_index)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -1183,3 +1186,4 @@ TEST(Compiler, unordered_index_string_view)
  for (const auto match: db.find_people_by_full_name(first, std::string_view(last_name), db.null_city()))
   ADD_FAILURE() << "Unexpected match: " << match.get_record_id();
 }
+#endif

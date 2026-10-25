@@ -233,13 +233,16 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../test/compiler/db/schema_v1/writable.cpp
   ../test/compiler/db/schema_v2/writable.cpp
   ../test/compiler/db/test/writable.cpp
-  ../test/compiler/db/unordered_index/writable.cpp
   ../test/compiler/db/vector_test/writable.cpp
   ../src/joedb/ui/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
  )
 
  target_link_libraries(joedb_test ${GTest_LIBRARIES})
+
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  target_sources(joedb_test PRIVATE ../test/compiler/db/unordered_index/writable.cpp)
+ endif()
 
  if(JOEDB_HAS_ASIO)
   if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
@@ -313,7 +316,9 @@ if(BUILD_TESTING)
  joedbc_build(../test/compiler/db schema_v1)
  joedbc_build(../test/compiler/db schema_v2)
  joedbc_build(../test/compiler/db test)
- joedbc_build(../test/compiler/db unordered_index)
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  joedbc_build(../test/compiler/db unordered_index)
+ endif()
  joedbc_build(../test/compiler/db vector_test)
 
  joedb_add_executable(joedb_generate_translation_header
