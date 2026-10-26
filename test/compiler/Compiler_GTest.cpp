@@ -2,6 +2,7 @@
 #include "db/default_values/Writable_Database.h"
 #include "db/test/Readonly_Database.h"
 #include "db/test/Memory_Database.h"
+#include "db/test/File_Client.h"
 #include "db/multi_index/Memory_Database.h"
 #include "db/schema_v1/Client.h"
 #include "db/schema_v1/Readonly_Database.h"
@@ -1030,7 +1031,6 @@ TEST(Compiler, index_iteration)
  EXPECT_EQ(cdb.next(paris), db.get_city_table().get_end());
 }
 
-#ifdef JOEDB_FILE_IS_LOCKABLE
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, shared_local_file)
 /////////////////////////////////////////////////////////////////////////////
@@ -1046,7 +1046,6 @@ TEST(Compiler, shared_local_file)
 
  std::remove(file_name);
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, delete_vector)
