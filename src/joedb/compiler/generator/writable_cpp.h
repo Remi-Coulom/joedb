@@ -18,7 +18,6 @@ namespace joedb::generator
    {
     out << "#include \"readonly.cpp\"\n";
     out << "#include \"Writable_Database.cpp\"\n";
-    out.flush();
    }
  };
 }

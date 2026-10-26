@@ -2,13 +2,13 @@
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Local_Channel.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 
 /////////////////////////////////////////////////////////////////////////////
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 /////////////////////////////////////////////////////////////////////////////
 {
- joedb::Destructor_Logger::set_logger(nullptr);
+ joedb::Global_Logger::set_logger(nullptr);
  joedb::Memory_File file;
  joedb::Writable_Journal_Client client(file, joedb::Connection::dummy);
  joedb::Logger logger;

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string>
+#include <limits>
 
 namespace joedb
 {
@@ -79,7 +80,11 @@ namespace joedb
    void shared_lock_head() {shared_lock(0, 1);}
    void unlock_head() noexcept {unlock(0, 1);}
 
-   std::string read_blob(Blob blob, int64_t max_size = -1) const;
+   std::string read_blob
+   (
+    Blob blob,
+    int64_t max_size = std::numeric_limits<int64_t>::max()
+   ) const;
 
    static void reading_past_end_of_file();
 

@@ -114,7 +114,7 @@ if(JOEDB_BUILD_TOOLS)
  ipo_add_executable(joedb_convert
   ../src/joedb/Writable.cpp
   ../src/joedb/error/assert.cpp
-  ../src/joedb/error/Destructor_Logger.cpp
+  ../src/joedb/error/Global_Logger.cpp
   ../src/joedb/error/Stream_Logger.cpp
   ../src/joedb/journal/File.cpp
   ../src/joedb/journal/Journal_Construction_Lock.cpp
@@ -139,9 +139,10 @@ if(BUILD_TESTING AND GTest_FOUND)
 
  add_executable(joedb_file_test
   ../test/Test_Main.cpp
+  ../test/String_Logger.cpp
+
   ../src/joedb/error/assert.cpp
-  ../src/joedb/error/String_Logger.cpp
-  ../src/joedb/error/Destructor_Logger.cpp
+  ../src/joedb/error/Global_Logger.cpp
 
   ../test/File_Test.cpp
   ../test/Upgradable_File_Test.cpp
@@ -205,6 +206,7 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../test/Client_Test.cpp
   ../test/Stream_File_Test.cpp
   ../test/StringIO_Test.cpp
+  ../test/String_Logger.cpp
   ../test/Test_Main.cpp
   ../test/type_io_Test.cpp
   ../test/Journal_Test.cpp
@@ -225,19 +227,22 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../test/compiler/translation.h
   ../test/compiler/unique_index.cpp
   ../test/compiler/db/blob/writable.cpp
+  ../test/compiler/db/default_values/writable.cpp
   ../test/compiler/db/empty/writable.cpp
   ../test/compiler/db/multi_index/writable.cpp
   ../test/compiler/db/schema_v1/writable.cpp
   ../test/compiler/db/schema_v2/writable.cpp
   ../test/compiler/db/test/writable.cpp
-  ../test/compiler/db/unordered_index/writable.cpp
   ../test/compiler/db/vector_test/writable.cpp
   ../src/joedb/ui/base64_decode.cpp
   ../src/joedb/journal/Portable_File.cpp
-  ../src/joedb/error/String_Logger.cpp
  )
 
  target_link_libraries(joedb_test ${GTest_LIBRARIES})
+
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  target_sources(joedb_test PRIVATE ../test/compiler/db/unordered_index/writable.cpp)
+ endif()
 
  if(JOEDB_HAS_ASIO)
   if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
@@ -306,11 +311,14 @@ if(BUILD_TESTING)
 
  joedbc_build(../test/compiler/db empty)
  joedbc_build(../test/compiler/db blob)
+ joedbc_build(../test/compiler/db default_values)
  joedbc_build(../test/compiler/db multi_index)
  joedbc_build(../test/compiler/db schema_v1)
  joedbc_build(../test/compiler/db schema_v2)
  joedbc_build(../test/compiler/db test)
- joedbc_build(../test/compiler/db unordered_index)
+ if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  joedbc_build(../test/compiler/db unordered_index)
+ endif()
  joedbc_build(../test/compiler/db vector_test)
 
  joedb_add_executable(joedb_generate_translation_header
@@ -466,7 +474,7 @@ if(JOEDB_BUILD_FUZZERS AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND JOEDB_HAS_
   ../src/joedb/concurrency/Local_Channel.cpp
   ../src/joedb/concurrency/Server.cpp
   ../src/joedb/error/assert.cpp
-  ../src/joedb/error/Destructor_Logger.cpp
+  ../src/joedb/error/Global_Logger.cpp
   ../src/joedb/error/Stream_Logger.cpp
   ../src/joedb/interpreted/Table.cpp
   ../src/joedb/ui/Blob_Reader_Command_Processor.cpp
@@ -496,7 +504,7 @@ if(JOEDB_BUILD_FUZZERS AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND JOEDB_HAS_
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/journal/Stream_File.cpp
   ../src/joedb/journal/Readonly_Journal.cpp
-  ../src/joedb/journal/File_Hasher.cpp
+  ../src/joedb/journal/get_hash.cpp
  )
 
  set_fuzz_options(joedb_fuzz)

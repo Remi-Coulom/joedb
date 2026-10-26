@@ -68,15 +68,44 @@ if(NOT "${JOEDB_WITH_WEBSOCKETS}" STREQUAL "OFF" AND Boost_FOUND)
 
  if("${JOEDB_WITH_WEBSOCKETS}" STREQUAL "ON")
   find_package(OpenSSL REQUIRED)
-  find_package(certify CONFIG REQUIRED)
  else()
   find_package(OpenSSL QUIET)
-  if(OpenSSL_FOUND)
-   find_package(certify CONFIG QUIET)
+ endif()
+
+ if(OpenSSL_FOUND)
+  find_package(certify CONFIG QUIET)
+
+  if(NOT TARGET certify::core)
+   find_path(
+    JOEDB_CERTIFY_INCLUDE_DIR
+    boost/certify/https_verification.hpp
+    HINTS "${CMAKE_CURRENT_LIST_DIR}/../../certify/include"
+   )
+
+   if(JOEDB_CERTIFY_INCLUDE_DIR)
+    message("-- Using Certify headers from ${JOEDB_CERTIFY_INCLUDE_DIR}")
+    add_library(certify::core INTERFACE IMPORTED GLOBAL)
+    set_target_properties(certify::core PROPERTIES
+     INTERFACE_COMPILE_FEATURES cxx_std_11
+     INTERFACE_INCLUDE_DIRECTORIES "${JOEDB_CERTIFY_INCLUDE_DIR}"
+     INTERFACE_LINK_LIBRARIES "Boost::headers;OpenSSL::SSL;OpenSSL::Crypto"
+    )
+
+    if(WIN32)
+     set_property(TARGET certify::core APPEND PROPERTY
+      INTERFACE_LINK_LIBRARIES Crypt32.lib)
+    elseif(APPLE)
+     set_property(TARGET certify::core APPEND PROPERTY
+      INTERFACE_LINK_LIBRARIES "-framework CoreFoundation;-framework Security")
+    endif()
+   else()
+    message("## Certify not found, disabling WebSockets")
+    message("## Fix: next to joedb, git clone https://github.com/djarek/certify.git")
+   endif()
   endif()
  endif()
 
- if(JOEDB_BEAST_INCLUDE_DIR AND OpenSSL_FOUND AND certify_FOUND)
+ if(JOEDB_BEAST_INCLUDE_DIR AND OpenSSL_FOUND AND TARGET certify::core)
   set(JOEDB_HAS_WEBSOCKETS TRUE)
  elseif("${JOEDB_WITH_WEBSOCKETS}" STREQUAL "ON")
   message(FATAL_ERROR

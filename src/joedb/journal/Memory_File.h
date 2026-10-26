@@ -22,7 +22,7 @@ namespace joedb
    void resize(size_t size) {data.resize(size);}
    std::string &get_data() {return data;}
    const std::string &get_data() const {return data;}
-   std::string move_data() const {return std::move(data);}
+   std::string move_data() {return std::move(data);}
 
    int64_t get_size() const override {return int64_t(data.size());}
    size_t pread(char *buffer, size_t size, int64_t offset) const override;

@@ -28,7 +28,8 @@ namespace joedb::generator
    if (i > 0)
     out << ", ";
    const Field_Id fid = index.field_ids[i];
-   write_type(out, db.get_field_type(index.table_id, fid), !index.ordered, true);
+   const Type &type = db.get_field_type(index.table_id, fid);
+   write_type(out, type, Type_Usage::lookup_value);
    out << " field_value_of_" << db.get_field_name(index.table_id, fid);
   }
  }
@@ -55,6 +56,7 @@ namespace joedb::generator
 #include <vector>
 #include <algorithm>
 #include <string_view>
+#include <utility>
 
 )RRR";
 
@@ -71,7 +73,10 @@ namespace joedb::generator
    out << "#include <map>\n";
 
   if (options.has_unordered_index())
+  {
    out << "#include <unordered_map>\n";
+   out << "#include \"joedb/Transparent_String_Hash.h\"\n";
+  }
 
   out << "\nstatic_assert(std::string_view(joedb::get_version()) == \"";
   out << joedb::get_version() << "\");\n\n";
@@ -106,8 +111,9 @@ namespace joedb::generator
 
     out << " struct hash_of_index_of_" << index.name;
     out << "\n {\n";
+    out << "  using is_transparent = void;\n";
     out << "  size_t operator()(const ";
-    write_tuple_type(out, index, false);
+    write_tuple_type(out, index, false, Type_Usage::lookup_value);
     out << "&key) const noexcept\n";
     out << "  {\n";
     out << "   return ";
@@ -129,7 +135,7 @@ namespace joedb::generator
       index.field_ids[i]
      );
 
-     write_type(out, type, false, false);
+     write_type(out, type, Type_Usage::lookup_value);
 
      out << ">()(std::get<" << i << ">(key))\n";
      out << std::string(i + 3, ' ' );
@@ -162,7 +168,9 @@ namespace joedb::generator
    if (index.ordered)
     out << ", std::less<>";
    else if (custom_hash)
-    out << ", hash_of_index_of_" << index.name;
+    out << ", hash_of_index_of_" << index.name << ", std::equal_to<>";
+   else if (db.get_field_type(index.table_id, index.field_ids[0]).get_type_id() == Type::Type_Id::string)
+    out << ", joedb::Transparent_String_Hash, std::equal_to<>";
 
    out << ">;\n";
   }
@@ -185,7 +193,7 @@ namespace joedb::generator
     const joedb::Type &type = db.get_field_type(tid, fid);
 
     out << "   std::vector<";
-    write_type(out, type, false, false);
+    write_type(out, type, Type_Usage::storage);
     out << "> " << fields.back() << ";\n";
    }
 
@@ -363,7 +371,7 @@ namespace joedb::generator
     else if (type.get_type_id() == Type::Type_Id::reference)
     {
      out << " = ";
-     write_type(out, type, false, false);
+     write_type(out, type, Type_Usage::storage);
      out << "(joedb::Record_Id::null)";
     }
     else if (type.get_type_id() == Type::Type_Id::blob)
@@ -428,12 +436,17 @@ namespace joedb::generator
 
     out << "   void internal_update_" << tname << "__" << fname;
     out << "\n   (\n    Record_Id record_id,\n    ";
-    write_type(out, type, false, true);
+    write_type(out, type, Type_Usage::setter_value);
     out << " field_value_of_" << fname << "\n   )\n";
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(record_id));\n";
     out << "    storage_of_" << tname << ".field_value_of_" << fname;
-    out << "[to_underlying(record_id)] = field_value_of_" << fname;
+    out << "[to_underlying(record_id)] = ";
+    if (type.get_type_id() == Type::Type_Id::string)
+     out << "std::move(";
+    out << "field_value_of_" << fname;
+    if (type.get_type_id() == Type::Type_Id::string)
+     out << ')';
     out << ";\n";
 
     for (const auto &index: options.get_indices())
@@ -452,13 +465,13 @@ namespace joedb::generator
     out << "    Record_Id record_id,\n";
     out << "    size_t size,\n";
     out << "    const ";
-    write_type(out, type, false, false);
+    write_type(out, type, Type_Usage::storage);
     out << " *value\n";
     out << "   )\n";
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(storage_of_" << tname << ".freedom_keeper.is_used_vector(record_id, size));\n";
     out << "    ";
-    write_type(out, type, false, false);
+    write_type(out, type, Type_Usage::storage);
     out << " *target = &storage_of_" << tname;
     out << ".field_value_of_" << fname << ".data()[to_underlying(record_id)];\n";
     out << "    if (target != value)\n";
@@ -544,7 +557,7 @@ namespace joedb::generator
     // Getter
     //
     out << "   ";
-    write_type(out, type, true, false);
+    write_type(out, type, Type_Usage::return_value);
     out << " get_" << fname << "(id_of_" << tname << " record";
     if (single_row)
      out << " = id_of_" << tname << "{0}";
@@ -552,7 +565,7 @@ namespace joedb::generator
     out << "   {\n";
     out << "    JOEDB_RELEASE_ASSERT(is_valid_record_id_for_" << tname << "(record.get_record_id()));\n";
     out << "    return (";
-    write_type(out, type, true, false);
+    write_type(out, type, Type_Usage::return_value);
     out << ")(storage_of_" << tname;
     out << ".field_value_of_" << fname << "[record.get_id()]);\n";
     out << "   }\n";
@@ -566,7 +579,7 @@ namespace joedb::generator
   {
    out << '\n';
    out << "   const type_of_index_of_" << index.name;
-   out << " &get_index_of_" << index.name << "()\n";
+   out << " &get_index_of_" << index.name << "() const\n";
    out << "   {\n";
    out << "    return index_of_" << index.name << ";\n";
    out << "   }\n";
@@ -613,7 +626,7 @@ namespace joedb::generator
     out << ") const\n";
     out << "   {\n";
     out << "    const auto i = index_of_" << index.name << ".find(";
-    write_tuple_type(out, index, true);
+    write_tuple_type(out, index, true, Type_Usage::lookup_value);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {
@@ -739,13 +752,13 @@ namespace joedb::generator
     {
      out << ", ";
      const Type &type = db.get_field_type(index.table_id, index.field_ids[i]);
-     write_type(out, type, !index.ordered, true);
+     write_type(out, type, Type_Usage::lookup_value);
      out << ' ' << db.get_field_name(index.table_id, index.field_ids[i]);
     }
     out << ")\n";
     out << "   {\n";
     out << "    range = db.index_of_" << index.name << ".equal_range(";
-    write_tuple_type(out, index, true);
+    write_tuple_type(out, index, true, Type_Usage::lookup_value);
     out << '(';
     for (size_t i = 0; i < index.field_ids.size(); i++)
     {

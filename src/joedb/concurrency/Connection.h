@@ -66,6 +66,15 @@ namespace joedb
     Content_Check content_check
    );
 
+   /// Compare content of file and connection. Throw if mismatch.
+   virtual void check_matching_content
+   (
+    const Readonly_Journal &client_journal,
+    Content_Check content_check,
+    int64_t from,
+    int64_t until
+   );
+
    /// Pull from the connection
    ///
    /// @param lock_action whether the connection should be locked before pulling

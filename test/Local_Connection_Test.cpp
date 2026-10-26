@@ -2,8 +2,8 @@
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/File.h"
-#include "joedb/error/String_Logger.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "./String_Logger.h"
+#include "joedb/error/Global_Logger.h"
 
 #include "gtest/gtest.h"
 
@@ -60,7 +60,7 @@ namespace joedb
   if (!File::lockable)
    GTEST_SKIP();
 
-  Destructor_Logger::warning("Toto");
+  Global_Logger::warning("Toto");
   EXPECT_EQ(String_Logger::the_logger.get_message(), "Toto");
 
   std::remove(file_name);
@@ -75,7 +75,7 @@ namespace joedb
   EXPECT_EQ
   (
    String_Logger::the_logger.get_message(),
-   "Writable_Journal: ahead of checkpoint"
+   "Writable_Journal destructor: ahead of checkpoint"
   );
 
   try

@@ -1,7 +1,5 @@
 #include "joedb/concurrency/Local_Channel.h"
 
-#include <boost/asio/connect.hpp>
-
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////

@@ -68,6 +68,20 @@ namespace joedb
   return result;
  }
 
+ void Robust_Connection::check_matching_content
+ (
+  const Readonly_Journal &client_journal,
+  Content_Check content_check,
+  int64_t from,
+  int64_t until
+ )
+ {
+  try_until_success([&]()
+  {
+   connection->check_matching_content(client_journal, content_check, from, until);
+  });
+ }
+
  int64_t Robust_Connection::pull
  (
   Lock_Action lock_action,
@@ -100,6 +114,11 @@ namespace joedb
     unlock_action
    );
   });
+ }
+
+ void Robust_Connection::ping()
+ {
+  try_until_success([&](){connection->ping();});
  }
 
  void Robust_Connection::unlock()

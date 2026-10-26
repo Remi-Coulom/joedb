@@ -1,33 +1,11 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File_Buffer.h"
 #include "joedb/error/Exception.h"
-#include "joedb/error/Destructor_Logger.h"
+#include "joedb/error/Global_Logger.h"
 #include "joedb/neg.h"
 
 namespace joedb
 {
- /////////////////////////////////////////////////////////////////////////////
- class Head_Exclusive_Lock
- /////////////////////////////////////////////////////////////////////////////
- {
-  private:
-   Abstract_File &file;
-
-  public:
-   Head_Exclusive_Lock(Abstract_File &file): file(file)
-   {
-    file.exclusive_lock(0, 1);
-   }
-
-   Head_Exclusive_Lock(const Head_Exclusive_Lock &) = delete;
-   Head_Exclusive_Lock &operator=(const Head_Exclusive_Lock &) = delete;
-
-   ~Head_Exclusive_Lock()
-   {
-    file.unlock(0, 1);
-   }
- };
-
  /////////////////////////////////////////////////////////////////////////////
  Writable_Journal::Writable_Journal(Journal_Construction_Lock &lock):
  /////////////////////////////////////////////////////////////////////////////
@@ -136,7 +114,7 @@ namespace joedb
   soft_index ^= 1;
   checkpoint_position = position;
 
-  Head_Exclusive_Lock lock(file);
+  File_Head_Lock lock(file, File_Head_Lock::Mode::exclusive);
 
   const int64_t soft = neg(checkpoint_position);
 
@@ -160,7 +138,7 @@ namespace joedb
   hard_index ^= 1;
   hard_checkpoint_position = checkpoint_position = position;
 
-  Head_Exclusive_Lock lock(file);
+  File_Head_Lock lock(file, File_Head_Lock::Mode::exclusive);
 
   file.pwrite
   (
@@ -483,8 +461,9 @@ namespace joedb
  {
   if (file.is_shared())
   {
-   file.exclusive_lock_tail();
+   File_Tail_Lock lock(&file);
    pull_without_locking();
+   lock.release();
   }
  }
 
@@ -513,13 +492,13 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  {
   if (ahead_of_checkpoint() > 0)
-   Destructor_Logger::warning("Writable_Journal: ahead of checkpoint");
+   Global_Logger::warning("Writable_Journal destructor: ahead of checkpoint");
  }
 
  /////////////////////////////////////////////////////////////////////////////
  Tail_Exclusive_Lock::Tail_Exclusive_Lock(Writable_Journal &journal):
  /////////////////////////////////////////////////////////////////////////////
-  journal(journal)
+  journal(&journal)
  {
   if (journal.get_position() > journal.get_checkpoint())
    throw Exception("locking journal with uncheckpointed data (try rollback?)");
@@ -527,9 +506,18 @@ namespace joedb
  }
 
  /////////////////////////////////////////////////////////////////////////////
+ Tail_Exclusive_Lock::Tail_Exclusive_Lock(Tail_Exclusive_Lock &&other) noexcept:
+ /////////////////////////////////////////////////////////////////////////////
+  journal(other.journal)
+ {
+  other.journal = nullptr;
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  Tail_Exclusive_Lock::~Tail_Exclusive_Lock()
  /////////////////////////////////////////////////////////////////////////////
  {
-  journal.unlock();
+  if (journal)
+   journal->unlock();
  }
 }

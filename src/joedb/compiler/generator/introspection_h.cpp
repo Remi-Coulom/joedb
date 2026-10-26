@@ -47,7 +47,7 @@ namespace joedb::generator
      namespace_write(out, options.get_name_space());
      out << "::";
     }
-    write_type(out, type, false, false);
+    write_type(out, type, Type_Usage::storage);
    }
 
    out << ", " << fname;
@@ -62,6 +62,5 @@ namespace joedb::generator
   }
 
   out << "\n#undef JOEDB_INTROSPECTION\n";
-  out.flush();
  }
 }

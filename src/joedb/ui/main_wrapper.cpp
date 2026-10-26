@@ -1,6 +1,7 @@
 #include "joedb/ui/main_wrapper.h"
 
 #include <iostream>
+#include <cstdio>
 
 namespace joedb
 {
@@ -15,10 +16,16 @@ namespace joedb
   int (*main)(Arguments &), int argc, char **argv
  )
  {
+  // necessary for fast console output in Windows
+  std::setvbuf(stdout, nullptr, _IOFBF, 8192);
+  std::setvbuf(stderr, nullptr, _IOFBF, 8192);
+  std::cerr.unsetf(std::ios_base::unitbuf);
+
   try
   {
    Arguments arguments(argc, argv);
-   return main(arguments);
+   const int result = main(arguments);
+   return result;
   }
   catch (const std::exception &e)
   {

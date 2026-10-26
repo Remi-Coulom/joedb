@@ -17,10 +17,20 @@ namespace joedb
    {
    }
 
+   bool is_pullonly() const override {return true;}
+
    int64_t handshake
    (
     const Readonly_Journal &client_journal,
     Content_Check content_check
+   ) override;
+
+   void check_matching_content
+   (
+    const Readonly_Journal &client_journal,
+    Content_Check content_check,
+    int64_t from,
+    int64_t until
    ) override;
 
    int64_t pull
@@ -51,6 +61,8 @@ namespace joedb
 
   public:
    Journal_Connection(Writable_Journal &server_journal);
+
+   bool is_pullonly() const override {return false;}
 
    int64_t pull
    (

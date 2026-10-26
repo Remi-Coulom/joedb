@@ -1,7 +1,7 @@
 #ifndef joedb_Journal_Construction_Lock_declared
 #define joedb_Journal_Construction_Lock_declared
 
-#include "joedb/journal/Abstract_File.h"
+#include "joedb/journal/File_Lock.h"
 #include "joedb/journal/Header.h"
 
 namespace joedb
@@ -20,6 +20,10 @@ namespace joedb
   friend class Writable_Journal;
 
   private:
+   // Acquire the tail before the head, and release them in reverse order.
+   File_Tail_Lock tail_lock;
+   File_Head_Lock head_lock;
+
    bool for_writable_journal = false;
    Journal_Construction_Lock &set_for_writable_journal()
    {
@@ -43,8 +47,6 @@ namespace joedb
 
    Journal_Construction_Lock(const Journal_Construction_Lock &) = delete;
    Journal_Construction_Lock &operator=(const Journal_Construction_Lock &) = delete;
-
-   ~Journal_Construction_Lock();
  };
 }
 

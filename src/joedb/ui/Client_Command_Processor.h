@@ -17,8 +17,6 @@ namespace joedb
   private:
    Blob_Reader_Command_Processor blob_processor;
 
-   void print_status(std::ostream &out);
-
   protected:
    Client &client;
 

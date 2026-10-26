@@ -42,6 +42,8 @@ History
 
   - Fixes (also available on 10.0.0 LTS branch):
 
+    - fix racy ``Open_Mode::write_existing_or_create_new`` in :joedb:`Posix_File`.
+    - fix pull conflict: error if trying to pull when ahead of checkpoint.
     - various fixes found by LLM review
     - add missing ``volatile`` to ``sig_atomic_t signal_status``
     - Fix MacOS installation (set RPATH)

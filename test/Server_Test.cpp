@@ -1,5 +1,6 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Server_Connection.h"
+#include "joedb/concurrency/Robust_Connection.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 #include "joedb/concurrency/Readonly_Client.h"
@@ -118,6 +119,50 @@ namespace joedb
  };
 
  ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, constructor_failure)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  class Failing_Connection: public Connection
+  {
+   public:
+    int64_t handshake(const Readonly_Journal &, Content_Check) override
+    {
+     return Header::ssize;
+    }
+
+    int64_t push
+    (
+     const Readonly_Journal &,
+     int64_t,
+     int64_t,
+     Unlock_Action
+    ) override
+    {
+     throw Exception("initial push failed");
+    }
+  } connection;
+
+  Memory_File file;
+  {
+   Writable_Journal journal(file);
+   journal.comment("ahead of connection");
+   journal.soft_checkpoint();
+  }
+
+  Writable_Journal_Client client(file, connection);
+  const char * const endpoint_path = "constructor_failure.sock";
+  std::remove(endpoint_path);
+
+  EXPECT_THROW
+  (
+   Server(logger, 0, 1, endpoint_path, client, std::chrono::milliseconds(0)),
+   Exception
+  );
+
+  std::remove(endpoint_path);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Server, basic)
  ////////////////////////////////////////////////////////////////////////////
  {
@@ -177,14 +222,7 @@ namespace joedb
     journal.soft_checkpoint();
    }
 
-   try
-   {
-    Test_Client client(mismatched_file, server);
-    FAIL() << "This should not work";
-   }
-   catch (const Content_Mismatch &)
-   {
-   }
+   EXPECT_THROW(Test_Client(mismatched_file, server), Content_Mismatch);
   }
  }
 
@@ -918,6 +956,49 @@ namespace joedb
   sequence.send(2);
   thread.join();
   EXPECT_EQ(sequence.get(), 3);
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, conflict_when_shared)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  for (const bool robust: {false, true})
+  {
+   for (const auto content_check: {Content_Check::fast, Content_Check::full})
+   {
+    SCOPED_TRACE(robust);
+    SCOPED_TRACE(int(content_check));
+
+    Test_Server server;
+    Local_Connector connector(server.server.get_endpoint_path());
+    Test_Local_Channel channel(server.server.get_endpoint_path());
+    std::unique_ptr<Connection> connection;
+
+    if (robust)
+     connection = std::make_unique<Robust_Connection>(connector, logger);
+    else
+     connection = std::make_unique<Server_Connection>(channel, logger);
+
+    Memory_File file(Open_Mode::shared_write);
+    Writable_Journal_Client local_client(file);
+    Writable_Journal_Client client(file, *connection, content_check);
+    Writable_Journal_Client transaction_client(file, *connection, content_check);
+    Writable_Journal_Client lock_client(file, *connection, content_check);
+
+    local_client.transaction([](Writable_Journal &journal)
+    {
+     journal.comment("local change");
+    });
+
+    EXPECT_THROW(client.pull(), Content_Mismatch);
+    EXPECT_THROW
+    (
+     transaction_client.transaction([](Writable_Journal &journal) {}),
+     Content_Mismatch
+    );
+    EXPECT_THROW(Client_Lock(lock_client).unlock(), Content_Mismatch);
+   }
+  }
  }
 
  ////////////////////////////////////////////////////////////////////////////

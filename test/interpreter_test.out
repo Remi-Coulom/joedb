@@ -221,7 +221,7 @@ Exception caught: unknown type
 Line 45: add_field test c qsdfqsdf
 Exception caught: No such table: qsdfqsdf
 Line 46: drop_table qsdfqsdf
-Exception caught: Unknown command. For a list of available commands, try "help".
+Exception caught: Unknown command: "qsdfqsdf". For a list of available commands, try "help".
 Line 47: qsdfqsdf
 OK: insert_into test 0 1234 5678
 Exception caught: insert: record_id already in use

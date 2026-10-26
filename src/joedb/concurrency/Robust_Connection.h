@@ -60,12 +60,22 @@ namespace joedb
     reconnect(nullptr);
    }
 
+   Channel &get_channel() {return *channel;}
+
    size_t pread(char *data, size_t size, int64_t offset) const;
 
    int64_t handshake
    (
     const Readonly_Journal &client_journal,
     Content_Check content_check
+   ) override;
+
+   void check_matching_content
+   (
+    const Readonly_Journal &client_journal,
+    Content_Check content_check,
+    int64_t from,
+    int64_t until
    ) override;
 
    int64_t pull
@@ -83,6 +93,8 @@ namespace joedb
     int64_t until_checkpoint,
     Unlock_Action unlock_action
    ) override;
+
+   void ping();
 
    void unlock() override;
    bool is_pullonly() const override {return connection->is_pullonly();}

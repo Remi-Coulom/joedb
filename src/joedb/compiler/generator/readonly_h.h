@@ -21,7 +21,6 @@ namespace joedb::generator
 #include "Types.h"
 //#warning readonly header is deprecated
 )RRR";
-    out.flush();
    }
  };
 }

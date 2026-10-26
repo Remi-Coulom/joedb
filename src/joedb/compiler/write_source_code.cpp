@@ -17,6 +17,5 @@ namespace joedb
 
   std::ofstream out(final_file_name, std::ios::binary | std::ios::trunc);
   write(out);
-  out.flush();
  }
 }

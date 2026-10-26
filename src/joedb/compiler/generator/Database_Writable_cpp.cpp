@@ -30,6 +30,5 @@ namespace joedb::generator
   out << ";\n";
 
   namespace_close(out, name_space);
-  out.flush();
  }
 }

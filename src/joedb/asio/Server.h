@@ -24,7 +24,7 @@ namespace joedb::asio
 
    const int thread_count;
    boost::asio::thread_pool thread_pool;
-   bool joined;
+   bool started;
 
    const std::string endpoint_path;
    boost::asio::local::stream_protocol::endpoint endpoint;
@@ -88,7 +88,7 @@ namespace joedb::asio
     return endpoint_path;
    }
 
-   bool is_joined() const {return joined;}
+   bool is_started() const noexcept {return started;}
 
    void start();
    void stop();

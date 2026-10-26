@@ -1,6 +1,6 @@
 #include "joedb/rpc/get_hash.h"
 #include "joedb/ui/type_io.h"
-#include "joedb/journal/File_Hasher.h"
+#include "joedb/journal/get_hash.h"
 
 #include <sstream>
 
@@ -16,6 +16,6 @@ namespace joedb::rpc
    write_string(out, signature.prolog);
   }
 
-  return File_Hasher::get_hash(out.str());
+  return get_full_hash(out.str());
  }
 }

@@ -1,5 +1,5 @@
 #include "joedb/concurrency/Server_Connection.h"
-#include "joedb/journal/File_Hasher.h"
+#include "joedb/journal/get_hash.h"
 #include "joedb/error/Disconnection.h"
 #include "joedb/ui/Progress_Bar.h"
 
@@ -26,9 +26,8 @@ namespace joedb
 
   const size_t returned_size = size_t(until - offset);
 
-  for (size_t read = 0; read < returned_size;)
-   read += lock->read_some(data + read, returned_size - read);
-
+  lock->read(data, returned_size);
+  
   return returned_size;
  }
 
@@ -40,25 +39,42 @@ namespace joedb
   Content_Check content_check
  )
  {
-  if (content_check == Content_Check::none)
-   return server_checkpoint;
-
-  log("checking hash... ");
-
-  const int64_t checkpoint = std::min
+  check_matching_content
   (
-   server_checkpoint,
-   client_journal.get_checkpoint()
+   client_journal,
+   content_check,
+   Header::ssize,
+   std::min(server_checkpoint, client_journal.get_checkpoint())
   );
+
+  return server_checkpoint;
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ void Server_Connection::check_matching_content
+ ////////////////////////////////////////////////////////////////////////////
+ (
+  const Readonly_Journal &client_journal,
+  Content_Check content_check,
+  int64_t from,
+  int64_t until
+ )
+ {
+  log("checking hash, from = " + std::to_string(from) + ", until = " + std::to_string(until));
+
+  if (content_check == Content_Check::none || from >= until)
+   return;
 
   buffer.index = 0;
   buffer.write<char>(content_check == Content_Check::fast ? 'H' : 'I');
-  buffer.write<int64_t>(checkpoint);
+  buffer.write<int64_t>(from);
+  buffer.write<int64_t>(until);
+
   buffer.write
   (
    content_check == Content_Check::fast
-   ? Journal_Hasher::get_fast_hash(client_journal, checkpoint)
-   : Journal_Hasher::get_full_hash(client_journal, checkpoint)
+   ? get_fast_hash(client_journal.get_file(), from, until)
+   : get_full_hash(client_journal.get_file(), from, until)
   );
 
   {
@@ -71,8 +87,6 @@ namespace joedb
 
   if (buffer.data[0] == 'h')
    content_mismatch();
-
-  return server_checkpoint;
  }
 
  ////////////////////////////////////////////////////////////////////////////

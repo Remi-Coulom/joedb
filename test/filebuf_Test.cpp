@@ -1,6 +1,6 @@
 #include "joedb/journal/iostream.h"
 #include "joedb/journal/Memory_File.h"
-#include "joedb/error/String_Logger.h"
+#include "./String_Logger.h"
 
 #include "gtest/gtest.h"
 
@@ -32,7 +32,7 @@ namespace joedb
    ios << 123;
   }
 
-  EXPECT_EQ("filebuf: flushing buffer", String_Logger::the_logger.get_message());
+  EXPECT_EQ("filebuf destructor: flushing buffer", String_Logger::the_logger.get_message());
  }
 
  TEST(filebuf, read)

@@ -9,26 +9,15 @@ namespace joedb
   Abstract_File &file,
   Recovery recovery
  ):
+  tail_lock(file.is_shared() ? &file : nullptr),
+  head_lock
+  (
+   file,
+   file.is_readonly() ? File_Head_Lock::Mode::shared : File_Head_Lock::Mode::exclusive
+  ),
   file(file),
   recovery(recovery),
   size(file.get_size())
  {
-  if (file.is_readonly())
-   file.shared_lock_head();
-  else
-  {
-   if (file.is_shared())
-    file.exclusive_lock_tail();
-   file.exclusive_lock_head();
-  }
- }
-
- ////////////////////////////////////////////////////////////////////////////
- Journal_Construction_Lock::~Journal_Construction_Lock()
- ////////////////////////////////////////////////////////////////////////////
- {
-  file.unlock_head();
-  if (file.is_shared())
-   file.unlock_tail();
  }
 }

@@ -1,7 +1,7 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Client.h"
 #include "joedb/concurrency/protocol_version.h"
-#include "joedb/journal/File_Hasher.h"
+#include "joedb/journal/get_hash.h"
 #include "joedb/ui/Progress_Bar.h"
 
 #include <boost/asio/redirect_error.hpp>
@@ -208,19 +208,21 @@ namespace joedb
  boost::asio::awaitable<void> Server::Session::check_hash()
  ///////////////////////////////////////////////////////////////////////////
  {
-  co_await read_buffer(1, 40);
+  co_await read_buffer(1, 48);
 
-  const auto checkpoint = buffer.read<int64_t>();
+  const auto from = buffer.read<int64_t>();
+  const auto until = buffer.read<int64_t>();
   const auto hash = buffer.read<SHA_256::Hash>();
 
   const Readonly_Journal &journal = get_server().client.get_journal();
 
   if
   (
-   checkpoint > journal.get_checkpoint() ||
+   from < 0 || until < 0 || from > until ||
+   until > journal.get_checkpoint() ||
    hash != (buffer.data[0] == 'H' // ??? takes_time
-   ? Journal_Hasher::get_fast_hash(journal, checkpoint)
-   : Journal_Hasher::get_full_hash(journal, checkpoint))
+   ? get_fast_hash(journal.get_file(), from, until)
+   : get_full_hash(journal.get_file(), from, until))
   )
   {
    buffer.data[0] = 'h';
@@ -230,7 +232,7 @@ namespace joedb
   {
    log
    (
-    "hash for checkpoint = " + std::to_string(checkpoint) +
+    "hash from = " + std::to_string(from) + ", until = " + std::to_string(until) +
     ", result = " + buffer.data[0]
    );
   }
@@ -530,9 +532,9 @@ namespace joedb
 
   if (writable_journal_client)
   {
+   writable_journal_client->push_if_ahead();
    if (!client.is_shared())
     client_lock.emplace(*writable_journal_client);
-   writable_journal_client->push_if_ahead();
   }
  }
 

@@ -171,7 +171,6 @@ General commands
 
   write_prompt(out);
   out << "> \x1b[0m";
-  out.flush();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -185,6 +184,8 @@ General commands
   {
    if (prompt)
     write_whole_prompt(out);
+
+   out.flush();
 
    std::string line;
    if (!std::getline(in, line))
@@ -233,10 +234,11 @@ General commands
 
     if (!found)
     {
-     throw Exception
-     (
-      "Unknown command. For a list of available commands, try \"help\"."
-     );
+     std::stringstream message;
+     message << "Unknown command: ";
+     write_string(message, command);
+     message << ". For a list of available commands, try \"help\".";
+     throw Exception(message.str());
     }
 
     after_command(out, line_number, line, nullptr);

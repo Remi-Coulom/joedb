@@ -11,6 +11,14 @@ namespace joedb::generator
  class Generator
  {
   protected:
+   enum class Type_Usage
+   {
+    storage,
+    return_value,
+    setter_value,
+    lookup_value
+   };
+
    const std::string dir_name;
    const std::string file_name;
    const Compiler_Options &options;
@@ -19,8 +27,8 @@ namespace joedb::generator
    bool table_has_field_type(Table_Id table_id, Type::Type_Id type_id) const;
 
    void write_initial_comment(std::ostream &out);
-   void write_type(std::ostream &out, Type type, bool return_type, bool setter_type);
-   void write_tuple_type(std::ostream &out, const Compiler_Options::Index &index, bool reference);
+   void write_type(std::ostream &out, Type type, Type_Usage usage);
+   void write_tuple_type(std::ostream &out, const Compiler_Options::Index &index, bool reference, Type_Usage usage = Type_Usage::storage);
 
    static const char *get_type_string(Type type);
    static const char *get_cpp_type_string(Type type);

@@ -45,6 +45,12 @@ namespace joedb
    }
 
    void join() {server.join();}
+
+   ~Server_Data()
+   {
+    if (server.is_started())
+     try {server.stop();} catch (...) {}
+   }
  };
 
  ////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 // minimal set of files to be linked with a compiled database
 #include "joedb/error/assert.cpp"
-#include "joedb/error/Destructor_Logger.cpp"
+#include "joedb/error/Global_Logger.cpp"
 #include "joedb/Writable.cpp"
 #include "joedb/ui/minimal_runtime_io.cpp"
 #include "joedb/journal/File.cpp"

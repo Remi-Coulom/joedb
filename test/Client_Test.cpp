@@ -11,6 +11,129 @@
 namespace joedb
 {
  /////////////////////////////////////////////////////////////////////////////
+ TEST(Client, read_journal_failure_unlocks_connection)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  class Tracking_Connection: public Connection
+  {
+   public:
+    bool locked = false;
+    bool fail_unlock = false;
+    int unlock_count = 0;
+
+    int64_t pull
+    (
+     Lock_Action lock_action,
+     Data_Transfer,
+     Writable_Journal &journal,
+     std::chrono::milliseconds
+    ) override
+    {
+     locked = bool(lock_action);
+     return journal.get_checkpoint();
+    }
+
+    void unlock() override
+    {
+     ++unlock_count;
+     locked = false;
+     if (fail_unlock)
+      throw Exception("unlock failed");
+    }
+  };
+
+  class Failing_Client: public Writable_Journal_Client
+  {
+   public:
+    using Writable_Journal_Client::Writable_Journal_Client;
+
+    void read_journal() override
+    {
+     throw Exception("replay failed");
+    }
+  };
+
+  for (bool fail_unlock: {false, true})
+  {
+   for (int operation = 0; operation < 3; ++operation)
+   {
+    SCOPED_TRACE(fail_unlock);
+    SCOPED_TRACE(operation);
+    Memory_File file;
+    Tracking_Connection connection;
+    connection.fail_unlock = fail_unlock;
+    Failing_Client client(file, connection);
+
+    try
+    {
+     if (operation == 0)
+      client.transaction([](Writable_Journal &) {FAIL() << "callback executed";});
+     else if (operation == 1)
+      client.transaction([](Writable_Journal &) {ADD_FAILURE() << "callback executed"; return 1;});
+     else
+     {
+      Client_Lock lock(client);
+     }
+     ADD_FAILURE() << "replay should have thrown";
+    }
+    catch (const Exception &e)
+    {
+     EXPECT_STREQ(e.what(), "replay failed");
+    }
+
+    EXPECT_EQ(connection.unlock_count, 1);
+    EXPECT_FALSE(connection.locked);
+   }
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
+ TEST(Client, transaction_preserves_exception_when_unlock_fails)
+ /////////////////////////////////////////////////////////////////////////////
+ {
+  class Failing_Connection: public Connection
+  {
+   public:
+    int unlock_count = 0;
+
+    void unlock() override
+    {
+     ++unlock_count;
+     throw Exception("unlock failed");
+    }
+  };
+
+  for (bool returns_value: {false, true})
+  {
+   SCOPED_TRACE(returns_value);
+   Memory_File file;
+   Failing_Connection connection;
+   Writable_Journal_Client client(file, connection);
+
+   try
+   {
+    if (returns_value)
+     client.transaction([](Writable_Journal &) -> int
+     {
+      throw Exception("transaction failed");
+     });
+    else
+     client.transaction([](Writable_Journal &)
+     {
+      throw Exception("transaction failed");
+     });
+    ADD_FAILURE() << "transaction should have thrown";
+   }
+   catch (const Exception &e)
+   {
+    EXPECT_STREQ(e.what(), "transaction failed");
+   }
+
+   EXPECT_EQ(connection.unlock_count, 1);
+  }
+ }
+
+ /////////////////////////////////////////////////////////////////////////////
  TEST(Client, Writable_Database_Client)
  /////////////////////////////////////////////////////////////////////////////
  {
@@ -141,28 +264,6 @@ namespace joedb
    client2.pull();
    EXPECT_EQ(1, int(client2.get_database().get_tables().size()));
   }
- }
-
- /////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_when_ahead)
- /////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File client_file;
-
-  {
-   Writable_Journal journal(client_file);
-   journal.comment("Hello");
-   journal.soft_checkpoint();
-  }
-
-  Memory_File server_file;
-  File_Connection connection(server_file);
-  Writable_Database_Client client(client_file, connection);
-
-  client.pull();
-  client.push_unlock();
-
-  EXPECT_EQ(server_file.get_size(), client_file.get_size());
  }
 
  /////////////////////////////////////////////////////////////////////////////
@@ -502,110 +603,26 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_conflict)
+ TEST(Client, pull_when_ahead)
  ////////////////////////////////////////////////////////////////////////////
  {
   Memory_File server_file;
-  Memory_File client1_file;
-  Memory_File client2_file;
+  Memory_File client_file;
 
   {
-   Writable_Journal journal(client1_file);
-   journal.comment("client1");
-   journal.soft_checkpoint();
-  }
-
-  {
-   Writable_Journal journal(client2_file);
-   journal.comment("client2");
+   Writable_Journal journal(client_file);
+   journal.comment("client");
    journal.soft_checkpoint();
   }
 
   File_Connection connection(server_file);
+  Writable_Journal_Client client(client_file, connection);
+  EXPECT_NE(server_file.get_size(), client_file.get_size());
 
-  Writable_Journal_Client client1(client1_file, connection);
-  Writable_Journal_Client client2(client2_file, connection);
-
-  EXPECT_NE(server_file.get_size(), client1_file.get_size());
-
-  client1.transaction([](Writable_Journal &journal){});
-
-  EXPECT_EQ(server_file.get_size(), client1_file.get_size());
-  EXPECT_EQ(server_file.get_size(), client2_file.get_size());
-
-  EXPECT_ANY_THROW(client2.pull());
+  EXPECT_ANY_THROW(client.pull());
+  EXPECT_ANY_THROW(client.transaction([](Writable_Journal &journal){}));
+  EXPECT_ANY_THROW(Client_Lock(client).checkpoint_and_push_unlock());
  }
-
- ////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_conflict_with_transaction)
- ////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File server_file;
-  Memory_File client1_file;
-  Memory_File client2_file;
-
-  {
-   Writable_Journal journal(client1_file);
-   journal.comment("client1");
-   journal.soft_checkpoint();
-  }
-
-  {
-   Writable_Journal journal(client2_file);
-   journal.comment("client2");
-   journal.soft_checkpoint();
-  }
-
-  File_Connection connection(server_file);
-
-  Writable_Journal_Client client1(client1_file, connection);
-  Writable_Journal_Client client2(client2_file, connection);
-
-  EXPECT_NE(server_file.get_size(), client1_file.get_size());
-
-  client1.transaction([](Writable_Journal &journal){});
-
-  EXPECT_EQ(server_file.get_size(), client1_file.get_size());
-  EXPECT_EQ(server_file.get_size(), client2_file.get_size());
-
-  EXPECT_ANY_THROW(client2.transaction([](Writable_Journal &journal){}));
- }
-
- ////////////////////////////////////////////////////////////////////////////
- TEST(Client, pull_conflict_with_lock)
- ////////////////////////////////////////////////////////////////////////////
- {
-  Memory_File server_file;
-  Memory_File client1_file;
-  Memory_File client2_file;
-
-  {
-   Writable_Journal journal(client1_file);
-   journal.comment("client1");
-   journal.soft_checkpoint();
-  }
-
-  {
-   Writable_Journal journal(client2_file);
-   journal.comment("client2");
-   journal.soft_checkpoint();
-  }
-
-  File_Connection connection(server_file);
-
-  Writable_Journal_Client client1(client1_file, connection);
-  Writable_Journal_Client client2(client2_file, connection);
-
-  EXPECT_NE(server_file.get_size(), client1_file.get_size());
-
-  client1.transaction([](Writable_Journal &journal){});
-
-  EXPECT_EQ(server_file.get_size(), client1_file.get_size());
-  EXPECT_EQ(server_file.get_size(), client2_file.get_size());
-
-  EXPECT_ANY_THROW(Client_Lock(client2).checkpoint_and_push_unlock());
- }
-
 
  ////////////////////////////////////////////////////////////////////////////
  TEST(Client, no_conflict_when_shared)
@@ -633,6 +650,39 @@ namespace joedb
     EXPECT_EQ(journal.get_checkpoint(), 46);
     journal.comment("Ha!");
    }
+  );
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Client, conflict_when_shared)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Memory_File server_file;
+  Memory_File client_file(Open_Mode::shared_write);
+
+  File_Connection connection(server_file);
+
+  Writable_Journal_Client client1(client_file, Connection::dummy);
+  Writable_Journal_Client client2(client_file, connection);
+
+  client1.transaction(
+   [](Writable_Journal &journal)
+   {
+    EXPECT_EQ(journal.get_checkpoint(), 41);
+    journal.comment("Hi!");
+   }
+  );
+
+  EXPECT_THROW
+  (
+   client2.transaction(
+    [](Writable_Journal &journal)
+    {
+     EXPECT_EQ(journal.get_checkpoint(), 46);
+     journal.comment("Ha!");
+    }
+   ),
+   Content_Mismatch
   );
  }
 }

@@ -1,5 +1,5 @@
-#ifndef joedb_Destructor_Logger
-#define joedb_Destructor_Logger
+#ifndef joedb_Global_Logger
+#define joedb_Global_Logger
 
 #include "external/cstring_view.hpp"
 #include <mutex>
@@ -9,7 +9,7 @@ namespace joedb
  class Logger;
 
  /// @ingroup error
- class Destructor_Logger
+ class Global_Logger
  {
   private:
    static Logger *the_logger;

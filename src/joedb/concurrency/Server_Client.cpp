@@ -1,6 +1,6 @@
 #include "joedb/concurrency/Server_Client.h"
 #include "joedb/concurrency/protocol_version.h"
-#include "joedb/error/Exception.h"
+#include "joedb/error/Disconnection.h"
 #include "joedb/journal/Header.h"
 #include "joedb/ui/Progress_Bar.h"
 
@@ -61,7 +61,7 @@ namespace joedb
   logger.log("server_version = " + std::to_string(server_version));
 
   if (server_version < protocol_version)
-   throw Exception("Unsupported server version");
+   throw Disconnection("Unsupported server version");
 
   session_id = buffer.read<int64_t>();
   server_checkpoint = buffer.read<int64_t>();
@@ -129,13 +129,13 @@ namespace joedb
  void Server_Client::disconnect()
  ////////////////////////////////////////////////////////////////////////////
  {
+  keep_alive.stop();
+
   {
    Lock<Channel&> lock(channel);
    buffer.data[0] = 'Q';
    lock->write(buffer.data, 1);
   }
-
-  keep_alive.stop();
  }
 
  ////////////////////////////////////////////////////////////////////////////

@@ -35,7 +35,7 @@ add_library(joedb_for_joedbc OBJECT
  ${JOEDB_SRC_DIR}/joedb/error/assert.cpp
  ${JOEDB_SRC_DIR}/joedb/error/Logger.cpp
  ${JOEDB_SRC_DIR}/joedb/error/Stream_Logger.cpp
- ${JOEDB_SRC_DIR}/joedb/error/Destructor_Logger.cpp
+ ${JOEDB_SRC_DIR}/joedb/error/Global_Logger.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Database_Schema.cpp
  ${JOEDB_SRC_DIR}/joedb/interpreted/Table.cpp

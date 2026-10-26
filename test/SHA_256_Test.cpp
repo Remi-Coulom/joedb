@@ -1,10 +1,12 @@
-#include "joedb/journal/File_Hasher.h"
+#include "joedb/journal/get_hash.h"
 #include "joedb/journal/Memory_File.h"
 #include "joedb/journal/Writable_Journal.h"
 
 #include "Test_File.h"
 
 #include "gtest/gtest.h"
+
+#include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(SHA_256, rotr)
@@ -40,7 +42,7 @@ TEST(SHA_256, sha_256)
 TEST(SHA_256, sha_256_string)
 /////////////////////////////////////////////////////////////////////////////
 {
- EXPECT_EQ(joedb::File_Hasher::get_hash("abc"), abc_hash);
+ EXPECT_EQ(joedb::get_full_hash("abc"), abc_hash);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,7 +59,7 @@ TEST(SHA_256, file)
   file_buffer.flush();
  }
 
- EXPECT_EQ(joedb::File_Hasher::get_hash(file), abc_hash);
+ EXPECT_EQ(joedb::get_full_hash(file), abc_hash);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,8 +79,8 @@ TEST(SHA_256, file_slice)
   file_buffer.flush();
  }
 
- EXPECT_EQ(joedb::File_Hasher::get_hash(file, 2, 3), abc_hash);
- EXPECT_EQ(joedb::File_Hasher::get_fast_hash(file, 2, 3), abc_hash);
+ EXPECT_EQ(joedb::get_full_hash(file, 2, 5), abc_hash);
+ EXPECT_EQ(joedb::get_fast_hash(file, 2, 5), abc_hash);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -91,8 +93,8 @@ TEST(SHA_256, file_with_short_reads)
 
  EXPECT_EQ
  (
-  joedb::File_Hasher::get_hash(file),
-  joedb::File_Hasher::get_hash(file.get_data())
+  joedb::get_full_hash(file),
+  joedb::get_full_hash(file.get_data())
  );
 }
 
@@ -109,13 +111,8 @@ TEST(SHA_256, fast_hash_with_short_reads)
 
  EXPECT_EQ
  (
-  joedb::File_Hasher::get_fast_hash
-  (
-   short_read_file,
-   0,
-   short_read_file.get_size()
-  ),
-  joedb::File_Hasher::get_fast_hash(file, 0, file.get_size())
+  joedb::get_fast_hash(short_read_file, 0, short_read_file.get_size()),
+  joedb::get_fast_hash(file, 0, file.get_size())
  );
 }
 
@@ -131,7 +128,7 @@ TEST(SHA_256, fast_hash_coverage)
    file_buffer.write<uint32_t>(uint32_t(i));
   file_buffer.flush();
  }
- joedb::File_Hasher::get_fast_hash(file, 0, file.get_size());
+ joedb::get_fast_hash(file, 0, file.get_size());
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -139,8 +136,8 @@ static const joedb::SHA_256::Hash big_hash
 /////////////////////////////////////////////////////////////////////////////
 {
  {
-  1375295911, 2979956878, 2035804433, 1588190633,
-  2991985271, 583611159, 3820768175, 909004044
+  113130918, 2435694586, 4004299373, 4110564913,
+  4160222598, 3194168673, 795849175, 2699492686
  }
 };
 
@@ -161,12 +158,31 @@ TEST(SHA_256, journal)
  joedb::Readonly_Journal journal(file);
  EXPECT_EQ(41, journal.get_position());
 
- const joedb::SHA_256::Hash hash = joedb::Journal_Hasher::get_fast_hash
+ const joedb::SHA_256::Hash hash = joedb::get_fast_hash
  (
-  journal,
+  journal.get_file(),
+  joedb::Header::ssize,
   journal.get_checkpoint() - 123
  );
 
  EXPECT_EQ(hash, big_hash);
  EXPECT_EQ(41, journal.get_position());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(SHA_256, empty)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+
+ {
+  joedb::Writable_Journal journal(file);
+  journal.timestamp(0);
+  journal.soft_checkpoint();
+ }
+
+ EXPECT_EQ(
+  joedb::get_full_hash(file, joedb::Header::ssize, joedb::Header::ssize),
+  joedb::get_full_hash("")
+ );
 }

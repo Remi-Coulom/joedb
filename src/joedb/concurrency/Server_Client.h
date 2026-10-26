@@ -27,7 +27,6 @@ namespace joedb
   protected:
    mutable Thread_Safe<Channel&> channel;
    Logger &logger;
-   bool connected;
 
    mutable Buffer<13> buffer;
 

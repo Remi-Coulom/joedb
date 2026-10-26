@@ -1,4 +1,5 @@
 #include "db/test/Client.h"
+#include "db/default_values/Writable_Database.h"
 #include "db/test/Readonly_Database.h"
 #include "db/test/Memory_Database.h"
 #include "db/multi_index/Memory_Database.h"
@@ -6,7 +7,9 @@
 #include "db/schema_v1/Readonly_Database.h"
 #include "db/schema_v2/Client.h"
 #include "db/schema_v2/Readonly_Database.h"
-#include "db/unordered_index/Writable_Database.h"
+#if __cplusplus >= 202002L
+ #include "db/unordered_index/Writable_Database.h"
+#endif
 #include "db/vector_test/Writable_Database.h"
 #include "db/vector_test/Readonly_Database.h"
 #include "db/vector_test/Memory_Database.h"
@@ -22,6 +25,30 @@ using namespace my_namespace::is_nested;
 #include "gtest/gtest.h"
 
 #include <unordered_map>
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, default_values)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ {
+  joedb::Writable_Journal journal(file);
+  journal.create_table("target");
+  journal.create_table("item");
+  journal.insert_into(joedb::Table_Id{2}, joedb::Record_Id{0});
+  journal.soft_checkpoint();
+ }
+
+ default_values::Writable_Database db(file);
+ const auto item = db.get_item_table().first();
+ EXPECT_EQ(db.get_text(item), std::string("a\0b", 3));
+ EXPECT_EQ(db.get_single(item), 1.23456789f);
+ EXPECT_EQ(db.get_double_precision(item), 1.2345678901234567);
+ EXPECT_TRUE(db.get_data(item).is_null());
+ EXPECT_TRUE(db.get_reference(item).is_null());
+ EXPECT_EQ(db.get_integer(item), 42);
+ EXPECT_TRUE(db.get_boolean(item));
+}
 
 /////////////////////////////////////////////////////////////////////////////
 static const std::string &get_translation
@@ -757,6 +784,33 @@ TEST(Compiler, vector_of_size_zero)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, vector_update_rejects_invalid_range_before_callback)
+/////////////////////////////////////////////////////////////////////////////
+{
+#if defined(NDEBUG) && !defined(JOEDB_FUZZING)
+ GTEST_SKIP() << "Requires debug assertions";
+#else
+ joedb::Memory_File file;
+ vector_test::Writable_Database db(file);
+ const auto v = db.new_vector_of_point(1);
+ db.soft_checkpoint();
+
+ bool callback_called = false;
+ EXPECT_THROW
+ (
+  db.update_vector_of_x(v, 2, [&](joedb::Span<float>)
+  {
+   callback_called = true;
+  }),
+  joedb::Assertion_Failure
+ );
+
+ EXPECT_FALSE(callback_called);
+ EXPECT_EQ(db.ahead_of_checkpoint(), 0);
+#endif
+}
+
+/////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, vector)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -1076,6 +1130,7 @@ TEST(Compiler, id_hash)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+#if __cplusplus >= 202002L
 TEST(Compiler, unordered_index)
 /////////////////////////////////////////////////////////////////////////////
 {
@@ -1092,3 +1147,43 @@ TEST(Compiler, unordered_index)
  for (const auto person: db.find_person_by_name("Coulom"))
   EXPECT_EQ(db.get_first_name(person), "Rémi");
 }
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, unordered_index_string_view)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Memory_File file;
+ unordered_index::Writable_Database db(file);
+
+ // Include an embedded null and leave a suffix outside each lookup view.
+ const std::string first_name("Jo\0e!", 5);
+ const std::string last_name("Smith!");
+ const std::string_view first(first_name.data(), 4);
+ const std::string_view last(last_name.data(), 5);
+ const auto person = db.new_person(std::string(first), std::string(last), db.null_city());
+
+ EXPECT_EQ(person, db.find_person_by_first_name(first));
+ EXPECT_EQ(person, db.find_person_by_full_name(first, last, db.null_city()));
+ EXPECT_EQ(db.null_person(), db.find_person_by_first_name(std::string_view(first_name)));
+ EXPECT_EQ(db.null_person(), db.find_person_by_full_name(first, std::string_view(last_name), db.null_city()));
+
+ size_t count = 0;
+ for (const auto match: db.find_person_by_name(last))
+ {
+  EXPECT_EQ(person, match);
+  ++count;
+ }
+ EXPECT_EQ(count, 1);
+
+ count = 0;
+ for (const auto match: db.find_people_by_full_name(first, last, db.null_city()))
+ {
+  EXPECT_EQ(person, match);
+  ++count;
+ }
+ EXPECT_EQ(count, 1);
+
+ for (const auto match: db.find_people_by_full_name(first, std::string_view(last_name), db.null_city()))
+  ADD_FAILURE() << "Unexpected match: " << match.get_record_id();
+}
+#endif

@@ -1,11 +1,71 @@
 #include "joedb/ui/type_io.h"
+#include "joedb/ui/write_value.h"
+#include "joedb/interpreted/Database.h"
 #include "joedb/ui/base64.h"
+#include "joedb/error/Exception.h"
 #include "external/wide_char_display_width.h"
 
 #include "gtest/gtest.h"
 
 #include <sstream>
 #include <random>
+#include <cmath>
+#include <cstdlib>
+#include <limits>
+#include <type_traits>
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, write_cpp_value)
+/////////////////////////////////////////////////////////////////////////////
+{
+ joedb::Database db;
+ db.create_table("value");
+ const auto table = db.find_table("value");
+ db.add_field(table, "single", joedb::Type::float32());
+ db.add_field(table, "double_precision", joedb::Type::float64());
+ db.add_field(table, "blob", joedb::Type::blob());
+ const joedb::Record_Id record{0};
+ db.insert_into(table, record);
+
+ const auto check_float = [&]<typename T>(T)
+ {
+  const auto field = db.find_field(table, std::is_same_v<T, float> ? "single" : "double_precision");
+  const auto write = [&](T value)
+  {
+   if constexpr (std::is_same_v<T, float>)
+    db.update_float32(table, record, field, value);
+   else
+    db.update_float64(table, record, field, value);
+   std::ostringstream out;
+   joedb::write_cpp_value(out, db, table, record, field);
+   return out.str();
+  };
+
+  for (const T value: {T(0), -T(0), T(1.2345678901234567), std::numeric_limits<T>::min(),
+                      std::numeric_limits<T>::max(), std::numeric_limits<T>::denorm_min()})
+  {
+   const std::string literal = write(value);
+   char *end;
+   const T parsed = T(std::strtod(literal.c_str(), &end));
+   EXPECT_EQ(parsed, value) << literal;
+   EXPECT_EQ(std::signbit(parsed), std::signbit(value));
+   EXPECT_STREQ(end, (std::is_same_v<T, float> ? "f" : ""));
+  }
+
+  const std::string prefix = std::is_same_v<T, float> ? "std::numeric_limits<float>" : "std::numeric_limits<double>";
+  EXPECT_EQ(write(std::numeric_limits<T>::infinity()), prefix + "::infinity()");
+  EXPECT_EQ(write(-std::numeric_limits<T>::infinity()), "-" + prefix + "::infinity()");
+  EXPECT_EQ(write(std::numeric_limits<T>::quiet_NaN()), prefix + "::quiet_NaN()");
+ };
+ check_float(float{});
+ check_float(double{});
+
+ const auto blob = db.find_field(table, "blob");
+ db.update_blob(table, record, blob, joedb::Blob(123, 456));
+ std::ostringstream out;
+ joedb::write_cpp_value(out, db, table, record, blob);
+ EXPECT_EQ(out.str(), "joedb::Blob(123, 456)");
+}
 
 struct
 {
@@ -310,6 +370,63 @@ TEST(StringIO_Test, utf8_validation)
  std::ostringstream out;
  joedb::write_string(out, s);
  EXPECT_TRUE(check_utf8(out.str()));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, json_rejects_invalid_utf8)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const struct
+ {
+  const char *name;
+  const char *bytes;
+ } cases[] =
+ {
+  {"overlong two-byte NUL", "\xc0\x80"},
+  {"overlong two-byte ASCII", "\xc1\xbf"},
+  {"overlong three-byte NUL", "\xe0\x80\x80"},
+  {"overlong three-byte character", "\xe0\x9f\xbf"},
+  {"overlong four-byte NUL", "\xf0\x80\x80\x80"},
+  {"overlong four-byte character", "\xf0\x8f\xbf\xbf"},
+  {"first surrogate", "\xed\xa0\x80"},
+  {"last surrogate", "\xed\xbf\xbf"},
+  {"above U+10FFFF", "\xf4\x90\x80\x80"},
+  {"invalid leading byte", "\xf5\x80\x80\x80"},
+  {"stray continuation byte", "\x80"},
+  {"truncated character", "\xf0\x90\x80"}
+ };
+
+ for (const auto &c: cases)
+ {
+  SCOPED_TRACE(c.name);
+  std::ostringstream out;
+  EXPECT_THROW(joedb::write_string(out, c.bytes, true), joedb::Exception);
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(StringIO_Test, json_accepts_utf8_boundaries)
+/////////////////////////////////////////////////////////////////////////////
+{
+ const char * const cases[] =
+ {
+  "\xc2\x80",         // U+0080
+  "\xdf\xbf",         // U+07FF
+  "\xe0\xa0\x80",     // U+0800
+  "\xed\x9f\xbf",     // U+D7FF, before surrogates
+  "\xee\x80\x80",     // U+E000, after surrogates
+  "\xef\xbf\xbf",     // U+FFFF
+  "\xf0\x90\x80\x80", // U+10000
+  "\xf4\x8f\xbf\xbf"  // U+10FFFF
+ };
+
+ for (const char *s: cases)
+ {
+  SCOPED_TRACE(s);
+  std::ostringstream out;
+  EXPECT_NO_THROW(joedb::write_string(out, s, true));
+  EXPECT_EQ('"' + std::string(s) + '"', out.str());
+ }
 }
 
 /////////////////////////////////////////////////////////////////////////////

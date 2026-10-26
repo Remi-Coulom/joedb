@@ -22,7 +22,6 @@ namespace joedb::generator
 #include "File_Client.h"
 //#warning writable header is deprecated
 )RRR";
-    out.flush();
    }
  };
 }

@@ -22,6 +22,11 @@ Structured data storage (no history, no durable incremental update):
 - https://developers.google.com/protocol-buffers/
 - https://google.github.io/flatbuffers/
 - https://www.json.org/
+
+  - https://stephenberry.github.io/glaze/
+  - https://www.boost.org/doc/libs/latest/libs/json/doc/html/index.html
+  - https://github.com/nlohmann/json
+
 - https://en.wikipedia.org/wiki/XML
 - https://www.boost.org/doc/libs/1_85_0/libs/serialization/doc/index.html
 - http://www.garret.ru/post/readme.htm
@@ -72,6 +77,7 @@ File Locking, atomicity, durability:
 - https://danluu.com/deconstruct-files/
 - https://danluu.com/file-consistency/
 - https://transactional.blog/blog/2022-darwins-deceptive-durability
+- https://www.youtube.com/watch?v=LMe7hf2G1po (slides: https://www.slideshare.net/slideshow/eat-my-data/9002060#2)
 
 Authentication and Encryption of Network Communications:
 

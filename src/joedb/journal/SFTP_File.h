@@ -23,7 +23,7 @@ namespace joedb
     );
    }
 
-   mutable int64_t pos;
+   mutable int64_t pos = 0;
 
    void seek(int64_t offset) const
    {
