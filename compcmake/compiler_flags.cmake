@@ -19,7 +19,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
  endif()
 
  string(APPEND CMAKE_CXX_FLAGS_COVERAGE
-	" -g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline -fno-default-inline -fno-inline-small-functions --coverage"
+	" -g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline -fno-default-inline -fno-inline-small-functions -fprofile-update=atomic --coverage"
 	)
 
  string(APPEND CMAKE_CXX_FLAGS_DEBUG " -D_GLIBCXX_DEBUG")
