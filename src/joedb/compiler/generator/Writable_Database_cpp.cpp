@@ -1,7 +1,7 @@
 #include "joedb/compiler/generator/Writable_Database_cpp.h"
 #include "joedb/compiler/nested_namespace.h"
 #include "joedb/ui/type_io.h"
-#include "joedb/ui/write_value.h"
+#include "joedb/compiler/write_cpp_value.h"
 
 namespace joedb::generator
 {

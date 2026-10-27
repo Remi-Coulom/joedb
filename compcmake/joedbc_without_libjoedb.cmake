@@ -79,6 +79,7 @@ if (NOT DEFINED JOEDBC_EXECUTABLE)
  add_library(joedbc_objects OBJECT
   ${JOEDB_SRC_DIR}/joedb/compiler/joedbc.cpp
   ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
+  ${JOEDB_SRC_DIR}/joedb/compiler/write_cpp_value.cpp
 
   ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generator.cpp
   ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_h.cpp
