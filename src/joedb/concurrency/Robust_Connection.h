@@ -9,6 +9,9 @@ namespace joedb
 {
  /// @ref Server_Connection that automatically reconnects on error
  ///
+ /// Must only be used with one Client. The journal passed to handshake
+ /// must remain alive for as long as this connection is used.
+ ///
  /// @ingroup concurrency
  class Robust_Connection: public Connection
  {

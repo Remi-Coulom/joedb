@@ -12,6 +12,9 @@ namespace joedb
  {
   log_exception(e);
 
+  const int64_t old_server_checkpoint =
+   connection ? connection->get_server_checkpoint() : Header::ssize;
+
   while (true)
   {
    std::this_thread::sleep_until(last_connection_time + period);
@@ -28,6 +31,8 @@ namespace joedb
      logger,
      connector.get_keep_alive_interval()
     );
+    if (connection->get_server_checkpoint() < old_server_checkpoint)
+     throw Disconnection("Robust_Connection: server checkpoint rolled back");
     if (handshake_journal)
      connection->handshake(*handshake_journal, handshake_content_check);
     return;
