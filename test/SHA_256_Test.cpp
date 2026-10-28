@@ -7,7 +7,6 @@
 #include "gtest/gtest.h"
 
 #include <vector>
-#include <cstdlib>
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(SHA_256, rotr)
@@ -213,14 +212,18 @@ TEST(SHA_256, padding_and_block_boundaries)
  }
 }
 
-#if GTEST_HAS_DEATH_TEST
-TEST(SHA_256DeathTest, exact_hashing_buffer_multiple)
+TEST(SHA_256, exact_hashing_buffer_multiple)
 {
-  const joedb::SHA_256::Hash expected = {0xb44ffb72U, 0xfcc25967U, 0x6bd80495U, 0xfef1b44bU, 0x808ca8f1U, 0xffe1b170U, 0x6a4d7911U, 0xb0e31f11U};
- EXPECT_EXIT
- ({
-  const auto actual = joedb::get_full_hash(std::string(131072, 'a'));
-  std::_Exit(actual == expected ? 0 : 1);
- }, testing::ExitedWithCode(0), "");
+ struct Case {size_t size; joedb::SHA_256::Hash hash;};
+ const Case cases[] =
+ {
+  {131072, {0xb44ffb72U, 0xfcc25967U, 0x6bd80495U, 0xfef1b44bU, 0x808ca8f1U, 0xffe1b170U, 0x6a4d7911U, 0xb0e31f11U}},
+  {262144, {0xdd3dde87U, 0x623d9a6bU, 0x354c68c9U, 0x43d189c8U, 0x9c63652dU, 0x945e7bbdU, 0xf0986caeU, 0x91a49521U}},
+  {393216, {0xcef254beU, 0x676d5530U, 0x8d292624U, 0x8a1237b3U, 0x906e478cU, 0xef15e76aU, 0x8e304849U, 0x97e86459U}},
+ };
+ for (const auto &test: cases)
+ {
+  SCOPED_TRACE(test.size);
+  EXPECT_EQ(joedb::get_full_hash(std::string(test.size, 'a')), test.hash);
+ }
 }
-#endif

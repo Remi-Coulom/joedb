@@ -38,7 +38,7 @@ namespace joedb
    {
     sha_256.process_final_chunk
     (
-     &hashing_buffer[full_chunks * SHA_256::chunk_size],
+     hashing_buffer.data() + full_chunks * SHA_256::chunk_size,
      uint64_t(current - from)
     );
     break;
