@@ -7,6 +7,7 @@
 #include "gtest/gtest.h"
 
 #include <vector>
+#include <cstdlib>
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(SHA_256, rotr)
@@ -186,3 +187,40 @@ TEST(SHA_256, empty)
   joedb::get_full_hash("")
  );
 }
+
+TEST(SHA_256, padding_and_block_boundaries)
+{
+ struct Case {size_t size; joedb::SHA_256::Hash hash;};
+ const Case cases[] =
+ {
+  {0, {0xe3b0c442U, 0x98fc1c14U, 0x9afbf4c8U, 0x996fb924U, 0x27ae41e4U, 0x649b934cU, 0xa495991bU, 0x7852b855U}},
+  {55, {0x9f4390f8U, 0xd30c2dd9U, 0x2ec9f095U, 0xb65e2b9aU, 0xe9b0a925U, 0xa5258e24U, 0x1c9f1e91U, 0x0f734318U}},
+  {56, {0xb35439a4U, 0xac6f0948U, 0xb6d6f9e3U, 0xc6af0f5fU, 0x590ce20fU, 0x1bde7090U, 0xef797068U, 0x6ec6738aU}},
+  {63, {0x7d3e74a0U, 0x5d7db15bU, 0xce4ad9ecU, 0x0658ea98U, 0xe3f06eeeU, 0xcf16b4c6U, 0xfff2da45U, 0x7ddc2f34U}},
+  {64, {0xffe054feU, 0x7ae0cb6dU, 0xc65c3af9U, 0xb61d5209U, 0xf439851dU, 0xb43d0ba5U, 0x997337dfU, 0x154668ebU}},
+  {65, {0x635361c4U, 0x8bb9eab1U, 0x4198e76eU, 0xa8ab7f1aU, 0x41685d6aU, 0xd62aa914U, 0x6d301d4fU, 0x17eb0ae0U}},
+  {127, {0xc57e9278U, 0xaf78fa3cU, 0xab38667bU, 0xef4ce29dU, 0x783787a2U, 0xf731d4e1U, 0x2200270fU, 0x0c32320aU}},
+  {128, {0x6836cf13U, 0xbac400e9U, 0x105071cdU, 0x6af47084U, 0xdfacad4eU, 0x5e302c94U, 0xbfed24e0U, 0x13afb73eU}},
+  {129, {0xc12cb024U, 0xa2e5551cU, 0xca0e08fcU, 0xe8f1c5e3U, 0x14555cc3U, 0xfef6329eU, 0xe994a3dbU, 0x752166aeU}},
+  {131071, {0x115b5799U, 0x5e13fe27U, 0xba1077d6U, 0x31a7fa51U, 0x82fbb798U, 0xac0193e8U, 0x79a75ebbU, 0x3680732cU}},
+  {131073, {0x7e009ea4U, 0xef882e38U, 0x5b3c0bcbU, 0xbfa8d009U, 0xbb0a633bU, 0xdd764415U, 0xc09182eeU, 0x0e75da73U}},
+ };
+ for (const auto &test: cases)
+ {
+  SCOPED_TRACE(test.size);
+  const std::string data(test.size, 'a');
+  EXPECT_EQ(joedb::get_full_hash(data), test.hash);
+ }
+}
+
+#if GTEST_HAS_DEATH_TEST
+TEST(SHA_256DeathTest, exact_hashing_buffer_multiple)
+{
+  const joedb::SHA_256::Hash expected = {0xb44ffb72U, 0xfcc25967U, 0x6bd80495U, 0xfef1b44bU, 0x808ca8f1U, 0xffe1b170U, 0x6a4d7911U, 0xb0e31f11U};
+ EXPECT_EXIT
+ ({
+  const auto actual = joedb::get_full_hash(std::string(131072, 'a'));
+  std::_Exit(actual == expected ? 0 : 1);
+ }, testing::ExitedWithCode(0), "");
+}
+#endif

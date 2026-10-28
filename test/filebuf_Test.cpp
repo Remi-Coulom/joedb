@@ -10,6 +10,20 @@
 
 namespace joedb
 {
+ TEST(filebuf, negative_seek_fails)
+ {
+  Memory_File file;
+  file.get_data() = "abc";
+  iostream stream(file);
+  stream.seekg(-2, std::ios::beg);
+  EXPECT_TRUE(stream.fail());
+  stream.clear();
+  stream.seekg(0, std::ios::beg);
+  EXPECT_EQ(stream.get(), 'a');
+  stream.seekp(-2, std::ios::beg);
+  EXPECT_TRUE(stream.fail());
+ }
+
  TEST(filebuf, hello)
  {
   joedb::Memory_File file;

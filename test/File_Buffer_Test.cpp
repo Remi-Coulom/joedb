@@ -11,6 +11,40 @@
 
 namespace joedb
 {
+ TEST(File_Buffer, compact_integer_boundaries)
+ {
+  const uint64_t values[] =
+  {
+   0, 1, 31, 32, 8191, 8192, (uint64_t(1) << 21) - 1, uint64_t(1) << 21,
+   (uint64_t(1) << 29) - 1, uint64_t(1) << 29, (uint64_t(1) << 37) - 1,
+   uint64_t(1) << 37, (uint64_t(1) << 45) - 1, uint64_t(1) << 45,
+   (uint64_t(1) << 53) - 1, uint64_t(1) << 53, (uint64_t(1) << 61) - 1
+  };
+  for (const size_t prefix: {size_t(0), size_t(4089), size_t(4095), size_t(4096)})
+  {
+   SCOPED_TRACE(prefix);
+   Memory_File file;
+   File_Buffer buffer(file);
+   const std::string padding(prefix, 'p');
+   buffer.write_data(padding.data(), padding.size());
+   buffer.compact_write<uint64_t>((uint64_t(1) << 61) - 1);
+   for (const auto value: values)
+    buffer.compact_write(value);
+   const auto end = buffer.get_position();
+   buffer.set_position(0);
+   std::string read_padding(prefix, '?');
+   buffer.read_data(read_padding.data(), read_padding.size());
+   EXPECT_EQ(read_padding, padding);
+   EXPECT_EQ(buffer.compact_read<uint64_t>(), (uint64_t(1) << 61) - 1);
+   for (const auto value: values)
+   {
+    SCOPED_TRACE(value);
+    EXPECT_EQ(buffer.compact_read<uint64_t>(), value);
+   }
+   EXPECT_EQ(buffer.get_position(), end);
+  }
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  TEST(File_Buffer, copy)
  ////////////////////////////////////////////////////////////////////////////

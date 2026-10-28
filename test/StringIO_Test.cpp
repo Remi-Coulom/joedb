@@ -8,6 +8,26 @@
 #include <sstream>
 #include <random>
 
+TEST(StringIO_Test, json_control_characters)
+{
+ std::ostringstream out;
+ joedb::write_string(out, std::string("\0\b\t\n\f\r\x1f\x7f", 8), true);
+ EXPECT_EQ(out.str(), "\"\\u0000\\u0008\\u0009\\u000a\\u000c\\u000d\\u001f\\u007f\"");
+}
+
+TEST(StringIO_Test, justified_truncation_preserves_utf8)
+{
+ std::ostringstream left;
+ joedb::write_justified(left, "abcd", 3, true);
+ EXPECT_EQ(left.str(), "ab…");
+ std::ostringstream right;
+ joedb::write_justified(right, "日本a", 4, false);
+ EXPECT_EQ(right.str(), " 日…");
+ std::ostringstream exact;
+ joedb::write_justified(exact, "日本", 4, true);
+ EXPECT_EQ(exact.str(), "日本");
+}
+
 struct
 {
  std::string s1;

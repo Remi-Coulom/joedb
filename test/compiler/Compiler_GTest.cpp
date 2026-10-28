@@ -4,6 +4,7 @@
 #include "db/test/Memory_Database.h"
 #include "db/test/File_Client.h"
 #include "db/multi_index/Memory_Database.h"
+#include "db/multi_index/Readonly_Database.h"
 #include "db/schema_v1/Client.h"
 #include "db/schema_v1/Readonly_Database.h"
 #include "db/schema_v2/Client.h"
@@ -26,6 +27,275 @@ using namespace my_namespace::is_nested;
 #include "gtest/gtest.h"
 
 #include <unordered_map>
+#include <array>
+#include <map>
+#include <set>
+#include <random>
+#include <filesystem>
+#include <fstream>
+#if defined(__linux__) && GTEST_HAS_DEATH_TEST
+#include <unistd.h>
+#include <cstdlib>
+
+namespace
+{
+ class Compiler_Command_DeathTest: public testing::Test
+ {
+  protected:
+   std::filesystem::path directory;
+   std::string compiler;
+   void SetUp() override
+   {
+    compiler = (std::filesystem::read_symlink("/proc/self/exe").parent_path() / "joedbc").string();
+    ASSERT_TRUE(std::filesystem::exists(compiler));
+    std::string pattern = (std::filesystem::temp_directory_path() / "joedb-compiler-XXXXXX").string();
+    const char *created = ::mkdtemp(pattern.data());
+    ASSERT_NE(created, nullptr);
+    directory = created;
+    std::ofstream(directory / "schema.joedbi") << "create_table items\nadd_field items value int32\n";
+    options("");
+   }
+   void options(const std::string &text)
+   {
+    std::ofstream(directory / "schema.joedbc") << "namespace generated\n" << text;
+   }
+   void expect_failure(const char *message)
+   {
+    EXPECT_EXIT
+    ({
+     if (::chdir(directory.c_str()) != 0)
+      std::_Exit(127);
+     ::execl(compiler.c_str(), compiler.c_str(), "schema", static_cast<char *>(nullptr));
+     std::_Exit(127);
+    }, testing::ExitedWithCode(1), message);
+   }
+   void TearDown() override
+   {
+    if (!directory.empty())
+     std::filesystem::remove_all(directory);
+   }
+ };
+
+ TEST_F(Compiler_Command_DeathTest, help_and_version)
+ {
+  EXPECT_EXIT
+  ({
+   ::execl(compiler.c_str(), compiler.c_str(), static_cast<char *>(nullptr));
+   std::_Exit(127);
+  }, testing::ExitedWithCode(1), "usage:");
+  EXPECT_EXIT
+  ({
+   ::execl(compiler.c_str(), compiler.c_str(), "--version", static_cast<char *>(nullptr));
+   std::_Exit(127);
+  }, testing::ExitedWithCode(0), "");
+ }
+ TEST_F(Compiler_Command_DeathTest, unknown_option)
+ {
+  options("unknown_option\n");
+  expect_failure("unknown command: unknown_option");
+ }
+ TEST_F(Compiler_Command_DeathTest, unknown_index_field)
+ {
+  options("create_index lookup items missing\n");
+  expect_failure("Field not found: missing");
+ }
+ TEST_F(Compiler_Command_DeathTest, invalid_index_identifier)
+ {
+  options("create_index bad-name items value\n");
+  expect_failure("Invalid index identifier: bad-name");
+ }
+ TEST_F(Compiler_Command_DeathTest, invalid_custom_identifier)
+ {
+  std::ofstream(directory / "schema.joedbi") << "custom bad-name\n";
+  expect_failure("custom: invalid identifier");
+ }
+ TEST_F(Compiler_Command_DeathTest, index_requires_fields)
+ {
+  options("create_index lookup items\n");
+  expect_failure("Exception caught:");
+ }
+ TEST_F(Compiler_Command_DeathTest, deprecated_storage_option_warns)
+ {
+  options("set_table_storage\n");
+  EXPECT_EXIT
+  ({
+   if (::chdir(directory.c_str()) != 0)
+    std::_Exit(127);
+   ::execl(compiler.c_str(), compiler.c_str(), "schema", static_cast<char *>(nullptr));
+   std::_Exit(127);
+  }, testing::ExitedWithCode(0), "set_table_storage is deprecated");
+  EXPECT_TRUE(std::filesystem::exists(directory / "generated" / "Database.h"));
+ }
+}
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, deterministic_multi_index_model)
+/////////////////////////////////////////////////////////////////////////////
+{
+ multi_index::Memory_Database db;
+ const std::array<multi_index::id_of_city, 3> cities =
+  {db.new_city(), db.new_city(), db.new_city()};
+ struct Row
+ {
+  std::string first;
+  std::string last;
+  multi_index::id_of_city city;
+ };
+ std::map<multi_index::id_of_person, Row> model;
+ const std::array<std::string, 5> names =
+  {"", "Smith", "Coulom", std::string("A\0B", 3), "Dupont"};
+ std::mt19937 random(0x51de);
+
+ const auto check = [&](const auto &database)
+ {
+  EXPECT_EQ(database.get_person_table().get_size(), model.size());
+  for (const auto &entry: model)
+  {
+   const auto id = entry.first;
+   const Row &row = entry.second;
+   EXPECT_EQ(database.get_first_name(id), row.first);
+   EXPECT_EQ(database.get_last_name(id), row.last);
+   EXPECT_EQ(database.get_city(id), row.city);
+   EXPECT_EQ(database.find_person_by_full_name(row.first, row.last), id);
+  }
+  for (const auto &name: names)
+  {
+   std::set<multi_index::id_of_person> expected;
+   for (const auto &entry: model)
+    if (entry.second.last == name)
+     expected.insert(entry.first);
+   std::set<multi_index::id_of_person> actual;
+   for (const auto id: database.find_person_by_name(name))
+    EXPECT_TRUE(actual.insert(id).second);
+   EXPECT_EQ(actual, expected);
+  }
+  for (const auto city: cities)
+  {
+   std::set<multi_index::id_of_person> expected;
+   for (const auto &entry: model)
+    if (entry.second.city == city)
+     expected.insert(entry.first);
+   std::set<multi_index::id_of_person> actual;
+   for (const auto id: database.find_person_by_city(city))
+    EXPECT_TRUE(actual.insert(id).second);
+   EXPECT_EQ(actual, expected);
+  }
+ };
+
+ for (size_t step = 0; step < 1000; ++step)
+ {
+  SCOPED_TRACE(step);
+  const auto operation = random() % 7;
+  if (model.empty() || (operation < 2 && model.size() < 40))
+  {
+   const Row row{"first" + std::to_string(step), names[random() % names.size()],
+                 cities[random() % cities.size()]};
+   const auto id = db.new_person(row.first, row.last, row.city);
+   ASSERT_TRUE(model.emplace(id, row).second);
+  }
+  else
+  {
+   auto entry = model.begin();
+   std::advance(entry, random() % model.size());
+   if (operation == 2)
+   {
+    db.delete_person(entry->first);
+    model.erase(entry);
+   }
+   else if (operation == 3)
+   {
+    entry->second.first = "renamed" + std::to_string(step);
+    db.set_first_name(entry->first, entry->second.first);
+    // Multi-column indexes are refreshed by updating their last column.
+    db.set_last_name(entry->first, entry->second.last);
+   }
+   else if (operation == 4)
+   {
+    entry->second.last = names[random() % names.size()];
+    db.set_last_name(entry->first, entry->second.last);
+   }
+   else if (operation == 5)
+   {
+    entry->second.city = cities[random() % cities.size()];
+    db.set_city(entry->first, entry->second.city);
+   }
+   else if (step % 31 == 0)
+   {
+    db.clear_person_table();
+    model.clear();
+   }
+  }
+  db.soft_checkpoint();
+  check(db);
+  if (testing::Test::HasFailure())
+   return;
+  if (step % 37 == 0)
+  {
+   multi_index::Readonly_Database replayed(db);
+   check(replayed);
+   if (testing::Test::HasFailure())
+    return;
+  }
+ }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, multi_index_recovers_after_duplicate)
+/////////////////////////////////////////////////////////////////////////////
+{
+ multi_index::Memory_Database db;
+ const auto first = db.new_person("Jane", "Smith", db.null_city());
+ const auto second = db.new_person("Jane", "Jones", db.null_city());
+ EXPECT_THROW(db.set_last_name(second, "Smith"), joedb::Exception);
+ // Failed updates remain in memory: repair them before further use.
+ ASSERT_NO_THROW(db.set_last_name(second, "Brown"));
+ db.soft_checkpoint();
+ EXPECT_EQ(db.find_person_by_full_name("Jane", "Smith"), first);
+ EXPECT_EQ(db.find_person_by_full_name("Jane", "Brown"), second);
+ EXPECT_TRUE(db.find_person_by_full_name("Jane", "Jones").is_null());
+ multi_index::Readonly_Database replayed(db);
+ EXPECT_EQ(replayed.get_last_name(second), "Brown");
+ EXPECT_EQ(replayed.find_person_by_full_name("Jane", "Smith"), first);
+ EXPECT_EQ(replayed.find_person_by_full_name("Jane", "Brown"), second);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+TEST(Compiler, vector_permutation_of_unique_index)
+/////////////////////////////////////////////////////////////////////////////
+{
+ multi_index::Memory_Database db;
+ const auto people = db.new_vector_of_person(3);
+ db.update_vector_of_first_name(people, 3, [](auto values)
+ {
+  for (auto &value: values)
+   value = "Jane";
+ });
+ const std::array<std::string, 3> names = {"Smith", "Jones", "Brown"};
+ db.update_vector_of_last_name(people, 3, [&](auto values)
+ {
+  std::copy(names.begin(), names.end(), values.begin());
+ });
+ for (size_t rotation = 0; rotation < 12; ++rotation)
+ {
+  db.update_vector_of_last_name(people, 3, [&](auto values)
+  {
+   for (size_t i = 0; i < 3; ++i)
+    values[i] = names[(i + rotation) % names.size()];
+  });
+  db.soft_checkpoint();
+  multi_index::Readonly_Database replayed(db);
+  for (size_t i = 0; i < 3; ++i)
+  {
+   const auto &name = names[(i + rotation) % names.size()];
+   EXPECT_EQ(db.find_person_by_full_name("Jane", name), people[i]);
+   EXPECT_EQ(replayed.find_person_by_full_name("Jane", name), people[i]);
+  }
+ }
+ db.delete_vector_of_person(people, 3);
+ EXPECT_TRUE(db.get_index_of_person_by_full_name().empty());
+ EXPECT_TRUE(db.get_index_of_person_by_name().empty());
+}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, default_values)

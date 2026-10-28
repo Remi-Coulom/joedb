@@ -6,6 +6,7 @@
 #include "joedb/journal/Portable_File.h"
 #include "joedb/journal/Stream_File.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Interpreted_File.h"
 //#include "joedb/journal/Encoded_File.h"
 //#include "joedb/journal/Identity_Codec.h"
 
@@ -16,6 +17,33 @@
 
 namespace joedb
 {
+ TEST(Interpreted_File, requires_final_empty_line)
+ {
+  Memory_File text;
+  text.get_data() = "create_table items\n";
+  EXPECT_THROW(Abstract_Interpreted_File{text}, Exception);
+  text.get_data() += '\n';
+  Abstract_Interpreted_File file(text);
+  Readonly_Journal journal(file);
+  Database db;
+  journal.replay_log(db);
+  EXPECT_EQ(db.find_table("items"), Table_Id(1));
+ }
+
+ TEST(Interpreted_File, sync_reaches_underlying_file)
+ {
+  class Sync_File: public Memory_File
+  {
+   public:
+    unsigned sync_count = 0;
+    void sync() override {++sync_count;}
+  } text;
+  Abstract_Interpreted_File file(text);
+  EXPECT_EQ(text.sync_count, 0);
+  file.sync();
+  EXPECT_EQ(text.sync_count, 1);
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  static void polymorphic_readonly_test(Abstract_File &file)
  ////////////////////////////////////////////////////////////////////////////

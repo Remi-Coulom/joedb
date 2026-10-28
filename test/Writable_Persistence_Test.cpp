@@ -5,6 +5,17 @@
 
 namespace joedb
 {
+ TEST(Writable_Persistence, rejects_mismatched_end_position)
+ {
+  Memory_File file;
+  Writable_Journal journal(file);
+  journal.start_writing(journal.get_checkpoint());
+  journal.comment("event");
+  EXPECT_THROW(journal.end_writing(journal.get_position() + 1), Exception);
+  EXPECT_NO_THROW(journal.end_writing(journal.get_position()));
+  journal.soft_checkpoint();
+ }
+
  /////////////////////////////////////////////////////////////////////////////
  TEST(Writable_Persistence, basic)
  /////////////////////////////////////////////////////////////////////////////

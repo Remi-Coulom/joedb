@@ -1,5 +1,6 @@
 #include "joedb/journal/Writable_Journal.h"
 #include "joedb/journal/File.h"
+#include "joedb/journal/Memory_File.h"
 #include "joedb/ui/dump.h"
 #include "joedb/ui/Interpreter.h"
 #include "joedb/ui/Interpreter_Dump_Writable.h"
@@ -9,8 +10,109 @@
 #include "gtest/gtest.h"
 
 #include <fstream>
+#include <array>
+#include <cstring>
+#include <limits>
+#include <random>
 
 using namespace joedb;
+
+namespace
+{
+ class Copying_Database: public Database
+ {
+  #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
+  cpp_type *get_own_##type_id##_storage(Table_Id, Record_Id, Field_Id, size_t &capacity) override\
+  {capacity = 0; return nullptr;}
+  #include "joedb/TYPE_MACRO.h"
+ };
+
+ template<typename T> struct Numeric_Journal_IO;
+ #define TYPE_MACRO(cpp_type, return_type, type_id, R, W)\
+ template<> struct Numeric_Journal_IO<cpp_type>\
+ {\
+  static Type type() {return Type::type_id();}\
+  static void scalar(Writable &w, Table_Id t, Record_Id r, Field_Id f, cpp_type v)\
+  {w.update_##type_id(t, r, f, v);}\
+  static void vector(Writable &w, Table_Id t, Record_Id r, Field_Id f, size_t n, const cpp_type *v)\
+  {w.update_vector_##type_id(t, r, f, n, v);}\
+  static cpp_type get(const Database &db, Table_Id t, Record_Id r, Field_Id f)\
+  {return db.get_##type_id(t, r, f);}\
+ };
+ #define TYPE_MACRO_NO_STRING
+ #define TYPE_MACRO_NO_REFERENCE
+ #define TYPE_MACRO_NO_BOOL
+ #define TYPE_MACRO_NO_BLOB
+ #include "joedb/TYPE_MACRO.h"
+
+ template<typename T> class Numeric_Journal_Test: public testing::Test {};
+ using Numeric_Types = testing::Types<int8_t, int16_t, int32_t, int64_t, float, double>;
+ TYPED_TEST_SUITE(Numeric_Journal_Test, Numeric_Types);
+
+ TYPED_TEST(Numeric_Journal_Test, scalar_and_vector_bit_patterns)
+ {
+  using T = TypeParam;
+  using IO = Numeric_Journal_IO<T>;
+  Memory_File file;
+  Writable_Journal writer(file);
+  std::array<std::array<std::array<T, 32>, 2>, 2> expected{};
+  for (const std::string name: {"first", "second"})
+   writer.create_table(name);
+  for (int table = 0; table < 2; ++table)
+  {
+   const Table_Id tid{uint16_t(table + 1)};
+   writer.add_field(tid, "a", IO::type());
+   writer.add_field(tid, "b", IO::type());
+   writer.insert_vector(tid, Record_Id{0}, 32);
+  }
+  std::mt19937_64 random(0x80f01);
+  const auto check = [&](const Database &db)
+  {
+   for (int table = 0; table < 2; ++table)
+    for (int field = 0; field < 2; ++field)
+     for (int record = 0; record < 32; ++record)
+     {
+      const T actual = IO::get(db, Table_Id{uint16_t(table + 1)}, Record_Id{record}, Field_Id{uint16_t(field + 1)});
+      ASSERT_EQ(std::memcmp(&actual, &expected[table][field][record], sizeof(T)), 0)
+       << "table=" << table << " field=" << field << " record=" << record;
+     }
+  };
+  for (size_t step = 0; step < 300; ++step)
+  {
+   SCOPED_TRACE(step);
+   const size_t table = random() % 2;
+   const size_t field = random() % 2;
+   const size_t count = 1 + random() % 8;
+   const size_t start = random() % (33 - count);
+   std::array<T, 8> values;
+   for (auto &value: values)
+   {
+    const uint64_t bits = random();
+    std::memcpy(&value, &bits, sizeof(T));
+   }
+   values[0] = step % 2 ? std::numeric_limits<T>::lowest() : std::numeric_limits<T>::max();
+   if (step % 2)
+    IO::vector(writer, Table_Id{uint16_t(table + 1)}, Record_Id{index_t(start)},
+     Field_Id{uint16_t(field + 1)}, count, values.data());
+   else
+    for (size_t i = 0; i < count; ++i)
+     IO::scalar(writer, Table_Id{uint16_t(table + 1)}, Record_Id{index_t(start + i)},
+      Field_Id{uint16_t(field + 1)}, values[i]);
+   std::copy_n(values.begin(), count, expected[table][field].begin() + start);
+   if (step % 41 == 0 || step == 299)
+   {
+    writer.soft_checkpoint();
+    Database direct;
+    Readonly_Journal reader(file);
+    reader.replay_log(direct);
+    ASSERT_NO_FATAL_FAILURE(check(direct));
+    Copying_Database fallback;
+    reader.replay_log(fallback);
+    ASSERT_NO_FATAL_FAILURE(check(fallback));
+   }
+  }
+ }
+}
 
 /////////////////////////////////////////////////////////////////////////////
 class Writable_Journal_Test: public ::testing::Test

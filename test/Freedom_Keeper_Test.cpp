@@ -1,6 +1,9 @@
 #include "joedb/Freedom_Keeper.h"
 #include "gtest/gtest.h"
 
+#include <random>
+#include <algorithm>
+
 namespace joedb
 {
  #ifndef NDEBUG
@@ -24,6 +27,14 @@ namespace joedb
   EXPECT_ANY_THROW(fk.free(Record_Id{10}));
  }
  #endif
+
+ TEST(Freedom_Keeper, first_free_predecessor_when_all_free)
+ {
+  Freedom_Keeper fk;
+  fk.resize(4);
+  ASSERT_EQ(fk.get_first_free(), Record_Id(0));
+  EXPECT_EQ(to_underlying(fk.get_previous(fk.get_first_free())), to_underlying(fk.free_list));
+ }
 
  template<typename T>
  class Freedom_Keeper_Test: public ::testing::Test
@@ -225,4 +236,87 @@ namespace joedb
    EXPECT_FALSE(fk.is_used_vector(Record_Id{0}, 2));
   }
  }
+ TYPED_TEST(Freedom_Keeper_Test, deterministic_model)
+ {
+  auto &fk = this->fk;
+  std::vector<bool> used;
+  std::mt19937 random(0x4a6f6564);
+  for (size_t step = 0; step < 1200; ++step)
+  {
+   SCOPED_TRACE(step);
+   const auto action = random() % 5;
+   if (used.empty() || (action == 0 && used.size() < 96))
+   {
+    used.resize(used.size() + 1 + random() % 4, false);
+    fk.resize(Record_Id(index_t(used.size())));
+   }
+   else if (action == 1)
+   {
+    const Record_Id id = fk.get_free_record();
+    used.resize(fk.size(), false);
+    ASSERT_GE(to_underlying(id), 0);
+    ASSERT_LT(size_t(id), used.size());
+    ASSERT_FALSE(used[size_t(id)]);
+    fk.use(id);
+    used[size_t(id)] = true;
+   }
+   else
+   {
+    const size_t first = random() % used.size();
+    size_t count = 1;
+    while (count < 8 && first + count < used.size() &&
+           used[first + count] == used[first])
+     ++count;
+    if (used[first])
+     fk.free_vector(Record_Id(index_t(first)), count);
+    else
+     fk.use_vector(Record_Id(index_t(first)), count);
+    const bool next = !used[first];
+    for (size_t i = first; i < first + count; ++i)
+     used[i] = next;
+   }
+
+   EXPECT_EQ(fk.size(), used.size());
+   EXPECT_EQ(to_underlying(fk.get_used_count()), std::count(used.begin(), used.end(), true));
+   for (size_t i = 0; i < used.size(); ++i)
+    ASSERT_EQ(fk.is_used(Record_Id(index_t(i))), used[i]) << i;
+
+   for (const bool want_used: {false, true})
+   {
+    const Record_Id sentinel = want_used ? fk.used_list : fk.free_list;
+    Record_Id previous = sentinel;
+    Record_Id current = fk.get_next(sentinel);
+    std::vector<bool> visited(used.size(), false);
+    size_t count = 0;
+    while (current != sentinel)
+    {
+     ASSERT_LT(count++, used.size());
+     ASSERT_GE(to_underlying(current), 0);
+     ASSERT_LT(size_t(current), used.size());
+     ASSERT_FALSE(visited[size_t(current)]);
+     visited[size_t(current)] = true;
+     ASSERT_EQ(used[size_t(current)], want_used);
+     EXPECT_EQ(to_underlying(fk.get_previous(current)), to_underlying(previous));
+     previous = current;
+     current = fk.get_next(current);
+    }
+    EXPECT_EQ(fk.get_previous(sentinel), previous);
+    EXPECT_EQ(count, size_t(std::count(used.begin(), used.end(), want_used)));
+   }
+
+   const size_t first = random() % (used.size() + 4);
+   const size_t count = 1 + random() % 8;
+   bool all_used = true;
+   bool all_free = true;
+   for (size_t i = first; i < first + count; ++i)
+   {
+    const bool is_used = i < used.size() && used[i];
+    all_used = all_used && is_used;
+    all_free = all_free && !is_used;
+   }
+   EXPECT_EQ(fk.is_used_vector(Record_Id(index_t(first)), count), all_used);
+   EXPECT_EQ(fk.is_free_vector(Record_Id(index_t(first)), count), all_free);
+  }
+ }
+
 }

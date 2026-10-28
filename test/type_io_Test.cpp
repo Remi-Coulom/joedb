@@ -4,6 +4,16 @@
 
 #include <sstream>
 
+TEST(type_io_Test, invalid_boolean_sets_failure)
+{
+ for (const char *text: {"", "invalid", "TRUE", "2"})
+ {
+  std::istringstream input(text);
+  EXPECT_FALSE(joedb::read_boolean(input));
+  EXPECT_TRUE(input.fail());
+ }
+}
+
 TEST(type_io_Test, primitive_io)
 {
  {

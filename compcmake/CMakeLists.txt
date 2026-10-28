@@ -161,6 +161,7 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/Readable.cpp
   ../src/joedb/Writable.cpp
+  ../src/joedb/Multiplexer.cpp
   ../src/joedb/interpreted/Database.cpp
   ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/interpreted/Table.cpp

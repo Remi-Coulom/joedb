@@ -9,6 +9,11 @@
 
 namespace joedb
 {
+ TEST(File_Slice, invalid_descriptor)
+ {
+  EXPECT_THROW(File_Slice(-1, 0, 4), Exception);
+ }
+
  TEST(File_Slice, basic)
  {
   const char * const file_name = "test.joedb";

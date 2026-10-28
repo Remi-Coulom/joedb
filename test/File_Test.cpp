@@ -18,6 +18,55 @@ using namespace joedb;
 
 static const uint64_t joedb_magic = 0x0000620165646A6FULL;
 
+TEST(File, zero_length_memory_write_does_not_extend)
+{
+ Memory_File file;
+ file.pwrite("abc", 3, 0);
+ file.pwrite("", 0, 100);
+ EXPECT_EQ(file.get_size(), 3);
+ EXPECT_EQ(file.get_data(), "abc");
+}
+
+TEST(File, truncated_source_copy_and_comparison)
+{
+ Memory_File source;
+ source.get_data() = "abc";
+ Memory_File destination;
+ destination.get_data() = "abcdef";
+ EXPECT_THROW(source.copy_to(destination, 0, 4), Exception);
+ EXPECT_THROW(source.equal_to(destination, 0, 4), Exception);
+ EXPECT_FALSE(destination.equal_to(source, 0, 6));
+ EXPECT_EQ(destination.get_data(), "abcdef");
+}
+
+TEST(File, blob_bounds)
+{
+ Memory_File file;
+ file.get_data() = "abcdef";
+ EXPECT_EQ(file.read_blob(Blob(1, 3), 3), "bcd");
+ EXPECT_EQ(file.read_blob(Blob(6, 0), 0), "");
+ EXPECT_THROW(file.read_blob(Blob(-1, 0)), Exception);
+ EXPECT_THROW(file.read_blob(Blob(0, -1)), Exception);
+ EXPECT_THROW(file.read_blob(Blob(0, 4), 3), Exception);
+ EXPECT_THROW(file.read_blob(Blob(4, 3)), Exception);
+}
+
+#ifdef JOEDB_FILE_IS_POSIX_FILE
+TEST(File, invalid_descriptor_reports_system_errors)
+{
+ File file(-1, Open_Mode::write_existing);
+ char data = 0;
+ EXPECT_THROW(file.pread(&data, 1, 0), Exception);
+ EXPECT_THROW(file.pwrite(&data, 1, 0), Exception);
+ EXPECT_THROW(file.get_size(), Exception);
+ EXPECT_THROW(file.shared_lock(0, 1), Exception);
+ EXPECT_THROW(file.exclusive_lock(0, 1), Exception);
+ EXPECT_THROW(file.sync(), Exception);
+ EXPECT_THROW(file.datasync(), Exception);
+ EXPECT_NO_THROW(file.unlock(0, 1));
+}
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 TEST(File, full_pread)
 /////////////////////////////////////////////////////////////////////////////

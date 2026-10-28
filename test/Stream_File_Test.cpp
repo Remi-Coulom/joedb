@@ -4,8 +4,38 @@
 #include "gtest/gtest.h"
 
 #include <sstream>
+#include <algorithm>
 
 using namespace joedb;
+
+TEST(Stream_File_Test, short_writes_and_sync_failure)
+{
+ class Short_Streambuf: public std::stringbuf
+ {
+  public:
+   bool fail_sync = false;
+   std::streamsize xsputn(const char *data, std::streamsize count) override
+   {
+    return std::stringbuf::xsputn(data, std::min<std::streamsize>(count, 2));
+   }
+   int sync() override {return fail_sync ? -1 : 0;}
+ } buffer;
+ Stream_File file(buffer, Open_Mode::create_new);
+ file.pwrite("abcdefg", 7, 0);
+ EXPECT_EQ(buffer.str(), "abcdefg");
+ buffer.fail_sync = true;
+ EXPECT_THROW(file.pwrite("z", 1, 0), Exception);
+}
+
+TEST(Stream_File_Test, failed_write)
+{
+ class Failed_Streambuf: public std::stringbuf
+ {
+   std::streamsize xsputn(const char *, std::streamsize) override {return 0;}
+ } buffer;
+ Stream_File file(buffer, Open_Mode::create_new);
+ EXPECT_THROW(file.pwrite("abc", 3, 0), Exception);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Stream_File_Test, append_after_get_size)

@@ -12,6 +12,7 @@
 #include "joedb/ui/write_lock.h"
 #include "joedb/ui/inplace_pack.h"
 #include "joedb/concurrency/File_Connection.h"
+#include "joedb/Signal.h"
 
 #if defined(JOEDB_HAS_ASIO) && __cplusplus >= 202002L
 #include "joedb/ui/joedb_server.h"
@@ -579,6 +580,95 @@ namespace joedb
   EXPECT_NE(out.str().find("pulled "), std::string::npos);
   EXPECT_EQ(out.str().find("Exception caught"), std::string::npos) << out.str();
   EXPECT_NE(client.get_database().find_table("from_server"), Table_Id(0));
+ }
+
+ TEST(ui, client_prompt_reports_checkpoint_difference)
+ {
+  class Checkpoint_Connection: public Connection
+  {
+   public:
+    int64_t checkpoint = 0;
+    bool readonly = false;
+    int64_t handshake(const Readonly_Journal &, Content_Check) override {return checkpoint;}
+    bool is_pullonly() const override {return readonly;}
+  } connection;
+  Memory_File file;
+  Writable_Journal journal(file);
+  journal.comment("initial data");
+  journal.soft_checkpoint();
+  const std::string checkpoint = std::to_string(journal.get_checkpoint());
+  for (const int difference: {5, -5, 0})
+   for (const bool readonly: {false, true})
+   {
+    SCOPED_TRACE(difference);
+    SCOPED_TRACE(readonly);
+    connection.checkpoint = journal.get_checkpoint() + difference;
+    connection.readonly = readonly;
+    Writable_Client client(journal, connection, Content_Check::none);
+    Client_Command_Processor processor(client);
+    std::ostringstream out;
+    processor.write_prompt(out);
+    const std::string suffix = difference > 0 ? "+5)(pull to sync)" :
+     difference < 0 ? readonly ? "-5)(cannot push)" : "-5)(push to sync)" : ")";
+    EXPECT_EQ(out.str(), "readonly_client(" + checkpoint + suffix);
+   }
+  connection.checkpoint = journal.get_checkpoint();
+  Writable_Client client(journal, connection, Content_Check::none);
+  Client_Command_Processor processor(client);
+  journal.comment("pending data");
+  std::ostringstream out;
+  processor.write_prompt(out);
+  EXPECT_EQ(out.str(), "readonly_client(" + checkpoint + ")*");
+  journal.soft_checkpoint();
+ }
+
+ TEST(ui, periodic_client_commands_stop_on_interrupt)
+ {
+  struct Signal_State
+  {
+   decltype(std::signal(SIGINT, SIG_IGN)) handler = std::signal(SIGINT, SIG_IGN);
+   int status = Signal::get_signal();
+   ~Signal_State() {std::signal(SIGINT, handler); Signal::set_signal(status);}
+  } signal_state;
+  class Interrupting_Connection: public Connection
+  {
+   public:
+    unsigned calls = 0;
+    bool ahead = false;
+    int64_t handshake(const Readonly_Journal &journal, Content_Check) override
+    {return ahead ? Header::ssize : journal.get_checkpoint();}
+    int64_t pull(Lock_Action, Data_Transfer, Writable_Journal &journal, std::chrono::milliseconds) override
+    {
+     ++calls;
+     Signal::set_signal(SIGINT);
+     return journal.get_checkpoint();
+    }
+    int64_t push(const Readonly_Journal &, int64_t, int64_t until, Unlock_Action) override
+    {
+     ++calls;
+     Signal::set_signal(SIGINT);
+     return until;
+    }
+  };
+  for (const std::string command: {"pull_every 0 0", "pull_every 0 0.001", "push_every 0.001"})
+  {
+   SCOPED_TRACE(command);
+   Memory_File file;
+   Writable_Journal journal(file);
+   journal.comment("ahead of server");
+   journal.soft_checkpoint();
+   Interrupting_Connection connection;
+   connection.ahead = command.rfind("push", 0) == 0;
+   Writable_Client client(journal, connection, Content_Check::none);
+   Client_Command_Processor processor(client);
+   std::istringstream parameters(command);
+   std::string name;
+   parameters >> name;
+   std::istringstream in;
+   std::ostringstream out;
+   EXPECT_EQ(processor.process_command(name, parameters, in, out), Command_Processor::Status::done);
+   EXPECT_EQ(connection.calls, 1);
+  }
  }
 
 #if defined(JOEDB_HAS_ASIO) && __cplusplus >= 202002L

@@ -9,8 +9,169 @@
 
 #include "gtest/gtest.h"
 
+#include <random>
+#include <memory>
+
 namespace joedb
 {
+ TEST(Encoded_File, invalid_buffer_sizes_do_not_hide_valid_data)
+ {
+  Identity_Codec codec;
+  Memory_File storage;
+  db::encoded_file::Writable_Database db(storage);
+  const Blob blob = db.write_blob("ok");
+  db.new_buffer(blob, -1, 0);
+  db.new_buffer(blob, 0, 0);
+  db.new_buffer(blob, (1 << 24) + 1, 0);
+  db.new_buffer(blob, 2, 0);
+  db.soft_checkpoint();
+  Readonly_Encoded_File encoded(codec, db, storage);
+  char data[2] = {};
+  ASSERT_NO_THROW(encoded.full_pread(data, sizeof(data), 0));
+  EXPECT_EQ(std::string_view(data, sizeof(data)), "ok");
+ }
+
+ TEST(Encoded_File, truncated_blob_is_reported)
+ {
+  Identity_Codec codec;
+  Memory_File storage;
+  db::encoded_file::Writable_Database db(storage);
+  db.new_buffer(Blob(1000000, 2), 2, 0);
+  db.soft_checkpoint();
+  Readonly_Encoded_File encoded(codec, db, storage);
+  char data[2];
+  EXPECT_THROW(encoded.full_pread(data, sizeof(data), 0), Exception);
+ }
+
+ TEST(Encoded_File, out_of_order_writes)
+ {
+  Identity_Codec codec;
+  Memory_File storage;
+  db::encoded_file::Writable_Database db(storage);
+  Encoded_File file(codec, db);
+  file.pwrite("world", 5, 5);
+  file.pwrite("hello", 5, 0);
+  ASSERT_EQ(file.get_size(), 10);
+  std::string result(10, '?');
+  EXPECT_NO_THROW(file.full_pread(result.data(), result.size(), 0));
+  EXPECT_EQ(result, "helloworld");
+ }
+
+ static void check_random_overwrites(Codec &codec)
+ {
+  Memory_File storage;
+  std::string expected(8192, '\0');
+  std::mt19937 random(0x5eed);
+  {
+   db::encoded_file::Writable_Database db(storage);
+   Encoded_File file(codec, db);
+   file.pwrite(expected.data(), expected.size(), 0);
+   for (size_t step = 0; step < 160; ++step)
+   {
+    SCOPED_TRACE(step);
+    const size_t offset = random() % (expected.size() + 1);
+    const size_t count = 1 + random() % 257;
+    std::string data(count, '\0');
+    for (char &c: data)
+     c = char(random() & 0xff);
+    if (offset + count > expected.size())
+     expected.resize(offset + count);
+    expected.replace(offset, count, data);
+    file.pwrite(data.data(), data.size(), int64_t(offset));
+    EXPECT_EQ(file.get_size(), int64_t(expected.size()));
+    if (step % 7 == 0)
+    {
+     std::string actual(expected.size(), '?');
+     ASSERT_NO_THROW(file.full_pread(actual.data(), actual.size(), 0));
+     ASSERT_EQ(actual, expected);
+    }
+   }
+   file.sync();
+  }
+  {
+   db::encoded_file::Writable_Database db(storage);
+   Encoded_File file(codec, db);
+   std::string actual(expected.size(), '?');
+   ASSERT_NO_THROW(file.full_pread(actual.data(), actual.size(), 0));
+   EXPECT_EQ(actual, expected);
+  }
+ }
+
+ TEST(Encoded_File, identity_random_overwrites)
+ {
+  Identity_Codec codec;
+  check_random_overwrites(codec);
+ }
+
+#ifdef JOEDB_HAS_BROTLI
+ TEST(Encoded_File, brotli_random_overwrites)
+ {
+  Brotli_Codec codec;
+  check_random_overwrites(codec);
+ }
+#endif
+
+ TEST(Encoded_File, failed_encoding_can_be_retried)
+ {
+  class Failing_Codec: public Identity_Codec
+  {
+   public:
+    bool fail = true;
+    std::string encode(std::string_view data) override
+    {
+     if (fail)
+      throw Exception("injected codec failure");
+     return Identity_Codec::encode(data);
+    }
+  } codec;
+  Memory_File storage;
+  db::encoded_file::Writable_Database db(storage);
+  Encoded_File file(codec, db);
+  file.pwrite("retained", 8, 0);
+  EXPECT_THROW(file.sync(), Exception);
+  EXPECT_EQ(file.get_size(), 8);
+  codec.fail = false;
+  EXPECT_NO_THROW(file.sync());
+  std::string data(8, '?');
+  ASSERT_NO_THROW(file.full_pread(data.data(), data.size(), 0));
+  EXPECT_EQ(data, "retained");
+  EXPECT_EQ(db.get_buffer_table().get_size(), 1);
+ }
+
+ TEST(Encoded_File, destructor_contains_encoding_failure)
+ {
+  class Failed_Codec: public Identity_Codec
+  {
+   public:
+    int attempts = 0;
+    std::string encode(std::string_view) override
+    {
+     ++attempts;
+     throw Exception("injected codec failure");
+    }
+  } codec;
+  Memory_File storage;
+  db::encoded_file::Writable_Database db(storage);
+  auto file = std::make_unique<Encoded_File>(codec, db);
+  file->pwrite("buffered", 8, 0);
+  EXPECT_NO_THROW(file.reset());
+  EXPECT_EQ(codec.attempts, 1);
+  EXPECT_TRUE(db.get_buffer_table().is_empty());
+ }
+
+#ifdef JOEDB_HAS_BROTLI
+ TEST(Encoded_File, invalid_compressed_input)
+ {
+  Brotli_Codec codec;
+  const std::string encoded = codec.encode("valid payload");
+  Decoder &decoder = codec;
+  char output[32] = {};
+  EXPECT_THROW(decoder.decode(encoded, output, 2), Exception);
+  EXPECT_THROW(decoder.decode(encoded, output, sizeof(output)), Exception);
+  EXPECT_THROW(decoder.decode("not brotli data", output, sizeof(output)), Exception);
+ }
+#endif
+
  ////////////////////////////////////////////////////////////////////////////
  TEST(Encoded_File, overwrite)
  ////////////////////////////////////////////////////////////////////////////
