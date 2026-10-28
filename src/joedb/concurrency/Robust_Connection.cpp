@@ -62,6 +62,9 @@ namespace joedb
   Content_Check content_check
  )
  {
+  if (handshake_journal)
+   throw Disconnection("Robust_Connection: handshake already performed");
+
   const int64_t result = try_until_success([&]()
   {
    return connection->handshake(client_journal, content_check);
