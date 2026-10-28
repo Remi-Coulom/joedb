@@ -4,6 +4,9 @@
 #include "joedb/ui/dump.h"
 #include "joedb/ui/process_journal_pair.h"
 
+#include <istream>
+#include <ostream>
+
 namespace joedb
 {
  inline void pack_process
@@ -16,9 +19,15 @@ namespace joedb
   pack(input, output);
  }
 
- inline int pack(Arguments &arguments)
+ inline int pack
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
-  return process_journal_pair(arguments, pack_process);
+  return process_journal_pair(arguments, err, pack_process);
  }
 }
 

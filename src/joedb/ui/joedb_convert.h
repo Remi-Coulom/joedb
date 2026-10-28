@@ -3,6 +3,9 @@
 
 #include "joedb/ui/process_journal_pair.h"
 
+#include <istream>
+#include <ostream>
+
 namespace joedb
 {
  inline void convert_process
@@ -18,9 +21,15 @@ namespace joedb
   output.soft_checkpoint();
  }
 
- inline int convert(Arguments &arguments)
+ inline int convert
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
-    return process_journal_pair(arguments, convert_process);
+  return process_journal_pair(arguments, err, convert_process);
  }
 }
 

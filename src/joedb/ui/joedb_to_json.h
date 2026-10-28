@@ -7,18 +7,25 @@
 #include "joedb/journal/File.h"
 #include "joedb/journal/Readonly_Journal.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 namespace joedb
 {
- inline int joedb_to_json(Arguments &arguments)
+ inline int joedb_to_json
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   const bool base64 = arguments.has_flag("base64");
   const beman::cstring_view file_name = arguments.get_next("file.joedb");
 
   if (arguments.missing())
   {
-   arguments.print_help(std::cerr);
+   arguments.print_help(err);
    return 1;
   }
 
@@ -26,13 +33,13 @@ namespace joedb
   Readonly_Journal journal(file);
   Database db;
   journal.replay_log(db);
-  const int error = write_json(std::cout, db, base64);
+  const int error = write_json(out, db, base64);
 
   if (error & JSON_Error::utf8)
-   std::cerr << "warning: a string could not be encoded. Maybe you should use --base64 instead.\n";
+   err << "warning: a string could not be encoded. Maybe you should use --base64 instead.\n";
 
   if (error & JSON_Error::infnan)
-   std::cerr << "warning: inf or nan value encoded as 0. JSON does not support inf and nan.\n";
+   err << "warning: inf or nan value encoded as 0. JSON does not support inf and nan.\n";
 
   return 0;
  }

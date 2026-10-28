@@ -7,11 +7,18 @@
 #include "joedb/concurrency/Client.h"
 #include "joedb/journal/File.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 namespace joedb
 {
- inline int client(Arguments &arguments)
+ inline int client
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   Parsed_Logger logger(arguments);
 
@@ -24,13 +31,14 @@ namespace joedb
    logger.get(),
    default_mode,
    Parsed_Client::DB_Type::interpreted,
-   arguments
+   arguments,
+   out
   );
 
   if (!parsed_client.get())
   {
-   arguments.print_help(std::cerr) << '\n';
-   parsed_client.print_help(std::cerr);
+   arguments.print_help(err) << '\n';
+   parsed_client.print_help(err);
    return 1;
   }
 
@@ -46,7 +54,7 @@ namespace joedb
    interpreter.reset(new Client_Command_Processor(client));
 
   interpreter->set_prompt(true);
-  interpreter->main_loop(std::cin, std::cout);
+  interpreter->main_loop(in, out);
 
   return 0;
  }

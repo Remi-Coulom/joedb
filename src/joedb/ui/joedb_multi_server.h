@@ -7,7 +7,8 @@
 #include "joedb/concurrency/Server.h"
 #include "joedb/concurrency/Writable_Journal_Client.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 #include <list>
 #include <memory>
 #include <cmath>
@@ -54,7 +55,13 @@ namespace joedb
    }
  };
 
- inline int multi_server(Arguments &arguments)
+ inline int multi_server
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   Parsed_Logger logger(arguments);
 
@@ -71,7 +78,7 @@ namespace joedb
 
   if (arguments.get_remaining_count() == 0)
   {
-   arguments.print_help(std::cerr);
+   arguments.print_help(err);
    return 1;
   }
 

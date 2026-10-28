@@ -12,7 +12,8 @@
 #include "joedb/ui/Raw_Dump_Writable.h"
 #include "joedb/interpreted/Database.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 #include <memory>
 #include <optional>
 
@@ -31,7 +32,13 @@ namespace joedb
    journal.replay_log(writable);
  }
 
- inline int logdump(Arguments &arguments)
+ inline int logdump
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   const bool sql = arguments.has_flag("sql");
   const bool raw = arguments.has_flag("raw");
@@ -45,14 +52,14 @@ namespace joedb
 
   if (arguments.missing())
   {
-   arguments.print_help(std::cerr);
+   arguments.print_help(err);
    return 1;
   }
 
   File file(file_name.c_str(), Open_Mode::read_existing);
 
   if (header)
-   dump_header(std::cout, file);
+   dump_header(out, file);
   else
   {
    std::optional<Readonly_Journal> journal;
@@ -71,11 +78,11 @@ namespace joedb
    const Abstract_File *blob_reader = blob ? &file : nullptr;
 
    if (sql)
-    writable.reset(new SQL_Dump_Writable(std::cout, blob_reader));
+    writable.reset(new SQL_Dump_Writable(out, blob_reader));
    else if (raw)
-    writable.reset(new Raw_Dump_Writable(std::cout));
+    writable.reset(new Raw_Dump_Writable(out));
    else
-    writable.reset(new Interpreter_Dump_Writable(std::cout, blob));
+    writable.reset(new Interpreter_Dump_Writable(out, blob));
 
    if (schema_only)
    {

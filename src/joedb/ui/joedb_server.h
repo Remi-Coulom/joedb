@@ -7,14 +7,21 @@
 #include "joedb/ui/Arguments.h"
 #include "joedb/ui/Parsed_Logger.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
 
 namespace joedb
 {
- inline int server(Arguments &arguments)
+ inline int server
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   Parsed_Logger logger(arguments);
 
@@ -50,13 +57,14 @@ namespace joedb
    logger.get(),
    default_open_mode,
    Parsed_Client::DB_Type::none,
-   arguments
+   arguments,
+   out
   );
 
   if (!parsed_client.get())
   {
-   arguments.print_help(std::cerr) << '\n';
-   parsed_client.print_help(std::cerr);
+   arguments.print_help(err) << '\n';
+   parsed_client.print_help(err);
    return 1;
   }
 

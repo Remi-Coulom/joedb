@@ -8,11 +8,18 @@
 #include "joedb/interpreted/Database.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 
 namespace joedb
 {
- inline int joedbi(Arguments &arguments)
+ inline int joedbi
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   Parsed_Logger logger(arguments);
 
@@ -37,8 +44,8 @@ namespace joedb
 
   if (!file)
   {
-   arguments.print_help(std::cerr) << '\n';
-   file_parser.print_help(std::cerr);
+   arguments.print_help(err) << '\n';
+   file_parser.print_help(err);
    return 1;
   }
 
@@ -51,7 +58,7 @@ namespace joedb
    journal.replay_log(db);
    Readable_Interpreter interpreter(db);
    interpreter.add_processor(blob_processor);
-   interpreter.main_loop(std::cin, std::cout);
+   interpreter.main_loop(in, out);
   }
   else
   {
@@ -63,7 +70,7 @@ namespace joedb
     max_record_id
    );
 
-   client.transaction([max_record_id, &blob_processor]
+   client.transaction([max_record_id, &blob_processor, &in, &out]
    (
     const Readable &readable,
     Writable &writable
@@ -71,7 +78,7 @@ namespace joedb
    {
     Interpreter interpreter(readable, writable, max_record_id);
     interpreter.add_processor(blob_processor);
-    interpreter.main_loop(std::cin, std::cout);
+    interpreter.main_loop(in, out);
    });
   }
 

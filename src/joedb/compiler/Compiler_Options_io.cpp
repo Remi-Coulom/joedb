@@ -6,7 +6,8 @@
 #include "joedb/ui/type_io.h"
 #include "joedb/ui/Readable_Command_Processor.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 #include <sstream>
 
 namespace joedb
@@ -16,7 +17,8 @@ namespace joedb
  /////////////////////////////////////////////////////////////////////////////
  (
   std::istream &in,
-  Compiler_Options &compiler_options
+  Compiler_Options &compiler_options,
+  std::ostream &err
  )
  {
   std::string line;
@@ -81,7 +83,7 @@ namespace joedb
    }
    else if (command == "set_table_storage")
    {
-    std::cerr << "Warning: set_table_storage is deprecated\n";
+    err << "Warning: set_table_storage is deprecated\n";
    }
    else if (command == "set_single_row")
    {

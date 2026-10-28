@@ -1,7 +1,7 @@
 #include "joedb/ui/process_journal_pair.h"
 #include "joedb/journal/File.h"
 
-#include <iostream>
+#include <ostream>
 
 namespace joedb
 {
@@ -10,6 +10,7 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  (
   Arguments &arguments,
+  std::ostream &err,
   void (*process)(Readonly_Journal &, Writable_Journal &, int64_t checkpoint)
  )
  {
@@ -25,7 +26,7 @@ namespace joedb
 
   if (arguments.missing())
   {
-   arguments.print_help(std::cerr);
+   arguments.print_help(err);
    return 1;
   }
 

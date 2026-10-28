@@ -11,7 +11,8 @@ namespace joedb
  void parse_compiler_options
  (
   std::istream &in,
-  Compiler_Options &compiler_options
+  Compiler_Options &compiler_options,
+  std::ostream &err
  );
 }
 

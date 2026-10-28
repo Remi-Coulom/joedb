@@ -7,13 +7,20 @@
 #include "joedb/ui/interruptible_sleep.h"
 #include "joedb/Signal.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 #include <limits>
 #include <chrono>
 
 namespace joedb
 {
- inline int push(Arguments &arguments)
+ inline int push
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   Parsed_Logger logger(arguments);
 
@@ -30,13 +37,14 @@ namespace joedb
    logger.get(),
    Open_Mode::read_existing,
    Parsed_Client::DB_Type::none,
-   arguments
+   arguments,
+   out
   );
 
   if (!parsed_client.get())
   {
-   arguments.print_help(std::cerr) << '\n';
-   parsed_client.print_help(std::cerr);
+   arguments.print_help(err) << '\n';
+   parsed_client.print_help(err);
    return 1;
   }
 

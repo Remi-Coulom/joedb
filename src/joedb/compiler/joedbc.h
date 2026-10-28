@@ -44,7 +44,8 @@
 #include "joedb/compiler/generator/Signatures_h.h"
 #include "joedb/compiler/generator/RPC_Client_h.h"
 
-#include <iostream>
+#include <istream>
+#include <ostream>
 #include <filesystem>
 #include <regex>
 
@@ -71,7 +72,8 @@ namespace joedb
  inline void compile
  (
   Compiler_Options &options,
-  Compiler_Options *parent_options
+  Compiler_Options *parent_options,
+  std::ostream &err
  )
  {
   const std::string joedbi_file_name = options.base_name + ".joedbi";
@@ -88,7 +90,7 @@ namespace joedb
    Interpreter interpreter(options.db, multiplexer, Record_Id::null);
    interpreter.set_echo(false);
    interpreter.set_rethrow(true);
-   interpreter.main_loop(joedbi_file, std::cerr);
+   interpreter.main_loop(joedbi_file, err);
    multiplexer.soft_checkpoint();
   }
 
@@ -97,7 +99,7 @@ namespace joedb
 
   {
    joedb::ifstream joedbc_file(joedbc_file_name, Open_Mode::read_existing);
-   parse_compiler_options(joedbc_file, options);
+   parse_compiler_options(joedbc_file, options, err);
   }
 
   generator::Database_h(options).generate();
@@ -146,12 +148,18 @@ namespace joedb
   }
  }
 
- inline int joedbc(Arguments &arguments)
+ inline int joedbc
+ (
+  Arguments &arguments,
+  std::istream &in,
+  std::ostream &out,
+  std::ostream &err
+ )
  {
   if (arguments.has_flag("version"))
   {
-   std::cout << joedb::get_version();
-   std::cout << ", compiled " << __DATE__ " " __TIME__ "\n";
+   out << joedb::get_version();
+   out << ", compiled " << __DATE__ " " __TIME__ "\n";
    return 0;
   }
 
@@ -159,11 +167,11 @@ namespace joedb
 
   if (arguments.missing())
   {
-   arguments.print_help(std::cerr);
-   std::cerr << "joedbc will read:\n";
-   std::cerr << " <base_name>.joedbi for the schema definition\n";
-   std::cerr << " <base_name>.joedbc for compiler options\n";
-   std::cerr << " <base_name>.rpc (optional) directory for RPC\n";
+   arguments.print_help(err);
+   err << "joedbc will read:\n";
+   err << " <base_name>.joedbi for the schema definition\n";
+   err << " <base_name>.joedbc for compiler options\n";
+   err << " <base_name>.rpc (optional) directory for RPC\n";
    return 1;
   }
 
@@ -172,7 +180,7 @@ namespace joedb
   options.output_path = ".";
   options.base_name = std::string(base_name);
 
-  compile(options, nullptr);
+  compile(options, nullptr, err);
 
   {
    std::error_code error_code;
@@ -197,7 +205,7 @@ namespace joedb
       procedure_options.output_path = std::string(base_name) + "/rpc";
       procedure_options.base_name = procedure_name;
 
-      compile(procedure_options, &options);
+      compile(procedure_options, &options, err);
      }
     }
    }

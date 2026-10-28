@@ -41,7 +41,8 @@ namespace joedb
     Logger &logger,
     Open_Mode default_open_mode,
     DB_Type default_db_type,
-    Arguments &arguments
+    Arguments &arguments,
+    std::ostream &out
    );
 
    Client *get() {return client.get();}
