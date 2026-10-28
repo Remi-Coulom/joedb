@@ -32,10 +32,30 @@ namespace joedb
   CURL_File source(server.url().c_str(), false);
   const Abstract_File &file = source;
   char data = '?';
-  size_t count = 1;
-  ASSERT_NO_THROW(count = file.pread(&data, 1, 20));
-  EXPECT_EQ(count, 0);
-  EXPECT_EQ(data, '?');
+  for (const int64_t offset: {10, 20})
+  {
+   SCOPED_TRACE(offset);
+   size_t count = 1;
+   ASSERT_NO_THROW(count = file.pread(&data, 1, offset));
+   EXPECT_EQ(count, 0);
+   EXPECT_EQ(data, '?');
+  }
+  ASSERT_EQ(file.pread(&data, 1, 0), 1);
+  EXPECT_EQ(data, '0');
+  std::string tail(4, '?');
+  ASSERT_EQ(file.pread(tail.data(), tail.size(), 9), 1);
+  EXPECT_EQ(tail, "9???");
+ }
+
+ TEST(CURL_HTTP_File, bounded_copy_after_end_throws)
+ {
+  Test_HTTP_Range_Server server;
+  CURL_File source(server.url().c_str(), false);
+  const Abstract_File &file = source;
+  Memory_File copied;
+  copied.get_data() = "unchanged";
+  EXPECT_THROW(file.copy_to(copied, 20, 1), Exception);
+  EXPECT_EQ(copied.get_data(), "unchanged");
  }
 
  TEST(CURL_HTTP_File, copies_whole_file_of_unknown_size)

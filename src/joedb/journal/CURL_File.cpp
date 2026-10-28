@@ -15,20 +15,27 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- void CURL_File::perform_range(int64_t start, int64_t size) const
+ bool CURL_File::perform_range(int64_t start, int64_t size) const
  ////////////////////////////////////////////////////////////////////////////
  {
   const std::string range =
    std::to_string(start) + '-' + std::to_string(start + size - 1);
 
   error_check(curl_easy_setopt(curl, CURLOPT_RANGE, range.c_str()));
-  error_check(curl_easy_perform(curl));
+  const CURLcode result = curl_easy_perform(curl);
 
   long code = 0;
   error_check(curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code));
 
+  if (code == 416 && result == CURLE_HTTP_RETURNED_ERROR)
+   return false;
+
+  error_check(result);
+
   if (code != 0 && code != 206)
    throw Exception("CURL_FIle: unexpected response code: " + std::to_string(code));
+
+  return true;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -72,9 +79,7 @@ namespace joedb
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &callback_data));
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, pread_callback));
 
-  perform_range(offset, int64_t(size));
-
-  return callback_data.offset;
+  return perform_range(offset, int64_t(size)) ? callback_data.offset : 0;
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -106,7 +111,8 @@ namespace joedb
   file_iterator.seek(start);
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file_iterator));
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, copy_callback));
-  perform_range(start, size);
+  if (!perform_range(start, size))
+   reading_past_end_of_file();
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -133,5 +139,6 @@ namespace joedb
   error_check(curl_easy_setopt(curl, CURLOPT_URL, url));
   error_check(curl_easy_setopt(curl, CURLOPT_USERAGENT, "joedb"));
   error_check(curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L));
+  error_check(curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L));
  }
 }

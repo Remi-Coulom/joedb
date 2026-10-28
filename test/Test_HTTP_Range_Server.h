@@ -56,7 +56,7 @@ namespace joedb
       if (from >= body.size() || until < from)
       {
        status = "416 Range Not Satisfiable";
-       payload.clear();
+       payload = "Requested range is outside the file";
        content_range = "Content-Range: bytes */10\r\n";
       }
       else
