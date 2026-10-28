@@ -92,10 +92,16 @@ namespace joedb
   CURL_File curl(url.c_str(), false);
   Abstract_File &file = curl;
   char data = '?';
-  size_t count = 1;
-  ASSERT_NO_THROW(count = file.pread(&data, 0, 0));
-  EXPECT_EQ(count, 0);
-  EXPECT_EQ(data, '?');
+  for (const int64_t offset: {0, 5, 10, 20})
+  {
+   SCOPED_TRACE(offset);
+   size_t count = 1;
+   ASSERT_NO_THROW(count = file.pread(&data, 0, offset));
+   EXPECT_EQ(count, 0);
+   EXPECT_EQ(data, '?');
+  }
+  ASSERT_EQ(file.pread(&data, 1, 0), 1);
+  EXPECT_EQ(data, 'a');
  }
 
  ///////////////////////////////////////////////////////////////////////////

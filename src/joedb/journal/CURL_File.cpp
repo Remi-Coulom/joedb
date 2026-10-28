@@ -64,6 +64,9 @@ namespace joedb
  size_t CURL_File::pread(char *buffer, size_t size, int64_t offset) const
  ////////////////////////////////////////////////////////////////////////////
  {
+  if (size == 0)
+   return 0;
+
   pread_Callback_Data callback_data{buffer, size, 0};
 
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &callback_data));
