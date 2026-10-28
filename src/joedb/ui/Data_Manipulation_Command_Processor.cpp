@@ -27,6 +27,8 @@ namespace joedb
    case Type::Type_Id::type_id:\
    {\
     const type value = joedb::read_##type_id(in);\
+    if (in.fail())\
+     throw Exception("failed parsing value");\
     writable.update_##type_id(table_id, record_id, field_id, value);\
    }\
    break;
@@ -168,7 +170,11 @@ namespace joedb
      {\
       std::vector<type> v(size);\
       for (size_t i = 0; i < size; i++)\
+      {\
        v[i] = joedb::read_##type_id(parameters);\
+       if (parameters.fail())\
+        throw Exception("failed parsing value");\
+      }\
       writable.update_vector_##type_id(table_id, record_id, field_id, size, v.data());\
      }\
      break;

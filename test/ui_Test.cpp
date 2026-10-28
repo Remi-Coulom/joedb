@@ -609,6 +609,59 @@ namespace joedb
   EXPECT_EQ(run(joedb_to_json, {input_file}).out, before.out);
  }
 
+
+ TEST_F(Tool_Test, invalid_updates_preserve_data)
+ {
+  const auto before = run(joedb_to_json, {input_file});
+  for (const char *command:
+   {"update person 0 score\n", "update person 0 name \"unfinished\n",
+    "update person 0 name trailing\\\n"})
+  {
+   SCOPED_TRACE(command);
+   const auto result = run(joedbi, {"--log", "none", input_file}, command);
+   EXPECT_EQ(result.code, 0);
+   EXPECT_NE(result.out.find("failed parsing value"), std::string::npos) << result.out;
+   EXPECT_EQ(run(joedb_to_json, {input_file}).out, before.out);
+  }
+ }
+
+ TEST_F(Tool_Test, invalid_vector_updates_preserve_data)
+ {
+  const auto inserted = run(joedbi, {"--log", "none", input_file},
+   "insert_into person 1 \"Middle\" 3.5\n");
+  ASSERT_EQ(inserted.code, 0);
+  ASSERT_EQ(inserted.out.find("Exception caught"), std::string::npos) << inserted.out;
+  const auto before = run(joedb_to_json, {input_file});
+  for (const char *command:
+   {"update_vector person 0 score 3 10 invalid 30\n",
+    "update_vector person 0 score 3 10 20\n",
+    "update_vector person 0 name 3 First Second\n"})
+  {
+   SCOPED_TRACE(command);
+   const auto result = run(joedbi, {"--log", "none", input_file}, command);
+   EXPECT_EQ(result.code, 0);
+   EXPECT_NE(result.out.find("failed parsing value"), std::string::npos) << result.out;
+   EXPECT_EQ(run(joedb_to_json, {input_file}).out, before.out);
+  }
+ }
+
+ TEST_F(Tool_Test, valid_updates_at_end_of_line)
+ {
+  const auto result = run(joedbi, {"--log", "none", input_file},
+   "insert_into person 1 \"Middle\" 3.5\n"
+   "update_vector person 0 score 3 4 5 6\n"
+   "update_vector person 0 name 3 Alpha \"\" Omega\n"
+   "update person 0 score 8.25\n"
+   "update person 0 name Final");
+  EXPECT_EQ(result.code, 0);
+  EXPECT_EQ(result.out.find("Exception caught"), std::string::npos) << result.out;
+  const auto json = run(joedb_to_json, {input_file});
+  EXPECT_EQ(json.out,
+   "{\n \"person\":\n {\n  \"__size\": 3,\n"
+   "  \"name\": [\"Final\", \"\", \"Omega\"],\n"
+   "  \"score\": [8.25, 5, 6]\n }\n}\n");
+ }
+
  TEST(ui, client)
  {
   const std::array<const char *, 5> args

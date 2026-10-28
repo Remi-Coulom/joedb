@@ -25,20 +25,22 @@ namespace joedb
   }
 
   const bool is_quoted = c == '"';
-  if (is_quoted)
-   in.get(c);
+  if (is_quoted && !in.get(c))
+   return result;
 
   while ((is_quoted && c != '"') || (!is_quoted && c != ' '))
   {
    if (c == '\\')
    {
-    in.get(c);
+    if (!in.get(c))
+     return result;
 
     if (c == 'x')
     {
      char c1;
      char c0;
-     in.get(c1).get(c0);
+     if (!in.get(c1).get(c0))
+      return result;
      const uint8_t n1 = get_hex_digit_from_char(c1);
      const uint8_t n0 = get_hex_digit_from_char(c0);
      c = char((n1 << 4) | n0);
@@ -47,7 +49,8 @@ namespace joedb
     {
      char c1;
      char c0;
-     in.get(c1).get(c0);
+     if (!in.get(c1).get(c0))
+      return result;
      const uint8_t n2 = uint8_t(c  - '0');
      const uint8_t n1 = uint8_t(c1 - '0');
      const uint8_t n0 = uint8_t(c0 - '0');
@@ -58,7 +61,11 @@ namespace joedb
    result.push_back(c);
 
    if (!in.get(c))
+   {
+    if (!is_quoted && in.eof())
+     in.clear(in.rdstate() & ~std::ios::failbit);
     break;
+   }
   }
 
   return result;
@@ -206,7 +213,7 @@ namespace joedb
  int8_t read_int8(std::istream &in)
  /////////////////////////////////////////////////////////////////////////////
  {
-  int result;
+  int result = 0;
   in >> result;
   return int8_t(result);
  }
