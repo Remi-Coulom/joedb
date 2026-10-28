@@ -68,6 +68,32 @@ namespace joedb
   ASSERT_NO_THROW(file.copy_to(copied));
   EXPECT_EQ(copied.get_data(), "0123456789");
  }
+
+ TEST(CURL_HTTP_File, unbounded_copy_from_offset)
+ {
+  Test_HTTP_Range_Server server;
+  CURL_File source(server.url().c_str(), false);
+  const Abstract_File &file = source;
+  for (const int64_t offset: {3, 10, 20})
+  {
+   SCOPED_TRACE(offset);
+   Memory_File copied;
+   copied.get_data() = "xxx";
+   ASSERT_NO_THROW(file.copy_to(copied, offset, -1));
+   EXPECT_EQ(copied.get_data(), offset == 3 ? "xxx3456789" : "xxx");
+  }
+ }
+
+ TEST(CURL_HTTP_File, zero_length_copy)
+ {
+  Test_HTTP_Range_Server server;
+  CURL_File source(server.url().c_str(), false);
+  const Abstract_File &file = source;
+  Memory_File copied;
+  copied.get_data() = "unchanged";
+  ASSERT_NO_THROW(file.copy_to(copied, 0, 0));
+  EXPECT_EQ(copied.get_data(), "unchanged");
+ }
 #endif
 
  class Local_CURL_File_Test: public testing::Test

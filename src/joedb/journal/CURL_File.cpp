@@ -18,8 +18,9 @@ namespace joedb
  bool CURL_File::perform_range(int64_t start, int64_t size) const
  ////////////////////////////////////////////////////////////////////////////
  {
-  const std::string range =
-   std::to_string(start) + '-' + std::to_string(start + size - 1);
+  std::string range = std::to_string(start) + '-';
+  if (size >= 0)
+   range += std::to_string(start + size - 1);
 
   error_check(curl_easy_setopt(curl, CURLOPT_RANGE, range.c_str()));
   const CURLcode result = curl_easy_perform(curl);
@@ -107,11 +108,14 @@ namespace joedb
   const int64_t size
  ) const
  {
+  if (size == 0)
+   return;
+
   File_Iterator file_iterator(destination);
   file_iterator.seek(start);
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file_iterator));
   error_check(curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, copy_callback));
-  if (!perform_range(start, size))
+  if (!perform_range(start, size) && size >= 0)
    reading_past_end_of_file();
  }
 
