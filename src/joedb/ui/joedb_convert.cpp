@@ -1,30 +1,5 @@
-#include "joedb/ui/process_journal_pair.h"
+#include "joedb/ui/joedb_convert.h"
 #include "joedb/ui/main_wrapper.h"
-
-namespace joedb
-{
- /////////////////////////////////////////////////////////////////////////////
- static void process
- /////////////////////////////////////////////////////////////////////////////
- (
-  Readonly_Journal &input,
-  Writable_Journal &output,
-  int64_t checkpoint
- )
- {
-  if (checkpoint > input.get_checkpoint() || checkpoint == 0)
-   checkpoint = input.get_checkpoint();
-  input.play_until(output, checkpoint);
-  output.soft_checkpoint();
- }
-
- /////////////////////////////////////////////////////////////////////////////
- static int convert(Arguments &arguments)
- /////////////////////////////////////////////////////////////////////////////
- {
-  return process_journal_pair(arguments, process);
- }
-}
 
 //////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
