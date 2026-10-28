@@ -7,9 +7,9 @@ cd -
 
 mkdir -p html
 
-lcov --directory ../compcmake/gcc_coverage_20\
+lcov --directory ../compcmake/gcc_coverage\
      --capture\
-     --ignore-errors mismatch\
+     --ignore-errors mismatch,inconsistent\
      --rc lcov_branch_coverage=1\
      --output-file all.info || exit 1
 

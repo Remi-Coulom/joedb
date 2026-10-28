@@ -1002,6 +1002,86 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, robust_reconnect_checkpoint)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  class Disconnectable_Channel: public Local_Channel
+  {
+   public:
+    using Local_Channel::Local_Channel;
+    void disconnect() {socket.close();}
+  };
+
+  class Reconnecting_Connector: public Connector
+  {
+   public:
+    std::string endpoint;
+    mutable Disconnectable_Channel *channel = nullptr;
+    mutable size_t connections = 0;
+
+    std::unique_ptr<Channel> new_channel() const override
+    {
+     ++connections;
+     auto result = std::make_unique<Disconnectable_Channel>(endpoint);
+     channel = result.get();
+     return result;
+    }
+  };
+
+  for (const bool server_file: {false, true})
+  {
+   for (const bool rollback: {false, true})
+   {
+    SCOPED_TRACE(server_file);
+    SCOPED_TRACE(rollback);
+    Test_Server live_server("robust_live.sock");
+    Test_Server rollback_server("robust_rollback.sock");
+    Memory_File writer_file;
+    Test_Client writer(writer_file, live_server);
+    const auto append = [&]()
+    {
+     writer.transaction([](const Readable &, Writable &writable)
+     {
+      writable.comment("server progress");
+     });
+    };
+    Reconnecting_Connector connector;
+    connector.endpoint = live_server.server.get_endpoint_path();
+    Memory_File file;
+    Writable_Journal journal(file);
+    std::unique_ptr<Robust_Connection> connection;
+    if (server_file)
+    {
+     append();
+     // Standalone Server_File must also detect rollback, without a Client.
+     connection = std::make_unique<Server_File>(connector, logger);
+    }
+    else
+    {
+     connection = std::make_unique<Robust_Connection>(connector, logger);
+     connection->handshake(journal, Content_Check::none);
+     append();
+     // Compare against the latest checkpoint, not just the initial one.
+     EXPECT_GT(connection->pull
+     (
+      Lock_Action::no_locking, Data_Transfer::with_data,
+      journal, std::chrono::milliseconds(0)
+     ), Header::ssize);
+    }
+
+    if (rollback)
+     connector.endpoint = rollback_server.server.get_endpoint_path();
+    connector.channel->disconnect();
+    if (rollback)
+     EXPECT_THROW(connection->ping(), Disconnection);
+    else
+     EXPECT_NO_THROW(connection->ping());
+    EXPECT_EQ(connector.connections, 2);
+   }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
  TEST(Server, blob)
  ////////////////////////////////////////////////////////////////////////////
  {

@@ -1,6 +1,6 @@
 #include "joedb/compiler/generator/introspection_h.h"
 #include "joedb/compiler/nested_namespace.h"
-#include "joedb/ui/write_value.h"
+#include "joedb/compiler/write_cpp_value.h"
 
 namespace joedb::generator
 {
@@ -56,7 +56,7 @@ namespace joedb::generator
    {
     out << ", ";
     const Record_Id record_id{db.get_freedom(tid).get_first_used()};
-    write_value(out, db, tid, record_id, fid);
+    write_cpp_value(out, db, tid, record_id, fid);
    }
    out << ");\n";
   }

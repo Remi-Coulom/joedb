@@ -91,8 +91,7 @@ namespace joedb
     {
      try
      {
-      boost::system::error_code ec;
-      ws.close(boost::beast::websocket::close_code::normal, ec);
+      ws.close(boost::beast::websocket::close_code::normal);
      }
      catch (...)
      {

@@ -57,6 +57,7 @@ namespace joedb
    );
 
    int64_t get_session_id() const {return session_id;}
+   int64_t get_server_checkpoint() const {return server_checkpoint;}
    Thread_Safe<Channel&> &get_channel() override final {return channel;}
 
    ~Server_Client();
