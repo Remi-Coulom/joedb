@@ -281,11 +281,11 @@ namespace joedb
 
     const Record_Id result = index - 1;
 
-    if (result == Record_Id{-1})
-     return used_list;
-
     if (result == used_size - 1)
      return free_list;
+
+    if (result == Record_Id{-1})
+     return used_list;
 
     return result;
    }
