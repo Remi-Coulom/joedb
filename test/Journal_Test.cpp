@@ -8,18 +8,17 @@
 
 #include "gtest/gtest.h"
 
-#include <cstdlib>
 #include <random>
 #include <array>
 #include "joedb/Multiplexer.h"
 
 namespace joedb
 {
-#if GTEST_HAS_DEATH_TEST
- TEST(JournalDeathTest, invalid_vector_start_reports_exception)
+ TEST(Journal, invalid_vector_start_reports_exception)
  {
   for (const index_t start: {-1, 5})
   {
+   SCOPED_TRACE(start);
    Memory_File file;
    {
     Writable_Journal journal(file);
@@ -30,23 +29,24 @@ namespace joedb
     journal.update_vector_int32(Table_Id(1), Record_Id(start), Field_Id(1), 1, &value);
     journal.soft_checkpoint();
    }
-   EXPECT_EXIT
-   ({
-    Readonly_Journal journal(file);
-    Database db;
-    try
-    {
-     journal.replay_log(db);
-    }
-    catch (const Exception &)
-    {
-     std::_Exit(0);
-    }
-    std::_Exit(1);
-   }, testing::ExitedWithCode(0), "");
+   Readonly_Journal journal(file);
+   Database db;
+   try
+   {
+    journal.replay_log(db);
+    FAIL() << "invalid vector start was accepted";
+   }
+   catch (const Exception &e)
+   {
+    EXPECT_STREQ(e.what(), "update_vector out of range");
+   }
+   if (start < 0)
+   {
+    Dummy_Writable writable;
+    EXPECT_THROW(journal.replay_log(writable), Exception);
+   }
   }
  }
-#endif
 
  TEST(Journal, deterministic_sparse_round_trip)
  {

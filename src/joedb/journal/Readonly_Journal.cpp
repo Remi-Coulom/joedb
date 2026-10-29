@@ -313,18 +313,22 @@ void joedb::Readonly_Journal::one_step(Writable &writable)
    cpp_type *data = writable.get_own_##type_id##_storage\
    (\
     table_of_last_operation,\
-    record_of_last_operation,\
+    Record_Id(0),\
     field_of_last_update,\
     capacity\
    );\
+   const size_t start = size_t(record_of_last_operation);\
+   if (to_underlying(record_of_last_operation) < 0 ||\
+       (data && (start > capacity || size > capacity - start)))\
+    throw Exception("update_vector out of range");\
    std::vector<cpp_type> buffer;\
    if (!data)\
    {\
     buffer.resize(size);\
     data = &buffer[0];\
    }\
-   else if (to_underlying(record_of_last_operation) < 0 || to_underlying(record_of_last_operation) + size > capacity)\
-    throw Exception("update_vector out of range");\
+   else\
+    data += start;\
    read_vector_of_##type_id(data, size);\
    writable.update_vector_##type_id\
    (\

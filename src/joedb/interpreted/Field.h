@@ -81,7 +81,7 @@ namespace joedb
    }\
    cpp_type *get_own_##type_id##_storage(Record_Id record_id)\
    {\
-    return &std::get<std::vector<cpp_type>>(column)[index(record_id)];\
+    return std::get<std::vector<cpp_type>>(column).data() + index(record_id);\
    }
    #include "joedb/TYPE_MACRO.h"
  };
