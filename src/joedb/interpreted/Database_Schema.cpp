@@ -2,6 +2,8 @@
 #include "joedb/error/Exception.h"
 #include "joedb/is_identifier.h"
 
+#include <limits>
+
 namespace joedb
 {
  ////////////////////////////////////////////////////////////////////////////
@@ -107,6 +109,8 @@ namespace joedb
 
   if (find_table(name) != Table_Id(0))
    throw Exception("create_table: name already used: " + name);
+  if (current_table_id == Table_Id(std::numeric_limits<std::underlying_type<Table_Id>::type>::max()))
+   throw Exception("create_table: reached maximum table count");
 
   ++current_table_id;
   tables.try_emplace(current_table_id);
