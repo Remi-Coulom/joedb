@@ -221,6 +221,7 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../test/Websocket_Test.cpp
   ../test/filebuf_Test.cpp
   ../src/joedb/compiler/write_cpp_value.cpp
+  ../src/joedb/compiler/Compiler_Options_io.cpp
   ../test/compiler/write_cpp_value_Test.cpp
   ../test/compiler/Compiler_GTest.cpp
   ../test/compiler/Interpreted_Database.cpp

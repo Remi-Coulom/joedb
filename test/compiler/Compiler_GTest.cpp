@@ -21,6 +21,8 @@
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/Upgradable_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
+#include "joedb/compiler/Compiler_Options.h"
+#include "joedb/compiler/Compiler_Options_io.h"
 
 using namespace my_namespace::is_nested;
 
@@ -33,6 +35,7 @@ using namespace my_namespace::is_nested;
 #include <random>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 #if defined(__linux__) && GTEST_HAS_DEATH_TEST
 #include <unistd.h>
 #include <cstdlib>
@@ -109,11 +112,6 @@ namespace
   std::ofstream(directory / "schema.joedbi") << "custom bad-name\n";
   expect_failure("custom: invalid identifier");
  }
- TEST_F(Compiler_Command_DeathTest, index_requires_fields)
- {
-  options("create_index lookup items\n");
-  expect_failure("Exception caught:");
- }
  TEST_F(Compiler_Command_DeathTest, deprecated_storage_option_warns)
  {
   options("set_table_storage\n");
@@ -128,6 +126,22 @@ namespace
  }
 }
 #endif
+
+TEST(Compiler_Command, index_requires_fields)
+{
+ for (const char *command: {"create_index", "create_unique_index",
+                           "create_unordered_index", "create_unordered_unique_index"})
+ {
+  SCOPED_TRACE(command);
+  joedb::Compiler_Options options;
+  options.db.create_table("items");
+  options.db.add_field(joedb::Table_Id(1), "value", joedb::Type::int32());
+  std::istringstream input(std::string(command) + " lookup items\n");
+  std::ostringstream errors;
+  EXPECT_THROW(joedb::parse_compiler_options(input, options, errors), joedb::Exception);
+  EXPECT_TRUE(options.get_indices().empty());
+ }
+}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, deterministic_multi_index_model)

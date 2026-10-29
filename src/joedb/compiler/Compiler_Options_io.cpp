@@ -76,6 +76,9 @@ namespace joedb
      }
     }
 
+    if (index.field_ids.empty())
+     throw Exception("Index requires at least one field: " + index.name);
+
     if (!joedb::is_identifier(index.name))
      throw Exception("Invalid index identifier: " + index.name);
 
