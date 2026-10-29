@@ -77,6 +77,8 @@ namespace joedb
                                 const type *value)\
    {\
     const auto it = find_field_from_id(field_id);\
+    if (size == 0)\
+     return;\
     check_record_id(record_id);\
     check_record_id(record_id + index_t(size) - 1);\
     it->second.set_vector_##type_id(record_id, size, value);\
