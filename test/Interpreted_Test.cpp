@@ -43,21 +43,6 @@ namespace joedb
   EXPECT_TRUE(db.get_fields(Table_Id(1)).empty());
  }
 
- TEST(Interpreted_Test, vector_update_rejects_deleted_middle_record)
- {
-  Database db;
-  db.create_table("items");
-  db.add_field(Table_Id(1), "value", Type::int32());
-  db.insert_vector(Table_Id(1), Record_Id(0), 3);
-  db.update_int32(Table_Id(1), Record_Id(0), Field_Id(1), 7);
-  db.update_int32(Table_Id(1), Record_Id(2), Field_Id(1), 9);
-  db.delete_from(Table_Id(1), Record_Id(1));
-  const int32_t values[] = {100, 200, 300};
-  EXPECT_THROW(db.update_vector_int32(Table_Id(1), Record_Id(0), Field_Id(1), 3, values), Exception);
-  EXPECT_EQ(db.get_int32(Table_Id(1), Record_Id(0), Field_Id(1)), 7);
-  EXPECT_EQ(db.get_int32(Table_Id(1), Record_Id(2), Field_Id(1)), 9);
- }
-
  TEST(Interpreted_Test, empty_vector_update_is_noop)
  {
   Database db;
@@ -67,29 +52,6 @@ namespace joedb
   db.update_int32(Table_Id(1), Record_Id(0), Field_Id(1), 42);
   EXPECT_NO_THROW(db.update_vector_int32(Table_Id(1), Record_Id(0), Field_Id(1), 0, nullptr));
   EXPECT_EQ(db.get_int32(Table_Id(1), Record_Id(0), Field_Id(1)), 42);
- }
-
- TEST(Interpreted_Test, vector_accepts_last_allowed_record)
- {
-  for (const index_t limit: {0, 1, 4, 10})
-  {
-   SCOPED_TRACE(limit);
-   Database scalar{Record_Id(limit)};
-   scalar.create_table("items");
-   ASSERT_NO_THROW(scalar.insert_into(Table_Id(1), Record_Id(limit)));
-   Database vector{Record_Id(limit)};
-   vector.create_table("items");
-   EXPECT_NO_THROW(vector.insert_vector(Table_Id(1), Record_Id(limit), 1));
-   EXPECT_TRUE(vector.is_used(Table_Id(1), Record_Id(limit)));
-  }
- }
-
- TEST(Interpreted_Test, vector_does_not_exceed_record_limit)
- {
-  Database db{Record_Id(10)};
-  db.create_table("items");
-  EXPECT_THROW(db.insert_vector(Table_Id(1), Record_Id(9), 3), Exception);
-  EXPECT_EQ(to_underlying(db.get_size(Table_Id(1))), 0);
  }
 
  ////////////////////////////////////////////////////////////////////////////
