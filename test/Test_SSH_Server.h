@@ -8,6 +8,8 @@
 #include <atomic>
 #include <memory>
 #include <thread>
+#include <fstream>
+#include <cstdio>
 #include <libssh/sftp.h>
 
 namespace joedb
@@ -42,6 +44,7 @@ namespace joedb
    std::unique_ptr<ssh_bind_struct, decltype(&ssh_bind_free)> bind{ssh_bind_new(), ssh_bind_free};
    std::atomic<bool> stopping{false};
    const bool allow_sftp;
+   std::string known_hosts_file;
    std::thread thread;
 
    struct Session
@@ -241,6 +244,15 @@ namespace joedb
     JOEDB_RELEASE_ASSERT(ssh_pki_generate(SSH_KEYTYPE_ED25519, 0, &host_key) == SSH_OK);
     // The bind owns the imported host key.
     JOEDB_RELEASE_ASSERT(ssh_bind_options_set(bind.get(), SSH_BIND_OPTIONS_IMPORT_KEY, host_key) == SSH_OK);
+    known_hosts_file = "ssh_known_hosts_" + std::to_string(port()) + ".tmp";
+    {
+     char *public_key = nullptr;
+     JOEDB_RELEASE_ASSERT(ssh_pki_export_pubkey_base64(host_key, &public_key) == SSH_OK);
+     std::ofstream known_hosts(known_hosts_file);
+     known_hosts << "[127.0.0.1]:" << port() << " ssh-ed25519 " << public_key << '\n';
+     ssh_string_free_char(public_key);
+     JOEDB_RELEASE_ASSERT(known_hosts);
+    }
     acceptor.async_accept([this](const boost::system::error_code &error,
      boost::asio::ip::tcp::socket socket)
     {
@@ -265,11 +277,13 @@ namespace joedb
     thread = std::thread([this]() {context.run();});
    }
    unsigned port() const {return acceptor.local_endpoint().port();}
+   const char *get_known_hosts_file() const {return known_hosts_file.c_str();}
    ~Test_SSH_Server()
    {
     stopping = true;
     context.stop();
     thread.join();
+    std::remove(known_hosts_file.c_str());
    }
  };
 }

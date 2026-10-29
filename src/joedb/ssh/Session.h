@@ -124,10 +124,20 @@ namespace joedb
      const unsigned port,
      const int verbosity,
      const char * const b64_key = nullptr,
-     const char * const passphrase = nullptr
+     const char * const passphrase = nullptr,
+     const char * const known_hosts = nullptr
     ):
      Session_Connection(user.c_str(), host.c_str(), port, verbosity)
     {
+     if (known_hosts)
+      check_result(ssh_options_set(session, SSH_OPTIONS_KNOWNHOSTS, known_hosts));
+
+     const auto host_status = ssh_session_is_known_server(session);
+     if (host_status == SSH_KNOWN_HOSTS_ERROR)
+      throw Exception(ssh_get_error(session));
+     if (host_status != SSH_KNOWN_HOSTS_OK)
+      throw Exception("SSH host key is not trusted: " + host);
+
      if (b64_key)
      {
       const Imported_Key key(b64_key, passphrase);

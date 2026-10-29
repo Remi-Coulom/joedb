@@ -22,7 +22,8 @@ namespace joedb
  {
   Test_SSH_Server server(true);
   Test_SSH_Key key;
-  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text());
+  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text(),
+   nullptr, server.get_known_hosts_file());
   ssh::SFTP sftp(session);
   SFTP_File file(sftp, "payload");
   char data[6] = {};
@@ -42,7 +43,8 @@ namespace joedb
  {
   Test_SSH_Server server(true);
   Test_SSH_Key key;
-  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text());
+  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text(),
+   nullptr, server.get_known_hosts_file());
   ssh::SFTP sftp(session);
   EXPECT_THROW(SFTP_File(sftp, "missing"), Exception);
   SFTP_File file(sftp, "broken");
@@ -86,7 +88,8 @@ namespace joedb
  {
   Test_SSH_Server server;
   Test_SSH_Key key;
-  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text());
+  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text(),
+   nullptr, server.get_known_hosts_file());
   ssh::Forward_Channel forwarded(session, "echo.invalid", 1234);
   forwarded.set_timeout(std::chrono::seconds(2));
   Channel &channel = forwarded;
@@ -110,7 +113,8 @@ namespace joedb
  {
   Test_SSH_Server server;
   Test_SSH_Key key;
-  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text());
+  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text(),
+   nullptr, server.get_known_hosts_file());
   EXPECT_THROW(ssh::Forward_Channel(session, "/rejected.sock"), Exception);
   EXPECT_THROW(ssh::SFTP{session}, Exception);
  }
