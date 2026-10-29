@@ -106,7 +106,7 @@ namespace joedb
  {
   Test_SSH_Server server;
   Test_SSH_Key key;
-  EXPECT_THROW(ssh::Session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text()), Exception);
+  EXPECT_THROW(ssh::Session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text()), Disconnection);
  }
 
  TEST(ssh, rejected_forward_and_sftp_requests)

@@ -2,6 +2,7 @@
 #define joedb_ssh_Session_declared
 
 #include "joedb/error/assert.h"
+#include "joedb/error/Disconnection.h"
 
 #include <string>
 #include <libssh/libssh.h>
@@ -134,9 +135,9 @@ namespace joedb
 
      const auto host_status = ssh_session_is_known_server(session);
      if (host_status == SSH_KNOWN_HOSTS_ERROR)
-      throw Exception(ssh_get_error(session));
+      throw Disconnection(ssh_get_error(session));
      if (host_status != SSH_KNOWN_HOSTS_OK)
-      throw Exception("SSH host key is not trusted: " + host);
+      throw Disconnection("SSH host key is not trusted: " + host);
 
      if (b64_key)
      {
