@@ -23,6 +23,8 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   JOEDB_DEBUG_ASSERT(offset >= 0);
+  if (size == 0)
+   return;
   const size_t end = size_t(offset) + size;
   if (end > data.size())
    data.resize(end);
