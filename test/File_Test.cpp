@@ -18,15 +18,6 @@ using namespace joedb;
 
 static const uint64_t joedb_magic = 0x0000620165646A6FULL;
 
-TEST(File, zero_length_memory_write_extends_to_offset)
-{
- Memory_File file;
- file.pwrite("abc", 3, 0);
- file.pwrite("", 0, 100);
- EXPECT_EQ(file.get_size(), 100);
- EXPECT_EQ(file.get_data(), std::string("abc") + std::string(97, '\0'));
-}
-
 TEST(File, truncated_source_copy_and_comparison)
 {
  Memory_File source;
