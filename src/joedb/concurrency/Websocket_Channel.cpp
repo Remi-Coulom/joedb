@@ -16,6 +16,19 @@ namespace joedb
   class Websocket_Channel
   {
    private:
+    static boost::asio::ssl::context make_ssl_context()
+    {
+     boost::asio::ssl::context context(boost::asio::ssl::context::tlsv12_client);
+     context.set_verify_mode
+     (
+      boost::asio::ssl::context::verify_peer |
+      boost::asio::ssl::context::verify_fail_if_no_peer_cert
+     );
+     context.set_default_verify_paths();
+     boost::certify::enable_native_https_server_verification(context);
+     return context;
+    }
+
     boost::asio::io_context io_context;
     boost::asio::ssl::context ssl_context;
 
@@ -35,18 +48,9 @@ namespace joedb
      const std::string &port,
      const std::string &path
     ):
-     ssl_context(boost::asio::ssl::context::tlsv12_client),
+     ssl_context(make_ssl_context()),
      ws(io_context, ssl_context)
     {
-     ssl_context.set_verify_mode
-     (
-      boost::asio::ssl::context::verify_peer |
-      boost::asio::ssl::context::verify_fail_if_no_peer_cert
-     );
-
-     ssl_context.set_default_verify_paths();
-
-     boost::certify::enable_native_https_server_verification(ssl_context);
      boost::certify::set_server_hostname(ws.next_layer(), host);
      boost::certify::sni_hostname(ws.next_layer(), host);
 
