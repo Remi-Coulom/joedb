@@ -9,6 +9,7 @@ mkdir -p html
 
 lcov --directory ../compcmake/gcc_coverage\
      --capture\
+     --filter exception,orphan\
      --ignore-errors mismatch,inconsistent\
      --rc lcov_branch_coverage=1\
      --output-file all.info || exit 1
@@ -19,6 +20,7 @@ lcov --remove all.info '/usr/*' '*/joedb/test*' '*joedb/src/joedb/db/*' '*/joedb
      --output app.info || exit 1
 
 genhtml --prefix "$src_dir"\
+        --filter exception,orphan\
         --ignore-errors mismatch,inconsistent\
         --demangle-cpp\
         --rc genhtml_branch_coverage=1\
