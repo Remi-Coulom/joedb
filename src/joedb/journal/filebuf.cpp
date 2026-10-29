@@ -65,6 +65,9 @@ namespace joedb
   std::ios_base::openmode which
  )
  {
+  if (pos < 0)
+   return pos_type(off_type(-1));
+
   sync();
 
   if (which & std::ios_base::in)
