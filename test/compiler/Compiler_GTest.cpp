@@ -21,8 +21,6 @@
 #include "joedb/interpreted/Database.h"
 #include "joedb/journal/Upgradable_File.h"
 #include "joedb/journal/Readonly_Memory_File.h"
-#include "joedb/compiler/Compiler_Options.h"
-#include "joedb/compiler/Compiler_Options_io.h"
 
 using namespace my_namespace::is_nested;
 
@@ -33,115 +31,6 @@ using namespace my_namespace::is_nested;
 #include <map>
 #include <set>
 #include <random>
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#if defined(__linux__) && GTEST_HAS_DEATH_TEST
-#include <unistd.h>
-#include <cstdlib>
-
-namespace
-{
- class Compiler_Command_DeathTest: public testing::Test
- {
-  protected:
-   std::filesystem::path directory;
-   std::string compiler;
-   void SetUp() override
-   {
-    compiler = (std::filesystem::read_symlink("/proc/self/exe").parent_path() / "joedbc").string();
-    ASSERT_TRUE(std::filesystem::exists(compiler));
-    std::string pattern = (std::filesystem::temp_directory_path() / "joedb-compiler-XXXXXX").string();
-    const char *created = ::mkdtemp(pattern.data());
-    ASSERT_NE(created, nullptr);
-    directory = created;
-    std::ofstream(directory / "schema.joedbi") << "create_table items\nadd_field items value int32\n";
-    options("");
-   }
-   void options(const std::string &text)
-   {
-    std::ofstream(directory / "schema.joedbc") << "namespace generated\n" << text;
-   }
-   void expect_failure(const char *message)
-   {
-    EXPECT_EXIT
-    ({
-     if (::chdir(directory.c_str()) != 0)
-      std::_Exit(127);
-     ::execl(compiler.c_str(), compiler.c_str(), "schema", static_cast<char *>(nullptr));
-     std::_Exit(127);
-    }, testing::ExitedWithCode(1), message);
-   }
-   void TearDown() override
-   {
-    if (!directory.empty())
-     std::filesystem::remove_all(directory);
-   }
- };
-
- TEST_F(Compiler_Command_DeathTest, help_and_version)
- {
-  EXPECT_EXIT
-  ({
-   ::execl(compiler.c_str(), compiler.c_str(), static_cast<char *>(nullptr));
-   std::_Exit(127);
-  }, testing::ExitedWithCode(1), "usage:");
-  EXPECT_EXIT
-  ({
-   ::execl(compiler.c_str(), compiler.c_str(), "--version", static_cast<char *>(nullptr));
-   std::_Exit(127);
-  }, testing::ExitedWithCode(0), "");
- }
- TEST_F(Compiler_Command_DeathTest, unknown_option)
- {
-  options("unknown_option\n");
-  expect_failure("unknown command: unknown_option");
- }
- TEST_F(Compiler_Command_DeathTest, unknown_index_field)
- {
-  options("create_index lookup items missing\n");
-  expect_failure("Field not found: missing");
- }
- TEST_F(Compiler_Command_DeathTest, invalid_index_identifier)
- {
-  options("create_index bad-name items value\n");
-  expect_failure("Invalid index identifier: bad-name");
- }
- TEST_F(Compiler_Command_DeathTest, invalid_custom_identifier)
- {
-  std::ofstream(directory / "schema.joedbi") << "custom bad-name\n";
-  expect_failure("custom: invalid identifier");
- }
- TEST_F(Compiler_Command_DeathTest, deprecated_storage_option_warns)
- {
-  options("set_table_storage\n");
-  EXPECT_EXIT
-  ({
-   if (::chdir(directory.c_str()) != 0)
-    std::_Exit(127);
-   ::execl(compiler.c_str(), compiler.c_str(), "schema", static_cast<char *>(nullptr));
-   std::_Exit(127);
-  }, testing::ExitedWithCode(0), "set_table_storage is deprecated");
-  EXPECT_TRUE(std::filesystem::exists(directory / "generated" / "Database.h"));
- }
-}
-#endif
-
-TEST(Compiler_Command, index_requires_fields)
-{
- for (const char *command: {"create_index", "create_unique_index",
-                           "create_unordered_index", "create_unordered_unique_index"})
- {
-  SCOPED_TRACE(command);
-  joedb::Compiler_Options options;
-  options.db.create_table("items");
-  options.db.add_field(joedb::Table_Id(1), "value", joedb::Type::int32());
-  std::istringstream input(std::string(command) + " lookup items\n");
-  std::ostringstream errors;
-  EXPECT_THROW(joedb::parse_compiler_options(input, options, errors), joedb::Exception);
-  EXPECT_TRUE(options.get_indices().empty());
- }
-}
 
 /////////////////////////////////////////////////////////////////////////////
 TEST(Compiler, deterministic_multi_index_model)

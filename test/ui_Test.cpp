@@ -13,6 +13,7 @@
 #include "joedb/ui/inplace_pack.h"
 #include "joedb/concurrency/File_Connection.h"
 #include "joedb/Signal.h"
+#include "joedb/compiler/joedbc.h"
 
 #if defined(JOEDB_HAS_ASIO) && __cplusplus >= 202002L
 #include "joedb/ui/joedb_server.h"
@@ -34,7 +35,7 @@ namespace joedb
   int (*const tools[])
   (Arguments &, std::istream &, std::ostream &, std::ostream &) =
   {
-   joedbi, client, convert, logdump, pack, push, joedb_to_json, lock,
+   joedbi, joedbc, client, convert, logdump, pack, push, joedb_to_json, lock,
 #if defined(JOEDB_HAS_ASIO) && __cplusplus >= 202002L
    server, multi_server,
 #endif
@@ -52,6 +53,106 @@ namespace joedb
    EXPECT_TRUE(out.str().empty());
    EXPECT_EQ(err.str().find("usage: tool"), 0);
   }
+ }
+
+ class Compiler_Command_Test: public testing::Test
+ {
+  protected:
+   std::filesystem::path original_directory;
+   std::filesystem::path directory;
+   std::ostringstream out;
+   std::ostringstream err;
+
+   void SetUp() override
+   {
+    original_directory = std::filesystem::current_path();
+    const auto test_directory = original_directory / "compiler_command_test.tmp";
+    ASSERT_TRUE(std::filesystem::create_directory(test_directory));
+    directory = test_directory;
+    std::filesystem::current_path(directory);
+    std::ofstream("schema.joedbi") << "create_table items\nadd_field items value int32\n";
+    options("");
+   }
+
+   void options(const std::string &text)
+   {
+    std::ofstream("schema.joedbc") << "namespace generated\n" << text;
+   }
+
+   int run(std::initializer_list<const char *> options)
+   {
+    std::vector<const char *> argv{"joedbc"};
+    argv.insert(argv.end(), options.begin(), options.end());
+    Arguments arguments(int(argv.size()), argv.data());
+    std::istringstream in;
+    out.str("");
+    err.str("");
+    return joedbc(arguments, in, out, err);
+   }
+
+   void expect_failure(const char *message)
+   {
+    try
+    {
+     run({"schema"});
+     FAIL() << "compiler command was accepted";
+    }
+    catch (const Exception &e)
+    {
+     EXPECT_NE(std::string(e.what()).find(message), std::string::npos);
+    }
+   }
+
+   void TearDown() override
+   {
+    if (!directory.empty())
+    {
+     std::filesystem::current_path(original_directory);
+     std::filesystem::remove_all(directory);
+    }
+   }
+ };
+
+ TEST_F(Compiler_Command_Test, help_and_version)
+ {
+  EXPECT_EQ(run({}), 1);
+  EXPECT_NE(err.str().find("usage: joedbc"), std::string::npos);
+  EXPECT_TRUE(out.str().empty());
+  EXPECT_EQ(run({"--version"}), 0);
+  EXPECT_NE(out.str().find(get_version()), std::string::npos);
+  EXPECT_TRUE(err.str().empty());
+ }
+
+ TEST_F(Compiler_Command_Test, unknown_option)
+ {
+  options("unknown_option\n");
+  expect_failure("unknown command: unknown_option");
+ }
+
+ TEST_F(Compiler_Command_Test, unknown_index_field)
+ {
+  options("create_index lookup items missing\n");
+  expect_failure("Field not found: missing");
+ }
+
+ TEST_F(Compiler_Command_Test, invalid_index_identifier)
+ {
+  options("create_index bad-name items value\n");
+  expect_failure("Invalid index identifier: bad-name");
+ }
+
+ TEST_F(Compiler_Command_Test, invalid_custom_identifier)
+ {
+  std::ofstream("schema.joedbi") << "custom bad-name\n";
+  expect_failure("custom: invalid identifier");
+ }
+
+ TEST_F(Compiler_Command_Test, deprecated_storage_option_warns)
+ {
+  options("set_table_storage\n");
+  EXPECT_EQ(run({"schema"}), 0);
+  EXPECT_NE(err.str().find("set_table_storage is deprecated"), std::string::npos);
+  EXPECT_TRUE(std::filesystem::exists(directory / "generated" / "Database.h"));
  }
 
  TEST(ui, joedbi_streams)
