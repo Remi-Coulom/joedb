@@ -4,6 +4,28 @@
 
 namespace joedb
 {
+ TEST(Interpreted_Test, oversized_vector_delete_preserves_records)
+ {
+  Database db;
+  db.create_table("items");
+  const Table_Id table{1};
+  db.insert_vector(table, Record_Id{0}, 3);
+
+  for (int pass = 0; pass < 2; ++pass)
+  {
+   EXPECT_THROW(db.delete_vector(table, Record_Id{1},
+                std::numeric_limits<size_t>::max()), Exception);
+   EXPECT_THROW(db.delete_vector(table, Record_Id{1},
+                size_t(std::numeric_limits<index_t>::max())), Exception);
+   EXPECT_TRUE(db.get_freedom(table).is_used_vector(Record_Id{1}, 2));
+   if (pass == 0)
+    db.delete_from(table, Record_Id{0});
+  }
+
+  EXPECT_NO_THROW(db.delete_vector(table, Record_Id{1}, 2));
+  EXPECT_EQ(db.get_freedom(table).get_used_count(), Record_Id{0});
+ }
+
  TEST(Interpreted_Test, rejects_unknown_field_without_changing_data)
  {
   Database db;

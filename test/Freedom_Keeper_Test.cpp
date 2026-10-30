@@ -3,6 +3,7 @@
 
 #include <random>
 #include <algorithm>
+#include <limits>
 
 namespace joedb
 {
@@ -236,6 +237,35 @@ namespace joedb
    EXPECT_FALSE(fk.is_used_vector(Record_Id{0}, 2));
   }
  }
+ TYPED_TEST(Freedom_Keeper_Test, used_vector_bounds)
+ {
+  auto &fk = this->fk;
+  fk.resize(Record_Id{3});
+  fk.use_vector(Record_Id{0}, 3);
+
+  // Check both the dense representation and the list after making a hole.
+  for (int pass = 0; pass < 2; ++pass)
+  {
+   EXPECT_TRUE(fk.is_used_vector(Record_Id{1}, 2));
+   EXPECT_TRUE(fk.is_used_vector(Record_Id{3}, 0));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{-1}, 0));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{4}, 0));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{3}, 1));
+   EXPECT_FALSE(fk.is_used_vector(Record_Id{1}, 3));
+   // This sum wraps to freedom_size but starts well beyond the allocation.
+   EXPECT_FALSE
+   (
+    fk.is_used_vector
+    (
+     Record_Id{4096},
+     std::numeric_limits<size_t>::max() - 4092
+    )
+   );
+   if (pass == 0)
+    fk.free(Record_Id{0});
+  }
+ }
+
  TYPED_TEST(Freedom_Keeper_Test, deterministic_model)
  {
   auto &fk = this->fk;
