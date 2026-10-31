@@ -8,6 +8,16 @@
 
 namespace joedb
 {
+ #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
+ static type safe_read_##type_id(std::istream &in)\
+ {\
+  const type value = joedb::read_##type_id(in);\
+  if (in.fail())\
+   throw Exception("failed parsing value");\
+  return value;\
+ }
+ #include "joedb/TYPE_MACRO.h"
+
  ////////////////////////////////////////////////////////////////////////////
  void Data_Manipulation_Command_Processor::update_value
  ////////////////////////////////////////////////////////////////////////////
@@ -26,9 +36,7 @@ namespace joedb
    #define TYPE_MACRO(type, return_type, type_id, read_method, write_method)\
    case Type::Type_Id::type_id:\
    {\
-    const type value = joedb::read_##type_id(in);\
-    if (in.fail())\
-     throw Exception("failed parsing value");\
+    const type value = safe_read_##type_id(in);\
     writable.update_##type_id(table_id, record_id, field_id, value);\
    }\
    break;
@@ -58,11 +66,7 @@ namespace joedb
   if (parameters.good())
   {
    for (const auto &[fid, fname]: readable.get_fields(table_id))
-   {
     update_value(parameters, table_id, record_id, fid);
-    if (parameters.fail())
-     throw Exception("failed parsing value");
-   }
   }
  }
 
@@ -170,11 +174,7 @@ namespace joedb
      {\
       std::vector<type> v(size);\
       for (size_t i = 0; i < size; i++)\
-      {\
-       v[i] = joedb::read_##type_id(parameters);\
-       if (parameters.fail())\
-        throw Exception("failed parsing value");\
-      }\
+       v[i] = safe_read_##type_id(parameters);\
       writable.update_vector_##type_id(table_id, record_id, field_id, size, v.data());\
      }\
      break;
