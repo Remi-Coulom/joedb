@@ -1,6 +1,12 @@
 History
 =======
 
+- 2026-10-15 10.0.12 LTS
+
+  This is the last 10.x LTS release.
+
+  - Freedom_Keeper fixes.
+
 - 2026-10-15 10.0.11 LTS
 
   - fix pull conflict
