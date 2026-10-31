@@ -59,16 +59,17 @@ namespace joedb
     }
     else
     {
+     const uint64_t value = uint64_t(x);
      uint32_t extra_bytes = 2;
 
-     while ((x >> (8 * extra_bytes)) >= 0x20 && extra_bytes < sizeof(T) - 1)
+     while (extra_bytes < 7 && (value >> (8 * extra_bytes)) >= 0x20)
       extra_bytes++;
 
-     write<uint8_t>(uint8_t((extra_bytes << 5) | (x >> (8 * extra_bytes))));
-     write<uint8_t>(uint8_t(x >> (8 * --extra_bytes)));
-     write<uint8_t>(uint8_t(x >> (8 * --extra_bytes)));
+     write<uint8_t>(uint8_t((extra_bytes << 5) | (value >> (8 * extra_bytes))));
+     write<uint8_t>(uint8_t(value >> (8 * --extra_bytes)));
+     write<uint8_t>(uint8_t(value >> (8 * --extra_bytes)));
      while (extra_bytes)
-      write<uint8_t>(uint8_t(x >> (8 * --extra_bytes)));
+      write<uint8_t>(uint8_t(value >> (8 * --extra_bytes)));
     }
    }
 

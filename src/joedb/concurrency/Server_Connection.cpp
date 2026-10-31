@@ -18,7 +18,10 @@ namespace joedb
   lock->write(buffer.data, buffer.index);
   lock->read(buffer.data, 9);
 
-  buffer.index = 1;
+  buffer.index = 0;
+  if (buffer.read<char>() != 'r')
+   throw Disconnection("pread error: unexpected server reply");
+
   const int64_t until = buffer.read<int64_t>();
 
   if (until < offset || until > offset + int64_t(size))

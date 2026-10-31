@@ -971,19 +971,25 @@ namespace joedb
 
     Test_Server server;
     Local_Connector connector(server.server.get_endpoint_path());
-    Test_Local_Channel channel(server.server.get_endpoint_path());
-    std::unique_ptr<Connection> connection;
+    std::array<std::unique_ptr<Channel>, 3> channels;
+    std::array<std::unique_ptr<Connection>, 3> connections;
 
-    if (robust)
-     connection = std::make_unique<Robust_Connection>(connector, logger);
-    else
-     connection = std::make_unique<Server_Connection>(channel, logger);
+    for (size_t i = 0; i < connections.size(); ++i)
+    {
+     if (robust)
+      connections[i] = std::make_unique<Robust_Connection>(connector, logger);
+     else
+     {
+      channels[i] = connector.new_channel();
+      connections[i] = std::make_unique<Server_Connection>(*channels[i], logger);
+     }
+    }
 
     Memory_File file(Open_Mode::shared_write);
     Writable_Journal_Client local_client(file);
-    Writable_Journal_Client client(file, *connection, content_check);
-    Writable_Journal_Client transaction_client(file, *connection, content_check);
-    Writable_Journal_Client lock_client(file, *connection, content_check);
+    Writable_Journal_Client client(file, *connections[0], content_check);
+    Writable_Journal_Client transaction_client(file, *connections[1], content_check);
+    Writable_Journal_Client lock_client(file, *connections[2], content_check);
 
     local_client.transaction([](Writable_Journal &journal)
     {
@@ -999,6 +1005,21 @@ namespace joedb
     EXPECT_THROW(Client_Lock(lock_client).unlock(), Content_Mismatch);
    }
   }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, robust_single_handshake)
+ ////////////////////////////////////////////////////////////////////////////
+ {
+  Test_Server server;
+  Local_Connector connector(server.server.get_endpoint_path());
+  Robust_Connection connection(connector, logger);
+  Memory_File file;
+  Writable_Journal_Client client(file, connection);
+  EXPECT_THROW(connection.handshake(client.get_journal(), Content_Check::fast), Disconnection);
+  Memory_File other_file;
+  EXPECT_THROW(Writable_Journal_Client(other_file, connection), Disconnection);
+  EXPECT_NO_THROW(client.pull());
  }
 
  ////////////////////////////////////////////////////////////////////////////

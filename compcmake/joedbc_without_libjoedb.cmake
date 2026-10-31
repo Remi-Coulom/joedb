@@ -73,41 +73,45 @@ target_link_libraries(joedb_for_joedbc ${JOEDB_EXTERNAL_LIBS})
 #############################################################################
 # Joedbc executable
 #############################################################################
+set(JOEDBC_SOURCES
+ ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/write_cpp_value.cpp
+
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generator.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_Writable_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_Writable_cpp.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Types_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readable_h.cpp
+
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_cpp.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Memory_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Interpreted_File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Interpreted_File_Database_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Multiplexer_h.cpp
+
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Client_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Client_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Client_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedure_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedures_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/Signatures_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/RPC_Client_h.cpp
+
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
+ ${JOEDB_SRC_DIR}/joedb/compiler/generator/print_table_h.cpp
+)
+
 if (NOT DEFINED JOEDBC_EXECUTABLE)
  set(JOEDBC_EXECUTABLE joedbc)
 
  add_library(joedbc_objects OBJECT
   ${JOEDB_SRC_DIR}/joedb/compiler/joedbc.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/Compiler_Options_io.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/write_cpp_value.cpp
-
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Generator.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_Writable_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Database_Writable_cpp.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Database_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Types_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readable_h.cpp
-
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Writable_Database_cpp.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Database_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Memory_Database_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Interpreted_File_Database_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Interpreted_File_Database_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Multiplexer_h.cpp
-
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Client_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/File_Client_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Readonly_Client_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedure_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Procedures_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/Signatures_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/RPC_Client_h.cpp
-
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/ids_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/introspection_h.cpp
-  ${JOEDB_SRC_DIR}/joedb/compiler/generator/print_table_h.cpp
+  ${JOEDBC_SOURCES}
  )
  target_link_libraries(joedbc_objects ${JOEDB_EXTERNAL_LIBS})
 

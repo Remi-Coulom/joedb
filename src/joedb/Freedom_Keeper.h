@@ -107,7 +107,8 @@ namespace joedb
     if
     (
      index.is_null() ||
-     index + size > freedom_size
+     index > freedom_size ||
+     size > size_t(freedom_size) - size_t(index)
     )
     {
      return false;
@@ -281,11 +282,11 @@ namespace joedb
 
     const Record_Id result = index - 1;
 
-    if (result == Record_Id{-1})
-     return used_list;
-
     if (result == used_size - 1)
      return free_list;
+
+    if (result == Record_Id{-1})
+     return used_list;
 
     return result;
    }
@@ -309,8 +310,8 @@ namespace joedb
    {
     return
      index.is_not_null() &&
-     index + size >= index &&
-     index + size <= used_size;
+     index <= used_size &&
+     size <= size_t(used_size) - size_t(index);
    }
 
    bool is_dense() const {return true;}

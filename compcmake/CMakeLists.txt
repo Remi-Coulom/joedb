@@ -161,6 +161,7 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../src/joedb/journal/Writable_Journal.cpp
   ../src/joedb/Readable.cpp
   ../src/joedb/Writable.cpp
+  ../src/joedb/Multiplexer.cpp
   ../src/joedb/interpreted/Database.cpp
   ../src/joedb/interpreted/Database_Schema.cpp
   ../src/joedb/interpreted/Table.cpp
@@ -219,15 +220,15 @@ if(BUILD_TESTING AND GTest_FOUND)
   ../test/ui_Test.cpp
   ../test/Websocket_Test.cpp
   ../test/filebuf_Test.cpp
-  ../src/joedb/compiler/write_cpp_value.cpp
+  ${JOEDBC_SOURCES}
   ../test/compiler/write_cpp_value_Test.cpp
   ../test/compiler/Compiler_GTest.cpp
+  ../test/compiler/Compiler_Options_Test.cpp
   ../test/compiler/Interpreted_Database.cpp
   ../test/compiler/Readable_Test.cpp
   ../test/compiler/Readonly_Client.cpp
   ../test/compiler/single_row.cpp
   ../test/compiler/translation.h
-  ../test/compiler/unique_index.cpp
   ../test/compiler/db/blob/writable.cpp
   ../test/compiler/db/default_values/writable.cpp
   ../test/compiler/db/empty/writable.cpp

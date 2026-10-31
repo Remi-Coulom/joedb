@@ -10,7 +10,7 @@
 #include "joedb/journal/File.h"
 #endif
 
-#include <iostream>
+#include <ostream>
 
 namespace joedb
 {
@@ -27,10 +27,11 @@ namespace joedb
     Connection &connection,
     bool tail,
     Content_Check content_check,
-    Recovery recovery
+    Recovery recovery,
+    std::ostream &out
    ):
     Readonly_Client(file, connection, content_check, recovery),
-    writable_multiplexer(std::cout)
+    writable_multiplexer(out)
    {
     if (tail)
      writable_multiplexer.set_start_index(1);
@@ -83,7 +84,8 @@ namespace joedb
   Logger &logger,
   Open_Mode default_open_mode,
   DB_Type default_db_type,
-  Arguments &arguments
+  Arguments &arguments,
+  std::ostream &out
  ):
   default_open_mode(default_open_mode),
   default_db_type(default_db_type),
@@ -240,7 +242,8 @@ namespace joedb
     *connection,
     db_type == DB_Type::sql_tail,
     content_check,
-    recovery
+    recovery,
+    out
    ));
   }
   else if (db_type == DB_Type::dump || db_type == DB_Type::dump_tail)
@@ -251,7 +254,8 @@ namespace joedb
     *connection,
     db_type == DB_Type::dump_tail,
     content_check,
-    recovery
+    recovery,
+    out
    ));
   }
 #ifdef PERSISTENCE_TEST

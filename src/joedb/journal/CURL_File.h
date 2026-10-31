@@ -53,7 +53,8 @@ namespace joedb
 
    void copy_to(Abstract_File &destination, int64_t start, int64_t size) const override;
 
-   void perform_range(int64_t start, int64_t size) const;
+   // Returns false when HTTP reports that the range is beyond EOF.
+   bool perform_range(int64_t start, int64_t size) const;
 
    size_t pread(char *buffer, size_t size, int64_t offset) const override;
 

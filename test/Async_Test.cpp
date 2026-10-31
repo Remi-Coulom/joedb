@@ -10,6 +10,25 @@
 
 namespace joedb
 {
+ TEST(Async, reader_recovers_after_file_growth)
+ {
+  Memory_File file;
+  file.pwrite("abc", 3, 0);
+  Async_Reader reader(file, 0, 6);
+  char data[8] = {};
+  EXPECT_EQ(reader.read(data, sizeof(data)), 3);
+  EXPECT_EQ(reader.get_remaining(), 3);
+  EXPECT_TRUE(reader.is_end_of_file());
+  file.pwrite("def", 3, 3);
+  EXPECT_EQ(reader.read(data, 0), 0);
+  EXPECT_EQ(reader.get_current(), 3);
+  EXPECT_EQ(reader.read(data, sizeof(data)), 3);
+  EXPECT_EQ(std::string_view(data, 3), "def");
+  EXPECT_FALSE(reader.is_end_of_file());
+  EXPECT_EQ(reader.get_remaining(), 0);
+  EXPECT_EQ(reader.read(data, sizeof(data)), 0);
+ }
+
  static constexpr int64_t blocks = 250;
  static constexpr int64_t step = 7;
  static constexpr int64_t block_size = 1 << 12; // 1 << 13 triggers a false warning

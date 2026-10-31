@@ -8,8 +8,128 @@
 
 #include "gtest/gtest.h"
 
+#include <random>
+#include <array>
+#include "joedb/Multiplexer.h"
+
 namespace joedb
 {
+ TEST(Journal, invalid_vector_start_reports_exception)
+ {
+  for (const index_t start: {-1, 5})
+  {
+   SCOPED_TRACE(start);
+   Memory_File file;
+   {
+    Writable_Journal journal(file);
+    journal.create_table("items");
+    journal.add_field(Table_Id(1), "value", Type::int32());
+    journal.insert_into(Table_Id(1), Record_Id(0));
+    const int32_t value = 42;
+    journal.update_vector_int32(Table_Id(1), Record_Id(start), Field_Id(1), 1, &value);
+    journal.soft_checkpoint();
+   }
+   Readonly_Journal journal(file);
+   Database db;
+   try
+   {
+    journal.replay_log(db);
+    FAIL() << "invalid vector start was accepted";
+   }
+   catch (const Exception &e)
+   {
+    EXPECT_STREQ(e.what(), "update_vector out of range");
+   }
+   if (start < 0)
+   {
+    Dummy_Writable writable;
+    EXPECT_THROW(journal.replay_log(writable), Exception);
+   }
+  }
+ }
+
+ TEST(Journal, deterministic_sparse_round_trip)
+ {
+  struct Record {bool used = false; int32_t value = 0; std::string name;};
+  std::array<Record, 64> model;
+  std::mt19937 random(0x6a6f6564);
+  Memory_File file;
+  Writable_Journal journal(file);
+  Database source;
+  Multiplexer writable{source, journal};
+  const Table_Id table{1};
+  writable.create_table("items");
+  writable.add_field(table, "value", Type::int32());
+  writable.add_field(table, "name", Type::string());
+
+  const auto check = [&]()
+  {
+   writable.soft_checkpoint();
+   Readonly_Journal reader(file);
+   Database restored;
+   reader.replay_log(restored);
+   for (size_t i = 0; i < model.size(); ++i)
+   {
+    const Record_Id id{index_t(i)};
+    ASSERT_EQ(restored.is_used(table, id), model[i].used) << i;
+    if (model[i].used)
+    {
+     ASSERT_EQ(restored.get_int32(table, id, Field_Id(1)), model[i].value) << i;
+     ASSERT_EQ(restored.get_string(table, id, Field_Id(2)), model[i].name) << i;
+    }
+   }
+  };
+
+  for (size_t step = 0; step < 1200; ++step)
+  {
+   SCOPED_TRACE(step);
+   const size_t first = random() % model.size();
+   const bool insert = !model[first].used;
+   size_t count = 1;
+   while (count < 4 && first + count < model.size() &&
+          model[first + count].used == model[first].used)
+    ++count;
+   const Record_Id id{index_t(first)};
+   if (!insert && random() % 3 == 0)
+   {
+    writable.delete_vector(table, id, count);
+    for (size_t i = 0; i < count; ++i)
+     model[first + i].used = false;
+   }
+   else
+   {
+    if (insert)
+     writable.insert_vector(table, id, count);
+    std::vector<int32_t> values(count);
+    std::vector<std::string> names(count);
+    for (size_t i = 0; i < count; ++i)
+    {
+     values[i] = int32_t(random() & 0x7fffffff);
+     names[i].resize(random() % 9);
+     for (char &c: names[i])
+      c = char(random() & 0xff);
+     model[first + i] = {true, values[i], names[i]};
+    }
+    if (random() % 2 == 0)
+    {
+     writable.update_vector_int32(table, id, Field_Id(1), count, values.data());
+     writable.update_vector_string(table, id, Field_Id(2), count, names.data());
+    }
+    else
+    {
+     for (size_t i = 0; i < count; ++i)
+     {
+      writable.update_int32(table, id + i, Field_Id(1), values[i]);
+      writable.update_string(table, id + i, Field_Id(2), names[i]);
+     }
+    }
+   }
+   if (step % 31 == 0)
+    check();
+  }
+  check();
+ }
+
  class Lock_Failure_File: public Memory_File
  {
   public:
@@ -92,6 +212,25 @@ namespace joedb
    EXPECT_FALSE(file.tail_locked);
    EXPECT_EQ(file.tail_unlock_count, 2);
   }
+ }
+
+ TEST(Journal, moving_tail_lock_transfers_unlock_responsibility)
+ {
+  Lock_Failure_File file;
+  Writable_Journal journal(file);
+  file.tail_unlock_count = 0;
+  {
+   Tail_Exclusive_Lock original(journal);
+   EXPECT_TRUE(file.tail_locked);
+   {
+    Tail_Exclusive_Lock moved(std::move(original));
+    EXPECT_TRUE(file.tail_locked);
+    EXPECT_EQ(file.tail_unlock_count, 0);
+   }
+   EXPECT_FALSE(file.tail_locked);
+   EXPECT_EQ(file.tail_unlock_count, 1);
+  }
+  EXPECT_EQ(file.tail_unlock_count, 1);
  }
 
  ////////////////////////////////////////////////////////////////////////////

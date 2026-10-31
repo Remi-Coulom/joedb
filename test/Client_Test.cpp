@@ -7,9 +7,122 @@
 #include "Shared_Memory_File.h"
 
 #include "gtest/gtest.h"
+#include <ctime>
 
 namespace joedb
 {
+ TEST(Client, transaction_writes_enabled_markers_and_syncs)
+ {
+  class Synced_Memory_File: public Memory_File
+  {
+   public:
+    unsigned sync_count = 0;
+    void sync() override {++sync_count;}
+  } file;
+  Writable_Journal_Client client(file);
+  client.set_valid_data(true);
+  client.set_timestamp(true);
+  client.set_hard_checkpoint(true);
+  const unsigned previous_syncs = file.sync_count;
+  const int64_t before = std::time(nullptr);
+  client.transaction([](Writable_Journal &journal) {journal.comment("transaction");});
+  const int64_t after = std::time(nullptr);
+  EXPECT_GT(file.sync_count, previous_syncs);
+  class Markers: public Dummy_Writable
+  {
+   public:
+    unsigned valid_count = 0;
+    unsigned timestamp_count = 0;
+    int64_t time = 0;
+    std::string text;
+    void valid_data() override {++valid_count;}
+    void timestamp(int64_t value) override {++timestamp_count; time = value;}
+    void comment(const std::string &value) override {text = value;}
+  } markers;
+  Readonly_Journal journal(file);
+  journal.replay_log(markers);
+  EXPECT_EQ(markers.valid_count, 1);
+  EXPECT_EQ(markers.timestamp_count, 1);
+  EXPECT_GE(markers.time, before);
+  EXPECT_LE(markers.time, after);
+  EXPECT_EQ(markers.text, "transaction");
+ }
+
+ TEST(File_Connection, rejects_push_from_stale_checkpoint)
+ {
+  Memory_File server_file;
+  Writable_Journal server(server_file);
+  Journal_Connection connection(server);
+  EXPECT_FALSE(connection.is_pullonly());
+  Memory_File client_file;
+  Writable_Journal client(client_file);
+  client.pull_from(server);
+  const int64_t initial_checkpoint = server.get_checkpoint();
+  client.comment("client update");
+  client.soft_checkpoint();
+  server.comment("concurrent server update");
+  server.soft_checkpoint();
+  const std::string saved = server_file.get_data();
+  EXPECT_THROW(connection.push(client, initial_checkpoint, client.get_checkpoint(),
+   Unlock_Action::unlock_after), Exception);
+  EXPECT_EQ(server_file.get_data(), saved);
+ }
+
+ TEST(File_Connection, fast_content_check_compares_tail)
+ {
+  Memory_File source;
+  {
+   Writable_Journal journal(source);
+   journal.comment(std::string(10000, 'x'));
+   journal.soft_checkpoint();
+  }
+  Memory_File changed;
+  changed.get_data() = source.get_data();
+  Readonly_Journal source_journal(source);
+  Readonly_Journal changed_journal(changed);
+  Pullonly_Journal_Connection connection(source_journal);
+  EXPECT_NO_THROW(connection.handshake(changed_journal, Content_Check::fast));
+  changed.get_data().back() = 'y';
+  EXPECT_THROW(connection.handshake(changed_journal, Content_Check::fast), Content_Mismatch);
+ }
+
+ TEST(File_Connection, readonly_rejects_lock_and_push)
+ {
+  Memory_File source;
+  Writable_Journal journal(source);
+  journal.comment("source");
+  journal.soft_checkpoint();
+  Pullonly_Journal_Connection connection(journal);
+  EXPECT_TRUE(connection.is_pullonly());
+  Memory_File target;
+  Writable_Journal target_journal(target);
+  EXPECT_THROW(connection.pull(Lock_Action::lock_before, Data_Transfer::without_data,
+   target_journal, std::chrono::milliseconds(0)), Exception);
+  EXPECT_THROW(connection.push(target_journal, Header::ssize, Header::ssize,
+   Unlock_Action::unlock_after), Exception);
+ }
+
+ TEST(File_Connection, full_content_check_detects_middle_difference)
+ {
+  Memory_File source;
+  {
+   Writable_Journal journal(source);
+   journal.comment(std::string(10000, 'x'));
+   journal.soft_checkpoint();
+  }
+  Memory_File changed;
+  changed.get_data() = source.get_data();
+  changed.get_data()[5000] = 'y';
+  Readonly_Journal source_journal(source);
+  Readonly_Journal changed_journal(changed);
+  Pullonly_Journal_Connection connection(source_journal);
+  EXPECT_THROW(connection.handshake(changed_journal, Content_Check::full), Content_Mismatch);
+  EXPECT_NO_THROW(connection.handshake(changed_journal, Content_Check::none));
+  changed.get_data()[Header::size + 10] = 'z';
+  EXPECT_THROW(connection.handshake(changed_journal, Content_Check::fast), Content_Mismatch);
+ }
+
+
  /////////////////////////////////////////////////////////////////////////////
  TEST(Client, read_journal_failure_unlocks_connection)
  /////////////////////////////////////////////////////////////////////////////
