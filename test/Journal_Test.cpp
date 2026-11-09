@@ -872,7 +872,7 @@ namespace joedb
 
   {
    Writable_Journal journal(file);
-   journal.skip_directly_to(journal.get_checkpoint());
+   journal.skip_to_checkpoint();
    journal.comment("uncheckpointed comment");
    journal.flush();
   }

@@ -113,9 +113,10 @@ namespace joedb
    {
     raw_play_until(writable, checkpoint_position);
    }
-   void skip_directly_to(int64_t position)
+   void skip_to_checkpoint()
    {
-    file_buffer.set_position(position);
+    file_buffer.set_position(checkpoint_position);
+    reset_context();
    }
    bool equal_to(Readonly_Journal &journal, int64_t from, int64_t until) const
    {

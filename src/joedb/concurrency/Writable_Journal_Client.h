@@ -34,7 +34,7 @@ namespace joedb
   protected:
    void read_journal() override
    {
-    data_journal.skip_directly_to(data_journal.get_checkpoint());
+    data_journal.skip_to_checkpoint();
    }
 
   public:
