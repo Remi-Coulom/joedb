@@ -7,7 +7,6 @@ include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../src)
 include("${CMAKE_CURRENT_LIST_DIR}/joedbc.cmake")
 
 set(JOEDB_SOURCES
- ${JOEDB_SRC_DIR}/joedb/Signal.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/open_mode_strings.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/inplace_pack.cpp
  ${JOEDB_SRC_DIR}/joedb/ui/interruptible_sleep.cpp

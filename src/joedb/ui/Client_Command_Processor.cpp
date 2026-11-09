@@ -164,8 +164,6 @@ namespace joedb
    float sleep_seconds = 0;
    parameters >> wait_seconds >> sleep_seconds;
 
-   Signal::start();
-
    do
     pull(out, to_milliseconds(wait_seconds));
    while (sleep(sleep_seconds, out));
@@ -178,8 +176,6 @@ namespace joedb
   {
    float sleep_seconds = 1.0f;
    parameters >> sleep_seconds;
-
-   Signal::start();
 
    do
     client.push_if_ahead();

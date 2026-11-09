@@ -1,6 +1,7 @@
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/diagnostics.h"
 #include "joedb/ui/type_io.h"
+#include "joedb/Signal.h"
 
 #include <sstream>
 #include <ctype.h>
@@ -186,6 +187,7 @@ General commands
     write_whole_prompt(out);
 
    out.flush();
+   Signal::start();
 
    std::string line;
    if (!std::getline(in, line))

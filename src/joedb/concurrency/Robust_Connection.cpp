@@ -1,4 +1,5 @@
 #include "joedb/concurrency/Robust_Connection.h"
+#include "joedb/ui/interruptible_sleep.h"
 
 namespace joedb
 {
@@ -17,24 +18,33 @@ namespace joedb
 
   while (true)
   {
-   std::this_thread::sleep_until(last_connection_time + period);
+   const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>
+   (
+    last_connection_time + period - clock::now()
+   );
+   if (duration.count() >= 0 && !interruptible_sleep(duration))
+    throw Disconnection("Robust_Connection: reconnect interrupted");
    last_connection_time = clock::now();
 
    try
    {
-    connection.reset();
-    channel.reset();
-    channel = connector.new_channel();
-    connection = std::make_unique<Server_Connection>
+    auto new_channel = connector.new_channel();
+    auto new_connection = std::make_unique<Server_Connection>
     (
-     *channel,
+     *new_channel,
      logger,
      connector.get_keep_alive_interval()
     );
-    if (connection->get_server_checkpoint() < old_server_checkpoint)
+
+    if (new_connection->get_server_checkpoint() < old_server_checkpoint)
      throw Disconnection("Robust_Connection: server checkpoint rolled back");
+
     if (handshake_journal)
-     connection->handshake(*handshake_journal, handshake_content_check);
+     new_connection->handshake(*handshake_journal, handshake_content_check);
+
+    connection = std::move(new_connection);
+    channel = std::move(new_channel);
+
     return;
    }
    catch (const Disconnection &)

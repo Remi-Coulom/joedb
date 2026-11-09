@@ -29,6 +29,7 @@ add_library(joedb_for_joedbc OBJECT
  ${JOEDB_SRC_DIR}/joedb/Multiplexer.cpp
  ${JOEDB_SRC_DIR}/joedb/Readable.cpp
  ${JOEDB_SRC_DIR}/joedb/Selective_Writable.cpp
+ ${JOEDB_SRC_DIR}/joedb/Signal.cpp
  ${JOEDB_SRC_DIR}/joedb/Writable.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/nested_namespace.cpp
  ${JOEDB_SRC_DIR}/joedb/compiler/write_source_code.cpp
