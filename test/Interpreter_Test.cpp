@@ -10,6 +10,7 @@
 #include "joedb/journal/iostream.h"
 #include "joedb/concurrency/Writable_Database_Client.h"
 #include "joedb/Multiplexer.h"
+#include "joedb/Signal.h"
 #include "gtest/gtest.h"
 
 #include <fstream>
@@ -17,6 +18,47 @@
 
 namespace joedb
 {
+ TEST(Command_Interpreter, interrupt_and_terminate)
+ {
+  class Signal_Processor: public Command_Processor
+  {
+   public:
+    int signal = SIGINT;
+    int calls = 0;
+
+    Status process_command(std::string_view, std::istream &,
+     std::istream &, std::ostream &) override
+    {
+     if (++calls == 1)
+     {
+      std::raise(signal);
+      throw Exception("interrupted command");
+     }
+     return Status::done;
+    }
+  };
+
+  const int previous_status = Signal::get_signal();
+  const auto previous_int_handler = std::signal(SIGINT, SIG_IGN);
+  const auto previous_term_handler = std::signal(SIGTERM, SIG_IGN);
+  for (const int signal: {SIGINT, SIGTERM})
+  {
+   Signal::set_signal(Signal::no_signal);
+   Signal_Processor processor;
+   processor.signal = signal;
+   Command_Interpreter interpreter;
+   interpreter.add_processor(processor);
+   std::istringstream in("signal\nsignal\nquit\n");
+   std::ostringstream out;
+   interpreter.main_loop(in, out);
+   EXPECT_EQ(processor.calls, signal == SIGTERM ? 1 : 2);
+  }
+  Signal::stop();
+  std::signal(SIGINT, previous_int_handler);
+  std::signal(SIGTERM, previous_term_handler);
+  Signal::set_signal(previous_status);
+ }
+
  ////////////////////////////////////////////////////////////////////////////
  TEST(Interpreter_Test, main_test)
  ////////////////////////////////////////////////////////////////////////////

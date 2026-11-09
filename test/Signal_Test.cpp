@@ -13,19 +13,27 @@ namespace joedb
   EXPECT_TRUE(interruptible_sleep(std::chrono::milliseconds(1)));
   Signal::set_signal(SIGINT);
   EXPECT_FALSE(interruptible_sleep(std::chrono::milliseconds(10000)));
+  EXPECT_TRUE(interruptible_sleep(std::chrono::milliseconds(0)));
+  Signal::set_signal(SIGTERM);
+  EXPECT_FALSE(interruptible_sleep(std::chrono::milliseconds(10000)));
+  EXPECT_TRUE(interruptible_sleep(std::chrono::milliseconds(0)));
   Signal::set_signal(previous_status);
  }
 
  TEST(Signal, captures_interrupt)
  {
   const auto previous_handler = std::signal(SIGINT, SIG_IGN);
+  const auto previous_term_handler = std::signal(SIGTERM, SIG_IGN);
   const int previous_status = Signal::get_signal();
   Signal::start();
   EXPECT_EQ(Signal::get_signal(), Signal::no_signal);
   EXPECT_EQ(std::raise(SIGINT), 0);
   EXPECT_EQ(Signal::get_signal(), SIGINT);
+  EXPECT_EQ(std::raise(SIGTERM), 0);
+  EXPECT_EQ(Signal::get_signal(), SIGTERM);
   Signal::stop();
   std::signal(SIGINT, previous_handler);
+  std::signal(SIGTERM, previous_term_handler);
   Signal::set_signal(previous_status);
  }
 

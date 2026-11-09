@@ -181,13 +181,15 @@ General commands
   int64_t line_number = 0;
   bool abort = false;
 
-  while(true)
+  Signal::start();
+
+  while (Signal::get_signal() != SIGTERM)
   {
    if (prompt)
     write_whole_prompt(out);
 
    out.flush();
-   Signal::start();
+   Signal::set_signal(Signal::no_signal);
 
    std::string line;
    if (!std::getline(in, line))
