@@ -13,7 +13,7 @@ namespace joedb
    const char *get_name() const override {return "ssh";}
    std::string get_connection_parameters() const override
    {
-    return "[--port p] [--verbosity v] [--key base64] [--passphrase secret] <user> <host> <path>";
+    return "[--port p] [--verbosity v] [--key base64] [--passphrase secret] [--trust_host] <user> <host> <path>";
    }
 
    void build_connector(Arguments &arguments) override
@@ -22,6 +22,7 @@ namespace joedb
     const auto verbosity = arguments.next_option<int>("verbosity", "v", 0);
     const auto key = arguments.next_option<beman::cstring_view>("key", "base64", "");
     const auto passphrase = arguments.next_option<beman::cstring_view>("passphrase", "secret", "");
+    const bool trust_host = arguments.has_flag("trust_host");
 
     const beman::cstring_view user = arguments.get_next("user");
     const beman::cstring_view host = arguments.get_next("host");
@@ -38,7 +39,8 @@ namespace joedb
      verbosity,
      std::string(key),
      std::string(passphrase),
-     path.c_str()
+     path.c_str(),
+     trust_host
     );
    }
  };

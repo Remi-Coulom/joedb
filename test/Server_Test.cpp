@@ -125,7 +125,7 @@ namespace joedb
   class Failing_Connection: public Connection
   {
    public:
-    int64_t handshake(const Readonly_Journal &, Content_Check) override
+    int64_t raw_handshake(const Readonly_Journal &) override
     {
      return Header::ssize;
     }
@@ -1099,6 +1099,66 @@ namespace joedb
      EXPECT_NO_THROW(connection->ping());
     EXPECT_EQ(connector.connections, 2);
    }
+  }
+ }
+
+ ////////////////////////////////////////////////////////////////////////////
+ TEST(Server, robust_reconnect_content_check)
+ {
+  class Disconnectable_Channel: public Local_Channel
+  {
+   public:
+    using Local_Channel::Local_Channel;
+    void disconnect() {socket.close();}
+  };
+
+  class Reconnecting_Connector: public Connector
+  {
+   public:
+    std::string endpoint;
+    mutable Disconnectable_Channel *channel = nullptr;
+
+    std::unique_ptr<Channel> new_channel() const override
+    {
+     auto result = std::make_unique<Disconnectable_Channel>(endpoint);
+     channel = result.get();
+     return result;
+    }
+  };
+
+  for (const auto check: {Content_Check::unknown, Content_Check::none,
+   Content_Check::fast, Content_Check::full})
+  {
+   SCOPED_TRACE(int(check));
+   Test_Server server;
+   server.client.transaction([](Writable_Journal &journal)
+   {
+    journal.comment("remote");
+   });
+   Memory_File file;
+   Writable_Journal journal(file);
+   journal.comment("client");
+   journal.soft_checkpoint();
+
+   Reconnecting_Connector connector;
+   connector.endpoint = server.server.get_endpoint_path();
+   Robust_Connection connection(connector, logger);
+   EXPECT_EQ(connection.raw_handshake(journal), journal.get_checkpoint());
+
+   if (check != Content_Check::unknown)
+   {
+    // Even an empty-range check must remember the policy for reconnects.
+    EXPECT_NO_THROW(connection.check_matching_content
+    (
+     journal, check, journal.get_checkpoint(), journal.get_checkpoint()
+    ));
+   }
+
+   connector.channel->disconnect();
+   if (check == Content_Check::unknown || check == Content_Check::none)
+    EXPECT_NO_THROW(connection.ping());
+   else
+    EXPECT_THROW(connection.ping(), Content_Mismatch);
   }
  }
 

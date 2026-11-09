@@ -6,6 +6,7 @@
 #include "joedb/concurrency/Keep_Alive_Thread.h"
 #include "joedb/concurrency/Robust_Connection.h"
 #include "joedb/concurrency/Server_File.h"
+#include "joedb/Signal.h"
 #include "String_Logger.h"
 #include "joedb/ui/Server_Connection_Builder.h"
 #include <array>
@@ -205,6 +206,32 @@ namespace joedb
   EXPECT_NE(logger.get_message().find("unlock() error"), std::string::npos);
   EXPECT_NO_THROW(connection.unlock());
   EXPECT_EQ(connector.attempts, 2);
+ }
+
+ TEST(Robust_Connection, reconnect_after_interruption)
+ {
+  class Reconnectable_Connection: public Robust_Connection
+  {
+   public:
+    using Robust_Connection::Robust_Connection;
+    using Robust_Connection::reconnect;
+  };
+
+  Scripted_Connector connector;
+  connector.set_keep_alive_interval(std::chrono::milliseconds(0));
+  Logger logger;
+  Reconnectable_Connection connection(connector, logger);
+
+  const int previous_signal = Signal::get_signal();
+  Signal::set_signal(SIGINT);
+  EXPECT_THROW(connection.reconnect(nullptr), Disconnection);
+  Signal::set_signal(previous_signal);
+  EXPECT_EQ(connector.attempts, 1);
+
+  connector.mode = 'R';
+  EXPECT_NO_THROW(connection.reconnect(nullptr));
+  EXPECT_EQ(connector.attempts, 2);
+  EXPECT_TRUE(connection.is_pullonly());
  }
 
  TEST(Server_File, protects_remote_body_and_rejects_wrong_journal)

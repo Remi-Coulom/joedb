@@ -17,6 +17,27 @@ namespace joedb
   Content_Check content_check
  )
  {
+  const int64_t checkpoint = raw_handshake(client_journal);
+  
+  if (content_check != Content_Check::unknown)
+  {
+   check_matching_content
+   (
+    client_journal,
+    content_check,
+    Header::ssize,
+    std::min(checkpoint, client_journal.get_checkpoint())
+   );
+  }
+
+  return checkpoint;
+ }
+
+ int64_t Connection::raw_handshake
+ (
+  const Readonly_Journal &client_journal
+ )
+ {
   return client_journal.get_checkpoint();
  }
 

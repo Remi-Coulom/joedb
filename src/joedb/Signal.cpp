@@ -36,6 +36,7 @@ namespace joedb
  {
   signal_status = no_signal;
   std::signal(SIGINT, joedb_signal_handler);
+  std::signal(SIGTERM, joedb_signal_handler);
  }
 
  ////////////////////////////////////////////////////////////////////////////
@@ -43,5 +44,6 @@ namespace joedb
  ////////////////////////////////////////////////////////////////////////////
  {
   std::signal(SIGINT, SIG_DFL);
+  std::signal(SIGTERM, SIG_DFL);
  }
 }

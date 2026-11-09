@@ -68,7 +68,38 @@ namespace joedb
   builder.build_connector(arguments);
   ASSERT_FALSE(arguments.missing());
   ASSERT_TRUE(builder.connector);
-  EXPECT_THROW(builder.connector->new_channel(), Exception);
+  EXPECT_THROW(builder.connector->new_channel(), Disconnection);
+ }
+
+ TEST(ssh, builder_trusts_host_when_requested)
+ {
+  Test_SSH_Server server;
+  Test_SSH_Key key;
+  const std::string port = std::to_string(server.port());
+  const std::array<const char *, 9> argv =
+   {"test", "--port", port.c_str(), "--key", key.get_text(), "--trust_host", "joedb-test", "127.0.0.1", "/rejected.sock"};
+  Arguments arguments(argv.size(), argv.data());
+  class Builder: public SSH_Connection_Builder
+  {
+   public:
+    using Server_Connection_Builder::connector;
+  } builder;
+  builder.build_connector(arguments);
+  ASSERT_FALSE(arguments.has_error());
+  ASSERT_TRUE(builder.connector);
+  try
+  {
+   builder.connector->new_channel();
+   FAIL() << "The test server rejects Unix socket forwarding";
+  }
+  catch (const Disconnection &)
+  {
+   FAIL() << "--trust_host should bypass host verification";
+  }
+  catch (const Exception &)
+  {
+   // Authentication succeeded and the server rejected Unix socket forwarding.
+  }
  }
 
  TEST(ssh, builder_rejects_missing_endpoint_arguments)
@@ -107,6 +138,47 @@ namespace joedb
   Test_SSH_Server server;
   Test_SSH_Key key;
   EXPECT_THROW(ssh::Session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text()), Disconnection);
+ }
+
+ TEST(ssh, explicitly_trusts_unknown_host_key)
+ {
+  Test_SSH_Server server;
+  Test_SSH_Key key;
+  ssh::Session session("joedb-test", "127.0.0.1", server.port(), 0, key.get_text(),
+   nullptr, nullptr, true);
+  ssh::Forward_Channel forwarded(session, "echo.invalid", 1234);
+  forwarded.set_timeout(std::chrono::seconds(2));
+  Channel &channel = forwarded;
+  const std::string message = "trusted host";
+  channel.write(message.data(), message.size());
+  std::string echo(message.size(), '?');
+  channel.read(echo.data(), echo.size());
+  EXPECT_EQ(echo, message);
+ }
+
+ TEST(ssh, connector_host_trust)
+ {
+  for (const bool trust_host: {false, true})
+  {
+   Test_SSH_Server server;
+   Test_SSH_Key key;
+   ssh::Connector connector("joedb-test", "127.0.0.1", server.port(), 0,
+    key.get_text(), "", "/rejected.sock", trust_host);
+   try
+   {
+    connector.new_channel();
+    FAIL() << "The test server rejects Unix socket forwarding";
+   }
+   catch (const Disconnection &)
+   {
+    EXPECT_FALSE(trust_host);
+   }
+   catch (const Exception &)
+   {
+    // With explicit trust, authentication succeeds and forwarding is attempted.
+    EXPECT_TRUE(trust_host);
+   }
+  }
  }
 
  TEST(ssh, rejected_forward_and_sftp_requests)

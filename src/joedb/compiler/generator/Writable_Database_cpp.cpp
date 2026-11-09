@@ -83,10 +83,12 @@ namespace joedb::generator
    joedb::Readonly_Memory_File schema_file(detail::schema_string, detail::schema_string_size);
    joedb::Readonly_Journal schema_journal(schema_file);
 
-   schema_journal.skip_directly_to(int64_t(file_schema_size));
+   joedb::Dummy_Writable dummy_writable;
+   schema_journal.raw_play_until(dummy_writable, int64_t(file_schema_size));
    schema_journal.raw_play_until(journal, detail::schema_string_size);
 
-   schema_journal.skip_directly_to(int64_t(file_schema_size));
+   schema_journal.rewind();
+   schema_journal.raw_play_until(dummy_writable, int64_t(file_schema_size));
    upgrading_schema = true;
    schema_journal.raw_play_until(*this, detail::schema_string_size);
    upgrading_schema = false;

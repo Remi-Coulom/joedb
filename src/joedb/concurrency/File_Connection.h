@@ -19,10 +19,9 @@ namespace joedb
 
    bool is_pullonly() const override {return true;}
 
-   int64_t handshake
+   int64_t raw_handshake
    (
-    const Readonly_Journal &client_journal,
-    Content_Check content_check
+    const Readonly_Journal &client_journal
    ) override;
 
    void check_matching_content

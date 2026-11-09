@@ -20,7 +20,8 @@ namespace joedb
  {
   none,
   fast,
-  full
+  full,
+  unknown
  };
 
  /// @ingroup concurrency
@@ -60,10 +61,17 @@ namespace joedb
    /// @param content_check indicates how matching content is tested
    ///
    /// @return connection checkpoint
-   virtual int64_t handshake
+   int64_t handshake
    (
     const Readonly_Journal &client_journal,
     Content_Check content_check
+   );
+
+   /// Perform handshake without checking matching content.
+   /// @return connection checkpoint
+   virtual int64_t raw_handshake
+   (
+    const Readonly_Journal &client_journal
    );
 
    /// Compare content of file and connection. Throw if mismatch.

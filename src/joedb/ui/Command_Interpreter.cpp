@@ -1,6 +1,7 @@
 #include "joedb/ui/Command_Interpreter.h"
 #include "joedb/ui/diagnostics.h"
 #include "joedb/ui/type_io.h"
+#include "joedb/Signal.h"
 
 #include <sstream>
 #include <ctype.h>
@@ -180,12 +181,15 @@ General commands
   int64_t line_number = 0;
   bool abort = false;
 
-  while(true)
+  Signal::start();
+
+  while (Signal::get_signal() != SIGTERM)
   {
    if (prompt)
     write_whole_prompt(out);
 
    out.flush();
+   Signal::set_signal(Signal::no_signal);
 
    std::string line;
    if (!std::getline(in, line))

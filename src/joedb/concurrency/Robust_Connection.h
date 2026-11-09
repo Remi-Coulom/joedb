@@ -9,7 +9,7 @@ namespace joedb
 {
  /// @ref Server_Connection that automatically reconnects on error
  ///
- /// Must only be used with one Client. The journal passed to handshake
+ /// Must only be used with one Client. The journal passed to raw_handshake
  /// must remain alive for as long as this connection is used.
  ///
  /// @ingroup concurrency
@@ -24,7 +24,7 @@ namespace joedb
    mutable std::unique_ptr<Channel> channel;
 
    const Readonly_Journal *handshake_journal = nullptr;
-   Content_Check handshake_content_check = Content_Check::fast;
+   Content_Check handshake_content_check = Content_Check::unknown;
 
    static constexpr auto period = std::chrono::seconds(5);
    mutable time_point last_connection_time = clock::now() - period;
@@ -67,11 +67,7 @@ namespace joedb
 
    size_t pread(char *data, size_t size, int64_t offset) const;
 
-   int64_t handshake
-   (
-    const Readonly_Journal &client_journal,
-    Content_Check content_check
-   ) override;
+   int64_t raw_handshake(const Readonly_Journal &client_journal) override;
 
    void check_matching_content
    (
