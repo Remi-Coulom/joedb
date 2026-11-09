@@ -3,21 +3,12 @@
 namespace joedb
 {
  //////////////////////////////////////////////////////////////////////////
- int64_t Pullonly_Journal_Connection::handshake
+ int64_t Pullonly_Journal_Connection::raw_handshake
  //////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal &client_journal,
-  Content_Check content_check
+  const Readonly_Journal &client_journal
  )
  {
-  check_matching_content
-  (
-   client_journal,
-   content_check,
-   Header::ssize,
-   std::min(server_journal.get_checkpoint(), client_journal.get_checkpoint())
-  );
-
   return server_journal.get_checkpoint();
  }
 

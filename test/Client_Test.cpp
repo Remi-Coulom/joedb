@@ -83,6 +83,8 @@ namespace joedb
   Pullonly_Journal_Connection connection(source_journal);
   EXPECT_NO_THROW(connection.handshake(changed_journal, Content_Check::fast));
   changed.get_data().back() = 'y';
+  EXPECT_EQ(connection.raw_handshake(changed_journal), source_journal.get_checkpoint());
+  EXPECT_NO_THROW(connection.handshake(changed_journal, Content_Check::unknown));
   EXPECT_THROW(connection.handshake(changed_journal, Content_Check::fast), Content_Mismatch);
  }
 

@@ -690,7 +690,7 @@ namespace joedb
    public:
     int64_t checkpoint = 0;
     bool readonly = false;
-    int64_t handshake(const Readonly_Journal &, Content_Check) override {return checkpoint;}
+    int64_t raw_handshake(const Readonly_Journal &) override {return checkpoint;}
     bool is_pullonly() const override {return readonly;}
   } connection;
   Memory_File file;
@@ -736,7 +736,7 @@ namespace joedb
    public:
     unsigned calls = 0;
     bool ahead = false;
-    int64_t handshake(const Readonly_Journal &journal, Content_Check) override
+    int64_t raw_handshake(const Readonly_Journal &journal) override
     {return ahead ? Header::ssize : journal.get_checkpoint();}
     int64_t pull(Lock_Action, Data_Transfer, Writable_Journal &journal, std::chrono::milliseconds) override
     {

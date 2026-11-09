@@ -39,11 +39,7 @@ namespace joedb
    //
    // Connection overrides
    //
-   int64_t handshake
-   (
-    const Readonly_Journal &client_journal,
-    Content_Check content_check
-   ) override;
+   int64_t raw_handshake(const Readonly_Journal &client_journal) override;
 
    void check_matching_content
    (

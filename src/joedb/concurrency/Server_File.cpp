@@ -59,11 +59,10 @@ namespace joedb
  }
 
  ////////////////////////////////////////////////////////////////////////////
- int64_t Server_File::handshake
+ int64_t Server_File::raw_handshake
  ////////////////////////////////////////////////////////////////////////////
  (
-  const Readonly_Journal &client_journal,
-  Content_Check content_check
+  const Readonly_Journal &client_journal
  )
  {
   if (&client_journal.get_file() != this)

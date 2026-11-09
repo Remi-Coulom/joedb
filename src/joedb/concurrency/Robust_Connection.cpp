@@ -66,10 +66,9 @@ namespace joedb
   );
  }
 
- int64_t Robust_Connection::handshake
+ int64_t Robust_Connection::raw_handshake
  (
-  const Readonly_Journal &client_journal,
-  Content_Check content_check
+  const Readonly_Journal &client_journal
  )
  {
   if (handshake_journal)
@@ -77,11 +76,10 @@ namespace joedb
 
   const int64_t result = try_until_success([&]()
   {
-   return connection->handshake(client_journal, content_check);
+   return connection->raw_handshake(client_journal);
   });
 
   handshake_journal = &client_journal;
-  handshake_content_check = content_check;
 
   return result;
  }
@@ -94,6 +92,8 @@ namespace joedb
   int64_t until
  )
  {
+  handshake_content_check = content_check;
+
   try_until_success([&]()
   {
    connection->check_matching_content(client_journal, content_check, from, until);
